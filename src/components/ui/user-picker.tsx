@@ -202,6 +202,8 @@ export function UserPicker({
             disabled={disabled}
             className={cn(
               'w-full justify-between font-normal h-9',
+              // Remove default focus-visible ring to prevent double focus
+              'focus:ring-0 focus:ring-offset-0 focus-visible:ring-1 focus-visible:ring-[#c69c6d]/50 focus-visible:ring-offset-0',
               !value && 'text-muted-foreground'
             )}
           >

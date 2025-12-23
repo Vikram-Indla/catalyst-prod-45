@@ -1,12 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { CatalystDatePicker } from '@/components/ui/catalyst-date-picker';
 import { Badge } from '@/components/ui/badge';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { ChevronDown, Wallet, TrendingUp, X } from 'lucide-react';
+import { ChevronDown, Wallet, TrendingUp, X, Calendar } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { UserPicker } from '@/components/ui/user-picker';
@@ -42,19 +41,134 @@ const DELIVERY_MODEL_OPTIONS = [
   'Internal Build, Vendor Advisory',
 ];
 
-
 interface BudgetViewTabProps {
   data: Partial<BusinessRequest> & Record<string, any>;
   onChange: (field: string, value: any) => void;
+  onDirtyChange?: (isDirty: boolean) => void;
 }
 
-// Helper to format currency
-const formatCurrency = (value: number | null | undefined): string => {
-  if (value === null || value === undefined) return 'SAR 0';
-  return `SAR ${value.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
-};
+// ============================================================================
+// REUSABLE COMPONENTS
+// ============================================================================
 
-// PO Tags Input Component
+// Currency Input with formatting
+function CurrencyInput({
+  label,
+  value,
+  onChange,
+  currency = 'SAR',
+  placeholder = '0',
+}: {
+  label: string;
+  value: number | null | undefined;
+  onChange: (value: number | null) => void;
+  currency?: string;
+  placeholder?: string;
+}) {
+  const [displayValue, setDisplayValue] = useState('');
+
+  // Format number with commas
+  const formatNumber = (num: number | null | undefined): string => {
+    if (num === null || num === undefined || isNaN(num)) return '';
+    return new Intl.NumberFormat('en-SA').format(num);
+  };
+
+  // Parse formatted string back to number
+  const parseNumber = (str: string): number | null => {
+    const cleaned = str.replace(/,/g, '').trim();
+    if (!cleaned) return null;
+    const num = parseFloat(cleaned);
+    return isNaN(num) ? null : num;
+  };
+
+  // Update display when value prop changes
+  useEffect(() => {
+    setDisplayValue(formatNumber(value));
+  }, [value]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const raw = e.target.value.replace(/[^0-9]/g, '');
+    setDisplayValue(raw ? formatNumber(parseNumber(raw)) : '');
+  };
+
+  const handleBlur = () => {
+    const num = parseNumber(displayValue);
+    onChange(num);
+    setDisplayValue(formatNumber(num));
+  };
+
+  return (
+    <div>
+      <Label className="text-xs font-medium text-gray-700 dark:text-gray-300 mb-1.5 block">{label}</Label>
+      <div className="relative">
+        <Input
+          type="text"
+          value={displayValue}
+          onChange={handleChange}
+          onBlur={handleBlur}
+          placeholder={placeholder}
+          className={cn(
+            "h-9 text-sm pr-14",
+            "bg-white dark:bg-gray-900",
+            "border-gray-200 dark:border-gray-700",
+            "focus:border-[#c69c6d] focus:ring-1 focus:ring-[#c69c6d]/20"
+          )}
+        />
+        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm font-medium text-gray-400 dark:text-gray-500">
+          {currency}
+        </span>
+      </div>
+    </div>
+  );
+}
+
+// Budget Type Toggle with clear selected state
+function BudgetTypeSelector({
+  value,
+  onChange,
+}: {
+  value: string[] | null;
+  onChange: (value: string[]) => void;
+}) {
+  const selected = value || [];
+
+  const toggleType = (type: string) => {
+    if (selected.includes(type)) {
+      onChange(selected.filter(t => t !== type));
+    } else {
+      onChange([...selected, type]);
+    }
+  };
+
+  return (
+    <div>
+      <Label className="text-xs font-medium text-gray-700 dark:text-gray-300 mb-2 block">Budget Type</Label>
+      <div className={cn(
+        "inline-flex rounded-lg border p-1",
+        "border-gray-200 dark:border-gray-700",
+        "bg-gray-50 dark:bg-gray-800/50"
+      )}>
+        {BUDGET_TYPE_OPTIONS.map((type) => (
+          <button
+            key={type}
+            type="button"
+            onClick={() => toggleType(type)}
+            className={cn(
+              "px-4 py-2 text-sm font-medium rounded-md transition-all",
+              selected.includes(type)
+                ? "bg-[#c69c6d] text-white shadow-sm"
+                : "bg-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+            )}
+          >
+            {type}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// PO Tags Input with consistent styling
 function POTagsInput({ 
   value, 
   onChange 
@@ -80,381 +194,333 @@ function POTagsInput({
   };
 
   return (
-    <div className="space-y-2">
-      <div className="flex flex-wrap gap-1.5 min-h-[32px] p-2 border border-border rounded-md bg-background">
+    <div>
+      <Label className="text-xs font-medium text-gray-700 dark:text-gray-300 mb-1.5 block">PO Number(s)</Label>
+      <div className={cn(
+        "flex flex-wrap gap-2 p-2 min-h-[42px] border rounded-lg transition-colors",
+        "bg-white dark:bg-gray-900",
+        "border-gray-200 dark:border-gray-700",
+        "focus-within:border-[#c69c6d] focus-within:ring-1 focus-within:ring-[#c69c6d]/20"
+      )}>
         {tags.map((tag, index) => (
-          <Badge 
-            key={index} 
-            variant="secondary" 
-            className="h-6 px-2 gap-1 bg-brand-primary/10 text-brand-primary border-brand-primary/20"
+          <span 
+            key={index}
+            className={cn(
+              "inline-flex items-center gap-1 px-2 py-1 rounded text-sm font-medium",
+              "bg-[#c69c6d]/10 text-[#8b7355]",
+              "dark:bg-[#c69c6d]/20 dark:text-[#d4b896]"
+            )}
           >
             {tag}
             <button 
               type="button"
               onClick={() => removeTag(tag)}
-              className="hover:bg-brand-primary/20 rounded-full p-0.5"
+              className="hover:text-[#c69c6d] dark:hover:text-[#d4b896]"
             >
-              <X className="h-3 w-3" />
+              <X className="w-3 h-3" />
             </button>
-          </Badge>
+          </span>
         ))}
-        <Input
+        <input
+          type="text"
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder={tags.length === 0 ? "Type PO and press Enter..." : "Add more..."}
-          className="flex-1 min-w-[120px] border-0 p-0 h-6 focus-visible:ring-0 text-sm"
+          className={cn(
+            "flex-1 min-w-[150px] border-0 p-1 text-sm focus:ring-0 focus:outline-none bg-transparent",
+            "placeholder:text-gray-400 dark:placeholder:text-gray-500",
+            "text-gray-900 dark:text-gray-100"
+          )}
         />
       </div>
     </div>
   );
 }
 
-// Budget Type Multi-Select Chips
-function BudgetTypeChips({
-  value,
-  onChange,
-}: {
-  value: string[] | null;
-  onChange: (value: string[]) => void;
+// Section Header with subtle divider styling
+function FormSection({ 
+  title, 
+  children, 
+  defaultOpen = true 
+}: { 
+  title: string; 
+  children: React.ReactNode; 
+  defaultOpen?: boolean;
 }) {
-  const selected = value || [];
-
-  const toggleType = (type: string) => {
-    if (selected.includes(type)) {
-      onChange(selected.filter(t => t !== type));
-    } else {
-      onChange([...selected, type]);
-    }
-  };
+  const [isOpen, setIsOpen] = useState(defaultOpen);
 
   return (
-    <div className="flex gap-2">
-      {BUDGET_TYPE_OPTIONS.map((type) => (
-        <button
-          key={type}
-          type="button"
-          onClick={() => toggleType(type)}
-          className={cn(
-            "px-3 py-1.5 rounded-full text-xs font-medium transition-all border",
-            selected.includes(type)
-              ? "bg-brand-primary text-white border-brand-primary"
-              : "bg-background text-muted-foreground border-border hover:border-brand-primary/50"
-          )}
-        >
-          {type}
-        </button>
-      ))}
-    </div>
+    <Collapsible open={isOpen} onOpenChange={setIsOpen}>
+      <div className="py-3">
+        <CollapsibleTrigger className="w-full flex items-center justify-between pb-3 border-b border-gray-200 dark:border-gray-700">
+          <h3 className="text-xs font-semibold uppercase tracking-wider text-[#5c7c5c] dark:text-[#7da37d]">
+            {title}
+          </h3>
+          <ChevronDown className={cn(
+            "w-4 h-4 text-gray-400 dark:text-gray-500 transition-transform",
+            !isOpen && "-rotate-90"
+          )} />
+        </CollapsibleTrigger>
+        <CollapsibleContent>
+          <div className="pt-4 space-y-4">
+            {children}
+          </div>
+        </CollapsibleContent>
+      </div>
+    </Collapsible>
   );
 }
 
-export function BudgetViewTab({ data, onChange }: BudgetViewTabProps) {
-  const [fundingOpen, setFundingOpen] = useState(true);
-  const [contractOpen, setContractOpen] = useState(true);
+// Helper to format currency for display
+const formatCurrency = (value: number | null | undefined): string => {
+  if (value === null || value === undefined) return 'SAR 0';
+  return `SAR ${value.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
+};
+
+// ============================================================================
+// MAIN COMPONENT
+// ============================================================================
+
+export function BudgetViewTab({ data, onChange, onDirtyChange }: BudgetViewTabProps) {
+  const handleChange = (field: string, value: any) => {
+    onChange(field, value);
+    onDirtyChange?.(true);
+  };
 
   // Get computed values for summary cards
   const fundingStatus = data.funding_status || 'Not Budgeted';
   const approvedBudget = data.approved_budget_sar || 0;
   const budgetType = data.budget_type || [];
 
-  // Get status color classes - using semantic tokens for dark mode support
+  // Get status color classes
   const getFundingStatusStyle = () => {
     if (fundingStatus === 'Budget Approved' || fundingStatus === 'Funded from Existing Contract') {
-      return { background: 'var(--status-success-bg)', borderColor: 'var(--status-success-border, rgba(125, 163, 125, 0.3))' };
+      return 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800';
     }
     if (fundingStatus === 'Budget Requested' || fundingStatus === 'Partially Budgeted') {
-      return { background: 'var(--status-warning-bg)', borderColor: 'var(--status-warning-border, rgba(212, 168, 85, 0.3))' };
+      return 'bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800';
     }
-    return { background: 'var(--surface-1, hsl(var(--card)))', borderColor: 'var(--border-default, hsl(var(--border)))' };
+    return 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700';
   };
 
-
   return (
-    <div className="space-y-4" style={{ background: 'var(--surface-bg, hsl(var(--background)))' }}>
+    <div className="space-y-4">
       {/* Intro Text */}
-      <p className="text-sm text-muted-foreground">
+      <p className="text-sm text-gray-500 dark:text-gray-400">
         Manage budget allocation, contracts, and capacity planning for this demand.
       </p>
 
       {/* Summary Cards Row */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Funding Status Card */}
-        <div className="rounded-lg border p-4" style={getFundingStatusStyle()}>
+        <div className={cn("rounded-lg border p-4", getFundingStatusStyle())}>
           <div className="flex items-center gap-2 mb-2">
-            <Wallet className="h-4 w-4 text-brand-primary" />
-            <span className="text-xs font-medium" style={{ color: 'var(--text-2, hsl(var(--muted-foreground)))' }}>Funding Status</span>
+            <Wallet className="h-4 w-4 text-[#c69c6d]" />
+            <span className="text-xs font-medium text-gray-500 dark:text-gray-400">Funding Status</span>
           </div>
-          <p className="text-lg font-semibold" style={{ color: 'var(--text-1, hsl(var(--foreground)))' }}>{fundingStatus}</p>
-          <p className="text-xs mt-1" style={{ color: 'var(--text-2, hsl(var(--muted-foreground)))' }}>
+          <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">{fundingStatus}</p>
+          <p className="text-xs mt-1 text-gray-500 dark:text-gray-400">
             Type: {budgetType.length > 0 ? budgetType.join(' / ') : 'Not set'}
           </p>
         </div>
 
         {/* Approved Budget Card */}
-        <div className="rounded-lg border p-4" style={{ background: 'var(--surface-1, hsl(var(--card)))', borderColor: 'var(--border-default, hsl(var(--border)))' }}>
+        <div className="rounded-lg border p-4 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
           <div className="flex items-center gap-2 mb-2">
-            <TrendingUp className="h-4 w-4 text-brand-primary" />
-            <span className="text-xs font-medium" style={{ color: 'var(--text-2, hsl(var(--muted-foreground)))' }}>Approved Budget</span>
+            <TrendingUp className="h-4 w-4 text-[#c69c6d]" />
+            <span className="text-xs font-medium text-gray-500 dark:text-gray-400">Approved Budget</span>
           </div>
-          <p className="text-lg font-semibold" style={{ color: 'var(--text-1, hsl(var(--foreground)))' }}>{formatCurrency(approvedBudget)}</p>
-          <p className="text-xs mt-1" style={{ color: 'var(--text-2, hsl(var(--muted-foreground)))' }}>
+          <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">{formatCurrency(approvedBudget)}</p>
+          <p className="text-xs mt-1 text-gray-500 dark:text-gray-400">
             Budget year: {data.budget_year || 'Not selected'}
           </p>
         </div>
-
       </div>
 
       {/* Section 1: Funding & Budget */}
-      <Collapsible open={fundingOpen} onOpenChange={setFundingOpen}>
-        <div className="border border-border rounded-xl overflow-hidden shadow-sm" style={{ background: 'var(--surface-1, hsl(var(--card)))' }}>
-          <CollapsibleTrigger className="w-full flex items-center justify-between p-4 hover:bg-muted/30 transition-colors">
-            <h3 className="text-xs font-semibold uppercase tracking-wide text-brand-primary">
-              Funding & Budget
-            </h3>
-            <ChevronDown className={cn(
-              "h-4 w-4 text-muted-foreground transition-transform",
-              !fundingOpen && "-rotate-90"
-            )} />
-          </CollapsibleTrigger>
-          <CollapsibleContent>
-            <div className="px-4 pb-4 space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* Funding Status */}
-                <div>
-                  <Label className="text-xs font-medium">Funding Status</Label>
-                  <Select
-                    value={data.funding_status || ''}
-                    onValueChange={(value) => onChange('funding_status', value)}
-                  >
-                    <SelectTrigger className="mt-1 h-9 text-sm">
-                      <SelectValue placeholder="Select status" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {FUNDING_STATUS_OPTIONS.map((opt) => (
-                        <SelectItem key={opt} value={opt}>{opt}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+      <FormSection title="Funding & Budget">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Funding Status */}
+          <div>
+            <Label className="text-xs font-medium text-gray-700 dark:text-gray-300 mb-1.5 block">Funding Status</Label>
+            <Select
+              value={data.funding_status || ''}
+              onValueChange={(value) => handleChange('funding_status', value)}
+            >
+              <SelectTrigger className="h-9 text-sm bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700">
+                <SelectValue placeholder="Select status" />
+              </SelectTrigger>
+              <SelectContent className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 z-[400]">
+                {FUNDING_STATUS_OPTIONS.map((opt) => (
+                  <SelectItem key={opt} value={opt}>{opt}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
 
-                {/* Budget Year */}
-                <div>
-                  <Label className="text-xs font-medium">Budget Year</Label>
-                  <Select
-                    value={data.budget_year || ''}
-                    onValueChange={(value) => onChange('budget_year', value)}
-                  >
-                    <SelectTrigger className="mt-1 h-9 text-sm">
-                      <SelectValue placeholder="Select year" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {BUDGET_YEAR_OPTIONS.map((opt) => (
-                        <SelectItem key={opt} value={opt}>{opt}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+          {/* Budget Year */}
+          <div>
+            <Label className="text-xs font-medium text-gray-700 dark:text-gray-300 mb-1.5 block">Budget Year</Label>
+            <Select
+              value={data.budget_year || ''}
+              onValueChange={(value) => handleChange('budget_year', value)}
+            >
+              <SelectTrigger className="h-9 text-sm bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700">
+                <SelectValue placeholder="Select year" />
+              </SelectTrigger>
+              <SelectContent className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 z-[400]">
+                {BUDGET_YEAR_OPTIONS.map((opt) => (
+                  <SelectItem key={opt} value={opt}>{opt}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
 
-                {/* Budget Type */}
-                <div className="md:col-span-2">
-                  <Label className="text-xs font-medium">Budget Type</Label>
-                  <div className="mt-2">
-                    <BudgetTypeChips
-                      value={data.budget_type}
-                      onChange={(value) => onChange('budget_type', value)}
-                    />
-                  </div>
-                </div>
+          {/* Budget Type - Full width */}
+          <div className="md:col-span-2">
+            <BudgetTypeSelector
+              value={data.budget_type}
+              onChange={(value) => handleChange('budget_type', value)}
+            />
+          </div>
 
-                {/* Approved Budget */}
-                <div>
-                  <Label className="text-xs font-medium">Approved Budget (SAR)</Label>
-                  <Input
-                    type="number"
-                    min={0}
-                    value={data.approved_budget_sar || ''}
-                    onChange={(e) => onChange('approved_budget_sar', e.target.value ? Number(e.target.value) : null)}
-                    placeholder="0"
-                    className="mt-1 h-9 text-sm"
-                  />
-                </div>
+          {/* Approved Budget (SAR) - with formatting */}
+          <CurrencyInput
+            label="Approved Budget (SAR)"
+            value={data.approved_budget_sar}
+            onChange={(value) => handleChange('approved_budget_sar', value)}
+          />
 
-                {/* Current Year Budget */}
-                <div>
-                  <Label className="text-xs font-medium">Current Year Budget (SAR)</Label>
-                  <Input
-                    type="number"
-                    min={0}
-                    value={data.current_year_budget_sar || ''}
-                    onChange={(e) => onChange('current_year_budget_sar', e.target.value ? Number(e.target.value) : null)}
-                    placeholder="0"
-                    className="mt-1 h-9 text-sm"
-                  />
-                </div>
+          {/* Current Year Budget (SAR) - with formatting */}
+          <CurrencyInput
+            label="Current Year Budget (SAR)"
+            value={data.current_year_budget_sar}
+            onChange={(value) => handleChange('current_year_budget_sar', value)}
+          />
 
-                {/* Budget Owner */}
-                <div>
-                  <Label className="text-xs font-medium">Budget Owner</Label>
-                  <Input
-                    value={data.budget_owner_name || ''}
-                    onChange={(e) => onChange('budget_owner_name', e.target.value)}
-                    placeholder="Enter budget owner name"
-                    className="mt-1 h-9 text-sm"
-                  />
-                </div>
+          {/* Budget Owner - Now uses UserPicker like Project Manager */}
+          <div>
+            <Label className="text-xs font-medium text-gray-700 dark:text-gray-300 mb-1.5 block">Budget Owner</Label>
+            <UserPicker
+              value={data.budget_owner_user_id || null}
+              onChange={(value) => handleChange('budget_owner_user_id', value as string | null)}
+              placeholder="Select budget owner..."
+            />
+          </div>
 
-                {/* Project Manager */}
-                <div>
-                  <Label className="text-xs font-medium">Project Manager</Label>
-                  <div className="mt-1">
-                    <UserPicker
-                      value={data.project_manager_user_id || null}
-                      onChange={(value) => onChange('project_manager_user_id', value as string | null)}
-                      placeholder="Select project manager..."
-                    />
-                  </div>
-                </div>
+          {/* Project Manager */}
+          <div>
+            <Label className="text-xs font-medium text-gray-700 dark:text-gray-300 mb-1.5 block">Project Manager</Label>
+            <UserPicker
+              value={data.project_manager_user_id || null}
+              onChange={(value) => handleChange('project_manager_user_id', value as string | null)}
+              placeholder="Select project manager..."
+            />
+          </div>
 
-                {/* Planned External Spend */}
-                <div>
-                  <Label className="text-xs font-medium">Planned External Spend (SAR)</Label>
-                  <Input
-                    type="number"
-                    min={0}
-                    value={data.planned_external_spend_sar || ''}
-                    onChange={(e) => onChange('planned_external_spend_sar', e.target.value ? Number(e.target.value) : null)}
-                    placeholder="0"
-                    className="mt-1 h-9 text-sm"
-                  />
-                </div>
+          {/* Planned External Spend (SAR) - with formatting */}
+          <CurrencyInput
+            label="Planned External Spend (SAR)"
+            value={data.planned_external_spend_sar}
+            onChange={(value) => handleChange('planned_external_spend_sar', value)}
+          />
 
-                {/* Internal Effort Cost */}
-                <div>
-                  <Label className="text-xs font-medium">Internal Effort Cost Equivalent (SAR)</Label>
-                  <Input
-                    type="number"
-                    min={0}
-                    value={data.internal_effort_cost_sar || ''}
-                    onChange={(e) => onChange('internal_effort_cost_sar', e.target.value ? Number(e.target.value) : null)}
-                    placeholder="0"
-                    className="mt-1 h-9 text-sm"
-                  />
-                </div>
-              </div>
-            </div>
-          </CollapsibleContent>
+          {/* Internal Effort Cost (SAR) - with formatting */}
+          <CurrencyInput
+            label="Internal Effort Cost Equivalent (SAR)"
+            value={data.internal_effort_cost_sar}
+            onChange={(value) => handleChange('internal_effort_cost_sar', value)}
+          />
         </div>
-      </Collapsible>
+      </FormSection>
 
       {/* Section 2: Contract & Commercials */}
-      <Collapsible open={contractOpen} onOpenChange={setContractOpen}>
-        <div className="border border-border rounded-xl overflow-hidden shadow-sm" style={{ background: 'var(--surface-1, hsl(var(--card)))' }}>
-          <CollapsibleTrigger className="w-full flex items-center justify-between p-4 hover:bg-muted/30 transition-colors">
-            <h3 className="text-xs font-semibold uppercase tracking-wide text-brand-primary">
-              Contract & Commercials
-            </h3>
-            <ChevronDown className={cn(
-              "h-4 w-4 text-muted-foreground transition-transform",
-              !contractOpen && "-rotate-90"
-            )} />
-          </CollapsibleTrigger>
-          <CollapsibleContent>
-            <div className="px-4 pb-4 space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* Contract Type */}
-                <div>
-                  <Label className="text-xs font-medium">Contract Type</Label>
-                  <Select
-                    value={data.contract_type || ''}
-                    onValueChange={(value) => onChange('contract_type', value)}
-                  >
-                    <SelectTrigger className="mt-1 h-9 text-sm">
-                      <SelectValue placeholder="Select type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {CONTRACT_TYPE_OPTIONS.map((opt) => (
-                        <SelectItem key={opt} value={opt}>{opt}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+      <FormSection title="Contract & Commercials">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Contract Type */}
+          <div>
+            <Label className="text-xs font-medium text-gray-700 dark:text-gray-300 mb-1.5 block">Contract Type</Label>
+            <Select
+              value={data.contract_type || ''}
+              onValueChange={(value) => handleChange('contract_type', value)}
+            >
+              <SelectTrigger className="h-9 text-sm bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700">
+                <SelectValue placeholder="Select type" />
+              </SelectTrigger>
+              <SelectContent className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 z-[400]">
+                {CONTRACT_TYPE_OPTIONS.map((opt) => (
+                  <SelectItem key={opt} value={opt}>{opt}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
 
-                {/* Primary Vendor */}
-                <div>
-                  <Label className="text-xs font-medium">Primary Vendor</Label>
-                  <Input
-                    value={data.primary_vendor_name || ''}
-                    onChange={(e) => onChange('primary_vendor_name', e.target.value)}
-                    placeholder="Enter vendor name"
-                    className="mt-1 h-9 text-sm"
-                  />
-                </div>
+          {/* Primary Vendor */}
+          <div>
+            <Label className="text-xs font-medium text-gray-700 dark:text-gray-300 mb-1.5 block">Primary Vendor</Label>
+            <Input
+              value={data.primary_vendor_name || ''}
+              onChange={(e) => handleChange('primary_vendor_name', e.target.value)}
+              placeholder="Enter vendor name"
+              className="h-9 text-sm bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700"
+            />
+          </div>
 
-                {/* PO Numbers */}
-                <div className="md:col-span-2">
-                  <Label className="text-xs font-medium">PO Number(s)</Label>
-                  <div className="mt-1">
-                    <POTagsInput
-                      value={data.po_numbers}
-                      onChange={(value) => onChange('po_numbers', value)}
-                    />
-                  </div>
-                </div>
+          {/* PO Numbers - Full width */}
+          <div className="md:col-span-2">
+            <POTagsInput
+              value={data.po_numbers}
+              onChange={(value) => handleChange('po_numbers', value)}
+            />
+          </div>
 
-                {/* Contract Start Date */}
-                <div>
-                  <Label className="text-xs font-medium">Contract Start Date</Label>
-                  <div className="mt-1">
-                    <CatalystDatePicker
-                      value={data.contract_start_date || null}
-                      onChange={(date) => onChange('contract_start_date', date ? format(date, 'yyyy-MM-dd') : null)}
-                      placeholder="Pick a date"
-                    />
-                  </div>
-                </div>
+          {/* Contract Start Date - with lighter icon */}
+          <div>
+            <Label className="text-xs font-medium text-gray-700 dark:text-gray-300 mb-1.5 block">Contract Start Date</Label>
+            <CatalystDatePicker
+              value={data.contract_start_date || null}
+              onChange={(date) => handleChange('contract_start_date', date ? format(date, 'yyyy-MM-dd') : null)}
+              placeholder="Select date"
+            />
+          </div>
 
-                {/* Contract End Date */}
-                <div>
-                  <Label className="text-xs font-medium">Contract End Date</Label>
-                  <div className="mt-1">
-                    <CatalystDatePicker
-                      value={data.contract_end_date || null}
-                      onChange={(date) => onChange('contract_end_date', date ? format(date, 'yyyy-MM-dd') : null)}
-                      placeholder="Pick a date"
-                    />
-                  </div>
-                  {/* Date validation */}
-                  {data.contract_start_date && data.contract_end_date && 
-                   new Date(data.contract_end_date) < new Date(data.contract_start_date) && (
-                    <p className="text-xs text-destructive mt-1">
-                      End date must be after start date.
-                    </p>
-                  )}
-                </div>
+          {/* Contract End Date - with lighter icon */}
+          <div>
+            <Label className="text-xs font-medium text-gray-700 dark:text-gray-300 mb-1.5 block">Contract End Date</Label>
+            <CatalystDatePicker
+              value={data.contract_end_date || null}
+              onChange={(date) => handleChange('contract_end_date', date ? format(date, 'yyyy-MM-dd') : null)}
+              placeholder="Select date"
+            />
+            {/* Date validation */}
+            {data.contract_start_date && data.contract_end_date && 
+             new Date(data.contract_end_date) < new Date(data.contract_start_date) && (
+              <p className="text-xs text-red-500 mt-1">
+                End date must be after start date.
+              </p>
+            )}
+          </div>
 
-                {/* Delivery Model */}
-                <div className="md:col-span-2">
-                  <Label className="text-xs font-medium">Delivery Model</Label>
-                  <Select
-                    value={data.delivery_model || ''}
-                    onValueChange={(value) => onChange('delivery_model', value)}
-                  >
-                    <SelectTrigger className="mt-1 h-9 text-sm">
-                      <SelectValue placeholder="Select delivery model" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {DELIVERY_MODEL_OPTIONS.map((opt) => (
-                        <SelectItem key={opt} value={opt}>{opt}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-            </div>
-          </CollapsibleContent>
+          {/* Delivery Model - Full width */}
+          <div className="md:col-span-2">
+            <Label className="text-xs font-medium text-gray-700 dark:text-gray-300 mb-1.5 block">Delivery Model</Label>
+            <Select
+              value={data.delivery_model || ''}
+              onValueChange={(value) => handleChange('delivery_model', value)}
+            >
+              <SelectTrigger className="h-9 text-sm bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700">
+                <SelectValue placeholder="Select model" />
+              </SelectTrigger>
+              <SelectContent className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 z-[400]">
+                {DELIVERY_MODEL_OPTIONS.map((opt) => (
+                  <SelectItem key={opt} value={opt}>{opt}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         </div>
-      </Collapsible>
+      </FormSection>
     </div>
   );
 }
