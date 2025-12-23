@@ -39,7 +39,7 @@ export function DeleteIncidentDialog({
     setIsDeleting(true);
     try {
       // Soft delete via RPC (avoids RLS edge cases)
-      const { error } = await supabase.rpc('soft_delete_incident', {
+      const { error } = await (supabase as any).rpc('soft_delete_incident', {
         p_incident_id: incidentId,
       });
 
