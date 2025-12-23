@@ -1,11 +1,10 @@
 import { GripVertical } from 'lucide-react';
-import { cn } from '@/lib/utils';
 
 interface RankCellProps {
-  rank: number | null;
+  displayIndex: number;
 }
 
-export function RankCell({ rank }: RankCellProps) {
+export function RankCell({ displayIndex }: RankCellProps) {
   return (
     <div className="flex items-center gap-1.5">
       <div 
@@ -14,15 +13,8 @@ export function RankCell({ rank }: RankCellProps) {
       >
         <GripVertical className="h-4 w-4" />
       </div>
-      <span 
-        className={cn(
-          "font-mono text-xs font-semibold px-2 py-0.5 rounded",
-          rank 
-            ? "bg-[hsl(var(--palette-champagne))]/20 text-[hsl(var(--secondary-bronze))]" 
-            : "bg-muted text-muted-foreground"
-        )}
-      >
-        {rank ? `#${rank}` : '—'}
+      <span className="font-mono text-xs font-semibold px-2 py-0.5 rounded bg-[#c69c6d]/15 text-[#8b7355]">
+        #{displayIndex}
       </span>
     </div>
   );
