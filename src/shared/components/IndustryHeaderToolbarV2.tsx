@@ -442,7 +442,7 @@ export function IndustryHeaderToolbarV2({
           </DropdownMenu>
         )}
 
-        {/* Create Button - Primary CTA (Olive Green) - Desktop only */}
+        {/* Create Button - Primary CTA (Catalyst Olive Green) - Desktop only */}
         {onCreateRequest && (
           <button
             onClick={onCreateRequest}
@@ -451,7 +451,7 @@ export function IndustryHeaderToolbarV2({
             <div className="w-4 h-4">
               <Icons.Plus />
             </div>
-            <span>Create Request</span>
+            <span>Create request</span>
           </button>
         )}
         </div>

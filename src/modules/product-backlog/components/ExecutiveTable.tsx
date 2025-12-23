@@ -7,6 +7,7 @@
 import React, { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
+import { Plus } from 'lucide-react';
 import { useDepartments } from '@/hooks/useDepartmentsAndOwners';
 import { EnterpriseToolbar } from './EnterpriseToolbar';
 import { FilterDrawer } from './FilterDrawer';
@@ -504,10 +505,11 @@ function EmptyState({ hasFilters, onClearFilters, onCreateNew }: {
         )}
         <button
           onClick={onCreateNew}
-          className="px-4 py-2 text-sm font-semibold rounded-lg border-none transition-colors focus:outline-none focus:ring-2 focus:ring-brand-primary/30"
-          style={{ backgroundColor: 'hsl(var(--brand-primary))', color: 'var(--text-inverse)' }}
+          className="h-9 px-4 text-sm font-medium rounded-lg transition-colors shadow-sm bg-secondary-olive hover:bg-secondary-olive/85 text-white flex items-center gap-2"
         >
-          Create request
+          <Plus className="w-4 h-4" />
+          <span className="hidden sm:inline">Create request</span>
+          <span className="sm:hidden">Create</span>
         </button>
       </div>
     </div>

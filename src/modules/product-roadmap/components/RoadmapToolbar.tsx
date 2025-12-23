@@ -79,16 +79,16 @@ export function RoadmapToolbar({
   
   return (
     <div 
-      className="flex items-center justify-between gap-4 p-3"
+      className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-3"
       style={{
         backgroundColor: tokens.surface.card,
         borderBottom: `1px solid ${tokens.border.default}`,
       }}
     >
       {/* Left side - Search & Filters */}
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 flex-wrap">
         {/* Search */}
-        <div className="relative">
+        <div className="relative flex-1 sm:flex-none">
           <Search 
             className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" 
             style={{ color: tokens.text.muted }}
@@ -98,7 +98,7 @@ export function RoadmapToolbar({
             placeholder="Search demands..."
             value={filters.search}
             onChange={(e) => onFiltersChange({ ...filters, search: e.target.value })}
-            className="pl-9 w-64 h-9"
+            className="pl-9 w-full sm:w-48 md:w-64 h-9"
             data-roadmap-search
             style={{
               borderColor: tokens.border.default,
@@ -184,7 +184,7 @@ export function RoadmapToolbar({
       </div>
 
       {/* Right side - Timeline controls & Actions */}
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 flex-wrap justify-end">
         {/* Timeline navigation */}
         <div 
           className="flex items-center rounded-md"
@@ -289,24 +289,15 @@ export function RoadmapToolbar({
           <TooltipContent>Export roadmap</TooltipContent>
         </Tooltip>
 
-        {/* Create button - olive green CTA */}
+        {/* Create button - Catalyst olive green CTA */}
         <button
           onClick={onOpenCreateDialog}
-          className="inline-flex items-center gap-2 px-4 py-2 font-medium text-sm rounded-lg transition-colors shadow-sm"
-          style={{
-            backgroundColor: '#808000',
-            color: '#ffffff',
-          }}
-          onMouseEnter={(e) => {
-            (e.currentTarget as HTMLElement).style.backgroundColor = '#6b6b00';
-          }}
-          onMouseLeave={(e) => {
-            (e.currentTarget as HTMLElement).style.backgroundColor = '#808000';
-          }}
+          className="inline-flex items-center gap-2 h-9 px-4 font-medium text-sm rounded-lg transition-colors shadow-sm bg-secondary-olive hover:bg-secondary-olive/85 text-white"
           data-create-button
         >
           <Plus className="w-4 h-4" />
-          Create request
+          <span className="hidden sm:inline">Create request</span>
+          <span className="sm:hidden">Create</span>
         </button>
       </div>
     </div>
