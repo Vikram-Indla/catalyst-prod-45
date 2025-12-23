@@ -134,6 +134,8 @@ export function useDeleteTeams() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['teams'] });
+      queryClient.invalidateQueries({ queryKey: ['accessible-teams'] });
+      queryClient.invalidateQueries({ queryKey: ['team-member-ids'] });
       toast.success('Teams deleted successfully');
     },
     onError: (error) => {
