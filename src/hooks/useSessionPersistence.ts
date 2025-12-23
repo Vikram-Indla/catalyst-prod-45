@@ -54,14 +54,11 @@ export function useTrackLastRoute() {
 }
 
 /**
- * Gets the last visited route from localStorage (sanitized)
+ * Gets the default home route after login
+ * Always returns /home - session persistence is disabled for login redirect
  */
 export function getLastRoute(): string {
-  const stored = localStorage.getItem(LAST_ROUTE_KEY);
-  if (!stored) return '/home';
-  
-  // Sanitize the stored route before returning
-  return sanitizeRoutePath(stored);
+  return '/home';
 }
 
 /**
