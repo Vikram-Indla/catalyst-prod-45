@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
@@ -17,7 +18,6 @@ import { format, parseISO } from 'date-fns';
 import { Calendar as CalendarIcon, Lock } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
-import { useEffect } from 'react';
 
 const QUARTER_OPTIONS = [
   'Q1 2025', 'Q2 2025', 'Q3 2025', 'Q4 2025',
@@ -267,7 +267,7 @@ export function DemandDetailsViewTab({ data, onChange, onDirtyChange }: DemandDe
   const reporterName = data.requestor_name || data.requestor || null;
 
   return (
-    <div className="space-y-5 pb-24">
+    <div className="space-y-5 pb-6">
       {/* Row 1: Status | EA Review Required? */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
         <div>
@@ -444,16 +444,41 @@ export function DemandDetailsViewTab({ data, onChange, onDirtyChange }: DemandDe
         />
       </div>
 
-      {/* Description Section */}
+      {/* Details Section with Summary and Description */}
       <div className="pt-4" style={{ borderTop: '1px solid var(--divider)' }}>
-        <FieldLabel>Description</FieldLabel>
-        <Textarea
-          value={data.description || ''}
-          onChange={(e) => handleChange('description', e.target.value)}
-          placeholder="Detailed description"
-          rows={4}
-          className="bg-background resize-none"
-        />
+        <div 
+          className="rounded-lg p-4"
+          style={{ backgroundColor: 'var(--surface-2)', border: '1px solid var(--divider)' }}
+        >
+          <h3 className="text-xs font-semibold uppercase tracking-wider mb-4" style={{ color: 'var(--text-3)' }}>
+            DETAILS
+          </h3>
+          
+          {/* Summary field */}
+          <div className="mb-4">
+            <FieldLabel>
+              Summary <span className="text-red-500">*</span>
+            </FieldLabel>
+            <Input
+              value={data.title || ''}
+              onChange={(e) => handleChange('title', e.target.value)}
+              placeholder="Enter summary"
+              className="bg-background"
+            />
+          </div>
+          
+          {/* Description field */}
+          <div>
+            <FieldLabel>Description</FieldLabel>
+            <Textarea
+              value={data.description || ''}
+              onChange={(e) => handleChange('description', e.target.value)}
+              placeholder="Detailed description"
+              rows={6}
+              className="bg-background resize-none"
+            />
+          </div>
+        </div>
       </div>
     </div>
   );

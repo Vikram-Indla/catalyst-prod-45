@@ -57,6 +57,7 @@ export const ROUTE_REGISTRY: Record<string, RouteConfig> = {
   // Industry routes (part of Product)
   '/industry/backlog': { section: 'INDUSTRY', pageTitle: 'Industry Backlog' },
   '/industry/kanban': { section: 'INDUSTRY', pageTitle: 'Industry Kanban' },
+  '/industry/table': { section: 'INDUSTRY', pageTitle: 'Demand Table' },
   '/industry/roadmaps': { section: 'INDUSTRY', pageTitle: 'Industry Roadmaps' },
   
   // Program routes
