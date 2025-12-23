@@ -61,6 +61,12 @@ interface Owner {
   name: string;
 }
 
+interface ProcessStep {
+  id: string;
+  value: string;
+  label: string;
+}
+
 interface IndustryRoadmapFiltersDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -68,6 +74,7 @@ interface IndustryRoadmapFiltersDialogProps {
   onFiltersChange: (filters: IndustryFilters) => void;
   owners: Owner[];
   products: Product[];
+  processSteps?: ProcessStep[];
 }
 
 // Multi-select dropdown component
@@ -166,7 +173,6 @@ function MultiSelectDropdown({
   );
 }
 
-const REQUEST_STATUSES = ['new', 'demand_analysis', 'solution_review', 'approved', 'in_progress', 'implementation', 'done', 'on_hold', 'cancelled'];
 const HEALTH_STATUSES = ['On Track', 'At Risk', 'Blocked'];
 
 export function IndustryRoadmapFiltersDialog({
@@ -176,6 +182,7 @@ export function IndustryRoadmapFiltersDialog({
   onFiltersChange,
   owners,
   products,
+  processSteps = [],
 }: IndustryRoadmapFiltersDialogProps) {
   const [draftFilters, setDraftFilters] = useState<IndustryFilters>(filters);
   const [dateValidationError, setDateValidationError] = useState<string | null>(null);
@@ -281,11 +288,11 @@ export function IndustryRoadmapFiltersDialog({
               </Label>
               <MultiSelectDropdown
                 label="Request Status"
-                options={REQUEST_STATUSES}
+                options={processSteps}
                 selected={draftFilters.status}
                 onChange={(selected) => setDraftFilters(prev => ({ ...prev, status: selected }))}
-                getOptionLabel={(s) => s.replace(/_/g, ' ').replace(/\b\w/g, (l: string) => l.toUpperCase())}
-                getOptionValue={(s) => s}
+                getOptionLabel={(s) => s.label}
+                getOptionValue={(s) => s.value}
               />
             </div>
             <div className="space-y-2">
