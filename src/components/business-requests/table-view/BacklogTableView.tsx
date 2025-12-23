@@ -9,7 +9,7 @@ import { cn } from '@/lib/utils';
 import { Checkbox } from '@/components/ui/checkbox';
 import { ChevronUp, ChevronDown, GripVertical } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
-import { StatusCell, ScoreCell, RankCell, IdCell, OwnerCell } from './cells';
+import { StatusCell, ScoreCell, RankCell, IdCell, OwnerCell, PriorityCell, QuarterCell } from './cells';
 import { useTableSelection } from './useTableSelection';
 import { useTableSort } from './useTableSort';
 import { DEFAULT_COLUMNS, TableColumn } from './types';
@@ -220,16 +220,16 @@ export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableVi
                                 onCheckedChange={() => toggleSelection(row.id)}
                               />
                             </td>
-                            <td className="px-3 py-3"><RankCell rank={row.rank ?? null} /></td>
+                            <td className="px-3 py-3"><RankCell displayIndex={index + 1} /></td>
                             <td className="px-3 py-3">
                               <IdCell requestKey={row.request_key || row.id.slice(0, 8)} onClick={(e) => { e.stopPropagation(); onRowClick(row.id); }} />
                             </td>
                             <td className="px-3 py-3 font-medium text-foreground max-w-[300px] truncate">{row.title || '—'}</td>
                             <td className="px-3 py-3"><StatusCell status={row.process_step || 'new_request'} /></td>
-                            <td className="px-3 py-3 text-muted-foreground">{row.priority_tier || '—'}</td>
+                            <td className="px-3 py-3"><PriorityCell priority={row.priority_tier || null} /></td>
                             <td className="px-3 py-3"><ScoreCell score={row.business_score ?? null} /></td>
                             <td className="px-3 py-3"><OwnerCell name={row.requestor || null} /></td>
-                            <td className="px-3 py-3 text-muted-foreground">{row.planned_quarter?.[0] || '—'}</td>
+                            <td className="px-3 py-3"><QuarterCell quarter={row.planned_quarter?.[0] || null} /></td>
                           </tr>
                         )}
                       </Draggable>
