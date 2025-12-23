@@ -289,24 +289,24 @@ export function RoadmapToolbar({
           <TooltipContent>Export roadmap</TooltipContent>
         </Tooltip>
 
-        {/* Create button - prominent brand CTA */}
+        {/* Create button - olive green CTA */}
         <button
           onClick={onOpenCreateDialog}
           className="inline-flex items-center gap-2 px-4 py-2 font-medium text-sm rounded-lg transition-colors shadow-sm"
           style={{
-            backgroundColor: brand.primary,
+            backgroundColor: '#808000',
             color: '#ffffff',
           }}
           onMouseEnter={(e) => {
-            (e.currentTarget as HTMLElement).style.backgroundColor = brand.primaryHover;
+            (e.currentTarget as HTMLElement).style.backgroundColor = '#6b6b00';
           }}
           onMouseLeave={(e) => {
-            (e.currentTarget as HTMLElement).style.backgroundColor = brand.primary;
+            (e.currentTarget as HTMLElement).style.backgroundColor = '#808000';
           }}
           data-create-button
         >
           <Plus className="w-4 h-4" />
-          Add Demand
+          Create request
         </button>
       </div>
     </div>
