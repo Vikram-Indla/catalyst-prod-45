@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useRef, useEffect } from 'react';
 import { useAuth } from '@/lib/auth';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -26,14 +26,16 @@ interface DemandDetailsTabProps {
 
 export function DemandDetailsTab({ data, onChange }: DemandDetailsTabProps) {
   const { user } = useAuth();
-  const [targetDateLocked, setTargetDateLocked] = useState(false);
-  const [lockedByUser, setLockedByUser] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const currentUser = 'Current User';
 
   const { data: departments } = useDepartments();
   const { data: owners } = useBusinessOwners();
   const { data: mappings } = useDepartmentOwnerMappings();
+
+  // Initialize lock state from persisted data
+  const targetDateLocked = data.end_date_locked ?? false;
+  const lockedByUser = data.end_date_locked_by ?? null;
 
   useEffect(() => {
     if (user?.id && !data.requestor) {
@@ -71,12 +73,15 @@ export function DemandDetailsTab({ data, onChange }: DemandDetailsTabProps) {
 
   const handleLockToggle = () => {
     if (targetDateLocked) {
-      if (lockedByUser && lockedByUser !== currentUser) {
-        toast.error(`Cannot unlock. This date was locked by ${lockedByUser}`);
+      // Only allow the user who locked it to unlock
+      if (lockedByUser && lockedByUser !== user?.id) {
+        toast.error(`Cannot unlock. This date was locked by another user`);
         return;
       }
-      setTargetDateLocked(false);
-      setLockedByUser(null);
+      // Unlock
+      onChange('end_date_locked', false);
+      onChange('end_date_locked_by', null);
+      onChange('end_date_locked_at', null);
       toast.info('Target Completion Date unlocked');
     } else {
       if (!data.impl_start_date) {
@@ -87,9 +92,11 @@ export function DemandDetailsTab({ data, onChange }: DemandDetailsTabProps) {
         toast.error('Cannot lock: Target Completion Date must be populated first');
         return;
       }
-      setTargetDateLocked(true);
-      setLockedByUser(currentUser);
-      toast.success(`Target Completion Date locked by ${currentUser}`);
+      // Lock
+      onChange('end_date_locked', true);
+      onChange('end_date_locked_by', user?.id || null);
+      onChange('end_date_locked_at', new Date().toISOString());
+      toast.success(`Target Completion Date locked`);
     }
   };
 

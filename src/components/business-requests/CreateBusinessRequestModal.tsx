@@ -18,6 +18,7 @@ const getInitialFormData = (): Record<string, any> => ({
   description: '',
   platform: '',
   requestor: '',
+  assignee: '',
   department: '',
   department_id: '',
   business_owner: '',
@@ -28,6 +29,10 @@ const getInitialFormData = (): Record<string, any> => ({
   attachments: [],
   delivery_platform: '',
   planned_quarter: '',
+  // Lock fields
+  end_date_locked: false,
+  end_date_locked_by: null,
+  end_date_locked_at: null,
   // Internal defaults
   process_step: 'new_request',
   health: 'green',
@@ -106,7 +111,7 @@ export function CreateBusinessRequestModal({ isOpen, onClose }: CreateBusinessRe
       toast.error('Description is required');
       return;
     }
-    if (!formData.requestor) {
+    if (!formData.assignee) {
       toast.error('Assignee is required');
       return;
     }
@@ -124,7 +129,8 @@ export function CreateBusinessRequestModal({ isOpen, onClose }: CreateBusinessRe
       title: formData.title,
       description: formData.description,
       platform: formData.platform,
-      requestor: formData.requestor,
+      requestor: formData.requestor || null,
+      assignee: formData.assignee || null,
       start_date: formData.start_date,
       end_date: formData.end_date,
       impl_start_date: formData.impl_start_date,
@@ -136,6 +142,10 @@ export function CreateBusinessRequestModal({ isOpen, onClose }: CreateBusinessRe
       department_id: formData.department_id,
       business_owner: formData.business_owner,
       business_owner_id: formData.business_owner_id,
+      // Lock fields
+      end_date_locked: formData.end_date_locked || false,
+      end_date_locked_by: formData.end_date_locked_by || null,
+      end_date_locked_at: formData.end_date_locked_at || null,
     };
 
     try {
