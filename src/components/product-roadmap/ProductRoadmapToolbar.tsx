@@ -23,12 +23,13 @@ import {
 import { TimelineFilterPopover, TimelineFilterState, DEFAULT_TIMELINE_FILTER } from '@/components/roadmap/TimelineFilterPopover';
 
 // Group By types
-export type DemandGroupBy = 'none' | 'platform' | 'owner' | 'quarter';
+export type DemandGroupBy = 'none' | 'platform' | 'owner' | 'quarter' | 'assignee';
 
 const GROUP_BY_OPTIONS: { value: DemandGroupBy; label: string }[] = [
   { value: 'none', label: 'None' },
   { value: 'platform', label: 'Delivery Platform' },
   { value: 'owner', label: 'Business Owner' },
+  { value: 'assignee', label: 'Assignee' },
   { value: 'quarter', label: 'Planned Quarter' },
 ];
 

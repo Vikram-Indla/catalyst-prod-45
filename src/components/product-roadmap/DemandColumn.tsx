@@ -1,6 +1,6 @@
 import React, { forwardRef, useRef, useEffect, useCallback, useState } from 'react';
 import { Demand, DemandOwner, DEMAND_STATUS_CONFIG } from '@/types/product-roadmap';
-import { Home, ChevronDown } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { DemandGroupBy } from './ProductRoadmapToolbar';
 import { format } from 'date-fns';
@@ -41,22 +41,31 @@ const formatDateRange = (start: Date, end: Date) => {
   return `${startStr} → ${endStr}`;
 };
 
-// Get health status config - semantic colors matching Program
-const getHealthConfig = (status: string) => {
+// Get status display config - show actual status with appropriate colors
+const getStatusConfig = (status: string) => {
   const statusLower = status?.toLowerCase() || '';
   
-  // Map to semantic Program colors
-  if (statusLower.includes('on_track') || statusLower.includes('ontrack') || statusLower.includes('approved') || statusLower.includes('implement') || statusLower.includes('ready')) {
-    return { label: 'ONTRACK', bgClass: 'bg-brand-primary', textClass: 'text-white' };
+  // Map statuses to display labels and colors
+  if (statusLower === 'new') {
+    return { label: 'NEW', bgClass: 'bg-muted-foreground', textClass: 'text-white' };
   }
-  if (statusLower.includes('at_risk') || statusLower.includes('atrisk') || statusLower.includes('review') || statusLower.includes('analyse')) {
-    return { label: 'ATRISK', bgClass: 'bg-secondary-bronze', textClass: 'text-white' };
+  if (statusLower === 'analyse') {
+    return { label: 'ANALYSE', bgClass: 'bg-secondary-bronze', textClass: 'text-white' };
   }
-  if (statusLower.includes('blocked') || statusLower.includes('on_hold') || statusLower.includes('rejected')) {
-    return { label: 'BLOCKED', bgClass: 'bg-destructive', textClass: 'text-white' };
+  if (statusLower === 'approved') {
+    return { label: 'APPROVED', bgClass: 'bg-brand-primary', textClass: 'text-white' };
   }
-  // Default for new/draft/etc
-  return { label: 'ONTRACK', bgClass: 'bg-brand-primary', textClass: 'text-white' };
+  if (statusLower === 'implement') {
+    return { label: 'IN PROGRESS', bgClass: 'bg-brand-primary', textClass: 'text-white' };
+  }
+  if (statusLower === 'closed') {
+    return { label: 'CLOSED', bgClass: 'bg-muted-foreground', textClass: 'text-white' };
+  }
+  if (statusLower === 'on-hold' || statusLower === 'on_hold') {
+    return { label: 'ON HOLD', bgClass: 'bg-destructive', textClass: 'text-white' };
+  }
+  // Default
+  return { label: status?.toUpperCase() || 'NEW', bgClass: 'bg-muted-foreground', textClass: 'text-white' };
 };
 
 export const DemandColumn = forwardRef<HTMLDivElement, DemandColumnProps>(
@@ -112,8 +121,7 @@ export const DemandColumn = forwardRef<HTMLDivElement, DemandColumnProps>(
 
     // Render a single demand row - matching Program structure
     const renderDemandRow = (demand: Demand, _index: number) => {
-      const healthConfig = getHealthConfig(demand.status);
-      const linkedCount = demand.milestones?.length || 0;
+      const statusConfig = getStatusConfig(demand.status);
       
       return (
         <div 
@@ -145,29 +153,13 @@ export const DemandColumn = forwardRef<HTMLDivElement, DemandColumnProps>(
             </div>
           </div>
           
-          {/* Home Icon + Count - matching Program */}
-          <div className={cn(
-            "flex items-center gap-1 px-2 py-1 rounded-xl text-[11px] flex-shrink-0",
-            linkedCount > 0
-              ? "bg-brand-primary-muted text-brand-primary"
-              : "bg-muted text-muted-foreground"
-          )}>
-            <Home className="h-3 w-3" />
-            {linkedCount}
-          </div>
-          
-          {/* Owner Avatar - matching Program */}
-          <div className="w-6 h-6 rounded-full bg-secondary-champagne flex items-center justify-center text-[10px] font-semibold text-secondary-bronze flex-shrink-0">
-            {getOwnerInitials(demand.ownerName || 'UN')}
-          </div>
-          
-          {/* Status Lozenge - semantic colors matching Program */}
+          {/* Status Lozenge - show actual status */}
           <div className={cn(
             "px-2 py-1 rounded text-[10px] font-semibold uppercase tracking-wide flex-shrink-0",
-            healthConfig.bgClass,
-            healthConfig.textClass
+            statusConfig.bgClass,
+            statusConfig.textClass
           )}>
-            {healthConfig.label}
+            {statusConfig.label}
           </div>
         </div>
       );

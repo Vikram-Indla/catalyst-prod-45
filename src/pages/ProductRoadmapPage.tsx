@@ -50,6 +50,9 @@ function groupDemands(demands: Demand[], groupBy: DemandGroupBy): DemandGroup[] 
         case 'owner':
           key = demand.ownerName || 'Unassigned';
           break;
+        case 'assignee':
+          key = demand.assigneeName || 'Unassigned';
+          break;
         default:
           key = 'Unassigned';
       }
@@ -122,28 +125,47 @@ export const ProductRoadmapPage: React.FC = () => {
   const [groupBy, setGroupBy] = useState<DemandGroupBy>('none');
   const [timelineFilter, setTimelineFilter] = useState<TimelineFilterState>(DEFAULT_TIMELINE_FILTER);
   
-  // Timeline dates derived from viewport (or dataset bounds)
+  // Timeline dates derived from timelineFilter (applying user's date selection)
   const timelineBounds = useMemo(() => {
-    if (isViewportAtDefault && demands.length > 0) {
-      let minStart = demands[0].startDate.getTime();
-      let maxEnd = demands[0].endDate.getTime();
-      demands.forEach(d => {
-        minStart = Math.min(minStart, d.startDate.getTime());
-        maxEnd = Math.max(maxEnd, d.endDate.getTime());
-      });
+    const { selectedYears, selectedQuarters } = timelineFilter;
+    
+    if (selectedYears.length === 0) {
+      // Fallback to current year
+      const currentYear = new Date().getFullYear();
       return {
-        start: new Date(minStart),
-        end: new Date(maxEnd),
+        start: new Date(currentYear, 0, 1),
+        end: new Date(currentYear, 11, 31),
       };
     }
-    return {
-      start: appliedViewport.start,
-      end: appliedViewport.end,
-    };
-  }, [appliedViewport, demands, isViewportAtDefault]);
+    
+    const sortedYears = [...selectedYears].sort((a, b) => a - b);
+    const sortedQuarters = selectedQuarters.length > 0 
+      ? [...selectedQuarters].sort((a, b) => a - b) 
+      : [1, 2, 3, 4];
+    
+    const firstYear = sortedYears[0];
+    const lastYear = sortedYears[sortedYears.length - 1];
+    const firstQuarter = sortedQuarters[0];
+    const lastQuarter = sortedQuarters[sortedQuarters.length - 1];
+    
+    // Calculate start date (first day of first quarter of first year)
+    const startMonth = (firstQuarter - 1) * 3;
+    const start = new Date(firstYear, startMonth, 1);
+    
+    // Calculate end date (last day of last quarter of last year)
+    const endMonth = lastQuarter * 3 - 1; // Last month of quarter
+    const end = new Date(lastYear, endMonth + 1, 0); // Last day of that month
+    
+    return { start, end };
+  }, [timelineFilter]);
   
   const timelineStart = timelineBounds.start;
   const timelineEnd = timelineBounds.end;
+  
+  // Filter demands by timeline viewport
+  const demandsInViewport = useMemo(() => {
+    return filterByViewportOverlap(demands, timelineStart, timelineEnd);
+  }, [demands, timelineStart, timelineEnd]);
   
   // Drawer state
   const [selectedDemandId, setSelectedDemandId] = useState<string | null>(null);
@@ -151,13 +173,6 @@ export const ProductRoadmapPage: React.FC = () => {
   const demandListRef = useRef<HTMLDivElement>(null);
   const timelineGridRef = useRef<HTMLDivElement>(null);
   
-  // Skip viewport filtering when at default
-  const demandsInViewport = useMemo(() => {
-    if (isViewportAtDefault) {
-      return demands;
-    }
-    return filterByViewportOverlap(demands, appliedViewport.start, appliedViewport.end);
-  }, [demands, appliedViewport, isViewportAtDefault]);
   
   // Apply canonical filters
   const filteredDemands = useMemo(
