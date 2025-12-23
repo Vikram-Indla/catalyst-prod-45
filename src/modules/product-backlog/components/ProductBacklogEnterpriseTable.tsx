@@ -1,6 +1,6 @@
 /**
  * ProductBacklogEnterpriseTable - Uses CatalystEnterpriseTable for Business Requests
- * Mirrors the epic backlog table styling and functionality
+ * Enterprise-grade styling with enhanced badges, tooltips, and visual hierarchy
  */
 
 import { useMemo } from 'react';
@@ -8,7 +8,8 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { CatalystEnterpriseTable, CatalystColumn } from '@/components/industry/CatalystEnterpriseTable';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { Badge } from '@/components/ui/badge';
+import { cn } from '@/lib/utils';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 // Status options
 const STATUS_OPTIONS = [
@@ -54,7 +55,91 @@ interface ProductBacklogEnterpriseTableProps {
   onItemClick: (itemId: string) => void;
   onItemSelect: (itemId: string, selected: boolean) => void;
   onFieldUpdate?: (requestId: string, field: string, value: any) => Promise<void>;
+  onCreateNew?: () => void;
 }
+
+// Get initials from name
+const getInitials = (name: string | null) => {
+  if (!name) return '?';
+  return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+};
+
+// Priority badge styles - stronger colors for visibility
+const getPriorityStyles = (priority: string) => {
+  const normalizedValue = priority?.toLowerCase() || 'unscored';
+  
+  const styles: Record<string, string> = {
+    'critical': 'bg-red-100 text-red-700 border border-red-200 dark:bg-red-900/30 dark:text-red-400 dark:border-red-800',
+    'high': 'bg-orange-100 text-orange-700 border border-orange-200 dark:bg-orange-900/30 dark:text-orange-400 dark:border-orange-800',
+    'medium': 'bg-amber-100 text-amber-700 border border-amber-200 dark:bg-amber-900/30 dark:text-amber-400 dark:border-amber-800',
+    'low': 'bg-gray-100 text-gray-600 border border-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-700',
+    'rejected': 'bg-gray-100 text-gray-600 border border-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-700',
+    'unscored': 'bg-gray-100 text-gray-600 border border-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-700',
+  };
+  
+  return styles[normalizedValue] || styles['unscored'];
+};
+
+// Status badge styles with colored dot
+const getStatusStyles = (status: string) => {
+  const normalizedValue = status?.toLowerCase().replace(/\s+/g, '_') || 'new_request';
+  
+  const styles: Record<string, { dot: string; bg: string; text: string }> = {
+    'new_request': {
+      dot: 'bg-blue-500',
+      bg: 'bg-blue-50 dark:bg-blue-900/20',
+      text: 'text-blue-700 dark:text-blue-400',
+    },
+    'new': {
+      dot: 'bg-blue-500',
+      bg: 'bg-blue-50 dark:bg-blue-900/20',
+      text: 'text-blue-700 dark:text-blue-400',
+    },
+    'analyse': {
+      dot: 'bg-purple-500',
+      bg: 'bg-purple-50 dark:bg-purple-900/20',
+      text: 'text-purple-700 dark:text-purple-400',
+    },
+    'in_review': {
+      dot: 'bg-amber-500',
+      bg: 'bg-amber-50 dark:bg-amber-900/20',
+      text: 'text-amber-700 dark:text-amber-400',
+    },
+    'approved': {
+      dot: 'bg-green-500',
+      bg: 'bg-green-50 dark:bg-green-900/20',
+      text: 'text-green-700 dark:text-green-400',
+    },
+    'implement': {
+      dot: 'bg-[#c69c6d]',
+      bg: 'bg-[#c69c6d]/10 dark:bg-[#c69c6d]/20',
+      text: 'text-[#8b7355] dark:text-[#d4b896]',
+    },
+    'closed': {
+      dot: 'bg-gray-500',
+      bg: 'bg-gray-100 dark:bg-gray-800',
+      text: 'text-gray-600 dark:text-gray-400',
+    },
+    'rejected': {
+      dot: 'bg-red-500',
+      bg: 'bg-red-50 dark:bg-red-900/20',
+      text: 'text-red-700 dark:text-red-400',
+    },
+    'on_hold': {
+      dot: 'bg-gray-400',
+      bg: 'bg-gray-100 dark:bg-gray-800',
+      text: 'text-gray-600 dark:text-gray-400',
+    },
+  };
+  
+  return styles[normalizedValue] || styles['new_request'];
+};
+
+// Format status for human-readable display
+const formatStatus = (status?: string) => {
+  if (!status) return '—';
+  return status.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+};
 
 export function ProductBacklogEnterpriseTable({
   items,
@@ -63,6 +148,7 @@ export function ProductBacklogEnterpriseTable({
   onItemClick,
   onItemSelect,
   onFieldUpdate,
+  onCreateNew,
 }: ProductBacklogEnterpriseTableProps) {
   const queryClient = useQueryClient();
 
@@ -113,14 +199,9 @@ export function ProductBacklogEnterpriseTable({
     });
   };
 
-  // Format status for human-readable display
-  const formatStatus = (status?: string) => {
-    if (!status) return '—';
-    return status.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-  };
-
-  // Define columns for the product backlog
+  // Define columns with enterprise styling
   const columns: CatalystColumn<BusinessRequestRow>[] = useMemo(() => [
+    // ID Column - Enhanced with gold accent
     {
       id: 'id',
       header: 'Request ID',
@@ -129,10 +210,13 @@ export function ProductBacklogEnterpriseTable({
       sortable: true,
       render: (value, row) => (
         <span 
-          className="font-mono text-xs text-[#c69c6d] dark:text-[#d4a855] hover:text-[#b8894d] dark:hover:text-[#c49545] hover:underline cursor-pointer font-semibold"
+          className={cn(
+            "font-mono text-sm font-medium cursor-pointer",
+            "text-[#c69c6d] dark:text-[#d4b896]",
+            "hover:text-[#b8894f] dark:hover:text-[#c49545] hover:underline"
+          )}
           onClick={(e) => {
             e.stopPropagation();
-            // Explicitly trigger the row click to open the drawer
             onItemClick(value);
           }}
         >
@@ -140,6 +224,7 @@ export function ProductBacklogEnterpriseTable({
         </span>
       ),
     },
+    // Summary with tooltip for truncated text
     {
       id: 'summary',
       header: 'Summary',
@@ -149,9 +234,21 @@ export function ProductBacklogEnterpriseTable({
       editable: true,
       type: 'text',
       render: (value) => (
-        <span className="text-sm font-medium truncate block" title={value}>{value}</span>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <span 
+              className="text-sm font-medium truncate block max-w-[280px] text-gray-900 dark:text-gray-100"
+            >
+              {value || '—'}
+            </span>
+          </TooltipTrigger>
+          <TooltipContent side="top" className="max-w-xs">
+            <p>{value}</p>
+          </TooltipContent>
+        </Tooltip>
       ),
     },
+    // Status with colored dot badge
     {
       id: 'processStep',
       header: 'Status',
@@ -164,25 +261,20 @@ export function ProductBacklogEnterpriseTable({
       options: STATUS_OPTIONS,
       filterOptions: STATUS_OPTIONS,
       render: (value) => {
-        const statusStyles: Record<string, string> = {
-          'new_request': 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
-          'analyse': 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
-          'in_review': 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
-          'approved': 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
-          'implement': 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
-          'closed': 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300',
-          'rejected': 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
-          'on_hold': 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300',
-        };
-        const normalizedValue = value?.toLowerCase().replace(/\s+/g, '_') || 'new_request';
-        const styleClass = statusStyles[normalizedValue] || statusStyles['new_request'];
+        const statusStyle = getStatusStyles(value);
         return (
-          <Badge className={`${styleClass} border-0 text-xs font-medium`}>
+          <span className={cn(
+            "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium",
+            statusStyle.bg,
+            statusStyle.text
+          )}>
+            <span className={cn("w-1.5 h-1.5 rounded-full", statusStyle.dot)} />
             {formatStatus(value)}
-          </Badge>
+          </span>
         );
       },
     },
+    // Score
     {
       id: 'score',
       header: 'Score',
@@ -190,9 +282,12 @@ export function ProductBacklogEnterpriseTable({
       width: '80px',
       sortable: true,
       render: (value) => (
-        <span className="text-sm font-medium text-right block tabular-nums">{value ?? '—'}</span>
+        <span className="text-sm font-medium text-right block tabular-nums text-gray-900 dark:text-gray-100">
+          {value ?? <span className="text-gray-400 dark:text-gray-500">—</span>}
+        </span>
       ),
     },
+    // Priority with stronger badge colors
     {
       id: 'autoPriority',
       header: 'Priority',
@@ -201,23 +296,16 @@ export function ProductBacklogEnterpriseTable({
       sortable: true,
       filterable: true,
       filterOptions: PRIORITY_OPTIONS,
-      render: (value) => {
-        const priorityStyles: Record<string, string> = {
-          'high': 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
-          'medium': 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
-          'low': 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
-          'rejected': 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300',
-          'unscored': 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300',
-        };
-        const normalizedValue = value?.toLowerCase() || 'unscored';
-        const styleClass = priorityStyles[normalizedValue] || priorityStyles['unscored'];
-        return (
-          <Badge className={`${styleClass} border-0 text-xs font-medium capitalize`}>
-            {value || 'Unscored'}
-          </Badge>
-        );
-      },
+      render: (value) => (
+        <span className={cn(
+          "inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium capitalize",
+          getPriorityStyles(value)
+        )}>
+          {value || 'Unscored'}
+        </span>
+      ),
     },
+    // Rank
     {
       id: 'rank',
       header: 'Rank',
@@ -225,9 +313,12 @@ export function ProductBacklogEnterpriseTable({
       width: '70px',
       sortable: true,
       render: (value) => (
-        <span className="text-sm font-semibold tabular-nums">{value ? `#${value}` : '—'}</span>
+        <span className="text-sm font-semibold tabular-nums text-gray-900 dark:text-gray-100">
+          {value ? `#${value}` : <span className="text-gray-400 dark:text-gray-500">—</span>}
+        </span>
       ),
     },
+    // Department with tooltip
     {
       id: 'department',
       header: 'Department',
@@ -236,19 +327,52 @@ export function ProductBacklogEnterpriseTable({
       sortable: true,
       filterable: true,
       render: (value) => (
-        <span className="text-sm text-muted-foreground truncate">{value || '—'}</span>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <span className="text-sm text-gray-600 dark:text-gray-400 truncate block max-w-[120px]">
+              {value || <span className="text-gray-400 dark:text-gray-500">—</span>}
+            </span>
+          </TooltipTrigger>
+          {value && (
+            <TooltipContent side="top">
+              <p>{value}</p>
+            </TooltipContent>
+          )}
+        </Tooltip>
       ),
     },
+    // Business Owner with avatar and tooltip
     {
       id: 'businessOwner',
       header: 'Business Owner',
       accessor: 'businessOwner',
       width: '150px',
       sortable: true,
-      render: (value) => (
-        <span className="text-sm truncate">{value || '—'}</span>
+      render: (value) => value ? (
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <div className="flex items-center gap-2 min-w-0">
+              <div className={cn(
+                "flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-xs font-medium",
+                "bg-[#c69c6d]/20 text-[#8b7355]",
+                "dark:bg-[#c69c6d]/30 dark:text-[#d4b896]"
+              )}>
+                {getInitials(value)}
+              </div>
+              <span className="text-sm truncate max-w-[100px] text-gray-900 dark:text-gray-100">
+                {value}
+              </span>
+            </div>
+          </TooltipTrigger>
+          <TooltipContent side="top">
+            <p className="font-medium">{value}</p>
+          </TooltipContent>
+        </Tooltip>
+      ) : (
+        <span className="text-sm text-gray-400 dark:text-gray-500">—</span>
       ),
     },
+    // Quarter with badge styling
     {
       id: 'quarter',
       header: 'Quarter',
@@ -256,21 +380,22 @@ export function ProductBacklogEnterpriseTable({
       width: '100px',
       sortable: true,
       filterable: true,
-      render: (value) => (
-        value ? (
-          <Badge variant="outline" className="text-[10px] px-1.5 py-0 h-5 border-brand-primary/50 text-brand-primary">
-            {value.toUpperCase().replace('_', ' ')}
-          </Badge>
-        ) : (
-          <span className="text-sm text-muted-foreground">—</span>
-        )
+      render: (value) => value ? (
+        <span className={cn(
+          "inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium",
+          "bg-blue-50 text-blue-700 border border-blue-200",
+          "dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800"
+        )}>
+          {value.toUpperCase().replace('_', ' ')}
+        </span>
+      ) : (
+        <span className="text-gray-400 dark:text-gray-500 text-sm">—</span>
       ),
     },
   ], [onItemClick]);
 
   // Handle row update for inline editing
   const handleRowUpdate = async (rowId: string, columnId: string, newValue: any) => {
-    // Find the actual DB id
     const row = items.find(r => r.id === rowId);
     const dbId = row?._dbId || rowId;
     
@@ -286,7 +411,7 @@ export function ProductBacklogEnterpriseTable({
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-primary"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#c69c6d]"></div>
       </div>
     );
   }
@@ -304,6 +429,7 @@ export function ProductBacklogEnterpriseTable({
       onSelectionChange={handleSelectionChange}
       showCheckboxes={true}
       showActionsColumn={true}
+      onCreateNew={onCreateNew}
     />
   );
 }
