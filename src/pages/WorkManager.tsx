@@ -40,7 +40,8 @@ import { WorkManagerTeams } from '@/components/work-manager/WorkManagerTeams';
 import { WorkManagerSettings } from '@/components/work-manager/WorkManagerSettings';
 import { TaskDrawer } from '@/components/work-manager/TaskDrawer';
 import { NewTaskDialog } from '@/components/work-manager/NewTaskDialog';
-import { teams as initialTeams, users, tasks, computeTaskExtended } from '@/lib/work-manager-data';
+import { teams as initialTeams, tasks, computeTaskExtended } from '@/lib/work-manager-data';
+import { useAllTeamMembers } from '@/hooks/useAllTeamMembers';
 import type { TaskStatus, Team } from '@/components/work-manager/types';
 import type { TaskFilters, TaskDrawerState, TaskExtended, Task, GroupByOption } from '@/components/work-manager/types';
 import { useAccessibleTeams, useCanViewAllTeams } from '@/hooks/useAccessibleTeams';
@@ -60,6 +61,7 @@ export function WorkManager({ tab: initialTab }: WorkManagerProps) {
   const { canViewAllTeams, isLoading: isRoleLoading } = useCanViewAllTeams();
   const { user } = useAuth();
   const createTeam = useCreateTeam();
+  const { data: teamMembersData = [] } = useAllTeamMembers();
   
   // Get team ID from URL query parameter
   const urlTeamId = useMemo(() => {
@@ -501,8 +503,8 @@ export function WorkManager({ tab: initialTab }: WorkManagerProps) {
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="all">All Assignees</SelectItem>
-                        {users.map(user => (
-                          <SelectItem key={user.id} value={user.id}>{user.name}</SelectItem>
+                        {teamMembersData.map(member => (
+                          <SelectItem key={member.id} value={member.id}>{member.name}</SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
@@ -560,7 +562,7 @@ export function WorkManager({ tab: initialTab }: WorkManagerProps) {
             onClearColumn={handleClearColumn}
             groupBy={groupBy}
             teamsData={teamsData}
-            usersData={users}
+            usersData={teamMembersData}
           />
         )}
         {activeTab === 'tasks' && (
@@ -576,7 +578,7 @@ export function WorkManager({ tab: initialTab }: WorkManagerProps) {
           <WorkManagerTeams 
             tasks={extendedTasks}
             teams={teamsData}
-            users={users}
+            users={teamMembersData}
             onCreateTeam={handleCreateTeam}
           />
         )}
@@ -604,7 +606,7 @@ export function WorkManager({ tab: initialTab }: WorkManagerProps) {
         open={isNewTaskDialogOpen}
         onOpenChange={setIsNewTaskDialogOpen}
         teams={teamsData}
-        users={users}
+        users={teamMembersData}
         onCreateTask={handleCreateTask}
       />
     </div>
