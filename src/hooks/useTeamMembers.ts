@@ -59,11 +59,15 @@ export function useAddTeamMember() {
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['team-members', variables.teamId] });
+      queryClient.invalidateQueries({ queryKey: ['team-member-ids'] });
+      queryClient.invalidateQueries({ queryKey: ['all-team-members'] });
       toast.success('Team member added successfully');
     },
-    onError: (error) => {
+    onError: (error: any) => {
       console.error('Error adding team member:', error);
-      toast.error('Failed to add team member');
+      if (error?.code !== '23505') {
+        toast.error('Failed to add team member');
+      }
     },
   });
 }
@@ -119,6 +123,8 @@ export function useRemoveTeamMember() {
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['team-members', variables.teamId] });
+      queryClient.invalidateQueries({ queryKey: ['team-member-ids'] });
+      queryClient.invalidateQueries({ queryKey: ['all-team-members'] });
       toast.success('Team member removed successfully');
     },
     onError: (error) => {
