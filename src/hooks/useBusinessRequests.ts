@@ -265,13 +265,16 @@ export function useUpdateBusinessRequest() {
         .single();
       
       // Convert ReadinessChecklist to Json-compatible format
-      // IMPORTANT: Remove system-managed fields from update payload to prevent constraint errors
+      // IMPORTANT: Remove system-managed fields AND computed fields from update payload
       const { 
         id: _removeId, 
         request_key: _removeRequestKey, 
         created_at: _removeCreatedAt,
         updated_at: _removeUpdatedAt,
         deleted_at: _removeDeletedAt,
+        // Remove computed fields that don't exist in the database
+        requestor_name: _removeRequestorName,
+        assignee_name: _removeAssigneeName,
         ...dataWithoutSystemFields 
       } = data as any;
       const updateData: Record<string, any> = { ...dataWithoutSystemFields };
