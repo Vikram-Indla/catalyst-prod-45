@@ -11,14 +11,12 @@ import { ChevronUp, ChevronDown, GripVertical, Pencil, MoreVertical } from 'luci
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import { 
-  RankCell, 
   IdCell, 
   StatusCell,
   OwnerCell,
   AssigneeCell,
   PriorityCell, 
   QuarterCell, 
-  DateCell, 
   SummaryCell 
 } from './cells';
 import { useTableSelection } from './useTableSelection';
@@ -217,21 +215,14 @@ export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableVi
             className="data-[state=checked]:bg-[var(--brand-gold)] data-[state=checked]:border-[var(--brand-gold)]"
           />
         );
-      case 'rank':
-        return <RankCell displayIndex={index + 1} />;
       case 'id':
         return <IdCell requestKey={row.request_key || row.id.slice(0, 8)} onClick={(e) => { e.stopPropagation(); onRowClick(row.id); }} />;
       case 'status':
         return <StatusCell status={row.process_step || 'new'} />;
       case 'title':
-        return <SummaryCell title={row.title || ''} department={row.department} createdAt={row.created_at} />;
-      case 'priority':
+        return <SummaryCell title={row.title || ''} />;
       case 'priority':
         return <PriorityCell priority={row.priority_tier || null} />;
-      case 'kickoff_date':
-        return <DateCell date={row.impl_start_date} showRelative={false} />;
-      case 'target_date':
-        return <DateCell date={row.end_date} showRelative={true} />;
       case 'reporter':
         return <OwnerCell name={row.requestor_name || row.requestor || null} />;
       case 'assignee':
@@ -244,8 +235,8 @@ export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableVi
         );
       case 'business_owner':
         return <OwnerCell name={row.business_owner || null} />;
-      case 'delivery_platform':
-        return <span className="text-sm text-foreground">{row.delivery_platform || '—'}</span>;
+      case 'department':
+        return <span className="text-sm text-foreground truncate block max-w-full">{row.department || '—'}</span>;
       case 'quarter':
         return <QuarterCell quarter={row.planned_quarter?.[0] || null} />;
       default:
@@ -349,11 +340,10 @@ export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableVi
                               {...provided.draggableProps}
                               className={cn(
                                 "border-b border-[var(--industry-border-subtle)] transition-colors",
-                                "hover:bg-[var(--industry-bg-hover)] cursor-pointer",
+                                "hover:bg-[var(--industry-bg-hover)]",
                                 selectedIds.has(row.id) && "bg-[var(--brand-gold)]/[0.08]",
                                 snapshot.isDragging && "bg-muted shadow-lg"
                               )}
-                              onClick={() => onRowClick(row.id)}
                               onMouseEnter={() => setHoveredRowId(row.id)}
                               onMouseLeave={() => setHoveredRowId(null)}
                             >
