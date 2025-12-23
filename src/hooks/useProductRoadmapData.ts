@@ -130,13 +130,28 @@ export function useProductRoadmapData() {
     },
   });
 
-  // Fetch milestones from business_request_links or a dedicated table
+  // Fetch milestones from the milestones table using business_request_id
   const demandIds = demandsData.map(d => d.id);
   const { data: milestonesData = [], isLoading: milestonesLoading } = useQuery({
     queryKey: ['product-roadmap-milestones', demandIds],
     queryFn: async () => {
-      // For now, return empty - milestones can be added later
-      return [] as { id: string; title: string; date: string; status: string; demand_id: string }[];
+      if (demandIds.length === 0) return [];
+      
+      const { data, error } = await supabase
+        .from('milestones')
+        .select('id, title, start_date, end_date, state, business_request_id')
+        .in('business_request_id', demandIds);
+      
+      if (error) throw error;
+      
+      // Map to expected format with date as the end_date (target date)
+      return (data || []).map(m => ({
+        id: m.id,
+        title: m.title,
+        date: m.end_date || m.start_date,
+        status: m.state || 'pending',
+        demand_id: m.business_request_id,
+      }));
     },
     enabled: demandIds.length > 0,
   });

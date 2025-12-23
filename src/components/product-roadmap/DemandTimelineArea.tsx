@@ -255,6 +255,26 @@ interface DemandTimelineRowProps {
   rowHeight: number;
 }
 
+// Status-based color mapping for progress bars
+const STATUS_COLORS: Record<string, string> = {
+  new: 'hsl(210, 40%, 50%)',           // Blue
+  new_request: 'hsl(210, 40%, 50%)',   // Blue
+  analyse: 'hsl(45, 85%, 50%)',        // Yellow/Amber
+  in_review: 'hsl(45, 85%, 50%)',      // Yellow/Amber
+  approved: 'hsl(160, 60%, 45%)',      // Teal
+  implement: 'hsl(120, 40%, 50%)',     // Green
+  implementing: 'hsl(120, 40%, 50%)',  // Green
+  done: 'hsl(120, 45%, 40%)',          // Dark Green
+  closed: 'hsl(120, 45%, 40%)',        // Dark Green
+  rejected: 'hsl(0, 60%, 50%)',        // Red
+  on_hold: 'hsl(30, 70%, 50%)',        // Orange
+};
+
+function getStatusColor(status: string): string {
+  const normalized = status.toLowerCase().replace(/[\s-]/g, '_');
+  return STATUS_COLORS[normalized] || 'hsl(var(--brand-primary))';
+}
+
 const DemandTimelineRow: React.FC<DemandTimelineRowProps> = ({
   demand,
   showMilestones,
@@ -267,8 +287,9 @@ const DemandTimelineRow: React.FC<DemandTimelineRowProps> = ({
   const barRight = calcPosition(demand.endDate, timelineStart, timelineEnd);
   const barWidth = Math.max(barRight - barLeft, 2);
   
-  // Get bar color - use brand primary since status colors are dynamic
-  const barColor = 'hsl(var(--brand-primary))';
+  // Get bar color based on status
+  const barColor = getStatusColor(demand.status);
+  const barColorLight = barColor.replace(')', ', 0.2)').replace('hsl(', 'hsla(');
   
   // Format dates for tooltip
   const startDateStr = format(demand.startDate, 'MMM d, yyyy');
@@ -305,11 +326,14 @@ const DemandTimelineRow: React.FC<DemandTimelineRowProps> = ({
               }}
             >
               {/* Track */}
-              <div className="absolute inset-0 bg-brand-primary/20 rounded-sm" />
+              <div 
+                className="absolute inset-0 rounded-sm" 
+                style={{ backgroundColor: barColorLight }}
+              />
               {/* Progress Fill */}
               <div
-                className="absolute left-0 top-0 h-full bg-brand-primary rounded-sm"
-                style={{ width: `${demand.progress}%` }}
+                className="absolute left-0 top-0 h-full rounded-sm"
+                style={{ width: `${demand.progress}%`, backgroundColor: barColor }}
               />
             </div>
             
