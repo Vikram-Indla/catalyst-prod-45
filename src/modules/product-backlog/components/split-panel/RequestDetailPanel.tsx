@@ -31,6 +31,7 @@ import { format, parseISO } from 'date-fns';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useDepartments, useBusinessOwners, useDepartmentOwnerMappings, getOwnerIdForDepartment } from '@/hooks/useDepartmentsAndOwners';
+import { useActiveDemandProcessSteps } from '@/hooks/useDemandProcessSteps';
 
 interface RequestItem {
   id: string;
@@ -71,15 +72,22 @@ interface RequestDetailPanelProps {
   onScore: () => void;
 }
 
-// Status options
-const STATUS_OPTIONS = [
-  { value: 'new_demand', label: 'New Demand', color: 'bg-blue-500' },
-  { value: 'new_request', label: 'New Request', color: 'bg-amber-500' },
-  { value: 'analyse', label: 'Analyse', color: 'bg-purple-500' },
-  { value: 'approved', label: 'Approved', color: 'bg-green-500' },
-  { value: 'implement', label: 'Implement', color: 'bg-cyan-500' },
-  { value: 'closed', label: 'Closed', color: 'bg-gray-400' },
-];
+// Status color mapping based on process step value
+const STATUS_COLORS: Record<string, string> = {
+  new_request: 'bg-amber-500',
+  new_demand: 'bg-blue-500',
+  in_review: 'bg-indigo-500',
+  ea_review: 'bg-violet-500',
+  analyse: 'bg-purple-500',
+  approved: 'bg-green-500',
+  ready_to_implement: 'bg-teal-500',
+  implement: 'bg-cyan-500',
+  closed: 'bg-gray-400',
+  rejected: 'bg-red-500',
+  on_hold: 'bg-orange-500',
+};
+
+const getStatusColor = (value: string) => STATUS_COLORS[value] || 'bg-gray-400';
 
 // Quarter options
 const QUARTER_OPTIONS = [
@@ -265,6 +273,9 @@ export function RequestDetailPanel({
   const { data: departments = [] } = useDepartments();
   const { data: businessOwners = [] } = useBusinessOwners();
   const { data: departmentOwnerMappings = [] } = useDepartmentOwnerMappings();
+  
+  // Fetch active process steps from DB
+  const { data: processSteps = [] } = useActiveDemandProcessSteps();
 
   // Fetch attachment count
   const { data: attachmentCount = 0 } = useQuery({
@@ -324,7 +335,9 @@ export function RequestDetailPanel({
   }
 
   const statusKey = request.processStep?.toLowerCase().replace(/\s+/g, '_') || 'new_request';
-  const statusOption = STATUS_OPTIONS.find(s => s.value === statusKey) || STATUS_OPTIONS[1];
+  const currentStep = processSteps.find(s => s.value === statusKey);
+  const statusLabel = currentStep?.label || request.processStep || 'New Request';
+  const statusColor = getStatusColor(statusKey);
   const priorityLabel = request.autoPriority?.charAt(0).toUpperCase() + request.autoPriority?.slice(1) || 'Unscored';
   const priorityColor = request.autoPriority?.toLowerCase() === 'high' || request.autoPriority?.toLowerCase() === 'critical' 
     ? 'bg-green-500' 
@@ -395,17 +408,17 @@ export function RequestDetailPanel({
                 <SelectTrigger className="w-full h-10">
                   <SelectValue>
                     <div className="flex items-center gap-2">
-                      <div className={cn('w-2 h-2 rounded-full', statusOption.color)} />
-                      {statusOption.label}
+                      <div className={cn('w-2 h-2 rounded-full', statusColor)} />
+                      {statusLabel}
                     </div>
                   </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
-                  {STATUS_OPTIONS.map((opt) => (
-                    <SelectItem key={opt.value} value={opt.value}>
+                  {processSteps.map((step) => (
+                    <SelectItem key={step.value} value={step.value}>
                       <div className="flex items-center gap-2">
-                        <div className={cn('w-2 h-2 rounded-full', opt.color)} />
-                        {opt.label}
+                        <div className={cn('w-2 h-2 rounded-full', getStatusColor(step.value))} />
+                        {step.label}
                       </div>
                     </SelectItem>
                   ))}
