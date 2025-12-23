@@ -10,14 +10,13 @@
  */
 
 import React, { useState } from 'react';
-import { KanbanTicket, PRIORITIES, DEPARTMENTS, TeamMember } from '../types';
+import { KanbanTicket, DEPARTMENTS } from '../types';
 import { Clock, GripVertical, Tag, MoreHorizontal } from 'lucide-react';
 
 interface KanbanCardProps {
   ticket: KanbanTicket;
   onClick: (ticket: KanbanTicket) => void;
   compactMode: boolean;
-  teamMembers?: TeamMember[];
 }
 
 /**
@@ -113,8 +112,10 @@ function RankBadge({ rank }: { rank: number | null }) {
   );
 }
 
-// Avatar Component - Using secondary palette
-function Avatar({ member, size = 28 }: { member: TeamMember; size?: number }) {
+// Business Owner Avatar Component
+function BusinessOwnerAvatar({ name, size = 28 }: { name: string; size?: number }) {
+  const initials = name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
+  
   return (
     <div
       className="
@@ -128,18 +129,17 @@ function Avatar({ member, size = 28 }: { member: TeamMember; size?: number }) {
         height: size,
         fontSize: size * 0.36,
       }}
-      title={member.name}
+      title={name}
     >
-      {member.initials}
+      {initials}
     </div>
   );
 }
 
-export function KanbanCard({ ticket, onClick, compactMode, teamMembers = [] }: KanbanCardProps) {
+export function KanbanCard({ ticket, onClick, compactMode }: KanbanCardProps) {
   const [isDragging, setIsDragging] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   
-  const assignee = teamMembers.find(m => m.id === ticket.assignee || m.name === ticket.assignee);
   const department = DEPARTMENTS.find(d => d.id === ticket.department || d.label === ticket.department);
   
   const handleDragStart = (e: React.DragEvent) => {
@@ -152,7 +152,7 @@ export function KanbanCard({ ticket, onClick, compactMode, teamMembers = [] }: K
     setIsDragging(false);
   };
 
-  if (compactMode) {
+if (compactMode) {
     return (
       <div
         draggable
@@ -186,7 +186,9 @@ export function KanbanCard({ ticket, onClick, compactMode, teamMembers = [] }: K
         </span>
         <RankBadge rank={ticket.rank} />
         <DaysInColumnIndicator days={ticket.daysInColumn} />
-        {assignee && <Avatar member={assignee} size={24} />}
+        {ticket.businessOwner && (
+          <BusinessOwnerAvatar name={ticket.businessOwner} size={24} />
+        )}
       </div>
     );
   }
@@ -292,26 +294,13 @@ export function KanbanCard({ ticket, onClick, compactMode, teamMembers = [] }: K
           <DaysInColumnIndicator days={ticket.daysInColumn} />
           <div className="flex items-center gap-2">
             {ticket.businessOwner && (
-              <span className="text-[11px] text-gray-500 dark:text-gray-400">
-                {ticket.businessOwner}
-              </span>
+              <>
+                <span className="text-[11px] text-gray-500 dark:text-gray-400">
+                  {ticket.businessOwner}
+                </span>
+                <BusinessOwnerAvatar name={ticket.businessOwner} size={28} />
+              </>
             )}
-            {assignee ? (
-              <Avatar member={assignee} size={28} />
-            ) : ticket.businessOwner ? (
-              <div
-                className="
-                  w-7 h-7 rounded-full 
-                  bg-olive-500 dark:bg-olive-600
-                  text-white 
-                  flex items-center justify-center 
-                  text-[10px] font-bold shadow-sm
-                "
-                title={ticket.businessOwner}
-              >
-                {ticket.businessOwner.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
-              </div>
-            ) : null}
           </div>
         </div>
       </div>

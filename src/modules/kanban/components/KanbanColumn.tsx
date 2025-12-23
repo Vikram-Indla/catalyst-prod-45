@@ -204,7 +204,6 @@ export function KanbanColumn({
             ticket={ticket}
             onClick={onCardClick}
             compactMode={compactMode}
-            teamMembers={teamMembers}
           />
         ))}
         {tickets.length === 0 && (
