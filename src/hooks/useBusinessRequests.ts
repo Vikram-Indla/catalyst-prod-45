@@ -453,13 +453,21 @@ export function useDuplicateBusinessRequest() {
       const nextNum = ((count || 0) + 1).toString().padStart(3, '0');
       const newRequestKey = `MIM-${nextNum}`;
 
-      // Create new request with only title copied, status reset to new_request, all other fields empty
+      // Create new request with only title copied, status reset to new_request, all scoring/optional fields null
       const { data: newRequest, error: insertError } = await supabase
         .from('business_requests')
         .insert({
           request_key: newRequestKey,
           title: `${original.title} (Copy)`,
           process_step: 'new_request',
+          // Explicitly reset all scoring fields to null
+          business_score: null,
+          business_value: null,
+          score_strategic_alignment: null,
+          score_time_urgency: null,
+          score_resource_feasibility: null,
+          rank: null,
+          priority_tier: null,
         })
         .select()
         .single();
