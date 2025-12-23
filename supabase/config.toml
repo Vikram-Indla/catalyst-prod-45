@@ -14,3 +14,6 @@ verify_jwt = false
 
 [functions.convert-incident]
 verify_jwt = false
+
+[functions.admin-set-password]
+verify_jwt = false
