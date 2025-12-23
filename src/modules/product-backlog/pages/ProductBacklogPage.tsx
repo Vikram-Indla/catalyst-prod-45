@@ -210,8 +210,9 @@ export default function ProductBacklogPage() {
       planned_quarter: 'planned_quarter',
       assignee: 'assignee',
       assigneeId: 'assignee_id',
+      businessAsk: 'start_date',
       kickoff: 'impl_start_date',
-      targetComplete: 'end_date',
+      targetComplete: 'impl_target_end_date',
     };
 
     // Handle batch updates (multiple fields at once)
