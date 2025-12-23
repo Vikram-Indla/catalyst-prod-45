@@ -25,9 +25,17 @@ interface BusinessRequestRow {
   business_score: number | null;
   rank: number | null;
   requestor: string | null;
+  requestor_name: string | null;
+  assignee: string | null;
+  business_owner: string | null;
   department: string | null;
   planned_quarter: string[] | null;
   created_at: string;
+  updated_at: string;
+  start_date: string | null;
+  impl_start_date: string | null;
+  impl_target_end_date: string | null;
+  ea_review_required: boolean | null;
 }
 
 export default function ProductBacklogTablePage() {
@@ -58,10 +66,18 @@ export default function ProductBacklogTablePage() {
       priority_tier: br.priority_tier || 'unscored',
       business_score: br.business_score ?? null,
       rank: br.rank ?? null,
-      requestor: br.requestor_name || br.requestor || null,
+      requestor: br.requestor || null,
+      requestor_name: br.requestor_name || br.requestor || null,
+      assignee: br.assignee || null,
+      business_owner: br.business_owner || null,
       department: br.department || null,
       planned_quarter: br.planned_quarter || null,
       created_at: br.created_at || '',
+      updated_at: br.updated_at || '',
+      start_date: br.start_date || null,
+      impl_start_date: br.impl_start_date || null,
+      impl_target_end_date: br.impl_target_end_date || null,
+      ea_review_required: br.ea_review_required ?? null,
     }));
     
     // Apply scoring filter from store
