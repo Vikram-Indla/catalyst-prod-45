@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
@@ -30,7 +30,8 @@ import {
   Minimize2,
   MoreVertical,
   Trash2,
-  Copy
+  Copy,
+  Check
 } from 'lucide-react';
 import { useBusinessRequest, useUpdateBusinessRequest, useDeleteBusinessRequest, useDuplicateBusinessRequest } from '@/hooks/useBusinessRequests';
 import { PriorityPill } from './PriorityPill';
@@ -56,6 +57,9 @@ import { ScoringReviewTab } from './drawer-tabs/ScoringReviewTab';
 import { PlanningViewTab } from './drawer-tabs/PlanningViewTab';
 import { cn } from '@/lib/utils';
 import { Loader2 } from 'lucide-react';
+
+// Debounce delay for auto-save (ms)
+const AUTO_SAVE_DELAY = 800;
 
 // Fields to track for audit logging (human-readable names)
 const AUDIT_FIELD_LABELS: Record<string, string> = {
@@ -246,33 +250,67 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
   const [isEditingName, setIsEditingName] = useState(false);
   const [editedName, setEditedName] = useState('');
   const [isExpanded, setIsExpanded] = useState(false);
-  const [hasChanges, setHasChanges] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const [showUnsavedChangesDialog, setShowUnsavedChangesDialog] = useState(false);
   const [workflowModalOpen, setWorkflowModalOpen] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [showSavedIndicator, setShowSavedIndicator] = useState(false);
   
   const nameInputRef = useRef<HTMLInputElement>(null);
   const tabsBodyScrollRef = useRef<HTMLDivElement>(null);
+  const autoSaveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const pendingChangesRef = useRef<Partial<BusinessRequest> & Record<string, any>>({});
 
-  // Track if we initiated a data update (to avoid resetting hasChanges on refetch)
-  // Using ref instead of state to avoid triggering useEffect re-runs
+  // Track if we initiated a data update (to avoid resetting form data on refetch)
   const skipNextFormResetRef = useRef(false);
 
   // Handle navigation to Epic from Links tab
-  // Closes this drawer, navigates to Program Backlog (epic-backlog) with epicId param so drawer auto-opens there
   const handleNavigateToEpic = useCallback((epicId: string, programId?: string | null) => {
-    // 1. Close the business drawer
     onClose();
-
-    // 2. Build route to Program Backlog (epic-backlog) with epicId query param
-    // This is the canonical route shown in screenshot as "Program Backlog" with "Epics" tab
     const path = programId
       ? `/program/${programId}/epic-backlog?epicId=${epicId}`
       : `/enterprise/epics?epicId=${epicId}`;
-
-    // 3. Navigate using push (not replace) to preserve browser back behaviour
     navigate(path);
   }, [onClose, navigate]);
+
+  // Auto-save function
+  const performAutoSave = useCallback(async (dataToSave: Partial<BusinessRequest> & Record<string, any>) => {
+    if (!requestId) return;
+    
+    setIsSaving(true);
+    
+    try {
+      // Log all field changes to audit table
+      await logFieldChanges(requestId, originalData, dataToSave);
+      
+      await updateMutation.mutateAsync({ id: requestId, data: dataToSave as Partial<BusinessRequest> });
+      
+      setOriginalData(dataToSave);
+      skipNextFormResetRef.current = true;
+      
+      // Show saved indicator briefly
+      setShowSavedIndicator(true);
+      setTimeout(() => setShowSavedIndicator(false), 2000);
+      
+      // Refresh related queries
+      queryClient.invalidateQueries({ queryKey: ['business-requests'] });
+      queryClient.invalidateQueries({ queryKey: ['business-request-audit', requestId] });
+    } catch (error) {
+      console.error('Auto-save failed:', error);
+      toast.error('Failed to save changes');
+    } finally {
+      setIsSaving(false);
+    }
+  }, [requestId, originalData, updateMutation, queryClient]);
+
+  // Debounced auto-save effect
+  useEffect(() => {
+    return () => {
+      // Cleanup timeout on unmount
+      if (autoSaveTimeoutRef.current) {
+        clearTimeout(autoSaveTimeoutRef.current);
+      }
+    };
+  }, []);
 
   // Reset to initial tab when drawer opens
   useEffect(() => {
@@ -281,7 +319,7 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
     }
   }, [isOpen, initialTab]);
 
-  // Reset scroll position when switching tabs (prevents "blank/void" if user was scrolled)
+  // Reset scroll position when switching tabs
   useEffect(() => {
     tabsBodyScrollRef.current?.scrollTo({ top: 0 });
   }, [activeTab, requestId]);
@@ -289,136 +327,57 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
   // Sync form data when request changes
   useEffect(() => {
     if (request) {
-      // Only overwrite formData if we didn't just trigger this update ourselves
       if (!skipNextFormResetRef.current) {
         setFormData(request);
         setOriginalData(request);
         setEditedName(request.title || '');
-        setHasChanges(false);
       } else {
-        // Still update originalData for change detection, but keep formData as-is
         setOriginalData(request);
       }
       skipNextFormResetRef.current = false;
     }
   }, [request]);
 
-  // Check if data has changed
-  const checkForChanges = useCallback((newData: Partial<BusinessRequest>) => {
-    const fieldsToCheck = [
-      'title', 'description', 'requestor', 'delivery_platform', 'delivery_track',
-      'platform', 'complexity', 'urgency', 'track', 'health', 'process_step',
-      'planned_quarter', 'start_date', 'end_date', 'executive_urgency', 
-      'business_value', 'complexity_score', 'business_score'
-    ];
-    
-    for (const field of fieldsToCheck) {
-      const originalValue = originalData[field as keyof typeof originalData];
-      const newValue = newData[field as keyof typeof newData];
-      if (originalValue !== newValue) {
-        return true;
+  const handleFieldChange = useCallback((field: string, value: any) => {
+    setFormData(prev => {
+      const newData = { ...prev, [field]: value };
+      
+      // Store pending changes for auto-save
+      pendingChangesRef.current = newData;
+      
+      // Clear existing timeout
+      if (autoSaveTimeoutRef.current) {
+        clearTimeout(autoSaveTimeoutRef.current);
       }
-    }
-    return false;
-  }, [originalData]);
-
-  const handleFieldChange = (field: string, value: any) => {
-    // Use functional update to ensure we always get the latest state
-    // This is critical when multiple onChange calls happen in sequence
-    setFormData(prev => ({ ...prev, [field]: value }));
+      
+      // Schedule auto-save
+      autoSaveTimeoutRef.current = setTimeout(() => {
+        performAutoSave(pendingChangesRef.current);
+      }, AUTO_SAVE_DELAY);
+      
+      return newData;
+    });
     
-    // Enable Save button on first edit - stays enabled until user manually saves
-    if (!hasChanges) {
-      setHasChanges(true);
-    }
-    // Prevent useEffect from resetting hasChanges when query refetches
     skipNextFormResetRef.current = true;
-  };
+  }, [performAutoSave]);
 
   const handleDirtyChange = (isDirty: boolean) => {
     if (isDirty) {
-      setHasChanges(true);
       skipNextFormResetRef.current = true;
     }
   };
 
-  const handleSave = async () => {
-    if (!requestId) return;
-    
-    console.log('Drawer handleSave - saving formData:', {
-      rank: formData.rank,
-      is_force_ranked: formData.is_force_ranked,
-      rank_override_justification: formData.rank_override_justification
-    });
-    
-    // Log all field changes to audit table
-    await logFieldChanges(requestId, originalData, formData);
-    
-    updateMutation.mutate({ id: requestId, data: formData as Partial<BusinessRequest> }, {
-      onSuccess: () => {
-        console.log('Drawer save successful');
-        setOriginalData(formData);
-        setHasChanges(false);
-        skipNextFormResetRef.current = true; // Prevent overwriting formData on refetch
-        // Refresh table
-        queryClient.invalidateQueries({ queryKey: ['business-requests'] });
-        queryClient.invalidateQueries({ queryKey: ['business-request-audit', requestId] });
-        toast.success('Business request saved');
-      }
-    });
-  };
-
-  const handleAttemptClose = () => {
-    if (hasChanges) {
-      setShowUnsavedChangesDialog(true);
-    } else {
-      handleClose();
-    }
-  };
-
   const handleClose = () => {
-    setHasChanges(false);
-    setShowUnsavedChangesDialog(false);
-    // Refresh table on close to ensure sorting is updated
+    // Flush any pending auto-save before closing
+    if (autoSaveTimeoutRef.current) {
+      clearTimeout(autoSaveTimeoutRef.current);
+      // Perform immediate save if there are pending changes
+      if (Object.keys(pendingChangesRef.current).length > 0) {
+        performAutoSave(pendingChangesRef.current);
+      }
+    }
     queryClient.invalidateQueries({ queryKey: ['business-requests'] });
     onClose();
-  };
-
-  const handleDiscardAndClose = () => {
-    setFormData(originalData);
-    setHasChanges(false);
-    setShowUnsavedChangesDialog(false);
-    onClose();
-  };
-
-
-  const handleSaveAndClose = async () => {
-    if (!requestId) return;
-    
-    console.log('Drawer handleSaveAndClose - saving formData:', {
-      rank: formData.rank,
-      is_force_ranked: formData.is_force_ranked,
-      rank_override_justification: formData.rank_override_justification
-    });
-    
-    // Log all field changes to audit table
-    await logFieldChanges(requestId, originalData, formData);
-    
-    // Close dialog and drawer immediately
-    setShowUnsavedChangesDialog(false);
-    setHasChanges(false);
-    onClose();
-    
-    // Save in background
-    updateMutation.mutate({ id: requestId, data: formData as Partial<BusinessRequest> }, {
-      onSuccess: () => {
-        console.log('Drawer save and close successful');
-        setOriginalData(formData);
-        queryClient.invalidateQueries({ queryKey: ['business-requests'] });
-        queryClient.invalidateQueries({ queryKey: ['business-request-audit', requestId] });
-        toast.success('Business request saved');
-      }
-    });
   };
 
   // Copy link handler
@@ -505,7 +464,7 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
 
   return (
     <>
-      <Sheet open={isOpen} onOpenChange={(open) => !open && handleAttemptClose()}>
+      <Sheet open={isOpen} onOpenChange={(open) => !open && handleClose()}>
         <SheetContent 
           side="right" 
           hideClose 
@@ -617,30 +576,19 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
               {/* Right Side: Action Buttons */}
               <div className="flex items-center gap-1.5 shrink-0">
                 
-                {/* Save Button - shows loading spinner */}
-                <Button
-                  size="sm"
-                  disabled={!hasChanges || updateMutation.isPending}
-                  onClick={handleSave}
-                  className={cn(
-                    "h-8 px-4 text-[13px] font-medium text-white min-w-[70px]",
-                    hasChanges 
-                      ? "bg-secondary-olive hover:bg-secondary-olive/85" 
-                      : "bg-secondary-olive/50 cursor-not-allowed opacity-60"
-                  )}
-                  style={{ 
-                    boxShadow: hasChanges ? '0 2px 4px rgba(92, 124, 92, 0.25)' : 'none'
-                  }}
-                >
-                  {updateMutation.isPending ? (
-                    <>
-                      <Loader2 className="h-3.5 w-3.5 mr-1.5 animate-spin" />
-                      Saving...
-                    </>
-                  ) : (
-                    'Save'
-                  )}
-                </Button>
+                {/* Auto-save indicator */}
+                {isSaving && (
+                  <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                    <span>Saving...</span>
+                  </div>
+                )}
+                {showSavedIndicator && !isSaving && (
+                  <div className="flex items-center gap-1.5 text-xs text-secondary-olive">
+                    <Check className="h-3.5 w-3.5" />
+                    <span>Saved</span>
+                  </div>
+                )}
 
                 {/* More Options */}
                 <DropdownMenu>
@@ -690,7 +638,7 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
                 <Button 
                   variant="ghost" 
                   size="icon" 
-                  onClick={handleAttemptClose}
+                  onClick={handleClose}
                   className="h-8 w-8 hover:bg-[var(--surface-hover,hsl(var(--muted)))]"
                   style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}
                 >
@@ -811,34 +759,6 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
         </SheetContent>
       </Sheet>
 
-      {/* Unsaved Changes Dialog */}
-      <AlertDialog open={showUnsavedChangesDialog} onOpenChange={setShowUnsavedChangesDialog}>
-        <AlertDialogContent style={{ background: 'var(--surface-bg, hsl(var(--background)))', borderColor: 'var(--border-default, hsl(var(--border)))' }}>
-          <AlertDialogHeader>
-            <AlertDialogTitle style={{ color: 'var(--text-primary, hsl(var(--foreground)))' }}>Unsaved Changes</AlertDialogTitle>
-            <AlertDialogDescription style={{ color: 'var(--text-secondary, hsl(var(--muted-foreground)))' }}>
-              You have unsaved changes. Are you sure you want to leave? Your changes will be lost.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setShowUnsavedChangesDialog(false)}>
-              Cancel
-            </AlertDialogCancel>
-            <AlertDialogAction 
-              onClick={handleDiscardAndClose}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            >
-              Discard Changes
-            </AlertDialogAction>
-            <AlertDialogAction 
-              onClick={handleSaveAndClose}
-              className="text-white bg-[#c69c6d] hover:bg-[#b8894d]"
-            >
-              Save & Close
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
 
       {/* Delete Confirmation Dialog */}
       <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
