@@ -30,16 +30,27 @@ export function DepartmentSelect({
       <SelectTrigger className={cn('bg-white dark:bg-gray-900 border-input', triggerClassName)}>
         <SelectValue placeholder={isLoading ? 'Loading...' : placeholder} />
       </SelectTrigger>
-      <SelectContent className={cn('bg-popover border shadow-lg z-[400]', className)}>
-        {departments?.map((dept) => (
-          <SelectItem 
-            key={dept.id} 
-            value={dept.id}
-            className="truncate"
-          >
-            {dept.name}
-          </SelectItem>
-        ))}
+      <SelectContent 
+        className={cn('bg-popover border shadow-lg', className)}
+        style={{ zIndex: 99999 }}
+        position="popper"
+        sideOffset={4}
+      >
+        {departments && departments.length > 0 ? (
+          departments.map((dept) => (
+            <SelectItem 
+              key={dept.id} 
+              value={dept.id}
+              className="truncate"
+            >
+              {dept.name}
+            </SelectItem>
+          ))
+        ) : (
+          <div className="py-2 px-3 text-sm text-muted-foreground">
+            {isLoading ? 'Loading departments...' : 'No departments available'}
+          </div>
+        )}
       </SelectContent>
     </Select>
   );
