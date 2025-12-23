@@ -297,23 +297,39 @@ export default function ProductBacklogPage() {
   // Handle clone
   const handleClone = async () => {
     if (!selectedRequest) return;
-    
-    // Fetch original and clone
+
+    // Fetch original (only need title)
     const { data: original, error: fetchError } = await supabase
       .from('business_requests')
-      .select('*')
+      .select('title, id')
       .eq('id', selectedRequest._dbId)
-      .single();
+      .maybeSingle();
 
     if (fetchError || !original) {
       toast.error('Failed to clone request');
       return;
     }
 
-    const { id, request_key, created_at, updated_at, ...cloneData } = original;
+    // Create a fresh demand: only copy the summary/title, reset status + scoring
     const { data: newRequest, error: insertError } = await supabase
       .from('business_requests')
-      .insert({ ...cloneData, title: `${original.title} (Copy)` })
+      .insert({
+        title: `${original.title} (Copy)`,
+        process_step: 'new_demand',
+
+        // Ensure cloned demand starts unscored
+        business_score: null,
+        business_value: null,
+        executive_urgency: null,
+        complexity_score: null,
+        score_strategic_alignment: null,
+        score_time_urgency: null,
+        score_resource_feasibility: null,
+        rank: null,
+        priority_tier: null,
+        is_force_ranked: false,
+        rank_override_justification: null,
+      })
       .select('request_key, id')
       .single();
 
@@ -323,7 +339,7 @@ export default function ProductBacklogPage() {
     }
 
     queryClient.invalidateQueries({ queryKey: ['business-requests'] });
-    
+
     // Show the new cloned request key
     const newKey = newRequest.request_key || newRequest.id?.slice(0, 8);
     toast.success(`Request cloned successfully as ${newKey}`, {
