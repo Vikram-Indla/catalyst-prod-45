@@ -3,7 +3,7 @@
  * Enterprise-grade styling with Catalyst colors
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import { 
   Search, 
   Filter, 
@@ -13,6 +13,7 @@ import {
   ChevronLeft, 
   ChevronRight,
 } from 'lucide-react';
+import { TimelineFilterPopover, TimelineFilterState, DEFAULT_TIMELINE_FILTER } from '@/components/roadmap/TimelineFilterPopover';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -45,6 +46,8 @@ interface RoadmapToolbarProps {
   onOpenExportDialog: () => void;
   itemCount: number;
   activeFilterCount: number;
+  timelineFilter?: TimelineFilterState;
+  onTimelineFilterChange?: (filter: TimelineFilterState) => void;
 }
 
 const GROUPING_OPTIONS: { value: GroupingField; label: string }[] = [
@@ -74,9 +77,15 @@ export function RoadmapToolbar({
   onOpenExportDialog,
   itemCount,
   activeFilterCount,
+  timelineFilter,
+  onTimelineFilterChange,
 }: RoadmapToolbarProps) {
   const { tokens, brand } = useRoadmapTheme();
+  const [localTimelineFilter, setLocalTimelineFilter] = useState<TimelineFilterState>(DEFAULT_TIMELINE_FILTER);
   
+  // Use provided or local state for timeline filter
+  const effectiveTimelineFilter = timelineFilter ?? localTimelineFilter;
+  const handleTimelineFilterChange = onTimelineFilterChange ?? setLocalTimelineFilter;
   return (
     <div 
       className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-3"
@@ -265,6 +274,12 @@ export function RoadmapToolbar({
             ))}
           </DropdownMenuContent>
         </DropdownMenu>
+
+        {/* Timeline Filter Popover */}
+        <TimelineFilterPopover
+          value={effectiveTimelineFilter}
+          onChange={handleTimelineFilterChange}
+        />
 
         <div 
           className="w-px h-6 mx-1"
