@@ -15,7 +15,6 @@ import { cn } from '@/lib/utils';
 // Process steps with semantic colors from Catalyst palette
 export const DRAWER_PROCESS_STEPS = [
   { value: 'new_request', label: 'New Demand', colorType: 'olive' as const },
-  { value: 'new_demand', label: 'New Demand', colorType: 'olive' as const },
   { value: 'in_review', label: 'Under Review', colorType: 'warning' as const },
   { value: 'analyse', label: 'Analysis', colorType: 'warning' as const },
   { value: 'approved', label: 'Approved', colorType: 'info' as const },
