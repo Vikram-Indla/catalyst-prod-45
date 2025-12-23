@@ -219,6 +219,8 @@ export function useEpicRoadmapItems(
       rank: epic.program_rank,
       startDate: startDate,
       endDate: endDate,
+      linkedItemsCount: epicFeatures.length, // Count of linked features
+      health: epic.health || 'green', // Health status
       milestones, // Child Features as markers
       risks: [],
       dependencies: [],
