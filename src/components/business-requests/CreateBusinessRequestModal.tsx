@@ -3,7 +3,7 @@ import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { X, Save } from 'lucide-react';
 import { useCreateBusinessRequest } from '@/hooks/useBusinessRequests';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { DemandDetailsTab } from './create-tabs/DemandDetailsTab';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
@@ -156,23 +156,23 @@ export function CreateBusinessRequestModal({ isOpen, onClose }: CreateBusinessRe
   const handleSave = async () => {
     // Validate required fields
     if (!formData.title || formData.title.length < 5) {
-      toast.error('Summary is required and must be at least 5 characters');
+      catalystToast.error('Validation Error', 'Summary is required and must be at least 5 characters');
       return;
     }
     if (!formData.description || formData.description.trim().length === 0) {
-      toast.error('Description is required');
+      catalystToast.error('Validation Error', 'Description is required');
       return;
     }
     if (!formData.assignee) {
-      toast.error('Assignee is required');
+      catalystToast.error('Validation Error', 'Assignee is required');
       return;
     }
     if (!formData.department_id) {
-      toast.error('Department is required');
+      catalystToast.error('Validation Error', 'Department is required');
       return;
     }
     if (!formData.business_owner_id) {
-      toast.error('Business Owner is required');
+      catalystToast.error('Validation Error', 'Business Owner is required');
       return;
     }
 
@@ -209,7 +209,7 @@ export function CreateBusinessRequestModal({ isOpen, onClose }: CreateBusinessRe
       
       const requestKey = createdRequest?.request_key || createdRequest?.id?.slice(0, 8);
       const summary = formData.title.length > 50 ? formData.title.slice(0, 50) + '...' : formData.title;
-      toast.success(`Request ${requestKey} created: "${summary}"`);
+      catalystToast.success('Request Created', `${requestKey}: "${summary}"`);
       
       setFormData(getInitialFormData());
       onClose();
