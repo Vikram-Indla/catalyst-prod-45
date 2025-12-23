@@ -34,13 +34,14 @@ export function AssigneeCell({ name, requestId, onSave, disabled = false }: Assi
   const [isSaving, setIsSaving] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Fetch available users
+  // Fetch available users - only active (approved) users
   const { data: users = [] } = useQuery({
-    queryKey: ['profiles-for-assignment'],
+    queryKey: ['profiles-for-assignment-active'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('profiles')
         .select('id, full_name, email')
+        .eq('approval_status', 'APPROVED')
         .order('full_name');
       if (error) throw error;
       return (data || []) as Profile[];
