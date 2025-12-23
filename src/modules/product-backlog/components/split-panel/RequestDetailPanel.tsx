@@ -9,7 +9,7 @@ import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { 
   Link2, Edit, Paperclip, Copy, Trash2, 
-  FileText, Check, Lock, Star, Calendar
+  FileText, Check, Lock, Star, Calendar, ArrowLeft
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -70,6 +70,8 @@ interface RequestDetailPanelProps {
   onAttachment: () => void;
   onLink: () => void;
   onScore: () => void;
+  onMobileBack?: () => void;
+  showMobileBack?: boolean;
 }
 
 // Status color mapping based on process step value
@@ -269,6 +271,8 @@ export function RequestDetailPanel({
   onAttachment,
   onLink,
   onScore,
+  onMobileBack,
+  showMobileBack = false,
 }: RequestDetailPanelProps) {
   // Fetch departments and business owners from DB
   const { data: departments = [] } = useDepartments();
@@ -364,42 +368,55 @@ export function RequestDetailPanel({
   return (
     <div className="h-full flex flex-col" style={{ backgroundColor: 'var(--bg)' }}>
       {/* Header */}
-      <div className="shrink-0 px-6 py-4" style={{ borderBottom: '1px solid var(--divider)' }}>
-        <div className="flex items-start justify-between">
-          <div className="flex-1 min-w-0">
-            {/* ID + Rank */}
-            <div className="flex items-center gap-2 mb-1">
-              <span 
-                className="text-sm font-mono font-medium cursor-pointer hover:underline" 
-                style={{ color: 'hsl(var(--secondary-bronze))' }}
-                onClick={onOpenDrawer}
+      <div className="shrink-0 px-4 md:px-6 py-4" style={{ borderBottom: '1px solid var(--divider)' }}>
+        <div className="flex items-start justify-between gap-2">
+          <div className="flex-1 min-w-0 flex items-start gap-2">
+            {/* Mobile Back Button */}
+            {showMobileBack && onMobileBack && (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="md:hidden shrink-0 -ml-2"
+                onClick={onMobileBack}
               >
-                {request.id}
-              </span>
-              {request.rank && (
-                <Badge variant="secondary" className="text-xs px-1.5 py-0 h-5">
-                  #{request.rank}
-                </Badge>
-              )}
+                <ArrowLeft className="h-5 w-5" />
+              </Button>
+            )}
+            <div className="flex-1 min-w-0">
+              {/* ID + Rank */}
+              <div className="flex items-center gap-2 mb-1 flex-wrap">
+                <span 
+                  className="text-sm font-mono font-medium cursor-pointer hover:underline" 
+                  style={{ color: 'hsl(var(--secondary-bronze))' }}
+                  onClick={onOpenDrawer}
+                >
+                  {request.id}
+                </span>
+                {request.rank && (
+                  <Badge variant="secondary" className="text-xs px-1.5 py-0 h-5">
+                    #{request.rank}
+                  </Badge>
+                )}
+              </div>
+              {/* Title */}
+              <h1 className="text-xl md:text-2xl font-semibold" style={{ color: 'var(--text-1)' }}>
+                {request.summary}
+              </h1>
             </div>
-            {/* Title */}
-            <h1 className="text-2xl font-semibold" style={{ color: 'var(--text-1)' }}>
-              {request.summary}
-            </h1>
           </div>
 
           {/* Copy Link Button */}
-          <div className="ml-4">
+          <div className="ml-2 md:ml-4 shrink-0">
             <CopyLinkButton requestId={request.id} />
           </div>
         </div>
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-y-auto px-6 py-5">
+      <div className="flex-1 overflow-y-auto px-4 md:px-6 py-5">
         <div className="space-y-5">
           {/* Row 1: Status | EA Review Required? */}
-          <div className="grid grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
             <div>
               <FieldLabel>Status</FieldLabel>
               <Select 
@@ -447,7 +464,7 @@ export function RequestDetailPanel({
           </div>
 
           {/* Row 2: Priority | Target Quarter */}
-          <div className="grid grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
             <div>
               <FieldLabel>Priority</FieldLabel>
               <div 
@@ -484,7 +501,7 @@ export function RequestDetailPanel({
           </div>
 
           {/* Row 3: Reporter | Assignee */}
-          <div className="grid grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
             <div>
               <FieldLabel>Reporter</FieldLabel>
               <div 
@@ -523,7 +540,7 @@ export function RequestDetailPanel({
           </div>
 
           {/* Row 4: Department | Business Owner */}
-          <div className="grid grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
             <div>
               <FieldLabel>Department</FieldLabel>
               <Select 
@@ -573,7 +590,7 @@ export function RequestDetailPanel({
           </div>
 
           {/* Row 5: Business Ask Date | Kickoff Date | Target Complete */}
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <DatePickerField 
               label="Business Ask Date" 
               value={request.businessAsk} 
@@ -592,7 +609,7 @@ export function RequestDetailPanel({
           </div>
 
           {/* Timestamps */}
-          <div className="pt-4 flex gap-8" style={{ borderTop: '1px solid var(--divider)' }}>
+          <div className="pt-4 flex flex-col sm:flex-row gap-4 sm:gap-8" style={{ borderTop: '1px solid var(--divider)' }}>
             <div>
               <span className="text-[10px] font-medium uppercase tracking-wider" style={{ color: 'var(--text-3)' }}>
                 CREATED
@@ -615,7 +632,7 @@ export function RequestDetailPanel({
 
       {/* Footer Actions */}
       <div 
-        className="shrink-0 px-6 py-3 flex items-center justify-center gap-2"
+        className="shrink-0 px-4 md:px-6 py-3 flex items-center justify-start md:justify-center gap-2 overflow-x-auto"
         style={{ borderTop: '1px solid var(--divider)', backgroundColor: 'var(--surface-2)' }}
       >
         <Button variant="outline" size="sm" className="gap-1.5" onClick={onOpenDrawer}>
