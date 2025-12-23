@@ -160,11 +160,11 @@ export function DemandDetailsTab({ data, onChange }: DemandDetailsTabProps) {
     </div>
   );
 
-  // Compact label
+  // Compact label with asterisk for required fields
   const CompactLabel = ({ children, required = false }: { children: React.ReactNode; required?: boolean }) => (
-    <label className="text-xs font-medium text-gray-700 dark:text-gray-300 mb-1 flex items-center gap-1">
+    <label className="text-xs font-medium text-gray-700 dark:text-gray-300 mb-1 flex items-center gap-0.5">
       {children}
-      {required && <span className="text-red-500 text-[10px] uppercase">Required</span>}
+      {required && <span className="text-red-500 text-sm font-bold">*</span>}
     </label>
   );
 
