@@ -590,7 +590,7 @@ export function RequestDetailPanel({
           </div>
 
           {/* Row 5: Business Ask Date | Kickoff Date | Target Complete */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
             <DatePickerField 
               label="Business Ask Date" 
               value={request.businessAsk} 
@@ -632,42 +632,42 @@ export function RequestDetailPanel({
 
       {/* Footer Actions */}
       <div 
-        className="shrink-0 px-4 md:px-6 py-3 flex items-center justify-start md:justify-center gap-2 overflow-x-auto"
+        className="shrink-0 px-3 md:px-6 py-3 flex items-center justify-start gap-1.5 md:gap-2 overflow-x-auto"
         style={{ borderTop: '1px solid var(--divider)', backgroundColor: 'var(--surface-2)' }}
       >
-        <Button variant="outline" size="sm" className="gap-1.5" onClick={onOpenDrawer}>
+        <Button variant="outline" size="sm" className="gap-1 px-2 md:px-3 shrink-0" onClick={onOpenDrawer}>
           <Edit className="w-3.5 h-3.5" />
-          Edit Details
+          <span className="hidden xs:inline">Edit</span>
         </Button>
-        <Button variant="outline" size="sm" className="gap-1.5" onClick={onAttachment}>
+        <Button variant="outline" size="sm" className="gap-1 px-2 md:px-3 shrink-0" onClick={onAttachment}>
           <Paperclip className="w-3.5 h-3.5" />
-          Attach
+          <span className="hidden xs:inline">Attach</span>
           {attachmentCount > 0 && (
             <Badge variant="secondary" className="ml-0.5 h-5 min-w-5 px-1.5 text-xs">
               {attachmentCount}
             </Badge>
           )}
         </Button>
-        <Button variant="outline" size="sm" className="gap-1.5" onClick={onClone}>
+        <Button variant="outline" size="sm" className="gap-1 px-2 md:px-3 shrink-0" onClick={onClone}>
           <Copy className="w-3.5 h-3.5" />
-          Clone
+          <span className="hidden xs:inline">Clone</span>
         </Button>
-        <Button variant="outline" size="sm" className="gap-1.5" onClick={onLink}>
+        <Button variant="outline" size="sm" className="gap-1 px-2 md:px-3 shrink-0" onClick={onLink}>
           <Link2 className="w-3.5 h-3.5" />
-          Link
+          <span className="hidden xs:inline">Link</span>
         </Button>
-        <Button variant="outline" size="sm" className="gap-1.5" onClick={onScore}>
+        <Button variant="outline" size="sm" className="gap-1 px-2 md:px-3 shrink-0" onClick={onScore}>
           <Star className="w-3.5 h-3.5" />
-          Score
+          <span className="hidden xs:inline">Score</span>
         </Button>
         <Button 
           variant="outline" 
           size="sm" 
-          className="gap-1.5 text-destructive border-destructive/30 hover:bg-destructive/10" 
+          className="gap-1 px-2 md:px-3 shrink-0 text-destructive border-destructive/30 hover:bg-destructive/10" 
           onClick={onDelete}
         >
           <Trash2 className="w-3.5 h-3.5" />
-          Delete
+          <span className="hidden xs:inline">Delete</span>
         </Button>
       </div>
     </div>
