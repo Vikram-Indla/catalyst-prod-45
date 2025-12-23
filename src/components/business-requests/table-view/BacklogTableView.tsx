@@ -418,6 +418,28 @@ export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableVi
         onAssignOwner={() => toast.info('Assign Owner feature coming soon')}
         onSetQuarter={() => toast.info('Set Quarter feature coming soon')}
         onApprove={() => toast.info('Approve feature coming soon')}
+        onDelete={async () => {
+          if (selectedIds.size === 0) return;
+          
+          const confirmed = window.confirm(`Are you sure you want to delete ${selectedIds.size} request(s)? This action cannot be undone.`);
+          if (!confirmed) return;
+          
+          try {
+            const { error } = await supabase
+              .from('business_requests')
+              .delete()
+              .in('id', Array.from(selectedIds));
+            
+            if (error) throw error;
+            
+            toast.success(`Deleted ${selectedIds.size} request(s)`);
+            clearSelection();
+            queryClient.invalidateQueries({ queryKey: ['business-requests'] });
+          } catch (error) {
+            console.error('Failed to delete requests:', error);
+            toast.error('Failed to delete requests');
+          }
+        }}
       />
 
       {/* Keyboard Hints */}

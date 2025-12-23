@@ -1,4 +1,4 @@
-import { X, UserPlus, Calendar, Check } from 'lucide-react';
+import { X, UserPlus, Calendar, Check, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
@@ -8,6 +8,7 @@ interface BulkActionsBarProps {
   onAssignOwner?: () => void;
   onSetQuarter?: () => void;
   onApprove?: () => void;
+  onDelete?: () => void;
 }
 
 export function BulkActionsBar({ 
@@ -15,7 +16,8 @@ export function BulkActionsBar({
   onClear,
   onAssignOwner,
   onSetQuarter,
-  onApprove 
+  onApprove,
+  onDelete
 }: BulkActionsBarProps) {
   if (selectedCount === 0) return null;
 
@@ -69,6 +71,18 @@ export function BulkActionsBar({
           >
             <Check className="h-4 w-4 mr-2" />
             Approve
+          </Button>
+        )}
+
+        {onDelete && (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onDelete}
+            className="text-red-400 hover:text-red-300 hover:bg-red-500/10"
+          >
+            <Trash2 className="h-4 w-4 mr-2" />
+            Delete
           </Button>
         )}
       </div>
