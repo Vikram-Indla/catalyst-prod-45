@@ -77,12 +77,13 @@ export function EAReviewTab({ data, onChange }: EAReviewTabProps) {
   const requiresRiskNotes = data.ea_risk_level === 'high';
   const isOutsourced = data.ea_delivery_model === 'outsourced';
 
-  // Match Review Date styling: thin border + background surface
-  const fieldContainerStyle = {
-    backgroundColor: 'hsl(var(--card))',
-    border: '1px solid hsl(var(--border))',
-    borderRadius: '0.5rem',
-  };
+  // Force PURE white field surface (card), not the warm page background
+  const fieldClass =
+    "mt-1 h-10 text-[13px] bg-card border-border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/20 focus-visible:border-ring";
+
+  const textareaBaseClass =
+    "mt-1 text-[13px] bg-card border-border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/20 focus-visible:border-ring";
+
 
   return (
     <div className="flex flex-col h-full space-y-4" style={{ background: 'var(--bg)' }}>
@@ -101,7 +102,7 @@ export function EAReviewTab({ data, onChange }: EAReviewTabProps) {
               EA Status <span className="text-destructive">*</span>
             </Label>
             <Select value={eaStatus} onValueChange={(value) => onChange('ea_status', value)}>
-              <SelectTrigger className="mt-1 h-10 text-[13px]" style={fieldContainerStyle}>
+              <SelectTrigger className={fieldClass}>
                 <SelectValue placeholder="Select status" />
               </SelectTrigger>
               <SelectContent className="z-[400] bg-popover border-border">
@@ -126,7 +127,7 @@ export function EAReviewTab({ data, onChange }: EAReviewTabProps) {
                 value={data.ea_reviewer || null}
                 onChange={(value) => onChange('ea_reviewer', value as string | null)}
                 placeholder="Select reviewer..."
-                className="[&_button]:h-10"
+                className="[&_button]:h-10 [&_button]:bg-card [&_button]:border-border"
               />
             </div>
           </div>
@@ -153,8 +154,7 @@ export function EAReviewTab({ data, onChange }: EAReviewTabProps) {
             value={data.ea_summary || ''}
             onChange={(e) => onChange('ea_summary', e.target.value)}
             placeholder="Enter EA review summary..."
-            className="mt-1 min-h-[80px] text-[13px]"
-            style={fieldContainerStyle}
+            className={`min-h-[80px] ${textareaBaseClass}`}
           />
         </div>
 
@@ -167,8 +167,7 @@ export function EAReviewTab({ data, onChange }: EAReviewTabProps) {
               value={data.ea_constraints || ''}
               onChange={(e) => onChange('ea_constraints', e.target.value)}
               placeholder="Enter constraints or conditions for approval..."
-              className="mt-1 min-h-[60px] text-[13px]"
-              style={fieldContainerStyle}
+              className={`min-h-[60px] ${textareaBaseClass}`}
             />
           </div>
         )}
@@ -189,7 +188,7 @@ export function EAReviewTab({ data, onChange }: EAReviewTabProps) {
               Arch Alignment
             </Label>
             <Select value={data.ea_arch_alignment || ''} onValueChange={(value) => onChange('ea_arch_alignment', value)}>
-              <SelectTrigger className="mt-1 h-10 text-[13px]" style={fieldContainerStyle}>
+              <SelectTrigger className={fieldClass}>
                 <SelectValue placeholder="Select alignment" />
               </SelectTrigger>
               <SelectContent className="z-[400] bg-popover border-border">
@@ -210,7 +209,7 @@ export function EAReviewTab({ data, onChange }: EAReviewTabProps) {
               value={data.ea_primary_impact_area || ''}
               onValueChange={(value) => onChange('ea_primary_impact_area', value)}
             >
-              <SelectTrigger className="mt-1 h-10 text-[13px]" style={fieldContainerStyle}>
+              <SelectTrigger className={fieldClass}>
                 <SelectValue placeholder="Select area" />
               </SelectTrigger>
               <SelectContent className="z-[400] bg-popover border-border">
@@ -232,8 +231,7 @@ export function EAReviewTab({ data, onChange }: EAReviewTabProps) {
             value={data.ea_business_capability_impact || ''}
             onChange={(e) => onChange('ea_business_capability_impact', e.target.value)}
             placeholder="Describe the business capability impact..."
-            className="mt-1 min-h-[60px] text-[13px]"
-            style={fieldContainerStyle}
+            className={`min-h-[60px] ${textareaBaseClass}`}
           />
         </div>
       </div>
@@ -253,7 +251,7 @@ export function EAReviewTab({ data, onChange }: EAReviewTabProps) {
               EA Complexity
             </Label>
             <Select value={data.ea_complexity || ''} onValueChange={(value) => onChange('ea_complexity', value)}>
-              <SelectTrigger className="mt-1 h-10 text-[13px]" style={fieldContainerStyle}>
+              <SelectTrigger className={fieldClass}>
                 <SelectValue placeholder="Select complexity" />
               </SelectTrigger>
               <SelectContent className="z-[400] bg-popover border-border">
@@ -271,7 +269,7 @@ export function EAReviewTab({ data, onChange }: EAReviewTabProps) {
               EA Risk Level
             </Label>
             <Select value={data.ea_risk_level || ''} onValueChange={(value) => onChange('ea_risk_level', value)}>
-              <SelectTrigger className="mt-1 h-10 text-[13px]" style={fieldContainerStyle}>
+              <SelectTrigger className={fieldClass}>
                 <SelectValue placeholder="Select risk level" />
               </SelectTrigger>
               <SelectContent className="z-[400] bg-popover border-border">
@@ -294,8 +292,7 @@ export function EAReviewTab({ data, onChange }: EAReviewTabProps) {
               value={data.ea_risk_notes || ''}
               onChange={(e) => onChange('ea_risk_notes', e.target.value)}
               placeholder="Enter risk notes (required for High risk)..."
-              className="mt-1 min-h-[60px] text-[13px]"
-              style={fieldContainerStyle}
+              className={`min-h-[60px] ${textareaBaseClass}`}
             />
           </div>
         )}
