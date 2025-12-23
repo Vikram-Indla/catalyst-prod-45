@@ -279,14 +279,17 @@ export function useUpdateBusinessRequest() {
       // Convert ReadinessChecklist to Json-compatible format
       // IMPORTANT: Remove system-managed fields AND computed fields from update payload
       const updateData: Record<string, any> = { ...data };
-      
+
       // Remove system-managed fields
       delete updateData.id;
       delete updateData.request_key;
       delete updateData.created_at;
       delete updateData.updated_at;
       delete updateData.deleted_at;
-      
+
+      // Remove internal UI-only fields
+      delete updateData._batch;
+
       // Remove computed/joined fields that don't exist in the database
       delete updateData.requestor_name;
       delete updateData.assignee_name;
