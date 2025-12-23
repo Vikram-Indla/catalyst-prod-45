@@ -5,6 +5,8 @@ import { cn } from '@/lib/utils';
 import { TODAY_LINE_COLOR, getKRStatusStyle } from '@/constants/krStatusStyles';
 import { DemandGroupBy } from './ProductRoadmapToolbar';
 import { ChevronDown } from 'lucide-react';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { format } from 'date-fns';
 
 interface DemandGroup {
   key: string;
@@ -265,44 +267,125 @@ const DemandTimelineRow: React.FC<DemandTimelineRowProps> = ({
   const statusConfig = DEMAND_STATUS_CONFIG.find(s => s.key === demand.status);
   const barColor = statusConfig?.color || 'hsl(var(--brand-primary))';
   
+  // Format dates for tooltip
+  const startDateStr = format(demand.startDate, 'MMM d, yyyy');
+  const endDateStr = format(demand.endDate, 'MMM d, yyyy');
+  
+  // Count milestone statuses
+  const milestoneStats = useMemo(() => {
+    const milestones = demand.milestones || [];
+    return {
+      total: milestones.length,
+      complete: milestones.filter(m => m.status === 'complete').length,
+      current: milestones.filter(m => m.status === 'current').length,
+      pending: milestones.filter(m => m.status === 'pending').length,
+      overdue: milestones.filter(m => m.status === 'overdue').length,
+    };
+  }, [demand.milestones]);
+  
   return (
-    <div 
-      className="relative border-b border-border hover:bg-muted bg-background cursor-pointer"
-      style={{ height: `${rowHeight}px` }}
-      onClick={onClick}
-    >
-      {/* Timeline Bar - matching Program: thin track with progress fill */}
-      <div 
-        className="absolute top-1/2 -translate-y-1/2 h-1.5"
-        style={{ 
-          left: `${barLeft}%`, 
-          width: `${barWidth}%`,
-          minWidth: '40px'
-        }}
-      >
-        {/* Track */}
-        <div className="absolute inset-0 bg-brand-primary/20 rounded-sm" />
-        {/* Progress Fill */}
-        <div
-          className="absolute left-0 top-0 h-full bg-brand-primary rounded-sm"
-          style={{ width: `${demand.progress}%` }}
-        />
-      </div>
-      
-      {/* Milestone Markers - Diamond shapes matching Program */}
-      {showMilestones && demand.milestones.length > 0 && demand.milestones.map((milestone, index) => (
-        <MilestoneMarker
-          key={milestone.id}
-          milestone={milestone}
-          index={index}
-          totalMilestones={demand.milestones.length}
-          demandStart={demand.startDate}
-          demandEnd={demand.endDate}
-          barLeft={barLeft}
-          barWidth={barWidth}
-        />
-      ))}
-    </div>
+    <TooltipProvider>
+      <Tooltip delayDuration={200}>
+        <TooltipTrigger asChild>
+          <div 
+            className="relative border-b border-border hover:bg-muted bg-background cursor-pointer"
+            style={{ height: `${rowHeight}px` }}
+            onClick={onClick}
+          >
+            {/* Timeline Bar - matching Program: thin track with progress fill */}
+            <div 
+              className="absolute top-1/2 -translate-y-1/2 h-1.5"
+              style={{ 
+                left: `${barLeft}%`, 
+                width: `${barWidth}%`,
+                minWidth: '40px'
+              }}
+            >
+              {/* Track */}
+              <div className="absolute inset-0 bg-brand-primary/20 rounded-sm" />
+              {/* Progress Fill */}
+              <div
+                className="absolute left-0 top-0 h-full bg-brand-primary rounded-sm"
+                style={{ width: `${demand.progress}%` }}
+              />
+            </div>
+            
+            {/* Milestone Markers - Diamond shapes matching Program */}
+            {showMilestones && demand.milestones && demand.milestones.length > 0 && demand.milestones.map((milestone, index) => (
+              <MilestoneMarker
+                key={milestone.id}
+                milestone={milestone}
+                index={index}
+                totalMilestones={demand.milestones.length}
+                demandStart={demand.startDate}
+                demandEnd={demand.endDate}
+                barLeft={barLeft}
+                barWidth={barWidth}
+              />
+            ))}
+          </div>
+        </TooltipTrigger>
+        <TooltipContent 
+          side="top" 
+          className="max-w-xs p-3 bg-background border border-border shadow-lg z-50"
+        >
+          <div className="space-y-2">
+            {/* Title */}
+            <div className="font-semibold text-foreground text-sm">{demand.title}</div>
+            
+            {/* Date range */}
+            <div className="text-xs text-muted-foreground">
+              {startDateStr} → {endDateStr}
+            </div>
+            
+            {/* Progress */}
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-muted-foreground">Progress:</span>
+              <div className="flex-1 h-1.5 bg-muted rounded-full overflow-hidden">
+                <div 
+                  className="h-full bg-brand-primary rounded-full"
+                  style={{ width: `${demand.progress}%` }}
+                />
+              </div>
+              <span className="text-xs font-medium text-foreground">{demand.progress}%</span>
+            </div>
+            
+            {/* Status */}
+            <div className="flex items-center gap-2 text-xs">
+              <span className="text-muted-foreground">Status:</span>
+              <span className="font-medium text-foreground capitalize">{demand.status.replace('-', ' ')}</span>
+            </div>
+            
+            {/* Milestones summary */}
+            {milestoneStats.total > 0 && (
+              <div className="pt-1 border-t border-border space-y-1">
+                <div className="text-xs font-medium text-foreground">
+                  Milestones ({milestoneStats.complete}/{milestoneStats.total} complete)
+                </div>
+                <div className="flex gap-2 text-[10px]">
+                  {milestoneStats.complete > 0 && (
+                    <span className="text-brand-primary">✓ {milestoneStats.complete} done</span>
+                  )}
+                  {milestoneStats.current > 0 && (
+                    <span className="text-secondary-bronze">● {milestoneStats.current} current</span>
+                  )}
+                  {milestoneStats.pending > 0 && (
+                    <span className="text-muted-foreground">○ {milestoneStats.pending} pending</span>
+                  )}
+                  {milestoneStats.overdue > 0 && (
+                    <span className="text-destructive">! {milestoneStats.overdue} overdue</span>
+                  )}
+                </div>
+              </div>
+            )}
+            
+            {milestoneStats.total === 0 && (
+              <div className="text-xs text-muted-foreground italic">No milestones</div>
+            )}
+          </div>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
   );
 };
 
