@@ -19,29 +19,19 @@ import { Calendar as CalendarIcon, Lock } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 
+// Unified quarter options - using space format to match database storage
 const QUARTER_OPTIONS = [
-  { value: 'Q1-2025', label: 'Q1 2025' },
-  { value: 'Q2-2025', label: 'Q2 2025' },
-  { value: 'Q3-2025', label: 'Q3 2025' },
-  { value: 'Q4-2025', label: 'Q4 2025' },
-  { value: 'Q1-2026', label: 'Q1 2026' },
-  { value: 'Q2-2026', label: 'Q2 2026' },
-  { value: 'Q3-2026', label: 'Q3 2026' },
-  { value: 'Q4-2026', label: 'Q4 2026' },
-  { value: 'Q1-2027', label: 'Q1 2027' },
-  { value: 'Q2-2027', label: 'Q2 2027' },
+  'Q1 2024', 'Q2 2024', 'Q3 2024', 'Q4 2024',
+  'Q1 2025', 'Q2 2025', 'Q3 2025', 'Q4 2025',
+  'Q1 2026', 'Q2 2026', 'Q3 2026', 'Q4 2026',
+  'Q1 2027', 'Q2 2027', 'Q3 2027', 'Q4 2027',
 ];
 
-// Normalize quarter value to hyphen format for matching
+// Normalize quarter value to space format for consistent storage
 const normalizeQuarter = (q: string | undefined): string => {
   if (!q) return '';
-  return q.replace(' ', '-');
-};
-
-// Get display label for a quarter value
-const getQuarterLabel = (q: string | undefined): string => {
-  if (!q) return '';
-  return q.replace('-', ' ');
+  // Convert hyphen to space for consistency
+  return q.replace('-', ' ').trim();
 };
 
 // Status color mapping
@@ -366,12 +356,12 @@ export function DemandDetailsViewTab({ data, onChange, onDirtyChange }: DemandDe
               >
                 <SelectTrigger className="w-full h-10">
                   <SelectValue placeholder="Select quarter">
-                    {quarterValue ? getQuarterLabel(quarterValue) : null}
+                    {normalizedValue || null}
                   </SelectValue>
                 </SelectTrigger>
                 <SelectContent className="z-[500]">
                   {QUARTER_OPTIONS.map((q) => (
-                    <SelectItem key={q.value} value={q.value}>{q.label}</SelectItem>
+                    <SelectItem key={q} value={q}>{q}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
