@@ -294,8 +294,8 @@ export function IndustryHeaderToolbarV2({
 
       {/* Bottom Row on Mobile: Search + Actions */}
       <div className="flex items-center gap-2 flex-1">
-        {/* Search */}
-        <div className="flex-1 md:max-w-md">
+        {/* Search - centered */}
+        <div className="flex-1 md:max-w-md mx-auto">
           <div className="relative group">
             <div className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-foreground transition-colors">
               <Icons.Search />
