@@ -1,17 +1,17 @@
 /**
  * DemandDetailsViewTab - Redesigned with clean layout
- * Header with Title + Status, Description, 4-col metadata, 3-col people, 3-col dates
+ * Description, 4-col metadata, 3-col people, 3-col dates
+ * Note: ID, Title, and Status are handled in the drawer header (BusinessRequestDrawer.tsx)
  */
 
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Calendar as CalendarIcon, Lock, Loader2, Link as LinkIcon, Copy } from 'lucide-react';
+import { Calendar as CalendarIcon, Lock, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { RichTextEditor } from '../RichTextEditor';
 import { BusinessRequest, PROCESS_STEPS } from '@/types/business-request';
@@ -30,23 +30,6 @@ const QUARTER_OPTIONS = [
   'Q1 2026', 'Q2 2026', 'Q3 2026', 'Q4 2026',
   'Q1 2027', 'Q2 2027',
 ];
-
-// Status color mapping
-const STATUS_COLORS: Record<string, string> = {
-  new_request: 'bg-amber-500',
-  new_demand: 'bg-blue-500',
-  in_review: 'bg-indigo-500',
-  ea_review: 'bg-violet-500',
-  analyse: 'bg-purple-500',
-  approved: 'bg-green-500',
-  ready_to_implement: 'bg-teal-500',
-  implement: 'bg-cyan-500',
-  closed: 'bg-gray-400',
-  rejected: 'bg-red-500',
-  on_hold: 'bg-orange-500',
-};
-
-const getStatusColor = (value: string) => STATUS_COLORS[value?.toLowerCase()] || 'bg-gray-400';
 
 // Priority tier config
 const PRIORITY_LABELS: Record<string, { label: string; color: string }> = {
@@ -132,43 +115,6 @@ function PriorityDropdown({ value, locked = true }: { value: string; locked?: bo
       </div>
       {locked && <Lock className="w-3.5 h-3.5 text-gray-400" />}
     </div>
-  );
-}
-
-// Status dropdown
-function StatusDropdown({ 
-  value, 
-  onChange, 
-  processSteps 
-}: { 
-  value: string; 
-  onChange: (value: string) => void;
-  processSteps: Array<{ value: string; label: string }>;
-}) {
-  const statusColor = getStatusColor(value);
-  const statusInfo = processSteps.find(s => s.value === value);
-  
-  return (
-    <Select value={value} onValueChange={onChange}>
-      <SelectTrigger className="h-9 w-[160px]">
-        <SelectValue>
-          <div className="flex items-center gap-2">
-            <div className={cn('w-2 h-2 rounded-full', statusColor)} />
-            <span className="text-sm">{statusInfo?.label || 'New demand'}</span>
-          </div>
-        </SelectValue>
-      </SelectTrigger>
-      <SelectContent className="z-[500] bg-popover">
-        {processSteps.map((step) => (
-          <SelectItem key={step.value} value={step.value}>
-            <div className="flex items-center gap-2">
-              <div className={cn('w-2 h-2 rounded-full', getStatusColor(step.value))} />
-              {step.label}
-            </div>
-          </SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
   );
 }
 
@@ -302,16 +248,9 @@ export function DemandDetailsViewTab({ data, onChange, onDirtyChange, requestId 
   };
 
   // Computed values
-  const statusKey = data.process_step?.toLowerCase() || 'new_demand';
   const priorityKey = (data.priority_tier as string)?.toLowerCase() || 'unscored';
   const reporterName = data.requestor_name || reporterProfile?.full_name || reporterProfile?.email;
   const businessOwnerName = data.business_owner || owners?.find(o => o.id === data.business_owner_id)?.name;
-
-  const copyLink = () => {
-    const url = `${window.location.origin}/industry/backlog?requestId=${requestId}`;
-    navigator.clipboard.writeText(url);
-    toast.success('Link copied to clipboard');
-  };
 
   return (
     <div className="p-4 md:p-6 space-y-4 md:space-y-6">
@@ -323,39 +262,7 @@ export function DemandDetailsViewTab({ data, onChange, onDirtyChange, requestId 
         </div>
       )}
 
-      {/* SECTION 1: Header with Key and Title */}
-      <div className="flex items-start justify-between gap-4">
-        <div className="flex-1">
-          <div className="flex items-center gap-2 text-sm text-gray-500 mb-1">
-            <span className="font-mono text-[hsl(var(--secondary-bronze))] font-medium">
-              {data.request_key || 'MIM-XXX'}
-            </span>
-            <button 
-              onClick={copyLink}
-              className="p-1 hover:bg-gray-100 rounded transition-colors"
-              title="Copy link"
-            >
-              <LinkIcon className="w-3.5 h-3.5" />
-            </button>
-          </div>
-          {/* Editable Title */}
-          <Input
-            value={data.title || ''}
-            onChange={(e) => handleChange('title', e.target.value)}
-            placeholder="Enter summary..."
-            className="text-xl font-semibold border-0 p-0 h-auto focus-visible:ring-0 focus-visible:ring-offset-0 bg-transparent"
-          />
-        </div>
-        <div className="flex items-center gap-2">
-          <StatusDropdown 
-            value={statusKey} 
-            onChange={(v) => handleChange('process_step', v)}
-            processSteps={processSteps}
-          />
-        </div>
-      </div>
-
-      {/* SECTION 2: Description - Full Width */}
+      {/* SECTION 1: Description - Full Width (ID, Title, Status are in drawer header) */}
       <div>
         <FieldLabel>Description</FieldLabel>
         <RichTextEditor
