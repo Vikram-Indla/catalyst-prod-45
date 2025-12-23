@@ -121,9 +121,9 @@
     --status-warning-bg: rgba(217, 119, 6, 0.08);
     --status-warning-border: rgba(217, 119, 6, 0.2);
     
-    --status-info: #5c7c5c;
-    --status-info-bg: rgba(92, 124, 92, 0.08);
-    --status-info-border: rgba(92, 124, 92, 0.2);
+    --status-info: #3b82f6;
+    --status-info-bg: rgba(59, 130, 246, 0.08);
+    --status-info-border: rgba(59, 130, 246, 0.2);
     
     --status-muted: #6b7280;
     --status-muted-bg: rgba(107, 114, 128, 0.08);
