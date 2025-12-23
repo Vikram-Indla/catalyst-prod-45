@@ -38,7 +38,6 @@ import {
 import { InlineEditCell } from './InlineEditCell';
 import { InlineUserPicker } from './InlineUserPicker';
 import { DeleteIncidentDialog } from './DeleteIncidentDialog';
-import { DeleteIncidentDialog } from './DeleteIncidentDialog';
 import { ResizableHeader } from './ResizableHeader';
 import { 
   useIncidentColumnWidths, 
@@ -49,7 +48,6 @@ import {
   getGridTemplate,
 } from './useIncidentColumnWidths';
 import { toast } from '@/components/ui/catalyst-toast';
-import { useUpdateIncident } from '@/hooks/useIncidents';
 import { useUpdateIncident } from '@/hooks/useIncidents';
 import type { Incident } from '@/types/incident';
 import type { ColumnConfig, TableDensity } from '@/hooks/useIncidentColumns';
@@ -416,9 +414,7 @@ export function IncidentListTable({
                 </div>
               ) : (
                 incidents.map((incident) => {
-                  const age = getAgingTime(incident.created_at);
                   const slaStatus = getSlaStatus(incident);
-                  const committeeStatus = getCommitteeDisplayStatus(incident.committee);
                   const isConverted = incident.status === 'converted' || incident.status === 'closed';
                   const isHovered = hoveredId === incident.id;
                   const isCritical = incident.severity === 'SEV1';
