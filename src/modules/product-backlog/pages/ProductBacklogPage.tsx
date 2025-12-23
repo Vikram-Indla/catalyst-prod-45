@@ -197,20 +197,53 @@ export default function ProductBacklogPage() {
       processStep: 'process_step',
       department: 'department',
       departmentId: 'department_id',
+      department_id: 'department_id',
       businessOwner: 'business_owner',
+      business_owner: 'business_owner',
       businessOwnerId: 'business_owner_id',
+      business_owner_id: 'business_owner_id',
       platform: 'delivery_platform',
+      delivery_platform: 'delivery_platform',
       summary: 'title',
       autoPriority: 'priority_tier',
       quarter: 'planned_quarter',
+      planned_quarter: 'planned_quarter',
       assignee: 'assignee',
       assigneeId: 'assignee_id',
       kickoff: 'impl_start_date',
       targetComplete: 'end_date',
     };
 
+    // Handle batch updates (multiple fields at once)
+    if (field === '_batch' && typeof value === 'object') {
+      const updatePayload: Record<string, any> = {};
+      const localUpdates: Record<string, any> = {};
+      
+      for (const [key, val] of Object.entries(value)) {
+        const dbField = fieldMap[key] || key;
+        updatePayload[dbField] = val;
+        localUpdates[key] = val;
+      }
+
+      const { error } = await supabase
+        .from('business_requests')
+        .update(updatePayload)
+        .eq('id', selectedRequest._dbId);
+
+      if (error) {
+        toast.error(`Failed to update: ${error.message}`);
+        return;
+      }
+
+      // Update local state with all fields
+      setSelectedRequest(prev => prev ? { ...prev, ...localUpdates } : null);
+      queryClient.invalidateQueries({ queryKey: ['business-requests'] });
+      toast.success('Updated successfully');
+      return;
+    }
+
     const dbField = fieldMap[field] || field;
-    const dbValue = field === 'quarter' ? [value] : value;
+    const dbValue = field === 'quarter' || field === 'planned_quarter' ? (Array.isArray(value) ? value : [value]) : value;
     
     const { error } = await supabase
       .from('business_requests')
