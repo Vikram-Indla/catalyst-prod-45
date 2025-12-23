@@ -1,7 +1,8 @@
 // src/hooks/useAccessibleTeams.ts
 // Hook to fetch teams accessible to the current user based on their role
 
-import { useQuery } from '@tanstack/react-query';
+import { useEffect } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/lib/auth';
 import { useUserRole } from '@/hooks/useUserRole';
@@ -22,6 +23,28 @@ export interface AccessibleTeam {
 export function useAccessibleTeams() {
   const { user } = useAuth();
   const { role, isAdmin, isProgramManager, isLoading: isRoleLoading } = useUserRole();
+  const queryClient = useQueryClient();
+
+  // Subscribe to real-time changes (INSERT, UPDATE, DELETE) on teams table
+  useEffect(() => {
+    const channel = supabase
+      .channel('teams-realtime')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'teams' },
+        () => {
+          // Invalidate teams queries so UI updates in real-time
+          queryClient.invalidateQueries({ queryKey: ['accessible-teams'] });
+          queryClient.invalidateQueries({ queryKey: ['teams'] });
+          queryClient.invalidateQueries({ queryKey: ['team-member-ids'] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [queryClient]);
 
   return useQuery({
     queryKey: ['accessible-teams', user?.id, role],
