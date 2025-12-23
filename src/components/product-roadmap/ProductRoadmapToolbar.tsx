@@ -278,6 +278,7 @@ export const ProductRoadmapToolbar: React.FC<ProductRoadmapToolbarProps> = ({
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [groupByMenuOpen, setGroupByMenuOpen] = useState(false);
   const filtersRef = useRef<HTMLDivElement>(null);
+  const groupByRef = useRef<HTMLDivElement>(null);
   
   // Fetch dynamic process steps from database
   const { data: processSteps = [] } = useProcessSteps();
@@ -293,14 +294,17 @@ export const ProductRoadmapToolbar: React.FC<ProductRoadmapToolbarProps> = ({
   
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
+      // Close filters if click is outside filters panel
       if (filtersRef.current && !filtersRef.current.contains(e.target as Node)) {
         if (filtersOpen) {
           onCancelFilters();
           setFiltersOpen(false);
         }
       }
-      // Close other menus
-      setGroupByMenuOpen(false);
+      // Close group by menu if click is outside it
+      if (groupByRef.current && !groupByRef.current.contains(e.target as Node)) {
+        setGroupByMenuOpen(false);
+      }
     };
     
     document.addEventListener('mousedown', handleClickOutside);
@@ -357,7 +361,7 @@ export const ProductRoadmapToolbar: React.FC<ProductRoadmapToolbarProps> = ({
         </div>
         
         {/* Group By Dropdown - matches Program */}
-        <div className="relative" onClick={(e) => e.stopPropagation()}>
+        <div className="relative" ref={groupByRef}>
           <button 
             className={cn(
               "h-9 px-3 flex items-center gap-2 text-sm border border-border rounded-lg bg-background hover:bg-muted",

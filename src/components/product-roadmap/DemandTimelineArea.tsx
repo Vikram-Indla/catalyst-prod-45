@@ -257,17 +257,20 @@ interface DemandTimelineRowProps {
 
 // Status-based color mapping for progress bars
 const STATUS_COLORS: Record<string, string> = {
-  new: 'hsl(210, 40%, 50%)',           // Blue
-  new_request: 'hsl(210, 40%, 50%)',   // Blue
-  analyse: 'hsl(45, 85%, 50%)',        // Yellow/Amber
-  in_review: 'hsl(45, 85%, 50%)',      // Yellow/Amber
-  approved: 'hsl(160, 60%, 45%)',      // Teal
-  implement: 'hsl(120, 40%, 50%)',     // Green
-  implementing: 'hsl(120, 40%, 50%)',  // Green
-  done: 'hsl(120, 45%, 40%)',          // Dark Green
-  closed: 'hsl(120, 45%, 40%)',        // Dark Green
-  rejected: 'hsl(0, 60%, 50%)',        // Red
-  on_hold: 'hsl(30, 70%, 50%)',        // Orange
+  new: 'hsl(210, 40%, 50%)',                   // Blue
+  new_request: 'hsl(210, 40%, 50%)',           // Blue
+  new_demand: 'hsl(210, 40%, 50%)',            // Blue
+  analyse: 'hsl(45, 85%, 50%)',                // Yellow/Amber
+  in_review: 'hsl(45, 85%, 50%)',              // Yellow/Amber
+  ea_review: 'hsl(280, 50%, 55%)',             // Purple
+  approved: 'hsl(160, 60%, 45%)',              // Teal
+  ready_to_implement: 'hsl(160, 70%, 42%)',    // Teal-Green
+  implement: 'hsl(120, 40%, 50%)',             // Green
+  implementing: 'hsl(120, 40%, 50%)',          // Green
+  done: 'hsl(120, 45%, 40%)',                  // Dark Green
+  closed: 'hsl(120, 45%, 40%)',                // Dark Green
+  rejected: 'hsl(0, 60%, 50%)',                // Red
+  on_hold: 'hsl(30, 70%, 50%)',                // Orange
 };
 
 function getStatusColor(status: string): string {
