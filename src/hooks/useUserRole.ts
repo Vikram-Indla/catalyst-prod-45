@@ -8,46 +8,45 @@ export type ProductRoleCode = 'super_admin' | 'product_admin' | 'general_manager
 export function useUserRole() {
   const { user } = useAuth();
 
-  const { data: role, isLoading: isRoleLoading } = useQuery({
-    queryKey: ['user-role', user?.id],
+  // Combine both queries into a single parallel fetch for efficiency
+  const { data: roleData, isLoading } = useQuery({
+    queryKey: ['user-roles-combined', user?.id],
     queryFn: async () => {
-      if (!user) return null;
+      if (!user) return { role: 'user' as UserRole, productRoles: [] as ProductRoleCode[] };
 
-      const { data, error } = await supabase
-        .from('user_roles')
-        .select('role')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false })
-        .limit(1)
-        .single();
+      // Fetch both in parallel
+      const [roleResult, productRolesResult] = await Promise.all([
+        supabase
+          .from('user_roles')
+          .select('role')
+          .eq('user_id', user.id)
+          .order('created_at', { ascending: false })
+          .limit(1)
+          .maybeSingle(),
+        supabase
+          .from('user_product_roles')
+          .select('role_id, product_roles(code)')
+          .eq('user_id', user.id)
+      ]);
 
-      if (error) {
-        // User has no role assigned, default to 'user'
-        return 'user' as UserRole;
-      }
+      const role = roleResult.error || !roleResult.data 
+        ? 'user' as UserRole 
+        : roleResult.data.role as UserRole;
 
-      return data.role as UserRole;
+      const productRoles = productRolesResult.error || !productRolesResult.data
+        ? []
+        : productRolesResult.data
+            .map(r => (r.product_roles as any)?.code as ProductRoleCode)
+            .filter(Boolean);
+
+      return { role, productRoles };
     },
     enabled: !!user,
+    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
   });
 
-  // Also fetch product roles for the user
-  const { data: productRoles, isLoading: isProductRolesLoading } = useQuery({
-    queryKey: ['user-product-roles', user?.id],
-    queryFn: async () => {
-      if (!user) return [];
-
-      const { data, error } = await supabase
-        .from('user_product_roles')
-        .select('role_id, product_roles(code)')
-        .eq('user_id', user.id);
-
-      if (error) return [];
-
-      return data.map(r => (r.product_roles as any)?.code as ProductRoleCode).filter(Boolean);
-    },
-    enabled: !!user,
-  });
+  const role = roleData?.role ?? null;
+  const productRoles = roleData?.productRoles ?? [];
 
   const hasRole = (requiredRole: UserRole) => {
     if (!role) return false;
@@ -87,7 +86,7 @@ export function useUserRole() {
   const isProductOwnerOnly = isProductOwner && 
     !isAdmin && !isSuperAdmin && !isProductAdmin && !isGeneralManager && !isProgramManager;
 
-  const isLoading = isRoleLoading || isProductRolesLoading;
+  // isLoading is already declared from the combined query above
 
   return {
     role,
