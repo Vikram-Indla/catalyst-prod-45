@@ -166,14 +166,6 @@ export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableVi
 
   // Handle assignee update
   const handleAssigneeUpdate = useCallback(async (requestId: string, assignee: string | null) => {
-    // Optimistic update
-    queryClient.setQueryData(['business-requests'], (old: any) => {
-      if (!old) return old;
-      return old.map((item: any) => 
-        item.id === requestId ? { ...item, assignee } : item
-      );
-    });
-
     try {
       const { error } = await supabase
         .from('business_requests')
@@ -181,11 +173,13 @@ export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableVi
         .eq('id', requestId);
       
       if (error) throw error;
+      
+      // Invalidate all business-requests queries (handles different search query keys)
+      queryClient.invalidateQueries({ queryKey: ['business-requests'] });
       toast.success(assignee ? `Assigned to ${assignee}` : 'Unassigned');
     } catch (error) {
       console.error('Failed to update assignee:', error);
       toast.error('Failed to update assignee');
-      queryClient.invalidateQueries({ queryKey: ['business-requests'] });
     }
   }, [queryClient]);
 
