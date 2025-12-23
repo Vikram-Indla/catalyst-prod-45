@@ -70,6 +70,7 @@ import CapacityWithSidebar from "./pages/program/CapacityWithSidebar";
 import BacklogWithSidebar from "./pages/program/BacklogWithSidebar";
 import RoadmapsWithSidebar from "./pages/program/RoadmapsWithSidebar";
 import ProgramRoadmapPage from "./pages/program/ProgramRoadmapPage";
+import RoadmapsTestPage from "./pages/program/RoadmapsTestPage";
 import ExecutionWorkbenchPage from "./pages/program/ExecutionWorkbench";
 import FeaturesWithSidebar from "./pages/program/FeaturesWithSidebar";
 import PIObjectives from "./pages/PIObjectives";
@@ -335,6 +336,7 @@ const App = () => (
               <Route path="/program/:programId/program-board" element={<ProgramBoardWithSidebar />} />
               <Route path="/program/:programId/dependencies" element={<DependenciesPage />} />
               <Route path="/program/:programId/roadmaps" element={<ProgramRoadmapPage />} />
+              <Route path="/program/:programId/roadmaps-test" element={<RoadmapsTestPage />} />
               <Route path="/program/:programId/objectives-tree" element={<OKRHub />} />
               <Route path="/program/:programId/forecast" element={<PlaceholderPage />} />
               <Route path="/program/:programId/capacity" element={<CapacityWithSidebar />} />
