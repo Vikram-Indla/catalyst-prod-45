@@ -559,7 +559,6 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
                   <StatusDropdown
                     currentStep={formData.process_step}
                     onChange={(step) => handleFieldChange('process_step', step)}
-                    isLoading={updateMutation.isPending}
                   />
 
                   {/* Rank Badge - shows "Rank #4" format */}
