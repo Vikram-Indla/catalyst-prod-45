@@ -178,7 +178,7 @@ import OKRHub from "./pages/enterprise/OKRHub";
 import ObjectiveRoadmapPage from "./pages/ObjectiveRoadmapPage";
 import ProductRoadmapPage from "./pages/ProductRoadmapPage";
 import ProductRoadmapV2Page from "./pages/ProductRoadmapV2Page";
-import IndustryRoadmapPage from "./pages/industry/IndustryRoadmapPage";
+
 import StrategicSnapshots from "./pages/enterprise/StrategicSnapshots";
 import StrategicBacklog from "./pages/enterprise/StrategicBacklog";
 import EnterpriseEpics from "./pages/enterprise/EnterpriseEpics";
@@ -306,7 +306,7 @@ const App = () => (
               <Route path="/industry/kanban" element={<BusinessRequestsKanbanPage />} />
               <Route path="/industry/dashboard" element={<DemandSummaryPage />} />
               <Route path="/industry/roadmaps" element={<ProductRoadmapV2Page />} />
-              <Route path="/industry/roadmaps-v1" element={<IndustryRoadmapPage />} />
+              <Route path="/industry/roadmaps-v1" element={<ProductRoadmapPage />} />
               <Route path="/industry/reports" element={<IndustryComingSoon />} />
               
               <Route path="/search" element={<SearchPage />} />
