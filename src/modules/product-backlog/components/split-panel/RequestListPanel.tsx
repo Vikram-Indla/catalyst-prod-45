@@ -198,10 +198,10 @@ export function RequestListPanel({
                       {request.summary}
                     </p>
 
-                    {/* Meta */}
+                    {/* Meta: Status, Target Date, Quarter */}
                     <p className="text-xs mt-1" style={{ color: 'var(--text-3)' }}>
                       {formatStatus(request.processStep)}
-                      {request.score !== null && request.score > 0 && ` • Score: ${request.score}`}
+                      {request.targetComplete && ` • ${request.targetComplete}`}
                       {request.quarter && ` • ${request.quarter}`}
                     </p>
                   </div>
