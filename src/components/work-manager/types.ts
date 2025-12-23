@@ -56,6 +56,8 @@ export interface User {
   email: string;
   role: string;
   avatarColor?: string;
+  teamId?: string;
+  teamName?: string;
 }
 
 export interface Team {

@@ -44,7 +44,11 @@ export function NewTaskDialog({ open, onOpenChange, onCreateTask, teams, users }
   const [assigneeId, setAssigneeId] = useState('');
   const [dueDate, setDueDate] = useState('');
 
+  // Filter team members by selected team - check both teamId property and memberIds array
   const teamMembers = users.filter(u => {
+    // Check if user has teamId matching selected team
+    if (u.teamId === teamId) return true;
+    // Also check memberIds array as fallback
     const team = teams.find(t => t.id === teamId);
     return team?.memberIds.includes(u.id);
   });
