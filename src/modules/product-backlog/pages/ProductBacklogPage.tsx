@@ -109,8 +109,8 @@ export default function ProductBacklogPage() {
       deliveryTrack: br.delivery_track || null,
       platform: br.delivery_platform || null,
       quarter: br.planned_quarter?.[0] || null,
-      createdAt: br.created_at?.split('T')[0] || null,
-      updatedAt: br.updated_at?.split('T')[0] || null,
+      createdAt: br.created_at || null,
+      updatedAt: br.updated_at || null,
       ea_review_required: br.ea_review_required ?? true,
     }));
     
@@ -180,12 +180,12 @@ export default function ProductBacklogPage() {
     }
     // 'my' filter would need user context - skip for now
     
-    // Sort: ranked first, then by score
+    // Default sort: latest created first
     return filtered.sort((a, b) => {
-      if (a.rank && b.rank) return a.rank - b.rank;
-      if (a.rank && !b.rank) return -1;
-      if (!a.rank && b.rank) return 1;
-      return (b.score || 0) - (a.score || 0);
+      const aTime = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+      const bTime = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+      if (bTime !== aTime) return bTime - aTime;
+      return (b.id || '').localeCompare(a.id || '');
     });
   }, [tableData, listSearchQuery, activeFilter]);
 
@@ -338,7 +338,7 @@ export default function ProductBacklogPage() {
         item.department || '',
         item.businessOwner || '',
         item.quarter || '',
-        item.createdAt || '',
+        item.createdAt ? item.createdAt.split('T')[0] : '',
       ]);
 
       const csvContent = [
