@@ -6,7 +6,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Input } from '@/components/ui/input';
 
 interface AddTeamMemberDialogProps {
   teamId: string;
@@ -16,8 +15,6 @@ interface AddTeamMemberDialogProps {
 
 export function AddTeamMemberDialog({ teamId, open, onOpenChange }: AddTeamMemberDialogProps) {
   const [userId, setUserId] = useState('');
-  const [role, setRole] = useState('Developer');
-  const [allocation, setAllocation] = useState(100);
 
   const addMember = useAddTeamMember();
 
@@ -39,14 +36,11 @@ export function AddTeamMemberDialog({ teamId, open, onOpenChange }: AddTeamMembe
     await addMember.mutateAsync({
       teamId,
       userId,
-      role,
-      allocation,
+      role: 'Member',
+      allocation: 100,
     });
 
-    // Reset form
     setUserId('');
-    setRole('Developer');
-    setAllocation(100);
     onOpenChange(false);
   };
 
@@ -73,45 +67,11 @@ export function AddTeamMemberDialog({ teamId, open, onOpenChange }: AddTeamMembe
             </Select>
           </div>
 
-          <div>
-            <Label htmlFor="role">Role *</Label>
-            <Select value={role} onValueChange={setRole} required>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="Product Owner">Product Owner</SelectItem>
-                <SelectItem value="Scrum Master">Scrum Master</SelectItem>
-                <SelectItem value="Tech Lead">Tech Lead</SelectItem>
-                <SelectItem value="Developer">Developer</SelectItem>
-                <SelectItem value="QA Engineer">QA Engineer</SelectItem>
-                <SelectItem value="Designer">Designer</SelectItem>
-                <SelectItem value="DevOps Engineer">DevOps Engineer</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div>
-            <Label htmlFor="allocation">Allocation % *</Label>
-            <Input
-              id="allocation"
-              type="number"
-              min="1"
-              max="100"
-              value={allocation}
-              onChange={(e) => setAllocation(Number(e.target.value))}
-              required
-            />
-            <p className="text-xs text-muted-foreground mt-1">
-              Percentage of time allocated to this team (1-100%)
-            </p>
-          </div>
-
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
               Cancel
             </Button>
-            <Button type="submit" disabled={addMember.isPending}>
+            <Button type="submit" disabled={!userId || addMember.isPending}>
               {addMember.isPending ? 'Adding...' : 'Add Member'}
             </Button>
           </DialogFooter>
