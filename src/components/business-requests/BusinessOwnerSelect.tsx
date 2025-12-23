@@ -51,7 +51,7 @@ export function BusinessOwnerSelect({
       onValueChange={onChange}
       disabled={disabled || isLoading}
     >
-      <SelectTrigger className={cn('bg-background', triggerClassName)}>
+      <SelectTrigger className={cn('bg-white dark:bg-gray-900 border-input', triggerClassName)}>
         <SelectValue placeholder={isLoading ? 'Loading...' : placeholder} />
       </SelectTrigger>
       <SelectContent className={cn('bg-popover border shadow-lg z-[400]', className)}>
