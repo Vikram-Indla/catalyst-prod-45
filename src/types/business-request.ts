@@ -1,8 +1,28 @@
 import { z } from 'zod';
 
-// Process Step config as a lookup map for O(1) access
-// Key is lowercase, used for case-insensitive matching
-// NOTE: Colors removed globally - all statuses now use neutral styling via StatusPill component
+/**
+ * =============================================================================
+ * PROCESS STEPS - DYNAMIC FROM DATABASE
+ * =============================================================================
+ * 
+ * IMPORTANT: Process steps are now managed dynamically from the 
+ * demand_process_steps table. DO NOT use the legacy PROCESS_STEPS constant below.
+ * 
+ * USE INSTEAD:
+ * - useProcessSteps() hook from '@/contexts/ProcessStepsContext'
+ * - useProcessStepOptions() for dropdown options
+ * - useProcessStepInfo() for label lookup
+ * 
+ * When process steps are renamed/added/deleted in admin, all consumers update automatically.
+ * =============================================================================
+ */
+
+// =============================================================================
+// LEGACY EXPORTS - DEPRECATED (kept for backwards compatibility during migration)
+// These will be REMOVED in future. Use useProcessSteps() context hook instead.
+// =============================================================================
+
+/** @deprecated Use useProcessSteps() from '@/contexts/ProcessStepsContext' instead */
 export const PROCESS_STEP_CONFIG: Record<string, { label: string }> = {
   'new_request': { label: 'New request' },
   'new_demand': { label: 'New demand' },
@@ -16,8 +36,7 @@ export const PROCESS_STEP_CONFIG: Record<string, { label: string }> = {
   'on_hold': { label: 'On-hold' },
 };
 
-// Helper to get process step info (case-insensitive lookup)
-// Returns only label - colors removed globally
+/** @deprecated Use useProcessStepInfo() from '@/contexts/ProcessStepsContext' instead */
 export const getProcessStepInfo = (value: string | null | undefined) => {
   if (!value) return { label: 'Unknown' };
   const normalized = value.toLowerCase();
@@ -26,8 +45,7 @@ export const getProcessStepInfo = (value: string | null | undefined) => {
   };
 };
 
-// Process Step Options as array for dropdowns - only lowercase values
-// NOTE: Colors removed globally
+/** @deprecated Use useProcessStepOptions() from '@/contexts/ProcessStepsContext' instead */
 export const PROCESS_STEPS = Object.entries(PROCESS_STEP_CONFIG).map(([value, { label }]) => ({
   value,
   label,

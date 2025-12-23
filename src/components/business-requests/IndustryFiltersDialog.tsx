@@ -5,7 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { ChevronUp, ChevronDown } from 'lucide-react';
-import { PROCESS_STEPS, DELIVERY_PLATFORM_OPTIONS } from '@/types/business-request';
+import { DELIVERY_PLATFORM_OPTIONS } from '@/types/business-request';
+import { useProcessSteps } from '@/contexts/ProcessStepsContext';
 
 interface IndustryFiltersDialogProps {
   open: boolean;
@@ -58,6 +59,9 @@ export function IndustryFiltersDialog({
   const [peopleOpen, setPeopleOpen] = useState(true);
   const [statusOpen, setStatusOpen] = useState(true);
   const [datesOpen, setDatesOpen] = useState(true);
+  
+  // Fetch process steps dynamically from database
+  const { processStepOptions } = useProcessSteps();
 
   const handleClearFilters = () => {
     onFiltersChange({});
@@ -221,7 +225,7 @@ export function IndustryFiltersDialog({
                       </SelectTrigger>
                       <SelectContent className="bg-white">
                         <SelectItem value="all">Select...</SelectItem>
-                        {PROCESS_STEPS.map((step) => (
+                        {processStepOptions.map((step) => (
                           <SelectItem key={step.value} value={step.value}>
                             {step.label}
                           </SelectItem>
