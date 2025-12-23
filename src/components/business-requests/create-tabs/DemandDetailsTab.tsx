@@ -6,8 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { CalendarIcon, Lock, Unlock, Upload, X, FileText, Info, Users, CalendarDays, Paperclip, Briefcase } from 'lucide-react';
+import { CalendarIcon, Lock, Unlock, Upload, X, FileText, Users, CalendarDays, Paperclip, Briefcase } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
@@ -17,40 +16,9 @@ import { DepartmentSelect } from '../DepartmentSelect';
 import { BusinessOwnerSelect } from '../BusinessOwnerSelect';
 import { useDepartments, useBusinessOwners, useDepartmentOwnerMappings, getOwnerIdForDepartment } from '@/hooks/useDepartmentsAndOwners';
 
-// Allowed document MIME types - allow all common document types
-const ALLOWED_FILE_TYPES = [
-  'application/pdf',
-  'application/msword',
-  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-  'application/vnd.ms-excel',
-  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-  'application/vnd.ms-powerpoint',
-  'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-  'text/plain',
-  'text/csv',
-  'image/jpeg',
-  'image/png',
-  'image/gif',
-  'image/webp',
-  'image/svg+xml',
-  'application/zip',
-  'application/x-rar-compressed',
-  'application/x-7z-compressed',
-  'application/json',
-  'application/xml',
-  'text/xml',
-  'text/html',
-  'text/markdown',
-  'application/rtf',
-  'application/vnd.oasis.opendocument.text',
-  'application/vnd.oasis.opendocument.spreadsheet',
-  'application/vnd.oasis.opendocument.presentation',
-];
-
-// Accept all common file extensions
 const ALLOWED_EXTENSIONS = '*';
 const MAX_FILES = 5;
-const MAX_FILE_SIZE = 20 * 1024 * 1024; // 20MB in bytes
+const MAX_FILE_SIZE = 20 * 1024 * 1024;
 
 interface DemandDetailsTabProps {
   data: any;
@@ -71,22 +39,18 @@ export function DemandDetailsTab({ data, onChange }: DemandDetailsTabProps) {
   const { data: owners } = useBusinessOwners();
   const { data: mappings } = useDepartmentOwnerMappings();
 
-  // Auto-populate reporter with current logged-in user on create
   useEffect(() => {
     if (user?.id && !data.requestor) {
       onChange('requestor', user.id);
     }
   }, [user?.id, data.requestor, onChange]);
 
-  // Handle department change with auto-setting of business owner
   const handleDepartmentChange = (departmentId: string) => {
     onChange('department_id', departmentId);
-    // Find department name and set it for legacy field
     const dept = departments?.find(d => d.id === departmentId);
     if (dept) {
       onChange('department', dept.name);
     }
-    // Auto-set business owner from mapping
     if (mappings) {
       const ownerId = getOwnerIdForDepartment(departmentId, mappings);
       if (ownerId) {
@@ -145,13 +109,10 @@ export function DemandDetailsTab({ data, onChange }: DemandDetailsTabProps) {
     let totalSize = attachments.reduce((sum, f) => sum + f.size, 0);
 
     for (const file of files) {
-      // Allow all file types - no extension/type validation
-
       if (totalSize + file.size > MAX_FILE_SIZE) {
         toast.error(`Total file size cannot exceed 20MB`);
         break;
       }
-
       validFiles.push(file);
       totalSize += file.size;
     }
@@ -177,76 +138,54 @@ export function DemandDetailsTab({ data, onChange }: DemandDetailsTabProps) {
     return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
   };
 
-  // Premium input class
-  const premiumInputClass = cn(
-    "w-full px-4 py-3",
+  // Compact input styling
+  const compactInputClass = cn(
+    "h-9 text-sm px-3",
     "bg-white dark:bg-gray-900",
     "border border-gray-200 dark:border-gray-700",
-    "rounded-lg",
+    "rounded-md",
     "text-gray-900 dark:text-gray-100",
-    "placeholder:text-gray-400 dark:placeholder:text-gray-500",
-    "focus:outline-none",
-    "focus:ring-2 focus:ring-secondary-olive/20",
-    "focus:border-secondary-olive",
-    "transition-all"
+    "placeholder:text-gray-400",
+    "focus:border-secondary-bronze focus:ring-1 focus:ring-secondary-bronze/20",
+    "transition-colors"
   );
 
-  // Premium section card class
-  const sectionCardClass = cn(
-    "bg-stone-50 dark:bg-gray-800/50",
-    "rounded-xl",
-    "border border-gray-200/80 dark:border-gray-700/60",
-    "shadow-sm",
-    "p-6"
-  );
-
-  // Premium section header
+  // Compact section header - inline style
   const SectionHeader = ({ icon: Icon, title }: { icon: React.ElementType; title: string }) => (
-    <h3 className="
-      text-[12px] font-semibold uppercase tracking-wider
-      text-secondary-olive dark:text-green-400
-      mb-5
-      flex items-center gap-2
-    ">
-      <Icon className="w-4 h-4" />
-      {title}
-    </h3>
+    <div className="flex items-center gap-2 pb-2 mb-3 border-b border-gray-200 dark:border-gray-700">
+      <Icon className="w-4 h-4 text-secondary-olive" />
+      <h3 className="text-xs font-semibold uppercase tracking-wide text-secondary-olive">
+        {title}
+      </h3>
+    </div>
   );
 
-  // Premium label
-  const PremiumLabel = ({ children, required = false }: { children: React.ReactNode; required?: boolean }) => (
-    <label className="block mb-2">
-      <span className="text-[13px] font-medium text-gray-700 dark:text-gray-300">
-        {children}
-      </span>
-      {required && (
-        <span className="text-[10px] text-red-500 ml-2 uppercase tracking-wide font-medium">
-          Required
-        </span>
-      )}
+  // Compact label
+  const CompactLabel = ({ children, required = false }: { children: React.ReactNode; required?: boolean }) => (
+    <label className="text-xs font-medium text-gray-700 dark:text-gray-300 mb-1 flex items-center gap-1">
+      {children}
+      {required && <span className="text-red-500 text-[10px] uppercase">Required</span>}
     </label>
   );
 
   return (
-    <div className="space-y-6 p-6">
+    <div className="space-y-4 p-5">
       {/* Basic Information Section */}
-      <div className={sectionCardClass}>
+      <div>
         <SectionHeader icon={FileText} title="Basic Information" />
-        
-        <div className="space-y-5">
+        <div className="space-y-3">
           <div>
-            <PremiumLabel required>Summary</PremiumLabel>
+            <CompactLabel required>Summary</CompactLabel>
             <Input
               value={data.title || ''}
               onChange={(e) => onChange('title', e.target.value)}
               placeholder="Enter demand summary (min 5 characters)"
-              className={premiumInputClass}
+              className={compactInputClass}
             />
           </div>
 
           <div>
-            <PremiumLabel required>Description</PremiumLabel>
-            <p className="text-[12px] text-gray-500 dark:text-gray-400 mb-2">Provide a detailed description (up to 2,000 words)</p>
+            <CompactLabel required>Description</CompactLabel>
             <RichTextEditor
               value={data.description || ''}
               onChange={(value) => onChange('description', value)}
@@ -256,251 +195,227 @@ export function DemandDetailsTab({ data, onChange }: DemandDetailsTabProps) {
         </div>
       </div>
 
-      {/* Timeline Section */}
-      <div className={sectionCardClass}>
+      {/* Timeline Section - All 3 fields in ONE row */}
+      <div>
         <SectionHeader icon={CalendarDays} title="Timeline" />
-        
-        <div className="grid grid-cols-3 gap-5">
-            <div>
-              <Label className="text-sm font-medium">Business Ask Date</Label>
-              <Popover open={businessAskDateOpen} onOpenChange={setBusinessAskDateOpen}>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className={cn(
-                      "w-full justify-start text-left font-normal mt-1.5",
-                      !data.start_date && "text-muted-foreground"
-                    )}
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {data.start_date ? format(new Date(data.start_date), 'dd/MM/yyyy') : 'dd/mm/yyyy'}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={data.start_date ? new Date(data.start_date) : undefined}
-                    onSelect={(date) => {
-                      onChange('start_date', date ? format(date, 'yyyy-MM-dd') : null);
-                      setBusinessAskDateOpen(false);
-                    }}
-                    initialFocus
-                    className="pointer-events-auto"
-                  />
-                </PopoverContent>
-              </Popover>
-            </div>
-
-            <div>
-              <Label className="text-sm font-medium">Kickoff Date</Label>
-              <Popover open={kickoffDateOpen} onOpenChange={setKickoffDateOpen}>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className={cn(
-                      "w-full justify-start text-left font-normal mt-1.5",
-                      !data.impl_start_date && "text-muted-foreground"
-                    )}
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {data.impl_start_date ? format(new Date(data.impl_start_date), 'dd/MM/yyyy') : 'dd/mm/yyyy'}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={data.impl_start_date ? new Date(data.impl_start_date) : undefined}
-                    onSelect={(date) => {
-                      onChange('impl_start_date', date ? format(date, 'yyyy-MM-dd') : null);
-                      setKickoffDateOpen(false);
-                    }}
-                    initialFocus
-                    className="pointer-events-auto"
-                  />
-                </PopoverContent>
-              </Popover>
-            </div>
-
-            <div>
-              <Label className="text-sm font-medium">Target Completion Date</Label>
-              <div className="flex gap-2 mt-1.5">
-                <Popover open={targetDateOpen} onOpenChange={setTargetDateOpen}>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      disabled={targetDateLocked}
-                      className={cn(
-                        "flex-1 justify-start text-left font-normal",
-                        !data.end_date && "text-muted-foreground",
-                        targetDateLocked && "opacity-60"
-                      )}
-                    >
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {data.end_date ? format(new Date(data.end_date), 'dd/MM/yyyy') : 'dd/mm/yyyy'}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={data.end_date ? new Date(data.end_date) : undefined}
-                      onSelect={(date) => {
-                        onChange('end_date', date ? format(date, 'yyyy-MM-dd') : null);
-                        setTargetDateOpen(false);
-                      }}
-                      initialFocus
-                      className="pointer-events-auto"
-                    />
-                  </PopoverContent>
-                </Popover>
+        <div className="grid grid-cols-3 gap-4">
+          <div>
+            <CompactLabel>Business Ask Date</CompactLabel>
+            <Popover open={businessAskDateOpen} onOpenChange={setBusinessAskDateOpen}>
+              <PopoverTrigger asChild>
                 <Button
                   variant="outline"
-                  size="icon"
-                  onClick={handleLockToggle}
                   className={cn(
-                    "shrink-0",
-                    targetDateLocked && "bg-muted border-brand-primary text-brand-primary"
+                    "w-full justify-start text-left font-normal h-9 text-sm",
+                    !data.start_date && "text-muted-foreground"
                   )}
-                  title={targetDateLocked ? `Locked by ${lockedByUser}` : 'Click to lock date'}
                 >
-                  {targetDateLocked ? <Lock className="h-4 w-4" /> : <Unlock className="h-4 w-4" />}
+                  <CalendarIcon className="mr-2 h-3.5 w-3.5" />
+                  {data.start_date ? format(new Date(data.start_date), 'dd/MM/yyyy') : 'dd/mm/yyyy'}
                 </Button>
-              </div>
-              {targetDateLocked && lockedByUser && (
-                <p className="text-xs text-muted-foreground mt-1">Locked by {lockedByUser}</p>
-              )}
-            </div>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar
+                  mode="single"
+                  selected={data.start_date ? new Date(data.start_date) : undefined}
+                  onSelect={(date) => {
+                    onChange('start_date', date ? format(date, 'yyyy-MM-dd') : null);
+                    setBusinessAskDateOpen(false);
+                  }}
+                  initialFocus
+                  className="pointer-events-auto"
+                />
+              </PopoverContent>
+            </Popover>
           </div>
-        </div>
 
-      {/* Attachments & Assignment Section */}
-      <div className={sectionCardClass}>
-        <SectionHeader icon={Paperclip} title="Attachments & Assignment" />
-        
-        <div className="space-y-5">
           <div>
-            <div className="flex items-baseline gap-2">
-              <Label className="text-sm font-medium">Attachments</Label>
-              <span className="text-xs text-muted-foreground">(Max 5 files, 20MB total)</span>
-            </div>
-            <div className="mt-1.5 space-y-2">
-              <input
-                ref={fileInputRef}
-                type="file"
-                multiple
-                accept={ALLOWED_EXTENSIONS}
-                onChange={handleFileSelect}
-                className="hidden"
-              />
-              <Button 
-                variant="outline" 
-                className="w-full justify-start text-muted-foreground"
-                onClick={() => fileInputRef.current?.click()}
-                disabled={attachments.length >= MAX_FILES}
+            <CompactLabel>Kickoff Date</CompactLabel>
+            <Popover open={kickoffDateOpen} onOpenChange={setKickoffDateOpen}>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  className={cn(
+                    "w-full justify-start text-left font-normal h-9 text-sm",
+                    !data.impl_start_date && "text-muted-foreground"
+                  )}
+                >
+                  <CalendarIcon className="mr-2 h-3.5 w-3.5" />
+                  {data.impl_start_date ? format(new Date(data.impl_start_date), 'dd/MM/yyyy') : 'dd/mm/yyyy'}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar
+                  mode="single"
+                  selected={data.impl_start_date ? new Date(data.impl_start_date) : undefined}
+                  onSelect={(date) => {
+                    onChange('impl_start_date', date ? format(date, 'yyyy-MM-dd') : null);
+                    setKickoffDateOpen(false);
+                  }}
+                  initialFocus
+                  className="pointer-events-auto"
+                />
+              </PopoverContent>
+            </Popover>
+          </div>
+
+          <div>
+            <CompactLabel>Target Completion</CompactLabel>
+            <div className="flex gap-1.5">
+              <Popover open={targetDateOpen} onOpenChange={setTargetDateOpen}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    disabled={targetDateLocked}
+                    className={cn(
+                      "flex-1 justify-start text-left font-normal h-9 text-sm",
+                      !data.end_date && "text-muted-foreground",
+                      targetDateLocked && "opacity-60"
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-3.5 w-3.5" />
+                    {data.end_date ? format(new Date(data.end_date), 'dd/MM/yyyy') : 'dd/mm/yyyy'}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={data.end_date ? new Date(data.end_date) : undefined}
+                    onSelect={(date) => {
+                      onChange('end_date', date ? format(date, 'yyyy-MM-dd') : null);
+                      setTargetDateOpen(false);
+                    }}
+                    initialFocus
+                    className="pointer-events-auto"
+                  />
+                </PopoverContent>
+              </Popover>
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={handleLockToggle}
+                className={cn(
+                  "h-9 w-9 shrink-0",
+                  targetDateLocked && "bg-muted border-secondary-olive text-secondary-olive"
+                )}
+                title={targetDateLocked ? `Locked by ${lockedByUser}` : 'Click to lock date'}
               >
-                <Upload className="mr-2 h-4 w-4" />
-                {attachments.length >= MAX_FILES ? 'Maximum files reached' : 'Upload Files...'}
+                {targetDateLocked ? <Lock className="h-3.5 w-3.5" /> : <Unlock className="h-3.5 w-3.5" />}
               </Button>
-
-              {attachments.length > 0 && (
-                <div className="space-y-2 mt-2">
-                  {attachments.map((file, index) => (
-                    <div 
-                      key={index}
-                      className="flex items-center justify-between p-2 bg-muted/50 rounded-md border border-border/40"
-                    >
-                      <div className="flex items-center gap-2 min-w-0">
-                        <FileText className="h-4 w-4 text-brand-primary shrink-0" />
-                        <span className="text-sm truncate">{file.name}</span>
-                        <span className="text-xs text-muted-foreground shrink-0">({formatFileSize(file.size)})</span>
-                      </div>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-6 w-6 p-0 text-muted-foreground hover:text-destructive"
-                        onClick={() => removeAttachment(index)}
-                      >
-                        <X className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <Label className="text-sm font-medium">Reporter</Label>
-              <div className="mt-1.5">
-                <UserPicker
-                  value={data.requestor || null}
-                  onChange={(value) => onChange('requestor', value as string | null)}
-                  placeholder="Select reporter..."
-                />
-              </div>
-              <p className="text-xs text-muted-foreground mt-1">Auto-populated with current user (editable)</p>
-            </div>
-
-            <div>
-              <Label className="text-sm font-medium">
-                Assignee <span className="text-destructive">*</span>
-              </Label>
-              <div className="mt-1.5">
-                <UserPicker
-                  value={data.assignee || null}
-                  onChange={(value) => onChange('assignee', value as string | null)}
-                  placeholder="Select assignee..."
-                />
-              </div>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <Label className="text-sm font-medium">
-                Department <span className="text-destructive">*</span>
-              </Label>
-              <div className="mt-1.5">
-                <DepartmentSelect
-                  value={data.department_id || null}
-                  onChange={handleDepartmentChange}
-                  placeholder="Select department..."
-                />
-              </div>
-            </div>
-
-            <div>
-              <Label className="text-sm font-medium">
-                Business Owner <span className="text-destructive">*</span>
-              </Label>
-              <div className="mt-1.5">
-                <BusinessOwnerSelect
-                  value={data.business_owner_id || null}
-                  onChange={handleBusinessOwnerChange}
-                  departmentId={data.department_id || null}
-                  placeholder="Select business owner..."
-                />
-              </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Delivery Context Section */}
-      <div className={sectionCardClass}>
-        <SectionHeader icon={Briefcase} title="Delivery Context" />
-        
-        <div className="grid grid-cols-2 gap-5">
+      {/* Attachments & Assignment Section */}
+      <div>
+        <SectionHeader icon={Paperclip} title="Attachments & Assignment" />
+        <div className="space-y-3">
+          {/* Attachments - full width */}
           <div>
-            <PremiumLabel>Delivery Platform</PremiumLabel>
+            <div className="flex items-baseline gap-2 mb-1">
+              <CompactLabel>Attachments</CompactLabel>
+              <span className="text-[10px] text-muted-foreground">(Max 5 files, 20MB total)</span>
+            </div>
+            <input
+              ref={fileInputRef}
+              type="file"
+              multiple
+              accept={ALLOWED_EXTENSIONS}
+              onChange={handleFileSelect}
+              className="hidden"
+            />
+            <Button 
+              variant="outline" 
+              className="w-full justify-start text-muted-foreground h-9 text-sm"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={attachments.length >= MAX_FILES}
+            >
+              <Upload className="mr-2 h-3.5 w-3.5" />
+              {attachments.length >= MAX_FILES ? 'Maximum files reached' : 'Upload Files...'}
+            </Button>
+
+            {attachments.length > 0 && (
+              <div className="flex flex-wrap gap-2 mt-2">
+                {attachments.map((file, index) => (
+                  <div 
+                    key={index}
+                    className="flex items-center gap-1.5 px-2 py-1 bg-muted/50 rounded border border-border/40 text-xs"
+                  >
+                    <FileText className="h-3 w-3 text-secondary-bronze shrink-0" />
+                    <span className="truncate max-w-[120px]">{file.name}</span>
+                    <span className="text-muted-foreground">({formatFileSize(file.size)})</span>
+                    <button
+                      className="p-0.5 hover:text-destructive"
+                      onClick={() => removeAttachment(index)}
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Reporter + Assignee - 2 columns */}
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <CompactLabel>Reporter</CompactLabel>
+              <UserPicker
+                value={data.requestor || null}
+                onChange={(value) => onChange('requestor', value as string | null)}
+                placeholder="Select reporter..."
+              />
+            </div>
+
+            <div>
+              <CompactLabel required>Assignee</CompactLabel>
+              <UserPicker
+                value={data.assignee || null}
+                onChange={(value) => onChange('assignee', value as string | null)}
+                placeholder="Select assignee..."
+              />
+            </div>
+          </div>
+
+          {/* Department + Business Owner - 2 columns */}
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <CompactLabel required>Department</CompactLabel>
+              <DepartmentSelect
+                value={data.department_id || null}
+                onChange={handleDepartmentChange}
+                placeholder="Select department..."
+              />
+            </div>
+
+            <div>
+              <CompactLabel required>Business Owner</CompactLabel>
+              <BusinessOwnerSelect
+                value={data.business_owner_id || null}
+                onChange={handleBusinessOwnerChange}
+                departmentId={data.department_id || null}
+                placeholder="Select business owner..."
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Delivery Context Section - 2 columns in ONE row */}
+      <div>
+        <SectionHeader icon={Briefcase} title="Delivery Context" />
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <CompactLabel>Delivery Platform</CompactLabel>
             <Select
               value={data.delivery_platform || ''}
               onValueChange={(value) => onChange('delivery_platform', value)}
             >
-              <SelectTrigger className={premiumInputClass}>
+              <SelectTrigger className={compactInputClass}>
                 <SelectValue placeholder="Select platform..." />
               </SelectTrigger>
-              <SelectContent className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 shadow-xl rounded-xl z-[200]">
+              <SelectContent className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 shadow-lg rounded-md z-[200]">
                 <SelectItem value="Senaei Platform">Senaei Platform</SelectItem>
                 <SelectItem value="MIM Platform">MIM Platform</SelectItem>
                 <SelectItem value="Enterprise Platform">Enterprise Platform</SelectItem>
@@ -509,15 +424,15 @@ export function DemandDetailsTab({ data, onChange }: DemandDetailsTabProps) {
             </Select>
           </div>
           <div>
-            <PremiumLabel>Planned Quarter</PremiumLabel>
+            <CompactLabel>Planned Quarter</CompactLabel>
             <Select
               value={data.planned_quarter || ''}
               onValueChange={(value) => onChange('planned_quarter', value)}
             >
-              <SelectTrigger className={premiumInputClass}>
+              <SelectTrigger className={compactInputClass}>
                 <SelectValue placeholder="Select quarter..." />
               </SelectTrigger>
-              <SelectContent className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 shadow-xl rounded-xl z-[200]">
+              <SelectContent className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 shadow-lg rounded-md z-[200]">
                 <SelectItem value="Q4-2025">Q4 2025</SelectItem>
                 <SelectItem value="Q1-2026">Q1 2026</SelectItem>
                 <SelectItem value="Q2-2026">Q2 2026</SelectItem>
