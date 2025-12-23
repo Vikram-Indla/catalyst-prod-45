@@ -54,3 +54,28 @@ export function useAllTeamMembers() {
     },
   });
 }
+
+// Hook to get team member IDs grouped by team
+export function useTeamMemberIds() {
+  return useQuery({
+    queryKey: ['team-member-ids'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('team_members')
+        .select('user_id, team_id');
+
+      if (error) throw error;
+
+      // Group member IDs by team
+      const teamMemberMap: Record<string, string[]> = {};
+      (data || []).forEach((member) => {
+        if (!teamMemberMap[member.team_id]) {
+          teamMemberMap[member.team_id] = [];
+        }
+        teamMemberMap[member.team_id].push(member.user_id);
+      });
+
+      return teamMemberMap;
+    },
+  });
+}
