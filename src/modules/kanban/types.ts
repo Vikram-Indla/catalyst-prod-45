@@ -1,6 +1,10 @@
-// Kanban Module Types - Matching the frontend specification exactly
+// Kanban Module Types - Dynamic columns from demand_process_steps
 
-export type StatusId = 
+// StatusId is now dynamic - string based on process_step value
+export type StatusId = string;
+
+// Legacy static StatusId for backwards compatibility (will be removed)
+export type LegacyStatusId = 
   | 'new_request'
   | 'analyse'
   | 'approved'
@@ -8,6 +12,9 @@ export type StatusId =
   | 'closed'
   | 'rejected'
   | 'on_hold';
+
+// Uncategorized column for items with no/invalid process_step
+export const UNCATEGORIZED_COLUMN_ID = '_uncategorized';
 
 // Priority is now derived from business_score only, not stored in DB
 
@@ -40,6 +47,14 @@ export interface KanbanTicket {
 
 export interface StatusConfig {
   id: StatusId;
+  label: string;
+  color: string;
+  order: number;
+}
+
+// Dynamic column config (built from demand_process_steps)
+export interface DynamicColumnConfig {
+  id: string;
   label: string;
   color: string;
   order: number;

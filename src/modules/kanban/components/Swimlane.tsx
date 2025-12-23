@@ -1,7 +1,9 @@
-// Swimlane component - matching HTML specification exactly
+/**
+ * Swimlane component - Dynamic columns from demand_process_steps
+ */
 
 import React, { useMemo, useState } from 'react';
-import { KanbanTicket, StatusId, COLUMNS_CONFIG, KANBAN_COLORS, TeamMember } from '../types';
+import { KanbanTicket, DynamicColumnConfig, KANBAN_COLORS, TeamMember } from '../types';
 import { KanbanColumn } from './KanbanColumn';
 import { KanbanIcons } from './KanbanIcons';
 
@@ -11,11 +13,12 @@ interface SwimlaneProps {
   icon?: string;
   tickets: KanbanTicket[];
   count: number;
-  onDrop: (ticketId: string, newStatus: StatusId) => void;
+  columns: DynamicColumnConfig[];
+  onDrop: (ticketId: string, newStatus: string) => void;
   onCardClick: (ticket: KanbanTicket) => void;
   compactMode: boolean;
-  collapsedColumns: StatusId[];
-  onToggleColumnCollapse: (columnId: StatusId) => void;
+  collapsedColumns: string[];
+  onToggleColumnCollapse: (columnId: string) => void;
   isExpanded: boolean;
   onToggleExpand: () => void;
   teamMembers?: TeamMember[];
@@ -27,6 +30,7 @@ export function Swimlane({
   icon, 
   tickets, 
   count,
+  columns,
   onDrop, 
   onCardClick, 
   compactMode, 
@@ -39,12 +43,12 @@ export function Swimlane({
   const [isHovered, setIsHovered] = useState(false);
   
   const ticketsByColumn = useMemo(() => {
-    const grouped: Record<StatusId, KanbanTicket[]> = {} as Record<StatusId, KanbanTicket[]>;
-    COLUMNS_CONFIG.forEach(col => {
+    const grouped: Record<string, KanbanTicket[]> = {};
+    columns.forEach(col => {
       grouped[col.id] = tickets.filter(t => t.status === col.id);
     });
     return grouped;
-  }, [tickets]);
+  }, [tickets, columns]);
 
   return (
     <div style={{
@@ -112,10 +116,11 @@ export function Swimlane({
             gap: '12px',
             minWidth: 'max-content',
           }}>
-            {COLUMNS_CONFIG.map(column => (
+            {columns.map(column => (
               <KanbanColumn
                 key={column.id}
                 column={column.id}
+                columnConfig={column}
                 tickets={ticketsByColumn[column.id] || []}
                 onDrop={onDrop}
                 onCardClick={onCardClick}

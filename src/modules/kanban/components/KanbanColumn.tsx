@@ -1,23 +1,22 @@
 /**
- * KanbanColumn - Catalyst Design System Compliant
+ * KanbanColumn - Dynamic columns built from demand_process_steps
  * 
  * GOVERNANCE COMPLIANCE:
  * ✓ Uses design tokens from tailwind.config.ts
  * ✓ All colors have dark mode variants
- * ✓ No hardcoded hex colors in JSX
- * ✓ Uses approved Tailwind classes
- * ✓ Status colors use status-* tokens
+ * ✓ Accepts column config as props (dynamic)
  */
 
 import React, { useState } from 'react';
-import { KanbanTicket, StatusId, COLUMNS_CONFIG, TeamMember } from '../types';
+import { KanbanTicket, DynamicColumnConfig, TeamMember, UNCATEGORIZED_COLUMN_ID } from '../types';
 import { KanbanCard } from './KanbanCard';
-import { MoreHorizontal, Inbox, ChevronLeft, Plus } from 'lucide-react';
+import { Inbox, ChevronLeft, Plus } from 'lucide-react';
 
 interface KanbanColumnProps {
-  column: StatusId;
+  column: string;
+  columnConfig: DynamicColumnConfig;
   tickets: KanbanTicket[];
-  onDrop: (ticketId: string, newStatus: StatusId) => void;
+  onDrop: (ticketId: string, newStatus: string) => void;
   onCardClick: (ticket: KanbanTicket) => void;
   compactMode: boolean;
   collapsed: boolean;
@@ -28,53 +27,30 @@ interface KanbanColumnProps {
 }
 
 /**
- * Column status styles mapped to design system tokens
- * Uses status-* tokens for semantic meaning per Catalyst Governance
+ * Get header styles based on column color
+ * Generates appropriate bg/border/dot styles from the column color
  */
-const COLUMN_HEADER_STYLES: Record<StatusId, { 
-  bg: string; 
-  border: string; 
-  dot: string;
-}> = {
-  new_request: { 
-    bg: 'bg-status-info-bg', 
-    border: 'border-blue-200 dark:border-blue-800',
-    dot: 'bg-status-info'
-  },
-  analyse: { 
-    bg: 'bg-status-warning-bg', 
-    border: 'border-amber-200 dark:border-amber-800',
-    dot: 'bg-status-warning'
-  },
-  approved: { 
-    bg: 'bg-status-success-bg', 
-    border: 'border-green-200 dark:border-green-800',
-    dot: 'bg-status-success'
-  },
-  implement: { 
-    bg: 'bg-purple-50 dark:bg-purple-950/30', 
-    border: 'border-purple-200 dark:border-purple-800',
-    dot: 'bg-purple-500 dark:bg-purple-400'
-  },
-  closed: { 
-    bg: 'bg-gray-50 dark:bg-gray-800/50', 
+const getHeaderStyles = (color: string, columnId: string) => {
+  // For uncategorized, use gray
+  if (columnId === UNCATEGORIZED_COLUMN_ID) {
+    return {
+      bg: 'bg-gray-100 dark:bg-gray-800/50',
+      border: 'border-gray-200 dark:border-gray-700',
+      dotColor: color,
+    };
+  }
+  
+  // Use inline style for dot color since it's dynamic
+  return {
+    bg: 'bg-gray-50 dark:bg-gray-800/30',
     border: 'border-gray-200 dark:border-gray-700',
-    dot: 'bg-gray-400 dark:bg-gray-500'
-  },
-  rejected: { 
-    bg: 'bg-status-danger-bg', 
-    border: 'border-red-200 dark:border-red-800',
-    dot: 'bg-status-danger'
-  },
-  on_hold: { 
-    bg: 'bg-orange-50 dark:bg-orange-950/30', 
-    border: 'border-orange-200 dark:border-orange-800',
-    dot: 'bg-orange-500 dark:bg-orange-400'
-  },
+    dotColor: color,
+  };
 };
 
 export function KanbanColumn({ 
-  column, 
+  column,
+  columnConfig,
   tickets, 
   onDrop, 
   onCardClick, 
@@ -87,8 +63,7 @@ export function KanbanColumn({
 }: KanbanColumnProps) {
   const [isDragOver, setIsDragOver] = useState(false);
   const [isHeaderHovered, setIsHeaderHovered] = useState(false);
-  const columnConfig = COLUMNS_CONFIG.find(c => c.id === column);
-  const headerStyles = COLUMN_HEADER_STYLES[column] || COLUMN_HEADER_STYLES.new_request;
+  const headerStyles = getHeaderStyles(columnConfig.color, column);
   
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
@@ -129,7 +104,10 @@ export function KanbanColumn({
           height: '100%',
         }}
       >
-        <div className={`w-2.5 h-2.5 rounded-full mb-2 flex-shrink-0 ${headerStyles.dot}`} />
+        <div 
+          className="w-2.5 h-2.5 rounded-full mb-2 flex-shrink-0"
+          style={{ backgroundColor: headerStyles.dotColor }}
+        />
         <span className="text-xs font-bold mb-2 text-gray-900 dark:text-gray-100">
           {tickets.length}
         </span>
@@ -141,7 +119,7 @@ export function KanbanColumn({
             transform: 'rotate(180deg)',
           }}
         >
-          {columnConfig?.label}
+          {columnConfig.label}
         </span>
       </div>
     );
@@ -168,16 +146,19 @@ export function KanbanColumn({
         minHeight: '500px',
       }}
     >
-      {/* Column Header - Semantic status background */}
+      {/* Column Header */}
       <div className={`
         flex-shrink-0 rounded-t-xl px-4 py-3 border-b 
         ${headerStyles.bg} ${headerStyles.border}
       `}>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${headerStyles.dot}`} />
+            <div 
+              className="w-2.5 h-2.5 rounded-full flex-shrink-0"
+              style={{ backgroundColor: headerStyles.dotColor }}
+            />
             <span className="text-[14px] font-semibold text-gray-900 dark:text-gray-100">
-              {columnConfig?.label}
+              {columnConfig.label}
             </span>
             <span className="
               bg-white dark:bg-gray-800 
@@ -255,8 +236,8 @@ export function KanbanColumn({
         )}
       </div>
 
-      {/* Add Item Button */}
-      {onAddRequest && (
+      {/* Add Item Button - only show for non-uncategorized columns */}
+      {onAddRequest && column !== UNCATEGORIZED_COLUMN_ID && (
         <div className="p-2 border-t border-gray-200 dark:border-gray-700">
           <button 
             onClick={onAddRequest}
