@@ -231,13 +231,13 @@ export const RoadmapDateFilterV2: React.FC<RoadmapDateFilterV2Props> = ({
       </PopoverTrigger>
 
       <PopoverContent 
-        className="w-[360px] p-0 bg-background border border-border rounded-xl shadow-xl"
+        className="w-[360px] p-0 bg-white dark:bg-[#2d2d2d] border border-gray-200 dark:border-gray-700 rounded-xl shadow-xl z-50"
         align="end"
         sideOffset={8}
       >
         {/* View Scale Section */}
-        <div className="p-4 border-b border-border">
-          <div className="text-sm font-semibold text-foreground mb-3">View Scale</div>
+        <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+          <h4 className="text-sm font-semibold text-gray-800 dark:text-gray-100 mb-3">View Scale</h4>
           <div className="flex gap-2">
             {scaleOptions.map(opt => (
               <button
@@ -246,8 +246,8 @@ export const RoadmapDateFilterV2: React.FC<RoadmapDateFilterV2Props> = ({
                 className={cn(
                   "flex-1 px-3 py-2 text-sm font-medium rounded-lg border transition-all",
                   draftViewport.scale === opt.value
-                    ? "bg-brand-primary text-white border-brand-primary"
-                    : "bg-background text-foreground border-border hover:border-brand-primary/50"
+                    ? "bg-[#c69c6d] text-white border-[#c69c6d]"
+                    : "bg-transparent border-gray-300 text-gray-700 hover:border-gray-400 dark:border-gray-600 dark:text-gray-300 dark:hover:border-gray-500"
                 )}
               >
                 {opt.label}
@@ -257,8 +257,8 @@ export const RoadmapDateFilterV2: React.FC<RoadmapDateFilterV2Props> = ({
         </div>
 
         {/* Select Years Section */}
-        <div className="p-4 border-b border-border">
-          <div className="text-sm font-semibold text-foreground mb-3">Select Years</div>
+        <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+          <h4 className="text-sm font-semibold text-gray-800 dark:text-gray-100 mb-3">Select Years</h4>
           <div className="flex gap-2 flex-wrap">
             {yearOptions.map(year => {
               const isSelected = draftViewport.selectedYears.includes(year);
@@ -270,13 +270,13 @@ export const RoadmapDateFilterV2: React.FC<RoadmapDateFilterV2Props> = ({
                   className={cn(
                     "relative px-4 py-2.5 text-sm font-medium rounded-lg border transition-all min-w-[72px]",
                     isSelected
-                      ? "bg-brand-primary text-white border-brand-primary"
-                      : "bg-muted/50 text-foreground border-border hover:border-brand-primary/50"
+                      ? "bg-[#c69c6d] text-white border-[#c69c6d]"
+                      : "bg-transparent border-gray-300 text-gray-700 hover:border-gray-400 dark:border-gray-600 dark:text-gray-300 dark:hover:border-gray-500"
                   )}
                 >
                   {year}
                   {isCurrent && !isSelected && (
-                    <div className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-brand-primary" />
+                    <div className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-[#c69c6d]" />
                   )}
                 </button>
               );
@@ -286,16 +286,14 @@ export const RoadmapDateFilterV2: React.FC<RoadmapDateFilterV2Props> = ({
 
         {/* Select Quarters Section - only show when scale is quarterly or monthly */}
         {(draftViewport.scale === 'quarterly' || draftViewport.scale === 'monthly') && (
-          <div className="p-4 border-b border-border">
+          <div className="p-4 border-b border-gray-200 dark:border-gray-700">
             <div className="flex items-center justify-between mb-3">
-              <span className="text-sm font-semibold text-foreground">Select Quarters</span>
+              <h4 className="text-sm font-semibold text-gray-800 dark:text-gray-100">Select Quarters</h4>
               <button
                 onClick={selectAllQuarters}
                 className={cn(
-                  "text-xs font-medium transition-colors",
-                  draftViewport.selectedQuarters.length === 4
-                    ? "text-brand-primary"
-                    : "text-muted-foreground hover:text-brand-primary"
+                  "text-sm font-medium transition-colors",
+                  "text-[#c69c6d] hover:text-[#8b7355] dark:text-[#d4b896] dark:hover:text-[#c69c6d]"
                 )}
               >
                 All
@@ -312,13 +310,13 @@ export const RoadmapDateFilterV2: React.FC<RoadmapDateFilterV2Props> = ({
                     className={cn(
                       "relative px-3 py-2.5 text-sm font-medium rounded-lg border transition-all",
                       isSelected
-                        ? "bg-brand-primary text-white border-brand-primary"
-                        : "bg-muted/50 text-foreground border-border hover:border-brand-primary/50"
+                        ? "bg-[#c69c6d] text-white border-[#c69c6d]"
+                        : "bg-transparent border-gray-300 text-gray-700 hover:border-gray-400 dark:border-gray-600 dark:text-gray-300 dark:hover:border-gray-500"
                     )}
                   >
                     Q{q}
                     {isCurrent && !isSelected && (
-                      <div className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-brand-primary" />
+                      <div className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-[#c69c6d]" />
                     )}
                   </button>
                 );
@@ -328,20 +326,20 @@ export const RoadmapDateFilterV2: React.FC<RoadmapDateFilterV2Props> = ({
         )}
 
         {/* Preview & Actions */}
-        <div className="p-4 bg-muted/30">
+        <div className="p-4 bg-gray-50 dark:bg-gray-800/50 rounded-b-xl">
           {/* Preview */}
-          <div className="mb-3 text-xs text-muted-foreground">
-            <span className="font-medium text-foreground">Preview: </span>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+            <span className="font-medium text-gray-700 dark:text-gray-300">Preview: </span>
             {draftDateRange.start.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
             {' – '}
             {draftDateRange.end.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-          </div>
+          </p>
 
           {/* Action Buttons */}
-          <div className="flex gap-2">
+          <div className="flex gap-3">
             <button
               onClick={handleClear}
-              className="flex-1 px-4 py-2 text-sm font-medium text-muted-foreground border border-border rounded-lg hover:bg-muted transition-colors"
+              className="flex-1 px-4 py-2 text-sm font-medium border border-gray-300 text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800 rounded-lg transition-colors"
             >
               Clear
             </button>
@@ -351,8 +349,8 @@ export const RoadmapDateFilterV2: React.FC<RoadmapDateFilterV2Props> = ({
               className={cn(
                 "flex-1 px-4 py-2 text-sm font-medium rounded-lg transition-colors",
                 hasChanges || draftViewport.selectedYears.length === 0
-                  ? "bg-brand-primary text-white hover:bg-brand-primary-hover"
-                  : "bg-brand-primary/50 text-white/70 cursor-not-allowed"
+                  ? "bg-[#c69c6d] hover:bg-[#b08b5c] text-white border-0"
+                  : "bg-[#c69c6d]/50 text-white/70 cursor-not-allowed"
               )}
             >
               Apply
