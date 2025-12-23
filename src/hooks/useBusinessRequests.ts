@@ -209,7 +209,7 @@ export function useCreateBusinessRequest() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['business-requests'] });
-      toast({ title: 'Business request created successfully' });
+      // Toast is shown in the modal with more context (request key, summary)
     },
     onError: (error) => {
       toast({ title: 'Failed to create business request', description: error.message, variant: 'destructive' });
