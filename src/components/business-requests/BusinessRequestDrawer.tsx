@@ -579,20 +579,32 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
               {/* Right Side: Action Buttons */}
               <div className="flex items-center gap-1.5 shrink-0">
                 
-                {/* Auto-save indicator - fixed width to prevent layout shift */}
-                <div className="w-16 flex items-center justify-end">
-                  {isSaving && (
-                    <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                      <span>Saving</span>
-                    </div>
-                  )}
-                  {showSavedIndicator && !isSaving && (
-                    <div className="flex items-center gap-1.5 text-xs text-secondary-olive">
-                      <Check className="h-3.5 w-3.5" />
-                      <span>Saved</span>
-                    </div>
-                  )}
+                {/* Auto-save indicator - smooth transition between states */}
+                <div className="min-w-[70px] flex items-center justify-end">
+                  <div 
+                    className={`
+                      flex items-center gap-1.5 px-2 py-1 rounded-md text-xs font-medium
+                      transition-all duration-300 ease-in-out
+                      ${isSaving 
+                        ? 'bg-amber-50 text-amber-700 dark:bg-amber-950/30 dark:text-amber-400 opacity-100' 
+                        : showSavedIndicator 
+                          ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-400 opacity-100' 
+                          : 'opacity-0'
+                      }
+                    `}
+                  >
+                    {isSaving ? (
+                      <>
+                        <Loader2 className="h-3 w-3 animate-spin" />
+                        <span>Saving...</span>
+                      </>
+                    ) : showSavedIndicator ? (
+                      <>
+                        <Check className="h-3 w-3" />
+                        <span>Saved</span>
+                      </>
+                    ) : null}
+                  </div>
                 </div>
 
                 {/* More Options */}
