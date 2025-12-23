@@ -240,7 +240,7 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
     staleTime: 60000,
   });
   
-  const [activeTab, setActiveTab] = useState('details');
+  const [activeTab, setActiveTab] = useState('demand-details');
   const [formData, setFormData] = useState<Partial<BusinessRequest> & Record<string, any>>({});
   const [originalData, setOriginalData] = useState<Partial<BusinessRequest> & Record<string, any>>({});
   const [isEditingName, setIsEditingName] = useState(false);
@@ -277,7 +277,7 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
   // Reset to initial tab when drawer opens
   useEffect(() => {
     if (isOpen) {
-      setActiveTab(initialTab || 'details');
+      setActiveTab(initialTab || 'demand-details');
     }
   }, [isOpen, initialTab]);
 
@@ -750,7 +750,8 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
               className="flex-1 min-h-0 overflow-y-auto"
               style={{ background: 'var(--surface-subtle, hsl(var(--muted)/0.3))' }}
             >
-              <TabsContent value="details" className="mt-0 focus-visible:outline-none">
+              {/* Demand Details Tab */}
+              <TabsContent value="demand-details" className="mt-0 focus-visible:outline-none">
                 <DemandDetailsViewTab 
                   data={formData} 
                   onChange={handleFieldChange} 
@@ -759,8 +760,9 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
                 />
               </TabsContent>
               
-              <TabsContent value="scoring" className="mt-0 focus-visible:outline-none">
-                <ScoringReviewTab 
+              {/* Business Score Tab */}
+              <TabsContent value="business-score" className="mt-0 p-5 pb-8 focus-visible:outline-none">
+                <BusinessScoreViewTab 
                   data={formData} 
                   onChange={handleFieldChange} 
                   requestId={requestId || undefined}
@@ -768,21 +770,39 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
                 />
               </TabsContent>
               
-              <TabsContent value="planning" className="mt-0 focus-visible:outline-none">
-                {requestId && (
-                  <PlanningViewTab 
-                    data={formData} 
-                    onChange={handleFieldChange}
-                    requestId={requestId}
-                  />
-                )}
+              {/* EA Review Tab */}
+              <TabsContent value="ea-review" className="mt-0 p-5 pb-8 focus-visible:outline-none">
+                <EAReviewTab 
+                  data={formData} 
+                  onChange={handleFieldChange}
+                />
               </TabsContent>
               
+              {/* Budget Tab */}
+              <TabsContent value="budget" className="mt-0 p-5 pb-8 focus-visible:outline-none">
+                <BudgetViewTab 
+                  data={formData} 
+                  onChange={handleFieldChange}
+                />
+              </TabsContent>
+              
+              {/* Risks Tab */}
+              <TabsContent value="risks" className="mt-0 p-5 pb-8 focus-visible:outline-none">
+                {requestId && <RisksViewTab requestId={requestId} />}
+              </TabsContent>
+              
+              {/* Milestones Tab */}
+              <TabsContent value="milestones" className="mt-0 p-5 pb-8 focus-visible:outline-none">
+                {requestId && <MilestonesViewTab requestId={requestId} />}
+              </TabsContent>
+              
+              {/* Links Tab */}
               <TabsContent value="links" className="mt-0 p-5 pb-8 focus-visible:outline-none">
                 {requestId && <LinksViewTab requestId={requestId} onNavigateToEpic={handleNavigateToEpic} />}
               </TabsContent>
               
-              <TabsContent value="history" className="mt-0 p-5 pb-8 focus-visible:outline-none">
+              {/* Audit History Tab */}
+              <TabsContent value="audit-history" className="mt-0 p-5 pb-8 focus-visible:outline-none">
                 {requestId && <ExecutiveAuditHistoryTab requestId={requestId} />}
               </TabsContent>
             </div>
