@@ -1,8 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Info } from 'lucide-react';
-import { DEMAND_STATUS_CONFIG } from '@/types/product-roadmap';
 import { TODAY_LINE_COLOR, PROGRESS_BAR_COLOR, KR_LEGEND_ITEMS } from '@/constants/krStatusStyles';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { useProcessSteps } from '@/modules/kanban/hooks/useProcessSteps';
+
+// Color palette for dynamic status display
+const STATUS_COLORS = [
+  '#3b82f6', // Blue
+  '#f59e0b', // Amber
+  '#8b5cf6', // Purple
+  '#22c55e', // Green
+  '#ef4444', // Red
+  '#f97316', // Orange
+  '#06b6d4', // Cyan
+  '#ec4899', // Pink
+  '#78716c', // Stone
+  '#84cc16', // Lime
+];
 
 interface ProductRoadmapLegendProps {
   isVisible: boolean;
@@ -11,6 +25,17 @@ interface ProductRoadmapLegendProps {
 
 export function ProductRoadmapLegend({ isVisible, showMilestones }: ProductRoadmapLegendProps) {
   const [isExpanded, setIsExpanded] = useState(true);
+  const { data: processSteps = [] } = useProcessSteps();
+  
+  // Create dynamic status config from process steps
+  const statusConfig = useMemo(() => 
+    processSteps.map((step, index) => ({
+      key: step.value,
+      label: step.label,
+      color: STATUS_COLORS[index % STATUS_COLORS.length],
+    })),
+    [processSteps]
+  );
   
   if (!isVisible) return null;
   
@@ -65,13 +90,13 @@ export function ProductRoadmapLegend({ isVisible, showMilestones }: ProductRoadm
               </div>
             </div>
 
-            {/* Status Section */}
+            {/* Status Section - Dynamic from database */}
             <div>
               <div className="text-[11px] font-semibold uppercase tracking-wider mb-3 text-muted-foreground">
                 STATUS
               </div>
               <div className="space-y-2">
-                {DEMAND_STATUS_CONFIG.map((status) => (
+                {statusConfig.map((status) => (
                   <div key={status.key} className="flex items-center gap-3">
                     <div 
                       className="w-3 h-3 rounded-full"

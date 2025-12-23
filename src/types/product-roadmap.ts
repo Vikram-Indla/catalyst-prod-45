@@ -20,7 +20,8 @@ export interface DemandMilestone {
   demandId?: string;
 }
 
-export type DemandStatus = 'new' | 'analyse' | 'approved' | 'implement' | 'closed' | 'on-hold';
+// DemandStatus is now dynamic from database - use string type for flexibility
+export type DemandStatus = string;
 export type PriorityTier = 'high' | 'medium' | 'low' | 'unscored';
 export type HealthStatus = 'on-track' | 'at-risk' | 'off-track' | 'unknown';
 export type MilestoneCondition = 'has-overdue' | 'all-complete' | 'no-milestones';
@@ -30,7 +31,7 @@ export interface Demand {
   id: string;
   key: string;
   title: string;
-  status: DemandStatus;
+  status: string; // Dynamic process_step value from database
   ownerId: string;
   ownerName: string;
   assigneeId: string;
@@ -104,16 +105,8 @@ export function areDemandFiltersEqual(a: DemandFilterState, b: DemandFilterState
     JSON.stringify([...a.milestoneConditions].sort()) === JSON.stringify([...b.milestoneConditions].sort())
   );
 }
-
-// Status display config
-export const DEMAND_STATUS_CONFIG: { key: DemandStatus; label: string; color: string }[] = [
-  { key: 'new', label: 'New', color: '#6b7280' },
-  { key: 'analyse', label: 'Analyse', color: '#c69c6d' },
-  { key: 'approved', label: 'Approved', color: '#5c7c5c' },
-  { key: 'implement', label: 'In Progress', color: '#8b7355' },
-  { key: 'closed', label: 'Completed', color: '#374151' },
-  { key: 'on-hold', label: 'On Hold', color: '#c75a4a' },
-];
+// DEMAND_STATUS_CONFIG is now dynamic - use useProcessSteps() hook instead
+// Kept for backward compatibility, but will be empty. Use dynamic process steps from database.
 
 // Priority tier display config
 export const PRIORITY_TIER_CONFIG: { key: PriorityTier; label: string; color: string }[] = [

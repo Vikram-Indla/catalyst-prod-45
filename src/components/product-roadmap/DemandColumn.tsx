@@ -1,9 +1,10 @@
-import React, { forwardRef, useRef, useEffect, useCallback, useState } from 'react';
-import { Demand, DemandOwner, DEMAND_STATUS_CONFIG } from '@/types/product-roadmap';
+import React, { forwardRef, useRef, useEffect, useCallback, useState, useMemo } from 'react';
+import { Demand, DemandOwner } from '@/types/product-roadmap';
 import { ChevronDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { DemandGroupBy } from './ProductRoadmapToolbar';
 import { format } from 'date-fns';
+import { useProcessSteps } from '@/modules/kanban/hooks/useProcessSteps';
 
 interface DemandGroup {
   key: string;
@@ -41,31 +42,32 @@ const formatDateRange = (start: Date, end: Date) => {
   return `${startStr} → ${endStr}`;
 };
 
-// Get status display config - show actual status with appropriate colors
-const getStatusConfig = (status: string) => {
+// Get status display config - dynamically from process steps
+const getStatusConfig = (status: string, processSteps: { value: string; label: string }[]) => {
+  const step = processSteps.find(s => s.value === status);
+  const label = step?.label || status?.replace(/_/g, ' ').toUpperCase() || 'NEW';
+  
+  // Determine color based on status characteristics
   const statusLower = status?.toLowerCase() || '';
   
-  // Map statuses to display labels and colors
-  if (statusLower === 'new') {
-    return { label: 'NEW', bgClass: 'bg-muted-foreground', textClass: 'text-white' };
+  if (statusLower.includes('close') || statusLower.includes('done') || statusLower.includes('complete')) {
+    return { label, bgClass: 'bg-muted-foreground', textClass: 'text-white' };
   }
-  if (statusLower === 'analyse') {
-    return { label: 'ANALYSE', bgClass: 'bg-secondary-bronze', textClass: 'text-white' };
+  if (statusLower.includes('hold') || statusLower.includes('reject')) {
+    return { label, bgClass: 'bg-destructive', textClass: 'text-white' };
   }
-  if (statusLower === 'approved') {
-    return { label: 'APPROVED', bgClass: 'bg-brand-primary', textClass: 'text-white' };
+  if (statusLower.includes('implement') || statusLower.includes('progress') || statusLower.includes('ready')) {
+    return { label, bgClass: 'bg-brand-primary', textClass: 'text-white' };
   }
-  if (statusLower === 'implement') {
-    return { label: 'IN PROGRESS', bgClass: 'bg-brand-primary', textClass: 'text-white' };
+  if (statusLower.includes('approv')) {
+    return { label, bgClass: 'bg-brand-primary', textClass: 'text-white' };
   }
-  if (statusLower === 'closed') {
-    return { label: 'CLOSED', bgClass: 'bg-muted-foreground', textClass: 'text-white' };
+  if (statusLower.includes('analy') || statusLower.includes('review')) {
+    return { label, bgClass: 'bg-secondary-bronze', textClass: 'text-white' };
   }
-  if (statusLower === 'on-hold' || statusLower === 'on_hold') {
-    return { label: 'ON HOLD', bgClass: 'bg-destructive', textClass: 'text-white' };
-  }
-  // Default
-  return { label: status?.toUpperCase() || 'NEW', bgClass: 'bg-muted-foreground', textClass: 'text-white' };
+  
+  // Default for new/other statuses
+  return { label, bgClass: 'bg-muted-foreground', textClass: 'text-white' };
 };
 
 export const DemandColumn = forwardRef<HTMLDivElement, DemandColumnProps>(
@@ -75,6 +77,15 @@ export const DemandColumn = forwardRef<HTMLDivElement, DemandColumnProps>(
     const startX = useRef(0);
     const startWidth = useRef(0);
     const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(new Set());
+    
+    // Fetch dynamic process steps from database
+    const { data: processSteps = [] } = useProcessSteps();
+    
+    // Memoize process steps for status config
+    const processStepsList = useMemo(() => 
+      processSteps.map(s => ({ value: s.value, label: s.label })),
+      [processSteps]
+    );
     
     const toggleGroup = (key: string) => {
       setCollapsedGroups(prev => {
@@ -121,7 +132,7 @@ export const DemandColumn = forwardRef<HTMLDivElement, DemandColumnProps>(
 
     // Render a single demand row - matching Program structure
     const renderDemandRow = (demand: Demand, _index: number) => {
-      const statusConfig = getStatusConfig(demand.status);
+      const statusConfig = getStatusConfig(demand.status, processStepsList);
       
       return (
         <div 

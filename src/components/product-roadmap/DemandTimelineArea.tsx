@@ -1,5 +1,5 @@
 import React, { forwardRef, useMemo, useRef, useEffect, useImperativeHandle, useState } from 'react';
-import { Demand, Scale, DemandMilestone, DEMAND_STATUS_CONFIG } from '@/types/product-roadmap';
+import { Demand, Scale, DemandMilestone } from '@/types/product-roadmap';
 import { generateTimeUnits, calcPosition } from '@/utils/objective-roadmap-utils';
 import { cn } from '@/lib/utils';
 import { TODAY_LINE_COLOR, getKRStatusStyle } from '@/constants/krStatusStyles';
@@ -7,6 +7,7 @@ import { DemandGroupBy } from './ProductRoadmapToolbar';
 import { ChevronDown } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { format } from 'date-fns';
+import { useProcessSteps } from '@/modules/kanban/hooks/useProcessSteps';
 
 interface DemandGroup {
   key: string;
@@ -34,6 +35,9 @@ export const DemandTimelineArea = forwardRef<HTMLDivElement, DemandTimelineAreaP
     const headerRef = useRef<HTMLDivElement>(null);
     const contentRef = useRef<HTMLDivElement>(null);
     const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(new Set());
+    
+    // Fetch dynamic process steps from database
+    const { data: processSteps = [] } = useProcessSteps();
     
     const toggleGroup = (key: string) => {
       setCollapsedGroups(prev => {
@@ -263,9 +267,8 @@ const DemandTimelineRow: React.FC<DemandTimelineRowProps> = ({
   const barRight = calcPosition(demand.endDate, timelineStart, timelineEnd);
   const barWidth = Math.max(barRight - barLeft, 2);
   
-  // Get status config for bar color
-  const statusConfig = DEMAND_STATUS_CONFIG.find(s => s.key === demand.status);
-  const barColor = statusConfig?.color || 'hsl(var(--brand-primary))';
+  // Get bar color - use brand primary since status colors are dynamic
+  const barColor = 'hsl(var(--brand-primary))';
   
   // Format dates for tooltip
   const startDateStr = format(demand.startDate, 'MMM d, yyyy');
