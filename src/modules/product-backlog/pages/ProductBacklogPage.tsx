@@ -258,7 +258,14 @@ export default function ProductBacklogPage() {
 
     // Update local state
     setSelectedRequest(prev => prev ? { ...prev, [field]: value } : null);
-    queryClient.invalidateQueries({ queryKey: ['business-requests'] });
+    
+    // Invalidate and wait for refetch to ensure UI is in sync
+    await queryClient.invalidateQueries({ queryKey: ['business-requests'] });
+    
+    // Show success toast for status changes
+    if (field === 'processStep') {
+      toast.success('Status updated');
+    }
   };
 
   // Handle clone
