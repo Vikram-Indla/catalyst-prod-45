@@ -262,14 +262,14 @@ export function DemandDetailsViewTab({ data, onChange, onDirtyChange, requestId 
         </div>
       )}
 
-      {/* SECTION 1: Description - Full Width (ID, Title, Status are in drawer header) */}
+      {/* SECTION 1: Description - Full Width with more vertical space */}
       <div>
         <FieldLabel>Description</FieldLabel>
         <RichTextEditor
           value={data.description || ''}
           onChange={(value) => handleChange('description', value)}
           placeholder="Describe the demand in detail..."
-          minHeight="120px"
+          minHeight="200px"
         />
       </div>
 
