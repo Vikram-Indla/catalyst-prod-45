@@ -232,9 +232,16 @@ export function useUpdateBusinessRequest() {
         .single();
       
       // Convert ReadinessChecklist to Json-compatible format
-      // IMPORTANT: Remove id from update payload to prevent duplicate key errors
-      const { id: _removeId, ...dataWithoutId } = data as any;
-      const updateData: Record<string, any> = { ...dataWithoutId };
+      // IMPORTANT: Remove system-managed fields from update payload to prevent constraint errors
+      const { 
+        id: _removeId, 
+        request_key: _removeRequestKey, 
+        created_at: _removeCreatedAt,
+        updated_at: _removeUpdatedAt,
+        deleted_at: _removeDeletedAt,
+        ...dataWithoutSystemFields 
+      } = data as any;
+      const updateData: Record<string, any> = { ...dataWithoutSystemFields };
       if (data.readiness_checklist) {
         updateData.readiness_checklist = data.readiness_checklist as unknown as Json;
       }
