@@ -341,7 +341,9 @@ export function RequestDetailPanel({
 
   const statusKey = request.processStep?.toLowerCase().replace(/\s+/g, '_') || 'new_request';
   const currentStep = processSteps.find(s => s.value === statusKey);
-  const statusLabel = currentStep?.label || request.processStep || 'New Request';
+  // Format status label: use label from process steps, or format raw value (new_demand -> New demand)
+  const statusLabel = currentStep?.label || 
+    (request.processStep ? request.processStep.replace(/_/g, ' ').replace(/^\w/, c => c.toUpperCase()) : 'New Request');
   const statusColor = getStatusColor(statusKey);
   const priorityLabel = request.autoPriority?.charAt(0).toUpperCase() + request.autoPriority?.slice(1) || 'Unscored';
   const priorityColor = request.autoPriority?.toLowerCase() === 'high' || request.autoPriority?.toLowerCase() === 'critical' 
