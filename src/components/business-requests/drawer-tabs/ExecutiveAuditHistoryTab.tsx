@@ -203,14 +203,11 @@ export function ExecutiveAuditHistoryTab({ requestId }: ExecutiveAuditHistoryTab
 
   return (
     <div 
-      className="flex flex-col flex-1 min-h-0 overflow-hidden"
+      className="space-y-4"
       style={{ backgroundColor: 'var(--surface-1)' }}
     >
       {/* Header with toggle */}
-      <div 
-        className="flex items-center justify-between px-4 py-3 shrink-0"
-        style={{ borderBottom: '1px solid var(--border-color)' }}
-      >
+      <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <History className="h-4 w-4" style={{ color: 'var(--accent-color)' }} />
           <span 
@@ -226,7 +223,7 @@ export function ExecutiveAuditHistoryTab({ requestId }: ExecutiveAuditHistoryTab
       </div>
 
       {/* Timeline */}
-      <div className="flex-1 overflow-y-auto px-4 py-3">
+      <div>
         {isLoading ? (
           <div className="flex items-center justify-center py-12" style={{ color: 'var(--text-3)' }}>
             <Loader2 className="h-4 w-4 animate-spin mr-2" />

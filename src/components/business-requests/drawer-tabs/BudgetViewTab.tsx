@@ -171,7 +171,7 @@ export function BudgetViewTab({ data, onChange }: BudgetViewTabProps) {
 
 
   return (
-    <div className="flex flex-col h-full space-y-4" style={{ background: 'var(--surface-bg, hsl(var(--background)))' }}>
+    <div className="space-y-4" style={{ background: 'var(--surface-bg, hsl(var(--background)))' }}>
       {/* Intro Text */}
       <p className="text-sm text-muted-foreground">
         Manage budget allocation, contracts, and capacity planning for this demand.

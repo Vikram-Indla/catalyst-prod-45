@@ -833,14 +833,14 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
                 ═══════════════════════════════════════════════════════════ */}
             <div 
               ref={tabsBodyScrollRef}
-              className="flex-1 min-h-0 overflow-y-auto flex flex-col"
+              className="flex-1 min-h-0 overflow-y-auto"
               style={{ background: 'var(--surface-subtle, hsl(var(--muted)/0.3))' }}
             >
-              <TabsContent value="demand-details" className="m-0 focus-visible:outline-none p-5 pb-8 flex-1 flex flex-col min-h-0">
+              <TabsContent value="demand-details" className="mt-0 p-5 pb-8 focus-visible:outline-none">
                 <DemandDetailsViewTab data={formData} onChange={handleFieldChange} />
               </TabsContent>
               
-              <TabsContent value="business-score" className="m-0 focus-visible:outline-none p-5 pb-8">
+              <TabsContent value="business-score" className="mt-0 focus-visible:outline-none">
                 <BusinessScoreViewTab 
                   data={formData} 
                   onChange={handleFieldChange} 
@@ -849,28 +849,28 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
                 />
               </TabsContent>
               
-              <TabsContent value="ea-review" className="m-0 focus-visible:outline-none p-5 pb-8">
+              <TabsContent value="ea-review" className="mt-0 focus-visible:outline-none">
                 <EAReviewTab data={formData} onChange={handleFieldChange} />
               </TabsContent>
               
-              <TabsContent value="budget" className="m-0 focus-visible:outline-none p-5 pb-8">
+              <TabsContent value="budget" className="mt-0 p-5 pb-8 focus-visible:outline-none">
                 <BudgetViewTab data={formData} onChange={handleFieldChange} />
               </TabsContent>
               
-              <TabsContent value="risks" className="m-0 focus-visible:outline-none p-5 pb-8">
+              <TabsContent value="risks" className="mt-0 focus-visible:outline-none">
                 {requestId && <RisksViewTab requestId={requestId} />}
               </TabsContent>
               
-              <TabsContent value="milestones" className="m-0 focus-visible:outline-none p-5 pb-8">
+              <TabsContent value="milestones" className="mt-0 focus-visible:outline-none">
                 {requestId && <MilestonesViewTab requestId={requestId} />}
               </TabsContent>
               
-              <TabsContent value="links" className="m-0 focus-visible:outline-none p-5 pb-8">
+              <TabsContent value="links" className="mt-0 p-5 pb-8 focus-visible:outline-none">
                 {requestId && <LinksViewTab requestId={requestId} onNavigateToEpic={handleNavigateToEpic} />}
               </TabsContent>
               
               
-              <TabsContent value="audit-history" className="m-0 focus-visible:outline-none p-5 pb-8">
+              <TabsContent value="audit-history" className="mt-0 p-5 pb-8 focus-visible:outline-none">
                 {requestId && <ExecutiveAuditHistoryTab requestId={requestId} />}
               </TabsContent>
             </div>
