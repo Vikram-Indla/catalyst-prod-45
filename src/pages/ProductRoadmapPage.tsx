@@ -13,6 +13,7 @@ import { BusinessRequestDrawer } from '@/components/business-requests/BusinessRe
 import GlobalPageHeader from '@/components/layout/GlobalPageHeader';
 import { Loader2 } from 'lucide-react';
 import { RoadmapViewport, RoadmapDebugOverlay } from '@/components/roadmaps/RoadmapDateFilterV2';
+import { TimelineFilterState, DEFAULT_TIMELINE_FILTER } from '@/components/roadmap/TimelineFilterPopover';
 
 // Group demands by a specific field
 export interface DemandGroup {
@@ -119,6 +120,7 @@ export const ProductRoadmapPage: React.FC = () => {
   const [columnWidth, setColumnWidth] = useState(380);
   const [searchQuery, setSearchQuery] = useState('');
   const [groupBy, setGroupBy] = useState<DemandGroupBy>('none');
+  const [timelineFilter, setTimelineFilter] = useState<TimelineFilterState>(DEFAULT_TIMELINE_FILTER);
   
   // Timeline dates derived from viewport (or dataset bounds)
   const timelineBounds = useMemo(() => {
@@ -258,6 +260,8 @@ export const ProductRoadmapPage: React.FC = () => {
         onSearchChange={setSearchQuery}
         groupBy={groupBy}
         onGroupByChange={setGroupBy}
+        timelineFilter={timelineFilter}
+        onTimelineFilterChange={setTimelineFilter}
         appliedViewport={appliedViewport}
         draftViewport={draftViewport}
         onDraftViewportChange={updateDraftViewport}

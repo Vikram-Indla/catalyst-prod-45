@@ -19,6 +19,7 @@ import { Search, Layers, Filter, Info, ChevronDown, Check, X, Home } from 'lucid
 import { cn } from '@/lib/utils';
 import { ProgramRoadmapFiltersDialog, ProgramFilters, DEFAULT_FILTERS, getCurrentQuarterDates, getNextQuarterDates } from '@/components/program/ProgramRoadmapFiltersDialog';
 import GlobalPageHeader from '@/components/layout/GlobalPageHeader';
+import { TimelineFilterPopover, TimelineFilterState, DEFAULT_TIMELINE_FILTER } from '@/components/roadmap/TimelineFilterPopover';
 
 // ===== TYPES =====
 interface LinkedFeature {
@@ -344,7 +345,7 @@ export default function ProgramRoadmapPage() {
   const [search, setSearch] = useState('');
   const [groupBy, setGroupBy] = useState<'platform' | 'owner' | 'health'>('platform');
   const [showMilestones, setShowMilestones] = useState(true);
-  const [year, setYear] = useState('2025');
+  const [timelineFilter, setTimelineFilter] = useState<TimelineFilterState>(DEFAULT_TIMELINE_FILTER);
   const [selectedProjects, setSelectedProjects] = useState<Set<string>>(new Set());
   const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(new Set());
   
@@ -355,7 +356,6 @@ export default function ProgramRoadmapPage() {
   // Dropdown states
   const [projectsMenuOpen, setProjectsMenuOpen] = useState(false);
   const [groupByMenuOpen, setGroupByMenuOpen] = useState(false);
-  const [yearMenuOpen, setYearMenuOpen] = useState(false);
   const [legendOpen, setLegendOpen] = useState(false);
   
   // Tooltip state
@@ -590,7 +590,6 @@ export default function ProgramRoadmapPage() {
     const handleClick = () => {
       setProjectsMenuOpen(false);
       setGroupByMenuOpen(false);
-      setYearMenuOpen(false);
     };
     document.addEventListener('click', handleClick);
     return () => document.removeEventListener('click', handleClick);
@@ -641,7 +640,6 @@ export default function ProgramRoadmapPage() {
                     onClick={() => {
                       setGroupByMenuOpen(!groupByMenuOpen);
                       setProjectsMenuOpen(false);
-                      setYearMenuOpen(false);
                     }}
                   >
                     <Layers size={16} />
@@ -714,40 +712,11 @@ export default function ProgramRoadmapPage() {
                 
                 <div className="w-px h-6 bg-border" />
                 
-                {/* Year Selector */}
-                <div className="relative" onClick={(e) => e.stopPropagation()}>
-                  <button
-                    onClick={() => {
-                      setYearMenuOpen(!yearMenuOpen);
-                      setProjectsMenuOpen(false);
-                      setGroupByMenuOpen(false);
-                    }}
-                    className="h-9 px-3 flex items-center gap-2 text-sm border border-border rounded-lg bg-background hover:bg-muted"
-                  >
-                    <span>{year}</span>
-                    <ChevronDown size={12} />
-                  </button>
-                  {yearMenuOpen && (
-                    <div className="absolute top-full right-0 mt-1 min-w-[100px] bg-background border border-border rounded-lg shadow-lg z-50">
-                      {['2025', '2026'].map(y => (
-                        <div
-                          key={y}
-                          className={cn(
-                            "flex items-center justify-between px-3 py-2 text-sm cursor-pointer hover:bg-muted first:rounded-t-lg last:rounded-b-lg",
-                            year === y && "text-brand-primary"
-                          )}
-                          onClick={() => {
-                            setYear(y);
-                            setYearMenuOpen(false);
-                          }}
-                        >
-                          {y}
-                          {year === y && <Check size={16} className="text-brand-primary" />}
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
+                {/* Timeline Filter Popover */}
+                <TimelineFilterPopover
+                  value={timelineFilter}
+                  onChange={setTimelineFilter}
+                />
                 
                 {/* Info Button */}
                 <button
