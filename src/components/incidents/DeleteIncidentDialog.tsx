@@ -38,16 +38,10 @@ export function DeleteIncidentDialog({
   const handleDelete = async () => {
     setIsDeleting(true);
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-
-      // Soft delete - set deleted_at
-      const { error } = await supabase
-        .from('incidents')
-        .update({
-          deleted_at: new Date().toISOString(),
-          updated_by: user?.id,
-        })
-        .eq('id', incidentId);
+      // Soft delete via RPC (avoids RLS edge cases)
+      const { error } = await supabase.rpc('soft_delete_incident', {
+        p_incident_id: incidentId,
+      });
 
       if (error) throw error;
 
