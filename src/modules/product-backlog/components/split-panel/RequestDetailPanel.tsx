@@ -75,22 +75,22 @@ interface RequestDetailPanelProps {
   showMobileBack?: boolean;
 }
 
-// Status color mapping based on process step value
+// Status color mapping based on process step value - using brand-aligned colors
 const STATUS_COLORS: Record<string, string> = {
-  new_request: 'bg-amber-500',
-  new_demand: 'bg-blue-500',
-  in_review: 'bg-indigo-500',
-  ea_review: 'bg-violet-500',
-  analyse: 'bg-purple-500',
-  approved: 'bg-green-500',
-  ready_to_implement: 'bg-teal-500',
-  implement: 'bg-cyan-500',
-  closed: 'bg-gray-400',
-  rejected: 'bg-red-500',
-  on_hold: 'bg-orange-500',
+  new_request: 'bg-[hsl(var(--accent))]',           // brand gold for new items
+  new_demand: 'bg-[hsl(var(--accent))]',            // brand gold for new items
+  in_review: 'bg-[hsl(220,60%,55%)]',               // professional blue
+  ea_review: 'bg-[hsl(260,50%,55%)]',               // violet
+  analyse: 'bg-[hsl(280,45%,55%)]',                 // purple
+  approved: 'bg-[hsl(var(--primary))]',             // brand olive for approved
+  ready_to_implement: 'bg-[hsl(var(--primary))]',   // brand olive
+  implement: 'bg-[hsl(190,60%,45%)]',               // teal
+  closed: 'bg-[hsl(0,0%,60%)]',                     // neutral gray
+  rejected: 'bg-[hsl(0,65%,50%)]',                  // red
+  on_hold: 'bg-[hsl(25,80%,55%)]',                  // orange
 };
 
-const getStatusColor = (value: string) => STATUS_COLORS[value] || 'bg-gray-400';
+const getStatusColor = (value: string) => STATUS_COLORS[value] || 'bg-[hsl(0,0%,60%)]';
 
 // Quarter options
 const QUARTER_OPTIONS = [
