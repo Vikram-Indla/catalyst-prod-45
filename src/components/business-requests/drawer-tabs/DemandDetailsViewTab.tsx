@@ -244,7 +244,21 @@ export function DemandDetailsViewTab({ data, onChange, onDirtyChange, requestId 
   };
 
   const handleDateChange = (field: string) => (date: Date | undefined) => {
-    handleChange(field, date ? format(date, 'yyyy-MM-dd') : null);
+    const formattedDate = date ? format(date, 'yyyy-MM-dd') : null;
+    
+    // Keep end_date and impl_target_end_date in sync for Target Complete
+    if (field === 'end_date') {
+      onChange('_batch', { end_date: formattedDate, impl_target_end_date: formattedDate });
+      onDirtyChange?.(true);
+      if (requestId) {
+        pendingChangesRef.current['end_date'] = formattedDate;
+        pendingChangesRef.current['impl_target_end_date'] = formattedDate;
+        if (autoSaveTimeoutRef.current) clearTimeout(autoSaveTimeoutRef.current);
+        autoSaveTimeoutRef.current = setTimeout(() => performAutoSave(), 1500);
+      }
+    } else {
+      handleChange(field, formattedDate);
+    }
   };
 
   // Computed values

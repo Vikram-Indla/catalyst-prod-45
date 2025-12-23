@@ -119,7 +119,8 @@ export default function ProductBacklogPage() {
       businessOwnerId: br.business_owner_id || null,
       businessAsk: br.start_date?.split('T')[0] || null,
       kickoff: br.impl_start_date?.split('T')[0] || null,
-      targetComplete: br.impl_target_end_date?.split('T')[0] || null,
+      // Use end_date as canonical Target Complete (create modal writes to end_date)
+      targetComplete: br.end_date?.split('T')[0] || br.impl_target_end_date?.split('T')[0] || null,
       deliveryTrack: br.delivery_track || null,
       platform: br.delivery_platform || null,
       quarter: br.planned_quarter?.[0] || null,
@@ -262,11 +263,18 @@ export default function ProductBacklogPage() {
     }
 
     const dbField = fieldMap[field] || field;
-    const dbValue = field === 'quarter' || field === 'planned_quarter' ? (Array.isArray(value) ? value : [value]) : value;
+    // When updating targetComplete, also sync end_date for consistency
+    let dbValue = field === 'quarter' || field === 'planned_quarter' ? (Array.isArray(value) ? value : [value]) : value;
+    
+    let updatePayload: Record<string, any> = { [dbField]: dbValue };
+    if (field === 'targetComplete') {
+      // Keep end_date and impl_target_end_date in sync
+      updatePayload = { end_date: dbValue, impl_target_end_date: dbValue };
+    }
     
     const { error } = await supabase
       .from('business_requests')
-      .update({ [dbField]: dbValue })
+      .update(updatePayload)
       .eq('id', selectedRequest._dbId);
 
     if (error) {
