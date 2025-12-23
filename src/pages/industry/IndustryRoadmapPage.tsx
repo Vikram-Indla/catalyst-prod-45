@@ -232,6 +232,20 @@ export default function IndustryRoadmapPage() {
     },
   });
 
+  // Fetch process steps for filter (dynamic from DB)
+  const { data: processStepsData } = useQuery({
+    queryKey: ['industry-roadmap-process-steps'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('demand_process_steps')
+        .select('id, value, label, sort_order')
+        .eq('is_active', true)
+        .order('sort_order');
+      if (error) throw error;
+      return data || [];
+    },
+  });
+
   // Transform to BusinessRequestItem format
   const businessRequests: BusinessRequestItem[] = useMemo(() => {
     return (requestsData || []).map((req: any) => {
@@ -935,6 +949,7 @@ export default function IndustryRoadmapPage() {
         onFiltersChange={handleFiltersChange}
         owners={ownersData || []}
         products={productsData || []}
+        processSteps={processStepsData || []}
       />
       
       {/* Business Request Drawer */}
