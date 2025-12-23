@@ -7,20 +7,33 @@ import { Json } from '@/integrations/supabase/types';
 
 // Helper to generate MIM-XXX format request key
 const generateRequestKey = async (): Promise<string> => {
-  // Get count of existing requests to generate next number
-  const { count, error } = await supabase
+  // Get all existing request keys to find the max number
+  const { data, error } = await supabase
     .from('business_requests')
-    .select('*', { count: 'exact', head: true });
+    .select('request_key')
+    .not('request_key', 'is', null);
   
   if (error) {
-    console.error('Error getting request count:', error);
-    // Fallback to random 3-digit number
-    const randomNum = Math.floor(Math.random() * 900) + 100;
-    return `MIM-${randomNum}`;
+    console.error('Error getting request keys:', error);
+    // Fallback to timestamp-based key to avoid collisions
+    const timestamp = Date.now().toString().slice(-6);
+    return `MIM-${timestamp}`;
   }
   
+  // Find the highest number from existing keys (handles gaps from deleted records)
+  let maxNum = 0;
+  (data || []).forEach(row => {
+    if (row.request_key) {
+      const match = row.request_key.match(/MIM-(\d+)/);
+      if (match) {
+        const num = parseInt(match[1], 10);
+        if (num > maxNum) maxNum = num;
+      }
+    }
+  });
+  
   // Generate next sequential number, padded to 3 digits
-  const nextNum = ((count || 0) + 1).toString().padStart(3, '0');
+  const nextNum = (maxNum + 1).toString().padStart(3, '0');
   return `MIM-${nextNum}`;
 };
 
