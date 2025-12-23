@@ -384,7 +384,7 @@ export function RequestDetailPanel({
       {/* Content */}
       <div className="flex-1 overflow-y-auto px-6 py-5">
         <div className="space-y-5">
-          {/* Row 1: Status | Business Owner */}
+          {/* Row 1: Status | EA Review Required? */}
           <div className="grid grid-cols-2 gap-6">
             <div>
               <FieldLabel>Status</FieldLabel>
@@ -414,30 +414,20 @@ export function RequestDetailPanel({
             </div>
 
             <div>
-              <FieldLabel>Business Owner</FieldLabel>
+              <FieldLabel>EA Review Required?</FieldLabel>
               <div 
                 className="h-10 px-3 rounded-md flex items-center justify-between"
-                style={{ backgroundColor: 'hsl(var(--secondary-bronze) / 0.08)', border: '1px solid hsl(var(--secondary-bronze) / 0.2)' }}
+                style={{ backgroundColor: 'hsl(var(--secondary-olive) / 0.08)', border: '1px solid hsl(var(--secondary-olive) / 0.2)' }}
               >
-                {request.businessOwner ? (
-                  <>
-                    <div className="flex items-center gap-2">
-                      <UserAvatar name={request.businessOwner} size="sm" />
-                      <span className="text-sm font-medium" style={{ color: 'var(--text-1)' }}>
-                        {request.businessOwner}
-                      </span>
-                    </div>
-                    <button 
-                      className="text-xs font-medium"
-                      style={{ color: 'hsl(var(--secondary-bronze))' }}
-                      onClick={() => toast.info('Change business owner')}
-                    >
-                      Change
-                    </button>
-                  </>
-                ) : (
-                  <span className="text-sm" style={{ color: 'var(--text-3)' }}>Not assigned</span>
-                )}
+                <span className="text-sm font-medium" style={{ color: 'var(--text-1)' }}>
+                  {request.ea_review_required ? 'Yes' : 'No'}
+                </span>
+                <Switch 
+                  id="ea-review"
+                  checked={request.ea_review_required ?? true}
+                  onCheckedChange={(checked) => onUpdateField('ea_review_required', checked)}
+                  className="data-[state=checked]:bg-[hsl(var(--secondary-olive))]"
+                />
               </div>
             </div>
           </div>
@@ -517,7 +507,7 @@ export function RequestDetailPanel({
             </div>
           </div>
 
-          {/* Row 4: Department | EA Review Required? */}
+          {/* Row 4: Department | Business Owner */}
           <div className="grid grid-cols-2 gap-6">
             <div>
               <FieldLabel>Department</FieldLabel>
@@ -539,19 +529,30 @@ export function RequestDetailPanel({
             </div>
 
             <div>
+              <FieldLabel>Business Owner</FieldLabel>
               <div 
-                className="h-10 px-3 rounded-md flex items-center justify-between mt-6"
-                style={{ backgroundColor: 'hsl(var(--secondary-olive) / 0.08)', border: '1px solid hsl(var(--secondary-olive) / 0.2)' }}
+                className="h-10 px-3 rounded-md flex items-center justify-between"
+                style={{ backgroundColor: 'hsl(var(--secondary-bronze) / 0.08)', border: '1px solid hsl(var(--secondary-bronze) / 0.2)' }}
               >
-                <label htmlFor="ea-review" className="text-sm font-medium" style={{ color: 'var(--text-1)' }}>
-                  EA Review Required?
-                </label>
-                <Switch 
-                  id="ea-review"
-                  checked={request.ea_review_required ?? true}
-                  onCheckedChange={(checked) => onUpdateField('ea_review_required', checked)}
-                  className="data-[state=checked]:bg-[hsl(var(--secondary-olive))]"
-                />
+                {request.businessOwner ? (
+                  <>
+                    <div className="flex items-center gap-2">
+                      <UserAvatar name={request.businessOwner} size="sm" />
+                      <span className="text-sm font-medium" style={{ color: 'var(--text-1)' }}>
+                        {request.businessOwner}
+                      </span>
+                    </div>
+                    <button 
+                      className="text-xs font-medium"
+                      style={{ color: 'hsl(var(--secondary-bronze))' }}
+                      onClick={() => toast.info('Change business owner')}
+                    >
+                      Change
+                    </button>
+                  </>
+                ) : (
+                  <span className="text-sm" style={{ color: 'var(--text-3)' }}>Not assigned</span>
+                )}
               </div>
             </div>
           </div>
