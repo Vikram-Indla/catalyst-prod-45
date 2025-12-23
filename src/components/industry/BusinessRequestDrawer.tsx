@@ -466,7 +466,7 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
                 <Button
                   size="sm"
                   onClick={handleSave}
-                  className="h-8 px-4 text-sm font-medium bg-[hsl(var(--secondary-olive))] hover:bg-[hsl(var(--secondary-olive)/0.85)] text-white"
+                  className="h-8 px-4 text-sm font-medium bg-secondary-olive hover:bg-secondary-olive/85 text-white"
                 >
                   Save
                 </Button>

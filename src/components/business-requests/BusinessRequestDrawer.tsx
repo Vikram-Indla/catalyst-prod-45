@@ -627,11 +627,11 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
                   className={cn(
                     "h-8 px-4 text-[13px] font-medium text-white",
                     hasChanges 
-                      ? "bg-[hsl(var(--secondary-olive))] hover:bg-[hsl(var(--secondary-olive)/0.85)]" 
-                      : "bg-[hsl(var(--secondary-olive)/0.5)] cursor-not-allowed opacity-60"
+                      ? "bg-secondary-olive hover:bg-secondary-olive/85" 
+                      : "bg-secondary-olive/50 cursor-not-allowed opacity-60"
                   )}
                   style={{ 
-                    boxShadow: hasChanges ? '0 2px 4px hsla(var(--secondary-olive), 0.25)' : 'none'
+                    boxShadow: hasChanges ? '0 2px 4px rgba(92, 124, 92, 0.25)' : 'none'
                   }}
                 >
                   Save
