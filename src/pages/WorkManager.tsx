@@ -41,7 +41,7 @@ import { WorkManagerSettings } from '@/components/work-manager/WorkManagerSettin
 import { TaskDrawer } from '@/components/work-manager/TaskDrawer';
 import { NewTaskDialog } from '@/components/work-manager/NewTaskDialog';
 import { teams as initialTeams, tasks, computeTaskExtended } from '@/lib/work-manager-data';
-import { useAllTeamMembers } from '@/hooks/useAllTeamMembers';
+import { useAllTeamMembers, useTeamMemberIds } from '@/hooks/useAllTeamMembers';
 import type { TaskStatus, Team } from '@/components/work-manager/types';
 import type { TaskFilters, TaskDrawerState, TaskExtended, Task, GroupByOption } from '@/components/work-manager/types';
 import { useAccessibleTeams, useCanViewAllTeams } from '@/hooks/useAccessibleTeams';
@@ -62,6 +62,7 @@ export function WorkManager({ tab: initialTab }: WorkManagerProps) {
   const { user } = useAuth();
   const createTeam = useCreateTeam();
   const { data: teamMembersData = [] } = useAllTeamMembers();
+  const { data: teamMemberIdsMap = {} } = useTeamMemberIds();
   
   // Get team ID from URL query parameter
   const urlTeamId = useMemo(() => {
@@ -133,10 +134,10 @@ export function WorkManager({ tab: initialTab }: WorkManagerProps) {
       id: t.id,
       name: t.name,
       description: t.description,
-      memberIds: [], // Will be populated separately if needed
+      memberIds: teamMemberIdsMap[t.id] || [],
       color: getTeamColor(t.team_type),
     }));
-  }, [accessibleTeams]);
+  }, [accessibleTeams, teamMemberIdsMap]);
 
   // Use mock data as fallback when no db teams exist (for demo purposes)
   const teamsData = teamsDataFromDb.length > 0 ? teamsDataFromDb : initialTeams;
