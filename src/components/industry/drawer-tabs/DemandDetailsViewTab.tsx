@@ -34,19 +34,19 @@ const normalizeQuarter = (q: string | undefined): string => {
   return q.replace('-', ' ').trim();
 };
 
-// Status color mapping
+// Status color mapping (Catalyst brand tokens from index.css)
 const STATUS_COLORS: Record<string, string> = {
-  new_request: 'bg-amber-500',
-  new_demand: 'bg-blue-500',
-  in_review: 'bg-indigo-500',
-  ea_review: 'bg-violet-500',
-  analyse: 'bg-purple-500',
-  approved: 'bg-green-500',
-  ready_to_implement: 'bg-teal-500',
-  implement: 'bg-cyan-500',
-  closed: 'bg-gray-400',
-  rejected: 'bg-red-500',
-  on_hold: 'bg-orange-500',
+  new_request: 'bg-[var(--process-new-demand)]',
+  new_demand: 'bg-[var(--process-new-demand)]',
+  in_review: 'bg-[var(--process-in-review)]',
+  ea_review: 'bg-[var(--process-ea-review)]',
+  analyse: 'bg-[var(--process-analyse)]',
+  approved: 'bg-[var(--process-approved)]',
+  ready_to_implement: 'bg-[var(--process-ready-to-implement)]',
+  implement: 'bg-[var(--process-implement)]',
+  closed: 'bg-[var(--process-closed)]',
+  rejected: 'bg-[var(--process-rejected)]',
+  on_hold: 'bg-[var(--process-on-hold)]',
 };
 
 const getStatusColor = (value: string) => STATUS_COLORS[value?.toLowerCase()] || 'bg-gray-400';
