@@ -5,25 +5,25 @@ interface PriorityCellProps {
 }
 
 /**
- * Priority badge styling with dark mode support (9.5 grade compliance)
- * Uses visible borders and proper contrast in dark mode
+ * Priority badge styling using ONLY Catalyst brand colors
+ * Brand palette: olive (#5c7c5c), bronze (#8b7355), gold (#c69c6d), champagne (#d4b896)
  */
 const PRIORITY_STYLES: Record<string, { light: string; dark: string }> = {
   critical: {
-    light: 'bg-red-100 text-red-700 border border-red-200',
-    dark: 'dark:bg-red-900/30 dark:text-red-400 dark:border-red-800'
+    light: 'bg-[#8b7355]/20 text-[#6b5544] border border-[#8b7355]/40',
+    dark: 'dark:bg-[#8b7355]/30 dark:text-[#d4b896] dark:border-[#8b7355]/50'
   },
   high: {
-    light: 'bg-orange-100 text-orange-700 border border-orange-200',
-    dark: 'dark:bg-orange-900/30 dark:text-orange-400 dark:border-orange-800'
+    light: 'bg-[#c69c6d]/20 text-[#8b7355] border border-[#c69c6d]/40',
+    dark: 'dark:bg-[#c69c6d]/30 dark:text-[#d4b896] dark:border-[#c69c6d]/50'
   },
   medium: {
-    light: 'bg-amber-100 text-amber-700 border border-amber-200',
-    dark: 'dark:bg-amber-900/30 dark:text-amber-400 dark:border-amber-700'
+    light: 'bg-[#d4b896]/25 text-[#8b7355] border border-[#d4b896]/50',
+    dark: 'dark:bg-[#d4b896]/20 dark:text-[#d4b896] dark:border-[#d4b896]/40'
   },
   low: {
-    light: 'bg-gray-100 text-gray-600 border border-gray-200',
-    dark: 'dark:bg-gray-700 dark:text-gray-400 dark:border-gray-600'
+    light: 'bg-[#5c7c5c]/10 text-[#5c7c5c] border border-[#5c7c5c]/30',
+    dark: 'dark:bg-[#5c7c5c]/20 dark:text-[#6b8b6b] dark:border-[#5c7c5c]/40'
   },
   unscored: {
     light: 'bg-transparent text-gray-400 border-2 border-dashed border-gray-200',
@@ -32,13 +32,12 @@ const PRIORITY_STYLES: Record<string, { light: string; dark: string }> = {
 };
 
 export function PriorityCell({ priority }: PriorityCellProps) {
-  // Show em-dash for null or empty
   if (!priority) {
     return <span className="text-gray-400 dark:text-gray-500">—</span>;
   }
 
   const normalizedPriority = priority.toLowerCase();
-  const styles = PRIORITY_STYLES[normalizedPriority] || PRIORITY_STYLES.low;
+  const styles = PRIORITY_STYLES[normalizedPriority] || PRIORITY_STYLES.unscored;
 
   return (
     <span className={cn(
