@@ -43,7 +43,7 @@ function calculateCompletion(data: Record<string, any>): number {
     { key: 'title', weight: 25, validator: (v: string) => v && v.length >= 5 },
     { key: 'description', weight: 25, validator: (v: string) => {
       const text = (v || '').replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
-      return text.split(' ').filter(Boolean).length >= 10;
+      return text.length > 0; // Just require some content, not 10 words
     }},
     { key: 'assignee', weight: 20, validator: (v: string) => !!v },
     { key: 'department_id', weight: 15, validator: (v: string) => !!v },
