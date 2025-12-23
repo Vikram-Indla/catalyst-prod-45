@@ -31,7 +31,7 @@ function checkIsCurrentQuarter(quarter: string): boolean {
 
 export function QuarterCell({ quarter, isCurrentQuarter }: QuarterCellProps) {
   if (!quarter) {
-    return <span className="text-[var(--industry-text-disabled)]">—</span>;
+    return <span className="text-gray-400 dark:text-gray-500 text-sm">—</span>;
   }
 
   const isCurrent = isCurrentQuarter ?? checkIsCurrentQuarter(quarter);
@@ -39,10 +39,16 @@ export function QuarterCell({ quarter, isCurrentQuarter }: QuarterCellProps) {
   return (
     <span 
       className={cn(
-        "inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium",
+        "inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium border",
         isCurrent 
-          ? "bg-[var(--brand-gold)]/10 text-[var(--brand-gold)] border border-[var(--brand-gold)]/30" 
-          : "bg-muted text-muted-foreground"
+          ? cn(
+              "bg-[var(--brand-gold)]/10 text-[var(--brand-gold)] border-[var(--brand-gold)]/30",
+              "dark:bg-[#c69c6d]/20 dark:text-[#d4a855] dark:border-[#c69c6d]/40"
+            )
+          : cn(
+              "bg-blue-50 text-blue-700 border-blue-200",
+              "dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800"
+            )
       )}
     >
       {formatQuarter(quarter)}

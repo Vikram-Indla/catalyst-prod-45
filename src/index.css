@@ -177,6 +177,13 @@
     --industry-text-muted: #666666;
     --industry-text-disabled: #999999;
     
+    /* Industry Status Colors - Light Mode */
+    --industry-status-new: #3b82f6;         /* Blue for new items */
+    --industry-status-progress: #c69c6d;    /* Brand gold for in-progress */
+    --industry-status-review: #8b5cf6;      /* Purple for review */
+    --industry-status-approved: #22c55e;    /* Green for approved */
+    --industry-status-blocked: #ef4444;     /* Red for blocked */
+    
     /* ═══════════════════════════════════════════════════════════════
        CATALYST PROCESS STEP STATUS COLORS — Brand-Aligned
        Only using: Olive, Bronze, Gold, Champagne + neutral grays
@@ -335,6 +342,32 @@
     /* Gold link colors - Dark mode (champagne for visibility) */
     --gold-link: 34 40% 71%;             /* #d4b896 champagne */
     --gold-link-hover: 34 50% 78%;       /* brighter */
+    
+    /* ═══════════════════════════════════════════════════════════════
+       Industry Backlog Table tokens - Dark Mode (9.5 Grade Compliance)
+       ═══════════════════════════════════════════════════════════════ */
+    --industry-bg-page: #0a0a0a;           /* Gray-900 page background */
+    --industry-bg-card: #171717;           /* Gray-800 table container */
+    --industry-bg-subtle: #0f0f0f;         /* Gray-900 header background */
+    --industry-bg-hover: rgba(64, 64, 64, 0.5);  /* gray-700/50 hover */
+    --industry-border-default: #404040;    /* Gray-700 visible borders */
+    --industry-border-subtle: #404040;     /* Gray-700 row dividers */
+    --industry-text-primary: #fafafa;      /* Gray-100 primary text */
+    --industry-text-secondary: #d4d4d4;    /* Gray-300 secondary text */
+    --industry-text-muted: #a3a3a3;        /* Gray-400 muted (never 500) */
+    --industry-text-disabled: #737373;     /* Gray-500 for disabled only */
+    
+    /* Industry Status Colors - Dark Mode (brighter for contrast) */
+    --industry-status-new: #60a5fa;        /* Blue-400 */
+    --industry-status-progress: #d4a855;   /* Brighter gold */
+    --industry-status-review: #a78bfa;     /* Purple-400 */
+    --industry-status-approved: #4ade80;   /* Green-400 */
+    --industry-status-blocked: #f87171;    /* Red-400 */
+    
+    /* Industry Priority Colors - Dark Mode (brighter) */
+    --industry-priority-high: #7a9a7a;     /* Brighter olive */
+    --industry-priority-medium: #d4a855;   /* Brighter gold */
+    --industry-priority-low: #e5c9a8;      /* Brighter champagne */
   }
   
   * {

@@ -243,16 +243,24 @@ export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableVi
 
   return (
     <div className="flex flex-col h-full">
-      {/* Table Container with Industry styling */}
+      {/* Table Container with Industry styling - Dark mode 9.5 grade */}
       <div 
-        className="flex flex-col flex-1 bg-[var(--industry-bg-card)] dark:bg-card rounded-[14px] border border-[var(--industry-border-default)] overflow-hidden"
+        className={cn(
+          "flex flex-col flex-1 rounded-[14px] border overflow-hidden",
+          "bg-[var(--industry-bg-card)] border-[var(--industry-border-default)]",
+          "dark:bg-[#171717] dark:border-[#404040]"
+        )}
         style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}
       >
         {/* Header Bar */}
-        <div className="flex items-center justify-between px-4 py-2.5 border-b border-[var(--industry-border-default)] bg-[var(--industry-bg-subtle)] dark:bg-muted/30">
+        <div className={cn(
+          "flex items-center justify-between px-4 py-2.5 border-b",
+          "border-[var(--industry-border-default)] bg-[var(--industry-bg-subtle)]",
+          "dark:border-[#404040] dark:bg-[#0f0f0f]"
+        )}>
           <div className="flex items-center gap-3">
-            <span className="text-sm text-[var(--industry-text-secondary)]">
-              <strong className="font-semibold text-[var(--industry-text-primary)]">{sortedData.length}</strong> requests
+            <span className="text-sm text-[var(--industry-text-secondary)] dark:text-gray-300">
+              <strong className="font-semibold text-[var(--industry-text-primary)] dark:text-gray-100">{sortedData.length}</strong> {sortedData.length === 1 ? 'request' : 'requests'}
             </span>
           </div>
           <ColumnVisibilityDropdown
@@ -268,20 +276,35 @@ export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableVi
         <div className="flex-1 overflow-auto">
           <DragDropContext onDragEnd={handleDragEnd}>
             <table className="w-full min-w-[1000px] border-collapse text-[13px]">
-              <thead className="sticky top-0 z-10 bg-[var(--industry-bg-card)] dark:bg-card">
+              {/* Column width definitions to prevent ID wrapping */}
+              <colgroup>
+                <col style={{ width: '32px' }} />      {/* Drag handle */}
+                <col style={{ width: '48px' }} />      {/* Checkbox */}
+                <col style={{ width: '100px' }} />     {/* ID - prevent wrapping */}
+                {/* Dynamic columns */}
+              </colgroup>
+              <thead className={cn(
+                "sticky top-0 z-10",
+                "bg-[var(--industry-bg-card)] dark:bg-[#0f0f0f]"
+              )}>
                 <tr>
-                  <th className="w-8 px-2 py-3.5 text-left border-b border-[var(--industry-border-default)]" />
+                  <th className={cn(
+                    "w-8 px-2 py-3.5 text-left border-b",
+                    "border-[var(--industry-border-default)] dark:border-[#404040]"
+                  )} />
                   {displayColumns.map(column => {
                     const isActive = sortConfig.column === column.key;
                     return (
                       <th
                         key={column.key}
                         className={cn(
-                          "text-left border-b border-[var(--industry-border-default)]",
-                          "whitespace-nowrap px-4 py-3.5",
+                          "text-left border-b whitespace-nowrap px-4 py-3.5",
                           "text-[11px] uppercase font-semibold tracking-[0.5px]",
-                          isActive ? "text-[var(--brand-gold)]" : "text-[var(--industry-text-muted)]",
-                          column.sortable && "cursor-pointer hover:text-[var(--industry-text-secondary)]"
+                          "border-[var(--industry-border-default)] dark:border-[#404040]",
+                          isActive 
+                            ? "text-[var(--brand-gold)] dark:text-[#d4a855]" 
+                            : "text-[var(--industry-text-muted)] dark:text-gray-400",
+                          column.sortable && "cursor-pointer hover:text-[var(--industry-text-secondary)] dark:hover:text-gray-300"
                         )}
                         style={{ width: column.width, minWidth: column.minWidth }}
                         onClick={() => column.sortable && handleSort(column.key)}
@@ -290,11 +313,14 @@ export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableVi
                           <Checkbox
                             checked={isAllSelected || (isIndeterminate ? 'indeterminate' : false)}
                             onCheckedChange={() => toggleAll()}
-                            className="data-[state=checked]:bg-[var(--brand-gold)] data-[state=checked]:border-[var(--brand-gold)]"
+                            className={cn(
+                              "data-[state=checked]:bg-[var(--brand-gold)] data-[state=checked]:border-[var(--brand-gold)]",
+                              "border-gray-300 dark:border-gray-500 dark:bg-[#262626]"
+                            )}
                           />
                         ) : (
                           <div className="flex items-center">
-                            <span className={cn(isActive && "border-b-2 border-[var(--brand-gold)] pb-0.5")}>
+                            <span className={cn(isActive && "border-b-2 border-[var(--brand-gold)] dark:border-[#d4a855] pb-0.5")}>
                               {column.label}
                             </span>
                             {renderSortIcon(column)}
@@ -304,15 +330,22 @@ export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableVi
                     );
                   })}
                   {/* Actions column header */}
-                  <th className="w-[100px] text-right px-4 py-3.5 border-b border-[var(--industry-border-default)]" />
+                  <th className={cn(
+                    "w-[100px] text-right px-4 py-3.5 border-b",
+                    "border-[var(--industry-border-default)] dark:border-[#404040]"
+                  )} />
                 </tr>
               </thead>
               <Droppable droppableId="backlog-table">
                 {(provided) => (
-                  <tbody ref={provided.innerRef} {...provided.droppableProps}>
+                  <tbody 
+                    ref={provided.innerRef} 
+                    {...provided.droppableProps}
+                    className="divide-y divide-gray-100 dark:divide-[#404040]"
+                  >
                     {isLoading ? (
                       Array.from({ length: 6 }).map((_, i) => (
-                        <tr key={i} className="border-b border-[var(--industry-border-subtle)]">
+                        <tr key={i} className="border-b border-[var(--industry-border-subtle)] dark:border-[#404040]">
                           <td className="px-2 py-3.5" />
                           {displayColumns.map(col => (
                             <td key={col.key} className="px-4 py-3.5">
@@ -324,7 +357,7 @@ export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableVi
                       ))
                     ) : sortedData.length === 0 ? (
                       <tr>
-                        <td colSpan={displayColumns.length + 2} className="text-center py-20 text-[var(--industry-text-muted)]">
+                        <td colSpan={displayColumns.length + 2} className="text-center py-20 text-[var(--industry-text-muted)] dark:text-gray-400">
                           No requests found
                         </td>
                       </tr>
@@ -336,10 +369,10 @@ export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableVi
                               ref={provided.innerRef}
                               {...provided.draggableProps}
                               className={cn(
-                                "border-b border-[var(--industry-border-subtle)] transition-colors",
-                                "hover:bg-[var(--industry-bg-hover)]",
-                                selectedIds.has(row.id) && "bg-[var(--brand-gold)]/[0.08]",
-                                snapshot.isDragging && "bg-muted shadow-lg"
+                                "transition-colors cursor-pointer",
+                                "hover:bg-[var(--industry-bg-hover)] dark:hover:bg-[#262626]/50",
+                                selectedIds.has(row.id) && "bg-[var(--brand-gold)]/[0.08] dark:bg-[#c69c6d]/[0.15]",
+                                snapshot.isDragging && "bg-muted dark:bg-[#333333] shadow-lg"
                               )}
                               onMouseEnter={() => setHoveredRowId(row.id)}
                               onMouseLeave={() => setHoveredRowId(null)}
