@@ -270,6 +270,8 @@ export function useBusinessRequestRoadmapItems(
       rank: request.rank,
       startDate: startDate,
       endDate: endDate,
+      linkedItemsCount: requestFeatures.length, // Count of linked features
+      health: request.health === 'red' ? 'red' : request.health === 'yellow' ? 'yellow' : 'green',
       milestones, // Linked Features as markers
       risks: [],
       dependencies: [],
