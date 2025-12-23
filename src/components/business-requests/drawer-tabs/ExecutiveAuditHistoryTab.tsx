@@ -109,12 +109,17 @@ export function ExecutiveAuditHistoryTab({ requestId }: ExecutiveAuditHistoryTab
 
   const allLogs = data?.pages.flatMap(page => page.logs) || [];
   
-  // Deduplicate logs - remove duplicate CREATE entries with same timestamp
+  // Deduplicate logs - remove entries with exact same id or same action/field/timestamp/actor
   const deduplicatedLogs = allLogs.reduce<AuditLog[]>((acc, log) => {
     const isDuplicate = acc.some(existing => 
-      existing.action === log.action &&
-      existing.field_changed === log.field_changed &&
-      existing.created_at === log.created_at
+      existing.id === log.id || (
+        existing.action === log.action &&
+        existing.field_changed === log.field_changed &&
+        existing.created_at === log.created_at &&
+        existing.actor_name === log.actor_name &&
+        existing.old_value === log.old_value &&
+        existing.new_value === log.new_value
+      )
     );
     if (!isDuplicate) {
       acc.push(log);
@@ -122,7 +127,7 @@ export function ExecutiveAuditHistoryTab({ requestId }: ExecutiveAuditHistoryTab
     return acc;
   }, []);
   
-  const totalCount = deduplicatedLogs.length; // Use deduplicated count for display
+  const totalCount = allLogs.length; // Use raw count from database for display
 
   // Group logs by timestamp (same minute = same changeset)
   const groupedChanges = deduplicatedLogs.reduce<ChangeGroup[]>((groups, log) => {
