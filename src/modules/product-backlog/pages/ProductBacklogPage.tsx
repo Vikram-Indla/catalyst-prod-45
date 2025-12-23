@@ -315,13 +315,11 @@ export default function ProductBacklogPage() {
       .from('business_requests')
       .insert({
         title: `${original.title} (Copy)`,
-        process_step: 'new_demand',
+        process_step: 'new_request',
 
         // Ensure cloned demand starts unscored
         business_score: null,
         business_value: null,
-        executive_urgency: null,
-        complexity_score: null,
         score_strategic_alignment: null,
         score_time_urgency: null,
         score_resource_feasibility: null,

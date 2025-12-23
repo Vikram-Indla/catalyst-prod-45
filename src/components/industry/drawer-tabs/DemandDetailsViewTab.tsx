@@ -260,7 +260,7 @@ export function DemandDetailsViewTab({ data, onChange, onDirtyChange }: DemandDe
   };
 
   // Get status display info
-  const statusKey = data.process_step?.toLowerCase() || 'new_demand';
+  const statusKey = data.process_step?.toLowerCase() || 'new_request';
   const statusInfo = processSteps.find(s => s.value === statusKey);
   const statusLabel = statusInfo?.label || 'New demand';
   const statusColor = getStatusColor(statusKey);
