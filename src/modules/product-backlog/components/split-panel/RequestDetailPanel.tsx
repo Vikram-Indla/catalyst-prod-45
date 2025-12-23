@@ -99,6 +99,15 @@ const QUARTER_OPTIONS = [
   'Q1 2027', 'Q2 2027',
 ];
 
+function normalizeQuarterValue(q: string | null | undefined): string {
+  if (!q) return '';
+  return q
+    .toUpperCase()
+    .replace(/[-_]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
 // Fallback department options (used if DB fetch fails)
 const FALLBACK_DEPARTMENT_OPTIONS = [
   'Standard Incentive',
@@ -488,15 +497,17 @@ export function RequestDetailPanel({
             <div>
               <FieldLabel>Target Quarter</FieldLabel>
               <Select 
-                value={request.quarter || ''} 
-                onValueChange={(value) => onUpdateField('quarter', value)}
+                value={normalizeQuarterValue(request.quarter) || ''}
+                onValueChange={(value) => onUpdateField('quarter', normalizeQuarterValue(value))}
               >
                 <SelectTrigger className="w-full h-10">
                   <SelectValue placeholder="Select quarter..." />
                 </SelectTrigger>
                 <SelectContent className="z-[500] bg-popover">
                   {QUARTER_OPTIONS.map((q) => (
-                    <SelectItem key={q} value={q}>{q}</SelectItem>
+                    <SelectItem key={q} value={q}>
+                      {q}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
