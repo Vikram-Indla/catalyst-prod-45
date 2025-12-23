@@ -364,7 +364,7 @@ export function DemandDetailsTab({ data, onChange }: DemandDetailsTabProps) {
             </Select>
           </div>
           <div>
-            <CompactLabel>Planned Quarter</CompactLabel>
+            <CompactLabel>Target Quarter</CompactLabel>
             <Select
               value={data.planned_quarter || ''}
               onValueChange={(value) => onChange('planned_quarter', value)}
