@@ -107,19 +107,20 @@ const SUPPORT_OPTIONS = [
   { value: 'L3', label: 'L3' },
 ];
 
-// Default columns configuration - committee and major hidden by default
+// Streamlined 6-column structure: Key, Summary, Severity, Status, Assignee, SLA
 const DEFAULT_VISIBLE_COLUMNS: ColumnConfig[] = [
   { id: 'key', label: 'Key', visible: true, required: true },
   { id: 'summary', label: 'Summary', visible: true, required: true },
-  { id: 'severity', label: 'Sev', visible: true },
-  { id: 'level', label: 'Lvl', visible: true },
+  { id: 'severity', label: 'Severity', visible: true },
   { id: 'status', label: 'Status', visible: true },
   { id: 'assignee', label: 'Assignee', visible: true },
-  { id: 'age', label: 'Age', visible: true },
   { id: 'sla', label: 'SLA', visible: true },
+  // Hidden columns - can be enabled via column selector
+  { id: 'level', label: 'Level', visible: false },
+  { id: 'age', label: 'Age', visible: false },
   { id: 'releaseVersion', label: 'Release', visible: false },
-  { id: 'major', label: 'Major', visible: false }, // Hidden - redundant with Sev
-  { id: 'committee', label: 'Committee', visible: false }, // Hidden - shows N/A usually
+  { id: 'major', label: 'Major', visible: false },
+  { id: 'committee', label: 'Committee', visible: false },
 ];
 
 function LoadingSkeleton({ 
@@ -615,10 +616,16 @@ export function IncidentListTable({
                       className={cn(
                         // CSS Grid row - exactly 36px height
                         'grid items-center h-9 transition-colors cursor-pointer border-b border-border last:border-b-0',
-                        // Row highlighting for critical items
-                        isCritical && 'bg-red-50/50 dark:bg-red-950/20',
-                        isBreached && !isCritical && 'bg-red-50/30 dark:bg-red-950/10',
-                        isHovered && 'bg-muted/30'
+                        // SEV1 Critical - Strong red highlight with left border
+                        isCritical && 'bg-red-50 dark:bg-red-950/30 hover:bg-red-100 dark:hover:bg-red-950/50 border-l-4 border-l-red-500',
+                        // SLA Breached (non-critical) - Amber highlight with left border
+                        isBreached && !isCritical && 'bg-amber-50 dark:bg-amber-950/30 hover:bg-amber-100 dark:hover:bg-amber-950/50 border-l-4 border-l-amber-500',
+                        // SEV2 High - Subtle orange tint
+                        !isCritical && !isBreached && incident.severity === 'SEV2' && 'bg-orange-50/50 dark:bg-orange-950/20 hover:bg-orange-50 dark:hover:bg-orange-950/30',
+                        // Default rows
+                        !isCritical && !isBreached && incident.severity !== 'SEV2' && 'bg-card hover:bg-muted/30',
+                        // Hover override for non-highlighted rows
+                        isHovered && !isCritical && !isBreached && incident.severity !== 'SEV2' && 'bg-muted/30'
                       )}
                       style={{ gridTemplateColumns: gridTemplate }}
                       onClick={(e) => handleRowClick(incident.id, e)}

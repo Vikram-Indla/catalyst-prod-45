@@ -24,14 +24,15 @@ const SUMMARY_COLUMN = 'summary';
 
 // Base minimum widths (content + padding allowance)
 export const MIN_COLUMN_WIDTHS: Record<string, number> = {
-  key: 80,
-  summary: 180,
-  severity: 54,
+  key: 100,
+  summary: 200,
+  severity: 80,
+  status: 100,
+  assignee: 120,
+  sla: 90,
+  // Hidden columns
   level: 44,
-  status: 80,
-  assignee: 100,
   age: 48,
-  sla: 64,
   releaseVersion: 80,
   major: 54,
   committee: 72,
@@ -40,14 +41,15 @@ export const MIN_COLUMN_WIDTHS: Record<string, number> = {
 
 // Maximum widths for columns
 export const MAX_COLUMN_WIDTHS: Record<string, number> = {
-  key: 120,
-  summary: 600, // Summary max - prevents it from taking over
-  severity: 80,
-  level: 60,
-  status: 120,
+  key: 140,
+  summary: 700, // Summary max - gives it room to breathe
+  severity: 100,
+  status: 140,
   assignee: 200,
+  sla: 110,
+  // Hidden columns
+  level: 60,
   age: 64,
-  sla: 80,
   releaseVersion: 140,
   major: 70,
   committee: 120,
@@ -57,9 +59,12 @@ export const MAX_COLUMN_WIDTHS: Record<string, number> = {
 // Flexible column weights for distributing remaining space
 // Higher weight = more space
 const FLEXIBLE_WEIGHTS: Record<string, number> = {
-  status: 2,
-  assignee: 2.5,
+  summary: 4,     // Give summary the most space
+  status: 1.5,
+  assignee: 2,
   severity: 1,
+  sla: 1,
+  // Hidden columns
   level: 0.8,
   age: 0.8,
   releaseVersion: 1.5,
@@ -69,14 +74,15 @@ const FLEXIBLE_WEIGHTS: Record<string, number> = {
 
 // Sensible fallback defaults if we can't measure
 export const DEFAULT_COLUMN_WIDTHS: Record<string, number> = {
-  key: 90,
-  summary: 320,
-  severity: 60,
+  key: 110,
+  summary: 400,
+  severity: 85,
+  status: 120,
+  assignee: 150,
+  sla: 100,
+  // Hidden columns
   level: 50,
-  status: 95,
-  assignee: 140,
   age: 52,
-  sla: 70,
   releaseVersion: 95,
   major: 58,
   committee: 85,
@@ -84,29 +90,31 @@ export const DEFAULT_COLUMN_WIDTHS: Record<string, number> = {
 };
 
 // Column order for iteration - EXACT ORDER for header and rows
+// Streamlined: Key, Summary, Severity, Status, Assignee, SLA (6 core columns)
 export const COLUMN_ORDER = [
   'key', 
   'summary', 
   'severity', 
-  'level', 
   'status', 
   'assignee', 
+  'sla',
+  // Hidden columns (can be enabled via column selector)
+  'level', 
   'age', 
-  'sla', 
   'releaseVersion', 
   'major', 
   'committee', 
   'actions'
 ];
 
-// Center-aligned columns (SEV onward - everything except KEY and SUMMARY)
+// Center-aligned columns (everything except KEY and SUMMARY)
 export const CENTER_ALIGNED_COLUMNS = [
   'severity', 
-  'level', 
   'status', 
   'assignee', 
+  'sla',
+  'level', 
   'age', 
-  'sla', 
   'releaseVersion', 
   'major', 
   'committee'

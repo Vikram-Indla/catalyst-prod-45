@@ -154,11 +154,18 @@ export default function IncidentRoomList() {
   }, [searchQuery, filters, sortField, sortOrder]);
 
   // Summary counts from backend data
-  const stats = useMemo(() => ({
-    critical: incidents?.filter(i => i.severity === 'SEV1' && !['resolved', 'closed', 'converted'].includes(i.status)).length || 0,
-    open: incidents?.filter(i => ['open', 'triage', 'in_progress'].includes(i.status)).length || 0,
-    toCommittee: incidents?.filter(i => i.status === 'to_committee').length || 0,
-  }), [incidents]);
+  const stats = useMemo(() => {
+    const slaBreached = incidents?.filter(i => 
+      (i.sla?.response_breached || i.sla?.resolution_breached) && 
+      !['resolved', 'closed', 'converted'].includes(i.status)
+    ).length || 0;
+    
+    return {
+      critical: incidents?.filter(i => i.severity === 'SEV1' && !['resolved', 'closed', 'converted'].includes(i.status)).length || 0,
+      open: incidents?.filter(i => ['open', 'triage', 'in_progress'].includes(i.status)).length || 0,
+      slaBreached,
+    };
+  }, [incidents]);
 
   const activeFilterCount = [
     filters.status?.length || 0,
@@ -198,16 +205,16 @@ export default function IncidentRoomList() {
               {/* Summary Counts - Subtle chips */}
               <div className="hidden lg:flex items-center gap-3 text-xs text-muted-foreground mr-3">
                 <span className="flex items-center gap-1.5">
-                  <span className="h-2 w-2 rounded-full bg-rose-500" />
+                  <span className="h-2 w-2 rounded-full bg-red-500" />
                   <span className="font-medium text-foreground">{stats.critical}</span> critical
                 </span>
                 <span className="flex items-center gap-1.5">
-                  <span className="h-2 w-2 rounded-full bg-sky-500" />
-                  {stats.open} open
+                  <span className="h-2 w-2 rounded-full bg-blue-500" />
+                  <span className="font-medium text-foreground">{stats.open}</span> open
                 </span>
                 <span className="flex items-center gap-1.5">
                   <span className="h-2 w-2 rounded-full bg-amber-500" />
-                  {stats.toCommittee} committee
+                  <span className="font-medium text-foreground">{stats.slaBreached}</span> SLA breached
                 </span>
               </div>
 
