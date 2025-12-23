@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { X, Save, CheckCircle } from 'lucide-react';
+import { X, Save } from 'lucide-react';
 import { useCreateBusinessRequest } from '@/hooks/useBusinessRequests';
 import { toast } from 'sonner';
 import { DemandDetailsTab } from './create-tabs/DemandDetailsTab';
@@ -90,7 +90,6 @@ async function uploadAttachments(requestId: string, attachments: File[]) {
 export function CreateBusinessRequestModal({ isOpen, onClose }: CreateBusinessRequestModalProps) {
   const createMutation = useCreateBusinessRequest();
   const [formData, setFormData] = useState<Record<string, any>>(getInitialFormData());
-  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
 
   const handleFieldChange = (field: string, value: any) => {
@@ -149,14 +148,13 @@ export function CreateBusinessRequestModal({ isOpen, onClose }: CreateBusinessRe
         setIsUploading(false);
       }
       
-      setShowSuccessMessage(true);
+      // Show toast with request details and close immediately
+      const requestKey = createdRequest?.request_key || createdRequest?.id?.slice(0, 8);
+      const summary = formData.title.length > 50 ? formData.title.slice(0, 50) + '...' : formData.title;
+      toast.success(`Request ${requestKey} created: "${summary}"`);
       
-      // Hide success message and close after 2 seconds
-      setTimeout(() => {
-        setShowSuccessMessage(false);
-        setFormData(getInitialFormData());
-        onClose();
-      }, 2500);
+      setFormData(getInitialFormData());
+      onClose();
     } catch (error) {
       console.error('Failed to create request:', error);
       setIsUploading(false);
@@ -164,7 +162,6 @@ export function CreateBusinessRequestModal({ isOpen, onClose }: CreateBusinessRe
   };
 
   const handleClose = () => {
-    setShowSuccessMessage(false);
     setFormData(getInitialFormData());
     onClose();
   };
@@ -181,21 +178,6 @@ export function CreateBusinessRequestModal({ isOpen, onClose }: CreateBusinessRe
       )}>
         {/* Accent Bar */}
         <div className="h-1 bg-gradient-to-r from-secondary-olive via-secondary-bronze to-secondary-champagne flex-shrink-0" />
-
-        {/* Success Message Overlay */}
-        {showSuccessMessage && (
-          <div className="absolute inset-0 z-50 flex items-center justify-center bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm">
-            <div className="text-center space-y-3 px-6 py-8 animate-in fade-in-0 zoom-in-95">
-              <div className="w-16 h-16 mx-auto rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
-                <CheckCircle className="h-10 w-10 text-green-600 dark:text-green-400" />
-              </div>
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Request Submitted</h3>
-              <p className="text-sm text-gray-500 dark:text-gray-400 max-w-xs">
-                Your business request is submitted for review and prioritization.
-              </p>
-            </div>
-          </div>
-        )}
 
         {/* Compact Header */}
         <div className="px-5 py-3 border-b border-gray-200 dark:border-gray-700 flex-shrink-0 bg-white dark:bg-gray-900">
@@ -244,7 +226,7 @@ export function CreateBusinessRequestModal({ isOpen, onClose }: CreateBusinessRe
           </Button>
           <Button 
             onClick={handleSave}
-            disabled={createMutation.isPending || showSuccessMessage || isUploading}
+            disabled={createMutation.isPending || isUploading}
             className={cn(
               "px-4 py-2 text-sm font-medium",
               "text-white bg-secondary-olive hover:bg-secondary-olive/90",
