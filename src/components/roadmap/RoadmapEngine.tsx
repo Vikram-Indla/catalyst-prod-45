@@ -16,7 +16,6 @@ import {
   Check,
   Info,
   Search,
-  Home,
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
@@ -966,96 +965,58 @@ export function RoadmapEngine({ config, items, isLoading, className, onItemClick
                 onMouseEnter={() => setHoveredItem(item.id)}
                 onMouseLeave={() => setHoveredItem(null)}
               >
-                <div className="h-full px-4 py-2.5 flex items-center gap-3 overflow-hidden">
-                  {/* Left: Circle indicator */}
-                  <div className="w-7 h-7 rounded-full border-2 flex items-center justify-center shrink-0" style={{ borderColor: 'hsl(var(--roadmap-status-new))' }}>
-                    <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: 'hsl(var(--roadmap-status-new))' }} />
+                <div className="h-full px-4 py-2.5 flex flex-col justify-center overflow-hidden">
+                  <div className="flex items-center gap-1.5 min-w-0">
+                    <span className="text-xs font-bold shrink-0" style={{ color: 'hsl(var(--roadmap-charcoal))' }}>#{item.rank}</span>
+                    {(item.rank === 1 || item.rank === 3 || item.rank === 9) && (
+                      <Lock className="h-3 w-3 shrink-0" style={{ color: 'hsl(var(--roadmap-status-new))' }} />
+                    )}
+                    <button 
+                      onClick={(e) => { e.stopPropagation(); onItemClick?.(item.id); }}
+                      className="text-xs font-medium hover:underline cursor-pointer bg-transparent border-none p-0 shrink-0"
+                      style={{ color: 'hsl(var(--roadmap-status-new))' }}
+                    >
+                      {item.key || item.id.slice(0, 8)}
+                    </button>
                   </div>
-                  
-                  {/* Middle: Title + Date range */}
-                  <div className="flex-1 min-w-0">
-                    <TooltipProvider delayDuration={300}>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <button 
-                            onClick={(e) => { e.stopPropagation(); onItemClick?.(item.id); }}
-                            className="text-[13px] font-medium truncate leading-tight cursor-pointer hover:underline bg-transparent border-none p-0 text-left w-full"
-                            style={{ color: 'hsl(var(--roadmap-charcoal))' }}
-                          >
-                            {isRTL ? item.titleAr : item.titleEn}
-                          </button>
-                        </TooltipTrigger>
-                        <TooltipContent 
-                          side="top" 
-                          align="start"
-                          sideOffset={8}
-                          className="max-w-[400px] px-4 py-3 text-sm leading-relaxed rounded-xl shadow-2xl z-[9999]"
-                          style={{ 
-                            backgroundColor: 'hsl(var(--roadmap-charcoal))',
-                            color: 'white',
-                            border: '1px solid hsla(35, 46%, 60%, 0.3)'
-                          }}
+                  <TooltipProvider delayDuration={300}>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <button 
+                          onClick={(e) => { e.stopPropagation(); onItemClick?.(item.id); }}
+                          className="text-sm font-medium truncate leading-tight mt-1 cursor-pointer hover:underline bg-transparent border-none p-0 text-left w-full"
+                          style={{ color: 'hsl(var(--roadmap-status-new))' }}
                         >
-                          <div className="font-semibold mb-1.5 text-xs uppercase tracking-wider" style={{ color: 'hsl(35, 46%, 70%)' }}>
-                            {item.key || item.id.slice(0, 8)}
-                          </div>
-                          <div className="font-medium" style={{ color: 'white' }}>
-                            {isRTL ? item.titleAr : item.titleEn}
-                          </div>
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                    <div className="text-[11px] mt-0.5" style={{ color: 'hsl(var(--roadmap-fossil))' }}>
-                      {item.startDate && item.endDate ? (
-                        <>
-                          {new Date(item.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                          {' → '}
-                          {new Date(item.endDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                        </>
-                      ) : (
-                        isRTL ? item.ownerAr : item.ownerEn
-                      )}
-                    </div>
-                  </div>
-                  
-                  {/* Right: Linked items count + Owner initials + Health badge */}
-                  <div className="flex items-center gap-2 shrink-0">
-                    {/* Linked items count (home icon) */}
-                    {typeof item.linkedItemsCount === 'number' && item.linkedItemsCount > 0 && (
-                      <div className="flex items-center gap-1 text-xs" style={{ color: 'hsl(var(--roadmap-fossil))' }}>
-                        <Home className="h-3.5 w-3.5" />
-                        <span>{item.linkedItemsCount}</span>
-                      </div>
-                    )}
-                    
-                    {/* Owner initials avatar */}
-                    {item.ownerInitials && (
-                      <div 
-                        className="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-semibold shrink-0"
+                          {isRTL ? item.titleAr : item.titleEn}
+                        </button>
+                      </TooltipTrigger>
+                      <TooltipContent 
+                        side="top" 
+                        align="start"
+                        sideOffset={8}
+                        className="max-w-[400px] px-4 py-3 text-sm leading-relaxed rounded-xl shadow-2xl z-[9999]"
                         style={{ 
-                          backgroundColor: 'hsl(var(--roadmap-sandstone))', 
-                          color: 'hsl(var(--roadmap-charcoal))' 
+                          backgroundColor: 'hsl(var(--roadmap-charcoal))',
+                          color: 'white',
+                          border: '1px solid hsla(35, 46%, 60%, 0.3)'
                         }}
                       >
-                        {item.ownerInitials}
-                      </div>
-                    )}
-                    
-                    {/* Health badge */}
-                    {item.health && (
-                      <div 
-                        className="px-2 py-1 rounded text-[10px] font-semibold uppercase tracking-wide shrink-0"
-                        style={{ 
-                          backgroundColor: item.health === 'green' 
-                            ? 'hsl(var(--roadmap-status-new))' 
-                            : item.health === 'yellow' 
-                            ? 'hsl(35, 60%, 55%)' 
-                            : 'hsl(0, 65%, 50%)',
-                          color: 'white'
-                        }}
-                      >
-                        {item.health === 'green' ? 'ONTRACK' : item.health === 'yellow' ? 'ATRISK' : 'BLOCKED'}
-                      </div>
+                        <div className="font-semibold mb-1.5 text-xs uppercase tracking-wider" style={{ color: 'hsl(35, 46%, 70%)' }}>
+                          {item.key || item.id.slice(0, 8)}
+                        </div>
+                        <div className="font-medium" style={{ color: 'white' }}>
+                          {isRTL ? item.titleAr : item.titleEn}
+                        </div>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                  <div className="text-[11px] mt-1 truncate" style={{ color: 'hsl(var(--roadmap-fossil))' }}>
+                    {isRTL ? item.ownerAr : item.ownerEn}
+                    {getPlatformName(item.platform) && (
+                      <>
+                        <span className="mx-1.5">·</span>
+                        <span style={{ color: 'hsl(var(--roadmap-status-new))' }}>{getPlatformName(item.platform)}</span>
+                      </>
                     )}
                   </div>
                 </div>

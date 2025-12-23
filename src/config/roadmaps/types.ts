@@ -18,10 +18,7 @@ export interface RoadmapItem {
   rank: number | null;
   startDate: string;
   endDate: string;
-  linkedItemsCount?: number; // Count of linked child items (e.g., features for epics, features for business requests)
-  ownerInitials?: string; // Owner initials for avatar display
-  health?: 'green' | 'yellow' | 'red'; // Health status for badge display
-  milestones: Array<{ step: 1 | 2 | 3 | 4 | 5; date: string; state: 'complete' | 'current' | 'pending'; featureId?: string; featureName?: string; featureStatus?: string }>;
+  milestones: Array<{ step: 1 | 2 | 3 | 4 | 5; date: string; state: 'complete' | 'current' | 'pending' }>;
   risks: Array<{ sno: number; title: string; status: 'resolved' | 'pending' | 'blocked' }>;
   dependencies: Array<{ sno: number; title: string; status: 'resolved' | 'pending' | 'blocked' }>;
 }
