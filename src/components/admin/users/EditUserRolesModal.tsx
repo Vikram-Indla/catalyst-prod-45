@@ -107,21 +107,26 @@ export function EditUserRolesModal({
                 </div>
               ) : (
                 roles?.map((role) => (
-                  <div key={role.id} className="flex items-start gap-3">
+                  <div 
+                    key={role.id} 
+                    className="flex items-start gap-3 p-2 rounded hover:bg-muted/50 cursor-pointer"
+                    onClick={() => handleRoleToggle(role.id)}
+                  >
                     <Checkbox
                       id={`edit-role-${role.id}`}
                       checked={selectedRoles.includes(role.id)}
                       onCheckedChange={() => handleRoleToggle(role.id)}
+                      className="mt-0.5 pointer-events-none"
                     />
                     <div className="flex-1 min-w-0">
                       <label
                         htmlFor={`edit-role-${role.id}`}
-                        className="text-sm font-medium cursor-pointer"
+                        className="text-sm font-medium cursor-pointer pointer-events-none"
                       >
                         {role.name}
                       </label>
                       {role.description && (
-                        <p className="text-xs text-muted-foreground">{role.description}</p>
+                        <p className="text-xs text-muted-foreground pointer-events-none">{role.description}</p>
                       )}
                     </div>
                   </div>
