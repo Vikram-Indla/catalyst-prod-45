@@ -259,10 +259,10 @@ function CatalystDatePicker({
                 onClick={() => handleDateSelect(day.date)}
                 className={cn(
                   "h-9 w-9 flex items-center justify-center text-sm rounded-md transition-colors",
-                  "hover:bg-brand-primary/10 focus:outline-none focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-600",
+                  "hover:bg-accent/10 focus:outline-none focus:ring-2 focus:ring-ring/30",
                   !day.isCurrentMonth && "text-muted-foreground opacity-50",
-                  day.isToday && !day.isSelected && "border border-brand-primary text-brand-primary font-medium",
-                  day.isSelected && "bg-brand-primary text-white hover:bg-brand-primary-hover font-medium",
+                  day.isToday && !day.isSelected && "border border-primary text-primary font-medium",
+                  day.isSelected && "bg-primary text-primary-foreground hover:bg-primary/90 font-medium",
                   day.isDisabled && "opacity-30 cursor-not-allowed hover:bg-transparent"
                 )}
               >
@@ -279,7 +279,7 @@ function CatalystDatePicker({
                   variant="ghost"
                   size="sm"
                   onClick={handleClear}
-                  className="text-brand-primary hover:text-brand-primary-hover hover:bg-brand-primary/10 h-8 px-3"
+                  className="text-primary hover:text-primary hover:bg-primary/10 h-8 px-3"
                 >
                   Clear
                 </Button>
@@ -291,7 +291,7 @@ function CatalystDatePicker({
                   variant="ghost"
                   size="sm"
                   onClick={handleToday}
-                  className="text-brand-primary hover:text-brand-primary-hover hover:bg-brand-primary/10 h-8 px-3"
+                  className="text-primary hover:text-primary hover:bg-primary/10 h-8 px-3"
                 >
                   Today
                 </Button>

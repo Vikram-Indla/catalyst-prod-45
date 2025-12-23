@@ -79,7 +79,7 @@ export function EAReviewTab({ data, onChange }: EAReviewTabProps) {
 
   // Consistent field styling matching Review Date field
   const fieldContainerStyle = {
-    backgroundColor: 'hsl(var(--background))',
+    backgroundColor: 'hsl(var(--card))',
     border: '1px solid hsl(var(--border))',
     borderRadius: '0.5rem',
   };

@@ -109,9 +109,9 @@ function CurrencyInput({
           placeholder={placeholder}
           className={cn(
             "h-9 text-sm pr-14",
-            "bg-white dark:bg-gray-900",
-            "border-gray-200 dark:border-gray-700",
-            "focus:border-[#c69c6d] focus:ring-1 focus:ring-[#c69c6d]/20"
+            "bg-background",
+            "border-input",
+            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/20 focus-visible:border-ring"
           )}
         />
         <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm font-medium text-gray-400 dark:text-gray-500">
@@ -156,8 +156,8 @@ function BudgetTypeSelector({
             className={cn(
               "px-4 py-2 text-sm font-medium rounded-md transition-all",
               selected.includes(type)
-                ? "bg-[#c69c6d] text-white shadow-sm"
-                : "bg-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                ? "bg-accent text-accent-foreground shadow-sm"
+                : "bg-transparent text-muted-foreground hover:text-foreground hover:bg-muted"
             )}
           >
             {type}
@@ -198,24 +198,24 @@ function POTagsInput({
       <Label className="text-xs font-medium text-gray-700 dark:text-gray-300 mb-1.5 block">PO Number(s)</Label>
       <div className={cn(
         "flex flex-wrap gap-2 p-2 min-h-[42px] border rounded-lg transition-colors",
-        "bg-white dark:bg-gray-900",
-        "border-gray-200 dark:border-gray-700",
-        "focus-within:border-[#c69c6d] focus-within:ring-1 focus-within:ring-[#c69c6d]/20"
+        "bg-background",
+        "border-input",
+        "focus-within:border-ring focus-within:ring-2 focus-within:ring-ring/20"
       )}>
         {tags.map((tag, index) => (
           <span 
             key={index}
             className={cn(
               "inline-flex items-center gap-1 px-2 py-1 rounded text-sm font-medium",
-              "bg-[#c69c6d]/10 text-[#8b7355]",
-              "dark:bg-[#c69c6d]/20 dark:text-[#d4b896]"
+              "bg-accent/10 text-[hsl(var(--secondary-bronze))]",
+              "dark:bg-accent/20 dark:text-[hsl(var(--secondary-champagne))]"
             )}
           >
             {tag}
             <button 
               type="button"
               onClick={() => removeTag(tag)}
-              className="hover:text-[#c69c6d] dark:hover:text-[#d4b896]"
+              className="text-muted-foreground hover:text-accent"
             >
               <X className="w-3 h-3" />
             </button>
@@ -253,8 +253,8 @@ function FormSection({
   return (
     <Collapsible open={isOpen} onOpenChange={setIsOpen}>
       <div className="py-3">
-        <CollapsibleTrigger className="w-full flex items-center justify-between pb-3 border-b border-gray-200 dark:border-gray-700">
-          <h3 className="text-xs font-semibold uppercase tracking-wider text-[#5c7c5c] dark:text-[#7da37d]">
+        <CollapsibleTrigger className="w-full flex items-center justify-between pb-3 border-b border-border">
+          <h3 className="text-xs font-semibold uppercase tracking-wider text-[hsl(var(--secondary-green))]">
             {title}
           </h3>
           <ChevronDown className={cn(
@@ -296,12 +296,12 @@ export function BudgetViewTab({ data, onChange, onDirtyChange }: BudgetViewTabPr
   // Get status color classes
   const getFundingStatusStyle = () => {
     if (fundingStatus === 'Budget Approved' || fundingStatus === 'Funded from Existing Contract') {
-      return 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800';
+      return 'bg-primary/10 border-primary/20';
     }
     if (fundingStatus === 'Budget Requested' || fundingStatus === 'Partially Budgeted') {
-      return 'bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800';
+      return 'bg-accent/10 border-accent/20';
     }
-    return 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700';
+    return 'bg-card border-border';
   };
 
   return (
@@ -316,7 +316,7 @@ export function BudgetViewTab({ data, onChange, onDirtyChange }: BudgetViewTabPr
         {/* Funding Status Card */}
         <div className={cn("rounded-lg border p-4", getFundingStatusStyle())}>
           <div className="flex items-center gap-2 mb-2">
-            <Wallet className="h-4 w-4 text-[#c69c6d]" />
+            <Wallet className="h-4 w-4 text-accent" />
             <span className="text-xs font-medium text-gray-500 dark:text-gray-400">Funding Status</span>
           </div>
           <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">{fundingStatus}</p>
@@ -328,7 +328,7 @@ export function BudgetViewTab({ data, onChange, onDirtyChange }: BudgetViewTabPr
         {/* Approved Budget Card */}
         <div className="rounded-lg border p-4 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
           <div className="flex items-center gap-2 mb-2">
-            <TrendingUp className="h-4 w-4 text-[#c69c6d]" />
+            <TrendingUp className="h-4 w-4 text-accent" />
             <span className="text-xs font-medium text-gray-500 dark:text-gray-400">Approved Budget</span>
           </div>
           <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">{formatCurrency(approvedBudget)}</p>
@@ -496,7 +496,7 @@ export function BudgetViewTab({ data, onChange, onDirtyChange }: BudgetViewTabPr
             {/* Date validation */}
             {data.contract_start_date && data.contract_end_date && 
              new Date(data.contract_end_date) < new Date(data.contract_start_date) && (
-              <p className="text-xs text-red-500 mt-1">
+              <p className="text-xs text-destructive mt-1">
                 End date must be after start date.
               </p>
             )}
