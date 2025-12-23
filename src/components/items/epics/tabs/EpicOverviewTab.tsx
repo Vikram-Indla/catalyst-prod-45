@@ -81,7 +81,11 @@ export function EpicOverviewTab({ epic }: EpicOverviewTabProps) {
   const { data: users } = useQuery({
     queryKey: ['users-for-dropdown'],
     queryFn: async () => {
-      const { data } = await supabase.from('profiles').select('id, full_name, email').order('full_name');
+      const { data } = await supabase
+        .from('profiles')
+        .select('id, full_name, email')
+        .eq('approval_status', 'APPROVED')
+        .order('full_name');
       return data || [];
     },
   });
