@@ -85,8 +85,30 @@ export function useAccessibleTeams() {
         throw memberError;
       }
 
+      // Also include teams created by the current user (so newly created teams are visible immediately)
+      const { data: createdTeams, error: createdError } = await supabase
+        .from('teams')
+        .select(`
+          id,
+          name,
+          short_name,
+          team_type,
+          description,
+          project_id,
+          is_active,
+          projects:projects!project_id(name)
+        `)
+        .eq('created_by', user.id)
+        .eq('is_active', true)
+        .order('name');
+
+      if (createdError) {
+        console.error('Error fetching teams created by user:', createdError);
+        throw createdError;
+      }
+
       // Filter to active teams only
-      const teams = (memberTeams || [])
+      const memberTeamsMapped = (memberTeams || [])
         .filter(m => m.teams && (m.teams as any).is_active)
         .map(m => {
           const team = m.teams as any;
@@ -102,10 +124,21 @@ export function useAccessibleTeams() {
           };
         });
 
+      const createdTeamsMapped = (createdTeams || []).map((team: any) => ({
+        id: team.id,
+        name: team.name,
+        short_name: team.short_name,
+        team_type: team.team_type,
+        description: team.description,
+        project_id: team.project_id,
+        is_active: team.is_active,
+        project_name: team.projects?.name,
+      }));
+
+      const teams = [...memberTeamsMapped, ...createdTeamsMapped];
+
       // Deduplicate by team id
-      const uniqueTeams = Array.from(
-        new Map(teams.map(t => [t.id, t])).values()
-      );
+      const uniqueTeams = Array.from(new Map(teams.map(t => [t.id, t])).values());
 
       return uniqueTeams.sort((a, b) => a.name.localeCompare(b.name));
     },

@@ -119,6 +119,7 @@ export interface CreateTeamInput {
   kanban_throughput?: number;
   kanban_auto_populate_estimate?: boolean;
   kanban_wip_limit?: number;
+  created_by?: string;
 }
 
 export interface UpdateTeamInput extends Partial<CreateTeamInput> {

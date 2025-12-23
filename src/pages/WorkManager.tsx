@@ -16,6 +16,7 @@ import {
   X,
   Layers
 } from 'lucide-react';
+import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -43,6 +44,8 @@ import { teams as initialTeams, users, tasks, computeTaskExtended } from '@/lib/
 import type { TaskStatus, Team } from '@/components/work-manager/types';
 import type { TaskFilters, TaskDrawerState, TaskExtended, Task, GroupByOption } from '@/components/work-manager/types';
 import { useAccessibleTeams, useCanViewAllTeams } from '@/hooks/useAccessibleTeams';
+import { useCreateTeam } from '@/hooks/useTeams';
+import { useAuth } from '@/lib/auth';
 
 interface WorkManagerProps {
   tab?: 'boards' | 'tasks' | 'insights' | 'teams' | 'settings';
@@ -55,6 +58,8 @@ export function WorkManager({ tab: initialTab }: WorkManagerProps) {
   // Fetch accessible teams based on user role
   const { data: accessibleTeams = [], isLoading: isTeamsLoading } = useAccessibleTeams();
   const { canViewAllTeams, isLoading: isRoleLoading } = useCanViewAllTeams();
+  const { user } = useAuth();
+  const createTeam = useCreateTeam();
   
   // Get team ID from URL query parameter
   const urlTeamId = useMemo(() => {
@@ -253,11 +258,28 @@ export function WorkManager({ tab: initialTab }: WorkManagerProps) {
     ));
   };
 
-  // Create new team handler - now a no-op since teams come from DB
-  // This could be wired to the actual create team mutation if needed
-  const handleCreateTeam = (_teamInput: Omit<Team, 'id'>) => {
-    // Teams are now managed via the database
-    // For now, this is a placeholder - can be connected to useCreateTeam hook
+  // Create new team handler - now wired to the backend
+  const handleCreateTeam = (teamInput: Omit<Team, 'id'>) => {
+    if (!user) {
+      toast.error('Please sign in to create a team');
+      return;
+    }
+
+    const shortName = teamInput.name
+      .split(/\s+/)
+      .filter(Boolean)
+      .map(w => w[0]?.toUpperCase())
+      .join('')
+      .slice(0, 10) || teamInput.name.slice(0, 10).toUpperCase();
+
+    createTeam.mutate({
+      name: teamInput.name.trim(),
+      short_name: shortName,
+      team_type: 'AGILE',
+      description: teamInput.description?.trim() || undefined,
+      is_active: true,
+      created_by: user.id,
+    });
   };
 
   // Get selected task for drawer
