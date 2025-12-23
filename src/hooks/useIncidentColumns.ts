@@ -14,14 +14,14 @@ const DEFAULT_COLUMNS: ColumnConfig[] = [
   { id: 'summary', label: 'Summary', visible: true, required: true },
   { id: 'severity', label: 'Sev', visible: true, width: '72px' },
   { id: 'priority', label: 'Pri', visible: true, width: '48px' },
-  { id: 'level', label: 'Lvl', visible: false, width: '44px' }, // Hidden by default - redundant with Sev/Pri
+  { id: 'level', label: 'Lvl', visible: true, width: '44px' },
   { id: 'status', label: 'Status', visible: true, minWidth: '100px' },
   { id: 'assignee', label: 'Assignee', visible: true, width: '140px' },
   { id: 'age', label: 'Age', visible: true, width: '64px' },
   { id: 'sla', label: 'SLA', visible: true, width: '80px' },
   { id: 'releaseVersion', label: 'Release', visible: false, width: '100px' },
-  { id: 'major', label: 'Major', visible: false, width: '56px' },
-  { id: 'committee', label: 'Committee', visible: false, width: '80px' },
+  { id: 'major', label: 'Major', visible: false, width: '56px' }, // Hidden - redundant with Sev
+  { id: 'committee', label: 'Committee', visible: false, width: '80px' }, // Hidden - shows N/A usually
 ];
 
 const STORAGE_KEY = 'catalyst-incident-columns';

@@ -12,7 +12,7 @@
 
 import { useState, useMemo, useRef, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { MoreHorizontal, Eye, Pencil, Trash2, AlertTriangle, Copy, ChevronLeft, ChevronRight } from 'lucide-react';
+import { MoreHorizontal, Eye, Pencil, Trash2, AlertTriangle, Copy, ChevronLeft, ChevronRight, HelpCircle } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import {
@@ -107,7 +107,7 @@ const SUPPORT_OPTIONS = [
   { value: 'L3', label: 'L3' },
 ];
 
-// Default columns configuration
+// Default columns configuration - committee and major hidden by default
 const DEFAULT_VISIBLE_COLUMNS: ColumnConfig[] = [
   { id: 'key', label: 'Key', visible: true, required: true },
   { id: 'summary', label: 'Summary', visible: true, required: true },
@@ -118,8 +118,8 @@ const DEFAULT_VISIBLE_COLUMNS: ColumnConfig[] = [
   { id: 'age', label: 'Age', visible: true },
   { id: 'sla', label: 'SLA', visible: true },
   { id: 'releaseVersion', label: 'Release', visible: false },
-  { id: 'major', label: 'Major', visible: false },
-  { id: 'committee', label: 'Committee', visible: true },
+  { id: 'major', label: 'Major', visible: false }, // Hidden - redundant with Sev
+  { id: 'committee', label: 'Committee', visible: false }, // Hidden - shows N/A usually
 ];
 
 function LoadingSkeleton({ 
@@ -465,7 +465,7 @@ export function IncidentListTable({
                     <span className={HEADER_TEXT}>SEV</span>
                   </ResizableHeader>
                 )}
-                {/* Lvl - center aligned */}
+                {/* Lvl - center aligned with tooltip */}
                 {isColumnVisible('level') && (
                   <ResizableHeader
                     columnId="level"
@@ -476,7 +476,20 @@ export function IncidentListTable({
                     className={cn(GRID_CELL_BASE, "px-2")}
                     centered
                   >
-                    <span className={HEADER_TEXT}>LVL</span>
+                    <div className="flex items-center gap-1">
+                      <span className={HEADER_TEXT}>LVL</span>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <HelpCircle className="w-3 h-3 text-muted-foreground/60 cursor-help" />
+                        </TooltipTrigger>
+                        <TooltipContent side="bottom" className="text-xs max-w-[200px]">
+                          <p className="font-medium mb-1">Support Escalation Level</p>
+                          <p className="text-muted-foreground">L1: First Response</p>
+                          <p className="text-muted-foreground">L2: Engineering</p>
+                          <p className="text-muted-foreground">L3: Senior/Architect</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </div>
                   </ResizableHeader>
                 )}
                 {/* Status - center aligned */}
@@ -593,6 +606,8 @@ export function IncidentListTable({
                   const committeeStatus = getCommitteeDisplayStatus(incident.committee);
                   const isConverted = incident.status === 'converted' || incident.status === 'closed';
                   const isHovered = hoveredId === incident.id;
+                  const isCritical = incident.severity === 'SEV1';
+                  const isBreached = slaStatus === 'breached';
                   
                   return (
                     <div 
@@ -600,6 +615,9 @@ export function IncidentListTable({
                       className={cn(
                         // CSS Grid row - exactly 36px height
                         'grid items-center h-9 transition-colors cursor-pointer border-b border-border last:border-b-0',
+                        // Row highlighting for critical items
+                        isCritical && 'bg-red-50/50 dark:bg-red-950/20',
+                        isBreached && !isCritical && 'bg-red-50/30 dark:bg-red-950/10',
                         isHovered && 'bg-muted/30'
                       )}
                       style={{ gridTemplateColumns: gridTemplate }}
@@ -629,9 +647,12 @@ export function IncidentListTable({
                           {incident.is_major_incident && (
                             <Tooltip>
                               <TooltipTrigger asChild>
-                                <AlertTriangle className="h-3 w-3 ml-1 text-amber-500 shrink-0" />
+                                <AlertTriangle className="h-3.5 w-3.5 ml-1 text-amber-500 shrink-0" />
                               </TooltipTrigger>
-                              <TooltipContent side="right" className="text-xs">Major incident</TooltipContent>
+                              <TooltipContent side="right" className="text-xs">
+                                <p className="font-medium">Major Incident</p>
+                                <p className="text-muted-foreground">High-priority issue requiring immediate attention</p>
+                              </TooltipContent>
                             </Tooltip>
                           )}
                         </div>
