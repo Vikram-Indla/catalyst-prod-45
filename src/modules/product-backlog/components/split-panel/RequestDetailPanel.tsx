@@ -42,6 +42,7 @@ interface RequestItem {
   autoPriority: string;
   rank: number | null;
   reporter?: string | null;
+  reporterId?: string | null;
   assignee?: string | null;
   assigneeId?: string | null;
   department: string | null;

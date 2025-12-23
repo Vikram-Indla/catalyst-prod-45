@@ -255,11 +255,10 @@ export function RequestListPanel({
       <div className="shrink-0 p-3" style={{ borderTop: '1px solid var(--divider)' }}>
         <button
           onClick={onCreateRequest}
-          className="w-full h-9 flex items-center justify-center gap-2 rounded-lg text-sm font-medium text-white transition-colors"
-          style={{ backgroundColor: 'hsl(var(--secondary-olive))' }}
+          className="w-full h-9 flex items-center justify-center gap-2 rounded-lg text-sm font-medium transition-colors shadow-sm bg-secondary-olive hover:bg-secondary-olive/85 text-white"
         >
           <Plus className="w-4 h-4" />
-          Create Request
+          Create request
         </button>
       </div>
     </div>
