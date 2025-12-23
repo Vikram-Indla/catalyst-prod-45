@@ -9,19 +9,22 @@ export interface ColumnConfig {
   required?: boolean;
 }
 
+// Streamlined 6-column structure: Key, Summary, Severity, Status, Assignee, SLA
+// Removed: Level (rarely used), Age (secondary), Priority (redundant with Sev), Release/Major/Committee (useless)
 const DEFAULT_COLUMNS: ColumnConfig[] = [
-  { id: 'key', label: 'Key', visible: true, minWidth: '110px', required: true },
+  { id: 'key', label: 'Key', visible: true, minWidth: '100px', required: true },
   { id: 'summary', label: 'Summary', visible: true, required: true },
-  { id: 'severity', label: 'Sev', visible: true, width: '72px' },
-  { id: 'priority', label: 'Pri', visible: true, width: '48px' },
-  { id: 'level', label: 'Lvl', visible: true, width: '44px' },
-  { id: 'status', label: 'Status', visible: true, minWidth: '100px' },
-  { id: 'assignee', label: 'Assignee', visible: true, width: '140px' },
-  { id: 'age', label: 'Age', visible: true, width: '64px' },
-  { id: 'sla', label: 'SLA', visible: true, width: '80px' },
+  { id: 'severity', label: 'Severity', visible: true, width: '80px' },
+  { id: 'status', label: 'Status', visible: true, minWidth: '120px' },
+  { id: 'assignee', label: 'Assignee', visible: true, width: '150px' },
+  { id: 'sla', label: 'SLA', visible: true, width: '100px' },
+  // Hidden columns - can be enabled via column selector
+  { id: 'level', label: 'Level', visible: false, width: '44px' },
+  { id: 'age', label: 'Age', visible: false, width: '64px' },
+  { id: 'priority', label: 'Priority', visible: false, width: '48px' },
   { id: 'releaseVersion', label: 'Release', visible: false, width: '100px' },
-  { id: 'major', label: 'Major', visible: false, width: '56px' }, // Hidden - redundant with Sev
-  { id: 'committee', label: 'Committee', visible: false, width: '80px' }, // Hidden - shows N/A usually
+  { id: 'major', label: 'Major', visible: false, width: '56px' },
+  { id: 'committee', label: 'Committee', visible: false, width: '80px' },
 ];
 
 const STORAGE_KEY = 'catalyst-incident-columns';
