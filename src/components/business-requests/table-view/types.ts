@@ -45,7 +45,6 @@ export const DEFAULT_COLUMNS: TableColumn[] = [
   { key: 'id', label: 'ID', width: 100, sortable: true, visible: true },
   { key: 'status', label: 'Status', width: 130, sortable: true, visible: true },
   { key: 'title', label: 'Summary', minWidth: 250, sortable: true, visible: true },
-  { key: 'score', label: 'Score', width: 100, sortable: true, visible: true },
   { key: 'priority', label: 'Priority', width: 100, sortable: true, visible: true },
   { key: 'business_owner', label: 'Owner', width: 160, sortable: true, visible: true },
   { key: 'quarter', label: 'Quarter', width: 110, sortable: true, visible: true },
