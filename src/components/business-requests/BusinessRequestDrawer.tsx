@@ -722,83 +722,24 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
               className="w-full justify-start rounded-none h-auto shrink-0 flex-nowrap px-5 bg-transparent py-0"
               style={{ borderBottom: '1px solid var(--border-default, hsl(var(--border)))' }}
             >
-              {VIEW_TABS.map((tab) => {
-                // Calculate status indicators based on data
-                const getTabStatus = () => {
-                  switch (tab.value) {
-                    case 'details':
-                      return formData.title && formData.description 
-                        ? { type: 'complete' as const, value: '✓' }
-                        : null;
-                    case 'scoring':
-                      const score = formData.business_score;
-                      const eaStatus = formData.ea_review_required === false ? 'na' : (formData.ea_status === 'approved' ? 'complete' : 'pending');
-                      return { 
-                        type: eaStatus === 'pending' ? 'pending' as const : 'score' as const, 
-                        value: eaStatus === 'pending' ? 'Pending' : (score ? (score / 100).toFixed(1) : '0')
-                      };
-                    case 'planning':
-                      const totalPlanning = risksCount + milestonesCount;
-                      return { type: 'count' as const, value: String(totalPlanning) };
-                    case 'links':
-                      return { type: 'count' as const, value: String(linksCount) };
-                    case 'history':
-                      return { type: 'count' as const, value: String(auditCount) };
-                    default:
-                      return null;
-                  }
-                };
-                
-                const status = getTabStatus();
-                
-                return (
-                  <TabsTrigger
-                    key={tab.value}
-                    value={tab.value}
-                    className={cn(
-                      "relative px-4 py-3 text-[13px] font-medium whitespace-nowrap",
-                      "bg-transparent border-none rounded-none",
-                      "data-[state=inactive]:text-muted-foreground data-[state=active]:text-foreground",
-                      "flex flex-col items-center gap-0.5",
-                      // Active indicator - only show for active tab
-                      "after:absolute after:bottom-0 after:left-2 after:right-2",
-                      "after:h-[2px] after:rounded-t-sm after:transition-all",
-                      "data-[state=inactive]:after:bg-transparent data-[state=inactive]:after:opacity-0",
-                      "data-[state=active]:after:bg-[#c69c6d] data-[state=active]:after:opacity-100"
-                    )}
-                  >
-                    <span>{tab.label}</span>
-                    {status && (
-                      <span 
-                        className="text-[10px] font-medium"
-                        style={{
-                          color: status.type === 'complete' 
-                            ? 'hsl(var(--secondary-olive))'
-                            : status.type === 'pending'
-                              ? 'hsl(35 92% 50%)'
-                              : status.type === 'score'
-                                ? 'hsl(var(--secondary-bronze))'
-                                : status.type === 'count' && parseInt(status.value || '0') > 0
-                                  ? 'hsl(var(--secondary-olive))'
-                                  : 'hsl(var(--muted-foreground))'
-                        }}
-                      >
-                        {status.type === 'pending' && (
-                          <span className="inline-flex items-center gap-1">
-                            <span className="w-1.5 h-1.5 rounded-full" style={{ background: 'hsl(35 92% 50%)' }} />
-                            {status.value}
-                          </span>
-                        )}
-                        {status.type === 'complete' && status.value === '✓' && (
-                          <span style={{ color: 'hsl(var(--secondary-olive))' }}>✓</span>
-                        )}
-                        {status.type === 'score' && status.value}
-                        {status.type === 'count' && status.value}
-                      </span>
-                    )}
-                  </TabsTrigger>
-                );
-              })}
+              {VIEW_TABS.map((tab) => (
+                <TabsTrigger
+                  key={tab.value}
+                  value={tab.value}
+                  className={cn(
+                    "relative px-3 md:px-4 py-3 text-xs md:text-[13px] font-medium whitespace-nowrap",
+                    "bg-transparent border-none rounded-none",
+                    "data-[state=inactive]:text-muted-foreground data-[state=active]:text-foreground",
+                    // Active indicator
+                    "after:absolute after:bottom-0 after:left-2 after:right-2",
+                    "after:h-[2px] after:rounded-t-sm after:transition-all",
+                    "data-[state=inactive]:after:bg-transparent data-[state=inactive]:after:opacity-0",
+                    "data-[state=active]:after:bg-[#c69c6d] data-[state=active]:after:opacity-100"
+                  )}
+                >
+                  {tab.label}
+                </TabsTrigger>
+              ))}
             </TabsList>
 
             {/* ═══════════════════════════════════════════════════════════
