@@ -14,7 +14,6 @@ import {
   RankCell, 
   IdCell, 
   StatusCell,
-  ScoreCell,
   OwnerCell,
   AssigneeCell,
   PriorityCell, 
@@ -226,8 +225,7 @@ export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableVi
         return <StatusCell status={row.process_step || 'new'} />;
       case 'title':
         return <SummaryCell title={row.title || ''} department={row.department} createdAt={row.created_at} />;
-      case 'score':
-        return <ScoreCell score={row.business_score ?? null} />;
+      case 'priority':
       case 'priority':
         return <PriorityCell priority={row.priority_tier || null} />;
       case 'kickoff_date':
