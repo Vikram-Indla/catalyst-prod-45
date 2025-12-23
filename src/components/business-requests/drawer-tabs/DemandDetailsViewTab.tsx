@@ -1,6 +1,7 @@
 /**
  * DemandDetailsViewTab - Catalyst Design System
- * Simple DETAILS card with Summary and Description as shown in design
+ * Enterprise-grade details card with Summary and Description
+ * Description uses flex layout to fill remaining vertical space
  */
 
 import { useState, ReactNode } from 'react';
@@ -15,23 +16,28 @@ interface DemandDetailsViewTabProps {
   onChange: (field: string, value: any) => void;
 }
 
-// Catalyst Form Card Component
+// Catalyst Form Card Component - with flex support for full-height content
 function FormCard({ 
   title, 
   children, 
   collapsible = false,
-  defaultExpanded = true 
+  defaultExpanded = true,
+  flexGrow = false
 }: { 
   title: string; 
   children: ReactNode; 
   collapsible?: boolean;
   defaultExpanded?: boolean;
+  flexGrow?: boolean;
 }) {
   const [expanded, setExpanded] = useState(defaultExpanded);
 
   return (
     <section 
-      className="rounded-lg overflow-hidden"
+      className={cn(
+        "rounded-lg overflow-hidden",
+        flexGrow && "flex-1 flex flex-col min-h-0"
+      )}
       style={{
         background: 'hsl(var(--card))',
         border: '1px solid hsl(var(--border))',
@@ -40,7 +46,7 @@ function FormCard({
     >
       <header 
         className={cn(
-          "px-5 py-3.5 flex items-center justify-between",
+          "px-5 py-3.5 flex items-center justify-between shrink-0",
           collapsible && "cursor-pointer hover:bg-muted/50"
         )}
         style={{
@@ -63,7 +69,10 @@ function FormCard({
         )}
       </header>
       {expanded && (
-        <div className="p-5 space-y-5">
+        <div className={cn(
+          "p-5 space-y-5",
+          flexGrow && "flex-1 flex flex-col min-h-0"
+        )}>
           {children}
         </div>
       )}
@@ -72,38 +81,58 @@ function FormCard({
 }
 
 // Catalyst Field Component
-function Field({ label, required, children }: { label: string; required?: boolean; children: ReactNode }) {
+function Field({ 
+  label, 
+  required, 
+  children,
+  flexGrow = false
+}: { 
+  label: string; 
+  required?: boolean; 
+  children: ReactNode;
+  flexGrow?: boolean;
+}) {
   return (
-    <div className="space-y-2">
-      <label className="text-[13px] font-medium text-foreground">
+    <div className={cn(
+      "space-y-2",
+      flexGrow && "flex-1 flex flex-col min-h-0"
+    )}>
+      <label className="text-[13px] font-medium text-foreground shrink-0">
         {label}
         {required && <span className="text-destructive ml-0.5">*</span>}
       </label>
-      {children}
+      <div className={cn(flexGrow && "flex-1 min-h-0")}>
+        {children}
+      </div>
     </div>
   );
 }
 
 export function DemandDetailsViewTab({ data, onChange }: DemandDetailsViewTabProps) {
   return (
-    <div className="space-y-4">
-      {/* DETAILS CARD - Primary card as shown in design */}
-      <FormCard title="Details">
-        <Field label="Summary" required>
-          <Input
-            value={data.title || ''}
-            onChange={(e) => onChange('title', e.target.value)}
-            placeholder="Enter demand summary"
-            className="h-10 text-[14px]"
-          />
-        </Field>
+    <div className="h-full flex flex-col gap-4">
+      {/* DETAILS CARD - Primary card with flex layout for description to fill space */}
+      <FormCard title="Details" flexGrow>
+        {/* Summary field - fixed height */}
+        <div className="shrink-0">
+          <Field label="Summary" required>
+            <Input
+              value={data.title || ''}
+              onChange={(e) => onChange('title', e.target.value)}
+              placeholder="Enter demand summary"
+              className="h-10 text-[14px]"
+            />
+          </Field>
+        </div>
 
-        <Field label="Description">
+        {/* Description field - fills remaining height */}
+        <Field label="Description" flexGrow>
           <RichTextEditor
             value={data.description || ''}
             onChange={(value) => onChange('description', value)}
             placeholder="Enter detailed description..."
-            minHeight="350px"
+            minHeight="200px"
+            className="flex-1 h-full"
           />
         </Field>
       </FormCard>

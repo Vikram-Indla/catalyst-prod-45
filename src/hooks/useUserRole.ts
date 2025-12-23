@@ -78,8 +78,8 @@ export function useUserRole() {
   const isProgramManager = role === 'admin' || role === 'program_manager';
   const isTeamLead = role === 'admin' || role === 'program_manager' || role === 'team_lead';
   
-  // Enterprise access: admin, super_admin, product_admin, or general_manager
-  const canAccessEnterprise = isAdmin || isSuperAdmin || isProductAdmin || isGeneralManager;
+  // Enterprise access: admin, super_admin, product_admin, general_manager, or product_owner
+  const canAccessEnterprise = isAdmin || isSuperAdmin || isProductAdmin || isGeneralManager || isProductOwner;
   // Capacity Planning access: same as enterprise access
   const canAccessCapacityPlanning = canAccessEnterprise;
   
