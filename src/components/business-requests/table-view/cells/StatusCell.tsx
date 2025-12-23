@@ -5,45 +5,61 @@ interface StatusCellProps {
 }
 
 const STATUS_CONFIG: Record<string, { label: string; className: string }> = {
+  new: { 
+    label: 'New', 
+    className: 'bg-[var(--industry-status-new)]/10 text-[var(--industry-status-new)]' 
+  },
   new_request: { 
     label: 'New Request', 
-    className: 'bg-amber-500/10 text-amber-700 dark:text-amber-400' 
+    className: 'bg-[var(--industry-status-new)]/10 text-[var(--industry-status-new)]' 
   },
   new_demand: { 
     label: 'New Demand', 
-    className: 'bg-blue-500/10 text-blue-700 dark:text-blue-400' 
+    className: 'bg-[var(--industry-status-new)]/10 text-[var(--industry-status-new)]' 
   },
-  scored: { 
-    label: 'Scored', 
-    className: 'bg-blue-500/10 text-blue-700 dark:text-blue-400' 
-  },
-  ea_review: { 
-    label: 'EA Review', 
-    className: 'bg-[hsl(var(--secondary-olive))]/12 text-[hsl(var(--secondary-olive))]' 
-  },
-  budget_review: { 
-    label: 'Budget Review', 
-    className: 'bg-[hsl(var(--secondary-bronze))]/15 text-[hsl(var(--secondary-bronze))]' 
-  },
-  ready: { 
-    label: 'Ready', 
-    className: 'bg-green-500/10 text-green-700 dark:text-green-400' 
+  'in-progress': {
+    label: 'In Progress',
+    className: 'bg-[var(--industry-status-progress)]/10 text-[var(--industry-status-progress)]'
   },
   in_progress: { 
     label: 'In Progress', 
-    className: 'bg-[hsl(var(--brand-primary))]/12 text-[hsl(var(--brand-primary))]' 
+    className: 'bg-[var(--industry-status-progress)]/10 text-[var(--industry-status-progress)]' 
+  },
+  scored: { 
+    label: 'Scored', 
+    className: 'bg-[var(--industry-status-progress)]/10 text-[var(--industry-status-progress)]' 
+  },
+  'ea-review': {
+    label: 'EA Review',
+    className: 'bg-[var(--industry-status-review)]/10 text-[var(--industry-status-review)]'
+  },
+  ea_review: { 
+    label: 'EA Review', 
+    className: 'bg-[var(--industry-status-review)]/10 text-[var(--industry-status-review)]' 
+  },
+  budget_review: { 
+    label: 'Budget Review', 
+    className: 'bg-[var(--industry-status-review)]/10 text-[var(--industry-status-review)]' 
+  },
+  ready: { 
+    label: 'Ready', 
+    className: 'bg-[var(--industry-status-approved)]/10 text-[var(--industry-status-approved)]' 
+  },
+  approved: {
+    label: 'Approved',
+    className: 'bg-[var(--industry-status-approved)]/10 text-[var(--industry-status-approved)]'
+  },
+  implement: {
+    label: 'Implement',
+    className: 'bg-[var(--industry-status-progress)]/10 text-[var(--industry-status-progress)]'
+  },
+  blocked: {
+    label: 'Blocked',
+    className: 'bg-[var(--industry-status-blocked)]/10 text-[var(--industry-status-blocked)]'
   },
   completed: { 
     label: 'Completed', 
     className: 'bg-muted text-muted-foreground' 
-  },
-  approved: {
-    label: 'Approved',
-    className: 'bg-green-500/10 text-green-700 dark:text-green-400'
-  },
-  implement: {
-    label: 'Implement',
-    className: 'bg-[hsl(var(--brand-primary))]/12 text-[hsl(var(--brand-primary))]'
   },
   closed: {
     label: 'Closed',
@@ -52,7 +68,7 @@ const STATUS_CONFIG: Record<string, { label: string; className: string }> = {
 };
 
 export function StatusCell({ status }: StatusCellProps) {
-  const config = STATUS_CONFIG[status] || STATUS_CONFIG.new_request;
+  const config = STATUS_CONFIG[status] || STATUS_CONFIG.new;
   
   return (
     <span className={cn(

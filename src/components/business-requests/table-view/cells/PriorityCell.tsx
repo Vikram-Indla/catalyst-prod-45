@@ -5,19 +5,33 @@ interface PriorityCellProps {
 }
 
 const PRIORITY_STYLES: Record<string, string> = {
-  critical: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 border border-red-200 dark:border-red-800',
-  high: 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400 border border-orange-200 dark:border-orange-800',
-  medium: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 border border-blue-200 dark:border-blue-800',
-  low: 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400 border border-gray-200 dark:border-gray-700',
+  critical: 'bg-[var(--industry-status-blocked)]/10 text-[var(--industry-status-blocked)] border border-[var(--industry-status-blocked)]/20',
+  high: 'bg-[var(--industry-priority-high)]/10 text-[var(--industry-priority-high)] border border-[var(--industry-priority-high)]/20',
+  medium: 'bg-[var(--industry-priority-medium)]/10 text-[var(--industry-priority-medium)] border border-[var(--industry-priority-medium)]/20',
+  low: 'bg-[var(--industry-priority-low)]/10 text-[var(--industry-priority-low)] border border-[var(--industry-priority-low)]/20',
+  unscored: 'border-2 border-dashed border-[var(--industry-border-default)] text-[var(--industry-text-muted)]',
 };
 
 export function PriorityCell({ priority }: PriorityCellProps) {
-  // Show em-dash for null, empty, or "unscored"
-  if (!priority || priority.toLowerCase() === 'unscored') {
-    return <span className="text-muted-foreground italic">—</span>;
+  // Show em-dash for null or empty
+  if (!priority) {
+    return <span className="text-[var(--industry-text-disabled)]">—</span>;
   }
 
   const normalizedPriority = priority.toLowerCase();
+  
+  // Handle "unscored" specifically
+  if (normalizedPriority === 'unscored') {
+    return (
+      <span className={cn(
+        "inline-flex items-center px-2 py-0.5 rounded text-xs font-medium",
+        PRIORITY_STYLES.unscored
+      )}>
+        Unscored
+      </span>
+    );
+  }
+
   const styleClass = PRIORITY_STYLES[normalizedPriority] || PRIORITY_STYLES.low;
 
   return (
