@@ -189,6 +189,10 @@ export function useCreateBusinessRequest() {
           request_key: requestKey,
           delivery_platform: data.delivery_platform || null,
           planned_quarter: data.planned_quarter || null,
+          department: (data as any).department || null,
+          department_id: (data as any).department_id || null,
+          business_owner: (data as any).business_owner || null,
+          business_owner_id: (data as any).business_owner_id || null,
         }])
         .select()
         .single();
