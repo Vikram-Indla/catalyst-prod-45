@@ -322,6 +322,13 @@ export function UsersTable({ users, isLoading, onEditRoles, onEditPermissions }:
                               Enable User
                             </DropdownMenuItem>
                           )}
+                          {/* Re-approve for rejected users */}
+                          {user.approval_status === 'REJECTED' && (
+                            <DropdownMenuItem onClick={() => handleApprove(user.id)} className="text-green-600">
+                              <CheckCircle className="h-4 w-4 mr-2" />
+                              Approve User
+                            </DropdownMenuItem>
+                          )}
                           {(user.approval_status === 'REJECTED' || user.approval_status === 'DISABLED') && (
                             <>
                               <DropdownMenuSeparator />
