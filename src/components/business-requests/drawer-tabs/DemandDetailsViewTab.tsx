@@ -1,9 +1,10 @@
 /**
  * DemandDetailsViewTab - Catalyst Design System
  * Enterprise-grade details with all demand fields + Summary and Description
+ * Supports auto-save with debouncing
  */
 
-import { useState, useEffect, ReactNode } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -11,17 +12,18 @@ import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
-import { ChevronDown, Calendar as CalendarIcon, Lock } from 'lucide-react';
+import { ChevronDown, Calendar as CalendarIcon, Lock, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { RichTextEditor } from '../RichTextEditor';
 import { BusinessRequest, PROCESS_STEPS } from '@/types/business-request';
 import { DepartmentSelect } from '@/components/business-requests/DepartmentSelect';
 import { useDepartments, useBusinessOwners, useDepartmentOwnerMappings, getOwnerIdForDepartment } from '@/hooks/useDepartmentsAndOwners';
 import { useActiveDemandProcessSteps } from '@/hooks/useDemandProcessSteps';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { format, parseISO } from 'date-fns';
 import { toast } from 'sonner';
+import { useUpdateBusinessRequest } from '@/hooks/useBusinessRequests';
 
 const QUARTER_OPTIONS = [
   'Q1 2025', 'Q2 2025', 'Q3 2025', 'Q4 2025',
@@ -58,6 +60,7 @@ interface DemandDetailsViewTabProps {
   data: Partial<BusinessRequest> & Record<string, any>;
   onChange: (field: string, value: any) => void;
   onDirtyChange?: (isDirty: boolean) => void;
+  requestId?: string | null;
 }
 
 // Field label component
@@ -194,11 +197,66 @@ function DatePickerField({
   );
 }
 
-export function DemandDetailsViewTab({ data, onChange, onDirtyChange }: DemandDetailsViewTabProps) {
+export function DemandDetailsViewTab({ data, onChange, onDirtyChange, requestId }: DemandDetailsViewTabProps) {
+  const queryClient = useQueryClient();
   const { data: departments } = useDepartments();
   const { data: owners } = useBusinessOwners();
   const { data: mappings } = useDepartmentOwnerMappings();
   const { data: processSteps = PROCESS_STEPS } = useActiveDemandProcessSteps();
+  const updateMutation = useUpdateBusinessRequest();
+  
+  // Auto-save state
+  const [isSaving, setIsSaving] = useState(false);
+  const autoSaveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const pendingChangesRef = useRef<Record<string, any>>({});
+
+  // Auto-save function
+  const performAutoSave = useCallback(async () => {
+    if (!requestId || Object.keys(pendingChangesRef.current).length === 0) return;
+    
+    setIsSaving(true);
+    const changesToSave = { ...pendingChangesRef.current };
+    pendingChangesRef.current = {};
+    
+    try {
+      await updateMutation.mutateAsync({ id: requestId, data: changesToSave as Partial<BusinessRequest> });
+      queryClient.invalidateQueries({ queryKey: ['business-requests'] });
+      queryClient.invalidateQueries({ queryKey: ['business-request', requestId] });
+    } catch (error) {
+      console.error('Auto-save failed:', error);
+      // Restore changes on failure so they can be retried
+      pendingChangesRef.current = { ...changesToSave, ...pendingChangesRef.current };
+      toast.error('Auto-save failed. Changes will be retried.');
+    } finally {
+      setIsSaving(false);
+    }
+  }, [requestId, updateMutation, queryClient]);
+
+  // Debounced auto-save trigger
+  const triggerAutoSave = useCallback((field: string, value: any) => {
+    pendingChangesRef.current[field] = value;
+    
+    if (autoSaveTimeoutRef.current) {
+      clearTimeout(autoSaveTimeoutRef.current);
+    }
+    
+    autoSaveTimeoutRef.current = setTimeout(() => {
+      performAutoSave();
+    }, 1500); // 1.5 second debounce
+  }, [performAutoSave]);
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (autoSaveTimeoutRef.current) {
+        clearTimeout(autoSaveTimeoutRef.current);
+        // Save any pending changes immediately on unmount
+        if (Object.keys(pendingChangesRef.current).length > 0) {
+          performAutoSave();
+        }
+      }
+    };
+  }, [performAutoSave]);
 
   // Resolve legacy text values to IDs on initial load
   useEffect(() => {
@@ -222,6 +280,10 @@ export function DemandDetailsViewTab({ data, onChange, onDirtyChange }: DemandDe
   const handleChange = (field: string, value: any) => {
     onChange(field, value);
     onDirtyChange?.(true);
+    // Trigger auto-save if we have a requestId
+    if (requestId) {
+      triggerAutoSave(field, value);
+    }
   };
 
   // Handle department change with auto-setting of business owner
@@ -244,6 +306,18 @@ export function DemandDetailsViewTab({ data, onChange, onDirtyChange }: DemandDe
 
     onChange('_batch', updates);
     onDirtyChange?.(true);
+    // Auto-save all batch updates
+    if (requestId) {
+      Object.entries(updates).forEach(([field, value]) => {
+        pendingChangesRef.current[field] = value;
+      });
+      if (autoSaveTimeoutRef.current) {
+        clearTimeout(autoSaveTimeoutRef.current);
+      }
+      autoSaveTimeoutRef.current = setTimeout(() => {
+        performAutoSave();
+      }, 1500);
+    }
   };
 
   const handleDateChange = (field: string) => (date: Date | undefined) => {
@@ -260,11 +334,53 @@ export function DemandDetailsViewTab({ data, onChange, onDirtyChange }: DemandDe
   const priorityKey = (data.priority_tier as string)?.toLowerCase() || 'unscored';
   const priorityInfo = PRIORITY_LABELS[priorityKey] || PRIORITY_LABELS.unscored;
 
-  // Get reporter display name
-  const reporterName = data.requestor_name || data.requestor || null;
+  // Get reporter display name - prefer resolved name over UUID
+  const reporterName = data.requestor_name || (data.requestor && !data.requestor.includes('-') ? data.requestor : null);
 
   return (
     <div className="space-y-5 p-4 md:p-5 pb-6">
+      {/* Auto-save indicator */}
+      {isSaving && (
+        <div className="flex items-center gap-2 text-xs text-muted-foreground animate-pulse">
+          <Loader2 className="w-3 h-3 animate-spin" />
+          Saving...
+        </div>
+      )}
+
+      {/* Details Section with Summary and Description - MOVED TO TOP */}
+      <div 
+        className="rounded-lg p-4"
+        style={{ backgroundColor: 'var(--surface-2)', border: '1px solid var(--divider)' }}
+      >
+        <h3 className="text-xs font-semibold uppercase tracking-wider mb-4" style={{ color: 'var(--text-3)' }}>
+          DETAILS
+        </h3>
+        
+        {/* Summary field */}
+        <div className="mb-4">
+          <FieldLabel>
+            Summary <span className="text-red-500">*</span>
+          </FieldLabel>
+          <Input
+            value={data.title || ''}
+            onChange={(e) => handleChange('title', e.target.value)}
+            placeholder="Enter summary"
+            className="bg-background"
+          />
+        </div>
+        
+        {/* Description field */}
+        <div>
+          <FieldLabel>Description</FieldLabel>
+          <RichTextEditor
+            value={data.description || ''}
+            onChange={(value) => handleChange('description', value)}
+            placeholder="Enter detailed description..."
+            minHeight="200px"
+          />
+        </div>
+      </div>
+
       {/* Row 1: Status | EA Review Required? */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
         <div>
@@ -439,41 +555,6 @@ export function DemandDetailsViewTab({ data, onChange, onDirtyChange }: DemandDe
         />
       </div>
 
-      {/* Details Section with Summary and Description */}
-      <div className="pt-4" style={{ borderTop: '1px solid var(--divider)' }}>
-        <div 
-          className="rounded-lg p-4"
-          style={{ backgroundColor: 'var(--surface-2)', border: '1px solid var(--divider)' }}
-        >
-          <h3 className="text-xs font-semibold uppercase tracking-wider mb-4" style={{ color: 'var(--text-3)' }}>
-            DETAILS
-          </h3>
-          
-          {/* Summary field */}
-          <div className="mb-4">
-            <FieldLabel>
-              Summary <span className="text-red-500">*</span>
-            </FieldLabel>
-            <Input
-              value={data.title || ''}
-              onChange={(e) => handleChange('title', e.target.value)}
-              placeholder="Enter summary"
-              className="bg-background"
-            />
-          </div>
-          
-          {/* Description field */}
-          <div>
-            <FieldLabel>Description</FieldLabel>
-            <RichTextEditor
-              value={data.description || ''}
-              onChange={(value) => handleChange('description', value)}
-              placeholder="Enter detailed description..."
-              minHeight="200px"
-            />
-          </div>
-        </div>
-      </div>
     </div>
   );
 }

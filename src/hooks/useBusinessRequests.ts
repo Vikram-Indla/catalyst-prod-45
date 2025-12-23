@@ -146,7 +146,23 @@ export function useBusinessRequest(id: string | null) {
         .eq('id', id)
         .single();
       if (error) throw error;
-      return transformRow(data);
+      
+      const transformed = transformRow(data);
+      
+      // Resolve requestor UUID to name if it looks like a UUID
+      if (data.requestor && data.requestor.length === 36 && data.requestor.includes('-')) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('full_name, email')
+          .eq('id', data.requestor)
+          .single();
+        
+        if (profile) {
+          transformed.requestor_name = profile.full_name || profile.email || '—';
+        }
+      }
+      
+      return transformed;
     },
     enabled: !!id,
   });
