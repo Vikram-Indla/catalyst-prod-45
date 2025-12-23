@@ -272,6 +272,30 @@ export function DemandDetailsTab({ data, onChange }: DemandDetailsTabProps) {
               </SelectContent>
             </Select>
           </div>
+
+          {/* Target Quarter */}
+          <div className="space-y-1">
+            <PremiumLabel htmlFor="planned_quarter">Target Quarter</PremiumLabel>
+            <Select
+              value={data.planned_quarter || ''}
+              onValueChange={(value) => onChange('planned_quarter', value)}
+            >
+              <SelectTrigger className={premiumInputClass}>
+                <SelectValue placeholder="Select quarter..." />
+              </SelectTrigger>
+              <SelectContent className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 shadow-xl rounded-xl">
+                {QUARTER_OPTIONS.map((q) => (
+                  <SelectItem 
+                    key={q} 
+                    value={q}
+                    className="hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg cursor-pointer"
+                  >
+                    {q}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         </div>
       </SectionCard>
     </div>
