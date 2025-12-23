@@ -1,7 +1,8 @@
-import { Badge } from '@/components/ui/badge';
+import { cn } from '@/lib/utils';
 
 interface QuarterCellProps {
   quarter: string | null;
+  isCurrentQuarter?: boolean;
 }
 
 /**
@@ -9,24 +10,42 @@ interface QuarterCellProps {
  * Handles formats like "Q2-2026", "q1_2025", "Q1 2025"
  */
 function formatQuarter(quarter: string): string {
-  // Normalize: uppercase, replace separators with space
   let normalized = quarter.toUpperCase().replace(/[-_]/g, ' ').trim();
-  // Collapse multiple spaces
   normalized = normalized.replace(/\s+/g, ' ');
   return normalized;
 }
 
-export function QuarterCell({ quarter }: QuarterCellProps) {
+/**
+ * Checks if a quarter is the current quarter
+ */
+function checkIsCurrentQuarter(quarter: string): boolean {
+  const now = new Date();
+  const currentYear = now.getFullYear();
+  const currentMonth = now.getMonth() + 1;
+  const currentQ = Math.ceil(currentMonth / 3);
+  const currentQStr = `Q${currentQ} ${currentYear}`;
+  
+  const formatted = formatQuarter(quarter);
+  return formatted === currentQStr;
+}
+
+export function QuarterCell({ quarter, isCurrentQuarter }: QuarterCellProps) {
   if (!quarter) {
-    return <span className="text-muted-foreground">—</span>;
+    return <span className="text-[var(--industry-text-disabled)]">—</span>;
   }
 
+  const isCurrent = isCurrentQuarter ?? checkIsCurrentQuarter(quarter);
+
   return (
-    <Badge 
-      variant="outline" 
-      className="text-[10px] px-1.5 py-0 h-5 border-[hsl(var(--brand-primary))]/50 text-[hsl(var(--brand-primary))] font-medium"
+    <span 
+      className={cn(
+        "inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium",
+        isCurrent 
+          ? "bg-[var(--brand-gold)]/10 text-[var(--brand-gold)] border border-[var(--brand-gold)]/30" 
+          : "bg-muted text-muted-foreground"
+      )}
     >
       {formatQuarter(quarter)}
-    </Badge>
+    </span>
   );
 }

@@ -7,3 +7,4 @@ export { PriorityCell } from './PriorityCell';
 export { QuarterCell } from './QuarterCell';
 export { DateCell } from './DateCell';
 export { TextCell } from './TextCell';
+export { SummaryCell } from './SummaryCell';

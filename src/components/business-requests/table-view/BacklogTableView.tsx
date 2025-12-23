@@ -1,19 +1,32 @@
 /**
- * BacklogTableView - Full-featured data table for business requests
- * With drag-and-drop row reordering that persists rank to database
+ * BacklogTableView - Industry Backlog Table
+ * Enhanced data table with drag-and-drop, bulk actions, and keyboard navigation
  */
 
 import { useMemo, useCallback, useState } from 'react';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 import { cn } from '@/lib/utils';
 import { Checkbox } from '@/components/ui/checkbox';
-import { ChevronUp, ChevronDown, GripVertical } from 'lucide-react';
+import { ChevronUp, ChevronDown, GripVertical, Pencil, MoreVertical } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
-import { RankCell, IdCell, OwnerCell, PriorityCell, QuarterCell, DateCell, TextCell } from './cells';
+import { Button } from '@/components/ui/button';
+import { 
+  RankCell, 
+  IdCell, 
+  StatusCell,
+  ScoreCell,
+  OwnerCell, 
+  PriorityCell, 
+  QuarterCell, 
+  DateCell, 
+  SummaryCell 
+} from './cells';
 import { useTableSelection } from './useTableSelection';
 import { useTableSort } from './useTableSort';
 import { DEFAULT_COLUMNS, TableColumn } from './types';
 import { ColumnVisibilityDropdown } from './ColumnVisibilityDropdown';
+import { BulkActionsBar } from './BulkActionsBar';
+import { KeyboardHints } from './KeyboardHints';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
@@ -34,6 +47,8 @@ interface BusinessRequestRow {
   end_date?: string | null;
   delivery_platform?: string | null;
   planned_quarter?: string[] | null;
+  department?: string | null;
+  created_at?: string | null;
 }
 
 interface BacklogTableViewProps {
@@ -44,6 +59,8 @@ interface BacklogTableViewProps {
 
 export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableViewProps) {
   const queryClient = useQueryClient();
+  const [hoveredRowId, setHoveredRowId] = useState<string | null>(null);
+  
   const { 
     selectedIds, 
     isAllSelected, 
@@ -77,7 +94,6 @@ export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableVi
   }, []);
 
   const hideAllColumns = useCallback(() => {
-    // Keep only checkbox visible
     setVisibleColumns(new Set(['checkbox']));
   }, []);
 
@@ -89,6 +105,8 @@ export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableVi
       switch (sortConfig.column) {
         case 'rank': aVal = a.rank || 999; bVal = b.rank || 999; break;
         case 'title': aVal = a.title || ''; bVal = b.title || ''; break;
+        case 'status': aVal = a.process_step || ''; bVal = b.process_step || ''; break;
+        case 'score': aVal = a.business_score || 0; bVal = b.business_score || 0; break;
         case 'priority': aVal = a.priority_tier || ''; bVal = b.priority_tier || ''; break;
         case 'kickoff_date': aVal = a.impl_start_date || ''; bVal = b.impl_start_date || ''; break;
         case 'target_date': aVal = a.end_date || ''; bVal = b.end_date || ''; break;
@@ -105,7 +123,7 @@ export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableVi
     return sorted;
   }, [data, sortConfig]);
 
-  // Handle drag end - persist rank changes to database
+  // Handle drag end
   const handleDragEnd = useCallback(async (result: DropResult) => {
     const { destination, source } = result;
 
@@ -154,7 +172,7 @@ export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableVi
     if (!column.sortable) return null;
     const isActive = sortConfig.column === column.key;
     return (
-      <span className={cn("ml-1", isActive ? "text-foreground" : "text-muted-foreground/50")}>
+      <span className={cn("ml-1", isActive ? "text-[var(--brand-gold)]" : "text-muted-foreground/40")}>
         {isActive && sortConfig.direction === 'asc' ? (
           <ChevronUp className="h-3.5 w-3.5" />
         ) : (
@@ -171,20 +189,25 @@ export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableVi
           <Checkbox
             checked={selectedIds.has(row.id)}
             onCheckedChange={() => toggleSelection(row.id)}
+            className="data-[state=checked]:bg-[var(--brand-gold)] data-[state=checked]:border-[var(--brand-gold)]"
           />
         );
       case 'rank':
         return <RankCell displayIndex={index + 1} />;
       case 'id':
         return <IdCell requestKey={row.request_key || row.id.slice(0, 8)} onClick={(e) => { e.stopPropagation(); onRowClick(row.id); }} />;
+      case 'status':
+        return <StatusCell status={row.process_step || 'new'} />;
+      case 'title':
+        return <SummaryCell title={row.title || ''} department={row.department} createdAt={row.created_at} />;
+      case 'score':
+        return <ScoreCell score={row.business_score ?? null} />;
       case 'priority':
         return <PriorityCell priority={row.priority_tier || null} />;
-      case 'title':
-        return <span className="font-medium text-foreground max-w-[250px] truncate block">{row.title || '—'}</span>;
       case 'kickoff_date':
-        return <DateCell date={row.impl_start_date} />;
+        return <DateCell date={row.impl_start_date} showRelative={false} />;
       case 'target_date':
-        return <DateCell date={row.end_date} />;
+        return <DateCell date={row.end_date} showRelative={true} />;
       case 'reporter':
         return <OwnerCell name={row.requestor_name || row.requestor || null} />;
       case 'assignee':
@@ -192,7 +215,7 @@ export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableVi
       case 'business_owner':
         return <OwnerCell name={row.business_owner || null} />;
       case 'delivery_platform':
-        return <TextCell value={row.delivery_platform} />;
+        return <span className="text-sm text-foreground">{row.delivery_platform || '—'}</span>;
       case 'quarter':
         return <QuarterCell quarter={row.planned_quarter?.[0] || null} />;
       default:
@@ -201,125 +224,184 @@ export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableVi
   };
 
   return (
-    <div className="flex flex-col h-full bg-background rounded-lg border border-border overflow-hidden">
-      {/* Toolbar with Column Visibility */}
-      <div className="flex items-center justify-between px-4 py-2 border-b border-border bg-muted/30">
-        <div className="flex items-center gap-3">
-          {selectedIds.size > 0 ? (
-            <>
-              <span className="text-sm font-medium">{selectedIds.size} selected</span>
-              <button onClick={clearSelection} className="text-sm text-muted-foreground hover:text-foreground">
-                Clear
-              </button>
-            </>
-          ) : (
-            <span className="text-sm text-muted-foreground">{sortedData.length} items</span>
-          )}
+    <div className="flex flex-col h-full">
+      {/* Table Container with Industry styling */}
+      <div 
+        className="flex flex-col flex-1 bg-[var(--industry-bg-card)] dark:bg-card rounded-[14px] border border-[var(--industry-border-default)] overflow-hidden"
+        style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}
+      >
+        {/* Header Bar */}
+        <div className="flex items-center justify-between px-4 py-2.5 border-b border-[var(--industry-border-default)] bg-[var(--industry-bg-subtle)] dark:bg-muted/30">
+          <div className="flex items-center gap-3">
+            <span className="text-sm text-[var(--industry-text-secondary)]">
+              <strong className="font-semibold text-[var(--industry-text-primary)]">{sortedData.length}</strong> requests
+            </span>
+          </div>
+          <ColumnVisibilityDropdown
+            columns={DEFAULT_COLUMNS}
+            visibleColumns={visibleColumns}
+            onToggleColumn={toggleColumnVisibility}
+            onShowAll={showAllColumns}
+            onHideAll={hideAllColumns}
+          />
         </div>
-        <ColumnVisibilityDropdown
-          columns={DEFAULT_COLUMNS}
-          visibleColumns={visibleColumns}
-          onToggleColumn={toggleColumnVisibility}
-          onShowAll={showAllColumns}
-          onHideAll={hideAllColumns}
-        />
+
+        {/* Table */}
+        <div className="flex-1 overflow-auto">
+          <DragDropContext onDragEnd={handleDragEnd}>
+            <table className="w-full min-w-[1000px] border-collapse text-[13px]">
+              <thead className="sticky top-0 z-10 bg-[var(--industry-bg-card)] dark:bg-card">
+                <tr>
+                  <th className="w-8 px-2 py-3.5 text-left border-b border-[var(--industry-border-default)]" />
+                  {displayColumns.map(column => {
+                    const isActive = sortConfig.column === column.key;
+                    return (
+                      <th
+                        key={column.key}
+                        className={cn(
+                          "text-left border-b border-[var(--industry-border-default)]",
+                          "whitespace-nowrap px-4 py-3.5",
+                          "text-[11px] uppercase font-semibold tracking-[0.5px]",
+                          isActive ? "text-[var(--brand-gold)]" : "text-[var(--industry-text-muted)]",
+                          column.sortable && "cursor-pointer hover:text-[var(--industry-text-secondary)]"
+                        )}
+                        style={{ width: column.width, minWidth: column.minWidth }}
+                        onClick={() => column.sortable && handleSort(column.key)}
+                      >
+                        {column.key === 'checkbox' ? (
+                          <Checkbox
+                            checked={isAllSelected || (isIndeterminate ? 'indeterminate' : false)}
+                            onCheckedChange={() => toggleAll()}
+                            className="data-[state=checked]:bg-[var(--brand-gold)] data-[state=checked]:border-[var(--brand-gold)]"
+                          />
+                        ) : (
+                          <div className="flex items-center">
+                            <span className={cn(isActive && "border-b-2 border-[var(--brand-gold)] pb-0.5")}>
+                              {column.label}
+                            </span>
+                            {renderSortIcon(column)}
+                          </div>
+                        )}
+                      </th>
+                    );
+                  })}
+                  {/* Actions column header */}
+                  <th className="w-[100px] text-right px-4 py-3.5 border-b border-[var(--industry-border-default)]" />
+                </tr>
+              </thead>
+              <Droppable droppableId="backlog-table">
+                {(provided) => (
+                  <tbody ref={provided.innerRef} {...provided.droppableProps}>
+                    {isLoading ? (
+                      Array.from({ length: 6 }).map((_, i) => (
+                        <tr key={i} className="border-b border-[var(--industry-border-subtle)]">
+                          <td className="px-2 py-3.5" />
+                          {displayColumns.map(col => (
+                            <td key={col.key} className="px-4 py-3.5">
+                              <Skeleton className="h-5 w-full" />
+                            </td>
+                          ))}
+                          <td className="px-4 py-3.5" />
+                        </tr>
+                      ))
+                    ) : sortedData.length === 0 ? (
+                      <tr>
+                        <td colSpan={displayColumns.length + 2} className="text-center py-20 text-[var(--industry-text-muted)]">
+                          No requests found
+                        </td>
+                      </tr>
+                    ) : (
+                      sortedData.map((row, index) => (
+                        <Draggable key={row.id} draggableId={row.id} index={index}>
+                          {(provided, snapshot) => (
+                            <tr
+                              ref={provided.innerRef}
+                              {...provided.draggableProps}
+                              className={cn(
+                                "border-b border-[var(--industry-border-subtle)] transition-colors",
+                                "hover:bg-[var(--industry-bg-hover)] cursor-pointer",
+                                selectedIds.has(row.id) && "bg-[var(--brand-gold)]/[0.08]",
+                                snapshot.isDragging && "bg-muted shadow-lg"
+                              )}
+                              onClick={() => onRowClick(row.id)}
+                              onMouseEnter={() => setHoveredRowId(row.id)}
+                              onMouseLeave={() => setHoveredRowId(null)}
+                            >
+                              {/* Drag handle - visible on hover */}
+                              <td
+                                {...provided.dragHandleProps}
+                                className="px-2 py-3.5 cursor-grab active:cursor-grabbing"
+                                onClick={(e) => e.stopPropagation()}
+                              >
+                                <GripVertical 
+                                  className={cn(
+                                    "h-4 w-4 transition-opacity",
+                                    hoveredRowId === row.id ? "opacity-50 hover:opacity-100" : "opacity-0"
+                                  )} 
+                                />
+                              </td>
+                              
+                              {displayColumns.map(column => (
+                                <td
+                                  key={column.key}
+                                  className="px-4 py-3.5"
+                                  onClick={column.key === 'checkbox' ? (e) => e.stopPropagation() : undefined}
+                                >
+                                  {renderCellContent(column, row, index)}
+                                </td>
+                              ))}
+                              
+                              {/* Row actions - visible on hover */}
+                              <td 
+                                className="px-4 py-3.5 text-right" 
+                                onClick={(e) => e.stopPropagation()}
+                              >
+                                <div className={cn(
+                                  "flex items-center justify-end gap-1 transition-opacity",
+                                  hoveredRowId === row.id ? "opacity-100" : "opacity-0"
+                                )}>
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-7 w-7 rounded-md hover:bg-muted"
+                                    onClick={(e) => { e.stopPropagation(); onRowClick(row.id); }}
+                                  >
+                                    <Pencil className="h-3.5 w-3.5 text-muted-foreground" />
+                                  </Button>
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-7 w-7 rounded-md hover:bg-muted"
+                                  >
+                                    <MoreVertical className="h-3.5 w-3.5 text-muted-foreground" />
+                                  </Button>
+                                </div>
+                              </td>
+                            </tr>
+                          )}
+                        </Draggable>
+                      ))
+                    )}
+                    {provided.placeholder}
+                  </tbody>
+                )}
+              </Droppable>
+            </table>
+          </DragDropContext>
+        </div>
       </div>
 
-      {/* Table */}
-      <div className="flex-1 overflow-auto">
-        <DragDropContext onDragEnd={handleDragEnd}>
-          <table className="w-full min-w-[900px] border-collapse text-[13px]">
-            <thead className="sticky top-0 z-10 bg-muted/50">
-              <tr>
-                <th className="w-8 px-2 py-2.5 text-left border-b border-border" />
-                {displayColumns.map(column => (
-                  <th
-                    key={column.key}
-                    className={cn(
-                      "text-left font-semibold text-muted-foreground border-b border-border",
-                      "whitespace-nowrap px-3 py-2.5",
-                      column.sortable && "cursor-pointer hover:text-foreground"
-                    )}
-                    style={{ width: column.width, minWidth: column.minWidth }}
-                    onClick={() => column.sortable && handleSort(column.key)}
-                  >
-                    {column.key === 'checkbox' ? (
-                      <Checkbox
-                        checked={isAllSelected || (isIndeterminate ? 'indeterminate' : false)}
-                        onCheckedChange={() => toggleAll()}
-                      />
-                    ) : (
-                      <div className="flex items-center">
-                        {column.label}
-                        {renderSortIcon(column)}
-                      </div>
-                    )}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <Droppable droppableId="backlog-table">
-              {(provided) => (
-                <tbody ref={provided.innerRef} {...provided.droppableProps}>
-                  {isLoading ? (
-                    Array.from({ length: 5 }).map((_, i) => (
-                      <tr key={i} className="border-b border-border/50">
-                        <td className="px-2 py-3" />
-                        {displayColumns.map(col => (
-                          <td key={col.key} className="px-3 py-3">
-                            <Skeleton className="h-5 w-full" />
-                          </td>
-                        ))}
-                      </tr>
-                    ))
-                  ) : sortedData.length === 0 ? (
-                    <tr>
-                      <td colSpan={displayColumns.length + 1} className="text-center py-16 text-muted-foreground">
-                        No requests found
-                      </td>
-                    </tr>
-                  ) : (
-                    sortedData.map((row, index) => (
-                      <Draggable key={row.id} draggableId={row.id} index={index}>
-                        {(provided, snapshot) => (
-                          <tr
-                            ref={provided.innerRef}
-                            {...provided.draggableProps}
-                            className={cn(
-                              "border-b border-border/50 hover:bg-muted/30 cursor-pointer transition-colors",
-                              selectedIds.has(row.id) && "bg-[hsl(var(--brand-primary))]/5",
-                              snapshot.isDragging && "bg-muted shadow-lg"
-                            )}
-                            onClick={() => onRowClick(row.id)}
-                          >
-                            <td
-                              {...provided.dragHandleProps}
-                              className="px-2 py-3 cursor-grab active:cursor-grabbing"
-                              onClick={(e) => e.stopPropagation()}
-                            >
-                              <GripVertical className="h-4 w-4 text-muted-foreground/50 hover:text-muted-foreground" />
-                            </td>
-                            {displayColumns.map(column => (
-                              <td
-                                key={column.key}
-                                className="px-3 py-3"
-                                onClick={column.key === 'checkbox' ? (e) => e.stopPropagation() : undefined}
-                              >
-                                {renderCellContent(column, row, index)}
-                              </td>
-                            ))}
-                          </tr>
-                        )}
-                      </Draggable>
-                    ))
-                  )}
-                  {provided.placeholder}
-                </tbody>
-              )}
-            </Droppable>
-          </table>
-        </DragDropContext>
-      </div>
+      {/* Bulk Actions Bar */}
+      <BulkActionsBar
+        selectedCount={selectedIds.size}
+        onClear={clearSelection}
+        onAssignOwner={() => toast.info('Assign Owner feature coming soon')}
+        onSetQuarter={() => toast.info('Set Quarter feature coming soon')}
+        onApprove={() => toast.info('Approve feature coming soon')}
+      />
+
+      {/* Keyboard Hints */}
+      <KeyboardHints />
     </div>
   );
 }
