@@ -11,6 +11,16 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -107,10 +117,13 @@ export function LinkWorkItemModal({
     });
   };
 
-  // Delete link
-  const handleDeleteLink = (linkId: string) => {
-    if (confirm('Remove this link?')) {
-      deleteLinkMutation.mutate(linkId);
+  // Delete link state
+  const [linkToDelete, setLinkToDelete] = useState<string | null>(null);
+  
+  const handleConfirmDelete = () => {
+    if (linkToDelete) {
+      deleteLinkMutation.mutate(linkToDelete);
+      setLinkToDelete(null);
     }
   };
 
@@ -322,7 +335,7 @@ export function LinkWorkItemModal({
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => handleDeleteLink(link.id)}
+                          onClick={() => setLinkToDelete(link.id)}
                           className="h-8 w-8 p-0 text-destructive hover:text-destructive hover:bg-destructive/10"
                         >
                           <X className="w-4 h-4" />
@@ -368,6 +381,27 @@ export function LinkWorkItemModal({
           </div>
         </div>
       </DialogContent>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={!!linkToDelete} onOpenChange={(open) => !open && setLinkToDelete(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Remove Link</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to remove this link? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleConfirmDelete}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Remove
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Dialog>
   );
 }
