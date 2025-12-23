@@ -580,19 +580,21 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
               {/* Right Side: Action Buttons */}
               <div className="flex items-center gap-1.5 shrink-0">
                 
-                {/* Auto-save indicator */}
-                {isSaving && (
-                  <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                    <span>Saving...</span>
-                  </div>
-                )}
-                {showSavedIndicator && !isSaving && (
-                  <div className="flex items-center gap-1.5 text-xs text-secondary-olive">
-                    <Check className="h-3.5 w-3.5" />
-                    <span>Saved</span>
-                  </div>
-                )}
+                {/* Auto-save indicator - fixed width to prevent layout shift */}
+                <div className="w-16 flex items-center justify-end">
+                  {isSaving && (
+                    <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                      <span>Saving</span>
+                    </div>
+                  )}
+                  {showSavedIndicator && !isSaving && (
+                    <div className="flex items-center gap-1.5 text-xs text-secondary-olive">
+                      <Check className="h-3.5 w-3.5" />
+                      <span>Saved</span>
+                    </div>
+                  )}
+                </div>
 
                 {/* More Options */}
                 <DropdownMenu>
