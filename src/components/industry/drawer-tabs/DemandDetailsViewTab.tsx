@@ -353,21 +353,30 @@ export function DemandDetailsViewTab({ data, onChange, onDirtyChange }: DemandDe
 
         <div className="min-w-0">
           <FieldLabel>Target Quarter</FieldLabel>
-          <Select 
-            value={normalizeQuarter(data.planned_quarter?.[0])} 
-            onValueChange={(value) => handleChange('planned_quarter', [value])}
-          >
-            <SelectTrigger className="w-full h-10">
-              <SelectValue placeholder="Select quarter">
-                {data.planned_quarter?.[0] ? getQuarterLabel(data.planned_quarter[0]) : null}
-              </SelectValue>
-            </SelectTrigger>
-            <SelectContent className="z-[500]">
-              {QUARTER_OPTIONS.map((q) => (
-                <SelectItem key={q.value} value={q.value}>{q.label}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          {(() => {
+            // Handle both array and string formats for planned_quarter
+            const rawValue = data.planned_quarter;
+            const quarterValue = Array.isArray(rawValue) ? rawValue[0] : rawValue;
+            const normalizedValue = normalizeQuarter(quarterValue);
+            
+            return (
+              <Select 
+                value={normalizedValue || undefined}
+                onValueChange={(value) => handleChange('planned_quarter', [value])}
+              >
+                <SelectTrigger className="w-full h-10">
+                  <SelectValue placeholder="Select quarter">
+                    {quarterValue ? getQuarterLabel(quarterValue) : null}
+                  </SelectValue>
+                </SelectTrigger>
+                <SelectContent className="z-[500]">
+                  {QUARTER_OPTIONS.map((q) => (
+                    <SelectItem key={q.value} value={q.value}>{q.label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            );
+          })()}
         </div>
       </div>
 
