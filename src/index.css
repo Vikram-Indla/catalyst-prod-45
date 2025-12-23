@@ -133,6 +133,7 @@
     --secondary-green: 120 26% 42%;
     --secondary-bronze: 30 24% 44%;
     --secondary-champagne: 34 40% 71%;
+    --secondary-olive: 120 26% 42%;     /* Olive for buttons/toggles */
     --secondary-green-bg: rgba(92, 124, 92, 0.1);
     --secondary-bronze-bg: rgba(139, 115, 85, 0.1);
     
@@ -303,6 +304,7 @@
     --secondary-green: 120 26% 42%;
     --secondary-bronze: 30 24% 44%;
     --secondary-champagne: 34 40% 71%;
+    --secondary-olive: 120 26% 42%;     /* Olive for buttons/toggles in dark mode */
     --secondary-green-bg: rgba(92, 124, 92, 0.2);
     --secondary-bronze-bg: rgba(139, 115, 85, 0.2);
     
