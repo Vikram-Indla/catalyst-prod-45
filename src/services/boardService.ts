@@ -81,7 +81,8 @@ export async function getBoardData(
     query = query.or(`display_id.ilike.%${filters.search}%,name.ilike.%${filters.search}%`);
   }
   if (filters?.onlyMine && user.user) {
-    query = query.eq('assignee_id', user.user.id);
+    // Filter where user is assignee OR reporter (created_by for features)
+    query = query.or(`assignee_id.eq.${user.user.id},created_by.eq.${user.user.id}`);
   }
 
   const { data: features, error } = await query;

@@ -4,7 +4,7 @@
  * Right panel: Full detail view of selected request
  */
 
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import { useBusinessRequests } from '@/hooks/useBusinessRequests';
 import { BusinessRequestDrawer } from '@/components/business-requests/BusinessRequestDrawer';
@@ -38,6 +38,7 @@ interface RequestItem {
   autoPriority: string;
   rank: number | null;
   reporter?: string | null;
+  reporterId?: string | null;
   assignee?: string | null;
   assigneeId?: string | null;
   department: string | null;
@@ -57,6 +58,17 @@ interface RequestItem {
 
 export default function ProductBacklogPage() {
   const queryClient = useQueryClient();
+  
+  // Get current user for "My Items" filter
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  
+  useEffect(() => {
+    const fetchUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setCurrentUserId(user?.id || null);
+    };
+    fetchUser();
+  }, []);
   
   // Shared state from store
   const { 
@@ -98,6 +110,7 @@ export default function ProductBacklogPage() {
       autoPriority: br.priority_tier || 'unscored',
       rank: br.rank ?? null,
       reporter: br.requestor_name || null,
+      reporterId: br.requestor || null,
       assignee: br.assignee_name || br.assignee || null,
       assigneeId: br.assignee || null,
       department: br.department || null,
@@ -178,8 +191,12 @@ export default function ProductBacklogPage() {
       filtered = filtered.filter(r => 
         r.autoPriority?.toLowerCase() === 'unscored' || r.score === null
       );
+    } else if (activeFilter === 'my' && currentUserId) {
+      // Filter items where current user is assignee OR reporter
+      filtered = filtered.filter(r => 
+        r.assigneeId === currentUserId || r.reporterId === currentUserId
+      );
     }
-    // 'my' filter would need user context - skip for now
     
     // Default sort: latest created first
     return filtered.sort((a, b) => {
@@ -188,7 +205,7 @@ export default function ProductBacklogPage() {
       if (bTime !== aTime) return bTime - aTime;
       return (b.id || '').localeCompare(a.id || '');
     });
-  }, [tableData, listSearchQuery, activeFilter]);
+  }, [tableData, listSearchQuery, activeFilter, currentUserId]);
 
   // Handle field update
   const handleFieldUpdate = async (field: string, value: any) => {
