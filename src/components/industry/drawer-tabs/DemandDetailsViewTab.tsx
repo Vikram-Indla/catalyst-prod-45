@@ -107,21 +107,15 @@ function AssigneeSelect({ value, onChange }: { value: string | null; onChange: (
 
   return (
     <Select value={value || 'unassigned'} onValueChange={(v) => onChange(v === 'unassigned' ? null : v)}>
-      <SelectTrigger 
-        className="w-full h-10"
-        style={{ 
-          backgroundColor: 'hsl(var(--secondary-bronze) / 0.08)', 
-          border: '1px solid hsl(var(--secondary-bronze) / 0.2)' 
-        }}
-      >
+      <SelectTrigger className="w-full h-10">
         <SelectValue placeholder="Select assignee">
           {value ? (
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 min-w-0">
               <UserAvatar name={value} size="sm" />
-              <span>{value}</span>
+              <span className="truncate">{value}</span>
             </div>
           ) : (
-            'Not assigned'
+            <span className="text-muted-foreground">Not assigned</span>
           )}
         </SelectValue>
       </SelectTrigger>
@@ -132,10 +126,10 @@ function AssigneeSelect({ value, onChange }: { value: string | null; onChange: (
         {profiles.map((p) => (
           <SelectItem key={p.id} value={p.full_name || p.email || p.id}>
             <div className="flex items-center gap-2">
-              <div className="w-6 h-6 rounded-full bg-[hsl(var(--secondary-bronze))] flex items-center justify-center text-white text-[10px] font-semibold">
+              <div className="w-6 h-6 rounded-full bg-[hsl(var(--secondary-bronze))] flex items-center justify-center text-white text-[10px] font-semibold flex-shrink-0">
                 {(p.full_name || p.email || '?').split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
               </div>
-              <span>{p.full_name || p.email}</span>
+              <span className="truncate">{p.full_name || p.email}</span>
             </div>
           </SelectItem>
         ))}
@@ -144,7 +138,7 @@ function AssigneeSelect({ value, onChange }: { value: string | null; onChange: (
   );
 }
 
-// Date picker field component
+// Date picker field component - uses shorter format to prevent truncation
 function DatePickerField({ 
   label, 
   value, 
@@ -158,19 +152,21 @@ function DatePickerField({
   const dateValue = value ? parseISO(value) : undefined;
   
   return (
-    <div className="flex-1">
+    <div className="flex-1 min-w-0">
       <FieldLabel>{label}</FieldLabel>
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button
             variant="outline"
             className={cn(
-              "w-full justify-start text-left font-normal h-10",
+              "w-full justify-start text-left font-normal h-10 px-2.5",
               !value && "text-muted-foreground"
             )}
           >
-            <CalendarIcon className="mr-2 h-4 w-4" />
-            {value ? format(parseISO(value), 'dd/MM/yyyy') : 'Select date'}
+            <CalendarIcon className="mr-1.5 h-4 w-4 flex-shrink-0" />
+            <span className="truncate">
+              {value ? format(parseISO(value), 'dd MMM yyyy') : 'Select'}
+            </span>
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-auto p-0 z-[500]" align="start">
@@ -182,6 +178,7 @@ function DatePickerField({
               setOpen(false);
             }}
             initialFocus
+            className="pointer-events-auto"
           />
         </PopoverContent>
       </Popover>
@@ -269,8 +266,8 @@ export function DemandDetailsViewTab({ data, onChange, onDirtyChange }: DemandDe
   return (
     <div className="space-y-5 pb-6">
       {/* Row 1: Status | EA Review Required? */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-        <div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="min-w-0">
           <FieldLabel>Status</FieldLabel>
           <Select 
             value={statusKey} 
@@ -278,9 +275,9 @@ export function DemandDetailsViewTab({ data, onChange, onDirtyChange }: DemandDe
           >
             <SelectTrigger className="w-full h-10">
               <SelectValue>
-                <div className="flex items-center gap-2">
-                  <div className={cn('w-2 h-2 rounded-full', statusColor)} />
-                  {statusLabel}
+                <div className="flex items-center gap-2 min-w-0">
+                  <div className={cn('w-2 h-2 rounded-full flex-shrink-0', statusColor)} />
+                  <span className="truncate">{statusLabel}</span>
                 </div>
               </SelectValue>
             </SelectTrigger>
@@ -297,45 +294,45 @@ export function DemandDetailsViewTab({ data, onChange, onDirtyChange }: DemandDe
           </Select>
         </div>
 
-        <div>
+        <div className="min-w-0">
           <FieldLabel>EA Review Required?</FieldLabel>
           <div 
             className="h-10 px-3 rounded-md flex items-center justify-between"
             style={{ backgroundColor: 'hsl(var(--secondary-olive) / 0.08)', border: '1px solid hsl(var(--secondary-olive) / 0.2)' }}
           >
-            <span className="text-sm font-medium" style={{ color: 'var(--text-1)' }}>
+            <span className="text-sm font-medium truncate" style={{ color: 'var(--text-1)' }}>
               {data.ea_review_required ? 'Yes' : 'No'}
             </span>
             <Switch 
               id="ea-review"
               checked={data.ea_review_required ?? true}
               onCheckedChange={(checked) => handleChange('ea_review_required', checked)}
-              className="data-[state=checked]:bg-[hsl(var(--secondary-olive))]"
+              className="data-[state=checked]:bg-[hsl(var(--secondary-olive))] flex-shrink-0 ml-2"
             />
           </div>
         </div>
       </div>
 
       {/* Row 2: Priority | Target Quarter */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-        <div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="min-w-0">
           <FieldLabel>Priority</FieldLabel>
           <div 
             className="h-10 px-3 rounded-md flex items-center justify-between cursor-pointer"
             style={{ backgroundColor: 'var(--surface-2)', border: '1px solid var(--divider)' }}
             onClick={() => toast.info('Priority is auto-calculated from the Scoring tab')}
           >
-            <div className="flex items-center gap-2">
-              <div className={cn('w-2 h-2 rounded-full', priorityInfo.color)} />
-              <span className="text-sm font-medium" style={{ color: 'var(--text-1)' }}>
+            <div className="flex items-center gap-2 min-w-0">
+              <div className={cn('w-2 h-2 rounded-full flex-shrink-0', priorityInfo.color)} />
+              <span className="text-sm font-medium truncate" style={{ color: 'var(--text-1)' }}>
                 {priorityInfo.label}
               </span>
             </div>
-            <Lock className="w-3.5 h-3.5" style={{ color: 'var(--text-3)' }} />
+            <Lock className="w-3.5 h-3.5 flex-shrink-0 ml-2" style={{ color: 'var(--text-3)' }} />
           </div>
         </div>
 
-        <div>
+        <div className="min-w-0">
           <FieldLabel>Target Quarter</FieldLabel>
           <Select 
             value={data.planned_quarter?.[0] || ''} 
@@ -354,36 +351,27 @@ export function DemandDetailsViewTab({ data, onChange, onDirtyChange }: DemandDe
       </div>
 
       {/* Row 3: Reporter | Assignee */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-        <div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="min-w-0">
           <FieldLabel>Reporter</FieldLabel>
           <div 
-            className="h-10 px-3 rounded-md flex items-center justify-between"
+            className="h-10 px-3 rounded-md flex items-center gap-2"
             style={{ backgroundColor: 'var(--surface-2)', border: '1px solid var(--divider)' }}
           >
             {reporterName ? (
               <>
-                <div className="flex items-center gap-2">
-                  <UserAvatar name={reporterName} size="sm" />
-                  <span className="text-sm font-medium" style={{ color: 'var(--text-1)' }}>
-                    {reporterName}
-                  </span>
-                </div>
-                <button 
-                  className="text-xs font-medium"
-                  style={{ color: 'hsl(var(--secondary-bronze))' }}
-                  onClick={() => toast.info('Change reporter feature coming soon')}
-                >
-                  Change
-                </button>
+                <UserAvatar name={reporterName} size="sm" />
+                <span className="text-sm font-medium truncate flex-1 min-w-0" style={{ color: 'var(--text-1)' }}>
+                  {reporterName}
+                </span>
               </>
             ) : (
-              <span className="text-sm" style={{ color: 'var(--text-3)' }}>Not assigned</span>
+              <span className="text-sm truncate" style={{ color: 'var(--text-3)' }}>Not assigned</span>
             )}
           </div>
         </div>
 
-        <div>
+        <div className="min-w-0">
           <FieldLabel>Assignee</FieldLabel>
           <AssigneeSelect
             value={data.assignee || null}
@@ -393,8 +381,8 @@ export function DemandDetailsViewTab({ data, onChange, onDirtyChange }: DemandDe
       </div>
 
       {/* Row 4: Department | Business Owner */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-        <div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="min-w-0">
           <FieldLabel>Department</FieldLabel>
           <DepartmentSelect
             value={data.department_id || null}
@@ -403,37 +391,35 @@ export function DemandDetailsViewTab({ data, onChange, onDirtyChange }: DemandDe
           />
         </div>
 
-        <div>
+        <div className="min-w-0">
           <FieldLabel>Business Owner</FieldLabel>
           <div 
-            className="h-10 px-3 rounded-md flex items-center justify-between"
+            className="h-10 px-3 rounded-md flex items-center gap-2"
             style={{ backgroundColor: 'hsl(var(--secondary-bronze) / 0.08)', border: '1px solid hsl(var(--secondary-bronze) / 0.2)' }}
           >
             {data.business_owner ? (
               <>
-                <div className="flex items-center gap-2">
-                  <UserAvatar name={data.business_owner} size="sm" />
-                  <span className="text-sm font-medium" style={{ color: 'var(--text-1)' }}>
-                    {data.business_owner}
-                  </span>
-                </div>
+                <UserAvatar name={data.business_owner} size="sm" />
+                <span className="text-sm font-medium truncate flex-1 min-w-0" style={{ color: 'var(--text-1)' }}>
+                  {data.business_owner}
+                </span>
               </>
             ) : (
-              <span className="text-sm" style={{ color: 'var(--text-3)' }}>Not assigned</span>
+              <span className="text-sm truncate" style={{ color: 'var(--text-3)' }}>Not assigned</span>
             )}
           </div>
         </div>
       </div>
 
       {/* Row 5: Business Ask Date | Kickoff Date | Target Complete */}
-      <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <DatePickerField 
-          label="Business Ask Date" 
+          label="Business Ask" 
           value={data.start_date} 
           onChange={handleDateChange('start_date')}
         />
         <DatePickerField 
-          label="Kickoff Date" 
+          label="Kickoff" 
           value={data.impl_start_date} 
           onChange={handleDateChange('impl_start_date')}
         />
