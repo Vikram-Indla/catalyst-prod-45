@@ -209,6 +209,10 @@ export function useCreateBusinessRequest() {
           department_id: (data as any).department_id || null,
           business_owner: (data as any).business_owner || null,
           business_owner_id: (data as any).business_owner_id || null,
+          // Date fields
+          start_date: (data as any).start_date || null,
+          end_date: (data as any).end_date || null,
+          impl_start_date: (data as any).impl_start_date || null,
         }])
         .select()
         .single();
