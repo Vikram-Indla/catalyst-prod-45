@@ -183,7 +183,7 @@ function CatalystDatePicker({
             triggerClassName
           )}
         >
-          <CalendarIcon className="mr-2 h-4 w-4" />
+          <CalendarIcon className="mr-2 h-4 w-4 text-gray-400 dark:text-gray-500" />
           {selectedDate ? format(selectedDate, dateFormat) : placeholder}
         </Button>
       </PopoverTrigger>
