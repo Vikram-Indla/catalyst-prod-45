@@ -314,7 +314,7 @@ export function DemandDetailsViewTab({ data, onChange, onDirtyChange, requestId 
   };
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-4 md:p-6 space-y-4 md:space-y-6">
       {/* Auto-save indicator */}
       {isSaving && (
         <div className="fixed top-4 right-4 z-50 flex items-center gap-2 px-3 py-1.5 bg-muted rounded-md text-xs text-muted-foreground">
