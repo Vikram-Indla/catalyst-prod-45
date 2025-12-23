@@ -256,7 +256,10 @@ export function UserPicker({
                         key={user.id}
                         value={user.id}
                         onSelect={() => handleSelect(user.id)}
-                        className="cursor-pointer"
+                        className={cn(
+                          "cursor-pointer",
+                          isSelected(user.id) && "bg-[hsl(var(--secondary-bronze))] text-white"
+                        )}
                       >
                         <Check
                           className={cn(
@@ -266,15 +269,28 @@ export function UserPicker({
                         />
                         <Avatar className="h-6 w-6 mr-2">
                           <AvatarImage src={user.avatar_url || undefined} />
-                          <AvatarFallback className="text-[10px] bg-brand-primary/20 text-brand-primary">
+                          <AvatarFallback 
+                            className={cn(
+                              "text-[10px]",
+                              isSelected(user.id) 
+                                ? "bg-white/20 text-white" 
+                                : "bg-[hsl(var(--secondary-bronze)/0.15)] text-[hsl(var(--secondary-bronze))]"
+                            )}
+                          >
                             {getInitials(user.full_name, user.email)}
                           </AvatarFallback>
                         </Avatar>
                         <div className="flex flex-col">
-                          <span className="text-sm font-medium">
+                          <span className={cn(
+                            "text-sm font-medium",
+                            isSelected(user.id) ? "text-white" : "text-foreground"
+                          )}>
                             {user.full_name || 'No name'}
                           </span>
-                          <span className="text-xs text-muted-foreground">
+                          <span className={cn(
+                            "text-xs",
+                            isSelected(user.id) ? "text-white/80" : "text-muted-foreground"
+                          )}>
                             {user.email}
                           </span>
                         </div>
