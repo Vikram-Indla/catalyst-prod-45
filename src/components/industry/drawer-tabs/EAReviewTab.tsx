@@ -78,7 +78,7 @@ export function EAReviewTab({ data, onChange }: EAReviewTabProps) {
   const isOutsourced = data.ea_delivery_model === 'outsourced';
 
   return (
-    <div className="flex flex-col h-full space-y-4 p-4 md:p-5 pb-6" style={{ background: 'var(--bg)' }}>
+    <div className="p-4 md:p-5 pb-6 space-y-4" style={{ background: 'var(--bg)' }}>
       {/* SECTION 1: EA Decision */}
       <div className="border rounded-lg p-4 space-y-4" style={{ borderColor: 'var(--border-color)', background: 'var(--surface-1)' }}>
         <h3 className="text-[11px] font-medium uppercase tracking-wide" style={{ color: 'var(--text-3)' }}>

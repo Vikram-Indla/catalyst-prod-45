@@ -48,7 +48,7 @@ export function AuditHistoryTab({ data }: AuditHistoryTabProps) {
   };
 
   return (
-    <div className="p-6 space-y-4">
+    <div className="p-4 md:p-5 pb-6 space-y-4">
       <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Change History</h3>
 
       {isLoading ? (

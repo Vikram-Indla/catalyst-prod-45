@@ -558,29 +558,29 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
               <TabsContent value="demand-details" className="m-0 focus-visible:outline-none p-4 md:p-5 pb-6">
                 <DemandDetailsViewTab data={formData} onChange={handleFieldChange} />
               </TabsContent>
-              <TabsContent value="business-score" className="m-0 focus-visible:outline-none">
+              <TabsContent value="business-score" className="m-0 focus-visible:outline-none data-[state=inactive]:hidden">
                 <BusinessScoreViewTab 
                   data={formData} 
                   onChange={handleFieldChange} 
                   onDirtyChange={handleDirtyChange}
                 />
               </TabsContent>
-              <TabsContent value="ea-review" className="m-0 focus-visible:outline-none p-4 md:p-5 pb-6">
+              <TabsContent value="ea-review" className="m-0 focus-visible:outline-none data-[state=inactive]:hidden">
                 <EAReviewTab data={formData} onChange={handleFieldChange} />
               </TabsContent>
-              <TabsContent value="budget" className="m-0 focus-visible:outline-none p-4 md:p-5 pb-6">
+              <TabsContent value="budget" className="m-0 focus-visible:outline-none data-[state=inactive]:hidden">
                 <BudgetViewTab data={formData} onChange={handleFieldChange} onDirtyChange={handleDirtyChange} />
               </TabsContent>
-              <TabsContent value="risks" className="m-0 focus-visible:outline-none p-4 md:p-5 pb-6">
+              <TabsContent value="risks" className="m-0 focus-visible:outline-none data-[state=inactive]:hidden">
                 <RisksViewTab data={formData} onChange={handleFieldChange} onDirtyChange={handleDirtyChange} />
               </TabsContent>
-              <TabsContent value="milestones" className="m-0 focus-visible:outline-none p-4 md:p-5 pb-6">
+              <TabsContent value="milestones" className="m-0 focus-visible:outline-none data-[state=inactive]:hidden">
                 <MilestonesViewTab data={formData} onChange={handleFieldChange} onDirtyChange={handleDirtyChange} />
               </TabsContent>
-              <TabsContent value="links" className="m-0 focus-visible:outline-none">
+              <TabsContent value="links" className="m-0 focus-visible:outline-none data-[state=inactive]:hidden">
                 <LinksViewTab data={formData} onChange={handleFieldChange} onDirtyChange={handleDirtyChange} />
               </TabsContent>
-              <TabsContent value="audit-history" className="m-0 focus-visible:outline-none">
+              <TabsContent value="audit-history" className="m-0 focus-visible:outline-none data-[state=inactive]:hidden">
                 <AuditHistoryTab data={formData} onChange={handleFieldChange} onDirtyChange={handleDirtyChange} />
               </TabsContent>
             </div>

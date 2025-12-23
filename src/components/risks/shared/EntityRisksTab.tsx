@@ -398,14 +398,14 @@ export function EntityRisksTab({ entityType, entityId }: EntityRisksTabProps) {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center py-8">
+      <div className="p-4 md:p-5 pb-6">
         <div className="text-sm text-muted-foreground">Loading risks...</div>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col h-full space-y-4" style={{ backgroundColor: 'var(--surface-1)' }}>
+    <div className="p-4 md:p-5 pb-6 space-y-4" style={{ backgroundColor: 'var(--surface-1)' }}>
       {/* Header with Sort and Add button */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
