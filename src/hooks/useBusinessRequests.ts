@@ -173,7 +173,7 @@ export function useCreateBusinessRequest() {
   const { toast } = useToast();
 
   return useMutation({
-    mutationFn: async (data: CreateBusinessRequestFormData & { delivery_platform?: string; planned_quarter?: string[] | null }) => {
+    mutationFn: async (data: CreateBusinessRequestFormData & { delivery_platform?: string; planned_quarter?: string[] | null; assignee?: string | null; end_date_locked?: boolean; end_date_locked_by?: string | null; end_date_locked_at?: string | null }) => {
       // Get current user for audit logging
       const { data: { user } } = await supabase.auth.getUser();
       
@@ -215,6 +215,12 @@ export function useCreateBusinessRequest() {
           impl_start_date: (data as any).impl_start_date || null,
           // Many views use impl_target_end_date as "Target Complete"; keep it in sync on create
           impl_target_end_date: (data as any).impl_target_end_date || (data as any).end_date || null,
+          // Assignee
+          assignee: (data as any).assignee || null,
+          // Lock fields
+          end_date_locked: (data as any).end_date_locked || false,
+          end_date_locked_by: (data as any).end_date_locked_by || null,
+          end_date_locked_at: (data as any).end_date_locked_at || null,
         }])
         .select()
         .single();

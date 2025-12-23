@@ -639,6 +639,9 @@ export type Database = {
           description: string | null
           ea_review_required: boolean | null
           end_date: string | null
+          end_date_locked: boolean | null
+          end_date_locked_at: string | null
+          end_date_locked_by: string | null
           environment_dependency: string | null
           estimated_cost: number | null
           estimated_cost_sar: number | null
@@ -739,6 +742,9 @@ export type Database = {
           description?: string | null
           ea_review_required?: boolean | null
           end_date?: string | null
+          end_date_locked?: boolean | null
+          end_date_locked_at?: string | null
+          end_date_locked_by?: string | null
           environment_dependency?: string | null
           estimated_cost?: number | null
           estimated_cost_sar?: number | null
@@ -839,6 +845,9 @@ export type Database = {
           description?: string | null
           ea_review_required?: boolean | null
           end_date?: string | null
+          end_date_locked?: boolean | null
+          end_date_locked_at?: string | null
+          end_date_locked_by?: string | null
           environment_dependency?: string | null
           estimated_cost?: number | null
           estimated_cost_sar?: number | null
