@@ -143,6 +143,8 @@ export function WorkManager({ tab: initialTab }: WorkManagerProps) {
       memberIds: teamMemberIdsMap[t.id] || [],
       color: getTeamColor(t.team_type),
     }));
+  }, [accessibleTeams, teamMemberIdsMap]);
+
   // Use mock data as fallback when no db teams exist (for demo purposes)
   const teamsData = teamsDataFromDb.length > 0 ? teamsDataFromDb : initialTeams;
 
