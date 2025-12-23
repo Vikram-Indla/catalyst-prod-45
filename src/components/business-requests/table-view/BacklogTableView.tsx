@@ -3,16 +3,17 @@
  * With drag-and-drop row reordering that persists rank to database
  */
 
-import { useMemo, useCallback } from 'react';
+import { useMemo, useCallback, useState } from 'react';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 import { cn } from '@/lib/utils';
 import { Checkbox } from '@/components/ui/checkbox';
 import { ChevronUp, ChevronDown, GripVertical } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
-import { StatusCell, ScoreCell, RankCell, IdCell, OwnerCell, PriorityCell, QuarterCell } from './cells';
+import { RankCell, IdCell, OwnerCell, PriorityCell, QuarterCell, DateCell, TextCell } from './cells';
 import { useTableSelection } from './useTableSelection';
 import { useTableSort } from './useTableSort';
 import { DEFAULT_COLUMNS, TableColumn } from './types';
+import { ColumnVisibilityDropdown } from './ColumnVisibilityDropdown';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
@@ -26,6 +27,12 @@ interface BusinessRequestRow {
   business_score?: number | null;
   rank?: number | null;
   requestor?: string | null;
+  requestor_name?: string | null;
+  assignee?: string | null;
+  business_owner?: string | null;
+  impl_start_date?: string | null;
+  end_date?: string | null;
+  delivery_platform?: string | null;
   planned_quarter?: string[] | null;
 }
 
@@ -48,6 +55,32 @@ export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableVi
   
   const { sortConfig, handleSort } = useTableSort({ column: 'rank', direction: 'asc' });
 
+  // Column visibility state
+  const [visibleColumns, setVisibleColumns] = useState<Set<string>>(() => {
+    return new Set(DEFAULT_COLUMNS.filter(c => c.visible !== false).map(c => c.key));
+  });
+
+  const toggleColumnVisibility = useCallback((columnKey: string) => {
+    setVisibleColumns(prev => {
+      const next = new Set(prev);
+      if (next.has(columnKey)) {
+        next.delete(columnKey);
+      } else {
+        next.add(columnKey);
+      }
+      return next;
+    });
+  }, []);
+
+  const showAllColumns = useCallback(() => {
+    setVisibleColumns(new Set(DEFAULT_COLUMNS.map(c => c.key)));
+  }, []);
+
+  const hideAllColumns = useCallback(() => {
+    // Keep only checkbox visible
+    setVisibleColumns(new Set(['checkbox']));
+  }, []);
+
   // Sort data
   const sortedData = useMemo(() => {
     const sorted = [...data];
@@ -55,9 +88,15 @@ export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableVi
       let aVal: any, bVal: any;
       switch (sortConfig.column) {
         case 'rank': aVal = a.rank || 999; bVal = b.rank || 999; break;
-        case 'score': aVal = a.business_score || 0; bVal = b.business_score || 0; break;
         case 'title': aVal = a.title || ''; bVal = b.title || ''; break;
-        case 'status': aVal = a.process_step || ''; bVal = b.process_step || ''; break;
+        case 'priority': aVal = a.priority_tier || ''; bVal = b.priority_tier || ''; break;
+        case 'kickoff_date': aVal = a.impl_start_date || ''; bVal = b.impl_start_date || ''; break;
+        case 'target_date': aVal = a.end_date || ''; bVal = b.end_date || ''; break;
+        case 'reporter': aVal = a.requestor_name || a.requestor || ''; bVal = b.requestor_name || b.requestor || ''; break;
+        case 'assignee': aVal = a.assignee || ''; bVal = b.assignee || ''; break;
+        case 'business_owner': aVal = a.business_owner || ''; bVal = b.business_owner || ''; break;
+        case 'delivery_platform': aVal = a.delivery_platform || ''; bVal = b.delivery_platform || ''; break;
+        case 'quarter': aVal = a.planned_quarter?.[0] || ''; bVal = b.planned_quarter?.[0] || ''; break;
         default: aVal = a.rank || 999; bVal = b.rank || 999;
       }
       if (sortConfig.direction === 'asc') return aVal > bVal ? 1 : -1;
@@ -70,21 +109,17 @@ export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableVi
   const handleDragEnd = useCallback(async (result: DropResult) => {
     const { destination, source } = result;
 
-    // Dropped outside the list or in the same position
     if (!destination || destination.index === source.index) return;
 
-    // Reorder the array
     const reordered = Array.from(sortedData);
     const [removed] = reordered.splice(source.index, 1);
     reordered.splice(destination.index, 0, removed);
 
-    // Create rank updates (1-based)
     const updates = reordered.map((item, index) => ({
       id: item.id,
       rank: index + 1,
     }));
 
-    // Optimistically update cache
     queryClient.setQueryData(['business-requests'], (old: any) => {
       if (!old) return old;
       return old.map((item: any) => {
@@ -93,7 +128,6 @@ export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableVi
       });
     });
 
-    // Persist to database
     try {
       const updatePromises = updates.map((item) =>
         supabase
@@ -107,12 +141,14 @@ export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableVi
     } catch (error) {
       console.error('Failed to save rank order:', error);
       toast.error('Failed to save rank order');
-      // Refetch to restore correct state
       queryClient.invalidateQueries({ queryKey: ['business-requests'] });
     }
   }, [sortedData, queryClient]);
 
-  const columns = DEFAULT_COLUMNS.filter(c => c.key !== 'actions');
+  // Filter columns based on visibility
+  const displayColumns = useMemo(() => {
+    return DEFAULT_COLUMNS.filter(c => visibleColumns.has(c.key));
+  }, [visibleColumns]);
 
   const renderSortIcon = (column: TableColumn) => {
     if (!column.sortable) return null;
@@ -128,17 +164,66 @@ export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableVi
     );
   };
 
+  const renderCellContent = (column: TableColumn, row: BusinessRequestRow, index: number) => {
+    switch (column.key) {
+      case 'checkbox':
+        return (
+          <Checkbox
+            checked={selectedIds.has(row.id)}
+            onCheckedChange={() => toggleSelection(row.id)}
+          />
+        );
+      case 'rank':
+        return <RankCell displayIndex={index + 1} />;
+      case 'id':
+        return <IdCell requestKey={row.request_key || row.id.slice(0, 8)} onClick={(e) => { e.stopPropagation(); onRowClick(row.id); }} />;
+      case 'priority':
+        return <PriorityCell priority={row.priority_tier || null} />;
+      case 'title':
+        return <span className="font-medium text-foreground max-w-[250px] truncate block">{row.title || '—'}</span>;
+      case 'kickoff_date':
+        return <DateCell date={row.impl_start_date} />;
+      case 'target_date':
+        return <DateCell date={row.end_date} />;
+      case 'reporter':
+        return <OwnerCell name={row.requestor_name || row.requestor || null} />;
+      case 'assignee':
+        return <OwnerCell name={row.assignee || null} />;
+      case 'business_owner':
+        return <OwnerCell name={row.business_owner || null} />;
+      case 'delivery_platform':
+        return <TextCell value={row.delivery_platform} />;
+      case 'quarter':
+        return <QuarterCell quarter={row.planned_quarter?.[0] || null} />;
+      default:
+        return null;
+    }
+  };
+
   return (
     <div className="flex flex-col h-full bg-background rounded-lg border border-border overflow-hidden">
-      {/* Bulk Actions Bar */}
-      {selectedIds.size > 0 && (
-        <div className="flex items-center gap-3 px-4 py-2 bg-[hsl(var(--brand-primary))]/5 border-b border-border">
-          <span className="text-sm font-medium">{selectedIds.size} selected</span>
-          <button onClick={clearSelection} className="text-sm text-muted-foreground hover:text-foreground">
-            Clear
-          </button>
+      {/* Toolbar with Column Visibility */}
+      <div className="flex items-center justify-between px-4 py-2 border-b border-border bg-muted/30">
+        <div className="flex items-center gap-3">
+          {selectedIds.size > 0 ? (
+            <>
+              <span className="text-sm font-medium">{selectedIds.size} selected</span>
+              <button onClick={clearSelection} className="text-sm text-muted-foreground hover:text-foreground">
+                Clear
+              </button>
+            </>
+          ) : (
+            <span className="text-sm text-muted-foreground">{sortedData.length} items</span>
+          )}
         </div>
-      )}
+        <ColumnVisibilityDropdown
+          columns={DEFAULT_COLUMNS}
+          visibleColumns={visibleColumns}
+          onToggleColumn={toggleColumnVisibility}
+          onShowAll={showAllColumns}
+          onHideAll={hideAllColumns}
+        />
+      </div>
 
       {/* Table */}
       <div className="flex-1 overflow-auto">
@@ -147,7 +232,7 @@ export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableVi
             <thead className="sticky top-0 z-10 bg-muted/50">
               <tr>
                 <th className="w-8 px-2 py-2.5 text-left border-b border-border" />
-                {columns.map(column => (
+                {displayColumns.map(column => (
                   <th
                     key={column.key}
                     className={cn(
@@ -180,7 +265,7 @@ export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableVi
                     Array.from({ length: 5 }).map((_, i) => (
                       <tr key={i} className="border-b border-border/50">
                         <td className="px-2 py-3" />
-                        {columns.map(col => (
+                        {displayColumns.map(col => (
                           <td key={col.key} className="px-3 py-3">
                             <Skeleton className="h-5 w-full" />
                           </td>
@@ -189,7 +274,7 @@ export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableVi
                     ))
                   ) : sortedData.length === 0 ? (
                     <tr>
-                      <td colSpan={columns.length + 1} className="text-center py-16 text-muted-foreground">
+                      <td colSpan={displayColumns.length + 1} className="text-center py-16 text-muted-foreground">
                         No requests found
                       </td>
                     </tr>
@@ -214,22 +299,15 @@ export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableVi
                             >
                               <GripVertical className="h-4 w-4 text-muted-foreground/50 hover:text-muted-foreground" />
                             </td>
-                            <td className="px-3 py-3" onClick={e => e.stopPropagation()}>
-                              <Checkbox
-                                checked={selectedIds.has(row.id)}
-                                onCheckedChange={() => toggleSelection(row.id)}
-                              />
-                            </td>
-                            <td className="px-3 py-3"><RankCell displayIndex={index + 1} /></td>
-                            <td className="px-3 py-3">
-                              <IdCell requestKey={row.request_key || row.id.slice(0, 8)} onClick={(e) => { e.stopPropagation(); onRowClick(row.id); }} />
-                            </td>
-                            <td className="px-3 py-3 font-medium text-foreground max-w-[300px] truncate">{row.title || '—'}</td>
-                            <td className="px-3 py-3"><StatusCell status={row.process_step || 'new_request'} /></td>
-                            <td className="px-3 py-3"><PriorityCell priority={row.priority_tier || null} /></td>
-                            <td className="px-3 py-3"><ScoreCell score={row.business_score ?? null} /></td>
-                            <td className="px-3 py-3"><OwnerCell name={row.requestor || null} /></td>
-                            <td className="px-3 py-3"><QuarterCell quarter={row.planned_quarter?.[0] || null} /></td>
+                            {displayColumns.map(column => (
+                              <td
+                                key={column.key}
+                                className="px-3 py-3"
+                                onClick={column.key === 'checkbox' ? (e) => e.stopPropagation() : undefined}
+                              >
+                                {renderCellContent(column, row, index)}
+                              </td>
+                            ))}
                           </tr>
                         )}
                       </Draggable>
@@ -241,11 +319,6 @@ export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableVi
             </Droppable>
           </table>
         </DragDropContext>
-      </div>
-
-      {/* Footer */}
-      <div className="flex items-center justify-between px-4 py-2 border-t border-border bg-muted/30">
-        <span className="text-sm text-muted-foreground">{sortedData.length} items</span>
       </div>
     </div>
   );

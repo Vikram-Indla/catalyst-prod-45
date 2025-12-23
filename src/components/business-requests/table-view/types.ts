@@ -40,14 +40,16 @@ export interface BulkAction {
 }
 
 export const DEFAULT_COLUMNS: TableColumn[] = [
-  { key: 'checkbox', label: '', width: 44, sortable: false },
-  { key: 'rank', label: 'Rank', width: 70, sortable: true },
-  { key: 'id', label: 'ID', width: 100, sortable: true },
-  { key: 'title', label: 'Summary', minWidth: 220, sortable: true },
-  { key: 'status', label: 'Status', width: 130, sortable: true },
-  { key: 'priority', label: 'Priority', width: 100, sortable: true },
-  { key: 'score', label: 'Score', width: 80, sortable: true },
-  { key: 'owner', label: 'Reporter', width: 160, sortable: true },
-  { key: 'quarter', label: 'Quarter', width: 100, sortable: true },
-  { key: 'actions', label: 'Actions', width: 80, sortable: false, sticky: 'right' },
+  { key: 'checkbox', label: '', width: 44, sortable: false, visible: true },
+  { key: 'rank', label: 'Rank', width: 70, sortable: true, visible: true },
+  { key: 'id', label: 'ID', width: 100, sortable: true, visible: true },
+  { key: 'priority', label: 'Priority', width: 100, sortable: true, visible: true },
+  { key: 'title', label: 'Summary', minWidth: 200, sortable: true, visible: true },
+  { key: 'kickoff_date', label: 'Kickoff Date', width: 110, sortable: true, visible: true },
+  { key: 'target_date', label: 'Target Date', width: 110, sortable: true, visible: true },
+  { key: 'reporter', label: 'Reporter', width: 140, sortable: true, visible: true },
+  { key: 'assignee', label: 'Assignee', width: 140, sortable: true, visible: true },
+  { key: 'business_owner', label: 'Business Owner', width: 140, sortable: true, visible: true },
+  { key: 'delivery_platform', label: 'Delivery Platform', width: 140, sortable: true, visible: true },
+  { key: 'quarter', label: 'Planned Quarter', width: 120, sortable: true, visible: true },
 ];
