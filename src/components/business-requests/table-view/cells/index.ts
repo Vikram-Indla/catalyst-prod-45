@@ -5,3 +5,5 @@ export { IdCell } from './IdCell';
 export { OwnerCell } from './OwnerCell';
 export { PriorityCell } from './PriorityCell';
 export { QuarterCell } from './QuarterCell';
+export { DateCell } from './DateCell';
+export { TextCell } from './TextCell';
