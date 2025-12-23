@@ -275,22 +275,23 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
   // Auto-save function
   const performAutoSave = useCallback(async (dataToSave: Partial<BusinessRequest> & Record<string, any>) => {
     if (!requestId) return;
-    
+
     setIsSaving(true);
-    
+
     try {
+      // Persist first; only write audit logs after a successful save
+      await updateMutation.mutateAsync({ id: requestId, data: dataToSave as Partial<BusinessRequest> });
+
       // Log all field changes to audit table
       await logFieldChanges(requestId, originalData, dataToSave);
-      
-      await updateMutation.mutateAsync({ id: requestId, data: dataToSave as Partial<BusinessRequest> });
-      
+
       setOriginalData(dataToSave);
       skipNextFormResetRef.current = true;
-      
+
       // Show saved indicator briefly
       setShowSavedIndicator(true);
       setTimeout(() => setShowSavedIndicator(false), 2000);
-      
+
       // Refresh related queries
       queryClient.invalidateQueries({ queryKey: ['business-requests'] });
       queryClient.invalidateQueries({ queryKey: ['business-request-audit', requestId] });
@@ -340,24 +341,27 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
 
   const handleFieldChange = useCallback((field: string, value: any) => {
     setFormData(prev => {
-      const newData = { ...prev, [field]: value };
-      
+      // Handle batch updates (multiple fields at once)
+      const newData = field === '_batch' && value && typeof value === 'object'
+        ? { ...prev, ...value }
+        : { ...prev, [field]: value };
+
       // Store pending changes for auto-save
       pendingChangesRef.current = newData;
-      
+
       // Clear existing timeout
       if (autoSaveTimeoutRef.current) {
         clearTimeout(autoSaveTimeoutRef.current);
       }
-      
+
       // Schedule auto-save
       autoSaveTimeoutRef.current = setTimeout(() => {
         performAutoSave(pendingChangesRef.current);
       }, AUTO_SAVE_DELAY);
-      
+
       return newData;
     });
-    
+
     skipNextFormResetRef.current = true;
   }, [performAutoSave]);
 
