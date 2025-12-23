@@ -8,7 +8,8 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Badge } from '@/components/ui/badge';
-import { PROCESS_STEPS, DELIVERY_PLATFORM_OPTIONS } from '@/types/business-request';
+import { DELIVERY_PLATFORM_OPTIONS } from '@/types/business-request';
+import { useProcessSteps } from '@/contexts/ProcessStepsContext';
 import { useDepartments } from '@/hooks/useDepartmentsAndOwners';
 import { CalendarIcon, X, Sparkles, Clock, AlertTriangle, CalendarDays, User, Zap } from 'lucide-react';
 import { format, subDays, startOfDay, endOfDay, startOfQuarter, endOfQuarter, addQuarters } from 'date-fns';
@@ -101,6 +102,9 @@ export function SmartFiltersDialog({
   // Fetch departments from admin-configured data (ZERO-SEED policy)
   const { data: departments = [] } = useDepartments();
   const departmentOptions = departments.map(d => ({ value: d.id, label: { en: d.name } }));
+  
+  // Fetch process steps dynamically from database
+  const { processStepOptions } = useProcessSteps();
 
   useEffect(() => {
     if (open) {
@@ -309,7 +313,7 @@ export function SmartFiltersDialog({
             <div className="space-y-1.5">
               <Label className="text-sm">Process Step</Label>
               <div className="flex flex-wrap gap-1">
-                {PROCESS_STEPS.map((step) => (
+                {processStepOptions.map((step) => (
                   <Button
                     key={step.value}
                     variant="outline"

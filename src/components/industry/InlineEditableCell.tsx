@@ -6,7 +6,8 @@ import { Calendar } from '@/components/ui/calendar';
 import { format } from 'date-fns';
 import { CalendarIcon, Check, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { PROCESS_STEPS, DELIVERY_PLATFORM_OPTIONS } from '@/types/business-request';
+import { DELIVERY_PLATFORM_OPTIONS } from '@/types/business-request';
+import { useProcessSteps } from '@/contexts/ProcessStepsContext';
 
 interface InlineEditableCellProps {
   value: string | null | undefined;
@@ -53,6 +54,8 @@ export function InlineEditableCell({
   displayValue,
   className,
 }: InlineEditableCellProps) {
+  // Fetch process steps dynamically
+  const { processStepOptions } = useProcessSteps();
   const [isEditing, setIsEditing] = useState(false);
   const [editValue, setEditValue] = useState(value || '');
   const [isOpen, setIsOpen] = useState(false);
@@ -95,7 +98,7 @@ export function InlineEditableCell({
     if (options) return options;
     switch (field) {
       case 'process_step':
-        return PROCESS_STEPS.map(s => ({ value: s.value, label: s.label }));
+        return processStepOptions.map(s => ({ value: s.value, label: s.label }));
       case 'delivery_platform':
         return DELIVERY_PLATFORM_OPTIONS.map(p => ({ value: p.value, label: p.label.en }));
       case 'department':

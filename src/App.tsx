@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { ThemeProvider } from "next-themes";
 import { AuthProvider } from "./lib/auth";
 import { NavigationProvider } from "./contexts/NavigationContext";
+import { ProcessStepsProvider } from "./contexts/ProcessStepsContext";
 import { CatalystToastProvider } from "./contexts/CatalystToastContext";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { CatalystShell } from "./components/layout/CatalystShell";
@@ -261,6 +262,7 @@ const App = () => (
     <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
       <AuthProvider>
         <NavigationProvider>
+          <ProcessStepsProvider>
           <CatalystToastProvider position="top-right" maxToasts={5}>
             <TooltipProvider>
               <Toaster />
@@ -783,6 +785,7 @@ const App = () => (
           </BrowserRouter>
         </TooltipProvider>
       </CatalystToastProvider>
+      </ProcessStepsProvider>
       </NavigationProvider>
     </AuthProvider>
   </ThemeProvider>
