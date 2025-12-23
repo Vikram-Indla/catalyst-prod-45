@@ -82,8 +82,19 @@ export function InlineUserPicker({
 
   if (disabled) {
     return (
-      <div className={cn(textSize, 'text-muted-foreground cursor-not-allowed text-center')}>
-        {value?.full_name || 'Unassigned'}
+      <div className={cn(textSize, 'flex items-center justify-center gap-2 text-muted-foreground cursor-not-allowed')}>
+        {value ? (
+          <>
+            <div className="h-6 w-6 rounded-full bg-muted flex items-center justify-center flex-shrink-0">
+              <span className="text-[10px] font-medium text-muted-foreground">
+                {value.avatar_initials || value.full_name?.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() || 'U'}
+              </span>
+            </div>
+            <span className="truncate">{value.full_name}</span>
+          </>
+        ) : (
+          <span className="italic">Unassigned</span>
+        )}
       </div>
     );
   }
@@ -93,22 +104,22 @@ export function InlineUserPicker({
       <PopoverTrigger asChild>
         <button
           className={cn(
-            'w-full flex items-center justify-center gap-1.5 rounded px-1 py-0.5 hover:bg-muted/80 transition-colors cursor-pointer',
+            'w-full flex items-center justify-center gap-2 rounded px-1 py-0.5 hover:bg-muted/80 transition-colors cursor-pointer',
             textSize
           )}
           onClick={(e) => e.stopPropagation()}
         >
           {value ? (
             <>
-              <div className="h-5 w-5 rounded-full bg-[var(--surface-3)] flex items-center justify-center flex-shrink-0">
-                <span className="text-[9px] font-medium text-[var(--text-2)]">
-                  {value.avatar_initials || value.full_name?.charAt(0) || 'U'}
+              <div className="h-6 w-6 rounded-full bg-[#c69c6d] dark:bg-[#d4a855] flex items-center justify-center flex-shrink-0">
+                <span className="text-[10px] font-medium text-white">
+                  {value.avatar_initials || value.full_name?.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() || 'U'}
                 </span>
               </div>
-              <span className="text-[var(--text-1)] truncate">{value.full_name}</span>
+              <span className="text-foreground truncate">{value.full_name}</span>
             </>
           ) : (
-            <span className="text-[var(--text-3)]">Unassigned</span>
+            <span className="text-muted-foreground italic">Unassigned</span>
           )}
         </button>
       </PopoverTrigger>
@@ -164,14 +175,14 @@ export function InlineUserPicker({
                 onClick={() => handleSelect(user.id)}
                 disabled={isSaving}
               >
-                <div className="h-6 w-6 rounded-full bg-[var(--surface-3)] flex items-center justify-center flex-shrink-0">
-                  <span className="text-[10px] font-medium text-[var(--text-2)]">
-                    {user.avatar_initials || user.full_name?.charAt(0) || 'U'}
+                <div className="h-7 w-7 rounded-full bg-[#c69c6d] dark:bg-[#d4a855] flex items-center justify-center flex-shrink-0">
+                  <span className="text-[10px] font-medium text-white">
+                    {user.avatar_initials || user.full_name?.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() || 'U'}
                   </span>
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="text-[var(--text-1)] truncate">{user.full_name}</div>
-                  <div className="text-[10px] text-[var(--text-3)] truncate">{user.email}</div>
+                  <div className="text-foreground truncate">{user.full_name}</div>
+                  <div className="text-[10px] text-muted-foreground truncate">{user.email}</div>
                 </div>
               </button>
             ))

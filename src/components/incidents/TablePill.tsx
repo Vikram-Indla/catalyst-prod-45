@@ -85,16 +85,18 @@ export function TablePill({
 // Status pill - compact with colored dot indicator
 export function StatusPill({ status }: { status: string }) {
   const statusConfig: Record<string, { label: string; variant: TablePillProps['variant']; dot?: boolean }> = {
-    open: { label: 'Open', variant: 'muted' },
-    triage: { label: 'Triage', variant: 'warning', dot: true },
-    to_committee: { label: 'Committee', variant: 'warning', dot: true },
+    open: { label: 'Open', variant: 'info', dot: true },
+    triage: { label: 'Triaging', variant: 'warning', dot: true },
+    to_committee: { label: 'Under Review', variant: 'accent', dot: true },
+    under_review: { label: 'Under Review', variant: 'accent', dot: true },
+    committee: { label: 'Under Review', variant: 'accent', dot: true },
     in_progress: { label: 'In Progress', variant: 'info', dot: true },
     resolved: { label: 'Resolved', variant: 'success', dot: true },
     converted: { label: 'Converted', variant: 'muted' },
     closed: { label: 'Closed', variant: 'muted' },
   };
 
-  const config = statusConfig[status] || { label: status, variant: 'muted' as const };
+  const config = statusConfig[status?.toLowerCase()] || statusConfig[status] || { label: status, variant: 'muted' as const };
   
   return (
     <TablePill variant={config.variant} dot={config.dot}>
@@ -103,19 +105,19 @@ export function StatusPill({ status }: { status: string }) {
   );
 }
 
-// Severity - small neutral pill with colored dot only (not full background)
+// Severity - proper color coding per severity level
 export function SeverityPill({ severity }: { severity: string }) {
-  const severityConfig: Record<string, { label: string; dotColor: string }> = {
-    SEV1: { label: 'SEV1', dotColor: 'bg-rose-500' },
-    SEV2: { label: 'SEV2', dotColor: 'bg-amber-500' },
-    SEV3: { label: 'SEV3', dotColor: 'bg-sky-400' },
-    SEV4: { label: 'SEV4', dotColor: 'bg-muted-foreground/50' },
+  const severityConfig: Record<string, { label: string; variant: TablePillProps['variant']; dotColor: string }> = {
+    SEV1: { label: 'SEV1', variant: 'danger', dotColor: 'bg-red-500' },
+    SEV2: { label: 'SEV2', variant: 'warning', dotColor: 'bg-orange-500' },
+    SEV3: { label: 'SEV3', variant: 'info', dotColor: 'bg-yellow-500' },
+    SEV4: { label: 'SEV4', variant: 'muted', dotColor: 'bg-gray-400' },
   };
 
-  const config = severityConfig[severity] || { label: severity, dotColor: 'bg-muted-foreground/50' };
+  const config = severityConfig[severity] || { label: severity, variant: 'muted' as TablePillProps['variant'], dotColor: 'bg-gray-400' };
   
   return (
-    <TablePill variant="muted" dot dotColor={config.dotColor}>
+    <TablePill variant={config.variant} dot dotColor={config.dotColor}>
       {config.label}
     </TablePill>
   );
