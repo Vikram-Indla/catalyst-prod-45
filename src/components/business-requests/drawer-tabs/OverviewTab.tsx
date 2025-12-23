@@ -45,7 +45,7 @@ export function OverviewTab({ data, isEditMode, onChange, hideProcessStepHealth 
               <div>
                 <Label className="text-sm font-medium">Process Step</Label>
                 <Select
-                  value={data.process_step || 'new_demand'}
+                  value={data.process_step || 'new_request'}
                   onValueChange={(value) => onChange('process_step', value)}
                 >
                   <SelectTrigger>
