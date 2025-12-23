@@ -17,11 +17,12 @@ export function ProgressRing({
   const circumference = 2 * Math.PI * radius;
   const offset = circumference - (percent / 100) * circumference;
   
-  // Color based on completion
+  // Color based on completion - using Catalyst brand colors
   const getColor = () => {
     if (percent >= 100) return 'text-[#5c7c5c]'; // olive - complete
-    if (percent >= 60) return 'text-[#c69c6d]'; // gold - progress
-    return 'text-gray-400 dark:text-gray-500'; // muted
+    if (percent >= 75) return 'text-[#5c7c5c]'; // olive - almost complete
+    if (percent >= 50) return 'text-[#c69c6d]'; // gold - progress
+    return 'text-[#d4b896]'; // champagne - starting
   };
 
   return (
