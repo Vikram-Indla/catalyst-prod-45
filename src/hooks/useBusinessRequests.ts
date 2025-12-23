@@ -266,18 +266,22 @@ export function useUpdateBusinessRequest() {
       
       // Convert ReadinessChecklist to Json-compatible format
       // IMPORTANT: Remove system-managed fields AND computed fields from update payload
-      const { 
-        id: _removeId, 
-        request_key: _removeRequestKey, 
-        created_at: _removeCreatedAt,
-        updated_at: _removeUpdatedAt,
-        deleted_at: _removeDeletedAt,
-        // Remove computed fields that don't exist in the database
-        requestor_name: _removeRequestorName,
-        assignee_name: _removeAssigneeName,
-        ...dataWithoutSystemFields 
-      } = data as any;
-      const updateData: Record<string, any> = { ...dataWithoutSystemFields };
+      const updateData: Record<string, any> = { ...data };
+      
+      // Remove system-managed fields
+      delete updateData.id;
+      delete updateData.request_key;
+      delete updateData.created_at;
+      delete updateData.updated_at;
+      delete updateData.deleted_at;
+      
+      // Remove computed/joined fields that don't exist in the database
+      delete updateData.requestor_name;
+      delete updateData.assignee_name;
+      delete updateData.department_name;
+      delete updateData.business_owner_name;
+      delete updateData.product_name;
+      
       if (data.readiness_checklist) {
         updateData.readiness_checklist = data.readiness_checklist as unknown as Json;
       }
