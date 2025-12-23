@@ -30,7 +30,7 @@ export function RoadmapTimelineHeader({ periods, zoom }: RoadmapTimelineHeaderPr
       {periods.map((period, index) => (
         <div
           key={period.key}
-          className="flex-shrink-0 px-4 py-3"
+          className="flex-shrink-0 px-4 h-[52px] flex flex-col justify-center"
           style={{
             minWidth: `${periodMinWidth}px`,
             width: `${100 / periods.length}%`,
