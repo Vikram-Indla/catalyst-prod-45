@@ -1,14 +1,14 @@
 import React, { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
-import { GripVertical } from 'lucide-react';
+import { GripVertical, ChevronDown, ChevronUp, Inbox } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
 
 // ============================================================================
-// CATALYST ENTERPRISE TABLE - STYLED EXACTLY LIKE THE REFERENCE
+// CATALYST ENTERPRISE TABLE - ENTERPRISE-GRADE VISUAL QUALITY
 // ============================================================================
 
 // Catalyst Golden Hour Color Palette - uses CSS tokens for dark mode support
-// These are fallback constants; components should prefer CSS variables
 const colors = {
   olive: 'var(--secondary-green, #5c7c5c)',
   bronze: 'var(--secondary-bronze, #8b7355)',
@@ -48,10 +48,10 @@ interface CatalystEnterpriseTableProps<T extends { id: string }> {
   onSelectionChange?: (ids: string[]) => void;
   showCheckboxes?: boolean;
   showActionsColumn?: boolean;
-  // Drag-drop support
   enableDragDrop?: boolean;
   onReorder?: (reorderedData: T[], sourceIndex: number, destinationIndex: number) => void;
   droppableId?: string;
+  onCreateNew?: () => void;
 }
 
 // Icons (inline SVG)
@@ -171,7 +171,7 @@ function InlineCellEditor({
 }
 
 // ============================================================================
-// COLUMN HEADER WITH SORT & FILTER
+// COLUMN HEADER WITH SORT & FILTER - POLISHED
 // ============================================================================
 function ColumnHeader<T>({ 
   column, 
@@ -222,38 +222,33 @@ function ColumnHeader<T>({
     setShowFilter(false);
   };
 
-  const sortButtonStyle: React.CSSProperties = {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: '2px',
-    border: 'none',
-    backgroundColor: 'transparent',
-    cursor: 'pointer',
-    color: isSorted ? colors.gold : colors.muted,
-    opacity: isSorted ? 1 : 0.5,
-    transition: 'opacity 0.2s',
-  };
-
   return (
-    <div style={{ position: 'relative' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-        <span style={{ fontWeight: 500, color: colors.muted, whiteSpace: 'nowrap' }}>
+    <div className="relative">
+      <div className="flex items-center gap-1.5">
+        <span className={cn(
+          "font-semibold uppercase tracking-wider text-xs whitespace-nowrap transition-colors",
+          "text-gray-600 dark:text-gray-400"
+        )}>
           {column.header}
         </span>
         
         {column.sortable !== false && (
           <button
             onClick={(e) => { e.stopPropagation(); onSort(column.id); }}
-            style={sortButtonStyle}
+            className={cn(
+              "p-0.5 rounded transition-colors",
+              isSorted 
+                ? "text-[#c69c6d] dark:text-[#d4b896]" 
+                : "text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300"
+            )}
             title="Sort"
           >
             {isSorted && sortConfig.direction === 'asc' ? (
-              <Icons.ChevronUp />
+              <ChevronUp className="w-3.5 h-3.5" />
             ) : isSorted && sortConfig.direction === 'desc' ? (
-              <Icons.ChevronDown />
+              <ChevronDown className="w-3.5 h-3.5" />
             ) : (
-              <span style={{ fontSize: '12px', opacity: 0.4 }}>⇅</span>
+              <ChevronDown className="w-3.5 h-3.5 opacity-40" />
             )}
           </button>
         )}
@@ -261,19 +256,17 @@ function ColumnHeader<T>({
         {column.filterable !== false && column.filterOptions && column.filterOptions.length > 0 && (
           <button
             onClick={(e) => { e.stopPropagation(); setShowFilter(!showFilter); }}
-            style={{ ...sortButtonStyle, color: hasFilters ? colors.gold : colors.muted, opacity: hasFilters ? 1 : 0.5 }}
+            className={cn(
+              "p-0.5 rounded transition-colors",
+              hasFilters 
+                ? "text-[#c69c6d] dark:text-[#d4b896]" 
+                : "text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300"
+            )}
             title="Filter"
           >
             <Icons.Filter />
             {hasFilters && (
-              <span style={{ 
-                marginLeft: '2px', 
-                fontSize: '10px', 
-                backgroundColor: colors.gold, 
-                color: colors.white, 
-                borderRadius: '9999px', 
-                padding: '0 4px' 
-              }}>
+              <span className="ml-0.5 text-[10px] bg-[#c69c6d] text-white dark:bg-[#d4b896] dark:text-gray-900 rounded-full px-1">
                 {filterValues.length}
               </span>
             )}
@@ -284,78 +277,60 @@ function ColumnHeader<T>({
       {showFilter && column.filterOptions && (
         <div 
           ref={dropdownRef} 
-          style={{
-            position: 'absolute',
-            top: '100%',
-            right: 0,
-            marginTop: '8px',
-            width: '240px',
-            backgroundColor: 'var(--surface-1)',
-            border: `1px solid var(--border-color)`,
-            borderRadius: '8px',
-            boxShadow: 'var(--card-shadow)',
-            zIndex: 100,
-          }}
+          className={cn(
+            "absolute top-full right-0 mt-2 w-60 z-[100] rounded-lg border shadow-lg",
+            "bg-white dark:bg-[#1a1a1a]",
+            "border-gray-200 dark:border-gray-700"
+          )}
         >
-          <div style={{ padding: '12px 14px', borderBottom: `1px solid var(--divider)` }}>
-            <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-2)' }}>
+          <div className="p-3 border-b border-gray-200 dark:border-gray-700">
+            <div className="text-xs font-semibold text-gray-600 dark:text-gray-400">
               Filter by {column.header}
             </div>
           </div>
-          <div style={{ maxHeight: '192px', overflowY: 'auto' }}>
+          <div className="max-h-48 overflow-y-auto">
             {column.filterOptions.map((opt) => (
               <label
                 key={opt.value}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '10px',
-                  padding: '10px 14px',
-                  cursor: 'pointer',
-                  transition: 'background-color 0.15s',
-                  backgroundColor: selectedFilters.includes(opt.value) ? `${colors.gold}10` : 'transparent',
-                  fontSize: '13px',
-                }}
-                onMouseOver={(e) => (e.currentTarget.style.backgroundColor = `${colors.gold}10`)}
-                onMouseOut={(e) => (e.currentTarget.style.backgroundColor = selectedFilters.includes(opt.value) ? `${colors.gold}10` : 'transparent')}
+                className={cn(
+                  "flex items-center gap-2.5 px-3 py-2.5 cursor-pointer text-sm transition-colors",
+                  selectedFilters.includes(opt.value) 
+                    ? "bg-[#c69c6d]/10 dark:bg-[#c69c6d]/20" 
+                    : "hover:bg-gray-50 dark:hover:bg-gray-800"
+                )}
               >
                 <input
                   type="checkbox"
                   checked={selectedFilters.includes(opt.value)}
                   onChange={() => handleFilterToggle(opt.value)}
-                  style={{ width: '16px', height: '16px', accentColor: colors.gold }}
+                  className={cn(
+                    "w-4 h-4 rounded transition-all cursor-pointer",
+                    "border-gray-300 text-[#c69c6d] focus:ring-[#c69c6d] focus:ring-offset-0",
+                    "dark:border-gray-500 dark:bg-gray-800 dark:checked:bg-[#c69c6d] dark:checked:border-[#c69c6d]"
+                  )}
                 />
-                <span style={{ flex: 1 }}>{opt.label}</span>
+                <span className="flex-1 text-gray-700 dark:text-gray-300">{opt.label}</span>
               </label>
             ))}
           </div>
-          <div style={{ 
-            display: 'flex', 
-            justifyContent: 'space-between', 
-            padding: '12px 14px', 
-            borderTop: `1px solid var(--divider)`,
-            backgroundColor: 'var(--surface-3)',
-          }}>
+          <div className={cn(
+            "flex justify-between p-3 border-t",
+            "border-gray-200 dark:border-gray-700",
+            "bg-gray-50 dark:bg-[#262626]"
+          )}>
             <button
               onClick={clearFilters}
-              style={{ fontSize: '13px', color: 'var(--text-2)', background: 'none', border: 'none', cursor: 'pointer' }}
+              className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
             >
               Clear
             </button>
             <button
               onClick={applyFilters}
-              style={{ 
-                padding: '6px 16px', 
-                fontSize: '13px', 
-                backgroundColor: 'var(--brand-accent)', 
-                color: 'var(--text-inverse)', 
-                border: 'none',
-                borderRadius: '4px', 
-                cursor: 'pointer',
-                transition: 'background-color 0.2s',
-              }}
-              onMouseOver={(e) => (e.currentTarget.style.backgroundColor = 'var(--brand-accent-hover)')}
-              onMouseOut={(e) => (e.currentTarget.style.backgroundColor = 'var(--brand-accent)')}
+              className={cn(
+                "px-4 py-1.5 text-sm font-medium rounded transition-colors",
+                "bg-[#c69c6d] text-white hover:bg-[#b8894f]",
+                "dark:bg-[#c69c6d] dark:hover:bg-[#b8894f]"
+              )}
             >
               Apply
             </button>
@@ -384,51 +359,32 @@ function RowActionsMenu({ onEdit }: { onEdit: () => void }) {
   }, []);
 
   return (
-    <div ref={menuRef} style={{ position: 'relative' }}>
+    <div ref={menuRef} className="relative">
       <button
         onClick={(e) => { e.stopPropagation(); setIsOpen(!isOpen); }}
-        style={{ 
-          padding: '4px', 
-          borderRadius: '4px', 
-          border: 'none', 
-          background: 'none',
-          cursor: 'pointer',
-          color: 'var(--icon-default)',
-        }}
-        onMouseOver={(e) => (e.currentTarget.style.backgroundColor = 'var(--nav-hover-bg)')}
-        onMouseOut={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
+        className={cn(
+          "p-1 rounded transition-colors",
+          "text-gray-400 dark:text-gray-500",
+          "hover:bg-gray-100 dark:hover:bg-gray-800",
+          "hover:text-gray-600 dark:hover:text-gray-300"
+        )}
       >
         <Icons.MoreHorizontal />
       </button>
 
       {isOpen && (
-        <div style={{
-          position: 'absolute',
-          right: 0,
-          top: '100%',
-          marginTop: '4px',
-          backgroundColor: 'var(--surface-1)',
-          border: `1px solid var(--border-color)`,
-          borderRadius: '8px',
-          boxShadow: 'var(--card-shadow)',
-          zIndex: 50,
-          minWidth: '120px',
-        }}>
+        <div className={cn(
+          "absolute right-0 top-full mt-1 min-w-[120px] z-50 rounded-lg border shadow-lg",
+          "bg-white dark:bg-[#1a1a1a]",
+          "border-gray-200 dark:border-gray-700"
+        )}>
           <button
             onClick={(e) => { e.stopPropagation(); onEdit(); setIsOpen(false); }}
-            style={{
-              width: '100%',
-              padding: '10px 14px',
-              textAlign: 'left',
-              fontSize: '13px',
-              border: 'none',
-              background: 'none',
-              cursor: 'pointer',
-              color: 'var(--text-1)',
-              transition: 'background-color 0.15s',
-            }}
-            onMouseOver={(e) => (e.currentTarget.style.backgroundColor = 'var(--nav-hover-bg)')}
-            onMouseOut={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
+            className={cn(
+              "w-full px-3 py-2 text-left text-sm transition-colors",
+              "text-gray-700 dark:text-gray-300",
+              "hover:bg-gray-50 dark:hover:bg-gray-800"
+            )}
           >
             Edit Row
           </button>
@@ -453,6 +409,7 @@ export function CatalystEnterpriseTable<T extends { id: string }>({
   enableDragDrop = false,
   onReorder,
   droppableId = 'catalyst-table',
+  onCreateNew,
 }: CatalystEnterpriseTableProps<T>) {
   const [sortConfig, setSortConfig] = useState<{ column: string | null; direction: SortDirection }>({ column: null, direction: null });
   const [filters, setFilters] = useState<Record<string, string[]>>({});
@@ -576,7 +533,6 @@ export function CatalystEnterpriseTable<T extends { id: string }>({
   };
 
   const handleRowClick = (row: T) => {
-    // Don't trigger row click if editing
     if (editingCell) return;
     onRowClick?.(row);
   };
@@ -601,55 +557,35 @@ export function CatalystEnterpriseTable<T extends { id: string }>({
     }
   };
 
-  // Styles using semantic CSS tokens for theme support
-  const cardStyle: React.CSSProperties = {
-    backgroundColor: 'var(--surface-2)',
-    borderRadius: '12px',
-    border: `1px solid var(--border-color)`,
-    overflow: 'hidden',
-    boxShadow: 'var(--card-shadow)',
-  };
-
-  const thStyle: React.CSSProperties = {
-    textAlign: 'left',
-    padding: '12px 16px',
-    fontWeight: 500,
-    color: 'var(--text-2)',
-    borderBottom: `1px solid var(--divider)`,
-    backgroundColor: 'var(--surface-1)',
-    whiteSpace: 'nowrap',
-  };
-
-  const tdStyle: React.CSSProperties = {
-    padding: '12px 16px',
-    borderBottom: `1px solid var(--divider)`,
-    verticalAlign: 'middle',
-    color: 'var(--text-1)',
-  };
-
-  // Render row content (shared between drag and non-drag modes)
+  // Render row content with enterprise styling
   const renderRowContent = (row: T, rowIndex: number, dragHandleProps?: any, isDragging?: boolean) => (
     <>
       {/* Drag handle column */}
       {enableDragDrop && (
-        <td style={{ ...tdStyle, padding: '8px', width: '32px' }} {...dragHandleProps}>
+        <td className="py-3 px-2 w-8" {...dragHandleProps}>
           <GripVertical 
             className={cn(
               "h-4 w-4 cursor-grab active:cursor-grabbing transition-colors",
               isDragging 
-                ? "text-brand-primary" 
+                ? "text-[#c69c6d] dark:text-[#d4b896]" 
                 : "text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400"
             )} 
           />
         </td>
       )}
+      {/* Checkbox with enhanced visibility */}
       {showCheckboxes && (
-        <td style={{ ...tdStyle, textAlign: 'center' }} onClick={(e) => e.stopPropagation()}>
+        <td className="py-3 px-4 w-12" onClick={(e) => e.stopPropagation()}>
           <input
             type="checkbox"
             checked={selectedRows.includes(row.id)}
             onChange={(e) => handleCheckboxChange(e, row.id)}
-            style={{ width: '16px', height: '16px', accentColor: colors.gold }}
+            className={cn(
+              "w-4 h-4 rounded transition-all cursor-pointer",
+              "border-gray-300 text-[#c69c6d] focus:ring-[#c69c6d] focus:ring-offset-0",
+              "dark:border-gray-500 dark:bg-gray-800 dark:checked:bg-[#c69c6d] dark:checked:border-[#c69c6d]",
+              "hover:border-[#c69c6d] dark:hover:border-[#c69c6d]"
+            )}
           />
         </td>
       )}
@@ -662,7 +598,11 @@ export function CatalystEnterpriseTable<T extends { id: string }>({
         return (
           <td
             key={column.id}
-            style={{ ...tdStyle, width: column.width }}
+            className={cn(
+              "py-3 px-4 align-middle text-gray-900 dark:text-gray-100",
+              column.width && `w-[${column.width}]`
+            )}
+            style={{ width: column.width }}
             onDoubleClick={(e) => handleCellDoubleClick(e, row.id, column.id)}
             title={column.editable ? 'Double-click to edit' : ''}
           >
@@ -678,36 +618,19 @@ export function CatalystEnterpriseTable<T extends { id: string }>({
               column.render(value, row)
             ) : (
               <span
-                style={{
-                  display: 'inline-block',
-                  padding: column.editable ? '4px 8px' : undefined,
-                  margin: column.editable ? '-4px -8px' : undefined,
-                  borderRadius: column.editable ? '4px' : undefined,
-                  border: column.editable ? '1px dashed transparent' : undefined,
-                  transition: 'all 0.15s',
-                  cursor: column.editable ? 'pointer' : undefined,
-                }}
-                onMouseOver={(e) => {
-                  if (column.editable) {
-                    e.currentTarget.style.borderColor = `${colors.gold}50`;
-                    e.currentTarget.style.backgroundColor = `${colors.gold}08`;
-                  }
-                }}
-                onMouseOut={(e) => {
-                  if (column.editable) {
-                    e.currentTarget.style.borderColor = 'transparent';
-                    e.currentTarget.style.backgroundColor = 'transparent';
-                  }
-                }}
+                className={cn(
+                  column.editable && "inline-block px-2 py-1 -mx-2 -my-1 rounded border border-transparent transition-all cursor-pointer",
+                  column.editable && "hover:border-[#c69c6d]/30 hover:bg-[#c69c6d]/5"
+                )}
               >
-                {value ?? '—'}
+                {value ?? <span className="text-gray-400 dark:text-gray-500">—</span>}
               </span>
             )}
           </td>
         );
       })}
       {showActionsColumn && (
-        <td style={tdStyle} onClick={(e) => e.stopPropagation()}>
+        <td className="py-3 px-4" onClick={(e) => e.stopPropagation()}>
           <RowActionsMenu
             onEdit={() => setEditingCell({ rowId: row.id, columnId: columns.find(c => c.editable)?.id || columns[0].id })}
           />
@@ -716,182 +639,221 @@ export function CatalystEnterpriseTable<T extends { id: string }>({
     </>
   );
 
-  const tableContent = (
-    <div style={cardStyle}>
-      {/* Table */}
-      <div style={{ overflowX: 'auto' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px', tableLayout: 'fixed' }}>
-          <thead>
-            <tr>
-              {/* Drag handle header */}
-              {enableDragDrop && (
-                <th style={{ ...thStyle, width: '32px' }}></th>
-              )}
-              {showCheckboxes && (
-                <th style={{ ...thStyle, textAlign: 'center', width: '48px' }}>
-                  <input
-                    type="checkbox"
-                    checked={processedData.length > 0 && selectedRows.length === processedData.length}
-                    onChange={handleSelectAll}
-                    style={{ width: '16px', height: '16px', accentColor: colors.gold }}
-                  />
-                </th>
-              )}
-              {columns.map((column) => (
-                <th 
-                  key={column.id} 
-                  style={{ ...thStyle, width: column.width }}
-                >
-                  <ColumnHeader
-                    column={column}
-                    sortConfig={sortConfig}
-                    filterValues={filters[column.id] || []}
-                    onSort={handleSort}
-                    onFilter={handleFilter}
-                  />
-                </th>
-              ))}
-              {showActionsColumn && (
-                <th style={{ ...thStyle, width: '48px' }}></th>
-              )}
-            </tr>
-          </thead>
-          {enableDragDrop ? (
-            <Droppable droppableId={droppableId}>
-              {(provided) => (
-                <tbody ref={provided.innerRef} {...provided.droppableProps}>
-                  {processedData.map((row, rowIndex) => (
-                    <Draggable key={row.id} draggableId={row.id} index={rowIndex}>
-                      {(provided, snapshot) => (
-                        <tr
-                          ref={provided.innerRef}
-                          {...provided.draggableProps}
-                          onClick={() => handleRowClick(row)}
-                          style={{
-                            ...provided.draggableProps.style,
-                            cursor: 'pointer',
-                            transition: 'background-color 0.15s',
-                            backgroundColor: snapshot.isDragging 
-                              ? 'var(--accent-muted)' 
-                              : selectedRows.includes(row.id) 
-                                ? 'var(--nav-active-bg)' 
-                                : 'transparent',
-                            boxShadow: snapshot.isDragging ? 'var(--card-shadow)' : undefined,
-                          }}
-                          onMouseOver={(e) => {
-                            if (!selectedRows.includes(row.id) && !snapshot.isDragging) {
-                              e.currentTarget.style.backgroundColor = 'var(--surface-3)';
-                            }
-                          }}
-                          onMouseOut={(e) => {
-                            if (!selectedRows.includes(row.id) && !snapshot.isDragging) {
-                              e.currentTarget.style.backgroundColor = 'transparent';
-                            }
-                          }}
-                        >
-                          {renderRowContent(row, rowIndex, provided.dragHandleProps, snapshot.isDragging)}
-                        </tr>
-                      )}
-                    </Draggable>
-                  ))}
-                  {provided.placeholder}
-                </tbody>
-              )}
-            </Droppable>
-          ) : (
-            <tbody>
-              {processedData.map((row, rowIndex) => (
-                <tr
-                  key={row.id}
-                  onClick={() => handleRowClick(row)}
-                  style={{
-                    cursor: 'pointer',
-                    transition: 'background-color 0.15s',
-                    backgroundColor: selectedRows.includes(row.id) ? 'var(--nav-active-bg)' : 'transparent',
-                  }}
-                  onMouseOver={(e) => {
-                    if (!selectedRows.includes(row.id)) {
-                      e.currentTarget.style.backgroundColor = 'var(--surface-3)';
-                    }
-                  }}
-                  onMouseOut={(e) => {
-                    if (!selectedRows.includes(row.id)) {
-                      e.currentTarget.style.backgroundColor = 'transparent';
-                    }
-                  }}
-                >
-                  {renderRowContent(row, rowIndex)}
-                </tr>
-              ))}
-            </tbody>
+  // Empty state component
+  const EmptyState = () => (
+    <tr>
+      <td colSpan={columns.length + (showCheckboxes ? 1 : 0) + (showActionsColumn ? 1 : 0) + (enableDragDrop ? 1 : 0)} className="py-16">
+        <div className="flex flex-col items-center justify-center text-center">
+          <div className={cn(
+            "w-12 h-12 rounded-full flex items-center justify-center mb-3",
+            "bg-gray-100 dark:bg-gray-800"
+          )}>
+            <Inbox className="w-6 h-6 text-gray-400 dark:text-gray-500" />
+          </div>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">
+            {processedData.length === 0 
+              ? "No requests found" 
+              : `Showing ${processedData.length} request${processedData.length !== 1 ? 's' : ''}`}
+          </p>
+          {onCreateNew && (
+            <button 
+              onClick={onCreateNew}
+              className="text-sm text-[#c69c6d] dark:text-[#d4b896] hover:underline font-medium"
+            >
+              + Create new request
+            </button>
           )}
-        </table>
+        </div>
+      </td>
+    </tr>
+  );
+
+  const tableContent = (
+    <TooltipProvider>
+      <div className={cn(
+        "rounded-lg border overflow-hidden",
+        "bg-white dark:bg-[#1a1a1a]",
+        "border-gray-200 dark:border-gray-700",
+        "shadow-sm dark:shadow-none"
+      )}>
+        {/* Request count header */}
+        <div className={cn(
+          "flex items-center justify-between px-4 py-2.5 border-b",
+          "border-gray-200 dark:border-gray-700",
+          "bg-gray-50/50 dark:bg-[#262626]"
+        )}>
+          <span className="text-sm text-gray-700 dark:text-gray-300">
+            <span className="font-semibold">{processedData.length}</span> {processedData.length === 1 ? 'request' : 'requests'}
+          </span>
+        </div>
+
+        {/* Table */}
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm table-fixed border-collapse">
+            {/* Column widths */}
+            <colgroup>
+              {enableDragDrop && <col className="w-8" />}
+              {showCheckboxes && <col className="w-12" />}
+              {columns.map((col) => (
+                <col key={col.id} style={{ width: col.width }} />
+              ))}
+              {showActionsColumn && <col className="w-12" />}
+            </colgroup>
+            
+            {/* Header with polish */}
+            <thead>
+              <tr className={cn(
+                "border-b",
+                "bg-gray-50 dark:bg-[#262626]",
+                "border-gray-200 dark:border-gray-700"
+              )}>
+                {enableDragDrop && (
+                  <th className="py-3 px-2 w-8"></th>
+                )}
+                {showCheckboxes && (
+                  <th className="py-3 px-4 w-12 text-center">
+                    <input
+                      type="checkbox"
+                      checked={processedData.length > 0 && selectedRows.length === processedData.length}
+                      onChange={handleSelectAll}
+                      className={cn(
+                        "w-4 h-4 rounded transition-all cursor-pointer",
+                        "border-gray-300 text-[#c69c6d] focus:ring-[#c69c6d] focus:ring-offset-0",
+                        "dark:border-gray-500 dark:bg-gray-800 dark:checked:bg-[#c69c6d] dark:checked:border-[#c69c6d]"
+                      )}
+                    />
+                  </th>
+                )}
+                {columns.map((column) => (
+                  <th 
+                    key={column.id} 
+                    className={cn(
+                      "py-3 px-4 text-left cursor-pointer transition-colors",
+                      "hover:bg-gray-100 dark:hover:bg-gray-800"
+                    )}
+                    style={{ width: column.width }}
+                  >
+                    <ColumnHeader
+                      column={column}
+                      sortConfig={sortConfig}
+                      filterValues={filters[column.id] || []}
+                      onSort={handleSort}
+                      onFilter={handleFilter}
+                    />
+                  </th>
+                ))}
+                {showActionsColumn && (
+                  <th className="py-3 px-4 w-12"></th>
+                )}
+              </tr>
+            </thead>
+            
+            {/* Body with row separation */}
+            {enableDragDrop ? (
+              <Droppable droppableId={droppableId}>
+                {(provided) => (
+                  <tbody 
+                    ref={provided.innerRef} 
+                    {...provided.droppableProps}
+                    className="divide-y divide-gray-200 dark:divide-gray-700"
+                  >
+                    {processedData.length === 0 ? (
+                      <EmptyState />
+                    ) : (
+                      processedData.map((row, rowIndex) => (
+                        <Draggable key={row.id} draggableId={row.id} index={rowIndex}>
+                          {(provided, snapshot) => (
+                            <tr
+                              ref={provided.innerRef}
+                              {...provided.draggableProps}
+                              onClick={() => handleRowClick(row)}
+                              className={cn(
+                                "transition-colors cursor-pointer",
+                                // Alternating row backgrounds
+                                rowIndex % 2 === 0 
+                                  ? "bg-white dark:bg-[#1a1a1a]" 
+                                  : "bg-gray-50/50 dark:bg-[#222222]",
+                                // Hover state
+                                "hover:bg-[#c69c6d]/5 dark:hover:bg-[#c69c6d]/10",
+                                // Selected state
+                                selectedRows.includes(row.id) && "bg-[#c69c6d]/10 dark:bg-[#c69c6d]/15 ring-1 ring-inset ring-[#c69c6d]/30",
+                                // Dragging state
+                                snapshot.isDragging && "bg-[#c69c6d]/15 dark:bg-[#c69c6d]/20 shadow-lg"
+                              )}
+                            >
+                              {renderRowContent(row, rowIndex, provided.dragHandleProps, snapshot.isDragging)}
+                            </tr>
+                          )}
+                        </Draggable>
+                      ))
+                    )}
+                    {provided.placeholder}
+                  </tbody>
+                )}
+              </Droppable>
+            ) : (
+              <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+                {processedData.length === 0 ? (
+                  <EmptyState />
+                ) : (
+                  processedData.map((row, rowIndex) => (
+                    <tr
+                      key={row.id}
+                      onClick={() => handleRowClick(row)}
+                      className={cn(
+                        "transition-colors cursor-pointer",
+                        // Alternating row backgrounds
+                        rowIndex % 2 === 0 
+                          ? "bg-white dark:bg-[#1a1a1a]" 
+                          : "bg-gray-50/50 dark:bg-[#222222]",
+                        // Hover state
+                        "hover:bg-[#c69c6d]/5 dark:hover:bg-[#c69c6d]/10",
+                        // Selected state
+                        selectedRows.includes(row.id) && "bg-[#c69c6d]/10 dark:bg-[#c69c6d]/15 ring-1 ring-inset ring-[#c69c6d]/30"
+                      )}
+                    >
+                      {renderRowContent(row, rowIndex)}
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            )}
+          </table>
+        </div>
+
+        {/* Undo Bar */}
+        {undoStack.length > 0 && (
+          <div className={cn(
+            "fixed bottom-6 left-1/2 -translate-x-1/2 z-[1000]",
+            "flex items-center gap-3 px-5 py-3 rounded-lg",
+            "bg-gray-900 dark:bg-gray-800 text-white shadow-lg"
+          )}>
+            <Icons.Undo />
+            <span className="text-sm">{undoStack.length} unsaved change{undoStack.length !== 1 ? 's' : ''}</span>
+            <button 
+              onClick={handleUndo}
+              className={cn(
+                "flex items-center gap-1.5 px-3 py-1.5 rounded text-sm font-medium transition-colors",
+                "bg-[#c69c6d] text-white hover:bg-[#b8894f]"
+              )}
+            >
+              Undo (Ctrl+Z)
+            </button>
+          </div>
+        )}
+
+        {/* Toast */}
+        {toast && (
+          <div className={cn(
+            "fixed top-6 right-6 z-[1000]",
+            "flex items-center gap-2 px-5 py-3 rounded-lg",
+            "bg-[#5c7c5c] text-white shadow-lg"
+          )}>
+            <Icons.Check /> {toast}
+          </div>
+        )}
       </div>
-
-      {/* Undo Bar */}
-      {undoStack.length > 0 && (
-        <div style={{
-          position: 'fixed',
-          bottom: '24px',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '12px',
-          padding: '12px 20px',
-          backgroundColor: '#1f2937',
-          color: colors.white,
-          borderRadius: '8px',
-          boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-          fontSize: '14px',
-          zIndex: 1000,
-        }}>
-          <Icons.Undo />
-          <span>{undoStack.length} unsaved change{undoStack.length !== 1 ? 's' : ''}</span>
-          <button 
-            onClick={handleUndo}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-              padding: '6px 12px',
-              border: 'none',
-              borderRadius: '4px',
-              backgroundColor: colors.gold,
-              color: colors.white,
-              cursor: 'pointer',
-              fontSize: '13px',
-              fontWeight: 500,
-            }}
-            onMouseOver={(e) => (e.currentTarget.style.backgroundColor = colors.goldHover)}
-            onMouseOut={(e) => (e.currentTarget.style.backgroundColor = colors.gold)}
-          >
-            Undo (Ctrl+Z)
-          </button>
-        </div>
-      )}
-
-      {/* Toast */}
-      {toast && (
-        <div style={{
-          position: 'fixed',
-          top: '24px',
-          right: '24px',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '8px',
-          padding: '12px 20px',
-          backgroundColor: colors.olive,
-          color: colors.white,
-          borderRadius: '8px',
-          boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-          fontSize: '14px',
-          zIndex: 1000,
-        }}>
-          <Icons.Check /> {toast}
-        </div>
-      )}
-    </div>
+    </TooltipProvider>
   );
 
   // Wrap with DragDropContext if drag-drop is enabled
