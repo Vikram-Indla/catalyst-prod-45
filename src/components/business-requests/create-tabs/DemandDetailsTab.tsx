@@ -3,10 +3,8 @@ import { useAuth } from '@/lib/auth';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Calendar } from '@/components/ui/calendar';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
-import { CalendarIcon, Lock, Unlock, Upload, X, FileText, Users, CalendarDays, Paperclip, Briefcase } from 'lucide-react';
+import { Lock, Unlock, Upload, X, FileText, Users, CalendarDays, Paperclip, Briefcase } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
@@ -15,6 +13,7 @@ import { UserPicker } from '@/components/ui/user-picker';
 import { DepartmentSelect } from '../DepartmentSelect';
 import { BusinessOwnerSelect } from '../BusinessOwnerSelect';
 import { useDepartments, useBusinessOwners, useDepartmentOwnerMappings, getOwnerIdForDepartment } from '@/hooks/useDepartmentsAndOwners';
+import { CatalystDatePicker } from '@/components/ui/catalyst-date-picker';
 
 const ALLOWED_EXTENSIONS = '*';
 const MAX_FILES = 5;
@@ -29,9 +28,6 @@ export function DemandDetailsTab({ data, onChange }: DemandDetailsTabProps) {
   const { user } = useAuth();
   const [targetDateLocked, setTargetDateLocked] = useState(false);
   const [lockedByUser, setLockedByUser] = useState<string | null>(null);
-  const [businessAskDateOpen, setBusinessAskDateOpen] = useState(false);
-  const [kickoffDateOpen, setKickoffDateOpen] = useState(false);
-  const [targetDateOpen, setTargetDateOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const currentUser = 'Current User';
 
@@ -201,95 +197,32 @@ export function DemandDetailsTab({ data, onChange }: DemandDetailsTabProps) {
         <div className="grid grid-cols-3 gap-4">
           <div>
             <CompactLabel>Business Ask Date</CompactLabel>
-            <Popover open={businessAskDateOpen} onOpenChange={setBusinessAskDateOpen}>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  className={cn(
-                    "w-full justify-start text-left font-normal h-9 text-sm",
-                    !data.start_date && "text-muted-foreground"
-                  )}
-                >
-                  <CalendarIcon className="mr-2 h-3.5 w-3.5" />
-                  {data.start_date ? format(new Date(data.start_date), 'dd/MM/yyyy') : 'dd/mm/yyyy'}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
-                  mode="single"
-                  selected={data.start_date ? new Date(data.start_date) : undefined}
-                  onSelect={(date) => {
-                    onChange('start_date', date ? format(date, 'yyyy-MM-dd') : null);
-                    setBusinessAskDateOpen(false);
-                  }}
-                  initialFocus
-                  className="pointer-events-auto"
-                />
-              </PopoverContent>
-            </Popover>
+            <CatalystDatePicker
+              value={data.start_date}
+              onChange={(date) => onChange('start_date', date ? format(date, 'yyyy-MM-dd') : null)}
+              placeholder="dd/mm/yyyy"
+            />
           </div>
 
           <div>
             <CompactLabel>Kickoff Date</CompactLabel>
-            <Popover open={kickoffDateOpen} onOpenChange={setKickoffDateOpen}>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  className={cn(
-                    "w-full justify-start text-left font-normal h-9 text-sm",
-                    !data.impl_start_date && "text-muted-foreground"
-                  )}
-                >
-                  <CalendarIcon className="mr-2 h-3.5 w-3.5" />
-                  {data.impl_start_date ? format(new Date(data.impl_start_date), 'dd/MM/yyyy') : 'dd/mm/yyyy'}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
-                  mode="single"
-                  selected={data.impl_start_date ? new Date(data.impl_start_date) : undefined}
-                  onSelect={(date) => {
-                    onChange('impl_start_date', date ? format(date, 'yyyy-MM-dd') : null);
-                    setKickoffDateOpen(false);
-                  }}
-                  initialFocus
-                  className="pointer-events-auto"
-                />
-              </PopoverContent>
-            </Popover>
+            <CatalystDatePicker
+              value={data.impl_start_date}
+              onChange={(date) => onChange('impl_start_date', date ? format(date, 'yyyy-MM-dd') : null)}
+              placeholder="dd/mm/yyyy"
+            />
           </div>
 
           <div>
             <CompactLabel>Target Completion</CompactLabel>
             <div className="flex gap-1.5">
-              <Popover open={targetDateOpen} onOpenChange={setTargetDateOpen}>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    disabled={targetDateLocked}
-                    className={cn(
-                      "flex-1 justify-start text-left font-normal h-9 text-sm",
-                      !data.end_date && "text-muted-foreground",
-                      targetDateLocked && "opacity-60"
-                    )}
-                  >
-                    <CalendarIcon className="mr-2 h-3.5 w-3.5" />
-                    {data.end_date ? format(new Date(data.end_date), 'dd/MM/yyyy') : 'dd/mm/yyyy'}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={data.end_date ? new Date(data.end_date) : undefined}
-                    onSelect={(date) => {
-                      onChange('end_date', date ? format(date, 'yyyy-MM-dd') : null);
-                      setTargetDateOpen(false);
-                    }}
-                    initialFocus
-                    className="pointer-events-auto"
-                  />
-                </PopoverContent>
-              </Popover>
+              <CatalystDatePicker
+                value={data.end_date}
+                onChange={(date) => onChange('end_date', date ? format(date, 'yyyy-MM-dd') : null)}
+                placeholder="dd/mm/yyyy"
+                disabled={targetDateLocked}
+                className={cn(targetDateLocked && "opacity-60")}
+              />
               <Button
                 variant="outline"
                 size="icon"

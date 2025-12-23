@@ -8,11 +8,10 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Calendar } from '@/components/ui/calendar';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Calendar as CalendarIcon, Lock, Loader2 } from 'lucide-react';
+import { Lock, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { CatalystDatePicker } from '@/components/ui/catalyst-date-picker';
 import { RichTextEditor } from '../RichTextEditor';
 import { BusinessRequest, PROCESS_STEPS } from '@/types/business-request';
 import { DepartmentSelect } from '@/components/business-requests/DepartmentSelect';
@@ -25,11 +24,16 @@ import { format, parseISO } from 'date-fns';
 import { toast } from 'sonner';
 import { useUpdateBusinessRequest } from '@/hooks/useBusinessRequests';
 
+// Quarter options matching the create form format (with hyphens)
 const QUARTER_OPTIONS = [
-  'Q1 2025', 'Q2 2025', 'Q3 2025', 'Q4 2025',
-  'Q1 2026', 'Q2 2026', 'Q3 2026', 'Q4 2026',
-  'Q1 2027', 'Q2 2027',
+  'Q4-2025', 'Q1-2026', 'Q2-2026', 'Q3-2026', 'Q4-2026',
+  'Q1-2027', 'Q2-2027', 'Q3-2027', 'Q4-2027',
 ];
+
+// Helper to format quarter for display (Q4-2026 -> Q4 2026)
+function formatQuarterDisplay(quarter: string): string {
+  return quarter.replace('-', ' ');
+}
 
 // Priority tier config
 const PRIORITY_LABELS: Record<string, { label: string; color: string }> = {
@@ -52,49 +56,6 @@ function FieldLabel({ children }: { children: React.ReactNode }) {
     <label className="text-xs font-medium uppercase tracking-wide mb-1.5 block text-gray-500">
       {children}
     </label>
-  );
-}
-
-// Date picker component
-function DatePicker({ 
-  value, 
-  onChange,
-  placeholder = 'Select date'
-}: { 
-  value: string | null | undefined; 
-  onChange: (date: Date | undefined) => void;
-  placeholder?: string;
-}) {
-  const [open, setOpen] = useState(false);
-  const dateValue = value ? parseISO(value) : undefined;
-  
-  return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <Button
-          variant="outline"
-          className={cn(
-            "w-full justify-start text-left font-normal h-9",
-            !value && "text-muted-foreground"
-          )}
-        >
-          <CalendarIcon className="mr-2 h-4 w-4" />
-          {value ? format(parseISO(value), 'dd MMM yyyy') : placeholder}
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent className="w-auto p-0 z-[500] bg-popover" align="start">
-        <Calendar
-          mode="single"
-          selected={dateValue}
-          onSelect={(date) => {
-            onChange(date);
-            setOpen(false);
-          }}
-          initialFocus
-          className="pointer-events-auto"
-        />
-      </PopoverContent>
-    </Popover>
   );
 }
 
@@ -307,7 +268,7 @@ export function DemandDetailsViewTab({ data, onChange, onDirtyChange, requestId 
             </SelectTrigger>
             <SelectContent className="z-[500] bg-popover">
               {QUARTER_OPTIONS.map((q) => (
-                <SelectItem key={q} value={q}>{q}</SelectItem>
+                <SelectItem key={q} value={q}>{formatQuarterDisplay(q)}</SelectItem>
               ))}
             </SelectContent>
           </Select>
@@ -325,7 +286,7 @@ export function DemandDetailsViewTab({ data, onChange, onDirtyChange, requestId 
           <FieldLabel>EA Review Required</FieldLabel>
           <div className="flex items-center gap-3 h-9 px-3 rounded-md border" style={{ borderColor: 'var(--divider)' }}>
             <Switch 
-              checked={data.ea_review_required ?? true}
+              checked={data.ea_review_required ?? false}
               onCheckedChange={(checked) => handleChange('ea_review_required', checked)}
               className="data-[state=checked]:bg-[hsl(var(--secondary-olive))]"
             />
@@ -386,23 +347,26 @@ export function DemandDetailsViewTab({ data, onChange, onDirtyChange, requestId 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div>
           <FieldLabel>Business Ask Date</FieldLabel>
-          <DatePicker 
+          <CatalystDatePicker 
             value={data.start_date} 
-            onChange={handleDateChange('start_date')}
+            onChange={(date) => handleDateChange('start_date')(date ?? undefined)}
+            placeholder="Select date"
           />
         </div>
         <div>
           <FieldLabel>Kickoff Date</FieldLabel>
-          <DatePicker 
+          <CatalystDatePicker 
             value={data.impl_start_date} 
-            onChange={handleDateChange('impl_start_date')}
+            onChange={(date) => handleDateChange('impl_start_date')(date ?? undefined)}
+            placeholder="Select date"
           />
         </div>
         <div>
           <FieldLabel>Target Complete</FieldLabel>
-          <DatePicker 
+          <CatalystDatePicker 
             value={data.end_date} 
-            onChange={handleDateChange('end_date')}
+            onChange={(date) => handleDateChange('end_date')(date ?? undefined)}
+            placeholder="Select date"
           />
         </div>
       </div>
