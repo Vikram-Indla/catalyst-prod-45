@@ -466,7 +466,7 @@ export function RequestDetailPanel({
             </div>
           </div>
 
-          {/* Row 2: Priority | Target Quarter */}
+          {/* Row 2: Priority */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
             <div>
               <FieldLabel>Priority</FieldLabel>
@@ -483,23 +483,6 @@ export function RequestDetailPanel({
                 </div>
                 <Lock className="w-3.5 h-3.5" style={{ color: 'var(--text-3)' }} />
               </div>
-            </div>
-
-            <div>
-              <FieldLabel>Target Quarter</FieldLabel>
-              <Select 
-                value={request.quarter || ''} 
-                onValueChange={(value) => onUpdateField('quarter', value)}
-              >
-                <SelectTrigger className="w-full h-10">
-                  <SelectValue placeholder="Select quarter" />
-                </SelectTrigger>
-                <SelectContent>
-                  {QUARTER_OPTIONS.map((q) => (
-                    <SelectItem key={q} value={q}>{q}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
             </div>
           </div>
 
