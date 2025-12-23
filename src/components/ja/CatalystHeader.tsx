@@ -48,7 +48,7 @@ export function CatalystHeader() {
   const location = useLocation();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
-  const { isAdmin, canAccessEnterprise } = useUserRole();
+  const { isAdmin, canAccessEnterprise, isProductOwnerOnly } = useUserRole();
   const { isModuleEnabled, isLoading: modulesLoading } = useEnabledModules();
   const { workspaceType } = useCatalystContext();
   const singleItemNav = useSingleItemNavigation();
@@ -111,25 +111,28 @@ export function CatalystHeader() {
 
   // Define nav items with their module codes - each module has its own code
   const allNavItems = [
-    { label: "Home", path: "/home", moduleCode: null }, // Always visible
-    { label: "Enterprise", path: "/enterprise/strategy-room", moduleCode: "ENTERPRISE", requiresEnterpriseAccess: true },
-    { label: "Product", hasDropdown: true, moduleCode: "PRODUCT" },
-    { label: "Program", hasDropdown: true, moduleCode: "PORTFOLIO" },
-    { label: "Project", hasDropdown: true, moduleCode: "PROGRAM" },
-    { label: "Release", hasDropdown: true, path: "/release", moduleCode: null }, // Always visible
-    { label: "Planner", hasDropdown: true, path: "/planner", moduleCode: null }, // Always visible - now with dropdown
+    { label: "Home", path: "/home", moduleCode: null, visibleToProductOwner: true }, // Always visible
+    { label: "Enterprise", path: "/enterprise/strategy-room", moduleCode: "ENTERPRISE", requiresEnterpriseAccess: true, visibleToProductOwner: true },
+    { label: "Product", hasDropdown: true, moduleCode: "PRODUCT", visibleToProductOwner: true },
+    { label: "Program", hasDropdown: true, moduleCode: "PORTFOLIO", visibleToProductOwner: false },
+    { label: "Project", hasDropdown: true, moduleCode: "PROGRAM", visibleToProductOwner: false },
+    { label: "Release", hasDropdown: true, path: "/release", moduleCode: null, visibleToProductOwner: false }, // Always visible
+    { label: "Planner", hasDropdown: true, path: "/planner", moduleCode: null, visibleToProductOwner: true }, // Always visible - now with dropdown
   ];
 
   // Get all nav items with their enabled status
   // Enterprise requires both module enabled AND role-based access (admin, super_admin, product_admin, general_manager)
-  const navItems = allNavItems.map(item => ({
-    ...item,
-    isEnabled: item.moduleCode === null 
-      ? true 
-      : item.requiresEnterpriseAccess 
-        ? isModuleEnabled(item.moduleCode) && canAccessEnterprise
-        : isModuleEnabled(item.moduleCode),
-  }));
+  // Product Owner only sees Home, Enterprise, Product, and Planner
+  const navItems = allNavItems
+    .filter(item => !isProductOwnerOnly || item.visibleToProductOwner)
+    .map(item => ({
+      ...item,
+      isEnabled: item.moduleCode === null 
+        ? true 
+        : item.requiresEnterpriseAccess 
+          ? isModuleEnabled(item.moduleCode) && canAccessEnterprise
+          : isModuleEnabled(item.moduleCode),
+    }));
 
   const { isDark } = useTheme();
 
@@ -507,41 +510,43 @@ export function CatalystHeader() {
               </TooltipContent>
             </Tooltip>
 
-            {/* Settings - 32x32 icon button */}
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <button
-                  style={{
-                    width: '32px',
-                    height: '32px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    border: 'none',
-                    borderRadius: '6px',
-                    background: 'transparent',
-                    color: 'var(--icon-default)',
-                    cursor: 'pointer',
-                    transition: 'all 0.15s ease',
-                  }}
-                  onMouseEnter={(e) => { 
-                    e.currentTarget.style.background = 'var(--nav-hover-bg)'; 
-                    e.currentTarget.style.color = 'var(--icon-hover)';
-                  }}
-                  onMouseLeave={(e) => { 
-                    e.currentTarget.style.background = 'transparent'; 
-                    e.currentTarget.style.color = 'var(--icon-default)';
-                  }}
-                  onClick={() => navigate('/admin/activity')}
-                  title="Settings"
-                >
-                  <Settings style={{ width: '20px', height: '20px' }} />
-                </button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Settings</p>
-              </TooltipContent>
-            </Tooltip>
+            {/* Settings - 32x32 icon button - Only visible to Admin */}
+            {isAdmin && (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button
+                    style={{
+                      width: '32px',
+                      height: '32px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      border: 'none',
+                      borderRadius: '6px',
+                      background: 'transparent',
+                      color: 'var(--icon-default)',
+                      cursor: 'pointer',
+                      transition: 'all 0.15s ease',
+                    }}
+                    onMouseEnter={(e) => { 
+                      e.currentTarget.style.background = 'var(--nav-hover-bg)'; 
+                      e.currentTarget.style.color = 'var(--icon-hover)';
+                    }}
+                    onMouseLeave={(e) => { 
+                      e.currentTarget.style.background = 'transparent'; 
+                      e.currentTarget.style.color = 'var(--icon-default)';
+                    }}
+                    onClick={() => navigate('/admin/activity')}
+                    title="Settings"
+                  >
+                    <Settings style={{ width: '20px', height: '20px' }} />
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Settings</p>
+                </TooltipContent>
+              </Tooltip>
+            )}
 
             {/* Search Button - visible control with keyboard shortcut hint */}
             <button

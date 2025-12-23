@@ -10,6 +10,7 @@ import { ProgramSelectorDropdown } from "./ProgramSelectorDropdown";
 import { ProjectSelectorDropdown } from "./ProjectSelectorDropdown";
 import { TeamSelectorDropdown } from "./TeamSelectorDropdown";
 import { StarredDropdown } from "./StarredDropdown";
+import { useUserRole } from "@/hooks/useUserRole";
 import {
   Collapsible,
   CollapsibleContent,
@@ -20,6 +21,7 @@ export function MobileNavigationMenu() {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [activeSection, setActiveSection] = useState<string | null>(null);
+  const { isProductOwnerOnly } = useUserRole();
 
   const handleNavigate = (path: string) => {
     navigate(path);
@@ -72,80 +74,86 @@ export function MobileNavigationMenu() {
               Enterprise
             </Button>
 
-            {/* Program */}
-            <Collapsible
-              open={activeSection === 'program'}
-              onOpenChange={() => toggleSection('program')}
-            >
-              <CollapsibleTrigger asChild>
-                <Button
-                  variant="ghost"
-                  className="w-full justify-between px-6 py-3 text-base font-medium"
-                >
-                  Program
-                  <ChevronRight
-                    className={`h-4 w-4 transition-transform ${
-                      activeSection === 'program' ? 'rotate-90' : ''
-                    }`}
-                  />
-                </Button>
-              </CollapsibleTrigger>
-              <CollapsibleContent className="px-4">
-                <div onClick={() => setOpen(false)}>
-                  <ProgramSelectorDropdown onClose={() => setOpen(false)} />
-                </div>
-              </CollapsibleContent>
-            </Collapsible>
+            {/* Program - Hidden for Product Owner Only */}
+            {!isProductOwnerOnly && (
+              <Collapsible
+                open={activeSection === 'program'}
+                onOpenChange={() => toggleSection('program')}
+              >
+                <CollapsibleTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    className="w-full justify-between px-6 py-3 text-base font-medium"
+                  >
+                    Program
+                    <ChevronRight
+                      className={`h-4 w-4 transition-transform ${
+                        activeSection === 'program' ? 'rotate-90' : ''
+                      }`}
+                    />
+                  </Button>
+                </CollapsibleTrigger>
+                <CollapsibleContent className="px-4">
+                  <div onClick={() => setOpen(false)}>
+                    <ProgramSelectorDropdown onClose={() => setOpen(false)} />
+                  </div>
+                </CollapsibleContent>
+              </Collapsible>
+            )}
 
-            {/* Project */}
-            <Collapsible
-              open={activeSection === 'project'}
-              onOpenChange={() => toggleSection('project')}
-            >
-              <CollapsibleTrigger asChild>
-                <Button
-                  variant="ghost"
-                  className="w-full justify-between px-6 py-3 text-base font-medium"
-                >
-                  Project
-                  <ChevronRight
-                    className={`h-4 w-4 transition-transform ${
-                      activeSection === 'project' ? 'rotate-90' : ''
-                    }`}
-                  />
-                </Button>
-              </CollapsibleTrigger>
-              <CollapsibleContent className="px-4">
-                <div onClick={() => setOpen(false)}>
-                  <ProjectSelectorDropdown onClose={() => setOpen(false)} />
-                </div>
-              </CollapsibleContent>
-            </Collapsible>
+            {/* Project - Hidden for Product Owner Only */}
+            {!isProductOwnerOnly && (
+              <Collapsible
+                open={activeSection === 'project'}
+                onOpenChange={() => toggleSection('project')}
+              >
+                <CollapsibleTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    className="w-full justify-between px-6 py-3 text-base font-medium"
+                  >
+                    Project
+                    <ChevronRight
+                      className={`h-4 w-4 transition-transform ${
+                        activeSection === 'project' ? 'rotate-90' : ''
+                      }`}
+                    />
+                  </Button>
+                </CollapsibleTrigger>
+                <CollapsibleContent className="px-4">
+                  <div onClick={() => setOpen(false)}>
+                    <ProjectSelectorDropdown onClose={() => setOpen(false)} />
+                  </div>
+                </CollapsibleContent>
+              </Collapsible>
+            )}
 
-            {/* Team */}
-            <Collapsible
-              open={activeSection === 'team'}
-              onOpenChange={() => toggleSection('team')}
-            >
-              <CollapsibleTrigger asChild>
-                <Button
-                  variant="ghost"
-                  className="w-full justify-between px-6 py-3 text-base font-medium"
-                >
-                  Team
-                  <ChevronRight
-                    className={`h-4 w-4 transition-transform ${
-                      activeSection === 'team' ? 'rotate-90' : ''
-                    }`}
-                  />
-                </Button>
-              </CollapsibleTrigger>
-              <CollapsibleContent className="px-4">
-                <div onClick={() => setOpen(false)}>
-                  <TeamSelectorDropdown onClose={() => setOpen(false)} />
-                </div>
-              </CollapsibleContent>
-            </Collapsible>
+            {/* Team - Hidden for Product Owner Only */}
+            {!isProductOwnerOnly && (
+              <Collapsible
+                open={activeSection === 'team'}
+                onOpenChange={() => toggleSection('team')}
+              >
+                <CollapsibleTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    className="w-full justify-between px-6 py-3 text-base font-medium"
+                  >
+                    Team
+                    <ChevronRight
+                      className={`h-4 w-4 transition-transform ${
+                        activeSection === 'team' ? 'rotate-90' : ''
+                      }`}
+                    />
+                  </Button>
+                </CollapsibleTrigger>
+                <CollapsibleContent className="px-4">
+                  <div onClick={() => setOpen(false)}>
+                    <TeamSelectorDropdown onClose={() => setOpen(false)} />
+                  </div>
+                </CollapsibleContent>
+              </Collapsible>
+            )}
 
             {/* Starred */}
             <Collapsible
