@@ -2,12 +2,32 @@
 // Teams Management View - Dark Mode Optimized
 
 import { useMemo, useState } from 'react';
-import { Plus, MoreHorizontal, Users, AlertTriangle, ChevronRight } from 'lucide-react';
+import { Plus, MoreHorizontal, Users, AlertTriangle, ChevronRight, UserPlus, Trash2, Edit } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { NewTeamDialog } from './NewTeamDialog';
 import { getUserById } from '@/lib/work-manager-data';
 import type { TaskExtended, Team, User } from './types';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import { AddTeamMemberDialog } from '@/components/teams/AddTeamMemberDialog';
+import { useDeleteTeams } from '@/hooks/useTeams';
+import { toast } from 'sonner';
 
 // Team accent colors - kept but with opacity in dark mode
 const teamColors: Record<string, string> = {
@@ -25,6 +45,9 @@ interface WorkManagerTeamsProps {
 
 export function WorkManagerTeams({ tasks, teams, users, onCreateTeam }: WorkManagerTeamsProps) {
   const [isNewTeamDialogOpen, setIsNewTeamDialogOpen] = useState(false);
+  const [addMemberTeamId, setAddMemberTeamId] = useState<string | null>(null);
+  const [deleteTeamId, setDeleteTeamId] = useState<string | null>(null);
+  const deleteTeams = useDeleteTeams();
 
   const getTeamStats = (teamId: string) => {
     const teamTasks = tasks.filter(t => t.teamId === teamId);
@@ -44,6 +67,16 @@ export function WorkManagerTeams({ tasks, teams, users, onCreateTeam }: WorkMana
       overdue: userTasks.filter(t => t.isOverdue).length,
       done: userTasks.filter(t => t.status === 'Done').length,
     };
+  };
+
+  const handleDeleteTeam = async () => {
+    if (!deleteTeamId) return;
+    try {
+      await deleteTeams.mutateAsync([deleteTeamId]);
+      setDeleteTeamId(null);
+    } catch (error) {
+      console.error('Error deleting team:', error);
+    }
   };
 
   const userTeamMap = useMemo(() => {
@@ -102,12 +135,31 @@ export function WorkManagerTeams({ tasks, teams, users, onCreateTeam }: WorkMana
                       </p>
                     )}
                   </div>
-                  <button 
-                    className="p-1.5 rounded-lg hover:bg-muted opacity-0 group-hover:opacity-100 transition-opacity" 
-                    type="button"
-                  >
-                    <MoreHorizontal className="w-4 h-4 text-muted-foreground" />
-                  </button>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <button 
+                        className="p-1.5 rounded-lg hover:bg-muted opacity-0 group-hover:opacity-100 transition-opacity" 
+                        type="button"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <MoreHorizontal className="w-4 h-4 text-muted-foreground" />
+                      </button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-48">
+                      <DropdownMenuItem onClick={() => setAddMemberTeamId(team.id)}>
+                        <UserPlus className="w-4 h-4 mr-2" />
+                        Add Member
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem 
+                        className="text-destructive focus:text-destructive"
+                        onClick={() => setDeleteTeamId(team.id)}
+                      >
+                        <Trash2 className="w-4 h-4 mr-2" />
+                        Delete Team
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </div>
                 
                 {/* Members section - monochrome avatars */}
@@ -322,6 +374,36 @@ export function WorkManagerTeams({ tasks, teams, users, onCreateTeam }: WorkMana
         users={users}
         onCreateTeam={onCreateTeam}
       />
+
+      {/* Add Member Dialog */}
+      {addMemberTeamId && (
+        <AddTeamMemberDialog
+          teamId={addMemberTeamId}
+          open={!!addMemberTeamId}
+          onOpenChange={(open) => !open && setAddMemberTeamId(null)}
+        />
+      )}
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={!!deleteTeamId} onOpenChange={(open) => !open && setDeleteTeamId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Team</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete this team? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={handleDeleteTeam}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
