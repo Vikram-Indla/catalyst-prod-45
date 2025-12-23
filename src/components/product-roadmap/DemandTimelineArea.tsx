@@ -255,27 +255,32 @@ interface DemandTimelineRowProps {
   rowHeight: number;
 }
 
-// Status-based color mapping for progress bars
+// Status-based color mapping for progress bars - CATALYST BRAND COLORS ONLY
+// Olive: #5c7c5c, #4a6a4a, #3d563d, #6b8b6b
+// Bronze: #8b7355
+// Gold: #c69c6d
+// Champagne: #d4b896
+// Gray: #737373
 const STATUS_COLORS: Record<string, string> = {
-  new: 'hsl(210, 40%, 50%)',                   // Blue
-  new_request: 'hsl(210, 40%, 50%)',           // Blue
-  new_demand: 'hsl(210, 40%, 50%)',            // Blue
-  analyse: 'hsl(45, 85%, 50%)',                // Yellow/Amber
-  in_review: 'hsl(45, 85%, 50%)',              // Yellow/Amber
-  ea_review: 'hsl(280, 50%, 55%)',             // Purple
-  approved: 'hsl(160, 60%, 45%)',              // Teal
-  ready_to_implement: 'hsl(160, 70%, 42%)',    // Teal-Green
-  implement: 'hsl(120, 40%, 50%)',             // Green
-  implementing: 'hsl(120, 40%, 50%)',          // Green
-  done: 'hsl(120, 45%, 40%)',                  // Dark Green
-  closed: 'hsl(120, 45%, 40%)',                // Dark Green
-  rejected: 'hsl(0, 60%, 50%)',                // Red
-  on_hold: 'hsl(30, 70%, 50%)',                // Orange
+  new: 'var(--process-new-demand)',
+  new_request: 'var(--process-new-demand)',
+  new_demand: 'var(--process-new-demand)',
+  analyse: 'var(--process-analyse)',
+  in_review: 'var(--process-in-review)',
+  ea_review: 'var(--process-ea-review)',
+  approved: 'var(--process-approved)',
+  ready_to_implement: 'var(--process-ready-to-implement)',
+  implement: 'var(--process-implement)',
+  implementing: 'var(--process-implement)',
+  done: 'var(--process-closed)',
+  closed: 'var(--process-closed)',
+  rejected: 'var(--process-rejected)',
+  on_hold: 'var(--process-on-hold)',
 };
 
 function getStatusColor(status: string): string {
   const normalized = status.toLowerCase().replace(/[\s-]/g, '_');
-  return STATUS_COLORS[normalized] || 'hsl(var(--brand-primary))';
+  return STATUS_COLORS[normalized] || 'var(--brand-olive)';
 }
 
 const DemandTimelineRow: React.FC<DemandTimelineRowProps> = ({
