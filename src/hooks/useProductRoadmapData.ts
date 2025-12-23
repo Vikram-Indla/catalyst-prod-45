@@ -1,20 +1,17 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { Demand, DemandOwner, DemandAssignee, DemandMilestone, DemandStatus, PriorityTier, HealthStatus, PlannedQuarter } from '@/types/product-roadmap';
+import { Demand, DemandOwner, DemandAssignee, DemandMilestone, PriorityTier, HealthStatus, PlannedQuarter } from '@/types/product-roadmap';
+import { useProcessSteps } from '@/modules/kanban/hooks/useProcessSteps';
 
-// Map process_step to DemandStatus
-function mapProcessStepToStatus(processStep: string | null): DemandStatus {
-  if (!processStep) return 'new';
-  const step = processStep.toLowerCase().replace(/[_\s]/g, '-');
+// Calculate progress based on process step order
+function calculateProgress(processStep: string | null, processSteps: { value: string; sort_order: number }[]): number {
+  if (!processStep) return 0;
   
-  if (step.includes('new') || step.includes('submit')) return 'new';
-  if (step.includes('analy') || step.includes('review')) return 'analyse';
-  if (step.includes('approv')) return 'approved';
-  if (step.includes('implement') || step.includes('progress')) return 'implement';
-  if (step.includes('close') || step.includes('complete') || step.includes('done')) return 'closed';
-  if (step.includes('hold') || step.includes('block')) return 'on-hold';
+  const step = processSteps.find(s => s.value === processStep);
+  if (!step) return 0;
   
-  return 'new';
+  const maxOrder = Math.max(...processSteps.map(s => s.sort_order), 1);
+  return Math.round((step.sort_order / maxOrder) * 100);
 }
 
 // Map priority_tier from DB to PriorityTier
@@ -71,6 +68,9 @@ function extractQuarter(plannedQuarters: string[] | null, endDate: Date | null):
 }
 
 export function useProductRoadmapData() {
+  // Fetch dynamic process steps from database
+  const { data: processSteps = [] } = useProcessSteps();
+  
   // Fetch business requests (demands) with extended fields
   const { data: demandsData = [], isLoading: demandsLoading } = useQuery({
     queryKey: ['product-roadmap-demands'],
@@ -199,17 +199,11 @@ export function useProductRoadmapData() {
       ? new Date(d.end_date) 
       : new Date(currentYear, 11, 31);
 
-    // Calculate progress based on status
-    const statusProgress: Record<DemandStatus, number> = {
-      'new': 0,
-      'analyse': 25,
-      'approved': 50,
-      'implement': 75,
-      'closed': 100,
-      'on-hold': 0,
-    };
-    const status = mapProcessStepToStatus(d.process_step);
-    const progress = statusProgress[status] || 0;
+    // Use actual process_step value from DB, default to first step or 'new'
+    const status = d.process_step || processSteps[0]?.value || 'new';
+    
+    // Calculate progress based on process step sort order
+    const progress = calculateProgress(d.process_step, processSteps);
 
     const milestones: DemandMilestone[] = demandMilestones.map(m => ({
       id: m.id,

@@ -1,10 +1,9 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { 
   Scale, 
   DemandFilterState, 
   DemandOwner, 
   DemandAssignee,
-  DEMAND_STATUS_CONFIG, 
   PRIORITY_TIER_CONFIG,
   HEALTH_CONFIG,
   QUARTER_CONFIG,
@@ -21,6 +20,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { TimelineFilterPopover, TimelineFilterState, DEFAULT_TIMELINE_FILTER } from '@/components/roadmap/TimelineFilterPopover';
+import { useProcessSteps } from '@/modules/kanban/hooks/useProcessSteps';
 
 // Group By types
 export type DemandGroupBy = 'none' | 'platform' | 'owner' | 'quarter' | 'assignee';
@@ -279,6 +279,18 @@ export const ProductRoadmapToolbar: React.FC<ProductRoadmapToolbarProps> = ({
   const [groupByMenuOpen, setGroupByMenuOpen] = useState(false);
   const filtersRef = useRef<HTMLDivElement>(null);
   
+  // Fetch dynamic process steps from database
+  const { data: processSteps = [] } = useProcessSteps();
+  
+  // Convert process steps to dropdown options format
+  const statusOptions = useMemo(() => 
+    processSteps.map(step => ({
+      key: step.value,
+      label: step.label,
+    })), 
+    [processSteps]
+  );
+  
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (filtersRef.current && !filtersRef.current.contains(e.target as Node)) {
@@ -404,7 +416,7 @@ export const ProductRoadmapToolbar: React.FC<ProductRoadmapToolbarProps> = ({
               <div className="flex-1 overflow-y-auto p-4 space-y-4">
                 <MultiSelectDropdown
                   label="Status / Workflow"
-                  options={DEMAND_STATUS_CONFIG}
+                  options={statusOptions}
                   selectedKeys={draftFilters.status}
                   onToggle={onToggleStatus}
                   placeholder="All statuses"
