@@ -56,15 +56,15 @@ export function AttachmentUploadModal({
   const queryClient = useQueryClient();
   const [uploading, setUploading] = useState(false);
 
-  // Fetch existing attachments
+  // Fetch existing attachments from business_request_links (document type)
   const { data: attachments = [], isLoading } = useQuery({
     queryKey: ['business-request-attachments', requestId],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('attachments')
+        .from('business_request_links')
         .select('*')
-        .eq('entity_type', 'business_request')
-        .eq('entity_id', requestId)
+        .eq('business_request_id', requestId)
+        .eq('kind', 'document')
         .order('created_at', { ascending: false });
 
       if (error) throw error;
@@ -73,37 +73,52 @@ export function AttachmentUploadModal({
     enabled: open && !!requestId,
   });
 
-  // Upload mutation
+  // Upload mutation - saves to business_request_links for consistency with Links tab
   const uploadMutation = useMutation({
     mutationFn: async (file: File) => {
       const { data: user } = await supabase.auth.getUser();
       if (!user.user) throw new Error('Not authenticated');
 
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('full_name')
+        .eq('id', user.user.id)
+        .single();
+
       // Upload file to storage
-      const fileName = `business-requests/${requestId}/${Date.now()}-${file.name}`;
+      const fileName = `${requestId}/${Date.now()}-${file.name}`;
       const { error: uploadError } = await supabase.storage
         .from('attachments')
         .upload(fileName, file);
 
       if (uploadError) throw uploadError;
 
-      // Create attachment record
-      const { error: dbError } = await supabase
+      const { data: { publicUrl } } = supabase.storage
         .from('attachments')
+        .getPublicUrl(fileName);
+
+      // Create link record in business_request_links (same as LinksViewTab)
+      const { error: dbError } = await supabase
+        .from('business_request_links')
         .insert({
-          entity_type: 'business_request',
-          entity_id: requestId,
-          uploaded_by: user.user.id,
+          business_request_id: requestId,
+          title: file.name,
+          url: publicUrl,
+          link_type: 'documentation',
+          kind: 'document',
           file_name: file.name,
           file_path: fileName,
           file_size: file.size,
           mime_type: file.type,
+          uploaded_by: user.user.id,
+          added_by_name: profile?.full_name || user.user.email || 'Unknown'
         });
 
       if (dbError) throw dbError;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['business-request-attachments', requestId] });
+      queryClient.invalidateQueries({ queryKey: ['business-request-links', requestId] });
       toast.success('Attachment uploaded successfully');
     },
     onError: (error: Error) => {
@@ -111,19 +126,21 @@ export function AttachmentUploadModal({
     },
   });
 
-  // Delete mutation
+  // Delete mutation - deletes from business_request_links
   const deleteMutation = useMutation({
     mutationFn: async (attachment: Attachment) => {
-      // Delete from storage
-      const { error: storageError } = await supabase.storage
-        .from('attachments')
-        .remove([attachment.file_path]);
+      // Delete from storage if file_path exists
+      if (attachment.file_path) {
+        const { error: storageError } = await supabase.storage
+          .from('attachments')
+          .remove([attachment.file_path]);
 
-      if (storageError) console.warn('Storage delete error:', storageError);
+        if (storageError) console.warn('Storage delete error:', storageError);
+      }
 
       // Delete from database
       const { error: dbError } = await supabase
-        .from('attachments')
+        .from('business_request_links')
         .delete()
         .eq('id', attachment.id);
 
@@ -131,6 +148,7 @@ export function AttachmentUploadModal({
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['business-request-attachments', requestId] });
+      queryClient.invalidateQueries({ queryKey: ['business-request-links', requestId] });
       toast.success('Attachment deleted');
     },
     onError: (error: Error) => {

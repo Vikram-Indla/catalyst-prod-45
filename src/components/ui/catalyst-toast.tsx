@@ -123,26 +123,31 @@ const variantConfig: Record<ToastVariant, {
   icon: React.ElementType; 
   iconClass: string;
   borderClass: string;
+  bgClass: string;
 }> = {
   success: {
     icon: CheckCircle2,
-    iconClass: 'text-emerald-600 dark:text-emerald-400',
-    borderClass: 'border-l-emerald-500',
+    iconClass: 'text-[#5c7c5c]',
+    borderClass: 'border-l-[#5c7c5c]',
+    bgClass: 'bg-[#5c7c5c]/10',
   },
   info: {
     icon: Info,
-    iconClass: 'text-sky-600 dark:text-sky-400',
-    borderClass: 'border-l-sky-500',
+    iconClass: 'text-[#c69c6d]',
+    borderClass: 'border-l-[#c69c6d]',
+    bgClass: 'bg-[#c69c6d]/10',
   },
   warning: {
     icon: AlertTriangle,
-    iconClass: 'text-amber-600 dark:text-amber-400',
-    borderClass: 'border-l-amber-500',
+    iconClass: 'text-[#8b7355]',
+    borderClass: 'border-l-[#8b7355]',
+    bgClass: 'bg-[#8b7355]/10',
   },
   error: {
     icon: XCircle,
-    iconClass: 'text-rose-600 dark:text-rose-400',
-    borderClass: 'border-l-rose-500',
+    iconClass: 'text-red-600 dark:text-red-400',
+    borderClass: 'border-l-red-500',
+    bgClass: 'bg-red-500/10',
   },
 };
 
@@ -163,16 +168,18 @@ export function catalystToast({
     (id) => (
       <div
         className={cn(
-          'flex items-start gap-3 w-[360px] p-4 rounded-lg shadow-lg border border-l-4 bg-background',
-          config.borderClass
+          'flex items-start gap-3 w-[360px] p-4 rounded-lg shadow-lg border border-l-4',
+          config.borderClass,
+          config.bgClass
         )}
         style={{
           background: 'var(--surface-1, hsl(var(--background)))',
-          borderColor: 'var(--border)',
           boxShadow: 'var(--card-shadow, 0 4px 6px -1px rgba(0, 0, 0, 0.1))',
         }}
       >
-        <Icon className={cn('h-5 w-5 flex-shrink-0 mt-0.5', config.iconClass)} />
+        <div className={cn('w-8 h-8 rounded-full flex items-center justify-center shrink-0', config.bgClass)}>
+          <Icon className={cn('h-4 w-4 flex-shrink-0', config.iconClass)} />
+        </div>
         <div className="flex-1 min-w-0">
           <p className="text-sm font-semibold text-foreground">{title}</p>
           {description && (
