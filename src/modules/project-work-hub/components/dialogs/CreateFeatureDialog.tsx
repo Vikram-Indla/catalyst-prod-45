@@ -19,7 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { toast } from '@/components/ui/catalyst-toast';
+import { catalystToast as toast } from '@/lib/catalystToast';
 import { Loader2 } from 'lucide-react';
 
 interface CreateFeatureDialogProps {
@@ -82,13 +82,13 @@ export const CreateFeatureDialog: React.FC<CreateFeatureDialogProps> = ({
       // Invalidate work items query so the list refreshes
       queryClient.invalidateQueries({ queryKey: ['work-items', projectId] });
       queryClient.invalidateQueries({ queryKey: ['features'] });
-      toast.success('Feature created', { description: 'The feature has been created successfully.' });
+      toast.success('Feature created', 'The feature has been created successfully.');
       resetForm();
       onClose();
       onSuccess?.();
     },
     onError: (error: any) => {
-      toast.error('Failed to create feature', { description: error.message });
+      toast.error('Failed to create feature', error.message);
     },
   });
 

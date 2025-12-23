@@ -8,9 +8,10 @@ export interface CatalystToastItem {
   id: string;
   type: CatalystToastType;
   title: string;
-  message: string;
+  message?: string;
   action?: CatalystToastAction;
   duration?: number;
+  undoCountdown?: number;
 }
 
 let toastIdCounter = 0;
@@ -38,20 +39,33 @@ export const catalystToast = {
     dismissListeners.forEach(listener => listener(id));
   },
 
-  success: (title: string, message: string, action?: CatalystToastAction, duration?: number): string => {
-    return catalystToast.show({ type: 'success', title, message, action, duration });
+  success: (title: string, message?: string, action?: CatalystToastAction, duration?: number): string => {
+    return catalystToast.show({ type: 'success', title, message, action, duration: duration ?? 4000 });
   },
 
-  error: (title: string, message: string, action?: CatalystToastAction, duration?: number): string => {
-    return catalystToast.show({ type: 'error', title, message, action, duration });
+  error: (title: string, message?: string, action?: CatalystToastAction, duration?: number): string => {
+    return catalystToast.show({ type: 'error', title, message, action, duration: duration ?? 5000 });
   },
 
-  warning: (title: string, message: string, action?: CatalystToastAction, duration?: number): string => {
-    return catalystToast.show({ type: 'warning', title, message, action, duration });
+  warning: (title: string, message?: string, action?: CatalystToastAction, duration?: number): string => {
+    return catalystToast.show({ type: 'warning', title, message, action, duration: duration ?? 4000 });
   },
 
-  info: (title: string, message: string, action?: CatalystToastAction, duration?: number): string => {
-    return catalystToast.show({ type: 'info', title, message, action, duration });
+  info: (title: string, message?: string, action?: CatalystToastAction, duration?: number): string => {
+    return catalystToast.show({ type: 'info', title, message, action, duration: duration ?? 4000 });
+  },
+
+  loading: (title: string, message?: string): string => {
+    return catalystToast.show({ type: 'loading', title, message });
+  },
+
+  undo: (title: string, onUndo: () => void, countdown: number = 5): string => {
+    return catalystToast.show({
+      type: 'undo',
+      title,
+      undoCountdown: countdown,
+      action: { label: 'Undo', onClick: onUndo },
+    });
   },
 };
 

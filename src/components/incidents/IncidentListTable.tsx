@@ -47,7 +47,7 @@ import {
   CENTER_ALIGNED_COLUMNS,
   getGridTemplate,
 } from './useIncidentColumnWidths';
-import { toast } from '@/components/ui/catalyst-toast';
+import { catalystToast as toast } from '@/lib/catalystToast';
 import { useUpdateIncident } from '@/hooks/useIncidents';
 import type { Incident } from '@/types/incident';
 import type { ColumnConfig, TableDensity } from '@/hooks/useIncidentColumns';
@@ -304,15 +304,15 @@ export function IncidentListTable({
   const handleCopyLink = (incidentId: string, incidentKey: string) => {
     const url = `${window.location.origin}/release/incidents/${incidentId}`;
     navigator.clipboard.writeText(url);
-    toast.success(`Link copied`, { description: `${incidentKey} link copied to clipboard` });
+    toast.success(`Link copied`, `${incidentKey} link copied to clipboard`);
   };
 
   const handleInlineUpdate = async (incidentId: string, field: string, value: string | boolean) => {
     try {
       await updateIncident.mutateAsync({ id: incidentId, data: { [field]: value } });
-      toast.success('Saved', { description: `${field} updated` });
+      toast.success('Saved', `${field} updated`);
     } catch (error: any) {
-      toast.error('Update failed', { description: error.message || 'Please try again' });
+      toast.error('Update failed', error.message || 'Please try again');
       throw error;
     }
   };
