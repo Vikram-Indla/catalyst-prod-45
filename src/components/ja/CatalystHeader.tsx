@@ -88,12 +88,15 @@ export function CatalystHeader() {
 
   const handleSignOut = async () => {
     try {
-      const { error } = await supabase.auth.signOut();
-      if (error) throw error;
+      // Always attempt to sign out - don't check for session first
+      // Use scope: 'local' to clear local session even if server session is gone
+      await supabase.auth.signOut({ scope: 'local' });
       toast.success('Signed out successfully');
       navigate('/auth');
     } catch (error: any) {
-      toast.error('Error signing out: ' + error.message);
+      // If sign out fails, still redirect to auth page
+      console.error('Sign out error:', error);
+      navigate('/auth');
     }
   };
 
