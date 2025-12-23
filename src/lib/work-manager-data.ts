@@ -1,16 +1,23 @@
 // src/lib/work-manager-data.ts
-// Work Manager Data - Empty (no seed data)
+// Work Manager Data - In-memory cache (seeded from backend at runtime)
 
-import type { 
-  User, Team, Task, KanbanColumn, 
-  TaskType, TaskStatus, Priority, LinkedItemType 
+import type {
+  User, Team, Task, KanbanColumn,
+  TaskStatus,
 } from '@/components/work-manager/types';
 
-// Users - empty (no seed data)
+// Users/Teams act as an in-memory lookup cache for UI helpers (getUserById/getTeamById).
+// They are kept in sync from the WorkManager page.
 export const users: User[] = [];
-
-// Teams - empty (no seed data)
 export const teams: Team[] = [];
+
+export function setWorkManagerUsers(next: User[]) {
+  users.splice(0, users.length, ...next);
+}
+
+export function setWorkManagerTeams(next: Team[]) {
+  teams.splice(0, teams.length, ...next);
+}
 
 // Default Kanban columns
 export const defaultColumns: KanbanColumn[] = [

@@ -40,7 +40,13 @@ import { WorkManagerTeams } from '@/components/work-manager/WorkManagerTeams';
 import { WorkManagerSettings } from '@/components/work-manager/WorkManagerSettings';
 import { TaskDrawer } from '@/components/work-manager/TaskDrawer';
 import { NewTaskDialog } from '@/components/work-manager/NewTaskDialog';
-import { teams as initialTeams, tasks, computeTaskExtended } from '@/lib/work-manager-data';
+import {
+  teams as initialTeams,
+  tasks,
+  computeTaskExtended,
+  setWorkManagerTeams,
+  setWorkManagerUsers,
+} from '@/lib/work-manager-data';
 import { useAllTeamMembers, useTeamMemberIds } from '@/hooks/useAllTeamMembers';
 import type { TaskStatus, Team } from '@/components/work-manager/types';
 import type { TaskFilters, TaskDrawerState, TaskExtended, Task, GroupByOption } from '@/components/work-manager/types';
@@ -137,10 +143,14 @@ export function WorkManager({ tab: initialTab }: WorkManagerProps) {
       memberIds: teamMemberIdsMap[t.id] || [],
       color: getTeamColor(t.team_type),
     }));
-  }, [accessibleTeams, teamMemberIdsMap]);
-
   // Use mock data as fallback when no db teams exist (for demo purposes)
   const teamsData = teamsDataFromDb.length > 0 ? teamsDataFromDb : initialTeams;
+
+  // Keep the in-memory lookup cache (used by getUserById/getTeamById) synced
+  useEffect(() => {
+    setWorkManagerUsers(teamMembersData);
+    setWorkManagerTeams(teamsData);
+  }, [teamMembersData, teamsData]);
 
   // Drawer state
   const [drawer, setDrawer] = useState<TaskDrawerState>({

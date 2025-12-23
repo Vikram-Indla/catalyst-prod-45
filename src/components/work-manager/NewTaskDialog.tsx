@@ -1,7 +1,8 @@
 // src/components/work-manager/NewTaskDialog.tsx
 // Dialog for creating a new task
 
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { toast } from 'sonner';
 import {
   Dialog,
   DialogContent,
@@ -40,23 +41,51 @@ export function NewTaskDialog({ open, onOpenChange, onCreateTask, teams, users }
   const [type, setType] = useState<TaskType>('Task');
   const [priority, setPriority] = useState<Priority>('Medium');
   const [status, setStatus] = useState<TaskStatus>('Backlog');
-  const [teamId, setTeamId] = useState(teams[0]?.id || '');
+  const [teamId, setTeamId] = useState('');
   const [assigneeId, setAssigneeId] = useState('');
   const [dueDate, setDueDate] = useState('');
 
-  // Filter team members by selected team - check both teamId property and memberIds array
-  const teamMembers = users.filter(u => {
-    // Check if user has teamId matching selected team
-    if (u.teamId === teamId) return true;
-    // Also check memberIds array as fallback
+  // Ensure we always have a valid default team selected when the dialog opens.
+  useEffect(() => {
+    if (!open) return;
+    if (!teams.length) {
+      setTeamId('');
+      return;
+    }
+    if (!teamId || !teams.some(t => t.id === teamId)) {
+      setTeamId(teams[0].id);
+    }
+  }, [open, teams, teamId]);
+
+  // Filter team members by selected team
+  const teamMembers = useMemo(() => {
+    if (!teamId) return [];
     const team = teams.find(t => t.id === teamId);
-    return team?.memberIds.includes(u.id);
-  });
+    return users.filter(u => u.teamId === teamId || !!team?.memberIds.includes(u.id));
+  }, [users, teams, teamId]);
+
+  // If selected assignee is no longer valid, clear it.
+  useEffect(() => {
+    if (!open) return;
+    if (assigneeId && !teamMembers.some(m => m.id === assigneeId)) {
+      setAssigneeId('');
+    }
+  }, [open, assigneeId, teamMembers]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!title.trim()) return;
+    if (!teamId) {
+      toast.error('Please select a team');
+      return;
+    }
+    if (!teamMembers.length) {
+      toast.error('This team has no members to assign');
+      return;
+    }
+
+    const finalAssigneeId = assigneeId || teamMembers[0].id;
 
     onCreateTask({
       title: title.trim(),
@@ -64,7 +93,7 @@ export function NewTaskDialog({ open, onOpenChange, onCreateTask, teams, users }
       type,
       priority,
       status,
-      assigneeId: assigneeId || teamMembers[0]?.id || 'u1',
+      assigneeId: finalAssigneeId,
       teamId,
       boardId: `board-${teamId}`,
       columnPosition: 0,
@@ -153,9 +182,15 @@ export function NewTaskDialog({ open, onOpenChange, onCreateTask, teams, users }
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label>Team</Label>
-              <Select value={teamId} onValueChange={(v) => { setTeamId(v); setAssigneeId(''); }}>
+              <Select
+                value={teamId}
+                onValueChange={(v) => {
+                  setTeamId(v);
+                  setAssigneeId('');
+                }}
+              >
                 <SelectTrigger>
-                  <SelectValue />
+                  <SelectValue placeholder="Select team" />
                 </SelectTrigger>
                 <SelectContent>
                   {teams.map(t => (
@@ -184,14 +219,24 @@ export function NewTaskDialog({ open, onOpenChange, onCreateTask, teams, users }
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label>Assignee</Label>
-              <Select value={assigneeId} onValueChange={setAssigneeId}>
+              <Select
+                value={assigneeId}
+                onValueChange={setAssigneeId}
+                disabled={!teamId || teamMembers.length === 0}
+              >
                 <SelectTrigger>
-                  <SelectValue placeholder="Select assignee" />
+                  <SelectValue placeholder={teamId ? (teamMembers.length ? 'Select assignee' : 'No team members') : 'Select team first'} />
                 </SelectTrigger>
                 <SelectContent>
-                  {teamMembers.map(u => (
-                    <SelectItem key={u.id} value={u.id}>{u.name}</SelectItem>
-                  ))}
+                  {teamMembers.length ? (
+                    teamMembers.map(u => (
+                      <SelectItem key={u.id} value={u.id}>{u.name}</SelectItem>
+                    ))
+                  ) : (
+                    <SelectItem value="__none" disabled>
+                      {teamId ? 'No members in this team' : 'Select a team to load members'}
+                    </SelectItem>
+                  )}
                 </SelectContent>
               </Select>
             </div>
