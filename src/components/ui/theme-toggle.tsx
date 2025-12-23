@@ -34,9 +34,9 @@ export function ThemeToggle() {
               width: '44px',
               height: '24px',
               padding: '2px',
-              border: '1px solid var(--border-default)',
+              border: isDark ? '1px solid var(--border-default)' : '1px solid hsl(var(--secondary-bronze))',
               cursor: isAdminRoute ? 'not-allowed' : 'pointer',
-              background: isDark ? 'var(--accent-color)' : 'var(--surface-3)',
+              background: isDark ? 'var(--accent-color)' : 'hsl(var(--secondary-champagne))',
             }}
           >
             <span
