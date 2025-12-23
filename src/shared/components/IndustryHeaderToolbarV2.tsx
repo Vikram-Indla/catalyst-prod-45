@@ -326,7 +326,7 @@ export function IndustryHeaderToolbarV2({
         </div>
 
         {/* Right Section: Actions */}
-        <div className="flex items-center gap-1 md:gap-2">
+        <div className="flex items-center gap-1 md:gap-2 ml-auto">
         {showAvatarFilter && (
           <div className="flex items-center gap-1 mr-2">
             {avatars.slice(0, 4).map((a, idx) => {
