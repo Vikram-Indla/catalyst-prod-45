@@ -648,7 +648,7 @@ export function LinksViewTab({ requestId, onNavigateToEpic }: LinksViewTabProps)
   };
 
   return (
-    <div className="p-4 md:p-6 space-y-6">
+    <div className="space-y-4">
       {/* Add New Link Section */}
       <Card className="p-5 border border-border/60 bg-card">
         <h4 className="font-semibold text-[15px] text-foreground mb-4">Add New Link</h4>
