@@ -298,6 +298,9 @@ export default function ProductBacklogPage() {
   const handleClone = async () => {
     if (!selectedRequest) return;
 
+    // Get current user for reporter field
+    const { data: { user } } = await supabase.auth.getUser();
+
     // Fetch original (only need title)
     const { data: original, error: fetchError } = await supabase
       .from('business_requests')
@@ -316,6 +319,7 @@ export default function ProductBacklogPage() {
       .insert({
         title: `${original.title} (Copy)`,
         process_step: 'new_request',
+        requestor: user?.id || null, // Set reporter to current user
 
         // Ensure cloned demand starts unscored
         business_score: null,

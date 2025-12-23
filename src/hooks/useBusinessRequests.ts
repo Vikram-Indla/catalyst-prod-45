@@ -435,6 +435,9 @@ export function useDuplicateBusinessRequest() {
 
   return useMutation({
     mutationFn: async (id: string) => {
+      // Get current user for reporter field
+      const { data: { user } } = await supabase.auth.getUser();
+      
       // Get the original request (only need the title)
       const { data: original, error: fetchError } = await supabase
         .from('business_requests')
@@ -455,6 +458,7 @@ export function useDuplicateBusinessRequest() {
           title: `${original.title} (Copy)`,
           request_key: requestKey,
           process_step: 'new_request',
+          requestor: user?.id || null, // Set reporter to current user
 
           // Reset scoring to "unscored"
           business_score: null,
@@ -474,8 +478,7 @@ export function useDuplicateBusinessRequest() {
       
       if (insertError) throw insertError;
       
-      // Create audit log for the duplicate
-      const { data: { user } } = await supabase.auth.getUser();
+      // Create audit log for the duplicate (reuse user from above)
       let actorName = 'System';
       if (user) {
         const { data: profile } = await supabase
