@@ -196,10 +196,17 @@ export default function ProductBacklogPage() {
     const fieldMap: Record<string, string> = {
       processStep: 'process_step',
       department: 'department',
+      departmentId: 'department_id',
+      businessOwner: 'business_owner',
+      businessOwnerId: 'business_owner_id',
       platform: 'delivery_platform',
       summary: 'title',
       autoPriority: 'priority_tier',
       quarter: 'planned_quarter',
+      assignee: 'assignee',
+      assigneeId: 'assignee_id',
+      kickoff: 'impl_start_date',
+      targetComplete: 'end_date',
     };
 
     const dbField = fieldMap[field] || field;
