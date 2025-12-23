@@ -5,6 +5,7 @@
  */
 
 import React, { useState, useMemo, useCallback } from 'react';
+import { cn } from '@/lib/utils';
 import { useBusinessRequests } from '@/hooks/useBusinessRequests';
 import { BusinessRequestDrawer } from '@/components/business-requests/BusinessRequestDrawer';
 import { CreateBusinessRequestModal } from '@/components/business-requests/CreateBusinessRequestModal';
@@ -383,18 +384,32 @@ export default function ProductBacklogPage() {
     />
   );
 
+  // Mobile: show detail panel when a request is selected
+  const [mobileShowDetail, setMobileShowDetail] = useState(false);
+  
+  // Handle request selection - on mobile, show detail panel
+  const handleSelectRequest = (req: RequestItem) => {
+    setSelectedRequest(req);
+    setMobileShowDetail(true);
+  };
+  
+  // Handle back on mobile
+  const handleMobileBack = () => {
+    setMobileShowDetail(false);
+  };
+
   return (
     <PageChrome toolbar={toolbarElement}>
-      <div className="h-full flex" style={{ backgroundColor: 'var(--bg)' }}>
-        {/* Left Panel - List (380px) */}
-        <div className="w-[380px] shrink-0">
+      <div className="h-full flex flex-col md:flex-row" style={{ backgroundColor: 'var(--bg)' }}>
+        {/* Left Panel - List */}
+        <div className={cn(
+          "w-full md:w-[380px] shrink-0 h-full",
+          mobileShowDetail ? "hidden md:block" : "block"
+        )}>
           <RequestListPanel
             requests={sortedRequests}
             selectedRequestId={selectedRequest?._dbId || null}
-            onSelectRequest={(req) => {
-              setSelectedRequest(req);
-              // Don't open drawer on ticket click - only select it for detail panel
-            }}
+            onSelectRequest={handleSelectRequest}
             searchQuery={listSearchQuery}
             onSearchChange={setListSearchQuery}
             activeFilter={activeFilter}
@@ -404,8 +419,11 @@ export default function ProductBacklogPage() {
           />
         </div>
 
-        {/* Right Panel - Detail (flex-1) */}
-        <div className="flex-1 min-w-0">
+        {/* Right Panel - Detail */}
+        <div className={cn(
+          "flex-1 min-w-0 h-full",
+          mobileShowDetail ? "block" : "hidden md:block"
+        )}>
           <RequestDetailPanel
             request={selectedRequest}
             onUpdateField={handleFieldUpdate}
@@ -428,6 +446,8 @@ export default function ProductBacklogPage() {
                 openDrawerWithTab(selectedRequest._dbId, 'business-score');
               }
             }}
+            onMobileBack={handleMobileBack}
+            showMobileBack={mobileShowDetail}
           />
         </div>
       </div>

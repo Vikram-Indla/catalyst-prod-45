@@ -229,14 +229,15 @@ export function IndustryHeaderToolbarV2({
   };
 
   return (
-    <div className="w-full flex items-center justify-between gap-4">
-      {/* Left Section: View Toggle */}
-      <div className="flex items-center gap-3">
+    <div className="w-full flex flex-col md:flex-row md:items-center justify-between gap-3 md:gap-4">
+      {/* Top Row on Mobile: View Toggle + Create */}
+      <div className="flex items-center justify-between md:justify-start gap-3">
+        {/* View Toggle */}
         <div className="flex items-center bg-muted rounded-lg p-1 border border-border/50">
           <button
             onClick={() => handleViewChange('list')}
             className={cn(
-              'h-8 px-3 flex items-center gap-2 rounded-md text-sm font-medium transition-all duration-200',
+              'h-8 px-2 md:px-3 flex items-center gap-1.5 md:gap-2 rounded-md text-sm font-medium transition-all duration-200',
               activeView === 'list'
                 ? 'bg-background text-foreground shadow-sm ring-1 ring-border/50'
                 : 'text-muted-foreground hover:text-foreground hover:bg-background/50'
@@ -245,12 +246,12 @@ export function IndustryHeaderToolbarV2({
             <div className="w-4 h-4">
               <Icons.List />
             </div>
-            <span>List</span>
+            <span className="hidden sm:inline">List</span>
           </button>
           <button
             onClick={() => handleViewChange('board')}
             className={cn(
-              'h-8 px-3 flex items-center gap-2 rounded-md text-sm font-medium transition-all duration-200',
+              'h-8 px-2 md:px-3 flex items-center gap-1.5 md:gap-2 rounded-md text-sm font-medium transition-all duration-200',
               activeView === 'board'
                 ? 'bg-background text-foreground shadow-sm ring-1 ring-border/50'
                 : 'text-muted-foreground hover:text-foreground hover:bg-background/50'
@@ -259,12 +260,12 @@ export function IndustryHeaderToolbarV2({
             <div className="w-4 h-4">
               <Icons.Kanban />
             </div>
-            <span>Board</span>
+            <span className="hidden sm:inline">Board</span>
           </button>
           <button
             onClick={() => handleViewChange('table')}
             className={cn(
-              'h-8 px-3 flex items-center gap-2 rounded-md text-sm font-medium transition-all duration-200',
+              'h-8 px-2 md:px-3 flex items-center gap-1.5 md:gap-2 rounded-md text-sm font-medium transition-all duration-200',
               activeView === 'table'
                 ? 'bg-background text-foreground shadow-sm ring-1 ring-border/50'
                 : 'text-muted-foreground hover:text-foreground hover:bg-background/50'
@@ -273,44 +274,59 @@ export function IndustryHeaderToolbarV2({
             <div className="w-4 h-4">
               <Icons.Table />
             </div>
-            <span>Table</span>
+            <span className="hidden sm:inline">Table</span>
           </button>
         </div>
+
+        {/* Create Button - Show on mobile in top row */}
+        {onCreateRequest && (
+          <button
+            onClick={onCreateRequest}
+            className="md:hidden h-9 px-3 flex items-center gap-2 rounded-lg bg-secondary-olive hover:bg-secondary-olive/85 text-white text-sm font-medium transition-colors shadow-sm"
+          >
+            <div className="w-4 h-4">
+              <Icons.Plus />
+            </div>
+            <span className="hidden xs:inline">Create</span>
+          </button>
+        )}
       </div>
 
-      {/* Center Section: Search */}
-      <div className="flex-1 max-w-md">
-        <div className="relative group">
-          <div className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-foreground transition-colors">
-            <Icons.Search />
+      {/* Bottom Row on Mobile: Search + Actions */}
+      <div className="flex items-center gap-2 flex-1">
+        {/* Search */}
+        <div className="flex-1 md:max-w-md">
+          <div className="relative group">
+            <div className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-foreground transition-colors">
+              <Icons.Search />
+            </div>
+            <input
+              ref={searchInputRef}
+              type="text"
+              value={searchValue}
+              onChange={(e) => onSearchChange(e.target.value)}
+              placeholder="Search..."
+              className="w-full h-9 pl-9 pr-10 md:pr-16 rounded-lg border border-border bg-muted/50 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 focus:bg-background focus:border-transparent transition-all"
+            />
+            {searchValue && (
+              <button
+                onClick={() => onSearchChange('')}
+                className="absolute right-2 md:right-12 top-1/2 -translate-y-1/2 p-1 text-muted-foreground hover:text-foreground rounded transition-colors"
+                title="Clear search"
+              >
+                <div className="w-3 h-3">
+                  <Icons.X />
+                </div>
+              </button>
+            )}
+            <kbd className="hidden md:inline-flex absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none h-5 select-none items-center gap-1 rounded border border-border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-80">
+              {shortcutKey}
+            </kbd>
           </div>
-          <input
-            ref={searchInputRef}
-            type="text"
-            value={searchValue}
-            onChange={(e) => onSearchChange(e.target.value)}
-            placeholder="Search requests..."
-            className="w-full h-9 pl-9 pr-16 rounded-lg border border-border bg-muted/50 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 focus:bg-background focus:border-transparent transition-all"
-          />
-          {searchValue && (
-            <button
-              onClick={() => onSearchChange('')}
-              className="absolute right-12 top-1/2 -translate-y-1/2 p-1 text-muted-foreground hover:text-foreground rounded transition-colors"
-              title="Clear search"
-            >
-              <div className="w-3 h-3">
-                <Icons.X />
-              </div>
-            </button>
-          )}
-          <kbd className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border border-border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-80">
-            {shortcutKey}
-          </kbd>
         </div>
-      </div>
 
-      {/* Right Section: Actions */}
-      <div className="flex items-center gap-2">
+        {/* Right Section: Actions */}
+        <div className="flex items-center gap-1 md:gap-2">
         {showAvatarFilter && (
           <div className="flex items-center gap-1 mr-2">
             {avatars.slice(0, 4).map((a, idx) => {
@@ -364,7 +380,7 @@ export function IndustryHeaderToolbarV2({
             <div className="w-4 h-4">
               <Icons.Filter />
             </div>
-            <span>Filters</span>
+            <span className="hidden sm:inline">Filters</span>
             {activeFiltersCount > 0 && (
               <span className="min-w-5 h-5 px-1.5 rounded-full bg-[#c69c6d] text-[10px] font-semibold text-white flex items-center justify-center">
                 {activeFiltersCount}
@@ -396,8 +412,8 @@ export function IndustryHeaderToolbarV2({
                 <div className="w-4 h-4">
                   <Icons.Export />
                 </div>
-                <span>Export</span>
-                <div className="w-3 h-3 opacity-60">
+                <span className="hidden sm:inline">Export</span>
+                <div className="hidden sm:block w-3 h-3 opacity-60">
                   <Icons.ChevronDown />
                 </div>
               </button>
@@ -426,11 +442,11 @@ export function IndustryHeaderToolbarV2({
           </DropdownMenu>
         )}
 
-        {/* Create Button - Primary CTA (Olive Green) */}
+        {/* Create Button - Primary CTA (Olive Green) - Desktop only */}
         {onCreateRequest && (
           <button
             onClick={onCreateRequest}
-            className="h-9 px-4 flex items-center gap-2 rounded-lg bg-secondary-olive hover:bg-secondary-olive/85 text-white text-sm font-medium transition-colors shadow-sm"
+            className="hidden md:flex h-9 px-4 items-center gap-2 rounded-lg bg-secondary-olive hover:bg-secondary-olive/85 text-white text-sm font-medium transition-colors shadow-sm"
           >
             <div className="w-4 h-4">
               <Icons.Plus />
@@ -438,6 +454,7 @@ export function IndustryHeaderToolbarV2({
             <span>Create Request</span>
           </button>
         )}
+        </div>
       </div>
     </div>
   );
