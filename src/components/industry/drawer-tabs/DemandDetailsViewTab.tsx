@@ -20,10 +20,29 @@ import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 
 const QUARTER_OPTIONS = [
-  'Q1 2025', 'Q2 2025', 'Q3 2025', 'Q4 2025',
-  'Q1 2026', 'Q2 2026', 'Q3 2026', 'Q4 2026',
-  'Q1 2027', 'Q2 2027',
+  { value: 'Q1-2025', label: 'Q1 2025' },
+  { value: 'Q2-2025', label: 'Q2 2025' },
+  { value: 'Q3-2025', label: 'Q3 2025' },
+  { value: 'Q4-2025', label: 'Q4 2025' },
+  { value: 'Q1-2026', label: 'Q1 2026' },
+  { value: 'Q2-2026', label: 'Q2 2026' },
+  { value: 'Q3-2026', label: 'Q3 2026' },
+  { value: 'Q4-2026', label: 'Q4 2026' },
+  { value: 'Q1-2027', label: 'Q1 2027' },
+  { value: 'Q2-2027', label: 'Q2 2027' },
 ];
+
+// Normalize quarter value to hyphen format for matching
+const normalizeQuarter = (q: string | undefined): string => {
+  if (!q) return '';
+  return q.replace(' ', '-');
+};
+
+// Get display label for a quarter value
+const getQuarterLabel = (q: string | undefined): string => {
+  if (!q) return '';
+  return q.replace('-', ' ');
+};
 
 // Status color mapping
 const STATUS_COLORS: Record<string, string> = {
@@ -335,15 +354,17 @@ export function DemandDetailsViewTab({ data, onChange, onDirtyChange }: DemandDe
         <div className="min-w-0">
           <FieldLabel>Target Quarter</FieldLabel>
           <Select 
-            value={data.planned_quarter?.[0] || ''} 
+            value={normalizeQuarter(data.planned_quarter?.[0])} 
             onValueChange={(value) => handleChange('planned_quarter', [value])}
           >
             <SelectTrigger className="w-full h-10">
-              <SelectValue placeholder="Select quarter" />
+              <SelectValue placeholder="Select quarter">
+                {data.planned_quarter?.[0] ? getQuarterLabel(data.planned_quarter[0]) : null}
+              </SelectValue>
             </SelectTrigger>
             <SelectContent className="z-[500]">
               {QUARTER_OPTIONS.map((q) => (
-                <SelectItem key={q} value={q}>{q}</SelectItem>
+                <SelectItem key={q.value} value={q.value}>{q.label}</SelectItem>
               ))}
             </SelectContent>
           </Select>
