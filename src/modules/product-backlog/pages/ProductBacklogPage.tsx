@@ -54,6 +54,7 @@ interface RequestItem {
   createdAt?: string | null;
   updatedAt?: string | null;
   ea_review_required?: boolean;
+  hasAttachments?: boolean;
 }
 
 export default function ProductBacklogPage() {
@@ -84,6 +85,30 @@ export default function ProductBacklogPage() {
   
   // Use the shared query with search
   const { data: businessRequests = [], isLoading } = useBusinessRequests(searchQuery);
+  
+  // Fetch attachment info for all requests
+  const [attachmentMap, setAttachmentMap] = useState<Record<string, boolean>>({});
+  
+  useEffect(() => {
+    const fetchAttachments = async () => {
+      if (businessRequests.length === 0) return;
+      
+      const requestIds = businessRequests.map((br: any) => br.id);
+      const { data: links } = await supabase
+        .from('business_request_links')
+        .select('business_request_id')
+        .in('business_request_id', requestIds);
+      
+      if (links) {
+        const map: Record<string, boolean> = {};
+        links.forEach(link => {
+          map[link.business_request_id] = true;
+        });
+        setAttachmentMap(map);
+      }
+    };
+    fetchAttachments();
+  }, [businessRequests]);
   const [selectedRequest, setSelectedRequest] = useState<RequestItem | null>(null);
   const [drawerRequestId, setDrawerRequestId] = useState<string | null>(null);
   const [drawerInitialTab, setDrawerInitialTab] = useState<string | undefined>(undefined);
@@ -127,6 +152,7 @@ export default function ProductBacklogPage() {
       createdAt: br.created_at || null,
       updatedAt: br.updated_at || null,
       ea_review_required: br.ea_review_required ?? true,
+      hasAttachments: !!attachmentMap[br.id],
     }));
     
     // Apply scoring filter from store
@@ -168,7 +194,7 @@ export default function ProductBacklogPage() {
     }
     
     return data;
-  }, [businessRequests, scoringFilter, filters]);
+  }, [businessRequests, scoringFilter, filters, attachmentMap]);
 
   // Filter and sort for list panel
   const sortedRequests = useMemo(() => {
