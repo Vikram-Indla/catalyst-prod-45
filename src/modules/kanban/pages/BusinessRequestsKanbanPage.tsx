@@ -1,12 +1,14 @@
 /**
  * Business Requests Kanban Page
+ * Dynamic columns built from demand_process_steps table
  * Shares state with List view via useIndustryViewStore
  */
 
 import React, { useState, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { KanbanTicket, StatusId, GroupByOption, COLUMNS_CONFIG, KANBAN_COLORS, SwimlaneGroup } from '../types';
+import { KanbanTicket, GroupByOption, KANBAN_COLORS, SwimlaneGroup, DynamicColumnConfig } from '../types';
 import { useKanbanData, useTeamMembers } from '../hooks/useKanbanData';
+import { useKanbanColumns } from '../hooks/useProcessSteps';
 import { KanbanColumn } from '../components/KanbanColumn';
 import { Swimlane } from '../components/Swimlane';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -28,8 +30,13 @@ export default function BusinessRequestsKanbanPage() {
     setScoringFilter
   } = useIndustryViewStore();
   
-  const { tickets, isLoading, updateStatus } = useKanbanData();
+  // Fetch dynamic columns from demand_process_steps
+  const { columns, isLoading: columnsLoading } = useKanbanColumns();
+  
+  const { tickets, isLoading: ticketsLoading, updateStatus } = useKanbanData();
   const teamMembers = useTeamMembers();
+  
+  const isLoading = columnsLoading || ticketsLoading;
   
   // Fetch departments from admin-configured data (not hardcoded)
   const { data: departments = [] } = useDepartments();
@@ -42,7 +49,7 @@ export default function BusinessRequestsKanbanPage() {
   }, [departments]);
   
   const [selectedCardId, setSelectedCardId] = useState<string | null>(null);
-  const [collapsedColumns, setCollapsedColumns] = useState<StatusId[]>([]);
+  const [collapsedColumns, setCollapsedColumns] = useState<string[]>([]);
   const [densityMode, setDensityMode] = useState<'compact' | 'regular' | 'relaxed'>('regular');
   const compactMode = densityMode === 'compact';
   const [groupBy, setGroupBy] = useState<GroupByOption>('none');
@@ -73,14 +80,14 @@ export default function BusinessRequestsKanbanPage() {
     });
   }, [tickets, searchQuery, scoringFilter]);
 
-  // Group tickets by column
+  // Group tickets by column (dynamic)
   const ticketsByColumn = useMemo(() => {
-    const grouped: Record<StatusId, KanbanTicket[]> = {} as any;
-    COLUMNS_CONFIG.forEach(col => {
+    const grouped: Record<string, KanbanTicket[]> = {};
+    columns.forEach(col => {
       grouped[col.id] = filteredTickets.filter(t => t.status === col.id);
     });
     return grouped;
-  }, [filteredTickets]);
+  }, [filteredTickets, columns]);
 
   // Group by swimlanes
   const groupedTickets = useMemo(() => {
@@ -136,11 +143,11 @@ export default function BusinessRequestsKanbanPage() {
     return Object.fromEntries(sortedEntries);
   }, [filteredTickets, groupBy, teamMembers, departmentNameById, departments]);
 
-  const handleDrop = useCallback((ticketId: string, newStatus: StatusId) => {
+  const handleDrop = useCallback((ticketId: string, newStatus: string) => {
     updateStatus({ ticketId, newStatus });
   }, [updateStatus]);
 
-  const toggleColumnCollapse = (columnId: StatusId) => {
+  const toggleColumnCollapse = (columnId: string) => {
     setCollapsedColumns(prev => prev.includes(columnId) ? prev.filter(c => c !== columnId) : [...prev, columnId]);
   };
 
@@ -204,10 +211,11 @@ export default function BusinessRequestsKanbanPage() {
             className="flex gap-3 flex-1 overflow-x-auto overflow-y-hidden"
             style={{ minHeight: 0 }}
           >
-            {COLUMNS_CONFIG.map(column => (
+            {columns.map(column => (
               <KanbanColumn 
                 key={column.id} 
-                column={column.id} 
+                column={column.id}
+                columnConfig={column}
                 tickets={ticketsByColumn[column.id] || []} 
                 onDrop={handleDrop} 
                 onCardClick={handleCardClick} 
@@ -228,7 +236,8 @@ export default function BusinessRequestsKanbanPage() {
                 color={group.color} 
                 icon={group.icon} 
                 tickets={group.tickets} 
-                count={group.tickets.length} 
+                count={group.tickets.length}
+                columns={columns}
                 onDrop={handleDrop} 
                 onCardClick={handleCardClick} 
                 compactMode={compactMode} 

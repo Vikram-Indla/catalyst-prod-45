@@ -1,48 +1,26 @@
-// Hook to fetch and transform business requests for Kanban view
+/**
+ * useKanbanData - Fetches business requests and maps to dynamic Kanban columns
+ * Columns are built from demand_process_steps table
+ */
 
 import { useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { KanbanTicket, StatusId, PRIORITIES } from '../types';
+import { KanbanTicket, UNCATEGORIZED_COLUMN_ID } from '../types';
+import { useKanbanColumns, useProcessSteps } from './useProcessSteps';
 import { toast } from 'sonner';
 
-// Map process_step from DB to StatusId
-const mapProcessStepToStatus = (processStep: string | null): StatusId => {
-  if (!processStep) return 'new_request';
+// Map process_step from DB to column ID
+// Returns _uncategorized for null/empty/invalid process_steps
+const mapProcessStepToColumnId = (processStep: string | null, validStepValues: Set<string>): string => {
+  if (!processStep) return UNCATEGORIZED_COLUMN_ID;
   
-  const stepMap: Record<string, StatusId> = {
-    'NEW_REQUEST': 'new_request',
-    'New Request': 'new_request',
-    'ANALYSE': 'analyse',
-    'Analyse': 'analyse',
-    'APPROVED': 'approved',
-    'Approved': 'approved',
-    'IMPLEMENT': 'implement',
-    'Implement': 'implement',
-    'CLOSED': 'closed',
-    'Closed': 'closed',
-    'REJECTED': 'rejected',
-    'Rejected': 'rejected',
-    'ON_HOLD': 'on_hold',
-    'On-Hold': 'on_hold',
-    'On Hold': 'on_hold',
-  };
+  // Check if the process_step exists in active steps
+  if (validStepValues.has(processStep)) {
+    return processStep;
+  }
   
-  return stepMap[processStep] || 'new_request';
-};
-
-// Map StatusId back to process_step for DB
-const mapStatusToProcessStep = (status: StatusId): string => {
-  const stepMap: Record<StatusId, string> = {
-    'new_request': 'NEW_REQUEST',
-    'analyse': 'ANALYSE',
-    'approved': 'APPROVED',
-    'implement': 'IMPLEMENT',
-    'closed': 'CLOSED',
-    'rejected': 'REJECTED',
-    'on_hold': 'ON_HOLD',
-  };
-  return stepMap[status];
+  return UNCATEGORIZED_COLUMN_ID;
 };
 
 // Derive priority from business_score (for visual display only)
@@ -65,6 +43,10 @@ const calculateDaysInColumn = (createdAt: string | null): number => {
 
 export function useKanbanData() {
   const queryClient = useQueryClient();
+  
+  // Fetch process steps for column mapping
+  const { data: processSteps = [] } = useProcessSteps();
+  const validStepValues = useMemo(() => new Set(processSteps.map(s => s.value)), [processSteps]);
   
   // Fetch departments to resolve IDs to names
   const { data: departments = [] } = useQuery({
@@ -107,7 +89,7 @@ export function useKanbanData() {
     return rawRequests.map((req) => ({
       id: req.request_key || `MIM-${String(req.id).slice(-3)}`,
       summary: req.title || 'Untitled Request',
-      status: mapProcessStepToStatus(req.process_step),
+      status: mapProcessStepToColumnId(req.process_step, validStepValues),
       assignee: req.assignee || null,
       businessOwner: req.business_owner || null,
       // Resolve department ID to name
@@ -121,13 +103,12 @@ export function useKanbanData() {
       _dbId: req.id,
       _derivedPriority: derivePriorityFromScore(req.business_score),
     }));
-  }, [rawRequests, departmentMap]);
+  }, [rawRequests, departmentMap, validStepValues]);
 
-  // Mutation to update status
+  // Mutation to update status (process_step)
   const updateStatusMutation = useMutation({
-    mutationFn: async ({ ticketId, newStatus }: { ticketId: string; newStatus: StatusId }) => {
-      // Find the DB ID from our tickets
-      const ticket = tickets.find(t => t.id === ticketId);
+    mutationFn: async ({ ticketId, newStatus }: { ticketId: string; newStatus: string }) => {
+      // Find the raw request by ticketId
       const rawRequest = rawRequests?.find(r => 
         (r.request_key === ticketId) || 
         (`MIM-${String(r.id).slice(-3)}` === ticketId)
@@ -135,10 +116,13 @@ export function useKanbanData() {
       
       if (!rawRequest) throw new Error('Request not found');
       
+      // If moving to Uncategorized, set process_step to null
+      const processStepValue = newStatus === UNCATEGORIZED_COLUMN_ID ? null : newStatus;
+      
       const { error } = await supabase
         .from('business_requests')
         .update({ 
-          process_step: mapStatusToProcessStep(newStatus),
+          process_step: processStepValue,
           updated_at: new Date().toISOString()
         })
         .eq('id', rawRequest.id);
@@ -146,7 +130,7 @@ export function useKanbanData() {
       if (error) throw error;
     },
     onSuccess: () => {
-      // Invalidate the shared query key
+      // Invalidate the shared query key - persists across module and project
       queryClient.invalidateQueries({ queryKey: ['business-requests'] });
     },
     onError: (error) => {
