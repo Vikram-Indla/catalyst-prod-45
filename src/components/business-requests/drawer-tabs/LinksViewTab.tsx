@@ -18,6 +18,16 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { 
   ArrowLeft, 
   Trash2, 
@@ -150,6 +160,7 @@ export function LinksViewTab({ requestId, onNavigateToEpic }: LinksViewTabProps)
   
   const [formView, setFormView] = useState<FormView>('selection');
   const [isDragOver, setIsDragOver] = useState(false);
+  const [linkToDelete, setLinkToDelete] = useState<any>(null);
   const [typeFilters, setTypeFilters] = useState<LinkKind[]>([]);
   const [statusFilters, setStatusFilters] = useState<Exclude<StatusFilter, 'all'>[]>([]);
   const [sortOption, setSortOption] = useState<SortOption>('newest');
@@ -1122,9 +1133,7 @@ export function LinksViewTab({ requestId, onNavigateToEpic }: LinksViewTabProps)
                               </DropdownMenuItem>
                               <DropdownMenuItem 
                                 onClick={() => {
-                                  if (confirm('Remove this link?')) {
-                                    deleteMutation.mutate(link);
-                                  }
+                                  setLinkToDelete(link);
                                 }}
                                 className="text-destructive focus:text-destructive"
                               >
@@ -1211,6 +1220,31 @@ export function LinksViewTab({ requestId, onNavigateToEpic }: LinksViewTabProps)
           )}
         </div>
       )}
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={!!linkToDelete} onOpenChange={(open) => !open && setLinkToDelete(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Remove Link</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to remove this link? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                if (linkToDelete) {
+                  deleteMutation.mutate(linkToDelete);
+                  setLinkToDelete(null);
+                }
+              }}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Remove
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
