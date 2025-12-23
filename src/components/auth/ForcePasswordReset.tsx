@@ -59,11 +59,13 @@ export function ForcePasswordReset({ onSuccess, userId }: ForcePasswordResetProp
     setIsLoading(true);
 
     try {
-      // Get current session for authorization
-      const { data: { session } } = await supabase.auth.getSession();
+      // Verify session is still valid
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
       
-      if (!session?.access_token) {
-        throw new Error('No active session. Please log in again.');
+      if (userError || !user) {
+        // Session is invalid - sign out and show error
+        await supabase.auth.signOut();
+        throw new Error('Your session has expired. Please log in again.');
       }
 
       // Use edge function to update password with admin privileges
@@ -73,10 +75,20 @@ export function ForcePasswordReset({ onSuccess, userId }: ForcePasswordResetProp
 
       if (invokeError) {
         console.error('Edge function error:', invokeError);
+        // Check if it's a session/token error
+        if (invokeError.message?.includes('401') || invokeError.message?.includes('token') || invokeError.message?.includes('session')) {
+          await supabase.auth.signOut();
+          throw new Error('Your session has expired. Please log in again.');
+        }
         throw new Error('Failed to update password. Please try again.');
       }
 
       if (!data?.success) {
+        // Check for session-related errors
+        if (data?.error?.includes('token') || data?.error?.includes('session') || data?.error?.includes('expired')) {
+          await supabase.auth.signOut();
+          throw new Error('Your session has expired. Please log in again.');
+        }
         throw new Error(data?.error || 'Failed to update password. Please try again.');
       }
 
@@ -88,7 +100,10 @@ export function ForcePasswordReset({ onSuccess, userId }: ForcePasswordResetProp
       onSuccess();
     } catch (err) {
       console.error('Error updating password:', err);
-      setError((err as Error).message || 'Failed to update password. Please try again.');
+      const errorMessage = (err as Error).message || 'Failed to update password. Please try again.';
+      setError(errorMessage);
+      
+      // If session expired, the signOut will trigger auth state change and redirect to login
     } finally {
       setIsLoading(false);
     }
