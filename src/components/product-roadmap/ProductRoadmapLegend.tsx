@@ -4,19 +4,37 @@ import { TODAY_LINE_COLOR, PROGRESS_BAR_COLOR, KR_LEGEND_ITEMS } from '@/constan
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { useProcessSteps } from '@/modules/kanban/hooks/useProcessSteps';
 
-// Color palette for dynamic status display
-const STATUS_COLORS = [
-  '#3b82f6', // Blue
-  '#f59e0b', // Amber
-  '#8b5cf6', // Purple
-  '#22c55e', // Green
-  '#ef4444', // Red
-  '#f97316', // Orange
-  '#06b6d4', // Cyan
-  '#ec4899', // Pink
-  '#78716c', // Stone
-  '#84cc16', // Lime
+// Catalyst Brand Colors ONLY for status display
+// Maps process steps to brand-aligned colors in order of workflow progression
+const CATALYST_STATUS_COLORS: Record<string, string> = {
+  new_demand: 'var(--process-new-demand)',        // Olive
+  in_review: 'var(--process-in-review)',          // Gold
+  ea_review: 'var(--process-ea-review)',          // Bronze
+  analyse: 'var(--process-analyse)',              // Gold
+  approved: 'var(--process-approved)',            // Olive Dark
+  ready_to_implement: 'var(--process-ready-to-implement)', // Olive
+  implement: 'var(--process-implement)',          // Olive Darker
+  closed: 'var(--process-closed)',                // Olive Light
+  rejected: 'var(--process-rejected)',            // Gray
+  on_hold: 'var(--process-on-hold)',              // Champagne
+};
+
+// Fallback colors for any unmapped statuses - cycles through brand palette
+const BRAND_FALLBACK_COLORS = [
+  '#5c7c5c', // Olive
+  '#c69c6d', // Gold
+  '#8b7355', // Bronze
+  '#4a6a4a', // Olive Dark
+  '#d4b896', // Champagne
+  '#6b8b6b', // Olive Light
+  '#3d563d', // Olive Darker
+  '#737373', // Gray
 ];
+
+function getStatusColor(statusKey: string, index: number): string {
+  const normalized = statusKey.toLowerCase().replace(/[\s-]/g, '_');
+  return CATALYST_STATUS_COLORS[normalized] || BRAND_FALLBACK_COLORS[index % BRAND_FALLBACK_COLORS.length];
+}
 
 interface ProductRoadmapLegendProps {
   isVisible: boolean;
@@ -27,12 +45,12 @@ export function ProductRoadmapLegend({ isVisible, showMilestones }: ProductRoadm
   const [isExpanded, setIsExpanded] = useState(true);
   const { data: processSteps = [] } = useProcessSteps();
   
-  // Create dynamic status config from process steps
+  // Create dynamic status config from process steps using Catalyst brand colors
   const statusConfig = useMemo(() => 
     processSteps.map((step, index) => ({
       key: step.value,
       label: step.label,
-      color: STATUS_COLORS[index % STATUS_COLORS.length],
+      color: getStatusColor(step.value, index),
     })),
     [processSteps]
   );

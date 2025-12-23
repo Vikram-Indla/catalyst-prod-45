@@ -176,17 +176,25 @@
     --industry-text-muted: #666666;
     --industry-text-disabled: #999999;
     
-    /* Industry Status Colors */
-    --industry-status-new: #5c7c5c;
-    --industry-status-progress: #2563eb;
-    --industry-status-review: #9333ea;
-    --industry-status-approved: #16a34a;
-    --industry-status-blocked: #dc2626;
+    /* ═══════════════════════════════════════════════════════════════
+       CATALYST PROCESS STEP STATUS COLORS — Brand-Aligned
+       Only using: Olive, Bronze, Gold, Champagne + neutral grays
+       ═══════════════════════════════════════════════════════════════ */
+    --process-new-demand: #5c7c5c;          /* Olive - New items */
+    --process-in-review: #c69c6d;           /* Gold - Under review */
+    --process-ea-review: #8b7355;           /* Bronze - EA review */
+    --process-analyse: #c69c6d;             /* Gold - Analysis */
+    --process-approved: #4a6a4a;            /* Olive Dark - Approved */
+    --process-ready-to-implement: #5c7c5c;  /* Olive - Ready */
+    --process-implement: #3d563d;           /* Olive Darker - In progress */
+    --process-closed: #6b8b6b;              /* Olive Light - Completed */
+    --process-rejected: #737373;            /* Gray-500 - Rejected */
+    --process-on-hold: #d4b896;             /* Champagne - On hold */
     
-    /* Industry Priority Colors */
-    --industry-priority-high: #16a34a;
-    --industry-priority-medium: #2563eb;
-    --industry-priority-low: #ca8a04;
+    /* Industry Priority Colors - Brand Aligned */
+    --industry-priority-high: #5c7c5c;      /* Olive */
+    --industry-priority-medium: #c69c6d;    /* Gold */
+    --industry-priority-low: #d4b896;       /* Champagne */
   }
   
   [data-theme="dark"],
