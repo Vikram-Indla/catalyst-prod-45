@@ -47,19 +47,19 @@ interface RequestListPanelProps {
   isLoading?: boolean;
 }
 
-// Status dot colors - using brand-aligned colors
+// Status dot colors - Catalyst brand tokens from index.css
 const STATUS_DOT_COLORS: Record<string, string> = {
-  'new_demand': 'bg-[hsl(var(--accent))]',           // brand gold for new items
-  'new_request': 'bg-[hsl(var(--accent))]',          // brand gold for new items
-  'analyse': 'bg-[hsl(280,45%,55%)]',                // purple
-  'in_review': 'bg-[hsl(220,60%,55%)]',              // professional blue
-  'ea_review': 'bg-[hsl(260,50%,55%)]',              // violet
-  'approved': 'bg-[hsl(var(--primary))]',            // brand olive for approved
-  'ready_to_implement': 'bg-[hsl(var(--primary))]',  // brand olive
-  'implement': 'bg-[hsl(190,60%,45%)]',              // teal
-  'closed': 'bg-[hsl(0,0%,60%)]',                    // neutral gray
-  'rejected': 'bg-[hsl(0,65%,50%)]',                 // red
-  'on_hold': 'bg-[hsl(25,80%,55%)]',                 // orange
+  new_demand: 'bg-[var(--process-new-demand)]',
+  new_request: 'bg-[var(--process-new-demand)]',
+  in_review: 'bg-[var(--process-in-review)]',
+  ea_review: 'bg-[var(--process-ea-review)]',
+  analyse: 'bg-[var(--process-analyse)]',
+  approved: 'bg-[var(--process-approved)]',
+  ready_to_implement: 'bg-[var(--process-ready-to-implement)]',
+  implement: 'bg-[var(--process-implement)]',
+  closed: 'bg-[var(--process-closed)]',
+  rejected: 'bg-[var(--process-rejected)]',
+  on_hold: 'bg-[var(--process-on-hold)]',
 };
 
 // Format status for display

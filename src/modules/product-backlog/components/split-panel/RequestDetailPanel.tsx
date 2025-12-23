@@ -75,19 +75,19 @@ interface RequestDetailPanelProps {
   showMobileBack?: boolean;
 }
 
-// Status color mapping based on process step value - using brand-aligned colors
+// Status color mapping based on process step value - Catalyst brand tokens from index.css
 const STATUS_COLORS: Record<string, string> = {
-  new_request: 'bg-[hsl(var(--accent))]',           // brand gold for new items
-  new_demand: 'bg-[hsl(var(--accent))]',            // brand gold for new items
-  in_review: 'bg-[hsl(220,60%,55%)]',               // professional blue
-  ea_review: 'bg-[hsl(260,50%,55%)]',               // violet
-  analyse: 'bg-[hsl(280,45%,55%)]',                 // purple
-  approved: 'bg-[hsl(var(--primary))]',             // brand olive for approved
-  ready_to_implement: 'bg-[hsl(var(--primary))]',   // brand olive
-  implement: 'bg-[hsl(190,60%,45%)]',               // teal
-  closed: 'bg-[hsl(0,0%,60%)]',                     // neutral gray
-  rejected: 'bg-[hsl(0,65%,50%)]',                  // red
-  on_hold: 'bg-[hsl(25,80%,55%)]',                  // orange
+  new_request: 'bg-[var(--process-new-demand)]',
+  new_demand: 'bg-[var(--process-new-demand)]',
+  in_review: 'bg-[var(--process-in-review)]',
+  ea_review: 'bg-[var(--process-ea-review)]',
+  analyse: 'bg-[var(--process-analyse)]',
+  approved: 'bg-[var(--process-approved)]',
+  ready_to_implement: 'bg-[var(--process-ready-to-implement)]',
+  implement: 'bg-[var(--process-implement)]',
+  closed: 'bg-[var(--process-closed)]',
+  rejected: 'bg-[var(--process-rejected)]',
+  on_hold: 'bg-[var(--process-on-hold)]',
 };
 
 const getStatusColor = (value: string) => STATUS_COLORS[value] || 'bg-[hsl(0,0%,60%)]';
