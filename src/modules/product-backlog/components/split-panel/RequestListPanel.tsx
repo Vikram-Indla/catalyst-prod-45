@@ -7,6 +7,7 @@ import React from 'react';
 import { cn } from '@/lib/utils';
 import { Search, Plus, Circle } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface RequestItem {
   id: string;
@@ -199,10 +200,47 @@ export function RequestListPanel({
                     </p>
 
                     {/* Meta: Status, Target Date, Quarter */}
-                    <p className="text-xs mt-1" style={{ color: 'var(--text-3)' }}>
-                      {formatStatus(request.processStep)}
-                      {request.targetComplete && ` • ${request.targetComplete}`}
-                      {request.quarter && ` • ${request.quarter}`}
+                    <p className="text-xs mt-1 flex items-center flex-wrap gap-0" style={{ color: 'var(--text-3)' }}>
+                      <TooltipProvider delayDuration={200}>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <span className="cursor-help hover:underline decoration-dotted">{formatStatus(request.processStep)}</span>
+                          </TooltipTrigger>
+                          <TooltipContent side="top" className="text-xs">
+                            <p>Process Step</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                      {request.targetComplete && (
+                        <>
+                          <span className="mx-1">•</span>
+                          <TooltipProvider delayDuration={200}>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <span className="cursor-help hover:underline decoration-dotted">{request.targetComplete}</span>
+                              </TooltipTrigger>
+                              <TooltipContent side="top" className="text-xs">
+                                <p>Target Completion Date</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        </>
+                      )}
+                      {request.quarter && (
+                        <>
+                          <span className="mx-1">•</span>
+                          <TooltipProvider delayDuration={200}>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <span className="cursor-help hover:underline decoration-dotted">{request.quarter}</span>
+                              </TooltipTrigger>
+                              <TooltipContent side="top" className="text-xs">
+                                <p>Planned Quarter</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        </>
+                      )}
                     </p>
                   </div>
                 </div>
