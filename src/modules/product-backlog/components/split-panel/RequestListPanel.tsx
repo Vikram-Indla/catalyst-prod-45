@@ -107,13 +107,11 @@ export function RequestListPanel({
               onClick={() => onFilterChange(filter)}
               className={cn(
                 'px-3 py-1 text-xs font-medium rounded-full transition-colors',
-                activeFilter === filter
-                  ? 'text-white'
-                  : 'hover:bg-muted'
+                activeFilter !== filter && 'hover:bg-muted'
               )}
               style={{
-                backgroundColor: activeFilter === filter ? 'hsl(var(--secondary-olive))' : 'var(--surface-2)',
-                color: activeFilter === filter ? 'white' : 'var(--text-2)',
+                backgroundColor: activeFilter === filter ? 'hsl(var(--secondary-olive))' : 'hsl(var(--muted))',
+                color: activeFilter === filter ? '#ffffff' : 'hsl(var(--foreground))',
               }}
             >
               {filter === 'all' && 'All'}
