@@ -77,27 +77,34 @@ export function EAReviewTab({ data, onChange }: EAReviewTabProps) {
   const requiresRiskNotes = data.ea_risk_level === 'high';
   const isOutsourced = data.ea_delivery_model === 'outsourced';
 
+  // Match Review Date styling: thin border + background surface
+  const fieldContainerStyle = {
+    backgroundColor: 'hsl(var(--background))',
+    border: '1px solid hsl(var(--border))',
+    borderRadius: '0.5rem',
+  };
+
   return (
     <div className="flex flex-col h-full space-y-4" style={{ background: 'var(--bg)' }}>
       {/* SECTION 1: EA Decision */}
-      <div className="border rounded-lg p-4 space-y-4" style={{ borderColor: 'var(--border-color)', background: 'var(--surface-1)' }}>
+      <div
+        className="border rounded-lg p-4 space-y-4"
+        style={{ borderColor: 'var(--border-color)', background: 'var(--surface-1)' }}
+      >
         <h3 className="text-[11px] font-medium uppercase tracking-wide" style={{ color: 'var(--text-3)' }}>
           EA Decision
         </h3>
-        
+
         <div className="grid grid-cols-2 gap-3">
           <div>
             <Label className="text-[11px] font-medium" style={{ color: 'var(--text-2)' }}>
               EA Status <span className="text-destructive">*</span>
             </Label>
-            <Select
-              value={eaStatus}
-              onValueChange={(value) => onChange('ea_status', value)}
-            >
-              <SelectTrigger className="mt-1 h-8 text-[13px]" style={{ background: 'var(--input-bg)', borderColor: 'var(--input-border)' }}>
+            <Select value={eaStatus} onValueChange={(value) => onChange('ea_status', value)}>
+              <SelectTrigger className="mt-1 h-10 text-[13px]" style={fieldContainerStyle}>
                 <SelectValue placeholder="Select status" />
               </SelectTrigger>
-              <SelectContent className="z-[400]" style={{ background: 'var(--surface-1)', borderColor: 'var(--border-color)' }}>
+              <SelectContent className="z-[400] bg-popover border-border">
                 {EA_STATUS_OPTIONS.map((option) => (
                   <SelectItem key={option.value} value={option.value}>
                     <div className="flex items-center gap-2">
@@ -109,7 +116,7 @@ export function EAReviewTab({ data, onChange }: EAReviewTabProps) {
               </SelectContent>
             </Select>
           </div>
-          
+
           <div>
             <Label className="text-[11px] font-medium" style={{ color: 'var(--text-2)' }}>
               EA Reviewer <span className="text-destructive">*</span>
@@ -119,10 +126,11 @@ export function EAReviewTab({ data, onChange }: EAReviewTabProps) {
                 value={data.ea_reviewer || null}
                 onChange={(value) => onChange('ea_reviewer', value as string | null)}
                 placeholder="Select reviewer..."
+                className="[&_button]:h-10"
               />
             </div>
           </div>
-          
+
           <div>
             <Label className="text-[11px] font-medium" style={{ color: 'var(--text-2)' }}>
               Review Date <span className="text-destructive">*</span>
@@ -146,7 +154,7 @@ export function EAReviewTab({ data, onChange }: EAReviewTabProps) {
             onChange={(e) => onChange('ea_summary', e.target.value)}
             placeholder="Enter EA review summary..."
             className="mt-1 min-h-[80px] text-[13px]"
-            style={{ background: 'var(--input-bg)', borderColor: 'var(--input-border)' }}
+            style={fieldContainerStyle}
           />
         </div>
 
@@ -160,31 +168,31 @@ export function EAReviewTab({ data, onChange }: EAReviewTabProps) {
               onChange={(e) => onChange('ea_constraints', e.target.value)}
               placeholder="Enter constraints or conditions for approval..."
               className="mt-1 min-h-[60px] text-[13px]"
-              style={{ background: 'var(--input-bg)', borderColor: 'var(--input-border)' }}
+              style={fieldContainerStyle}
             />
           </div>
         )}
       </div>
 
       {/* SECTION 2: Architectural Alignment */}
-      <div className="border rounded-lg p-4 space-y-4" style={{ borderColor: 'var(--border-color)', background: 'var(--surface-1)' }}>
+      <div
+        className="border rounded-lg p-4 space-y-4"
+        style={{ borderColor: 'var(--border-color)', background: 'var(--surface-1)' }}
+      >
         <h3 className="text-[11px] font-medium uppercase tracking-wide" style={{ color: 'var(--text-3)' }}>
           Architectural Alignment
         </h3>
-        
+
         <div className="grid grid-cols-2 gap-3">
           <div>
             <Label className="text-[11px] font-medium" style={{ color: 'var(--text-2)' }}>
               Arch Alignment
             </Label>
-            <Select
-              value={data.ea_arch_alignment || ''}
-              onValueChange={(value) => onChange('ea_arch_alignment', value)}
-            >
-              <SelectTrigger className="mt-1 h-8 text-[13px]" style={{ background: 'var(--input-bg)', borderColor: 'var(--input-border)' }}>
+            <Select value={data.ea_arch_alignment || ''} onValueChange={(value) => onChange('ea_arch_alignment', value)}>
+              <SelectTrigger className="mt-1 h-10 text-[13px]" style={fieldContainerStyle}>
                 <SelectValue placeholder="Select alignment" />
               </SelectTrigger>
-              <SelectContent className="z-[400]" style={{ background: 'var(--surface-1)', borderColor: 'var(--border-color)' }}>
+              <SelectContent className="z-[400] bg-popover border-border">
                 {ARCH_ALIGNMENT_OPTIONS.map((option) => (
                   <SelectItem key={option.value} value={option.value}>
                     {option.label}
@@ -193,7 +201,7 @@ export function EAReviewTab({ data, onChange }: EAReviewTabProps) {
               </SelectContent>
             </Select>
           </div>
-          
+
           <div>
             <Label className="text-[11px] font-medium" style={{ color: 'var(--text-2)' }}>
               Primary Impact Area
@@ -202,10 +210,10 @@ export function EAReviewTab({ data, onChange }: EAReviewTabProps) {
               value={data.ea_primary_impact_area || ''}
               onValueChange={(value) => onChange('ea_primary_impact_area', value)}
             >
-              <SelectTrigger className="mt-1 h-8 text-[13px]" style={{ background: 'var(--input-bg)', borderColor: 'var(--input-border)' }}>
+              <SelectTrigger className="mt-1 h-10 text-[13px]" style={fieldContainerStyle}>
                 <SelectValue placeholder="Select area" />
               </SelectTrigger>
-              <SelectContent className="z-[400]" style={{ background: 'var(--surface-1)', borderColor: 'var(--border-color)' }}>
+              <SelectContent className="z-[400] bg-popover border-border">
                 {IMPACT_AREA_OPTIONS.map((option) => (
                   <SelectItem key={option.value} value={option.value}>
                     {option.label}
@@ -225,30 +233,30 @@ export function EAReviewTab({ data, onChange }: EAReviewTabProps) {
             onChange={(e) => onChange('ea_business_capability_impact', e.target.value)}
             placeholder="Describe the business capability impact..."
             className="mt-1 min-h-[60px] text-[13px]"
-            style={{ background: 'var(--input-bg)', borderColor: 'var(--input-border)' }}
+            style={fieldContainerStyle}
           />
         </div>
       </div>
 
       {/* SECTION 3: Risk & Complexity */}
-      <div className="border rounded-lg p-4 space-y-4" style={{ borderColor: 'var(--border-color)', background: 'var(--surface-1)' }}>
+      <div
+        className="border rounded-lg p-4 space-y-4"
+        style={{ borderColor: 'var(--border-color)', background: 'var(--surface-1)' }}
+      >
         <h3 className="text-[11px] font-medium uppercase tracking-wide" style={{ color: 'var(--text-3)' }}>
           Risk & Complexity
         </h3>
-        
+
         <div className="grid grid-cols-2 gap-3">
           <div>
             <Label className="text-[11px] font-medium" style={{ color: 'var(--text-2)' }}>
               EA Complexity
             </Label>
-            <Select
-              value={data.ea_complexity || ''}
-              onValueChange={(value) => onChange('ea_complexity', value)}
-            >
-              <SelectTrigger className="mt-1 h-8 text-[13px]" style={{ background: 'var(--input-bg)', borderColor: 'var(--input-border)' }}>
+            <Select value={data.ea_complexity || ''} onValueChange={(value) => onChange('ea_complexity', value)}>
+              <SelectTrigger className="mt-1 h-10 text-[13px]" style={fieldContainerStyle}>
                 <SelectValue placeholder="Select complexity" />
               </SelectTrigger>
-              <SelectContent className="z-[400]" style={{ background: 'var(--surface-1)', borderColor: 'var(--border-color)' }}>
+              <SelectContent className="z-[400] bg-popover border-border">
                 {COMPLEXITY_OPTIONS.map((option) => (
                   <SelectItem key={option.value} value={option.value}>
                     {option.label}
@@ -257,19 +265,16 @@ export function EAReviewTab({ data, onChange }: EAReviewTabProps) {
               </SelectContent>
             </Select>
           </div>
-          
+
           <div>
             <Label className="text-[11px] font-medium" style={{ color: 'var(--text-2)' }}>
               EA Risk Level
             </Label>
-            <Select
-              value={data.ea_risk_level || ''}
-              onValueChange={(value) => onChange('ea_risk_level', value)}
-            >
-              <SelectTrigger className="mt-1 h-8 text-[13px]" style={{ background: 'var(--input-bg)', borderColor: 'var(--input-border)' }}>
+            <Select value={data.ea_risk_level || ''} onValueChange={(value) => onChange('ea_risk_level', value)}>
+              <SelectTrigger className="mt-1 h-10 text-[13px]" style={fieldContainerStyle}>
                 <SelectValue placeholder="Select risk level" />
               </SelectTrigger>
-              <SelectContent className="z-[400]" style={{ background: 'var(--surface-1)', borderColor: 'var(--border-color)' }}>
+              <SelectContent className="z-[400] bg-popover border-border">
                 {RISK_LEVEL_OPTIONS.map((option) => (
                   <SelectItem key={option.value} value={option.value}>
                     {option.label}
@@ -290,12 +295,12 @@ export function EAReviewTab({ data, onChange }: EAReviewTabProps) {
               onChange={(e) => onChange('ea_risk_notes', e.target.value)}
               placeholder="Enter risk notes (required for High risk)..."
               className="mt-1 min-h-[60px] text-[13px]"
-              style={{ background: 'var(--input-bg)', borderColor: 'var(--input-border)' }}
+              style={fieldContainerStyle}
             />
           </div>
         )}
       </div>
-
     </div>
   );
 }
+
