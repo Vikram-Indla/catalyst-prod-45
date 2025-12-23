@@ -106,7 +106,7 @@ export function RequestListPanel({
               key={filter}
               onClick={() => onFilterChange(filter)}
               className={cn(
-                'px-3 py-1 text-xs font-medium rounded-full transition-colors',
+                'px-3 py-1 text-xs font-medium rounded-full transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:ring-[hsl(var(--secondary-olive))]',
                 activeFilter !== filter && 'hover:bg-muted'
               )}
               style={{
