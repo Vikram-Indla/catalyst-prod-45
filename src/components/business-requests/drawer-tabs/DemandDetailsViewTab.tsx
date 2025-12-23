@@ -1,22 +1,22 @@
 /**
- * DemandDetailsViewTab - Catalyst Design System
- * Enterprise-grade details with all demand fields + Summary and Description
- * Supports auto-save with debouncing
+ * DemandDetailsViewTab - Redesigned with clean layout
+ * Header with Title + Status, Description, 4-col metadata, 3-col people, 3-col dates
  */
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
-import { ChevronDown, Calendar as CalendarIcon, Lock, Loader2 } from 'lucide-react';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Calendar as CalendarIcon, Lock, Loader2, Link as LinkIcon, Copy } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { RichTextEditor } from '../RichTextEditor';
 import { BusinessRequest, PROCESS_STEPS } from '@/types/business-request';
 import { DepartmentSelect } from '@/components/business-requests/DepartmentSelect';
+import { UserSelect } from '@/components/business-requests/UserSelect';
 import { useDepartments, useBusinessOwners, useDepartmentOwnerMappings, getOwnerIdForDepartment } from '@/hooks/useDepartmentsAndOwners';
 import { useActiveDemandProcessSteps } from '@/hooks/useDemandProcessSteps';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
@@ -63,137 +63,112 @@ interface DemandDetailsViewTabProps {
   requestId?: string | null;
 }
 
-// Field label component
+// Label component
 function FieldLabel({ children }: { children: React.ReactNode }) {
   return (
-    <label className="text-xs font-medium mb-1.5 block" style={{ color: 'var(--text-3)' }}>
+    <label className="text-xs font-medium uppercase tracking-wide mb-1.5 block text-gray-500">
       {children}
     </label>
   );
 }
 
-// Avatar component
-function UserAvatar({ name, size = 'sm' }: { name: string; size?: 'sm' | 'md' }) {
-  const initials = name
-    .split(' ')
-    .map(n => n[0])
-    .join('')
-    .slice(0, 2)
-    .toUpperCase();
-  
-  const sizeClasses = size === 'sm' ? 'w-6 h-6 text-[10px]' : 'w-8 h-8 text-xs';
-  
-  return (
-    <div 
-      className={cn(
-        "rounded-full flex items-center justify-center font-semibold text-white shrink-0",
-        sizeClasses
-      )}
-      style={{ backgroundColor: 'hsl(var(--secondary-bronze))' }}
-    >
-      {initials}
-    </div>
-  );
-}
-
-// Assignee Select component
-function AssigneeSelect({ value, onChange }: { value: string | null; onChange: (name: string | null) => void }) {
-  const { data: profiles = [] } = useQuery({
-    queryKey: ['all-profiles-for-assignment-active'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('id, full_name, email')
-        .eq('approval_status', 'APPROVED')
-        .order('full_name');
-      if (error) throw error;
-      return data || [];
-    },
-    staleTime: 5 * 60 * 1000,
-  });
-
-  return (
-    <Select value={value || 'unassigned'} onValueChange={(v) => onChange(v === 'unassigned' ? null : v)}>
-      <SelectTrigger 
-        className="w-full h-10"
-        style={{ 
-          backgroundColor: 'hsl(var(--secondary-bronze) / 0.08)', 
-          border: '1px solid hsl(var(--secondary-bronze) / 0.2)' 
-        }}
-      >
-        <SelectValue placeholder="Select assignee">
-          {value ? (
-            <div className="flex items-center gap-2">
-              <UserAvatar name={value} size="sm" />
-              <span>{value}</span>
-            </div>
-          ) : (
-            'Not assigned'
-          )}
-        </SelectValue>
-      </SelectTrigger>
-      <SelectContent className="z-[500] bg-popover">
-        <SelectItem value="unassigned">
-          <span className="text-muted-foreground">Unassigned</span>
-        </SelectItem>
-        {profiles.map((p) => (
-          <SelectItem key={p.id} value={p.full_name || p.email || p.id}>
-            <div className="flex items-center gap-2">
-              <div className="w-6 h-6 rounded-full bg-[hsl(var(--secondary-bronze))] flex items-center justify-center text-white text-[10px] font-semibold">
-                {(p.full_name || p.email || '?').split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
-              </div>
-              <span>{p.full_name || p.email}</span>
-            </div>
-          </SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
-  );
-}
-
-// Date picker field component
-function DatePickerField({ 
-  label, 
+// Date picker component
+function DatePicker({ 
   value, 
-  onChange 
+  onChange,
+  placeholder = 'Select date'
 }: { 
-  label: string; 
   value: string | null | undefined; 
   onChange: (date: Date | undefined) => void;
+  placeholder?: string;
 }) {
   const [open, setOpen] = useState(false);
   const dateValue = value ? parseISO(value) : undefined;
   
   return (
-    <div className="flex-1">
-      <FieldLabel>{label}</FieldLabel>
-      <Popover open={open} onOpenChange={setOpen}>
-        <PopoverTrigger asChild>
-          <Button
-            variant="outline"
-            className={cn(
-              "w-full justify-start text-left font-normal h-10",
-              !value && "text-muted-foreground"
-            )}
-          >
-            <CalendarIcon className="mr-2 h-4 w-4" />
-            {value ? format(parseISO(value), 'dd/MM/yyyy') : 'Select date'}
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent className="w-auto p-0 z-[500] bg-popover" align="start">
-          <Calendar
-            mode="single"
-            selected={dateValue}
-            onSelect={(date) => {
-              onChange(date);
-              setOpen(false);
-            }}
-            initialFocus
-            className="pointer-events-auto"
-          />
-        </PopoverContent>
-      </Popover>
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <Button
+          variant="outline"
+          className={cn(
+            "w-full justify-start text-left font-normal h-9",
+            !value && "text-muted-foreground"
+          )}
+        >
+          <CalendarIcon className="mr-2 h-4 w-4" />
+          {value ? format(parseISO(value), 'dd MMM yyyy') : placeholder}
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-auto p-0 z-[500] bg-popover" align="start">
+        <Calendar
+          mode="single"
+          selected={dateValue}
+          onSelect={(date) => {
+            onChange(date);
+            setOpen(false);
+          }}
+          initialFocus
+          className="pointer-events-auto"
+        />
+      </PopoverContent>
+    </Popover>
+  );
+}
+
+// Priority dropdown (locked)
+function PriorityDropdown({ value, locked = true }: { value: string; locked?: boolean }) {
+  const priorityKey = value?.toLowerCase() || 'unscored';
+  const priorityInfo = PRIORITY_LABELS[priorityKey] || PRIORITY_LABELS.unscored;
+  
+  return (
+    <div 
+      className="h-9 px-3 rounded-md flex items-center justify-between border cursor-pointer"
+      style={{ backgroundColor: 'var(--surface-2)', borderColor: 'var(--divider)' }}
+      onClick={() => locked && toast.info('Priority is auto-calculated from the Scoring tab')}
+    >
+      <div className="flex items-center gap-2">
+        <div className={cn('w-2 h-2 rounded-full', priorityInfo.color)} />
+        <span className="text-sm font-medium">{priorityInfo.label}</span>
+      </div>
+      {locked && <Lock className="w-3.5 h-3.5 text-gray-400" />}
     </div>
+  );
+}
+
+// Status dropdown
+function StatusDropdown({ 
+  value, 
+  onChange, 
+  processSteps 
+}: { 
+  value: string; 
+  onChange: (value: string) => void;
+  processSteps: Array<{ value: string; label: string }>;
+}) {
+  const statusColor = getStatusColor(value);
+  const statusInfo = processSteps.find(s => s.value === value);
+  
+  return (
+    <Select value={value} onValueChange={onChange}>
+      <SelectTrigger className="h-9 w-[160px]">
+        <SelectValue>
+          <div className="flex items-center gap-2">
+            <div className={cn('w-2 h-2 rounded-full', statusColor)} />
+            <span className="text-sm">{statusInfo?.label || 'New demand'}</span>
+          </div>
+        </SelectValue>
+      </SelectTrigger>
+      <SelectContent className="z-[500] bg-popover">
+        {processSteps.map((step) => (
+          <SelectItem key={step.value} value={step.value}>
+            <div className="flex items-center gap-2">
+              <div className={cn('w-2 h-2 rounded-full', getStatusColor(step.value))} />
+              {step.label}
+            </div>
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
   );
 }
 
@@ -210,6 +185,22 @@ export function DemandDetailsViewTab({ data, onChange, onDirtyChange, requestId 
   const autoSaveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const pendingChangesRef = useRef<Record<string, any>>({});
 
+  // Fetch reporter profile if needed
+  const { data: reporterProfile } = useQuery({
+    queryKey: ['profile', data.requestor],
+    queryFn: async () => {
+      if (!data.requestor || !data.requestor.includes('-')) return null;
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('id, full_name, email')
+        .eq('id', data.requestor)
+        .single();
+      return profile;
+    },
+    enabled: !!data.requestor && data.requestor.includes('-'),
+    staleTime: 5 * 60 * 1000,
+  });
+
   // Auto-save function
   const performAutoSave = useCallback(async () => {
     if (!requestId || Object.keys(pendingChangesRef.current).length === 0) return;
@@ -224,7 +215,6 @@ export function DemandDetailsViewTab({ data, onChange, onDirtyChange, requestId 
       queryClient.invalidateQueries({ queryKey: ['business-request', requestId] });
     } catch (error) {
       console.error('Auto-save failed:', error);
-      // Restore changes on failure so they can be retried
       pendingChangesRef.current = { ...changesToSave, ...pendingChangesRef.current };
       toast.error('Auto-save failed. Changes will be retried.');
     } finally {
@@ -242,15 +232,14 @@ export function DemandDetailsViewTab({ data, onChange, onDirtyChange, requestId 
     
     autoSaveTimeoutRef.current = setTimeout(() => {
       performAutoSave();
-    }, 1500); // 1.5 second debounce
+    }, 1500);
   }, [performAutoSave]);
 
-  // Cleanup timeout on unmount
+  // Cleanup on unmount
   useEffect(() => {
     return () => {
       if (autoSaveTimeoutRef.current) {
         clearTimeout(autoSaveTimeoutRef.current);
-        // Save any pending changes immediately on unmount
         if (Object.keys(pendingChangesRef.current).length > 0) {
           performAutoSave();
         }
@@ -258,38 +247,31 @@ export function DemandDetailsViewTab({ data, onChange, onDirtyChange, requestId 
     };
   }, [performAutoSave]);
 
-  // Resolve legacy text values to IDs on initial load
+  // Resolve legacy department/owner IDs
   useEffect(() => {
     if (departments && !data.department_id && data.department) {
       const dept = departments.find(d => d.name.toLowerCase() === (data.department || '').toLowerCase());
-      if (dept) {
-        onChange('department_id', dept.id);
-      }
+      if (dept) onChange('department_id', dept.id);
     }
   }, [departments, data.department, data.department_id, onChange]);
 
   useEffect(() => {
     if (owners && !data.business_owner_id && data.business_owner) {
       const owner = owners.find(o => o.name.toLowerCase() === (data.business_owner || '').toLowerCase());
-      if (owner) {
-        onChange('business_owner_id', owner.id);
-      }
+      if (owner) onChange('business_owner_id', owner.id);
     }
   }, [owners, data.business_owner, data.business_owner_id, onChange]);
 
   const handleChange = (field: string, value: any) => {
     onChange(field, value);
     onDirtyChange?.(true);
-    // Trigger auto-save if we have a requestId
     if (requestId) {
       triggerAutoSave(field, value);
     }
   };
 
-  // Handle department change with auto-setting of business owner
   const handleDepartmentChange = (departmentId: string) => {
     const dept = departments?.find(d => d.id === departmentId);
-    
     const updates: Record<string, any> = {
       department_id: departmentId,
       department: dept?.name || null,
@@ -306,17 +288,12 @@ export function DemandDetailsViewTab({ data, onChange, onDirtyChange, requestId 
 
     onChange('_batch', updates);
     onDirtyChange?.(true);
-    // Auto-save all batch updates
     if (requestId) {
       Object.entries(updates).forEach(([field, value]) => {
         pendingChangesRef.current[field] = value;
       });
-      if (autoSaveTimeoutRef.current) {
-        clearTimeout(autoSaveTimeoutRef.current);
-      }
-      autoSaveTimeoutRef.current = setTimeout(() => {
-        performAutoSave();
-      }, 1500);
+      if (autoSaveTimeoutRef.current) clearTimeout(autoSaveTimeoutRef.current);
+      autoSaveTimeoutRef.current = setTimeout(() => performAutoSave(), 1500);
     }
   };
 
@@ -324,137 +301,87 @@ export function DemandDetailsViewTab({ data, onChange, onDirtyChange, requestId 
     handleChange(field, date ? format(date, 'yyyy-MM-dd') : null);
   };
 
-  // Get status display info
+  // Computed values
   const statusKey = data.process_step?.toLowerCase() || 'new_demand';
-  const statusInfo = processSteps.find(s => s.value === statusKey);
-  const statusLabel = statusInfo?.label || 'New demand';
-  const statusColor = getStatusColor(statusKey);
-
-  // Get priority display info
   const priorityKey = (data.priority_tier as string)?.toLowerCase() || 'unscored';
-  const priorityInfo = PRIORITY_LABELS[priorityKey] || PRIORITY_LABELS.unscored;
+  const reporterName = data.requestor_name || reporterProfile?.full_name || reporterProfile?.email;
+  const businessOwnerName = data.business_owner || owners?.find(o => o.id === data.business_owner_id)?.name;
 
-  // Get reporter display name - prefer resolved name over UUID
-  const reporterName = data.requestor_name || (data.requestor && !data.requestor.includes('-') ? data.requestor : null);
+  const copyLink = () => {
+    const url = `${window.location.origin}/industry/backlog?requestId=${requestId}`;
+    navigator.clipboard.writeText(url);
+    toast.success('Link copied to clipboard');
+  };
 
   return (
-    <div className="space-y-5 p-4 md:p-5 pb-6">
+    <div className="p-6 space-y-6">
       {/* Auto-save indicator */}
       {isSaving && (
-        <div className="flex items-center gap-2 text-xs text-muted-foreground animate-pulse">
+        <div className="fixed top-4 right-4 z-50 flex items-center gap-2 px-3 py-1.5 bg-muted rounded-md text-xs text-muted-foreground">
           <Loader2 className="w-3 h-3 animate-spin" />
           Saving...
         </div>
       )}
 
-      {/* Details Section with Summary and Description - MOVED TO TOP */}
-      <div 
-        className="rounded-lg p-4"
-        style={{ backgroundColor: 'var(--surface-2)', border: '1px solid var(--divider)' }}
-      >
-        <h3 className="text-xs font-semibold uppercase tracking-wider mb-4" style={{ color: 'var(--text-3)' }}>
-          DETAILS
-        </h3>
-        
-        {/* Summary field */}
-        <div className="mb-4">
-          <FieldLabel>
-            Summary <span className="text-red-500">*</span>
-          </FieldLabel>
+      {/* SECTION 1: Header with Key and Title */}
+      <div className="flex items-start justify-between gap-4">
+        <div className="flex-1">
+          <div className="flex items-center gap-2 text-sm text-gray-500 mb-1">
+            <span className="font-mono text-[hsl(var(--secondary-bronze))] font-medium">
+              {data.request_key || 'MIM-XXX'}
+            </span>
+            <button 
+              onClick={copyLink}
+              className="p-1 hover:bg-gray-100 rounded transition-colors"
+              title="Copy link"
+            >
+              <LinkIcon className="w-3.5 h-3.5" />
+            </button>
+          </div>
+          {/* Editable Title */}
           <Input
             value={data.title || ''}
             onChange={(e) => handleChange('title', e.target.value)}
-            placeholder="Enter summary"
-            className="bg-background"
+            placeholder="Enter summary..."
+            className="text-xl font-semibold border-0 p-0 h-auto focus-visible:ring-0 focus-visible:ring-offset-0 bg-transparent"
           />
         </div>
-        
-        {/* Description field */}
-        <div>
-          <FieldLabel>Description</FieldLabel>
-          <RichTextEditor
-            value={data.description || ''}
-            onChange={(value) => handleChange('description', value)}
-            placeholder="Enter detailed description..."
-            minHeight="200px"
-          />
-        </div>
-      </div>
-
-      {/* Row 1: Status | EA Review Required? */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-        <div>
-          <FieldLabel>Status</FieldLabel>
-          <Select 
+        <div className="flex items-center gap-2">
+          <StatusDropdown 
             value={statusKey} 
-            onValueChange={(value) => handleChange('process_step', value)}
-          >
-            <SelectTrigger className="w-full h-10">
-              <SelectValue>
-                <div className="flex items-center gap-2">
-                  <div className={cn('w-2 h-2 rounded-full', statusColor)} />
-                  {statusLabel}
-                </div>
-              </SelectValue>
-            </SelectTrigger>
-            <SelectContent className="z-[500] bg-popover">
-              {processSteps.map((step) => (
-                <SelectItem key={step.value} value={step.value}>
-                  <div className="flex items-center gap-2">
-                    <div className={cn('w-2 h-2 rounded-full', getStatusColor(step.value))} />
-                    {step.label}
-                  </div>
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div>
-          <FieldLabel>EA Review Required?</FieldLabel>
-          <div 
-            className="h-10 px-3 rounded-md flex items-center justify-between"
-            style={{ backgroundColor: 'hsl(var(--secondary-olive) / 0.08)', border: '1px solid hsl(var(--secondary-olive) / 0.2)' }}
-          >
-            <span className="text-sm font-medium" style={{ color: 'var(--text-1)' }}>
-              {data.ea_review_required ? 'Yes' : 'No'}
-            </span>
-            <Switch 
-              id="ea-review"
-              checked={data.ea_review_required ?? true}
-              onCheckedChange={(checked) => handleChange('ea_review_required', checked)}
-              className="data-[state=checked]:bg-[hsl(var(--secondary-olive))]"
-            />
-          </div>
+            onChange={(v) => handleChange('process_step', v)}
+            processSteps={processSteps}
+          />
         </div>
       </div>
 
-      {/* Row 2: Priority | Target Quarter */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+      {/* SECTION 2: Description - Full Width */}
+      <div>
+        <FieldLabel>Description</FieldLabel>
+        <RichTextEditor
+          value={data.description || ''}
+          onChange={(value) => handleChange('description', value)}
+          placeholder="Describe the demand in detail..."
+          minHeight="120px"
+        />
+      </div>
+
+      {/* Divider */}
+      <hr className="border-gray-200" />
+
+      {/* SECTION 3: Key Metadata - 4 Column Grid */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div>
           <FieldLabel>Priority</FieldLabel>
-          <div 
-            className="h-10 px-3 rounded-md flex items-center justify-between cursor-pointer"
-            style={{ backgroundColor: 'var(--surface-2)', border: '1px solid var(--divider)' }}
-            onClick={() => toast.info('Priority is auto-calculated from the Scoring tab')}
-          >
-            <div className="flex items-center gap-2">
-              <div className={cn('w-2 h-2 rounded-full', priorityInfo.color)} />
-              <span className="text-sm font-medium" style={{ color: 'var(--text-1)' }}>
-                {priorityInfo.label}
-              </span>
-            </div>
-            <Lock className="w-3.5 h-3.5" style={{ color: 'var(--text-3)' }} />
-          </div>
+          <PriorityDropdown value={priorityKey} locked={true} />
         </div>
-
         <div>
           <FieldLabel>Target Quarter</FieldLabel>
           <Select 
             value={data.planned_quarter?.[0] || ''} 
             onValueChange={(value) => handleChange('planned_quarter', [value])}
           >
-            <SelectTrigger className="w-full h-10">
+            <SelectTrigger className="h-9">
               <SelectValue placeholder="Select quarter" />
             </SelectTrigger>
             <SelectContent className="z-[500] bg-popover">
@@ -464,97 +391,114 @@ export function DemandDetailsViewTab({ data, onChange, onDirtyChange, requestId 
             </SelectContent>
           </Select>
         </div>
-      </div>
-
-      {/* Row 3: Reporter | Assignee */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-        <div>
-          <FieldLabel>Reporter</FieldLabel>
-          <div 
-            className="h-10 px-3 rounded-md flex items-center justify-between"
-            style={{ backgroundColor: 'var(--surface-2)', border: '1px solid var(--divider)' }}
-          >
-            {reporterName ? (
-              <>
-                <div className="flex items-center gap-2">
-                  <UserAvatar name={reporterName} size="sm" />
-                  <span className="text-sm font-medium" style={{ color: 'var(--text-1)' }}>
-                    {reporterName}
-                  </span>
-                </div>
-                <button 
-                  className="text-xs font-medium"
-                  style={{ color: 'hsl(var(--secondary-bronze))' }}
-                  onClick={() => toast.info('Change reporter feature coming soon')}
-                >
-                  Change
-                </button>
-              </>
-            ) : (
-              <span className="text-sm" style={{ color: 'var(--text-3)' }}>Not assigned</span>
-            )}
-          </div>
-        </div>
-
-        <div>
-          <FieldLabel>Assignee</FieldLabel>
-          <AssigneeSelect
-            value={data.assignee || null}
-            onChange={(name) => handleChange('assignee', name)}
-          />
-        </div>
-      </div>
-
-      {/* Row 4: Department | Business Owner */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
         <div>
           <FieldLabel>Department</FieldLabel>
           <DepartmentSelect
             value={data.department_id || null}
             onChange={handleDepartmentChange}
             placeholder="Select department"
+            className="h-9"
           />
         </div>
-
         <div>
-          <FieldLabel>Business Owner</FieldLabel>
-          <div 
-            className="h-10 px-3 rounded-md flex items-center justify-between"
-            style={{ backgroundColor: 'hsl(var(--secondary-bronze) / 0.08)', border: '1px solid hsl(var(--secondary-bronze) / 0.2)' }}
-          >
-            {data.business_owner ? (
-              <div className="flex items-center gap-2">
-                <UserAvatar name={data.business_owner} size="sm" />
-                <span className="text-sm font-medium" style={{ color: 'var(--text-1)' }}>
-                  {data.business_owner}
-                </span>
-              </div>
-            ) : (
-              <span className="text-sm" style={{ color: 'var(--text-3)' }}>Not assigned</span>
-            )}
+          <FieldLabel>EA Review Required</FieldLabel>
+          <div className="flex items-center gap-3 h-9 px-3 rounded-md border" style={{ borderColor: 'var(--divider)' }}>
+            <Switch 
+              checked={data.ea_review_required ?? true}
+              onCheckedChange={(checked) => handleChange('ea_review_required', checked)}
+              className="data-[state=checked]:bg-[hsl(var(--secondary-olive))]"
+            />
+            <span className="text-sm text-gray-600">
+              {data.ea_review_required ? 'Yes' : 'No'}
+            </span>
           </div>
         </div>
       </div>
 
-      {/* Row 5: Business Ask Date | Kickoff Date | Target Complete */}
-      <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
-        <DatePickerField 
-          label="Business Ask Date" 
-          value={data.start_date} 
-          onChange={handleDateChange('start_date')}
-        />
-        <DatePickerField 
-          label="Kickoff Date" 
-          value={data.impl_start_date} 
-          onChange={handleDateChange('impl_start_date')}
-        />
-        <DatePickerField 
-          label="Target Complete" 
-          value={data.end_date} 
-          onChange={handleDateChange('end_date')}
-        />
+      {/* SECTION 4: People - 3 Column Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div>
+          <FieldLabel>Reporter</FieldLabel>
+          {reporterName ? (
+            <div className="h-9 px-3 rounded-md border flex items-center gap-2" style={{ borderColor: 'var(--divider)' }}>
+              <Avatar className="w-5 h-5">
+                <AvatarFallback className="bg-[hsl(var(--secondary-bronze))] text-white text-[10px] font-semibold">
+                  {reporterName?.split(' ').map(n => n[0]).join('').slice(0, 2) || '?'}
+                </AvatarFallback>
+              </Avatar>
+              <span className="text-sm truncate">{reporterName}</span>
+            </div>
+          ) : (
+            <div className="h-9 px-3 rounded-md border flex items-center text-muted-foreground text-sm" style={{ borderColor: 'var(--divider)' }}>
+              Not assigned
+            </div>
+          )}
+        </div>
+        <div>
+          <FieldLabel>Assignee</FieldLabel>
+          <UserSelect
+            value={data.assignee || null}
+            onChange={(userId) => handleChange('assignee', userId)}
+            placeholder="Select assignee"
+          />
+        </div>
+        <div>
+          <FieldLabel>Business Owner</FieldLabel>
+          {businessOwnerName ? (
+            <div className="h-9 px-3 rounded-md border flex items-center gap-2" style={{ borderColor: 'var(--divider)', backgroundColor: 'hsl(var(--secondary-bronze) / 0.08)' }}>
+              <Avatar className="w-5 h-5">
+                <AvatarFallback className="bg-[hsl(var(--secondary-bronze))] text-white text-[10px] font-semibold">
+                  {businessOwnerName?.split(' ').map(n => n[0]).join('').slice(0, 2) || '?'}
+                </AvatarFallback>
+              </Avatar>
+              <span className="text-sm truncate">{businessOwnerName}</span>
+            </div>
+          ) : (
+            <div className="h-9 px-3 rounded-md border flex items-center text-muted-foreground text-sm" style={{ borderColor: 'var(--divider)' }}>
+              Auto-assigned from department
+            </div>
+          )}
+        </div>
       </div>
 
+      {/* SECTION 5: Timeline - 3 Column Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div>
+          <FieldLabel>Business Ask Date</FieldLabel>
+          <DatePicker 
+            value={data.start_date} 
+            onChange={handleDateChange('start_date')}
+          />
+        </div>
+        <div>
+          <FieldLabel>Kickoff Date</FieldLabel>
+          <DatePicker 
+            value={data.impl_start_date} 
+            onChange={handleDateChange('impl_start_date')}
+          />
+        </div>
+        <div>
+          <FieldLabel>Target Complete</FieldLabel>
+          <DatePicker 
+            value={data.end_date} 
+            onChange={handleDateChange('end_date')}
+          />
+        </div>
+      </div>
+
+      {/* SECTION 6: Metadata Footer */}
+      <div className="flex items-center gap-6 pt-2 text-xs text-gray-400">
+        <span>
+          Created: <span className="text-gray-600">
+            {data.created_at ? format(parseISO(data.created_at), 'dd MMM yyyy') : '—'}
+          </span>
+        </span>
+        <span>
+          Updated: <span className="text-gray-600">
+            {data.updated_at ? format(parseISO(data.updated_at), 'dd MMM yyyy') : '—'}
+          </span>
+        </span>
+      </div>
     </div>
   );
 }

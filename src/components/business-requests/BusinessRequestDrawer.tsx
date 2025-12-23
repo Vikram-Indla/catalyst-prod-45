@@ -52,6 +52,8 @@ import { useVisibleDrawerTabs } from '@/hooks/useDrawerTabConfigs';
 import { useBusinessDrawerRoleTabs } from '@/hooks/useBusinessDrawerRoleTabs';
 import { EnterpriseStatusControl, WorkflowFooter, getNextWorkflowAction, StatusDropdown } from './drawer';
 import { EAReviewTab } from './drawer-tabs/EAReviewTab';
+import { ScoringReviewTab } from './drawer-tabs/ScoringReviewTab';
+import { PlanningViewTab } from './drawer-tabs/PlanningViewTab';
 import { cn } from '@/lib/utils';
 import { Loader2 } from 'lucide-react';
 
@@ -159,16 +161,13 @@ interface BusinessRequestDrawerProps {
   initialTab?: string;
 }
 
-// Fallback tabs if config is not loaded
+// Consolidated tabs - 5 tabs instead of 8
 const FALLBACK_TABS = [
-  { value: 'demand-details', label: 'Demand Details' },
-  { value: 'business-score', label: 'Business Score' },
-  { value: 'ea-review', label: 'EA Review' },
-  { value: 'budget', label: 'Budget' },
-  { value: 'risks', label: 'Risks' },
-  { value: 'milestones', label: 'Milestones' },
+  { value: 'details', label: 'Details' },
+  { value: 'scoring', label: 'Scoring & Review' },
+  { value: 'planning', label: 'Planning' },
   { value: 'links', label: 'Links' },
-  { value: 'audit-history', label: 'Audit History' },
+  { value: 'history', label: 'History' },
 ];
 
 export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestChange, initialTab }: BusinessRequestDrawerProps) {
@@ -241,7 +240,7 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
     staleTime: 60000,
   });
   
-  const [activeTab, setActiveTab] = useState('demand-details');
+  const [activeTab, setActiveTab] = useState('details');
   const [formData, setFormData] = useState<Partial<BusinessRequest> & Record<string, any>>({});
   const [originalData, setOriginalData] = useState<Partial<BusinessRequest> & Record<string, any>>({});
   const [isEditingName, setIsEditingName] = useState(false);
@@ -278,7 +277,7 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
   // Reset to initial tab when drawer opens
   useEffect(() => {
     if (isOpen) {
-      setActiveTab(initialTab || 'demand-details');
+      setActiveTab(initialTab || 'details');
     }
   }, [isOpen, initialTab]);
 
@@ -727,41 +726,23 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
                 // Calculate status indicators based on data
                 const getTabStatus = () => {
                   switch (tab.value) {
-                    case 'demand-details':
+                    case 'details':
                       return formData.title && formData.description 
                         ? { type: 'complete' as const, value: '✓' }
                         : null;
-                    case 'business-score':
-                      // ALWAYS show a value - show "0" if null
+                    case 'scoring':
                       const score = formData.business_score;
+                      const eaStatus = formData.ea_review_required === false ? 'na' : (formData.ea_status === 'approved' ? 'complete' : 'pending');
                       return { 
-                        type: 'score' as const, 
-                        value: score ? (score / 100).toFixed(1) : '0' 
+                        type: eaStatus === 'pending' ? 'pending' as const : 'score' as const, 
+                        value: eaStatus === 'pending' ? 'Pending' : (score ? (score / 100).toFixed(1) : '0')
                       };
-                    case 'ea-review':
-                      // Check ea_review_required flag first - show N/A if not required
-                      if (formData.ea_review_required === false) {
-                        return { type: 'na' as const, value: 'N/A' };
-                      }
-                      if (formData.ea_status === 'approved') {
-                        return { type: 'complete' as const, value: '✓' };
-                      }
-                      return { type: 'pending' as const, value: 'Pending' };
-                    case 'budget':
-                      // Show "0" if null, not "Empty"
-                      return { 
-                        type: 'count' as const, 
-                        value: formData.estimated_cost 
-                          ? new Intl.NumberFormat('en-SA', { notation: 'compact' }).format(formData.estimated_cost)
-                          : '0'
-                      };
-                    case 'risks':
-                      return { type: 'count' as const, value: String(risksCount) };
-                    case 'milestones':
-                      return { type: 'count' as const, value: String(milestonesCount) };
+                    case 'planning':
+                      const totalPlanning = risksCount + milestonesCount;
+                      return { type: 'count' as const, value: String(totalPlanning) };
                     case 'links':
                       return { type: 'count' as const, value: String(linksCount) };
-                    case 'audit-history':
+                    case 'history':
                       return { type: 'count' as const, value: String(auditCount) };
                     default:
                       return null;
@@ -797,22 +778,14 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
                               ? 'hsl(35 92% 50%)'
                               : status.type === 'score'
                                 ? 'hsl(var(--secondary-bronze))'
-                                : status.type === 'na'
-                                  ? 'hsl(var(--muted-foreground))'
-                                  : status.type === 'count' && parseInt(status.value || '0') > 0
-                                    ? 'hsl(var(--secondary-olive))'
-                                    : 'hsl(var(--muted-foreground))'
+                                : status.type === 'count' && parseInt(status.value || '0') > 0
+                                  ? 'hsl(var(--secondary-olive))'
+                                  : 'hsl(var(--muted-foreground))'
                         }}
                       >
                         {status.type === 'pending' && (
                           <span className="inline-flex items-center gap-1">
                             <span className="w-1.5 h-1.5 rounded-full" style={{ background: 'hsl(35 92% 50%)' }} />
-                            {status.value}
-                          </span>
-                        )}
-                        {status.type === 'na' && (
-                          <span className="inline-flex items-center gap-1">
-                            <span className="w-1.5 h-1.5 rounded-full" style={{ background: 'hsl(var(--muted-foreground))' }} />
                             {status.value}
                           </span>
                         )}
@@ -836,7 +809,7 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
               className="flex-1 min-h-0 overflow-y-auto"
               style={{ background: 'var(--surface-subtle, hsl(var(--muted)/0.3))' }}
             >
-              <TabsContent value="demand-details" className="mt-0 p-5 pb-8 focus-visible:outline-none">
+              <TabsContent value="details" className="mt-0 focus-visible:outline-none">
                 <DemandDetailsViewTab 
                   data={formData} 
                   onChange={handleFieldChange} 
@@ -845,8 +818,8 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
                 />
               </TabsContent>
               
-              <TabsContent value="business-score" className="mt-0 focus-visible:outline-none">
-                <BusinessScoreViewTab 
+              <TabsContent value="scoring" className="mt-0 focus-visible:outline-none">
+                <ScoringReviewTab 
                   data={formData} 
                   onChange={handleFieldChange} 
                   requestId={requestId || undefined}
@@ -854,28 +827,21 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
                 />
               </TabsContent>
               
-              <TabsContent value="ea-review" className="mt-0 focus-visible:outline-none">
-                <EAReviewTab data={formData} onChange={handleFieldChange} />
-              </TabsContent>
-              
-              <TabsContent value="budget" className="mt-0 p-5 pb-8 focus-visible:outline-none">
-                <BudgetViewTab data={formData} onChange={handleFieldChange} />
-              </TabsContent>
-              
-              <TabsContent value="risks" className="mt-0 focus-visible:outline-none">
-                {requestId && <RisksViewTab requestId={requestId} />}
-              </TabsContent>
-              
-              <TabsContent value="milestones" className="mt-0 focus-visible:outline-none">
-                {requestId && <MilestonesViewTab requestId={requestId} />}
+              <TabsContent value="planning" className="mt-0 focus-visible:outline-none">
+                {requestId && (
+                  <PlanningViewTab 
+                    data={formData} 
+                    onChange={handleFieldChange}
+                    requestId={requestId}
+                  />
+                )}
               </TabsContent>
               
               <TabsContent value="links" className="mt-0 p-5 pb-8 focus-visible:outline-none">
                 {requestId && <LinksViewTab requestId={requestId} onNavigateToEpic={handleNavigateToEpic} />}
               </TabsContent>
               
-              
-              <TabsContent value="audit-history" className="mt-0 p-5 pb-8 focus-visible:outline-none">
+              <TabsContent value="history" className="mt-0 p-5 pb-8 focus-visible:outline-none">
                 {requestId && <ExecutiveAuditHistoryTab requestId={requestId} />}
               </TabsContent>
             </div>
