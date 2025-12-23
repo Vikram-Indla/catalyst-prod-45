@@ -297,8 +297,8 @@ export default function IndustryPage() {
   const [filtersDialogOpen, setFiltersDialogOpen] = useState(false);
   const [filters, setFilters] = useState<SmartFilters>({});
   const [columnSort, setColumnSort] = useState<ColumnSort>({
-    columnId: 'rank',
-    direction: 'asc'
+    columnId: 'submitted_date',
+    direction: 'desc'
   });
   const [notification, setNotification] = useState<{
     show: boolean;

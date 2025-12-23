@@ -151,13 +151,14 @@ function UserAvatar({ name, size = 'md' }: { name: string; size?: 'sm' | 'md' })
 
 // Assignee Select component with profiles data
 function AssigneeSelect({ value, onChange }: { value: string | null; onChange: (name: string | null) => void }) {
-  // Fetch all profiles for assignment
+  // Fetch only active (approved) profiles for assignment
   const { data: profiles = [] } = useQuery({
-    queryKey: ['all-profiles-for-assignment'],
+    queryKey: ['all-profiles-for-assignment-active'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('profiles')
         .select('id, full_name, email')
+        .eq('approval_status', 'APPROVED')
         .order('full_name');
       if (error) throw error;
       return data || [];
