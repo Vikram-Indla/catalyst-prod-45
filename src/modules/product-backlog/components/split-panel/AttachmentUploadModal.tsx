@@ -149,16 +149,8 @@ export function AttachmentUploadModal({
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
-    accept: {
-      'image/*': ['.png', '.jpg', '.jpeg', '.gif', '.webp'],
-      'application/pdf': ['.pdf'],
-      'application/msword': ['.doc'],
-      'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx'],
-      'application/vnd.ms-excel': ['.xls'],
-      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx'],
-      'text/plain': ['.txt'],
-    },
     maxSize: 10 * 1024 * 1024, // 10MB
+    // Accept all file types
   });
 
   // Download file
@@ -218,7 +210,7 @@ export function AttachmentUploadModal({
                     : 'Drag & drop files here, or click to select'}
                 </p>
                 <p className="text-xs text-muted-foreground/70">
-                  Max 10MB per file. Supports images, PDFs, and documents.
+                  Max 10MB per file. Supports all file types.
                 </p>
               </div>
             )}
