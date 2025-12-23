@@ -71,7 +71,6 @@ export function CapacityHeader({
   const handleDateSelect = (date: Date | undefined) => {
     if (date) {
       onStartDateChange(getGCCWeekStart(date));
-      setCalendarOpen(false);
     }
   };
 
