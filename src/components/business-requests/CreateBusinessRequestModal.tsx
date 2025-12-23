@@ -298,7 +298,7 @@ export function CreateBusinessRequestModal({ isOpen, onClose }: CreateBusinessRe
             </Button>
             <Button 
               onClick={handleSave}
-              disabled={createMutation.isPending || isUploading || completionPercent < 100}
+              disabled={createMutation.isPending || isUploading}
               className={cn(
                 "px-4 py-2 text-sm font-medium",
                 "text-white bg-[#5c7c5c] hover:bg-[#4a6a4a]",
