@@ -406,9 +406,9 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
     }
   };
 
-  // Get drawer width classes based on expanded state - reduced by 30%
+  // Get drawer width classes based on expanded state - full screen when expanded
   const drawerWidthClass = isExpanded 
-    ? 'w-screen sm:w-[70vw] sm:max-w-[1120px]' 
+    ? 'w-screen h-screen' 
     : 'w-screen sm:w-[65vw] sm:max-w-[980px]';
 
   if (!isOpen) return null;
