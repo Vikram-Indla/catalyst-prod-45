@@ -5,9 +5,12 @@ interface ScoreCellProps {
 }
 
 export function ScoreCell({ score }: ScoreCellProps) {
-  if (score === null || score === undefined) {
+  if (score === null || score === undefined || score === 0) {
     return <span className="text-[var(--industry-text-disabled)]">—</span>;
   }
+
+  // Database stores score as 0-500 (score * 100), convert to 0-5 scale
+  const normalizedScore = score / 100;
 
   // Determine color based on score thresholds from spec
   // High (≥3.5): green, Medium (2.5-3.4): blue, Low (<2.5): amber
@@ -26,8 +29,8 @@ export function ScoreCell({ score }: ScoreCellProps) {
     };
   };
 
-  const colors = getScoreColor(score);
-  const percentage = Math.min(100, (score / 5) * 100); // Assuming max score is 5
+  const colors = getScoreColor(normalizedScore);
+  const percentage = Math.min(100, (normalizedScore / 5) * 100); // Score is 0-5 scale
 
   return (
     <div className="flex items-center gap-2">
@@ -38,7 +41,7 @@ export function ScoreCell({ score }: ScoreCellProps) {
         />
       </div>
       <span className={cn("text-xs font-semibold", colors.text)}>
-        {score.toFixed(1)}
+        {normalizedScore.toFixed(2)}
       </span>
     </div>
   );
