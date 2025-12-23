@@ -322,7 +322,7 @@ export function DemandDetailsViewTab({ data, onChange, onDirtyChange }: DemandDe
         </div>
       </div>
 
-      {/* Row 2: Priority | Target Quarter */}
+      {/* Row 2: Priority */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="min-w-0">
           <FieldLabel>Priority</FieldLabel>
@@ -339,23 +339,6 @@ export function DemandDetailsViewTab({ data, onChange, onDirtyChange }: DemandDe
             </div>
             <Lock className="w-3.5 h-3.5 flex-shrink-0 ml-2" style={{ color: 'var(--text-3)' }} />
           </div>
-        </div>
-
-        <div className="min-w-0">
-          <FieldLabel>Target Quarter</FieldLabel>
-          <Select 
-            value={Array.isArray(data.planned_quarter) ? data.planned_quarter[0] || '' : data.planned_quarter || ''} 
-            onValueChange={(value) => handleChange('planned_quarter', [value])}
-          >
-            <SelectTrigger className="w-full h-10">
-              <SelectValue placeholder="Select quarter" />
-            </SelectTrigger>
-            <SelectContent className="z-[500]">
-              {QUARTER_OPTIONS.map((q) => (
-                <SelectItem key={q} value={q}>{q}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
         </div>
       </div>
 
