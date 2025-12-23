@@ -253,6 +253,7 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
   const [workflowModalOpen, setWorkflowModalOpen] = useState(false);
   
   const nameInputRef = useRef<HTMLInputElement>(null);
+  const tabsBodyScrollRef = useRef<HTMLDivElement>(null);
 
   // Track if we initiated a data update (to avoid resetting hasChanges on refetch)
   // Using ref instead of state to avoid triggering useEffect re-runs
@@ -274,13 +275,17 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
     navigate(path);
   }, [onClose, navigate]);
 
-  // Reset to default tab when drawer opens
   // Reset to initial tab when drawer opens
   useEffect(() => {
     if (isOpen) {
       setActiveTab(initialTab || 'demand-details');
     }
   }, [isOpen, initialTab]);
+
+  // Reset scroll position when switching tabs (prevents "blank/void" if user was scrolled)
+  useEffect(() => {
+    tabsBodyScrollRef.current?.scrollTo({ top: 0 });
+  }, [activeTab, requestId]);
 
   // Sync form data when request changes
   useEffect(() => {
@@ -827,6 +832,7 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
                 DRAWER BODY
                 ═══════════════════════════════════════════════════════════ */}
             <div 
+              ref={tabsBodyScrollRef}
               className="flex-1 min-h-0 overflow-y-auto flex flex-col"
               style={{ background: 'var(--surface-subtle, hsl(var(--muted)/0.3))' }}
             >
