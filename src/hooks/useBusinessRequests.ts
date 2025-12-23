@@ -435,10 +435,10 @@ export function useDuplicateBusinessRequest() {
 
   return useMutation({
     mutationFn: async (id: string) => {
-      // Get the original request
+      // Get the original request (only need the title)
       const { data: original, error: fetchError } = await supabase
         .from('business_requests')
-        .select('*')
+        .select('title, request_key')
         .eq('id', id)
         .single();
       
@@ -453,15 +453,13 @@ export function useDuplicateBusinessRequest() {
       const nextNum = ((count || 0) + 1).toString().padStart(3, '0');
       const newRequestKey = `MIM-${nextNum}`;
 
-      // Create duplicate with new key and reset certain fields
-      const { id: _id, request_key: _key, created_at: _created, updated_at: _updated, deleted_at: _deleted, rank: _rank, ...duplicateData } = original;
-      
+      // Create new request with only title copied, status reset to new_request, all other fields empty
       const { data: newRequest, error: insertError } = await supabase
         .from('business_requests')
         .insert({
-          ...duplicateData,
           request_key: newRequestKey,
           title: `${original.title} (Copy)`,
+          process_step: 'new_request',
         })
         .select()
         .single();
