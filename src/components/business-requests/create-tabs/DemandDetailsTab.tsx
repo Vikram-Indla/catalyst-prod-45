@@ -1,10 +1,9 @@
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useMemo } from 'react';
 import { useAuth } from '@/lib/auth';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
-import { Lock, Unlock, Upload, X, FileText, Users, CalendarDays, Paperclip, Briefcase } from 'lucide-react';
+import { Lock, Unlock, Upload, X, FileText, Users, CalendarDays, Paperclip, Briefcase, Check } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
@@ -15,24 +14,41 @@ import { DepartmentSelect } from '../DepartmentSelect';
 import { BusinessOwnerSelect } from '../BusinessOwnerSelect';
 import { useDepartments, useBusinessOwners, useDepartmentOwnerMappings, getOwnerIdForDepartment } from '@/hooks/useDepartmentsAndOwners';
 import { CatalystDatePicker } from '@/components/ui/catalyst-date-picker';
+import { FormField } from '../create-form';
 
 const ALLOWED_EXTENSIONS = '*';
 const MAX_FILES = 5;
 const MAX_FILE_SIZE = 20 * 1024 * 1024;
+const SUMMARY_MAX_CHARS = 200;
+const SUMMARY_MIN_CHARS = 5;
+const DESCRIPTION_MAX_WORDS = 2000;
+const DESCRIPTION_MIN_WORDS = 10;
 
 interface DemandDetailsTabProps {
   data: any;
   onChange: (field: string, value: any) => void;
 }
 
+// Helper to count words in HTML string
+function countWords(html: string): number {
+  const text = html.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+  if (!text) return 0;
+  return text.split(' ').filter(Boolean).length;
+}
+
 export function DemandDetailsTab({ data, onChange }: DemandDetailsTabProps) {
   const { user } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const currentUser = 'Current User';
 
   const { data: departments } = useDepartments();
   const { data: owners } = useBusinessOwners();
   const { data: mappings } = useDepartmentOwnerMappings();
+
+  // Validation states
+  const summaryLength = (data.title || '').length;
+  const descriptionWordCount = useMemo(() => countWords(data.description || ''), [data.description]);
+  const isSummaryValid = summaryLength >= SUMMARY_MIN_CHARS;
+  const isDescriptionValid = descriptionWordCount >= DESCRIPTION_MIN_WORDS;
 
   // Initialize lock state from persisted data
   const targetDateLocked = data.end_date_locked ?? false;
@@ -74,12 +90,10 @@ export function DemandDetailsTab({ data, onChange }: DemandDetailsTabProps) {
 
   const handleLockToggle = () => {
     if (targetDateLocked) {
-      // Only allow the user who locked it to unlock
       if (lockedByUser && lockedByUser !== user?.id) {
         toast.error(`Cannot unlock. This date was locked by another user`);
         return;
       }
-      // Unlock
       onChange('end_date_locked', false);
       onChange('end_date_locked_by', null);
       onChange('end_date_locked_at', null);
@@ -93,7 +107,6 @@ export function DemandDetailsTab({ data, onChange }: DemandDetailsTabProps) {
         toast.error('Cannot lock: Target Completion Date must be populated first');
         return;
       }
-      // Lock
       onChange('end_date_locked', true);
       onChange('end_date_locked_by', user?.id || null);
       onChange('end_date_locked_at', new Date().toISOString());
@@ -142,87 +155,96 @@ export function DemandDetailsTab({ data, onChange }: DemandDetailsTabProps) {
     return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
   };
 
-  // Compact input styling
+  // Compact input styling with dark mode
   const compactInputClass = cn(
     "h-9 text-sm px-3",
-    "bg-white dark:bg-gray-900",
-    "border border-gray-200 dark:border-gray-700",
-    "rounded-md",
+    "bg-white dark:bg-gray-800",
+    "border border-gray-200 dark:border-gray-600",
+    "rounded-lg",
     "text-gray-900 dark:text-gray-100",
-    "placeholder:text-gray-400",
-    "focus:border-secondary-bronze focus:ring-1 focus:ring-secondary-bronze/20",
+    "placeholder:text-gray-400 dark:placeholder:text-gray-500",
+    "focus:border-[#c69c6d] focus:ring-2 focus:ring-[#c69c6d]/10",
     "transition-colors"
   );
 
-  // Compact section header - inline style
+  // Compact section header
   const SectionHeader = ({ icon: Icon, title }: { icon: React.ElementType; title: string }) => (
     <div className="flex items-center gap-2 pb-2 mb-3 border-b border-gray-200 dark:border-gray-700">
-      <Icon className="w-4 h-4 text-secondary-olive" />
-      <h3 className="text-xs font-semibold uppercase tracking-wide text-secondary-olive">
+      <Icon className="w-4 h-4 text-[#5c7c5c]" />
+      <h3 className="text-xs font-semibold uppercase tracking-wide text-[#5c7c5c]">
         {title}
       </h3>
     </div>
   );
 
-  // Compact label with asterisk for required fields
-  const CompactLabel = ({ children, required = false }: { children: React.ReactNode; required?: boolean }) => (
-    <label className="text-xs font-medium text-gray-700 dark:text-gray-300 mb-1 flex items-center gap-0.5">
-      {children}
-      {required && <span className="text-red-500 text-sm font-bold">*</span>}
-    </label>
-  );
-
   return (
-    <div className="space-y-4 p-5">
+    <div className="space-y-5 p-5">
       {/* Basic Information Section */}
       <div>
         <SectionHeader icon={FileText} title="Basic Information" />
-        <div className="space-y-3">
-          <div>
-            <CompactLabel required>Summary</CompactLabel>
-            <Input
-              value={data.title || ''}
-              onChange={(e) => onChange('title', e.target.value)}
-              placeholder="Enter demand summary (min 5 characters)"
-              className={compactInputClass}
-            />
-          </div>
+        <div className="space-y-4">
+          {/* Summary Field with validation */}
+          <FormField
+            label="Summary"
+            required
+            isValid={isSummaryValid}
+            counter={{ current: summaryLength, max: SUMMARY_MAX_CHARS }}
+          >
+            <div className="relative">
+              <Input
+                value={data.title || ''}
+                onChange={(e) => onChange('title', e.target.value)}
+                placeholder="Brief title of the business request"
+                maxLength={SUMMARY_MAX_CHARS}
+                className={cn(
+                  compactInputClass,
+                  isSummaryValid && "border-[#5c7c5c]/50 focus:border-[#5c7c5c]"
+                )}
+              />
+            </div>
+          </FormField>
 
-          <div>
-            <CompactLabel required>Description</CompactLabel>
+          {/* Description Field with word count */}
+          <FormField
+            label="Description"
+            required
+            isValid={isDescriptionValid}
+            counter={{ current: descriptionWordCount, max: DESCRIPTION_MAX_WORDS, type: 'word' }}
+          >
             <RichTextEditor
               value={data.description || ''}
               onChange={(value) => onChange('description', value)}
-              placeholder="Describe the demand in detail..."
+              placeholder="Describe the business need in detail..."
+              minHeight="150px"
+              className={cn(
+                isDescriptionValid && "border-[#5c7c5c]/50"
+              )}
             />
-          </div>
+          </FormField>
         </div>
       </div>
 
-      {/* Timeline Section - All 3 fields in ONE row */}
+      {/* Timeline Section */}
       <div>
         <SectionHeader icon={CalendarDays} title="Timeline" />
         <div className="grid grid-cols-3 gap-4">
-          <div>
-            <CompactLabel>Business Ask Date</CompactLabel>
+          <FormField label="Business Ask Date" showValidation={false}>
             <CatalystDatePicker
               value={data.start_date}
               onChange={(date) => onChange('start_date', date ? format(date, 'yyyy-MM-dd') : null)}
               placeholder="dd/mm/yyyy"
             />
-          </div>
+          </FormField>
 
-          <div>
-            <CompactLabel>Kickoff Date</CompactLabel>
+          <FormField label="Kickoff Date" showValidation={false}>
             <CatalystDatePicker
               value={data.impl_start_date}
               onChange={(date) => onChange('impl_start_date', date ? format(date, 'yyyy-MM-dd') : null)}
               placeholder="dd/mm/yyyy"
             />
-          </div>
+          </FormField>
 
-          <div>
-            <CompactLabel>Target Completion</CompactLabel>
+          <FormField label="Target Completion" showValidation={false}>
             <div className="flex gap-1.5">
               <CatalystDatePicker
                 value={data.end_date}
@@ -237,118 +259,127 @@ export function DemandDetailsTab({ data, onChange }: DemandDetailsTabProps) {
                 onClick={handleLockToggle}
                 className={cn(
                   "h-9 w-9 shrink-0",
-                  targetDateLocked && "bg-muted border-secondary-olive text-secondary-olive"
+                  "border-gray-200 dark:border-gray-600",
+                  targetDateLocked && "bg-[#5c7c5c]/10 border-[#5c7c5c] text-[#5c7c5c]"
                 )}
                 title={targetDateLocked ? `Locked by ${lockedByUser}` : 'Click to lock date'}
               >
                 {targetDateLocked ? <Lock className="h-3.5 w-3.5" /> : <Unlock className="h-3.5 w-3.5" />}
               </Button>
             </div>
-          </div>
+          </FormField>
         </div>
       </div>
 
       {/* Attachments & Assignment Section */}
       <div>
         <SectionHeader icon={Paperclip} title="Attachments & Assignment" />
-        <div className="space-y-3">
-          {/* Attachments - full width */}
-          <div>
-            <div className="flex items-baseline gap-2 mb-1">
-              <CompactLabel>Attachments</CompactLabel>
-              <span className="text-[10px] text-muted-foreground">(Max 5 files, 20MB total)</span>
-            </div>
-            <input
-              ref={fileInputRef}
-              type="file"
-              multiple
-              accept={ALLOWED_EXTENSIONS}
-              onChange={handleFileSelect}
-              className="hidden"
-            />
-            <Button 
-              variant="outline" 
-              className="w-full justify-start text-muted-foreground h-9 text-sm"
-              onClick={() => fileInputRef.current?.click()}
-              disabled={attachments.length >= MAX_FILES}
-            >
-              <Upload className="mr-2 h-3.5 w-3.5" />
-              {attachments.length >= MAX_FILES ? 'Maximum files reached' : 'Upload Files...'}
-            </Button>
-
-            {attachments.length > 0 && (
-              <div className="flex flex-wrap gap-2 mt-2">
-                {attachments.map((file, index) => (
-                  <div 
-                    key={index}
-                    className="flex items-center gap-1.5 px-2 py-1 bg-muted/50 rounded border border-border/40 text-xs"
-                  >
-                    <FileText className="h-3 w-3 text-secondary-bronze shrink-0" />
-                    <span className="truncate max-w-[120px]">{file.name}</span>
-                    <span className="text-muted-foreground">({formatFileSize(file.size)})</span>
-                    <button
-                      className="p-0.5 hover:text-destructive"
-                      onClick={() => removeAttachment(index)}
-                    >
-                      <X className="h-3 w-3" />
-                    </button>
-                  </div>
-                ))}
+        <div className="space-y-4">
+          {/* Attachments */}
+          <FormField 
+            label="Attachments" 
+            showValidation={false}
+          >
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] text-gray-400 dark:text-gray-500">(Max 5 files, 20MB total)</span>
               </div>
-            )}
-          </div>
+              <input
+                ref={fileInputRef}
+                type="file"
+                multiple
+                accept={ALLOWED_EXTENSIONS}
+                onChange={handleFileSelect}
+                className="hidden"
+              />
+              <Button 
+                variant="outline" 
+                className={cn(
+                  "w-full justify-start h-9 text-sm",
+                  "text-gray-500 dark:text-gray-400",
+                  "border-gray-200 dark:border-gray-600",
+                  "border-dashed hover:border-[#c69c6d] hover:bg-[#c69c6d]/5"
+                )}
+                onClick={() => fileInputRef.current?.click()}
+                disabled={attachments.length >= MAX_FILES}
+              >
+                <Upload className="mr-2 h-3.5 w-3.5" />
+                {attachments.length >= MAX_FILES ? 'Maximum files reached' : 'Drop files here or click to upload...'}
+              </Button>
 
-          {/* Reporter + Assignee - 2 columns */}
+              {attachments.length > 0 && (
+                <div className="flex flex-wrap gap-2">
+                  {attachments.map((file, index) => (
+                    <div 
+                      key={index}
+                      className={cn(
+                        "flex items-center gap-1.5 px-2 py-1 rounded-md text-xs",
+                        "bg-gray-50 dark:bg-gray-800",
+                        "border border-gray-200 dark:border-gray-700"
+                      )}
+                    >
+                      <FileText className="h-3 w-3 text-[#c69c6d] shrink-0" />
+                      <span className="truncate max-w-[120px] text-gray-700 dark:text-gray-300">{file.name}</span>
+                      <span className="text-gray-400 dark:text-gray-500">({formatFileSize(file.size)})</span>
+                      <button
+                        className="p-0.5 hover:text-red-500 text-gray-400"
+                        onClick={() => removeAttachment(index)}
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </FormField>
+
+          {/* Reporter + Assignee */}
           <div className="grid grid-cols-2 gap-4">
-            <div>
-              <CompactLabel>Reporter</CompactLabel>
+            <FormField label="Reporter" showValidation={false}>
               <UserPicker
                 value={data.requestor || null}
                 onChange={(value) => onChange('requestor', value as string | null)}
                 placeholder="Select reporter..."
               />
-            </div>
+            </FormField>
 
-            <div>
-              <CompactLabel required>Assignee</CompactLabel>
+            <FormField label="Assignee" required isValid={!!data.assignee}>
               <AssigneeUserPicker
                 value={data.assignee || null}
                 onChange={(value) => onChange('assignee', value)}
                 placeholder="Select assignee..."
               />
-            </div>
+            </FormField>
           </div>
 
-          {/* Department + Business Owner - 2 columns */}
+          {/* Department + Business Owner */}
           <div className="grid grid-cols-2 gap-4">
-            <div>
-              <CompactLabel required>Department</CompactLabel>
+            <FormField label="Department" required isValid={!!data.department_id}>
               <DepartmentSelect
                 value={data.department_id || null}
                 onChange={handleDepartmentChange}
                 placeholder="Select department..."
               />
-            </div>
+            </FormField>
 
-            <div>
-              <CompactLabel required>Business Owner</CompactLabel>
+            <FormField label="Business Owner" required isValid={!!data.business_owner_id}>
               <BusinessOwnerSelect
                 value={data.business_owner_id || null}
                 onChange={handleBusinessOwnerChange}
                 departmentId={data.department_id || null}
                 placeholder="Select business owner..."
               />
-            </div>
+            </FormField>
           </div>
         </div>
       </div>
 
-      {/* Delivery Context Section - 2 columns in ONE row */}
+      {/* Delivery Context Section */}
       <div>
         <SectionHeader icon={Briefcase} title="Delivery Context" />
         <div className="grid grid-cols-2 gap-4">
-          <div>
-            <CompactLabel>Delivery Platform</CompactLabel>
+          <FormField label="Delivery Platform" showValidation={false}>
             <Select
               value={data.delivery_platform || ''}
               onValueChange={(value) => onChange('delivery_platform', value)}
@@ -356,16 +387,16 @@ export function DemandDetailsTab({ data, onChange }: DemandDetailsTabProps) {
               <SelectTrigger className={compactInputClass}>
                 <SelectValue placeholder="Select platform..." />
               </SelectTrigger>
-              <SelectContent className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 shadow-lg rounded-md z-[200]">
+              <SelectContent className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-lg rounded-md z-[200]">
                 <SelectItem value="Senaei Platform">Senaei Platform</SelectItem>
                 <SelectItem value="MIM Platform">MIM Platform</SelectItem>
                 <SelectItem value="Enterprise Platform">Enterprise Platform</SelectItem>
                 <SelectItem value="Digital Platform">Digital Platform</SelectItem>
               </SelectContent>
             </Select>
-          </div>
-          <div>
-            <CompactLabel>Target Quarter</CompactLabel>
+          </FormField>
+
+          <FormField label="Target Quarter" showValidation={false}>
             <Select
               value={data.planned_quarter || ''}
               onValueChange={(value) => onChange('planned_quarter', value)}
@@ -373,7 +404,7 @@ export function DemandDetailsTab({ data, onChange }: DemandDetailsTabProps) {
               <SelectTrigger className={compactInputClass}>
                 <SelectValue placeholder="Select quarter..." />
               </SelectTrigger>
-              <SelectContent className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 shadow-lg rounded-md z-[200]">
+              <SelectContent className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-lg rounded-md z-[200]">
                 <SelectItem value="Q4-2025">Q4 2025</SelectItem>
                 <SelectItem value="Q1-2026">Q1 2026</SelectItem>
                 <SelectItem value="Q2-2026">Q2 2026</SelectItem>
@@ -383,7 +414,7 @@ export function DemandDetailsTab({ data, onChange }: DemandDetailsTabProps) {
                 <SelectItem value="Q2-2027">Q2 2027</SelectItem>
               </SelectContent>
             </Select>
-          </div>
+          </FormField>
         </div>
       </div>
     </div>
