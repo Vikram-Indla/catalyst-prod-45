@@ -43,26 +43,28 @@ export function RoadmapListPanel({
           borderRight: `1px solid ${tokens.border.default}`,
         }}
       >
-        {/* Header */}
+        {/* Header - matches timeline header height (2 lines) */}
         <div 
-          className="flex items-center justify-between px-4 py-3"
+          className="flex items-center justify-between px-4 h-[52px]"
           style={{
             borderBottom: `1px solid ${tokens.border.default}`,
             backgroundColor: tokens.surface.card,
           }}
         >
-          <span 
-            className="text-xs font-semibold uppercase tracking-wider"
-            style={{ color: tokens.text.muted }}
-          >
-            Demands
-          </span>
-          <span 
-            className="text-xs font-medium"
-            style={{ color: tokens.text.secondary }}
-          >
-            {items.length} items
-          </span>
+          <div>
+            <span 
+              className="text-xs font-semibold uppercase tracking-wider block"
+              style={{ color: tokens.text.muted }}
+            >
+              Demands
+            </span>
+            <span 
+              className="text-xs"
+              style={{ color: tokens.text.secondary }}
+            >
+              {items.length} items
+            </span>
+          </div>
         </div>
 
         <ScrollArea className="flex-1">
@@ -145,26 +147,28 @@ export function RoadmapListPanel({
         borderRight: `1px solid ${tokens.border.default}`,
       }}
     >
-      {/* Header */}
+      {/* Header - matches timeline header height (2 lines) */}
       <div 
-        className="flex items-center justify-between px-4 py-3"
+        className="flex items-center justify-between px-4 h-[52px]"
         style={{
           borderBottom: `1px solid ${tokens.border.default}`,
           backgroundColor: tokens.surface.card,
         }}
       >
-        <span 
-          className="text-xs font-semibold uppercase tracking-wider"
-          style={{ color: tokens.text.muted }}
-        >
-          Demands
-        </span>
-        <span 
-          className="text-xs font-medium"
-          style={{ color: tokens.text.secondary }}
-        >
-          {items.length} items
-        </span>
+        <div>
+          <span 
+            className="text-xs font-semibold uppercase tracking-wider block"
+            style={{ color: tokens.text.muted }}
+          >
+            Demands
+          </span>
+          <span 
+            className="text-xs"
+            style={{ color: tokens.text.secondary }}
+          >
+            {items.length} items
+          </span>
+        </div>
       </div>
 
       <ScrollArea className="flex-1">
