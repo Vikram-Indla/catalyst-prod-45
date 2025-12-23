@@ -29,7 +29,7 @@ const getInitialFormData = (): Record<string, any> => ({
   delivery_platform: '',
   planned_quarter: '',
   // Internal defaults
-  process_step: 'new_demand',
+  process_step: 'new_request',
   health: 'green',
 });
 
