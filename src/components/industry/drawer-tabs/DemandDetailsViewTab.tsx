@@ -51,24 +51,29 @@ export function DemandDetailsViewTab({ data, onChange, onDirtyChange }: DemandDe
   };
 
   // Handle department change with auto-setting of business owner
+  // Batches all related field updates into a single onChange call to avoid multiple toasts
   const handleDepartmentChange = (departmentId: string) => {
-    handleChange('department_id', departmentId);
-    // Find department name and set it for legacy field
     const dept = departments?.find(d => d.id === departmentId);
-    if (dept) {
-      handleChange('department', dept.name);
-    }
+    
+    // Build batch update object
+    const updates: Record<string, any> = {
+      department_id: departmentId,
+      department: dept?.name || null,
+    };
+
     // Auto-set business owner from mapping
     if (mappings) {
       const ownerId = getOwnerIdForDepartment(departmentId, mappings);
       if (ownerId) {
-        handleChange('business_owner_id', ownerId);
         const owner = owners?.find(o => o.id === ownerId);
-        if (owner) {
-          handleChange('business_owner', owner.name);
-        }
+        updates.business_owner_id = ownerId;
+        updates.business_owner = owner?.name || null;
       }
     }
+
+    // Single batch update
+    onChange('_batch', updates);
+    onDirtyChange?.(true);
   };
 
   const handleBusinessOwnerChange = (ownerId: string) => {
