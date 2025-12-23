@@ -202,10 +202,10 @@ export function CreateBusinessRequestModal({ isOpen, onClose }: CreateBusinessRe
           <div className="flex items-start justify-between">
             <div className="flex-1 min-w-0 pr-4">
               <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
-                Create Demand Intake
+                Create business request
               </h2>
               <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                Submit a new demand request for review and prioritization
+                Submit a new business request for review and prioritization
               </p>
             </div>
             <button 
