@@ -7,7 +7,6 @@ interface QuarterCellProps {
 
 /**
  * Normalizes quarter format to "Q1 2025" style
- * Handles formats like "Q2-2026", "q1_2025", "Q1 2025"
  */
 function formatQuarter(quarter: string): string {
   let normalized = quarter.toUpperCase().replace(/[-_]/g, ' ').trim();
@@ -29,6 +28,10 @@ function checkIsCurrentQuarter(quarter: string): boolean {
   return formatted === currentQStr;
 }
 
+/**
+ * Quarter badge styling using ONLY Catalyst brand colors
+ * Brand palette: olive (#5c7c5c), bronze (#8b7355), gold (#c69c6d), champagne (#d4b896)
+ */
 export function QuarterCell({ quarter, isCurrentQuarter }: QuarterCellProps) {
   if (!quarter) {
     return <span className="text-gray-400 dark:text-gray-500 text-sm">—</span>;
@@ -42,12 +45,14 @@ export function QuarterCell({ quarter, isCurrentQuarter }: QuarterCellProps) {
         "inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium border",
         isCurrent 
           ? cn(
-              "bg-[var(--brand-gold)]/10 text-[var(--brand-gold)] border-[var(--brand-gold)]/30",
-              "dark:bg-[#c69c6d]/20 dark:text-[#d4a855] dark:border-[#c69c6d]/40"
+              // Current quarter - gold highlight
+              "bg-[#c69c6d]/15 text-[#8b7355] border-[#c69c6d]/40",
+              "dark:bg-[#c69c6d]/25 dark:text-[#d4b896] dark:border-[#c69c6d]/50"
             )
           : cn(
-              "bg-blue-50 text-blue-700 border-blue-200",
-              "dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800"
+              // Regular quarter - olive tint
+              "bg-[#5c7c5c]/10 text-[#5c7c5c] border-[#5c7c5c]/30",
+              "dark:bg-[#5c7c5c]/20 dark:text-[#6b8b6b] dark:border-[#5c7c5c]/40"
             )
       )}
     >
