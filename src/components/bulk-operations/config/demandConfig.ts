@@ -48,13 +48,6 @@ export const demandBulkConfig: BulkOperationConfig = {
       options: [], // Populated dynamically by bulk edit component via useDepartments hook
     },
     {
-      id: 'planned_quarter',
-      label: 'Quarter',
-      type: 'select',
-      dbColumn: 'planned_quarter',
-      options: QUARTER_OPTIONS,
-    },
-    {
       id: 'business_owner',
       label: 'Business Owner',
       type: 'user',
