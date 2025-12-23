@@ -5,7 +5,7 @@
 
 import React from 'react';
 import { cn } from '@/lib/utils';
-import { Search, Plus, Circle } from 'lucide-react';
+import { Search, Plus, Circle, Paperclip } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
@@ -33,6 +33,7 @@ interface RequestItem {
   quarter: string | null;
   createdAt?: string | null;
   updatedAt?: string | null;
+  hasAttachments?: boolean;
 }
 
 interface RequestListPanelProps {
@@ -178,6 +179,20 @@ export function RequestListPanel({
                       <span className="text-xs font-mono font-semibold" style={{ color: 'hsl(var(--secondary-bronze))' }}>
                         {request.id}
                       </span>
+
+                      {/* Attachment indicator */}
+                      {request.hasAttachments && (
+                        <TooltipProvider delayDuration={200}>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Paperclip className="w-3 h-3" style={{ color: 'var(--text-3)' }} />
+                            </TooltipTrigger>
+                            <TooltipContent side="top" className="text-xs">
+                              <p>Has attachments</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      )}
 
                       {(request.autoPriority === 'High' || request.autoPriority === 'high') && (
                         <Badge className="bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400 border-0 text-[10px] px-1.5 py-0">
