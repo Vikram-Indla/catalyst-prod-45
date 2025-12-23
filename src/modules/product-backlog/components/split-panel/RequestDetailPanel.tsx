@@ -450,8 +450,9 @@ export function RequestDetailPanel({
             <div>
               <FieldLabel>Priority</FieldLabel>
               <div 
-                className="h-10 px-3 rounded-md flex items-center justify-between"
+                className="h-10 px-3 rounded-md flex items-center justify-between cursor-pointer"
                 style={{ backgroundColor: 'var(--surface-2)', border: '1px solid var(--divider)' }}
+                onClick={() => toast.info('Priority is auto-calculated from the Scoring tab')}
               >
                 <div className="flex items-center gap-2">
                   <div className={cn('w-2 h-2 rounded-full', priorityColor)} />
