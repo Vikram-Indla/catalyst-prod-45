@@ -426,11 +426,11 @@ export function IndustryHeaderToolbarV2({
           </DropdownMenu>
         )}
 
-        {/* Create Button - Primary CTA (Gold) */}
+        {/* Create Button - Primary CTA (Olive Green) */}
         {onCreateRequest && (
           <button
             onClick={onCreateRequest}
-            className="h-9 px-4 flex items-center gap-2 rounded-lg bg-[#c69c6d] hover:bg-[#b8894d] text-white text-sm font-medium transition-colors shadow-sm"
+            className="h-9 px-4 flex items-center gap-2 rounded-lg bg-secondary-olive hover:bg-secondary-olive/85 text-white text-sm font-medium transition-colors shadow-sm"
           >
             <div className="w-4 h-4">
               <Icons.Plus />
