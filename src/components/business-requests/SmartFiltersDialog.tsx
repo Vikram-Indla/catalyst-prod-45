@@ -439,18 +439,18 @@ export function SmartFiltersDialog({
             <div className="space-y-1.5">
               <Label className="text-sm">Delivery Platform</Label>
               <div className="flex flex-wrap gap-1">
-                {DELIVERY_PLATFORM_OPTIONS.map((platform) => (
+              {DELIVERY_PLATFORM_OPTIONS.map((platform) => (
                   <Button
-                    key={platform}
+                    key={platform.value}
                     variant="outline"
                     size="sm"
                     className={cn(
                       "h-7 text-xs",
-                      localFilters.deliveryPlatform?.includes(platform) && "border-brand-primary bg-brand-primary/10 text-brand-primary"
+                      localFilters.deliveryPlatform?.includes(platform.value) && "border-brand-primary bg-brand-primary/10 text-brand-primary"
                     )}
-                    onClick={() => toggleMultiSelect('deliveryPlatform', platform)}
+                    onClick={() => toggleMultiSelect('deliveryPlatform', platform.value)}
                   >
-                    {platform}
+                    {platform.label.en}
                   </Button>
                 ))}
               </div>
