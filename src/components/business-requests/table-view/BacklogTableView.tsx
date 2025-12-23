@@ -25,6 +25,7 @@ import { DEFAULT_COLUMNS, TableColumn } from './types';
 import { ColumnVisibilityDropdown } from './ColumnVisibilityDropdown';
 import { BulkActionsBar } from './BulkActionsBar';
 import { KeyboardHints } from './KeyboardHints';
+import { DeleteConfirmDialog } from './DeleteConfirmDialog';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
@@ -58,6 +59,8 @@ interface BacklogTableViewProps {
 export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableViewProps) {
   const queryClient = useQueryClient();
   const [hoveredRowId, setHoveredRowId] = useState<string | null>(null);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   
   const { 
     selectedIds, 
@@ -418,12 +421,19 @@ export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableVi
         onAssignOwner={() => toast.info('Assign Owner feature coming soon')}
         onSetQuarter={() => toast.info('Set Quarter feature coming soon')}
         onApprove={() => toast.info('Approve feature coming soon')}
-        onDelete={async () => {
+        onDelete={() => setDeleteDialogOpen(true)}
+      />
+
+      {/* Delete Confirmation Dialog */}
+      <DeleteConfirmDialog
+        isOpen={deleteDialogOpen}
+        onClose={() => setDeleteDialogOpen(false)}
+        selectedCount={selectedIds.size}
+        isDeleting={isDeleting}
+        onConfirm={async () => {
           if (selectedIds.size === 0) return;
           
-          const confirmed = window.confirm(`Are you sure you want to delete ${selectedIds.size} request(s)? This action cannot be undone.`);
-          if (!confirmed) return;
-          
+          setIsDeleting(true);
           try {
             const { error } = await supabase
               .from('business_requests')
@@ -432,12 +442,15 @@ export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableVi
             
             if (error) throw error;
             
-            toast.success(`Deleted ${selectedIds.size} request(s)`);
+            toast.success(`Successfully deleted ${selectedIds.size} request${selectedIds.size > 1 ? 's' : ''}`);
             clearSelection();
             queryClient.invalidateQueries({ queryKey: ['business-requests'] });
+            setDeleteDialogOpen(false);
           } catch (error) {
             console.error('Failed to delete requests:', error);
             toast.error('Failed to delete requests');
+          } finally {
+            setIsDeleting(false);
           }
         }}
       />
