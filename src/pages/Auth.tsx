@@ -264,22 +264,22 @@ export default function Auth() {
 
   return (
     <div className="min-h-screen flex flex-col lg:flex-row">
-      {/* Left Panel - Brand Panel */}
+      {/* Left Panel - Brand Panel with cream background */}
       <div 
-        className="hidden lg:flex relative w-full lg:w-[45%] flex-col justify-start p-6 sm:p-8 md:p-12 lg:p-16 overflow-hidden min-h-[40vh] lg:min-h-screen bg-brand-dark"
+        className="hidden lg:flex relative w-full lg:w-[45%] flex-col justify-start p-6 sm:p-8 md:p-12 lg:p-16 overflow-hidden min-h-[40vh] lg:min-h-screen bg-[#faf7f1]"
         style={{ paddingTop: "clamp(100px, 15vh, 160px)" }}
       >
         {/* Decorative Gradient 1 */}
         <div 
           className="absolute -top-24 -right-24 w-[350px] h-[350px] rounded-full pointer-events-none animate-float"
-          style={{ background: "radial-gradient(circle, hsl(var(--brand-primary) / 0.3) 0%, transparent 70%)" }}
+          style={{ background: "radial-gradient(circle, rgba(92, 124, 92, 0.15) 0%, transparent 70%)" }}
         />
 
         {/* Decorative Gradient 2 */}
         <div 
           className="absolute -bottom-20 -left-20 w-[300px] h-[300px] rounded-full pointer-events-none"
           style={{
-            background: "radial-gradient(circle, hsl(var(--brand-primary) / 0.1) 0%, transparent 70%)",
+            background: "radial-gradient(circle, rgba(92, 124, 92, 0.08) 0%, transparent 70%)",
             animation: "float 10s ease-in-out infinite reverse"
           }}
         />
@@ -288,19 +288,21 @@ export default function Auth() {
         <div className="relative z-10 max-w-lg">
           {/* Headline */}
           <h1 
-            className="mb-4 sm:mb-6 leading-tight font-display text-white"
+            className="mb-4 sm:mb-6 leading-tight font-display"
             style={{
               fontSize: "clamp(2rem, 5vw, 3.2rem)",
               fontWeight: 500,
               lineHeight: 1.2
             }}
           >
-            Streamline your <span className="text-brand-primary font-semibold italic">enterprise</span> demand & delivery
+            <span className="text-[#8b7355]">Streamline your</span>{" "}
+            <span className="text-[#c69c6d] font-semibold italic">enterprise</span>{" "}
+            <span className="text-[#c69c6d] font-semibold italic">demand & delivery</span>
           </h1>
 
-          {/* Description */}
+          {/* Description - FIXED CONTRAST */}
           <p 
-            className="mb-8 sm:mb-12 max-w-md font-body text-white/90"
+            className="mb-8 sm:mb-12 max-w-md font-body text-[#737373]"
             style={{
               fontSize: "clamp(0.95rem, 2vw, 1.1rem)",
               lineHeight: 1.8
@@ -309,8 +311,8 @@ export default function Auth() {
             Transform how your organization manages demand and delivery with intelligent workflows and real-time insights.
           </p>
 
-          {/* Capabilities Section */}
-          <div className="pt-8 sm:pt-12 border-t border-brand-primary/40">
+          {/* Capabilities Section - FIXED CONTRAST */}
+          <div className="pt-8 sm:pt-12 border-t border-[#e5e5e5]">
             <div className="grid grid-cols-2 gap-x-8 gap-y-4">
               {[
                 { Icon: Briefcase, label: "Portfolio Management" },
@@ -324,14 +326,14 @@ export default function Auth() {
                   key={index}
                   className="flex items-center gap-3 group py-2.5 whitespace-nowrap"
                 >
-                  <div className="p-2 bg-brand-primary/15 rounded-lg transition-colors duration-300 group-hover:bg-brand-primary/25">
+                  <div className="p-2 bg-[#5c7c5c]/15 rounded-lg transition-colors duration-300 group-hover:bg-[#5c7c5c]/25">
                     <item.Icon 
-                      className="transition-transform duration-300 group-hover:scale-110 text-brand-primary"
+                      className="transition-transform duration-300 group-hover:scale-110 text-[#5c7c5c]"
                       size={18}
                       strokeWidth={2}
                     />
                   </div>
-                  <span className="font-body text-base font-medium tracking-wide transition-colors duration-300 group-hover:text-brand-primary text-white">
+                  <span className="font-body text-sm font-medium tracking-wide transition-colors duration-300 group-hover:text-[#5c7c5c] text-[#525252]">
                     {item.label}
                   </span>
                 </div>
@@ -343,11 +345,11 @@ export default function Auth() {
         {/* Footer */}
         <div className="absolute bottom-6 sm:bottom-8 md:bottom-12 left-6 sm:left-8 md:left-12 lg:left-16 z-10">
           <div className="flex flex-col gap-3 mb-4">
-            <div className="rounded-sm w-20 h-[3px] bg-brand-primary" />
-            <div className="rounded-sm w-10 h-[3px] bg-brand-primary/50" />
-            <div className="rounded-sm w-5 h-[3px] bg-brand-primary/30" />
+            <div className="rounded-sm w-20 h-[3px] bg-[#5c7c5c]" />
+            <div className="rounded-sm w-10 h-[3px] bg-[#5c7c5c]/50" />
+            <div className="rounded-sm w-5 h-[3px] bg-[#5c7c5c]/30" />
           </div>
-          <p className="font-body text-sm text-white/35">
+          <p className="font-body text-sm text-[#a3a3a3]">
             © 2025 Catalyst. All rights reserved.
           </p>
         </div>
