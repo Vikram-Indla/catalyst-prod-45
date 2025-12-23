@@ -429,8 +429,8 @@ export function DemandDetailsViewTab({ data, onChange, onDirtyChange }: DemandDe
       <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
         <DatePickerField 
           label="Business Ask Date" 
-          value={data.created_at?.split('T')[0] || null} 
-          onChange={handleDateChange('created_at')}
+          value={data.start_date} 
+          onChange={handleDateChange('start_date')}
         />
         <DatePickerField 
           label="Kickoff Date" 
