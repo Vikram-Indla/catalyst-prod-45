@@ -141,6 +141,61 @@ function UserAvatar({ name, size = 'md' }: { name: string; size?: 'sm' | 'md' })
   );
 }
 
+// Assignee Select component with profiles data
+function AssigneeSelect({ value, onChange }: { value: string | null; onChange: (name: string | null) => void }) {
+  // Fetch all profiles for assignment
+  const { data: profiles = [] } = useQuery({
+    queryKey: ['all-profiles-for-assignment'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('id, full_name, email')
+        .order('full_name');
+      if (error) throw error;
+      return data || [];
+    },
+    staleTime: 5 * 60 * 1000,
+  });
+
+  return (
+    <Select value={value || 'unassigned'} onValueChange={(v) => onChange(v === 'unassigned' ? null : v)}>
+      <SelectTrigger 
+        className="w-full h-10"
+        style={{ 
+          backgroundColor: 'hsl(var(--secondary-bronze) / 0.08)', 
+          border: '1px solid hsl(var(--secondary-bronze) / 0.2)' 
+        }}
+      >
+        <SelectValue placeholder="Select assignee">
+          {value ? (
+            <div className="flex items-center gap-2">
+              <UserAvatar name={value} size="sm" />
+              <span>{value}</span>
+            </div>
+          ) : (
+            'Not assigned'
+          )}
+        </SelectValue>
+      </SelectTrigger>
+      <SelectContent>
+        <SelectItem value="unassigned">
+          <span className="text-muted-foreground">Unassigned</span>
+        </SelectItem>
+        {profiles.map((p) => (
+          <SelectItem key={p.id} value={p.full_name || p.email || p.id}>
+            <div className="flex items-center gap-2">
+              <div className="w-6 h-6 rounded-full bg-[hsl(var(--secondary-bronze))] flex items-center justify-center text-white text-[10px] font-semibold">
+                {(p.full_name || p.email || '?').split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
+              </div>
+              <span>{p.full_name || p.email}</span>
+            </div>
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  );
+}
+
 // Field label component
 function FieldLabel({ children }: { children: React.ReactNode }) {
   return (
@@ -455,30 +510,10 @@ export function RequestDetailPanel({
 
             <div>
               <FieldLabel>Assignee</FieldLabel>
-              <div 
-                className="h-10 px-3 rounded-md flex items-center justify-between"
-                style={{ backgroundColor: 'hsl(var(--secondary-bronze) / 0.08)', border: '1px solid hsl(var(--secondary-bronze) / 0.2)' }}
-              >
-                {request.assignee ? (
-                  <>
-                    <div className="flex items-center gap-2">
-                      <UserAvatar name={request.assignee} size="sm" />
-                      <span className="text-sm font-medium" style={{ color: 'var(--text-1)' }}>
-                        {request.assignee}
-                      </span>
-                    </div>
-                    <button 
-                      className="text-xs font-medium"
-                      style={{ color: 'hsl(var(--secondary-bronze))' }}
-                      onClick={() => toast.info('Change assignee')}
-                    >
-                      Change
-                    </button>
-                  </>
-                ) : (
-                  <span className="text-sm" style={{ color: 'var(--text-3)' }}>Not assigned</span>
-                )}
-              </div>
+              <AssigneeSelect
+                value={request.assignee || null}
+                onChange={(name) => onUpdateField('assignee', name)}
+              />
             </div>
           </div>
 
