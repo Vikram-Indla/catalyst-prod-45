@@ -619,39 +619,23 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
               {/* Right Side: Action Buttons */}
               <div className="flex items-center gap-1.5 shrink-0">
                 
-                {/* Save Dropdown */}
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button
-                      size="sm"
-                      disabled={!hasChanges || updateMutation.isPending}
-                      className={cn(
-                        "h-8 px-3 text-[13px] font-medium text-white",
-                        hasChanges 
-                          ? "bg-[#c69c6d] hover:bg-[#b8894d]" 
-                          : "bg-[#c69c6d]/50 cursor-not-allowed opacity-60"
-                      )}
-                      style={{ 
-                        boxShadow: hasChanges ? '0 2px 4px rgba(198, 156, 109, 0.25)' : 'none'
-                      }}
-                    >
-                      Save
-                      <ChevronDown className="h-3.5 w-3.5 ml-1" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent 
-                    align="end" 
-                    className="z-[400] w-40"
-                    style={{ background: 'var(--surface-bg, hsl(var(--background)))', borderColor: 'var(--border-default, hsl(var(--border)))' }}
-                  >
-                    <DropdownMenuItem onSelect={handleSave} disabled={!hasChanges}>
-                      Save
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onSelect={handleSaveAndClose} disabled={!hasChanges}>
-                      Save & Close
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                {/* Save Button */}
+                <Button
+                  size="sm"
+                  disabled={!hasChanges || updateMutation.isPending}
+                  onClick={handleSave}
+                  className={cn(
+                    "h-8 px-4 text-[13px] font-medium text-white",
+                    hasChanges 
+                      ? "bg-[hsl(var(--secondary-olive))] hover:bg-[hsl(var(--secondary-olive)/0.85)]" 
+                      : "bg-[hsl(var(--secondary-olive)/0.5)] cursor-not-allowed opacity-60"
+                  )}
+                  style={{ 
+                    boxShadow: hasChanges ? '0 2px 4px hsla(var(--secondary-olive), 0.25)' : 'none'
+                  }}
+                >
+                  Save
+                </Button>
 
                 {/* More Options */}
                 <DropdownMenu>

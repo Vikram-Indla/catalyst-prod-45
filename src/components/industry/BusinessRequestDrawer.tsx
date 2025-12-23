@@ -463,25 +463,13 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
               
               {/* Right side: Save button + action icons all inline */}
               <div className="flex items-center gap-2 shrink-0">
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button
-                      size="sm"
-                      className="h-8 px-3 text-sm font-medium bg-brand-primary hover:bg-brand-primary-hover text-white"
-                    >
-                      Save
-                      <ChevronDown className="h-3.5 w-3.5 ml-1" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="bg-popover">
-                    <DropdownMenuItem onSelect={handleSave}>
-                      Save
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onSelect={handleSaveAndClose}>
-                      Save & Close
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                <Button
+                  size="sm"
+                  onClick={handleSave}
+                  className="h-8 px-4 text-sm font-medium bg-[hsl(var(--secondary-olive))] hover:bg-[hsl(var(--secondary-olive)/0.85)] text-white"
+                >
+                  Save
+                </Button>
                 
                 {/* More options dropdown */}
                 <DropdownMenu>
