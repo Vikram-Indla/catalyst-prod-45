@@ -833,10 +833,10 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
                 ═══════════════════════════════════════════════════════════ */}
             <div 
               ref={tabsBodyScrollRef}
-              className="flex-1 min-h-0 overflow-y-auto flex flex-col"
+              className="flex-1 min-h-0 overflow-y-auto"
               style={{ background: 'var(--surface-subtle, hsl(var(--muted)/0.3))' }}
             >
-              <TabsContent value="demand-details" className="mt-0 p-5 pb-8 focus-visible:outline-none h-full flex flex-col">
+              <TabsContent value="demand-details" className="mt-0 p-5 pb-8 focus-visible:outline-none">
                 <DemandDetailsViewTab data={formData} onChange={handleFieldChange} />
               </TabsContent>
               

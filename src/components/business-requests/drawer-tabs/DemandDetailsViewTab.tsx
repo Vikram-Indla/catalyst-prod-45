@@ -110,7 +110,7 @@ function Field({
 
 export function DemandDetailsViewTab({ data, onChange }: DemandDetailsViewTabProps) {
   return (
-    <div className="flex-1 flex flex-col min-h-0">
+    <div className="space-y-4">
       {/* DETAILS CARD - Primary card with flex layout for description to fill space */}
       <FormCard title="Details" flexGrow>
         {/* Summary field - fixed height */}
@@ -131,7 +131,8 @@ export function DemandDetailsViewTab({ data, onChange }: DemandDetailsViewTabPro
             value={data.description || ''}
             onChange={(value) => onChange('description', value)}
             placeholder="Enter detailed description..."
-            className="flex-1 h-full min-h-[300px]"
+            minHeight="200px"
+            className="flex-1 h-full"
           />
         </Field>
       </FormCard>
