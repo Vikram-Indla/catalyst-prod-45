@@ -16,81 +16,54 @@
  */
 import { useState, useCallback, useRef, useLayoutEffect } from 'react';
 
-const STORAGE_KEY = 'catalyst.release.incidentList.columnWidths.v2';
+const STORAGE_KEY = 'catalyst.release.incidentList.columnWidths.v3';
 
-// Column categories for sizing algorithm
-const FIXED_COLUMNS = ['key', 'sla', 'actions'] as const;
-const SUMMARY_COLUMN = 'summary';
+// EXECUTIVE 6-COLUMN STRUCTURE ONLY
+// Fixed columns with explicit pixel widths, Summary takes remaining space
+export const COLUMN_WIDTHS: Record<string, string> = {
+  key: '100px',
+  summary: 'auto',  // Takes remaining space
+  severity: '90px',
+  status: '120px',
+  assignee: '180px',
+  sla: '100px',
+  actions: '40px',
+};
 
-// Base minimum widths (content + padding allowance)
+// Minimum widths for resize constraints
 export const MIN_COLUMN_WIDTHS: Record<string, number> = {
-  key: 100,
+  key: 80,
   summary: 200,
   severity: 80,
   status: 100,
-  assignee: 120,
-  sla: 90,
-  // Hidden columns
-  level: 44,
-  age: 48,
-  releaseVersion: 80,
-  major: 54,
-  committee: 72,
+  assignee: 140,
+  sla: 80,
   actions: 40,
 };
 
-// Maximum widths for columns
+// Maximum widths for resize constraints
 export const MAX_COLUMN_WIDTHS: Record<string, number> = {
   key: 140,
-  summary: 700, // Summary max - gives it room to breathe
-  severity: 100,
-  status: 140,
-  assignee: 200,
-  sla: 110,
-  // Hidden columns
-  level: 60,
-  age: 64,
-  releaseVersion: 140,
-  major: 70,
-  committee: 120,
+  summary: 1000,
+  severity: 110,
+  status: 160,
+  assignee: 250,
+  sla: 120,
   actions: 40,
 };
 
-// Flexible column weights for distributing remaining space
-// Higher weight = more space
-const FLEXIBLE_WEIGHTS: Record<string, number> = {
-  summary: 4,     // Give summary the most space
-  status: 1.5,
-  assignee: 2,
-  severity: 1,
-  sla: 1,
-  // Hidden columns
-  level: 0.8,
-  age: 0.8,
-  releaseVersion: 1.5,
-  major: 0.8,
-  committee: 1.2,
-};
-
-// Sensible fallback defaults if we can't measure
+// Default fallback widths (used for grid calculation)
 export const DEFAULT_COLUMN_WIDTHS: Record<string, number> = {
-  key: 110,
+  key: 100,
   summary: 400,
-  severity: 85,
+  severity: 90,
   status: 120,
-  assignee: 150,
+  assignee: 180,
   sla: 100,
-  // Hidden columns
-  level: 50,
-  age: 52,
-  releaseVersion: 95,
-  major: 58,
-  committee: 85,
   actions: 40,
 };
 
-// Column order for iteration - EXACT ORDER for header and rows
-// Streamlined: Key, Summary, Severity, Status, Assignee, SLA (6 core columns)
+// Column order - EXECUTIVE 6 columns only
 export const COLUMN_ORDER = [
   'key', 
   'summary', 
@@ -98,41 +71,43 @@ export const COLUMN_ORDER = [
   'status', 
   'assignee', 
   'sla',
-  // Hidden columns (can be enabled via column selector)
-  'level', 
-  'age', 
-  'releaseVersion', 
-  'major', 
-  'committee', 
   'actions'
 ];
 
-// Center-aligned columns (everything except KEY and SUMMARY)
+// Center-aligned columns
 export const CENTER_ALIGNED_COLUMNS = [
   'severity', 
   'status', 
   'assignee', 
-  'sla',
-  'level', 
-  'age', 
-  'releaseVersion', 
-  'major', 
-  'committee'
+  'sla'
 ];
+
+// Flexible column weights for distributing remaining space
+const FLEXIBLE_WEIGHTS: Record<string, number> = {
+  summary: 5,     // Summary gets most of the extra space
+  status: 1,
+  assignee: 1.5,
+  severity: 0.5,
+  sla: 0.5,
+};
 
 /**
  * SINGLE SOURCE OF TRUTH: Generate grid template columns string
- * This EXACT string must be used by BOTH header row and data rows
+ * Uses table-fixed approach: fixed widths for all columns except summary
  */
 export function getGridTemplate(
   columnWidths: Record<string, number>,
   isColumnVisible: (colId: string) => boolean
 ): string {
+  // Executive 6-column structure with fixed widths and summary taking remaining space
   const cols: string[] = [];
   
   COLUMN_ORDER.forEach(colId => {
     if (colId === 'actions') {
       cols.push('40px');
+    } else if (colId === 'summary' && isColumnVisible(colId)) {
+      // Summary takes all remaining space
+      cols.push('1fr');
     } else if (isColumnVisible(colId)) {
       const width = columnWidths[colId] || DEFAULT_COLUMN_WIDTHS[colId] || 80;
       cols.push(`${Math.round(width)}px`);
