@@ -56,8 +56,11 @@
     <script>
       (function() {
         var isAdmin = window.location.pathname.indexOf('/admin') === 0;
-        if (isAdmin) {
+        var isAuth = window.location.pathname === '/auth' || window.location.pathname.indexOf('/auth') === 0;
+        // Force light mode on admin and auth routes - no dark mode allowed
+        if (isAdmin || isAuth) {
           document.documentElement.setAttribute('data-theme', 'light');
+          document.documentElement.classList.remove('dark');
         } else {
           var stored = localStorage.getItem('catalyst_theme');
           var system = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';

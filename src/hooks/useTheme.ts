@@ -8,6 +8,8 @@ const STORAGE_KEY = 'catalyst_theme';
 export function useTheme() {
   const location = useLocation();
   const isAdminRoute = location.pathname.startsWith('/admin');
+  const isAuthRoute = location.pathname === '/auth' || location.pathname.startsWith('/auth');
+  const forceLightMode = isAdminRoute || isAuthRoute;
   
   const [theme, setThemeState] = useState<Theme>(() => {
     // Initial value - will be corrected in useEffect
@@ -30,14 +32,14 @@ export function useTheme() {
     }
   }, []);
 
-  // Handle admin route forcing light theme
+  // Handle admin and auth routes forcing light theme
   useEffect(() => {
-    if (isAdminRoute) {
+    if (forceLightMode) {
       applyTheme('light');
     } else {
       applyTheme(theme);
     }
-  }, [isAdminRoute, theme, applyTheme]);
+  }, [forceLightMode, theme, applyTheme]);
 
   // Listen for system preference changes when no stored preference
   useEffect(() => {
@@ -46,7 +48,7 @@ export function useTheme() {
 
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
     const handleChange = (e: MediaQueryListEvent) => {
-      if (!isAdminRoute) {
+      if (!forceLightMode) {
         const newTheme = e.matches ? 'dark' : 'light';
         setThemeState(newTheme);
         applyTheme(newTheme);
@@ -55,15 +57,15 @@ export function useTheme() {
 
     mediaQuery.addEventListener('change', handleChange);
     return () => mediaQuery.removeEventListener('change', handleChange);
-  }, [isAdminRoute, applyTheme]);
+  }, [forceLightMode, applyTheme]);
 
   const setTheme = useCallback((newTheme: Theme) => {
-    if (isAdminRoute) return; // Don't allow theme change on admin routes
+    if (forceLightMode) return; // Don't allow theme change on admin/auth routes
     
     setThemeState(newTheme);
     localStorage.setItem(STORAGE_KEY, newTheme);
     applyTheme(newTheme);
-  }, [isAdminRoute, applyTheme]);
+  }, [forceLightMode, applyTheme]);
 
   const toggleTheme = useCallback(() => {
     const newTheme = theme === 'dark' ? 'light' : 'dark';
@@ -71,10 +73,11 @@ export function useTheme() {
   }, [theme, setTheme]);
 
   return {
-    theme: isAdminRoute ? 'light' : theme,
+    theme: forceLightMode ? 'light' : theme,
     setTheme,
     toggleTheme,
-    isDark: !isAdminRoute && theme === 'dark',
+    isDark: !forceLightMode && theme === 'dark',
     isAdminRoute,
+    isAuthRoute,
   };
 }
