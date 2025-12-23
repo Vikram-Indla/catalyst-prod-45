@@ -20,6 +20,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { TimelineFilterPopover, TimelineFilterState, DEFAULT_TIMELINE_FILTER } from '@/components/roadmap/TimelineFilterPopover';
 
 // Group By types
 export type DemandGroupBy = 'none' | 'platform' | 'owner' | 'quarter';
@@ -30,8 +31,6 @@ const GROUP_BY_OPTIONS: { value: DemandGroupBy; label: string }[] = [
   { value: 'owner', label: 'Business Owner' },
   { value: 'quarter', label: 'Planned Quarter' },
 ];
-
-const YEAR_OPTIONS = ['2025', '2026', '2027'];
 
 interface ProductRoadmapToolbarProps {
   scale: Scale;
@@ -47,9 +46,9 @@ interface ProductRoadmapToolbarProps {
   groupBy: DemandGroupBy;
   onGroupByChange: (groupBy: DemandGroupBy) => void;
   
-  // Year
-  selectedYear?: string;
-  onYearChange?: (year: string) => void;
+  // Timeline Filter
+  timelineFilter: TimelineFilterState;
+  onTimelineFilterChange: (filter: TimelineFilterState) => void;
   
   // Viewport (staged)
   appliedViewport: { start: Date; end: Date; scale: Scale };
@@ -251,8 +250,8 @@ export const ProductRoadmapToolbar: React.FC<ProductRoadmapToolbarProps> = ({
   onSearchChange,
   groupBy,
   onGroupByChange,
-  selectedYear = '2025',
-  onYearChange,
+  timelineFilter,
+  onTimelineFilterChange,
   appliedViewport,
   draftViewport,
   onDraftViewportChange,
@@ -277,12 +276,7 @@ export const ProductRoadmapToolbar: React.FC<ProductRoadmapToolbarProps> = ({
 }) => {
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [groupByMenuOpen, setGroupByMenuOpen] = useState(false);
-  const [yearMenuOpen, setYearMenuOpen] = useState(false);
   const filtersRef = useRef<HTMLDivElement>(null);
-  
-  const [internalYear, setInternalYear] = useState(selectedYear);
-  const currentYear = onYearChange ? selectedYear : internalYear;
-  const handleYearChange = onYearChange || setInternalYear;
   
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -294,7 +288,6 @@ export const ProductRoadmapToolbar: React.FC<ProductRoadmapToolbarProps> = ({
       }
       // Close other menus
       setGroupByMenuOpen(false);
-      setYearMenuOpen(false);
     };
     
     document.addEventListener('mousedown', handleClickOutside);
@@ -359,7 +352,6 @@ export const ProductRoadmapToolbar: React.FC<ProductRoadmapToolbarProps> = ({
             )}
             onClick={() => {
               setGroupByMenuOpen(!groupByMenuOpen);
-              setYearMenuOpen(false);
             }}
           >
             <Layers size={16} />
@@ -528,39 +520,11 @@ export const ProductRoadmapToolbar: React.FC<ProductRoadmapToolbarProps> = ({
         
         <div className="w-px h-6 bg-border" />
         
-        {/* Year Selector - matches Program */}
-        <div className="relative" onClick={(e) => e.stopPropagation()}>
-          <button
-            onClick={() => {
-              setYearMenuOpen(!yearMenuOpen);
-              setGroupByMenuOpen(false);
-            }}
-            className="h-9 px-3 flex items-center gap-2 text-sm border border-border rounded-lg bg-background hover:bg-muted"
-          >
-            <span>{currentYear}</span>
-            <ChevronDown size={12} />
-          </button>
-          {yearMenuOpen && (
-            <div className="absolute top-full right-0 mt-1 min-w-[100px] bg-background border border-border rounded-lg shadow-lg z-50">
-              {YEAR_OPTIONS.map(y => (
-                <div
-                  key={y}
-                  className={cn(
-                    "flex items-center justify-between px-3 py-2 text-sm cursor-pointer hover:bg-muted first:rounded-t-lg last:rounded-b-lg",
-                    currentYear === y && "text-brand-primary"
-                  )}
-                  onClick={() => {
-                    handleYearChange(y);
-                    setYearMenuOpen(false);
-                  }}
-                >
-                  {y}
-                  {currentYear === y && <Check size={16} className="text-brand-primary" />}
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
+        {/* Timeline Filter Popover */}
+        <TimelineFilterPopover
+          value={timelineFilter}
+          onChange={onTimelineFilterChange}
+        />
         
         {/* Info/Legend Button - matches Program */}
         <TooltipProvider>
