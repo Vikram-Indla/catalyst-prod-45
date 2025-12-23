@@ -86,33 +86,25 @@ export function ExecutiveAuditHistoryTab({ requestId }: ExecutiveAuditHistoryTab
       const from = pageParam * PAGE_SIZE;
       const to = from + PAGE_SIZE - 1;
 
-      // Join with profiles table to get proper user names
+      // Query audit logs directly (no FK to profiles)
       const { data, error, count } = await supabase
         .from('business_request_audit_logs')
-        .select(`
-          *,
-          actor:profiles!actor_id(full_name, email)
-        `, { count: 'exact' })
+        .select('*', { count: 'exact' })
         .eq('business_request_id', requestId)
         .order('created_at', { ascending: false })
         .range(from, to);
 
       if (error) throw error;
       
-      // Map logs to include resolved actor name
-      const logsWithNames = (data || []).map((log: any) => ({
-        ...log,
-        actor_name: log.actor?.full_name || log.actor?.email || log.actor_name || 'Unknown User'
-      }));
-      
-      return { logs: logsWithNames, count: count || 0, page: pageParam };
+      return { logs: data || [], count: count || 0, page: pageParam };
     },
     getNextPageParam: (lastPage) => {
       const totalLoaded = (lastPage.page + 1) * PAGE_SIZE;
       return totalLoaded < lastPage.count ? lastPage.page + 1 : undefined;
     },
     initialPageParam: 0,
-    enabled: !!requestId
+    enabled: !!requestId,
+    staleTime: 60000, // Cache for 1 minute
   });
 
   const allLogs = data?.pages.flatMap(page => page.logs) || [];
