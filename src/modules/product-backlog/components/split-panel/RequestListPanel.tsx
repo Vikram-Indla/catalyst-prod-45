@@ -101,25 +101,26 @@ export function RequestListPanel({
 
         {/* Quick Filters */}
         <div className="flex gap-2">
-          {(['all', 'high', 'unscored', 'my'] as const).map((filter) => (
-            <button
-              key={filter}
-              onClick={() => onFilterChange(filter)}
-              className={cn(
-                'px-3 py-1 text-xs font-medium rounded-full transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:ring-[hsl(var(--secondary-olive))]',
-                activeFilter !== filter && 'hover:bg-muted'
-              )}
-              style={{
-                backgroundColor: activeFilter === filter ? 'hsl(var(--secondary-olive))' : 'hsl(var(--muted))',
-                color: activeFilter === filter ? '#ffffff' : 'hsl(var(--foreground))',
-              }}
-            >
-              {filter === 'all' && 'All'}
-              {filter === 'high' && 'High Priority'}
-              {filter === 'unscored' && 'Unscored'}
-              {filter === 'my' && 'My Items'}
-            </button>
-          ))}
+          {(['all', 'high', 'unscored', 'my'] as const).map((filter) => {
+            const isActive = activeFilter === filter;
+            return (
+              <button
+                key={filter}
+                onClick={() => onFilterChange(filter)}
+                className={cn(
+                  'px-3 py-1 text-xs font-medium rounded-full transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-1',
+                  isActive
+                    ? 'bg-primary text-primary-foreground hover:bg-primary/90 focus-visible:ring-primary'
+                    : 'bg-muted text-foreground hover:bg-muted/80 focus-visible:ring-ring'
+                )}
+              >
+                {filter === 'all' && 'All'}
+                {filter === 'high' && 'High Priority'}
+                {filter === 'unscored' && 'Unscored'}
+                {filter === 'my' && 'My Items'}
+              </button>
+            );
+          })}
         </div>
       </div>
 
