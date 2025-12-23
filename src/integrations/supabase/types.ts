@@ -15902,6 +15902,10 @@ export type Database = {
       is_user_approved: { Args: { user_id: string }; Returns: boolean }
       show_limit: { Args: never; Returns: number }
       show_trgm: { Args: { "": string }; Returns: string[] }
+      soft_delete_incident: {
+        Args: { p_incident_id: string }
+        Returns: undefined
+      }
       track_room_access: {
         Args: {
           p_page_key?: string
