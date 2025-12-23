@@ -15,7 +15,7 @@ interface RisksViewTabProps {
 export function RisksViewTab({ data }: RisksViewTabProps) {
   if (!data.id) {
     return (
-      <div className="p-6 text-center text-muted-foreground text-sm">
+      <div className="p-4 md:p-5 pb-6 text-center text-muted-foreground text-sm">
         Save the request first to add risks.
       </div>
     );

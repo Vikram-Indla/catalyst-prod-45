@@ -33,7 +33,7 @@ export function LinksViewTab({ data, onChange, onDirtyChange }: LinksViewTabProp
   };
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-4 md:p-5 pb-6 space-y-6">
       {/* Quick Links */}
       <div className="space-y-4">
         <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Quick Links</h3>
