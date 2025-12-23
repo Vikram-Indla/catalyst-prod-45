@@ -4,11 +4,8 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Calendar } from '@/components/ui/calendar';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { format } from 'date-fns';
+import { CatalystDatePicker } from '@/components/ui/catalyst-date-picker';
 import { cn } from '@/lib/utils';
-import { CalendarIcon } from 'lucide-react';
 
 interface KeyResult {
   id: string;
@@ -110,28 +107,12 @@ export function KeyResultItem({ keyResult, onOpenCheckIn, onUpdate }: KeyResultI
 
           <div>
             <div className="text-xs text-muted-foreground mb-1">End date</div>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  className={cn(
-                    "w-full justify-start text-left font-normal h-8",
-                    !keyResult.end_date && "text-muted-foreground"
-                  )}
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {keyResult.end_date ? format(new Date(keyResult.end_date), "PPP") : <span>Select a date</span>}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0">
-                <Calendar
-                  mode="single"
-                  selected={keyResult.end_date ? new Date(keyResult.end_date) : undefined}
-                  onSelect={(date) => date && onUpdate({ end_date: date.toISOString() })}
-                  initialFocus
-                />
-              </PopoverContent>
-            </Popover>
+            <CatalystDatePicker
+              value={keyResult.end_date || null}
+              onChange={(date) => date && onUpdate({ end_date: date.toISOString() })}
+              placeholder="Select a date"
+              triggerClassName="h-8"
+            />
           </div>
 
           <div>

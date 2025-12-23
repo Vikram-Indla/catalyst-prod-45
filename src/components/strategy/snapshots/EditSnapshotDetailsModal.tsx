@@ -4,11 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { StrategicSnapshot, useUpdateSnapshot } from '@/hooks/useStrategicSnapshots';
-import { format } from 'date-fns';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Calendar } from '@/components/ui/calendar';
-import { CalendarIcon } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { CatalystDatePicker } from '@/components/ui/catalyst-date-picker';
 import { catalystToast } from '@/lib/catalystToast';
 
 interface EditSnapshotDetailsModalProps {
@@ -105,54 +101,22 @@ export function EditSnapshotDetailsModal({ open, onClose, snapshot }: EditSnapsh
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label>Start date <span className="text-destructive">*</span></Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className={cn(
-                      'w-full justify-start text-left font-normal',
-                      !startDate && 'text-muted-foreground'
-                    )}
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {startDate ? format(startDate, 'MMM d, yyyy') : 'Select date'}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={startDate}
-                    onSelect={setStartDate}
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
+              <CatalystDatePicker
+                value={startDate || null}
+                onChange={(date) => setStartDate(date || undefined)}
+                placeholder="Select date"
+                dateFormat="MMM d, yyyy"
+              />
             </div>
 
             <div className="space-y-2">
               <Label>End date <span className="text-destructive">*</span></Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className={cn(
-                      'w-full justify-start text-left font-normal',
-                      !endDate && 'text-muted-foreground'
-                    )}
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {endDate ? format(endDate, 'MMM d, yyyy') : 'Select date'}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={endDate}
-                    onSelect={setEndDate}
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
+              <CatalystDatePicker
+                value={endDate || null}
+                onChange={(date) => setEndDate(date || undefined)}
+                placeholder="Select date"
+                dateFormat="MMM d, yyyy"
+              />
             </div>
           </div>
 

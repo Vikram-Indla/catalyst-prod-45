@@ -1,13 +1,8 @@
-import { useState } from 'react';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { Calendar } from '@/components/ui/calendar';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Button } from '@/components/ui/button';
+import { CatalystDatePicker } from '@/components/ui/catalyst-date-picker';
 import { Card, CardContent } from '@/components/ui/card';
-import { CalendarIcon } from 'lucide-react';
 import { format } from 'date-fns';
-import { cn } from '@/lib/utils';
 import { BusinessRequest } from '@/types/business-request';
 
 interface OnHoldTabProps {
@@ -17,7 +12,6 @@ interface OnHoldTabProps {
 }
 
 export function OnHoldTab({ data, isEditMode, onChange }: OnHoldTabProps) {
-  const [resumeDateOpen, setResumeDateOpen] = useState(false);
   return (
     <div className="space-y-6 p-5">
       {/* On Hold Reason Section */}
@@ -39,32 +33,11 @@ export function OnHoldTab({ data, isEditMode, onChange }: OnHoldTabProps) {
 
           <div>
             <Label className="text-sm font-medium">Expected Resume Date</Label>
-            <Popover open={resumeDateOpen} onOpenChange={setResumeDateOpen}>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  className={cn(
-                    "w-full justify-start text-left font-normal",
-                    !data.expected_resume_date && "text-muted-foreground"
-                  )}
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {data.expected_resume_date ? format(new Date(data.expected_resume_date), 'PPP') : 'Pick a date'}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
-                  mode="single"
-                  selected={data.expected_resume_date ? new Date(data.expected_resume_date) : undefined}
-                  onSelect={(date) => {
-                    onChange('expected_resume_date', date ? format(date, 'yyyy-MM-dd') : null);
-                    setResumeDateOpen(false);
-                  }}
-                  initialFocus
-                  className="pointer-events-auto"
-                />
-              </PopoverContent>
-            </Popover>
+            <CatalystDatePicker
+              value={data.expected_resume_date || null}
+              onChange={(date) => onChange('expected_resume_date', date ? format(date, 'yyyy-MM-dd') : null)}
+              placeholder="Pick a date"
+            />
           </div>
         </CardContent>
       </Card>

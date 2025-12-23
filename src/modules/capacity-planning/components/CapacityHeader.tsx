@@ -7,8 +7,7 @@ import { format, addWeeks, subWeeks, addDays } from 'date-fns';
 import { getGCCWeekStart } from '../utils/dateUtils';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Calendar } from '@/components/ui/calendar';
+import { CatalystDatePicker } from '@/components/ui/catalyst-date-picker';
 import { CapacityFilter, CapacityFilters, DEFAULT_FILTERS } from './CapacityFilter';
 import { ResourceInventoryItem } from '@/hooks/useResourceInventory';
 
@@ -56,7 +55,7 @@ export function CapacityHeader({
   onFiltersChange,
   resources,
 }: CapacityHeaderProps) {
-  const [calendarOpen, setCalendarOpen] = useState(false);
+  
   
   const weeksCount = timeSpan === '2weeks' ? 2 : 5;
   const endDate = addDays(addWeeks(startDate, weeksCount), -1);
@@ -143,23 +142,15 @@ export function CapacityHeader({
               <ChevronLeft className="h-4 w-4" />
             </Button>
 
-            <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
-              <PopoverTrigger asChild>
-                <Button variant="ghost" size="sm" className="h-8 px-3 gap-2 text-foreground font-medium">
-                  <CalendarIcon className="h-4 w-4 text-muted-foreground" />
-                  {format(startDate, 'MMM d')} – {format(endDate, 'MMM d, yyyy')}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0 z-[400]" align="center">
-                <Calendar
-                  mode="single"
-                  selected={startDate}
-                  onSelect={handleDateSelect}
-                  initialFocus
-                  className="p-3 pointer-events-auto"
-                />
-              </PopoverContent>
-            </Popover>
+            <CatalystDatePicker
+              value={startDate}
+              onChange={(date) => date && onStartDateChange(getGCCWeekStart(date))}
+              placeholder="Select date"
+              dateFormat="MMM d"
+              triggerClassName="h-8 px-3 gap-2 text-foreground font-medium border-0 bg-transparent hover:bg-accent"
+              showClearButton={false}
+              showTodayButton={true}
+            />
 
             <Button variant="ghost" size="icon" className="h-8 w-8" onClick={handleNext}>
               <ChevronRight className="h-4 w-4" />
