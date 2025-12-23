@@ -17,7 +17,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
-import { toast } from '@/components/ui/catalyst-toast';
+import { catalystToast as toast } from '@/lib/catalystToast';
 
 interface DeleteIncidentDialogProps {
   open: boolean;
@@ -45,17 +45,13 @@ export function DeleteIncidentDialog({
 
       if (error) throw error;
 
-      toast.success(`Incident ${incidentKey} deleted`, {
-        description: 'The incident has been removed from the list.',
-      });
+      toast.success(`Incident ${incidentKey} deleted`, 'The incident has been removed from the list.');
 
       queryClient.invalidateQueries({ queryKey: ['incidents'] });
       queryClient.invalidateQueries({ queryKey: ['open-incident-count'] });
       onOpenChange(false);
     } catch (error: any) {
-      toast.error('Failed to delete incident', {
-        description: error.message || 'Please try again.',
-      });
+      toast.error('Failed to delete incident', error.message || 'Please try again.');
     } finally {
       setIsDeleting(false);
     }

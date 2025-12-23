@@ -1,8 +1,8 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { X, CheckCircle, AlertTriangle, XCircle, Star, LucideIcon } from 'lucide-react';
+import { X, Check, Info, AlertTriangle, Trash2, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-export type CatalystToastType = 'info' | 'success' | 'error' | 'warning';
+export type CatalystToastType = 'info' | 'success' | 'error' | 'warning' | 'undo' | 'loading';
 
 export interface CatalystToastAction {
   label: string;
@@ -13,32 +13,49 @@ export interface CatalystToastProps {
   id: string;
   type: CatalystToastType;
   title: string;
-  message: string;
+  message?: string;
   action?: CatalystToastAction;
   onClose: (id: string) => void;
   duration?: number;
+  undoCountdown?: number;
   isRTL?: boolean;
 }
 
-const iconMap: Record<CatalystToastType, LucideIcon> = {
-  info: Star,
-  success: CheckCircle,
-  error: XCircle,
-  warning: AlertTriangle,
-};
-
-const typeStyles = {
-  info: {
-    iconColor: 'text-brand-primary',
-  },
+// Variant configurations with Catalyst brand colors
+const variantConfig: Record<CatalystToastType, {
+  bg: string;
+  iconBg: string;
+  icon: React.ReactNode;
+}> = {
   success: {
-    iconColor: 'text-emerald-500',
+    bg: 'bg-[#5c7c5c]', // Olive
+    iconBg: 'bg-white/20',
+    icon: <Check className="w-5 h-5 text-white" />,
   },
   error: {
-    iconColor: 'text-red-500',
+    bg: 'bg-red-600',
+    iconBg: 'bg-white/20',
+    icon: <X className="w-5 h-5 text-white" />,
   },
   warning: {
-    iconColor: 'text-amber-500',
+    bg: 'bg-[#8b7355]', // Bronze
+    iconBg: 'bg-white/20',
+    icon: <AlertTriangle className="w-5 h-5 text-white" />,
+  },
+  info: {
+    bg: 'bg-[#c69c6d]', // Gold
+    iconBg: 'bg-white/20',
+    icon: <Info className="w-5 h-5 text-white" />,
+  },
+  undo: {
+    bg: 'bg-gray-900 dark:bg-gray-700',
+    iconBg: 'bg-white/10',
+    icon: <Trash2 className="w-5 h-5 text-white" />,
+  },
+  loading: {
+    bg: 'bg-[#c69c6d]', // Gold
+    iconBg: 'bg-white/20',
+    icon: <Loader2 className="w-5 h-5 text-white animate-spin" />,
   },
 };
 
@@ -50,36 +67,55 @@ export const CatalystToast: React.FC<CatalystToastProps> = ({
   action,
   onClose,
   duration = 5000,
+  undoCountdown,
   isRTL = false,
 }) => {
   const [isExiting, setIsExiting] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
+  const [countdown, setCountdown] = useState(undoCountdown || 0);
 
-  const styles = typeStyles[type];
-  const Icon = iconMap[type];
+  const config = variantConfig[type];
 
   const handleClose = useCallback(() => {
     setIsExiting(true);
     setTimeout(() => onClose(id), 200);
   }, [id, onClose]);
 
-  // Auto-dismiss timer
+  // Countdown for undo toasts
   useEffect(() => {
-    if (duration && !isPaused) {
+    if (type === 'undo' && undoCountdown && !isPaused) {
+      const interval = setInterval(() => {
+        setCountdown(prev => {
+          if (prev <= 1) {
+            clearInterval(interval);
+            handleClose();
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+      return () => clearInterval(interval);
+    }
+  }, [type, undoCountdown, isPaused, handleClose]);
+
+  // Auto-dismiss timer (not for loading or undo toasts)
+  useEffect(() => {
+    if (duration && type !== 'loading' && type !== 'undo' && !isPaused) {
       const timer = setTimeout(handleClose, duration);
       return () => clearTimeout(timer);
     }
-  }, [duration, isPaused, handleClose]);
+  }, [duration, type, isPaused, handleClose]);
 
   return (
     <div
       className={cn(
-        'relative flex items-start gap-4 px-5 py-4 min-w-[380px] max-w-[460px]',
-        'bg-white rounded-xl',
-        'border border-neutral-200/80',
-        'shadow-[0_8px_30px_rgba(0,0,0,0.08),0_4px_12px_rgba(0,0,0,0.05)]',
-        'font-sans motion-reduce:animate-none',
-        isExiting ? 'animate-toast-out' : 'animate-toast-in',
+        'relative flex items-center gap-3 min-w-[320px] max-w-[480px] py-3 px-4',
+        'rounded-xl text-white shadow-lg',
+        'motion-reduce:animate-none',
+        config.bg,
+        isExiting 
+          ? 'animate-out fade-out slide-out-to-bottom-4 duration-200' 
+          : 'animate-in fade-in slide-in-from-bottom-4 duration-300',
         isRTL ? 'rtl' : 'ltr'
       )}
       role="alert"
@@ -88,52 +124,67 @@ export const CatalystToast: React.FC<CatalystToastProps> = ({
       onMouseLeave={() => setIsPaused(false)}
       dir={isRTL ? 'rtl' : 'ltr'}
     >
-      {/* Icon */}
-      <div className="flex-shrink-0 pt-0.5">
-        <Icon size={28} className={cn(styles.iconColor, 'stroke-[1.5]')} aria-hidden="true" />
+      {/* Icon with subtle background */}
+      <div className={cn(
+        'flex-shrink-0 w-9 h-9 flex items-center justify-center rounded-full',
+        config.iconBg
+      )}>
+        {config.icon}
       </div>
 
       {/* Content */}
-      <div className="flex-1 min-w-0 pt-0.5">
-        <p className="text-[15px] font-semibold text-neutral-900 leading-tight mb-1">
+      <div className="flex-1 min-w-0">
+        <p className="text-sm font-semibold text-white leading-tight">
           {title}
         </p>
-        <p className="text-[13px] text-neutral-500 leading-relaxed">
-          {message}
-        </p>
-        
-        {action && (
-          <div className="mt-2.5">
-            <button
-              onClick={action.onClick}
-              className={cn(
-                'text-[13px] font-medium text-brand-primary',
-                'bg-transparent border-none cursor-pointer p-0',
-                'hover:text-brand-primary-dark hover:underline',
-                'transition-all duration-150 ease-out',
-                'focus:outline-none focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-600 focus:ring-offset-2 rounded'
-              )}
-            >
-              {action.label}
-            </button>
-          </div>
+        {message && (
+          <p className="text-xs text-white/80 mt-0.5 truncate">
+            {message}
+          </p>
         )}
       </div>
 
-      {/* Close Button */}
-      <button
-        onClick={handleClose}
-        aria-label="Dismiss notification"
-        className={cn(
-          'flex-shrink-0 w-6 h-6 flex items-center justify-center',
-          'bg-transparent border-none cursor-pointer rounded-md',
-          'text-neutral-400 hover:text-neutral-600 hover:bg-neutral-100',
-          'transition-all duration-150 ease-out',
-          'focus:outline-none focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-600 focus:ring-offset-2'
-        )}
-      >
-        <X size={18} strokeWidth={1.5} aria-hidden="true" />
-      </button>
+      {/* Action Button */}
+      {action && (
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            action.onClick();
+            handleClose();
+          }}
+          className={cn(
+            'flex-shrink-0 text-xs font-medium text-white/90 px-2 py-1',
+            'bg-white/20 rounded hover:bg-white/30',
+            'transition-colors duration-150',
+            'focus:outline-none focus:ring-2 focus:ring-white/50'
+          )}
+        >
+          {action.label}
+        </button>
+      )}
+
+      {/* Countdown for undo */}
+      {type === 'undo' && countdown > 0 && (
+        <span className="flex-shrink-0 text-xs text-white/70 ml-1">
+          {countdown}s
+        </span>
+      )}
+
+      {/* Dismiss button (for non-auto-dismiss toasts) */}
+      {(type === 'loading' || (!duration && type !== 'undo')) && (
+        <button
+          onClick={handleClose}
+          aria-label="Dismiss notification"
+          className={cn(
+            'flex-shrink-0 w-6 h-6 flex items-center justify-center rounded-md ml-1',
+            'text-white/70 hover:text-white hover:bg-white/20',
+            'transition-colors duration-150',
+            'focus:outline-none focus:ring-2 focus:ring-white/50'
+          )}
+        >
+          <X size={16} aria-hidden="true" />
+        </button>
+      )}
     </div>
   );
 };

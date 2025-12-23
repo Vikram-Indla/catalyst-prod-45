@@ -19,7 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { toast } from '@/components/ui/catalyst-toast';
+import { catalystToast as toast } from '@/lib/catalystToast';
 import { Loader2 } from 'lucide-react';
 
 interface CreateStoryDialogProps {
@@ -86,13 +86,13 @@ export const CreateStoryDialog: React.FC<CreateStoryDialogProps> = ({
       // Invalidate work items query so the list refreshes
       queryClient.invalidateQueries({ queryKey: ['work-items', projectId] });
       queryClient.invalidateQueries({ queryKey: ['stories'] });
-      toast.success('Story created', { description: 'The story has been created successfully.' });
+      toast.success('Story created', 'The story has been created successfully.');
       resetForm();
       onClose();
       onSuccess?.();
     },
     onError: (error: any) => {
-      toast.error('Failed to create story', { description: error.message });
+      toast.error('Failed to create story', error.message);
     },
   });
 
