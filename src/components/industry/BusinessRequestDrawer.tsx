@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetClose } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -53,7 +53,9 @@ const AUDIT_FIELD_LABELS: Record<string, string> = {
   description: 'Description',
   process_step: 'Process Step',
   department: 'Department',
+  department_id: 'Department',
   business_owner: 'Business Owner',
+  business_owner_id: 'Business Owner',
   requestor: 'Requestor',
   assignee: 'Assignee',
   delivery_platform: 'Delivery Platform',
@@ -66,6 +68,9 @@ const AUDIT_FIELD_LABELS: Record<string, string> = {
   estimated_cost: 'Estimated Cost',
   start_date: 'Start Date',
   end_date: 'End Date',
+  impl_start_date: 'Kickoff Date',
+  ea_review_required: 'EA Review Required',
+  priority_tier: 'Priority Tier',
   executive_urgency: 'Executive Urgency',
   business_value: 'Business Value',
   complexity_score: 'Complexity Score',
@@ -218,8 +223,10 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
     const fieldsToCheck = [
       'title', 'description', 'requestor', 'delivery_platform', 'delivery_track',
       'platform', 'complexity', 'urgency', 'track', 'health', 'process_step',
-      'planned_quarter', 'start_date', 'end_date', 'executive_urgency', 
-      'business_value', 'complexity_score', 'business_score'
+      'planned_quarter', 'start_date', 'end_date', 'impl_start_date',
+      'executive_urgency', 'business_value', 'complexity_score', 'business_score',
+      'department', 'department_id', 'business_owner', 'business_owner_id',
+      'assignee', 'ea_review_required', 'priority_tier'
     ];
     
     for (const field of fieldsToCheck) {
@@ -232,12 +239,69 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
     return false;
   }, [originalData]);
 
-  const handleFieldChange = (field: string, value: any) => {
-    // Use functional update to ensure we always get the latest state
-    // This is critical when multiple onChange calls happen in sequence
-    setFormData(prev => ({ ...prev, [field]: value }));
+  // Auto-save timeout ref
+  const autoSaveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  
+  // Auto-save function
+  const triggerAutoSave = useCallback((dataToSave: Partial<BusinessRequest> & Record<string, any>, originalDataForAudit: Partial<BusinessRequest> & Record<string, any>) => {
+    if (!requestId) return;
     
-    // Enable Save button on first edit - stays enabled until user manually saves
+    // Clear any pending auto-save
+    if (autoSaveTimeoutRef.current) {
+      clearTimeout(autoSaveTimeoutRef.current);
+    }
+    
+    // Debounce auto-save by 800ms
+    autoSaveTimeoutRef.current = setTimeout(async () => {
+      console.log('Auto-saving changes...');
+      
+      // Log field changes to audit table
+      await logFieldChanges(requestId, originalDataForAudit, dataToSave);
+      
+      updateMutation.mutate({ id: requestId, data: dataToSave as Partial<BusinessRequest> }, {
+        onSuccess: () => {
+          console.log('Auto-save successful');
+          setOriginalData(dataToSave);
+          setHasChanges(false);
+          skipNextFormResetRef.current = true;
+          // Refresh all views
+          queryClient.invalidateQueries({ queryKey: ['business-requests'] });
+          queryClient.invalidateQueries({ queryKey: ['business-request-audit', requestId] });
+          toast.success('Changes saved', { duration: 2000 });
+        }
+      });
+    }, 800);
+  }, [requestId, updateMutation, queryClient]);
+
+  // Cleanup auto-save timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (autoSaveTimeoutRef.current) {
+        clearTimeout(autoSaveTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  const handleFieldChange = (field: string, value: any) => {
+    // Handle batch updates (multiple fields at once)
+    if (field === '_batch' && typeof value === 'object') {
+      setFormData(prev => {
+        const updated = { ...prev, ...value };
+        // Trigger auto-save with the updated data
+        triggerAutoSave(updated, originalData);
+        return updated;
+      });
+    } else {
+      // Use functional update to ensure we always get the latest state
+      setFormData(prev => {
+        const updated = { ...prev, [field]: value };
+        // Trigger auto-save with the updated data
+        triggerAutoSave(updated, originalData);
+        return updated;
+      });
+    }
+    
+    // Enable Save button on first edit
     if (!hasChanges) {
       setHasChanges(true);
     }
