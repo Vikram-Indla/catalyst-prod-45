@@ -9,22 +9,15 @@ export interface ColumnConfig {
   required?: boolean;
 }
 
-// Streamlined 6-column structure: Key, Summary, Severity, Status, Assignee, SLA
-// Removed: Level (rarely used), Age (secondary), Priority (redundant with Sev), Release/Major/Committee (useless)
+// EXECUTIVE 6-COLUMN STRUCTURE: Key, Summary, Severity, Status, Assignee, SLA
+// Removed permanently: Committee (100% N/A), Major (redundant w/ SEV), Release (90% empty), Age (low value)
 const DEFAULT_COLUMNS: ColumnConfig[] = [
-  { id: 'key', label: 'Key', visible: true, minWidth: '100px', required: true },
-  { id: 'summary', label: 'Summary', visible: true, required: true },
-  { id: 'severity', label: 'Severity', visible: true, width: '80px' },
-  { id: 'status', label: 'Status', visible: true, minWidth: '120px' },
-  { id: 'assignee', label: 'Assignee', visible: true, width: '150px' },
+  { id: 'key', label: 'Key', visible: true, width: '100px', required: true },
+  { id: 'summary', label: 'Summary', visible: true, required: true }, // Auto-fills remaining space
+  { id: 'severity', label: 'Severity', visible: true, width: '90px' },
+  { id: 'status', label: 'Status', visible: true, width: '120px' },
+  { id: 'assignee', label: 'Assignee', visible: true, width: '180px' },
   { id: 'sla', label: 'SLA', visible: true, width: '100px' },
-  // Hidden columns - can be enabled via column selector
-  { id: 'level', label: 'Level', visible: false, width: '44px' },
-  { id: 'age', label: 'Age', visible: false, width: '64px' },
-  { id: 'priority', label: 'Priority', visible: false, width: '48px' },
-  { id: 'releaseVersion', label: 'Release', visible: false, width: '100px' },
-  { id: 'major', label: 'Major', visible: false, width: '56px' },
-  { id: 'committee', label: 'Committee', visible: false, width: '80px' },
 ];
 
 const STORAGE_KEY = 'catalyst-incident-columns';

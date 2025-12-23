@@ -12,7 +12,7 @@
 
 import { useState, useMemo, useRef, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { MoreHorizontal, Eye, Pencil, Trash2, AlertTriangle, Copy, ChevronLeft, ChevronRight, HelpCircle } from 'lucide-react';
+import { MoreHorizontal, Eye, Pencil, Trash2, AlertTriangle, Copy, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import {
@@ -37,7 +37,7 @@ import {
 } from '@/components/ui/select';
 import { InlineEditCell } from './InlineEditCell';
 import { InlineUserPicker } from './InlineUserPicker';
-import { InlineReleasePicker } from './InlineReleasePicker';
+import { DeleteIncidentDialog } from './DeleteIncidentDialog';
 import { DeleteIncidentDialog } from './DeleteIncidentDialog';
 import { ResizableHeader } from './ResizableHeader';
 import { 
@@ -49,13 +49,12 @@ import {
   getGridTemplate,
 } from './useIncidentColumnWidths';
 import { toast } from '@/components/ui/catalyst-toast';
-import { getCommitteeDisplayStatus } from '@/utils/committeeStatus';
+import { useUpdateIncident } from '@/hooks/useIncidents';
 import { useUpdateIncident } from '@/hooks/useIncidents';
 import type { Incident } from '@/types/incident';
 import type { ColumnConfig, TableDensity } from '@/hooks/useIncidentColumns';
 import { cn } from '@/lib/utils';
-import { getAgingTime } from '@/components/incidents/badges/IncidentBadges';
-import { StatusPill, SeverityPill, SlaPill, MajorPill, CommitteePill } from './TablePill';
+import { StatusPill, SeverityPill, SlaPill } from './TablePill';
 
 // Page size storage key
 const PAGE_SIZE_STORAGE_KEY = 'catalyst.incidentList.pageSize';
@@ -107,7 +106,7 @@ const SUPPORT_OPTIONS = [
   { value: 'L3', label: 'L3' },
 ];
 
-// Streamlined 6-column structure: Key, Summary, Severity, Status, Assignee, SLA
+// EXECUTIVE 6-COLUMN STRUCTURE ONLY - no hidden columns available
 const DEFAULT_VISIBLE_COLUMNS: ColumnConfig[] = [
   { id: 'key', label: 'Key', visible: true, required: true },
   { id: 'summary', label: 'Summary', visible: true, required: true },
@@ -115,12 +114,6 @@ const DEFAULT_VISIBLE_COLUMNS: ColumnConfig[] = [
   { id: 'status', label: 'Status', visible: true },
   { id: 'assignee', label: 'Assignee', visible: true },
   { id: 'sla', label: 'SLA', visible: true },
-  // Hidden columns - can be enabled via column selector
-  { id: 'level', label: 'Level', visible: false },
-  { id: 'age', label: 'Age', visible: false },
-  { id: 'releaseVersion', label: 'Release', visible: false },
-  { id: 'major', label: 'Major', visible: false },
-  { id: 'committee', label: 'Committee', visible: false },
 ];
 
 function LoadingSkeleton({ 
@@ -130,9 +123,6 @@ function LoadingSkeleton({
   gridTemplate: string; 
   visibleColumns: ColumnConfig[];
 }) {
-  const isColumnVisible = (colId: string) => visibleColumns.some(c => c.id === colId && c.visible !== false);
-  const isCentered = (colId: string) => CENTER_ALIGNED_COLUMNS.includes(colId);
-
   return (
     <div className="rounded-md border border-border overflow-hidden bg-card">
       {/* Header - exactly 32px */}
@@ -140,61 +130,24 @@ function LoadingSkeleton({
         className="grid items-center h-8 bg-muted border-b border-border"
         style={{ gridTemplateColumns: gridTemplate }}
       >
-        {isColumnVisible('key') && (
-          <div className={cn(GRID_CELL_BASE, "pl-3 pr-2 flex items-center h-full")}>
-            <span className={cn(HEADER_TEXT, "truncate")}>KEY</span>
-          </div>
-        )}
-        {isColumnVisible('summary') && (
-          <div className={cn(GRID_CELL_BASE, "pr-2 flex items-center h-full")}>
-            <span className={cn(HEADER_TEXT, "truncate")}>SUMMARY</span>
-          </div>
-        )}
-        {isColumnVisible('severity') && (
-          <div className={cn(GRID_CELL_BASE, "px-2 flex items-center justify-center h-full")}>
-            <span className={cn(HEADER_TEXT, "truncate")}>SEV</span>
-          </div>
-        )}
-        {isColumnVisible('level') && (
-          <div className={cn(GRID_CELL_BASE, "px-2 flex items-center justify-center h-full")}>
-            <span className={cn(HEADER_TEXT, "truncate")}>LVL</span>
-          </div>
-        )}
-        {isColumnVisible('status') && (
-          <div className={cn(GRID_CELL_BASE, "px-2 flex items-center justify-center h-full")}>
-            <span className={cn(HEADER_TEXT, "truncate")}>STATUS</span>
-          </div>
-        )}
-        {isColumnVisible('assignee') && (
-          <div className={cn(GRID_CELL_BASE, "px-2 flex items-center justify-center h-full")}>
-            <span className={cn(HEADER_TEXT, "truncate")}>ASSIGNEE</span>
-          </div>
-        )}
-        {isColumnVisible('age') && (
-          <div className={cn(GRID_CELL_BASE, "px-2 flex items-center justify-center h-full")}>
-            <span className={cn(HEADER_TEXT, "truncate")}>AGE</span>
-          </div>
-        )}
-        {isColumnVisible('sla') && (
-          <div className={cn(GRID_CELL_BASE, "px-2 flex items-center justify-center h-full")}>
-            <span className={cn(HEADER_TEXT, "truncate")}>SLA</span>
-          </div>
-        )}
-        {isColumnVisible('releaseVersion') && (
-          <div className={cn(GRID_CELL_BASE, "px-2 flex items-center justify-center h-full")}>
-            <span className={cn(HEADER_TEXT, "truncate")}>RELEASE</span>
-          </div>
-        )}
-        {isColumnVisible('major') && (
-          <div className={cn(GRID_CELL_BASE, "px-2 flex items-center justify-center h-full")}>
-            <span className={cn(HEADER_TEXT, "truncate")}>MAJOR</span>
-          </div>
-        )}
-        {isColumnVisible('committee') && (
-          <div className={cn(GRID_CELL_BASE, "px-2 flex items-center justify-center h-full")}>
-            <span className={cn(HEADER_TEXT, "truncate")}>COMMITTEE</span>
-          </div>
-        )}
+        <div className={cn(GRID_CELL_BASE, "pl-3 pr-2 flex items-center h-full")}>
+          <span className={cn(HEADER_TEXT, "truncate")}>KEY</span>
+        </div>
+        <div className={cn(GRID_CELL_BASE, "pr-2 flex items-center h-full")}>
+          <span className={cn(HEADER_TEXT, "truncate")}>SUMMARY</span>
+        </div>
+        <div className={cn(GRID_CELL_BASE, "px-2 flex items-center justify-center h-full")}>
+          <span className={cn(HEADER_TEXT, "truncate")}>SEV</span>
+        </div>
+        <div className={cn(GRID_CELL_BASE, "px-2 flex items-center justify-center h-full")}>
+          <span className={cn(HEADER_TEXT, "truncate")}>STATUS</span>
+        </div>
+        <div className={cn(GRID_CELL_BASE, "px-2 flex items-center justify-center h-full")}>
+          <span className={cn(HEADER_TEXT, "truncate")}>ASSIGNEE</span>
+        </div>
+        <div className={cn(GRID_CELL_BASE, "px-2 flex items-center justify-center h-full")}>
+          <span className={cn(HEADER_TEXT, "truncate")}>SLA</span>
+        </div>
         <div className={cn(GRID_CELL_BASE, "flex items-center h-full")}></div>
       </div>
       {/* Skeleton rows - exactly 36px each */}
@@ -204,61 +157,24 @@ function LoadingSkeleton({
           className="grid items-center h-9 border-b border-border last:border-b-0"
           style={{ gridTemplateColumns: gridTemplate }}
         >
-          {isColumnVisible('key') && (
-            <div className={cn(GRID_CELL_BASE, "pl-3 pr-2 flex items-center h-full")}>
-              <Skeleton className="h-3.5 w-14" />
-            </div>
-          )}
-          {isColumnVisible('summary') && (
-            <div className={cn(GRID_CELL_BASE, "pr-2 flex items-center h-full")}>
-              <Skeleton className="h-3.5 w-full max-w-[90%]" />
-            </div>
-          )}
-          {isColumnVisible('severity') && (
-            <div className={cn(GRID_CELL_BASE, "px-2 flex items-center justify-center h-full")}>
-              <Skeleton className="h-5 w-14 rounded-full" />
-            </div>
-          )}
-          {isColumnVisible('level') && (
-            <div className={cn(GRID_CELL_BASE, "px-2 flex items-center justify-center h-full")}>
-              <Skeleton className="h-3.5 w-6" />
-            </div>
-          )}
-          {isColumnVisible('status') && (
-            <div className={cn(GRID_CELL_BASE, "px-2 flex items-center justify-center h-full")}>
-              <Skeleton className="h-5 w-20 rounded-full" />
-            </div>
-          )}
-          {isColumnVisible('assignee') && (
-            <div className={cn(GRID_CELL_BASE, "px-2 flex items-center justify-center h-full")}>
-              <Skeleton className="h-4 w-24" />
-            </div>
-          )}
-          {isColumnVisible('age') && (
-            <div className={cn(GRID_CELL_BASE, "px-2 flex items-center justify-center h-full")}>
-              <Skeleton className="h-3.5 w-8" />
-            </div>
-          )}
-          {isColumnVisible('sla') && (
-            <div className={cn(GRID_CELL_BASE, "px-2 flex items-center justify-center h-full")}>
-              <Skeleton className="h-3.5 w-14" />
-            </div>
-          )}
-          {isColumnVisible('releaseVersion') && (
-            <div className={cn(GRID_CELL_BASE, "px-2 flex items-center justify-center h-full")}>
-              <Skeleton className="h-3.5 w-16" />
-            </div>
-          )}
-          {isColumnVisible('major') && (
-            <div className={cn(GRID_CELL_BASE, "px-2 flex items-center justify-center h-full")}>
-              <Skeleton className="h-3.5 w-10" />
-            </div>
-          )}
-          {isColumnVisible('committee') && (
-            <div className={cn(GRID_CELL_BASE, "px-2 flex items-center justify-center h-full")}>
-              <Skeleton className="h-3.5 w-16" />
-            </div>
-          )}
+          <div className={cn(GRID_CELL_BASE, "pl-3 pr-2 flex items-center h-full")}>
+            <Skeleton className="h-3.5 w-14" />
+          </div>
+          <div className={cn(GRID_CELL_BASE, "pr-2 flex items-center h-full")}>
+            <Skeleton className="h-3.5 w-full max-w-[90%]" />
+          </div>
+          <div className={cn(GRID_CELL_BASE, "px-2 flex items-center justify-center h-full")}>
+            <Skeleton className="h-5 w-14 rounded-full" />
+          </div>
+          <div className={cn(GRID_CELL_BASE, "px-2 flex items-center justify-center h-full")}>
+            <Skeleton className="h-5 w-20 rounded-full" />
+          </div>
+          <div className={cn(GRID_CELL_BASE, "px-2 flex items-center justify-center h-full")}>
+            <Skeleton className="h-4 w-24" />
+          </div>
+          <div className={cn(GRID_CELL_BASE, "px-2 flex items-center justify-center h-full")}>
+            <Skeleton className="h-5 w-16 rounded-full" />
+          </div>
           <div className={cn(GRID_CELL_BASE, "flex items-center h-full")}></div>
         </div>
       ))}
@@ -420,177 +336,75 @@ export function IncidentListTable({
         >
           <div className="overflow-x-auto w-full h-full">
             {/* Grid table - min-width ensures it can grow for horizontal scroll */}
-            <div style={{ minWidth: `${totalTableWidth}px`, width: '100%' }}>
+            <div style={{ minWidth: '100%', width: '100%' }}>
               {/* Header row - exactly 32px height, CSS Grid layout */}
               <div 
                 className="grid items-center h-8 sticky top-0 z-20 bg-muted border-b border-border"
                 style={{ gridTemplateColumns: gridTemplate }}
               >
                 {/* Key - left aligned */}
-                {isColumnVisible('key') && (
-                  <ResizableHeader
-                    columnId="key"
-                    width={columnWidths.key}
-                    minWidth={MIN_COLUMN_WIDTHS.key}
-                    maxWidth={MAX_COLUMN_WIDTHS.key}
-                    onResize={handleColumnResize}
-                    className={cn(GRID_CELL_BASE, "pl-3 pr-2")}
-                  >
-                    <span className={HEADER_TEXT}>KEY</span>
-                  </ResizableHeader>
-                )}
-                {/* Summary - left aligned */}
-                {isColumnVisible('summary') && (
-                  <ResizableHeader
-                    columnId="summary"
-                    width={columnWidths.summary}
-                    minWidth={MIN_COLUMN_WIDTHS.summary}
-                    maxWidth={MAX_COLUMN_WIDTHS.summary}
-                    onResize={handleColumnResize}
-                    className={cn(GRID_CELL_BASE, "pr-2")}
-                  >
-                    <span className={HEADER_TEXT}>SUMMARY</span>
-                  </ResizableHeader>
-                )}
+                <ResizableHeader
+                  columnId="key"
+                  width={columnWidths.key}
+                  minWidth={MIN_COLUMN_WIDTHS.key}
+                  maxWidth={MAX_COLUMN_WIDTHS.key}
+                  onResize={handleColumnResize}
+                  className={cn(GRID_CELL_BASE, "pl-3 pr-2")}
+                >
+                  <span className={HEADER_TEXT}>KEY</span>
+                </ResizableHeader>
+                {/* Summary - left aligned, takes remaining space */}
+                <div className={cn(GRID_CELL_BASE, "pr-2 flex items-center h-full")}>
+                  <span className={HEADER_TEXT}>SUMMARY</span>
+                </div>
                 {/* Sev - center aligned */}
-                {isColumnVisible('severity') && (
-                  <ResizableHeader
-                    columnId="severity"
-                    width={columnWidths.severity}
-                    minWidth={MIN_COLUMN_WIDTHS.severity}
-                    maxWidth={MAX_COLUMN_WIDTHS.severity}
-                    onResize={handleColumnResize}
-                    className={cn(GRID_CELL_BASE, "px-2")}
-                    centered
-                  >
-                    <span className={HEADER_TEXT}>SEV</span>
-                  </ResizableHeader>
-                )}
-                {/* Lvl - center aligned with tooltip */}
-                {isColumnVisible('level') && (
-                  <ResizableHeader
-                    columnId="level"
-                    width={columnWidths.level}
-                    minWidth={MIN_COLUMN_WIDTHS.level}
-                    maxWidth={MAX_COLUMN_WIDTHS.level}
-                    onResize={handleColumnResize}
-                    className={cn(GRID_CELL_BASE, "px-2")}
-                    centered
-                  >
-                    <div className="flex items-center gap-1">
-                      <span className={HEADER_TEXT}>LVL</span>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <HelpCircle className="w-3 h-3 text-muted-foreground/60 cursor-help" />
-                        </TooltipTrigger>
-                        <TooltipContent side="bottom" className="text-xs max-w-[200px]">
-                          <p className="font-medium mb-1">Support Escalation Level</p>
-                          <p className="text-muted-foreground">L1: First Response</p>
-                          <p className="text-muted-foreground">L2: Engineering</p>
-                          <p className="text-muted-foreground">L3: Senior/Architect</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </div>
-                  </ResizableHeader>
-                )}
+                <ResizableHeader
+                  columnId="severity"
+                  width={columnWidths.severity}
+                  minWidth={MIN_COLUMN_WIDTHS.severity}
+                  maxWidth={MAX_COLUMN_WIDTHS.severity}
+                  onResize={handleColumnResize}
+                  className={cn(GRID_CELL_BASE, "px-2")}
+                  centered
+                >
+                  <span className={HEADER_TEXT}>SEV</span>
+                </ResizableHeader>
                 {/* Status - center aligned */}
-                {isColumnVisible('status') && (
-                  <ResizableHeader
-                    columnId="status"
-                    width={columnWidths.status}
-                    minWidth={MIN_COLUMN_WIDTHS.status}
-                    maxWidth={MAX_COLUMN_WIDTHS.status}
-                    onResize={handleColumnResize}
-                    className={cn(GRID_CELL_BASE, "px-2")}
-                    centered
-                  >
-                    <span className={HEADER_TEXT}>STATUS</span>
-                  </ResizableHeader>
-                )}
+                <ResizableHeader
+                  columnId="status"
+                  width={columnWidths.status}
+                  minWidth={MIN_COLUMN_WIDTHS.status}
+                  maxWidth={MAX_COLUMN_WIDTHS.status}
+                  onResize={handleColumnResize}
+                  className={cn(GRID_CELL_BASE, "px-2")}
+                  centered
+                >
+                  <span className={HEADER_TEXT}>STATUS</span>
+                </ResizableHeader>
                 {/* Assignee - center aligned */}
-                {isColumnVisible('assignee') && (
-                  <ResizableHeader
-                    columnId="assignee"
-                    width={columnWidths.assignee}
-                    minWidth={MIN_COLUMN_WIDTHS.assignee}
-                    maxWidth={MAX_COLUMN_WIDTHS.assignee}
-                    onResize={handleColumnResize}
-                    className={cn(GRID_CELL_BASE, "px-2")}
-                    centered
-                  >
-                    <span className={HEADER_TEXT}>ASSIGNEE</span>
-                  </ResizableHeader>
-                )}
-                {/* Age - center aligned */}
-                {isColumnVisible('age') && (
-                  <ResizableHeader
-                    columnId="age"
-                    width={columnWidths.age}
-                    minWidth={MIN_COLUMN_WIDTHS.age}
-                    maxWidth={MAX_COLUMN_WIDTHS.age}
-                    onResize={handleColumnResize}
-                    className={cn(GRID_CELL_BASE, "px-2")}
-                    centered
-                  >
-                    <span className={HEADER_TEXT}>AGE</span>
-                  </ResizableHeader>
-                )}
+                <ResizableHeader
+                  columnId="assignee"
+                  width={columnWidths.assignee}
+                  minWidth={MIN_COLUMN_WIDTHS.assignee}
+                  maxWidth={MAX_COLUMN_WIDTHS.assignee}
+                  onResize={handleColumnResize}
+                  className={cn(GRID_CELL_BASE, "px-2")}
+                  centered
+                >
+                  <span className={HEADER_TEXT}>ASSIGNEE</span>
+                </ResizableHeader>
                 {/* SLA - center aligned */}
-                {isColumnVisible('sla') && (
-                  <ResizableHeader
-                    columnId="sla"
-                    width={columnWidths.sla}
-                    minWidth={MIN_COLUMN_WIDTHS.sla}
-                    maxWidth={MAX_COLUMN_WIDTHS.sla}
-                    onResize={handleColumnResize}
-                    className={cn(GRID_CELL_BASE, "px-2")}
-                    centered
-                  >
-                    <span className={HEADER_TEXT}>SLA</span>
-                  </ResizableHeader>
-                )}
-                {/* Release - center aligned */}
-                {isColumnVisible('releaseVersion') && (
-                  <ResizableHeader
-                    columnId="releaseVersion"
-                    width={columnWidths.releaseVersion}
-                    minWidth={MIN_COLUMN_WIDTHS.releaseVersion}
-                    maxWidth={MAX_COLUMN_WIDTHS.releaseVersion}
-                    onResize={handleColumnResize}
-                    className={cn(GRID_CELL_BASE, "px-2")}
-                    centered
-                  >
-                    <span className={HEADER_TEXT}>RELEASE</span>
-                  </ResizableHeader>
-                )}
-                {/* Major - center aligned */}
-                {isColumnVisible('major') && (
-                  <ResizableHeader
-                    columnId="major"
-                    width={columnWidths.major}
-                    minWidth={MIN_COLUMN_WIDTHS.major}
-                    maxWidth={MAX_COLUMN_WIDTHS.major}
-                    onResize={handleColumnResize}
-                    className={cn(GRID_CELL_BASE, "px-2")}
-                    centered
-                  >
-                    <span className={HEADER_TEXT}>MAJOR</span>
-                  </ResizableHeader>
-                )}
-                {/* Committee - center aligned */}
-                {isColumnVisible('committee') && (
-                  <ResizableHeader
-                    columnId="committee"
-                    width={columnWidths.committee}
-                    minWidth={MIN_COLUMN_WIDTHS.committee}
-                    maxWidth={MAX_COLUMN_WIDTHS.committee}
-                    onResize={handleColumnResize}
-                    className={cn(GRID_CELL_BASE, "px-2")}
-                    centered
-                  >
-                    <span className={HEADER_TEXT}>COMMITTEE</span>
-                  </ResizableHeader>
-                )}
+                <ResizableHeader
+                  columnId="sla"
+                  width={columnWidths.sla}
+                  minWidth={MIN_COLUMN_WIDTHS.sla}
+                  maxWidth={MAX_COLUMN_WIDTHS.sla}
+                  onResize={handleColumnResize}
+                  className={cn(GRID_CELL_BASE, "px-2")}
+                  centered
+                >
+                  <span className={HEADER_TEXT}>SLA</span>
+                </ResizableHeader>
                 {/* Actions header - fixed 40px */}
                 <div className={cn(GRID_CELL_BASE, "flex items-center h-full")}></div>
               </div>
@@ -637,189 +451,106 @@ export function IncidentListTable({
                       }}
                     >
                       {/* Key - left aligned */}
-                      {isColumnVisible('key') && (
-                        <div className={cn(GRID_CELL_BASE, "pl-3 pr-2 flex items-center h-full")}>
-                          <Link 
-                            to={`/release/incidents/${incident.id}`} 
-                            className={cn(
-                              CELL_TEXT,
-                              'font-medium font-mono',
-                              'text-[#c69c6d] dark:text-[#d4a855] hover:text-[#b8894d] dark:hover:text-[#c49545]',
-                              'hover:underline truncate'
-                            )}
-                            onClick={(e) => e.stopPropagation()}
-                          >
-                            {incident.incident_key}
-                          </Link>
-                          {incident.is_major_incident && (
+                      <div className={cn(GRID_CELL_BASE, "pl-3 pr-2 flex items-center h-full")}>
+                        <Link 
+                          to={`/release/incidents/${incident.id}`} 
+                          className={cn(
+                            CELL_TEXT,
+                            'font-medium font-mono',
+                            'text-[#c69c6d] dark:text-[#d4a855] hover:text-[#b8894d] dark:hover:text-[#c49545]',
+                            'hover:underline truncate'
+                          )}
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          {incident.incident_key}
+                        </Link>
+                        {incident.is_major_incident && (
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <AlertTriangle className="h-3.5 w-3.5 ml-1 text-amber-500 shrink-0" />
+                            </TooltipTrigger>
+                            <TooltipContent side="right" className="text-xs">
+                              <p className="font-medium">Major Incident</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        )}
+                      </div>
+                      
+                      {/* Summary - left aligned, takes remaining space */}
+                      <div 
+                        className={cn(GRID_CELL_BASE, "pr-2 flex items-center h-full")} 
+                        data-inline-edit
+                      >
+                        <InlineEditCell
+                          type="text"
+                          value={incident.title}
+                          displayValue={
                             <Tooltip>
                               <TooltipTrigger asChild>
-                                <AlertTriangle className="h-3.5 w-3.5 ml-1 text-amber-500 shrink-0" />
+                                <span className={cn(CELL_TEXT, "truncate font-medium cursor-pointer block w-full")}>{incident.title}</span>
                               </TooltipTrigger>
-                              <TooltipContent side="right" className="text-xs">
-                                <p className="font-medium">Major Incident</p>
-                                <p className="text-muted-foreground">High-priority issue requiring immediate attention</p>
-                              </TooltipContent>
+                              <TooltipContent side="top" className="text-xs max-w-md break-words">{incident.title}</TooltipContent>
                             </Tooltip>
-                          )}
-                        </div>
-                      )}
-                      
-                      {/* Summary - left aligned */}
-                      {isColumnVisible('summary') && (
-                        <div 
-                          className={cn(GRID_CELL_BASE, "pr-2 flex items-center h-full")} 
-                          data-inline-edit
-                        >
-                          <InlineEditCell
-                            type="text"
-                            value={incident.title}
-                            displayValue={
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <span className={cn(CELL_TEXT, "truncate font-medium cursor-pointer block w-full")}>{incident.title}</span>
-                                </TooltipTrigger>
-                                <TooltipContent side="top" className="text-xs max-w-md break-words">{incident.title}</TooltipContent>
-                              </Tooltip>
-                            }
-                            onSave={(val) => handleInlineUpdate(incident.id, 'title', val)}
-                            disabled={isConverted}
-                            textSize="text-[12px]"
-                          />
-                        </div>
-                      )}
+                          }
+                          onSave={(val) => handleInlineUpdate(incident.id, 'title', val)}
+                          disabled={isConverted}
+                          textSize="text-[12px]"
+                        />
+                      </div>
                       
                       {/* Severity - center aligned */}
-                      {isColumnVisible('severity') && (
-                        <div 
-                          className={cn(GRID_CELL_BASE, "px-2 flex items-center justify-center h-full")} 
-                          data-inline-edit
-                        >
-                          <InlineEditCell
-                            type="select"
-                            value={incident.severity}
-                            options={SEVERITY_OPTIONS}
-                            displayValue={<SeverityPill severity={incident.severity} />}
-                            onSave={(val) => handleInlineUpdate(incident.id, 'severity', val)}
-                            disabled={isConverted}
-                            textSize="text-[12px]"
-                          />
-                        </div>
-                      )}
-                      
-                      {/* Level - center aligned */}
-                      {isColumnVisible('level') && (
-                        <div 
-                          className={cn(GRID_CELL_BASE, "px-2 flex items-center justify-center h-full")} 
-                          data-inline-edit
-                        >
-                          <InlineEditCell
-                            type="select"
-                            value={incident.support_level || ''}
-                            options={SUPPORT_OPTIONS}
-                            displayValue={
-                              incident.support_level ? (
-                                <span className={cn(CELL_MUTED, "tabular-nums truncate")}>{incident.support_level}</span>
-                              ) : (
-                                <span className={cn(CELL_MUTED, "opacity-50")}>—</span>
-                              )
-                            }
-                            onSave={(val) => handleInlineUpdate(incident.id, 'support_level', val)}
-                            disabled={isConverted}
-                            textSize="text-[12px]"
-                          />
-                        </div>
-                      )}
+                      <div 
+                        className={cn(GRID_CELL_BASE, "px-2 flex items-center justify-center h-full")} 
+                        data-inline-edit
+                      >
+                        <InlineEditCell
+                          type="select"
+                          value={incident.severity}
+                          options={SEVERITY_OPTIONS}
+                          displayValue={<SeverityPill severity={incident.severity} />}
+                          onSave={(val) => handleInlineUpdate(incident.id, 'severity', val)}
+                          disabled={isConverted}
+                          textSize="text-[12px]"
+                        />
+                      </div>
                       
                       {/* Status - center aligned */}
-                      {isColumnVisible('status') && (
-                        <div 
-                          className={cn(GRID_CELL_BASE, "px-2 flex items-center justify-center h-full")} 
-                          data-inline-edit
-                        >
-                          <InlineEditCell
-                            type="select"
-                            value={incident.status}
-                            options={STATUS_OPTIONS}
-                            displayValue={<StatusPill status={incident.status} />}
-                            onSave={(val) => handleInlineUpdate(incident.id, 'status', val)}
-                            disabled={isConverted}
-                            textSize="text-[12px]"
-                          />
-                        </div>
-                      )}
+                      <div 
+                        className={cn(GRID_CELL_BASE, "px-2 flex items-center justify-center h-full")} 
+                        data-inline-edit
+                      >
+                        <InlineEditCell
+                          type="select"
+                          value={incident.status}
+                          options={STATUS_OPTIONS}
+                          displayValue={<StatusPill status={incident.status} />}
+                          onSave={(val) => handleInlineUpdate(incident.id, 'status', val)}
+                          disabled={isConverted}
+                          textSize="text-[12px]"
+                        />
+                      </div>
                       
-                      {/* Assignee - center aligned */}
-                      {isColumnVisible('assignee') && (
-                        <div 
-                          className={cn(GRID_CELL_BASE, "px-2 flex items-center justify-center h-full")}
-                          data-inline-edit
-                        >
-                          <InlineUserPicker
-                            value={incident.assignee}
-                            onSave={(userId) => handleInlineUpdate(incident.id, 'assignee_id', userId || '')}
-                            disabled={isConverted}
-                            textSize="text-[12px]"
-                          />
-                        </div>
-                      )}
-                      
-                      {/* Age - center aligned */}
-                      {isColumnVisible('age') && (
-                        <div className={cn(GRID_CELL_BASE, "px-2 flex items-center justify-center h-full")}>
-                          <span className={cn(CELL_MUTED, "tabular-nums text-[11px] truncate")}>{age}</span>
-                        </div>
-                      )}
+                      {/* Assignee - center aligned with proper flex alignment */}
+                      <div 
+                        className={cn(GRID_CELL_BASE, "px-2 flex items-center justify-center h-full")}
+                        data-inline-edit
+                      >
+                        <InlineUserPicker
+                          value={incident.assignee}
+                          onSave={(userId) => handleInlineUpdate(incident.id, 'assignee_id', userId || '')}
+                          disabled={isConverted}
+                          textSize="text-[12px]"
+                        />
+                      </div>
                       
                       {/* SLA - center aligned */}
-                      {isColumnVisible('sla') && (
-                        <div className={cn(GRID_CELL_BASE, "px-2 flex items-center justify-center h-full")}>
-                          {slaStatus ? (
-                            <SlaPill status={slaStatus} />
-                          ) : (
-                            <span className={cn(CELL_MUTED, "opacity-50 text-[11px]")}>—</span>
-                          )}
-                        </div>
-                      )}
-
-                      {/* Release - center aligned */}
-                      {isColumnVisible('releaseVersion') && (
-                        <div 
-                          className={cn(GRID_CELL_BASE, "px-2 flex items-center justify-center h-full")}
-                          data-inline-edit
-                        >
-                          <InlineReleasePicker
-                            value={incident.release_version}
-                            onSave={(releaseId) => handleInlineUpdate(incident.id, 'release_version_id', releaseId || '')}
-                            disabled={isConverted}
-                            textSize="text-[12px]"
-                          />
-                        </div>
-                      )}
-
-                      {/* Major - center aligned */}
-                      {isColumnVisible('major') && (
-                        <div 
-                          className={cn(GRID_CELL_BASE, "px-2 flex items-center justify-center h-full")} 
-                          data-inline-edit
-                        >
-                          <InlineEditCell
-                            type="toggle"
-                            value={incident.is_major_incident || false}
-                            displayValue={<MajorPill isMajor={incident.is_major_incident || false} />}
-                            onSave={(val) => handleInlineUpdate(incident.id, 'is_major_incident', val)}
-                            disabled={isConverted}
-                            textSize="text-[12px]"
-                          />
-                        </div>
-                      )}
-
-                      {/* Committee - center aligned */}
-                      {isColumnVisible('committee') && (
-                        <div className={cn(GRID_CELL_BASE, "px-2 flex items-center justify-center h-full")}>
-                          <CommitteePill status={committeeStatus.status} label={committeeStatus.label} />
-                        </div>
-                      )}
+                      <div className={cn(GRID_CELL_BASE, "px-2 flex items-center justify-center h-full")}>
+                        {slaStatus ? (
+                          <SlaPill status={slaStatus} />
+                        ) : (
+                          <span className={cn(CELL_MUTED, "opacity-50 text-[11px]")}>—</span>
+                        )}
+                      </div>
 
                       {/* Actions */}
                       <div className={cn(GRID_CELL_BASE, "flex items-center justify-center h-full")}>
