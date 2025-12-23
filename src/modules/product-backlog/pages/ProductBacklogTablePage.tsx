@@ -82,9 +82,10 @@ export default function ProductBacklogTablePage() {
     
     // Apply scoring filter from store
     if (scoringFilter === 'scored') {
-      data = data.filter(row => row.business_score !== null);
+      data = data.filter(row => row.business_score !== null && row.business_score > 0);
     } else if (scoringFilter === 'unscored') {
-      data = data.filter(row => row.business_score === null);
+      // Treat 0 as unscored (newly created requests default to 0)
+      data = data.filter(row => row.business_score === null || row.business_score === 0);
     }
     
     // Apply dialog filters

@@ -213,6 +213,8 @@ export function useCreateBusinessRequest() {
           start_date: (data as any).start_date || null,
           end_date: (data as any).end_date || null,
           impl_start_date: (data as any).impl_start_date || null,
+          // Many views use impl_target_end_date as "Target Complete"; keep it in sync on create
+          impl_target_end_date: (data as any).impl_target_end_date || (data as any).end_date || null,
         }])
         .select()
         .single();

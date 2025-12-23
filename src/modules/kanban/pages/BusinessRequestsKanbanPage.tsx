@@ -67,8 +67,8 @@ export default function BusinessRequestsKanbanPage() {
         }
       }
       // Scoring filter
-      if (scoringFilter === 'scored' && ticket.score === null) return false;
-      if (scoringFilter === 'unscored' && ticket.score !== null) return false;
+      if (scoringFilter === 'scored' && (ticket.score === null || ticket.score === 0)) return false;
+      if (scoringFilter === 'unscored' && (ticket.score !== null && ticket.score > 0)) return false;
       return true;
     });
   }, [tickets, searchQuery, scoringFilter]);

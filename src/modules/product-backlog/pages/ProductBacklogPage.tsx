@@ -130,9 +130,10 @@ export default function ProductBacklogPage() {
     
     // Apply scoring filter from store
     if (scoringFilter === 'scored') {
-      data = data.filter(row => row.score !== null);
+      data = data.filter(row => row.score !== null && row.score > 0);
     } else if (scoringFilter === 'unscored') {
-      data = data.filter(row => row.score === null);
+      // Treat 0 as unscored (newly created requests default to 0)
+      data = data.filter(row => row.score === null || row.score === 0);
     }
     
     // Apply dialog filters
