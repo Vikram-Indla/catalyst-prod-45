@@ -11,7 +11,6 @@ import {
   MILESTONE_CONDITION_CONFIG,
 } from '@/types/product-roadmap';
 import { Search, Filter, Check, X, ChevronDown, Info, Layers } from 'lucide-react';
-import { RoadmapDateFilterV2, RoadmapViewport } from '@/components/roadmaps/RoadmapDateFilterV2';
 import { cn } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import {
@@ -32,6 +31,8 @@ const GROUP_BY_OPTIONS: { value: DemandGroupBy; label: string }[] = [
   { value: 'quarter', label: 'Planned Quarter' },
 ];
 
+const YEAR_OPTIONS = ['2025', '2026', '2027'];
+
 interface ProductRoadmapToolbarProps {
   scale: Scale;
   onScaleChange: (scale: Scale) => void;
@@ -46,10 +47,14 @@ interface ProductRoadmapToolbarProps {
   groupBy: DemandGroupBy;
   onGroupByChange: (groupBy: DemandGroupBy) => void;
   
+  // Year
+  selectedYear?: string;
+  onYearChange?: (year: string) => void;
+  
   // Viewport (staged)
-  appliedViewport: RoadmapViewport;
-  draftViewport: RoadmapViewport;
-  onDraftViewportChange: (viewport: RoadmapViewport) => void;
+  appliedViewport: { start: Date; end: Date; scale: Scale };
+  draftViewport: { start: Date; end: Date; scale: Scale };
+  onDraftViewportChange: (viewport: { start: Date; end: Date; scale: Scale }) => void;
   
   // Canonical filter props
   draftFilters: DemandFilterState;
@@ -125,7 +130,7 @@ const MultiSelectDropdown: React.FC<{
   );
 };
 
-// Searchable user dropdown - only shows results after typing
+// Searchable user dropdown
 const UserSearchDropdown: React.FC<{
   label: string;
   items: { id: string; name: string; initials: string }[];
@@ -137,12 +142,10 @@ const UserSearchDropdown: React.FC<{
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   
-  // Only show results after user types
   const filtered = search.trim().length > 0 
     ? items.filter(item => item.name.toLowerCase().includes(search.toLowerCase()))
     : [];
   
-  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
@@ -207,7 +210,6 @@ const UserSearchDropdown: React.FC<{
         )}
       </div>
       
-      {/* Show selected items as small chips */}
       {selectedIds.length > 0 && (
         <div className="flex flex-wrap gap-1 mt-1.5">
           {selectedIds.slice(0, 3).map(id => {
@@ -249,6 +251,8 @@ export const ProductRoadmapToolbar: React.FC<ProductRoadmapToolbarProps> = ({
   onSearchChange,
   groupBy,
   onGroupByChange,
+  selectedYear = '2025',
+  onYearChange,
   appliedViewport,
   draftViewport,
   onDraftViewportChange,
@@ -272,7 +276,13 @@ export const ProductRoadmapToolbar: React.FC<ProductRoadmapToolbarProps> = ({
   matchingDemands,
 }) => {
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const [groupByMenuOpen, setGroupByMenuOpen] = useState(false);
+  const [yearMenuOpen, setYearMenuOpen] = useState(false);
   const filtersRef = useRef<HTMLDivElement>(null);
+  
+  const [internalYear, setInternalYear] = useState(selectedYear);
+  const currentYear = onYearChange ? selectedYear : internalYear;
+  const handleYearChange = onYearChange || setInternalYear;
   
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -282,6 +292,9 @@ export const ProductRoadmapToolbar: React.FC<ProductRoadmapToolbarProps> = ({
           setFiltersOpen(false);
         }
       }
+      // Close other menus
+      setGroupByMenuOpen(false);
+      setYearMenuOpen(false);
     };
     
     document.addEventListener('mousedown', handleClickOutside);
@@ -310,19 +323,12 @@ export const ProductRoadmapToolbar: React.FC<ProductRoadmapToolbarProps> = ({
     onClearAll();
     setFiltersOpen(false);
   };
-  
-  const handleViewportApply = () => {
-    onApplyFilters();
-    if (draftViewport.scale !== scale) {
-      onScaleChange(draftViewport.scale);
-    }
-  };
 
-  // Prepare platform options
   const platformOptions = platforms.map(p => ({ key: p, label: p }));
   
   return (
-    <div className="flex items-center justify-between px-6 py-3 border-b border-border bg-surface-1">
+    <div className="flex items-center justify-between px-6 py-3 border-b border-border bg-background">
+      {/* LEFT: Search → Group by → Filters */}
       <div className="flex items-center gap-3">
         {/* Search */}
         <div className="relative">
@@ -344,7 +350,45 @@ export const ProductRoadmapToolbar: React.FC<ProductRoadmapToolbarProps> = ({
           )}
         </div>
         
-        {/* Smart Filters */}
+        {/* Group By Dropdown - matches Program */}
+        <div className="relative" onClick={(e) => e.stopPropagation()}>
+          <button 
+            className={cn(
+              "h-9 px-3 flex items-center gap-2 text-sm border border-border rounded-lg bg-background hover:bg-muted",
+              groupBy !== 'none' && "border-brand-primary text-brand-primary"
+            )}
+            onClick={() => {
+              setGroupByMenuOpen(!groupByMenuOpen);
+              setYearMenuOpen(false);
+            }}
+          >
+            <Layers size={16} />
+            Group by
+            <ChevronDown size={12} />
+          </button>
+          {groupByMenuOpen && (
+            <div className="absolute top-full mt-1 left-0 w-44 py-1 bg-background border border-border rounded-lg shadow-lg z-50">
+              {GROUP_BY_OPTIONS.map(option => (
+                <div
+                  key={option.value}
+                  className={cn(
+                    "flex items-center justify-between px-3 py-2 text-sm cursor-pointer hover:bg-muted",
+                    groupBy === option.value && "text-brand-primary"
+                  )}
+                  onClick={() => {
+                    onGroupByChange(option.value);
+                    setGroupByMenuOpen(false);
+                  }}
+                >
+                  {option.label}
+                  {groupBy === option.value && <Check size={16} className="text-brand-primary" />}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+        
+        {/* Filters Button */}
         <div className="relative" ref={filtersRef}>
           <button 
             className={cn(
@@ -364,9 +408,7 @@ export const ProductRoadmapToolbar: React.FC<ProductRoadmapToolbarProps> = ({
           
           {filtersOpen && (
             <div className="absolute top-full mt-2 left-0 w-80 bg-background border border-border rounded-lg shadow-xl z-50 flex flex-col max-h-[520px]">
-              {/* Scrollable filter body */}
               <div className="flex-1 overflow-y-auto p-4 space-y-4">
-                {/* Status / Workflow */}
                 <MultiSelectDropdown
                   label="Status / Workflow"
                   options={DEMAND_STATUS_CONFIG}
@@ -375,7 +417,6 @@ export const ProductRoadmapToolbar: React.FC<ProductRoadmapToolbarProps> = ({
                   placeholder="All statuses"
                 />
                 
-                {/* Planned Quarter */}
                 <MultiSelectDropdown
                   label="Planned Quarter"
                   options={QUARTER_CONFIG}
@@ -384,7 +425,6 @@ export const ProductRoadmapToolbar: React.FC<ProductRoadmapToolbarProps> = ({
                   placeholder="All quarters"
                 />
                 
-                {/* Delivery Platform */}
                 {platforms.length > 0 && (
                   <MultiSelectDropdown
                     label="Delivery Platform"
@@ -395,7 +435,6 @@ export const ProductRoadmapToolbar: React.FC<ProductRoadmapToolbarProps> = ({
                   />
                 )}
                 
-                {/* Business Owner - Type-ahead searchable */}
                 <UserSearchDropdown
                   label="Business Owner"
                   items={owners}
@@ -404,7 +443,6 @@ export const ProductRoadmapToolbar: React.FC<ProductRoadmapToolbarProps> = ({
                   placeholder="Type to search owners..."
                 />
                 
-                {/* Assignee - Type-ahead searchable */}
                 <UserSearchDropdown
                   label="Assignee"
                   items={assignees}
@@ -413,7 +451,6 @@ export const ProductRoadmapToolbar: React.FC<ProductRoadmapToolbarProps> = ({
                   placeholder="Type to search assignees..."
                 />
                 
-                {/* Priority Tier */}
                 <MultiSelectDropdown
                   label="Priority Tier"
                   options={PRIORITY_TIER_CONFIG.filter(t => t.key !== 'unscored')}
@@ -422,7 +459,6 @@ export const ProductRoadmapToolbar: React.FC<ProductRoadmapToolbarProps> = ({
                   placeholder="All priorities"
                 />
                 
-                {/* Health */}
                 <MultiSelectDropdown
                   label="Health"
                   options={HEALTH_CONFIG.filter(h => h.key !== 'unknown')}
@@ -431,7 +467,6 @@ export const ProductRoadmapToolbar: React.FC<ProductRoadmapToolbarProps> = ({
                   placeholder="All health statuses"
                 />
                 
-                {/* Milestone Condition */}
                 <MultiSelectDropdown
                   label="Milestone Condition"
                   options={MILESTONE_CONDITION_CONFIG}
@@ -441,14 +476,11 @@ export const ProductRoadmapToolbar: React.FC<ProductRoadmapToolbarProps> = ({
                 />
               </div>
               
-              {/* Sticky Footer */}
               <div className="border-t border-border p-3 space-y-2 bg-muted/30 flex-shrink-0">
-                {/* Matching Count */}
                 <div className="text-xs text-muted-foreground text-center">
                   {matchingDemands} demand{matchingDemands !== 1 ? 's' : ''} match
                 </div>
                 
-                {/* Actions */}
                 <div className="flex items-center gap-2">
                   <button
                     className="flex-1 px-3 py-2 text-xs font-medium text-muted-foreground hover:text-foreground"
@@ -473,46 +505,11 @@ export const ProductRoadmapToolbar: React.FC<ProductRoadmapToolbarProps> = ({
             </div>
           )}
         </div>
-        
-        {/* Group By Dropdown */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <button
-              className={cn(
-                "h-9 px-3 flex items-center gap-2 text-sm border border-border rounded-lg bg-background hover:bg-muted",
-                groupBy !== 'none' && "border-brand-primary text-brand-primary"
-              )}
-            >
-              <Layers size={16} />
-              Group
-              <ChevronDown size={14} />
-            </button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="start" className="w-48 z-[400]">
-            <div className="px-2 py-1.5 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
-              Group by
-            </div>
-            {GROUP_BY_OPTIONS.map((option) => (
-              <DropdownMenuItem
-                key={option.value}
-                className={cn(
-                  "flex items-center justify-between cursor-pointer",
-                  groupBy === option.value && "bg-brand-primary/10"
-                )}
-                onClick={() => onGroupByChange(option.value)}
-              >
-                <span>{option.label}</span>
-                {groupBy === option.value && (
-                  <Check size={14} className="text-brand-primary" />
-                )}
-              </DropdownMenuItem>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
       </div>
       
+      {/* RIGHT: Milestones toggle + Year selector + Info */}
       <div className="flex items-center gap-3">
-        {/* Milestones Toggle */}
+        {/* Milestones Toggle - matches Program */}
         <div className="flex items-center gap-2">
           <span className="text-sm text-muted-foreground">Milestones</span>
           <div 
@@ -531,27 +528,54 @@ export const ProductRoadmapToolbar: React.FC<ProductRoadmapToolbarProps> = ({
         
         <div className="w-px h-6 bg-border" />
         
-        {/* Date Range Filter */}
-        <RoadmapDateFilterV2
-          draftViewport={draftViewport}
-          appliedViewport={appliedViewport}
-          onDraftChange={onDraftViewportChange}
-          onApply={handleViewportApply}
-          onClear={handleClearAll}
-        />
+        {/* Year Selector - matches Program */}
+        <div className="relative" onClick={(e) => e.stopPropagation()}>
+          <button
+            onClick={() => {
+              setYearMenuOpen(!yearMenuOpen);
+              setGroupByMenuOpen(false);
+            }}
+            className="h-9 px-3 flex items-center gap-2 text-sm border border-border rounded-lg bg-background hover:bg-muted"
+          >
+            <span>{currentYear}</span>
+            <ChevronDown size={12} />
+          </button>
+          {yearMenuOpen && (
+            <div className="absolute top-full right-0 mt-1 min-w-[100px] bg-background border border-border rounded-lg shadow-lg z-50">
+              {YEAR_OPTIONS.map(y => (
+                <div
+                  key={y}
+                  className={cn(
+                    "flex items-center justify-between px-3 py-2 text-sm cursor-pointer hover:bg-muted first:rounded-t-lg last:rounded-b-lg",
+                    currentYear === y && "text-brand-primary"
+                  )}
+                  onClick={() => {
+                    handleYearChange(y);
+                    setYearMenuOpen(false);
+                  }}
+                >
+                  {y}
+                  {currentYear === y && <Check size={16} className="text-brand-primary" />}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
         
-        {/* Legend Toggle */}
+        {/* Info/Legend Button - matches Program */}
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
               <button
                 className={cn(
-                  "h-10 w-10 flex items-center justify-center border border-border rounded-xl transition-colors bg-background",
-                  showLegend ? "border-brand-primary text-brand-primary" : "hover:bg-muted text-muted-foreground"
+                  "h-9 w-9 flex items-center justify-center border border-border rounded-lg transition-colors",
+                  showLegend 
+                    ? "bg-brand-primary text-white border-brand-primary" 
+                    : "bg-background text-muted-foreground hover:bg-muted"
                 )}
                 onClick={onToggleLegend}
               >
-                <Info size={18} strokeWidth={1.5} />
+                <Info size={16} />
               </button>
             </TooltipTrigger>
             <TooltipContent side="bottom">
