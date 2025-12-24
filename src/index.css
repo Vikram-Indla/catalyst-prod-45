@@ -617,3 +617,120 @@
 [data-theme="dark"] * {
   scrollbar-color: #525252 #262626;
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   CATALYST 9.5 EXECUTIVE SHADOW SYSTEM
+   Premium shadows with proper light/dark mode variants
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Light mode shadows */
+.shadow-catalyst-xs { box-shadow: 0 1px 2px rgba(26, 26, 26, 0.04); }
+.shadow-catalyst-sm { box-shadow: 0 1px 3px rgba(26, 26, 26, 0.06), 0 1px 2px rgba(26, 26, 26, 0.04); }
+.shadow-catalyst-md { box-shadow: 0 4px 6px -1px rgba(26, 26, 26, 0.06), 0 2px 4px -1px rgba(26, 26, 26, 0.04); }
+.shadow-catalyst-lg { box-shadow: 0 10px 15px -3px rgba(26, 26, 26, 0.06), 0 4px 6px -2px rgba(26, 26, 26, 0.03); }
+
+/* Dark mode shadows */
+.dark .shadow-catalyst-xs { box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3); }
+.dark .shadow-catalyst-sm { box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4), 0 1px 2px rgba(0, 0, 0, 0.3); }
+.dark .shadow-catalyst-md { box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.3); }
+.dark .shadow-catalyst-lg { box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.3); }
+
+/* Gold focus glow */
+.glow-gold { box-shadow: 0 0 0 3px rgba(198, 156, 109, 0.12); }
+.dark .glow-gold { box-shadow: 0 0 0 3px rgba(212, 168, 85, 0.15); }
+
+/* Inner shadow for inputs */
+.shadow-inner-subtle { box-shadow: inset 0 1px 2px rgba(26, 26, 26, 0.04); }
+.dark .shadow-inner-subtle { box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.2); }
+
+/* ═══════════════════════════════════════════════════════════════
+   CATALYST 9.5 MICRO-INTERACTIONS
+   Premium animations and hover effects
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Spring animation for hover lift */
+.hover-lift {
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease;
+}
+.hover-lift:hover {
+  transform: translateY(-2px);
+}
+
+/* Press scale for buttons */
+.press-scale {
+  transition: transform 0.1s ease;
+}
+.press-scale:active {
+  transform: scale(0.97);
+}
+
+/* Smooth transitions */
+.transition-smooth {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Tab indicator spring animation */
+.tab-indicator {
+  transform: scaleX(0);
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.tab-active .tab-indicator {
+  transform: scaleX(1);
+}
+
+/* Pulsing animation for save indicator */
+@keyframes pulse-subtle {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+.pulse-subtle { animation: pulse-subtle 2s ease-in-out infinite; }
+
+/* Avatar ring on hover */
+.avatar-ring {
+  transition: box-shadow 0.2s ease;
+}
+.avatar-ring:hover {
+  box-shadow: 0 0 0 2px #faf7f1, 0 0 0 4px #c69c6d;
+}
+.dark .avatar-ring:hover {
+  box-shadow: 0 0 0 2px #141414, 0 0 0 4px #d4a855;
+}
+
+/* Focus ring utility */
+.focus-ring:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px rgba(198, 156, 109, 0.4);
+}
+.dark .focus-ring:focus-visible {
+  box-shadow: 0 0 0 2px #1a1a1a, 0 0 0 4px rgba(212, 168, 85, 0.4);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   CATALYST 9.5 SCROLLBAR
+   Premium styled scrollbar for drawer content
+   ═══════════════════════════════════════════════════════════════ */
+
+.scrollbar-catalyst::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scrollbar-catalyst::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-catalyst::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.08);
+  border-radius: 3px;
+}
+
+.scrollbar-catalyst::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.15);
+}
+
+.dark .scrollbar-catalyst::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.dark .scrollbar-catalyst::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}

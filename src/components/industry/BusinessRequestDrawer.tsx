@@ -29,7 +29,8 @@ import {
   Minimize2,
   MoreVertical,
   Trash2,
-  Copy
+  Copy,
+  Loader2
 } from 'lucide-react';
 import { useBusinessRequest, useUpdateBusinessRequest, useDeleteBusinessRequest, useDuplicateBusinessRequest } from '@/hooks/useBusinessRequests';
 import { BusinessRequest } from '@/types/business-request';
@@ -46,6 +47,7 @@ import { toast } from 'sonner';
 import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useBusinessDrawerRoleTabs } from '@/hooks/useBusinessDrawerRoleTabs';
+import { cn } from '@/lib/utils';
 
 // Fields to track for audit logging (human-readable names)
 const AUDIT_FIELD_LABELS: Record<string, string> = {
@@ -188,6 +190,8 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showUnsavedChangesDialog, setShowUnsavedChangesDialog] = useState(false);
   const [workflowModalOpen, setWorkflowModalOpen] = useState(false);
+  const [showSavedIndicator, setShowSavedIndicator] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const nameInputRef = useRef<HTMLInputElement>(null);
 
   // Track if we initiated a data update (to avoid resetting hasChanges on refetch)
@@ -254,6 +258,7 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
     // Debounce auto-save by 800ms
     autoSaveTimeoutRef.current = setTimeout(async () => {
       console.log('Auto-saving changes...');
+      setIsSaving(true);
       
       // Log field changes to audit table
       await logFieldChanges(requestId, originalDataForAudit, dataToSave);
@@ -263,11 +268,17 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
           console.log('Auto-save successful');
           setOriginalData(dataToSave);
           setHasChanges(false);
+          setIsSaving(false);
+          setShowSavedIndicator(true);
+          setTimeout(() => setShowSavedIndicator(false), 2000);
           skipNextFormResetRef.current = true;
           // Refresh all views
           queryClient.invalidateQueries({ queryKey: ['business-requests'] });
           queryClient.invalidateQueries({ queryKey: ['business-request-audit', requestId] });
-          toast.success('Changes saved', { duration: 2000 });
+        },
+        onError: () => {
+          setIsSaving(false);
+          toast.error('Failed to save changes');
         }
       });
     }, 800);
@@ -470,9 +481,9 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
     }
   };
 
-  // Get drawer width classes based on expanded state - full screen when expanded
+  // Get drawer width classes based on expanded state
   const drawerWidthClass = isExpanded 
-    ? 'w-screen h-screen' 
+    ? 'w-screen sm:w-[70vw] sm:max-w-[1120px]' 
     : 'w-screen sm:w-[65vw] sm:max-w-[980px]';
 
   if (!isOpen) return null;
@@ -480,140 +491,118 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
   return (
     <>
       <Sheet open={isOpen} onOpenChange={(open) => !open && handleAttemptClose()}>
-        <SheetContent side="right" hideClose className={`executive-drawer ${drawerWidthClass} p-0`}>
-          <SheetHeader className="executive-drawer-header flex-col space-y-0 shrink-0 p-0">
-            {/* Header row with proper top spacing */}
-            <div className="flex items-center justify-between px-4 md:px-5 pt-4 pb-3 border-b border-brand-primary/50">
-              {/* Left side: Request ID + Title */}
-              <div className="flex items-center gap-2.5 flex-1 min-w-0">
-                <div className="flex items-center gap-1 shrink-0">
-                  <span className="text-sm font-medium text-brand-primary">{request?.request_key || '...'}</span>
-                  <button
-                    onClick={handleCopyLink}
-                    className="text-muted-foreground/60 hover:text-brand-primary transition-colors p-0.5"
-                    title="Copy link"
-                  >
-                    <LinkIcon className="h-3 w-3" />
-                  </button>
-                </div>
-                
-                {/* Editable title */}
-                <div className="flex items-center gap-1.5 flex-1 min-w-0 group">
+        <SheetContent 
+          side="right" 
+          hideClose 
+          className={cn(
+            "p-0 flex flex-col transition-colors duration-300",
+            drawerWidthClass
+          )}
+          style={{ 
+            background: 'white',
+            borderLeft: '1px solid rgba(229, 231, 235, 0.8)'
+          }}
+        >
+          {/* Breadcrumb Row - 9.5 Executive */}
+          <div className={cn(
+            "px-6 py-3 flex items-center gap-3",
+            "border-b border-gray-100 dark:border-[#242424]",
+            "bg-gray-50/50 dark:bg-[#1c1c1c]/50"
+          )}>
+            <nav className="flex items-center gap-2">
+              <span className="text-[10px] font-semibold uppercase tracking-[0.08em] text-gray-400 dark:text-gray-500">
+                Product Backlog
+              </span>
+              <span className="text-gray-300 dark:text-[#2c2c2c]">/</span>
+              <span className="text-[11px] font-bold font-mono text-[#8b7355] dark:text-[#d4a855] tracking-wide">
+                {request?.request_key || '...'}
+              </span>
+            </nav>
+            
+            {/* Copy Link Button */}
+            <button 
+              onClick={handleCopyLink}
+              className={cn(
+                "group p-1.5 -ml-1 rounded-lg transition-smooth",
+                "text-gray-400 hover:text-[#c69c6d] dark:hover:text-[#d4a855]",
+                "hover:bg-[#c69c6d]/10 dark:hover:bg-[#d4a855]/10"
+              )}
+              title="Copy link"
+            >
+              <LinkIcon className="w-3.5 h-3.5 transition-transform duration-200 group-hover:scale-110" />
+            </button>
+            
+            <div className="flex-1" />
+            
+            {/* Auto-save Indicator */}
+            {showSavedIndicator && (
+              <div className={cn(
+                "flex items-center gap-2 px-3 py-1.5 rounded-full",
+                "bg-[#5c7c5c]/10 dark:bg-[#7a9a7a]/15",
+                "border border-[#5c7c5c]/20 dark:border-[#7a9a7a]/20"
+              )}>
+                <span className="w-1.5 h-1.5 rounded-full bg-[#5c7c5c] dark:bg-[#7a9a7a] pulse-subtle" />
+                <span className="text-[11px] font-semibold text-[#5c7c5c] dark:text-[#7a9a7a] tracking-wide">
+                  Saved
+                </span>
+              </div>
+            )}
+            
+            {isSaving && (
+              <div className={cn(
+                "flex items-center gap-2 px-3 py-1.5 rounded-full",
+                "bg-[#c69c6d]/10 dark:bg-[#d4a855]/15",
+                "border border-[#c69c6d]/20 dark:border-[#d4a855]/20"
+              )}>
+                <Loader2 className="w-3 h-3 animate-spin text-[#c69c6d] dark:text-[#d4a855]" />
+                <span className="text-[11px] font-semibold text-[#c69c6d] dark:text-[#d4a855] tracking-wide">
+                  Saving...
+                </span>
+              </div>
+            )}
+          </div>
+
+          {/* Hero Row - 9.5 Executive */}
+          <div className="px-6 py-5 border-b border-gray-200 dark:border-[#242424] bg-white dark:bg-[#141414]">
+            <div className="flex items-start justify-between gap-6">
+              <div className="flex-1 min-w-0">
+                <div className="group flex items-center gap-2 mb-4">
                   {isEditingName ? (
-                    <Input
-                      ref={nameInputRef}
-                      value={editedName}
-                      onChange={(e) => setEditedName(e.target.value)}
-                      onBlur={handleSaveName}
-                      onKeyDown={handleNameKeyDown}
-                      className="text-base font-medium h-auto py-1 px-2 border-brand-primary/50 focus:border-brand-primary"
-                    />
+                    <Input ref={nameInputRef} value={editedName} onChange={(e) => setEditedName(e.target.value)} onBlur={handleSaveName} onKeyDown={handleNameKeyDown} className="text-[22px] font-semibold h-auto py-1.5 px-2 max-w-[480px] border-[#c69c6d]" />
                   ) : (
                     <>
-                      <SheetTitle className="truncate text-base font-medium text-foreground">
-                        {request?.title || 'Loading...'}
-                      </SheetTitle>
-                      <button
-                        onClick={handleStartEditName}
-                        className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-brand-primary transition-all p-0.5"
-                        title="Rename"
-                      >
-                        <Pencil className="h-3.5 w-3.5" />
-                      </button>
+                      <h1 className="text-[22px] font-semibold text-gray-900 dark:text-white truncate max-w-[480px] leading-tight tracking-[-0.02em]">{request?.title || 'Loading...'}</h1>
+                      <button onClick={handleStartEditName} className="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg text-gray-400 hover:text-[#8b7355] hover:bg-[#8b7355]/10 transition-all"><Pencil className="w-3.5 h-3.5" /></button>
                     </>
                   )}
                 </div>
+                <div className="flex items-center gap-3">
+                  <button onClick={() => setWorkflowModalOpen(true)} className="inline-flex items-center gap-2 pl-2.5 pr-3 py-2 rounded-lg bg-gradient-to-r from-amber-50 to-amber-50/60 dark:from-amber-900/25 dark:to-amber-900/15 border border-amber-200/70 dark:border-amber-700/40 shadow-catalyst-xs transition-smooth press-scale">
+                    <span className="text-[10px] font-semibold uppercase tracking-[0.08em] text-amber-700 dark:text-amber-400">Status</span>
+                    <span className="text-sm font-medium text-amber-800 dark:text-amber-300 capitalize">{formData.process_step?.replace(/_/g, ' ') || 'New Request'}</span>
+                    <ChevronDown className="w-3.5 h-3.5 text-amber-600" />
+                  </button>
+                  {formData.rank && (<div className="inline-flex items-center rounded-lg overflow-hidden border border-gray-200 dark:border-[#2c2c2c] shadow-catalyst-xs"><span className="px-2.5 py-2 text-[10px] font-semibold uppercase tracking-[0.08em] text-gray-500 bg-gray-50 dark:bg-[#242424]">Rank</span><span className="px-2.5 py-2 text-[13px] font-bold text-[#c69c6d] dark:text-[#d4a855] bg-white dark:bg-[#1c1c1c]/50">#{formData.rank}</span></div>)}
+                </div>
               </div>
-              
-              {/* Right side: Save button + action icons all inline */}
-              <div className="flex items-center gap-2 shrink-0">
-                <Button
-                  size="sm"
-                  onClick={handleSave}
-                  className="h-8 px-4 text-sm font-medium bg-secondary-olive hover:bg-secondary-olive/85 text-white"
-                >
-                  Save
-                </Button>
-                
-                {/* More options dropdown */}
+              <div className="flex items-center gap-1">
+                <Button size="sm" onClick={handleSave} className="h-9 px-4 rounded-lg bg-gradient-to-r from-[#5c7c5c] to-[#4a6a4a] hover:from-[#4a6a4a] hover:to-[#3d5a3d] text-white text-sm font-semibold shadow-catalyst-md press-scale">Save</Button>
                 <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-muted/50">
-                      <MoreVertical className="h-4 w-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-56 bg-popover">
-                    <DropdownMenuItem onSelect={() => handleAdditionalOption('duplicate')}>
-                      <Copy className="h-4 w-4 mr-2" />
-                      Duplicate Request
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem 
-                      onSelect={() => handleAdditionalOption('delete')}
-                      className="text-destructive focus:text-destructive"
-                    >
-                      <Trash2 className="h-4 w-4 mr-2" />
-                      Delete Request
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
+                  <DropdownMenuTrigger asChild><button className="h-9 w-9 rounded-lg flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:hover:bg-[#242424]"><MoreVertical className="w-4 h-4" /></button></DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-56"><DropdownMenuItem onSelect={() => handleAdditionalOption('duplicate')}><Copy className="h-4 w-4 mr-2" />Duplicate Request</DropdownMenuItem><DropdownMenuSeparator /><DropdownMenuItem onSelect={() => handleAdditionalOption('delete')} className="text-destructive"><Trash2 className="h-4 w-4 mr-2" />Delete Request</DropdownMenuItem></DropdownMenuContent>
                 </DropdownMenu>
-                
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={toggleExpand}
-                  className="h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-muted/50"
-                  title={isExpanded ? 'Collapse' : 'Expand'}
-                >
-                  {isExpanded ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
-                </Button>
-                
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
-                  onClick={handleAttemptClose}
-                  className="h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-muted/50"
-                >
-                  <X className="h-4 w-4" />
-                </Button>
+                <button onClick={toggleExpand} className="h-9 w-9 rounded-lg flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:hover:bg-[#242424]" title={isExpanded ? 'Collapse' : 'Expand'}>{isExpanded ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}</button>
+                <button onClick={handleAttemptClose} className="h-9 w-9 rounded-lg flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:hover:bg-[#242424]"><X className="w-4 h-4" /></button>
               </div>
             </div>
-            <SheetDescription className="sr-only">Business request details panel</SheetDescription>
-          </SheetHeader>
-
-          {/* Workflow Status - same size as tab labels */}
-          <div className="px-4 md:px-5 py-2 flex items-center shrink-0">
-            <button 
-              onClick={() => setWorkflowModalOpen(true)}
-              className="flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
-            >
-              <span className="font-bold text-foreground">Status:</span>
-              <span className="text-brand-primary capitalize underline underline-offset-2">
-                {formData.process_step?.replace(/_/g, ' ') || 'New Request'}
-              </span>
-              <span className="text-xs font-normal text-muted-foreground/70">(click to update)</span>
-            </button>
-            <WorkflowViewerModal 
-              currentStep={formData.process_step || 'new_request'}
-              requestId={requestId || ''}
-              submittedDate={request?.created_at}
-              onStepChange={(step) => handleFieldChange('process_step', step)}
-              open={workflowModalOpen}
-              onOpenChange={setWorkflowModalOpen}
-            />
+            <WorkflowViewerModal currentStep={formData.process_step || 'new_request'} requestId={requestId || ''} submittedDate={request?.created_at} onStepChange={(step) => handleFieldChange('process_step', step)} open={workflowModalOpen} onOpenChange={setWorkflowModalOpen} />
           </div>
 
-          {/* Tabs with horizontal scroll */}
+          {/* Tabs - 9.5 Executive */}
           <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col min-h-0">
-            <TabsList className="executive-tabs-list w-full justify-start rounded-none border-b border-border h-10 shrink-0 overflow-x-auto flex-nowrap px-4 md:px-5">
+            <TabsList className="w-full justify-start rounded-none h-auto px-6 py-0 bg-white dark:bg-[#141414] border-b border-gray-200 dark:border-[#242424]">
               {VIEW_TABS.map((tab) => (
-                <TabsTrigger
-                  key={tab.value}
-                  value={tab.value}
-                  className="executive-tab whitespace-nowrap"
-                >
-                  {tab.label}
-                </TabsTrigger>
+                <TabsTrigger key={tab.value} value={tab.value} className="relative px-4 py-4 text-[13px] font-medium whitespace-nowrap bg-transparent border-none rounded-none text-gray-500 hover:text-gray-700 data-[state=active]:text-gray-900 data-[state=active]:font-semibold after:absolute after:bottom-0 after:left-3 after:right-3 after:h-[2px] after:rounded-full data-[state=inactive]:after:scale-x-0 data-[state=active]:after:scale-x-100 data-[state=active]:after:bg-[#c69c6d]">{tab.label}</TabsTrigger>
               ))}
             </TabsList>
 
