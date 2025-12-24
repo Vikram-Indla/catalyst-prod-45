@@ -198,7 +198,7 @@ export default function IndustryRoadmapPage() {
   const timelineBodyRef = useRef<HTMLDivElement>(null);
   const timelineHeaderRef = useRef<HTMLDivElement>(null);
   
-  // Fetch business requests
+  // Fetch business requests with milestones
   const { data: requestsData, isLoading } = useQuery({
     queryKey: ['industry-roadmap-requests'],
     queryFn: async () => {
@@ -233,6 +233,14 @@ export default function IndustryRoadmapPage() {
           departments (
             id,
             name
+          ),
+          milestones (
+            id,
+            title,
+            start_date,
+            end_date,
+            state,
+            completed_date
           )
         `)
         .is('deleted_at', null)
@@ -327,6 +335,30 @@ export default function IndustryRoadmapPage() {
         return d.toISOString().split('T')[0];
       })();
       
+      // Transform milestones from DB format to UI format
+      const transformedMilestones: Milestone[] = (req.milestones || []).map((m: any) => {
+        const endDate = m.end_date ? new Date(m.end_date) : null;
+        const today = new Date();
+        
+        // Determine status based on state and dates
+        let status: 'complete' | 'current' | 'pending' | 'overdue';
+        if (m.state === 'completed' || m.completed_date) {
+          status = 'complete';
+        } else if (endDate && endDate < today) {
+          status = 'overdue';
+        } else if (m.state === 'in_progress') {
+          status = 'current';
+        } else {
+          status = 'pending';
+        }
+        
+        return {
+          title: m.title,
+          date: m.end_date || m.start_date || '',
+          status,
+        };
+      });
+      
       return {
         id: req.id,
         key: req.request_key || `BR-${req.id.slice(0, 4).toUpperCase()}`,
@@ -343,7 +375,7 @@ export default function IndustryRoadmapPage() {
         startDate: startDate,
         endDate: actualEndDate,
         progress: req.progress || 0,
-        milestones: [], // Could be enhanced to show linked features as milestones
+        milestones: transformedMilestones,
         linkedFeatures: [],
         hasDependencies: false,
         isBlocked: req.process_step === 'on_hold',
