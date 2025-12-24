@@ -34,13 +34,14 @@ interface RiskMitigationTabProps {
 export function RiskMitigationTab({ risk, formData, onChange, isEditing }: RiskMitigationTabProps) {
   const [attachments] = useState<string[]>([]);
 
-  // Fetch profiles for owner display
+  // Fetch profiles for owner display - only APPROVED
   const { data: profiles = [] } = useQuery({
-    queryKey: ['profiles-list'],
+    queryKey: ['profiles-list-approved'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('profiles')
         .select('id, full_name, email')
+        .eq('approval_status', 'APPROVED')
         .order('full_name');
       if (error) throw error;
       return data || [];

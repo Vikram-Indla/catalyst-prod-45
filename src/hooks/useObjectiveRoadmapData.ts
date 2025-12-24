@@ -68,6 +68,7 @@ export function useObjectiveRoadmapData() {
       const { data, error } = await supabase
         .from('profiles')
         .select('id, full_name')
+        .eq('approval_status', 'APPROVED')
         .order('full_name');
       
       if (error) throw error;

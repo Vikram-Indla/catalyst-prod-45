@@ -126,13 +126,14 @@ export function ObjectiveDialog({ open, onClose, objectiveId, scopeType = 'portf
     },
   });
 
-  // Fetch users for owner selection
+  // Fetch users for owner selection - only APPROVED
   const { data: users } = useQuery({
-    queryKey: ['users-list'],
+    queryKey: ['users-list-approved'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('profiles')
         .select('id, full_name, email')
+        .eq('approval_status', 'APPROVED')
         .order('full_name');
       if (error) throw error;
       return data;

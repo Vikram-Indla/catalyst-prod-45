@@ -23,13 +23,14 @@ const PRODUCT_PERMISSIONS = [
 export function AccessControlPanel() {
   const [searchQuery, setSearchQuery] = useState('');
 
-  // Fetch users with their roles
+  // Fetch users with their roles - only APPROVED users
   const { data: usersWithRoles = [], isLoading } = useQuery({
     queryKey: ['users-with-roles'],
     queryFn: async () => {
       const { data: profiles, error: profilesError } = await supabase
         .from('profiles')
-        .select('id, email, full_name');
+        .select('id, email, full_name')
+        .eq('approval_status', 'APPROVED');
       
       if (profilesError) throw profilesError;
 

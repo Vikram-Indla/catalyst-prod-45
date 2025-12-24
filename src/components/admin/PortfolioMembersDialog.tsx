@@ -19,13 +19,14 @@ export function PortfolioMembersDialog({ open, onOpenChange, portfolioId, portfo
   const queryClient = useQueryClient();
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
 
-  // Fetch all profiles
+  // Fetch all APPROVED profiles
   const { data: profiles } = useQuery({
-    queryKey: ['profiles'],
+    queryKey: ['profiles-approved'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
+        .eq('approval_status', 'APPROVED')
         .order('full_name');
       if (error) throw error;
       return data;

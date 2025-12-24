@@ -155,6 +155,7 @@ export function useUsersWithRole(roleId: string | null) {
       const { data: profiles, error: profilesError } = await supabase
         .from('profiles')
         .select('id, email, full_name')
+        .eq('approval_status', 'APPROVED')
         .in('id', userIds);
 
       if (profilesError) throw profilesError;
