@@ -32,6 +32,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useDepartments, useBusinessOwners, useDepartmentOwnerMappings, getOwnerIdForDepartment } from '@/hooks/useDepartmentsAndOwners';
 import { useActiveDemandProcessSteps } from '@/hooks/useDemandProcessSteps';
+import { useActiveUsers } from '@/hooks/useActiveUsers';
 
 interface RequestItem {
   id: string;
@@ -167,22 +168,17 @@ function UserAvatar({ name, size = 'md' }: { name: string; size?: 'sm' | 'md' })
   );
 }
 
-// Assignee Select component with profiles data
+// Assignee Select component with profiles data (real-time sync with admin/users)
 function AssigneeSelect({ value, onChange }: { value: string | null; onChange: (name: string | null) => void }) {
-  // Fetch only active (approved) profiles for assignment
-  const { data: profiles = [] } = useQuery({
-    queryKey: ['all-profiles-for-assignment-active'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('id, full_name, email')
-        .eq('approval_status', 'APPROVED')
-        .order('full_name');
-      if (error) throw error;
-      return data || [];
-    },
-    staleTime: 5 * 60 * 1000,
-  });
+  // Fetch only active (approved) profiles with real-time sync
+  const { data: activeUsers = [] } = useActiveUsers();
+  
+  // Transform to expected format
+  const profiles = activeUsers.map(u => ({
+    id: u.id,
+    full_name: u.full_name,
+    email: u.email,
+  }));
 
   return (
     <Select value={value || 'unassigned'} onValueChange={(v) => onChange(v === 'unassigned' ? null : v)}>

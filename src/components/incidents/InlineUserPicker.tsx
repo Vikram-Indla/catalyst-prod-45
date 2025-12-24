@@ -6,12 +6,11 @@
  * - Searchable user dropdown
  * - Optimistic update with rollback on error
  * - Keyboard navigation (Esc to cancel)
+ * - Real-time sync with admin/users (APPROVED status only)
  */
 
 import { useState, useRef, useEffect } from 'react';
 import { Search, X, User } from 'lucide-react';
-import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
 import {
   Popover,
   PopoverContent,
@@ -19,6 +18,7 @@ import {
 } from '@/components/ui/popover';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
+import { useActiveUsers } from '@/hooks/useActiveUsers';
 import type { IncidentUserProfile } from '@/types/incident';
 
 interface InlineUserPickerProps {
@@ -39,18 +39,18 @@ export function InlineUserPicker({
   const [isSaving, setIsSaving] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Fetch available users
-  const { data: users = [] } = useQuery({
-    queryKey: ['incident-user-profiles'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('incident_user_profiles')
-        .select('*')
-        .order('full_name');
-      if (error) throw error;
-      return data as IncidentUserProfile[];
-    },
-  });
+  // Fetch APPROVED users with real-time sync
+  const { data: activeUsers = [] } = useActiveUsers();
+  
+  // Transform to IncidentUserProfile format
+  const users: IncidentUserProfile[] = activeUsers.map(u => ({
+    id: u.id,
+    full_name: u.full_name || u.email || 'Unknown',
+    email: u.email || '',
+    avatar_initials: (u.full_name || u.email || 'U').split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase(),
+    incident_role: 'user' as const,
+    has_veto_power: false,
+  }));
 
   // Focus search input when popover opens
   useEffect(() => {

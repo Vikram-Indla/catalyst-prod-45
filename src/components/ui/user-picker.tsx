@@ -1,6 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { useState, useMemo } from 'react';
 import { Check, ChevronsUpDown, User, X, Loader2, AlertCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -19,10 +17,11 @@ import {
 } from '@/components/ui/popover';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { useActiveUsers } from '@/hooks/useActiveUsers';
 
 interface UserProfile {
   id: string;
-  email: string;
+  email: string | null;
   full_name: string | null;
   avatar_url: string | null;
 }
@@ -49,20 +48,8 @@ export function UserPicker({
   const [open, setOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
-  // Fetch users from profiles table
-  const { data: users, isLoading, error } = useQuery({
-    queryKey: ['user-profiles'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('id, email, full_name, avatar_url')
-        .order('full_name', { ascending: true });
-
-      if (error) throw error;
-      return data as UserProfile[];
-    },
-    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
-  });
+  // Fetch APPROVED users with real-time sync
+  const { data: users, isLoading, error } = useActiveUsers();
 
   // Filter users based on search query
   const filteredUsers = useMemo(() => {

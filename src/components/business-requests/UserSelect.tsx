@@ -1,13 +1,12 @@
 /**
  * UserSelect - Reusable user selection component with avatar display
- * Shows user avatar + name, fetches from profiles table
+ * Shows user avatar + name, fetches APPROVED users with real-time sync
  */
 
-import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
+import { useActiveUsers } from '@/hooks/useActiveUsers';
 
 interface UserProfile {
   id: string;
@@ -46,20 +45,16 @@ export function UserSelect({
   showUnassigned = true,
   saveAs = 'name'
 }: UserSelectProps) {
-  // Fetch all active profiles
-  const { data: profiles = [], isLoading } = useQuery({
-    queryKey: ['profiles-for-user-select'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('id, full_name, email, avatar_url')
-        .eq('approval_status', 'APPROVED')
-        .order('full_name');
-      if (error) throw error;
-      return (data || []) as UserProfile[];
-    },
-    staleTime: 5 * 60 * 1000,
-  });
+  // Fetch APPROVED users with real-time sync
+  const { data: activeUsers = [], isLoading } = useActiveUsers();
+  
+  // Transform to expected format
+  const profiles: UserProfile[] = activeUsers.map(u => ({
+    id: u.id,
+    full_name: u.full_name,
+    email: u.email,
+    avatar_url: u.avatar_url,
+  }));
 
   // Find selected user's display info - match by id OR full_name for compatibility
   const selectedUser = profiles.find(p => p.id === value || p.full_name === value);
