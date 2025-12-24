@@ -92,11 +92,11 @@ const STATUS_COLORS: Record<string, string> = {
 
 const getStatusColor = (value: string) => STATUS_COLORS[value] || 'bg-[hsl(0,0%,60%)]';
 
-// Quarter options
+// Quarter options (canonical storage format: "Q1-2026"; display: "Q1 2026")
 const QUARTER_OPTIONS = [
-  'Q1 2025', 'Q2 2025', 'Q3 2025', 'Q4 2025',
-  'Q1 2026', 'Q2 2026', 'Q3 2026', 'Q4 2026',
-  'Q1 2027', 'Q2 2027',
+  'Q1-2025', 'Q2-2025', 'Q3-2025', 'Q4-2025',
+  'Q1-2026', 'Q2-2026', 'Q3-2026', 'Q4-2026',
+  'Q1-2027', 'Q2-2027', 'Q3-2027', 'Q4-2027',
 ];
 
 function normalizeQuarterValue(q: string | null | undefined): string {
@@ -106,6 +106,12 @@ function normalizeQuarterValue(q: string | null | undefined): string {
     .replace(/[-_]/g, ' ')
     .replace(/\s+/g, ' ')
     .trim();
+}
+
+function normalizeQuarterKey(q: string | null | undefined): string {
+  if (!q) return '';
+  const formatted = normalizeQuarterValue(q); // "Q1 2026"
+  return formatted.replace(' ', '-'); // "Q1-2026"
 }
 
 // Fallback department options (used if DB fetch fails)
@@ -497,8 +503,8 @@ export function RequestDetailPanel({
             <div>
               <FieldLabel>Target Quarter</FieldLabel>
               <Select 
-                value={normalizeQuarterValue(request.quarter) || ''}
-                onValueChange={(value) => onUpdateField('quarter', normalizeQuarterValue(value))}
+                value={normalizeQuarterKey(request.quarter) || ''}
+                onValueChange={(value) => onUpdateField('quarter', normalizeQuarterKey(value))}
               >
                 <SelectTrigger className="w-full h-10">
                   <SelectValue placeholder="Select quarter..." />
@@ -506,7 +512,7 @@ export function RequestDetailPanel({
                 <SelectContent className="z-[500] bg-popover">
                   {QUARTER_OPTIONS.map((q) => (
                     <SelectItem key={q} value={q}>
-                      {q}
+                      {normalizeQuarterValue(q)}
                     </SelectItem>
                   ))}
                 </SelectContent>
