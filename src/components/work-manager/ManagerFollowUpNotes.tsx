@@ -439,7 +439,7 @@ export function ManagerFollowUpNotes({
           value={newNote}
           onChange={(e) => setNewNote(e.target.value)}
           placeholder="Add a follow-up action item..."
-          className="text-[13px] min-h-[80px] bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-700 placeholder:text-gray-500"
+          className="text-[13px] min-h-[80px] bg-background border-border placeholder:text-muted-foreground"
         />
         <Button
           size="sm"

@@ -202,13 +202,13 @@ export function WorkManagerTeams({ tasks, teams, users, onCreateTeam }: WorkMana
                 <div className="mt-4 pt-4 border-t border-border">
                   <div className="grid grid-cols-3 gap-3">
                     {/* Open */}
-                    <div className="p-3 rounded-lg bg-stone-100 dark:bg-white/5 text-center">
+                    <div className="p-3 rounded-lg bg-muted text-center">
                       <div className="text-xl font-bold text-foreground">{stats.open}</div>
-                      <div className="text-[10px] uppercase tracking-wide text-stone-500 dark:text-muted-foreground mt-0.5">Open</div>
+                      <div className="text-[10px] uppercase tracking-wide text-muted-foreground mt-0.5">Open</div>
                     </div>
                     
                     {/* Overdue - text color only */}
-                    <div className="p-3 rounded-lg bg-stone-100 dark:bg-white/5 text-center">
+                    <div className="p-3 rounded-lg bg-muted text-center">
                       <div className={cn(
                         "text-xl font-bold",
                         stats.overdue > 0 ? 'text-red-500 dark:text-red-400' : 'text-foreground'
@@ -224,9 +224,9 @@ export function WorkManagerTeams({ tasks, teams, users, onCreateTeam }: WorkMana
                     </div>
                     
                     {/* Done - text color only */}
-                    <div className="p-3 rounded-lg bg-stone-100 dark:bg-white/5 text-center">
+                    <div className="p-3 rounded-lg bg-muted text-center">
                       <div className="text-xl font-bold text-green-600 dark:text-green-400">{stats.done}</div>
-                      <div className="text-[10px] uppercase tracking-wide text-stone-500 dark:text-muted-foreground mt-0.5">Done</div>
+                      <div className="text-[10px] uppercase tracking-wide text-muted-foreground mt-0.5">Done</div>
                     </div>
                   </div>
                 </div>

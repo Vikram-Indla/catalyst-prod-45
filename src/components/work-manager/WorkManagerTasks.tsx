@@ -222,16 +222,16 @@ export function WorkManagerTasks({ tasks, onOpenTask }: WorkManagerTasksProps) {
   return (
     <div className={cn(
       "rounded-xl overflow-hidden",
-      "border border-border dark:border-[#2c2c2c]",
-      "bg-card dark:bg-[#141414]",
+      "border border-border",
+      "bg-card",
       "shadow-catalyst-sm"
     )}>
       <div className="overflow-auto max-h-[calc(100vh-220px)]">
         <table className="w-full">
           <thead className="sticky top-0 z-10">
             <tr className={cn(
-              "bg-gray-50/80 dark:bg-[#5c7c5c]/12",
-              "border-b border-gray-200 dark:border-[#2c2c2c]"
+              "bg-muted/50",
+              "border-b border-border"
             )}>
               <SortableHeader field="key" label="ID" className="w-[100px]" />
               <SortableHeader field="title" label="Title" />
@@ -249,7 +249,7 @@ export function WorkManagerTasks({ tasks, onOpenTask }: WorkManagerTasksProps) {
               </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100 dark:divide-[#242424]">
+          <tbody className="divide-y divide-border">
             {sortedTasks.map((task) => {
               const assignee = getUserById(task.assigneeId);
               const team = getTeamById(task.teamId);
@@ -261,7 +261,7 @@ export function WorkManagerTasks({ tasks, onOpenTask }: WorkManagerTasksProps) {
                   onClick={() => onOpenTask(task.id)}
                   className={cn(
                     'group cursor-pointer',
-                    'hover:bg-gray-50/80 dark:hover:bg-[#1c1c1c]',
+                    'hover:bg-muted/50',
                     'transition-all duration-150',
                     isDone && 'opacity-50'
                   )}

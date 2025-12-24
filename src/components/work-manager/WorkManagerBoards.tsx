@@ -398,8 +398,8 @@ function BoardColumn({
             )}
           >
             {tasks.length === 0 ? (
-              <div className="border-2 border-dashed border-stone-300 dark:border-gray-600 rounded-xl p-8 text-center bg-stone-50/50 dark:bg-gray-800/30">
-                <div className="w-12 h-12 rounded-full bg-stone-100 dark:bg-gray-700 flex items-center justify-center mx-auto mb-3">
+              <div className="border-2 border-dashed border-border rounded-xl p-8 text-center bg-muted/30">
+                <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center mx-auto mb-3">
                   <CheckCircle2 className="w-6 h-6 text-stone-400 dark:text-gray-500" />
                 </div>
                 <p className="text-[12px] font-medium text-stone-500 dark:text-gray-400">No tasks</p>
