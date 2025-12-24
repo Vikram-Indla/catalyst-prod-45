@@ -72,6 +72,26 @@ interface Quarter {
 // ===== UTILITIES =====
 const TODAY = new Date();
 
+function generateRollingQuarters(fromDate: Date, count: number = 4): Quarter[] {
+  const startMonth = Math.floor(fromDate.getMonth() / 3) * 3;
+  const base = new Date(fromDate.getFullYear(), startMonth, 1);
+
+  return Array.from({ length: count }, (_, i) => {
+    const start = new Date(base);
+    start.setMonth(base.getMonth() + i * 3);
+    start.setDate(1);
+
+    const q = Math.floor(start.getMonth() / 3) + 1;
+    const end = new Date(start.getFullYear(), start.getMonth() + 3, 0);
+
+    return {
+      label: `Q${q} ${start.getFullYear()}`,
+      start,
+      end,
+    };
+  });
+}
+
 function generateQuartersForFilter(filter: TimelineFilterState): Quarter[] {
   const quarters: Quarter[] = [];
   const years = filter.selectedYears.length > 0 
@@ -148,6 +168,7 @@ export default function IndustryRoadmapPage() {
   const [groupBy, setGroupBy] = useState<'owner' | 'product' | 'quarters' | 'department'>('product');
   const [showMilestones, setShowMilestones] = useState(true);
   const [timelineFilter, setTimelineFilter] = useState<TimelineFilterState>(DEFAULT_TIMELINE_FILTER);
+  const [isTimelineAuto, setIsTimelineAuto] = useState(true);
   const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(new Set());
   const [selectedRequestId, setSelectedRequestId] = useState<string | null>(null);
   
@@ -167,10 +188,12 @@ export default function IndustryRoadmapPage() {
     y: 0
   });
   
-  // Dynamic timeline quarters based on filter
+  // Dynamic timeline quarters
+  // Default (auto): current quarter → next 3 quarters (no past quarters)
+  // Custom: driven by TimelineFilterPopover selections
   const visibleQuarters = useMemo(() => {
-    return generateQuartersForFilter(timelineFilter);
-  }, [timelineFilter]);
+    return isTimelineAuto ? generateRollingQuarters(new Date(), 4) : generateQuartersForFilter(timelineFilter);
+  }, [isTimelineAuto, timelineFilter]);
   
   // Timeline calculation helpers
   const getTimelineStart = useCallback(() => {
@@ -716,7 +739,10 @@ export default function IndustryRoadmapPage() {
               {/* Timeline Filter Popover */}
               <TimelineFilterPopover
                 value={timelineFilter}
-                onChange={setTimelineFilter}
+                onChange={(next) => {
+                  setIsTimelineAuto(false);
+                  setTimelineFilter(next);
+                }}
               />
               
               {/* Info Button */}
@@ -837,7 +863,13 @@ export default function IndustryRoadmapPage() {
                         </div>
                         
                         {/* Status Badge */}
-                        <div className="px-2 py-1 rounded text-[10px] font-medium bg-muted text-muted-foreground flex-shrink-0 capitalize">
+                        <div
+                          className="px-2 py-1 rounded text-[10px] font-medium flex-shrink-0 capitalize"
+                          style={{
+                            backgroundColor: `var(--process-${(request.status || 'new_demand').replace(/_/g, '-')})`,
+                            color: 'hsl(var(--primary-foreground))',
+                          }}
+                        >
                           {request.status?.replace(/_/g, ' ') || 'New'}
                         </div>
                       </div>
@@ -966,12 +998,18 @@ export default function IndustryRoadmapPage() {
                             className="absolute top-1/2 -translate-y-1/2 h-2 z-[5]"
                             style={{ left: `${startPct}%`, width: `${width}%`, minWidth: '10px' }}
                           >
-                            {/* Track */}
-                            <div className="absolute inset-0 bg-brand-primary/20 rounded-sm" />
-                            {/* Progress */}
+                            {/* Track (status color) */}
                             <div
-                              className="absolute left-0 top-0 h-full bg-brand-primary rounded-sm"
-                              style={{ width: `${request.progress}%` }}
+                              className="absolute inset-0 rounded-sm opacity-20"
+                              style={{ backgroundColor: `var(--process-${(request.status || 'new_demand').replace(/_/g, '-')})` }}
+                            />
+                            {/* Progress (status color) */}
+                            <div
+                              className="absolute left-0 top-0 h-full rounded-sm"
+                              style={{
+                                width: `${request.progress}%`,
+                                backgroundColor: `var(--process-${(request.status || 'new_demand').replace(/_/g, '-')})`,
+                              }}
                             />
                           </div>
                           
