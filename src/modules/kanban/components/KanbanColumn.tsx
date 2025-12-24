@@ -204,6 +204,7 @@ export function KanbanColumn({
             ticket={ticket}
             onClick={onCardClick}
             compactMode={compactMode}
+            statusLabel={columnConfig.label}
           />
         ))}
         {tickets.length === 0 && (

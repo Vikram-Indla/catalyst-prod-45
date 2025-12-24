@@ -30,6 +30,7 @@ interface KanbanCardProps {
   ticket: KanbanTicket;
   onClick: (ticket: KanbanTicket) => void;
   compactMode: boolean;
+  statusLabel?: string; // Label from column config
 }
 
 /**
@@ -149,7 +150,7 @@ function BusinessOwnerAvatar({ name, size = 28 }: { name: string; size?: number 
   );
 }
 
-export function KanbanCard({ ticket, onClick, compactMode }: KanbanCardProps) {
+export function KanbanCard({ ticket, onClick, compactMode, statusLabel }: KanbanCardProps) {
   const [isDragging, setIsDragging] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   
@@ -294,7 +295,7 @@ if (compactMode) {
             bg-gray-100 dark:bg-gray-800
             px-2 py-0.5 rounded
           ">
-            {getStatusLabel(ticket.status)}
+            {statusLabel || getStatusLabel(ticket.status)}
           </span>
         </div>
 
