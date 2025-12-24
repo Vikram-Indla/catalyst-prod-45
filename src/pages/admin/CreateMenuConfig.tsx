@@ -25,7 +25,6 @@ const WORK_ITEM_TYPES: WorkItemType[] = [
 ];
 
 // Default visibility settings matching the reference screenshot
-// Note: No role has ALL items checked to prevent "All" checkbox from being selected
 const DEFAULT_VISIBILITY: Record<string, Record<string, boolean>> = {
   developer: {
     theme: false, objective: false, 'business-request': false, epic: false,
@@ -53,7 +52,7 @@ const DEFAULT_VISIBILITY: Record<string, Record<string, boolean>> = {
   },
   super_admin: {
     theme: true, objective: true, 'business-request': true, epic: true,
-    feature: true, story: true, defect: true, incident: true, dependency: true, risk: false,
+    feature: true, story: true, defect: true, incident: true, dependency: true, risk: true,
   },
 };
 
@@ -376,7 +375,7 @@ export default function CreateMenuConfig() {
                           <td className="text-center py-3 px-2">
                             <div className="flex justify-center">
                               <Checkbox
-                                checked={allSelected ? true : someSelected ? 'indeterminate' : false}
+                                checked={allSelected}
                                 onCheckedChange={handleSelectAll}
                                 className="h-5 w-5"
                               />
