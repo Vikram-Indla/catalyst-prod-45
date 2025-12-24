@@ -72,12 +72,17 @@ interface Quarter {
 // ===== UTILITIES =====
 const TODAY = new Date();
 
-function generateQuarters(): Quarter[] {
+function generateQuartersForFilter(filter: TimelineFilterState): Quarter[] {
   const quarters: Quarter[] = [];
-  const currentYear = TODAY.getFullYear();
+  const years = filter.selectedYears.length > 0 
+    ? [...filter.selectedYears].sort((a, b) => a - b)
+    : [TODAY.getFullYear()];
+  const selectedQuarters = filter.selectedQuarters.length > 0
+    ? [...filter.selectedQuarters].sort((a, b) => a - b)
+    : [1, 2, 3, 4];
 
-  for (let year = currentYear; year <= currentYear + 1; year++) {
-    for (let q = 1; q <= 4; q++) {
+  for (const year of years) {
+    for (const q of selectedQuarters) {
       const startMonth = (q - 1) * 3;
       quarters.push({
         label: `Q${q} ${year}`,
@@ -88,10 +93,6 @@ function generateQuarters(): Quarter[] {
   }
   return quarters;
 }
-
-const QUARTERS = generateQuarters();
-// UI renders 6 quarters (matches header/body grid). Percent math must use the same range.
-const VISIBLE_QUARTERS = QUARTERS.slice(0, 6);
 
 function parseDate(str: string | null): Date {
   if (!str) return new Date();
@@ -132,35 +133,13 @@ function getOwnerInitials(name: string): string {
     .slice(0, 2);
 }
 
-function getTimelineStart(): Date {
-  return VISIBLE_QUARTERS[0].start;
-}
-
-function getTimelineEnd(): Date {
-  return VISIBLE_QUARTERS[VISIBLE_QUARTERS.length - 1].end;
-}
-
-function dateToPercent(date: Date | string): number {
-  const d = typeof date === 'string' ? parseDate(date) : date;
-  const start = getTimelineStart();
-  const end = getTimelineEnd();
-  const total = end.getTime() - start.getTime();
-  const offset = d.getTime() - start.getTime();
-
-  if (total <= 0 || Number.isNaN(total) || Number.isNaN(offset)) return 0;
-  return Math.max(0, Math.min(100, (offset / total) * 100));
-}
-
-function getTodayPercent(): number {
-  return dateToPercent(TODAY);
-}
-
 // Map process_step to health
 function mapHealthFromStatus(processStep: string | null, health: string | null): 'On Track' | 'At Risk' | 'Blocked' {
   if (health === 'red' || processStep === 'on_hold') return 'Blocked';
   if (health === 'yellow') return 'At Risk';
   return 'On Track';
 }
+
 
 // ===== COMPONENT =====
 export default function IndustryRoadmapPage() {
@@ -187,6 +166,32 @@ export default function IndustryRoadmapPage() {
     x: 0,
     y: 0
   });
+  
+  // Dynamic timeline quarters based on filter
+  const visibleQuarters = useMemo(() => {
+    return generateQuartersForFilter(timelineFilter);
+  }, [timelineFilter]);
+  
+  // Timeline calculation helpers
+  const getTimelineStart = useCallback(() => {
+    return visibleQuarters.length > 0 ? visibleQuarters[0].start : new Date();
+  }, [visibleQuarters]);
+  
+  const getTimelineEnd = useCallback(() => {
+    return visibleQuarters.length > 0 ? visibleQuarters[visibleQuarters.length - 1].end : new Date();
+  }, [visibleQuarters]);
+  
+  const dateToPercent = useCallback((date: Date | string): number => {
+    const d = typeof date === 'string' ? parseDate(date) : date;
+    const start = getTimelineStart();
+    const end = getTimelineEnd();
+    const total = end.getTime() - start.getTime();
+    const offset = d.getTime() - start.getTime();
+    if (total <= 0 || Number.isNaN(total) || Number.isNaN(offset)) return 0;
+    return Math.max(0, Math.min(100, (offset / total) * 100));
+  }, [getTimelineStart, getTimelineEnd]);
+  
+  const todayPercent = useMemo(() => dateToPercent(TODAY), [dateToPercent]);
   
   // Refs for scroll sync
   const listBodyRef = useRef<HTMLDivElement>(null);
@@ -556,7 +561,7 @@ export default function IndustryRoadmapPage() {
     return () => document.removeEventListener('click', handleClick);
   }, []);
   
-  const todayPercent = getTodayPercent();
+  // todayPercent is now computed above via useMemo
   
   if (isLoading) {
     return (
@@ -829,15 +834,15 @@ export default function IndustryRoadmapPage() {
             ref={timelineHeaderRef}
             className="h-10 border-b border-border bg-background overflow-x-hidden"
           >
-            <div className="relative" style={{ width: '720px' }}>
+            <div className="relative" style={{ width: `${Math.max(visibleQuarters.length * 120, 720)}px` }}>
               {/* Quarter labels */}
               <div className="flex h-10">
-                {VISIBLE_QUARTERS.map((q, i) => (
+                {visibleQuarters.map((q, i) => (
                   <div
                     key={q.label}
                     className={cn(
                       "flex-1 h-10 flex items-center justify-center text-xs font-medium text-muted-foreground",
-                      i < VISIBLE_QUARTERS.length - 1 && "border-r border-border"
+                      i < visibleQuarters.length - 1 && "border-r border-border"
                     )}
                   >
                     {q.label}
@@ -877,15 +882,15 @@ export default function IndustryRoadmapPage() {
               </div>
             )}
             
-            <div className="relative" style={{ width: '720px', minHeight: '100%' }}>
+            <div className="relative" style={{ width: `${Math.max(visibleQuarters.length * 120, 720)}px`, minHeight: '100%' }}>
               {/* Grid Lines */}
               <div className="absolute inset-0 flex pointer-events-none">
-                {VISIBLE_QUARTERS.map((q, i) => (
+                {visibleQuarters.map((q, i) => (
                   <div
                     key={q.label}
                     className={cn(
                       "flex-1",
-                      i < VISIBLE_QUARTERS.length - 1 && "border-r border-border"
+                      i < visibleQuarters.length - 1 && "border-r border-border"
                     )}
                   />
                 ))}
@@ -921,11 +926,9 @@ export default function IndustryRoadmapPage() {
                     {!isCollapsed && group.requests.map(request => {
                       const startPct = dateToPercent(request.startDate);
                       const endPct = dateToPercent(request.endDate);
-                      // Ensure minimum visible width (1.5% of 720px ≈ 11px)
+                      // Ensure minimum visible width
                       const width = Math.max(endPct - startPct, 1.5);
                       
-                      // Debug: log bar positioning for troubleshooting
-                      console.log(`[Roadmap Bar] ${request.key}: startDate=${request.startDate}, endDate=${request.endDate}, startPct=${startPct.toFixed(2)}%, endPct=${endPct.toFixed(2)}%, width=${width.toFixed(2)}%`);
                       
                       return (
                         <div
