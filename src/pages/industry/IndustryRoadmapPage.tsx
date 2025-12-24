@@ -618,10 +618,38 @@ export default function IndustryRoadmapPage() {
             onScroll={handleListScroll}
             className="flex-1 overflow-y-auto"
           >
-            {groupedRequests.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-12 text-center">
-                <div className="text-4xl opacity-40 mb-3">📋</div>
-                <div className="text-sm text-muted-foreground">No business requests match your filters</div>
+            {businessRequests.length === 0 ? (
+              /* True empty state - no data at all */
+              <div className="flex flex-col items-center justify-center py-16 text-center px-6">
+                <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mb-4">
+                  <Home size={28} className="text-muted-foreground" />
+                </div>
+                <h3 className="text-base font-semibold text-foreground mb-1">No business requests yet</h3>
+                <p className="text-sm text-muted-foreground max-w-[260px]">
+                  Create your first business request to see it on the roadmap timeline.
+                </p>
+              </div>
+            ) : groupedRequests.length === 0 ? (
+              /* Filtered empty state - data exists but filtered out */
+              <div className="flex flex-col items-center justify-center py-12 text-center px-6">
+                <div className="w-14 h-14 rounded-full bg-muted flex items-center justify-center mb-3">
+                  <Filter size={24} className="text-muted-foreground" />
+                </div>
+                <h3 className="text-sm font-medium text-foreground mb-1">No matching requests</h3>
+                <p className="text-sm text-muted-foreground max-w-[240px]">
+                  Try adjusting your filters or search to find what you're looking for.
+                </p>
+                {(search || activeFilterCount > 0) && (
+                  <button 
+                    className="mt-3 text-sm text-brand-primary hover:underline"
+                    onClick={() => {
+                      setSearch('');
+                      setFilters(DEFAULT_INDUSTRY_FILTERS);
+                    }}
+                  >
+                    Clear all filters
+                  </button>
+                )}
               </div>
             ) : (
               groupedRequests.map(group => {
@@ -736,6 +764,18 @@ export default function IndustryRoadmapPage() {
             onScroll={handleTimelineScroll}
             className="flex-1 overflow-auto relative"
           >
+            {/* Empty state overlay when no data */}
+            {(businessRequests.length === 0 || groupedRequests.length === 0) && (
+              <div className="absolute inset-0 flex items-center justify-center bg-background/80 z-10">
+                <div className="text-sm text-muted-foreground">
+                  {businessRequests.length === 0 
+                    ? 'Create business requests to visualize your roadmap'
+                    : 'Adjust filters to view requests on the timeline'
+                  }
+                </div>
+              </div>
+            )}
+            
             <div className="min-w-full relative">
               {/* Grid Lines */}
               <div className="absolute inset-0 flex pointer-events-none">
