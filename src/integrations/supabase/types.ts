@@ -4794,6 +4794,36 @@ export type Database = {
         }
         Relationships: []
       }
+      home_user_summary: {
+        Row: {
+          created_at: string | null
+          delivery_counts: Json | null
+          last_computed_at: string | null
+          operations_counts: Json | null
+          planner_counts: Json | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          delivery_counts?: Json | null
+          last_computed_at?: string | null
+          operations_counts?: Json | null
+          planner_counts?: Json | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          delivery_counts?: Json | null
+          last_computed_at?: string | null
+          operations_counts?: Json | null
+          planner_counts?: Json | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       idea_group_members: {
         Row: {
           created_at: string | null
@@ -15242,6 +15272,36 @@ export type Database = {
           },
         ]
       }
+      work_item_activity: {
+        Row: {
+          activity_type: string
+          id: string
+          metadata: Json | null
+          occurred_at: string
+          user_id: string
+          work_item_id: string
+          work_item_type: string
+        }
+        Insert: {
+          activity_type: string
+          id?: string
+          metadata?: Json | null
+          occurred_at?: string
+          user_id: string
+          work_item_id: string
+          work_item_type: string
+        }
+        Update: {
+          activity_type?: string
+          id?: string
+          metadata?: Json | null
+          occurred_at?: string
+          user_id?: string
+          work_item_id?: string
+          work_item_type?: string
+        }
+        Relationships: []
+      }
       work_item_assignments: {
         Row: {
           created_at: string | null
@@ -16052,6 +16112,10 @@ export type Database = {
       is_admin: { Args: { _user_id: string }; Returns: boolean }
       is_user_admin: { Args: { user_id: string }; Returns: boolean }
       is_user_approved: { Args: { user_id: string }; Returns: boolean }
+      refresh_home_user_summary: {
+        Args: { p_user_id: string }
+        Returns: undefined
+      }
       show_limit: { Args: never; Returns: number }
       show_trgm: { Args: { "": string }; Returns: string[] }
       soft_delete_incident: {
