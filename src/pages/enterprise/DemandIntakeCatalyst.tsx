@@ -40,7 +40,8 @@ import { useBusinessRequests } from '@/hooks/useBusinessRequests';
 import { CreateBusinessRequestModal } from '@/components/business-requests/CreateBusinessRequestModal';
 import { BusinessRequestDrawer } from '@/components/business-requests/BusinessRequestDrawer';
 import { StatusSummaryKanbanView } from '@/components/business-requests/StatusSummaryKanbanView';
-import { PROCESS_STEPS, getProcessStepInfo } from '@/types/business-request';
+import { PROCESS_STEPS } from '@/types/business-request';
+import { useProcessSteps } from '@/contexts/ProcessStepsContext';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { cn } from '@/lib/utils';
@@ -103,6 +104,7 @@ export default function DemandIntakeCatalyst() {
   
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { getProcessStepInfo } = useProcessSteps();
 
   // Handle create=true from URL
   useEffect(() => {
@@ -324,11 +326,17 @@ export default function DemandIntakeCatalyst() {
         value: step.value,
         label: step.label,
       })),
-      render: (value) => (
-        <span className="inline-flex items-center px-2.5 py-1 text-xs font-medium rounded bg-muted/50 text-foreground border border-border">
-          {getProcessStepInfo(value).label}
-        </span>
-      ),
+      render: (value) => {
+        const stepInfo = getProcessStepInfo(value);
+        return (
+          <span 
+            className="inline-flex items-center px-2.5 py-1 text-xs font-medium rounded text-white"
+            style={{ backgroundColor: stepInfo.color }}
+          >
+            {stepInfo.label}
+          </span>
+        );
+      },
     },
     {
       id: 'business_score',

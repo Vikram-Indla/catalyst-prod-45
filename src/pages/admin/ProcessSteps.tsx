@@ -21,6 +21,7 @@ import {
   DemandProcessStep,
 } from '@/hooks/useDemandProcessSteps';
 import { DeleteProcessStepDialog } from '@/components/admin/DeleteProcessStepDialog';
+import { BrandColorPicker, getBrandColorHex } from '@/components/admin/BrandColorPicker';
 
 export default function ProcessSteps() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -65,6 +66,13 @@ export default function ProcessSteps() {
     await toggleMutation.mutateAsync({ id: step.id, is_active: step.is_active });
   };
 
+  const handleColorChange = async (step: DemandProcessStep, newColor: string) => {
+    await updateMutation.mutateAsync({
+      id: step.id,
+      color: newColor,
+    });
+  };
+
   const openEditDialog = (step: DemandProcessStep) => {
     setEditingStep(step);
     setFormData({ value: step.value, label: step.label });
@@ -94,14 +102,14 @@ export default function ProcessSteps() {
           </div>
           <Button className="bg-brand-primary hover:bg-brand-primary-hover" onClick={openAddDialog}>
             <Plus className="h-4 w-4 mr-2" />
-            Add Process Step
+            Add BR Status
           </Button>
         </div>
 
         <div className="grid gap-4 md:grid-cols-3">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Steps</CardTitle>
+              <CardTitle className="text-sm font-medium">Total Statuses</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{steps.length}</div>
@@ -109,7 +117,7 @@ export default function ProcessSteps() {
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Active Steps</CardTitle>
+              <CardTitle className="text-sm font-medium">Active Statuses</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
@@ -119,7 +127,7 @@ export default function ProcessSteps() {
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Inactive Steps</CardTitle>
+              <CardTitle className="text-sm font-medium">Inactive Statuses</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
@@ -133,7 +141,7 @@ export default function ProcessSteps() {
           <CardHeader>
             <CardTitle>BR Status Configuration</CardTitle>
             <CardDescription>
-              Configure statuses that appear in Business Request dropdowns and Kanban boards.
+              Configure statuses that appear in Business Request dropdowns and Kanban boards. Colors are auto-saved and applied across the entire application in real-time.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -154,23 +162,24 @@ export default function ProcessSteps() {
                 <thead className="bg-muted/50">
                   <tr>
                     <th className="text-left p-3 text-sm font-medium w-10"></th>
+                    <th className="text-left p-3 text-sm font-medium">Color</th>
                     <th className="text-left p-3 text-sm font-medium">Label</th>
                     <th className="text-left p-3 text-sm font-medium">Value (Key)</th>
                     <th className="text-left p-3 text-sm font-medium">Order</th>
-                    <th className="text-left p-3 text-sm font-medium">Status</th>
+                    <th className="text-left p-3 text-sm font-medium">Active</th>
                     <th className="text-right p-3 text-sm font-medium">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {isLoading ? (
                     <tr>
-                      <td colSpan={6} className="p-3 text-center text-muted-foreground">
+                      <td colSpan={7} className="p-3 text-center text-muted-foreground">
                         Loading...
                       </td>
                     </tr>
                   ) : filteredSteps.length === 0 ? (
                     <tr>
-                      <td colSpan={6} className="p-3 text-center text-muted-foreground">
+                      <td colSpan={7} className="p-3 text-center text-muted-foreground">
                         No BR statuses found
                       </td>
                     </tr>
@@ -179,6 +188,20 @@ export default function ProcessSteps() {
                       <tr key={step.id} className="border-t hover:bg-muted/50">
                         <td className="p-3">
                           <GripVertical className="h-4 w-4 text-muted-foreground cursor-grab" />
+                        </td>
+                        <td className="p-3">
+                          <div className="flex items-center gap-2">
+                            <BrandColorPicker
+                              value={step.color}
+                              onChange={(color) => handleColorChange(step, color)}
+                            />
+                            <span 
+                              className="inline-flex items-center px-2 py-0.5 text-xs font-medium rounded text-white"
+                              style={{ backgroundColor: getBrandColorHex(step.color) }}
+                            >
+                              {step.label}
+                            </span>
+                          </div>
                         </td>
                         <td className="p-3 text-sm font-medium">{step.label}</td>
                         <td className="p-3 text-sm text-muted-foreground font-mono">{step.value}</td>
@@ -218,7 +241,7 @@ export default function ProcessSteps() {
           <DialogContent>
             <DialogHeader>
               <DialogTitle>
-                {editingStep ? 'Edit Process Step' : 'Add Process Step'}
+                {editingStep ? 'Edit BR Status' : 'Add BR Status'}
               </DialogTitle>
             </DialogHeader>
             <div className="space-y-4 py-4">
