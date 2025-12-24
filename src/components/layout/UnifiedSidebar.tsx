@@ -40,7 +40,7 @@ interface UnifiedSidebarProps {
 const menuConfigs: Record<WorkspaceType, Array<{ id: string; label: string; icon: any; pathTemplate: string; badge?: string }>> = {
   program: [
     { id: 'room', label: 'Program Room', icon: LayoutDashboard, pathTemplate: '/program/:id/room' },
-    { id: 'epic-backlog', label: 'Program Backlog', icon: Square, pathTemplate: '/program/:id/epic-backlog' },
+    { id: 'epic-backlog', label: 'Epic Backlog', icon: Square, pathTemplate: '/program/:id/epic-backlog' },
     { id: 'work-tree', label: 'Work Tree', icon: Network, pathTemplate: '/program/:id/work-tree' },
     { id: 'dependencies', label: 'Dependencies', icon: GitBranch, pathTemplate: '/program/:id/dependencies' },
     { id: 'roadmaps', label: 'Roadmaps', icon: Map, pathTemplate: '/program/:id/roadmaps' },
