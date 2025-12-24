@@ -255,18 +255,11 @@ export function useUnifiedHomeItems(params: UnifiedQueryParams) {
       const to = from + pageSize - 1;
       const updatedRangeDate = getUpdatedRangeDate(filters.updatedRange);
 
-      // If domain filter is set, use that instead of mode
-      const effectiveDomain = filters.domain !== 'all' ? filters.domain : null;
-      
-      // Domain=All aggregates all sources
-      if (filters.domain === 'all') {
-        return await fetchAllItems({ filters, search, sort, from, to, updatedRangeDate, userId, page, pageSize });
-      }
+      // IMPORTANT: Mode takes precedence - each mode shows ONLY its own data types
+      // Planner = only tasks, Delivery = only epics/features/stories, Operations = only incidents
+      // Domain filter is only used within Operations mode for sub-filtering
 
-      // Use specific domain or fall back to mode
-      const targetMode = effectiveDomain || mode;
-
-      switch (targetMode) {
+      switch (mode) {
         case 'operations': {
           return await fetchOperationsItems({ filters, search, sort, from, to, updatedRangeDate, userId });
         }
