@@ -15945,6 +15945,7 @@ export type Database = {
           completed_at: string | null
           created_at: string
           created_by: string | null
+          decision_required: boolean | null
           description: string | null
           due_date: string | null
           id: string
@@ -15952,9 +15953,12 @@ export type Database = {
           linked_item_key: string | null
           linked_item_title: string | null
           linked_item_type: string | null
+          planned_date: string | null
           priority: string
+          ready_for_sprint: boolean | null
           recurrence: string
           reporter_id: string | null
+          review_status: string | null
           status: string
           tags: string[] | null
           team_id: string | null
@@ -15972,6 +15976,7 @@ export type Database = {
           completed_at?: string | null
           created_at?: string
           created_by?: string | null
+          decision_required?: boolean | null
           description?: string | null
           due_date?: string | null
           id?: string
@@ -15979,9 +15984,12 @@ export type Database = {
           linked_item_key?: string | null
           linked_item_title?: string | null
           linked_item_type?: string | null
+          planned_date?: string | null
           priority?: string
+          ready_for_sprint?: boolean | null
           recurrence?: string
           reporter_id?: string | null
+          review_status?: string | null
           status?: string
           tags?: string[] | null
           team_id?: string | null
@@ -15999,6 +16007,7 @@ export type Database = {
           completed_at?: string | null
           created_at?: string
           created_by?: string | null
+          decision_required?: boolean | null
           description?: string | null
           due_date?: string | null
           id?: string
@@ -16006,9 +16015,12 @@ export type Database = {
           linked_item_key?: string | null
           linked_item_title?: string | null
           linked_item_type?: string | null
+          planned_date?: string | null
           priority?: string
+          ready_for_sprint?: boolean | null
           recurrence?: string
           reporter_id?: string | null
+          review_status?: string | null
           status?: string
           tags?: string[] | null
           team_id?: string | null

@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { 
   ChevronDown, ChevronUp, Star, MoreHorizontal, ExternalLink, CheckCircle, 
@@ -14,6 +14,7 @@ import { CriticalStrip, ActiveFilter } from './home/CriticalStrip';
 import { HomeRoleModeSelector, HomeRoleMode } from './home/HomeRoleModeSelector';
 import { ModeAwareGridRow } from './home/WorkGridRow';
 import { ModeAwareEmptyState } from './home/EmptyStates';
+import { PlannerFilterDrawer } from './home/PlannerFilterDrawer';
 // Domain-separated hooks - each mode has its own query hooks
 import {
   useHomeOperationsSummary,
@@ -29,6 +30,11 @@ import {
   useHomePlannerSummary,
   useHomePlannerItems,
   PlannerWorkItem,
+  PlannerFilters,
+  getDefaultPlannerFilters,
+  deserializePlannerFilters,
+  serializePlannerFilters,
+  hasActivePlannerFilters,
 } from '@/hooks/home/useHomePlannerData';
 import {
   useStarredItemIds,
@@ -43,6 +49,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { useDebounce } from '@/hooks/useDebounce';
 
 const ITEMS_PER_PAGE = 20;
 const STORAGE_KEY_PINNED = 'catalyst_home_pinned_projects';
@@ -342,6 +349,8 @@ function ModeAwareDataGrid({
   density = 'comfortable',
   starredItemIds,
   onToggleStar,
+  hasMore: externalHasMore,
+  isLoadingMore,
 }: { 
   items: HomeWorkItem[]; 
   mode: HomeRoleMode;
@@ -353,9 +362,16 @@ function ModeAwareDataGrid({
   density?: 'compact' | 'comfortable';
   starredItemIds?: Set<string>;
   onToggleStar?: (itemId: string, itemType: string) => void;
+  hasMore?: boolean;
+  isLoadingMore?: boolean;
 }) {
-  // Filter items by search (client-side backup - server should handle this)
+  // For Planner mode: NO client-side filtering - server handles everything
+  // For other modes: client-side filtering is a backup (server should handle this)
   const filteredItems = useMemo(() => {
+    if (mode === 'planner') {
+      // Planner uses server-side filtering only
+      return items;
+    }
     if (!searchQuery) return items;
     const query = searchQuery.toLowerCase();
     return items.filter(item => 
@@ -363,11 +379,15 @@ function ModeAwareDataGrid({
       item.summary.toLowerCase().includes(query) ||
       item.project.toLowerCase().includes(query)
     );
-  }, [items, searchQuery]);
+  }, [items, searchQuery, mode]);
 
   const groupedItems = groupItemsByTimePeriod(filteredItems);
   let displayedCount = 0;
-  const hasMore = visibleCount < filteredItems.length;
+  
+  // For Planner mode, use external hasMore from pagination; for others use local calculation
+  const hasMore = mode === 'planner' 
+    ? (externalHasMore ?? false)
+    : visibleCount < filteredItems.length;
 
   return (
     <div className="mt-2 rounded-xl border border-[var(--border-color)] overflow-hidden bg-[var(--card-bg)] shadow-sm dark:shadow-[0_1px_3px_rgba(0,0,0,0.4)]">
@@ -400,7 +420,11 @@ function ModeAwareDataGrid({
       ) : (
         <>
           {groupedItems.map((group, groupIndex) => {
-            const remainingSlots = visibleCount - displayedCount;
+            // For Planner mode, show all items (pagination handled server-side)
+            // For other modes, use visibleCount
+            const remainingSlots = mode === 'planner' 
+              ? group.items.length 
+              : visibleCount - displayedCount;
             if (remainingSlots <= 0) return null;
             
             const itemsToShow = group.items.slice(0, remainingSlots);
@@ -440,9 +464,10 @@ function ModeAwareDataGrid({
             <div className="flex justify-center py-4" style={{ borderTop: '1px solid var(--divider)' }}>
               <button 
                 onClick={onLoadMore}
-                className="px-4 py-2 text-sm font-medium rounded-lg border transition-colors bg-[var(--surface-2)] border-[var(--border-color)] text-[var(--text-2)] hover:bg-[var(--surface-3)] hover:border-[var(--brand-gold)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]"
+                disabled={isLoadingMore}
+                className="px-4 py-2 text-sm font-medium rounded-lg border transition-colors bg-[var(--surface-2)] border-[var(--border-color)] text-[var(--text-2)] hover:bg-[var(--surface-3)] hover:border-[var(--brand-gold)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)] disabled:opacity-50"
               >
-                Load more
+                {isLoadingMore ? 'Loading...' : 'Load more'}
               </button>
             </div>
           )}
@@ -467,15 +492,25 @@ export function HomeContent() {
   // Local state
   const [visibleCount, setVisibleCount] = useState(ITEMS_PER_PAGE);
   const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || '');
-  const [sortBy, setSortBy] = useState('recently-updated');
+  const [sortBy, setSortBy] = useState(searchParams.get('sort') || 'recently-updated');
   const [density, setDensity] = useState<'compact' | 'comfortable'>('comfortable');
   const [pinnedProjects, setPinnedProjects] = useState<string[]>([]);
   const [isProjectsCollapsed, setIsProjectsCollapsed] = useState(false);
+  
+  // Planner-specific state
+  const [plannerPage, setPlannerPage] = useState(1);
+  const [plannerFilters, setPlannerFilters] = useState<PlannerFilters>(() => 
+    deserializePlannerFilters(searchParams)
+  );
+  const [plannerItems, setPlannerItems] = useState<PlannerWorkItem[]>([]);
+  
+  // Debounced search for server queries
+  const debouncedSearch = useDebounce(searchQuery, 300);
 
   // ============================================
   // URL STATE MANAGEMENT
   // ============================================
-  const updateUrlState = (updates: Record<string, string | null>) => {
+  const updateUrlState = useCallback((updates: Record<string, string | null>) => {
     const newParams = new URLSearchParams(searchParams);
     Object.entries(updates).forEach(([key, value]) => {
       if (value === null || value === '' || value === DEFAULT_TABS[roleMode]) {
@@ -485,25 +520,50 @@ export function HomeContent() {
       }
     });
     setSearchParams(newParams, { replace: true });
-  };
+  }, [searchParams, setSearchParams, roleMode]);
 
   const handleModeChange = (newMode: HomeRoleMode) => {
-    // Reset tab to default for new mode, preserve filter if applicable
     const newParams = new URLSearchParams();
     newParams.set('mode', newMode);
-    // Don't carry over filters between modes
     setSearchParams(newParams, { replace: true });
     setVisibleCount(ITEMS_PER_PAGE);
+    setPlannerPage(1);
+    setPlannerItems([]);
+    setPlannerFilters(getDefaultPlannerFilters());
   };
 
   const handleTabChange = (tab: string) => {
-    updateUrlState({ tab, filter: null }); // Clear filter when changing tabs
+    updateUrlState({ tab, filter: null });
     setVisibleCount(ITEMS_PER_PAGE);
+    setPlannerPage(1);
+    setPlannerItems([]);
   };
 
   const handleFilterChange = (filter: ActiveFilter) => {
     updateUrlState({ filter: filter === 'all' ? null : filter });
   };
+
+  // Planner filter handlers
+  const handlePlannerFiltersApply = useCallback(() => {
+    const filterParams = serializePlannerFilters(plannerFilters);
+    const newParams = new URLSearchParams(searchParams);
+    // Clear old filter params
+    ['status', 'decisionRequired', 'readyForSprint', 'plannedDateFrom', 'plannedDateTo'].forEach(k => newParams.delete(k));
+    // Set new ones
+    Object.entries(filterParams).forEach(([k, v]) => newParams.set(k, v));
+    setSearchParams(newParams, { replace: true });
+    setPlannerPage(1);
+    setPlannerItems([]);
+  }, [plannerFilters, searchParams, setSearchParams]);
+
+  const handlePlannerFiltersClear = useCallback(() => {
+    setPlannerFilters(getDefaultPlannerFilters());
+    const newParams = new URLSearchParams(searchParams);
+    ['status', 'decisionRequired', 'readyForSprint', 'plannedDateFrom', 'plannedDateTo'].forEach(k => newParams.delete(k));
+    setSearchParams(newParams, { replace: true });
+    setPlannerPage(1);
+    setPlannerItems([]);
+  }, [searchParams, setSearchParams]);
 
   // ============================================
   // DOMAIN-SEPARATED DATA FETCHING
