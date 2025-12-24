@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useCreateMenuVisibility, useProductRoles } from '@/hooks/useCreateMenuVisibility';
 import { workItemConfig, WorkItemType } from '@/config/workItemConfig';
-import { Save, Loader2, AlertCircle } from 'lucide-react';
+import { Save, Loader2, AlertCircle, RotateCcw } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 
@@ -21,12 +21,57 @@ const WORK_ITEM_TYPES: WorkItemType[] = [
   'risk',
 ];
 
+// Default visibility settings based on the screenshot
+const DEFAULT_VISIBILITY: Record<string, Record<string, boolean>> = {
+  developer: {
+    theme: false, objective: false, 'business-request': false, epic: false,
+    feature: false, story: true, defect: false, incident: false, dependency: false, risk: false,
+  },
+  enterprise_architect: {
+    theme: true, objective: true, 'business-request': true, epic: true,
+    feature: true, story: false, defect: false, incident: false, dependency: true, risk: true,
+  },
+  general_manager: {
+    theme: true, objective: true, 'business-request': true, epic: true,
+    feature: true, story: true, defect: true, incident: true, dependency: true, risk: true,
+  },
+  product_admin: {
+    theme: true, objective: true, 'business-request': true, epic: true,
+    feature: true, story: true, defect: true, incident: true, dependency: true, risk: true,
+  },
+  product_manager: {
+    theme: true, objective: true, 'business-request': false, epic: true,
+    feature: true, story: false, defect: false, incident: true, dependency: true, risk: true,
+  },
+  product_owner: {
+    theme: false, objective: false, 'business-request': true, epic: true,
+    feature: true, story: false, defect: false, incident: false, dependency: false, risk: false,
+  },
+  project_manager: {
+    theme: false, objective: false, 'business-request': true, epic: true,
+    feature: true, story: true, defect: true, incident: true, dependency: true, risk: true,
+  },
+  qa_tester: {
+    theme: false, objective: false, 'business-request': false, epic: false,
+    feature: false, story: true, defect: false, incident: false, dependency: false, risk: false,
+  },
+  requester: {
+    theme: false, objective: false, 'business-request': true, epic: false,
+    feature: false, story: false, defect: false, incident: false, dependency: false, risk: false,
+  },
+  super_admin: {
+    theme: true, objective: true, 'business-request': true, epic: true,
+    feature: true, story: true, defect: true, incident: true, dependency: true, risk: true,
+  },
+};
+
 export default function CreateMenuConfig() {
   const { allSettings, isLoadingAll, batchUpdateVisibility } = useCreateMenuVisibility();
   const { data: productRoles, isLoading: isLoadingRoles } = useProductRoles();
   
   // Track pending changes (role_code -> work_item_type -> is_visible)
   const [pendingChanges, setPendingChanges] = useState<Record<string, Record<string, boolean>>>({});
+  const [isRestoringDefaults, setIsRestoringDefaults] = useState(false);
   
   // Build a map for quick lookup: role_code -> work_item_type -> is_visible
   const visibilityMap = useMemo(() => {
@@ -100,6 +145,29 @@ export default function CreateMenuConfig() {
     }
   };
 
+  const handleRestoreDefaults = async () => {
+    setIsRestoringDefaults(true);
+    
+    const updates: { roleCode: string; workItemType: string; isVisible: boolean }[] = [];
+    
+    Object.entries(DEFAULT_VISIBILITY).forEach(([roleCode, workItems]) => {
+      Object.entries(workItems).forEach(([workItemType, isVisible]) => {
+        updates.push({ roleCode, workItemType, isVisible });
+      });
+    });
+
+    try {
+      await batchUpdateVisibility.mutateAsync(updates);
+      setPendingChanges({});
+      toast.success('Settings restored to defaults');
+    } catch (error) {
+      console.error('Failed to restore defaults:', error);
+      toast.error('Failed to restore defaults');
+    } finally {
+      setIsRestoringDefaults(false);
+    }
+  };
+
   if (isLoadingAll || isLoadingRoles) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -117,18 +185,33 @@ export default function CreateMenuConfig() {
             Control which work items each role can see in the Create dropdown menu.
           </p>
         </div>
-        <Button 
-          onClick={handleSave} 
-          disabled={!hasUnsavedChanges || batchUpdateVisibility.isPending}
-          className="gap-2"
-        >
-          {batchUpdateVisibility.isPending ? (
-            <Loader2 className="h-4 w-4 animate-spin" />
-          ) : (
-            <Save className="h-4 w-4" />
-          )}
-          Save Settings
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button 
+            variant="outline"
+            onClick={handleRestoreDefaults} 
+            disabled={isRestoringDefaults || batchUpdateVisibility.isPending}
+            className="gap-2"
+          >
+            {isRestoringDefaults ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <RotateCcw className="h-4 w-4" />
+            )}
+            Restore Defaults
+          </Button>
+          <Button 
+            onClick={handleSave} 
+            disabled={!hasUnsavedChanges || batchUpdateVisibility.isPending}
+            className="gap-2"
+          >
+            {batchUpdateVisibility.isPending && !isRestoringDefaults ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <Save className="h-4 w-4" />
+            )}
+            Save Settings
+          </Button>
+        </div>
       </div>
 
       {hasUnsavedChanges && (
