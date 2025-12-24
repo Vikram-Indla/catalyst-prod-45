@@ -238,6 +238,12 @@ export function WorkManager({ tab: initialTab }: WorkManagerProps) {
     ));
   };
 
+  // Delete task
+  const handleDeleteTask = (taskId: string) => {
+    setTaskData(prev => prev.filter(t => t.id !== taskId));
+    toast.success('Task deleted successfully');
+  };
+
   // Create new task
   const handleCreateTask = (taskInput: Omit<Task, 'id' | 'key' | 'createdAt' | 'updatedAt'>) => {
     const now = new Date().toISOString().split('T')[0];
@@ -612,6 +618,7 @@ export function WorkManager({ tab: initialTab }: WorkManagerProps) {
             handleUpdateTask(drawer.taskId, updates);
           }
         }}
+        onDelete={handleDeleteTask}
       />
 
       {/* New Task Dialog */}
