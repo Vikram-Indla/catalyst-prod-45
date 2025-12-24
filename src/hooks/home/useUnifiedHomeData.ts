@@ -4,7 +4,22 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import type { WorkItemType } from '@/components/ja/icons/WorkItemTypeIcon';
-import { HomeFilters, HomeRoleMode } from './useHomeFilters';
+import { HomeFilters, HomeRoleMode, HomeDomain } from './useHomeFilters';
+
+// ============================================
+// NAVIGATION METADATA FOR WORK ITEMS
+// ============================================
+export interface WorkItemNavigation {
+  path: string;
+  fallbackPath: string;
+  openBehavior: 'push' | 'new-tab';
+}
+
+export interface WorkItemContext {
+  programId?: string;
+  projectId?: string;
+  industryView?: boolean;
+}
 
 // ============================================
 // UNIFIED WORK ITEM TYPE
@@ -17,6 +32,7 @@ export interface UnifiedWorkItem {
   projectKey: string;
   status: string;
   type: WorkItemType;
+  domain: HomeDomain; // Which domain this item belongs to
   assignee: string | null;
   activityDate: Date;
   activityType: 'Updated' | 'Created';
@@ -27,6 +43,9 @@ export interface UnifiedWorkItem {
   readyForSprint?: boolean;
   decisionRequired?: boolean;
   reviewStatus?: string;
+  // Navigation metadata
+  nav: WorkItemNavigation;
+  context: WorkItemContext;
 }
 
 // ============================================
@@ -81,6 +100,67 @@ function getUpdatedRangeDate(range: string): Date | null {
     default:
       return null;
   }
+}
+
+// ============================================
+// HELPER: Generate navigation metadata for work items
+// ============================================
+function generateNavigation(
+  domain: HomeDomain,
+  type: WorkItemType,
+  id: string,
+  key: string,
+  context: WorkItemContext
+): WorkItemNavigation {
+  // Operations (Incidents)
+  if (domain === 'operations' || type === 'defect') {
+    return {
+      path: `/release/incidents/${id}`,
+      fallbackPath: '/release/incidents',
+      openBehavior: 'push',
+    };
+  }
+
+  // Planner (Tasks)
+  if (domain === 'planner' || type === 'task') {
+    return {
+      path: `/planner/tasks?taskId=${id}`,
+      fallbackPath: '/planner/tasks',
+      openBehavior: 'push',
+    };
+  }
+
+  // Delivery - determine best route based on context
+  if (context.programId) {
+    return {
+      path: `/program/${context.programId}/epic-backlog?focusKey=${encodeURIComponent(key)}`,
+      fallbackPath: `/program/${context.programId}/epic-backlog`,
+      openBehavior: 'push',
+    };
+  }
+
+  if (context.projectId) {
+    return {
+      path: `/projects/${context.projectId}/work?focusKey=${encodeURIComponent(key)}`,
+      fallbackPath: `/projects/${context.projectId}/work`,
+      openBehavior: 'push',
+    };
+  }
+
+  if (context.industryView) {
+    return {
+      path: `/industry/backlog?focusKey=${encodeURIComponent(key)}`,
+      fallbackPath: '/industry/backlog',
+      openBehavior: 'push',
+    };
+  }
+
+  // Default to industry backlog with focus
+  return {
+    path: `/industry/backlog?focusKey=${encodeURIComponent(key)}`,
+    fallbackPath: '/industry/backlog',
+    openBehavior: 'push',
+  };
 }
 
 // ============================================
@@ -175,7 +255,18 @@ export function useUnifiedHomeItems(params: UnifiedQueryParams) {
       const to = from + pageSize - 1;
       const updatedRangeDate = getUpdatedRangeDate(filters.updatedRange);
 
-      switch (mode) {
+      // If domain filter is set, use that instead of mode
+      const effectiveDomain = filters.domain !== 'all' ? filters.domain : null;
+      
+      // Domain=All aggregates all sources
+      if (filters.domain === 'all') {
+        return await fetchAllItems({ filters, search, sort, from, to, updatedRangeDate, userId, page, pageSize });
+      }
+
+      // Use specific domain or fall back to mode
+      const targetMode = effectiveDomain || mode;
+
+      switch (targetMode) {
         case 'operations': {
           return await fetchOperationsItems({ filters, search, sort, from, to, updatedRangeDate, userId });
         }
@@ -200,6 +291,71 @@ export function useUnifiedHomeItems(params: UnifiedQueryParams) {
     refetchInterval: 1000 * 15,
     refetchOnWindowFocus: true,
   });
+}
+
+// ============================================
+// AGGREGATED ALL DOMAINS FETCH
+// ============================================
+async function fetchAllItems(params: {
+  filters: HomeFilters;
+  search: string;
+  sort: string;
+  from: number;
+  to: number;
+  updatedRangeDate: Date | null;
+  userId?: string;
+  page: number;
+  pageSize: number;
+}): Promise<UnifiedItemsResponse> {
+  const { filters, search, sort, from, to, updatedRangeDate, userId, page, pageSize } = params;
+
+  // Fetch from all three domains in parallel
+  const [opsResult, deliveryResult, plannerResult] = await Promise.all([
+    fetchOperationsItems({ filters, search, sort, from: 0, to: 10, updatedRangeDate, userId }),
+    fetchDeliveryItems({ filters, search, sort, from: 0, to: 10, updatedRangeDate, userId }),
+    fetchPlannerItems({ filters, search, sort, from: 0, to: 10, updatedRangeDate, userId, page: 1, pageSize: 10 }),
+  ]);
+
+  // Combine all items
+  let allItems: UnifiedWorkItem[] = [
+    ...opsResult.items,
+    ...deliveryResult.items,
+    ...plannerResult.items,
+  ];
+
+  // Sort combined items by activityDate (most recent first) or by the selected sort
+  if (sort === 'priority') {
+    // Priority sort - order by priority string
+    const priorityOrder = { 'Critical': 0, 'High': 1, 'Medium': 2, 'Low': 3 };
+    allItems.sort((a, b) => {
+      const aOrder = priorityOrder[a.priority as keyof typeof priorityOrder] ?? 4;
+      const bOrder = priorityOrder[b.priority as keyof typeof priorityOrder] ?? 4;
+      return aOrder - bOrder;
+    });
+  } else {
+    // Default: sort by updated date
+    allItems.sort((a, b) => b.activityDate.getTime() - a.activityDate.getTime());
+  }
+
+  // Apply pagination to combined results
+  const paginatedItems = allItems.slice(from, to + 1);
+  const totalCount = opsResult.counts.total + deliveryResult.counts.total + plannerResult.counts.total;
+
+  return {
+    items: paginatedItems,
+    counts: {
+      workedOn: opsResult.counts.workedOn + deliveryResult.counts.workedOn + plannerResult.counts.workedOn,
+      assigned: opsResult.counts.assigned + deliveryResult.counts.assigned + plannerResult.counts.assigned,
+      starred: opsResult.counts.starred + deliveryResult.counts.starred + plannerResult.counts.starred,
+      total: totalCount,
+    },
+    pagination: {
+      page,
+      pageSize,
+      total: totalCount,
+      hasMore: from + paginatedItems.length < totalCount,
+    },
+  };
 }
 
 // ============================================
@@ -264,19 +420,28 @@ async function fetchOperationsItems(params: {
   const { data: incidents, count, error } = await query;
   if (error) throw error;
 
-  const items: UnifiedWorkItem[] = (incidents || []).map(incident => ({
-    id: incident.id,
-    key: incident.incident_key || `INC-${incident.id.slice(0, 6)}`,
-    summary: incident.title,
-    project: incident.project?.name || 'Unknown Project',
-    projectKey: incident.project?.key || 'UNK',
-    status: incident.status,
-    type: 'defect' as WorkItemType,
-    assignee: incident.assignee_id,
-    activityDate: new Date(incident.updated_at || incident.created_at),
-    activityType: 'Updated',
-    severity: incident.severity,
-  }));
+  const items: UnifiedWorkItem[] = (incidents || []).map(incident => {
+    const key = incident.incident_key || `INC-${incident.id.slice(0, 6)}`;
+    const context: WorkItemContext = { 
+      projectId: incident.project?.id 
+    };
+    return {
+      id: incident.id,
+      key,
+      summary: incident.title,
+      project: incident.project?.name || 'Unknown Project',
+      projectKey: incident.project?.key || 'UNK',
+      status: incident.status,
+      type: 'defect' as WorkItemType,
+      domain: 'operations' as HomeDomain,
+      assignee: incident.assignee_id,
+      activityDate: new Date(incident.updated_at || incident.created_at),
+      activityType: 'Updated' as const,
+      severity: incident.severity,
+      nav: generateNavigation('operations', 'defect', incident.id, key, context),
+      context,
+    };
+  });
 
   // Get counts
   const [totalResult, assignedResult] = await Promise.all([
@@ -372,19 +537,27 @@ async function fetchDeliveryItems(params: {
   totalStories = storyCount || 0;
 
   (stories || []).forEach(story => {
+    const key = story.story_key || `US-${story.id.slice(0, 6)}`;
+    const context: WorkItemContext = {
+      projectId: story.feature?.id,
+      industryView: !story.feature,
+    };
     items.push({
       id: story.id,
-      key: story.story_key || `US-${story.id.slice(0, 6)}`,
+      key,
       summary: story.title || story.name || 'Untitled Story',
       project: story.feature?.name || 'Backlog',
       projectKey: story.feature?.display_id || 'BKL',
       status: story.status || story.state || 'Open',
       type: 'story' as WorkItemType,
+      domain: 'delivery' as HomeDomain,
       assignee: story.assignee_id,
       activityDate: new Date(story.updated_at || story.created_at),
-      activityType: 'Updated',
+      activityType: 'Updated' as const,
       priority: story.priority,
       blocked: story.blocked,
+      nav: generateNavigation('delivery', 'story', story.id, key, context),
+      context,
     });
   });
 
@@ -435,19 +608,27 @@ async function fetchDeliveryItems(params: {
     totalFeatures = featureCount || 0;
 
     (features || []).forEach(feature => {
+      const key = feature.display_id || `F-${feature.id.slice(0, 6)}`;
+      const context: WorkItemContext = {
+        programId: feature.epic?.id,
+        industryView: !feature.epic,
+      };
       items.push({
         id: feature.id,
-        key: feature.display_id || `F-${feature.id.slice(0, 6)}`,
+        key,
         summary: feature.name,
         project: feature.epic?.name || 'Portfolio',
         projectKey: feature.epic?.epic_key || 'PRT',
         status: feature.status || 'Open',
         type: 'feature' as WorkItemType,
+        domain: 'delivery' as HomeDomain,
         assignee: null,
         activityDate: new Date(feature.updated_at || feature.created_at),
-        activityType: 'Updated',
+        activityType: 'Updated' as const,
         priority: feature.priority,
         blocked: feature.blocked,
+        nav: generateNavigation('delivery', 'feature', feature.id, key, context),
+        context,
       });
     });
   }
@@ -583,24 +764,31 @@ async function fetchPlannerItems(params: {
   const { data: tasks, count: totalCount, error } = await query;
   if (error) throw error;
 
-  const items: UnifiedWorkItem[] = (tasks || []).map(task => ({
-    id: task.id,
-    key: task.key || `TSK-${task.id.slice(0, 6)}`,
-    summary: task.title,
-    project: 'Work Manager',
-    projectKey: 'WM',
-    status: task.status,
-    type: 'task' as WorkItemType,
-    assignee: task.assignee_id,
-    activityDate: new Date(task.updated_at || task.created_at),
-    activityType: 'Updated',
-    priority: task.priority,
-    plannedDate: task.planned_date ? new Date(task.planned_date) : undefined,
-    readyForSprint: task.ready_for_sprint || false,
-    decisionRequired: task.decision_required || false,
-    reviewStatus: task.review_status || 'none',
-    blocked: task.blocked || false,
-  }));
+  const items: UnifiedWorkItem[] = (tasks || []).map(task => {
+    const key = task.key || `TSK-${task.id.slice(0, 6)}`;
+    const context: WorkItemContext = {};
+    return {
+      id: task.id,
+      key,
+      summary: task.title,
+      project: 'Work Manager',
+      projectKey: 'WM',
+      status: task.status,
+      type: 'task' as WorkItemType,
+      domain: 'planner' as HomeDomain,
+      assignee: task.assignee_id,
+      activityDate: new Date(task.updated_at || task.created_at),
+      activityType: 'Updated' as const,
+      priority: task.priority,
+      plannedDate: task.planned_date ? new Date(task.planned_date) : undefined,
+      readyForSprint: task.ready_for_sprint || false,
+      decisionRequired: task.decision_required || false,
+      reviewStatus: task.review_status || 'none',
+      blocked: task.blocked || false,
+      nav: generateNavigation('planner', 'task', task.id, key, context),
+      context,
+    };
+  });
 
   // Fetch category counts
   const [plannedResult, upcomingResult, pendingResult] = await Promise.all([

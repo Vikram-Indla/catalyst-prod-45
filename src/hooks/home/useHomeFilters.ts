@@ -6,11 +6,17 @@ import { useCallback, useMemo } from 'react';
 import { useDebounce } from '@/hooks/useDebounce';
 
 // ============================================
+// DOMAIN FILTER TYPE
+// ============================================
+export type HomeDomain = 'all' | 'operations' | 'delivery' | 'planner';
+
+// ============================================
 // UNIFIED FILTER TYPE - Used by ALL modes
 // ============================================
 export interface HomeFilters {
   search: string;
   scope: 'worked-on' | 'assigned' | 'starred';
+  domain: HomeDomain; // NEW: Domain filter for cross-mode filtering
   status: string[];
   priority: string[];
   updatedRange: '24h' | '7d' | '30d' | 'any';
@@ -33,12 +39,23 @@ export interface HomePagination {
 }
 
 // ============================================
+// DOMAIN OPTIONS
+// ============================================
+export const DOMAIN_OPTIONS: { value: HomeDomain; label: string }[] = [
+  { value: 'all', label: 'All domains' },
+  { value: 'operations', label: 'Operations' },
+  { value: 'delivery', label: 'Delivery' },
+  { value: 'planner', label: 'Planner' },
+];
+
+// ============================================
 // DEFAULT FILTERS
 // ============================================
 export function getDefaultHomeFilters(): HomeFilters {
   return {
     search: '',
     scope: 'worked-on',
+    domain: 'all', // Default to all domains
     status: [],
     priority: [],
     updatedRange: 'any',
@@ -109,6 +126,7 @@ export function serializeHomeFilters(filters: HomeFilters): Record<string, strin
 
   if (filters.search) params.search = filters.search;
   if (filters.scope !== 'worked-on') params.scope = filters.scope;
+  if (filters.domain !== 'all') params.domain = filters.domain;
   if (filters.status.length > 0) params.status = filters.status.join(',');
   if (filters.priority.length > 0) params.priority = filters.priority.join(',');
   if (filters.updatedRange !== 'any') params.updatedRange = filters.updatedRange;
@@ -129,6 +147,7 @@ export function deserializeHomeFilters(params: URLSearchParams): HomeFilters {
   return {
     search: params.get('search') || '',
     scope: (params.get('scope') as HomeFilters['scope']) || 'worked-on',
+    domain: (params.get('domain') as HomeDomain) || 'all',
     status: params.get('status')?.split(',').filter(Boolean) || [],
     priority: params.get('priority')?.split(',').filter(Boolean) || [],
     updatedRange: (params.get('updatedRange') as HomeFilters['updatedRange']) || 'any',
@@ -150,6 +169,7 @@ export function deserializeHomeFilters(params: URLSearchParams): HomeFilters {
 // ============================================
 export function hasActiveHomeFilters(filters: HomeFilters): boolean {
   return (
+    filters.domain !== 'all' ||
     filters.status.length > 0 ||
     filters.priority.length > 0 ||
     filters.updatedRange !== 'any' ||
@@ -167,6 +187,7 @@ export function hasActiveHomeFilters(filters: HomeFilters): boolean {
 // ============================================
 export function countActiveHomeFilters(filters: HomeFilters): number {
   let count = 0;
+  if (filters.domain !== 'all') count++;
   if (filters.status.length > 0) count++;
   if (filters.priority.length > 0) count++;
   if (filters.updatedRange !== 'any') count++;
@@ -238,7 +259,7 @@ export function useHomeFilters() {
     
     // Clear old filter params then set new ones
     const newParams = new URLSearchParams(searchParams);
-    ['status', 'priority', 'updatedRange', 'projectIds', 'types', 'decisionRequired', 'readyForSprint', 'plannedDateFrom', 'plannedDateTo']
+    ['domain', 'status', 'priority', 'updatedRange', 'projectIds', 'types', 'decisionRequired', 'readyForSprint', 'plannedDateFrom', 'plannedDateTo']
       .forEach(k => newParams.delete(k));
     newParams.delete('page');
     
@@ -254,7 +275,7 @@ export function useHomeFilters() {
   // Clear all filters
   const clearFilters = useCallback(() => {
     const newParams = new URLSearchParams(searchParams);
-    ['status', 'priority', 'updatedRange', 'projectIds', 'types', 'decisionRequired', 'readyForSprint', 'plannedDateFrom', 'plannedDateTo', 'page']
+    ['domain', 'status', 'priority', 'updatedRange', 'projectIds', 'types', 'decisionRequired', 'readyForSprint', 'plannedDateFrom', 'plannedDateTo', 'page']
       .forEach(k => newParams.delete(k));
     setSearchParams(newParams, { replace: true });
   }, [searchParams, setSearchParams]);
