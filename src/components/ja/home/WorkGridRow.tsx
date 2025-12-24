@@ -242,57 +242,14 @@ export function OperationsGridRow({
           </DropdownMenuTrigger>
           <DropdownMenuContent 
             align="end" 
-            className="bg-[var(--surface-1)] border-[var(--border-color)] z-[300]"
+            className="bg-white dark:bg-gray-800 border-[var(--border-color)] z-[300] shadow-lg"
           >
             <DropdownMenuItem 
-              onClick={(e) => { e.stopPropagation(); handleRowClick(); }}
+              onClick={(e) => { e.stopPropagation(); onAssignToMe?.(item.id); }}
               className="text-[var(--text-1)] cursor-pointer"
             >
-              <Eye className="w-4 h-4 mr-2" />
-              View details
-            </DropdownMenuItem>
-            {canAssign && (
-              <DropdownMenuItem 
-                onClick={(e) => { e.stopPropagation(); onAssignToMe?.(item.id); }}
-                className="text-[var(--text-1)] cursor-pointer"
-              >
-                <UserPlus className="w-4 h-4 mr-2" />
-                Assign to me
-              </DropdownMenuItem>
-            )}
-            {isIncident && canResolve && (
-              <>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem 
-                  onClick={(e) => { e.stopPropagation(); onAcknowledge?.(item.id); }}
-                  className="text-[var(--text-1)] cursor-pointer"
-                >
-                  <CheckCircle className="w-4 h-4 mr-2" />
-                  Acknowledge
-                </DropdownMenuItem>
-                <DropdownMenuItem 
-                  onClick={(e) => { e.stopPropagation(); onResolve?.(item.id); }}
-                  className="text-[var(--text-1)] cursor-pointer"
-                >
-                  <CheckCircle className="w-4 h-4 mr-2" />
-                  Resolve
-                </DropdownMenuItem>
-              </>
-            )}
-            <DropdownMenuSeparator />
-            <DropdownMenuItem 
-              onClick={(e) => { e.stopPropagation(); /* TODO: View history */ }}
-              className="text-[var(--text-1)] cursor-pointer"
-            >
-              <History className="w-4 h-4 mr-2" />
-              View history
-            </DropdownMenuItem>
-            <DropdownMenuItem 
-              onClick={handleOpenNewTab}
-              className="text-[var(--text-1)] cursor-pointer"
-            >
-              <ExternalLink className="w-4 h-4 mr-2" />
-              Open in new tab
+              <UserPlus className="w-4 h-4 mr-2" />
+              Assign to me
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -479,7 +436,7 @@ export function DeliveryGridRow({
             </DropdownMenuTrigger>
             <DropdownMenuContent 
               align="end" 
-              className="bg-[var(--surface-1)] border-[var(--border-color)] z-[300]"
+              className="bg-white dark:bg-gray-800 border-[var(--border-color)] z-[300] shadow-lg"
             >
               <DropdownMenuItem 
                 onClick={(e) => { e.stopPropagation(); onAssignToMe?.(item.id); }}
@@ -487,28 +444,6 @@ export function DeliveryGridRow({
               >
                 <UserPlus className="w-4 h-4 mr-2" />
                 Assign to me
-              </DropdownMenuItem>
-              <DropdownMenuItem 
-                onClick={(e) => { e.stopPropagation(); onChangeStatus?.(item.id); }}
-                className="text-[var(--text-1)] cursor-pointer"
-              >
-                <CheckCircle className="w-4 h-4 mr-2" />
-                Change status
-              </DropdownMenuItem>
-              <DropdownMenuItem 
-                onClick={(e) => { e.stopPropagation(); onAddComment?.(item.id); }}
-                className="text-[var(--text-1)] cursor-pointer"
-              >
-                <MessageSquare className="w-4 h-4 mr-2" />
-                Add comment
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem 
-                onClick={(e) => { e.stopPropagation(); /* TODO: View history */ }}
-                className="text-[var(--text-1)] cursor-pointer"
-              >
-                <History className="w-4 h-4 mr-2" />
-                View history
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -552,6 +487,7 @@ export function DeliveryGridRow({
 export function PlannerGridRow({ 
   item, 
   density = 'comfortable',
+  onAssignToMe,
   onReviewItem,
   onAddNote,
   onPrepareForPlanning,
@@ -559,6 +495,7 @@ export function PlannerGridRow({
 }: { 
   item: BaseWorkItem; 
   density?: 'compact' | 'comfortable';
+  onAssignToMe?: (id: string) => void;
   onReviewItem?: (id: string) => void;
   onAddNote?: (id: string) => void;
   onPrepareForPlanning?: (id: string) => void;
@@ -693,29 +630,14 @@ export function PlannerGridRow({
             </DropdownMenuTrigger>
             <DropdownMenuContent 
               align="end" 
-              className="bg-[var(--surface-1)] border-[var(--border-color)] z-[300]"
+              className="bg-white dark:bg-gray-800 border-[var(--border-color)] z-[300] shadow-lg"
             >
               <DropdownMenuItem 
-                onClick={(e) => { e.stopPropagation(); onPrepareForPlanning?.(item.id); }}
+                onClick={(e) => { e.stopPropagation(); onAssignToMe?.(item.id); }}
                 className="text-[var(--text-1)] cursor-pointer"
               >
-                <Calendar className="w-4 h-4 mr-2" />
-                Prepare for planning
-              </DropdownMenuItem>
-              <DropdownMenuItem 
-                onClick={(e) => { e.stopPropagation(); onRequestClarification?.(item.id); }}
-                className="text-[var(--text-1)] cursor-pointer"
-              >
-                <HelpCircle className="w-4 h-4 mr-2" />
-                Request clarification
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem 
-                onClick={handleOpenNewTab}
-                className="text-[var(--text-1)] cursor-pointer"
-              >
-                <ExternalLink className="w-4 h-4 mr-2" />
-                Open in new tab
+                <UserPlus className="w-4 h-4 mr-2" />
+                Assign to me
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -801,6 +723,7 @@ export function ModeAwareGridRow({
         <PlannerGridRow 
           item={item} 
           density={density}
+          onAssignToMe={onAssignToMe}
           onReviewItem={onReviewItem}
           onAddNote={onAddNote}
           onPrepareForPlanning={onPrepareForPlanning}
