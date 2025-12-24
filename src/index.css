@@ -232,7 +232,7 @@
     --secondary-foreground: 0 0% 96%;
     
     --muted: 0 0% 18%;                  /* #2d2d2d */
-    --muted-foreground: 0 0% 64%;       /* #a3a3a3 */
+    --muted-foreground: 0 0% 70%;       /* #b3b3b3 - increased for better dark mode contrast */
     
     --accent: 32 40% 60%;               /* gold accent */
     --accent-foreground: 0 0% 100%;
