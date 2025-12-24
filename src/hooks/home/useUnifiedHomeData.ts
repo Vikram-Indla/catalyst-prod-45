@@ -328,11 +328,14 @@ async function fetchAllItems(params: {
 }): Promise<UnifiedItemsResponse> {
   const { filters, search, sort, from, to, updatedRangeDate, userId, page, pageSize } = params;
 
-  // Fetch from all three domains in parallel
+  // Fetch enough items from each domain to cover pagination
+  // We need to fetch all items up to `to` from each domain, then sort and paginate client-side
+  const fetchLimit = to + 1; // Fetch enough to cover the requested range
+  
   const [opsResult, deliveryResult, plannerResult] = await Promise.all([
-    fetchOperationsItems({ filters, search, sort, from: 0, to: 10, updatedRangeDate, userId }),
-    fetchDeliveryItems({ filters, search, sort, from: 0, to: 10, updatedRangeDate, userId }),
-    fetchPlannerItems({ filters, search, sort, from: 0, to: 10, updatedRangeDate, userId, page: 1, pageSize: 10 }),
+    fetchOperationsItems({ filters, search, sort, from: 0, to: fetchLimit - 1, updatedRangeDate, userId }),
+    fetchDeliveryItems({ filters, search, sort, from: 0, to: fetchLimit - 1, updatedRangeDate, userId }),
+    fetchPlannerItems({ filters, search, sort, from: 0, to: fetchLimit - 1, updatedRangeDate, userId, page: 1, pageSize: fetchLimit }),
   ]);
 
   // Combine all items
