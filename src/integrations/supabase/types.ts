@@ -16302,6 +16302,20 @@ export type Database = {
       }
       derive_quarter_from_date: { Args: { p_date: string }; Returns: string }
       extract_kb_tiptap_text: { Args: { content: Json }; Returns: string }
+      find_feature_by_short_id: {
+        Args: { p_short: string }
+        Returns: {
+          display_id: string
+          id: string
+        }[]
+      }
+      find_story_by_short_id: {
+        Args: { p_short: string }
+        Returns: {
+          id: string
+          story_key: string
+        }[]
+      }
       generate_change_number: { Args: never; Returns: string }
       generate_next_defect_id: { Args: never; Returns: string }
       generate_next_epic_key: {
