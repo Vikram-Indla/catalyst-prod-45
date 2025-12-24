@@ -44,6 +44,7 @@ export function BulkAssignModal({ isOpen, onClose, onConfirm, selectedCount }: B
       const { data, error } = await supabase
         .from('profiles')
         .select('id, email, full_name')
+        .eq('approval_status', 'APPROVED')
         .limit(50);
       
       if (error) throw error;

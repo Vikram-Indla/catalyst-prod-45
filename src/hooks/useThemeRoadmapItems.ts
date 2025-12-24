@@ -166,6 +166,7 @@ export function useThemeRoadmapItems(filters?: ThemeRoadmapFilters): UseThemeRoa
       const { data, error } = await supabase
         .from('profiles')
         .select('id, full_name')
+        .eq('approval_status', 'APPROVED')
         .order('full_name');
       if (error) throw error;
       return (data || []).map(p => ({ id: p.id, name: p.full_name || 'Unknown' }));

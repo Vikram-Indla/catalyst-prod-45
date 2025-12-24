@@ -73,13 +73,14 @@ export function StrategicEpicDrawer({
     enabled: open,
   });
 
-  // Fetch users for owner selection
+  // Fetch users for owner selection - only APPROVED users
   const { data: users = [] } = useQuery({
     queryKey: ['users-for-epic-owner'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('profiles')
         .select('id, full_name')
+        .eq('approval_status', 'APPROVED')
         .order('full_name');
       if (error) throw error;
       return data || [];

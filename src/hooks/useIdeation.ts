@@ -790,6 +790,7 @@ export function useIdeationUsers() {
       const { data, error } = await supabase
         .from('profiles')
         .select('id, email, full_name, avatar_url')
+        .eq('approval_status', 'APPROVED')
         .order('full_name');
       if (error) throw error;
       return data || [];

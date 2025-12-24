@@ -48,13 +48,14 @@ export function EpicMassMoveDialog({
     },
   });
 
-  // Fetch users/profiles for owner dropdown
+  // Fetch users/profiles for owner dropdown - only APPROVED users
   const { data: owners } = useQuery({
-    queryKey: ['users-list'],
+    queryKey: ['users-list-approved'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('profiles')
         .select('id, full_name, email')
+        .eq('approval_status', 'APPROVED')
         .order('full_name');
       if (error) throw error;
       return data || [];

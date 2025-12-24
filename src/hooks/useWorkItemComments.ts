@@ -176,7 +176,7 @@ async function saveMentions(commentId: string, usernames: string[]) {
   }
 }
 
-// Hook to fetch users for @mention autocomplete
+// Hook to fetch users for @mention autocomplete - only APPROVED users
 export function useMentionableUsers() {
   return useQuery({
     queryKey: ['mentionable-users'],
@@ -184,6 +184,7 @@ export function useMentionableUsers() {
       const { data, error } = await supabase
         .from('profiles')
         .select('id, full_name, email')
+        .eq('approval_status', 'APPROVED')
         .order('full_name');
       
       if (error) throw error;

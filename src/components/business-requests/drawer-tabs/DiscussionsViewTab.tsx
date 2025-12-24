@@ -33,13 +33,14 @@ export function DiscussionsViewTab({ requestId }: DiscussionsViewTabProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const queryClient = useQueryClient();
 
-  // Fetch all profiles for @mentions
+  // Fetch all APPROVED profiles for @mentions
   const { data: profiles = [] } = useQuery({
-    queryKey: ['profiles-for-mentions'],
+    queryKey: ['profiles-for-mentions-approved'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('profiles')
         .select('id, full_name, email')
+        .eq('approval_status', 'APPROVED')
         .order('full_name');
       if (error) throw error;
       return data as Profile[];
