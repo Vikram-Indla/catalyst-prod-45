@@ -217,16 +217,21 @@ export function TaskDrawer({ isOpen, task, activeTab, onClose, onTabChange, onUp
               <X className="w-5 h-5 text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-colors" />
             </button>
 
-            {/* Task title with priority dot */}
+            {/* Task type badge and title */}
             <div className="flex items-start gap-3 pr-12">
               <div className={cn(
                 'w-3 h-3 rounded-full mt-1.5 shrink-0 ring-2 ring-white dark:ring-gray-900',
                 priorityColors[currentPriority].dot
               )} />
               <div className="flex-1 min-w-0">
-                <h2 className="text-[16px] font-semibold text-gray-900 dark:text-gray-100 leading-snug mb-2">
-                  {task.title}
-                </h2>
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300">
+                    Task
+                  </span>
+                  <h2 className="text-[16px] font-semibold text-gray-900 dark:text-gray-100 leading-snug">
+                    {task.title}
+                  </h2>
+                </div>
                 <span className="inline-flex items-center px-2.5 py-1 rounded-md bg-gray-100 dark:bg-gray-800 font-mono text-[11px] font-medium text-gray-600 dark:text-gray-400">
                   {task.key}
                 </span>

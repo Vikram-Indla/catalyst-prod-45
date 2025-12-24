@@ -119,7 +119,12 @@ export function NewTaskDialog({ open, onOpenChange, onCreateTask, teams, users }
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle className="text-lg font-semibold">Create New Task</DialogTitle>
+          <div className="flex items-center gap-2">
+            <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300">
+              Task
+            </span>
+            <DialogTitle className="text-lg font-semibold">Create New Task</DialogTitle>
+          </div>
         </DialogHeader>
         
         <form onSubmit={handleSubmit} className="space-y-4 py-2">

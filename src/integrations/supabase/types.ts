@@ -15692,6 +15692,145 @@ export type Database = {
         }
         Relationships: []
       }
+      work_manager_task_sequences: {
+        Row: {
+          last_sequence: number
+          team_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          last_sequence?: number
+          team_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          last_sequence?: number
+          team_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "work_manager_task_sequences_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: true
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      work_manager_tasks: {
+        Row: {
+          assignee_id: string | null
+          blocked: boolean
+          blocked_at: string | null
+          blocked_reason: string | null
+          board_id: string | null
+          column_position: number
+          completed_at: string | null
+          created_at: string
+          created_by: string | null
+          description: string | null
+          due_date: string | null
+          id: string
+          key: string
+          linked_item_key: string | null
+          linked_item_title: string | null
+          linked_item_type: string | null
+          priority: string
+          recurrence: string
+          reporter_id: string | null
+          status: string
+          tags: string[] | null
+          team_id: string | null
+          title: string
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          assignee_id?: string | null
+          blocked?: boolean
+          blocked_at?: string | null
+          blocked_reason?: string | null
+          board_id?: string | null
+          column_position?: number
+          completed_at?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          due_date?: string | null
+          id?: string
+          key: string
+          linked_item_key?: string | null
+          linked_item_title?: string | null
+          linked_item_type?: string | null
+          priority?: string
+          recurrence?: string
+          reporter_id?: string | null
+          status?: string
+          tags?: string[] | null
+          team_id?: string | null
+          title: string
+          type?: string
+          updated_at?: string
+        }
+        Update: {
+          assignee_id?: string | null
+          blocked?: boolean
+          blocked_at?: string | null
+          blocked_reason?: string | null
+          board_id?: string | null
+          column_position?: number
+          completed_at?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          due_date?: string | null
+          id?: string
+          key?: string
+          linked_item_key?: string | null
+          linked_item_title?: string | null
+          linked_item_type?: string | null
+          priority?: string
+          recurrence?: string
+          reporter_id?: string | null
+          status?: string
+          tags?: string[] | null
+          team_id?: string | null
+          title?: string
+          type?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "work_manager_tasks_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "work_manager_tasks_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "work_manager_tasks_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "work_manager_tasks_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       workflow_rules: {
         Row: {
           architecture_review_required: boolean
@@ -15878,6 +16017,10 @@ export type Database = {
       generate_next_defect_id: { Args: never; Returns: string }
       generate_next_epic_key: {
         Args: { p_program_id: string }
+        Returns: string
+      }
+      generate_work_manager_task_key: {
+        Args: { p_team_id: string }
         Returns: string
       }
       get_all_blockers: {
