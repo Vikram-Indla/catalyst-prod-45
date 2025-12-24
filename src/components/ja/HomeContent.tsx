@@ -12,7 +12,7 @@ import { SegmentedTabs, SegmentedTab } from '@/components/ui/segmented-tabs';
 import { UnifiedToolbar } from '@/components/ui/unified-toolbar';
 import { CriticalStrip } from './home/CriticalStrip';
 import { HomeRoleModeSelector, HomeRoleMode } from './home/HomeRoleModeSelector';
-import { useHomeData, HomeWorkItem } from '@/hooks/useHomeData';
+import { useHomeData, HomeWorkItem, HomeProject } from '@/hooks/useHomeData';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -24,6 +24,38 @@ import {
 const ITEMS_PER_PAGE = 10;
 const STORAGE_KEY_MODE = 'catalyst_home_mode';
 const STORAGE_KEY_PINNED = 'catalyst_home_pinned_projects';
+
+// ============================================
+// UTILITY: Group items by time period
+// ============================================
+function groupItemsByTimePeriod(items: HomeWorkItem[]): { label: string; items: HomeWorkItem[] }[] {
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const yesterday = new Date(today.getTime() - 24 * 60 * 60 * 1000);
+  const lastWeek = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+
+  const groups: { label: string; items: HomeWorkItem[] }[] = [
+    { label: 'Today', items: [] },
+    { label: 'Yesterday', items: [] },
+    { label: 'This week', items: [] },
+    { label: 'Older', items: [] },
+  ];
+
+  items.forEach(item => {
+    const itemDate = new Date(item.activityDate);
+    if (itemDate >= today) {
+      groups[0].items.push(item);
+    } else if (itemDate >= yesterday) {
+      groups[1].items.push(item);
+    } else if (itemDate >= lastWeek) {
+      groups[2].items.push(item);
+    } else {
+      groups[3].items.push(item);
+    }
+  });
+
+  return groups.filter(g => g.items.length > 0);
+}
 
 // ============================================
 // FOCUS WIDGET COMPONENT (Brand-aligned)
@@ -90,7 +122,7 @@ function ProjectCard({
   onPin,
   hasUrgency = false, // subtle urgency indicator
 }: { 
-  project: Project; 
+  project: HomeProject; 
   isPinned: boolean;
   onPin: () => void;
   hasUrgency?: boolean;
@@ -235,7 +267,7 @@ function ProjectCard({
           </div>
           <div className="flex items-center gap-1">
             {/* Subtle urgency indicator */}
-            {hasUrgency && (
+            {(hasUrgency || project.hasUrgency) && (
               <span className="w-1.5 h-1.5 rounded-full bg-[var(--brand-gold)]" title="Has incidents" />
             )}
             <span className="text-[9px] text-[var(--text-3)]">2h ago</span>
@@ -255,7 +287,7 @@ function DataGridRow({
   item, 
   density = 'comfortable'
 }: { 
-  item: ActivityItem; 
+  item: HomeWorkItem; 
   density?: 'compact' | 'comfortable';
 }) {
   const navigate = useNavigate();
@@ -282,7 +314,7 @@ function DataGridRow({
       {/* Key */}
       <div className="flex items-center gap-2">
         <WorkItemTypeIcon type={item.type} size={14} />
-        <span className="text-xs font-medium text-[var(--text-2)]">{item.id}</span>
+        <span className="text-xs font-medium text-[var(--text-2)]">{item.key}</span>
       </div>
 
       {/* Summary */}
@@ -365,7 +397,7 @@ function DataGrid({
   searchQuery,
   density = 'comfortable'
 }: { 
-  items: ActivityItem[]; 
+  items: HomeWorkItem[]; 
   visibleCount: number;
   onLoadMore: () => void;
   searchQuery: string;
@@ -376,7 +408,7 @@ function DataGrid({
     if (!searchQuery) return items;
     const query = searchQuery.toLowerCase();
     return items.filter(item => 
-      item.id.toLowerCase().includes(query) ||
+      item.key.toLowerCase().includes(query) ||
       item.summary.toLowerCase().includes(query) ||
       item.project.toLowerCase().includes(query)
     );
@@ -486,6 +518,9 @@ export function HomeContent() {
     return (saved as HomeRoleMode) || 'delivery';
   });
 
+  // Fetch data based on current mode
+  const { workItems, criticalCounts, projects, isLoading } = useHomeData(roleMode);
+
   // Load pinned projects from localStorage
   useEffect(() => {
     const saved = localStorage.getItem(STORAGE_KEY_PINNED);
@@ -519,15 +554,15 @@ export function HomeContent() {
     const pinned = projects.filter(p => pinnedProjects.includes(p.id));
     const unpinned = projects.filter(p => !pinnedProjects.includes(p.id));
     return [...pinned, ...unpinned];
-  }, [pinnedProjects]);
+  }, [projects, pinnedProjects]);
 
-  // Calculate counts
-  const workedOnCount = activityItems.length;
-  const assignedCount = activityItems.filter(item => item.assignee).length;
+  // Calculate counts from real data
+  const workedOnCount = workItems.length;
+  const assignedCount = workItems.filter(item => item.assignee).length;
   const starredCount = 0;
   
   // Focus widget data
-  const recentlyUpdatedCount = activityItems.filter(item => {
+  const recentlyUpdatedCount = workItems.filter(item => {
     const daysDiff = (Date.now() - item.activityDate.getTime()) / (1000 * 60 * 60 * 24);
     return daysDiff <= 7;
   }).length;
@@ -540,19 +575,23 @@ export function HomeContent() {
   const handleChipFilter = (filter: ActiveFilter) => {
     setActiveFilter(filter);
     setSelectedTab('worked-on');
-    // In a real implementation, this would filter the work list
-    // For now, it sets the filter state which can be used to filter data
   };
 
   // Get items for current tab (with filter applied)
   const getTabItems = () => {
-    let items = activityItems;
+    let items = workItems;
     
-    // Apply chip filter (mock implementation - would filter real data)
+    // Apply chip filter based on real data attributes
     if (activeFilter !== 'all') {
-      // In real implementation, filter by incident type, SLA status, etc.
-      // For now, just return all items as placeholder
-      items = activityItems;
+      switch (activeFilter) {
+        case 'major-incidents':
+          items = items.filter(i => i.severity === 'SEV1' || i.severity === 'SEV2');
+          break;
+        case 'blocked':
+          items = items.filter(i => i.status === 'blocked');
+          break;
+        // Other filters can be extended as needed
+      }
     }
     
     switch (selectedTab) {
@@ -595,13 +634,13 @@ export function HomeContent() {
           <HomeRoleModeSelector value={roleMode} onChange={setRoleMode} />
         </div>
 
-        {/* Critical Strip - actionable chips */}
+        {/* Critical Strip - actionable chips from real data */}
         <div className="mt-3">
           <CriticalStrip
-            majorIncidents={mockIncidentData.majorIncidents}
-            slaAtRisk={mockIncidentData.slaAtRisk}
-            awaitingMe={mockIncidentData.awaitingMe}
-            blocked={mockIncidentData.blocked}
+            majorIncidents={criticalCounts.majorIncidents}
+            slaAtRisk={criticalCounts.slaAtRisk}
+            awaitingMe={criticalCounts.awaitingMe}
+            blocked={criticalCounts.blocked}
             activeFilter={activeFilter}
             onFilterChange={handleChipFilter}
           />
@@ -610,51 +649,52 @@ export function HomeContent() {
         {/* Divider - stronger for light mode visibility */}
         <div className="h-px mt-3 mb-3 bg-[var(--border-color)]" />
 
-        {/* Recent Projects Section */}
-        <div className="mb-4">
-          <div className="flex justify-between items-center mb-2">
-            <button 
-              onClick={() => pinnedProjects.length > 0 && setIsProjectsCollapsed(!isProjectsCollapsed)}
-              className={cn(
-                "flex items-center gap-1.5 text-sm font-medium text-[var(--text-1)]",
-                pinnedProjects.length > 0 && "cursor-pointer hover:text-[var(--text-2)]"
-              )}
-            >
-              Recent projects
-              {pinnedProjects.length > 0 && (
-                isProjectsCollapsed 
-                  ? <ChevronDown className="w-3.5 h-3.5" />
-                  : <ChevronUp className="w-3.5 h-3.5" />
-              )}
-              {pinnedProjects.length > 0 && (
-                <span className="text-xs text-[var(--text-3)] ml-1">
-                  ({pinnedProjects.length} pinned)
-                </span>
-              )}
-            </button>
-            <button 
-              onClick={() => navigate('/projects')}
-              className="text-xs no-underline transition-colors text-[var(--text-2)] hover:text-[var(--text-1)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)] rounded px-1"
-            >
-              View all projects →
-            </button>
-          </div>
-
-          {/* Project cards grid - 4 columns at xl */}
-          {!isProjectsCollapsed && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2">
-              {sortedProjects.map((project, index) => (
-                <ProjectCard 
-                  key={project.id} 
-                  project={project}
-                  isPinned={pinnedProjects.includes(project.id)}
-                  onPin={() => togglePinProject(project.id)}
-                  hasUrgency={index === 0} // Mock: first project has urgency
-                />
-              ))}
+        {/* Recent Projects Section - only show if projects exist */}
+        {projects.length > 0 && (
+          <div className="mb-4">
+            <div className="flex justify-between items-center mb-2">
+              <button 
+                onClick={() => pinnedProjects.length > 0 && setIsProjectsCollapsed(!isProjectsCollapsed)}
+                className={cn(
+                  "flex items-center gap-1.5 text-sm font-medium text-[var(--text-1)]",
+                  pinnedProjects.length > 0 && "cursor-pointer hover:text-[var(--text-2)]"
+                )}
+              >
+                Recent projects
+                {pinnedProjects.length > 0 && (
+                  isProjectsCollapsed 
+                    ? <ChevronDown className="w-3.5 h-3.5" />
+                    : <ChevronUp className="w-3.5 h-3.5" />
+                )}
+                {pinnedProjects.length > 0 && (
+                  <span className="text-xs text-[var(--text-3)] ml-1">
+                    ({pinnedProjects.length} pinned)
+                  </span>
+                )}
+              </button>
+              <button 
+                onClick={() => navigate('/projects')}
+                className="text-xs no-underline transition-colors text-[var(--text-2)] hover:text-[var(--text-1)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)] rounded px-1"
+              >
+                View all projects →
+              </button>
             </div>
-          )}
-        </div>
+
+            {/* Project cards grid - 4 columns at xl */}
+            {!isProjectsCollapsed && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2">
+                {sortedProjects.map((project) => (
+                  <ProjectCard 
+                    key={project.id} 
+                    project={project}
+                    isPinned={pinnedProjects.includes(project.id)}
+                    onPin={() => togglePinProject(project.id)}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Two Column Layout */}
         <div className="grid grid-cols-1 xl:grid-cols-[1fr_240px] gap-4">
@@ -675,6 +715,9 @@ export function HomeContent() {
                     ×
                   </button>
                 </span>
+              )}
+              {isLoading && (
+                <span className="text-xs text-[var(--text-3)]">Loading...</span>
               )}
             </div>
 
@@ -741,9 +784,9 @@ export function HomeContent() {
                 <FocusWidget 
                   title="My workload"
                   icon={Briefcase}
-                  primaryCount={mockIncidentData.myWorkload.incidents + mockIncidentData.myWorkload.workItems}
+                  primaryCount={criticalCounts.myWorkload.incidents + criticalCounts.myWorkload.workItems}
                   secondaryLabel="incidents"
-                  secondaryCount={mockIncidentData.myWorkload.incidents}
+                  secondaryCount={criticalCounts.myWorkload.incidents}
                   onClick={() => handleTabChange('worked-on')}
                 />
                 
