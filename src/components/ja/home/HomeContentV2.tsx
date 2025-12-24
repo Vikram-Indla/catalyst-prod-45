@@ -18,6 +18,7 @@ import { ModeAwareEmptyState } from './EmptyStates';
 import { HomeUnifiedFilterDrawer } from './HomeUnifiedFilterDrawer';
 import { 
   useHomeWorkItems, 
+  useHomeWorkItemsInvalidation,
   HomeWorkItem, 
   HomeDomain, 
   HomeScope, 
@@ -25,6 +26,8 @@ import {
   HomeFiltersState 
 } from '@/hooks/home/useHomeWorkItems';
 import { useDebounce } from '@/hooks/useDebounce';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 const DEFAULT_PAGE_SIZE = 20;
 
@@ -119,6 +122,7 @@ function WorkItemsDataGrid({
   activeScope,
   density,
   isLoading,
+  onAssignToMe,
 }: { 
   items: HomeWorkItem[];
   mode: HomeRoleMode;
@@ -131,6 +135,7 @@ function WorkItemsDataGrid({
   activeScope: HomeScope;
   density: 'compact' | 'comfortable';
   isLoading: boolean;
+  onAssignToMe: (id: string, itemType: string) => void;
 }) {
   const groupedItems = groupItemsByTimePeriod(items);
   
@@ -227,6 +232,7 @@ function WorkItemsDataGrid({
                 item={item}
                 mode={mode}
                 density={density}
+                onAssignToMe={() => onAssignToMe(item.id, item.type)}
               />
             ))}
           </div>
@@ -466,6 +472,45 @@ export function HomeContentV2() {
     setCurrentPage(0);
   }, []);
 
+  // Invalidation for refetch
+  const invalidateItems = useHomeWorkItemsInvalidation();
+
+  // Assign to me handler
+  const handleAssignToMe = useCallback(async (itemId: string, itemType: string) => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast.error('You must be logged in to assign items');
+        return;
+      }
+
+      // Map item type to table name
+      const tableMap: Record<string, string> = {
+        'defect': 'incidents',
+        'incident': 'incidents',
+        'story': 'stories',
+        'feature': 'features',
+        'epic': 'epics',
+        'task': 'work_manager_tasks',
+      };
+      
+      const tableName = tableMap[itemType] || 'stories';
+      
+      const { error } = await supabase
+        .from(tableName as any)
+        .update({ assignee_id: user.id })
+        .eq('id', itemId);
+
+      if (error) throw error;
+
+      toast.success('Item assigned to you');
+      invalidateItems();
+    } catch (err) {
+      console.error('Failed to assign item:', err);
+      toast.error('Failed to assign item');
+    }
+  }, [invalidateItems]);
+
   // Scope counts for tabs
   const scopeCounts: HomeScopeTabsCounts = useMemo(() => ({
     workedOn: counts.workedOn,
@@ -674,6 +719,7 @@ export function HomeContentV2() {
               activeScope={scope}
               density={density}
               isLoading={isLoading}
+              onAssignToMe={handleAssignToMe}
             />
           </div>
 
