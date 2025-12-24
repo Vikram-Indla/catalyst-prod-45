@@ -259,10 +259,40 @@ export default function IndustryRoadmapPage() {
   // Transform to BusinessRequestItem format
   const businessRequests: BusinessRequestItem[] = useMemo(() => {
     return (requestsData || []).map((req: any) => {
-      const startDate = req.impl_start_date || req.start_date || req.created_at;
-      const endDate = req.impl_target_end_date || req.end_date || null;
+      // Canonical date logic: prefer impl_start_date → impl_target_end_date
+      // Fallback to start_date → end_date if impl dates are missing OR inverted
+      let startDate: string;
+      let endDate: string | null;
       
-      // Default end date if missing (3 months from start)
+      const hasImplDates = req.impl_start_date && req.impl_target_end_date;
+      const implDatesInverted = hasImplDates && new Date(req.impl_start_date) > new Date(req.impl_target_end_date);
+      
+      if (hasImplDates && !implDatesInverted) {
+        // Use impl dates (canonical)
+        startDate = req.impl_start_date;
+        endDate = req.impl_target_end_date;
+      } else {
+        // Fallback to start_date/end_date
+        startDate = req.start_date || req.created_at;
+        endDate = req.end_date || null;
+        
+        // Log warning for data quality tracking
+        if (implDatesInverted) {
+          console.warn(
+            `[Roadmap] Inverted impl dates for demand ${req.id} (${req.request_key || req.title}): ` +
+            `impl_start_date=${req.impl_start_date} > impl_target_end_date=${req.impl_target_end_date}. ` +
+            `Falling back to start_date/end_date.`
+          );
+        } else if (req.impl_start_date || req.impl_target_end_date) {
+          console.warn(
+            `[Roadmap] Missing impl dates for demand ${req.id} (${req.request_key || req.title}): ` +
+            `impl_start_date=${req.impl_start_date}, impl_target_end_date=${req.impl_target_end_date}. ` +
+            `Falling back to start_date/end_date.`
+          );
+        }
+      }
+      
+      // Default end date if still missing (3 months from start)
       const actualEndDate = endDate || (() => {
         const d = new Date(startDate);
         d.setMonth(d.getMonth() + 3);
