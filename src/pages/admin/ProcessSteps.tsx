@@ -2,7 +2,7 @@ import { AdminGuard } from '@/components/admin/AdminGuard';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Plus, Search, Edit, GripVertical } from 'lucide-react';
+import { Plus, Search, Edit, GripVertical, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { Switch } from '@/components/ui/switch';
 import {
@@ -20,12 +20,15 @@ import {
   useToggleDemandProcessStep,
   DemandProcessStep,
 } from '@/hooks/useDemandProcessSteps';
+import { DeleteProcessStepDialog } from '@/components/admin/DeleteProcessStepDialog';
 
 export default function ProcessSteps() {
   const [searchTerm, setSearchTerm] = useState('');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingStep, setEditingStep] = useState<DemandProcessStep | null>(null);
   const [formData, setFormData] = useState({ value: '', label: '' });
+  const [deleteStep, setDeleteStep] = useState<DemandProcessStep | null>(null);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
   const { data: steps = [], isLoading } = useDemandProcessSteps();
   const createMutation = useCreateDemandProcessStep();
@@ -72,6 +75,11 @@ export default function ProcessSteps() {
     setEditingStep(null);
     setFormData({ value: '', label: '' });
     setIsDialogOpen(true);
+  };
+
+  const openDeleteDialog = (step: DemandProcessStep) => {
+    setDeleteStep(step);
+    setIsDeleteDialogOpen(true);
   };
 
   return (
@@ -182,9 +190,19 @@ export default function ProcessSteps() {
                           />
                         </td>
                         <td className="p-3 text-sm text-right">
-                          <Button variant="ghost" size="sm" onClick={() => openEditDialog(step)}>
-                            <Edit className="h-4 w-4" />
-                          </Button>
+                          <div className="flex items-center justify-end gap-1">
+                            <Button variant="ghost" size="sm" onClick={() => openEditDialog(step)}>
+                              <Edit className="h-4 w-4" />
+                            </Button>
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              onClick={() => openDeleteDialog(step)}
+                              className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
                         </td>
                       </tr>
                     ))
@@ -195,6 +213,7 @@ export default function ProcessSteps() {
           </CardContent>
         </Card>
 
+        {/* Edit/Add Dialog */}
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogContent>
             <DialogHeader>
@@ -241,6 +260,14 @@ export default function ProcessSteps() {
             </DialogFooter>
           </DialogContent>
         </Dialog>
+
+        {/* Delete Dialog */}
+        <DeleteProcessStepDialog
+          open={isDeleteDialogOpen}
+          onOpenChange={setIsDeleteDialogOpen}
+          step={deleteStep}
+          allSteps={steps}
+        />
       </div>
     </AdminGuard>
   );
