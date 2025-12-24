@@ -284,7 +284,12 @@ export default function ProductBacklogPage() {
 
       // Update local state with all fields
       setSelectedRequest(prev => prev ? { ...prev, ...localUpdates } : null);
-      queryClient.invalidateQueries({ queryKey: ['business-requests'] });
+
+      // Ensure both list + drawer detail queries refresh
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['business-requests'] }),
+        queryClient.invalidateQueries({ queryKey: ['business-request', selectedRequest._dbId] }),
+      ]);
       return;
     }
 
@@ -311,8 +316,11 @@ export default function ProductBacklogPage() {
     // Update local state
     setSelectedRequest(prev => prev ? { ...prev, [field]: value } : null);
     
-    // Invalidate and wait for refetch to ensure UI is in sync
-    await queryClient.invalidateQueries({ queryKey: ['business-requests'] });
+    // Invalidate and wait for refetch to ensure UI is in sync (list + drawer)
+    await Promise.all([
+      queryClient.invalidateQueries({ queryKey: ['business-requests'] }),
+      queryClient.invalidateQueries({ queryKey: ['business-request', selectedRequest._dbId] }),
+    ]);
     
     // Show success toast for status changes
     if (field === 'processStep') {
