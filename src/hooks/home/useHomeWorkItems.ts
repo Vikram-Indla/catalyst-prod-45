@@ -503,22 +503,38 @@ async function fetchPlanner(params: {
   const total = allItems.length;
   const paginatedItems = allItems.slice(from, from + pageSize);
 
-  // Get scope counts
-  const [plannedRes, upcomingRes, pendingRes] = await Promise.all([
+  // Get scope counts - dynamic real-time counts
+  const now = new Date();
+  const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const endOfThisWeek = new Date(startOfToday);
+  endOfThisWeek.setDate(startOfToday.getDate() + (7 - startOfToday.getDay())); // End of this week (Sunday)
+  const startOfNextWeek = new Date(endOfThisWeek);
+  startOfNextWeek.setDate(endOfThisWeek.getDate() + 1);
+  const endOfNextWeek = new Date(startOfNextWeek);
+  endOfNextWeek.setDate(startOfNextWeek.getDate() + 6);
+
+  const [assignedToMeRes, thisWeekRes, nextWeekRes] = await Promise.all([
+    // Assigned to me - tasks assigned to current user
+    userId 
+      ? supabase.from('work_manager_tasks').select('id', { count: 'exact', head: true })
+          .eq('assignee_id', userId)
+      : Promise.resolve({ count: 0 }),
+    // This week - tasks with due_date within this week
     supabase.from('work_manager_tasks').select('id', { count: 'exact', head: true })
-      .or('status.in.(Planned,In Progress),ready_for_sprint.eq.true'),
+      .gte('due_date', startOfToday.toISOString().split('T')[0])
+      .lte('due_date', endOfThisWeek.toISOString().split('T')[0]),
+    // Next week - tasks with due_date in next week
     supabase.from('work_manager_tasks').select('id', { count: 'exact', head: true })
-      .in('status', ['Backlog', 'On Hold']),
-    supabase.from('work_manager_tasks').select('id', { count: 'exact', head: true })
-      .or('decision_required.eq.true,review_status.eq.pending'),
+      .gte('due_date', startOfNextWeek.toISOString().split('T')[0])
+      .lte('due_date', endOfNextWeek.toISOString().split('T')[0]),
   ]);
 
   return {
     items: paginatedItems,
     counts: {
-      workedOn: plannedRes.count || 0,
-      assigned: upcomingRes.count || 0,
-      starred: pendingRes.count || 0,
+      workedOn: assignedToMeRes.count || 0, // Assigned to me
+      assigned: thisWeekRes.count || 0,     // This week
+      starred: nextWeekRes.count || 0,      // Next week
       total,
     },
     pagination: { page, pageSize, total, hasMore: from + paginatedItems.length < total },
