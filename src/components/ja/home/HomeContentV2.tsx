@@ -343,7 +343,7 @@ export function HomeContentV2() {
   const [searchParams, setSearchParams] = useSearchParams();
   
   // URL-driven state
-  const domain = (searchParams.get('mode') as HomeDomain) || 'delivery';
+  const domain = (searchParams.get('mode') as HomeDomain) || 'all';
   const scope = (searchParams.get('scope') as HomeScope) || 'worked-on';
   const activeFilter = (searchParams.get('filter') as ActiveFilter) || 'all';
   
@@ -689,21 +689,6 @@ export function HomeContentV2() {
               onSortChange={handleSortChange}
               density={density}
               onDensityChange={setDensity}
-              filterContent={
-                <HomeUnifiedFilterDrawer
-                  mode={domain}
-                  filters={{
-                    search: searchQuery,
-                    scope,
-                    domain,
-                    ...filters,
-                    types: [],
-                  }}
-                  onFiltersChange={handleFiltersChange}
-                  onClear={handleClearFilters}
-                  hasActiveFilters={hasActiveFilters}
-                />
-              }
             />
 
             {/* Data Grid */}
