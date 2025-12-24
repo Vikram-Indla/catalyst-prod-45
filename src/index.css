@@ -95,7 +95,8 @@
     --text-4: #737373;
     --text-secondary-strong: 0 0% 30%;
     --icon-default: #525252;
-    --divider: #e8e8e8;
+    --icon-muted: #737373;
+    --divider: #e5e5e5;
     --border-color: #e5e5e5;
     --nav-bg: #ffffff;
     --nav-hover-bg: rgba(0, 0, 0, 0.03);
@@ -107,8 +108,12 @@
     --card-shadow: var(--shadow-card);
     --table-row-bg: #ffffff;
     --table-row-hover: rgba(0, 0, 0, 0.02);
+    --table-header-bg: rgba(0, 0, 0, 0.02);  /* Light mode header bg */
+    --table-section-bg: rgba(0, 0, 0, 0.02);  /* Section headers */
+    --row-hover: rgba(0, 0, 0, 0.02);
     --selection-row-bg: rgba(92, 124, 92, 0.06);
     --selection-bar-accent: #5c7c5c;
+    --focus-ring: #5c7c5c;
     
     /* Status/Semantic colors - Light Mode */
     --status-success: #16a34a;
@@ -267,26 +272,31 @@
     --surface-2: #262626;
     --surface-3: #2d2d2d;
     --text-1: #f5f5f5;
-    --text-2: #a3a3a3;
-    --text-3: #737373;
-    --text-4: #525252;
+    --text-2: #d4d4d4;            /* Brightened from #a3a3a3 for better contrast */
+    --text-3: #a3a3a3;            /* Brightened from #737373 for better visibility */
+    --text-4: #737373;
     --text-secondary-strong: 0 0% 75%;
     --icon-default: #a3a3a3;
-    --divider: #333333;
-    --border-color: #404040;
+    --icon-muted: #737373;
+    --divider: #2a2a2a;           /* Visible row dividers */
+    --border-color: #2c2c2c;      /* Card borders */
     --nav-bg: #1f1f1f;
     --nav-hover-bg: rgba(255, 255, 255, 0.04);
     --nav-active-bg: rgba(198, 156, 109, 0.15);
     --brand-active: #c69c6d;
     --brand-gold: #c69c6d;
     --brand-primary: #c69c6d;
-    --card-bg: #262626;
-    --card-border: #404040;
+    --card-bg: #141414;
+    --card-border: #2c2c2c;
     --card-shadow: 0 1px 3px rgba(0,0,0,0.4);
-    --table-row-bg: #262626;
-    --table-row-hover: #333333;
+    --table-row-bg: #141414;
+    --table-row-hover: #1c1c1c;
+    --table-header-bg: rgba(92, 124, 92, 0.1);  /* Olive-tinted header */
+    --table-section-bg: #1a1a1a;  /* Section headers (TODAY/THIS WEEK) */
+    --row-hover: #1c1c1c;
     --selection-row-bg: rgba(198, 156, 109, 0.15);
     --selection-bar-accent: #c69c6d;
+    --focus-ring: #d4a855;
     
     /* Status/Semantic colors - Dark Mode */
     --status-success: #22c55e;
