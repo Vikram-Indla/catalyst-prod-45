@@ -6,17 +6,13 @@ import {
   Link2, 
   RefreshCw, 
   MessageSquare, 
-  Clock, 
   AlertTriangle,
   X,
   Folder,
   CheckSquare,
   FileText,
   AlertCircle,
-  CalendarClock,
-  Edit3,
-  UserPlus,
-  PlayCircle,
+  Trash2,
   Check
 } from 'lucide-react';
 import {
@@ -36,6 +32,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { getUserById, getTeamById } from '@/lib/work-manager-data';
 import { useTeamMembers } from '@/hooks/useTeamMembers';
 import type { TaskExtended, TaskStatus, Priority, TaskType, RecurrenceType } from './types';
@@ -48,6 +54,7 @@ interface TaskDrawerProps {
   onClose: () => void;
   onTabChange: (tab: 'overview' | 'activity' | 'comments') => void;
   onUpdate: (updates: Partial<TaskExtended>) => void;
+  onDelete?: (taskId: string) => void;
 }
 
 const statuses: TaskStatus[] = ['Backlog', 'Planned', 'In Progress', 'Waiting', 'Done'];
@@ -86,11 +93,12 @@ const taskTypeIcons: Record<TaskType, typeof Folder> = {
   'General': FileText,
 };
 
-export function TaskDrawer({ isOpen, task, activeTab, onClose, onTabChange, onUpdate }: TaskDrawerProps) {
+export function TaskDrawer({ isOpen, task, activeTab, onClose, onTabChange, onUpdate, onDelete }: TaskDrawerProps) {
   const [localTask, setLocalTask] = useState<Partial<TaskExtended>>({});
   const [showToast, setShowToast] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [commentText, setCommentText] = useState('');
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   // Fetch team members from database
   const { data: teamMembersData = [] } = useTeamMembers(task?.teamId);
@@ -166,13 +174,13 @@ export function TaskDrawer({ isOpen, task, activeTab, onClose, onTabChange, onUp
     }));
   };
 
-  // Mock activity data with icons
-  const activities = [
-    { id: 'a1', type: 'status_changed', user: 'Sarah Ahmed', initials: 'SA', color: 'bg-emerald-500', from: 'Planned', to: 'In Progress', time: '2 hours ago', exactTime: 'Dec 22, 2025 at 10:30 AM', icon: PlayCircle },
-    { id: 'a2', type: 'assigned', user: 'Mohammed Al-Rashid', initials: 'MR', color: 'bg-blue-500', to: 'Sarah Ahmed', time: '1 day ago', exactTime: 'Dec 21, 2025 at 3:15 PM', icon: UserPlus },
-    { id: 'a3', type: 'edited', user: 'Layla Hassan', initials: 'LH', color: 'bg-purple-500', field: 'description', time: '2 days ago', exactTime: 'Dec 20, 2025 at 11:00 AM', icon: Edit3 },
-    { id: 'a4', type: 'created', user: 'Vikram', initials: 'VA', color: 'bg-[#5c7c5c]', time: '3 days ago', exactTime: 'Dec 19, 2025 at 9:00 AM', icon: CheckSquare },
-  ];
+  const handleDelete = () => {
+    if (onDelete && task) {
+      onDelete(task.id);
+      setShowDeleteDialog(false);
+      onClose();
+    }
+  };
 
   const TypeIcon = taskTypeIcons[currentType];
 
@@ -345,19 +353,6 @@ export function TaskDrawer({ isOpen, task, activeTab, onClose, onTabChange, onUp
                       })}
                     </SelectContent>
                   </Select>
-                </FieldRow>
-
-                {/* Reporter - with brand color */}
-                <FieldRow label="Reporter">
-                  <div className="flex items-center gap-2.5">
-                    <div 
-                      className="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold text-white"
-                      style={{ backgroundColor: '#5c7c5c' }}
-                    >
-                      VA
-                    </div>
-                    <span className="text-[13px] font-medium text-gray-900 dark:text-gray-100">Vikram (You)</span>
-                  </div>
                 </FieldRow>
 
                 {/* Due Date */}
@@ -542,56 +537,32 @@ export function TaskDrawer({ isOpen, task, activeTab, onClose, onTabChange, onUp
                     </div>
                   </div>
                 )}
+
+                {/* Delete Task Section */}
+                {onDelete && (
+                  <div className="py-6 mt-4 border-t border-gray-100 dark:border-gray-800">
+                    <Button
+                      variant="outline"
+                      onClick={() => setShowDeleteDialog(true)}
+                      className="w-full border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700 dark:border-red-800 dark:text-red-400 dark:hover:bg-red-900/20"
+                    >
+                      <Trash2 className="w-4 h-4 mr-2" />
+                      Delete Task
+                    </Button>
+                  </div>
+                )}
               </div>
             )}
 
-            {/* ACTIVITY TAB */}
+            {/* ACTIVITY TAB - No activity history available yet */}
             {activeTab === 'activity' && (
               <div className="py-4">
-                <div className="relative">
-                  {/* Timeline line */}
-                  <div className="absolute left-4 top-8 bottom-4 w-0.5 bg-gray-200 dark:bg-gray-700" />
-                  
-                  <div className="space-y-0">
-                    {activities.map((activity, index) => {
-                      const Icon = activity.icon;
-                      return (
-                        <div 
-                          key={activity.id} 
-                          className="relative flex gap-4 py-4 group hover:bg-gray-50 dark:hover:bg-gray-800/50 -mx-2 px-2 rounded-lg transition-colors duration-200"
-                        >
-                          {/* Avatar - monochrome */}
-                          <div className="w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 z-10 ring-4 ring-white dark:ring-gray-900 bg-gray-200 dark:bg-white/10 text-gray-600 dark:text-white">
-                            {activity.initials}
-                          </div>
-                          
-                          {/* Content */}
-                          <div className="flex-1 min-w-0">
-                            <p className="text-[13px] text-gray-900 dark:text-gray-100">
-                              <span className="font-semibold">{activity.user}</span>
-                              {activity.type === 'status_changed' && (
-                                <> changed status from <span className="font-medium text-gray-600 dark:text-gray-400">{activity.from}</span> to <span className="font-medium text-[#5c7c5c]">{activity.to}</span></>
-                              )}
-                              {activity.type === 'assigned' && (
-                                <> assigned this to <span className="font-semibold">{activity.to}</span></>
-                              )}
-                              {activity.type === 'edited' && (
-                                <> updated the <span className="font-medium">{activity.field}</span></>
-                              )}
-                              {activity.type === 'created' && (
-                                <> created this task</>
-                              )}
-                            </p>
-                            <div className="flex items-center gap-2 mt-1">
-                              <Icon className="w-3 h-3 text-gray-400" />
-                              <span className="text-[11px] text-gray-400 group-hover:hidden">{activity.time}</span>
-                              <span className="text-[11px] text-gray-500 hidden group-hover:inline">{activity.exactTime}</span>
-                            </div>
-                          </div>
-                        </div>
-                      );
-                    })}
+                <div className="text-center py-12">
+                  <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
+                    <RefreshCw className="w-8 h-8 text-gray-400" />
                   </div>
+                  <h3 className="text-[14px] font-semibold text-gray-900 dark:text-gray-100 mb-1">No activity yet</h3>
+                  <p className="text-[13px] text-gray-500 dark:text-gray-400">Activity history will appear here when available</p>
                 </div>
               </div>
             )}
@@ -611,7 +582,7 @@ export function TaskDrawer({ isOpen, task, activeTab, onClose, onTabChange, onUp
                 {/* Comment input */}
                 <div className="flex gap-3 mt-6 pt-6 border-t border-gray-100 dark:border-gray-800">
                   <div className="w-8 h-8 rounded-full bg-[#5c7c5c] flex items-center justify-center text-[10px] font-bold text-white shrink-0">
-                    VA
+                    U
                   </div>
                   <div className="flex-1 space-y-3">
                     <Textarea
@@ -664,6 +635,27 @@ export function TaskDrawer({ isOpen, task, activeTab, onClose, onTabChange, onUp
           )}
         </SheetContent>
       </Sheet>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Task</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete "{task.title}"? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDelete}
+              className="bg-red-600 hover:bg-red-700 text-white"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       {/* Toast */}
       {showToast && (
