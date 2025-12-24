@@ -61,7 +61,6 @@ const MODE_TABS: Record<HomeRoleMode, { value: string; label: string }[]> = {
   delivery: [
     { value: 'worked-on', label: 'Worked on' },
     { value: 'assigned', label: 'Assigned' },
-    { value: 'starred', label: 'Starred' },
   ],
   planner: [
     { value: 'planned', label: 'Planned' },
