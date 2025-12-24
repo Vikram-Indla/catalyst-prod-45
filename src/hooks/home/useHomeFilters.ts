@@ -22,6 +22,9 @@ export interface HomeFilters {
   updatedRange: '24h' | '7d' | '30d' | 'any';
   projectIds: string[];
   types: string[];
+  // New filters for Assignee and Level
+  assignee: string[];
+  level: string[];
   // Mode-specific but exposed uniformly
   decisionRequired: boolean | null;
   readyForSprint: boolean | null;
@@ -61,6 +64,8 @@ export function getDefaultHomeFilters(): HomeFilters {
     updatedRange: 'any',
     projectIds: [],
     types: [],
+    assignee: [],
+    level: [],
     decisionRequired: null,
     readyForSprint: null,
     plannedDateFrom: null,
@@ -118,6 +123,16 @@ export const UPDATED_RANGE_OPTIONS = [
   { value: 'any', label: 'Any time' },
 ];
 
+// Level options for filtering
+export const LEVEL_OPTIONS = [
+  { value: 'Enterprise', label: 'Enterprise' },
+  { value: 'Product', label: 'Product' },
+  { value: 'Program', label: 'Program' },
+  { value: 'Project', label: 'Project' },
+  { value: 'Release', label: 'Release' },
+  { value: 'Planner', label: 'Planner' },
+];
+
 // ============================================
 // SERIALIZE FILTERS TO URL
 // ============================================
@@ -132,6 +147,8 @@ export function serializeHomeFilters(filters: HomeFilters): Record<string, strin
   if (filters.updatedRange !== 'any') params.updatedRange = filters.updatedRange;
   if (filters.projectIds.length > 0) params.projectIds = filters.projectIds.join(',');
   if (filters.types.length > 0) params.types = filters.types.join(',');
+  if (filters.assignee.length > 0) params.assignee = filters.assignee.join(',');
+  if (filters.level.length > 0) params.level = filters.level.join(',');
   if (filters.decisionRequired !== null) params.decisionRequired = String(filters.decisionRequired);
   if (filters.readyForSprint !== null) params.readyForSprint = String(filters.readyForSprint);
   if (filters.plannedDateFrom) params.plannedDateFrom = filters.plannedDateFrom;
@@ -153,6 +170,8 @@ export function deserializeHomeFilters(params: URLSearchParams): HomeFilters {
     updatedRange: (params.get('updatedRange') as HomeFilters['updatedRange']) || 'any',
     projectIds: params.get('projectIds')?.split(',').filter(Boolean) || [],
     types: params.get('types')?.split(',').filter(Boolean) || [],
+    assignee: params.get('assignee')?.split(',').filter(Boolean) || [],
+    level: params.get('level')?.split(',').filter(Boolean) || [],
     decisionRequired: params.has('decisionRequired') 
       ? params.get('decisionRequired') === 'true' 
       : null,
@@ -175,6 +194,8 @@ export function hasActiveHomeFilters(filters: HomeFilters): boolean {
     filters.updatedRange !== 'any' ||
     filters.projectIds.length > 0 ||
     filters.types.length > 0 ||
+    filters.assignee.length > 0 ||
+    filters.level.length > 0 ||
     filters.decisionRequired !== null ||
     filters.readyForSprint !== null ||
     filters.plannedDateFrom !== null ||
@@ -193,6 +214,8 @@ export function countActiveHomeFilters(filters: HomeFilters): number {
   if (filters.updatedRange !== 'any') count++;
   if (filters.projectIds.length > 0) count++;
   if (filters.types.length > 0) count++;
+  if (filters.assignee.length > 0) count++;
+  if (filters.level.length > 0) count++;
   if (filters.decisionRequired !== null) count++;
   if (filters.readyForSprint !== null) count++;
   if (filters.plannedDateFrom || filters.plannedDateTo) count++;

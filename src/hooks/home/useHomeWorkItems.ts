@@ -15,13 +15,16 @@ import { useCallback, useEffect, useMemo } from 'react';
 // ============================================
 export type HomeDomain = 'all' | 'operations' | 'delivery' | 'planner';
 export type HomeScope = 'worked-on' | 'assigned' | 'starred';
-export type HomeSort = 'updated' | 'priority' | 'status' | 'planned-date';
+export type HomeSort = 'updated' | 'priority' | 'status' | 'planned-date' | 'key' | 'level' | 'assignee';
 
 export interface HomeFiltersState {
   status: string[];
   priority: string[];
   updatedRange: '24h' | '7d' | '30d' | 'any';
   projectIds: string[];
+  // New filters for Assignee and Level
+  assignee: string[];
+  level: string[];
   // Planner-specific
   decisionRequired: boolean | null;
   readyForSprint: boolean | null;
@@ -576,6 +579,8 @@ export function useHomeWorkItems(params: HomeWorkItemsParams) {
     priority: [],
     updatedRange: 'any',
     projectIds: [],
+    assignee: [],
+    level: [],
     decisionRequired: null,
     readyForSprint: null,
     plannedDateFrom: null,

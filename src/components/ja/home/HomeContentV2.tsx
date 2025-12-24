@@ -338,6 +338,8 @@ export function HomeContentV2() {
     priority: [],
     updatedRange: 'any',
     projectIds: [],
+    assignee: [],
+    level: [],
     decisionRequired: null,
     readyForSprint: null,
     plannedDateFrom: null,
@@ -386,6 +388,8 @@ export function HomeContentV2() {
       priority: [],
       updatedRange: 'any',
       projectIds: [],
+      assignee: [],
+      level: [],
       decisionRequired: null,
       readyForSprint: null,
       plannedDateFrom: null,
@@ -411,6 +415,8 @@ export function HomeContentV2() {
       priority: [],
       updatedRange: 'any',
       projectIds: [],
+      assignee: [],
+      level: [],
       decisionRequired: null,
       readyForSprint: null,
       plannedDateFrom: null,
@@ -459,15 +465,22 @@ export function HomeContentV2() {
       filters.priority.length > 0 ||
       filters.updatedRange !== 'any' ||
       filters.projectIds.length > 0 ||
+      filters.assignee.length > 0 ||
+      filters.level.length > 0 ||
       filters.decisionRequired !== null ||
       filters.readyForSprint !== null ||
       filters.plannedDateFrom !== null ||
       filters.plannedDateTo !== null;
   }, [filters]);
 
-  // Sort options based on mode
+  // Sort options - include Key, Level, Assignee for all modes
   const sortOptions = useMemo(() => {
-    const base = [{ value: 'updated', label: 'Recently updated' }];
+    const base = [
+      { value: 'updated', label: 'Recently updated' },
+      { value: 'key', label: 'Key' },
+      { value: 'level', label: 'Level' },
+      { value: 'assignee', label: 'Assignee' },
+    ];
     if (domain === 'operations') {
       return [...base, { value: 'priority', label: 'Priority' }];
     }

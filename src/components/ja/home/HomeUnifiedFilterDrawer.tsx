@@ -17,6 +17,7 @@ import {
   PRIORITY_OPTIONS,
   UPDATED_RANGE_OPTIONS,
   DOMAIN_OPTIONS,
+  LEVEL_OPTIONS,
 } from '@/hooks/home/useHomeFilters';
 
 interface HomeUnifiedFilterDrawerProps {
@@ -52,6 +53,14 @@ export function HomeUnifiedFilterDrawer({
     onFiltersChange({ priority: updated });
   };
 
+  const handleLevelToggle = (level: string) => {
+    const current = filters.level || [];
+    const updated = current.includes(level)
+      ? current.filter(l => l !== level)
+      : [...current, level];
+    onFiltersChange({ level: updated });
+  };
+
   const handleUpdatedRangeChange = (range: HomeFilters['updatedRange']) => {
     onFiltersChange({ updatedRange: range });
   };
@@ -71,6 +80,42 @@ export function HomeUnifiedFilterDrawer({
             Clear all
           </Button>
         )}
+      </div>
+
+      {/* Level Filter */}
+      <div className="space-y-2">
+        <Label className="text-xs font-medium text-[var(--text-2)]">Level</Label>
+        <div className="flex flex-wrap gap-1.5">
+          {LEVEL_OPTIONS.map((option) => {
+            const isSelected = (filters.level || []).includes(option.value);
+            return (
+              <button
+                key={option.value}
+                onClick={() => handleLevelToggle(option.value)}
+                className={cn(
+                  "px-2 py-1 text-xs rounded-md border transition-colors",
+                  isSelected
+                    ? "bg-[var(--brand-primary)] text-[var(--text-inverse)] border-[var(--brand-primary)]"
+                    : "bg-transparent text-[var(--text-2)] border-[var(--border-color)] hover:border-[var(--brand-primary)]"
+                )}
+              >
+                {option.label}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Assignee Filter */}
+      <div className="space-y-2">
+        <Label className="text-xs font-medium text-[var(--text-2)]">Assignee</Label>
+        <Input
+          type="text"
+          placeholder="Filter by assignee name..."
+          value={(filters.assignee || [])[0] || ''}
+          onChange={(e) => onFiltersChange({ assignee: e.target.value ? [e.target.value] : [] })}
+          className="h-8 text-xs bg-[var(--surface-2)] border-[var(--border-color)]"
+        />
       </div>
 
       {/* Domain Filter */}
