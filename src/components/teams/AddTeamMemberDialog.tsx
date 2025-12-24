@@ -1,7 +1,6 @@
 import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
 import { useAddTeamMember, useTeamMembers } from '@/hooks/useTeamMembers';
+import { useActiveUsers } from '@/hooks/useActiveUsers';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -19,18 +18,7 @@ export function AddTeamMemberDialog({ teamId, open, onOpenChange }: AddTeamMembe
 
   const addMember = useAddTeamMember();
   const { data: existingMembers = [] } = useTeamMembers(teamId);
-
-  const { data: users = [] } = useQuery({
-    queryKey: ['users'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('id, full_name, email')
-        .order('full_name');
-      if (error) throw error;
-      return data;
-    },
-  });
+  const { data: users = [] } = useActiveUsers();
 
   // Filter out users who are already team members
   const existingMemberIds = existingMembers.map((m) => m.user_id);
