@@ -1,8 +1,8 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { 
   ChevronDown, ChevronUp, Star, MoreHorizontal, ExternalLink, CheckCircle, 
-  Clock, Pin, Settings, Kanban, List, AlertTriangle, Briefcase
+  Clock, Pin, Settings, Kanban, List, AlertTriangle, Briefcase, Calendar, FileText
 } from 'lucide-react';
 import { WorkItemTypeIcon } from './icons/WorkItemTypeIcon';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
@@ -12,6 +12,8 @@ import { SegmentedTabs, SegmentedTab } from '@/components/ui/segmented-tabs';
 import { UnifiedToolbar } from '@/components/ui/unified-toolbar';
 import { CriticalStrip, ActiveFilter } from './home/CriticalStrip';
 import { HomeRoleModeSelector, HomeRoleMode } from './home/HomeRoleModeSelector';
+import { ModeAwareGridRow } from './home/WorkGridRow';
+import { ModeAwareEmptyState } from './home/EmptyStates';
 // Domain-separated hooks - each mode has its own query hooks
 import {
   useHomeOperationsSummary,
@@ -37,7 +39,6 @@ import {
 } from '@/components/ui/dropdown-menu';
 
 const ITEMS_PER_PAGE = 20;
-const STORAGE_KEY_MODE = 'catalyst_home_mode';
 const STORAGE_KEY_PINNED = 'catalyst_home_pinned_projects';
 
 // Unified work item type for display
@@ -53,6 +54,28 @@ interface HomeProject {
   doneCount: number;
   hasUrgency: boolean;
 }
+
+// Tab configurations per mode
+const MODE_TABS: Record<HomeRoleMode, { value: string; label: string }[]> = {
+  operations: [], // Operations has no tabs - just a work grid
+  delivery: [
+    { value: 'worked-on', label: 'Worked on' },
+    { value: 'assigned', label: 'Assigned' },
+    { value: 'starred', label: 'Starred' },
+  ],
+  planner: [
+    { value: 'planned', label: 'Planned' },
+    { value: 'upcoming', label: 'Upcoming' },
+    { value: 'pending-review', label: 'Pending review' },
+  ],
+};
+
+// Default tab per mode
+const DEFAULT_TABS: Record<HomeRoleMode, string> = {
+  operations: 'all',
+  delivery: 'worked-on',
+  planner: 'planned',
+};
 
 // ============================================
 // UTILITY: Group items by time period
@@ -87,9 +110,8 @@ function groupItemsByTimePeriod(items: HomeWorkItem[]): { label: string; items: 
 }
 
 // ============================================
-// FOCUS WIDGET COMPONENT (Brand-aligned)
+// MODE-SPECIFIC FOCUS WIDGETS
 // ============================================
-// Calmer, restrained focus widget - triage panel style
 function FocusWidget({ 
   title, 
   icon: Icon, 
@@ -122,7 +144,6 @@ function FocusWidget({
           <Icon className="w-4 h-4 shrink-0 text-[var(--icon-muted)] mt-0.5" />
           <div className="min-w-0 flex-1">
             <div className="text-sm font-medium text-[var(--text-1)]">{title}</div>
-            {/* Secondary info below title */}
             {(subtitle || (secondaryLabel && secondaryCount !== undefined)) && (
               <div className="text-[10px] text-[var(--text-3)] mt-0.5">
                 {secondaryLabel && secondaryCount !== undefined 
@@ -144,12 +165,11 @@ function FocusWidget({
 // ============================================
 // PROJECT CARD COMPONENT
 // ============================================
-// Sleeker project card with optional urgency indicator
 function ProjectCard({ 
   project, 
   isPinned,
   onPin,
-  hasUrgency = false, // subtle urgency indicator
+  hasUrgency = false,
 }: { 
   project: HomeProject; 
   isPinned: boolean;
@@ -177,12 +197,9 @@ function ProjectCard({
       onMouseLeave={() => setIsHovered(false)}
       onClick={handleCardClick}
     >
-      {/* Header accent bar - thinner */}
       <div className="h-0.5" style={{ backgroundColor: project.color }} />
       
-      {/* Card content - sleeker, reduced padding */}
       <div className="p-2 relative">
-        {/* Quick actions - visible on hover */}
         <div 
           className={cn(
             "absolute top-1 right-1 flex items-center gap-0.5 transition-opacity z-10",
@@ -261,14 +278,12 @@ function ProjectCard({
           </DropdownMenu>
         </div>
 
-        {/* Pinned indicator - subtle */}
         {isPinned && !isHovered && (
           <div className="absolute top-1 right-1">
             <Pin className="w-2.5 h-2.5 text-[var(--brand-gold)] fill-current" />
           </div>
         )}
 
-        {/* Project info row */}
         <div className="flex items-center gap-2">
           <div 
             className="w-6 h-6 rounded flex items-center justify-center text-white text-[9px] font-bold shrink-0"
@@ -283,7 +298,6 @@ function ProjectCard({
           </div>
         </div>
 
-        {/* Stats row - more compact */}
         <div className="flex items-center justify-between mt-1.5">
           <div className="flex items-center gap-1">
             <span className="text-[10px] tabular-nums text-[var(--text-2)]">
@@ -295,7 +309,6 @@ function ProjectCard({
             </span>
           </div>
           <div className="flex items-center gap-1">
-            {/* Subtle urgency indicator */}
             {(hasUrgency || project.hasUrgency) && (
               <span className="w-1.5 h-1.5 rounded-full bg-[var(--brand-gold)]" title="Has incidents" />
             )}
@@ -308,131 +321,30 @@ function ProjectCard({
 }
 
 // ============================================
-// DATA GRID ROW COMPONENT (NO CHECKBOXES)
+// MODE-AWARE DATA GRID COMPONENT
 // ============================================
 const GRID_COLS = '100px 1fr 160px 100px 80px 80px';
 
-function DataGridRow({ 
-  item, 
-  density = 'comfortable'
-}: { 
-  item: HomeWorkItem; 
-  density?: 'compact' | 'comfortable';
-}) {
-  const navigate = useNavigate();
-  const [isHovered, setIsHovered] = useState(false);
-  const timeAgo = formatDistanceToNow(item.activityDate, { addSuffix: false });
-  
-  const rowHeight = density === 'compact' ? 'py-1' : 'py-2';
-
-  return (
-    <div 
-      className={cn(
-        "grid items-center px-3 transition-colors cursor-pointer",
-        rowHeight,
-        isHovered && "bg-[var(--row-hover)]"
-      )}
-      style={{ 
-        gridTemplateColumns: GRID_COLS,
-        borderBottom: '1px solid var(--divider)',
-      }}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      onClick={() => navigate(`/work-item/${item.id}`)}
-    >
-      {/* Key */}
-      <div className="flex items-center gap-2">
-        <WorkItemTypeIcon type={item.type} size={14} />
-        <span className="text-xs font-medium text-[var(--text-2)]">{item.key}</span>
-      </div>
-
-      {/* Summary */}
-      <div className="min-w-0 pr-4">
-        <div className="text-sm leading-5 text-[var(--text-1)] truncate">
-          {item.summary}
-        </div>
-      </div>
-
-      {/* Project */}
-      <div className="text-xs truncate text-[var(--text-2)]">
-        {item.project}
-      </div>
-
-      {/* Updated */}
-      <div className="text-xs tabular-nums text-[var(--text-2)]">
-        {timeAgo} ago
-      </div>
-
-      {/* Assignee */}
-      <div className="flex justify-start">
-        {item.assignee ? (
-          <Avatar className="w-5 h-5">
-            <AvatarFallback className="text-[9px] font-medium bg-[var(--surface-3)] text-[var(--text-2)]">
-              {item.assignee.slice(0, 2).toUpperCase()}
-            </AvatarFallback>
-          </Avatar>
-        ) : (
-          <span className="text-[var(--text-3)]">—</span>
-        )}
-      </div>
-
-      {/* Quick actions */}
-      <div className={cn("flex items-center justify-end gap-0.5 transition-opacity", isHovered ? "opacity-100" : "opacity-0")}>
-        <button 
-          className="w-5 h-5 rounded flex items-center justify-center hover:bg-[var(--nav-hover-bg)] text-[var(--icon-muted)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]"
-          onClick={(e) => e.stopPropagation()}
-          title="Star"
-        >
-          <Star className="w-3 h-3" />
-        </button>
-        <button 
-          className="w-5 h-5 rounded flex items-center justify-center hover:bg-[var(--nav-hover-bg)] text-[var(--icon-muted)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]"
-          onClick={(e) => e.stopPropagation()}
-          title="Open in new tab"
-        >
-          <ExternalLink className="w-3 h-3" />
-        </button>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <button 
-              className="w-5 h-5 rounded flex items-center justify-center hover:bg-[var(--nav-hover-bg)] text-[var(--icon-muted)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]"
-              onClick={(e) => e.stopPropagation()}
-              title="More actions"
-            >
-              <MoreHorizontal className="w-3 h-3" />
-            </button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent 
-            align="end" 
-            className="bg-[var(--surface-1)] border-[var(--border-color)] z-[300]"
-          >
-            <DropdownMenuItem className="text-[var(--text-1)]">View details</DropdownMenuItem>
-            <DropdownMenuItem className="text-[var(--text-1)]">Assign to me</DropdownMenuItem>
-            <DropdownMenuItem className="text-[var(--text-1)]">Change status</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
-    </div>
-  );
-}
-
-// ============================================
-// DATA GRID COMPONENT (NO CHECKBOXES)
-// ============================================
-function DataGrid({ 
+function ModeAwareDataGrid({ 
   items, 
+  mode,
   visibleCount, 
   onLoadMore,
   searchQuery,
+  selectedTab,
+  activeFilter,
   density = 'comfortable'
 }: { 
   items: HomeWorkItem[]; 
+  mode: HomeRoleMode;
   visibleCount: number;
   onLoadMore: () => void;
   searchQuery: string;
+  selectedTab: string;
+  activeFilter: string;
   density?: 'compact' | 'comfortable';
 }) {
-  // Filter items by search
+  // Filter items by search (client-side backup - server should handle this)
   const filteredItems = useMemo(() => {
     if (!searchQuery) return items;
     const query = searchQuery.toLowerCase();
@@ -449,7 +361,7 @@ function DataGrid({
 
   return (
     <div className="mt-2 rounded-lg border-2 border-[var(--border-color)] overflow-hidden bg-[var(--surface-1)] shadow-sm">
-      {/* Sticky Header (NO checkbox column) - stronger light mode visibility */}
+      {/* Sticky Header */}
       <div 
         className="grid items-center py-2.5 px-3 text-[10px] font-semibold uppercase tracking-wide sticky top-0 z-10"
         style={{ 
@@ -467,13 +379,14 @@ function DataGrid({
         <div></div>
       </div>
 
-      {/* Loading / Empty States */}
+      {/* Empty State or Content */}
       {filteredItems.length === 0 ? (
-        <div className="py-8 text-center">
-          <div className="text-sm text-[var(--text-3)]">
-            {searchQuery ? `No results for "${searchQuery}"` : 'No items to show'}
-          </div>
-        </div>
+        <ModeAwareEmptyState 
+          mode={mode}
+          tab={selectedTab}
+          searchQuery={searchQuery}
+          filter={activeFilter}
+        />
       ) : (
         <>
           {groupedItems.map((group, groupIndex) => {
@@ -495,9 +408,10 @@ function DataGrid({
                   {group.label}
                 </div>
                 {itemsToShow.map((item, index) => (
-                  <DataGridRow 
+                  <ModeAwareGridRow 
                     key={`${group.label}-${index}`} 
                     item={item}
+                    mode={mode}
                     density={density}
                   />
                 ))}
@@ -525,26 +439,55 @@ function DataGrid({
 // ============================================
 // MAIN HOME CONTENT
 // ============================================
-
-// ============================================
-// MAIN HOME CONTENT
-// ============================================
 export function HomeContent() {
   const navigate = useNavigate();
-  const [selectedTab, setSelectedTab] = useState('worked-on');
+  const [searchParams, setSearchParams] = useSearchParams();
+  
+  // URL state - mode, tab, filter
+  const roleMode = (searchParams.get('mode') as HomeRoleMode) || 'delivery';
+  const selectedTab = searchParams.get('tab') || DEFAULT_TABS[roleMode];
+  const activeFilter = (searchParams.get('filter') as ActiveFilter) || 'all';
+  
+  // Local state
   const [visibleCount, setVisibleCount] = useState(ITEMS_PER_PAGE);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || '');
   const [sortBy, setSortBy] = useState('recently-updated');
   const [density, setDensity] = useState<'compact' | 'comfortable'>('comfortable');
   const [pinnedProjects, setPinnedProjects] = useState<string[]>([]);
   const [isProjectsCollapsed, setIsProjectsCollapsed] = useState(false);
-  const [activeFilter, setActiveFilter] = useState<ActiveFilter>('all');
-  
-  // Role mode with localStorage persistence
-  const [roleMode, setRoleMode] = useState<HomeRoleMode>(() => {
-    const saved = localStorage.getItem(STORAGE_KEY_MODE);
-    return (saved as HomeRoleMode) || 'delivery';
-  });
+
+  // ============================================
+  // URL STATE MANAGEMENT
+  // ============================================
+  const updateUrlState = (updates: Record<string, string | null>) => {
+    const newParams = new URLSearchParams(searchParams);
+    Object.entries(updates).forEach(([key, value]) => {
+      if (value === null || value === '' || value === DEFAULT_TABS[roleMode]) {
+        newParams.delete(key);
+      } else {
+        newParams.set(key, value);
+      }
+    });
+    setSearchParams(newParams, { replace: true });
+  };
+
+  const handleModeChange = (newMode: HomeRoleMode) => {
+    // Reset tab to default for new mode, preserve filter if applicable
+    const newParams = new URLSearchParams();
+    newParams.set('mode', newMode);
+    // Don't carry over filters between modes
+    setSearchParams(newParams, { replace: true });
+    setVisibleCount(ITEMS_PER_PAGE);
+  };
+
+  const handleTabChange = (tab: string) => {
+    updateUrlState({ tab, filter: null }); // Clear filter when changing tabs
+    setVisibleCount(ITEMS_PER_PAGE);
+  };
+
+  const handleFilterChange = (filter: ActiveFilter) => {
+    updateUrlState({ filter: filter === 'all' ? null : filter });
+  };
 
   // ============================================
   // DOMAIN-SEPARATED DATA FETCHING
@@ -554,7 +497,10 @@ export function HomeContent() {
   // Operations mode: Incident Management + Release Management
   const operationsSummary = useHomeOperationsSummary();
   const operationsItems = useHomeOperationsItems({
-    filter: activeFilter === 'major-incidents' ? 'major' : undefined,
+    filter: activeFilter === 'major-incidents' ? 'major' : 
+            activeFilter === 'sla-at-risk' ? 'sla-at-risk' :
+            activeFilter === 'awaiting-me' ? 'awaiting-me' :
+            activeFilter === 'blocked' ? 'blocked' : undefined,
     search: searchQuery || undefined,
     sort: sortBy === 'priority' ? 'priority' : 'updated',
     page: 1,
@@ -574,6 +520,8 @@ export function HomeContent() {
   // Planner mode: Work Manager
   const plannerSummary = useHomePlannerSummary();
   const plannerItems = useHomePlannerItems({
+    category: selectedTab === 'upcoming' ? 'upcoming' : 
+              selectedTab === 'pending-review' ? 'pending-review' : 'planned',
     search: searchQuery || undefined,
     sort: sortBy === 'priority' ? 'priority' : 'planned-date',
     page: 1,
@@ -597,7 +545,7 @@ export function HomeContent() {
             },
           },
           isLoading: operationsSummary.isLoading || operationsItems.isLoading,
-          projects: [] as HomeProject[], // Operations mode doesn't show projects
+          projects: [] as HomeProject[],
         };
       case 'planner':
         return {
@@ -640,38 +588,28 @@ export function HomeContent() {
     plannerSummary.data, plannerItems.data, plannerSummary.isLoading, plannerItems.isLoading,
   ]);
 
-  // Tab counts from backend
-  const workedOnCount = useMemo(() => {
-    if (roleMode === 'delivery') {
-      return deliveryItems.data?.counts.workedOn || 0;
+  // Tab counts from backend - mode specific
+  const tabCounts = useMemo(() => {
+    switch (roleMode) {
+      case 'operations':
+        return {
+          total: operationsItems.data?.counts.total || 0,
+        };
+      case 'planner':
+        return {
+          planned: plannerItems.data?.counts.planned || 0,
+          upcoming: plannerItems.data?.counts.upcoming || 0,
+          pendingReview: plannerItems.data?.counts.pendingReview || 0,
+        };
+      case 'delivery':
+      default:
+        return {
+          workedOn: deliveryItems.data?.counts.workedOn || 0,
+          assigned: deliveryItems.data?.counts.assigned || 0,
+          starred: deliveryItems.data?.counts.starred || 0,
+        };
     }
-    return workItems.length;
-  }, [roleMode, deliveryItems.data, workItems]);
-
-  const assignedCount = useMemo(() => {
-    if (roleMode === 'delivery') {
-      return deliveryItems.data?.counts.assigned || 0;
-    }
-    return workItems.filter(item => item.assignee).length;
-  }, [roleMode, deliveryItems.data, workItems]);
-
-  const starredCount = useMemo(() => {
-    if (roleMode === 'delivery') {
-      return deliveryItems.data?.counts.starred || 0;
-    }
-    return 0;
-  }, [roleMode, deliveryItems.data]);
-
-  // Focus widget data
-  const recentlyUpdatedCount = useMemo(() => {
-    if (roleMode === 'delivery') {
-      return deliverySummary.data?.recentlyUpdated || 0;
-    }
-    return workItems.filter(item => {
-      const daysDiff = (Date.now() - item.activityDate.getTime()) / (1000 * 60 * 60 * 24);
-      return daysDiff <= 7;
-    }).length;
-  }, [roleMode, deliverySummary.data, workItems]);
+  }, [roleMode, operationsItems.data, plannerItems.data, deliveryItems.data]);
 
   // Load pinned projects from localStorage
   useEffect(() => {
@@ -685,17 +623,12 @@ export function HomeContent() {
     }
   }, []);
 
-  // Save role mode to localStorage
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEY_MODE, roleMode);
-  }, [roleMode]);
-
   // Save pinned projects to localStorage
   const togglePinProject = (projectId: string) => {
     setPinnedProjects(prev => {
       const newPinned = prev.includes(projectId)
         ? prev.filter(id => id !== projectId)
-        : [...prev, projectId].slice(0, 3); // Max 3 pinned
+        : [...prev, projectId].slice(0, 3);
       localStorage.setItem(STORAGE_KEY_PINNED, JSON.stringify(newPinned));
       return newPinned;
     });
@@ -712,19 +645,6 @@ export function HomeContent() {
     setVisibleCount(prev => prev + ITEMS_PER_PAGE);
   };
 
-  // Handle chip click - set filter and switch to appropriate tab
-  const handleChipFilter = (filter: ActiveFilter) => {
-    setActiveFilter(filter);
-    setSelectedTab('worked-on');
-  };
-
-  // Get items for current tab - data already filtered by backend
-  const getTabItems = (): HomeWorkItem[] => {
-    // Backend handles filtering via query params
-    // Just return the items as-is
-    return workItems;
-  };
-
   const sortOptions = [
     { label: 'Recently updated', value: 'recently-updated' },
     { label: 'Recently viewed', value: 'recently-viewed' },
@@ -732,11 +652,115 @@ export function HomeContent() {
     { label: 'Due date', value: 'due-date' },
   ];
 
-  // Clear filter when tab changes
-  const handleTabChange = (tab: string) => {
-    setSelectedTab(tab);
-    if (activeFilter !== 'all') {
-      setActiveFilter('all');
+  // Get current mode tabs
+  const currentModeTabs = MODE_TABS[roleMode];
+  const hasTabs = currentModeTabs.length > 0;
+
+  // Get tab count for display
+  const getTabCount = (tabValue: string): number => {
+    if (roleMode === 'delivery') {
+      const counts = tabCounts as { workedOn: number; assigned: number; starred: number };
+      switch (tabValue) {
+        case 'worked-on': return counts.workedOn;
+        case 'assigned': return counts.assigned;
+        case 'starred': return counts.starred;
+        default: return 0;
+      }
+    }
+    if (roleMode === 'planner') {
+      const counts = tabCounts as { planned: number; upcoming: number; pendingReview: number };
+      switch (tabValue) {
+        case 'planned': return counts.planned;
+        case 'upcoming': return counts.upcoming;
+        case 'pending-review': return counts.pendingReview;
+        default: return 0;
+      }
+    }
+    return 0;
+  };
+
+  // Mode-specific focus widgets
+  const renderFocusWidgets = () => {
+    switch (roleMode) {
+      case 'operations':
+        return (
+          <>
+            <FocusWidget 
+              title="Active incidents"
+              icon={AlertTriangle}
+              primaryCount={criticalCounts.myWorkload.incidents}
+              subtitle="Assigned to me"
+              onClick={() => handleFilterChange('all')}
+            />
+            <FocusWidget 
+              title="SLA at risk"
+              icon={Clock}
+              primaryCount={criticalCounts.slaAtRisk}
+              subtitle="Approaching breach"
+              onClick={() => handleFilterChange('sla-at-risk')}
+            />
+            <FocusWidget 
+              title="Awaiting action"
+              icon={AlertTriangle}
+              primaryCount={criticalCounts.awaitingMe}
+              subtitle="Needs response"
+              onClick={() => handleFilterChange('awaiting-me')}
+            />
+          </>
+        );
+      case 'planner':
+        return (
+          <>
+            <FocusWidget 
+              title="Planned items"
+              icon={Calendar}
+              primaryCount={getTabCount('planned')}
+              subtitle="Ready for sprint"
+              onClick={() => handleTabChange('planned')}
+            />
+            <FocusWidget 
+              title="Upcoming work"
+              icon={Clock}
+              primaryCount={getTabCount('upcoming')}
+              subtitle="Next sprints"
+              onClick={() => handleTabChange('upcoming')}
+            />
+            <FocusWidget 
+              title="Pending review"
+              icon={FileText}
+              primaryCount={getTabCount('pending-review')}
+              subtitle="Needs attention"
+              onClick={() => handleTabChange('pending-review')}
+            />
+          </>
+        );
+      case 'delivery':
+      default:
+        return (
+          <>
+            <FocusWidget 
+              title="My workload"
+              icon={Briefcase}
+              primaryCount={criticalCounts.myWorkload.workItems}
+              subtitle="Active items"
+              onClick={() => handleTabChange('worked-on')}
+            />
+            <FocusWidget 
+              title="Recently updated"
+              icon={Clock}
+              primaryCount={deliverySummary.data?.recentlyUpdated || 0}
+              subtitle="Last 7 days"
+              onClick={() => handleTabChange('worked-on')}
+            />
+            <FocusWidget 
+              title="Starred"
+              icon={Star}
+              primaryCount={getTabCount('starred')}
+              subtitle="Quick access"
+              onClick={() => handleTabChange('starred')}
+            />
+          </>
+        );
     }
   };
 
@@ -745,31 +769,33 @@ export function HomeContent() {
       className="min-h-screen font-sans"
       style={{ backgroundColor: 'var(--bg)' }}
     >
-      {/* Responsive container - wider on laptop/desktop */}
+      {/* Responsive container */}
       <div className="w-full max-w-[1680px] 2xl:max-w-[1920px] mx-auto px-6 xl:px-8 py-3">
         {/* Page header row */}
         <div className="flex items-center justify-between gap-4">
           <h1 className="text-xl font-semibold leading-7 tracking-tight m-0 text-[var(--text-1)]">
             For you
           </h1>
-          <HomeRoleModeSelector value={roleMode} onChange={setRoleMode} />
+          <HomeRoleModeSelector value={roleMode} onChange={handleModeChange} />
         </div>
 
-        {/* Critical Strip - actionable chips from real data */}
-        <div className="mt-3">
-          <CriticalStrip
-            majorIncidents={criticalCounts.majorIncidents}
-            slaAtRisk={criticalCounts.slaAtRisk}
-            awaitingMe={criticalCounts.awaitingMe}
-            blocked={criticalCounts.blocked}
-            activeFilter={activeFilter}
-            currentMode={roleMode}
-            onFilterChange={handleChipFilter}
-            onModeChange={setRoleMode}
-          />
-        </div>
+        {/* Critical Strip - only show in Operations mode */}
+        {roleMode === 'operations' && (
+          <div className="mt-3">
+            <CriticalStrip
+              majorIncidents={criticalCounts.majorIncidents}
+              slaAtRisk={criticalCounts.slaAtRisk}
+              awaitingMe={criticalCounts.awaitingMe}
+              blocked={criticalCounts.blocked}
+              activeFilter={activeFilter}
+              currentMode={roleMode}
+              onFilterChange={handleFilterChange}
+              onModeChange={handleModeChange}
+            />
+          </div>
+        )}
 
-        {/* Divider - stronger for light mode visibility */}
+        {/* Divider */}
         <div className="h-px mt-3 mb-3 bg-[var(--border-color)]" />
 
         {/* Recent Projects Section - only show if projects exist */}
@@ -803,7 +829,6 @@ export function HomeContent() {
               </button>
             </div>
 
-            {/* Project cards grid - 4 columns at xl */}
             {!isProjectsCollapsed && (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2">
                 {sortedProjects.map((project) => (
@@ -823,16 +848,16 @@ export function HomeContent() {
         <div className="grid grid-cols-1 xl:grid-cols-[1fr_240px] gap-4">
           {/* Left Column - Your Work */}
           <div>
-            {/* Section title with active filter indicator - stronger hierarchy */}
+            {/* Section title with active filter indicator */}
             <div className="flex items-center gap-2 mb-3">
               <span className="text-sm font-semibold text-[var(--text-1)]">
                 Your work
               </span>
               {activeFilter !== 'all' && (
                 <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-[var(--brand-primary)]/10 text-[var(--brand-primary)]">
-                  {activeFilter.replace('-', ' ')}
+                  {activeFilter.replace(/-/g, ' ')}
                   <button 
-                    onClick={() => setActiveFilter('all')}
+                    onClick={() => handleFilterChange('all')}
                     className="ml-0.5 hover:text-[var(--text-1)]"
                   >
                     ×
@@ -844,15 +869,19 @@ export function HomeContent() {
               )}
             </div>
 
-            {/* Segmented Tabs - reduced: Worked on, Assigned, Starred */}
-            <SegmentedTabs value={selectedTab} onValueChange={handleTabChange}>
-              <SegmentedTab value="worked-on" count={workedOnCount}>Worked on</SegmentedTab>
-              <SegmentedTab value="assigned" count={assignedCount}>Assigned</SegmentedTab>
-              <SegmentedTab value="starred" count={starredCount}>Starred</SegmentedTab>
-            </SegmentedTabs>
+            {/* Mode-specific tabs - only show if mode has tabs */}
+            {hasTabs && (
+              <SegmentedTabs value={selectedTab} onValueChange={handleTabChange}>
+                {currentModeTabs.map(tab => (
+                  <SegmentedTab key={tab.value} value={tab.value} count={getTabCount(tab.value)}>
+                    {tab.label}
+                  </SegmentedTab>
+                ))}
+              </SegmentedTabs>
+            )}
 
-            {/* Unified Toolbar - visually secondary */}
-            <div className="mt-2">
+            {/* Unified Toolbar */}
+            <div className={cn(hasTabs ? "mt-2" : "")}>
               <UnifiedToolbar
                 searchValue={searchQuery}
                 onSearchChange={setSearchQuery}
@@ -873,23 +902,20 @@ export function HomeContent() {
               />
             </div>
 
-            {/* Data Grid */}
-            {selectedTab === 'starred' ? (
-              <div className="py-8 text-center text-sm text-[var(--text-3)]">
-                No starred items
-              </div>
-            ) : (
-              <DataGrid 
-                items={getTabItems()} 
-                visibleCount={visibleCount}
-                onLoadMore={handleLoadMore}
-                searchQuery={searchQuery}
-                density={density}
-              />
-            )}
+            {/* Mode-Aware Data Grid */}
+            <ModeAwareDataGrid 
+              items={workItems} 
+              mode={roleMode}
+              visibleCount={visibleCount}
+              onLoadMore={handleLoadMore}
+              searchQuery={searchQuery}
+              selectedTab={selectedTab}
+              activeFilter={activeFilter}
+              density={density}
+            />
           </div>
 
-          {/* Right Column - My Focus (sticky triage panel) - strongly contained card */}
+          {/* Right Column - My Focus (mode-specific) */}
           <div className="xl:sticky xl:top-20 xl:self-start">
             <div 
               className={cn(
@@ -903,33 +929,7 @@ export function HomeContent() {
               </div>
               
               <div className="space-y-0.5">
-                {/* My workload */}
-                <FocusWidget 
-                  title="My workload"
-                  icon={Briefcase}
-                  primaryCount={criticalCounts.myWorkload.incidents + criticalCounts.myWorkload.workItems}
-                  secondaryLabel="incidents"
-                  secondaryCount={criticalCounts.myWorkload.incidents}
-                  onClick={() => handleTabChange('worked-on')}
-                />
-                
-                {/* Recently updated */}
-                <FocusWidget 
-                  title="Recently updated"
-                  icon={Clock}
-                  primaryCount={recentlyUpdatedCount}
-                  subtitle="Last 7 days"
-                  onClick={() => handleTabChange('worked-on')}
-                />
-                
-                {/* Starred */}
-                <FocusWidget 
-                  title="Starred"
-                  icon={Star}
-                  primaryCount={starredCount}
-                  subtitle="Quick access"
-                  onClick={() => handleTabChange('starred')}
-                />
+                {renderFocusWidgets()}
               </div>
             </div>
           </div>
