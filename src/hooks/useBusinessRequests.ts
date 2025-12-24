@@ -136,6 +136,34 @@ export function useBusinessRequests(searchQuery?: string) {
 }
 
 export function useBusinessRequest(id: string | null) {
+  const queryClient = useQueryClient();
+  
+  // Set up real-time subscription for this specific request
+  useEffect(() => {
+    if (!id) return;
+    
+    const channel = supabase
+      .channel(`business-request-${id}`)
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'business_requests',
+          filter: `id=eq.${id}`
+        },
+        () => {
+          // Refetch this specific request when it's updated
+          queryClient.invalidateQueries({ queryKey: ['business-request', id] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [id, queryClient]);
+  
   return useQuery({
     queryKey: ['business-request', id],
     queryFn: async () => {

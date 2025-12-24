@@ -109,6 +109,7 @@ export default function ProductBacklogPage() {
     };
     fetchAttachments();
   }, [businessRequests]);
+  
   const [selectedRequest, setSelectedRequest] = useState<RequestItem | null>(null);
   const [drawerRequestId, setDrawerRequestId] = useState<string | null>(null);
   const [drawerInitialTab, setDrawerInitialTab] = useState<string | undefined>(undefined);
@@ -117,6 +118,49 @@ export default function ProductBacklogPage() {
   const [filters, setFilters] = useState<ProductBacklogFilters>({});
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [attachmentModalOpen, setAttachmentModalOpen] = useState(false);
+
+  // Sync selectedRequest with latest data from businessRequests when it updates via realtime
+  useEffect(() => {
+    if (!selectedRequest || businessRequests.length === 0) return;
+    
+    // Find the updated version of the currently selected request
+    const updatedRequest = businessRequests.find((br: any) => br.id === selectedRequest._dbId) as any;
+    if (updatedRequest) {
+      // Transform to RequestItem format and update local state
+      const transformed: RequestItem = {
+        id: updatedRequest.request_key || updatedRequest.id?.slice(0, 8) || '—',
+        _dbId: updatedRequest.id,
+        summary: updatedRequest.title || '—',
+        processStep: updatedRequest.process_step?.toLowerCase().replace(/ /g, '_') || 'new_request',
+        score: updatedRequest.business_score ?? null,
+        autoPriority: updatedRequest.priority_tier || 'unscored',
+        rank: updatedRequest.rank ?? null,
+        reporter: updatedRequest.requestor_name || null,
+        reporterId: updatedRequest.requestor || null,
+        assignee: updatedRequest.assignee_name || updatedRequest.assignee || null,
+        assigneeId: updatedRequest.assignee || null,
+        department: updatedRequest.department || null,
+        departmentId: updatedRequest.department_id || null,
+        businessOwner: updatedRequest.business_owner || null,
+        businessOwnerId: updatedRequest.business_owner_id || null,
+        businessAsk: updatedRequest.start_date?.split('T')[0] || null,
+        kickoff: updatedRequest.impl_start_date?.split('T')[0] || null,
+        targetComplete: updatedRequest.end_date?.split('T')[0] || updatedRequest.impl_target_end_date?.split('T')[0] || null,
+        deliveryTrack: updatedRequest.delivery_track || null,
+        platform: updatedRequest.delivery_platform || null,
+        quarter: updatedRequest.planned_quarter?.[0] || null,
+        createdAt: updatedRequest.created_at || null,
+        updatedAt: updatedRequest.updated_at || null,
+        ea_review_required: updatedRequest.ea_review_required ?? true,
+        hasAttachments: !!attachmentMap[updatedRequest.id],
+      };
+      
+      // Only update if data has changed to avoid infinite loops
+      if (JSON.stringify(transformed) !== JSON.stringify(selectedRequest)) {
+        setSelectedRequest(transformed);
+      }
+    }
+  }, [businessRequests, selectedRequest?._dbId, attachmentMap]);
 
   // Helper to open drawer with specific tab
   const openDrawerWithTab = (requestId: string, tab?: string) => {
