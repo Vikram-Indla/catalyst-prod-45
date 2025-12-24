@@ -311,6 +311,7 @@ export default function IndustryRoadmapPage() {
           department_id,
           planned_quarter,
           rank,
+          business_score,
           progress,
           created_at,
           products (
@@ -335,7 +336,7 @@ export default function IndustryRoadmapPage() {
           )
         `)
         .is('deleted_at', null)
-        .order('rank', { ascending: true, nullsFirst: false });
+        .order('business_score', { ascending: false, nullsFirst: false });
 
       if (error) throw error;
       return data || [];
@@ -385,7 +386,10 @@ export default function IndustryRoadmapPage() {
 
   // Transform to BusinessRequestItem format
   const businessRequests: BusinessRequestItem[] = useMemo(() => {
-    return (requestsData || []).map((req: any) => {
+    // First pass: filter scored items to calculate ranks
+    const scoredItems = (requestsData || []).filter((req: any) => req.business_score != null);
+    
+    return (requestsData || []).map((req: any, index: number) => {
       // Canonical date logic: prefer impl_start_date → impl_target_end_date
       // Fallback to start_date → end_date if impl dates are missing OR inverted
       let startDate: string;
@@ -450,6 +454,16 @@ export default function IndustryRoadmapPage() {
         };
       });
       
+      // Compute rank: use explicit rank if set, otherwise calculate from position among scored items
+      let computedRank: number | null = null;
+      if (req.rank != null) {
+        computedRank = req.rank;
+      } else if (req.business_score != null) {
+        // Find position among scored items (already sorted by business_score desc)
+        const positionInScored = scoredItems.findIndex((r: any) => r.id === req.id);
+        computedRank = positionInScored >= 0 ? positionInScored + 1 : null;
+      }
+      
       return {
         id: req.id,
         key: req.request_key || `BR-${req.id.slice(0, 4).toUpperCase()}`,
@@ -466,7 +480,7 @@ export default function IndustryRoadmapPage() {
         startDate: startDate,
         endDate: actualEndDate,
         progress: req.progress || 0,
-        rank: req.rank ?? null,
+        rank: computedRank,
         milestones: transformedMilestones,
         linkedFeatures: [],
         hasDependencies: false,
