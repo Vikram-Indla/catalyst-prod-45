@@ -70,10 +70,15 @@ export function WorkManager({ tab: initialTab }: WorkManagerProps) {
   const { data: teamMembersData = [] } = useAllTeamMembers();
   const { data: teamMemberIdsMap = {} } = useTeamMemberIds();
   
-  // Get team ID from URL query parameter
+  // Get team ID and task ID from URL query parameters
   const urlTeamId = useMemo(() => {
     const params = new URLSearchParams(location.search);
     return params.get('team');
+  }, [location.search]);
+
+  const urlTaskId = useMemo(() => {
+    const params = new URLSearchParams(location.search);
+    return params.get('taskId');
   }, [location.search]);
   
   // Determine active tab from URL or prop
@@ -160,6 +165,13 @@ export function WorkManager({ tab: initialTab }: WorkManagerProps) {
     taskId: null,
     activeTab: 'overview',
   });
+
+  // Open drawer when taskId is in URL
+  useEffect(() => {
+    if (urlTaskId) {
+      setDrawer({ isOpen: true, taskId: urlTaskId, activeTab: 'overview' });
+    }
+  }, [urlTaskId]);
 
   // New task dialog state
   const [isNewTaskDialogOpen, setIsNewTaskDialogOpen] = useState(false);

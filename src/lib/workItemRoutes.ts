@@ -61,8 +61,8 @@ export function getWorkItemRoute(item: WorkItemRouteInput): string | null {
       return id ? `/items/stories?selected=${id}` : null;
       
     case 'task':
-      // Tasks have direct route
-      return id ? `/work-manager/tasks/${id}` : null;
+      // Tasks open in WorkManager with drawer - use taskId query param
+      return id ? `/planner/tasks?taskId=${id}` : null;
       
     case 'defect':
     case 'incident':
