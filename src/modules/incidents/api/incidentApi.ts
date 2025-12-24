@@ -1,12 +1,10 @@
 /**
  * Incident API Adapter Layer
  * 
- * Supports both mock mode (for development) and real mode (Supabase)
- * Per 04-API-CONTRACT spec
+ * Real Supabase implementation only - no mock data
  */
 
 import { supabase } from '@/integrations/supabase/client';
-import { seedData } from '../data/seedData';
 import type {
   Incident,
   CreateIncidentFormData,
@@ -24,241 +22,16 @@ import type {
   CommentType,
 } from '../types';
 
-// Configuration
-const USE_MOCK_MODE = true; // Toggle this to switch between mock and real mode
-
 // Helper for calculating aging
 function getHoursAgo(dateStr: string): number {
   return (Date.now() - new Date(dateStr).getTime()) / (1000 * 60 * 60);
 }
 
 // ============================================================================
-// MOCK API IMPLEMENTATION
-// ============================================================================
-
-let mockIncidents = [...seedData.incidents];
-let mockNextIncidentNum = 1248;
-
-const mockApi = {
-  // List incidents with filters
-  async listIncidents(filters?: IncidentFilters): Promise<Incident[]> {
-    let result = [...mockIncidents];
-
-    if (filters?.status?.length) {
-      result = result.filter(i => filters.status!.includes(i.status));
-    }
-    if (filters?.severity?.length) {
-      result = result.filter(i => filters.severity!.includes(i.severity));
-    }
-    if (filters?.support_level?.length) {
-      result = result.filter(i => i.support_level && filters.support_level!.includes(i.support_level));
-    }
-    if (filters?.priority?.length) {
-      result = result.filter(i => i.priority && filters.priority!.includes(i.priority));
-    }
-    if (filters?.is_major_incident !== undefined) {
-      result = result.filter(i => i.is_major_incident === filters.is_major_incident);
-    }
-    if (filters?.assignee_id) {
-      result = result.filter(i => i.assignee_id === filters.assignee_id);
-    }
-    if (filters?.search) {
-      const search = filters.search.toLowerCase();
-      result = result.filter(i => 
-        i.incident_key.toLowerCase().includes(search) ||
-        i.title.toLowerCase().includes(search)
-      );
-    }
-
-    // Sort by created_at desc
-    return result.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
-  },
-
-  // Get single incident
-  async getIncident(id: string): Promise<Incident | null> {
-    return mockIncidents.find(i => i.id === id || i.incident_key === id) || null;
-  },
-
-  // Create incident
-  async createIncident(data: CreateIncidentFormData): Promise<Incident> {
-    const newIncident: Incident = {
-      id: `inc-${Date.now()}`,
-      incident_key: `INC-${mockNextIncidentNum++}`,
-      title: data.title,
-      description: data.description,
-      status: 'open',
-      severity: data.severity,
-      priority: derivePriority(data.impact, data.urgency),
-      impact: data.impact,
-      urgency: data.urgency,
-      is_major_incident: data.is_major_incident,
-      release_version_id: data.release_version_id,
-      release_version: seedData.releaseVersions.find(r => r.id === data.release_version_id),
-      source_department_id: data.source_department_id,
-      source_department: seedData.departments.find(d => d.id === data.source_department_id),
-      business_process_id: data.business_process_id,
-      business_process: seedData.businessProcesses.find(b => b.id === data.business_process_id),
-      delivery_platform_id: data.delivery_platform_id,
-      delivery_platform: data.delivery_platform_id ? seedData.deliveryPlatforms.find(p => p.id === data.delivery_platform_id) : undefined,
-      assignee_id: data.assignee_id,
-      assignee: data.assignee_id ? seedData.userProfiles.find(u => u.id === data.assignee_id) : undefined,
-      requires_committee: false,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-      comments: [],
-      attachments: [],
-      history: [],
-    };
-
-    // Calculate SLA
-    const slaConfig = seedData.slaConfigs.find(s => s.severity === data.severity);
-    if (slaConfig) {
-      const now = new Date();
-      newIncident.sla = {
-        id: `sla-${Date.now()}`,
-        incident_id: newIncident.id,
-        response_due_at: new Date(now.getTime() + slaConfig.response_minutes * 60 * 1000).toISOString(),
-        response_breached: false,
-        resolution_due_at: new Date(now.getTime() + slaConfig.resolution_minutes * 60 * 1000).toISOString(),
-        resolution_breached: false,
-      };
-    }
-
-    mockIncidents.unshift(newIncident);
-    return newIncident;
-  },
-
-  // Update incident
-  async updateIncident(id: string, data: Partial<Incident>): Promise<Incident | null> {
-    const index = mockIncidents.findIndex(i => i.id === id);
-    if (index === -1) return null;
-
-    mockIncidents[index] = {
-      ...mockIncidents[index],
-      ...data,
-      updated_at: new Date().toISOString(),
-    };
-
-    return mockIncidents[index];
-  },
-
-  // Add comment
-  async addComment(incidentId: string, content: string, commentType: CommentType = 'update'): Promise<IncidentComment> {
-    const incident = mockIncidents.find(i => i.id === incidentId);
-    if (!incident) throw new Error('Incident not found');
-
-    const comment: IncidentComment = {
-      id: `cmt-${Date.now()}`,
-      incident_id: incidentId,
-      author_id: 'user-1',
-      author: seedData.userProfiles[0],
-      content,
-      comment_type: commentType,
-      is_pinned: false,
-      is_system: false,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-    };
-
-    incident.comments = [comment, ...(incident.comments || [])];
-    return comment;
-  },
-
-  // Get dashboard metrics
-  async getDashboardMetrics(): Promise<IncidentDashboardMetrics> {
-    const openStatuses = ['open', 'triage', 'to_committee', 'in_progress'];
-    const openIncidents = mockIncidents.filter(i => openStatuses.includes(i.status));
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    return {
-      open_count: openIncidents.length,
-      major_count: openIncidents.filter(i => i.is_major_incident).length,
-      sla_breached_count: openIncidents.filter(i => i.sla?.response_breached || i.sla?.resolution_breached).length,
-      l1_count: openIncidents.filter(i => i.support_level === 'L1').length,
-      l2_count: openIncidents.filter(i => i.support_level === 'L2').length,
-      l3_count: openIncidents.filter(i => i.support_level === 'L3').length,
-      resolved_today: mockIncidents.filter(i => i.resolved_at && new Date(i.resolved_at) >= today).length,
-      created_today: mockIncidents.filter(i => new Date(i.created_at) >= today).length,
-      needs_attention: openIncidents.filter(i => 
-        i.sla?.response_breached || 
-        i.sla?.resolution_breached || 
-        i.is_major_incident ||
-        i.status === 'open'
-      ).slice(0, 10),
-      my_queue: openIncidents.filter(i => i.assignee_id === 'user-1').slice(0, 10),
-    };
-  },
-
-  // Get committee queue
-  async getCommitteeQueue(includesClosed = false): Promise<CommitteeQueueItem[]> {
-    const relevantIncidents = mockIncidents.filter(i => 
-      i.committee && 
-      (includesClosed || i.committee.status === 'pending')
-    );
-
-    return relevantIncidents.map(incident => {
-      const committee = incident.committee!;
-      const votes = committee.members?.map(m => m.vote) || [];
-      const approvedCount = votes.filter(v => v?.vote === 'approved').length;
-      const rejectedCount = votes.filter(v => v?.vote === 'rejected' || v?.vote === 'vetoed').length;
-      const pendingCount = votes.filter(v => !v?.vote || v.vote === 'pending').length;
-      const hasVeto = votes.some(v => v?.vote === 'vetoed');
-
-      // Time waiting = since first approver added
-      const firstMemberAdded = committee.members?.reduce((min, m) => {
-        const addedAt = new Date(m.added_at).getTime();
-        return addedAt < min ? addedAt : min;
-      }, Date.now()) || Date.now();
-
-      return {
-        incident,
-        committee,
-        time_waiting_hours: (Date.now() - firstMemberAdded) / (1000 * 60 * 60),
-        aging_hours: getHoursAgo(incident.created_at),
-        approvals_count: approvedCount,
-        rejections_count: rejectedCount,
-        pending_count: pendingCount,
-        has_veto: hasVeto,
-      };
-    });
-  },
-
-  // Reference data
-  async getWorkgroups(): Promise<Workgroup[]> {
-    return seedData.workgroups;
-  },
-
-  async getUserProfiles(): Promise<UserProfile[]> {
-    return seedData.userProfiles;
-  },
-
-  async getReleaseVersions(): Promise<ReleaseVersion[]> {
-    return seedData.releaseVersions;
-  },
-
-  async getDepartments(): Promise<Department[]> {
-    return seedData.departments;
-  },
-
-  async getBusinessProcesses(): Promise<BusinessProcess[]> {
-    return seedData.businessProcesses;
-  },
-
-  async getDeliveryPlatforms(): Promise<DeliveryPlatform[]> {
-    return seedData.deliveryPlatforms;
-  },
-
-  async getSlaConfigs(): Promise<SlaConfig[]> {
-    return seedData.slaConfigs;
-  },
-};
-
-// ============================================================================
 // REAL API IMPLEMENTATION (Supabase)
 // ============================================================================
 
-const realApi = {
+export const incidentApi = {
   async listIncidents(filters?: IncidentFilters): Promise<Incident[]> {
     let query = supabase
       .from('incidents')
@@ -278,6 +51,18 @@ const realApi = {
     }
     if (filters?.severity?.length) {
       query = query.in('severity', filters.severity);
+    }
+    if (filters?.support_level?.length) {
+      query = query.in('support_level', filters.support_level);
+    }
+    if (filters?.priority?.length) {
+      query = query.in('priority', filters.priority);
+    }
+    if (filters?.is_major_incident !== undefined) {
+      query = query.eq('is_major_incident', filters.is_major_incident);
+    }
+    if (filters?.search) {
+      query = query.or(`title.ilike.%${filters.search}%,incident_key.ilike.%${filters.search}%`);
     }
 
     const { data, error } = await query;
@@ -308,25 +93,136 @@ const realApi = {
     return data as unknown as Incident;
   },
 
-  // TODO: SPEC REQUIRED - Implement remaining real API methods
-  async createIncident(_data: CreateIncidentFormData): Promise<Incident> {
-    throw new Error('Real API not implemented - use mock mode');
+  async createIncident(formData: CreateIncidentFormData): Promise<Incident> {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error('Not authenticated');
+
+    const { data, error } = await supabase
+      .from('incidents')
+      .insert({
+        title: formData.title,
+        description: formData.description,
+        severity: formData.severity,
+        impact: formData.impact,
+        urgency: formData.urgency,
+        is_major_incident: formData.is_major_incident,
+        release_version_id: formData.release_version_id,
+        source_department_id: formData.source_department_id,
+        business_process_id: formData.business_process_id,
+        delivery_platform_id: formData.delivery_platform_id,
+        assignee_id: formData.assignee_id,
+        reporter_id: user.id,
+        created_by: user.id,
+      })
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data as unknown as Incident;
   },
 
-  async updateIncident(_id: string, _data: Partial<Incident>): Promise<Incident | null> {
-    throw new Error('Real API not implemented - use mock mode');
+  async updateIncident(id: string, updates: Partial<Incident>): Promise<Incident | null> {
+    const { data, error } = await supabase
+      .from('incidents')
+      .update(updates)
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data as unknown as Incident;
   },
 
-  async addComment(_incidentId: string, _content: string, _commentType?: CommentType): Promise<IncidentComment> {
-    throw new Error('Real API not implemented - use mock mode');
+  async addComment(incidentId: string, content: string, commentType: CommentType = 'comment'): Promise<IncidentComment> {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error('Not authenticated');
+
+    const { data, error } = await supabase
+      .from('incident_comments')
+      .insert({
+        incident_id: incidentId,
+        author_id: user.id,
+        content,
+        comment_type: commentType,
+      })
+      .select(`*, author:incident_user_profiles(*)`)
+      .single();
+
+    if (error) throw error;
+    return data as unknown as IncidentComment;
   },
 
   async getDashboardMetrics(): Promise<IncidentDashboardMetrics> {
-    throw new Error('Real API not implemented - use mock mode');
+    const { data: incidents, error } = await supabase
+      .from('incidents')
+      .select('id, status, severity, is_major_incident, created_at')
+      .is('deleted_at', null);
+
+    if (error) throw error;
+
+    const openIncidents = (incidents || []).filter(i => !['resolved', 'closed'].includes(i.status));
+    const majorIncidents = openIncidents.filter(i => i.is_major_incident);
+    
+    return {
+      total_open: openIncidents.length,
+      major_active: majorIncidents.length,
+      sla_breached: 0, // Would need to join with sla_records
+      sla_at_risk: 0,
+      committee_pending: 0,
+      by_severity: {
+        SEV1: openIncidents.filter(i => i.severity === 'SEV1').length,
+        SEV2: openIncidents.filter(i => i.severity === 'SEV2').length,
+        SEV3: openIncidents.filter(i => i.severity === 'SEV3').length,
+        SEV4: openIncidents.filter(i => i.severity === 'SEV4').length,
+      },
+      by_status: {
+        new: openIncidents.filter(i => i.status === 'new').length,
+        in_progress: openIncidents.filter(i => i.status === 'in_progress').length,
+        pending: openIncidents.filter(i => i.status === 'pending').length,
+        resolved: (incidents || []).filter(i => i.status === 'resolved').length,
+        closed: (incidents || []).filter(i => i.status === 'closed').length,
+      },
+    };
   },
 
-  async getCommitteeQueue(_includesClosed?: boolean): Promise<CommitteeQueueItem[]> {
-    throw new Error('Real API not implemented - use mock mode');
+  async getCommitteeQueue(includesClosed?: boolean): Promise<CommitteeQueueItem[]> {
+    let query = supabase
+      .from('incidents')
+      .select(`
+        *,
+        committee:incident_committees(*, members:committee_members(*))
+      `)
+      .eq('requires_committee', true)
+      .is('deleted_at', null);
+
+    if (!includesClosed) {
+      query = query.not('status', 'in', '("resolved","closed")');
+    }
+
+    const { data, error } = await query;
+    if (error) throw error;
+
+    return (data || [])
+      .filter(i => i.committee)
+      .map(incident => {
+        const committee = incident.committee;
+        const members = committee?.members || [];
+        const approvedCount = members.filter((m: any) => m.vote === 'approved').length;
+        const rejectedCount = members.filter((m: any) => m.vote === 'rejected' || m.vote === 'vetoed').length;
+        const pendingCount = members.filter((m: any) => !m.vote || m.vote === 'pending').length;
+        const hasVeto = members.some((m: any) => m.vote === 'vetoed');
+
+        return {
+          incident: incident as unknown as Incident,
+          committee,
+          time_waiting_hours: getHoursAgo(incident.created_at),
+          aging_hours: getHoursAgo(incident.created_at),
+          approvals_count: approvedCount,
+          rejections_count: rejectedCount,
+          pending_count: pendingCount,
+          has_veto: hasVeto,
+        };
+      });
   },
 
   async getWorkgroups(): Promise<Workgroup[]> {
@@ -355,8 +251,8 @@ const realApi = {
   },
 
   async getDeliveryPlatforms(): Promise<DeliveryPlatform[]> {
-    // TODO: SPEC REQUIRED - delivery_platforms table doesn't exist in schema yet
-    return seedData.deliveryPlatforms;
+    // delivery_platforms table doesn't exist yet - return empty array
+    return [];
   },
 
   async getSlaConfigs(): Promise<SlaConfig[]> {
@@ -369,7 +265,7 @@ const realApi = {
 // BUSINESS LOGIC HELPERS
 // ============================================================================
 
-function derivePriority(impact: string, urgency: string): 'P1' | 'P2' | 'P3' | 'P4' {
+export function derivePriority(impact: string, urgency: string): 'P1' | 'P2' | 'P3' | 'P4' {
   const matrix: Record<string, Record<string, 'P1' | 'P2' | 'P3' | 'P4'>> = {
     high: { high: 'P1', medium: 'P2', low: 'P3' },
     medium: { high: 'P2', medium: 'P3', low: 'P4' },
@@ -377,11 +273,5 @@ function derivePriority(impact: string, urgency: string): 'P1' | 'P2' | 'P3' | '
   };
   return matrix[impact]?.[urgency] || 'P3';
 }
-
-// ============================================================================
-// EXPORTED API (switches between mock and real)
-// ============================================================================
-
-export const incidentApi = USE_MOCK_MODE ? mockApi : realApi;
 
 export default incidentApi;
