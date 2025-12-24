@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { Search, FileText, Zap, Star, BookOpen, AlertTriangle, CheckSquare, Bug } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
+import { getValidatedWorkItemRoute } from "@/lib/workItemRoutes";
 
 interface GlobalSearchPaletteProps {
   open: boolean;
@@ -203,17 +204,15 @@ export function GlobalSearchPalette({ open, onOpenChange }: GlobalSearchPaletteP
   }, [open]);
 
   const handleSelect = (item: SearchResult) => {
-    // Navigate based on type
-    const routes: Record<GlobalSearchWorkItemType, string> = {
-      'epic': `/items/epics/${item.id}`,
-      'feature': `/items/features/${item.id}`,
-      'story': `/items/stories/${item.id}`,
-      'incident': `/incidents/${item.id}`,
-      'business-request': `/industry/requests/${item.id}`,
-      'task': `/tasks/${item.id}`,
-      'defect': `/defects/${item.id}`,
-    };
-    navigate(routes[item.type] || `/work-item/${item.key}`);
+    // Use centralized route utility for consistent navigation
+    const route = getValidatedWorkItemRoute({ 
+      id: item.id, 
+      key: item.key, 
+      type: item.type === 'business-request' ? 'demand' : item.type 
+    });
+    if (route) {
+      navigate(route);
+    }
     onOpenChange(false);
   };
 

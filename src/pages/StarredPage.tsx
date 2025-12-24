@@ -11,6 +11,7 @@ import { formatDistanceToNow } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { useStarredDeliveryItems, useToggleStar, StarredItemType } from '@/hooks/home/useStarredItems';
 import { Skeleton } from '@/components/ui/skeleton';
+import { getValidatedWorkItemRoute } from '@/lib/workItemRoutes';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -63,15 +64,19 @@ function StarredItemRow({
   const timeAgo = formatDistanceToNow(item.activityDate, { addSuffix: false });
   
   const handleRowClick = () => {
-    // Navigate based on type
-    const route = getItemRoute(item.type, item.id);
-    navigate(route);
+    // Navigate based on type with defensive check
+    const route = getItemRoute(item.type, item.id, item.key);
+    if (route) {
+      navigate(route);
+    }
   };
 
   const handleOpenNewTab = (e: React.MouseEvent) => {
     e.stopPropagation();
-    const route = getItemRoute(item.type, item.id);
-    window.open(route, '_blank');
+    const route = getItemRoute(item.type, item.id, item.key);
+    if (route) {
+      window.open(route, '_blank');
+    }
   };
 
   const handleViewDetails = (e: React.MouseEvent) => {
@@ -221,19 +226,9 @@ function StarredItemRow({
   );
 }
 
-function getItemRoute(type: ExtendedWorkItemType, id: string): string {
-  switch (type) {
-    case 'epic':
-      return `/enterprise/epics/${id}`;
-    case 'feature':
-      return `/features/${id}`;
-    case 'task':
-      return `/work-manager/tasks/${id}`;
-    case 'story':
-    case 'defect':
-    default:
-      return `/work-item/${id}`;
-  }
+function getItemRoute(type: ExtendedWorkItemType, id: string, key?: string): string | null {
+  // Use centralized route utility for consistency
+  return getValidatedWorkItemRoute({ id, key, type: type as string });
 }
 
 function groupItemsByTimePeriod(items: StarredItem[]): { label: string; items: StarredItem[] }[] {
