@@ -771,41 +771,38 @@ export default function IndustryRoadmapPage() {
         
         {/* Right Timeline Panel */}
         <div className="flex-1 flex flex-col overflow-hidden">
-          {/* Timeline Header - scrolls horizontally with body */}
+          {/* Timeline Header - scrolls horizontally with body, uses same width as body */}
           <div 
             ref={timelineHeaderRef}
             className="h-10 border-b border-border bg-background overflow-x-hidden"
           >
-            <div className="flex min-w-max">
-              {QUARTERS.slice(0, 6).map((q, i) => {
-                const qStart = dateToPercent(q.start);
-                const qEnd = dateToPercent(q.end);
-                const isTodayQuarter = todayPercent >= qStart && todayPercent < qEnd;
-                
-                return (
+            <div className="relative" style={{ width: '720px' }}>
+              {/* Quarter labels */}
+              <div className="flex h-10">
+                {QUARTERS.slice(0, 6).map((q, i) => (
                   <div
                     key={q.label}
                     className={cn(
-                      "flex-1 min-w-[120px] h-10 flex items-center justify-center text-xs font-medium text-muted-foreground relative",
+                      "flex-1 h-10 flex items-center justify-center text-xs font-medium text-muted-foreground",
                       i < 5 && "border-r border-border"
                     )}
                   >
                     {q.label}
-                    {/* TODAY Badge - positioned inside the quarter header so it scrolls with content */}
-                    {isTodayQuarter && (
-                      <div
-                        className="absolute top-1.5 bg-secondary-bronze text-white text-[9px] font-semibold px-1.5 py-0.5 rounded uppercase tracking-wider z-10"
-                        style={{ 
-                          left: '50%',
-                          transform: 'translateX(-50%)'
-                        }}
-                      >
-                        TODAY
-                      </div>
-                    )}
                   </div>
-                );
-              })}
+                ))}
+              </div>
+              {/* TODAY Badge - positioned using same todayPercent as the line */}
+              {todayPercent >= 0 && todayPercent <= 100 && (
+                <div
+                  className="absolute top-1.5 bg-secondary-bronze text-white text-[9px] font-semibold px-1.5 py-0.5 rounded uppercase tracking-wider z-10"
+                  style={{ 
+                    left: `${todayPercent}%`,
+                    transform: 'translateX(-50%)'
+                  }}
+                >
+                  TODAY
+                </div>
+              )}
             </div>
           </div>
           
@@ -827,14 +824,14 @@ export default function IndustryRoadmapPage() {
               </div>
             )}
             
-            <div className="min-w-max relative">
+            <div className="relative" style={{ width: '720px', minHeight: '100%' }}>
               {/* Grid Lines */}
               <div className="absolute inset-0 flex pointer-events-none">
                 {QUARTERS.slice(0, 6).map((q, i) => (
                   <div
                     key={q.label}
                     className={cn(
-                      "flex-1 min-w-[120px]",
+                      "flex-1",
                       i < 5 && "border-r border-border"
                     )}
                   />
@@ -842,16 +839,18 @@ export default function IndustryRoadmapPage() {
               </div>
               
               {/* Today Line */}
-              <div
-                className="absolute top-0 w-0.5 bg-secondary-bronze z-10 pointer-events-none"
-                style={{
-                  left: `${todayPercent}%`,
-                  height: `${groupedRequests.reduce((acc, g) => {
-                    const collapsed = collapsedGroups.has(g.key);
-                    return acc + 44 + (collapsed ? 0 : g.requests.length * 56);
-                  }, 0)}px`
-                }}
-              />
+              {todayPercent >= 0 && todayPercent <= 100 && (
+                <div
+                  className="absolute top-0 w-0.5 bg-secondary-bronze z-10 pointer-events-none"
+                  style={{
+                    left: `${todayPercent}%`,
+                    height: `${groupedRequests.reduce((acc, g) => {
+                      const collapsed = collapsedGroups.has(g.key);
+                      return acc + 44 + (collapsed ? 0 : g.requests.length * 56);
+                    }, 0)}px`
+                  }}
+                />
+              )}
               
               {/* Rows */}
               {groupedRequests.map(group => {
@@ -869,7 +868,8 @@ export default function IndustryRoadmapPage() {
                     {!isCollapsed && group.requests.map(request => {
                       const startPct = dateToPercent(request.startDate);
                       const endPct = dateToPercent(request.endDate);
-                      const width = Math.max(endPct - startPct, 1);
+                      // Ensure minimum visible width (1% of 720px = 7.2px, so use 1.5% for better visibility)
+                      const width = Math.max(endPct - startPct, 1.5);
                       
                       return (
                         <div
@@ -880,10 +880,10 @@ export default function IndustryRoadmapPage() {
                           onClick={() => handleRowClick(request)}
                           className="h-14 border-b border-border bg-background relative hover:bg-muted cursor-pointer"
                         >
-                          {/* Bar */}
+                          {/* Bar - using percentage positioning on fixed-width container */}
                           <div
-                            className="absolute top-1/2 -translate-y-1/2 h-1.5"
-                            style={{ left: `${startPct}%`, width: `${width}%` }}
+                            className="absolute top-1/2 -translate-y-1/2 h-2 z-[5]"
+                            style={{ left: `${startPct}%`, width: `${width}%`, minWidth: '10px' }}
                           >
                             {/* Track */}
                             <div className="absolute inset-0 bg-brand-primary/20 rounded-sm" />
