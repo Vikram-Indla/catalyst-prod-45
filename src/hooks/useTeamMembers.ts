@@ -1,9 +1,47 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { useEffect } from 'react';
 import type { TeamMember } from '@/types/team.types';
 
 export function useTeamMembers(teamId?: string) {
+  const queryClient = useQueryClient();
+
+  // Set up real-time subscription to sync with profiles changes
+  useEffect(() => {
+    if (!teamId) return;
+
+    const channel = supabase
+      .channel(`team-members-${teamId}-sync`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'profiles',
+        },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ['team-members', teamId] });
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'team_members',
+        },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ['team-members', teamId] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [teamId, queryClient]);
+
   return useQuery({
     queryKey: ['team-members', teamId],
     queryFn: async () => {
@@ -11,7 +49,7 @@ export function useTeamMembers(teamId?: string) {
 
       const { data, error } = await supabase
         .from('team_members')
-        .select('*, profiles!user_id(id, full_name, email)')
+        .select('*, profiles!user_id(id, full_name, email, approval_status)')
         .eq('team_id', teamId)
         .order('created_at');
 
@@ -20,7 +58,13 @@ export function useTeamMembers(teamId?: string) {
         throw error;
       }
 
-      return data as TeamMember[];
+      // Filter to only include users with APPROVED status
+      const approvedMembers = (data || []).filter((member) => {
+        const profile = member.profiles as { approval_status: string | null } | null;
+        return profile?.approval_status === 'APPROVED';
+      });
+
+      return approvedMembers as TeamMember[];
     },
     enabled: !!teamId,
   });
