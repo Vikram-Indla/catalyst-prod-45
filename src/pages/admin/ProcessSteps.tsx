@@ -3,8 +3,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Plus, Search, Edit, GripVertical, Trash2 } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Switch } from '@/components/ui/switch';
+import { Save } from 'lucide-react';
+import { toast } from 'sonner';
 import {
   Dialog,
   DialogContent,
@@ -30,6 +32,8 @@ export default function ProcessSteps() {
   const [formData, setFormData] = useState({ value: '', label: '' });
   const [deleteStep, setDeleteStep] = useState<DemandProcessStep | null>(null);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [pendingColors, setPendingColors] = useState<Record<string, string>>({});
+  const [isSaving, setIsSaving] = useState(false);
 
   const { data: steps = [], isLoading } = useDemandProcessSteps();
   const createMutation = useCreateDemandProcessStep();
@@ -66,11 +70,46 @@ export default function ProcessSteps() {
     await toggleMutation.mutateAsync({ id: step.id, is_active: step.is_active });
   };
 
-  const handleColorChange = async (step: DemandProcessStep, newColor: string) => {
-    await updateMutation.mutateAsync({
-      id: step.id,
-      color: newColor,
+  const handleColorChange = (stepId: string, newColor: string) => {
+    setPendingColors(prev => ({ ...prev, [stepId]: newColor }));
+  };
+
+  const hasUnsavedChanges = useMemo(() => {
+    return Object.keys(pendingColors).some(stepId => {
+      const step = steps.find(s => s.id === stepId);
+      return step && pendingColors[stepId] !== step.color;
     });
+  }, [pendingColors, steps]);
+
+  const handleSaveSettings = async () => {
+    const changedSteps = Object.entries(pendingColors).filter(([stepId, color]) => {
+      const step = steps.find(s => s.id === stepId);
+      return step && color !== step.color;
+    });
+
+    if (changedSteps.length === 0) {
+      toast.info('No changes to save');
+      return;
+    }
+
+    setIsSaving(true);
+    try {
+      await Promise.all(
+        changedSteps.map(([stepId, color]) =>
+          updateMutation.mutateAsync({ id: stepId, color })
+        )
+      );
+      setPendingColors({});
+      toast.success('Color settings saved and applied across the application');
+    } catch (error) {
+      toast.error('Failed to save color settings');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const getDisplayColor = (step: DemandProcessStep) => {
+    return pendingColors[step.id] ?? step.color;
   };
 
   const openEditDialog = (step: DemandProcessStep) => {
@@ -141,7 +180,7 @@ export default function ProcessSteps() {
           <CardHeader>
             <CardTitle>BR Status Configuration</CardTitle>
             <CardDescription>
-              Configure statuses that appear in Business Request dropdowns and Kanban boards. Colors are auto-saved and applied across the entire application in real-time.
+              Configure statuses that appear in Business Request dropdowns and Kanban boards. Select colors and click "Save Settings" to apply changes across the entire application.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -155,6 +194,14 @@ export default function ProcessSteps() {
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
               </div>
+              <Button
+                className="bg-brand-primary hover:bg-brand-primary-hover"
+                onClick={handleSaveSettings}
+                disabled={!hasUnsavedChanges || isSaving}
+              >
+                <Save className="h-4 w-4 mr-2" />
+                {isSaving ? 'Saving...' : 'Save Settings'}
+              </Button>
             </div>
 
             <div className="border rounded-lg">
@@ -192,15 +239,18 @@ export default function ProcessSteps() {
                         <td className="p-3">
                           <div className="flex items-center gap-2">
                             <BrandColorPicker
-                              value={step.color}
-                              onChange={(color) => handleColorChange(step, color)}
+                              value={getDisplayColor(step)}
+                              onChange={(color) => handleColorChange(step.id, color)}
                             />
                             <span 
                               className="inline-flex items-center px-2 py-0.5 text-xs font-medium rounded text-white"
-                              style={{ backgroundColor: getBrandColorHex(step.color) }}
+                              style={{ backgroundColor: getBrandColorHex(getDisplayColor(step)) }}
                             >
                               {step.label}
                             </span>
+                            {pendingColors[step.id] && pendingColors[step.id] !== step.color && (
+                              <span className="text-xs text-amber-600 font-medium">• Unsaved</span>
+                            )}
                           </div>
                         </td>
                         <td className="p-3 text-sm font-medium">{step.label}</td>
