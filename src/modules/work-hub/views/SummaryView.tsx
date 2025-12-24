@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Progress } from '@/components/ui/progress';
 import { Filter, CheckCircle, Edit, Plus, Calendar, Maximize2, ExternalLink, FileText, CheckSquare, Square } from 'lucide-react';
-import { WorkItemTypeIcon } from '@/components/ja/icons/WorkItemTypeIcon';
+import { WorkItemIcon } from '@/components/ja/icons/WorkItemIcon';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
 
@@ -379,7 +379,7 @@ function EpicProgress() {
           {epics.map((epic) => (
             <div key={epic.key}>
               <div className="flex items-center gap-2 mb-1 text-sm">
-                <WorkItemTypeIcon type="epic" size={14} />
+                <WorkItemIcon type="epic" size={14} />
                 <span className="text-primary">{epic.key}</span>
                 <span className="text-muted-foreground truncate">{epic.name}</span>
               </div>

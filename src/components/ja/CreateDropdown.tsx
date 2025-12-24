@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Plus } from "lucide-react";
 import { useEnabledModules } from "@/hooks/useModules";
 import { useCreateMenuVisibility } from "@/hooks/useCreateMenuVisibility";
+import { WorkItemIcon } from "@/components/ja/icons/WorkItemIcon";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,45 +12,35 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { workItemConfig, getWorkItemsByCategory, WorkItemType } from "@/config/workItemConfig";
+import { getWorkItemsByCategory, WorkItemType } from "@/config/workItemConfig";
 
 // Get items organized by category from centralized config
 const enterpriseItems = getWorkItemsByCategory('enterprise').map(item => ({
   label: item.label,
-  icon: item.icon,
-  color: item.color,
   type: item.key as WorkItemType,
   moduleCode: item.moduleCode,
 }));
 
 const productItems = getWorkItemsByCategory('product').map(item => ({
   label: item.label,
-  icon: item.icon,
-  color: item.color,
   type: item.key as WorkItemType,
   moduleCode: item.moduleCode,
 }));
 
 const programItems = getWorkItemsByCategory('program').map(item => ({
   label: item.label,
-  icon: item.icon,
-  color: item.color,
   type: item.key as WorkItemType,
   moduleCode: item.moduleCode,
 }));
 
 const projectItems = getWorkItemsByCategory('project').map(item => ({
   label: item.label,
-  icon: item.icon,
-  color: item.color,
   type: item.key as WorkItemType,
   moduleCode: item.moduleCode,
 }));
 
 const otherItems = getWorkItemsByCategory('other').map(item => ({
   label: item.label,
-  icon: item.icon,
-  color: item.color,
   type: item.key as WorkItemType,
   moduleCode: item.moduleCode,
 }));
@@ -142,7 +133,7 @@ export function CreateDropdown() {
             onClick={() => handleItemClick(item.type)}
             className="flex items-center gap-3 py-2 cursor-pointer hover:bg-accent"
           >
-            <item.icon className={`h-5 w-5 ${item.color}`} />
+            <WorkItemIcon type={item.type} size={20} />
             <span className="text-sm">{item.label}</span>
           </DropdownMenuItem>
         ))}

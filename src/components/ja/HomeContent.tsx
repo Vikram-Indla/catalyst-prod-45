@@ -4,7 +4,7 @@ import {
   ChevronDown, ChevronUp, Star, MoreHorizontal, ExternalLink, CheckCircle, 
   Clock, Pin, Settings, Kanban, List, AlertTriangle, Briefcase, Calendar, FileText
 } from 'lucide-react';
-import { WorkItemTypeIcon } from './icons/WorkItemTypeIcon';
+import { WorkItemIcon } from './icons/WorkItemIcon';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
 import { formatDistanceToNow } from 'date-fns';

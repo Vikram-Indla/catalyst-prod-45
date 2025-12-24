@@ -31,7 +31,7 @@ import {
   Trash2,
   XCircle
 } from 'lucide-react';
-import { WorkItemTypeIcon } from '@/components/ja/icons/WorkItemTypeIcon';
+import { WorkItemIcon } from '@/components/ja/icons/WorkItemIcon';
 import { toast } from 'sonner';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
@@ -222,7 +222,7 @@ export default function EnterpriseEpics() {
                   >
                     <TableCell className="font-mono text-sm">
                       <div className="flex items-center gap-2">
-                        <WorkItemTypeIcon type="epic" size={14} />
+                        <WorkItemIcon type="epic" size={14} />
                         <span>{epic.epic_key || epic.id.slice(0, 8)}</span>
                       </div>
                     </TableCell>
