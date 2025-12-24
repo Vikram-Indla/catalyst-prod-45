@@ -6,7 +6,7 @@
  * Swaps Programs → Business Requests from Supabase
  */
 
-import React, { useState, useRef, useCallback, useMemo, useEffect } from 'react';
+import React, { useState, useRef, useCallback, useMemo, useEffect, useLayoutEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Search, Layers, Filter, Info, ChevronDown, Check, X, Home } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -69,23 +69,54 @@ interface Quarter {
   end: Date;
 }
 
-// ===== UTILITIES =====
+// ===== CONSTANTS =====
 const TODAY = new Date();
+const QUARTER_COLUMN_WIDTH = 180; // px per quarter column
+const MIN_VISIBLE_QUARTERS = 4;
+const MAX_VISIBLE_QUARTERS = 12;
+const QUARTER_BUFFER = 4; // extra quarters for scrolling
 
-function generateRollingQuarters(fromDate: Date, count: number = 4): Quarter[] {
-  const startMonth = Math.floor(fromDate.getMonth() / 3) * 3;
-  const base = new Date(fromDate.getFullYear(), startMonth, 1);
+// ===== UTILITIES =====
 
+/**
+ * Generate quarters starting from a given offset before/after today's quarter
+ * @param offsetFromToday - negative = quarters before today, 0 = today's quarter
+ * @param count - total number of quarters to generate
+ */
+function generateQuartersFromToday(offsetFromToday: number, count: number): Quarter[] {
+  const todayQuarter = Math.floor(TODAY.getMonth() / 3);
+  const todayYear = TODAY.getFullYear();
+  
+  // Calculate starting quarter (add offset)
+  let startQ = todayQuarter + offsetFromToday;
+  let startYear = todayYear;
+  
+  // Normalize if offset pushes us to previous/next year
+  while (startQ < 0) {
+    startQ += 4;
+    startYear -= 1;
+  }
+  while (startQ > 3) {
+    startQ -= 4;
+    startYear += 1;
+  }
+  
   return Array.from({ length: count }, (_, i) => {
-    const start = new Date(base);
-    start.setMonth(base.getMonth() + i * 3);
-    start.setDate(1);
-
-    const q = Math.floor(start.getMonth() / 3) + 1;
-    const end = new Date(start.getFullYear(), start.getMonth() + 3, 0);
-
+    let q = startQ + i;
+    let year = startYear;
+    
+    // Normalize quarter overflow
+    while (q > 3) {
+      q -= 4;
+      year += 1;
+    }
+    
+    const startMonth = q * 3;
+    const start = new Date(year, startMonth, 1);
+    const end = new Date(year, startMonth + 3, 0);
+    
     return {
-      label: `Q${q} ${start.getFullYear()}`,
+      label: `Q${q + 1} ${year}`,
       start,
       end,
     };
@@ -188,12 +219,53 @@ export default function IndustryRoadmapPage() {
     y: 0
   });
   
+  // Refs for scroll sync and resize
+  const listBodyRef = useRef<HTMLDivElement>(null);
+  const timelineBodyRef = useRef<HTMLDivElement>(null);
+  const timelineHeaderRef = useRef<HTMLDivElement>(null);
+  const timelineContainerRef = useRef<HTMLDivElement>(null);
+  
+  // Responsive quarter count based on container width
+  const [containerWidth, setContainerWidth] = useState(0);
+  
+  // Measure container width with ResizeObserver
+  useLayoutEffect(() => {
+    const container = timelineContainerRef.current;
+    if (!container) return;
+    
+    const observer = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        setContainerWidth(entry.contentRect.width);
+      }
+    });
+    
+    observer.observe(container);
+    // Initial measurement
+    setContainerWidth(container.clientWidth);
+    
+    return () => observer.disconnect();
+  }, []);
+  
+  // Calculate visible quarter count from container width
+  const visibleQuarterCount = useMemo(() => {
+    if (containerWidth === 0) return MIN_VISIBLE_QUARTERS;
+    const count = Math.floor(containerWidth / QUARTER_COLUMN_WIDTH);
+    return Math.max(MIN_VISIBLE_QUARTERS, Math.min(MAX_VISIBLE_QUARTERS, count));
+  }, [containerWidth]);
+  
+  // Total quarters = visible + buffer for scrolling
+  const totalQuarterCount = visibleQuarterCount + QUARTER_BUFFER;
+  
   // Dynamic timeline quarters
-  // Default (auto): current quarter → next 3 quarters (no past quarters)
-  // Custom: driven by TimelineFilterPopover selections
+  // Auto mode: start 1 quarter before today, show visibleQuarterCount + buffer
+  // Custom mode: driven by TimelineFilterPopover selections
   const visibleQuarters = useMemo(() => {
-    return isTimelineAuto ? generateRollingQuarters(new Date(), 4) : generateQuartersForFilter(timelineFilter);
-  }, [isTimelineAuto, timelineFilter]);
+    if (!isTimelineAuto) {
+      return generateQuartersForFilter(timelineFilter);
+    }
+    // Start 1 quarter before today for context, generate enough quarters
+    return generateQuartersFromToday(-1, totalQuarterCount);
+  }, [isTimelineAuto, timelineFilter, totalQuarterCount]);
   
   // Timeline calculation helpers
   const getTimelineStart = useCallback(() => {
@@ -215,11 +287,6 @@ export default function IndustryRoadmapPage() {
   }, [getTimelineStart, getTimelineEnd]);
   
   const todayPercent = useMemo(() => dateToPercent(TODAY), [dateToPercent]);
-  
-  // Refs for scroll sync
-  const listBodyRef = useRef<HTMLDivElement>(null);
-  const timelineBodyRef = useRef<HTMLDivElement>(null);
-  const timelineHeaderRef = useRef<HTMLDivElement>(null);
   
   // Fetch business requests with milestones
   const { data: requestsData, isLoading } = useQuery({
@@ -882,13 +949,13 @@ export default function IndustryRoadmapPage() {
         </div>
         
         {/* Right Timeline Panel */}
-        <div className="flex-1 flex flex-col overflow-hidden">
+        <div ref={timelineContainerRef} className="flex-1 flex flex-col overflow-hidden">
           {/* Timeline Header - scrolls horizontally with body, uses same width as body */}
           <div 
             ref={timelineHeaderRef}
             className="h-10 border-b border-border bg-background overflow-x-hidden"
           >
-            <div className="relative" style={{ width: `${Math.max(visibleQuarters.length * 120, 720)}px` }}>
+            <div className="relative" style={{ width: `${visibleQuarters.length * QUARTER_COLUMN_WIDTH}px` }}>
               {/* Quarter labels */}
               <div className="flex h-10">
                 {visibleQuarters.map((q, i) => (
@@ -936,7 +1003,7 @@ export default function IndustryRoadmapPage() {
               </div>
             )}
             
-            <div className="relative" style={{ width: `${Math.max(visibleQuarters.length * 120, 720)}px`, minHeight: '100%' }}>
+            <div className="relative" style={{ width: `${visibleQuarters.length * QUARTER_COLUMN_WIDTH}px`, minHeight: '100%' }}>
               {/* Grid Lines */}
               <div className="absolute inset-0 flex pointer-events-none">
                 {visibleQuarters.map((q, i) => (
