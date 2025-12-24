@@ -227,8 +227,9 @@ function getItemRoute(type: ExtendedWorkItemType, id: string): string {
       return `/enterprise/epics/${id}`;
     case 'feature':
       return `/features/${id}`;
-    case 'story':
     case 'task':
+      return `/work-manager/tasks/${id}`;
+    case 'story':
     case 'defect':
     default:
       return `/work-item/${id}`;

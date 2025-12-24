@@ -302,14 +302,21 @@ export function DeliveryGridRow({
   
   const rowHeight = density === 'compact' ? 'py-1' : 'py-2';
   
+  // Determine route based on item type
+  const getItemRoute = () => {
+    if (item.type === 'task') {
+      return `/work-manager/tasks/${item.id}`;
+    }
+    return `/work-item/${item.id}`;
+  };
+
   const handleRowClick = () => {
-    // Navigate to work item detail page
-    navigate(`/work-item/${item.id}`);
+    navigate(getItemRoute());
   };
 
   const handleOpenNewTab = (e: React.MouseEvent) => {
     e.stopPropagation();
-    window.open(`/work-item/${item.id}`, '_blank');
+    window.open(getItemRoute(), '_blank');
   };
 
   return (
