@@ -1,0 +1,683 @@
+// src/components/ja/home/WorkGridRow.tsx
+// Mode-specific data grid row components with correct CTAs per domain
+
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { 
+  Star, MoreHorizontal, ExternalLink, CheckCircle, 
+  UserPlus, Clock, MessageSquare, History, Eye, 
+  FileText, HelpCircle, Calendar
+} from 'lucide-react';
+import { WorkItemTypeIcon, WorkItemType } from '../icons/WorkItemTypeIcon';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { cn } from '@/lib/utils';
+import { formatDistanceToNow } from 'date-fns';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
+import type { HomeRoleMode } from './HomeRoleModeSelector';
+
+// ============================================
+// SHARED TYPES
+// ============================================
+export interface BaseWorkItem {
+  id: string;
+  key: string;
+  summary: string;
+  project: string;
+  projectKey: string;
+  status: string;
+  type: WorkItemType;
+  assignee: string | null;
+  activityDate: Date;
+  activityType: 'Updated' | 'Created';
+  priority?: string;
+  severity?: string;
+  blocked?: boolean;
+}
+
+export const GRID_COLS = '100px 1fr 160px 100px 80px 80px';
+
+// ============================================
+// OPERATIONS MODE ROW
+// Intent: Operational triage and issue resolution
+// Primary content: Incidents, Releases
+// ============================================
+export function OperationsGridRow({ 
+  item, 
+  density = 'comfortable',
+  onAssignToMe,
+  onAcknowledge,
+  onResolve,
+}: { 
+  item: BaseWorkItem; 
+  density?: 'compact' | 'comfortable';
+  onAssignToMe?: (id: string) => void;
+  onAcknowledge?: (id: string) => void;
+  onResolve?: (id: string) => void;
+}) {
+  const navigate = useNavigate();
+  const [isHovered, setIsHovered] = useState(false);
+  const timeAgo = formatDistanceToNow(item.activityDate, { addSuffix: false });
+  
+  const rowHeight = density === 'compact' ? 'py-1' : 'py-2';
+  
+  // Determine route based on item key pattern
+  const isIncident = item.key.startsWith('INC') || item.type === 'defect';
+  const isRelease = item.key.startsWith('REL');
+  
+  const handleRowClick = () => {
+    if (isIncident) {
+      navigate(`/release/incidents/${item.id}`);
+    } else if (isRelease) {
+      navigate(`/release/releases/${item.id}`);
+    } else {
+      navigate(`/work-item/${item.id}`);
+    }
+  };
+
+  const handleOpenNewTab = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const path = isIncident 
+      ? `/release/incidents/${item.id}` 
+      : isRelease 
+        ? `/release/releases/${item.id}` 
+        : `/work-item/${item.id}`;
+    window.open(path, '_blank');
+  };
+
+  // Check if user can take actions (placeholder - would check permissions)
+  const canAssign = true;
+  const canAcknowledge = isIncident && item.status === 'triage';
+  const canResolve = isIncident && !['resolved', 'closed'].includes(item.status);
+
+  return (
+    <div 
+      className={cn(
+        "grid items-center px-3 transition-colors cursor-pointer",
+        rowHeight,
+        isHovered && "bg-[var(--row-hover)]"
+      )}
+      style={{ 
+        gridTemplateColumns: GRID_COLS,
+        borderBottom: '1px solid var(--divider)',
+      }}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      onClick={handleRowClick}
+    >
+      {/* Key */}
+      <div className="flex items-center gap-2">
+        <WorkItemTypeIcon type={item.type} size={14} />
+        <span className="text-xs font-medium text-[var(--text-2)]">{item.key}</span>
+      </div>
+
+      {/* Summary */}
+      <div className="min-w-0 pr-4">
+        <div className="text-sm leading-5 text-[var(--text-1)] truncate">
+          {item.summary}
+        </div>
+      </div>
+
+      {/* Project */}
+      <div className="text-xs truncate text-[var(--text-2)]">
+        {item.project}
+      </div>
+
+      {/* Updated */}
+      <div className="text-xs tabular-nums text-[var(--text-2)]">
+        {timeAgo} ago
+      </div>
+
+      {/* Assignee */}
+      <div className="flex justify-start">
+        {item.assignee ? (
+          <Avatar className="w-5 h-5">
+            <AvatarFallback className="text-[9px] font-medium bg-[var(--surface-3)] text-[var(--text-2)]">
+              {item.assignee.slice(0, 2).toUpperCase()}
+            </AvatarFallback>
+          </Avatar>
+        ) : (
+          <span className="text-[var(--text-3)]">—</span>
+        )}
+      </div>
+
+      {/* Quick actions - Operations specific: View, Assign, Acknowledge/Resolve */}
+      <div className={cn("flex items-center justify-end gap-0.5 transition-opacity", isHovered ? "opacity-100" : "opacity-0")}>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button 
+                className="w-5 h-5 rounded flex items-center justify-center hover:bg-[var(--nav-hover-bg)] text-[var(--icon-muted)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]"
+                onClick={(e) => { e.stopPropagation(); handleRowClick(); }}
+                title="View details"
+              >
+                <Eye className="w-3 h-3" />
+              </button>
+            </TooltipTrigger>
+            <TooltipContent>View details</TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+
+        {canAssign && (
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button 
+                  className="w-5 h-5 rounded flex items-center justify-center hover:bg-[var(--nav-hover-bg)] text-[var(--icon-muted)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]"
+                  onClick={(e) => { e.stopPropagation(); onAssignToMe?.(item.id); }}
+                  title="Assign to me"
+                >
+                  <UserPlus className="w-3 h-3" />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent>Assign to me</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        )}
+
+        {canAcknowledge && (
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button 
+                  className="w-5 h-5 rounded flex items-center justify-center hover:bg-[var(--nav-hover-bg)] text-[var(--brand-gold)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]"
+                  onClick={(e) => { e.stopPropagation(); onAcknowledge?.(item.id); }}
+                  title="Acknowledge"
+                >
+                  <CheckCircle className="w-3 h-3" />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent>Acknowledge incident</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        )}
+
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button 
+              className="w-5 h-5 rounded flex items-center justify-center hover:bg-[var(--nav-hover-bg)] text-[var(--icon-muted)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]"
+              onClick={(e) => e.stopPropagation()}
+              title="More actions"
+            >
+              <MoreHorizontal className="w-3 h-3" />
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent 
+            align="end" 
+            className="bg-[var(--surface-1)] border-[var(--border-color)] z-[300]"
+          >
+            <DropdownMenuItem 
+              onClick={(e) => { e.stopPropagation(); handleRowClick(); }}
+              className="text-[var(--text-1)] cursor-pointer"
+            >
+              <Eye className="w-4 h-4 mr-2" />
+              View details
+            </DropdownMenuItem>
+            {canAssign && (
+              <DropdownMenuItem 
+                onClick={(e) => { e.stopPropagation(); onAssignToMe?.(item.id); }}
+                className="text-[var(--text-1)] cursor-pointer"
+              >
+                <UserPlus className="w-4 h-4 mr-2" />
+                Assign to me
+              </DropdownMenuItem>
+            )}
+            {isIncident && canResolve && (
+              <>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem 
+                  onClick={(e) => { e.stopPropagation(); onAcknowledge?.(item.id); }}
+                  className="text-[var(--text-1)] cursor-pointer"
+                >
+                  <CheckCircle className="w-4 h-4 mr-2" />
+                  Acknowledge
+                </DropdownMenuItem>
+                <DropdownMenuItem 
+                  onClick={(e) => { e.stopPropagation(); onResolve?.(item.id); }}
+                  className="text-[var(--text-1)] cursor-pointer"
+                >
+                  <CheckCircle className="w-4 h-4 mr-2" />
+                  Resolve
+                </DropdownMenuItem>
+              </>
+            )}
+            <DropdownMenuSeparator />
+            <DropdownMenuItem 
+              onClick={(e) => { e.stopPropagation(); /* TODO: View history */ }}
+              className="text-[var(--text-1)] cursor-pointer"
+            >
+              <History className="w-4 h-4 mr-2" />
+              View history
+            </DropdownMenuItem>
+            <DropdownMenuItem 
+              onClick={handleOpenNewTab}
+              className="text-[var(--text-1)] cursor-pointer"
+            >
+              <ExternalLink className="w-4 h-4 mr-2" />
+              Open in new tab
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+    </div>
+  );
+}
+
+// ============================================
+// DELIVERY MODE ROW
+// Intent: Execution tracking and day-to-day delivery work
+// Primary content: Epics, Features, Stories, Tasks
+// ============================================
+export function DeliveryGridRow({ 
+  item, 
+  density = 'comfortable',
+  isStarred = false,
+  onToggleStar,
+  onAssignToMe,
+  onChangeStatus,
+  onAddComment,
+}: { 
+  item: BaseWorkItem; 
+  density?: 'compact' | 'comfortable';
+  isStarred?: boolean;
+  onToggleStar?: (id: string) => void;
+  onAssignToMe?: (id: string) => void;
+  onChangeStatus?: (id: string) => void;
+  onAddComment?: (id: string) => void;
+}) {
+  const navigate = useNavigate();
+  const [isHovered, setIsHovered] = useState(false);
+  const timeAgo = formatDistanceToNow(item.activityDate, { addSuffix: false });
+  
+  const rowHeight = density === 'compact' ? 'py-1' : 'py-2';
+  
+  const handleRowClick = () => {
+    // Navigate to work item detail page
+    navigate(`/work-item/${item.id}`);
+  };
+
+  const handleOpenNewTab = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    window.open(`/work-item/${item.id}`, '_blank');
+  };
+
+  return (
+    <div 
+      className={cn(
+        "grid items-center px-3 transition-colors cursor-pointer",
+        rowHeight,
+        isHovered && "bg-[var(--row-hover)]"
+      )}
+      style={{ 
+        gridTemplateColumns: GRID_COLS,
+        borderBottom: '1px solid var(--divider)',
+      }}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      onClick={handleRowClick}
+    >
+      {/* Key */}
+      <div className="flex items-center gap-2">
+        <WorkItemTypeIcon type={item.type} size={14} />
+        <span className="text-xs font-medium text-[var(--text-2)]">{item.key}</span>
+      </div>
+
+      {/* Summary */}
+      <div className="min-w-0 pr-4">
+        <div className="text-sm leading-5 text-[var(--text-1)] truncate">
+          {item.summary}
+        </div>
+      </div>
+
+      {/* Project */}
+      <div className="text-xs truncate text-[var(--text-2)]">
+        {item.project}
+      </div>
+
+      {/* Updated */}
+      <div className="text-xs tabular-nums text-[var(--text-2)]">
+        {timeAgo} ago
+      </div>
+
+      {/* Assignee */}
+      <div className="flex justify-start">
+        {item.assignee ? (
+          <Avatar className="w-5 h-5">
+            <AvatarFallback className="text-[9px] font-medium bg-[var(--surface-3)] text-[var(--text-2)]">
+              {item.assignee.slice(0, 2).toUpperCase()}
+            </AvatarFallback>
+          </Avatar>
+        ) : (
+          <span className="text-[var(--text-3)]">—</span>
+        )}
+      </div>
+
+      {/* Quick actions - Delivery specific: Star, Open in new tab */}
+      <div className={cn("flex items-center justify-end gap-0.5 transition-opacity", isHovered ? "opacity-100" : "opacity-0")}>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button 
+                className={cn(
+                  "w-5 h-5 rounded flex items-center justify-center hover:bg-[var(--nav-hover-bg)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]",
+                  isStarred ? "text-[var(--brand-gold)]" : "text-[var(--icon-muted)]"
+                )}
+                onClick={(e) => { e.stopPropagation(); onToggleStar?.(item.id); }}
+                title={isStarred ? "Unstar" : "Star"}
+              >
+                <Star className={cn("w-3 h-3", isStarred && "fill-current")} />
+              </button>
+            </TooltipTrigger>
+            <TooltipContent>{isStarred ? "Unstar" : "Star"}</TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button 
+                className="w-5 h-5 rounded flex items-center justify-center hover:bg-[var(--nav-hover-bg)] text-[var(--icon-muted)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]"
+                onClick={handleOpenNewTab}
+                title="Open in new tab"
+              >
+                <ExternalLink className="w-3 h-3" />
+              </button>
+            </TooltipTrigger>
+            <TooltipContent>Open in new tab</TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button 
+              className="w-5 h-5 rounded flex items-center justify-center hover:bg-[var(--nav-hover-bg)] text-[var(--icon-muted)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]"
+              onClick={(e) => e.stopPropagation()}
+              title="More actions"
+            >
+              <MoreHorizontal className="w-3 h-3" />
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent 
+            align="end" 
+            className="bg-[var(--surface-1)] border-[var(--border-color)] z-[300]"
+          >
+            <DropdownMenuItem 
+              onClick={(e) => { e.stopPropagation(); onAssignToMe?.(item.id); }}
+              className="text-[var(--text-1)] cursor-pointer"
+            >
+              <UserPlus className="w-4 h-4 mr-2" />
+              Assign to me
+            </DropdownMenuItem>
+            <DropdownMenuItem 
+              onClick={(e) => { e.stopPropagation(); onChangeStatus?.(item.id); }}
+              className="text-[var(--text-1)] cursor-pointer"
+            >
+              <CheckCircle className="w-4 h-4 mr-2" />
+              Change status
+            </DropdownMenuItem>
+            <DropdownMenuItem 
+              onClick={(e) => { e.stopPropagation(); onAddComment?.(item.id); }}
+              className="text-[var(--text-1)] cursor-pointer"
+            >
+              <MessageSquare className="w-4 h-4 mr-2" />
+              Add comment
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem 
+              onClick={(e) => { e.stopPropagation(); /* TODO: View history */ }}
+              className="text-[var(--text-1)] cursor-pointer"
+            >
+              <History className="w-4 h-4 mr-2" />
+              View history
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+    </div>
+  );
+}
+
+// ============================================
+// PLANNER MODE ROW
+// Intent: Planning, preparation, and decision support
+// Primary content: Planned items, Upcoming work, Pending review
+// ============================================
+export function PlannerGridRow({ 
+  item, 
+  density = 'comfortable',
+  onReviewItem,
+  onAddNote,
+  onPrepareForPlanning,
+  onRequestClarification,
+}: { 
+  item: BaseWorkItem; 
+  density?: 'compact' | 'comfortable';
+  onReviewItem?: (id: string) => void;
+  onAddNote?: (id: string) => void;
+  onPrepareForPlanning?: (id: string) => void;
+  onRequestClarification?: (id: string) => void;
+}) {
+  const navigate = useNavigate();
+  const [isHovered, setIsHovered] = useState(false);
+  const timeAgo = formatDistanceToNow(item.activityDate, { addSuffix: false });
+  
+  const rowHeight = density === 'compact' ? 'py-1' : 'py-2';
+  
+  const handleRowClick = () => {
+    // Navigate to planning/review view (read-first)
+    navigate(`/work-manager/tasks/${item.id}`);
+  };
+
+  const handleOpenNewTab = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    window.open(`/work-manager/tasks/${item.id}`, '_blank');
+  };
+
+  return (
+    <div 
+      className={cn(
+        "grid items-center px-3 transition-colors cursor-pointer",
+        rowHeight,
+        isHovered && "bg-[var(--row-hover)]"
+      )}
+      style={{ 
+        gridTemplateColumns: GRID_COLS,
+        borderBottom: '1px solid var(--divider)',
+      }}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      onClick={handleRowClick}
+    >
+      {/* Key */}
+      <div className="flex items-center gap-2">
+        <WorkItemTypeIcon type={item.type} size={14} />
+        <span className="text-xs font-medium text-[var(--text-2)]">{item.key}</span>
+      </div>
+
+      {/* Summary */}
+      <div className="min-w-0 pr-4">
+        <div className="text-sm leading-5 text-[var(--text-1)] truncate">
+          {item.summary}
+        </div>
+      </div>
+
+      {/* Project */}
+      <div className="text-xs truncate text-[var(--text-2)]">
+        {item.project}
+      </div>
+
+      {/* Updated */}
+      <div className="text-xs tabular-nums text-[var(--text-2)]">
+        {timeAgo} ago
+      </div>
+
+      {/* Assignee */}
+      <div className="flex justify-start">
+        {item.assignee ? (
+          <Avatar className="w-5 h-5">
+            <AvatarFallback className="text-[9px] font-medium bg-[var(--surface-3)] text-[var(--text-2)]">
+              {item.assignee.slice(0, 2).toUpperCase()}
+            </AvatarFallback>
+          </Avatar>
+        ) : (
+          <span className="text-[var(--text-3)]">—</span>
+        )}
+      </div>
+
+      {/* Quick actions - Planner specific: Review, Add note */}
+      <div className={cn("flex items-center justify-end gap-0.5 transition-opacity", isHovered ? "opacity-100" : "opacity-0")}>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button 
+                className="w-5 h-5 rounded flex items-center justify-center hover:bg-[var(--nav-hover-bg)] text-[var(--icon-muted)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]"
+                onClick={(e) => { e.stopPropagation(); onReviewItem?.(item.id); }}
+                title="Review item"
+              >
+                <Eye className="w-3 h-3" />
+              </button>
+            </TooltipTrigger>
+            <TooltipContent>Review item</TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button 
+                className="w-5 h-5 rounded flex items-center justify-center hover:bg-[var(--nav-hover-bg)] text-[var(--icon-muted)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]"
+                onClick={(e) => { e.stopPropagation(); onAddNote?.(item.id); }}
+                title="Add note"
+              >
+                <FileText className="w-3 h-3" />
+              </button>
+            </TooltipTrigger>
+            <TooltipContent>Add note</TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button 
+              className="w-5 h-5 rounded flex items-center justify-center hover:bg-[var(--nav-hover-bg)] text-[var(--icon-muted)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]"
+              onClick={(e) => e.stopPropagation()}
+              title="More actions"
+            >
+              <MoreHorizontal className="w-3 h-3" />
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent 
+            align="end" 
+            className="bg-[var(--surface-1)] border-[var(--border-color)] z-[300]"
+          >
+            <DropdownMenuItem 
+              onClick={(e) => { e.stopPropagation(); onPrepareForPlanning?.(item.id); }}
+              className="text-[var(--text-1)] cursor-pointer"
+            >
+              <Calendar className="w-4 h-4 mr-2" />
+              Prepare for planning
+            </DropdownMenuItem>
+            <DropdownMenuItem 
+              onClick={(e) => { e.stopPropagation(); onRequestClarification?.(item.id); }}
+              className="text-[var(--text-1)] cursor-pointer"
+            >
+              <HelpCircle className="w-4 h-4 mr-2" />
+              Request clarification
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem 
+              onClick={handleOpenNewTab}
+              className="text-[var(--text-1)] cursor-pointer"
+            >
+              <ExternalLink className="w-4 h-4 mr-2" />
+              Open in new tab
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+    </div>
+  );
+}
+
+// ============================================
+// MODE-AWARE ROW SELECTOR
+// ============================================
+export function ModeAwareGridRow({
+  item,
+  mode,
+  density = 'comfortable',
+  isStarred = false,
+  onToggleStar,
+  onAssignToMe,
+  onAcknowledge,
+  onResolve,
+  onChangeStatus,
+  onAddComment,
+  onReviewItem,
+  onAddNote,
+  onPrepareForPlanning,
+  onRequestClarification,
+}: {
+  item: BaseWorkItem;
+  mode: HomeRoleMode;
+  density?: 'compact' | 'comfortable';
+  isStarred?: boolean;
+  onToggleStar?: (id: string) => void;
+  onAssignToMe?: (id: string) => void;
+  onAcknowledge?: (id: string) => void;
+  onResolve?: (id: string) => void;
+  onChangeStatus?: (id: string) => void;
+  onAddComment?: (id: string) => void;
+  onReviewItem?: (id: string) => void;
+  onAddNote?: (id: string) => void;
+  onPrepareForPlanning?: (id: string) => void;
+  onRequestClarification?: (id: string) => void;
+}) {
+  switch (mode) {
+    case 'operations':
+      return (
+        <OperationsGridRow 
+          item={item} 
+          density={density}
+          onAssignToMe={onAssignToMe}
+          onAcknowledge={onAcknowledge}
+          onResolve={onResolve}
+        />
+      );
+    case 'planner':
+      return (
+        <PlannerGridRow 
+          item={item} 
+          density={density}
+          onReviewItem={onReviewItem}
+          onAddNote={onAddNote}
+          onPrepareForPlanning={onPrepareForPlanning}
+          onRequestClarification={onRequestClarification}
+        />
+      );
+    case 'delivery':
+    default:
+      return (
+        <DeliveryGridRow 
+          item={item} 
+          density={density}
+          isStarred={isStarred}
+          onToggleStar={onToggleStar}
+          onAssignToMe={onAssignToMe}
+          onChangeStatus={onChangeStatus}
+          onAddComment={onAddComment}
+        />
+      );
+  }
+}

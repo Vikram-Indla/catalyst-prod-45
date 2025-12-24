@@ -10,7 +10,7 @@ import { cn } from '@/lib/utils';
 import { formatDistanceToNow } from 'date-fns';
 import { SegmentedTabs, SegmentedTab } from '@/components/ui/segmented-tabs';
 import { UnifiedToolbar } from '@/components/ui/unified-toolbar';
-import { CriticalStrip } from './home/CriticalStrip';
+import { CriticalStrip, ActiveFilter } from './home/CriticalStrip';
 import { HomeRoleModeSelector, HomeRoleMode } from './home/HomeRoleModeSelector';
 // Domain-separated hooks - each mode has its own query hooks
 import {
@@ -523,9 +523,8 @@ function DataGrid({
 }
 
 // ============================================
-// ACTIVE FILTER TYPE
+// MAIN HOME CONTENT
 // ============================================
-type ActiveFilter = 'all' | 'major-incidents' | 'sla-at-risk' | 'awaiting-me' | 'blocked';
 
 // ============================================
 // MAIN HOME CONTENT
@@ -764,7 +763,9 @@ export function HomeContent() {
             awaitingMe={criticalCounts.awaitingMe}
             blocked={criticalCounts.blocked}
             activeFilter={activeFilter}
+            currentMode={roleMode}
             onFilterChange={handleChipFilter}
+            onModeChange={setRoleMode}
           />
         </div>
 
