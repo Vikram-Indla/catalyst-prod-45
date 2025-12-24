@@ -4794,6 +4794,105 @@ export type Database = {
         }
         Relationships: []
       }
+      home_analytics_alerts: {
+        Row: {
+          alert_name: string
+          created_at: string
+          id: string
+          is_active: boolean
+          metric_name: string
+          notify_roles: string[]
+          severity: string
+          threshold_operator: string
+          threshold_value: number
+          updated_at: string
+        }
+        Insert: {
+          alert_name: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          metric_name: string
+          notify_roles?: string[]
+          severity: string
+          threshold_operator: string
+          threshold_value: number
+          updated_at?: string
+        }
+        Update: {
+          alert_name?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          metric_name?: string
+          notify_roles?: string[]
+          severity?: string
+          threshold_operator?: string
+          threshold_value?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      home_analytics_daily: {
+        Row: {
+          computed_at: string
+          date: string
+          home_mode: string
+          id: string
+          metadata: Json | null
+          metric_name: string
+          metric_value: number
+        }
+        Insert: {
+          computed_at?: string
+          date: string
+          home_mode: string
+          id?: string
+          metadata?: Json | null
+          metric_name: string
+          metric_value?: number
+        }
+        Update: {
+          computed_at?: string
+          date?: string
+          home_mode?: string
+          id?: string
+          metadata?: Json | null
+          metric_name?: string
+          metric_value?: number
+        }
+        Relationships: []
+      }
+      home_analytics_events: {
+        Row: {
+          created_at: string
+          event_name: string
+          event_properties: Json | null
+          home_mode: string
+          id: string
+          session_id: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          event_name: string
+          event_properties?: Json | null
+          home_mode: string
+          id?: string
+          session_id?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          event_name?: string
+          event_properties?: Json | null
+          home_mode?: string
+          id?: string
+          session_id?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       home_migration_metrics: {
         Row: {
           data_mismatches: Json | null
@@ -16074,6 +16173,10 @@ export type Database = {
         Returns: boolean
       }
       clean_stale_presence: { Args: never; Returns: undefined }
+      compute_home_analytics_daily: {
+        Args: { target_date?: string }
+        Returns: undefined
+      }
       create_adhoc_cycle: { Args: never; Returns: string }
       create_notification: {
         Args: {
