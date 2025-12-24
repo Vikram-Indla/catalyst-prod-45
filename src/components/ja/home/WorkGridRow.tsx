@@ -8,7 +8,8 @@ import {
   UserPlus, Clock, MessageSquare, History, Eye, 
   FileText, HelpCircle, Calendar
 } from 'lucide-react';
-import { WorkItemTypeIcon, WorkItemType } from '../icons/WorkItemTypeIcon';
+import { WorkItemIcon } from '../icons/WorkItemIcon';
+import type { WorkItemType } from '../icons/WorkItemTypeIcon';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
 import { getValidatedWorkItemRoute } from '@/lib/workItemRoutes';
@@ -142,7 +143,7 @@ export function OperationsGridRow({
       >
         {/* Key - bronze/gold color */}
         <div className="flex items-center gap-2.5">
-          <WorkItemTypeIcon type={item.type} size={14} />
+          <WorkItemIcon type={item.type} size={14} />
           <span className="text-[13px] font-mono font-medium text-[#8b7355] dark:text-[#d4a855]">{item.key}</span>
         </div>
 
@@ -269,7 +270,7 @@ export function OperationsGridRow({
         onClick={handleRowClick}
       >
         <div className="flex items-center gap-1.5">
-          <WorkItemTypeIcon type={item.type} size={12} />
+          <WorkItemIcon type={item.type} size={12} />
           <span className="text-xs font-mono font-medium text-[#8b7355] dark:text-[#d4a855]">{item.key}</span>
         </div>
         <div className="min-w-0 px-2">
@@ -355,7 +356,7 @@ export function DeliveryGridRow({
       >
         {/* Key - bronze/gold color */}
         <div className="flex items-center gap-2.5">
-          <WorkItemTypeIcon type={item.type} size={14} />
+          <WorkItemIcon type={item.type} size={14} />
           <span className="text-[13px] font-mono font-medium text-[#8b7355] dark:text-[#d4a855]">{item.key}</span>
         </div>
 
@@ -463,7 +464,7 @@ export function DeliveryGridRow({
         onClick={handleRowClick}
       >
         <div className="flex items-center gap-1.5">
-          <WorkItemTypeIcon type={item.type} size={12} />
+          <WorkItemIcon type={item.type} size={12} />
           <span className="text-xs font-mono font-medium text-[#8b7355] dark:text-[#d4a855]">{item.key}</span>
         </div>
         <div className="min-w-0 px-2">
@@ -549,7 +550,7 @@ export function PlannerGridRow({
       >
         {/* Key - bronze/gold color */}
         <div className="flex items-center gap-2.5">
-          <WorkItemTypeIcon type={item.type} size={14} />
+          <WorkItemIcon type={item.type} size={14} />
           <span className="text-[13px] font-mono font-medium text-[#8b7355] dark:text-[#d4a855]">{item.key}</span>
         </div>
 
@@ -657,7 +658,7 @@ export function PlannerGridRow({
         onClick={handleRowClick}
       >
         <div className="flex items-center gap-1.5">
-          <WorkItemTypeIcon type={item.type} size={12} />
+          <WorkItemIcon type={item.type} size={12} />
           <span className="text-xs font-mono font-medium text-[#8b7355] dark:text-[#d4a855]">{item.key}</span>
         </div>
         <div className="min-w-0 px-2">

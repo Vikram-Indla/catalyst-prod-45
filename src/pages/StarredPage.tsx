@@ -6,7 +6,8 @@ import { useNavigate } from 'react-router-dom';
 import { Star, Eye, FileText, MoreHorizontal, ExternalLink, Trash2, Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { WorkItemTypeIcon, WorkItemType } from '@/components/ja/icons/WorkItemTypeIcon';
+import { WorkItemIcon } from '@/components/ja/icons/WorkItemIcon';
+import type { WorkItemType } from '@/components/ja/icons/WorkItemTypeIcon';
 import { formatDistanceToNow } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { useStarredDeliveryItems, useToggleStar, StarredItemType } from '@/hooks/home/useStarredItems';
@@ -110,13 +111,8 @@ function StarredItemRow({
       {/* Key - bronze/gold color */}
       <div className="flex items-center gap-2.5">
         {/* Only render icon for valid WorkItemType */}
-        {['story', 'feature', 'task', 'defect'].includes(item.type) && (
-          <WorkItemTypeIcon type={item.type as WorkItemType} size={14} />
-        )}
-        {item.type === 'epic' && (
-          <div className="w-3.5 h-3.5 rounded-sm bg-purple-500 flex items-center justify-center">
-            <span className="text-[8px] font-bold text-white">E</span>
-          </div>
+        {['story', 'feature', 'task', 'defect', 'epic'].includes(item.type) && (
+          <WorkItemIcon type={item.type as WorkItemType} size={14} />
         )}
         <span className="text-[13px] font-mono font-medium text-[#8b7355] dark:text-[#d4a855]">{item.key}</span>
       </div>

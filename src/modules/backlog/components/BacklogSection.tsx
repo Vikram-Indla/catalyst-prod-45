@@ -3,7 +3,7 @@ import { Droppable, Draggable } from '@hello-pangea/dnd';
 import { BacklogPISection, BacklogItem } from '../types';
 import { Button } from '@/components/ui/button';
 import { ChevronDown, ChevronRight, GripVertical, ChevronLeft, Loader2 } from 'lucide-react';
-import { WorkItemTypeIcon } from '@/components/ja/icons/WorkItemTypeIcon';
+import { WorkItemIcon } from '@/components/ja/icons/WorkItemIcon';
 import { Checkbox } from '@/components/ui/checkbox';
 import { cn } from '@/lib/utils';
 import { QuickAddRow } from './QuickAddRow';
@@ -314,7 +314,7 @@ function BacklogItemRow({
 
           {/* Key - Generate program-based epic key (e.g., ABC-001) */}
           <div className="font-mono text-xs text-muted-foreground min-w-[100px] flex items-center gap-1.5">
-            <WorkItemTypeIcon type="epic" size={14} />
+            <WorkItemIcon type="epic" size={14} />
             <span>{item.epicKey || (programKey ? `${programKey}-${String(rank).padStart(3, '0')}` : item.displayId || '—')}</span>
           </div>
 

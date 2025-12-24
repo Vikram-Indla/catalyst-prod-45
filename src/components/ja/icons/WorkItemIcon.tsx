@@ -17,6 +17,7 @@ const ICON_COLORS: Record<string, string> = {
   // Project
   feature: '#F59E0B',    // Amber
   story: '#36B37E',      // Green
+  task: '#0065FF',       // Blue
   defect: '#FF5630',     // Red
   incident: '#EF4444',   // Red-500
   
@@ -33,6 +34,7 @@ const OUTLINE_COLORS: Record<string, string> = {
   epic: '#a060f0',
   feature: '#fbbf24',
   story: '#4ade80',
+  task: '#3b82f6',
   defect: '#f87171',
   incident: '#f87171',
   dependency: '#60a5fa',
@@ -120,6 +122,13 @@ function FilledIcon({ type, size, color, className }: { type: string; size: numb
         <svg {...commonProps}>
           <rect x="2" y="1" width="12" height="14" rx="1" fill={color} />
           <path d="M5 4H11M5 7H11M5 10H9" stroke="white" strokeWidth="1.5" strokeLinecap="round" />
+        </svg>
+      );
+    case 'task':
+      return (
+        <svg {...commonProps}>
+          <rect width="16" height="16" rx="2" fill={color} />
+          <path d="M4 8L7 11L12 5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
       );
     case 'defect':
@@ -214,6 +223,13 @@ function OutlineIcon({ type, size, color, className }: { type: string; size: num
         <svg {...commonProps}>
           <rect x="3" y="2" width="10" height="12" rx="1" stroke={stroke} strokeWidth={sw} />
           <path d="M5 5H11M5 8H11M5 11H8" stroke={stroke} strokeWidth="1.2" strokeLinecap="round" />
+        </svg>
+      );
+    case 'task':
+      return (
+        <svg {...commonProps}>
+          <rect x="2" y="2" width="12" height="12" rx="2" stroke={stroke} strokeWidth={sw} />
+          <path d="M5 8L7 10L11 6" stroke={stroke} strokeWidth={sw} strokeLinecap="round" strokeLinejoin="round" />
         </svg>
       );
     case 'defect':
@@ -311,6 +327,13 @@ function MinimalIcon({ type, size, color, className }: { type: string; size: num
           <rect x="5" y="5" width="6" height="1" rx="0.5" fill={color} />
           <rect x="5" y="7.5" width="6" height="1" rx="0.5" fill={color} />
           <rect x="5" y="10" width="4" height="1" rx="0.5" fill={color} />
+        </svg>
+      );
+    case 'task':
+      return (
+        <svg {...commonProps}>
+          <rect x="2" y="2" width="12" height="12" rx="2" fill={color} opacity="0.15" />
+          <path d="M5 8L7 10L11 6" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
       );
     case 'defect':
