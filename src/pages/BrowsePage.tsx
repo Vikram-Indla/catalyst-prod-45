@@ -43,8 +43,16 @@ export default function BrowsePage() {
     try {
       const normalizedKey = workItemKey.toUpperCase();
 
+      // Check if the key is a generated key (e.g., F-3f3fbf, US-abc123)
+      // These are derived from the UUID when display_id is null
+      let idFromGeneratedKey: string | null = null;
+      const generatedKeyMatch = normalizedKey.match(/^(F|US|E)-([A-F0-9]{6})$/i);
+      if (generatedKeyMatch) {
+        idFromGeneratedKey = generatedKeyMatch[2].toLowerCase();
+      }
+
       // Search across all work item tables in parallel
-      const [epicResult, featureResult, storyResult, demandResult] = await Promise.all([
+      const [epicResult, featureResult, storyResult, demandResult, featureByIdResult, storyByIdResult] = await Promise.all([
         supabase
           .from('epics')
           .select('id, epic_key')
@@ -65,6 +73,22 @@ export default function BrowsePage() {
           .select('id, request_key')
           .ilike('request_key', normalizedKey)
           .maybeSingle(),
+        // Also search by ID prefix for features (when display_id is null)
+        idFromGeneratedKey && normalizedKey.startsWith('F-')
+          ? supabase
+              .from('features')
+              .select('id, display_id')
+              .like('id', `${idFromGeneratedKey}%`)
+              .maybeSingle()
+          : Promise.resolve({ data: null, error: null }),
+        // Also search by ID prefix for stories (when story_key is null)
+        idFromGeneratedKey && normalizedKey.startsWith('US-')
+          ? supabase
+              .from('stories')
+              .select('id, story_key')
+              .like('id', `${idFromGeneratedKey}%`)
+              .maybeSingle()
+          : Promise.resolve({ data: null, error: null }),
       ]);
 
       let result: WorkItemResult | null = null;
@@ -73,8 +97,14 @@ export default function BrowsePage() {
         result = { id: epicResult.data.id, type: 'epic', key: epicResult.data.epic_key || workItemKey };
       } else if (featureResult.data) {
         result = { id: featureResult.data.id, type: 'feature', key: featureResult.data.display_id || workItemKey };
+      } else if (featureByIdResult.data) {
+        // Found by generated key (F-xxxxxx)
+        result = { id: featureByIdResult.data.id, type: 'feature', key: featureByIdResult.data.display_id || workItemKey };
       } else if (storyResult.data) {
         result = { id: storyResult.data.id, type: 'story', key: storyResult.data.story_key || workItemKey };
+      } else if (storyByIdResult.data) {
+        // Found by generated key (US-xxxxxx)
+        result = { id: storyByIdResult.data.id, type: 'story', key: storyByIdResult.data.story_key || workItemKey };
       } else if (demandResult.data) {
         result = { id: demandResult.data.id, type: 'demand', key: demandResult.data.request_key || workItemKey };
       }
