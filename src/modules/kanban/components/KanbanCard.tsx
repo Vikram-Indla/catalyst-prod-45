@@ -10,8 +10,21 @@
  */
 
 import React, { useState } from 'react';
-import { KanbanTicket, DEPARTMENTS } from '../types';
+import { KanbanTicket, DEPARTMENTS, COLUMNS_CONFIG } from '../types';
 import { Clock, GripVertical, Tag, MoreHorizontal } from 'lucide-react';
+
+// Helper to get a human-readable label for a status
+function getStatusLabel(status: string): string {
+  // First check static column config
+  const columnConfig = COLUMNS_CONFIG.find(c => c.id === status);
+  if (columnConfig) return columnConfig.label;
+  
+  // Fallback: convert snake_case to Title Case
+  return status
+    .split('_')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(' ');
+}
 
 interface KanbanCardProps {
   ticket: KanbanTicket;
@@ -281,7 +294,7 @@ if (compactMode) {
             bg-gray-100 dark:bg-gray-800
             px-2 py-0.5 rounded
           ">
-            Request
+            {getStatusLabel(ticket.status)}
           </span>
         </div>
 
