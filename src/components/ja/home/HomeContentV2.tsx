@@ -724,18 +724,25 @@ export function HomeContentV2({ metrics }: HomeContentV2Props) {
       className="min-h-screen font-sans"
       style={{ backgroundColor: 'var(--bg)' }}
     >
-      <div className="w-full max-w-[1680px] 2xl:max-w-[1920px] mx-auto px-6 xl:px-8 py-3">
-        {/* Page header */}
-        <div className="flex items-center justify-between gap-4">
-          <h1 className="text-xl font-semibold leading-7 tracking-tight m-0 text-[var(--text-1)]">
-            For you
-          </h1>
-          <HomeRoleModeSelector value={roleMode} onChange={handleModeChange} />
+      {/* Sticky header pane */}
+      <div 
+        className="sticky top-0 z-20 border-b border-[var(--border-color)]"
+        style={{ backgroundColor: 'var(--bg)' }}
+      >
+        <div className="w-full max-w-[1680px] 2xl:max-w-[1920px] mx-auto px-6 xl:px-8 py-3">
+          <div className="flex items-center justify-between gap-4">
+            <h1 className="text-xl font-semibold leading-7 tracking-tight m-0 text-[var(--text-1)]">
+              For you
+            </h1>
+            <HomeRoleModeSelector value={roleMode} onChange={handleModeChange} />
+          </div>
         </div>
+      </div>
 
+      <div className="w-full max-w-[1680px] 2xl:max-w-[1920px] mx-auto px-6 xl:px-8 py-3">
         {/* Critical Strip - Operations only */}
         {roleMode === 'operations' && (
-          <div className="mt-3">
+          <div className="mb-3">
             <CriticalStrip
               majorIncidents={criticalCounts.majorIncidents}
               slaAtRisk={criticalCounts.slaAtRisk}
@@ -748,8 +755,6 @@ export function HomeContentV2({ metrics }: HomeContentV2Props) {
             />
           </div>
         )}
-
-        <div className="h-px mt-3 mb-3 bg-[var(--border-color)]" />
 
         {/* Two Column Layout */}
         <div className="grid grid-cols-1 xl:grid-cols-[1fr_240px] gap-4">
