@@ -1,9 +1,10 @@
 /**
  * useKanbanData - Fetches business requests and maps to dynamic Kanban columns
  * Columns are built from demand_process_steps table
+ * Includes real-time updates for process_step changes
  */
 
-import { useMemo } from 'react';
+import { useMemo, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { KanbanTicket, UNCATEGORIZED_COLUMN_ID } from '../types';
@@ -82,7 +83,30 @@ export function useKanbanData() {
     },
   });
 
-  // Transform to KanbanTicket format
+  // Real-time subscription for business_requests updates
+  useEffect(() => {
+    const channel = supabase
+      .channel('kanban-business-requests')
+      .on(
+        'postgres_changes',
+        {
+          event: '*', // Listen to INSERT, UPDATE, DELETE
+          schema: 'public',
+          table: 'business_requests'
+        },
+        (payload) => {
+          console.log('Kanban realtime update:', payload.eventType);
+          // Invalidate and refetch business-requests to update the board
+          queryClient.invalidateQueries({ queryKey: ['business-requests'] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [queryClient]);
+
   const tickets: KanbanTicket[] = useMemo(() => {
     if (!rawRequests) return [];
     

@@ -307,6 +307,22 @@ if (compactMode) {
         ">
           <DaysInColumnIndicator days={ticket.daysInColumn} />
           <div className="flex items-center gap-2">
+            {ticket.assignee && (
+              <div className="flex items-center gap-1.5 mr-2">
+                <div
+                  className="
+                    w-6 h-6 rounded-full flex items-center justify-center 
+                    text-[10px] font-medium shrink-0
+                    bg-blue-100 dark:bg-blue-900/40
+                    text-blue-700 dark:text-blue-300
+                    border border-blue-200 dark:border-blue-700
+                  "
+                  title={`Assignee: ${ticket.assignee}`}
+                >
+                  {ticket.assignee.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
+                </div>
+              </div>
+            )}
             {ticket.businessOwner && (
               <>
                 <span className="text-[11px] text-gray-500 dark:text-gray-400">
