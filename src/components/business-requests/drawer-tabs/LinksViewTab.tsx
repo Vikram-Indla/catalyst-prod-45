@@ -131,6 +131,8 @@ const TYPE_BADGE_CONFIG: Record<string, { bg: string; text: string }> = {
 interface LinksViewTabProps {
   requestId: string;
   onNavigateToEpic?: (epicId: string, programId?: string | null) => void;
+  onNavigateToFeature?: (featureId: string) => void;
+  onNavigateToStory?: (storyId: string) => void;
 }
 
 const formatFileSize = (bytes: number): string => {
@@ -154,7 +156,7 @@ const formatDate = (dateStr: string): string => {
   });
 };
 
-export function LinksViewTab({ requestId, onNavigateToEpic }: LinksViewTabProps) {
+export function LinksViewTab({ requestId, onNavigateToEpic, onNavigateToFeature, onNavigateToStory }: LinksViewTabProps) {
   const queryClient = useQueryClient();
   const fileInputRef = useRef<HTMLInputElement>(null);
   
@@ -1068,10 +1070,24 @@ export function LinksViewTab({ requestId, onNavigateToEpic }: LinksViewTabProps)
                       {/* Line 1: Title + Type Badge + Status Badge + Menu */}
                       <div className="flex items-center gap-2">
                         {/* Title - truncates to make room for badges */}
-                        {/* Epic links get special navigation handling */}
+                        {/* Implementation links get special navigation handling */}
                         {link.kind === 'implementation' && link.linked_item_type === 'epic' && onNavigateToEpic ? (
                           <button
                             onClick={() => onNavigateToEpic(link.linked_item_id, null)}
+                            className="text-[14px] font-medium text-brand-primary hover:underline underline-offset-2 truncate flex-1 min-w-0 text-left"
+                          >
+                            {link.title}
+                          </button>
+                        ) : link.kind === 'implementation' && link.linked_item_type === 'feature' && onNavigateToFeature ? (
+                          <button
+                            onClick={() => onNavigateToFeature(link.linked_item_id)}
+                            className="text-[14px] font-medium text-brand-primary hover:underline underline-offset-2 truncate flex-1 min-w-0 text-left"
+                          >
+                            {link.title}
+                          </button>
+                        ) : link.kind === 'implementation' && link.linked_item_type === 'story' && onNavigateToStory ? (
+                          <button
+                            onClick={() => onNavigateToStory(link.linked_item_id)}
                             className="text-[14px] font-medium text-brand-primary hover:underline underline-offset-2 truncate flex-1 min-w-0 text-left"
                           >
                             {link.title}

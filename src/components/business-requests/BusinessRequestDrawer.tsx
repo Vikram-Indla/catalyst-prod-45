@@ -46,6 +46,8 @@ import { ExecutiveAuditHistoryTab } from './drawer-tabs/ExecutiveAuditHistoryTab
 import { MilestonesViewTab } from './drawer-tabs/MilestonesViewTab';
 import { RisksViewTab } from './drawer-tabs/RisksViewTab';
 import { WorkflowViewerModal } from './WorkflowViewerModal';
+import { FeatureDetailsPanel } from '@/components/items/features/FeatureDetailsPanel';
+import { StoryDetailsPanel } from '@/components/items/stories/StoryDetailsPanel';
 import { toast } from 'sonner';
 import { useQueryClient, useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -255,6 +257,42 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
   const [isSaving, setIsSaving] = useState(false);
   const [showSavedIndicator, setShowSavedIndicator] = useState(false);
   
+  // Linked item panel state
+  const [selectedFeatureId, setSelectedFeatureId] = useState<string | null>(null);
+  const [selectedStoryId, setSelectedStoryId] = useState<string | null>(null);
+
+  // Fetch selected feature data
+  const { data: selectedFeature } = useQuery({
+    queryKey: ['feature-for-panel', selectedFeatureId],
+    queryFn: async () => {
+      if (!selectedFeatureId) return null;
+      const { data, error } = await supabase
+        .from('features')
+        .select('*')
+        .eq('id', selectedFeatureId)
+        .single();
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!selectedFeatureId,
+  });
+
+  // Fetch selected story data
+  const { data: selectedStory } = useQuery({
+    queryKey: ['story-for-panel', selectedStoryId],
+    queryFn: async () => {
+      if (!selectedStoryId) return null;
+      const { data, error } = await supabase
+        .from('stories')
+        .select('*')
+        .eq('id', selectedStoryId)
+        .single();
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!selectedStoryId,
+  });
+  
   const nameInputRef = useRef<HTMLInputElement>(null);
   const tabsBodyScrollRef = useRef<HTMLDivElement>(null);
   const autoSaveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -271,6 +309,16 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
       : `/enterprise/epics?epicId=${epicId}`;
     navigate(path);
   }, [onClose, navigate]);
+
+  // Handle navigation to Feature from Links tab - opens inline panel
+  const handleNavigateToFeature = useCallback((featureId: string) => {
+    setSelectedFeatureId(featureId);
+  }, []);
+
+  // Handle navigation to Story from Links tab - opens inline panel
+  const handleNavigateToStory = useCallback((storyId: string) => {
+    setSelectedStoryId(storyId);
+  }, []);
 
   // Auto-save function
   const performAutoSave = useCallback(async (dataToSave: Partial<BusinessRequest> & Record<string, any>) => {
@@ -763,7 +811,14 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
               
               {/* Links Tab */}
               <TabsContent value="links" className="mt-0 p-5 pb-8 focus-visible:outline-none">
-                {requestId && <LinksViewTab requestId={requestId} onNavigateToEpic={handleNavigateToEpic} />}
+                {requestId && (
+                  <LinksViewTab 
+                    requestId={requestId} 
+                    onNavigateToEpic={handleNavigateToEpic}
+                    onNavigateToFeature={handleNavigateToFeature}
+                    onNavigateToStory={handleNavigateToStory}
+                  />
+                )}
               </TabsContent>
               
               {/* Audit History Tab */}
@@ -798,6 +853,20 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Feature Details Panel */}
+      <FeatureDetailsPanel
+        feature={selectedFeature || undefined}
+        open={!!selectedFeatureId}
+        onClose={() => setSelectedFeatureId(null)}
+      />
+
+      {/* Story Details Panel */}
+      <StoryDetailsPanel
+        story={selectedStory}
+        open={!!selectedStoryId}
+        onClose={() => setSelectedStoryId(null)}
+      />
     </>
   );
 }
