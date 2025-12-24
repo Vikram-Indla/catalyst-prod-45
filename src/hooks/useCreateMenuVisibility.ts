@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useUserRole } from './useUserRole';
@@ -59,6 +60,30 @@ export function useCreateMenuVisibility() {
     },
     enabled: productRoles !== undefined,
   });
+
+  // Real-time subscription for visibility changes
+  useEffect(() => {
+    const channel = supabase
+      .channel('create-menu-visibility-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'create_menu_visibility',
+        },
+        () => {
+          // Invalidate queries to refetch data when changes occur
+          queryClient.invalidateQueries({ queryKey: ['create-menu-visibility-all'] });
+          queryClient.invalidateQueries({ queryKey: ['create-menu-visibility-user'] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [queryClient]);
 
   // Mutation to update visibility
   const updateVisibility = useMutation({
