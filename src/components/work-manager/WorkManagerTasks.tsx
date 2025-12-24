@@ -85,7 +85,7 @@ export function WorkManagerTasks({ tasks, onOpenTask }: WorkManagerTasksProps) {
     <th
       onClick={() => handleSort(field)}
       className={cn(
-        'text-left px-4 py-3 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground bg-muted/50 cursor-pointer hover:text-foreground whitespace-nowrap transition-colors',
+        'text-left px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.08em] text-gray-500 bg-gray-50/80 cursor-pointer hover:text-foreground whitespace-nowrap transition-colors',
         className
       )}
     >
@@ -125,23 +125,23 @@ export function WorkManagerTasks({ tasks, onOpenTask }: WorkManagerTasksProps) {
   };
 
   return (
-    <div className="bg-card rounded-xl border border-border shadow-sm overflow-hidden">
+    <div className="rounded-xl border border-gray-200 shadow-catalyst-sm overflow-hidden">
       <div className="overflow-auto max-h-[calc(100vh-220px)]">
         <table className="w-full">
           <thead className="sticky top-0 z-10">
-            <tr className="border-b border-border bg-muted">
+            <tr className="bg-gray-50/80 border-b border-gray-200">
               <SortableHeader field="key" label="ID" className="w-[100px]" />
               <SortableHeader field="title" label="Title" />
               <SortableHeader field="team" label="Team" className="w-[160px]" />
               <SortableHeader field="assignee" label="Assignee" className="w-[180px]" />
               <SortableHeader field="type" label="Type" className="w-[100px]" />
-              <th className="text-left px-4 py-3 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground bg-muted/50 w-[120px]">
+              <th className="text-left px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.08em] text-gray-500 bg-gray-50/80 w-[120px]">
                 Linked Item
               </th>
               <SortableHeader field="status" label="Status" className="w-[120px]" />
               <SortableHeader field="priority" label="Priority" className="w-[100px]" />
               <SortableHeader field="dueDate" label="Due Date" className="w-[120px]" />
-              <th className="text-left px-4 py-3 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground bg-muted/50 w-[80px]">
+              <th className="text-left px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.08em] text-gray-500 bg-gray-50/80 w-[80px]">
                 Blocked
               </th>
             </tr>
@@ -157,7 +157,7 @@ export function WorkManagerTasks({ tasks, onOpenTask }: WorkManagerTasksProps) {
                   key={task.id}
                   onClick={() => onOpenTask(task.id)}
                   className={cn(
-                    'border-b border-border hover:bg-muted/50 cursor-pointer transition-colors',
+                    'border-b border-border hover:bg-gray-50 transition-smooth cursor-pointer',
                     isDone && 'opacity-50'
                   )}
                 >
