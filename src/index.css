@@ -422,6 +422,32 @@
   [data-theme="dark"] [data-sidebar="menu-button"]:hover {
     background-color: hsl(0 0% 20%);
   }
+  
+  /* Dark mode contrast utilities for muted elements */
+  .text-muted-visible {
+    @apply text-muted-foreground;
+  }
+  
+  .dark .text-muted-visible {
+    color: hsl(0 0% 65%);
+  }
+  
+  .text-muted-subtle {
+    @apply text-muted-foreground;
+  }
+  
+  .dark .text-muted-subtle {
+    color: hsl(0 0% 55%);
+  }
+  
+  /* Icon visibility boost for dark mode empty states */
+  .icon-muted-visible {
+    @apply text-muted-foreground;
+  }
+  
+  .dark .icon-muted-visible {
+    color: hsl(0 0% 50%);
+  }
 }
 
 /* ════════════════════════════════════════════════════════════════════════════
