@@ -575,24 +575,24 @@ export function HomeContentV2() {
         return (
           <>
             <FocusWidget 
-              title="Planned"
-              icon={Calendar}
+              title="Assigned to me"
+              icon={Briefcase}
               primaryCount={counts.workedOn}
-              subtitle="In progress or ready"
+              subtitle="Tasks I own"
               onClick={() => handleScopeChange('worked-on')}
             />
             <FocusWidget 
-              title="Upcoming"
+              title="This week"
               icon={Clock}
               primaryCount={counts.assigned}
-              subtitle="Backlog items"
+              subtitle="Due within 7 days"
               onClick={() => handleScopeChange('assigned')}
             />
             <FocusWidget 
-              title="Pending review"
-              icon={FileText}
+              title="Next week"
+              icon={Calendar}
               primaryCount={counts.starred}
-              subtitle="Needs decision"
+              subtitle="Due in 8-14 days"
               onClick={() => handleScopeChange('starred')}
             />
           </>
