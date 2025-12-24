@@ -112,8 +112,10 @@ function parseDate(str: string | null): Date {
 
 function formatDate(date: Date | string): string {
   const d = typeof date === 'string' ? parseDate(date) : date;
-  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-  return `${months[d.getMonth()]} ${d.getDate()}`;
+  const day = String(d.getDate()).padStart(2, '0');
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const year = String(d.getFullYear()).slice(-2);
+  return `${day}-${month}-${year}`;
 }
 
 function formatDateRange(start: string, end: string): string {
