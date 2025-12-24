@@ -59,7 +59,6 @@ export default function CreateMenuConfig() {
   
   // Track pending changes (role_code -> work_item_type -> is_visible)
   const [pendingChanges, setPendingChanges] = useState<Record<string, Record<string, boolean>>>({});
-  const [isRestoringDefaults, setIsRestoringDefaults] = useState(false);
   
   // Build a map for quick lookup: role_code -> work_item_type -> is_visible
   const visibilityMap = useMemo(() => {
@@ -133,26 +132,30 @@ export default function CreateMenuConfig() {
     }
   };
 
-  const handleRestoreDefaults = async () => {
-    setIsRestoringDefaults(true);
-    
-    const updates: { roleCode: string; workItemType: string; isVisible: boolean }[] = [];
+  const handleRestoreDefaults = () => {
+    // Stage all default values as pending changes (don't save immediately)
+    const newPendingChanges: Record<string, Record<string, boolean>> = {};
     
     Object.entries(DEFAULT_VISIBILITY).forEach(([roleCode, workItems]) => {
-      Object.entries(workItems).forEach(([workItemType, isVisible]) => {
-        updates.push({ roleCode, workItemType, isVisible });
+      Object.entries(workItems).forEach(([workItemType, defaultValue]) => {
+        const currentSavedValue = visibilityMap[roleCode]?.[workItemType] ?? false;
+        
+        // Only add to pending if different from saved value
+        if (defaultValue !== currentSavedValue) {
+          if (!newPendingChanges[roleCode]) {
+            newPendingChanges[roleCode] = {};
+          }
+          newPendingChanges[roleCode][workItemType] = defaultValue;
+        }
       });
     });
-
-    try {
-      await batchUpdateVisibility.mutateAsync(updates);
-      setPendingChanges({});
-      toast.success('Settings restored to defaults');
-    } catch (error) {
-      console.error('Failed to restore defaults:', error);
-      toast.error('Failed to restore defaults');
-    } finally {
-      setIsRestoringDefaults(false);
+    
+    setPendingChanges(newPendingChanges);
+    
+    if (Object.keys(newPendingChanges).length > 0) {
+      toast.info('Default settings staged. Click "Save Settings" to apply.');
+    } else {
+      toast.info('Settings are already at defaults.');
     }
   };
 
@@ -177,14 +180,10 @@ export default function CreateMenuConfig() {
           <Button 
             variant="outline"
             onClick={handleRestoreDefaults} 
-            disabled={isRestoringDefaults || batchUpdateVisibility.isPending}
+            disabled={batchUpdateVisibility.isPending}
             className="gap-2"
           >
-            {isRestoringDefaults ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              <RotateCcw className="h-4 w-4" />
-            )}
+            <RotateCcw className="h-4 w-4" />
             Restore Defaults
           </Button>
           <Button 
@@ -192,7 +191,7 @@ export default function CreateMenuConfig() {
             disabled={!hasUnsavedChanges || batchUpdateVisibility.isPending}
             className="gap-2"
           >
-            {batchUpdateVisibility.isPending && !isRestoringDefaults ? (
+            {batchUpdateVisibility.isPending ? (
               <Loader2 className="h-4 w-4 animate-spin" />
             ) : (
               <Save className="h-4 w-4" />
