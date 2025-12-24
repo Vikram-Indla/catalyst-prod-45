@@ -15274,6 +15274,30 @@ export type Database = {
         }
         Relationships: []
       }
+      user_starred_items: {
+        Row: {
+          id: string
+          item_id: string
+          item_type: string
+          starred_at: string
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          item_id: string
+          item_type: string
+          starred_at?: string
+          user_id: string
+        }
+        Update: {
+          id?: string
+          item_id?: string
+          item_type?: string
+          starred_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_theme_preferences: {
         Row: {
           accent_color: string | null

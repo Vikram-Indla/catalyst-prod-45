@@ -31,6 +31,12 @@ import {
   PlannerWorkItem,
 } from '@/hooks/home/useHomePlannerData';
 import {
+  useStarredItemIds,
+  useStarredDeliveryItems,
+  useToggleStar,
+  useStarredItemsCount,
+} from '@/hooks/home/useStarredItems';
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -61,6 +67,7 @@ const MODE_TABS: Record<HomeRoleMode, { value: string; label: string }[]> = {
   delivery: [
     { value: 'worked-on', label: 'Worked on' },
     { value: 'assigned', label: 'Assigned' },
+    { value: 'starred', label: 'Starred' },
   ],
   planner: [
     { value: 'planned', label: 'Planned' },
@@ -332,7 +339,9 @@ function ModeAwareDataGrid({
   searchQuery,
   selectedTab,
   activeFilter,
-  density = 'comfortable'
+  density = 'comfortable',
+  starredItemIds,
+  onToggleStar,
 }: { 
   items: HomeWorkItem[]; 
   mode: HomeRoleMode;
@@ -342,6 +351,8 @@ function ModeAwareDataGrid({
   selectedTab: string;
   activeFilter: string;
   density?: 'compact' | 'comfortable';
+  starredItemIds?: Set<string>;
+  onToggleStar?: (itemId: string, itemType: string) => void;
 }) {
   // Filter items by search (client-side backup - server should handle this)
   const filteredItems = useMemo(() => {
@@ -416,6 +427,8 @@ function ModeAwareDataGrid({
                     item={item}
                     mode={mode}
                     density={density}
+                    isStarred={starredItemIds?.has(item.id)}
+                    onToggleStar={onToggleStar ? () => onToggleStar(item.id, item.type) : undefined}
                   />
                 ))}
               </div>
@@ -513,12 +526,18 @@ export function HomeContent() {
   // Delivery mode: Execution work items
   const deliverySummary = useHomeDeliverySummary();
   const deliveryItems = useHomeDeliveryItems({
-    scope: selectedTab === 'assigned' ? 'assigned' : selectedTab === 'starred' ? 'starred' : 'worked-on',
+    scope: selectedTab === 'assigned' ? 'assigned' : 'worked-on',
     search: searchQuery || undefined,
     sort: sortBy === 'priority' ? 'priority' : sortBy === 'due-date' ? 'due-date' : 'updated',
     page: 1,
     pageSize: visibleCount,
   });
+
+  // Starred items - separate query for starred tab
+  const starredItemIds = useStarredItemIds();
+  const starredItems = useStarredDeliveryItems();
+  const starredCount = useStarredItemsCount();
+  const toggleStarMutation = useToggleStar();
 
   // Planner mode: Work Manager
   const plannerSummary = useHomePlannerSummary();
@@ -568,27 +587,35 @@ export function HomeContent() {
         };
       case 'delivery':
       default:
+        // If starred tab, use starred items; otherwise use regular delivery items
+        const items = selectedTab === 'starred' 
+          ? (starredItems.data?.items || [])
+          : (deliveryItems.data?.items || []);
         return {
-          workItems: deliveryItems.data?.items || [],
+          workItems: items,
           criticalCounts: {
             majorIncidents: { open: 0, breached: 0, atRisk: 0 },
             slaAtRisk: 0,
             awaitingMe: 0,
-            blocked: (deliveryItems.data?.items || []).filter(i => i.blocked).length,
+            blocked: items.filter((i: any) => i.blocked).length,
             myWorkload: {
               incidents: 0,
               workItems: deliveryItems.data?.counts.total || 0,
             },
           },
-          isLoading: deliverySummary.isLoading || deliveryItems.isLoading,
+          isLoading: selectedTab === 'starred' 
+            ? starredItems.isLoading 
+            : (deliverySummary.isLoading || deliveryItems.isLoading),
           projects: [] as HomeProject[],
         };
     }
   }, [
     roleMode,
+    selectedTab,
     operationsSummary.data, operationsItems.data, operationsSummary.isLoading, operationsItems.isLoading,
     deliverySummary.data, deliveryItems.data, deliverySummary.isLoading, deliveryItems.isLoading,
     plannerSummary.data, plannerItems.data, plannerSummary.isLoading, plannerItems.isLoading,
+    starredItems.data, starredItems.isLoading,
   ]);
 
   // Tab counts from backend - mode specific
@@ -609,10 +636,10 @@ export function HomeContent() {
         return {
           workedOn: deliveryItems.data?.counts.workedOn || 0,
           assigned: deliveryItems.data?.counts.assigned || 0,
-          starred: deliveryItems.data?.counts.starred || 0,
+          starred: starredCount.data || 0,
         };
     }
-  }, [roleMode, operationsItems.data, plannerItems.data, deliveryItems.data]);
+  }, [roleMode, operationsItems.data, plannerItems.data, deliveryItems.data, starredCount.data]);
 
   // Load pinned projects from localStorage
   useEffect(() => {
@@ -915,6 +942,15 @@ export function HomeContent() {
               selectedTab={selectedTab}
               activeFilter={activeFilter}
               density={density}
+              starredItemIds={starredItemIds.data}
+              onToggleStar={(itemId, itemType) => {
+                const isStarred = starredItemIds.data?.has(itemId) || false;
+                toggleStarMutation.mutate({
+                  itemId,
+                  itemType: itemType as any,
+                  isCurrentlyStarred: isStarred,
+                });
+              }}
             />
           </div>
 

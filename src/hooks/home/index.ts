@@ -7,3 +7,4 @@ export * from './useHomeDeliveryData';
 export * from './useHomePlannerData';
 export * from './useHomeAnalytics';
 export * from './useMigrationMetrics';
+export * from './useStarredItems';
