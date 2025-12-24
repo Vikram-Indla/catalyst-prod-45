@@ -4794,6 +4794,39 @@ export type Database = {
         }
         Relationships: []
       }
+      home_migration_metrics: {
+        Row: {
+          data_mismatches: Json | null
+          error_count: number | null
+          id: string
+          page_load_ms: number | null
+          query_count: number | null
+          recorded_at: string
+          user_id: string | null
+          version: string
+        }
+        Insert: {
+          data_mismatches?: Json | null
+          error_count?: number | null
+          id?: string
+          page_load_ms?: number | null
+          query_count?: number | null
+          recorded_at?: string
+          user_id?: string | null
+          version: string
+        }
+        Update: {
+          data_mismatches?: Json | null
+          error_count?: number | null
+          id?: string
+          page_load_ms?: number | null
+          query_count?: number | null
+          recorded_at?: string
+          user_id?: string | null
+          version?: string
+        }
+        Relationships: []
+      }
       home_user_summary: {
         Row: {
           created_at: string | null
