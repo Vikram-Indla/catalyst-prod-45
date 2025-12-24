@@ -67,7 +67,7 @@ export function SegmentedTab({ value, children, count, className }: SegmentedTab
             isActive
               // Active count badge: grey neutral (not gold)
               ? "bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200"
-              : "bg-[var(--surface-3)] text-[var(--text-2)]"
+              : "bg-[var(--surface-3)] text-[var(--text-2)] dark:text-foreground/60"
           )}
         >
           {count > 99 ? "99+" : count}
