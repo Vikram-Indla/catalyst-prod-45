@@ -12,7 +12,22 @@ import { SegmentedTabs, SegmentedTab } from '@/components/ui/segmented-tabs';
 import { UnifiedToolbar } from '@/components/ui/unified-toolbar';
 import { CriticalStrip } from './home/CriticalStrip';
 import { HomeRoleModeSelector, HomeRoleMode } from './home/HomeRoleModeSelector';
-import { useHomeData, HomeWorkItem, HomeProject } from '@/hooks/useHomeData';
+// Domain-separated hooks - each mode has its own query hooks
+import {
+  useHomeOperationsSummary,
+  useHomeOperationsItems,
+  OperationsWorkItem,
+} from '@/hooks/home/useHomeOperationsData';
+import {
+  useHomeDeliverySummary,
+  useHomeDeliveryItems,
+  DeliveryWorkItem,
+} from '@/hooks/home/useHomeDeliveryData';
+import {
+  useHomePlannerSummary,
+  useHomePlannerItems,
+  PlannerWorkItem,
+} from '@/hooks/home/useHomePlannerData';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,9 +36,23 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 
-const ITEMS_PER_PAGE = 10;
+const ITEMS_PER_PAGE = 20;
 const STORAGE_KEY_MODE = 'catalyst_home_mode';
 const STORAGE_KEY_PINNED = 'catalyst_home_pinned_projects';
+
+// Unified work item type for display
+type HomeWorkItem = OperationsWorkItem | DeliveryWorkItem | PlannerWorkItem;
+
+// Project type for display
+interface HomeProject {
+  id: string;
+  key: string;
+  name: string;
+  color: string;
+  openCount: number;
+  doneCount: number;
+  hasUrgency: boolean;
+}
 
 // ============================================
 // UTILITY: Group items by time period
@@ -518,8 +547,132 @@ export function HomeContent() {
     return (saved as HomeRoleMode) || 'delivery';
   });
 
-  // Fetch data based on current mode
-  const { workItems, criticalCounts, projects, isLoading } = useHomeData(roleMode);
+  // ============================================
+  // DOMAIN-SEPARATED DATA FETCHING
+  // Each mode queries different backend services
+  // ============================================
+  
+  // Operations mode: Incident Management + Release Management
+  const operationsSummary = useHomeOperationsSummary();
+  const operationsItems = useHomeOperationsItems({
+    filter: activeFilter === 'major-incidents' ? 'major' : undefined,
+    search: searchQuery || undefined,
+    sort: sortBy === 'priority' ? 'priority' : 'updated',
+    page: 1,
+    pageSize: visibleCount,
+  });
+
+  // Delivery mode: Execution work items
+  const deliverySummary = useHomeDeliverySummary();
+  const deliveryItems = useHomeDeliveryItems({
+    scope: selectedTab === 'assigned' ? 'assigned' : selectedTab === 'starred' ? 'starred' : 'worked-on',
+    search: searchQuery || undefined,
+    sort: sortBy === 'priority' ? 'priority' : sortBy === 'due-date' ? 'due-date' : 'updated',
+    page: 1,
+    pageSize: visibleCount,
+  });
+
+  // Planner mode: Work Manager
+  const plannerSummary = useHomePlannerSummary();
+  const plannerItems = useHomePlannerItems({
+    search: searchQuery || undefined,
+    sort: sortBy === 'priority' ? 'priority' : 'planned-date',
+    page: 1,
+    pageSize: visibleCount,
+  });
+
+  // Get data based on current mode
+  const { workItems, criticalCounts, isLoading, projects } = useMemo(() => {
+    switch (roleMode) {
+      case 'operations':
+        return {
+          workItems: operationsItems.data?.items || [],
+          criticalCounts: {
+            majorIncidents: operationsSummary.data?.incidents.major || { open: 0, breached: 0, atRisk: 0 },
+            slaAtRisk: operationsSummary.data?.incidents.slaAtRisk || 0,
+            awaitingMe: operationsSummary.data?.incidents.awaitingMe || 0,
+            blocked: operationsSummary.data?.incidents.blocked || 0,
+            myWorkload: {
+              incidents: operationsItems.data?.counts.total || 0,
+              workItems: 0,
+            },
+          },
+          isLoading: operationsSummary.isLoading || operationsItems.isLoading,
+          projects: [] as HomeProject[], // Operations mode doesn't show projects
+        };
+      case 'planner':
+        return {
+          workItems: plannerItems.data?.items || [],
+          criticalCounts: {
+            majorIncidents: { open: 0, breached: 0, atRisk: 0 },
+            slaAtRisk: 0,
+            awaitingMe: plannerSummary.data?.pendingReview || 0,
+            blocked: 0,
+            myWorkload: {
+              incidents: 0,
+              workItems: plannerItems.data?.counts.planned || 0,
+            },
+          },
+          isLoading: plannerSummary.isLoading || plannerItems.isLoading,
+          projects: [] as HomeProject[],
+        };
+      case 'delivery':
+      default:
+        return {
+          workItems: deliveryItems.data?.items || [],
+          criticalCounts: {
+            majorIncidents: { open: 0, breached: 0, atRisk: 0 },
+            slaAtRisk: 0,
+            awaitingMe: 0,
+            blocked: (deliveryItems.data?.items || []).filter(i => i.blocked).length,
+            myWorkload: {
+              incidents: 0,
+              workItems: deliveryItems.data?.counts.total || 0,
+            },
+          },
+          isLoading: deliverySummary.isLoading || deliveryItems.isLoading,
+          projects: [] as HomeProject[],
+        };
+    }
+  }, [
+    roleMode,
+    operationsSummary.data, operationsItems.data, operationsSummary.isLoading, operationsItems.isLoading,
+    deliverySummary.data, deliveryItems.data, deliverySummary.isLoading, deliveryItems.isLoading,
+    plannerSummary.data, plannerItems.data, plannerSummary.isLoading, plannerItems.isLoading,
+  ]);
+
+  // Tab counts from backend
+  const workedOnCount = useMemo(() => {
+    if (roleMode === 'delivery') {
+      return deliveryItems.data?.counts.workedOn || 0;
+    }
+    return workItems.length;
+  }, [roleMode, deliveryItems.data, workItems]);
+
+  const assignedCount = useMemo(() => {
+    if (roleMode === 'delivery') {
+      return deliveryItems.data?.counts.assigned || 0;
+    }
+    return workItems.filter(item => item.assignee).length;
+  }, [roleMode, deliveryItems.data, workItems]);
+
+  const starredCount = useMemo(() => {
+    if (roleMode === 'delivery') {
+      return deliveryItems.data?.counts.starred || 0;
+    }
+    return 0;
+  }, [roleMode, deliveryItems.data]);
+
+  // Focus widget data
+  const recentlyUpdatedCount = useMemo(() => {
+    if (roleMode === 'delivery') {
+      return deliverySummary.data?.recentlyUpdated || 0;
+    }
+    return workItems.filter(item => {
+      const daysDiff = (Date.now() - item.activityDate.getTime()) / (1000 * 60 * 60 * 24);
+      return daysDiff <= 7;
+    }).length;
+  }, [roleMode, deliverySummary.data, workItems]);
 
   // Load pinned projects from localStorage
   useEffect(() => {
@@ -556,17 +709,6 @@ export function HomeContent() {
     return [...pinned, ...unpinned];
   }, [projects, pinnedProjects]);
 
-  // Calculate counts from real data
-  const workedOnCount = workItems.length;
-  const assignedCount = workItems.filter(item => item.assignee).length;
-  const starredCount = 0;
-  
-  // Focus widget data
-  const recentlyUpdatedCount = workItems.filter(item => {
-    const daysDiff = (Date.now() - item.activityDate.getTime()) / (1000 * 60 * 60 * 24);
-    return daysDiff <= 7;
-  }).length;
-
   const handleLoadMore = () => {
     setVisibleCount(prev => prev + ITEMS_PER_PAGE);
   };
@@ -577,31 +719,11 @@ export function HomeContent() {
     setSelectedTab('worked-on');
   };
 
-  // Get items for current tab (with filter applied)
-  const getTabItems = () => {
-    let items = workItems;
-    
-    // Apply chip filter based on real data attributes
-    if (activeFilter !== 'all') {
-      switch (activeFilter) {
-        case 'major-incidents':
-          items = items.filter(i => i.severity === 'SEV1' || i.severity === 'SEV2');
-          break;
-        case 'blocked':
-          items = items.filter(i => i.status === 'blocked');
-          break;
-        // Other filters can be extended as needed
-      }
-    }
-    
-    switch (selectedTab) {
-      case 'assigned':
-        return items.filter(item => item.assignee);
-      case 'starred':
-        return [];
-      default:
-        return items;
-    }
+  // Get items for current tab - data already filtered by backend
+  const getTabItems = (): HomeWorkItem[] => {
+    // Backend handles filtering via query params
+    // Just return the items as-is
+    return workItems;
   };
 
   const sortOptions = [
