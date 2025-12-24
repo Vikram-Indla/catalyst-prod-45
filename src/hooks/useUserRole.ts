@@ -3,7 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/lib/auth';
 
 export type UserRole = 'admin' | 'program_manager' | 'team_lead' | 'user' | null;
-export type ProductRoleCode = 'super_admin' | 'product_admin' | 'general_manager' | 'product_manager' | 'product_owner' | 'requester' | 'enterprise_architect' | 'project_manager' | 'developer' | 'qa_tester' | null;
+export type ProductRoleCode = 'super_admin' | 'product_manager' | 'product_owner' | 'enterprise_architect' | 'project_manager' | 'developer' | 'qa_tester' | null;
 
 export function useUserRole() {
   const { user } = useAuth();
@@ -71,20 +71,18 @@ export function useUserRole() {
 
   const isAdmin = role === 'admin';
   const isSuperAdmin = hasProductRole('super_admin');
-  const isProductAdmin = hasProductRole('product_admin') || isSuperAdmin;
-  const isGeneralManager = hasProductRole('general_manager') || isSuperAdmin || isProductAdmin;
   const isProductOwner = hasProductRole('product_owner');
   const isProgramManager = role === 'admin' || role === 'program_manager';
   const isTeamLead = role === 'admin' || role === 'program_manager' || role === 'team_lead';
   
-  // Enterprise access: admin, super_admin, product_admin, general_manager, or product_owner
-  const canAccessEnterprise = isAdmin || isSuperAdmin || isProductAdmin || isGeneralManager || isProductOwner;
+  // Enterprise access: admin, super_admin, or product_owner
+  const canAccessEnterprise = isAdmin || isSuperAdmin || isProductOwner;
   // Capacity Planning access: same as enterprise access
   const canAccessCapacityPlanning = canAccessEnterprise;
   
   // Product Owner only role check - user has ONLY product_owner role and no other elevated roles
   const isProductOwnerOnly = isProductOwner && 
-    !isAdmin && !isSuperAdmin && !isProductAdmin && !isGeneralManager && !isProgramManager;
+    !isAdmin && !isSuperAdmin && !isProgramManager;
 
   // isLoading is already declared from the combined query above
 
@@ -96,8 +94,6 @@ export function useUserRole() {
     hasProductRole,
     isAdmin,
     isSuperAdmin,
-    isProductAdmin,
-    isGeneralManager,
     isProductOwner,
     isProductOwnerOnly,
     isProgramManager,

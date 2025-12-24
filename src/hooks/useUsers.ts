@@ -370,7 +370,7 @@ export function useIsSuperAdmin() {
       if (productError) return false;
 
       return productRoles?.some((ur: any) => 
-        ur.product_roles?.code === 'super_admin' || ur.product_roles?.code === 'product_admin'
+        ur.product_roles?.code === 'super_admin'
       ) || false;
     }
   });
