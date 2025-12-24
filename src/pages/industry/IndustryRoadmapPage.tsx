@@ -38,6 +38,9 @@ interface BusinessRequestItem {
   ownerId: string | null;
   product: string;
   productId: string | null;
+  department: string;
+  departmentId: string | null;
+  targetQuarters: string[];
   health: 'On Track' | 'At Risk' | 'Blocked';
   status: string;
   startDate: string;
@@ -140,7 +143,7 @@ function mapHealthFromStatus(processStep: string | null, health: string | null):
 export default function IndustryRoadmapPage() {
   // State
   const [search, setSearch] = useState('');
-  const [groupBy, setGroupBy] = useState<'product' | 'owner' | 'health'>('product');
+  const [groupBy, setGroupBy] = useState<'owner' | 'product' | 'quarters' | 'department'>('product');
   const [showMilestones, setShowMilestones] = useState(true);
   const [timelineFilter, setTimelineFilter] = useState<TimelineFilterState>(DEFAULT_TIMELINE_FILTER);
   const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(new Set());
@@ -185,6 +188,8 @@ export default function IndustryRoadmapPage() {
           business_owner,
           business_owner_id,
           product_id,
+          department_id,
+          planned_quarter,
           rank,
           progress,
           created_at,
@@ -193,6 +198,10 @@ export default function IndustryRoadmapPage() {
             name
           ),
           business_owners (
+            id,
+            name
+          ),
+          departments (
             id,
             name
           )
@@ -267,6 +276,9 @@ export default function IndustryRoadmapPage() {
         ownerId: req.business_owner_id,
         product: req.products?.name || 'No Product',
         productId: req.product_id,
+        department: req.departments?.name || 'No Department',
+        departmentId: req.department_id,
+        targetQuarters: req.planned_quarter || [],
         health: mapHealthFromStatus(req.process_step, req.health),
         status: req.process_step || 'new',
         startDate: startDate,
@@ -385,17 +397,42 @@ export default function IndustryRoadmapPage() {
     const groups: Record<string, BusinessRequestItem[]> = {};
     
     filteredRequests.forEach(request => {
-      let key: string;
-      if (groupBy === 'product') key = request.product;
-      else if (groupBy === 'owner') key = request.owner;
-      else if (groupBy === 'health') key = request.health;
-      else key = 'All';
-      
-      if (!groups[key]) groups[key] = [];
-      groups[key].push(request);
+      if (groupBy === 'quarters') {
+        // For quarters, a request can appear in multiple groups if it spans multiple quarters
+        const quarters = request.targetQuarters.length > 0 ? request.targetQuarters : ['No Quarter'];
+        quarters.forEach(quarter => {
+          if (!groups[quarter]) groups[quarter] = [];
+          groups[quarter].push(request);
+        });
+      } else {
+        let key: string;
+        if (groupBy === 'product') key = request.product;
+        else if (groupBy === 'owner') key = request.owner;
+        else if (groupBy === 'department') key = request.department;
+        else key = 'All';
+        
+        if (!groups[key]) groups[key] = [];
+        groups[key].push(request);
+      }
     });
     
-    return Object.entries(groups).map(([key, requests]) => ({ key, requests }));
+    // Sort groups - quarters should be sorted chronologically
+    const entries = Object.entries(groups);
+    if (groupBy === 'quarters') {
+      entries.sort((a, b) => {
+        if (a[0] === 'No Quarter') return 1;
+        if (b[0] === 'No Quarter') return -1;
+        // Parse quarter format like "Q1 2025"
+        const parseQuarter = (q: string) => {
+          const match = q.match(/Q(\d)\s*(\d{4})/);
+          if (!match) return 0;
+          return parseInt(match[2]) * 10 + parseInt(match[1]);
+        };
+        return parseQuarter(a[0]) - parseQuarter(b[0]);
+      });
+    }
+    
+    return entries.map(([key, requests]) => ({ key, requests }));
   }, [filteredRequests, groupBy]);
   
   // Toggle group collapse
@@ -517,9 +554,10 @@ export default function IndustryRoadmapPage() {
                 {groupByMenuOpen && (
                   <div className="absolute top-full mt-1 left-0 w-40 py-1 bg-background border border-border rounded-lg shadow-lg z-50">
                     {[
-                      { value: 'product', label: 'Product' },
                       { value: 'owner', label: 'Business Owner' },
-                      { value: 'health', label: 'Health' }
+                      { value: 'product', label: 'Product' },
+                      { value: 'quarters', label: 'Quarters' },
+                      { value: 'department', label: 'Department' }
                     ].map(option => (
                       <div
                         key={option.value}
