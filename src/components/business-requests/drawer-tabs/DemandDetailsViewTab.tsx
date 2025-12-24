@@ -210,17 +210,14 @@ export function DemandDetailsViewTab({ data, onChange, onDirtyChange, requestId 
   const handleDateChange = (field: string) => (date: Date | undefined) => {
     const formattedDate = date ? format(date, 'yyyy-MM-dd') : null;
     
-    console.log(`[DemandDetailsViewTab] handleDateChange: field=${field}, formattedDate=${formattedDate}`);
-    
     // Keep end_date and impl_target_end_date in sync for Target Complete
-    if (field === 'end_date') {
-      console.log('[DemandDetailsViewTab] Syncing end_date and impl_target_end_date');
-      onChange('_batch', { end_date: formattedDate, impl_target_end_date: formattedDate });
+    if (field === 'impl_target_end_date') {
+      // Target Complete: update both impl_target_end_date (primary) and end_date (for backward compat)
+      onChange('_batch', { impl_target_end_date: formattedDate, end_date: formattedDate });
       onDirtyChange?.(true);
       if (requestId) {
-        pendingChangesRef.current['end_date'] = formattedDate;
         pendingChangesRef.current['impl_target_end_date'] = formattedDate;
-        console.log('[DemandDetailsViewTab] pendingChangesRef:', { ...pendingChangesRef.current });
+        pendingChangesRef.current['end_date'] = formattedDate;
         if (autoSaveTimeoutRef.current) clearTimeout(autoSaveTimeoutRef.current);
         autoSaveTimeoutRef.current = setTimeout(() => performAutoSave(), 1500);
       }
@@ -364,8 +361,8 @@ export function DemandDetailsViewTab({ data, onChange, onDirtyChange, requestId 
         <div>
           <FieldLabel>Target Complete</FieldLabel>
           <CatalystDatePicker 
-            value={data.end_date} 
-            onChange={(date) => handleDateChange('end_date')(date ?? undefined)}
+            value={data.impl_target_end_date} 
+            onChange={(date) => handleDateChange('impl_target_end_date')(date ?? undefined)}
             placeholder="Select date"
           />
         </div>
