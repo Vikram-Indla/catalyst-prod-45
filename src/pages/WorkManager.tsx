@@ -42,11 +42,11 @@ import { TaskDrawer } from '@/components/work-manager/TaskDrawer';
 import { NewTaskDialog } from '@/components/work-manager/NewTaskDialog';
 import {
   teams as initialTeams,
-  tasks,
   computeTaskExtended,
   setWorkManagerTeams,
   setWorkManagerUsers,
 } from '@/lib/work-manager-data';
+import { useWorkManagerTasks, useCreateWorkManagerTask, useUpdateWorkManagerTask, useDeleteWorkManagerTask } from '@/hooks/useWorkManagerTasks';
 import { useAllTeamMembers, useTeamMemberIds } from '@/hooks/useAllTeamMembers';
 import type { TaskStatus, Team } from '@/components/work-manager/types';
 import type { TaskFilters, TaskDrawerState, TaskExtended, Task, GroupByOption } from '@/components/work-manager/types';
@@ -167,8 +167,11 @@ export function WorkManager({ tab: initialTab }: WorkManagerProps) {
   // Group by state
   const [groupBy, setGroupBy] = useState<GroupByOption>('status');
 
-  // Task data with computed fields
-  const [taskData, setTaskData] = useState(tasks);
+  // Database hooks for tasks
+  const { data: dbTasks = [], isLoading: isTasksLoading } = useWorkManagerTasks(filters.teamId);
+  const createTaskMutation = useCreateWorkManagerTask();
+  const updateTaskMutation = useUpdateWorkManagerTask();
+  const deleteTaskMutation = useDeleteWorkManagerTask();
   
   // Filter tasks to only show those from accessible teams (security enforcement)
   const accessibleTeamIds = useMemo(() => 
@@ -178,11 +181,11 @@ export function WorkManager({ tab: initialTab }: WorkManagerProps) {
   
   const extendedTasks: TaskExtended[] = useMemo(() => {
     // Only show tasks from teams the user has access to
-    const accessibleTasks = taskData.filter(task => 
+    const accessibleTasks = dbTasks.filter(task => 
       accessibleTeamIds.has(task.teamId) || canViewAllTeams
     );
     return accessibleTasks.map(computeTaskExtended);
-  }, [taskData, accessibleTeamIds, canViewAllTeams]);
+  }, [dbTasks, accessibleTeamIds, canViewAllTeams]);
 
   // Count active filters
   const activeFilterCount = useMemo(() => {
@@ -231,52 +234,39 @@ export function WorkManager({ tab: initialTab }: WorkManagerProps) {
     setDrawer({ isOpen: false, taskId: null, activeTab: 'overview' });
   };
 
-  // Update task
-  const handleUpdateTask = (taskId: string, updates: Partial<typeof taskData[0]>) => {
-    setTaskData(prev => prev.map(t => 
-      t.id === taskId ? { ...t, ...updates, updatedAt: new Date().toISOString().split('T')[0] } : t
-    ));
+  // Update task - using database
+  const handleUpdateTask = (taskId: string, updates: Partial<Task>) => {
+    updateTaskMutation.mutate({ id: taskId, updates });
   };
 
-  // Delete task
+  // Delete task - using database
   const handleDeleteTask = (taskId: string) => {
-    setTaskData(prev => prev.filter(t => t.id !== taskId));
-    toast.success('Task deleted successfully');
+    deleteTaskMutation.mutate(taskId);
+    handleCloseDrawer();
   };
 
-  // Create new task
+  // Create new task - using database
   const handleCreateTask = (taskInput: Omit<Task, 'id' | 'key' | 'createdAt' | 'updatedAt'>) => {
-    const now = new Date().toISOString().split('T')[0];
-    const newId = `t${Date.now()}`;
-    const newKey = `WM-${String(taskData.length + 1).padStart(4, '0')}`;
-    
-    const newTask: Task = {
-      ...taskInput,
-      id: newId,
-      key: newKey,
-      createdAt: now,
-      updatedAt: now,
-    };
-    
-    setTaskData(prev => [...prev, newTask]);
+    createTaskMutation.mutate(taskInput);
   };
 
   // Move task handler for drag-and-drop
   const handleMoveTask = (args: { taskId: string; fromStatus: TaskStatus; toStatus: TaskStatus; toIndex: number }) => {
-    setTaskData(prev => prev.map(t =>
-      t.id === args.taskId
-        ? { ...t, status: args.toStatus, columnPosition: args.toIndex, updatedAt: new Date().toISOString().split('T')[0] }
-        : t
-    ));
+    updateTaskMutation.mutate({
+      id: args.taskId,
+      updates: { status: args.toStatus, columnPosition: args.toIndex }
+    });
   };
 
   // Clear column - move all tasks to Backlog
   const handleClearColumn = (status: TaskStatus) => {
-    setTaskData(prev => prev.map(t =>
-      t.status === status
-        ? { ...t, status: 'Backlog' as TaskStatus, columnPosition: 0, updatedAt: new Date().toISOString().split('T')[0] }
-        : t
-    ));
+    const tasksToMove = dbTasks.filter(t => t.status === status);
+    tasksToMove.forEach(task => {
+      updateTaskMutation.mutate({
+        id: task.id,
+        updates: { status: 'Backlog' as TaskStatus, columnPosition: 0 }
+      });
+    });
   };
 
   // Create new team handler - now wired to the backend
