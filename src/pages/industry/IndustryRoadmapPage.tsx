@@ -804,19 +804,9 @@ export default function IndustryRoadmapPage() {
                           </div>
                         </div>
                         
-                        {/* Owner */}
-                        <div className="w-6 h-6 rounded-full bg-secondary-champagne flex items-center justify-center text-[10px] font-semibold text-secondary-bronze flex-shrink-0">
-                          {getOwnerInitials(request.owner)}
-                        </div>
-                        
-                        {/* Status */}
-                        <div className={cn(
-                          "px-2 py-1 rounded text-[10px] font-semibold uppercase tracking-wide flex-shrink-0",
-                          request.health === 'On Track' && "bg-brand-primary text-white",
-                          request.health === 'At Risk' && "bg-secondary-bronze text-white",
-                          request.health === 'Blocked' && "bg-destructive text-white"
-                        )}>
-                          {request.health.toUpperCase().replace(' ', '')}
+                        {/* Status Badge */}
+                        <div className="px-2 py-1 rounded text-[10px] font-medium bg-muted text-muted-foreground flex-shrink-0 capitalize">
+                          {request.status?.replace(/_/g, ' ') || 'New'}
                         </div>
                       </div>
                     ))}
