@@ -990,35 +990,62 @@ export default function IndustryRoadmapPage() {
           {/* Details */}
           <div className="space-y-1.5">
             <div className="flex justify-between items-center text-xs">
+              <span className="text-muted-foreground">Status</span>
+              <span className="font-medium text-foreground capitalize">
+                {tooltip.request.status?.replace(/_/g, ' ') || 'New'}
+              </span>
+            </div>
+            <div className="flex justify-between items-center text-xs">
               <span className="text-muted-foreground">Dates</span>
               <span className="font-medium text-foreground">
                 {formatDateRange(tooltip.request.startDate, tooltip.request.endDate)}
               </span>
             </div>
-            <div className="flex justify-between items-center text-xs">
-              <span className="text-muted-foreground">Health</span>
-              <span className="font-medium text-foreground flex items-center gap-1.5">
-                <div className={cn(
-                  "w-3 h-3 rounded",
-                  tooltip.request.health === 'On Track' && "bg-brand-primary",
-                  tooltip.request.health === 'At Risk' && "bg-secondary-bronze",
-                  tooltip.request.health === 'Blocked' && "bg-destructive"
-                )} />
-                {tooltip.request.health}
-              </span>
-            </div>
-            <div className="flex justify-between items-center text-xs">
-              <span className="text-muted-foreground">Owner</span>
-              <span className="font-medium text-foreground">{tooltip.request.owner}</span>
-            </div>
+            {tooltip.request.hasDependencies && (
+              <div className="flex justify-between items-center text-xs">
+                <span className="text-muted-foreground">Risks</span>
+                <span className="font-medium text-destructive flex items-center gap-1.5">
+                  <div className="w-2 h-2 rounded-full bg-destructive" />
+                  Has dependencies
+                </span>
+              </div>
+            )}
             <div className="flex justify-between items-center text-xs">
               <span className="text-muted-foreground">Product</span>
-              <span className="font-medium text-foreground">{tooltip.request.product}</span>
+              <span className="font-medium text-foreground">{tooltip.request.product || 'Unassigned'}</span>
             </div>
             <div className="flex justify-between items-center text-xs">
               <span className="text-muted-foreground">Progress</span>
               <span className="font-medium text-foreground">{tooltip.request.progress}%</span>
             </div>
+          </div>
+          
+          {/* Linked Milestones */}
+          <div className="mt-2.5 pt-2.5 border-t border-border">
+            <div className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1.5">
+              Linked Milestones
+            </div>
+            {tooltip.request.milestones.length === 0 ? (
+              <div className="text-[11px] text-muted-foreground italic">
+                No milestones defined
+              </div>
+            ) : (
+              <div className="max-h-[180px] overflow-auto pr-1.5 space-y-1">
+                {tooltip.request.milestones.map((milestone, idx) => (
+                  <div key={idx} className="flex items-center gap-1.5 text-[11px]">
+                    <div className={cn(
+                      "w-2 h-2 rotate-45 flex-shrink-0",
+                      milestone.status === 'complete' && "bg-brand-primary",
+                      milestone.status === 'current' && "border border-brand-gold bg-background",
+                      milestone.status === 'pending' && "border border-secondary-champagne bg-background",
+                      milestone.status === 'overdue' && "bg-destructive"
+                    )} />
+                    <span className="text-foreground truncate flex-1">{milestone.title}</span>
+                    <span className="text-muted-foreground flex-shrink-0">{formatDate(milestone.date)}</span>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       )}
