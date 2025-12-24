@@ -532,16 +532,25 @@ async function fetchAll(params: {
   userId?: string;
 }): Promise<HomeWorkItemsResponse> {
   const { page, pageSize } = params;
-  
-  // Fetch from all three domains
+
+  // IMPORTANT:
+  // Each domain fetch already paginates. In "all" mode we must fetch the FULL
+  // (bounded) result sets from each domain and paginate only once after combining.
+  const combinedFetchParams = {
+    ...params,
+    page: 1,
+    pageSize: 500,
+  };
+
+  // Fetch from all three domains (unpaginated within the 500-item bound)
   const [opsRes, deliveryRes, plannerRes] = await Promise.all([
-    fetchOperations(params),
-    fetchDelivery(params),
-    fetchPlanner(params),
+    fetchOperations(combinedFetchParams),
+    fetchDelivery(combinedFetchParams),
+    fetchPlanner(combinedFetchParams),
   ]);
 
   // Combine items
-  let allItems = [...opsRes.items, ...deliveryRes.items, ...plannerRes.items];
+  const allItems = [...opsRes.items, ...deliveryRes.items, ...plannerRes.items];
 
   // Sort combined
   if (params.sort === 'priority') {
