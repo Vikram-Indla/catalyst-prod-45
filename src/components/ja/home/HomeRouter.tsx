@@ -72,7 +72,7 @@ export function HomeRouter() {
 
   // Phase 1, 3, 4: V2 enabled for this user
   if (home_v2_enabled) {
-    return <HomeContentV2 metrics={metrics} />;
+    return <HomeContentV2 />;
   }
 
   // Default: V1 (current implementation)
