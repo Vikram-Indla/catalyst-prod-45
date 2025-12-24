@@ -75,20 +75,13 @@ export default function BrowsePage() {
           .ilike('request_key', normalizedKey)
           .maybeSingle(),
         // Also search by ID prefix for features (when display_id is null)
+        // Use RPC function that handles text casting properly
         idFromGeneratedKey && normalizedKey.startsWith('F-')
-          ? supabase
-              .from('features')
-              .select('id, display_id, project_id')
-              .like('id', `${idFromGeneratedKey}%`)
-              .maybeSingle()
+          ? supabase.rpc('find_feature_by_short_id', { p_short: idFromGeneratedKey })
           : Promise.resolve({ data: null, error: null }),
         // Also search by ID prefix for stories (when story_key is null)
         idFromGeneratedKey && normalizedKey.startsWith('US-')
-          ? supabase
-              .from('stories')
-              .select('id, story_key')
-              .like('id', `${idFromGeneratedKey}%`)
-              .maybeSingle()
+          ? supabase.rpc('find_story_by_short_id', { p_short: idFromGeneratedKey })
           : Promise.resolve({ data: null, error: null }),
       ]);
 
@@ -98,14 +91,26 @@ export default function BrowsePage() {
         result = { id: epicResult.data.id, type: 'epic', key: epicResult.data.epic_key || workItemKey };
       } else if (featureResult.data) {
         result = { id: featureResult.data.id, type: 'feature', key: featureResult.data.display_id || workItemKey, projectId: featureResult.data.project_id };
-      } else if (featureByIdResult.data) {
-        // Found by generated key (F-xxxxxx)
-        result = { id: featureByIdResult.data.id, type: 'feature', key: featureByIdResult.data.display_id || workItemKey, projectId: featureByIdResult.data.project_id };
+      } else if (featureByIdResult.data && Array.isArray(featureByIdResult.data) && featureByIdResult.data.length > 0) {
+        // Found by generated key (F-xxxxxx) via RPC - need to fetch project_id
+        const foundFeature = featureByIdResult.data[0];
+        const { data: featureDetails } = await supabase
+          .from('features')
+          .select('project_id')
+          .eq('id', foundFeature.id)
+          .single();
+        result = { 
+          id: foundFeature.id, 
+          type: 'feature', 
+          key: foundFeature.display_id || workItemKey, 
+          projectId: featureDetails?.project_id 
+        };
       } else if (storyResult.data) {
         result = { id: storyResult.data.id, type: 'story', key: storyResult.data.story_key || workItemKey };
-      } else if (storyByIdResult.data) {
-        // Found by generated key (US-xxxxxx)
-        result = { id: storyByIdResult.data.id, type: 'story', key: storyByIdResult.data.story_key || workItemKey };
+      } else if (storyByIdResult.data && Array.isArray(storyByIdResult.data) && storyByIdResult.data.length > 0) {
+        // Found by generated key (US-xxxxxx) via RPC
+        const foundStory = storyByIdResult.data[0];
+        result = { id: foundStory.id, type: 'story', key: foundStory.story_key || workItemKey };
       } else if (demandResult.data) {
         result = { id: demandResult.data.id, type: 'demand', key: demandResult.data.request_key || workItemKey };
       }
