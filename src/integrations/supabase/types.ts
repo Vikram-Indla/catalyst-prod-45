@@ -2345,6 +2345,7 @@ export type Database = {
       }
       demand_process_steps: {
         Row: {
+          color: string | null
           created_at: string
           id: string
           is_active: boolean
@@ -2354,6 +2355,7 @@ export type Database = {
           value: string
         }
         Insert: {
+          color?: string | null
           created_at?: string
           id?: string
           is_active?: boolean
@@ -2363,6 +2365,7 @@ export type Database = {
           value: string
         }
         Update: {
+          color?: string | null
           created_at?: string
           id?: string
           is_active?: boolean

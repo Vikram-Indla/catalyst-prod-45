@@ -4,15 +4,18 @@
  * This context fetches process steps from demand_process_steps table and provides:
  * - processSteps: Array of active process steps
  * - getProcessStepLabel: Function to get label for a value
+ * - getProcessStepColor: Function to get color hex for a value
  * - processStepOptions: Array of {value, label} for dropdowns
  * - isLoading: Loading state
  * 
  * When process steps are renamed/added/deleted in admin, all consumers update automatically
+ * Colors selected in admin are applied in real-time across the entire application.
  */
 
 import React, { createContext, useContext, useMemo, ReactNode } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { getBrandColorHex } from '@/components/admin/BrandColorPicker';
 
 export interface ProcessStep {
   id: string;
@@ -20,6 +23,7 @@ export interface ProcessStep {
   label: string;
   sort_order: number;
   is_active: boolean;
+  color: string | null;
 }
 
 export interface ProcessStepOption {
@@ -31,7 +35,8 @@ interface ProcessStepsContextValue {
   processSteps: ProcessStep[];
   processStepOptions: ProcessStepOption[];
   getProcessStepLabel: (value: string | null | undefined) => string;
-  getProcessStepInfo: (value: string | null | undefined) => { label: string };
+  getProcessStepColor: (value: string | null | undefined) => string;
+  getProcessStepInfo: (value: string | null | undefined) => { label: string; color: string };
   isLoading: boolean;
 }
 
@@ -47,15 +52,15 @@ export function ProcessStepsProvider({ children }: ProcessStepsProviderProps) {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('demand_process_steps')
-        .select('id, value, label, sort_order, is_active')
+        .select('id, value, label, sort_order, is_active, color')
         .eq('is_active', true)
         .order('sort_order', { ascending: true });
       
       if (error) throw error;
       return data as ProcessStep[];
     },
-    staleTime: 2 * 60 * 1000, // 2 minutes - balance between freshness and performance
-    refetchOnWindowFocus: true, // Refetch when user returns to tab
+    staleTime: 30 * 1000, // 30 seconds - shorter for real-time color updates
+    refetchOnWindowFocus: true,
   });
 
   // Build lookup map for O(1) access
@@ -88,18 +93,33 @@ export function ProcessStepsProvider({ children }: ProcessStepsProviderProps) {
     [processStepMap]
   );
 
-  // Get process step info (compatible with getProcessStepInfo from business-request.ts)
-  const getProcessStepInfo = useMemo(() =>
-    (value: string | null | undefined): { label: string } => {
-      return { label: getProcessStepLabel(value) };
+  // Get color hex for a value (case-insensitive)
+  const getProcessStepColor = useMemo(() =>
+    (value: string | null | undefined): string => {
+      if (!value) return getBrandColorHex('olive');
+      const step = processStepMap.get(value.toLowerCase());
+      return getBrandColorHex(step?.color);
     },
-    [getProcessStepLabel]
+    [processStepMap]
+  );
+
+  // Get process step info (compatible with getProcessStepInfo from business-request.ts)
+  // Now includes color from database
+  const getProcessStepInfo = useMemo(() =>
+    (value: string | null | undefined): { label: string; color: string } => {
+      return { 
+        label: getProcessStepLabel(value),
+        color: getProcessStepColor(value),
+      };
+    },
+    [getProcessStepLabel, getProcessStepColor]
   );
 
   const contextValue: ProcessStepsContextValue = {
     processSteps,
     processStepOptions,
     getProcessStepLabel,
+    getProcessStepColor,
     getProcessStepInfo,
     isLoading,
   };
@@ -133,9 +153,9 @@ export function useProcessStepOptions(): ProcessStepOption[] {
 }
 
 /**
- * Hook that returns a function to get label (drop-in replacement for getProcessStepInfo)
+ * Hook that returns a function to get label and color (enhanced replacement for getProcessStepInfo)
  */
-export function useProcessStepInfo(): (value: string | null | undefined) => { label: string } {
+export function useProcessStepInfo(): (value: string | null | undefined) => { label: string; color: string } {
   const { getProcessStepInfo } = useProcessSteps();
   return getProcessStepInfo;
 }

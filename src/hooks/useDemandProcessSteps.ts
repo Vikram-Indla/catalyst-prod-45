@@ -8,6 +8,7 @@ export interface DemandProcessStep {
   label: string;
   sort_order: number;
   is_active: boolean;
+  color: string | null;
   created_at: string;
   updated_at: string;
 }
