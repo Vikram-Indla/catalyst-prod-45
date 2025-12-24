@@ -31,14 +31,6 @@ const DEFAULT_VISIBILITY: Record<string, Record<string, boolean>> = {
     theme: true, objective: true, 'business-request': true, epic: true,
     feature: true, story: false, defect: false, incident: false, dependency: true, risk: true,
   },
-  general_manager: {
-    theme: true, objective: true, 'business-request': true, epic: true,
-    feature: true, story: true, defect: true, incident: true, dependency: true, risk: true,
-  },
-  product_admin: {
-    theme: true, objective: true, 'business-request': true, epic: true,
-    feature: true, story: true, defect: true, incident: true, dependency: true, risk: true,
-  },
   product_manager: {
     theme: true, objective: true, 'business-request': false, epic: true,
     feature: true, story: false, defect: false, incident: true, dependency: true, risk: true,
@@ -54,10 +46,6 @@ const DEFAULT_VISIBILITY: Record<string, Record<string, boolean>> = {
   qa_tester: {
     theme: false, objective: false, 'business-request': false, epic: false,
     feature: false, story: true, defect: false, incident: false, dependency: false, risk: false,
-  },
-  requester: {
-    theme: false, objective: false, 'business-request': true, epic: false,
-    feature: false, story: false, defect: false, incident: false, dependency: false, risk: false,
   },
   super_admin: {
     theme: true, objective: true, 'business-request': true, epic: true,

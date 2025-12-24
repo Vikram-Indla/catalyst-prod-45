@@ -30,14 +30,14 @@ const EA_TABS = ['ea-review'];
  * - Product Owner: Demand Details, Business Score, Links, Audit History
  * - Project Manager: All tabs + Budget, Risks, Milestones
  * - Enterprise Architect: All tabs + EA Review
- * - Admin roles (super_admin, product_admin, general_manager): All tabs
+ * - Admin roles (super_admin): All tabs
  */
 export function useBusinessDrawerRoleTabs() {
-  const { productRoles, isAdmin, isSuperAdmin, isProductAdmin, isGeneralManager, isLoading } = useUserRole();
+  const { productRoles, isAdmin, isSuperAdmin, isLoading } = useUserRole();
 
   const visibleTabs = useMemo(() => {
     // Admin roles see everything
-    if (isAdmin || isSuperAdmin || isProductAdmin || isGeneralManager) {
+    if (isAdmin || isSuperAdmin) {
       return ALL_TABS;
     }
 
@@ -63,7 +63,7 @@ export function useBusinessDrawerRoleTabs() {
 
     // Filter ALL_TABS to maintain order
     return ALL_TABS.filter(tab => allowedTabValues.has(tab.value));
-  }, [productRoles, isAdmin, isSuperAdmin, isProductAdmin, isGeneralManager]);
+  }, [productRoles, isAdmin, isSuperAdmin]);
 
   return {
     visibleTabs,

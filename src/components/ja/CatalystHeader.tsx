@@ -124,7 +124,7 @@ export function CatalystHeader() {
   ];
 
   // Get all nav items with their enabled status
-  // Enterprise requires both module enabled AND role-based access (admin, super_admin, product_admin, general_manager)
+  // Enterprise requires both module enabled AND role-based access (admin, super_admin)
   // Product Owner only sees Home, Enterprise, Product, and Planner
   const navItems = allNavItems
     .filter(item => !isProductOwnerOnly || item.visibleToProductOwner)

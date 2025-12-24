@@ -32,7 +32,7 @@ export function PermissionsMatrix({ roles }: PermissionsMatrixProps) {
   }, {} as Record<string, Record<string, string>>);
 
   // Sort roles by a predefined order
-  const roleOrder = ['super_admin', 'product_admin', 'general_manager', 'product_manager', 'product_owner', 'requester'];
+  const roleOrder = ['super_admin', 'product_manager', 'product_owner', 'enterprise_architect', 'project_manager', 'developer', 'qa_tester'];
   const sortedRoles = [...roles].sort((a, b) => {
     const aIdx = roleOrder.indexOf(a.code);
     const bIdx = roleOrder.indexOf(b.code);
