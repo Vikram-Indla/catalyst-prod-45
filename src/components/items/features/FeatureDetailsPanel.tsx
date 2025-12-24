@@ -1,13 +1,11 @@
 /**
- * FeatureDetailsPanel — Slim Framework (4 Tabs Only)
+ * FeatureDetailsPanel — Enterprise-Grade Feature Drawer
  * 
- * Allowed tabs:
- * 1. Overview — name, description, status, owner, health, blocked, dates
- * 2. Stories — list child stories, derived progress
- * 3. Dependencies — if wired (kept minimal)
- * 4. Activity — comments/discussions
- * 
- * All SAFe/WSJF/Financial/PI tabs are HIDDEN.
+ * Redesigned to match FeatureDetailPage layout:
+ * - Header with Feature Key, title, status/health pills
+ * - KPI strip: Progress %, Stories, Blockers
+ * - Tabbed content: Overview, Delivery, Links, Activity
+ * - Collapsible right rail with Details, Planning, Classification
  */
 
 import { useState, useEffect } from 'react';
@@ -21,19 +19,44 @@ import {
   DropdownMenuTrigger,
   DropdownMenuSeparator 
 } from '@/components/ui/dropdown-menu';
-import { MoreVertical, AlertCircle } from 'lucide-react';
+import { 
+  ChevronRight, 
+  ChevronDown,
+  ChevronUp,
+  Share2, 
+  Link2, 
+  MoreHorizontal, 
+  UserPlus,
+  Plus,
+  Eye,
+  Calendar,
+  FileText,
+  Ban,
+  AlertCircle,
+  Settings,
+  Maximize2
+} from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useFeatureProgress } from '@/hooks/useFeatureProgress';
+import { useProjects } from '@/hooks/useProjects';
 import { WorkItemPresence } from '@/components/work-items/WorkItemPresence';
 import { WorkItemWatchers } from '@/components/work-items/WorkItemWatchers';
-import { FeatureOverviewTab } from './tabs/FeatureOverviewTab';
-import { FeatureStoriesTab } from './tabs/FeatureStoriesTab';
-import { FeatureDependenciesTab } from './tabs/FeatureDependenciesTab';
-import { Badge } from '@/components/ui/badge';
-import { useFeatureProgress } from '@/hooks/useFeatureProgress';
-
+import { AssignModal } from '@/components/features/AssignModal';
+import { CreateStoryModal } from '@/components/stories/CreateStoryModal';
+import { format } from 'date-fns';
+import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { useNavigate } from 'react-router-dom';
 import type { Feature, FeatureStatus } from '@/types/feature.types';
+
+// Import sub-tabs from feature-detail
+import { FeatureOverviewTab } from '@/pages/project/feature-detail/FeatureOverviewTab';
+import { FeatureDeliveryTab } from '@/pages/project/feature-detail/FeatureDeliveryTab';
+import { FeatureLinksTab } from '@/pages/project/feature-detail/FeatureLinksTab';
+import { FeatureActivityTab } from '@/pages/project/feature-detail/FeatureActivityTab';
 
 interface FeatureDetailsPanelProps {
   feature?: Feature;
@@ -41,228 +64,547 @@ interface FeatureDetailsPanelProps {
   onClose: () => void;
 }
 
-// Slim form data — only active fields
-interface FeatureFormData {
-  name: string;
-  description: string;
-  status: FeatureStatus;
-  health: 'green' | 'yellow' | 'red';
-  blocked: boolean;
-  blocked_reason: string;
-  planned_start_date: string;
-  planned_end_date: string;
+const STATUS_CONFIG: Record<string, { label: string; class: string }> = {
+  funnel: { label: 'Draft', class: 'bg-muted text-muted-foreground' },
+  analyzing: { label: 'In Analysis', class: 'bg-blue-500/10 text-blue-600 dark:text-blue-400' },
+  backlog: { label: 'Backlog', class: 'bg-slate-500/10 text-slate-600 dark:text-slate-400' },
+  implementing: { label: 'In Progress', class: 'bg-brand-primary/10 text-brand-primary' },
+  done: { label: 'Done', class: 'bg-status-success/10 text-status-success' },
+};
+
+const HEALTH_CONFIG: Record<string, { label: string; class: string }> = {
+  green: { label: 'On Track', class: 'bg-status-success/10 text-status-success' },
+  on_track: { label: 'On Track', class: 'bg-status-success/10 text-status-success' },
+  yellow: { label: 'At Risk', class: 'bg-status-warning/10 text-status-warning' },
+  amber: { label: 'At Risk', class: 'bg-status-warning/10 text-status-warning' },
+  at_risk: { label: 'At Risk', class: 'bg-status-warning/10 text-status-warning' },
+  red: { label: 'Off Track', class: 'bg-status-danger/10 text-status-danger' },
+  off_track: { label: 'Off Track', class: 'bg-status-danger/10 text-status-danger' },
+};
+
+interface CollapsibleSectionProps {
+  title: string;
+  children: React.ReactNode;
+  defaultOpen?: boolean;
+}
+
+function CollapsibleSection({ title, children, defaultOpen = true }: CollapsibleSectionProps) {
+  const [isOpen, setIsOpen] = useState(defaultOpen);
+
+  return (
+    <div className="border-b border-border last:border-b-0">
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full flex items-center justify-between px-4 py-3 hover:bg-muted/50 transition-colors"
+      >
+        <span className="text-xs font-semibold text-foreground uppercase tracking-wide">
+          {title}
+        </span>
+        {isOpen ? (
+          <ChevronUp className="h-4 w-4 text-muted-foreground" />
+        ) : (
+          <ChevronDown className="h-4 w-4 text-muted-foreground" />
+        )}
+      </button>
+      {isOpen && (
+        <div className="px-4 pb-4 space-y-3">
+          {children}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function FieldRow({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div className="space-y-1">
+      <div className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+        {label}
+      </div>
+      <div className="text-sm text-foreground">
+        {children}
+      </div>
+    </div>
+  );
+}
+
+function getInitials(name: string): string {
+  return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
 }
 
 export function FeatureDetailsPanel({ feature, open, onClose }: FeatureDetailsPanelProps) {
   const [activeTab, setActiveTab] = useState('overview');
+  const [showRightRail, setShowRightRail] = useState(true);
+  const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
+  const [isCreateStoryOpen, setIsCreateStoryOpen] = useState(false);
   const queryClient = useQueryClient();
-  
-  // Story-driven progress
-  const { data: progress } = useFeatureProgress(feature?.id);
-  
-  // Form state — slim fields only
-  const [formData, setFormData] = useState<FeatureFormData>({
-    name: '',
-    description: '',
-    status: 'funnel',
-    health: 'green',
-    blocked: false,
-    blocked_reason: '',
-    planned_start_date: '',
-    planned_end_date: '',
+  const navigate = useNavigate();
+  const { data: projects } = useProjects();
+
+  // Fetch full feature data with relations
+  const { data: featureData } = useQuery({
+    queryKey: ['feature-detail-panel', feature?.id],
+    queryFn: async () => {
+      if (!feature?.id) return null;
+
+      const { data, error } = await supabase
+        .from('features')
+        .select(`
+          id, display_id, name, description, acceptance_criteria, status, health,
+          blocked, blocked_reason, planned_start_date, planned_end_date,
+          owner_id, epic_id, project_id, progress_pct, updated_at, change_number_id
+        `)
+        .eq('id', feature.id)
+        .single();
+
+      if (error) throw error;
+      if (!data) return null;
+
+      // Fetch relations in parallel
+      const [ownerResult, epicResult, projectResult, contributorsResult, changeNumberResult] = await Promise.all([
+        data.owner_id 
+          ? supabase.from('profiles').select('id, full_name, email, avatar_url, role').eq('id', data.owner_id).single()
+          : { data: null },
+        data.epic_id
+          ? supabase.from('epics').select('id, epic_key, name, primary_program_id').eq('id', data.epic_id).single()
+          : { data: null },
+        data.project_id
+          ? supabase.from('projects').select('id, name').eq('id', data.project_id).single()
+          : { data: null },
+        supabase
+          .from('feature_contributors')
+          .select('id, user_id, user:profiles!feature_contributors_user_id_fkey(id, full_name, email, avatar_url, role)')
+          .eq('feature_id', feature.id),
+        data.change_number_id
+          ? supabase.from('change_numbers').select('id, number, description').eq('id', data.change_number_id).single()
+          : { data: null },
+      ]);
+
+      return {
+        ...data,
+        owner: ownerResult.data,
+        epic: epicResult.data,
+        project: projectResult.data,
+        contributors: contributorsResult.data || [],
+        change_number: changeNumberResult.data,
+      };
+    },
+    enabled: !!feature?.id && open,
   });
 
-  // Initialize form data when feature changes
-  useEffect(() => {
-    if (feature) {
-      setFormData({
-        name: feature.name || '',
-        description: feature.description || '',
-        status: (feature.status as FeatureStatus) || 'funnel',
-        health: (feature.health as 'green' | 'yellow' | 'red') || 'green',
-        blocked: feature.blocked || false,
-        blocked_reason: feature.blocked_reason || '',
-        planned_start_date: feature.planned_start_date || '',
-        planned_end_date: feature.planned_end_date || '',
-      });
-    }
-  }, [feature]);
+  // Story-driven progress
+  const { data: progress } = useFeatureProgress(feature?.id);
 
-  // Update form field
-  const updateField = <K extends keyof FeatureFormData>(field: K, value: FeatureFormData[K]) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-  };
+  // Fetch story counts
+  const { data: storyStats } = useQuery({
+    queryKey: ['feature-story-stats', feature?.id],
+    queryFn: async () => {
+      if (!feature?.id) return { total: 0, done: 0, blocked: 0 };
 
-  // Save mutation — slim fields only
-  const saveMutation = useMutation({
-    mutationFn: async () => {
+      const { data, error } = await supabase
+        .from('stories')
+        .select('id, status, state')
+        .eq('feature_id', feature.id);
+
+      if (error) return { total: 0, done: 0, blocked: 0 };
+
+      const stories = data || [];
+      return {
+        total: stories.length,
+        done: stories.filter(s => s.status === 'done' || s.state === 'done').length,
+        blocked: stories.filter(s => (s.status as string) === 'blocked' || (s.state as string) === 'blocked').length,
+      };
+    },
+    enabled: !!feature?.id && open,
+  });
+
+  // Update feature mutation
+  const updateFeature = useMutation({
+    mutationFn: async (updates: Record<string, any>) => {
       if (!feature?.id) throw new Error('No feature ID');
-      
       const { error } = await supabase
         .from('features')
-        .update({
-          name: formData.name,
-          description: formData.description || null,
-          status: formData.status as any,
-          health: formData.health as any,
-          blocked: formData.blocked,
-          blocked_reason: formData.blocked ? formData.blocked_reason : null,
-          planned_start_date: formData.planned_start_date || null,
-          planned_end_date: formData.planned_end_date || null,
-        } as any)
+        .update({ ...updates, updated_at: new Date().toISOString() } as any)
         .eq('id', feature.id);
-      
       if (error) throw error;
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['feature-detail-panel', feature?.id] });
       queryClient.invalidateQueries({ queryKey: ['features'] });
       queryClient.invalidateQueries({ queryKey: ['features-backlog'] });
-      toast.success('Feature saved');
     },
-    onError: (error) => {
-      console.error('Save error:', error);
-      toast.error('Failed to save feature');
+    onError: (error: any) => {
+      toast.error('Failed to update feature', { description: error.message });
     },
   });
 
-  const handleSave = () => {
-    saveMutation.mutate();
-  };
+  // Update project mutation
+  const updateProjectMutation = useMutation({
+    mutationFn: async (projectId: string) => {
+      if (!feature?.id) return;
+      const { error } = await supabase
+        .from('features')
+        .update({ project_id: projectId } as any)
+        .eq('id', feature.id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['feature-detail-panel', feature?.id] });
+      queryClient.invalidateQueries({ queryKey: ['features'] });
+      toast.success('Project updated');
+    },
+    onError: () => {
+      toast.error('Failed to update project');
+    },
+  });
 
-  const handleSaveAndClose = () => {
-    saveMutation.mutate(undefined, {
-      onSuccess: () => {
-        onClose();
-      },
+  const handleStatusChange = (newStatus: FeatureStatus) => {
+    updateFeature.mutate({ status: newStatus }, {
+      onSuccess: () => toast.success('Status updated'),
     });
   };
 
-  const handleAction = (action: string) => {
-    switch (action) {
-      case 'delete':
-        toast.info('Move feature to recycle bin');
-        break;
-      case 'copy':
-        toast.info('Copy feature');
-        break;
-      default:
-        toast.info(`Action: ${action}`);
+  const handleCopyLink = () => {
+    navigator.clipboard.writeText(window.location.href);
+    toast.success('Link copied to clipboard');
+  };
+
+  const handleOpenFullPage = () => {
+    if (featureData?.project_id && feature?.id) {
+      navigate(`/projects/${featureData.project_id}/features/${feature.id}`);
+      onClose();
     }
   };
 
+  if (!feature) return null;
+
+  const statusConfig = STATUS_CONFIG[(featureData?.status as string) || 'funnel'] || STATUS_CONFIG.funnel;
+  const healthConfig = HEALTH_CONFIG[(featureData?.health as string) || 'green'] || HEALTH_CONFIG.green;
+  const progressPct = featureData?.progress_pct || progress?.completionPercent || 0;
+  const featureKey = featureData?.display_id || feature.display_id || `F-${feature.id.slice(0, 6)}`;
+
   return (
     <Sheet open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
-      <SheetContent className="executive-drawer w-full sm:w-[600px] md:w-[700px] lg:w-[800px] sm:max-w-[90vw] p-0 flex flex-col overflow-hidden bg-white">
+      <SheetContent className="w-full sm:w-[90vw] md:w-[85vw] lg:w-[80vw] xl:w-[75vw] sm:max-w-[1200px] p-0 flex flex-col overflow-hidden bg-background">
         {/* Header */}
-        <div className="executive-drawer-header flex-shrink-0 bg-white px-3 md:px-4 py-2 border-b border-neutral-200">
-          <div className="flex items-center justify-between gap-2">
-            <div className="flex-1 min-w-0 flex items-center gap-2">
-              <div className="min-w-0">
-                <h2 className="executive-drawer-title truncate">
-                  {feature ? formData.name || feature.name : 'New Feature'}
-                </h2>
-                <div className="flex items-center gap-2 mt-1">
-                  {feature?.display_id && (
-                    <span className="executive-drawer-subtitle font-mono">
-                      {feature.display_id}
-                    </span>
-                  )}
-                  {formData.blocked && (
-                    <Badge variant="destructive" className="text-[10px] h-5 gap-1">
-                      <AlertCircle className="h-3 w-3" />
-                      Blocked
-                    </Badge>
-                  )}
-                  {progress && progress.totalStories > 0 && (
-                    <Badge variant="secondary" className="text-[10px] h-5">
-                      {progress.completionPercent}% ({progress.completedStories}/{progress.totalStories})
-                    </Badge>
-                  )}
+        <div className="flex-shrink-0 border-b bg-card">
+          <div className="px-4 md:px-6 py-4">
+            {/* Top row: Key + Actions */}
+            <div className="flex items-start justify-between gap-4 mb-3">
+              <div className="flex-1 min-w-0">
+                {/* Feature Key */}
+                <span className="font-mono text-sm text-muted-foreground mb-1 block">
+                  {featureKey}
+                </span>
+                {/* Title */}
+                <h1 className="text-lg md:text-xl font-semibold text-foreground leading-tight line-clamp-2">
+                  {featureData?.name || feature.name}
+                </h1>
+              </div>
+
+              {/* Actions */}
+              <div className="flex items-center gap-1 md:gap-2 flex-shrink-0">
+                {feature?.id && <WorkItemPresence workItemType="features" workItemId={feature.id} />}
+                {feature?.id && <WorkItemWatchers workItemType="feature" workItemId={feature.id} />}
+                
+                {/* Transition Dropdown */}
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button size="sm" className="bg-brand-primary hover:bg-brand-primary-hover text-white hidden sm:flex">
+                      <ChevronRight className="h-4 w-4 mr-1" />
+                      Transition
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem onClick={() => handleStatusChange('analyzing')}>
+                      Move to Analysis
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => handleStatusChange('backlog')}>
+                      Move to Backlog
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => handleStatusChange('implementing')}>
+                      Start Progress
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={() => handleStatusChange('done')}>
+                      Mark Done
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+
+                <Button variant="outline" size="sm" onClick={() => setIsAssignModalOpen(true)} className="hidden md:flex">
+                  <UserPlus className="h-4 w-4 mr-1" />
+                  Assign
+                </Button>
+                <Button variant="outline" size="sm" onClick={() => setIsCreateStoryOpen(true)} className="hidden md:flex">
+                  <Plus className="h-4 w-4 mr-1" />
+                  Story
+                </Button>
+                <Button variant="ghost" size="icon" onClick={handleOpenFullPage} title="Open full page">
+                  <Maximize2 className="h-4 w-4" />
+                </Button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="icon">
+                      <MoreHorizontal className="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem onClick={() => setIsAssignModalOpen(true)} className="md:hidden">
+                      Assign
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setIsCreateStoryOpen(true)} className="md:hidden">
+                      Create Story
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator className="md:hidden" />
+                    <DropdownMenuItem onClick={handleCopyLink}>Copy Link</DropdownMenuItem>
+                    <DropdownMenuItem onClick={handleOpenFullPage}>Open Full Page</DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem className="text-destructive">Delete</DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+            </div>
+
+            {/* Status + Health Pills */}
+            <div className="flex items-center gap-2 mb-4">
+              <span className={cn(
+                "px-2.5 py-1 rounded-full text-xs font-semibold",
+                statusConfig.class
+              )}>
+                {statusConfig.label}
+              </span>
+              <span className={cn(
+                "px-2.5 py-1 rounded-full text-xs font-semibold",
+                healthConfig.class
+              )}>
+                {healthConfig.label}
+              </span>
+              {(featureData?.blocked || feature.blocked) && (
+                <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-status-danger/10 text-status-danger flex items-center gap-1">
+                  <Ban className="h-3 w-3" />
+                  Blocked
+                </span>
+              )}
+            </div>
+
+            {/* KPI Strip */}
+            <div className="flex items-center gap-4 md:gap-8 flex-wrap">
+              {/* Progress */}
+              <div className="flex items-center gap-2 md:gap-3">
+                <div className="text-xl md:text-2xl font-bold text-foreground">{progressPct}%</div>
+                <div className="w-16 md:w-20 h-1.5 bg-border rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-status-success rounded-full transition-all" 
+                    style={{ width: `${progressPct}%` }} 
+                  />
+                </div>
+                <span className="text-xs text-muted-foreground hidden sm:inline">Progress</span>
+              </div>
+
+              <div className="h-6 w-px bg-border hidden sm:block" />
+
+              {/* Stories */}
+              <div className="flex items-center gap-2">
+                <FileText className="h-4 w-4 text-muted-foreground" />
+                <div>
+                  <div className="text-xs text-muted-foreground">Stories</div>
+                  <div className="text-base md:text-lg font-bold text-foreground">{storyStats?.total || 0}</div>
                 </div>
               </div>
-              {feature?.id && <WorkItemPresence workItemType="features" workItemId={feature.id} />}
-              {feature?.id && <WorkItemWatchers workItemType="feature" workItemId={feature.id} />}
-            </div>
-            <div className="flex items-center flex-shrink-0 gap-2">
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={handleSave}
-                disabled={saveMutation.isPending}
-              >
-                {saveMutation.isPending ? 'Saving...' : 'Save'}
-              </Button>
-              <Button 
-                size="sm" 
-                onClick={handleSaveAndClose}
-                disabled={saveMutation.isPending}
-                className="bg-brand-primary hover:bg-brand-primary-hover text-white"
-              >
-                Save & Close
-              </Button>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon" className="text-foreground hover:bg-muted">
-                    <MoreVertical className="w-4 h-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="z-[100]">
-                  <DropdownMenuItem onClick={() => handleAction('copy')}>
-                    Copy Feature
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem 
-                    onClick={() => handleAction('delete')}
-                    className="text-destructive"
-                  >
-                    Delete
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+
+              <div className="h-6 w-px bg-border hidden sm:block" />
+
+              {/* Blockers */}
+              <div className="flex items-center gap-2">
+                <Ban className="h-4 w-4 text-status-danger" />
+                <div>
+                  <div className="text-xs text-muted-foreground">Blockers</div>
+                  <div className="text-base md:text-lg font-bold text-foreground">{storyStats?.blocked || 0}</div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Tabs — HARD LIMIT: 4 Tabs Only */}
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col overflow-hidden">
-          <div className="executive-drawer-tabs overflow-x-auto flex-shrink-0">
-            <TabsList className="inline-flex bg-transparent w-auto min-w-full justify-start flex-nowrap" style={{ height: 'var(--toolbar-h)' }}>
-              <TabsTrigger value="overview" className="executive-drawer-tab">
-                Overview
-              </TabsTrigger>
-              <TabsTrigger value="stories" className="executive-drawer-tab">
-                Stories
-                {progress && progress.totalStories > 0 && (
-                  <Badge variant="secondary" className="ml-1.5 h-4 px-1.5 text-[10px]">
-                    {progress.totalStories}
-                  </Badge>
-                )}
-              </TabsTrigger>
-              <TabsTrigger value="dependencies" className="executive-drawer-tab">
-                Dependencies
-              </TabsTrigger>
-            </TabsList>
+        {/* Main Content Area */}
+        <div className="flex flex-1 min-h-0 overflow-hidden">
+          {/* Left: Tabbed Content */}
+          <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col">
+              <TabsList className="border-b px-4 md:px-6 h-auto bg-transparent rounded-none justify-start gap-0 flex-shrink-0 overflow-x-auto">
+                <TabsTrigger 
+                  value="overview" 
+                  className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-3 md:px-4 py-3 text-sm"
+                >
+                  Overview
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="delivery"
+                  className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-3 md:px-4 py-3 text-sm"
+                >
+                  Delivery
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="links"
+                  className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-3 md:px-4 py-3 text-sm"
+                >
+                  Links
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="activity"
+                  className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-3 md:px-4 py-3 text-sm"
+                >
+                  Activity
+                </TabsTrigger>
+              </TabsList>
+
+              <div className="flex-1 overflow-y-auto">
+                <TabsContent value="overview" className="m-0 p-4 md:p-6">
+                  {featureData && (
+                    <FeatureOverviewTab feature={{
+                      id: featureData.id,
+                      description: featureData.description,
+                      acceptance_criteria: featureData.acceptance_criteria,
+                      updated_at: featureData.updated_at,
+                      owner: featureData.owner,
+                    }} />
+                  )}
+                </TabsContent>
+                <TabsContent value="delivery" className="m-0 p-4 md:p-6">
+                  <FeatureDeliveryTab featureId={feature.id} projectId={featureData?.project_id || ''} />
+                </TabsContent>
+                <TabsContent value="links" className="m-0 p-4 md:p-6">
+                  {featureData && <FeatureLinksTab feature={featureData as any} />}
+                </TabsContent>
+                <TabsContent value="activity" className="m-0 p-4 md:p-6">
+                  <FeatureActivityTab featureId={feature.id} />
+                </TabsContent>
+              </div>
+            </Tabs>
           </div>
 
-          <div className="executive-drawer-content flex-1 overflow-y-auto">
-            <TabsContent value="overview" className="mt-0 p-4 sm:p-6">
-              <FeatureOverviewTab 
-                feature={feature} 
-                formData={formData}
-                updateField={updateField}
-                progress={progress}
-              />
-            </TabsContent>
+          {/* Right Rail */}
+          {showRightRail && (
+            <div className="w-[280px] lg:w-[300px] border-l bg-card flex flex-col hidden md:flex">
+              {/* Details Section */}
+              <CollapsibleSection title="Details">
+                <FieldRow label="Assignee">
+                  {featureData?.owner ? (
+                    <div className="flex items-center gap-2">
+                      <div className="w-6 h-6 rounded-full bg-brand-primary/10 text-brand-primary flex items-center justify-center text-xs font-medium">
+                        {getInitials(featureData.owner.full_name)}
+                      </div>
+                      <span>{featureData.owner.full_name}</span>
+                    </div>
+                  ) : (
+                    <span className="text-muted-foreground">Unassigned</span>
+                  )}
+                </FieldRow>
 
-            <TabsContent value="stories" className="mt-0 p-4 sm:p-6">
-              <FeatureStoriesTab feature={feature} progress={progress} />
-            </TabsContent>
+                <FieldRow label="Project">
+                  <Select 
+                    value={featureData?.project_id || ''} 
+                    onValueChange={(val) => updateProjectMutation.mutate(val)}
+                    disabled={updateProjectMutation.isPending}
+                  >
+                    <SelectTrigger className="h-8 text-sm">
+                      <SelectValue placeholder="Select project" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {projects?.map((project) => (
+                        <SelectItem key={project.id} value={project.id}>
+                          {project.is_default ? `${project.name} (Default)` : project.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </FieldRow>
 
-            <TabsContent value="dependencies" className="mt-0 p-4 sm:p-6">
-              <FeatureDependenciesTab feature={feature} />
-            </TabsContent>
-          </div>
-        </Tabs>
+                <FieldRow label="Parent Epic">
+                  {featureData?.epic ? (
+                    <span className="text-gold-link hover:text-gold-link-hover cursor-pointer hover:underline transition-colors font-medium text-sm">
+                      {featureData.epic.epic_key} {featureData.epic.name}
+                    </span>
+                  ) : (
+                    <span className="text-muted-foreground">None</span>
+                  )}
+                </FieldRow>
+              </CollapsibleSection>
+
+              {/* Planning Section */}
+              <CollapsibleSection title="Planning">
+                <div className="grid grid-cols-2 gap-3">
+                  <FieldRow label="Start Date">
+                    <span>
+                      {featureData?.planned_start_date 
+                        ? format(new Date(featureData.planned_start_date), 'MMM d, yyyy')
+                        : 'Not set'
+                      }
+                    </span>
+                  </FieldRow>
+
+                  <FieldRow label="Target Date">
+                    <span>
+                      {featureData?.planned_end_date 
+                        ? format(new Date(featureData.planned_end_date), 'MMM d, yyyy')
+                        : 'Not set'
+                      }
+                    </span>
+                  </FieldRow>
+                </div>
+
+                <FieldRow label="Change Number">
+                  {featureData?.change_number ? (
+                    <span className="font-mono text-xs bg-muted px-2 py-1 rounded inline-block">
+                      {featureData.change_number.number}
+                    </span>
+                  ) : (
+                    <span className="text-muted-foreground">Not assigned</span>
+                  )}
+                </FieldRow>
+              </CollapsibleSection>
+
+              {/* Configure Fields Button */}
+              <div className="mt-auto p-4 border-t">
+                <Button variant="ghost" size="sm" className="w-full justify-center">
+                  <Settings className="h-4 w-4 mr-2" />
+                  Configure Fields
+                </Button>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Assign Modal */}
+        {featureData && (
+          <AssignModal
+            isOpen={isAssignModalOpen}
+            onClose={() => setIsAssignModalOpen(false)}
+            featureId={feature.id}
+            featureKey={featureKey}
+            featureTitle={featureData.name}
+            currentOwner={featureData.owner || null}
+            currentContributors={featureData.contributors || []}
+            projectId={featureData.project_id || undefined}
+          />
+        )}
+
+        {/* Create Story Modal */}
+        {featureData && (
+          <CreateStoryModal
+            isOpen={isCreateStoryOpen}
+            onClose={() => setIsCreateStoryOpen(false)}
+            parentFeature={{
+              id: feature.id,
+              key: featureKey,
+              title: featureData.name,
+              program_id: featureData.epic?.primary_program_id || undefined,
+              epic_id: featureData.epic_id,
+              epic_key: featureData.epic?.epic_key,
+            }}
+          />
+        )}
       </SheetContent>
     </Sheet>
   );
