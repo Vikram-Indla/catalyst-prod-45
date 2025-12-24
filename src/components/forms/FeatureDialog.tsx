@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
+import { useProjects, useDefaultProject } from '@/hooks/useProjects';
 
 interface FeatureDialogProps {
   open: boolean;
@@ -22,6 +23,7 @@ export function FeatureDialog({ open, onOpenChange, feature }: FeatureDialogProp
   const [health, setHealth] = useState(feature?.health || 'green');
   const [epicId, setEpicId] = useState(feature?.epic_id || '');
   const [programId, setProgramId] = useState(feature?.program_id || '');
+  const [projectId, setProjectId] = useState(feature?.project_id || '');
   const [piId, setPiId] = useState(feature?.pi_id || '');
   const [estimatePoints, setEstimatePoints] = useState(feature?.estimate_points || 0);
   
@@ -43,6 +45,10 @@ export function FeatureDialog({ open, onOpenChange, feature }: FeatureDialogProp
     : '0.00';
 
   const queryClient = useQueryClient();
+  
+  // Fetch projects with default project
+  const { data: projects } = useProjects();
+  const { data: defaultProject } = useDefaultProject();
 
   const { data: epics } = useQuery({
     queryKey: ['epics'],
@@ -79,6 +85,8 @@ export function FeatureDialog({ open, onOpenChange, feature }: FeatureDialogProp
       setHealth(feature?.health || 'green');
       setEpicId(feature?.epic_id || '');
       setProgramId(feature?.program_id || '');
+      // Use feature's project_id, or default project if not set
+      setProjectId(feature?.project_id || defaultProject?.id || '');
       setPiId(feature?.pi_id || '');
       setEstimatePoints(feature?.estimate_points || 0);
       setBusinessValue(feature?.business_value || 0);
@@ -90,7 +98,7 @@ export function FeatureDialog({ open, onOpenChange, feature }: FeatureDialogProp
       setAcceptanceCriteria(feature?.acceptance_criteria || '');
       setNotes(feature?.notes || '');
     }
-  }, [open, feature]);
+  }, [open, feature, defaultProject?.id]);
 
   const mutation = useMutation({
     mutationFn: async (data: any) => {
@@ -131,6 +139,7 @@ export function FeatureDialog({ open, onOpenChange, feature }: FeatureDialogProp
       health,
       epic_id: epicId,
       program_id: programId,
+      project_id: projectId || defaultProject?.id || null,
       pi_id: piId || null,
       estimate_points: estimatePoints,
       business_value: businessValue,
@@ -200,6 +209,21 @@ export function FeatureDialog({ open, onOpenChange, feature }: FeatureDialogProp
                 </SelectContent>
               </Select>
             </div>
+          </div>
+          <div>
+            <Label htmlFor="project">Project</Label>
+            <Select value={projectId} onValueChange={setProjectId}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select project" />
+              </SelectTrigger>
+              <SelectContent>
+                {projects?.map((project) => (
+                  <SelectItem key={project.id} value={project.id}>
+                    {project.is_default ? `${project.name} (Default)` : project.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
           <div className="grid grid-cols-3 gap-4">
             <div>

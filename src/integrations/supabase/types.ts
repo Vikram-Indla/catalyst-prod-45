@@ -10074,6 +10074,7 @@ export type Database = {
           created_at: string | null
           description: string | null
           id: string
+          is_default: boolean | null
           key: string
           name: string
           program_id: string
@@ -10086,6 +10087,7 @@ export type Database = {
           created_at?: string | null
           description?: string | null
           id?: string
+          is_default?: boolean | null
           key: string
           name: string
           program_id: string
@@ -10098,6 +10100,7 @@ export type Database = {
           created_at?: string | null
           description?: string | null
           id?: string
+          is_default?: boolean | null
           key?: string
           name?: string
           program_id?: string
