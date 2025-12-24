@@ -40,7 +40,7 @@ export interface OperationsWorkItem {
 
 export interface OperationsItemsParams {
   type?: 'incident' | 'release';
-  filter?: 'major' | 'sla-at-risk' | 'blocked';
+  filter?: 'major' | 'sla-at-risk' | 'blocked' | 'awaiting-me';
   search?: string;
   sort?: 'updated' | 'priority';
   page?: number;
