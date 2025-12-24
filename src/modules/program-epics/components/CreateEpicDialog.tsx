@@ -346,19 +346,6 @@ export function CreateEpicDialog({
           <DialogTitle>Create Epic</DialogTitle>
         </DialogHeader>
         
-        {/* LIVE VALIDATION: Missing Required Fields Banner */}
-        {missingFields.length > 0 && (
-          <div className="p-3 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-md mx-1">
-            <p className="text-sm font-medium text-amber-800 dark:text-amber-200 mb-1">
-              Missing required fields:
-            </p>
-            <ul className="text-sm text-amber-700 dark:text-amber-300 list-disc list-inside space-y-0.5">
-              {missingFields.map((field) => (
-                <li key={field}>{field}</li>
-              ))}
-            </ul>
-          </div>
-        )}
         
         <ScrollArea className="flex-1 pr-4">
           <div className="flex flex-col gap-5 py-4">
