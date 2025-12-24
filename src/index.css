@@ -273,11 +273,11 @@
     --surface-3: #2d2d2d;
     --text-1: #f5f5f5;
     --text-2: #d4d4d4;            /* Brightened from #a3a3a3 for better contrast */
-    --text-3: #a3a3a3;            /* Brightened from #737373 for better visibility */
-    --text-4: #737373;
+    --text-3: #b3b3b3;            /* Increased from #a3a3a3 for table headers (70% lightness) */
+    --text-4: #8a8a8a;            /* Increased from #737373 for better visibility */
     --text-secondary-strong: 0 0% 75%;
-    --icon-default: #a3a3a3;
-    --icon-muted: #737373;
+    --icon-default: #b3b3b3;      /* Increased for better icon visibility */
+    --icon-muted: #8a8a8a;        /* Increased from #737373 */
     --divider: #2a2a2a;           /* Visible row dividers */
     --border-color: #2c2c2c;      /* Card borders */
     --nav-bg: #1f1f1f;

@@ -22,11 +22,11 @@ export function TableEmptyState({
   const getDefaultIcon = () => {
     switch (variant) {
       case 'no-results':
-        return <Search className="h-12 w-12 text-muted-foreground/50" />;
+        return <Search className="h-12 w-12 text-muted-foreground/50 dark:text-foreground/40" />;
       case 'error':
         return <AlertCircle className="h-12 w-12 text-destructive/60" />;
       default:
-        return <Database className="h-12 w-12 text-muted-foreground/50" />;
+        return <Database className="h-12 w-12 text-muted-foreground/50 dark:text-foreground/40" />;
     }
   };
 
@@ -42,7 +42,7 @@ export function TableEmptyState({
         {title}
       </h3>
       {description && (
-        <p className="text-sm text-muted-foreground text-center max-w-sm mb-4">
+        <p className="text-sm text-muted-foreground dark:text-foreground/60 text-center max-w-sm mb-4">
           {description}
         </p>
       )}
