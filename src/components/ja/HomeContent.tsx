@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { 
   ChevronDown, ChevronUp, Star, MoreHorizontal, ExternalLink, CheckCircle, 
   Clock, Pin, Settings, Kanban, List, AlertTriangle, Briefcase, Calendar, FileText
@@ -11,31 +11,21 @@ import { formatDistanceToNow } from 'date-fns';
 import { SegmentedTabs, SegmentedTab } from '@/components/ui/segmented-tabs';
 import { UnifiedToolbar } from '@/components/ui/unified-toolbar';
 import { CriticalStrip, ActiveFilter } from './home/CriticalStrip';
-import { HomeRoleModeSelector, HomeRoleMode } from './home/HomeRoleModeSelector';
+import { HomeRoleModeSelector } from './home/HomeRoleModeSelector';
 import { ModeAwareGridRow } from './home/WorkGridRow';
 import { ModeAwareEmptyState } from './home/EmptyStates';
-import { PlannerFilterDrawer } from './home/PlannerFilterDrawer';
-// Domain-separated hooks - each mode has its own query hooks
+import { HomeUnifiedFilterDrawer } from './home/HomeUnifiedFilterDrawer';
 import {
-  useHomeOperationsSummary,
-  useHomeOperationsItems,
-  OperationsWorkItem,
-} from '@/hooks/home/useHomeOperationsData';
+  useHomeFilters,
+  HomeRoleMode,
+  countActiveHomeFilters,
+  hasActiveHomeFilters,
+} from '@/hooks/home/useHomeFilters';
 import {
-  useHomeDeliverySummary,
-  useHomeDeliveryItems,
-  DeliveryWorkItem,
-} from '@/hooks/home/useHomeDeliveryData';
-import {
-  useHomePlannerSummary,
-  useHomePlannerItems,
-  PlannerWorkItem,
-  PlannerFilters,
-  getDefaultPlannerFilters,
-  deserializePlannerFilters,
-  serializePlannerFilters,
-  hasActivePlannerFilters,
-} from '@/hooks/home/useHomePlannerData';
+  useUnifiedHomeSummary,
+  useUnifiedHomeItems,
+  UnifiedWorkItem,
+} from '@/hooks/home/useUnifiedHomeData';
 import {
   useStarredItemIds,
   useStarredDeliveryItems,
@@ -49,13 +39,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { useDebounce } from '@/hooks/useDebounce';
 
-const ITEMS_PER_PAGE = 20;
 const STORAGE_KEY_PINNED = 'catalyst_home_pinned_projects';
-
-// Unified work item type for display
-type HomeWorkItem = OperationsWorkItem | DeliveryWorkItem | PlannerWorkItem;
 
 // Project type for display
 interface HomeProject {
@@ -68,38 +53,23 @@ interface HomeProject {
   hasUrgency: boolean;
 }
 
-// Tab configurations per mode
-const MODE_TABS: Record<HomeRoleMode, { value: string; label: string }[]> = {
-  operations: [], // Operations has no tabs - just a work grid
-  delivery: [
-    { value: 'worked-on', label: 'Worked on' },
-    { value: 'assigned', label: 'Assigned' },
-    { value: 'starred', label: 'Starred' },
-  ],
-  planner: [
-    { value: 'planned', label: 'Planned' },
-    { value: 'upcoming', label: 'Upcoming' },
-    { value: 'pending-review', label: 'Pending review' },
-  ],
-};
-
-// Default tab per mode
-const DEFAULT_TABS: Record<HomeRoleMode, string> = {
-  operations: 'all',
-  delivery: 'worked-on',
-  planner: 'planned',
-};
+// Tab configurations - UNIFIED across all modes (Worked on / Assigned / Starred)
+const UNIFIED_TABS = [
+  { value: 'worked-on', label: 'Worked on' },
+  { value: 'assigned', label: 'Assigned' },
+  { value: 'starred', label: 'Starred' },
+];
 
 // ============================================
 // UTILITY: Group items by time period
 // ============================================
-function groupItemsByTimePeriod(items: HomeWorkItem[]): { label: string; items: HomeWorkItem[] }[] {
+function groupItemsByTimePeriod(items: UnifiedWorkItem[]): { label: string; items: UnifiedWorkItem[] }[] {
   const now = new Date();
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
   const yesterday = new Date(today.getTime() - 24 * 60 * 60 * 1000);
   const lastWeek = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
 
-  const groups: { label: string; items: HomeWorkItem[] }[] = [
+  const groups: { label: string; items: UnifiedWorkItem[] }[] = [
     { label: 'Today', items: [] },
     { label: 'Yesterday', items: [] },
     { label: 'This week', items: [] },
@@ -334,64 +304,39 @@ function ProjectCard({
 }
 
 // ============================================
-// MODE-AWARE DATA GRID COMPONENT
+// UNIFIED DATA GRID COMPONENT
 // ============================================
 const GRID_COLS = '100px 1fr 160px 100px 80px 80px';
 
-function ModeAwareDataGrid({ 
+function UnifiedDataGrid({ 
   items, 
   mode,
-  visibleCount, 
   onLoadMore,
   searchQuery,
   selectedTab,
-  activeFilter,
   density = 'comfortable',
   starredItemIds,
   onToggleStar,
-  hasMore: externalHasMore,
+  hasMore,
   isLoadingMore,
 }: { 
-  items: HomeWorkItem[]; 
+  items: UnifiedWorkItem[]; 
   mode: HomeRoleMode;
-  visibleCount: number;
   onLoadMore: () => void;
   searchQuery: string;
   selectedTab: string;
-  activeFilter: string;
   density?: 'compact' | 'comfortable';
   starredItemIds?: Set<string>;
   onToggleStar?: (itemId: string, itemType: string) => void;
-  hasMore?: boolean;
-  isLoadingMore?: boolean;
+  hasMore: boolean;
+  isLoadingMore: boolean;
 }) {
-  // For Planner mode: NO client-side filtering - server handles everything
-  // For other modes: client-side filtering is a backup (server should handle this)
-  const filteredItems = useMemo(() => {
-    if (mode === 'planner') {
-      // Planner uses server-side filtering only
-      return items;
-    }
-    if (!searchQuery) return items;
-    const query = searchQuery.toLowerCase();
-    return items.filter(item => 
-      item.key.toLowerCase().includes(query) ||
-      item.summary.toLowerCase().includes(query) ||
-      item.project.toLowerCase().includes(query)
-    );
-  }, [items, searchQuery, mode]);
-
-  const groupedItems = groupItemsByTimePeriod(filteredItems);
-  let displayedCount = 0;
-  
-  // For Planner mode, use external hasMore from pagination; for others use local calculation
-  const hasMore = mode === 'planner' 
-    ? (externalHasMore ?? false)
-    : visibleCount < filteredItems.length;
+  // NO client-side filtering - server handles everything
+  const groupedItems = groupItemsByTimePeriod(items);
 
   return (
     <div className="mt-2 rounded-xl border border-[var(--border-color)] overflow-hidden bg-[var(--card-bg)] shadow-sm dark:shadow-[0_1px_3px_rgba(0,0,0,0.4)]">
-      {/* Sticky Header - olive tinted in dark mode */}
+      {/* Sticky Header */}
       <div 
         className="grid items-center py-2.5 px-4 text-[11px] font-semibold uppercase tracking-[0.08em] sticky top-0 z-10"
         style={{ 
@@ -410,54 +355,42 @@ function ModeAwareDataGrid({
       </div>
 
       {/* Empty State or Content */}
-      {filteredItems.length === 0 ? (
+      {items.length === 0 ? (
         <ModeAwareEmptyState 
           mode={mode}
           tab={selectedTab}
           searchQuery={searchQuery}
-          filter={activeFilter}
+          filter=""
         />
       ) : (
         <>
-          {groupedItems.map((group, groupIndex) => {
-            // For Planner mode, show all items (pagination handled server-side)
-            // For other modes, use visibleCount
-            const remainingSlots = mode === 'planner' 
-              ? group.items.length 
-              : visibleCount - displayedCount;
-            if (remainingSlots <= 0) return null;
-            
-            const itemsToShow = group.items.slice(0, remainingSlots);
-            displayedCount += itemsToShow.length;
-
-            return (
-              <div key={groupIndex}>
-                {/* Section header row - TODAY / THIS WEEK / OLDER */}
-                <div 
-                  className="text-[11px] font-bold uppercase tracking-[0.1em] py-2.5 px-4"
-                  style={{ 
-                    color: 'var(--text-3)',
-                    backgroundColor: 'var(--table-section-bg)',
-                    borderTop: groupIndex > 0 ? '1px solid var(--divider)' : 'none',
-                    borderBottom: '1px solid var(--divider)',
-                  }}
-                >
-                  {group.label}
-                </div>
-                {/* Data rows with visible dividers */}
-                {itemsToShow.map((item, index) => (
-                  <ModeAwareGridRow 
-                    key={`${group.label}-${index}`} 
-                    item={item}
-                    mode={mode}
-                    density={density}
-                    isStarred={starredItemIds?.has(item.id)}
-                    onToggleStar={onToggleStar ? () => onToggleStar(item.id, item.type) : undefined}
-                  />
-                ))}
+          {groupedItems.map((group, groupIndex) => (
+            <div key={groupIndex}>
+              {/* Section header row */}
+              <div 
+                className="text-[11px] font-bold uppercase tracking-[0.1em] py-2.5 px-4"
+                style={{ 
+                  color: 'var(--text-3)',
+                  backgroundColor: 'var(--table-section-bg)',
+                  borderTop: groupIndex > 0 ? '1px solid var(--divider)' : 'none',
+                  borderBottom: '1px solid var(--divider)',
+                }}
+              >
+                {group.label}
               </div>
-            );
-          })}
+              {/* Data rows */}
+              {group.items.map((item, index) => (
+                <ModeAwareGridRow 
+                  key={`${group.label}-${index}`} 
+                  item={item as any}
+                  mode={mode}
+                  density={density}
+                  isStarred={starredItemIds?.has(item.id)}
+                  onToggleStar={onToggleStar ? () => onToggleStar(item.id, item.type) : undefined}
+                />
+              ))}
+            </div>
+          ))}
           
           {/* Load more */}
           {hasMore && (
@@ -482,225 +415,90 @@ function ModeAwareDataGrid({
 // ============================================
 export function HomeContent() {
   const navigate = useNavigate();
-  const [searchParams, setSearchParams] = useSearchParams();
   
-  // URL state - mode, tab, filter
-  const roleMode = (searchParams.get('mode') as HomeRoleMode) || 'delivery';
-  const selectedTab = searchParams.get('tab') || DEFAULT_TABS[roleMode];
-  const activeFilter = (searchParams.get('filter') as ActiveFilter) || 'all';
+  // Unified filter state from URL
+  const {
+    mode,
+    filters,
+    debouncedSearch,
+    sort,
+    page,
+    pageSize,
+    activeFilterCount,
+    hasFilters,
+    setMode,
+    setScope,
+    setSearch,
+    setSort,
+    setFilters,
+    clearFilters,
+    setPage,
+  } = useHomeFilters();
   
-  // Local state
-  const [visibleCount, setVisibleCount] = useState(ITEMS_PER_PAGE);
-  const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || '');
-  const [sortBy, setSortBy] = useState(searchParams.get('sort') || 'recently-updated');
+  // Local UI state
   const [density, setDensity] = useState<'compact' | 'comfortable'>('comfortable');
   const [pinnedProjects, setPinnedProjects] = useState<string[]>([]);
   const [isProjectsCollapsed, setIsProjectsCollapsed] = useState(false);
+  const [accumulatedItems, setAccumulatedItems] = useState<UnifiedWorkItem[]>([]);
   
-  // Planner-specific state
-  const [plannerPage, setPlannerPage] = useState(1);
-  const [plannerFilters, setPlannerFilters] = useState<PlannerFilters>(() => 
-    deserializePlannerFilters(searchParams)
-  );
-  const [plannerItems, setPlannerItems] = useState<PlannerWorkItem[]>([]);
-  
-  // Debounced search for server queries
-  const debouncedSearch = useDebounce(searchQuery, 300);
-
-  // ============================================
-  // URL STATE MANAGEMENT
-  // ============================================
-  const updateUrlState = useCallback((updates: Record<string, string | null>) => {
-    const newParams = new URLSearchParams(searchParams);
-    Object.entries(updates).forEach(([key, value]) => {
-      if (value === null || value === '' || value === DEFAULT_TABS[roleMode]) {
-        newParams.delete(key);
-      } else {
-        newParams.set(key, value);
-      }
-    });
-    setSearchParams(newParams, { replace: true });
-  }, [searchParams, setSearchParams, roleMode]);
-
-  const handleModeChange = (newMode: HomeRoleMode) => {
-    const newParams = new URLSearchParams();
-    newParams.set('mode', newMode);
-    setSearchParams(newParams, { replace: true });
-    setVisibleCount(ITEMS_PER_PAGE);
-    setPlannerPage(1);
-    setPlannerItems([]);
-    setPlannerFilters(getDefaultPlannerFilters());
-  };
-
-  const handleTabChange = (tab: string) => {
-    updateUrlState({ tab, filter: null });
-    setVisibleCount(ITEMS_PER_PAGE);
-    setPlannerPage(1);
-    setPlannerItems([]);
-  };
-
-  const handleFilterChange = (filter: ActiveFilter) => {
-    updateUrlState({ filter: filter === 'all' ? null : filter });
-  };
-
-  // Planner filter handlers
-  const handlePlannerFiltersApply = useCallback(() => {
-    const filterParams = serializePlannerFilters(plannerFilters);
-    const newParams = new URLSearchParams(searchParams);
-    // Clear old filter params
-    ['status', 'decisionRequired', 'readyForSprint', 'plannedDateFrom', 'plannedDateTo'].forEach(k => newParams.delete(k));
-    // Set new ones
-    Object.entries(filterParams).forEach(([k, v]) => newParams.set(k, v));
-    setSearchParams(newParams, { replace: true });
-    setPlannerPage(1);
-    setPlannerItems([]);
-  }, [plannerFilters, searchParams, setSearchParams]);
-
-  const handlePlannerFiltersClear = useCallback(() => {
-    setPlannerFilters(getDefaultPlannerFilters());
-    const newParams = new URLSearchParams(searchParams);
-    ['status', 'decisionRequired', 'readyForSprint', 'plannedDateFrom', 'plannedDateTo'].forEach(k => newParams.delete(k));
-    setSearchParams(newParams, { replace: true });
-    setPlannerPage(1);
-    setPlannerItems([]);
-  }, [searchParams, setSearchParams]);
-
-  // ============================================
-  // DOMAIN-SEPARATED DATA FETCHING
-  // Each mode queries different backend services
-  // ============================================
-  
-  // Operations mode: Incident Management + Release Management
-  const operationsSummary = useHomeOperationsSummary();
-  const operationsItems = useHomeOperationsItems({
-    filter: activeFilter === 'major-incidents' ? 'major' : 
-            activeFilter === 'sla-at-risk' ? 'sla-at-risk' :
-            activeFilter === 'awaiting-me' ? 'awaiting-me' :
-            activeFilter === 'blocked' ? 'blocked' : undefined,
-    search: searchQuery || undefined,
-    sort: sortBy === 'priority' ? 'priority' : 'updated',
-    page: 1,
-    pageSize: visibleCount,
-  });
-
-  // Delivery mode: Execution work items
-  const deliverySummary = useHomeDeliverySummary();
-  const deliveryItems = useHomeDeliveryItems({
-    scope: selectedTab === 'assigned' ? 'assigned' : 'worked-on',
-    search: searchQuery || undefined,
-    sort: sortBy === 'priority' ? 'priority' : sortBy === 'due-date' ? 'due-date' : 'updated',
-    page: 1,
-    pageSize: visibleCount,
-  });
-
-  // Starred items - separate query for starred tab
+  // Starred items
   const starredItemIds = useStarredItemIds();
   const starredItems = useStarredDeliveryItems();
   const starredCount = useStarredItemsCount();
   const toggleStarMutation = useToggleStar();
 
-  // Planner mode: Work Manager
-  const plannerSummary = useHomePlannerSummary();
-  const plannerItemsQuery = useHomePlannerItems({
-    category: selectedTab === 'upcoming' ? 'upcoming' : 
-              selectedTab === 'pending-review' ? 'pending-review' : 'planned',
-    search: debouncedSearch || undefined,
-    sort: sortBy === 'priority' ? 'priority' : 'planned-date',
-    filters: plannerFilters,
-    page: plannerPage,
-    pageSize: ITEMS_PER_PAGE,
+  // Unified data hooks with real-time updates
+  const summary = useUnifiedHomeSummary(mode);
+  const itemsQuery = useUnifiedHomeItems({
+    mode,
+    filters,
+    search: debouncedSearch,
+    sort,
+    page,
+    pageSize,
   });
 
-  // Get data based on current mode
-  const { workItems, criticalCounts, isLoading, projects } = useMemo(() => {
-    switch (roleMode) {
-      case 'operations':
-        return {
-          workItems: operationsItems.data?.items || [],
-          criticalCounts: {
-            majorIncidents: operationsSummary.data?.incidents.major || { open: 0, breached: 0, atRisk: 0 },
-            slaAtRisk: operationsSummary.data?.incidents.slaAtRisk || 0,
-            awaitingMe: operationsSummary.data?.incidents.awaitingMe || 0,
-            blocked: operationsSummary.data?.incidents.blocked || 0,
-            myWorkload: {
-              incidents: operationsItems.data?.counts.total || 0,
-              workItems: 0,
-            },
-          },
-          isLoading: operationsSummary.isLoading || operationsItems.isLoading,
-          projects: [] as HomeProject[],
-        };
-      case 'planner':
-        return {
-          workItems: plannerItemsQuery.data?.items || [],
-          criticalCounts: {
-            majorIncidents: { open: 0, breached: 0, atRisk: 0 },
-            slaAtRisk: 0,
-            awaitingMe: plannerSummary.data?.pendingReview || 0,
-            blocked: 0,
-            myWorkload: {
-              incidents: 0,
-              workItems: plannerItemsQuery.data?.counts.planned || 0,
-            },
-          },
-          isLoading: plannerSummary.isLoading || plannerItemsQuery.isLoading,
-          projects: [] as HomeProject[],
-        };
-      case 'delivery':
-      default:
-        // If starred tab, use starred items; otherwise use regular delivery items
-        const items = selectedTab === 'starred' 
-          ? (starredItems.data?.items || [])
-          : (deliveryItems.data?.items || []);
-        return {
-          workItems: items,
-          criticalCounts: {
-            majorIncidents: { open: 0, breached: 0, atRisk: 0 },
-            slaAtRisk: 0,
-            awaitingMe: 0,
-            blocked: items.filter((i: any) => i.blocked).length,
-            myWorkload: {
-              incidents: 0,
-              workItems: deliveryItems.data?.counts.total || 0,
-            },
-          },
-          isLoading: selectedTab === 'starred' 
-            ? starredItems.isLoading 
-            : (deliverySummary.isLoading || deliveryItems.isLoading),
-          projects: [] as HomeProject[],
-        };
+  // Accumulate items for pagination
+  useEffect(() => {
+    if (itemsQuery.data?.items) {
+      if (page === 1) {
+        setAccumulatedItems(itemsQuery.data.items);
+      } else {
+        setAccumulatedItems(prev => {
+          const existingIds = new Set(prev.map(i => i.id));
+          const newItems = itemsQuery.data.items.filter(i => !existingIds.has(i.id));
+          return [...prev, ...newItems];
+        });
+      }
     }
-  }, [
-    roleMode,
-    selectedTab,
-    operationsSummary.data, operationsItems.data, operationsSummary.isLoading, operationsItems.isLoading,
-    deliverySummary.data, deliveryItems.data, deliverySummary.isLoading, deliveryItems.isLoading,
-    plannerSummary.data, plannerItemsQuery.data, plannerSummary.isLoading, plannerItemsQuery.isLoading,
-    starredItems.data, starredItems.isLoading,
-  ]);
+  }, [itemsQuery.data?.items, page]);
 
-  // Tab counts from backend - mode specific
-  const tabCounts = useMemo(() => {
-    switch (roleMode) {
-      case 'operations':
-        return {
-          total: operationsItems.data?.counts.total || 0,
-        };
-      case 'planner':
-        return {
-          planned: plannerItemsQuery.data?.counts.planned || 0,
-          upcoming: plannerItemsQuery.data?.counts.upcoming || 0,
-          pendingReview: plannerItemsQuery.data?.counts.pendingReview || 0,
-        };
-      case 'delivery':
-      default:
-        return {
-          workedOn: deliveryItems.data?.counts.workedOn || 0,
-          assigned: deliveryItems.data?.counts.assigned || 0,
-          starred: starredCount.data || 0,
-        };
+  // Reset accumulated items when filters/search/mode change
+  useEffect(() => {
+    setAccumulatedItems([]);
+    setPage(1);
+  }, [mode, filters.scope, filters.status, filters.priority, filters.updatedRange, debouncedSearch, setPage]);
+
+  // Get work items based on tab
+  const workItems = useMemo(() => {
+    if (filters.scope === 'starred') {
+      return starredItems.data?.items || [];
     }
-  }, [roleMode, operationsItems.data, plannerItemsQuery.data, deliveryItems.data, starredCount.data]);
+    return accumulatedItems;
+  }, [filters.scope, starredItems.data, accumulatedItems]);
+
+  // Tab counts from backend
+  const tabCounts = useMemo(() => {
+    const data = itemsQuery.data?.counts || summary.data;
+    return {
+      workedOn: data?.workedOn || 0,
+      assigned: data?.assigned || 0,
+      starred: starredCount.data || data?.starred || 0,
+    };
+  }, [itemsQuery.data?.counts, summary.data, starredCount.data]);
+
+  const isLoading = summary.isLoading || itemsQuery.isLoading;
+  const hasMore = itemsQuery.data?.pagination?.hasMore || false;
 
   // Load pinned projects from localStorage
   useEffect(() => {
@@ -725,77 +523,65 @@ export function HomeContent() {
     });
   };
 
-  // Sort projects: pinned first, then recent
-  const sortedProjects = useMemo(() => {
-    const pinned = projects.filter(p => pinnedProjects.includes(p.id));
-    const unpinned = projects.filter(p => !pinnedProjects.includes(p.id));
-    return [...pinned, ...unpinned];
-  }, [projects, pinnedProjects]);
-
   const handleLoadMore = () => {
-    setVisibleCount(prev => prev + ITEMS_PER_PAGE);
+    if (hasMore && !itemsQuery.isFetching) {
+      setPage(page + 1);
+    }
+  };
+
+  const handleModeChange = (newMode: HomeRoleMode) => {
+    setAccumulatedItems([]);
+    setMode(newMode);
+  };
+
+  const handleTabChange = (tab: string) => {
+    setAccumulatedItems([]);
+    setScope(tab as any);
   };
 
   const sortOptions = [
-    { label: 'Recently updated', value: 'recently-updated' },
-    { label: 'Recently viewed', value: 'recently-viewed' },
+    { label: 'Recently updated', value: 'updated' },
     { label: 'Priority', value: 'priority' },
-    { label: 'Due date', value: 'due-date' },
+    { label: 'Status', value: 'status' },
+    ...(mode === 'planner' ? [{ label: 'Planned date', value: 'planned-date' }] : []),
   ];
-
-  // Get current mode tabs
-  const currentModeTabs = MODE_TABS[roleMode];
-  const hasTabs = currentModeTabs.length > 0;
 
   // Get tab count for display
   const getTabCount = (tabValue: string): number => {
-    if (roleMode === 'delivery') {
-      const counts = tabCounts as { workedOn: number; assigned: number; starred: number };
-      switch (tabValue) {
-        case 'worked-on': return counts.workedOn;
-        case 'assigned': return counts.assigned;
-        case 'starred': return counts.starred;
-        default: return 0;
-      }
+    switch (tabValue) {
+      case 'worked-on': return tabCounts.workedOn;
+      case 'assigned': return tabCounts.assigned;
+      case 'starred': return tabCounts.starred;
+      default: return 0;
     }
-    if (roleMode === 'planner') {
-      const counts = tabCounts as { planned: number; upcoming: number; pendingReview: number };
-      switch (tabValue) {
-        case 'planned': return counts.planned;
-        case 'upcoming': return counts.upcoming;
-        case 'pending-review': return counts.pendingReview;
-        default: return 0;
-      }
-    }
-    return 0;
   };
 
   // Mode-specific focus widgets
   const renderFocusWidgets = () => {
-    switch (roleMode) {
+    switch (mode) {
       case 'operations':
         return (
           <>
             <FocusWidget 
-              title="Active incidents"
+              title="All incidents"
               icon={AlertTriangle}
-              primaryCount={criticalCounts.myWorkload.incidents}
-              subtitle="Assigned to me"
-              onClick={() => handleFilterChange('all')}
+              primaryCount={tabCounts.workedOn}
+              subtitle="Total active"
+              onClick={() => handleTabChange('worked-on')}
             />
             <FocusWidget 
-              title="SLA at risk"
-              icon={Clock}
-              primaryCount={criticalCounts.slaAtRisk}
-              subtitle="Approaching breach"
-              onClick={() => handleFilterChange('sla-at-risk')}
+              title="Assigned to me"
+              icon={Briefcase}
+              primaryCount={tabCounts.assigned}
+              subtitle="My workload"
+              onClick={() => handleTabChange('assigned')}
             />
             <FocusWidget 
-              title="Awaiting action"
-              icon={AlertTriangle}
-              primaryCount={criticalCounts.awaitingMe}
-              subtitle="Needs response"
-              onClick={() => handleFilterChange('awaiting-me')}
+              title="Starred"
+              icon={Star}
+              primaryCount={tabCounts.starred}
+              subtitle="Quick access"
+              onClick={() => handleTabChange('starred')}
             />
           </>
         );
@@ -803,25 +589,25 @@ export function HomeContent() {
         return (
           <>
             <FocusWidget 
-              title="Planned items"
+              title="Active work"
               icon={Calendar}
-              primaryCount={getTabCount('planned')}
-              subtitle="Ready for sprint"
-              onClick={() => handleTabChange('planned')}
+              primaryCount={tabCounts.workedOn}
+              subtitle="Planned & In Progress"
+              onClick={() => handleTabChange('worked-on')}
             />
             <FocusWidget 
-              title="Upcoming work"
+              title="Upcoming"
               icon={Clock}
-              primaryCount={getTabCount('upcoming')}
-              subtitle="Next sprints"
-              onClick={() => handleTabChange('upcoming')}
+              primaryCount={tabCounts.assigned}
+              subtitle="Backlog & On Hold"
+              onClick={() => handleTabChange('assigned')}
             />
             <FocusWidget 
-              title="Pending review"
+              title="Needs review"
               icon={FileText}
-              primaryCount={getTabCount('pending-review')}
-              subtitle="Needs attention"
-              onClick={() => handleTabChange('pending-review')}
+              primaryCount={tabCounts.starred}
+              subtitle="Decision required"
+              onClick={() => handleTabChange('starred')}
             />
           </>
         );
@@ -832,26 +618,35 @@ export function HomeContent() {
             <FocusWidget 
               title="My workload"
               icon={Briefcase}
-              primaryCount={criticalCounts.myWorkload.workItems}
+              primaryCount={tabCounts.workedOn}
               subtitle="Active items"
               onClick={() => handleTabChange('worked-on')}
             />
             <FocusWidget 
-              title="Recently updated"
-              icon={Clock}
-              primaryCount={deliverySummary.data?.recentlyUpdated || 0}
-              subtitle="Last 7 days"
-              onClick={() => handleTabChange('worked-on')}
+              title="Assigned"
+              icon={CheckCircle}
+              primaryCount={tabCounts.assigned}
+              subtitle="Assigned to me"
+              onClick={() => handleTabChange('assigned')}
             />
             <FocusWidget 
               title="Starred"
               icon={Star}
-              primaryCount={getTabCount('starred')}
+              primaryCount={tabCounts.starred}
               subtitle="Quick access"
               onClick={() => handleTabChange('starred')}
             />
           </>
         );
+    }
+  };
+
+  // Get mode-specific empty state label
+  const getModeLabel = () => {
+    switch (mode) {
+      case 'operations': return 'operations';
+      case 'planner': return 'planner';
+      default: return 'delivery';
     }
   };
 
@@ -867,20 +662,20 @@ export function HomeContent() {
           <h1 className="text-xl font-semibold leading-7 tracking-tight m-0 text-[var(--text-1)]">
             For you
           </h1>
-          <HomeRoleModeSelector value={roleMode} onChange={handleModeChange} />
+          <HomeRoleModeSelector value={mode} onChange={handleModeChange} />
         </div>
 
         {/* Critical Strip - only show in Operations mode */}
-        {roleMode === 'operations' && (
+        {mode === 'operations' && (
           <div className="mt-3">
             <CriticalStrip
-              majorIncidents={criticalCounts.majorIncidents}
-              slaAtRisk={criticalCounts.slaAtRisk}
-              awaitingMe={criticalCounts.awaitingMe}
-              blocked={criticalCounts.blocked}
-              activeFilter={activeFilter}
-              currentMode={roleMode}
-              onFilterChange={handleFilterChange}
+              majorIncidents={{ open: 0, breached: 0, atRisk: 0 }}
+              slaAtRisk={0}
+              awaitingMe={0}
+              blocked={0}
+              activeFilter="all"
+              currentMode={mode}
+              onFilterChange={() => {}}
               onModeChange={handleModeChange}
             />
           </div>
@@ -888,52 +683,6 @@ export function HomeContent() {
 
         {/* Divider */}
         <div className="h-px mt-3 mb-3 bg-[var(--border-color)]" />
-
-        {/* Recent Projects Section - only show if projects exist */}
-        {projects.length > 0 && (
-          <div className="mb-4">
-            <div className="flex justify-between items-center mb-2">
-              <button 
-                onClick={() => pinnedProjects.length > 0 && setIsProjectsCollapsed(!isProjectsCollapsed)}
-                className={cn(
-                  "flex items-center gap-1.5 text-sm font-medium text-[var(--text-1)]",
-                  pinnedProjects.length > 0 && "cursor-pointer hover:text-[var(--text-2)]"
-                )}
-              >
-                Recent projects
-                {pinnedProjects.length > 0 && (
-                  isProjectsCollapsed 
-                    ? <ChevronDown className="w-3.5 h-3.5" />
-                    : <ChevronUp className="w-3.5 h-3.5" />
-                )}
-                {pinnedProjects.length > 0 && (
-                  <span className="text-xs text-[var(--text-3)] ml-1">
-                    ({pinnedProjects.length} pinned)
-                  </span>
-                )}
-              </button>
-              <button 
-                onClick={() => navigate('/projects')}
-                className="text-xs no-underline transition-colors text-[var(--text-2)] hover:text-[var(--text-1)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)] rounded px-1"
-              >
-                View all projects →
-              </button>
-            </div>
-
-            {!isProjectsCollapsed && (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2">
-                {sortedProjects.map((project) => (
-                  <ProjectCard 
-                    key={project.id} 
-                    project={project}
-                    isPinned={pinnedProjects.includes(project.id)}
-                    onPin={() => togglePinProject(project.id)}
-                  />
-                ))}
-              </div>
-            )}
-          </div>
-        )}
 
         {/* Two Column Layout */}
         <div className="grid grid-cols-1 xl:grid-cols-[1fr_240px] gap-4">
@@ -944,11 +693,11 @@ export function HomeContent() {
               <span className="text-sm font-semibold text-[var(--text-1)]">
                 Your work
               </span>
-              {activeFilter !== 'all' && (
+              {hasFilters && (
                 <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-[var(--brand-primary)]/10 text-[var(--brand-primary)]">
-                  {activeFilter.replace(/-/g, ' ')}
+                  {activeFilterCount} filter{activeFilterCount !== 1 ? 's' : ''}
                   <button 
-                    onClick={() => handleFilterChange('all')}
+                    onClick={clearFilters}
                     className="ml-0.5 hover:text-[var(--text-1)]"
                   >
                     ×
@@ -960,48 +709,46 @@ export function HomeContent() {
               )}
             </div>
 
-            {/* Mode-specific tabs - only show if mode has tabs */}
-            {hasTabs && (
-              <SegmentedTabs value={selectedTab} onValueChange={handleTabChange}>
-                {currentModeTabs.map(tab => (
-                  <SegmentedTab key={tab.value} value={tab.value} count={getTabCount(tab.value)}>
-                    {tab.label}
-                  </SegmentedTab>
-                ))}
-              </SegmentedTabs>
-            )}
+            {/* UNIFIED tabs - same for all modes */}
+            <SegmentedTabs value={filters.scope} onValueChange={handleTabChange}>
+              {UNIFIED_TABS.map(tab => (
+                <SegmentedTab key={tab.value} value={tab.value} count={getTabCount(tab.value)}>
+                  {tab.label}
+                </SegmentedTab>
+              ))}
+            </SegmentedTabs>
 
-            {/* Unified Toolbar */}
-            <div className={cn(hasTabs ? "mt-2" : "")}>
+            {/* Unified Toolbar with REAL filter drawer */}
+            <div className="mt-2">
               <UnifiedToolbar
-                searchValue={searchQuery}
-                onSearchChange={setSearchQuery}
+                searchValue={filters.search}
+                onSearchChange={setSearch}
                 searchPlaceholder="Search in your work list…"
                 sortOptions={sortOptions}
-                sortValue={sortBy}
-                onSortChange={setSortBy}
+                sortValue={sort}
+                onSortChange={(val) => setSort(val as any)}
                 density={density}
                 onDensityChange={setDensity}
+                activeFilters={activeFilterCount}
                 filterContent={
-                  <div className="space-y-3">
-                    <div className="text-sm font-medium text-[var(--text-1)]">Filter by</div>
-                    <div className="text-xs text-[var(--text-3)]">
-                      Filter options coming soon...
-                    </div>
-                  </div>
+                  <HomeUnifiedFilterDrawer
+                    mode={mode}
+                    filters={filters}
+                    onFiltersChange={setFilters}
+                    onClear={clearFilters}
+                    hasActiveFilters={hasFilters}
+                  />
                 }
               />
             </div>
 
-            {/* Mode-Aware Data Grid */}
-            <ModeAwareDataGrid 
-              items={workItems} 
-              mode={roleMode}
-              visibleCount={visibleCount}
+            {/* Unified Data Grid - NO local filtering */}
+            <UnifiedDataGrid 
+              items={workItems as UnifiedWorkItem[]}
+              mode={mode}
               onLoadMore={handleLoadMore}
-              searchQuery={searchQuery}
-              selectedTab={selectedTab}
-              activeFilter={activeFilter}
+              searchQuery={filters.search}
+              selectedTab={filters.scope}
               density={density}
               starredItemIds={starredItemIds.data}
               onToggleStar={(itemId, itemType) => {
@@ -1012,6 +759,8 @@ export function HomeContent() {
                   isCurrentlyStarred: isStarred,
                 });
               }}
+              hasMore={hasMore}
+              isLoadingMore={itemsQuery.isFetching && page > 1}
             />
           </div>
 
