@@ -192,6 +192,7 @@ import EnterpriseSuccessCriteria from "./pages/enterprise/EnterpriseSuccessCrite
 import EnterpriseRisks from "./pages/enterprise/EnterpriseRisks";
 import EnterpriseComingSoon from "./pages/enterprise/ComingSoon";
 import SkillsInventory from "./pages/SkillsInventory";
+import StarredPage from "./pages/StarredPage";
 
 
 import BusinessRequests from "./pages/enterprise/BusinessRequests";
@@ -305,6 +306,9 @@ const App = () => (
               <Route path="/industry/roadmaps" element={<ProductRoadmapV2Page />} />
               <Route path="/industry/roadmaps-v1" element={<IndustryRoadmapPage />} />
               <Route path="/industry/reports" element={<IndustryComingSoon />} />
+              
+              {/* Starred items page */}
+              <Route path="/starred" element={<StarredPage />} />
               
               <Route path="/search" element={<SearchPage />} />
               <Route path="/portfolio-room" element={<PortfolioRoomPageOld />} />
