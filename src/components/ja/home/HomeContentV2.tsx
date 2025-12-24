@@ -62,7 +62,6 @@ const MODE_TABS: Record<HomeRoleMode, { value: string; label: string }[]> = {
   delivery: [
     { value: 'worked-on', label: 'Worked on' },
     { value: 'assigned', label: 'Assigned' },
-    { value: 'starred', label: 'Starred' },
   ],
   planner: [
     { value: 'planned', label: 'Planned' },
@@ -458,7 +457,6 @@ export function HomeContentV2({ metrics }: HomeContentV2Props) {
         return {
           'worked-on': deliveryItems.data?.counts.workedOn || 0,
           assigned: deliveryItems.data?.counts.assigned || 0,
-          starred: deliveryItems.data?.counts.starred || 0,
         };
     }
   }, [roleMode, operationsItems.data, deliveryItems.data, plannerItems.data]);
@@ -567,13 +565,6 @@ export function HomeContentV2({ metrics }: HomeContentV2Props) {
               primaryCount={deliverySummary.data?.recentlyUpdated || 0}
               subtitle="Last 7 days"
               onClick={() => handleTabChange('worked-on')}
-            />
-            <FocusWidget 
-              title="Starred"
-              icon={Star}
-              primaryCount={getTabCount('starred')}
-              subtitle="Quick access"
-              onClick={() => handleTabChange('starred')}
             />
           </>
         );
