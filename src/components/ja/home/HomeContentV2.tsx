@@ -1,86 +1,32 @@
 // src/components/ja/home/HomeContentV2.tsx
-// V2 Home Implementation - Full dynamic, domain-driven architecture
-// This is the target state for the migration
+// V2 Home Implementation - Full enterprise-grade architecture
+// Single source of truth via useHomeWorkItems hook
 
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { 
-  ChevronDown, ChevronUp, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight,
-  Star, MoreHorizontal, ExternalLink, 
-  Clock, Pin, AlertTriangle, Briefcase, Calendar, FileText
+  ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight,
+  AlertTriangle, Briefcase, Clock, Calendar, FileText
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { SegmentedTabs, SegmentedTab } from '@/components/ui/segmented-tabs';
 import { UnifiedToolbar } from '@/components/ui/unified-toolbar';
 import { CriticalStrip, ActiveFilter } from './CriticalStrip';
 import { HomeRoleModeSelector, HomeRoleMode } from './HomeRoleModeSelector';
+import { HomeScopeTabs, HomeScopeValue, HomeScopeTabsCounts } from './HomeScopeTabs';
 import { ModeAwareGridRow } from './WorkGridRow';
 import { ModeAwareEmptyState } from './EmptyStates';
-import { useMigrationMetrics } from '@/hooks/home/useMigrationMetrics';
+import { HomeUnifiedFilterDrawer } from './HomeUnifiedFilterDrawer';
+import { 
+  useHomeWorkItems, 
+  HomeWorkItem, 
+  HomeDomain, 
+  HomeScope, 
+  HomeSort,
+  HomeFiltersState 
+} from '@/hooks/home/useHomeWorkItems';
+import { useDebounce } from '@/hooks/useDebounce';
 
-// V2 specific hooks with enhanced tracking
-import {
-  useHomeOperationsSummary,
-  useHomeOperationsItems,
-  OperationsWorkItem,
-} from '@/hooks/home/useHomeOperationsData';
-import {
-  useHomeDeliverySummary,
-  useHomeDeliveryItems,
-  DeliveryWorkItem,
-} from '@/hooks/home/useHomeDeliveryData';
-import {
-  useHomePlannerSummary,
-  useHomePlannerItems,
-  PlannerWorkItem,
-} from '@/hooks/home/useHomePlannerData';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-
-const ITEMS_PER_PAGE = 20;
-const STORAGE_KEY_PINNED = 'catalyst_home_pinned_projects';
-
-type HomeWorkItem = OperationsWorkItem | DeliveryWorkItem | PlannerWorkItem;
-
-interface HomeProject {
-  id: string;
-  key: string;
-  name: string;
-  color: string;
-  openCount: number;
-  doneCount: number;
-  hasUrgency: boolean;
-}
-
-// Tab configurations per mode - V2: Strict domain separation
-const MODE_TABS: Record<HomeRoleMode, { value: string; label: string }[]> = {
-  all: [
-    { value: 'worked-on', label: 'Worked on' },
-    { value: 'assigned', label: 'Assigned' },
-  ],
-  operations: [], // Operations has no tabs - filter-driven
-  delivery: [
-    { value: 'worked-on', label: 'Worked on' },
-    { value: 'assigned', label: 'Assigned' },
-  ],
-  planner: [
-    { value: 'planned', label: 'Planned' },
-    { value: 'upcoming', label: 'Upcoming' },
-    { value: 'pending-review', label: 'Pending review' },
-  ],
-};
-
-const DEFAULT_TABS: Record<HomeRoleMode, string> = {
-  all: 'worked-on',
-  operations: 'all',
-  delivery: 'worked-on',
-  planner: 'planned',
-};
+const DEFAULT_PAGE_SIZE = 20;
 
 // ============================================
 // UTILITY: Group items by time period
@@ -99,7 +45,7 @@ function groupItemsByTimePeriod(items: HomeWorkItem[]): { label: string; items: 
   ];
 
   items.forEach(item => {
-    const itemDate = new Date(item.activityDate);
+    const itemDate = item.activityDate;
     if (itemDate >= today) {
       groups[0].items.push(item);
     } else if (itemDate >= yesterday) {
@@ -115,22 +61,18 @@ function groupItemsByTimePeriod(items: HomeWorkItem[]): { label: string; items: 
 }
 
 // ============================================
-// FOCUS WIDGET - V2: Mode-aware
+// FOCUS WIDGET
 // ============================================
 function FocusWidget({ 
   title, 
   icon: Icon, 
   primaryCount, 
-  secondaryLabel,
-  secondaryCount,
   subtitle,
   onClick,
 }: { 
   title: string; 
   icon: React.ElementType; 
   primaryCount: number; 
-  secondaryLabel?: string;
-  secondaryCount?: number;
   subtitle?: string;
   onClick?: () => void;
 }) {
@@ -149,13 +91,8 @@ function FocusWidget({
           <Icon className="w-4 h-4 shrink-0 text-[var(--icon-muted)] mt-0.5" />
           <div className="min-w-0 flex-1">
             <div className="text-sm font-medium text-[var(--text-1)]">{title}</div>
-            {(subtitle || (secondaryLabel && secondaryCount !== undefined)) && (
-              <div className="text-[10px] text-[var(--text-3)] mt-0.5">
-                {secondaryLabel && secondaryCount !== undefined 
-                  ? `${secondaryCount} ${secondaryLabel.toLowerCase()}`
-                  : subtitle
-                }
-              </div>
+            {subtitle && (
+              <div className="text-[10px] text-[var(--text-3)] mt-0.5">{subtitle}</div>
             )}
           </div>
         </div>
@@ -168,9 +105,9 @@ function FocusWidget({
 }
 
 // ============================================
-// DATA GRID - V2: Strict mode isolation with pagination
+// DATA GRID WITH ENTERPRISE PAGINATION
 // ============================================
-function ModeAwareDataGridV2({ 
+function WorkItemsDataGrid({ 
   items, 
   mode,
   currentPage,
@@ -179,9 +116,9 @@ function ModeAwareDataGridV2({
   onPageChange,
   onPageSizeChange,
   searchQuery,
-  selectedTab,
-  activeFilter,
+  activeScope,
   density,
+  isLoading,
 }: { 
   items: HomeWorkItem[];
   mode: HomeRoleMode;
@@ -191,19 +128,19 @@ function ModeAwareDataGridV2({
   onPageChange: (page: number) => void;
   onPageSizeChange: (size: number) => void;
   searchQuery: string;
-  selectedTab: string;
-  activeFilter: ActiveFilter;
+  activeScope: HomeScope;
   density: 'compact' | 'comfortable';
+  isLoading: boolean;
 }) {
   const groupedItems = groupItemsByTimePeriod(items);
   
-  if (items.length === 0) {
+  if (!isLoading && items.length === 0) {
     return (
       <ModeAwareEmptyState 
         mode={mode} 
-        tab={selectedTab}
+        tab={activeScope}
         searchQuery={searchQuery}
-        filter={activeFilter}
+        filter="all"
       />
     );
   }
@@ -214,7 +151,6 @@ function ModeAwareDataGridV2({
   const canGoPrevious = currentPage > 0;
   const canGoNext = currentPage < totalPages - 1;
 
-  // Generate page numbers with ellipsis
   const getPageNumbers = (): (number | 'ellipsis')[] => {
     const pages: (number | 'ellipsis')[] = [];
     const maxVisible = 5;
@@ -255,30 +191,33 @@ function ModeAwareDataGridV2({
         <div></div>
       </div>
 
-      {groupedItems.map((group, groupIndex) => (
-        <div key={groupIndex}>
-          {/* Section header row */}
-          <div 
-            className="text-[11px] font-bold uppercase tracking-[0.1em] py-2.5 px-4"
-            style={{ 
-              color: 'var(--text-3)',
-              backgroundColor: 'var(--table-section-bg)',
-              borderTop: groupIndex > 0 ? '1px solid var(--divider)' : 'none',
-              borderBottom: '1px solid var(--divider)',
-            }}
-          >
-            {group.label}
+      {isLoading ? (
+        <div className="py-12 text-center text-[var(--text-3)]">Loading...</div>
+      ) : (
+        groupedItems.map((group, groupIndex) => (
+          <div key={groupIndex}>
+            <div 
+              className="text-[11px] font-bold uppercase tracking-[0.1em] py-2.5 px-4"
+              style={{ 
+                color: 'var(--text-3)',
+                backgroundColor: 'var(--table-section-bg)',
+                borderTop: groupIndex > 0 ? '1px solid var(--divider)' : 'none',
+                borderBottom: '1px solid var(--divider)',
+              }}
+            >
+              {group.label}
+            </div>
+            {group.items.map((item, index) => (
+              <ModeAwareGridRow 
+                key={`${group.label}-${index}`} 
+                item={item}
+                mode={mode}
+                density={density}
+              />
+            ))}
           </div>
-          {group.items.map((item, index) => (
-            <ModeAwareGridRow 
-              key={`${group.label}-${index}`} 
-              item={item}
-              mode={mode}
-              density={density}
-            />
-          ))}
-        </div>
-      ))}
+        ))
+      )}
       
       {/* Enterprise Pagination Footer */}
       {totalItems > 0 && (
@@ -289,7 +228,6 @@ function ModeAwareDataGridV2({
             backgroundColor: 'var(--table-header-bg)',
           }}
         >
-          {/* Left: Row count and page size */}
           <div className="flex items-center gap-4">
             <span className="text-sm" style={{ color: 'var(--text-3)' }}>
               Showing <span className="font-medium" style={{ color: 'var(--text-1)' }}>{startRow}</span>
@@ -313,9 +251,7 @@ function ModeAwareDataGridV2({
             </div>
           </div>
           
-          {/* Right: Navigation */}
           <div className="flex items-center gap-1">
-            {/* First page */}
             <button
               onClick={() => onPageChange(0)}
               disabled={!canGoPrevious}
@@ -325,7 +261,6 @@ function ModeAwareDataGridV2({
               <ChevronsLeft className="h-4 w-4" />
             </button>
             
-            {/* Previous */}
             <button
               onClick={() => onPageChange(currentPage - 1)}
               disabled={!canGoPrevious}
@@ -335,7 +270,6 @@ function ModeAwareDataGridV2({
               <ChevronLeft className="h-4 w-4" />
             </button>
             
-            {/* Page numbers */}
             <div className="flex items-center gap-1 mx-2">
               {getPageNumbers().map((page, index) => 
                 page === 'ellipsis' ? (
@@ -357,7 +291,6 @@ function ModeAwareDataGridV2({
               )}
             </div>
             
-            {/* Next */}
             <button
               onClick={() => onPageChange(currentPage + 1)}
               disabled={!canGoNext}
@@ -367,7 +300,6 @@ function ModeAwareDataGridV2({
               <ChevronRight className="h-4 w-4" />
             </button>
             
-            {/* Last page */}
             <button
               onClick={() => onPageChange(totalPages - 1)}
               disabled={!canGoNext}
@@ -384,289 +316,186 @@ function ModeAwareDataGridV2({
 }
 
 // ============================================
-// V2 MAIN COMPONENT
+// MAIN COMPONENT
 // ============================================
-interface HomeContentV2Props {
-  metrics?: ReturnType<typeof useMigrationMetrics>;
-}
-
-export function HomeContentV2({ metrics }: HomeContentV2Props) {
+export function HomeContentV2() {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   
-  // URL state
-  const roleMode = (searchParams.get('mode') as HomeRoleMode) || 'delivery';
-  const selectedTab = searchParams.get('tab') || DEFAULT_TABS[roleMode];
+  // URL-driven state
+  const domain = (searchParams.get('mode') as HomeDomain) || 'delivery';
+  const scope = (searchParams.get('scope') as HomeScope) || 'worked-on';
   const activeFilter = (searchParams.get('filter') as ActiveFilter) || 'all';
   
-  // Pagination state
+  // Local UI state
   const [currentPage, setCurrentPage] = useState(0);
-  const [pageSize, setPageSize] = useState(ITEMS_PER_PAGE);
+  const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
   const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || '');
-  const [sortBy, setSortBy] = useState('recently-updated');
+  const [sortBy, setSortBy] = useState<HomeSort>('updated');
   const [density, setDensity] = useState<'compact' | 'comfortable'>('comfortable');
-  const [pinnedProjects, setPinnedProjects] = useState<string[]>([]);
-  const [isProjectsCollapsed, setIsProjectsCollapsed] = useState(false);
+  const [filters, setFilters] = useState<HomeFiltersState>({
+    status: [],
+    priority: [],
+    updatedRange: 'any',
+    projectIds: [],
+    decisionRequired: null,
+    readyForSprint: null,
+    plannedDateFrom: null,
+    plannedDateTo: null,
+  });
 
-  // Track page load for metrics
-  useEffect(() => {
-    const recordLoad = async () => {
-      if (metrics) {
-        await metrics.recordMetrics('v2');
-      }
-    };
-    
-    // Record after initial render
-    const timeoutId = setTimeout(recordLoad, 100);
-    return () => clearTimeout(timeoutId);
-  }, [metrics]);
+  // Debounced search for API
+  const debouncedSearch = useDebounce(searchQuery, 300);
+
+  // Unified data hook - single source of truth
+  const { data, isLoading, isFetching, refetch } = useHomeWorkItems({
+    domain,
+    scope,
+    search: debouncedSearch,
+    filters,
+    sort: sortBy,
+    page: currentPage + 1, // API is 1-indexed
+    pageSize,
+  });
+
+  const workItems = data?.items || [];
+  const counts = data?.counts || { workedOn: 0, assigned: 0, starred: 0, total: 0 };
+  const totalItems = data?.pagination?.total || 0;
 
   // URL state management
-  const updateUrlState = (updates: Record<string, string | null>) => {
+  const updateUrlState = useCallback((updates: Record<string, string | null>) => {
     const newParams = new URLSearchParams(searchParams);
     Object.entries(updates).forEach(([key, value]) => {
-      if (value === null || value === '' || value === DEFAULT_TABS[roleMode]) {
+      if (value === null || value === '') {
         newParams.delete(key);
       } else {
         newParams.set(key, value);
       }
     });
     setSearchParams(newParams, { replace: true });
-  };
+  }, [searchParams, setSearchParams]);
 
-  const handleModeChange = (newMode: HomeRoleMode) => {
+  // Domain change - reset page + refetch
+  const handleModeChange = useCallback((newMode: HomeRoleMode) => {
     const newParams = new URLSearchParams();
     newParams.set('mode', newMode);
     setSearchParams(newParams, { replace: true });
     setCurrentPage(0);
-  };
+    setFilters({
+      status: [],
+      priority: [],
+      updatedRange: 'any',
+      projectIds: [],
+      decisionRequired: null,
+      readyForSprint: null,
+      plannedDateFrom: null,
+      plannedDateTo: null,
+    });
+  }, [setSearchParams]);
 
-  const handleTabChange = (tab: string) => {
-    updateUrlState({ tab, filter: null });
+  // Scope change - reset page + refetch
+  const handleScopeChange = useCallback((newScope: HomeScopeValue) => {
+    updateUrlState({ scope: newScope === 'worked-on' ? null : newScope });
     setCurrentPage(0);
-  };
+  }, [updateUrlState]);
 
-  const handleFilterChange = (filter: ActiveFilter) => {
+  // Filter change - reset page + refetch
+  const handleFiltersChange = useCallback((newFilters: Partial<HomeFiltersState>) => {
+    setFilters(prev => ({ ...prev, ...newFilters }));
+    setCurrentPage(0);
+  }, []);
+
+  const handleClearFilters = useCallback(() => {
+    setFilters({
+      status: [],
+      priority: [],
+      updatedRange: 'any',
+      projectIds: [],
+      decisionRequired: null,
+      readyForSprint: null,
+      plannedDateFrom: null,
+      plannedDateTo: null,
+    });
+    setCurrentPage(0);
+  }, []);
+
+  const handleFilterChange = useCallback((filter: ActiveFilter) => {
     updateUrlState({ filter: filter === 'all' ? null : filter });
-  };
+  }, [updateUrlState]);
 
-  // ============================================
-  // V2: DOMAIN-SEPARATED DATA FETCHING
-  // ============================================
-  
-  // Operations mode
-  const operationsSummary = useHomeOperationsSummary();
-  const operationsItems = useHomeOperationsItems({
-    filter: activeFilter === 'major-incidents' ? 'major' : 
-            activeFilter === 'sla-at-risk' ? 'sla-at-risk' :
-            activeFilter === 'awaiting-me' ? 'awaiting-me' :
-            activeFilter === 'blocked' ? 'blocked' : undefined,
-    search: searchQuery || undefined,
-    sort: sortBy === 'priority' ? 'priority' : 'updated',
-    page: currentPage + 1,
-    pageSize: pageSize,
-  });
-
-  // Delivery mode
-  const deliverySummary = useHomeDeliverySummary();
-  const deliveryItems = useHomeDeliveryItems({
-    scope: selectedTab === 'assigned' ? 'assigned' : selectedTab === 'starred' ? 'starred' : 'worked-on',
-    search: searchQuery || undefined,
-    sort: sortBy === 'priority' ? 'priority' : sortBy === 'due-date' ? 'due-date' : 'updated',
-    page: currentPage + 1,
-    pageSize: pageSize,
-  });
-
-  // Planner mode
-  const plannerSummary = useHomePlannerSummary();
-  const plannerItems = useHomePlannerItems({
-    category: selectedTab === 'upcoming' ? 'upcoming' : 
-              selectedTab === 'pending-review' ? 'pending-review' : 'planned',
-    search: searchQuery || undefined,
-    sort: sortBy === 'priority' ? 'priority' : 'planned-date',
-    page: currentPage + 1,
-    pageSize: pageSize,
-  });
-
-  // Increment query count for metrics
-  useEffect(() => {
-    if (metrics) {
-      metrics.incrementQueryCount();
-    }
-  }, [operationsItems.dataUpdatedAt, deliveryItems.dataUpdatedAt, plannerItems.dataUpdatedAt]);
-
-  // Track errors
-  useEffect(() => {
-    if (metrics) {
-      if (operationsItems.error) metrics.incrementErrorCount();
-      if (deliveryItems.error) metrics.incrementErrorCount();
-      if (plannerItems.error) metrics.incrementErrorCount();
-    }
-  }, [operationsItems.error, deliveryItems.error, plannerItems.error]);
-
-  // Get data based on current mode
-  const { workItems, criticalCounts, isLoading } = useMemo(() => {
-    switch (roleMode) {
-      case 'operations':
-        return {
-          workItems: operationsItems.data?.items || [],
-          criticalCounts: {
-            majorIncidents: operationsSummary.data?.incidents.major || { open: 0, breached: 0, atRisk: 0 },
-            slaAtRisk: operationsSummary.data?.incidents.slaAtRisk || 0,
-            awaitingMe: operationsSummary.data?.incidents.awaitingMe || 0,
-            blocked: operationsSummary.data?.incidents.blocked || 0,
-            myWorkload: {
-              incidents: operationsItems.data?.counts.total || 0,
-              workItems: 0,
-            },
-          },
-          isLoading: operationsSummary.isLoading || operationsItems.isLoading,
-        };
-      case 'planner':
-        return {
-          workItems: plannerItems.data?.items || [],
-          criticalCounts: {
-            majorIncidents: { open: 0, breached: 0, atRisk: 0 },
-            slaAtRisk: 0,
-            awaitingMe: plannerSummary.data?.pendingReview || 0,
-            blocked: 0,
-            myWorkload: {
-              incidents: 0,
-              workItems: plannerItems.data?.counts.planned || 0,
-            },
-          },
-          isLoading: plannerSummary.isLoading || plannerItems.isLoading,
-        };
-      case 'delivery':
-      default:
-        return {
-          workItems: deliveryItems.data?.items || [],
-          criticalCounts: {
-            majorIncidents: { open: 0, breached: 0, atRisk: 0 },
-            slaAtRisk: 0,
-            awaitingMe: 0,
-            blocked: (deliveryItems.data?.items || []).filter(i => i.blocked).length,
-            myWorkload: {
-              incidents: 0,
-              workItems: deliveryItems.data?.counts.total || 0,
-            },
-          },
-          isLoading: deliverySummary.isLoading || deliveryItems.isLoading,
-        };
-    }
-  }, [
-    roleMode,
-    operationsSummary.data, operationsItems.data, operationsSummary.isLoading, operationsItems.isLoading,
-    deliverySummary.data, deliveryItems.data, deliverySummary.isLoading, deliveryItems.isLoading,
-    plannerSummary.data, plannerItems.data, plannerSummary.isLoading, plannerItems.isLoading,
-  ]);
-
-  // Tab counts
-  const tabCounts = useMemo(() => {
-    switch (roleMode) {
-      case 'operations':
-        return { total: operationsItems.data?.counts.total || 0 };
-      case 'planner':
-        return {
-          planned: plannerItems.data?.counts.planned || 0,
-          upcoming: plannerItems.data?.counts.upcoming || 0,
-          'pending-review': plannerItems.data?.counts.pendingReview || 0,
-        };
-      case 'delivery':
-      default:
-        return {
-          'worked-on': deliveryItems.data?.counts.workedOn || 0,
-          assigned: deliveryItems.data?.counts.assigned || 0,
-        };
-    }
-  }, [roleMode, operationsItems.data, deliveryItems.data, plannerItems.data]);
-
-  const getTabCount = (tabValue: string): number => {
-    return (tabCounts as Record<string, number>)[tabValue] ?? 0;
-  };
-
-  const handlePageChange = (page: number) => {
+  // Page change
+  const handlePageChange = useCallback((page: number) => {
     setCurrentPage(page);
-  };
+  }, []);
 
-  const handlePageSizeChange = (size: number) => {
+  // Page size change - reset page
+  const handlePageSizeChange = useCallback((size: number) => {
     setPageSize(size);
-    setCurrentPage(0); // Reset to first page when changing page size
-  };
+    setCurrentPage(0);
+  }, []);
 
-  // Get total items for pagination
-  const totalItems = useMemo(() => {
-    switch (roleMode) {
-      case 'all': {
-        const opsTotal = operationsItems.data?.counts.total || 0;
-        const deliveryTotal = deliveryItems.data?.counts.total || 0;
-        const plannerTotal = (plannerItems.data?.counts.planned || 0) + 
-                            (plannerItems.data?.counts.upcoming || 0);
-        return opsTotal + deliveryTotal + plannerTotal;
-      }
-      case 'operations':
-        return operationsItems.data?.counts.total || 0;
-      case 'delivery':
-        return deliveryItems.data?.counts.total || 0;
-      case 'planner':
-        return (plannerItems.data?.counts.planned || 0) + 
-               (plannerItems.data?.counts.upcoming || 0) + 
-               (plannerItems.data?.counts.pendingReview || 0);
-      default:
-        return 0;
-    }
-  }, [roleMode, operationsItems.data, deliveryItems.data, plannerItems.data]);
+  // Search change
+  const handleSearchChange = useCallback((value: string) => {
+    setSearchQuery(value);
+    setCurrentPage(0);
+  }, []);
 
-  // Current mode config
-  const currentModeTabs = MODE_TABS[roleMode];
-  const hasTabs = currentModeTabs.length > 0;
+  // Sort change
+  const handleSortChange = useCallback((value: string) => {
+    setSortBy(value as HomeSort);
+    setCurrentPage(0);
+  }, []);
 
-  // Sort options - mode specific
+  // Scope counts for tabs
+  const scopeCounts: HomeScopeTabsCounts = useMemo(() => ({
+    workedOn: counts.workedOn,
+    assigned: counts.assigned,
+    starred: counts.starred,
+  }), [counts]);
+
+  // Check if filters are active
+  const hasActiveFilters = useMemo(() => {
+    return filters.status.length > 0 ||
+      filters.priority.length > 0 ||
+      filters.updatedRange !== 'any' ||
+      filters.projectIds.length > 0 ||
+      filters.decisionRequired !== null ||
+      filters.readyForSprint !== null ||
+      filters.plannedDateFrom !== null ||
+      filters.plannedDateTo !== null;
+  }, [filters]);
+
+  // Sort options based on mode
   const sortOptions = useMemo(() => {
-    const baseOptions = [
-      { value: 'recently-updated', label: 'Recently updated' },
-    ];
-    
-    if (roleMode === 'operations') {
-      return [...baseOptions, { value: 'priority', label: 'Priority' }];
+    const base = [{ value: 'updated', label: 'Recently updated' }];
+    if (domain === 'operations') {
+      return [...base, { value: 'priority', label: 'Priority' }];
     }
-    if (roleMode === 'planner') {
-      return [...baseOptions, { value: 'planned-date', label: 'Planned date' }];
+    if (domain === 'planner') {
+      return [...base, { value: 'planned-date', label: 'Planned date' }];
     }
-    return [
-      ...baseOptions,
-      { value: 'priority', label: 'Priority' },
-      { value: 'due-date', label: 'Due date' },
-    ];
-  }, [roleMode]);
+    return [...base, { value: 'priority', label: 'Priority' }];
+  }, [domain]);
 
-  // Mode-specific focus widgets
+  // Focus widgets based on mode
   const renderFocusWidgets = () => {
-    switch (roleMode) {
+    switch (domain) {
       case 'operations':
         return (
           <>
             <FocusWidget 
-              title="Major incidents"
+              title="All incidents"
               icon={AlertTriangle}
-              primaryCount={criticalCounts.majorIncidents.open}
-              secondaryLabel="breached"
-              secondaryCount={criticalCounts.majorIncidents.breached}
-              onClick={() => handleFilterChange('major-incidents')}
+              primaryCount={counts.total}
+              subtitle="Total active"
+              onClick={() => handleScopeChange('worked-on')}
             />
             <FocusWidget 
-              title="SLA at risk"
-              icon={Clock}
-              primaryCount={criticalCounts.slaAtRisk}
-              subtitle="Action needed"
-              onClick={() => handleFilterChange('sla-at-risk')}
-            />
-            <FocusWidget 
-              title="Awaiting action"
-              icon={AlertTriangle}
-              primaryCount={criticalCounts.awaitingMe}
-              subtitle="Needs response"
-              onClick={() => handleFilterChange('awaiting-me')}
+              title="Assigned to me"
+              icon={Briefcase}
+              primaryCount={counts.assigned}
+              subtitle="My workload"
+              onClick={() => handleScopeChange('assigned')}
             />
           </>
         );
@@ -674,45 +503,46 @@ export function HomeContentV2({ metrics }: HomeContentV2Props) {
         return (
           <>
             <FocusWidget 
-              title="Planned items"
+              title="Planned"
               icon={Calendar}
-              primaryCount={getTabCount('planned')}
-              subtitle="Ready for sprint"
-              onClick={() => handleTabChange('planned')}
+              primaryCount={counts.workedOn}
+              subtitle="In progress or ready"
+              onClick={() => handleScopeChange('worked-on')}
             />
             <FocusWidget 
-              title="Upcoming work"
+              title="Upcoming"
               icon={Clock}
-              primaryCount={getTabCount('upcoming')}
-              subtitle="Next sprints"
-              onClick={() => handleTabChange('upcoming')}
+              primaryCount={counts.assigned}
+              subtitle="Backlog items"
+              onClick={() => handleScopeChange('assigned')}
             />
             <FocusWidget 
               title="Pending review"
               icon={FileText}
-              primaryCount={getTabCount('pending-review')}
-              subtitle="Needs attention"
-              onClick={() => handleTabChange('pending-review')}
+              primaryCount={counts.starred}
+              subtitle="Needs decision"
+              onClick={() => handleScopeChange('starred')}
             />
           </>
         );
       case 'delivery':
+      case 'all':
       default:
         return (
           <>
             <FocusWidget 
-              title="My workload"
-              icon={Briefcase}
-              primaryCount={criticalCounts.myWorkload.workItems}
-              subtitle="Active items"
-              onClick={() => handleTabChange('assigned')}
+              title="Worked on"
+              icon={Clock}
+              primaryCount={counts.workedOn}
+              subtitle="Recent activity"
+              onClick={() => handleScopeChange('worked-on')}
             />
             <FocusWidget 
-              title="Recently updated"
-              icon={Clock}
-              primaryCount={deliverySummary.data?.recentlyUpdated || 0}
-              subtitle="Last 7 days"
-              onClick={() => handleTabChange('worked-on')}
+              title="Assigned to me"
+              icon={Briefcase}
+              primaryCount={counts.assigned}
+              subtitle="My workload"
+              onClick={() => handleScopeChange('assigned')}
             />
           </>
         );
@@ -734,22 +564,22 @@ export function HomeContentV2({ metrics }: HomeContentV2Props) {
             <h1 className="text-xl font-semibold leading-7 tracking-tight m-0 text-[var(--text-1)]">
               For you
             </h1>
-            <HomeRoleModeSelector value={roleMode} onChange={handleModeChange} />
+            <HomeRoleModeSelector value={domain} onChange={handleModeChange} />
           </div>
         </div>
       </div>
 
       <div className="w-full max-w-[1680px] 2xl:max-w-[1920px] mx-auto px-6 xl:px-8 py-3">
         {/* Critical Strip - Operations only */}
-        {roleMode === 'operations' && (
+        {domain === 'operations' && (
           <div className="mb-3">
             <CriticalStrip
-              majorIncidents={criticalCounts.majorIncidents}
-              slaAtRisk={criticalCounts.slaAtRisk}
-              awaitingMe={criticalCounts.awaitingMe}
-              blocked={criticalCounts.blocked}
+              majorIncidents={{ open: 0, breached: 0, atRisk: 0 }}
+              slaAtRisk={0}
+              awaitingMe={0}
+              blocked={0}
               activeFilter={activeFilter}
-              currentMode={roleMode}
+              currentMode={domain}
               onFilterChange={handleFilterChange}
               onModeChange={handleModeChange}
             />
@@ -764,68 +594,59 @@ export function HomeContentV2({ metrics }: HomeContentV2Props) {
               <span className="text-sm font-semibold text-[var(--text-1)]">
                 Your work
               </span>
-              {activeFilter !== 'all' && (
-                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-[var(--brand-primary)]/10 text-[var(--brand-primary)]">
-                  {activeFilter.replace(/-/g, ' ')}
-                  <button 
-                    onClick={() => handleFilterChange('all')}
-                    className="ml-0.5 hover:text-[var(--text-1)]"
-                  >
-                    ×
-                  </button>
-                </span>
-              )}
-              {isLoading && (
+              {(isFetching || isLoading) && (
                 <span className="text-xs text-[var(--text-3)]">Loading...</span>
               )}
             </div>
 
-            {/* Mode-specific tabs */}
-            {hasTabs && (
-              <SegmentedTabs value={selectedTab} onValueChange={handleTabChange}>
-                {currentModeTabs.map(tab => (
-                  <SegmentedTab key={tab.value} value={tab.value} count={getTabCount(tab.value)}>
-                    {tab.label}
-                  </SegmentedTab>
-                ))}
-              </SegmentedTabs>
-            )}
+            {/* Scope Tabs - Identical across all modes */}
+            <HomeScopeTabs
+              value={scope}
+              onChange={handleScopeChange}
+              counts={scopeCounts}
+              className="mb-2"
+            />
 
             {/* Toolbar */}
-            <div className={cn(hasTabs ? "mt-2" : "")}>
-              <UnifiedToolbar
-                searchValue={searchQuery}
-                onSearchChange={setSearchQuery}
-                searchPlaceholder="Search in your work list…"
-                sortOptions={sortOptions}
-                sortValue={sortBy}
-                onSortChange={setSortBy}
-                density={density}
-                onDensityChange={setDensity}
-                filterContent={
-                  <div className="space-y-3">
-                    <div className="text-sm font-medium text-[var(--text-1)]">Filter by</div>
-                    <div className="text-xs text-[var(--text-3)]">
-                      Filter options coming soon...
-                    </div>
-                  </div>
-                }
-              />
-            </div>
+            <UnifiedToolbar
+              searchValue={searchQuery}
+              onSearchChange={handleSearchChange}
+              searchPlaceholder="Search in your work list…"
+              sortOptions={sortOptions}
+              sortValue={sortBy}
+              onSortChange={handleSortChange}
+              density={density}
+              onDensityChange={setDensity}
+              filterContent={
+                <HomeUnifiedFilterDrawer
+                  mode={domain}
+                  filters={{
+                    search: searchQuery,
+                    scope,
+                    domain,
+                    ...filters,
+                    types: [],
+                  }}
+                  onFiltersChange={handleFiltersChange}
+                  onClear={handleClearFilters}
+                  hasActiveFilters={hasActiveFilters}
+                />
+              }
+            />
 
             {/* Data Grid */}
-            <ModeAwareDataGridV2 
+            <WorkItemsDataGrid 
               items={workItems} 
-              mode={roleMode}
+              mode={domain}
               currentPage={currentPage}
               pageSize={pageSize}
               totalItems={totalItems}
               onPageChange={handlePageChange}
               onPageSizeChange={handlePageSizeChange}
               searchQuery={searchQuery}
-              selectedTab={selectedTab}
-              activeFilter={activeFilter}
+              activeScope={scope}
               density={density}
+              isLoading={isLoading}
             />
           </div>
 
