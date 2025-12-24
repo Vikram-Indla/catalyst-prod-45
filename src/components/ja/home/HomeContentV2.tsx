@@ -185,7 +185,7 @@ function WorkItemsDataGrid({
       >
         <div>Key</div>
         <div>Summary</div>
-        <div>Project</div>
+        <div>Level</div>
         <div>Updated</div>
         <div>Assignee</div>
         <div></div>
