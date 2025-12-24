@@ -18,7 +18,7 @@ const modes: { value: HomeRoleMode; label: string }[] = [
 export function HomeRoleModeSelector({ value, onChange }: HomeRoleModeSelectorProps) {
   return (
     <div 
-      className="inline-flex items-center p-0.5 rounded-md border border-[var(--border-gold)] bg-[var(--surface-champagne)]"
+      className="inline-flex items-center gap-0.5 p-1 rounded-lg bg-muted/50 dark:bg-muted/30 border border-border/50"
       role="tablist"
     >
       {modes.map((mode) => (
@@ -28,15 +28,17 @@ export function HomeRoleModeSelector({ value, onChange }: HomeRoleModeSelectorPr
           aria-selected={value === mode.value}
           onClick={() => onChange(mode.value)}
           className={cn(
-            "px-2.5 py-1 text-xs font-medium rounded transition-all",
-            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)] focus-visible:ring-offset-1",
+            "relative px-3 py-1.5 text-sm font-medium rounded-md transition-all duration-200",
+            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
             value === mode.value
-              // Active: olive green text with gold accent underline
-              ? "bg-[var(--surface-1)] text-[var(--brand-primary)] shadow-sm border-b-2 border-[var(--brand-gold)]"
-              : "text-[var(--text-3)] hover:text-[var(--text-2)] hover:bg-[var(--surface-2)]"
+              ? "bg-background text-foreground shadow-sm"
+              : "text-muted-foreground hover:text-foreground hover:bg-background/50"
           )}
         >
           {mode.label}
+          {value === mode.value && (
+            <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-4 h-0.5 bg-primary rounded-full" />
+          )}
         </button>
       ))}
     </div>
