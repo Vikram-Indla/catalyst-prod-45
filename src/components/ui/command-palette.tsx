@@ -2,8 +2,6 @@ import * as React from "react";
 import { Command } from "cmdk";
 import { useNavigate } from "react-router-dom";
 import { Search, Home, Building2, Package, Briefcase, FolderKanban, Rocket, FileText, Target, Square, AlertTriangle } from "lucide-react";
-import { projects, activityItems } from "@/data/homePageData";
-import { WorkItemTypeIcon } from "@/components/ja/icons/WorkItemTypeIcon";
 import { cn } from "@/lib/utils";
 
 interface CommandPaletteProps {
@@ -89,7 +87,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
               ref={inputRef}
               value={search}
               onValueChange={setSearch}
-              placeholder="Search projects, items, or type a command..."
+              placeholder="Search or type a command..."
               className={cn(
                 "flex-1 h-12 bg-transparent text-sm text-[var(--text-1)]",
                 "placeholder:text-[var(--text-3)]",
@@ -153,63 +151,6 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
                 </Command.Item>
               ))}
             </Command.Group>
-
-            {/* Recent Projects */}
-            {projects.length > 0 && (
-              <Command.Group heading="Recent Projects" className="mb-2">
-                <div className="px-2 py-1.5 text-[11px] font-semibold uppercase tracking-wide text-[var(--text-3)]">
-                  Recent Projects
-                </div>
-                {projects.slice(0, 5).map((project) => (
-                  <Command.Item
-                    key={project.id}
-                    value={`${project.name} ${project.key}`}
-                    onSelect={() => handleSelect(`/project/${project.key.toLowerCase()}`)}
-                    className={cn(
-                      "flex items-center gap-3 px-3 py-2 rounded-md cursor-pointer",
-                      "text-[var(--text-1)]",
-                      "aria-selected:bg-[var(--nav-hover-bg)]",
-                      focusRingClass
-                    )}
-                  >
-                    <div
-                      className="h-5 w-5 rounded flex items-center justify-center text-[10px] font-bold text-white"
-                      style={{ backgroundColor: project.color }}
-                    >
-                      {project.key.slice(0, 2)}
-                    </div>
-                    <span className="text-sm flex-1 truncate">{project.name}</span>
-                    <span className="text-xs text-[var(--text-3)]">{project.key}</span>
-                  </Command.Item>
-                ))}
-              </Command.Group>
-            )}
-
-            {/* Recent Work Items */}
-            {activityItems.length > 0 && (
-              <Command.Group heading="Recent Work Items">
-                <div className="px-2 py-1.5 text-[11px] font-semibold uppercase tracking-wide text-[var(--text-3)]">
-                  Recent Work Items
-                </div>
-                {activityItems.slice(0, 8).map((item, index) => (
-                  <Command.Item
-                    key={`${item.id}-${index}`}
-                    value={`${item.id} ${item.summary}`}
-                    onSelect={() => handleSelect(`/work-item/${item.id}`)}
-                    className={cn(
-                      "flex items-center gap-3 px-3 py-2 rounded-md cursor-pointer",
-                      "text-[var(--text-1)]",
-                      "aria-selected:bg-[var(--nav-hover-bg)]",
-                      focusRingClass
-                    )}
-                  >
-                    <WorkItemTypeIcon type={item.type} size={16} />
-                    <span className="text-xs font-medium text-[var(--text-2)] w-20 shrink-0">{item.id}</span>
-                    <span className="text-sm flex-1 truncate">{item.summary}</span>
-                  </Command.Item>
-                ))}
-              </Command.Group>
-            )}
           </Command.List>
 
           {/* Footer */}
