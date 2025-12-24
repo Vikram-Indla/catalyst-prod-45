@@ -11,6 +11,7 @@ import {
 import { WorkItemTypeIcon, WorkItemType } from '../icons/WorkItemTypeIcon';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
+import { getValidatedWorkItemRoute } from '@/lib/workItemRoutes';
 import { formatDistanceToNow } from 'date-fns';
 import {
   DropdownMenu,
@@ -72,28 +73,35 @@ export function OperationsGridRow({
   
   const rowHeight = density === 'compact' ? 'py-1' : 'py-2';
   
-  // Determine route based on item key pattern
-  const isIncident = item.key.startsWith('INC') || item.type === 'defect';
-  const isRelease = item.key.startsWith('REL');
+  // Determine if this is an incident or release for special handling
+  const isIncident = item.key?.startsWith('INC') || item.type === 'defect';
+  const isRelease = item.key?.startsWith('REL');
+  
+  // Determine correct route using centralized utility
+  const getItemRoute = (): string | null => {
+    if (isIncident) {
+      return item.id ? `/release/incidents/${item.id}` : null;
+    }
+    if (isRelease) {
+      return item.id ? `/release/releases/${item.id}` : null;
+    }
+    // For other types, use the centralized route helper
+    return getValidatedWorkItemRoute({ id: item.id, key: item.key, type: item.type });
+  };
   
   const handleRowClick = () => {
-    if (isIncident) {
-      navigate(`/release/incidents/${item.id}`);
-    } else if (isRelease) {
-      navigate(`/release/releases/${item.id}`);
-    } else {
-      navigate(`/work-item/${item.id}`);
+    const route = getItemRoute();
+    if (route) {
+      navigate(route);
     }
   };
 
   const handleOpenNewTab = (e: React.MouseEvent) => {
     e.stopPropagation();
-    const path = isIncident 
-      ? `/release/incidents/${item.id}` 
-      : isRelease 
-        ? `/release/releases/${item.id}` 
-        : `/work-item/${item.id}`;
-    window.open(path, '_blank');
+    const route = getItemRoute();
+    if (route) {
+      window.open(route, '_blank');
+    }
   };
 
   // Check if user can take actions (placeholder - would check permissions)
@@ -302,21 +310,24 @@ export function DeliveryGridRow({
   
   const rowHeight = density === 'compact' ? 'py-1' : 'py-2';
   
-  // Determine route based on item type
-  const getItemRoute = () => {
-    if (item.type === 'task') {
-      return `/work-manager/tasks/${item.id}`;
-    }
-    return `/work-item/${item.id}`;
+  // Get route using centralized utility with defensive check
+  const getItemRoute = (): string | null => {
+    return getValidatedWorkItemRoute({ id: item.id, key: item.key, type: item.type });
   };
 
   const handleRowClick = () => {
-    navigate(getItemRoute());
+    const route = getItemRoute();
+    if (route) {
+      navigate(route);
+    }
   };
 
   const handleOpenNewTab = (e: React.MouseEvent) => {
     e.stopPropagation();
-    window.open(getItemRoute(), '_blank');
+    const route = getItemRoute();
+    if (route) {
+      window.open(route, '_blank');
+    }
   };
 
   return (
@@ -478,14 +489,24 @@ export function PlannerGridRow({
   
   const rowHeight = density === 'compact' ? 'py-1' : 'py-2';
   
+  // Get route using centralized utility with defensive check
+  const getItemRoute = (): string | null => {
+    return getValidatedWorkItemRoute({ id: item.id, key: item.key, type: item.type });
+  };
+  
   const handleRowClick = () => {
-    // Navigate to planning/review view (read-first)
-    navigate(`/work-manager/tasks/${item.id}`);
+    const route = getItemRoute();
+    if (route) {
+      navigate(route);
+    }
   };
 
   const handleOpenNewTab = (e: React.MouseEvent) => {
     e.stopPropagation();
-    window.open(`/work-manager/tasks/${item.id}`, '_blank');
+    const route = getItemRoute();
+    if (route) {
+      window.open(route, '_blank');
+    }
   };
 
   return (
