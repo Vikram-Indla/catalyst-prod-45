@@ -180,57 +180,8 @@ export function OperationsGridRow({
           )}
         </div>
 
-      {/* Quick actions - Operations specific: View, Assign, Acknowledge/Resolve */}
+      {/* Quick actions - Operations specific: Kebab menu with Assign to me */}
       <div className={cn("flex items-center justify-end gap-0.5 transition-opacity", isHovered ? "opacity-100" : "opacity-0")}>
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <button 
-                className="w-5 h-5 rounded flex items-center justify-center hover:bg-[var(--nav-hover-bg)] text-[var(--icon-muted)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]"
-                onClick={(e) => { e.stopPropagation(); handleRowClick(); }}
-                title="View details"
-              >
-                <Eye className="w-3 h-3" />
-              </button>
-            </TooltipTrigger>
-            <TooltipContent>View details</TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-
-        {canAssign && (
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <button 
-                  className="w-5 h-5 rounded flex items-center justify-center hover:bg-[var(--nav-hover-bg)] text-[var(--icon-muted)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]"
-                  onClick={(e) => { e.stopPropagation(); onAssignToMe?.(item.id); }}
-                  title="Assign to me"
-                >
-                  <UserPlus className="w-3 h-3" />
-                </button>
-              </TooltipTrigger>
-              <TooltipContent>Assign to me</TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        )}
-
-        {canAcknowledge && (
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <button 
-                  className="w-5 h-5 rounded flex items-center justify-center hover:bg-[var(--nav-hover-bg)] text-[var(--brand-gold)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]"
-                  onClick={(e) => { e.stopPropagation(); onAcknowledge?.(item.id); }}
-                  title="Acknowledge"
-                >
-                  <CheckCircle className="w-3 h-3" />
-                </button>
-              </TooltipTrigger>
-              <TooltipContent>Acknowledge incident</TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        )}
-
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button 
@@ -393,38 +344,8 @@ export function DeliveryGridRow({
           )}
         </div>
 
-        {/* Quick actions - Delivery specific: View, Open in new tab, Star */}
+        {/* Quick actions - Delivery specific: Kebab menu with Assign to me */}
         <div className={cn("flex items-center justify-end gap-0.5 transition-opacity", isHovered ? "opacity-100" : "opacity-0")}>
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <button 
-                  className="w-5 h-5 rounded flex items-center justify-center hover:bg-[var(--nav-hover-bg)] text-[var(--icon-muted)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]"
-                  onClick={(e) => { e.stopPropagation(); handleRowClick(); }}
-                  title="View details"
-                >
-                  <Eye className="w-3 h-3" />
-                </button>
-              </TooltipTrigger>
-              <TooltipContent>View details</TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <button 
-                  className="w-5 h-5 rounded flex items-center justify-center hover:bg-[var(--nav-hover-bg)] text-[var(--icon-muted)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]"
-                  onClick={handleOpenNewTab}
-                  title="Open in new tab"
-                >
-                  <FileText className="w-3 h-3" />
-                </button>
-              </TooltipTrigger>
-              <TooltipContent>Open in new tab</TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button 
@@ -587,38 +508,8 @@ export function PlannerGridRow({
           )}
         </div>
 
-        {/* Quick actions - Planner specific: Review, Add note */}
+        {/* Quick actions - Planner specific: Kebab menu with Assign to me */}
         <div className={cn("flex items-center justify-end gap-0.5 transition-opacity", isHovered ? "opacity-100" : "opacity-0")}>
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <button 
-                  className="w-5 h-5 rounded flex items-center justify-center hover:bg-[var(--nav-hover-bg)] text-[var(--icon-muted)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]"
-                  onClick={(e) => { e.stopPropagation(); onReviewItem?.(item.id); }}
-                  title="Review item"
-                >
-                  <Eye className="w-3 h-3" />
-                </button>
-              </TooltipTrigger>
-              <TooltipContent>Review item</TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <button 
-                  className="w-5 h-5 rounded flex items-center justify-center hover:bg-[var(--nav-hover-bg)] text-[var(--icon-muted)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]"
-                  onClick={(e) => { e.stopPropagation(); onAddNote?.(item.id); }}
-                  title="Add note"
-                >
-                  <FileText className="w-3 h-3" />
-                </button>
-              </TooltipTrigger>
-              <TooltipContent>Add note</TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button 
