@@ -46,6 +46,7 @@ interface BusinessRequestItem {
   startDate: string;
   endDate: string;
   progress: number;
+  rank: number | null;
   milestones: Milestone[];
   linkedFeatures: LinkedFeature[];
   hasDependencies?: boolean;
@@ -465,6 +466,7 @@ export default function IndustryRoadmapPage() {
         startDate: startDate,
         endDate: actualEndDate,
         progress: req.progress || 0,
+        rank: req.rank ?? null,
         milestones: transformedMilestones,
         linkedFeatures: [],
         hasDependencies: false,
@@ -931,6 +933,9 @@ export default function IndustryRoadmapPage() {
                         {/* Content */}
                         <div className="flex-1 min-w-0">
                           <div className="text-[13px] font-medium text-foreground truncate">
+                            {request.rank != null && (
+                              <span className="text-muted-foreground mr-1">#{request.rank}</span>
+                            )}
                             {request.title}
                           </div>
                           <div className="text-[11px] text-muted-foreground">
