@@ -48,6 +48,7 @@ import { RisksViewTab } from './drawer-tabs/RisksViewTab';
 import { WorkflowViewerModal } from './WorkflowViewerModal';
 import { FeatureDetailsPanel } from '@/components/items/features/FeatureDetailsPanel';
 import { StoryDetailsPanel } from '@/components/items/stories/StoryDetailsPanel';
+import { EpicDetailsPanel } from '@/components/items/epics/EpicDetailsPanel';
 import { toast } from 'sonner';
 import { useQueryClient, useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -260,6 +261,7 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
   // Linked item panel state
   const [selectedFeatureId, setSelectedFeatureId] = useState<string | null>(null);
   const [selectedStoryId, setSelectedStoryId] = useState<string | null>(null);
+  const [selectedEpicId, setSelectedEpicId] = useState<string | null>(null);
 
   // Fetch selected feature data
   const { data: selectedFeature } = useQuery({
@@ -292,6 +294,22 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
     },
     enabled: !!selectedStoryId,
   });
+
+  // Fetch selected epic data
+  const { data: selectedEpic } = useQuery({
+    queryKey: ['epic-for-panel', selectedEpicId],
+    queryFn: async () => {
+      if (!selectedEpicId) return null;
+      const { data, error } = await supabase
+        .from('epics')
+        .select('*')
+        .eq('id', selectedEpicId)
+        .single();
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!selectedEpicId,
+  });
   
   const nameInputRef = useRef<HTMLInputElement>(null);
   const tabsBodyScrollRef = useRef<HTMLDivElement>(null);
@@ -301,14 +319,10 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
   // Track if we initiated a data update (to avoid resetting form data on refetch)
   const skipNextFormResetRef = useRef(false);
 
-  // Handle navigation to Epic from Links tab
-  const handleNavigateToEpic = useCallback((epicId: string, programId?: string | null) => {
-    onClose();
-    const path = programId
-      ? `/program/${programId}/epic-backlog?epicId=${epicId}`
-      : `/enterprise/epics?epicId=${epicId}`;
-    navigate(path);
-  }, [onClose, navigate]);
+  // Handle navigation to Epic from Links tab - opens inline panel instead of navigating
+  const handleNavigateToEpic = useCallback((epicId: string, _programId?: string | null) => {
+    setSelectedEpicId(epicId);
+  }, []);
 
   // Handle navigation to Feature from Links tab - opens inline panel
   const handleNavigateToFeature = useCallback((featureId: string) => {
@@ -867,6 +881,15 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
         open={!!selectedStoryId}
         onClose={() => setSelectedStoryId(null)}
       />
+
+      {/* Epic Details Panel */}
+      {selectedEpic && (
+        <EpicDetailsPanel
+          epic={selectedEpic}
+          open={!!selectedEpicId}
+          onClose={() => setSelectedEpicId(null)}
+        />
+      )}
     </>
   );
 }
