@@ -144,8 +144,8 @@ export function CriticalStrip({
                   : isHighestSeverity
                     // Highest severity - subtle gold emphasis
                     ? "bg-[var(--brand-gold)]/5 border-[var(--brand-gold)]/30 hover:bg-[var(--brand-gold)]/10 hover:border-[var(--brand-gold)]"
-                    // Normal state
-                    : "bg-[var(--surface-1)] border-[var(--border-color)] hover:bg-[var(--surface-2)] hover:border-[var(--brand-gold)]/50"
+                    // Normal state - improved contrast in dark mode
+                    : "bg-white dark:bg-[#1c1c1c] border-gray-200 dark:border-[#2c2c2c] hover:bg-gray-50 dark:hover:bg-[#262626] hover:border-[var(--brand-gold)]/50"
             )}
           >
             {/* Icon - red only for confirmed breach, gold for risk, muted otherwise */}
@@ -164,7 +164,7 @@ export function CriticalStrip({
             <span className={cn(
               "text-sm whitespace-nowrap",
               isActive || isHighestSeverity ? "font-medium" : "font-normal",
-              "text-[var(--text-1)]"
+              "text-gray-900 dark:text-gray-100"
             )}>
               {pill.label}
             </span>

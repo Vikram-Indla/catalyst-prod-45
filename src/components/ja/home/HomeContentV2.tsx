@@ -199,12 +199,25 @@ function ModeAwareDataGridV2({
   }
 
   return (
-    <div 
-      className={cn(
-        "border rounded-lg overflow-hidden mt-2",
-        "bg-[var(--surface-1)] border-[var(--border-color)]"
-      )}
-    >
+    <div className="mt-2 rounded-xl border border-[var(--border-color)] overflow-hidden bg-[var(--card-bg)] shadow-sm dark:shadow-[0_1px_3px_rgba(0,0,0,0.4)]">
+      {/* Sticky Header - olive tinted in dark mode */}
+      <div 
+        className="grid items-center py-2.5 px-4 text-[11px] font-semibold uppercase tracking-[0.08em] sticky top-0 z-10"
+        style={{ 
+          gridTemplateColumns: '100px 1fr 160px 100px 80px 80px',
+          color: 'var(--text-3)',
+          backgroundColor: 'var(--table-header-bg)',
+          borderBottom: '1px solid var(--divider)',
+        }}
+      >
+        <div>Key</div>
+        <div>Summary</div>
+        <div>Project</div>
+        <div>Updated</div>
+        <div>Assignee</div>
+        <div></div>
+      </div>
+
       {groupedItems.map((group, groupIndex) => {
         const itemsToShow = group.items.slice(0, Math.max(0, visibleCount - groupedItems
           .slice(0, groupIndex)
@@ -214,12 +227,15 @@ function ModeAwareDataGridV2({
         
         return (
           <div key={groupIndex}>
+            {/* Section header row - TODAY / THIS WEEK / OLDER */}
             <div 
-              className={cn(
-                "text-[10px] font-semibold uppercase tracking-wider py-1 px-3",
-                groupIndex > 0 ? 'mt-2' : 'mt-1'
-              )} 
-              style={{ color: 'var(--text-3)' }}
+              className="text-[11px] font-bold uppercase tracking-[0.1em] py-2.5 px-4"
+              style={{ 
+                color: 'var(--text-3)',
+                backgroundColor: 'var(--table-section-bg)',
+                borderTop: groupIndex > 0 ? '1px solid var(--divider)' : 'none',
+                borderBottom: '1px solid var(--divider)',
+              }}
             >
               {group.label}
             </div>
@@ -236,10 +252,10 @@ function ModeAwareDataGridV2({
       })}
       
       {hasMore && (
-        <div className="flex justify-center mt-3 pb-3">
+        <div className="flex justify-center py-4" style={{ borderTop: '1px solid var(--divider)' }}>
           <button 
             onClick={onLoadMore}
-            className="px-3 py-1.5 text-sm font-medium rounded-md border transition-colors bg-[var(--surface-2)] border-[var(--border-color)] text-[var(--text-2)] hover:bg-[var(--surface-3)]"
+            className="px-4 py-2 text-sm font-medium rounded-lg border transition-colors bg-[var(--surface-2)] border-[var(--border-color)] text-[var(--text-2)] hover:bg-[var(--surface-3)] hover:border-[var(--brand-gold)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]"
           >
             Load more
           </button>

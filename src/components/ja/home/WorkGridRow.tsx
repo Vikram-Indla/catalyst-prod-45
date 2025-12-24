@@ -104,7 +104,7 @@ export function OperationsGridRow({
   return (
     <div 
       className={cn(
-        "grid items-center px-3 transition-colors cursor-pointer",
+        "grid items-center px-4 transition-colors cursor-pointer group",
         rowHeight,
         isHovered && "bg-[var(--row-hover)]"
       )}
@@ -116,39 +116,39 @@ export function OperationsGridRow({
       onMouseLeave={() => setIsHovered(false)}
       onClick={handleRowClick}
     >
-      {/* Key */}
-      <div className="flex items-center gap-2">
+      {/* Key - bronze/gold color */}
+      <div className="flex items-center gap-2.5">
         <WorkItemTypeIcon type={item.type} size={14} />
-        <span className="text-xs font-medium text-[var(--text-2)]">{item.key}</span>
+        <span className="text-[13px] font-mono font-medium text-[#8b7355] dark:text-[#d4a855]">{item.key}</span>
       </div>
 
-      {/* Summary */}
+      {/* Summary - hover changes to olive */}
       <div className="min-w-0 pr-4">
-        <div className="text-sm leading-5 text-[var(--text-1)] truncate">
+        <div className="text-sm font-medium leading-5 text-[var(--text-1)] truncate group-hover:text-[#5c7c5c] dark:group-hover:text-[#7a9a7a] transition-colors">
           {item.summary}
         </div>
       </div>
 
-      {/* Project */}
-      <div className="text-xs truncate text-[var(--text-2)]">
+      {/* Project - brighter in dark mode */}
+      <div className="text-sm truncate text-gray-600 dark:text-gray-300">
         {item.project}
       </div>
 
       {/* Updated */}
-      <div className="text-xs tabular-nums text-[var(--text-2)]">
+      <div className="text-sm tabular-nums text-gray-500 dark:text-gray-400">
         {timeAgo} ago
       </div>
 
-      {/* Assignee */}
+      {/* Assignee - visible dash in dark mode */}
       <div className="flex justify-start">
         {item.assignee ? (
-          <Avatar className="w-5 h-5">
-            <AvatarFallback className="text-[9px] font-medium bg-[var(--surface-3)] text-[var(--text-2)]">
+          <Avatar className="w-6 h-6">
+            <AvatarFallback className="text-[10px] font-bold bg-gradient-to-br from-[#5c7c5c] to-[#4a6a4a] text-white">
               {item.assignee.slice(0, 2).toUpperCase()}
             </AvatarFallback>
           </Avatar>
         ) : (
-          <span className="text-[var(--text-3)]">—</span>
+          <span className="text-sm text-gray-400 dark:text-gray-500">—</span>
         )}
       </div>
 
@@ -315,7 +315,7 @@ export function DeliveryGridRow({
   return (
     <div 
       className={cn(
-        "grid items-center px-3 transition-colors cursor-pointer",
+        "grid items-center px-4 transition-colors cursor-pointer group",
         rowHeight,
         isHovered && "bg-[var(--row-hover)]"
       )}
@@ -327,39 +327,39 @@ export function DeliveryGridRow({
       onMouseLeave={() => setIsHovered(false)}
       onClick={handleRowClick}
     >
-      {/* Key */}
-      <div className="flex items-center gap-2">
+      {/* Key - bronze/gold color */}
+      <div className="flex items-center gap-2.5">
         <WorkItemTypeIcon type={item.type} size={14} />
-        <span className="text-xs font-medium text-[var(--text-2)]">{item.key}</span>
+        <span className="text-[13px] font-mono font-medium text-[#8b7355] dark:text-[#d4a855]">{item.key}</span>
       </div>
 
-      {/* Summary */}
+      {/* Summary - hover changes to olive */}
       <div className="min-w-0 pr-4">
-        <div className="text-sm leading-5 text-[var(--text-1)] truncate">
+        <div className="text-sm font-medium leading-5 text-[var(--text-1)] truncate group-hover:text-[#5c7c5c] dark:group-hover:text-[#7a9a7a] transition-colors">
           {item.summary}
         </div>
       </div>
 
-      {/* Project */}
-      <div className="text-xs truncate text-[var(--text-2)]">
+      {/* Project - brighter in dark mode */}
+      <div className="text-sm truncate text-gray-600 dark:text-gray-300">
         {item.project}
       </div>
 
       {/* Updated */}
-      <div className="text-xs tabular-nums text-[var(--text-2)]">
+      <div className="text-sm tabular-nums text-gray-500 dark:text-gray-400">
         {timeAgo} ago
       </div>
 
-      {/* Assignee */}
+      {/* Assignee - visible dash in dark mode */}
       <div className="flex justify-start">
         {item.assignee ? (
-          <Avatar className="w-5 h-5">
-            <AvatarFallback className="text-[9px] font-medium bg-[var(--surface-3)] text-[var(--text-2)]">
+          <Avatar className="w-6 h-6">
+            <AvatarFallback className="text-[10px] font-bold bg-gradient-to-br from-[#5c7c5c] to-[#4a6a4a] text-white">
               {item.assignee.slice(0, 2).toUpperCase()}
             </AvatarFallback>
           </Avatar>
         ) : (
-          <span className="text-[var(--text-3)]">—</span>
+          <span className="text-sm text-gray-400 dark:text-gray-500">—</span>
         )}
       </div>
 
@@ -487,7 +487,7 @@ export function PlannerGridRow({
   return (
     <div 
       className={cn(
-        "grid items-center px-3 transition-colors cursor-pointer",
+        "grid items-center px-4 transition-colors cursor-pointer group",
         rowHeight,
         isHovered && "bg-[var(--row-hover)]"
       )}
@@ -499,39 +499,39 @@ export function PlannerGridRow({
       onMouseLeave={() => setIsHovered(false)}
       onClick={handleRowClick}
     >
-      {/* Key */}
-      <div className="flex items-center gap-2">
+      {/* Key - bronze/gold color */}
+      <div className="flex items-center gap-2.5">
         <WorkItemTypeIcon type={item.type} size={14} />
-        <span className="text-xs font-medium text-[var(--text-2)]">{item.key}</span>
+        <span className="text-[13px] font-mono font-medium text-[#8b7355] dark:text-[#d4a855]">{item.key}</span>
       </div>
 
-      {/* Summary */}
+      {/* Summary - hover changes to olive */}
       <div className="min-w-0 pr-4">
-        <div className="text-sm leading-5 text-[var(--text-1)] truncate">
+        <div className="text-sm font-medium leading-5 text-[var(--text-1)] truncate group-hover:text-[#5c7c5c] dark:group-hover:text-[#7a9a7a] transition-colors">
           {item.summary}
         </div>
       </div>
 
-      {/* Project */}
-      <div className="text-xs truncate text-[var(--text-2)]">
+      {/* Project - brighter in dark mode */}
+      <div className="text-sm truncate text-gray-600 dark:text-gray-300">
         {item.project}
       </div>
 
       {/* Updated */}
-      <div className="text-xs tabular-nums text-[var(--text-2)]">
+      <div className="text-sm tabular-nums text-gray-500 dark:text-gray-400">
         {timeAgo} ago
       </div>
 
-      {/* Assignee */}
+      {/* Assignee - visible dash in dark mode */}
       <div className="flex justify-start">
         {item.assignee ? (
-          <Avatar className="w-5 h-5">
-            <AvatarFallback className="text-[9px] font-medium bg-[var(--surface-3)] text-[var(--text-2)]">
+          <Avatar className="w-6 h-6">
+            <AvatarFallback className="text-[10px] font-bold bg-gradient-to-br from-[#5c7c5c] to-[#4a6a4a] text-white">
               {item.assignee.slice(0, 2).toUpperCase()}
             </AvatarFallback>
           </Avatar>
         ) : (
-          <span className="text-[var(--text-3)]">—</span>
+          <span className="text-sm text-gray-400 dark:text-gray-500">—</span>
         )}
       </div>
 
