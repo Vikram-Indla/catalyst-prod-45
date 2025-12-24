@@ -129,7 +129,7 @@ export function WorkManagerTasks({ tasks, onOpenTask }: WorkManagerTasksProps) {
       <div className="overflow-auto max-h-[calc(100vh-220px)]">
         <table className="w-full">
           <thead className="sticky top-0 z-10">
-            <tr className="bg-gray-50/80 border-b border-gray-200">
+            <tr className="bg-[#5c7c5c]/15 dark:bg-[#5c7c5c]/20 border-b border-[#2c2c2c]">
               <SortableHeader field="key" label="ID" className="w-[100px]" />
               <SortableHeader field="title" label="Title" />
               <SortableHeader field="team" label="Team" className="w-[160px]" />
@@ -157,7 +157,7 @@ export function WorkManagerTasks({ tasks, onOpenTask }: WorkManagerTasksProps) {
                   key={task.id}
                   onClick={() => onOpenTask(task.id)}
                   className={cn(
-                    'border-b border-border hover:bg-gray-50 transition-smooth cursor-pointer',
+                    'border-b border-[#242424] hover:bg-[#1c1c1c] transition-smooth cursor-pointer',
                     isDone && 'opacity-50'
                   )}
                 >
