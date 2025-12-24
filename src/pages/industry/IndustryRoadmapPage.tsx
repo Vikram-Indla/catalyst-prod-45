@@ -919,8 +919,11 @@ export default function IndustryRoadmapPage() {
                     {!isCollapsed && group.requests.map(request => {
                       const startPct = dateToPercent(request.startDate);
                       const endPct = dateToPercent(request.endDate);
-                      // Ensure minimum visible width (1% of 720px = 7.2px, so use 1.5% for better visibility)
+                      // Ensure minimum visible width (1.5% of 720px ≈ 11px)
                       const width = Math.max(endPct - startPct, 1.5);
+                      
+                      // Debug: log bar positioning for troubleshooting
+                      console.log(`[Roadmap Bar] ${request.key}: startDate=${request.startDate}, endDate=${request.endDate}, startPct=${startPct.toFixed(2)}%, endPct=${endPct.toFixed(2)}%, width=${width.toFixed(2)}%`);
                       
                       return (
                         <div
