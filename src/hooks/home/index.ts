@@ -8,3 +8,5 @@ export * from './useHomePlannerData';
 export * from './useHomeAnalytics';
 export * from './useMigrationMetrics';
 export * from './useStarredItems';
+export * from './useHomeFilters';
+export * from './useUnifiedHomeData';
