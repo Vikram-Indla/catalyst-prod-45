@@ -70,14 +70,14 @@ export function TaskCard({ task, onClick, isDragging = false }: TaskCardProps) {
       role="button"
       className={cn(
         // Base styles - Premium card treatment
-        'relative group bg-white rounded-xl p-4 cursor-pointer',
-        'border border-stone-100',
+        'relative group bg-card rounded-xl p-4 cursor-pointer',
+        'border border-border',
         // Deeper premium shadows
         'shadow-[0_2px_8px_rgba(0,0,0,0.06),0_1px_3px_rgba(0,0,0,0.04)]',
         // Premium hover effects with deeper shadow
         'transition-all duration-200 ease-out',
         'hover:shadow-[0_8px_24px_rgba(0,0,0,0.1),0_4px_8px_rgba(0,0,0,0.06)]',
-        'hover:border-stone-200 hover:-translate-y-0.5',
+        'hover:border-border hover:-translate-y-0.5',
         'focus:ring-2 focus:ring-olive-500/20 focus:outline-none focus:border-olive-300',
         // Dragging state
         isDragging && 'shadow-hover cursor-grabbing rotate-1 scale-[1.02]',
@@ -85,9 +85,9 @@ export function TaskCard({ task, onClick, isDragging = false }: TaskCardProps) {
         // Blocked styling - red left border only, no background tint
         task.blocked && 'border-l-[3px] border-l-red-500',
         // Done styling - subtle fade
-        isDone && !task.blocked && 'opacity-60 bg-stone-50/50 dark:bg-gray-800/50',
-        // Dark mode
-        'dark:bg-gray-800 dark:border-gray-700 dark:hover:border-gray-600'
+        isDone && !task.blocked && 'opacity-60 bg-muted/50 dark:bg-gray-800/50',
+        // Dark mode - already handled via bg-card
+        'dark:border-gray-700 dark:hover:border-gray-600'
       )}
     >
       {/* Drag Handle - visible on hover */}
