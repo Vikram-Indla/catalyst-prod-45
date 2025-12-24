@@ -1,9 +1,10 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { AlertTriangle, Clock, Bell, Ban } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import type { HomeRoleMode } from './HomeRoleModeSelector';
 
-type ActiveFilter = 'all' | 'major-incidents' | 'sla-at-risk' | 'awaiting-me' | 'blocked';
+export type ActiveFilter = 'all' | 'major-incidents' | 'sla-at-risk' | 'awaiting-me' | 'blocked';
 
 interface CriticalPill {
   id: ActiveFilter;
@@ -14,7 +15,7 @@ interface CriticalPill {
   hasRisk?: boolean;
   breached?: number;
   atRisk?: number;
-  route: string;
+  targetMode: HomeRoleMode; // Mode this chip should activate
   severity: number; // 0-3 for prioritization (3 = highest)
 }
 
@@ -24,7 +25,9 @@ interface CriticalStripProps {
   awaitingMe: number;
   blocked: number;
   activeFilter?: ActiveFilter;
+  currentMode: HomeRoleMode;
   onFilterChange?: (filter: ActiveFilter) => void;
+  onModeChange?: (mode: HomeRoleMode) => void;
 }
 
 export function CriticalStrip({ 
@@ -33,9 +36,12 @@ export function CriticalStrip({
   awaitingMe, 
   blocked,
   activeFilter = 'all',
+  currentMode,
   onFilterChange,
+  onModeChange,
 }: CriticalStripProps) {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   // Calculate severity scores for soft prioritization
   const getMajorIncidentSeverity = () => {
@@ -55,7 +61,7 @@ export function CriticalStrip({
       hasRisk: majorIncidents.atRisk > 0,
       breached: majorIncidents.breached,
       atRisk: majorIncidents.atRisk,
-      route: '/release/incidents?filter=major',
+      targetMode: 'operations', // Major incidents belong to Operations mode
       severity: getMajorIncidentSeverity(),
     },
     {
@@ -64,7 +70,7 @@ export function CriticalStrip({
       icon: Clock,
       count: slaAtRisk,
       hasRisk: slaAtRisk > 0,
-      route: '/release/incidents?filter=sla-risk',
+      targetMode: 'operations', // SLA belongs to Operations mode
       severity: slaAtRisk > 3 ? 2 : slaAtRisk > 0 ? 1 : 0,
     },
     {
@@ -72,7 +78,7 @@ export function CriticalStrip({
       label: 'Awaiting me',
       icon: Bell,
       count: awaitingMe,
-      route: '/home?tab=awaiting',
+      targetMode: currentMode, // Awaiting me stays in current mode
       severity: awaitingMe > 5 ? 1 : 0,
     },
     {
@@ -81,7 +87,7 @@ export function CriticalStrip({
       icon: Ban,
       count: blocked,
       hasBreach: blocked > 0,
-      route: '/home?tab=blocked',
+      targetMode: currentMode, // Blocked stays in current mode
       severity: blocked > 0 ? 2 : 0,
     },
   ];
@@ -90,17 +96,29 @@ export function CriticalStrip({
   const maxSeverity = Math.max(...pills.map(p => p.severity));
 
   const handlePillClick = (pill: CriticalPill) => {
-    if (onFilterChange) {
-      // Toggle filter - if already active, clear it
-      if (activeFilter === pill.id) {
-        onFilterChange('all');
-      } else {
-        onFilterChange(pill.id);
-      }
-    } else {
-      // Fallback to navigation if no filter handler
-      navigate(pill.route);
+    // If clicking a chip that belongs to a different mode, switch mode first
+    if (pill.targetMode !== currentMode && onModeChange) {
+      onModeChange(pill.targetMode);
     }
+
+    // Toggle filter - if already active, clear it
+    const newFilter = activeFilter === pill.id ? 'all' : pill.id;
+    
+    if (onFilterChange) {
+      onFilterChange(newFilter);
+    }
+
+    // Update URL state for deep-linking
+    const newParams = new URLSearchParams(searchParams);
+    if (newFilter === 'all') {
+      newParams.delete('filter');
+    } else {
+      newParams.set('filter', newFilter);
+    }
+    if (pill.targetMode !== currentMode) {
+      newParams.set('mode', pill.targetMode);
+    }
+    setSearchParams(newParams, { replace: true });
   };
 
   return (
