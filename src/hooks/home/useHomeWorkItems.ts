@@ -133,7 +133,6 @@ async function fetchOperations(params: {
 }): Promise<HomeWorkItemsResponse> {
   const { scope, search, filters, sort, page, pageSize, updatedRangeDate, userId } = params;
   const from = (page - 1) * pageSize;
-  const to = from + pageSize - 1;
 
   let query = supabase
     .from('incidents')
@@ -179,7 +178,8 @@ async function fetchOperations(params: {
     query = query.order('updated_at', { ascending: false });
   }
 
-  query = query.range(from, to);
+  // Use limit instead of range to avoid 416 errors, then paginate client-side
+  query = query.limit(500);
 
   const { data: incidents, count, error } = await query;
   if (error) throw error;
@@ -191,7 +191,7 @@ async function fetchOperations(params: {
     : { data: [] };
   const profileMap = new Map((profiles || []).map(p => [p.id, p.full_name]));
 
-  const items: HomeWorkItem[] = (incidents || []).map(inc => ({
+  const allItems: HomeWorkItem[] = (incidents || []).map(inc => ({
     id: inc.id,
     key: inc.incident_key || `INC-${inc.id.slice(0, 6)}`,
     summary: inc.title,
@@ -208,6 +208,10 @@ async function fetchOperations(params: {
     navPath: `/release/incidents/${inc.id}`,
   }));
 
+  // Client-side pagination
+  const total = allItems.length;
+  const paginatedItems = allItems.slice(from, from + pageSize);
+
   // Get scope counts (server-side)
   const [workedOnRes, assignedRes] = await Promise.all([
     supabase.from('incidents').select('id', { count: 'exact', head: true }).is('deleted_at', null),
@@ -215,14 +219,14 @@ async function fetchOperations(params: {
   ]);
 
   return {
-    items,
+    items: paginatedItems,
     counts: {
       workedOn: workedOnRes.count || 0,
       assigned: assignedRes.count || 0,
       starred: 0,
-      total: count || 0,
+      total,
     },
-    pagination: { page, pageSize, total: count || 0, hasMore: from + items.length < (count || 0) },
+    pagination: { page, pageSize, total, hasMore: from + paginatedItems.length < total },
   };
 }
 
@@ -241,14 +245,13 @@ async function fetchDelivery(params: {
 }): Promise<HomeWorkItemsResponse> {
   const { scope, search, filters, sort, page, pageSize, updatedRangeDate, userId } = params;
   const from = (page - 1) * pageSize;
-  const to = from + pageSize - 1;
 
   const items: HomeWorkItem[] = [];
   let totalStories = 0;
   let totalFeatures = 0;
   let totalEpics = 0;
 
-  // Fetch stories
+  // Fetch stories - get count first, then fetch all for proper client-side pagination
   let storyQuery = supabase
     .from('stories')
     .select(`
@@ -267,7 +270,8 @@ async function fetchDelivery(params: {
   storyQuery = sort === 'priority' 
     ? storyQuery.order('priority', { ascending: true }) 
     : storyQuery.order('updated_at', { ascending: false });
-  storyQuery = storyQuery.range(from, to);
+  // Limit to reasonable max for combined pagination
+  storyQuery = storyQuery.limit(500);
 
   const { data: stories, count: storyCount, error: storyErr } = await storyQuery;
   if (storyErr) throw storyErr;
@@ -317,7 +321,7 @@ async function fetchDelivery(params: {
     featureQuery = sort === 'priority' 
       ? featureQuery.order('priority', { ascending: true }) 
       : featureQuery.order('updated_at', { ascending: false });
-    featureQuery = featureQuery.range(from, to);
+    featureQuery = featureQuery.limit(500);
 
     const { data: features, count: featureCount, error: featureErr } = await featureQuery;
     if (featureErr) throw featureErr;
@@ -351,7 +355,7 @@ async function fetchDelivery(params: {
 
     if (search?.trim()) epicQuery = epicQuery.or(`name.ilike.%${search}%,epic_key.ilike.%${search}%`);
     if (updatedRangeDate) epicQuery = epicQuery.gte('updated_at', updatedRangeDate.toISOString());
-    epicQuery = epicQuery.order('updated_at', { ascending: false }).range(from, to);
+    epicQuery = epicQuery.order('updated_at', { ascending: false }).limit(500);
 
     const { data: epics, count: epicCount, error: epicErr } = await epicQuery;
     if (epicErr) throw epicErr;
@@ -376,17 +380,18 @@ async function fetchDelivery(params: {
     });
   }
 
-  // Sort combined and trim
+  // Sort combined items
   items.sort((a, b) => b.activityDate.getTime() - a.activityDate.getTime());
-  const paginatedItems = items.slice(0, pageSize);
+  
+  // Client-side pagination on the combined results
+  const total = items.length;
+  const paginatedItems = items.slice(from, from + pageSize);
 
   // Get scope counts
   const [workedOnRes, assignedRes] = await Promise.all([
     supabase.from('stories').select('id', { count: 'exact', head: true }).is('deleted_at', null),
     supabase.from('stories').select('id', { count: 'exact', head: true }).is('deleted_at', null).not('assignee_id', 'is', null),
   ]);
-
-  const total = totalStories + totalFeatures + totalEpics;
 
   return {
     items: paginatedItems,
@@ -415,7 +420,6 @@ async function fetchPlanner(params: {
 }): Promise<HomeWorkItemsResponse> {
   const { scope, search, filters, sort, page, pageSize, updatedRangeDate, userId } = params;
   const from = (page - 1) * pageSize;
-  const to = from + pageSize - 1;
 
   let query = supabase
     .from('work_manager_tasks')
@@ -453,10 +457,12 @@ async function fetchPlanner(params: {
     query = query.order('updated_at', { ascending: false });
   }
 
-  query = query.range(from, to);
+  // Use limit instead of range to avoid 416 errors
+  query = query.limit(500);
 
   const { data: tasks, count, error } = await query;
   if (error) throw error;
+  
   // Fetch assignee names for tasks
   const taskAssigneeIds = (tasks || []).map(t => t.assignee_id).filter(Boolean);
   const { data: taskProfiles } = taskAssigneeIds.length > 0 
@@ -464,7 +470,7 @@ async function fetchPlanner(params: {
     : { data: [] };
   const taskProfileMap = new Map((taskProfiles || []).map(p => [p.id, p.full_name]));
 
-  const items: HomeWorkItem[] = (tasks || []).map(t => ({
+  const allItems: HomeWorkItem[] = (tasks || []).map(t => ({
     id: t.id,
     key: t.key || `TSK-${t.id.slice(0, 6)}`,
     summary: t.title,
@@ -486,6 +492,10 @@ async function fetchPlanner(params: {
     navPath: `/planner/tasks?taskId=${t.id}`,
   }));
 
+  // Client-side pagination
+  const total = allItems.length;
+  const paginatedItems = allItems.slice(from, from + pageSize);
+
   // Get scope counts
   const [plannedRes, upcomingRes, pendingRes] = await Promise.all([
     supabase.from('work_manager_tasks').select('id', { count: 'exact', head: true })
@@ -497,14 +507,14 @@ async function fetchPlanner(params: {
   ]);
 
   return {
-    items,
+    items: paginatedItems,
     counts: {
       workedOn: plannedRes.count || 0,
       assigned: upcomingRes.count || 0,
       starred: pendingRes.count || 0,
-      total: count || 0,
+      total,
     },
-    pagination: { page, pageSize, total: count || 0, hasMore: from + items.length < (count || 0) },
+    pagination: { page, pageSize, total, hasMore: from + paginatedItems.length < total },
   };
 }
 
