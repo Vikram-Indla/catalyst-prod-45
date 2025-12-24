@@ -601,13 +601,14 @@ export function HomeContent() {
 
   // Planner mode: Work Manager
   const plannerSummary = useHomePlannerSummary();
-  const plannerItems = useHomePlannerItems({
+  const plannerItemsQuery = useHomePlannerItems({
     category: selectedTab === 'upcoming' ? 'upcoming' : 
               selectedTab === 'pending-review' ? 'pending-review' : 'planned',
-    search: searchQuery || undefined,
+    search: debouncedSearch || undefined,
     sort: sortBy === 'priority' ? 'priority' : 'planned-date',
-    page: 1,
-    pageSize: visibleCount,
+    filters: plannerFilters,
+    page: plannerPage,
+    pageSize: ITEMS_PER_PAGE,
   });
 
   // Get data based on current mode
@@ -631,7 +632,7 @@ export function HomeContent() {
         };
       case 'planner':
         return {
-          workItems: plannerItems.data?.items || [],
+          workItems: plannerItemsQuery.data?.items || [],
           criticalCounts: {
             majorIncidents: { open: 0, breached: 0, atRisk: 0 },
             slaAtRisk: 0,
@@ -639,10 +640,10 @@ export function HomeContent() {
             blocked: 0,
             myWorkload: {
               incidents: 0,
-              workItems: plannerItems.data?.counts.planned || 0,
+              workItems: plannerItemsQuery.data?.counts.planned || 0,
             },
           },
-          isLoading: plannerSummary.isLoading || plannerItems.isLoading,
+          isLoading: plannerSummary.isLoading || plannerItemsQuery.isLoading,
           projects: [] as HomeProject[],
         };
       case 'delivery':
@@ -674,7 +675,7 @@ export function HomeContent() {
     selectedTab,
     operationsSummary.data, operationsItems.data, operationsSummary.isLoading, operationsItems.isLoading,
     deliverySummary.data, deliveryItems.data, deliverySummary.isLoading, deliveryItems.isLoading,
-    plannerSummary.data, plannerItems.data, plannerSummary.isLoading, plannerItems.isLoading,
+    plannerSummary.data, plannerItemsQuery.data, plannerSummary.isLoading, plannerItemsQuery.isLoading,
     starredItems.data, starredItems.isLoading,
   ]);
 
@@ -687,9 +688,9 @@ export function HomeContent() {
         };
       case 'planner':
         return {
-          planned: plannerItems.data?.counts.planned || 0,
-          upcoming: plannerItems.data?.counts.upcoming || 0,
-          pendingReview: plannerItems.data?.counts.pendingReview || 0,
+          planned: plannerItemsQuery.data?.counts.planned || 0,
+          upcoming: plannerItemsQuery.data?.counts.upcoming || 0,
+          pendingReview: plannerItemsQuery.data?.counts.pendingReview || 0,
         };
       case 'delivery':
       default:
@@ -699,7 +700,7 @@ export function HomeContent() {
           starred: starredCount.data || 0,
         };
     }
-  }, [roleMode, operationsItems.data, plannerItems.data, deliveryItems.data, starredCount.data]);
+  }, [roleMode, operationsItems.data, plannerItemsQuery.data, deliveryItems.data, starredCount.data]);
 
   // Load pinned projects from localStorage
   useEffect(() => {
