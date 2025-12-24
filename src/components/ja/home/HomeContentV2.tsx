@@ -5,7 +5,8 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { 
-  ChevronDown, ChevronUp, Star, MoreHorizontal, ExternalLink, 
+  ChevronDown, ChevronUp, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight,
+  Star, MoreHorizontal, ExternalLink, 
   Clock, Pin, AlertTriangle, Briefcase, Calendar, FileText
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -167,13 +168,16 @@ function FocusWidget({
 }
 
 // ============================================
-// DATA GRID - V2: Strict mode isolation
+// DATA GRID - V2: Strict mode isolation with pagination
 // ============================================
 function ModeAwareDataGridV2({ 
   items, 
   mode,
-  visibleCount,
-  onLoadMore,
+  currentPage,
+  pageSize,
+  totalItems,
+  onPageChange,
+  onPageSizeChange,
   searchQuery,
   selectedTab,
   activeFilter,
@@ -181,15 +185,17 @@ function ModeAwareDataGridV2({
 }: { 
   items: HomeWorkItem[];
   mode: HomeRoleMode;
-  visibleCount: number;
-  onLoadMore: () => void;
+  currentPage: number;
+  pageSize: number;
+  totalItems: number;
+  onPageChange: (page: number) => void;
+  onPageSizeChange: (size: number) => void;
   searchQuery: string;
   selectedTab: string;
   activeFilter: ActiveFilter;
   density: 'compact' | 'comfortable';
 }) {
   const groupedItems = groupItemsByTimePeriod(items);
-  const hasMore = items.length >= visibleCount;
   
   if (items.length === 0) {
     return (
@@ -202,9 +208,36 @@ function ModeAwareDataGridV2({
     );
   }
 
+  const totalPages = Math.ceil(totalItems / pageSize);
+  const startRow = currentPage * pageSize + 1;
+  const endRow = Math.min((currentPage + 1) * pageSize, totalItems);
+  const canGoPrevious = currentPage > 0;
+  const canGoNext = currentPage < totalPages - 1;
+
+  // Generate page numbers with ellipsis
+  const getPageNumbers = (): (number | 'ellipsis')[] => {
+    const pages: (number | 'ellipsis')[] = [];
+    const maxVisible = 5;
+    
+    if (totalPages <= maxVisible) {
+      return Array.from({ length: totalPages }, (_, i) => i);
+    }
+    
+    pages.push(0);
+    const start = Math.max(1, currentPage - 1);
+    const end = Math.min(totalPages - 2, currentPage + 1);
+    
+    if (start > 1) pages.push('ellipsis');
+    for (let i = start; i <= end; i++) pages.push(i);
+    if (end < totalPages - 2) pages.push('ellipsis');
+    if (totalPages > 1) pages.push(totalPages - 1);
+    
+    return pages;
+  };
+
   return (
     <div className="mt-2 rounded-xl border border-[var(--border-color)] overflow-hidden bg-[var(--card-bg)] shadow-sm dark:shadow-[0_1px_3px_rgba(0,0,0,0.4)]">
-      {/* Sticky Header - olive tinted in dark mode */}
+      {/* Sticky Header */}
       <div 
         className="grid items-center py-2.5 px-4 text-[11px] font-semibold uppercase tracking-[0.08em] sticky top-0 z-10"
         style={{ 
@@ -222,47 +255,128 @@ function ModeAwareDataGridV2({
         <div></div>
       </div>
 
-      {groupedItems.map((group, groupIndex) => {
-        const itemsToShow = group.items.slice(0, Math.max(0, visibleCount - groupedItems
-          .slice(0, groupIndex)
-          .reduce((acc, g) => acc + g.items.length, 0)));
-        
-        if (itemsToShow.length === 0) return null;
-        
-        return (
-          <div key={groupIndex}>
-            {/* Section header row - TODAY / THIS WEEK / OLDER */}
-            <div 
-              className="text-[11px] font-bold uppercase tracking-[0.1em] py-2.5 px-4"
-              style={{ 
-                color: 'var(--text-3)',
-                backgroundColor: 'var(--table-section-bg)',
-                borderTop: groupIndex > 0 ? '1px solid var(--divider)' : 'none',
-                borderBottom: '1px solid var(--divider)',
-              }}
-            >
-              {group.label}
-            </div>
-            {itemsToShow.map((item, index) => (
-              <ModeAwareGridRow 
-                key={`${group.label}-${index}`} 
-                item={item}
-                mode={mode}
-                density={density}
-              />
-            ))}
-          </div>
-        );
-      })}
-      
-      {hasMore && (
-        <div className="flex justify-center py-4" style={{ borderTop: '1px solid var(--divider)' }}>
-          <button 
-            onClick={onLoadMore}
-            className="px-4 py-2 text-sm font-medium rounded-lg border transition-colors bg-[var(--surface-2)] border-[var(--border-color)] text-[var(--text-2)] hover:bg-[var(--surface-3)] hover:border-[var(--brand-gold)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]"
+      {groupedItems.map((group, groupIndex) => (
+        <div key={groupIndex}>
+          {/* Section header row */}
+          <div 
+            className="text-[11px] font-bold uppercase tracking-[0.1em] py-2.5 px-4"
+            style={{ 
+              color: 'var(--text-3)',
+              backgroundColor: 'var(--table-section-bg)',
+              borderTop: groupIndex > 0 ? '1px solid var(--divider)' : 'none',
+              borderBottom: '1px solid var(--divider)',
+            }}
           >
-            Load more
-          </button>
+            {group.label}
+          </div>
+          {group.items.map((item, index) => (
+            <ModeAwareGridRow 
+              key={`${group.label}-${index}`} 
+              item={item}
+              mode={mode}
+              density={density}
+            />
+          ))}
+        </div>
+      ))}
+      
+      {/* Enterprise Pagination Footer */}
+      {totalItems > 0 && (
+        <div 
+          className="flex items-center justify-between px-4 py-3"
+          style={{ 
+            borderTop: '1px solid var(--divider)',
+            backgroundColor: 'var(--table-header-bg)',
+          }}
+        >
+          {/* Left: Row count and page size */}
+          <div className="flex items-center gap-4">
+            <span className="text-sm" style={{ color: 'var(--text-3)' }}>
+              Showing <span className="font-medium" style={{ color: 'var(--text-1)' }}>{startRow}</span>
+              {" – "}
+              <span className="font-medium" style={{ color: 'var(--text-1)' }}>{endRow}</span>
+              {" of "}
+              <span className="font-medium" style={{ color: 'var(--text-1)' }}>{totalItems}</span>
+            </span>
+            
+            <div className="flex items-center gap-2">
+              <span className="text-sm" style={{ color: 'var(--text-3)' }}>Rows per page:</span>
+              <select
+                value={pageSize}
+                onChange={(e) => onPageSizeChange(Number(e.target.value))}
+                className="h-8 px-2 text-sm rounded-md border bg-[var(--surface-2)] border-[var(--border-color)] text-[var(--text-1)] focus:outline-none focus:ring-2 focus:ring-[var(--focus-ring)]"
+              >
+                {[10, 20, 50, 100].map((size) => (
+                  <option key={size} value={size}>{size}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+          
+          {/* Right: Navigation */}
+          <div className="flex items-center gap-1">
+            {/* First page */}
+            <button
+              onClick={() => onPageChange(0)}
+              disabled={!canGoPrevious}
+              className="h-8 w-8 flex items-center justify-center rounded-md transition-colors disabled:opacity-40 disabled:cursor-not-allowed hover:bg-[var(--surface-3)] text-[var(--text-2)]"
+              title="First page"
+            >
+              <ChevronsLeft className="h-4 w-4" />
+            </button>
+            
+            {/* Previous */}
+            <button
+              onClick={() => onPageChange(currentPage - 1)}
+              disabled={!canGoPrevious}
+              className="h-8 w-8 flex items-center justify-center rounded-md transition-colors disabled:opacity-40 disabled:cursor-not-allowed hover:bg-[var(--surface-3)] text-[var(--text-2)]"
+              title="Previous page"
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </button>
+            
+            {/* Page numbers */}
+            <div className="flex items-center gap-1 mx-2">
+              {getPageNumbers().map((page, index) => 
+                page === 'ellipsis' ? (
+                  <span key={`ellipsis-${index}`} className="px-2" style={{ color: 'var(--text-3)' }}>…</span>
+                ) : (
+                  <button
+                    key={page}
+                    onClick={() => onPageChange(page)}
+                    className={cn(
+                      "h-8 w-8 text-sm rounded-md transition-colors",
+                      currentPage === page 
+                        ? "bg-[var(--brand-primary)] text-white font-medium"
+                        : "text-[var(--text-2)] hover:bg-[var(--surface-3)]"
+                    )}
+                  >
+                    {page + 1}
+                  </button>
+                )
+              )}
+            </div>
+            
+            {/* Next */}
+            <button
+              onClick={() => onPageChange(currentPage + 1)}
+              disabled={!canGoNext}
+              className="h-8 w-8 flex items-center justify-center rounded-md transition-colors disabled:opacity-40 disabled:cursor-not-allowed hover:bg-[var(--surface-3)] text-[var(--text-2)]"
+              title="Next page"
+            >
+              <ChevronRight className="h-4 w-4" />
+            </button>
+            
+            {/* Last page */}
+            <button
+              onClick={() => onPageChange(totalPages - 1)}
+              disabled={!canGoNext}
+              className="h-8 w-8 flex items-center justify-center rounded-md transition-colors disabled:opacity-40 disabled:cursor-not-allowed hover:bg-[var(--surface-3)] text-[var(--text-2)]"
+              title="Last page"
+            >
+              <ChevronsRight className="h-4 w-4" />
+            </button>
+          </div>
         </div>
       )}
     </div>
@@ -285,8 +399,9 @@ export function HomeContentV2({ metrics }: HomeContentV2Props) {
   const selectedTab = searchParams.get('tab') || DEFAULT_TABS[roleMode];
   const activeFilter = (searchParams.get('filter') as ActiveFilter) || 'all';
   
-  // Local state
-  const [visibleCount, setVisibleCount] = useState(ITEMS_PER_PAGE);
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(0);
+  const [pageSize, setPageSize] = useState(ITEMS_PER_PAGE);
   const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || '');
   const [sortBy, setSortBy] = useState('recently-updated');
   const [density, setDensity] = useState<'compact' | 'comfortable'>('comfortable');
@@ -323,12 +438,12 @@ export function HomeContentV2({ metrics }: HomeContentV2Props) {
     const newParams = new URLSearchParams();
     newParams.set('mode', newMode);
     setSearchParams(newParams, { replace: true });
-    setVisibleCount(ITEMS_PER_PAGE);
+    setCurrentPage(0);
   };
 
   const handleTabChange = (tab: string) => {
     updateUrlState({ tab, filter: null });
-    setVisibleCount(ITEMS_PER_PAGE);
+    setCurrentPage(0);
   };
 
   const handleFilterChange = (filter: ActiveFilter) => {
@@ -348,8 +463,8 @@ export function HomeContentV2({ metrics }: HomeContentV2Props) {
             activeFilter === 'blocked' ? 'blocked' : undefined,
     search: searchQuery || undefined,
     sort: sortBy === 'priority' ? 'priority' : 'updated',
-    page: 1,
-    pageSize: visibleCount,
+    page: currentPage + 1,
+    pageSize: pageSize,
   });
 
   // Delivery mode
@@ -358,8 +473,8 @@ export function HomeContentV2({ metrics }: HomeContentV2Props) {
     scope: selectedTab === 'assigned' ? 'assigned' : selectedTab === 'starred' ? 'starred' : 'worked-on',
     search: searchQuery || undefined,
     sort: sortBy === 'priority' ? 'priority' : sortBy === 'due-date' ? 'due-date' : 'updated',
-    page: 1,
-    pageSize: visibleCount,
+    page: currentPage + 1,
+    pageSize: pageSize,
   });
 
   // Planner mode
@@ -369,8 +484,8 @@ export function HomeContentV2({ metrics }: HomeContentV2Props) {
               selectedTab === 'pending-review' ? 'pending-review' : 'planned',
     search: searchQuery || undefined,
     sort: sortBy === 'priority' ? 'priority' : 'planned-date',
-    page: 1,
-    pageSize: visibleCount,
+    page: currentPage + 1,
+    pageSize: pageSize,
   });
 
   // Increment query count for metrics
@@ -470,9 +585,37 @@ export function HomeContentV2({ metrics }: HomeContentV2Props) {
     return (tabCounts as Record<string, number>)[tabValue] ?? 0;
   };
 
-  const handleLoadMore = () => {
-    setVisibleCount(prev => prev + ITEMS_PER_PAGE);
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
   };
+
+  const handlePageSizeChange = (size: number) => {
+    setPageSize(size);
+    setCurrentPage(0); // Reset to first page when changing page size
+  };
+
+  // Get total items for pagination
+  const totalItems = useMemo(() => {
+    switch (roleMode) {
+      case 'all': {
+        const opsTotal = operationsItems.data?.counts.total || 0;
+        const deliveryTotal = deliveryItems.data?.counts.total || 0;
+        const plannerTotal = (plannerItems.data?.counts.planned || 0) + 
+                            (plannerItems.data?.counts.upcoming || 0);
+        return opsTotal + deliveryTotal + plannerTotal;
+      }
+      case 'operations':
+        return operationsItems.data?.counts.total || 0;
+      case 'delivery':
+        return deliveryItems.data?.counts.total || 0;
+      case 'planner':
+        return (plannerItems.data?.counts.planned || 0) + 
+               (plannerItems.data?.counts.upcoming || 0) + 
+               (plannerItems.data?.counts.pendingReview || 0);
+      default:
+        return 0;
+    }
+  }, [roleMode, operationsItems.data, deliveryItems.data, plannerItems.data]);
 
   // Current mode config
   const currentModeTabs = MODE_TABS[roleMode];
@@ -669,8 +812,11 @@ export function HomeContentV2({ metrics }: HomeContentV2Props) {
             <ModeAwareDataGridV2 
               items={workItems} 
               mode={roleMode}
-              visibleCount={visibleCount}
-              onLoadMore={handleLoadMore}
+              currentPage={currentPage}
+              pageSize={pageSize}
+              totalItems={totalItems}
+              onPageChange={handlePageChange}
+              onPageSizeChange={handlePageSizeChange}
               searchQuery={searchQuery}
               selectedTab={selectedTab}
               activeFilter={activeFilter}
