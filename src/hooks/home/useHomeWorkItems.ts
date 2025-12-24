@@ -350,7 +350,7 @@ async function fetchDelivery(params: {
     // Fetch epics
     let epicQuery = supabase
       .from('epics')
-      .select('id, epic_key, name, status, created_at, updated_at', { count: 'exact' })
+      .select('id, epic_key, name, status, assignee_id, created_at, updated_at', { count: 'exact' })
       .is('deleted_at', null);
 
     if (search?.trim()) epicQuery = epicQuery.or(`name.ilike.%${search}%,epic_key.ilike.%${search}%`);
@@ -360,6 +360,13 @@ async function fetchDelivery(params: {
     const { data: epics, count: epicCount, error: epicErr } = await epicQuery;
     if (epicErr) throw epicErr;
     totalEpics = epicCount || 0;
+
+    // Fetch assignee names for epics
+    const epicAssigneeIds = (epics || []).map(e => e.assignee_id).filter(Boolean);
+    const { data: epicProfiles } = epicAssigneeIds.length > 0 
+      ? await supabase.from('profiles').select('id, full_name').in('id', epicAssigneeIds)
+      : { data: [] };
+    const epicProfileMap = new Map((epicProfiles || []).map(p => [p.id, p.full_name]));
 
     (epics || []).forEach(e => {
       items.push({
@@ -372,7 +379,7 @@ async function fetchDelivery(params: {
         status: e.status || 'Open',
         type: 'epic' as WorkItemType,
         domain: 'delivery' as HomeDomain,
-        assignee: null,
+        assignee: e.assignee_id ? epicProfileMap.get(e.assignee_id) || null : null,
         activityDate: new Date(e.updated_at || e.created_at),
         activityType: 'Updated' as const,
         navPath: `/industry/backlog?focusKey=${encodeURIComponent(e.epic_key || e.id)}`,
