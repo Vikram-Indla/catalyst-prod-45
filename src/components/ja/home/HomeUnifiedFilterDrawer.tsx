@@ -12,9 +12,11 @@ import { Input } from '@/components/ui/input';
 import {
   HomeFilters,
   HomeRoleMode,
+  HomeDomain,
   MODE_STATUS_OPTIONS,
   PRIORITY_OPTIONS,
   UPDATED_RANGE_OPTIONS,
+  DOMAIN_OPTIONS,
 } from '@/hooks/home/useHomeFilters';
 
 interface HomeUnifiedFilterDrawerProps {
@@ -69,6 +71,30 @@ export function HomeUnifiedFilterDrawer({
             Clear all
           </Button>
         )}
+      </div>
+
+      {/* Domain Filter */}
+      <div className="space-y-2">
+        <Label className="text-xs font-medium text-[var(--text-2)]">Domain</Label>
+        <div className="flex flex-wrap gap-1.5">
+          {DOMAIN_OPTIONS.map((option) => {
+            const isSelected = filters.domain === option.value;
+            return (
+              <button
+                key={option.value}
+                onClick={() => onFiltersChange({ domain: option.value })}
+                className={cn(
+                  "px-2 py-1 text-xs rounded-md border transition-colors",
+                  isSelected
+                    ? "bg-[var(--brand-primary)] text-[var(--text-inverse)] border-[var(--brand-primary)]"
+                    : "bg-transparent text-[var(--text-2)] border-[var(--border-color)] hover:border-[var(--brand-primary)]"
+                )}
+              >
+                {option.label}
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       {/* Status Filter */}

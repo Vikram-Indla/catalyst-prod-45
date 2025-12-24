@@ -27,6 +27,7 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import type { HomeRoleMode } from './HomeRoleModeSelector';
+import type { WorkItemNavigation, WorkItemContext } from '@/hooks/home/useUnifiedHomeData';
 
 // ============================================
 // SHARED TYPES
@@ -45,6 +46,9 @@ export interface BaseWorkItem {
   priority?: string;
   severity?: string;
   blocked?: boolean;
+  // Navigation metadata
+  nav?: WorkItemNavigation;
+  context?: WorkItemContext;
 }
 
 export const GRID_COLS = '100px 1fr 160px 100px 80px 80px';
@@ -77,8 +81,13 @@ export function OperationsGridRow({
   const isIncident = item.key?.startsWith('INC') || item.type === 'defect';
   const isRelease = item.key?.startsWith('REL');
   
-  // Determine correct route using centralized utility
+  // Use nav.path if provided, otherwise fall back to deterministic routing
   const getItemRoute = (): string | null => {
+    // Prefer nav.path from backend
+    if (item.nav?.path) {
+      return item.nav.path;
+    }
+    // Fallback to deterministic rules
     if (isIncident) {
       return item.id ? `/release/incidents/${item.id}` : null;
     }
@@ -313,8 +322,11 @@ export function DeliveryGridRow({
   
   const rowHeight = density === 'compact' ? 'py-1' : 'py-2';
   
-  // Get route using centralized utility with defensive check
+  // Use nav.path if provided, otherwise fall back to centralized utility
   const getItemRoute = (): string | null => {
+    if (item.nav?.path) {
+      return item.nav.path;
+    }
     return getValidatedWorkItemRoute({ id: item.id, key: item.key, type: item.type });
   };
 
@@ -495,8 +507,11 @@ export function PlannerGridRow({
   
   const rowHeight = density === 'compact' ? 'py-1' : 'py-2';
   
-  // Get route using centralized utility with defensive check
+  // Use nav.path if provided, otherwise fall back to centralized utility
   const getItemRoute = (): string | null => {
+    if (item.nav?.path) {
+      return item.nav.path;
+    }
     return getValidatedWorkItemRoute({ id: item.id, key: item.key, type: item.type });
   };
   
