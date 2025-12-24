@@ -2,6 +2,7 @@ import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { Plus } from "lucide-react";
 import { useEnabledModules } from "@/hooks/useModules";
+import { useCreateMenuVisibility } from "@/hooks/useCreateMenuVisibility";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,14 +11,14 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { workItemConfig, getWorkItemsByCategory } from "@/config/workItemConfig";
+import { workItemConfig, getWorkItemsByCategory, WorkItemType } from "@/config/workItemConfig";
 
 // Get items organized by category from centralized config
 const enterpriseItems = getWorkItemsByCategory('enterprise').map(item => ({
   label: item.label,
   icon: item.icon,
   color: item.color,
-  type: item.key,
+  type: item.key as WorkItemType,
   moduleCode: item.moduleCode,
 }));
 
@@ -25,7 +26,7 @@ const productItems = getWorkItemsByCategory('product').map(item => ({
   label: item.label,
   icon: item.icon,
   color: item.color,
-  type: item.key,
+  type: item.key as WorkItemType,
   moduleCode: item.moduleCode,
 }));
 
@@ -33,7 +34,7 @@ const programItems = getWorkItemsByCategory('program').map(item => ({
   label: item.label,
   icon: item.icon,
   color: item.color,
-  type: item.key,
+  type: item.key as WorkItemType,
   moduleCode: item.moduleCode,
 }));
 
@@ -41,7 +42,7 @@ const projectItems = getWorkItemsByCategory('project').map(item => ({
   label: item.label,
   icon: item.icon,
   color: item.color,
-  type: item.key,
+  type: item.key as WorkItemType,
   moduleCode: item.moduleCode,
 }));
 
@@ -49,7 +50,7 @@ const otherItems = getWorkItemsByCategory('other').map(item => ({
   label: item.label,
   icon: item.icon,
   color: item.color,
-  type: item.key,
+  type: item.key as WorkItemType,
   moduleCode: item.moduleCode,
 }));
 
@@ -57,31 +58,47 @@ export function CreateDropdown() {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const { isModuleEnabled } = useEnabledModules();
+  const { isWorkItemVisible } = useCreateMenuVisibility();
 
-  // Filter items based on enabled modules
+  // Filter items based on enabled modules AND role-based visibility
   const filteredEnterpriseItems = useMemo(() => 
-    enterpriseItems.filter(item => item.moduleCode === null || isModuleEnabled(item.moduleCode)),
-    [isModuleEnabled]
+    enterpriseItems.filter(item => 
+      (item.moduleCode === null || isModuleEnabled(item.moduleCode)) && 
+      isWorkItemVisible(item.type)
+    ),
+    [isModuleEnabled, isWorkItemVisible]
   );
 
   const filteredProductItems = useMemo(() => 
-    productItems.filter(item => item.moduleCode === null || isModuleEnabled(item.moduleCode)),
-    [isModuleEnabled]
+    productItems.filter(item => 
+      (item.moduleCode === null || isModuleEnabled(item.moduleCode)) && 
+      isWorkItemVisible(item.type)
+    ),
+    [isModuleEnabled, isWorkItemVisible]
   );
 
   const filteredProgramItems = useMemo(() => 
-    programItems.filter(item => item.moduleCode === null || isModuleEnabled(item.moduleCode)),
-    [isModuleEnabled]
+    programItems.filter(item => 
+      (item.moduleCode === null || isModuleEnabled(item.moduleCode)) && 
+      isWorkItemVisible(item.type)
+    ),
+    [isModuleEnabled, isWorkItemVisible]
   );
 
   const filteredProjectItems = useMemo(() => 
-    projectItems.filter(item => item.moduleCode === null || isModuleEnabled(item.moduleCode)),
-    [isModuleEnabled]
+    projectItems.filter(item => 
+      (item.moduleCode === null || isModuleEnabled(item.moduleCode)) && 
+      isWorkItemVisible(item.type)
+    ),
+    [isModuleEnabled, isWorkItemVisible]
   );
 
   const filteredOtherItems = useMemo(() => 
-    otherItems.filter(item => item.moduleCode === null || isModuleEnabled(item.moduleCode)),
-    [isModuleEnabled]
+    otherItems.filter(item => 
+      (item.moduleCode === null || isModuleEnabled(item.moduleCode)) && 
+      isWorkItemVisible(item.type)
+    ),
+    [isModuleEnabled, isWorkItemVisible]
   );
 
   const handleItemClick = (type: string) => {

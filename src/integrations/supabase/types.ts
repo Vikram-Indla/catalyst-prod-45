@@ -1832,6 +1832,33 @@ export type Database = {
           },
         ]
       }
+      create_menu_visibility: {
+        Row: {
+          created_at: string
+          id: string
+          is_visible: boolean
+          role_code: string
+          updated_at: string
+          work_item_type: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_visible?: boolean
+          role_code: string
+          updated_at?: string
+          work_item_type: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_visible?: boolean
+          role_code?: string
+          updated_at?: string
+          work_item_type?: string
+        }
+        Relationships: []
+      }
       custom_field_defs: {
         Row: {
           created_at: string | null

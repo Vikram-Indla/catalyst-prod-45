@@ -140,6 +140,7 @@ import AuditActivityPage from "./pages/admin/AuditActivityPage";
 import KanbanSettings from "./pages/admin/KanbanSettings";
 import ResourceInventory from "./pages/admin/ResourceInventory";
 import ProcessSteps from "./pages/admin/ProcessSteps";
+import CreateMenuConfig from "./pages/admin/CreateMenuConfig";
 import DeliveryPlatforms from "./pages/admin/DeliveryPlatforms";
 import RiskSeverityLevels from "./pages/admin/RiskSeverityLevels";
 import DevelopmentInventory from "./pages/admin/DevelopmentInventory";
@@ -736,6 +737,7 @@ const App = () => (
                 <Route path="business-owners" element={<BusinessOwnersAdmin />} />
                 <Route path="business-processes" element={<BusinessProcesses />} />
                 <Route path="business/ProcessStep" element={<ProcessSteps />} />
+                <Route path="create-menu-config" element={<CreateMenuConfig />} />
                 <Route path="business/RiskSeverity" element={<RiskSeverityLevels />} />
                 <Route path="business/DeliveryPlatforms" element={<DeliveryPlatforms />} />
                 <Route path="estimation" element={<Estimation />} />
