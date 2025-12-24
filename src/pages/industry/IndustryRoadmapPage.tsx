@@ -196,7 +196,7 @@ function mapHealthFromStatus(processStep: string | null, health: string | null):
 export default function IndustryRoadmapPage() {
   // State
   const [search, setSearch] = useState('');
-  const [groupBy, setGroupBy] = useState<'owner' | 'product' | 'quarters' | 'department'>('product');
+  const [groupBy, setGroupBy] = useState<'none' | 'owner' | 'product' | 'quarters' | 'department'>('none');
   const [showMilestones, setShowMilestones] = useState(true);
   const [timelineFilter, setTimelineFilter] = useState<TimelineFilterState>(DEFAULT_TIMELINE_FILTER);
   const [isTimelineAuto, setIsTimelineAuto] = useState(true);
@@ -575,6 +575,11 @@ export default function IndustryRoadmapPage() {
   
   // Group requests
   const groupedRequests = useMemo(() => {
+    // Handle 'none' - flat list, no grouping
+    if (groupBy === 'none') {
+      return [{ key: '__flat__', requests: filteredRequests }];
+    }
+    
     const groups: Record<string, BusinessRequestItem[]> = {};
     
     filteredRequests.forEach(request => {
@@ -739,6 +744,7 @@ export default function IndustryRoadmapPage() {
                 {groupByMenuOpen && (
                   <div className="absolute top-full mt-1 left-0 w-40 py-1 bg-background border border-border rounded-lg shadow-lg z-50">
                     {[
+                      { value: 'none', label: 'None' },
                       { value: 'owner', label: 'Business Owner' },
                       { value: 'product', label: 'Product' },
                       { value: 'quarters', label: 'Quarters' },
@@ -880,32 +886,35 @@ export default function IndustryRoadmapPage() {
             ) : (
               groupedRequests.map(group => {
                 const isCollapsed = collapsedGroups.has(group.key);
+                const isFlat = groupBy === 'none';
                 
                 return (
                   <React.Fragment key={group.key}>
-                    {/* Group Header */}
-                    <div
-                      onClick={() => toggleGroup(group.key)}
-                      className="h-11 px-3 pl-4 flex items-center gap-2 border-b border-border bg-muted/50 cursor-pointer hover:bg-muted"
-                    >
-                      <div className={cn(
-                        "w-5 h-5 flex items-center justify-center text-muted-foreground text-xs transition-transform",
-                        isCollapsed && "-rotate-90"
-                      )}>
-                        ▾
-                      </div>
-                      <div className="w-[3px] h-6 rounded bg-brand-primary" />
-                      <div className="flex-1">
-                        <div className="text-[13px] font-semibold text-foreground">{group.key}</div>
-                        <div className="text-[11px] text-muted-foreground">
-                          {group.requests.length} request{group.requests.length !== 1 ? 's' : ''}
+                    {/* Group Header - skip for flat list */}
+                    {!isFlat && (
+                      <div
+                        onClick={() => toggleGroup(group.key)}
+                        className="h-11 px-3 pl-4 flex items-center gap-2 border-b border-border bg-muted/50 cursor-pointer hover:bg-muted"
+                      >
+                        <div className={cn(
+                          "w-5 h-5 flex items-center justify-center text-muted-foreground text-xs transition-transform",
+                          isCollapsed && "-rotate-90"
+                        )}>
+                          ▾
                         </div>
+                        <div className="w-[3px] h-6 rounded bg-brand-primary" />
+                        <div className="flex-1">
+                          <div className="text-[13px] font-semibold text-foreground">{group.key}</div>
+                          <div className="text-[11px] text-muted-foreground">
+                            {group.requests.length} request{group.requests.length !== 1 ? 's' : ''}
+                          </div>
+                        </div>
+                        <div className="w-1.5 h-1.5 rounded-full bg-brand-primary" />
                       </div>
-                      <div className="w-1.5 h-1.5 rounded-full bg-brand-primary" />
-                    </div>
+                    )}
                     
                     {/* Request Rows */}
-                    {!isCollapsed && group.requests.map(request => (
+                    {(isFlat || !isCollapsed) && group.requests.map(request => (
                       <div
                         key={request.id}
                         onMouseEnter={(e) => showTooltip(e, request)}
@@ -1025,7 +1034,9 @@ export default function IndustryRoadmapPage() {
                     left: `${todayPercent}%`,
                     height: `${groupedRequests.reduce((acc, g) => {
                       const collapsed = collapsedGroups.has(g.key);
-                      return acc + 44 + (collapsed ? 0 : g.requests.length * 56);
+                      const isFlat = groupBy === 'none';
+                      const headerHeight = isFlat ? 0 : 44;
+                      return acc + headerHeight + (collapsed && !isFlat ? 0 : g.requests.length * 56);
                     }, 0)}px`
                   }}
                 />
@@ -1034,17 +1045,20 @@ export default function IndustryRoadmapPage() {
               {/* Rows */}
               {groupedRequests.map(group => {
                 const isCollapsed = collapsedGroups.has(group.key);
+                const isFlat = groupBy === 'none';
                 
                 return (
                   <React.Fragment key={group.key}>
-                    {/* Group Row */}
-                    <div className={cn(
-                      "h-11 border-b border-border bg-muted/50",
-                      isCollapsed && "hidden"
-                    )} />
+                    {/* Group Row - skip for flat list */}
+                    {!isFlat && (
+                      <div className={cn(
+                        "h-11 border-b border-border bg-muted/50",
+                        isCollapsed && "hidden"
+                      )} />
+                    )}
                     
                     {/* Request Rows */}
-                    {!isCollapsed && group.requests.map(request => {
+                    {(isFlat || !isCollapsed) && group.requests.map(request => {
                       const startPct = dateToPercent(request.startDate);
                       const endPct = dateToPercent(request.endDate);
                       // Ensure minimum visible width
