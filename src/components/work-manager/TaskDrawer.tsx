@@ -240,8 +240,8 @@ export function TaskDrawer({ isOpen, task, activeTab, onClose, onTabChange, onUp
           </div>
 
           {/* PILL-STYLE TABS */}
-          <div className="shrink-0 px-6 py-3 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800">
-            <div className="flex gap-1 p-1 bg-gray-100 dark:bg-gray-800 rounded-full">
+          <div className="shrink-0 px-6 py-3 bg-card border-b border-border">
+            <div className="flex gap-1 p-1 bg-muted rounded-full">
               {(['overview', 'activity', 'comments'] as const).map((tab) => (
                 <button
                   key={tab}

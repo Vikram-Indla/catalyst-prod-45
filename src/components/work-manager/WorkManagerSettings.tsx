@@ -345,7 +345,7 @@ export function WorkManagerSettings() {
               </thead>
               <tbody>
                 {templates.map((template) => (
-                  <tr key={template.id} className="border-b border-border-subtle hover:bg-stone-50 dark:hover:bg-gray-800 transition-colors">
+                  <tr key={template.id} className="border-b border-border-subtle hover:bg-muted/50 transition-colors">
                     <td className="px-4 py-3 text-[13px] font-medium text-foreground">{template.name}</td>
                     <td className="px-4 py-3 text-[13px] text-foreground/70">{template.frequency}</td>
                     <td className="px-4 py-3 text-[13px] text-muted-foreground">{template.nextRun}</td>
@@ -377,7 +377,7 @@ export function WorkManagerSettings() {
 
           <div className="bg-surface-card border border-border-default rounded-lg divide-y divide-border-subtle">
             {notifications.map((notification) => (
-              <div key={notification.id} className="flex items-center justify-between p-4 hover:bg-stone-50 dark:hover:bg-gray-800 transition-colors">
+              <div key={notification.id} className="flex items-center justify-between p-4 hover:bg-muted/50 transition-colors">
                 <div>
                   <span className="text-[13px] font-medium text-foreground">{notification.label}</span>
                   <p className="text-[12px] text-muted-foreground mt-0.5">{notification.description}</p>
@@ -403,7 +403,7 @@ export function WorkManagerSettings() {
             {integrations.map((integration) => (
               <div
                 key={integration.name}
-                className="flex items-center justify-between p-4 bg-surface-card border border-border-default rounded-lg hover:bg-stone-50 dark:hover:bg-gray-800 transition-colors"
+                className="flex items-center justify-between p-4 bg-surface-card border border-border-default rounded-lg hover:bg-muted/50 transition-colors"
               >
                 <div className="flex items-center gap-4">
                   <div className="w-10 h-10 rounded-lg bg-surface-muted flex items-center justify-center text-lg">

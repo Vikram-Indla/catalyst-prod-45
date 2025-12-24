@@ -513,7 +513,7 @@ export function WorkManagerInsights({ tasks }: WorkManagerInsightsProps) {
                   const avatarColors = ['#5c7c5c', '#8b7355', '#c69c6d', '#d4b896', '#6b8b6b'];
                   const avatarColor = avatarColors[idx % avatarColors.length];
                   return (
-                    <tr key={member.userId} className="border-b border-border-subtle hover:bg-stone-50 dark:hover:bg-gray-800 transition-colors cursor-pointer">
+                    <tr key={member.userId} className="border-b border-border-subtle hover:bg-muted/50 transition-colors cursor-pointer">
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-2">
                           <div 
