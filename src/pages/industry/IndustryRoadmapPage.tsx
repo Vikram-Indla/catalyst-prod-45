@@ -168,6 +168,7 @@ export default function IndustryRoadmapPage() {
   // Refs for scroll sync
   const listBodyRef = useRef<HTMLDivElement>(null);
   const timelineBodyRef = useRef<HTMLDivElement>(null);
+  const timelineHeaderRef = useRef<HTMLDivElement>(null);
   
   // Fetch business requests
   const { data: requestsData, isLoading } = useQuery({
@@ -455,6 +456,10 @@ export default function IndustryRoadmapPage() {
   const handleTimelineScroll = useCallback(() => {
     if (listBodyRef.current && timelineBodyRef.current) {
       listBodyRef.current.scrollTop = timelineBodyRef.current.scrollTop;
+    }
+    // Sync horizontal scroll to header
+    if (timelineBodyRef.current && timelineHeaderRef.current) {
+      timelineHeaderRef.current.scrollLeft = timelineBodyRef.current.scrollLeft;
     }
   }, []);
   
@@ -766,34 +771,42 @@ export default function IndustryRoadmapPage() {
         
         {/* Right Timeline Panel */}
         <div className="flex-1 flex flex-col overflow-hidden">
-          {/* Timeline Header */}
-          <div className="h-10 flex border-b border-border bg-background relative">
-            {QUARTERS.slice(0, 6).map((q, i) => {
-              const qStart = dateToPercent(q.start);
-              const qEnd = dateToPercent(q.end);
-              const showBadge = todayPercent >= qStart && todayPercent < qEnd;
-              const badgePos = ((todayPercent - qStart) / (qEnd - qStart)) * 100;
-              
-              return (
-                <div
-                  key={q.label}
-                  className={cn(
-                    "flex-1 min-w-[120px] flex items-center justify-center text-xs font-medium text-muted-foreground relative",
-                    i < 5 && "border-r border-border"
-                  )}
-                >
-                  {q.label}
-                  {showBadge && (
-                    <div
-                      className="absolute top-1.5 bg-secondary-bronze text-white text-[9px] font-semibold px-1.5 py-0.5 rounded uppercase tracking-wider z-10"
-                      style={{ left: `${badgePos}%` }}
-                    >
-                      TODAY
-                    </div>
-                  )}
-                </div>
-              );
-            })}
+          {/* Timeline Header - scrolls horizontally with body */}
+          <div 
+            ref={timelineHeaderRef}
+            className="h-10 border-b border-border bg-background overflow-x-hidden"
+          >
+            <div className="flex min-w-max">
+              {QUARTERS.slice(0, 6).map((q, i) => {
+                const qStart = dateToPercent(q.start);
+                const qEnd = dateToPercent(q.end);
+                const isTodayQuarter = todayPercent >= qStart && todayPercent < qEnd;
+                
+                return (
+                  <div
+                    key={q.label}
+                    className={cn(
+                      "flex-1 min-w-[120px] h-10 flex items-center justify-center text-xs font-medium text-muted-foreground relative",
+                      i < 5 && "border-r border-border"
+                    )}
+                  >
+                    {q.label}
+                    {/* TODAY Badge - positioned inside the quarter header so it scrolls with content */}
+                    {isTodayQuarter && (
+                      <div
+                        className="absolute top-1.5 bg-secondary-bronze text-white text-[9px] font-semibold px-1.5 py-0.5 rounded uppercase tracking-wider z-10"
+                        style={{ 
+                          left: '50%',
+                          transform: 'translateX(-50%)'
+                        }}
+                      >
+                        TODAY
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
           </div>
           
           {/* Timeline Body */}
@@ -814,7 +827,7 @@ export default function IndustryRoadmapPage() {
               </div>
             )}
             
-            <div className="min-w-full relative">
+            <div className="min-w-max relative">
               {/* Grid Lines */}
               <div className="absolute inset-0 flex pointer-events-none">
                 {QUARTERS.slice(0, 6).map((q, i) => (
