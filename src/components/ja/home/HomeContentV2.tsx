@@ -173,11 +173,11 @@ function WorkItemsDataGrid({
 
   return (
     <div className="mt-2 rounded-xl border border-[var(--border-color)] overflow-hidden bg-[var(--card-bg)] shadow-sm dark:shadow-[0_1px_3px_rgba(0,0,0,0.4)]">
-      {/* Sticky Header */}
+      {/* Sticky Header - responsive: hide Level/Assignee on mobile */}
       <div 
-        className="grid items-center py-2.5 px-4 text-[11px] font-semibold uppercase tracking-[0.08em] sticky top-0 z-10"
+        className="hidden md:grid items-center py-2.5 px-4 text-[11px] font-semibold uppercase tracking-[0.08em] sticky top-0 z-10"
         style={{ 
-          gridTemplateColumns: '100px 1fr 160px 100px 80px 80px',
+          gridTemplateColumns: '100px 1fr 120px 110px 140px 80px',
           color: 'var(--text-3)',
           backgroundColor: 'var(--table-header-bg)',
           borderBottom: '1px solid var(--divider)',
@@ -189,6 +189,20 @@ function WorkItemsDataGrid({
         <div>Updated</div>
         <div>Assignee</div>
         <div></div>
+      </div>
+      {/* Mobile header */}
+      <div 
+        className="grid md:hidden items-center py-2.5 px-3 text-[11px] font-semibold uppercase tracking-[0.08em] sticky top-0 z-10"
+        style={{ 
+          gridTemplateColumns: '80px 1fr 80px',
+          color: 'var(--text-3)',
+          backgroundColor: 'var(--table-header-bg)',
+          borderBottom: '1px solid var(--divider)',
+        }}
+      >
+        <div>Key</div>
+        <div>Summary</div>
+        <div className="text-right">Updated</div>
       </div>
 
       {isLoading ? (

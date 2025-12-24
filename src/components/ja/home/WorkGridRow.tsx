@@ -55,7 +55,8 @@ export interface BaseWorkItem {
   context?: WorkItemContext;
 }
 
-export const GRID_COLS = '100px 1fr 120px 100px 140px 80px';
+export const GRID_COLS = '100px 1fr 120px 110px 140px 80px';
+export const GRID_COLS_MOBILE = '80px 1fr 80px';
 
 // ============================================
 // OPERATIONS MODE ROW
@@ -123,58 +124,60 @@ export function OperationsGridRow({
   const canResolve = isIncident && !['resolved', 'closed'].includes(item.status);
 
   return (
-    <div 
-      className={cn(
-        "grid items-center px-4 transition-colors cursor-pointer group",
-        rowHeight,
-        isHovered && "bg-[var(--row-hover)]"
-      )}
-      style={{ 
-        gridTemplateColumns: GRID_COLS,
-        borderBottom: '1px solid var(--divider)',
-      }}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      onClick={handleRowClick}
-    >
-      {/* Key - bronze/gold color */}
-      <div className="flex items-center gap-2.5">
-        <WorkItemTypeIcon type={item.type} size={14} />
-        <span className="text-[13px] font-mono font-medium text-[#8b7355] dark:text-[#d4a855]">{item.key}</span>
-      </div>
-
-      {/* Summary - hover changes to olive */}
-      <div className="min-w-0 pr-4">
-        <div className="text-sm font-medium leading-5 text-[var(--text-1)] truncate group-hover:text-[#5c7c5c] dark:group-hover:text-[#7a9a7a] transition-colors">
-          {item.summary}
-        </div>
-      </div>
-
-      {/* Level - brighter in dark mode */}
-      <div className="text-sm truncate text-gray-600 dark:text-gray-300">
-        {item.level || 'Release'}
-      </div>
-
-      {/* Updated */}
-      <div className="text-sm tabular-nums text-gray-500 dark:text-gray-400">
-        {timeAgo} ago
-      </div>
-
-      {/* Assignee - show full name with avatar */}
-      <div className="flex items-center gap-2 min-w-0">
-        {item.assignee ? (
-          <>
-            <Avatar className="w-6 h-6 shrink-0">
-              <AvatarFallback className="text-[10px] font-bold bg-gradient-to-br from-[#5c7c5c] to-[#4a6a4a] text-white">
-                {item.assignee.slice(0, 2).toUpperCase()}
-              </AvatarFallback>
-            </Avatar>
-            <span className="text-sm text-gray-600 dark:text-gray-300 truncate">{item.assignee}</span>
-          </>
-        ) : (
-          <span className="text-sm text-gray-400 dark:text-gray-500">—</span>
+    <>
+      {/* Desktop Row */}
+      <div 
+        className={cn(
+          "hidden md:grid items-center px-4 transition-colors cursor-pointer group",
+          rowHeight,
+          isHovered && "bg-[var(--row-hover)]"
         )}
-      </div>
+        style={{ 
+          gridTemplateColumns: GRID_COLS,
+          borderBottom: '1px solid var(--divider)',
+        }}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        onClick={handleRowClick}
+      >
+        {/* Key - bronze/gold color */}
+        <div className="flex items-center gap-2.5">
+          <WorkItemTypeIcon type={item.type} size={14} />
+          <span className="text-[13px] font-mono font-medium text-[#8b7355] dark:text-[#d4a855]">{item.key}</span>
+        </div>
+
+        {/* Summary - hover changes to olive */}
+        <div className="min-w-0 pr-4">
+          <div className="text-sm font-medium leading-5 text-[var(--text-1)] truncate group-hover:text-[#5c7c5c] dark:group-hover:text-[#7a9a7a] transition-colors">
+            {item.summary}
+          </div>
+        </div>
+
+        {/* Level - brighter in dark mode */}
+        <div className="text-sm truncate text-gray-600 dark:text-gray-300">
+          {item.level || 'Release'}
+        </div>
+
+        {/* Updated */}
+        <div className="text-sm tabular-nums text-gray-500 dark:text-gray-400">
+          {timeAgo} ago
+        </div>
+
+        {/* Assignee - show full name with avatar */}
+        <div className="flex items-center gap-2 min-w-0">
+          {item.assignee ? (
+            <>
+              <Avatar className="w-6 h-6 shrink-0">
+                <AvatarFallback className="text-[10px] font-bold bg-gradient-to-br from-[#5c7c5c] to-[#4a6a4a] text-white">
+                  {item.assignee.slice(0, 2).toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
+              <span className="text-sm text-gray-600 dark:text-gray-300 truncate">{item.assignee}</span>
+            </>
+          ) : (
+            <span className="text-sm text-gray-400 dark:text-gray-500">—</span>
+          )}
+        </div>
 
       {/* Quick actions - Operations specific: View, Assign, Acknowledge/Resolve */}
       <div className={cn("flex items-center justify-end gap-0.5 transition-opacity", isHovered ? "opacity-100" : "opacity-0")}>
@@ -294,7 +297,34 @@ export function OperationsGridRow({
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-    </div>
+      </div>
+      
+      {/* Mobile Row */}
+      <div 
+        className={cn(
+          "grid md:hidden items-center px-3 py-2 transition-colors cursor-pointer",
+          isHovered && "bg-[var(--row-hover)]"
+        )}
+        style={{ 
+          gridTemplateColumns: GRID_COLS_MOBILE,
+          borderBottom: '1px solid var(--divider)',
+        }}
+        onClick={handleRowClick}
+      >
+        <div className="flex items-center gap-1.5">
+          <WorkItemTypeIcon type={item.type} size={12} />
+          <span className="text-xs font-mono font-medium text-[#8b7355] dark:text-[#d4a855]">{item.key}</span>
+        </div>
+        <div className="min-w-0 px-2">
+          <div className="text-sm font-medium leading-5 text-[var(--text-1)] truncate">
+            {item.summary}
+          </div>
+        </div>
+        <div className="text-xs tabular-nums text-gray-500 dark:text-gray-400 text-right">
+          {timeAgo}
+        </div>
+      </div>
+    </>
   );
 }
 
@@ -350,138 +380,167 @@ export function DeliveryGridRow({
   };
 
   return (
-    <div 
-      className={cn(
-        "grid items-center px-4 transition-colors cursor-pointer group",
-        rowHeight,
-        isHovered && "bg-[var(--row-hover)]"
-      )}
-      style={{ 
-        gridTemplateColumns: GRID_COLS,
-        borderBottom: '1px solid var(--divider)',
-      }}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      onClick={handleRowClick}
-    >
-      {/* Key - bronze/gold color */}
-      <div className="flex items-center gap-2.5">
-        <WorkItemTypeIcon type={item.type} size={14} />
-        <span className="text-[13px] font-mono font-medium text-[#8b7355] dark:text-[#d4a855]">{item.key}</span>
-      </div>
+    <>
+      {/* Desktop Row */}
+      <div 
+        className={cn(
+          "hidden md:grid items-center px-4 transition-colors cursor-pointer group",
+          rowHeight,
+          isHovered && "bg-[var(--row-hover)]"
+        )}
+        style={{ 
+          gridTemplateColumns: GRID_COLS,
+          borderBottom: '1px solid var(--divider)',
+        }}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        onClick={handleRowClick}
+      >
+        {/* Key - bronze/gold color */}
+        <div className="flex items-center gap-2.5">
+          <WorkItemTypeIcon type={item.type} size={14} />
+          <span className="text-[13px] font-mono font-medium text-[#8b7355] dark:text-[#d4a855]">{item.key}</span>
+        </div>
 
-      {/* Summary - hover changes to olive */}
-      <div className="min-w-0 pr-4">
-        <div className="text-sm font-medium leading-5 text-[var(--text-1)] truncate group-hover:text-[#5c7c5c] dark:group-hover:text-[#7a9a7a] transition-colors">
-          {item.summary}
+        {/* Summary - hover changes to olive */}
+        <div className="min-w-0 pr-4">
+          <div className="text-sm font-medium leading-5 text-[var(--text-1)] truncate group-hover:text-[#5c7c5c] dark:group-hover:text-[#7a9a7a] transition-colors">
+            {item.summary}
+          </div>
+        </div>
+
+        {/* Level - brighter in dark mode */}
+        <div className="text-sm truncate text-gray-600 dark:text-gray-300">
+          {item.level || 'Project'}
+        </div>
+
+        {/* Updated */}
+        <div className="text-sm tabular-nums text-gray-500 dark:text-gray-400">
+          {timeAgo} ago
+        </div>
+
+        {/* Assignee - show full name with avatar */}
+        <div className="flex items-center gap-2 min-w-0">
+          {item.assignee ? (
+            <>
+              <Avatar className="w-6 h-6 shrink-0">
+                <AvatarFallback className="text-[10px] font-bold bg-gradient-to-br from-[#5c7c5c] to-[#4a6a4a] text-white">
+                  {item.assignee.slice(0, 2).toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
+              <span className="text-sm text-gray-600 dark:text-gray-300 truncate">{item.assignee}</span>
+            </>
+          ) : (
+            <span className="text-sm text-gray-400 dark:text-gray-500">—</span>
+          )}
+        </div>
+
+        {/* Quick actions - Delivery specific: View, Open in new tab, Star */}
+        <div className={cn("flex items-center justify-end gap-0.5 transition-opacity", isHovered ? "opacity-100" : "opacity-0")}>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button 
+                  className="w-5 h-5 rounded flex items-center justify-center hover:bg-[var(--nav-hover-bg)] text-[var(--icon-muted)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]"
+                  onClick={(e) => { e.stopPropagation(); handleRowClick(); }}
+                  title="View details"
+                >
+                  <Eye className="w-3 h-3" />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent>View details</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button 
+                  className="w-5 h-5 rounded flex items-center justify-center hover:bg-[var(--nav-hover-bg)] text-[var(--icon-muted)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]"
+                  onClick={handleOpenNewTab}
+                  title="Open in new tab"
+                >
+                  <FileText className="w-3 h-3" />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent>Open in new tab</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button 
+                className="w-5 h-5 rounded flex items-center justify-center hover:bg-[var(--nav-hover-bg)] text-[var(--icon-muted)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]"
+                onClick={(e) => e.stopPropagation()}
+                title="More actions"
+              >
+                <MoreHorizontal className="w-3 h-3" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent 
+              align="end" 
+              className="bg-[var(--surface-1)] border-[var(--border-color)] z-[300]"
+            >
+              <DropdownMenuItem 
+                onClick={(e) => { e.stopPropagation(); onAssignToMe?.(item.id); }}
+                className="text-[var(--text-1)] cursor-pointer"
+              >
+                <UserPlus className="w-4 h-4 mr-2" />
+                Assign to me
+              </DropdownMenuItem>
+              <DropdownMenuItem 
+                onClick={(e) => { e.stopPropagation(); onChangeStatus?.(item.id); }}
+                className="text-[var(--text-1)] cursor-pointer"
+              >
+                <CheckCircle className="w-4 h-4 mr-2" />
+                Change status
+              </DropdownMenuItem>
+              <DropdownMenuItem 
+                onClick={(e) => { e.stopPropagation(); onAddComment?.(item.id); }}
+                className="text-[var(--text-1)] cursor-pointer"
+              >
+                <MessageSquare className="w-4 h-4 mr-2" />
+                Add comment
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem 
+                onClick={(e) => { e.stopPropagation(); /* TODO: View history */ }}
+                className="text-[var(--text-1)] cursor-pointer"
+              >
+                <History className="w-4 h-4 mr-2" />
+                View history
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
-
-      {/* Level - brighter in dark mode */}
-      <div className="text-sm truncate text-gray-600 dark:text-gray-300">
-        {item.level || 'Project'}
-      </div>
-
-      {/* Updated */}
-      <div className="text-sm tabular-nums text-gray-500 dark:text-gray-400">
-        {timeAgo} ago
-      </div>
-
-      {/* Assignee - show full name with avatar */}
-      <div className="flex items-center gap-2 min-w-0">
-        {item.assignee ? (
-          <>
-            <Avatar className="w-6 h-6 shrink-0">
-              <AvatarFallback className="text-[10px] font-bold bg-gradient-to-br from-[#5c7c5c] to-[#4a6a4a] text-white">
-                {item.assignee.slice(0, 2).toUpperCase()}
-              </AvatarFallback>
-            </Avatar>
-            <span className="text-sm text-gray-600 dark:text-gray-300 truncate">{item.assignee}</span>
-          </>
-        ) : (
-          <span className="text-sm text-gray-400 dark:text-gray-500">—</span>
+      
+      {/* Mobile Row */}
+      <div 
+        className={cn(
+          "grid md:hidden items-center px-3 py-2 transition-colors cursor-pointer",
+          isHovered && "bg-[var(--row-hover)]"
         )}
+        style={{ 
+          gridTemplateColumns: GRID_COLS_MOBILE,
+          borderBottom: '1px solid var(--divider)',
+        }}
+        onClick={handleRowClick}
+      >
+        <div className="flex items-center gap-1.5">
+          <WorkItemTypeIcon type={item.type} size={12} />
+          <span className="text-xs font-mono font-medium text-[#8b7355] dark:text-[#d4a855]">{item.key}</span>
+        </div>
+        <div className="min-w-0 px-2">
+          <div className="text-sm font-medium leading-5 text-[var(--text-1)] truncate">
+            {item.summary}
+          </div>
+        </div>
+        <div className="text-xs tabular-nums text-gray-500 dark:text-gray-400 text-right">
+          {timeAgo}
+        </div>
       </div>
-
-      {/* Quick actions - Delivery specific: View, Open in new tab, Star */}
-      <div className={cn("flex items-center justify-end gap-0.5 transition-opacity", isHovered ? "opacity-100" : "opacity-0")}>
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <button 
-                className="w-5 h-5 rounded flex items-center justify-center hover:bg-[var(--nav-hover-bg)] text-[var(--icon-muted)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]"
-                onClick={(e) => { e.stopPropagation(); handleRowClick(); }}
-                title="View details"
-              >
-                <Eye className="w-3 h-3" />
-              </button>
-            </TooltipTrigger>
-            <TooltipContent>View details</TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <button 
-                className="w-5 h-5 rounded flex items-center justify-center hover:bg-[var(--nav-hover-bg)] text-[var(--icon-muted)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]"
-                onClick={handleOpenNewTab}
-                title="Open in new tab"
-              >
-                <FileText className="w-3 h-3" />
-              </button>
-            </TooltipTrigger>
-            <TooltipContent>Open in new tab</TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <button 
-              className="w-5 h-5 rounded flex items-center justify-center hover:bg-[var(--nav-hover-bg)] text-[var(--icon-muted)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]"
-              onClick={(e) => e.stopPropagation()}
-              title="More actions"
-            >
-              <MoreHorizontal className="w-3 h-3" />
-            </button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent 
-            align="end" 
-            className="bg-[var(--surface-1)] border-[var(--border-color)] z-[300]"
-          >
-            <DropdownMenuItem 
-              onClick={(e) => { e.stopPropagation(); onAssignToMe?.(item.id); }}
-              className="text-[var(--text-1)] cursor-pointer"
-            >
-              <UserPlus className="w-4 h-4 mr-2" />
-              Assign to me
-            </DropdownMenuItem>
-            <DropdownMenuItem 
-              onClick={(e) => { e.stopPropagation(); onChangeStatus?.(item.id); }}
-              className="text-[var(--text-1)] cursor-pointer"
-            >
-              <CheckCircle className="w-4 h-4 mr-2" />
-              Change status
-            </DropdownMenuItem>
-            <DropdownMenuItem 
-              onClick={(e) => { e.stopPropagation(); onAddComment?.(item.id); }}
-              className="text-[var(--text-1)] cursor-pointer"
-            >
-              <MessageSquare className="w-4 h-4 mr-2" />
-              Add comment
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem 
-              onClick={(e) => { e.stopPropagation(); /* TODO: View history */ }}
-              className="text-[var(--text-1)] cursor-pointer"
-            >
-              <History className="w-4 h-4 mr-2" />
-              View history
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
-    </div>
+    </>
   );
 }
 
@@ -535,131 +594,160 @@ export function PlannerGridRow({
   };
 
   return (
-    <div 
-      className={cn(
-        "grid items-center px-4 transition-colors cursor-pointer group",
-        rowHeight,
-        isHovered && "bg-[var(--row-hover)]"
-      )}
-      style={{ 
-        gridTemplateColumns: GRID_COLS,
-        borderBottom: '1px solid var(--divider)',
-      }}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      onClick={handleRowClick}
-    >
-      {/* Key - bronze/gold color */}
-      <div className="flex items-center gap-2.5">
-        <WorkItemTypeIcon type={item.type} size={14} />
-        <span className="text-[13px] font-mono font-medium text-[#8b7355] dark:text-[#d4a855]">{item.key}</span>
-      </div>
+    <>
+      {/* Desktop Row */}
+      <div 
+        className={cn(
+          "hidden md:grid items-center px-4 transition-colors cursor-pointer group",
+          rowHeight,
+          isHovered && "bg-[var(--row-hover)]"
+        )}
+        style={{ 
+          gridTemplateColumns: GRID_COLS,
+          borderBottom: '1px solid var(--divider)',
+        }}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        onClick={handleRowClick}
+      >
+        {/* Key - bronze/gold color */}
+        <div className="flex items-center gap-2.5">
+          <WorkItemTypeIcon type={item.type} size={14} />
+          <span className="text-[13px] font-mono font-medium text-[#8b7355] dark:text-[#d4a855]">{item.key}</span>
+        </div>
 
-      {/* Summary - hover changes to olive */}
-      <div className="min-w-0 pr-4">
-        <div className="text-sm font-medium leading-5 text-[var(--text-1)] truncate group-hover:text-[#5c7c5c] dark:group-hover:text-[#7a9a7a] transition-colors">
-          {item.summary}
+        {/* Summary - hover changes to olive */}
+        <div className="min-w-0 pr-4">
+          <div className="text-sm font-medium leading-5 text-[var(--text-1)] truncate group-hover:text-[#5c7c5c] dark:group-hover:text-[#7a9a7a] transition-colors">
+            {item.summary}
+          </div>
+        </div>
+
+        {/* Level - brighter in dark mode */}
+        <div className="text-sm truncate text-gray-600 dark:text-gray-300">
+          {item.level || 'Planner'}
+        </div>
+
+        {/* Updated */}
+        <div className="text-sm tabular-nums text-gray-500 dark:text-gray-400">
+          {timeAgo} ago
+        </div>
+
+        {/* Assignee - show full name with avatar */}
+        <div className="flex items-center gap-2 min-w-0">
+          {item.assignee ? (
+            <>
+              <Avatar className="w-6 h-6 shrink-0">
+                <AvatarFallback className="text-[10px] font-bold bg-gradient-to-br from-[#5c7c5c] to-[#4a6a4a] text-white">
+                  {item.assignee.slice(0, 2).toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
+              <span className="text-sm text-gray-600 dark:text-gray-300 truncate">{item.assignee}</span>
+            </>
+          ) : (
+            <span className="text-sm text-gray-400 dark:text-gray-500">—</span>
+          )}
+        </div>
+
+        {/* Quick actions - Planner specific: Review, Add note */}
+        <div className={cn("flex items-center justify-end gap-0.5 transition-opacity", isHovered ? "opacity-100" : "opacity-0")}>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button 
+                  className="w-5 h-5 rounded flex items-center justify-center hover:bg-[var(--nav-hover-bg)] text-[var(--icon-muted)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]"
+                  onClick={(e) => { e.stopPropagation(); onReviewItem?.(item.id); }}
+                  title="Review item"
+                >
+                  <Eye className="w-3 h-3" />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent>Review item</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button 
+                  className="w-5 h-5 rounded flex items-center justify-center hover:bg-[var(--nav-hover-bg)] text-[var(--icon-muted)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]"
+                  onClick={(e) => { e.stopPropagation(); onAddNote?.(item.id); }}
+                  title="Add note"
+                >
+                  <FileText className="w-3 h-3" />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent>Add note</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button 
+                className="w-5 h-5 rounded flex items-center justify-center hover:bg-[var(--nav-hover-bg)] text-[var(--icon-muted)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]"
+                onClick={(e) => e.stopPropagation()}
+                title="More actions"
+              >
+                <MoreHorizontal className="w-3 h-3" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent 
+              align="end" 
+              className="bg-[var(--surface-1)] border-[var(--border-color)] z-[300]"
+            >
+              <DropdownMenuItem 
+                onClick={(e) => { e.stopPropagation(); onPrepareForPlanning?.(item.id); }}
+                className="text-[var(--text-1)] cursor-pointer"
+              >
+                <Calendar className="w-4 h-4 mr-2" />
+                Prepare for planning
+              </DropdownMenuItem>
+              <DropdownMenuItem 
+                onClick={(e) => { e.stopPropagation(); onRequestClarification?.(item.id); }}
+                className="text-[var(--text-1)] cursor-pointer"
+              >
+                <HelpCircle className="w-4 h-4 mr-2" />
+                Request clarification
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem 
+                onClick={handleOpenNewTab}
+                className="text-[var(--text-1)] cursor-pointer"
+              >
+                <ExternalLink className="w-4 h-4 mr-2" />
+                Open in new tab
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
-
-      {/* Level - brighter in dark mode */}
-      <div className="text-sm truncate text-gray-600 dark:text-gray-300">
-        {item.level || 'Planner'}
-      </div>
-
-      {/* Updated */}
-      <div className="text-sm tabular-nums text-gray-500 dark:text-gray-400">
-        {timeAgo} ago
-      </div>
-
-      {/* Assignee - show full name with avatar */}
-      <div className="flex items-center gap-2 min-w-0">
-        {item.assignee ? (
-          <>
-            <Avatar className="w-6 h-6 shrink-0">
-              <AvatarFallback className="text-[10px] font-bold bg-gradient-to-br from-[#5c7c5c] to-[#4a6a4a] text-white">
-                {item.assignee.slice(0, 2).toUpperCase()}
-              </AvatarFallback>
-            </Avatar>
-            <span className="text-sm text-gray-600 dark:text-gray-300 truncate">{item.assignee}</span>
-          </>
-        ) : (
-          <span className="text-sm text-gray-400 dark:text-gray-500">—</span>
+      
+      {/* Mobile Row */}
+      <div 
+        className={cn(
+          "grid md:hidden items-center px-3 py-2 transition-colors cursor-pointer",
+          isHovered && "bg-[var(--row-hover)]"
         )}
+        style={{ 
+          gridTemplateColumns: GRID_COLS_MOBILE,
+          borderBottom: '1px solid var(--divider)',
+        }}
+        onClick={handleRowClick}
+      >
+        <div className="flex items-center gap-1.5">
+          <WorkItemTypeIcon type={item.type} size={12} />
+          <span className="text-xs font-mono font-medium text-[#8b7355] dark:text-[#d4a855]">{item.key}</span>
+        </div>
+        <div className="min-w-0 px-2">
+          <div className="text-sm font-medium leading-5 text-[var(--text-1)] truncate">
+            {item.summary}
+          </div>
+        </div>
+        <div className="text-xs tabular-nums text-gray-500 dark:text-gray-400 text-right">
+          {timeAgo}
+        </div>
       </div>
-
-      {/* Quick actions - Planner specific: Review, Add note */}
-      <div className={cn("flex items-center justify-end gap-0.5 transition-opacity", isHovered ? "opacity-100" : "opacity-0")}>
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <button 
-                className="w-5 h-5 rounded flex items-center justify-center hover:bg-[var(--nav-hover-bg)] text-[var(--icon-muted)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]"
-                onClick={(e) => { e.stopPropagation(); onReviewItem?.(item.id); }}
-                title="Review item"
-              >
-                <Eye className="w-3 h-3" />
-              </button>
-            </TooltipTrigger>
-            <TooltipContent>Review item</TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <button 
-                className="w-5 h-5 rounded flex items-center justify-center hover:bg-[var(--nav-hover-bg)] text-[var(--icon-muted)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]"
-                onClick={(e) => { e.stopPropagation(); onAddNote?.(item.id); }}
-                title="Add note"
-              >
-                <FileText className="w-3 h-3" />
-              </button>
-            </TooltipTrigger>
-            <TooltipContent>Add note</TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <button 
-              className="w-5 h-5 rounded flex items-center justify-center hover:bg-[var(--nav-hover-bg)] text-[var(--icon-muted)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]"
-              onClick={(e) => e.stopPropagation()}
-              title="More actions"
-            >
-              <MoreHorizontal className="w-3 h-3" />
-            </button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent 
-            align="end" 
-            className="bg-[var(--surface-1)] border-[var(--border-color)] z-[300]"
-          >
-            <DropdownMenuItem 
-              onClick={(e) => { e.stopPropagation(); onPrepareForPlanning?.(item.id); }}
-              className="text-[var(--text-1)] cursor-pointer"
-            >
-              <Calendar className="w-4 h-4 mr-2" />
-              Prepare for planning
-            </DropdownMenuItem>
-            <DropdownMenuItem 
-              onClick={(e) => { e.stopPropagation(); onRequestClarification?.(item.id); }}
-              className="text-[var(--text-1)] cursor-pointer"
-            >
-              <HelpCircle className="w-4 h-4 mr-2" />
-              Request clarification
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem 
-              onClick={handleOpenNewTab}
-              className="text-[var(--text-1)] cursor-pointer"
-            >
-              <ExternalLink className="w-4 h-4 mr-2" />
-              Open in new tab
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
-    </div>
+    </>
   );
 }
 
