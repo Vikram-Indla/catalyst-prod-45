@@ -1,6 +1,6 @@
 import React from 'react';
 
-export type WorkItemType = 'story' | 'feature' | 'task' | 'defect';
+export type WorkItemType = 'story' | 'feature' | 'task' | 'defect' | 'epic';
 
 interface WorkItemTypeIconProps {
   type: WorkItemType;
@@ -8,6 +8,7 @@ interface WorkItemTypeIconProps {
 }
 
 const ICON_COLORS: Record<WorkItemType, string> = {
+  epic: '#904EE2', // Purple - represents large scope
   story: '#36B37E', // Green
   feature: '#F59E0B', // Amber (was purple - per design system governance)
   task: '#0065FF', // Blue
@@ -18,6 +19,14 @@ export function WorkItemTypeIcon({ type, size = 16 }: WorkItemTypeIconProps) {
   const color = ICON_COLORS[type];
   
   switch (type) {
+    case 'epic':
+      // Purple thunderbolt icon - represents large scope and power
+      return (
+        <svg width={size} height={size} viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="16" height="16" rx="3" fill={color} />
+          <path d="M9.5 2L4 9H7.5L6.5 14L12 7H8.5L9.5 2Z" fill="white" />
+        </svg>
+      );
     case 'story':
       // Green bookmark/story icon
       return (
@@ -27,7 +36,7 @@ export function WorkItemTypeIcon({ type, size = 16 }: WorkItemTypeIconProps) {
         </svg>
       );
     case 'feature':
-      // Purple lightning bolt
+      // Amber lightning bolt
       return (
         <svg width={size} height={size} viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
           <rect width="16" height="16" rx="2" fill={color} />
@@ -58,6 +67,7 @@ export function WorkItemTypeIcon({ type, size = 16 }: WorkItemTypeIconProps) {
 
 export function getWorkItemTypeLabel(type: WorkItemType): string {
   const labels: Record<WorkItemType, string> = {
+    epic: 'Epic',
     story: 'Story',
     feature: 'Feature',
     task: 'Task',

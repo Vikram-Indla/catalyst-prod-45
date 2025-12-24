@@ -4,6 +4,7 @@
  */
 import { useState, useMemo } from 'react';
 import { Search, ChevronRight, ArrowUpDown, ArrowUp } from 'lucide-react';
+import { WorkItemTypeIcon } from '@/components/ja/icons/WorkItemTypeIcon';
 import type { StrategicTheme } from '@/types/strategicBacklog';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
@@ -261,7 +262,10 @@ export function StrategicBacklogEpicsSection({
                   >
                     {isColumnVisible('name') && (
                       <td className="px-4 py-3">
-                        <span className="text-sm font-medium text-foreground">{epic.name}</span>
+                        <div className="flex items-center gap-2">
+                          <WorkItemTypeIcon type="epic" size={14} />
+                          <span className="text-sm font-medium text-foreground">{epic.name}</span>
+                        </div>
                       </td>
                     )}
                     {isColumnVisible('theme') && (
