@@ -65,6 +65,7 @@ const adminPockets = [
     icon: Database,
     path: '/admin/field-configuration',
     children: [
+      { label: 'Create', path: '/admin/create-menu-config' },
       { label: 'Projects', path: '/admin/programs' },
       { label: 'Programs', path: '/admin/portfolios' },
       { label: 'Departments', path: '/admin/departments' },
