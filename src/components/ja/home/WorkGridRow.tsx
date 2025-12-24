@@ -147,14 +147,17 @@ export function OperationsGridRow({
         {timeAgo} ago
       </div>
 
-      {/* Assignee - visible dash in dark mode */}
-      <div className="flex justify-start">
+      {/* Assignee - show full name with avatar */}
+      <div className="flex items-center gap-2 min-w-0">
         {item.assignee ? (
-          <Avatar className="w-6 h-6">
-            <AvatarFallback className="text-[10px] font-bold bg-gradient-to-br from-[#5c7c5c] to-[#4a6a4a] text-white">
-              {item.assignee.slice(0, 2).toUpperCase()}
-            </AvatarFallback>
-          </Avatar>
+          <>
+            <Avatar className="w-6 h-6 shrink-0">
+              <AvatarFallback className="text-[10px] font-bold bg-gradient-to-br from-[#5c7c5c] to-[#4a6a4a] text-white">
+                {item.assignee.slice(0, 2).toUpperCase()}
+              </AvatarFallback>
+            </Avatar>
+            <span className="text-sm text-gray-600 dark:text-gray-300 truncate">{item.assignee}</span>
+          </>
         ) : (
           <span className="text-sm text-gray-400 dark:text-gray-500">—</span>
         )}
@@ -368,14 +371,17 @@ export function DeliveryGridRow({
         {timeAgo} ago
       </div>
 
-      {/* Assignee - visible dash in dark mode */}
-      <div className="flex justify-start">
+      {/* Assignee - show full name with avatar */}
+      <div className="flex items-center gap-2 min-w-0">
         {item.assignee ? (
-          <Avatar className="w-6 h-6">
-            <AvatarFallback className="text-[10px] font-bold bg-gradient-to-br from-[#5c7c5c] to-[#4a6a4a] text-white">
-              {item.assignee.slice(0, 2).toUpperCase()}
-            </AvatarFallback>
-          </Avatar>
+          <>
+            <Avatar className="w-6 h-6 shrink-0">
+              <AvatarFallback className="text-[10px] font-bold bg-gradient-to-br from-[#5c7c5c] to-[#4a6a4a] text-white">
+                {item.assignee.slice(0, 2).toUpperCase()}
+              </AvatarFallback>
+            </Avatar>
+            <span className="text-sm text-gray-600 dark:text-gray-300 truncate">{item.assignee}</span>
+          </>
         ) : (
           <span className="text-sm text-gray-400 dark:text-gray-500">—</span>
         )}
@@ -547,14 +553,17 @@ export function PlannerGridRow({
         {timeAgo} ago
       </div>
 
-      {/* Assignee - visible dash in dark mode */}
-      <div className="flex justify-start">
+      {/* Assignee - show full name with avatar */}
+      <div className="flex items-center gap-2 min-w-0">
         {item.assignee ? (
-          <Avatar className="w-6 h-6">
-            <AvatarFallback className="text-[10px] font-bold bg-gradient-to-br from-[#5c7c5c] to-[#4a6a4a] text-white">
-              {item.assignee.slice(0, 2).toUpperCase()}
-            </AvatarFallback>
-          </Avatar>
+          <>
+            <Avatar className="w-6 h-6 shrink-0">
+              <AvatarFallback className="text-[10px] font-bold bg-gradient-to-br from-[#5c7c5c] to-[#4a6a4a] text-white">
+                {item.assignee.slice(0, 2).toUpperCase()}
+              </AvatarFallback>
+            </Avatar>
+            <span className="text-sm text-gray-600 dark:text-gray-300 truncate">{item.assignee}</span>
+          </>
         ) : (
           <span className="text-sm text-gray-400 dark:text-gray-500">—</span>
         )}
