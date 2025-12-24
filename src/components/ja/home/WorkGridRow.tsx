@@ -55,7 +55,7 @@ export interface BaseWorkItem {
   context?: WorkItemContext;
 }
 
-export const GRID_COLS = '100px 1fr 160px 100px 80px 80px';
+export const GRID_COLS = '100px 1fr 120px 100px 140px 80px';
 
 // ============================================
 // OPERATIONS MODE ROW
