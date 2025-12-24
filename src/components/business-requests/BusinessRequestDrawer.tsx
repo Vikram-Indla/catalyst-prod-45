@@ -502,7 +502,7 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
               </span>
               <button
                 onClick={handleCopyLink}
-                className="p-1 rounded hover:bg-[var(--surface-hover,hsl(var(--muted)))] transition-colors"
+                className="p-1 rounded hover:bg-[var(--surface-hover,hsl(var(--muted)))] transition-smooth press-scale"
                 style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}
                 title="Copy link"
               >
@@ -527,7 +527,7 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
                       onChange={(e) => setEditedName(e.target.value)}
                       onBlur={handleSaveName}
                       onKeyDown={handleNameKeyDown}
-                      className="text-[22px] font-semibold h-auto py-1 px-2 max-w-[480px] border-[#c69c6d] focus-visible:ring-[#c69c6d]"
+                      className="text-[22px] font-semibold h-auto py-1.5 px-2 max-w-[480px] border-[#c69c6d] focus-visible:ring-[#c69c6d]/20 focus-visible:glow-gold transition-smooth"
                       style={{ 
                         background: 'var(--surface-subtle, hsl(var(--muted)))',
                         color: 'var(--text-primary, hsl(var(--foreground)))'
@@ -543,7 +543,7 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
                       </SheetTitle>
                       <button
                         onClick={handleStartEditName}
-                        className="opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-[var(--surface-hover,hsl(var(--muted)))] transition-all"
+                        className="opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-[var(--surface-hover,hsl(var(--muted)))] transition-smooth press-scale"
                         style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}
                         title="Rename"
                       >
@@ -613,7 +613,7 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
                     <Button 
                       variant="ghost" 
                       size="icon" 
-                      className="h-8 w-8 hover:bg-[var(--surface-hover,hsl(var(--muted)))]"
+                      className="h-8 w-8 hover:bg-[var(--surface-hover,hsl(var(--muted)))] press-scale transition-smooth"
                       style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}
                     >
                       <MoreVertical className="h-4 w-4" />
@@ -621,7 +621,7 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
                   </DropdownMenuTrigger>
                   <DropdownMenuContent 
                     align="end" 
-                    className="w-48 z-[400]"
+                    className="w-48 z-[400] shadow-catalyst-lg"
                     style={{ background: 'var(--surface-bg, hsl(var(--background)))', borderColor: 'var(--border-default, hsl(var(--border)))' }}
                   >
                     <DropdownMenuItem onSelect={() => handleAdditionalOption('duplicate')}>
@@ -644,7 +644,7 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
                   variant="ghost"
                   size="icon"
                   onClick={toggleExpand}
-                  className="h-8 w-8 hover:bg-[var(--surface-hover,hsl(var(--muted)))]"
+                  className="h-8 w-8 hover:bg-[var(--surface-hover,hsl(var(--muted)))] press-scale transition-smooth"
                   style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}
                   title={isExpanded ? 'Collapse' : 'Expand'}
                 >
@@ -656,7 +656,7 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
                   variant="ghost" 
                   size="icon" 
                   onClick={handleClose}
-                  className="h-8 w-8 hover:bg-[var(--surface-hover,hsl(var(--muted)))]"
+                  className="h-8 w-8 hover:bg-[var(--surface-hover,hsl(var(--muted)))] press-scale transition-smooth"
                   style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}
                 >
                   <X className="h-4 w-4" />
