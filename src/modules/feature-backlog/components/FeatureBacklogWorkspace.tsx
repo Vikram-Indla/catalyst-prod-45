@@ -1,0 +1,281 @@
+/**
+ * FeatureBacklogWorkspace — Main workspace component
+ * Matches EpicBacklogWorkspace structure exactly
+ */
+import { useState, useCallback, useEffect } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useNavigate } from 'react-router-dom';
+import { supabase } from '@/integrations/supabase/client';
+import { FeatureBacklogHeader } from './FeatureBacklogHeader';
+import { FeatureBacklogTable } from './FeatureBacklogTable';
+import { FeatureBacklogFiltersDialog } from './FeatureBacklogFiltersDialog';
+import { FeatureBacklogColumnsDialog } from './FeatureBacklogColumnsDialog';
+import { FeatureDetailsPanel } from '@/components/items/features/FeatureDetailsPanel';
+import { fetchFeatureBacklog, fetchProgramProjects, fetchProgramEpics } from '../api/featureBacklogApi';
+import { useFeatureBacklogPreferences } from '../hooks/useFeatureBacklogPreferences';
+import { toast } from 'sonner';
+import { format } from 'date-fns';
+import type { FeatureBacklogQueryParams } from '../types';
+
+interface FeatureBacklogWorkspaceProps {
+  programId: string;
+}
+
+export function FeatureBacklogWorkspace({ programId }: FeatureBacklogWorkspaceProps) {
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const { preferences, updatePreferences } = useFeatureBacklogPreferences(programId);
+
+  // State
+  const [viewMode, setViewMode] = useState<'list' | 'kanban'>(preferences.last_view);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedFeatureId, setSelectedFeatureId] = useState<string | null>(null);
+  const [selectedItems, setSelectedItems] = useState<string[]>([]);
+  const [isFiltersOpen, setIsFiltersOpen] = useState(false);
+  const [isColumnsOpen, setIsColumnsOpen] = useState(false);
+
+  // Pagination state
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(50);
+
+  // Filter state
+  const [filters, setFilters] = useState<{
+    status?: string;
+    priority?: string;
+    projectId?: string;
+    epicId?: string;
+  }>({});
+
+  // Sort state
+  const [sortField, setSortField] = useState('updated');
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
+
+  // Sync view preference
+  useEffect(() => {
+    if (viewMode !== preferences.last_view) {
+      updatePreferences({ last_view: viewMode });
+    }
+  }, [viewMode]);
+
+  // Query params
+  const queryParams: FeatureBacklogQueryParams = {
+    programId,
+    page,
+    pageSize,
+    search: searchQuery || undefined,
+    status: filters.status,
+    priority: filters.priority,
+    projectId: filters.projectId,
+    epicId: filters.epicId,
+    sortField,
+    sortDirection,
+  };
+
+  // Fetch features (server-side pagination)
+  const { data: backlogData, isLoading, refetch } = useQuery({
+    queryKey: ['program', programId, 'feature-backlog', queryParams],
+    queryFn: () => fetchFeatureBacklog(queryParams),
+    staleTime: 0,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+  });
+
+  // Fetch filter options
+  const { data: projects } = useQuery({
+    queryKey: ['program', programId, 'projects'],
+    queryFn: () => fetchProgramProjects(programId),
+  });
+
+  const { data: epics } = useQuery({
+    queryKey: ['program', programId, 'epics'],
+    queryFn: () => fetchProgramEpics(programId),
+  });
+
+  // Realtime subscription for features
+  useEffect(() => {
+    const channel = supabase
+      .channel(`feature-backlog-${programId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'features',
+        },
+        () => {
+          // Invalidate all related queries
+          queryClient.invalidateQueries({ queryKey: ['program', programId, 'feature-backlog'] });
+          queryClient.invalidateQueries({ queryKey: ['feature-detail'] });
+          queryClient.invalidateQueries({ queryKey: ['program', programId, 'epic-backlog'] });
+          queryClient.invalidateQueries({ queryKey: ['program', programId, 'roadmaps'] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [programId, queryClient]);
+
+  // Handlers
+  const handleFeatureClick = (featureId: string) => {
+    const feature = backlogData?.items.find(f => f.id === featureId);
+    if (feature?.project_id) {
+      // Navigate to full page view
+      navigate(`/projects/${feature.project_id}/features/${featureId}`);
+    } else {
+      // Open drawer for features without project
+      setSelectedFeatureId(featureId);
+    }
+  };
+
+  const handleSort = (field: string) => {
+    if (sortField === field) {
+      setSortDirection(prev => prev === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortField(field);
+      setSortDirection('desc');
+    }
+    setPage(1);
+  };
+
+  const handleFiltersChange = (newFilters: typeof filters) => {
+    setFilters(newFilters);
+    setPage(1);
+  };
+
+  const handleSelectItem = (itemId: string, selected: boolean) => {
+    setSelectedItems(prev =>
+      selected ? [...prev, itemId] : prev.filter(id => id !== itemId)
+    );
+  };
+
+  const handleSelectAll = (selected: boolean) => {
+    if (selected) {
+      setSelectedItems(backlogData?.items.map(f => f.id) || []);
+    } else {
+      setSelectedItems([]);
+    }
+  };
+
+  const handleClearSelection = () => {
+    setSelectedItems([]);
+  };
+
+  const handleExport = useCallback(() => {
+    const items = backlogData?.items || [];
+    if (items.length === 0) {
+      toast.error('No items to export');
+      return;
+    }
+
+    try {
+      const headers = ['Key', 'Summary', 'Project', 'Epic', 'Status', 'Priority', 'Assignee', 'Updated'];
+      const rows = items.map(item => [
+        item.key,
+        item.summary.replace(/,/g, ';').replace(/\n/g, ' '),
+        item.project_name || '',
+        item.epic_name || '',
+        item.status || '',
+        item.priority || '',
+        item.assignee_name || '',
+        item.updated_at ? format(new Date(item.updated_at), 'yyyy-MM-dd') : '',
+      ]);
+
+      const csvContent = [
+        headers.join(','),
+        ...rows.map(row => row.map(cell => `"${cell}"`).join(','))
+      ].join('\n');
+
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `feature-backlog-${format(new Date(), 'yyyy-MM-dd')}.csv`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+
+      toast.success(`Exported ${items.length} features to CSV`);
+    } catch (error) {
+      console.error('Export failed:', error);
+      toast.error('Failed to export data');
+    }
+  }, [backlogData?.items]);
+
+  const totalPages = Math.ceil((backlogData?.total || 0) / pageSize);
+
+  return (
+    <div className="h-full flex flex-col bg-background">
+      <FeatureBacklogHeader
+        programId={programId}
+        viewMode={viewMode}
+        onViewModeChange={setViewMode}
+        searchQuery={searchQuery}
+        onSearchChange={setSearchQuery}
+        onOpenFilters={() => setIsFiltersOpen(true)}
+        onOpenColumns={() => setIsColumnsOpen(true)}
+        onExport={handleExport}
+        selectedCount={selectedItems.length}
+        onClearSelection={handleClearSelection}
+      />
+
+      <div className="flex-1 overflow-auto px-4 sm:px-6 pt-2 pb-4">
+        {isLoading ? (
+          <div className="flex items-center justify-center h-full">
+            <div className="text-muted-foreground">Loading...</div>
+          </div>
+        ) : (
+          <FeatureBacklogTable
+            items={backlogData?.items || []}
+            visibleColumns={preferences.visible_columns}
+            selectedItems={selectedItems}
+            onItemClick={handleFeatureClick}
+            onItemSelect={handleSelectItem}
+            onSelectAll={handleSelectAll}
+            sortField={sortField}
+            sortDirection={sortDirection}
+            onSort={handleSort}
+            page={page}
+            pageSize={pageSize}
+            totalItems={backlogData?.total || 0}
+            totalPages={totalPages}
+            onPageChange={setPage}
+            onPageSizeChange={(size) => {
+              setPageSize(size);
+              setPage(1);
+            }}
+          />
+        )}
+      </div>
+
+      {/* Feature Details Drawer */}
+      {selectedFeatureId && (
+        <FeatureDetailsPanel
+          feature={{ id: selectedFeatureId } as any}
+          open={!!selectedFeatureId}
+          onClose={() => setSelectedFeatureId(null)}
+        />
+      )}
+
+      {/* Filters Dialog */}
+      <FeatureBacklogFiltersDialog
+        open={isFiltersOpen}
+        onOpenChange={setIsFiltersOpen}
+        filters={filters}
+        onFiltersChange={handleFiltersChange}
+        projects={projects || []}
+        epics={epics || []}
+      />
+
+      {/* Columns Dialog */}
+      <FeatureBacklogColumnsDialog
+        open={isColumnsOpen}
+        onOpenChange={setIsColumnsOpen}
+        visibleColumns={preferences.visible_columns}
+        onColumnsChange={(columns) => updatePreferences({ visible_columns: columns })}
+      />
+    </div>
+  );
+}
