@@ -10,6 +10,7 @@ interface WorkItemResult {
   id: string;
   type: WorkItemType;
   key: string;
+  projectId?: string | null;
 }
 
 /**
@@ -60,7 +61,7 @@ export default function BrowsePage() {
           .maybeSingle(),
         supabase
           .from('features')
-          .select('id, display_id')
+          .select('id, display_id, project_id')
           .ilike('display_id', normalizedKey)
           .maybeSingle(),
         supabase
@@ -77,7 +78,7 @@ export default function BrowsePage() {
         idFromGeneratedKey && normalizedKey.startsWith('F-')
           ? supabase
               .from('features')
-              .select('id, display_id')
+              .select('id, display_id, project_id')
               .like('id', `${idFromGeneratedKey}%`)
               .maybeSingle()
           : Promise.resolve({ data: null, error: null }),
@@ -96,10 +97,10 @@ export default function BrowsePage() {
       if (epicResult.data) {
         result = { id: epicResult.data.id, type: 'epic', key: epicResult.data.epic_key || workItemKey };
       } else if (featureResult.data) {
-        result = { id: featureResult.data.id, type: 'feature', key: featureResult.data.display_id || workItemKey };
+        result = { id: featureResult.data.id, type: 'feature', key: featureResult.data.display_id || workItemKey, projectId: featureResult.data.project_id };
       } else if (featureByIdResult.data) {
         // Found by generated key (F-xxxxxx)
-        result = { id: featureByIdResult.data.id, type: 'feature', key: featureByIdResult.data.display_id || workItemKey };
+        result = { id: featureByIdResult.data.id, type: 'feature', key: featureByIdResult.data.display_id || workItemKey, projectId: featureByIdResult.data.project_id };
       } else if (storyResult.data) {
         result = { id: storyResult.data.id, type: 'story', key: storyResult.data.story_key || workItemKey };
       } else if (storyByIdResult.data) {
@@ -140,7 +141,13 @@ export default function BrowsePage() {
         navigate(`/items/epics?selected=${item.id}`, { replace: true });
         break;
       case 'feature':
-        navigate(`/items/features?selected=${item.id}`, { replace: true });
+        // Navigate to the new FeatureDetailPage with full-page view
+        if (item.projectId) {
+          navigate(`/projects/${item.projectId}/features/${item.id}`, { replace: true });
+        } else {
+          // Fallback to features list if no project
+          navigate(`/items/features?selected=${item.id}`, { replace: true });
+        }
         break;
       case 'story':
         navigate(`/items/stories?selected=${item.id}`, { replace: true });
