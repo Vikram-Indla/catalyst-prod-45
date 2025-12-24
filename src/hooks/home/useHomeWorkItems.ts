@@ -40,12 +40,16 @@ export interface HomeWorkItemsParams {
   userId?: string;
 }
 
+// Level hierarchy for navigation menu context
+export type HomeLevel = 'Enterprise' | 'Product' | 'Program' | 'Project' | 'Release' | 'Planner';
+
 export interface HomeWorkItem {
   id: string;
   key: string;
   summary: string;
   project: string;
   projectKey: string;
+  level: HomeLevel; // Nav menu level: Enterprise, Product, Program, Project, Release, Planner
   status: string;
   type: WorkItemType;
   domain: HomeDomain;
@@ -183,6 +187,7 @@ async function fetchOperations(params: {
     summary: inc.title,
     project: inc.project?.name || 'Unknown',
     projectKey: inc.project?.key || 'UNK',
+    level: 'Release' as HomeLevel, // Incidents are at Release level
     status: inc.status,
     type: 'defect' as WorkItemType,
     domain: 'operations' as HomeDomain,
@@ -265,6 +270,7 @@ async function fetchDelivery(params: {
       summary: s.title || s.name || 'Untitled',
       project: s.feature?.name || 'Backlog',
       projectKey: s.feature?.display_id || 'BKL',
+      level: 'Project' as HomeLevel, // Stories are at Project level
       status: s.status || s.state || 'Open',
       type: 'story' as WorkItemType,
       domain: 'delivery' as HomeDomain,
@@ -307,6 +313,7 @@ async function fetchDelivery(params: {
         summary: f.name,
         project: f.epic?.name || 'Portfolio',
         projectKey: f.epic?.epic_key || 'PRT',
+        level: 'Program' as HomeLevel, // Features are at Program level
         status: f.status || 'Open',
         type: 'feature' as WorkItemType,
         domain: 'delivery' as HomeDomain,
@@ -340,6 +347,7 @@ async function fetchDelivery(params: {
         summary: e.name,
         project: 'Portfolio',
         projectKey: 'PRT',
+        level: 'Product' as HomeLevel, // Epics are at Product level
         status: e.status || 'Open',
         type: 'epic' as WorkItemType,
         domain: 'delivery' as HomeDomain,
@@ -439,6 +447,7 @@ async function fetchPlanner(params: {
     summary: t.title,
     project: 'Work Manager',
     projectKey: 'WM',
+    level: 'Planner' as HomeLevel, // Tasks are at Planner level
     status: t.status,
     type: 'task' as WorkItemType,
     domain: 'planner' as HomeDomain,

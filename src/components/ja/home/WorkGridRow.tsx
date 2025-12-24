@@ -32,12 +32,16 @@ import type { WorkItemNavigation, WorkItemContext } from '@/hooks/home/useUnifie
 // ============================================
 // SHARED TYPES
 // ============================================
+// Level hierarchy type
+export type HomeLevel = 'Enterprise' | 'Product' | 'Program' | 'Project' | 'Release' | 'Planner';
+
 export interface BaseWorkItem {
   id: string;
   key: string;
   summary: string;
   project: string;
   projectKey: string;
+  level?: HomeLevel; // Nav menu level: Enterprise, Product, Program, Project, Release, Planner
   status: string;
   type: WorkItemType;
   assignee: string | null;
@@ -146,9 +150,9 @@ export function OperationsGridRow({
         </div>
       </div>
 
-      {/* Project - brighter in dark mode */}
+      {/* Level - brighter in dark mode */}
       <div className="text-sm truncate text-gray-600 dark:text-gray-300">
-        {item.project}
+        {item.level || 'Release'}
       </div>
 
       {/* Updated */}
@@ -373,9 +377,9 @@ export function DeliveryGridRow({
         </div>
       </div>
 
-      {/* Project - brighter in dark mode */}
+      {/* Level - brighter in dark mode */}
       <div className="text-sm truncate text-gray-600 dark:text-gray-300">
-        {item.project}
+        {item.level || 'Project'}
       </div>
 
       {/* Updated */}
@@ -558,9 +562,9 @@ export function PlannerGridRow({
         </div>
       </div>
 
-      {/* Project - brighter in dark mode */}
+      {/* Level - brighter in dark mode */}
       <div className="text-sm truncate text-gray-600 dark:text-gray-300">
-        {item.project}
+        {item.level || 'Planner'}
       </div>
 
       {/* Updated */}
