@@ -2,8 +2,8 @@
 // Route: /enterprise/roadmaps
 // Per MD spec: bar-based timeline with exact layout specifications
 
-import { useState, useCallback } from 'react';
-import { format } from 'date-fns';
+import { useState, useCallback, useMemo } from 'react';
+import { format, startOfQuarter, addQuarters, endOfQuarter } from 'date-fns';
 import { ThemeDetailsDrawer } from '@/components/backlog/ThemeDetailsDrawer';
 import { ObjectiveAnalyticsDrawer } from '@/modules/okr-v2/components/ObjectiveAnalyticsDrawer';
 import { EpicDetailsPanel } from '@/components/items/epics/EpicDetailsPanel';
@@ -89,7 +89,6 @@ function calculateTimelinePosition(startDate: string, endDate: string, yearStart
 export default function EnterpriseRoadmapsPage() {
   const [viewMode, setViewMode] = useState<'monthly' | 'quarterly' | 'yearly'>('quarterly');
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedYear] = useState(new Date().getFullYear());
   const [selectedItem, setSelectedItem] = useState<RoadmapItem | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
 
@@ -137,19 +136,29 @@ export default function EnterpriseRoadmapsPage() {
     setTimeout(() => setSelectedItem(null), 300);
   }, []);
 
-  // Timeline calculations
-  const yearStart = new Date(selectedYear, 0, 1);
-  const yearEnd = new Date(selectedYear, 11, 31);
+  // Timeline calculations - Start from current quarter and show 4 upcoming quarters
   const today = new Date();
-  const todayPercent = ((today.getTime() - yearStart.getTime()) / (yearEnd.getTime() - yearStart.getTime())) * 100;
+  const currentQuarterStart = startOfQuarter(today);
+  
+  // Generate 4 quarters starting from current quarter
+  const quarters = useMemo(() => {
+    return Array.from({ length: 4 }, (_, i) => {
+      const quarterStart = addQuarters(currentQuarterStart, i);
+      const quarterNum = Math.ceil((quarterStart.getMonth() + 1) / 3);
+      return {
+        label: `Q${quarterNum}`,
+        year: String(quarterStart.getFullYear()),
+        start: quarterStart,
+        end: endOfQuarter(quarterStart),
+      };
+    });
+  }, [currentQuarterStart]);
 
-  // Quarters for header
-  const quarters = [
-    { label: 'Q1', year: String(selectedYear) },
-    { label: 'Q2', year: String(selectedYear) },
-    { label: 'Q3', year: String(selectedYear) },
-    { label: 'Q4', year: String(selectedYear) },
-  ];
+  // Timeline range: from current quarter start to end of last displayed quarter
+  const timelineStart = quarters[0].start;
+  const timelineEnd = quarters[quarters.length - 1].end;
+  const totalMs = timelineEnd.getTime() - timelineStart.getTime();
+  const todayPercent = ((today.getTime() - timelineStart.getTime()) / totalMs) * 100;
 
   // Calculate status counts
   const statusCounts = {
@@ -220,7 +229,7 @@ export default function EnterpriseRoadmapsPage() {
         </button>
         <button className="flex items-center gap-2 px-3 py-2 text-[13px] font-medium bg-card border border-border rounded-md text-muted-foreground hover:border-brand-primary/50 transition-colors">
           <Calendar className="w-4 h-4" />
-          {selectedYear}
+          {format(today, 'yyyy')}
         </button>
         <button className="flex items-center gap-2 px-3 py-2 text-[13px] font-medium bg-card border border-border rounded-md text-muted-foreground hover:border-brand-primary/50 transition-colors">
           <Download className="w-4 h-4" />
@@ -402,8 +411,8 @@ export default function EnterpriseRoadmapsPage() {
                 const { startPercent, widthPercent } = calculateTimelinePosition(
                   item.startDate,
                   item.endDate,
-                  yearStart,
-                  yearEnd
+                  timelineStart,
+                  timelineEnd
                 );
 
                 return (
@@ -424,13 +433,17 @@ export default function EnterpriseRoadmapsPage() {
                     >
                       <div
                         className={cn(
-                          "h-full bg-brand-primary/15 rounded-md border border-border relative overflow-visible border-l-[3px]",
+                          "h-full rounded-md border border-border relative overflow-visible border-l-[3px]",
+                          config.bgClass,
                           config.borderClass
                         )}
                       >
                         {/* Progress Fill */}
                         <div
-                          className="absolute left-0 top-0 bottom-0 bg-brand-primary opacity-50 rounded-l"
+                          className={cn(
+                            "absolute left-0 top-0 bottom-0 opacity-60 rounded-l",
+                            config.dotClass
+                          )}
                           style={{ width: `${item.progress}%` }}
                         />
 
