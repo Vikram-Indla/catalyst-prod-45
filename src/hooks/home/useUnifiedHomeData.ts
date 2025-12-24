@@ -384,8 +384,7 @@ async function fetchOperationsItems(params: {
       assignee_id,
       created_at,
       updated_at,
-      project:projects!incidents_project_id_fkey(id, name, key),
-      assignee:profiles!incidents_assignee_id_fkey(id, full_name)
+      project:projects!incidents_project_id_fkey(id, name, key)
     `, { count: 'exact' })
     .is('deleted_at', null);
 
@@ -435,7 +434,7 @@ async function fetchOperationsItems(params: {
       status: incident.status,
       type: 'defect' as WorkItemType,
       domain: 'operations' as HomeDomain,
-      assignee: (incident.assignee as any)?.full_name || null,
+      assignee: null, // No FK relationship to profiles - would need separate lookup
       activityDate: new Date(incident.updated_at || incident.created_at),
       activityType: 'Updated' as const,
       severity: incident.severity,
@@ -500,8 +499,7 @@ async function fetchDeliveryItems(params: {
       blocked,
       created_at,
       updated_at,
-      feature:features(id, name, display_id),
-      assignee:profiles!stories_assignee_id_fkey(id, full_name)
+      feature:features(id, name, display_id)
     `, { count: 'exact' })
     .is('deleted_at', null);
 
@@ -553,7 +551,7 @@ async function fetchDeliveryItems(params: {
       status: story.status || story.state || 'Open',
       type: 'story' as WorkItemType,
       domain: 'delivery' as HomeDomain,
-      assignee: (story.assignee as any)?.full_name || null,
+      assignee: null, // No FK relationship to profiles - would need separate lookup
       activityDate: new Date(story.updated_at || story.created_at),
       activityType: 'Updated' as const,
       priority: story.priority,
@@ -696,8 +694,7 @@ async function fetchPlannerItems(params: {
       review_status,
       blocked,
       created_at,
-      updated_at,
-      assignee:profiles!work_manager_tasks_assignee_id_fkey(id, full_name)
+      updated_at
     `, { count: 'exact' });
 
   // Apply scope mapping for planner
@@ -779,7 +776,7 @@ async function fetchPlannerItems(params: {
       status: task.status,
       type: 'task' as WorkItemType,
       domain: 'planner' as HomeDomain,
-      assignee: (task.assignee as any)?.full_name || null,
+      assignee: null, // No FK relationship to profiles - would need separate lookup
       activityDate: new Date(task.updated_at || task.created_at),
       activityType: 'Updated' as const,
       priority: task.priority,
