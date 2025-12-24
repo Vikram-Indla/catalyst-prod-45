@@ -4,7 +4,6 @@ import {
   ChevronDown, ChevronUp, Star, MoreHorizontal, ExternalLink, CheckCircle, 
   Clock, Pin, Settings, Kanban, List, AlertTriangle, Briefcase
 } from 'lucide-react';
-import { projects, activityItems, Project, ActivityItem, groupItemsByTimePeriod } from '@/data/homePageData';
 import { WorkItemTypeIcon } from './icons/WorkItemTypeIcon';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
@@ -13,6 +12,7 @@ import { SegmentedTabs, SegmentedTab } from '@/components/ui/segmented-tabs';
 import { UnifiedToolbar } from '@/components/ui/unified-toolbar';
 import { CriticalStrip } from './home/CriticalStrip';
 import { HomeRoleModeSelector, HomeRoleMode } from './home/HomeRoleModeSelector';
+import { useHomeData, HomeWorkItem } from '@/hooks/useHomeData';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -24,17 +24,6 @@ import {
 const ITEMS_PER_PAGE = 10;
 const STORAGE_KEY_MODE = 'catalyst_home_mode';
 const STORAGE_KEY_PINNED = 'catalyst_home_pinned_projects';
-
-// ============================================
-// MOCK INCIDENT DATA (wire to real data source)
-// ============================================
-const mockIncidentData = {
-  majorIncidents: { open: 2, breached: 1, atRisk: 1 },
-  slaAtRisk: 5,
-  awaitingMe: 3,
-  blocked: 1,
-  myWorkload: { incidents: 4, workItems: 12 },
-};
 
 // ============================================
 // FOCUS WIDGET COMPONENT (Brand-aligned)
@@ -718,17 +707,8 @@ export function HomeContent() {
               />
             </div>
 
-            {/* Data Grid or Exec collapsed state */}
-            {roleMode === 'exec' && selectedTab === 'worked-on' ? (
-              <div className="mt-3 p-3 rounded-lg border border-[var(--border-color)] bg-[var(--surface-2)]">
-                <button 
-                  onClick={() => setRoleMode('delivery')}
-                  className="text-sm text-[var(--text-2)] hover:text-[var(--text-1)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)] rounded"
-                >
-                  View work items →
-                </button>
-              </div>
-            ) : selectedTab === 'starred' ? (
+            {/* Data Grid */}
+            {selectedTab === 'starred' ? (
               <div className="py-8 text-center text-sm text-[var(--text-3)]">
                 No starred items
               </div>

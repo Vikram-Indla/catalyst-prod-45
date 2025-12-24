@@ -1,7 +1,7 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
 
-export type HomeRoleMode = 'ops' | 'delivery' | 'exec';
+export type HomeRoleMode = 'operations' | 'delivery' | 'planner';
 
 interface HomeRoleModeSelectorProps {
   value: HomeRoleMode;
@@ -9,9 +9,9 @@ interface HomeRoleModeSelectorProps {
 }
 
 const modes: { value: HomeRoleMode; label: string }[] = [
-  { value: 'ops', label: 'Operations' },
+  { value: 'operations', label: 'Operations' },
   { value: 'delivery', label: 'Delivery' },
-  { value: 'exec', label: 'Approvals' },
+  { value: 'planner', label: 'Planner' },
 ];
 
 export function HomeRoleModeSelector({ value, onChange }: HomeRoleModeSelectorProps) {
