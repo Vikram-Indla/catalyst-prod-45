@@ -75,7 +75,7 @@ const TODAY = new Date();
 function generateQuarters(): Quarter[] {
   const quarters: Quarter[] = [];
   const currentYear = TODAY.getFullYear();
-  
+
   for (let year = currentYear; year <= currentYear + 1; year++) {
     for (let q = 1; q <= 4; q++) {
       const startMonth = (q - 1) * 3;
@@ -90,10 +90,24 @@ function generateQuarters(): Quarter[] {
 }
 
 const QUARTERS = generateQuarters();
+// UI renders 6 quarters (matches header/body grid). Percent math must use the same range.
+const VISIBLE_QUARTERS = QUARTERS.slice(0, 6);
 
 function parseDate(str: string | null): Date {
   if (!str) return new Date();
-  return new Date(str);
+
+  // Parse date-only strings safely (avoid locale parsing)
+  const m = str.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  const d = m
+    ? new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]))
+    : new Date(str);
+
+  if (Number.isNaN(d.getTime())) {
+    console.warn(`[Roadmap] Invalid date string: ${str}`);
+    return new Date();
+  }
+
+  return d;
 }
 
 function formatDate(date: Date | string): string {
@@ -108,15 +122,20 @@ function formatDateRange(start: string, end: string): string {
 
 function getOwnerInitials(name: string): string {
   if (!name) return '??';
-  return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+  return name
+    .split(' ')
+    .map((n) => n[0])
+    .join('')
+    .toUpperCase()
+    .slice(0, 2);
 }
 
 function getTimelineStart(): Date {
-  return QUARTERS[0].start;
+  return VISIBLE_QUARTERS[0].start;
 }
 
 function getTimelineEnd(): Date {
-  return QUARTERS[QUARTERS.length - 1].end;
+  return VISIBLE_QUARTERS[VISIBLE_QUARTERS.length - 1].end;
 }
 
 function dateToPercent(date: Date | string): number {
@@ -125,6 +144,8 @@ function dateToPercent(date: Date | string): number {
   const end = getTimelineEnd();
   const total = end.getTime() - start.getTime();
   const offset = d.getTime() - start.getTime();
+
+  if (total <= 0 || Number.isNaN(total) || Number.isNaN(offset)) return 0;
   return Math.max(0, Math.min(100, (offset / total) * 100));
 }
 
@@ -809,12 +830,12 @@ export default function IndustryRoadmapPage() {
             <div className="relative" style={{ width: '720px' }}>
               {/* Quarter labels */}
               <div className="flex h-10">
-                {QUARTERS.slice(0, 6).map((q, i) => (
+                {VISIBLE_QUARTERS.map((q, i) => (
                   <div
                     key={q.label}
                     className={cn(
                       "flex-1 h-10 flex items-center justify-center text-xs font-medium text-muted-foreground",
-                      i < 5 && "border-r border-border"
+                      i < VISIBLE_QUARTERS.length - 1 && "border-r border-border"
                     )}
                   >
                     {q.label}
@@ -857,12 +878,12 @@ export default function IndustryRoadmapPage() {
             <div className="relative" style={{ width: '720px', minHeight: '100%' }}>
               {/* Grid Lines */}
               <div className="absolute inset-0 flex pointer-events-none">
-                {QUARTERS.slice(0, 6).map((q, i) => (
+                {VISIBLE_QUARTERS.map((q, i) => (
                   <div
                     key={q.label}
                     className={cn(
                       "flex-1",
-                      i < 5 && "border-r border-border"
+                      i < VISIBLE_QUARTERS.length - 1 && "border-r border-border"
                     )}
                   />
                 ))}
