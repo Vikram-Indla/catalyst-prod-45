@@ -58,6 +58,10 @@ interface HomeProject {
 
 // Tab configurations per mode - V2: Strict domain separation
 const MODE_TABS: Record<HomeRoleMode, { value: string; label: string }[]> = {
+  all: [
+    { value: 'worked-on', label: 'Worked on' },
+    { value: 'assigned', label: 'Assigned' },
+  ],
   operations: [], // Operations has no tabs - filter-driven
   delivery: [
     { value: 'worked-on', label: 'Worked on' },
@@ -71,6 +75,7 @@ const MODE_TABS: Record<HomeRoleMode, { value: string; label: string }[]> = {
 };
 
 const DEFAULT_TABS: Record<HomeRoleMode, string> = {
+  all: 'worked-on',
   operations: 'all',
   delivery: 'worked-on',
   planner: 'planned',

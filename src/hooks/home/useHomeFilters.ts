@@ -202,7 +202,7 @@ export function countActiveHomeFilters(filters: HomeFilters): number {
 // ============================================
 // UNIFIED HOME FILTERS HOOK
 // ============================================
-export type HomeRoleMode = 'operations' | 'delivery' | 'planner';
+export type HomeRoleMode = 'all' | 'operations' | 'delivery' | 'planner';
 
 export function useHomeFilters() {
   const [searchParams, setSearchParams] = useSearchParams();
