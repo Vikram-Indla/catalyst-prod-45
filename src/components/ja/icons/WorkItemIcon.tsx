@@ -1,6 +1,12 @@
 import React from 'react';
 import { useWorkItemIconPreferences, IconStyle } from '@/hooks/useWorkItemIconPreferences';
 import type { WorkItemType } from '@/config/workItemConfig';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 
 // Icon colors that work in both light and dark modes (from Catalyst design system)
 const ICON_COLORS: Record<string, string> = {
@@ -41,36 +47,78 @@ const OUTLINE_COLORS: Record<string, string> = {
   risk: '#fb923c',
 };
 
+// Work item type labels for tooltips
+const WORK_ITEM_LABELS: Record<string, string> = {
+  theme: 'Theme',
+  objective: 'Objective',
+  'business-request': 'Business Request',
+  epic: 'Epic',
+  feature: 'Feature',
+  story: 'Story',
+  task: 'Task',
+  defect: 'Defect',
+  incident: 'Incident',
+  dependency: 'Dependency',
+  risk: 'Risk',
+};
+
 interface WorkItemIconProps {
   type: string;
   size?: number;
   className?: string;
   /** Override the icon style from preferences */
   forceStyle?: IconStyle;
+  /** Disable tooltip (useful when parent already has tooltip) */
+  hideTooltip?: boolean;
 }
 
 /**
  * Universal Work Item Icon component that respects admin-configured icon styles.
  * Automatically updates across the application when settings change.
+ * Includes tooltip showing work item type on hover.
  */
-export function WorkItemIcon({ type, size = 16, className = '', forceStyle }: WorkItemIconProps) {
+export function WorkItemIcon({ type, size = 16, className = '', forceStyle, hideTooltip = false }: WorkItemIconProps) {
   const { getIconStyle } = useWorkItemIconPreferences();
   
   const iconStyle = forceStyle || getIconStyle(type);
   const color = ICON_COLORS[type] || '#6b7280';
   const outlineColor = OUTLINE_COLORS[type] || color;
+  const label = WORK_ITEM_LABELS[type] || type.charAt(0).toUpperCase() + type.slice(1).replace(/-/g, ' ');
   
-  // Render based on icon style
+  let iconElement: React.ReactNode;
+  
   switch (iconStyle) {
     case 'filled':
-      return <FilledIcon type={type} size={size} color={color} className={className} />;
+      iconElement = <FilledIcon type={type} size={size} color={color} className={className} />;
+      break;
     case 'outline':
-      return <OutlineIcon type={type} size={size} color={outlineColor} className={className} />;
+      iconElement = <OutlineIcon type={type} size={size} color={outlineColor} className={className} />;
+      break;
     case 'minimal':
-      return <MinimalIcon type={type} size={size} color={color} className={className} />;
+      iconElement = <MinimalIcon type={type} size={size} color={color} className={className} />;
+      break;
     default:
-      return <FilledIcon type={type} size={size} color={color} className={className} />;
+      iconElement = <FilledIcon type={type} size={size} color={color} className={className} />;
   }
+  
+  if (hideTooltip) {
+    return <>{iconElement}</>;
+  }
+  
+  return (
+    <TooltipProvider delayDuration={300}>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <span className="inline-flex items-center justify-center" style={{ lineHeight: 0 }}>
+            {iconElement}
+          </span>
+        </TooltipTrigger>
+        <TooltipContent side="top" className="text-xs">
+          {label}
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  );
 }
 
 // ============================================================================
