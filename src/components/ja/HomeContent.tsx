@@ -8,7 +8,7 @@ import { WorkItemTypeIcon } from './icons/WorkItemTypeIcon';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
 import { formatDistanceToNow } from 'date-fns';
-import { SegmentedTabs, SegmentedTab } from '@/components/ui/segmented-tabs';
+import { HomeScopeTabs, HomeScopeValue } from './home/HomeScopeTabs';
 import { UnifiedToolbar } from '@/components/ui/unified-toolbar';
 import { CriticalStrip, ActiveFilter } from './home/CriticalStrip';
 import { HomeRoleModeSelector } from './home/HomeRoleModeSelector';
@@ -53,12 +53,8 @@ interface HomeProject {
   hasUrgency: boolean;
 }
 
-// Tab configurations - UNIFIED across all modes (Worked on / Assigned / Starred)
-const UNIFIED_TABS = [
-  { value: 'worked-on', label: 'Worked on' },
-  { value: 'assigned', label: 'Assigned' },
-  { value: 'starred', label: 'Starred' },
-];
+// Tab scope type imported from HomeScopeTabs
+// Using unified HomeScopeTabs component for all modes
 
 // ============================================
 // UTILITY: Group items by time period
@@ -546,16 +542,6 @@ export function HomeContent() {
     ...(mode === 'planner' ? [{ label: 'Planned date', value: 'planned-date' }] : []),
   ];
 
-  // Get tab count for display
-  const getTabCount = (tabValue: string): number => {
-    switch (tabValue) {
-      case 'worked-on': return tabCounts.workedOn;
-      case 'assigned': return tabCounts.assigned;
-      case 'starred': return tabCounts.starred;
-      default: return 0;
-    }
-  };
-
   // Mode-specific focus widgets
   const renderFocusWidgets = () => {
     switch (mode) {
@@ -709,14 +695,12 @@ export function HomeContent() {
               )}
             </div>
 
-            {/* UNIFIED tabs - same for all modes */}
-            <SegmentedTabs value={filters.scope} onValueChange={handleTabChange}>
-              {UNIFIED_TABS.map(tab => (
-                <SegmentedTab key={tab.value} value={tab.value} count={getTabCount(tab.value)}>
-                  {tab.label}
-                </SegmentedTab>
-              ))}
-            </SegmentedTabs>
+            {/* UNIFIED HomeScopeTabs - identical for all modes */}
+            <HomeScopeTabs
+              value={filters.scope as HomeScopeValue}
+              onChange={handleTabChange as (value: HomeScopeValue) => void}
+              counts={tabCounts}
+            />
 
             {/* Unified Toolbar with REAL filter drawer */}
             <div className="mt-2">
