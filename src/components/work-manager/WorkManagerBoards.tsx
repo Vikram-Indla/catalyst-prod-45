@@ -309,9 +309,9 @@ function BoardColumn({
   };
 
   return (
-    <div className="flex-shrink-0 w-[300px] min-w-[280px] bg-gradient-to-b from-stone-50 to-stone-100/50 dark:from-neutral-900 dark:to-neutral-900/80 rounded-xl flex flex-col max-h-[calc(100vh-240px)] border border-stone-200/60 dark:border-gray-800 shadow-inner-sm">
+    <div className="flex-shrink-0 w-[300px] min-w-[280px] bg-gradient-to-b from-muted/50 to-muted/30 dark:from-neutral-900 dark:to-neutral-900/80 rounded-xl flex flex-col max-h-[calc(100vh-240px)] border border-border dark:border-gray-800 shadow-inner-sm">
       {/* Column Header - with bottom gradient fade */}
-      <div className="flex items-center justify-between p-3 border-b border-stone-200/60 dark:border-gray-700 bg-gradient-to-b from-white/60 to-stone-50/30 dark:from-gray-800/30">
+      <div className="flex items-center justify-between p-3 border-b border-border dark:border-gray-700 bg-gradient-to-b from-card/60 to-muted/30 dark:from-gray-800/30">
         <div className="flex items-center gap-2">
           {column.color && (
             <div 
@@ -322,9 +322,9 @@ function BoardColumn({
           {getGroupIcon()}
           <span className={cn(
             "text-[13px] font-semibold tracking-tight",
-            column.id === 'Done' ? 'text-green-600/80 dark:text-green-400/70' : 'text-stone-800 dark:text-gray-100'
+            column.id === 'Done' ? 'text-green-600/80 dark:text-green-400/70' : 'text-foreground'
           )}>{column.name}</span>
-          <span className="px-2 py-0.5 bg-stone-200/80 dark:bg-white/10 text-stone-600 dark:text-gray-300 text-[11px] font-semibold rounded-full">
+          <span className="px-2 py-0.5 bg-muted dark:bg-white/10 text-muted-foreground dark:text-gray-300 text-[11px] font-semibold rounded-full">
             {tasks.length}
           </span>
         </div>
@@ -332,10 +332,10 @@ function BoardColumn({
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button 
-                className="p-1.5 rounded-md hover:bg-stone-200/80 dark:hover:bg-gray-700 transition-colors" 
+                className="p-1.5 rounded-md hover:bg-muted dark:hover:bg-gray-700 transition-colors" 
                 type="button"
               >
-                <MoreHorizontal className="w-4 h-4 text-stone-500" />
+                <MoreHorizontal className="w-4 h-4 text-muted-foreground" />
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-48 bg-popover shadow-elevated">

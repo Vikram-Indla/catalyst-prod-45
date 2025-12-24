@@ -245,14 +245,14 @@ export function WorkManagerInsights({ tasks }: WorkManagerInsightsProps) {
         </div>
         <div className="flex items-center gap-3">
           {/* View Mode Toggle - Premium */}
-          <div className="flex rounded-lg border border-stone-200 overflow-hidden shadow-xs">
+          <div className="flex rounded-lg border border-border dark:border-gray-700 overflow-hidden shadow-xs">
             <button
               onClick={() => setViewMode('individual')}
               className={cn(
                 'px-4 py-2 text-[12px] font-semibold transition-all duration-200',
                 viewMode === 'individual' 
                   ? 'bg-gradient-to-r from-olive-500 to-olive-600 text-white shadow-brand' 
-                  : 'bg-white text-stone-600 hover:bg-stone-50'
+                  : 'bg-card dark:bg-gray-800 text-muted-foreground hover:bg-muted dark:hover:bg-gray-700'
               )}
             >
               Individual
@@ -263,7 +263,7 @@ export function WorkManagerInsights({ tasks }: WorkManagerInsightsProps) {
                 'px-4 py-2 text-[12px] font-semibold transition-all duration-200',
                 viewMode === 'team' 
                   ? 'bg-gradient-to-r from-olive-500 to-olive-600 text-white shadow-brand' 
-                  : 'bg-white text-stone-600 hover:bg-stone-50'
+                  : 'bg-card dark:bg-gray-800 text-muted-foreground hover:bg-muted dark:hover:bg-gray-700'
               )}
             >
               Team

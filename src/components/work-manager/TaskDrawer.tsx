@@ -270,7 +270,7 @@ export function TaskDrawer({ isOpen, task, activeTab, onClose, onTabChange, onUp
                     value={currentStatus}
                     onValueChange={(v) => setLocalTask(prev => ({ ...prev, status: v as TaskStatus }))}
                   >
-                    <SelectTrigger className="w-[160px] h-8 text-[13px] bg-stone-50 border-stone-200">
+                    <SelectTrigger className="w-[160px] h-8 text-[13px] bg-muted dark:bg-input border-border">
                       <div className="flex items-center gap-2">
                         <div className={cn(
                           'w-2 h-2 rounded-full',
@@ -317,7 +317,7 @@ export function TaskDrawer({ isOpen, task, activeTab, onClose, onTabChange, onUp
                     value={localTask.assigneeId || task.assigneeId}
                     onValueChange={(v) => setLocalTask(prev => ({ ...prev, assigneeId: v }))}
                   >
-                    <SelectTrigger className="w-[220px] h-9 text-[13px] bg-stone-50 border-stone-200">
+                    <SelectTrigger className="w-[220px] h-9 text-[13px] bg-muted dark:bg-input border-border">
                       <SelectValue>
                         {assignee && (
                           <div className="flex items-center gap-2.5">
@@ -392,7 +392,7 @@ export function TaskDrawer({ isOpen, task, activeTab, onClose, onTabChange, onUp
                     value={currentPriority}
                     onValueChange={(v) => setLocalTask(prev => ({ ...prev, priority: v as Priority }))}
                   >
-                    <SelectTrigger className="w-[160px] h-8 text-[13px] bg-stone-50 border-stone-200">
+                    <SelectTrigger className="w-[160px] h-8 text-[13px] bg-muted dark:bg-input border-border">
                       <div className="flex items-center gap-2">
                         <div className={cn('w-2.5 h-2.5 rounded-full', priorityColors[currentPriority].dot)} />
                         <span>{currentPriority}</span>
@@ -417,7 +417,7 @@ export function TaskDrawer({ isOpen, task, activeTab, onClose, onTabChange, onUp
                     value={currentType}
                     onValueChange={(v) => setLocalTask(prev => ({ ...prev, type: v as TaskType }))}
                   >
-                    <SelectTrigger className="w-[160px] h-8 text-[13px] bg-stone-50 border-stone-200">
+                    <SelectTrigger className="w-[160px] h-8 text-[13px] bg-muted dark:bg-input border-border">
                       <div className="flex items-center gap-2">
                         <TypeIcon className="w-4 h-4 text-gray-500" />
                         <span>{currentType}</span>
@@ -455,7 +455,7 @@ export function TaskDrawer({ isOpen, task, activeTab, onClose, onTabChange, onUp
                     value={currentRecurrence}
                     onValueChange={(v) => setLocalTask(prev => ({ ...prev, recurrence: v as RecurrenceType }))}
                   >
-                    <SelectTrigger className="w-[160px] h-8 text-[13px] bg-stone-50 border-stone-200">
+                    <SelectTrigger className="w-[160px] h-8 text-[13px] bg-muted dark:bg-input border-border">
                       <div className="flex items-center gap-2">
                         <RefreshCw className={cn(
                           'w-3.5 h-3.5 text-gray-400 transition-all duration-300',

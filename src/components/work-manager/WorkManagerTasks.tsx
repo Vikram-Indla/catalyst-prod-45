@@ -222,8 +222,8 @@ export function WorkManagerTasks({ tasks, onOpenTask }: WorkManagerTasksProps) {
   return (
     <div className={cn(
       "rounded-xl overflow-hidden",
-      "border border-gray-200 dark:border-[#2c2c2c]",
-      "bg-white dark:bg-[#141414]",
+      "border border-border dark:border-[#2c2c2c]",
+      "bg-card dark:bg-[#141414]",
       "shadow-catalyst-sm"
     )}>
       <div className="overflow-auto max-h-[calc(100vh-220px)]">
