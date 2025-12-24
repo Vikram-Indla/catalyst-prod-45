@@ -171,6 +171,29 @@ export function useUnifiedHomeSummary(mode: HomeRoleMode, userId?: string) {
     queryKey: ['home-unified-summary', mode, userId],
     queryFn: async (): Promise<UnifiedSummary> => {
       switch (mode) {
+        case 'all': {
+          // Aggregate counts from all domains
+          const [incidentsTotal, incidentsAssigned, storiesTotal, storiesAssigned, featuresTotal, tasksPlanned, tasksUpcoming] = await Promise.all([
+            supabase.from('incidents').select('id', { count: 'exact', head: true }).is('deleted_at', null),
+            supabase.from('incidents').select('id', { count: 'exact', head: true }).is('deleted_at', null).not('assignee_id', 'is', null),
+            supabase.from('stories').select('id', { count: 'exact', head: true }).is('deleted_at', null),
+            supabase.from('stories').select('id', { count: 'exact', head: true }).is('deleted_at', null).not('assignee_id', 'is', null),
+            supabase.from('features').select('id', { count: 'exact', head: true }).is('deleted_at', null),
+            supabase.from('work_manager_tasks').select('id', { count: 'exact', head: true }).or('status.in.(Planned,In Progress),ready_for_sprint.eq.true'),
+            supabase.from('work_manager_tasks').select('id', { count: 'exact', head: true }).in('status', ['Backlog', 'On Hold']),
+          ]);
+
+          const workedOn = (incidentsTotal.count || 0) + (storiesTotal.count || 0) + (featuresTotal.count || 0) + (tasksPlanned.count || 0);
+          const assigned = (incidentsAssigned.count || 0) + (storiesAssigned.count || 0) + (tasksUpcoming.count || 0);
+
+          return {
+            workedOn,
+            assigned,
+            starred: 0,
+            total: workedOn,
+          };
+        }
+
         case 'operations': {
           const { count: totalCount } = await supabase
             .from('incidents')
@@ -256,10 +279,13 @@ export function useUnifiedHomeItems(params: UnifiedQueryParams) {
       const updatedRangeDate = getUpdatedRangeDate(filters.updatedRange);
 
       // IMPORTANT: Mode takes precedence - each mode shows ONLY its own data types
-      // Planner = only tasks, Delivery = only epics/features/stories, Operations = only incidents
-      // Domain filter is only used within Operations mode for sub-filtering
+      // All = all work items, Planner = only tasks, Delivery = only epics/features/stories, Operations = only incidents
 
       switch (mode) {
+        case 'all': {
+          return await fetchAllItems({ filters, search, sort, from, to, updatedRangeDate, userId, page, pageSize });
+        }
+
         case 'operations': {
           return await fetchOperationsItems({ filters, search, sort, from, to, updatedRangeDate, userId });
         }
