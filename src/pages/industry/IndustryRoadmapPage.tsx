@@ -1084,7 +1084,7 @@ export default function IndustryRoadmapPage() {
       
       {/* Legend Panel */}
       {legendOpen && (
-        <div className="fixed top-40 right-5 bg-background border border-border rounded-xl shadow-lg p-4 w-[200px] z-50">
+        <div className="fixed top-40 right-5 bg-background border border-border rounded-xl shadow-lg p-4 w-[220px] z-50">
           {/* Close button */}
           <button
             onClick={() => setLegendOpen(false)}
@@ -1093,23 +1093,51 @@ export default function IndustryRoadmapPage() {
             <X className="h-3.5 w-3.5" />
           </button>
           
-          {/* Request Health Section */}
+          {/* Status Section - Process Steps */}
           <div className="mb-4">
             <div className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-2.5">
-              Request Health
+              Status
             </div>
             <div className="space-y-2">
               <div className="flex items-center gap-2.5 text-xs">
-                <div className="w-3.5 h-3.5 rounded-full bg-brand-primary flex-shrink-0" />
-                <span className="text-foreground">On Track</span>
+                <div className="w-3.5 h-3.5 rounded-sm flex-shrink-0" style={{ backgroundColor: 'var(--process-new-demand)' }} />
+                <span className="text-foreground">New Demand</span>
               </div>
               <div className="flex items-center gap-2.5 text-xs">
-                <div className="w-3.5 h-3.5 rounded-full bg-secondary-bronze flex-shrink-0" />
-                <span className="text-foreground">At Risk</span>
+                <div className="w-3.5 h-3.5 rounded-sm flex-shrink-0" style={{ backgroundColor: 'var(--process-in-review)' }} />
+                <span className="text-foreground">In Review</span>
               </div>
               <div className="flex items-center gap-2.5 text-xs">
-                <div className="w-3.5 h-3.5 rounded-full bg-destructive flex-shrink-0" />
-                <span className="text-foreground">Blocked</span>
+                <div className="w-3.5 h-3.5 rounded-sm flex-shrink-0" style={{ backgroundColor: 'var(--process-ea-review)' }} />
+                <span className="text-foreground">EA Review</span>
+              </div>
+              <div className="flex items-center gap-2.5 text-xs">
+                <div className="w-3.5 h-3.5 rounded-sm flex-shrink-0" style={{ backgroundColor: 'var(--process-analyse)' }} />
+                <span className="text-foreground">Analyse</span>
+              </div>
+              <div className="flex items-center gap-2.5 text-xs">
+                <div className="w-3.5 h-3.5 rounded-sm flex-shrink-0" style={{ backgroundColor: 'var(--process-approved)' }} />
+                <span className="text-foreground">Approved</span>
+              </div>
+              <div className="flex items-center gap-2.5 text-xs">
+                <div className="w-3.5 h-3.5 rounded-sm flex-shrink-0" style={{ backgroundColor: 'var(--process-ready-to-implement)' }} />
+                <span className="text-foreground">Ready to Implement</span>
+              </div>
+              <div className="flex items-center gap-2.5 text-xs">
+                <div className="w-3.5 h-3.5 rounded-sm flex-shrink-0" style={{ backgroundColor: 'var(--process-implement)' }} />
+                <span className="text-foreground">Implement</span>
+              </div>
+              <div className="flex items-center gap-2.5 text-xs">
+                <div className="w-3.5 h-3.5 rounded-sm flex-shrink-0" style={{ backgroundColor: 'var(--process-closed)' }} />
+                <span className="text-foreground">Closed</span>
+              </div>
+              <div className="flex items-center gap-2.5 text-xs">
+                <div className="w-3.5 h-3.5 rounded-sm flex-shrink-0" style={{ backgroundColor: 'var(--process-on-hold)' }} />
+                <span className="text-foreground">On Hold</span>
+              </div>
+              <div className="flex items-center gap-2.5 text-xs">
+                <div className="w-3.5 h-3.5 rounded-sm flex-shrink-0" style={{ backgroundColor: 'var(--process-rejected)' }} />
+                <span className="text-foreground">Rejected</span>
               </div>
             </div>
           </div>
