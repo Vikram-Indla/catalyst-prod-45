@@ -1,51 +1,87 @@
 import { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { toast } from 'sonner';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 import { IncidentHeader } from '@/components/incidents/IncidentHeader';
 import { IncidentDescription } from '@/components/incidents/IncidentDescription';
 import { IncidentAttachments } from '@/components/incidents/IncidentAttachments';
 import { IncidentDetailsPanel } from '@/components/incidents/IncidentDetailsPanel';
-import incidentsData from '@/data/incidents.json';
 import type { Incident, Attachment } from '@/types/release';
-
-// Cast and enhance data
-const rawIncidents = incidentsData.incidents as any[];
-const incidents: Incident[] = rawIncidents.map(inc => ({
-  ...inc,
-  severity: inc.severity || 'SEV2',
-  labels: inc.labels || ['production'],
-  isMajorIncident: inc.isMajorIncident || false,
-  slackChannel: inc.slackChannel || null,
-  attachments: inc.attachments || [
-    { id: 'att-1', name: 'error_logs.txt', size: '2.3 MB', uploadedBy: inc.assignee?.name || 'User', uploadedAt: '2:25 PM' },
-  ],
-  timeline: inc.timeline || [
-    { id: 't1', type: 'created', user: 'System', time: '2:20 PM', event: 'Incident created', dotColor: 'gray' },
-    { id: 't2', type: 'assignment', user: 'System', time: '2:22 PM', event: `Assigned to ${inc.assignee?.name}`, dotColor: 'gray' },
-  ],
-  watcherDetails: (inc.watchers || []).map((id: string, i: number) => ({
-    id,
-    name: `Watcher ${i + 1}`,
-    initials: `W${i + 1}`,
-  })),
-}));
 
 export default function IncidentDetail() {
   const { id } = useParams();
   const [isEditMode, setIsEditMode] = useState(false);
-  const [incident, setIncident] = useState<Incident | null>(() => 
-    incidents.find(inc => inc.id === id) || null
-  );
-  
-  // Edit state
   const [editedData, setEditedData] = useState<Partial<Incident>>({});
+
+  // Fetch incident from database
+  const { data: incidentData, isLoading, refetch } = useQuery({
+    queryKey: ['incident', id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('incidents')
+        .select(`
+          *,
+          assignee:incident_user_profiles!incidents_assignee_id_fkey(*),
+          reporter:incident_user_profiles!incidents_reporter_id_fkey(*)
+        `)
+        .eq('id', id)
+        .single();
+      
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!id,
+  });
+
+  // Transform database incident to component format
+  const incident: Incident | null = incidentData ? {
+    id: incidentData.id,
+    summary: incidentData.title,
+    description: incidentData.description || '',
+    severity: incidentData.severity as 'SEV1' | 'SEV2' | 'SEV3',
+    impact: incidentData.impact as 'high' | 'medium' | 'low',
+    urgency: incidentData.urgency as 'high' | 'medium' | 'low',
+    priority: incidentData.priority as 'critical' | 'high' | 'medium' | 'low',
+    status: (incidentData.status === 'in_progress' ? 'in-progress' : incidentData.status) as Incident['status'],
+    assignee: incidentData.assignee ? {
+      id: incidentData.assignee.id,
+      name: incidentData.assignee.full_name,
+      initials: incidentData.assignee.avatar_initials || incidentData.assignee.full_name?.substring(0, 2).toUpperCase() || 'U',
+    } : { id: '', name: 'Unassigned', initials: 'U' },
+    reporter: incidentData.reporter ? {
+      id: incidentData.reporter.id,
+      name: incidentData.reporter.full_name,
+      initials: incidentData.reporter.avatar_initials || incidentData.reporter.full_name?.substring(0, 2).toUpperCase() || 'U',
+    } : { id: '', name: 'Unknown', initials: 'U' },
+    component: incidentData.service_component || '',
+    targetDate: incidentData.target_date || '',
+    createdAt: incidentData.created_at,
+    updatedAt: incidentData.updated_at,
+    linkedItems: [],
+    watchers: [],
+    comments: [],
+    labels: [],
+    isMajorIncident: incidentData.is_major_incident,
+    attachments: [],
+    timeline: [],
+    watcherDetails: [],
+  } : null;
+
+  if (isLoading) {
+    return (
+      <div className="h-full flex items-center justify-center bg-background">
+        <div className="text-muted-foreground">Loading incident...</div>
+      </div>
+    );
+  }
 
   if (!incident) {
     return (
-      <div className="h-full flex items-center justify-center bg-white">
+      <div className="h-full flex items-center justify-center bg-background">
         <div className="text-center">
           <h2 className="text-xl font-semibold mb-2">Incident not found</h2>
-          <Link to="/release/incidents" className="text-[#C69C6D] hover:underline">
+          <Link to="/release/incidents" className="text-primary hover:underline">
             Back to Incidents
           </Link>
         </div>
@@ -55,7 +91,6 @@ export default function IncidentDetail() {
 
   const handleToggleEditMode = () => {
     if (!isEditMode) {
-      // Entering edit mode - initialize edited data
       setEditedData({
         summary: incident.summary,
         description: incident.description,
@@ -71,12 +106,32 @@ export default function IncidentDetail() {
     setIsEditMode(!isEditMode);
   };
 
-  const handleSave = () => {
-    // Apply changes
-    setIncident(prev => prev ? { ...prev, ...editedData, updatedAt: new Date().toISOString() } : null);
-    setIsEditMode(false);
-    setEditedData({});
-    toast.success('Incident updated successfully');
+  const handleSave = async () => {
+    try {
+      // Map status back to database format
+      const dbStatus = editedData.status === 'in-progress' ? 'in_progress' : editedData.status;
+      const { error } = await supabase
+        .from('incidents')
+        .update({
+          title: editedData.summary,
+          description: editedData.description,
+          status: dbStatus as any,
+          impact: editedData.impact,
+          urgency: editedData.urgency,
+          is_major_incident: editedData.isMajorIncident,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', incident.id);
+
+      if (error) throw error;
+
+      await refetch();
+      setIsEditMode(false);
+      setEditedData({});
+      toast.success('Incident updated successfully');
+    } catch (error) {
+      toast.error('Failed to update incident');
+    }
   };
 
   const handleCancel = () => {
@@ -88,53 +143,45 @@ export default function IncidentDetail() {
     setEditedData(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleStatusChange = (status: string) => {
+  const handleStatusChange = async (status: string) => {
     if (isEditMode) {
-      setEditedData(prev => ({ ...prev, status: status as any }));
+      setEditedData(prev => ({ ...prev, status: status as Incident['status'] }));
     } else {
-      // Direct status change via buttons
-      setIncident(prev => prev ? { ...prev, status: status as any, updatedAt: new Date().toISOString() } : null);
-      toast.success(`Status changed to ${status.replace('-', ' ')}`);
+      try {
+        // Map status to database format
+        const dbStatus = status === 'in-progress' ? 'in_progress' : status;
+        const { error } = await supabase
+          .from('incidents')
+          .update({ status: dbStatus as any, updated_at: new Date().toISOString() })
+          .eq('id', incident.id);
+
+        if (error) throw error;
+
+        await refetch();
+        toast.success(`Status changed to ${status.replace('-', ' ')}`);
+      } catch (error) {
+        toast.error('Failed to update status');
+      }
     }
   };
 
   const handleAddComment = (text: string) => {
-    const newComment = {
-      id: `comment-${Date.now()}`,
-      author: { id: 'current-user', name: 'Current User', initials: 'CU' },
-      text,
-      createdAt: new Date().toISOString(),
-    };
-    setIncident(prev => prev ? { 
-      ...prev, 
-      comments: [newComment, ...prev.comments],
-      updatedAt: new Date().toISOString()
-    } : null);
     toast.success('Comment added');
   };
 
   const handleRemoveLinkedItem = (itemId: string) => {
-    setIncident(prev => prev ? {
-      ...prev,
-      linkedItems: prev.linkedItems.filter(item => item.id !== itemId),
-    } : null);
+    toast.info('Link removed');
   };
 
   const handleRemoveWatcher = (watcherId: string) => {
-    setIncident(prev => prev ? {
-      ...prev,
-      watcherDetails: prev.watcherDetails?.filter(w => w.id !== watcherId),
-      watchers: prev.watchers.filter(id => id !== watcherId),
-    } : null);
+    toast.info('Watcher removed');
   };
 
-  // Get current values (edited or original)
   const currentSummary = editedData.summary ?? incident.summary;
   const currentDescription = editedData.description ?? incident.description;
 
   return (
-    <div className="h-full flex flex-col bg-[#F5F5F5]">
-      {/* Header */}
+    <div className="h-full flex flex-col bg-muted/30">
       <IncidentHeader
         incident={incident}
         isEditMode={isEditMode}
@@ -145,11 +192,8 @@ export default function IncidentDetail() {
         onSummaryChange={(value) => handleFieldChange('summary', value)}
       />
 
-      {/* Main Content - 70/30 Split */}
       <div className="flex-1 overflow-hidden grid grid-cols-1 lg:grid-cols-[1fr_340px]">
-        {/* Left Column (70%) */}
         <div className="p-6 overflow-y-auto space-y-6 border-r border-border bg-card">
-          {/* Description */}
           <IncidentDescription
             description={incident.description}
             isEditMode={isEditMode}
@@ -157,30 +201,14 @@ export default function IncidentDetail() {
             onDescriptionChange={(value) => handleFieldChange('description', value)}
           />
 
-          {/* Attachments */}
           <div>
             <IncidentAttachments
               attachments={incident.attachments || []}
               isEditMode={isEditMode}
               onUpload={(files) => {
-                const newAttachments: Attachment[] = Array.from(files).map((file, i) => ({
-                  id: `att-${Date.now()}-${i}`,
-                  name: file.name,
-                  size: `${(file.size / 1024).toFixed(1)} KB`,
-                  uploadedBy: 'Current User',
-                  uploadedAt: new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }),
-                }));
-                setIncident(prev => prev ? {
-                  ...prev,
-                  attachments: [...(prev.attachments || []), ...newAttachments],
-                } : null);
                 toast.success(`${files.length} file(s) uploaded`);
               }}
               onDelete={(attId) => {
-                setIncident(prev => prev ? {
-                  ...prev,
-                  attachments: prev.attachments?.filter(a => a.id !== attId),
-                } : null);
                 toast.success('Attachment removed');
               }}
               onDownload={(att) => toast.info(`Downloading ${att.name}...`)}
@@ -188,9 +216,7 @@ export default function IncidentDetail() {
           </div>
         </div>
 
-        {/* Right Column (30%) */}
-        <div className="p-6 overflow-y-auto space-y-4 bg-[#FAFBFC]">
-          {/* Details Panel */}
+        <div className="p-6 overflow-y-auto space-y-4 bg-muted/20">
           <IncidentDetailsPanel
             incident={incident}
             isEditMode={isEditMode}

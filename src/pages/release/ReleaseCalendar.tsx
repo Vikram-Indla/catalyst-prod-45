@@ -4,22 +4,51 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
-import releasesData from '@/data/releases.json';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 import type { Release } from '@/types/release';
-
-const releases = (releasesData as { versions: Release[] }).versions;
 
 const DAYS = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
 export default function ReleaseCalendar() {
-  const [currentDate, setCurrentDate] = useState(new Date(2025, 11, 1)); // December 2025
+  const [currentDate, setCurrentDate] = useState(new Date());
   const [view, setView] = useState<'month' | 'quarter'>('month');
   const [selectedRelease, setSelectedRelease] = useState<Release | null>(null);
 
-  const today = new Date(2025, 11, 7); // December 7, 2025
+  const today = new Date();
 
-  // Get quarter start month (0, 3, 6, 9)
+  // Fetch releases from database
+  const { data: dbReleases = [] } = useQuery({
+    queryKey: ['release-versions-calendar'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('release_versions')
+        .select('*')
+        .order('release_date', { ascending: true });
+      
+      if (error) throw error;
+      return data || [];
+    },
+  });
+
+  // Transform database releases to Release type
+  const releases: Release[] = dbReleases.map(r => ({
+    id: r.id,
+    name: r.name || r.version,
+    description: '',
+    status: (r.status === 'released' ? 'released' : r.status === 'planned' ? 'unreleased' : 'unreleased') as 'unreleased' | 'released' | 'overdue',
+    project: 'Catalyst',
+    startDate: r.created_at,
+    releaseDate: r.release_date || r.created_at,
+    progress: r.status === 'released' ? 100 : 50,
+    stats: { done: 0, inProgress: 0, todo: 0, total: 0 },
+    owner: { id: '', name: '', initials: '' },
+    pipeline: { dev: 'pending', qa: 'pending', staging: 'pending', uat: 'pending', prod: 'pending' },
+    linkedItems: [],
+    releaseNotes: '',
+  }));
+
   const getQuarterStartMonth = (date: Date) => {
     return Math.floor(date.getMonth() / 3) * 3;
   };
@@ -57,9 +86,8 @@ export default function ReleaseCalendar() {
     }
 
     return days;
-  }, [currentDate]);
+  }, [currentDate, releases]);
 
-  // Quarter view data - 3 months
   const quarterMonths = useMemo(() => {
     const year = currentDate.getFullYear();
     const quarterStart = getQuarterStartMonth(currentDate);
@@ -80,7 +108,6 @@ export default function ReleaseCalendar() {
       const weeks: Array<Array<{ date: Date; isCurrentMonth: boolean; releases: Release[] }>> = [];
       let current = new Date(startDate);
       
-      // Build up to 6 weeks
       for (let w = 0; w < 6; w++) {
         const week: Array<{ date: Date; isCurrentMonth: boolean; releases: Release[] }> = [];
         for (let d = 0; d < 7; d++) {
@@ -101,7 +128,6 @@ export default function ReleaseCalendar() {
           current.setDate(current.getDate() + 1);
         }
         weeks.push(week);
-        // Stop if we've passed the last day and completed the week
         if (current > lastDay && current.getDay() === 0) break;
       }
 
@@ -113,7 +139,7 @@ export default function ReleaseCalendar() {
         weeks,
       };
     });
-  }, [currentDate]);
+  }, [currentDate, releases]);
 
   const navigateMonth = (delta: number) => {
     if (view === 'quarter') {
@@ -230,9 +256,7 @@ export default function ReleaseCalendar() {
       {/* Calendar Content */}
       <div className="flex-1 overflow-auto p-3 sm:px-4">
         {view === 'month' ? (
-          /* Month View */
           <div className="border border-border rounded-lg overflow-hidden bg-card">
-            {/* Header */}
             <div className="grid grid-cols-7 bg-muted/30">
               {DAYS.map((day) => (
                 <div
@@ -244,7 +268,6 @@ export default function ReleaseCalendar() {
               ))}
             </div>
 
-            {/* Body */}
             <div className="grid grid-cols-7">
               {calendarDays.map((day, index) => (
                 <div
@@ -290,11 +313,9 @@ export default function ReleaseCalendar() {
             </div>
           </div>
         ) : (
-          /* Quarter View - 3 months side by side */
           <div className="grid grid-cols-3 gap-3">
             {quarterMonths.map((monthData) => (
               <div key={monthData.month} className="border border-border rounded-lg overflow-hidden bg-card">
-                {/* Month Header */}
                 <div className="py-2 px-3 bg-muted/30 border-b border-border">
                   <span className="text-sm font-semibold text-foreground">{monthData.name} {monthData.year}</span>
                   {monthData.releases.length > 0 && (
@@ -304,7 +325,6 @@ export default function ReleaseCalendar() {
                   )}
                 </div>
                 
-                {/* Mini calendar header */}
                 <div className="grid grid-cols-7 bg-muted/20">
                   {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((d, i) => (
                     <div key={i} className="py-1 text-center text-[9px] font-medium text-muted-foreground">
@@ -313,7 +333,6 @@ export default function ReleaseCalendar() {
                   ))}
                 </div>
 
-                {/* Mini calendar body */}
                 <div className="p-1">
                   {monthData.weeks.map((week, weekIdx) => (
                     <div key={weekIdx} className="grid grid-cols-7">
@@ -349,7 +368,6 @@ export default function ReleaseCalendar() {
                   ))}
                 </div>
 
-                {/* Releases list for the month */}
                 {monthData.releases.length > 0 && (
                   <div className="border-t border-border p-2 space-y-1 max-h-[80px] overflow-y-auto">
                     {monthData.releases.map(release => (
@@ -372,7 +390,6 @@ export default function ReleaseCalendar() {
           </div>
         )}
 
-        {/* Selected Release - Linked Items Table (below calendar) */}
         {selectedRelease && (
           <Card className="mt-4 border-border">
             <div className="p-4 border-b border-border flex items-center justify-between">
@@ -428,13 +445,20 @@ export default function ReleaseCalendar() {
                           </span>
                         </td>
                         <td className="px-4 py-3 border-b border-border">
-                          <span className="text-sm font-mono text-muted-foreground">{item.id}</span>
+                          <span className="text-sm font-mono text-primary">{item.id}</span>
                         </td>
                         <td className="px-4 py-3 border-b border-border">
                           <span className="text-sm text-foreground">{item.summary}</span>
                         </td>
                         <td className="px-4 py-3 border-b border-border">
-                          <span className="text-sm text-muted-foreground">{item.status || '-'}</span>
+                          <span className={cn(
+                            "px-2 py-0.5 rounded text-[10px] font-medium uppercase",
+                            item.status === 'done' && "bg-green-100 text-green-700",
+                            item.status === 'in-progress' && "bg-blue-100 text-blue-700",
+                            item.status === 'todo' && "bg-gray-100 text-gray-700"
+                          )}>
+                            {item.status || 'Unknown'}
+                          </span>
                         </td>
                       </tr>
                     ))}
@@ -442,7 +466,7 @@ export default function ReleaseCalendar() {
                 </table>
               </div>
             ) : (
-              <div className="p-6 text-center text-sm text-muted-foreground">
+              <div className="p-8 text-center text-sm text-muted-foreground">
                 No linked items for this release
               </div>
             )}
