@@ -24,35 +24,35 @@ const WORK_ITEM_TYPES: WorkItemType[] = [
   'risk',
 ];
 
-// Default visibility settings based on the screenshot
+// Default visibility settings - all unchecked by default
 const DEFAULT_VISIBILITY: Record<string, Record<string, boolean>> = {
   developer: {
     theme: false, objective: false, 'business-request': false, epic: false,
-    feature: false, story: true, defect: false, incident: false, dependency: false, risk: false,
+    feature: false, story: false, defect: false, incident: false, dependency: false, risk: false,
   },
   enterprise_architect: {
-    theme: true, objective: true, 'business-request': true, epic: true,
-    feature: true, story: false, defect: false, incident: false, dependency: true, risk: true,
+    theme: false, objective: false, 'business-request': false, epic: false,
+    feature: false, story: false, defect: false, incident: false, dependency: false, risk: false,
   },
   product_manager: {
-    theme: true, objective: true, 'business-request': false, epic: true,
-    feature: true, story: false, defect: false, incident: true, dependency: true, risk: true,
+    theme: false, objective: false, 'business-request': false, epic: false,
+    feature: false, story: false, defect: false, incident: false, dependency: false, risk: false,
   },
   product_owner: {
-    theme: false, objective: false, 'business-request': true, epic: true,
-    feature: true, story: false, defect: false, incident: false, dependency: false, risk: false,
+    theme: false, objective: false, 'business-request': false, epic: false,
+    feature: false, story: false, defect: false, incident: false, dependency: false, risk: false,
   },
   project_manager: {
-    theme: false, objective: false, 'business-request': true, epic: true,
-    feature: true, story: true, defect: true, incident: true, dependency: true, risk: true,
+    theme: false, objective: false, 'business-request': false, epic: false,
+    feature: false, story: false, defect: false, incident: false, dependency: false, risk: false,
   },
   qa_tester: {
     theme: false, objective: false, 'business-request': false, epic: false,
-    feature: false, story: true, defect: false, incident: false, dependency: false, risk: false,
+    feature: false, story: false, defect: false, incident: false, dependency: false, risk: false,
   },
   super_admin: {
-    theme: true, objective: true, 'business-request': true, epic: true,
-    feature: true, story: true, defect: true, incident: true, dependency: true, risk: true,
+    theme: false, objective: false, 'business-request': false, epic: false,
+    feature: false, story: false, defect: false, incident: false, dependency: false, risk: false,
   },
 };
 
