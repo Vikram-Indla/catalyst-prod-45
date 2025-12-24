@@ -155,6 +155,9 @@ export default function CreateMenuConfig() {
                   <th className="text-left py-3 px-4 font-medium text-sm text-muted-foreground min-w-[180px]">
                     Role
                   </th>
+                  <th className="text-center py-3 px-2 font-medium text-sm min-w-[70px]">
+                    <span className="text-xs">All</span>
+                  </th>
                   {WORK_ITEM_TYPES.map(type => {
                     const config = workItemConfig[type];
                     const Icon = config.icon;
@@ -170,35 +173,60 @@ export default function CreateMenuConfig() {
                 </tr>
               </thead>
               <tbody>
-                {productRoles?.map(role => (
-                  <tr key={role.code} className="border-b hover:bg-muted/30 transition-colors">
-                    <td className="py-3 px-4">
-                      <div className="flex flex-col">
-                        <span className="font-medium text-sm">{role.name}</span>
-                        <span className="text-xs text-muted-foreground">{role.code}</span>
-                      </div>
-                    </td>
-                    {WORK_ITEM_TYPES.map(type => {
-                      const isVisible = getVisibility(role.code, type);
-                      const hasChange = pendingChanges[role.code]?.[type] !== undefined;
-                      
-                      return (
-                        <td key={type} className="text-center py-3 px-2">
-                          <div className="flex justify-center">
-                            <Checkbox
-                              checked={isVisible}
-                              onCheckedChange={() => handleToggle(role.code, type)}
-                              className={cn(
-                                'h-5 w-5',
-                                hasChange && 'ring-2 ring-amber-400 ring-offset-2'
-                              )}
-                            />
-                          </div>
-                        </td>
-                      );
-                    })}
-                  </tr>
-                ))}
+                {productRoles?.map(role => {
+                  // Check if all items are selected for this role
+                  const allSelected = WORK_ITEM_TYPES.every(type => getVisibility(role.code, type));
+                  const someSelected = WORK_ITEM_TYPES.some(type => getVisibility(role.code, type));
+                  
+                  const handleSelectAll = () => {
+                    const newValue = !allSelected;
+                    WORK_ITEM_TYPES.forEach(type => {
+                      const currentValue = getVisibility(role.code, type);
+                      if (currentValue !== newValue) {
+                        handleToggle(role.code, type);
+                      }
+                    });
+                  };
+
+                  return (
+                    <tr key={role.code} className="border-b hover:bg-muted/30 transition-colors">
+                      <td className="py-3 px-4">
+                        <div className="flex flex-col">
+                          <span className="font-medium text-sm">{role.name}</span>
+                          <span className="text-xs text-muted-foreground">{role.code}</span>
+                        </div>
+                      </td>
+                      <td className="text-center py-3 px-2">
+                        <div className="flex justify-center">
+                          <Checkbox
+                            checked={allSelected ? true : someSelected ? 'indeterminate' : false}
+                            onCheckedChange={handleSelectAll}
+                            className="h-5 w-5"
+                          />
+                        </div>
+                      </td>
+                      {WORK_ITEM_TYPES.map(type => {
+                        const isVisible = getVisibility(role.code, type);
+                        const hasChange = pendingChanges[role.code]?.[type] !== undefined;
+                        
+                        return (
+                          <td key={type} className="text-center py-3 px-2">
+                            <div className="flex justify-center">
+                              <Checkbox
+                                checked={isVisible}
+                                onCheckedChange={() => handleToggle(role.code, type)}
+                                className={cn(
+                                  'h-5 w-5',
+                                  hasChange && 'ring-2 ring-amber-400 ring-offset-2'
+                                )}
+                              />
+                            </div>
+                          </td>
+                        );
+                      })}
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
