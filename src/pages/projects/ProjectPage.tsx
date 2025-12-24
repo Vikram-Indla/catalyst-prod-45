@@ -3,16 +3,22 @@ import { useParams } from 'react-router-dom';
 import { Settings, MoreHorizontal, ChevronRight } from 'lucide-react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
-import { mockProjectData } from '../../data/mockProjectData';
 import SummaryView from './views/SummaryView';
 import ListView from './views/ListView';
 import KanbanView from './views/KanbanView';
+
+// Default project data when no real data exists
+const defaultProject = {
+  key: 'PROJ',
+  name: 'Project',
+  features: [],
+};
 
 export default function ProjectPage() {
   const { projectKey } = useParams<{ projectKey: string }>();
   const [activeTab, setActiveTab] = useState('summary');
   
-  const project = mockProjectData;
+  const project = { ...defaultProject, key: projectKey || 'PROJ', name: projectKey || 'Project' };
 
   return (
     <div className="flex flex-col min-h-screen bg-background w-full">

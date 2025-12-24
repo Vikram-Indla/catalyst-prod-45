@@ -133,7 +133,7 @@ export const incidentApi = {
     return data as unknown as Incident;
   },
 
-  async addComment(incidentId: string, content: string, commentType: CommentType = 'comment'): Promise<IncidentComment> {
+  async addComment(incidentId: string, content: string, commentType: CommentType = 'update'): Promise<IncidentComment> {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error('Not authenticated');
 
@@ -155,7 +155,7 @@ export const incidentApi = {
   async getDashboardMetrics(): Promise<IncidentDashboardMetrics> {
     const { data: incidents, error } = await supabase
       .from('incidents')
-      .select('id, status, severity, is_major_incident, created_at')
+      .select('id, status, severity, is_major_incident, created_at, support_level')
       .is('deleted_at', null);
 
     if (error) throw error;
@@ -164,24 +164,23 @@ export const incidentApi = {
     const majorIncidents = openIncidents.filter(i => i.is_major_incident);
     
     return {
-      total_open: openIncidents.length,
-      major_active: majorIncidents.length,
-      sla_breached: 0, // Would need to join with sla_records
-      sla_at_risk: 0,
-      committee_pending: 0,
-      by_severity: {
-        SEV1: openIncidents.filter(i => i.severity === 'SEV1').length,
-        SEV2: openIncidents.filter(i => i.severity === 'SEV2').length,
-        SEV3: openIncidents.filter(i => i.severity === 'SEV3').length,
-        SEV4: openIncidents.filter(i => i.severity === 'SEV4').length,
-      },
-      by_status: {
-        new: openIncidents.filter(i => i.status === 'new').length,
-        in_progress: openIncidents.filter(i => i.status === 'in_progress').length,
-        pending: openIncidents.filter(i => i.status === 'pending').length,
-        resolved: (incidents || []).filter(i => i.status === 'resolved').length,
-        closed: (incidents || []).filter(i => i.status === 'closed').length,
-      },
+      open_count: openIncidents.length,
+      major_count: majorIncidents.length,
+      sla_breached_count: 0, // Would need to join with sla_records
+      l1_count: openIncidents.filter(i => i.support_level === 'L1').length,
+      l2_count: openIncidents.filter(i => i.support_level === 'L2').length,
+      l3_count: openIncidents.filter(i => i.support_level === 'L3').length,
+      resolved_today: (incidents || []).filter(i => {
+        if (i.status !== 'resolved') return false;
+        const today = new Date().toDateString();
+        return new Date(i.created_at).toDateString() === today;
+      }).length,
+      created_today: (incidents || []).filter(i => {
+        const today = new Date().toDateString();
+        return new Date(i.created_at).toDateString() === today;
+      }).length,
+      needs_attention: [],
+      my_queue: [],
     };
   },
 
@@ -212,16 +211,26 @@ export const incidentApi = {
         const pendingCount = members.filter((m: any) => !m.vote || m.vote === 'pending').length;
         const hasVeto = members.some((m: any) => m.vote === 'vetoed');
 
+        // Map members to include added_at field
+        const mappedMembers = members.map((m: any) => ({
+          ...m,
+          added_at: m.created_at || new Date().toISOString(),
+        }));
+
         return {
           incident: incident as unknown as Incident,
-          committee,
+          committee: {
+            ...committee,
+            incident_id: committee.incident_id || incident.id,
+            members: mappedMembers,
+          },
           time_waiting_hours: getHoursAgo(incident.created_at),
           aging_hours: getHoursAgo(incident.created_at),
           approvals_count: approvedCount,
           rejections_count: rejectedCount,
           pending_count: pendingCount,
           has_veto: hasVeto,
-        };
+        } as CommitteeQueueItem;
       });
   },
 

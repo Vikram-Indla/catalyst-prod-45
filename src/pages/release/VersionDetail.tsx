@@ -90,7 +90,7 @@ export default function VersionDetail() {
               <CardTitle className="text-[15px] font-semibold">Description</CardTitle>
             </CardHeader>
             <CardContent className="p-4">
-              <p className="text-sm text-[#5C5C5C]">{release.description || 'No description provided'}</p>
+              <p className="text-sm text-[#5C5C5C]">No description provided</p>
             </CardContent>
           </Card>
 
@@ -101,7 +101,7 @@ export default function VersionDetail() {
             </CardHeader>
             <CardContent className="p-4">
               <p className="text-sm text-[#5C5C5C] whitespace-pre-wrap">
-                {release.notes || 'No release notes available'}
+                No release notes available
               </p>
             </CardContent>
           </Card>
