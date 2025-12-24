@@ -116,12 +116,15 @@ export function DemandDetailsViewTab({ data, onChange, onDirtyChange, requestId 
     const changesToSave = { ...pendingChangesRef.current };
     pendingChangesRef.current = {};
     
+    console.log('[DemandDetailsViewTab] Auto-saving changes:', changesToSave);
+    
     try {
       await updateMutation.mutateAsync({ id: requestId, data: changesToSave as Partial<BusinessRequest> });
+      console.log('[DemandDetailsViewTab] Auto-save successful');
       queryClient.invalidateQueries({ queryKey: ['business-requests'] });
       queryClient.invalidateQueries({ queryKey: ['business-request', requestId] });
     } catch (error) {
-      console.error('Auto-save failed:', error);
+      console.error('[DemandDetailsViewTab] Auto-save failed:', error);
       pendingChangesRef.current = { ...changesToSave, ...pendingChangesRef.current };
       toast.error('Auto-save failed. Changes will be retried.');
     } finally {
@@ -207,13 +210,17 @@ export function DemandDetailsViewTab({ data, onChange, onDirtyChange, requestId 
   const handleDateChange = (field: string) => (date: Date | undefined) => {
     const formattedDate = date ? format(date, 'yyyy-MM-dd') : null;
     
+    console.log(`[DemandDetailsViewTab] handleDateChange: field=${field}, formattedDate=${formattedDate}`);
+    
     // Keep end_date and impl_target_end_date in sync for Target Complete
     if (field === 'end_date') {
+      console.log('[DemandDetailsViewTab] Syncing end_date and impl_target_end_date');
       onChange('_batch', { end_date: formattedDate, impl_target_end_date: formattedDate });
       onDirtyChange?.(true);
       if (requestId) {
         pendingChangesRef.current['end_date'] = formattedDate;
         pendingChangesRef.current['impl_target_end_date'] = formattedDate;
+        console.log('[DemandDetailsViewTab] pendingChangesRef:', { ...pendingChangesRef.current });
         if (autoSaveTimeoutRef.current) clearTimeout(autoSaveTimeoutRef.current);
         autoSaveTimeoutRef.current = setTimeout(() => performAutoSave(), 1500);
       }
