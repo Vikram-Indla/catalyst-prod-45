@@ -87,9 +87,9 @@ export default function ProcessSteps() {
       <div className="p-6 space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Process Steps</h1>
+            <h1 className="text-3xl font-bold tracking-tight">BR Status</h1>
             <p className="text-muted-foreground mt-2">
-              Manage process step options for Business Requests
+              Manage status options for Business Requests
             </p>
           </div>
           <Button className="bg-brand-primary hover:bg-brand-primary-hover" onClick={openAddDialog}>
@@ -131,9 +131,9 @@ export default function ProcessSteps() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Process Step Configuration</CardTitle>
+            <CardTitle>BR Status Configuration</CardTitle>
             <CardDescription>
-              Configure process steps that appear in Business Request dropdowns and Kanban boards.
+              Configure statuses that appear in Business Request dropdowns and Kanban boards.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -141,7 +141,7 @@ export default function ProcessSteps() {
               <div className="relative flex-1">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
-                  placeholder="Search process steps..."
+                  placeholder="Search BR statuses..."
                   className="pl-10"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
@@ -171,7 +171,7 @@ export default function ProcessSteps() {
                   ) : filteredSteps.length === 0 ? (
                     <tr>
                       <td colSpan={6} className="p-3 text-center text-muted-foreground">
-                        No process steps found
+                        No BR statuses found
                       </td>
                     </tr>
                   ) : (
