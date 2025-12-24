@@ -181,6 +181,13 @@ async function fetchOperations(params: {
   const { data: incidents, count, error } = await query;
   if (error) throw error;
 
+  // Fetch assignee names
+  const assigneeIds = (incidents || []).map(i => i.assignee_id).filter(Boolean);
+  const { data: profiles } = assigneeIds.length > 0 
+    ? await supabase.from('profiles').select('id, full_name').in('id', assigneeIds)
+    : { data: [] };
+  const profileMap = new Map((profiles || []).map(p => [p.id, p.full_name]));
+
   const items: HomeWorkItem[] = (incidents || []).map(inc => ({
     id: inc.id,
     key: inc.incident_key || `INC-${inc.id.slice(0, 6)}`,
@@ -191,7 +198,7 @@ async function fetchOperations(params: {
     status: inc.status,
     type: 'defect' as WorkItemType,
     domain: 'operations' as HomeDomain,
-    assignee: inc.assignee_id,
+    assignee: inc.assignee_id ? profileMap.get(inc.assignee_id) || null : null,
     activityDate: new Date(inc.updated_at || inc.created_at),
     activityType: 'Updated' as const,
     severity: inc.severity,
@@ -263,6 +270,13 @@ async function fetchDelivery(params: {
   if (storyErr) throw storyErr;
   totalStories = storyCount || 0;
 
+  // Fetch assignee names for stories
+  const storyAssigneeIds = (stories || []).map(s => s.assignee_id).filter(Boolean);
+  const { data: storyProfiles } = storyAssigneeIds.length > 0 
+    ? await supabase.from('profiles').select('id, full_name').in('id', storyAssigneeIds)
+    : { data: [] };
+  const storyProfileMap = new Map((storyProfiles || []).map(p => [p.id, p.full_name]));
+
   (stories || []).forEach(s => {
     items.push({
       id: s.id,
@@ -274,7 +288,7 @@ async function fetchDelivery(params: {
       status: s.status || s.state || 'Open',
       type: 'story' as WorkItemType,
       domain: 'delivery' as HomeDomain,
-      assignee: s.assignee_id,
+      assignee: s.assignee_id ? storyProfileMap.get(s.assignee_id) || null : null,
       activityDate: new Date(s.updated_at || s.created_at),
       activityType: 'Updated' as const,
       priority: s.priority,
@@ -440,6 +454,12 @@ async function fetchPlanner(params: {
 
   const { data: tasks, count, error } = await query;
   if (error) throw error;
+  // Fetch assignee names for tasks
+  const taskAssigneeIds = (tasks || []).map(t => t.assignee_id).filter(Boolean);
+  const { data: taskProfiles } = taskAssigneeIds.length > 0 
+    ? await supabase.from('profiles').select('id, full_name').in('id', taskAssigneeIds)
+    : { data: [] };
+  const taskProfileMap = new Map((taskProfiles || []).map(p => [p.id, p.full_name]));
 
   const items: HomeWorkItem[] = (tasks || []).map(t => ({
     id: t.id,
@@ -451,7 +471,7 @@ async function fetchPlanner(params: {
     status: t.status,
     type: 'task' as WorkItemType,
     domain: 'planner' as HomeDomain,
-    assignee: t.assignee_id,
+    assignee: t.assignee_id ? taskProfileMap.get(t.assignee_id) || null : null,
     activityDate: new Date(t.updated_at || t.created_at),
     activityType: 'Updated' as const,
     priority: t.priority,
