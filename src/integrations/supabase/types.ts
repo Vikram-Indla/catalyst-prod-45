@@ -15616,6 +15616,30 @@ export type Database = {
           },
         ]
       }
+      work_item_icon_preferences: {
+        Row: {
+          created_at: string
+          icon_style: string
+          id: string
+          updated_at: string
+          work_item_type: string
+        }
+        Insert: {
+          created_at?: string
+          icon_style?: string
+          id?: string
+          updated_at?: string
+          work_item_type: string
+        }
+        Update: {
+          created_at?: string
+          icon_style?: string
+          id?: string
+          updated_at?: string
+          work_item_type?: string
+        }
+        Relationships: []
+      }
       work_item_key_history: {
         Row: {
           changed_at: string
