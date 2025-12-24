@@ -1,6 +1,9 @@
 // src/hooks/home/useHomeWorkItems.ts
 // UNIFIED HOME WORK ITEMS HOOK - Single source of truth for all domains
-// Implements: Operations (Incidents), Delivery (Epics/Features/Stories), Planner (Tasks)
+// Domain rules:
+// - Operations = Incidents ONLY
+// - Planner = Tasks ONLY (Work Manager tasks)  
+// - Delivery = Everything EXCEPT incidents and tasks (Epics/Features/Stories)
 
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
