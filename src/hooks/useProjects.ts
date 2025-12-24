@@ -13,6 +13,7 @@ export interface Project {
   key: string;
   program_id: string;
   status?: string;
+  is_default?: boolean;
   created_at?: string;
   updated_at?: string;
   wip_limits?: Record<string, number>;
@@ -20,6 +21,8 @@ export interface Project {
 
 export const projectKeys = {
   all: ['projects'] as const,
+  withDefault: ['projects-with-default'] as const,
+  defaultProject: ['default-project'] as const,
   one: (id: string) => [...projectKeys.all, id] as const,
 };
 
@@ -41,18 +44,39 @@ export function useProject(projectId: string) {
   });
 }
 
-// Get all projects for user
+// Get all projects for user (default project first)
 export function useProjects() {
   return useQuery({
-    queryKey: projectKeys.all,
+    queryKey: projectKeys.withDefault,
     queryFn: async () => {
       const { data, error } = await supabase
         .from('projects')
-        .select('id, name, key, description, program_id')
-        .order('name');
+        .select('id, name, key, description, program_id, status, is_default')
+        .order('is_default', { ascending: false }) // Default project first
+        .order('name', { ascending: true });
 
       if (error) throw error;
       return data as Project[];
+    },
+  });
+}
+
+// Get only the default project
+export function useDefaultProject() {
+  return useQuery({
+    queryKey: projectKeys.defaultProject,
+    queryFn: async (): Promise<Project | null> => {
+      const { data, error } = await supabase
+        .from('projects')
+        .select('id, name, key, description, program_id, status, is_default')
+        .eq('is_default', true)
+        .single();
+      
+      if (error) {
+        console.warn('No default project found:', error);
+        return null;
+      }
+      return data as Project;
     },
   });
 }

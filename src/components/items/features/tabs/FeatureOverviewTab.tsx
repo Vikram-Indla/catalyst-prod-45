@@ -6,6 +6,7 @@
  * - status, owner, health
  * - blocked + reason
  * - planned dates
+ * - project (with auto-save)
  * - Story-driven progress (read-only)
  */
 
@@ -17,9 +18,13 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
-import { CalendarIcon, AlertCircle, CheckCircle2, Clock, CircleDashed } from 'lucide-react';
+import { CalendarIcon, AlertCircle, CheckCircle2, Clock, CircleDashed, FolderKanban } from 'lucide-react';
 import type { Feature, FeatureProgress, FeatureStatus } from '@/types/feature.types';
 import { suggestFeatureStatus } from '@/hooks/useFeatureProgress';
+import { useProjects } from '@/hooks/useProjects';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 interface FeatureFormData {
   name: string;
@@ -57,9 +62,66 @@ export function FeatureOverviewTab({ feature, formData, updateField, progress }:
   // Get suggested status based on story progress
   const suggestedStatus = progress ? suggestFeatureStatus(progress, formData.status) : null;
   const showStatusSuggestion = suggestedStatus && suggestedStatus !== formData.status;
+  
+  // Fetch projects for project selector
+  const { data: projects } = useProjects();
+  const queryClient = useQueryClient();
+  
+  // Auto-save project mutation
+  const updateProjectMutation = useMutation({
+    mutationFn: async (projectId: string) => {
+      if (!feature?.id) throw new Error('No feature ID');
+      const { error } = await supabase
+        .from('features')
+        .update({ project_id: projectId } as any)
+        .eq('id', feature.id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['features'] });
+      queryClient.invalidateQueries({ queryKey: ['features-backlog'] });
+      queryClient.invalidateQueries({ queryKey: ['feature-detail'] });
+      toast.success('Project updated');
+    },
+    onError: () => {
+      toast.error('Failed to update project');
+    },
+  });
+  
+  const handleProjectChange = (projectId: string) => {
+    updateProjectMutation.mutate(projectId);
+  };
 
   return (
     <div className="space-y-6">
+      {/* Project Selector (Auto-Save) */}
+      <Card className="border-border/60">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-sm font-medium flex items-center gap-2">
+            <FolderKanban className="h-4 w-4" />
+            Project
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Select 
+            value={feature?.project_id || ''} 
+            onValueChange={handleProjectChange}
+            disabled={updateProjectMutation.isPending}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Select project" />
+            </SelectTrigger>
+            <SelectContent>
+              {projects?.map((project) => (
+                <SelectItem key={project.id} value={project.id}>
+                  {project.is_default ? `${project.name} (Default)` : project.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </CardContent>
+      </Card>
+
       {/* Story-Driven Progress (Read-Only) */}
       {progress && progress.totalStories > 0 && (
         <Card className="border-border/60">

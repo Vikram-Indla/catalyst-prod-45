@@ -2,7 +2,7 @@
  * FeatureRightRail — Collapsible right sidebar for Feature detail page
  * 
  * Sections:
- * - Details (Owner, Program, Parent Epic, Product, Department, Business Owner)
+ * - Details (Owner, Project, Program, Parent Epic, Product, Department, Business Owner)
  * - Planning (Start Date, Target Date, Release, Priority, Risk)
  * - Classification (Labels, Components, Environment)
  */
@@ -12,13 +12,19 @@ import { ChevronDown, ChevronUp, Settings, User, Calendar, Zap, Building2 } from
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { format } from 'date-fns';
+import { useProjects } from '@/hooks/useProjects';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 interface FeatureRightRailProps {
   feature: {
     id: string;
     owner_id: string | null;
     epic_id: string;
+    project_id?: string | null;
     planned_start_date: string | null;
     planned_end_date: string | null;
     health: string | null;
@@ -102,6 +108,28 @@ const MOCK_DATA = {
 };
 
 export function FeatureRightRail({ feature, collapsed, onToggleCollapse, onUpdate }: FeatureRightRailProps) {
+  const { data: projects } = useProjects();
+  const queryClient = useQueryClient();
+  
+  // Auto-save project mutation
+  const updateProjectMutation = useMutation({
+    mutationFn: async (projectId: string) => {
+      const { error } = await supabase
+        .from('features')
+        .update({ project_id: projectId } as any)
+        .eq('id', feature.id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['feature-detail'] });
+      queryClient.invalidateQueries({ queryKey: ['features'] });
+      toast.success('Project updated');
+    },
+    onError: () => {
+      toast.error('Failed to update project');
+    },
+  });
+
   if (collapsed) {
     return (
       <div className="w-10 border-l flex flex-col items-center py-4">
@@ -132,6 +160,25 @@ export function FeatureRightRail({ feature, collapsed, onToggleCollapse, onUpdat
           ) : (
             <span className="text-muted-foreground">Unassigned</span>
           )}
+        </FieldRow>
+
+        <FieldRow label="Project">
+          <Select 
+            value={feature.project_id || ''} 
+            onValueChange={(val) => updateProjectMutation.mutate(val)}
+            disabled={updateProjectMutation.isPending}
+          >
+            <SelectTrigger className="h-8 text-sm">
+              <SelectValue placeholder="Select project" />
+            </SelectTrigger>
+            <SelectContent>
+              {projects?.map((project) => (
+                <SelectItem key={project.id} value={project.id}>
+                  {project.is_default ? `${project.name} (Default)` : project.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </FieldRow>
 
         <FieldRow label="Program">
