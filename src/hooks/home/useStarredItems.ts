@@ -150,6 +150,7 @@ export function useStarredDeliveryItems() {
       const storyIds = starredItems.filter(s => s.item_type === 'story').map(s => s.item_id);
       const featureIds = starredItems.filter(s => s.item_type === 'feature').map(s => s.item_id);
       const epicIds = starredItems.filter(s => s.item_type === 'epic').map(s => s.item_id);
+      const taskIds = starredItems.filter(s => s.item_type === 'task').map(s => s.item_id);
 
       const items: any[] = [];
 
@@ -226,6 +227,32 @@ export function useStarredDeliveryItems() {
             status: epic.status || 'Open',
             type: 'epic',
             activityDate: new Date(epic.updated_at),
+            activityType: 'Updated',
+            starredAt: starredItem?.starred_at,
+          });
+        });
+      }
+
+      // Fetch tasks (from work_manager_tasks) - project = team name
+      if (taskIds.length > 0) {
+        const { data: tasks } = await supabase
+          .from('work_manager_tasks')
+          .select('id, key, title, status, priority, blocked, updated_at, assignee_id, team:teams(id, name)')
+          .in('id', taskIds);
+
+        (tasks || []).forEach(task => {
+          const starredItem = starredItems.find(s => s.item_id === task.id);
+          items.push({
+            id: task.id,
+            key: task.key || `TSK-${task.id.slice(0, 6)}`,
+            summary: task.title || 'Untitled Task',
+            project: task.team?.name || 'Work Manager',
+            projectKey: task.team?.name?.slice(0, 3).toUpperCase() || 'WMT',
+            status: task.status || 'Open',
+            type: 'task',
+            priority: task.priority,
+            blocked: task.blocked,
+            activityDate: new Date(task.updated_at),
             activityType: 'Updated',
             starredAt: starredItem?.starred_at,
           });
