@@ -419,7 +419,7 @@ export default function IncidentsListPage() {
                   onClick={() => handleRowClick(incident)}
                 >
                   <td className="px-3 py-2">
-                    <span className="font-mono text-xs font-medium text-brand-primary">
+                    <span className="font-mono text-xs font-medium text-[hsl(var(--gold-link))] hover:text-[hsl(var(--gold-link-hover))]">
                       {incident.incident_key || '-'}
                     </span>
                     {incident.is_major_incident && (
