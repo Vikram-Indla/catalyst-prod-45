@@ -215,16 +215,7 @@ export function BacklogEnterpriseTable({
         );
       },
     },
-    {
-      id: 'technicalScore',
-      header: 'Score',
-      accessor: (row) => row.technicalScore ?? row.businessScore,
-      width: '80px',
-      sortable: true,
-      render: (value) => (
-        <span className="text-sm font-medium text-right block">{value ?? '—'}</span>
-      ),
-    },
+    // Score column removed - not applicable for epic backlog
     {
       id: 'assignee',
       header: 'Assignee',
