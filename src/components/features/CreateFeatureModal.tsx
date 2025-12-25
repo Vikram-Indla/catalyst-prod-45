@@ -260,8 +260,11 @@ export function CreateFeatureModal({
       return newFeature;
     },
     onSuccess: (data) => {
+      // Invalidate all feature-related queries including backlog
       queryClient.invalidateQueries({ queryKey: ['features'] });
       queryClient.invalidateQueries({ queryKey: ['epics'] });
+      queryClient.invalidateQueries({ queryKey: ['program'] }); // Invalidates feature-backlog queries
+      queryClient.invalidateQueries({ queryKey: ['feature-backlog'] });
       
       // Clear draft
       localStorage.removeItem(DRAFT_KEY);

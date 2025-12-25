@@ -9,7 +9,16 @@ import type { FeatureBacklogQueryParams, FeatureBacklogResponse, FeatureBacklogI
 
 // Cache for program project IDs to avoid repeated lookups
 const projectIdsCache = new Map<string, { ids: string[]; timestamp: number }>();
-const CACHE_TTL = 60000; // 1 minute cache
+const CACHE_TTL = 30000; // 30 second cache (reduced for faster invalidation)
+
+// Export function to clear cache when needed
+export function clearProjectIdsCache(programId?: string) {
+  if (programId) {
+    projectIdsCache.delete(programId);
+  } else {
+    projectIdsCache.clear();
+  }
+}
 
 async function getProgramProjectIds(programId: string): Promise<string[]> {
   const now = Date.now();
