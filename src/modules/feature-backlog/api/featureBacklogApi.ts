@@ -73,9 +73,7 @@ export async function fetchFeatureBacklog(params: FeatureBacklogQueryParams): Pr
           change_number_id,
           projects!project_id(id, name, program_id),
           epics!epic_id(id, name, epic_key, primary_program_id),
-          change_numbers!change_number_id(id, number),
-          assignee:profiles!assignee_id(id, full_name),
-          owner:profiles!owner_id(id, full_name)
+          change_numbers!change_number_id(id, number)
         `);
 
     // Apply program scoping
@@ -146,7 +144,7 @@ export async function fetchFeatureBacklog(params: FeatureBacklogQueryParams): Pr
     status: f.status,
     priority: f.priority,
     assignee_id: f.assignee_id,
-    assignee_name: (f.assignee as any)?.full_name || null,
+    assignee_name: null, // No FK relationship to profiles on features table
     health: f.health,
     progress_pct: f.progress_pct,
     planned_start_date: f.planned_start_date,
@@ -154,7 +152,7 @@ export async function fetchFeatureBacklog(params: FeatureBacklogQueryParams): Pr
     created_at: f.created_at,
     updated_at: f.updated_at,
     owner_id: f.owner_id,
-    owner_name: (f.owner as any)?.full_name || null,
+    owner_name: null, // No FK relationship to profiles on features table
     change_number_id: f.change_number_id,
     change_number: (f.change_numbers as any)?.number || null,
     labels: null, // TODO: Add labels support
