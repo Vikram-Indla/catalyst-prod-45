@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -118,10 +118,14 @@ export default function DependenciesPage() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('epics')
-        .select('id, name, epic_key, program_id')
+        .select('id, name, epic_key, primary_program_id')
         .is('deleted_at', null);
       if (error) throw error;
-      return data || [];
+      // Map primary_program_id to program_id for consistency
+      return (data || []).map(e => ({
+        ...e,
+        program_id: e.primary_program_id
+      }));
     },
   });
 
@@ -199,6 +203,47 @@ export default function DependenciesPage() {
     },
     enabled: !!activeProgramId || !programId,
   });
+
+  // Real-time subscription for dependencies table
+  useEffect(() => {
+    const depsChannel = supabase
+      .channel('dependencies-realtime')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'dependencies',
+        },
+        () => {
+          // Invalidate and refetch when any dependency changes
+          queryClient.invalidateQueries({ queryKey: ['dependencies-grid'] });
+        }
+      )
+      .subscribe();
+
+    // Also subscribe to epics for real-time name/key updates
+    const epicsChannel = supabase
+      .channel('epics-realtime-deps')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'epics',
+        },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ['all-epics-lookup'] });
+          queryClient.invalidateQueries({ queryKey: ['program-epics-lookup'] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(depsChannel);
+      supabase.removeChannel(epicsChannel);
+    };
+  }, [queryClient]);
 
   // Transform dependencies with resolved work items
   const resolvedDependencies = useMemo(() => {
