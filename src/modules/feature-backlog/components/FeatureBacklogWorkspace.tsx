@@ -12,7 +12,7 @@ import { FeatureBacklogFiltersDialog } from './FeatureBacklogFiltersDialog';
 import { FeatureBacklogColumnsDialog } from './FeatureBacklogColumnsDialog';
 import { FeatureDetailsPanel } from '@/components/items/features/FeatureDetailsPanel';
 import { CreateFeatureModal } from '@/components/features/CreateFeatureModal';
-import { fetchFeatureBacklog, fetchProgramProjects, fetchProgramEpics } from '../api/featureBacklogApi';
+import { fetchFeatureBacklog, fetchProgramProjects, fetchProgramEpics, clearProjectIdsCache } from '../api/featureBacklogApi';
 import { useFeatureBacklogPreferences } from '../hooks/useFeatureBacklogPreferences';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
@@ -286,8 +286,9 @@ export function FeatureBacklogWorkspace({ programId }: FeatureBacklogWorkspacePr
         onClose={() => setIsCreateModalOpen(false)}
         onSuccess={(featureId) => {
           setIsCreateModalOpen(false);
+          // Clear cache and refetch
+          clearProjectIdsCache(programId);
           refetch();
-          toast.success('Feature created successfully');
         }}
       />
     </div>
