@@ -73,8 +73,6 @@ export async function fetchFeatureBacklog(params: FeatureBacklogQueryParams): Pr
           change_number_id,
           projects!project_id(id, name, program_id),
           epics!epic_id(id, name, epic_key, primary_program_id),
-          owner:profiles!features_owner_id_fkey(id, full_name),
-          assignee:profiles!features_assignee_id_fkey(id, full_name),
           change_numbers!change_number_id(id, number)
         `);
 
