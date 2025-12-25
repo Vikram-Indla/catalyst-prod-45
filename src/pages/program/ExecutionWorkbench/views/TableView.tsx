@@ -8,7 +8,7 @@
 
 import React, { useState } from 'react';
 import { WorkItem, HealthStatus, ItemStatus } from '../types';
-import { ChevronRight, ChevronDown, MoreHorizontal, Link2, AlertTriangle } from 'lucide-react';
+import { ChevronRight, ChevronDown, MoreHorizontal, Link2, AlertTriangle, Diamond, Puzzle, BookOpen } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import {
@@ -23,21 +23,21 @@ interface TableViewProps {
   onItemClick: (item: WorkItem) => void;
 }
 
-// Type badge component - E/F/S colored circles
+// Type badge component - Icons for Epic/Feature/Story
 function TypeBadge({ type }: { type: string }) {
-  const config: Record<string, { label: string; bgClass: string; textClass: string }> = {
-    epic: { label: 'E', bgClass: 'bg-workitem-epic/20', textClass: 'text-workitem-epic' },
-    feature: { label: 'F', bgClass: 'bg-workitem-feature/20', textClass: 'text-workitem-feature' },
-    story: { label: 'S', bgClass: 'bg-muted', textClass: 'text-muted-foreground' },
+  const config: Record<string, { Icon: typeof Diamond; bgClass: string; textClass: string }> = {
+    epic: { Icon: Diamond, bgClass: 'bg-workitem-epic/20', textClass: 'text-workitem-epic' },
+    feature: { Icon: Puzzle, bgClass: 'bg-workitem-feature/20', textClass: 'text-workitem-feature' },
+    story: { Icon: BookOpen, bgClass: 'bg-muted', textClass: 'text-muted-foreground' },
   };
-  const { label, bgClass, textClass } = config[type] || config.story;
+  const { Icon, bgClass, textClass } = config[type] || config.story;
   
   return (
     <span className={cn(
-      "inline-flex items-center justify-center w-5 h-5 rounded text-[10px] font-bold flex-shrink-0",
+      "inline-flex items-center justify-center w-5 h-5 rounded flex-shrink-0",
       bgClass, textClass
     )}>
-      {label}
+      <Icon className="h-3 w-3" />
     </span>
   );
 }
