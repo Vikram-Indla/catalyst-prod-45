@@ -1,10 +1,10 @@
 /**
  * FeatureKanbanBoard - Full Kanban board for Feature Backlog
- * Styled like Industry Kanban with DnD and real-time updates
+ * Dynamically fetches statuses from feature_statuses table with real-time sync
  */
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { DragDropContext, DropResult } from '@hello-pangea/dnd';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { FeatureBacklogItem } from '../types';
 import { FeatureKanbanColumn } from './FeatureKanbanColumn';
@@ -19,15 +19,30 @@ interface FeatureKanbanBoardProps {
   onAddFeature?: () => void;
 }
 
-// Feature statuses with Catalyst-approved colors
-const FEATURE_STATUSES = [
-  { id: 'funnel', label: 'Funnel', color: '#c8ccd0' },           // Grey (Catalyst)
-  { id: 'analyzing', label: 'Analyzing', color: '#c69c6d' },     // Gold (Catalyst)
-  { id: 'backlog', label: 'Backlog', color: '#5c7c5c' },         // Olive (Catalyst)
-  { id: 'implementing', label: 'Implementing', color: '#f59e0b' }, // Amber (status)
-  { id: 'validating', label: 'Validating', color: '#22c55e' },   // Green (status)
-  { id: 'deploying', label: 'Deploying', color: '#22c55e' },     // Green (status)
-  { id: 'done', label: 'Done', color: '#22c55e' },               // Green (status)
+// Catalyst-approved color mapping from semantic color names
+const COLOR_MAP: Record<string, string> = {
+  // Status colors
+  info: '#c8ccd0',      // Grey
+  warning: '#f59e0b',   // Amber  
+  success: '#22c55e',   // Green
+  danger: '#ef4444',    // Red
+  forest: '#22c55e',    // Green (done)
+  // Catalyst brand colors
+  gold: '#c69c6d',
+  olive: '#5c7c5c',
+  bronze: '#8b7355',
+  grey: '#c8ccd0',
+  // Fallbacks
+  default: '#c8ccd0',
+};
+
+// Fallback statuses if DB fetch fails
+const FALLBACK_STATUSES = [
+  { id: 'funnel', label: 'Funnel', color: '#c8ccd0' },
+  { id: 'analyzing', label: 'Analyzing', color: '#c69c6d' },
+  { id: 'backlog', label: 'Backlog', color: '#5c7c5c' },
+  { id: 'implementing', label: 'Implementing', color: '#f59e0b' },
+  { id: 'done', label: 'Done', color: '#22c55e' },
 ];
 
 export function FeatureKanbanBoard({
@@ -41,20 +56,57 @@ export function FeatureKanbanBoard({
   const queryClient = useQueryClient();
   const [collapsedColumns, setCollapsedColumns] = useState<string[]>([]);
 
-  // Get unique statuses from items and merge with defaults
+  // Fetch feature statuses from database
+  const { data: dbStatuses, isLoading: statusesLoading } = useQuery({
+    queryKey: ['feature-statuses'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('feature_statuses')
+        .select('*')
+        .eq('is_active', true)
+        .order('sort_order', { ascending: true });
+
+      if (error) throw error;
+      return data || [];
+    },
+    staleTime: 1000 * 60 * 5, // 5 minutes
+  });
+
+  // Real-time subscription for feature_statuses changes
+  useEffect(() => {
+    const channel = supabase
+      .channel('feature-statuses-realtime')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'feature_statuses',
+        },
+        () => {
+          // Invalidate query to refetch statuses when admin changes them
+          queryClient.invalidateQueries({ queryKey: ['feature-statuses'] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [queryClient]);
+
+  // Map DB statuses to kanban format with Catalyst colors
   const statuses = useMemo(() => {
-    const itemStatuses = new Set(items.map(item => item.status).filter(Boolean));
-    const allStatuses = new Set([...FEATURE_STATUSES.map(s => s.id), ...itemStatuses]);
-    
-    return Array.from(allStatuses).map(status => {
-      const predefined = FEATURE_STATUSES.find(s => s.id === status);
-      return predefined || {
-        id: status!,
-        label: status!.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' '),
-        color: '#6b7280'
-      };
-    });
-  }, [items]);
+    if (!dbStatuses || dbStatuses.length === 0) {
+      return FALLBACK_STATUSES;
+    }
+
+    return dbStatuses.map(status => ({
+      id: status.value,
+      label: status.label,
+      color: COLOR_MAP[status.color] || COLOR_MAP.default,
+    }));
+  }, [dbStatuses]);
 
   // Group items by status
   const itemsByStatus = useMemo(() => {
@@ -62,6 +114,14 @@ export function FeatureKanbanBoard({
     statuses.forEach(status => {
       grouped[status.id] = items.filter(item => item.status === status.id);
     });
+    
+    // Handle items with statuses not in current config (place in first column)
+    const knownStatuses = new Set(statuses.map(s => s.id));
+    const orphanedItems = items.filter(item => item.status && !knownStatuses.has(item.status));
+    if (orphanedItems.length > 0 && statuses.length > 0) {
+      grouped[statuses[0].id] = [...(grouped[statuses[0].id] || []), ...orphanedItems];
+    }
+    
     return grouped;
   }, [items, statuses]);
 
@@ -108,6 +168,14 @@ export function FeatureKanbanBoard({
     );
   };
 
+  if (statusesLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+      </div>
+    );
+  }
+
   return (
     <DragDropContext onDragEnd={handleDragEnd}>
       <div
@@ -117,7 +185,7 @@ export function FeatureKanbanBoard({
           paddingBottom: 'calc(12px + env(safe-area-inset-bottom, 0px))',
         }}
       >
-        {statuses.map(status => (
+        {statuses.map((status, index) => (
           <FeatureKanbanColumn
             key={status.id}
             columnId={status.id}
@@ -129,7 +197,7 @@ export function FeatureKanbanBoard({
             onItemSelect={onItemSelect}
             collapsed={collapsedColumns.includes(status.id)}
             onToggleCollapse={() => toggleColumnCollapse(status.id)}
-            onAddFeature={status.id === 'funnel' ? onAddFeature : undefined}
+            onAddFeature={index === 0 ? onAddFeature : undefined}
           />
         ))}
       </div>
