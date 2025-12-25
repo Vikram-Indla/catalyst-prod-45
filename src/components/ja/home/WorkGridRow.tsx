@@ -29,6 +29,7 @@ import {
 } from '@/components/ui/tooltip';
 import type { HomeRoleMode } from './HomeRoleModeSelector';
 import type { WorkItemNavigation, WorkItemContext } from '@/hooks/home/useUnifiedHomeData';
+import { LevelTag } from './LevelTag';
 
 // ============================================
 // SHARED TYPES
@@ -126,12 +127,13 @@ export function OperationsGridRow({
 
   return (
     <>
-      {/* Desktop Row */}
+      {/* Desktop Row - Gold tinted hover for Catalyst brand */}
       <div 
         className={cn(
-          "hidden md:grid items-center px-4 transition-colors cursor-pointer group",
+          "hidden md:grid items-center px-4 transition-all duration-150 cursor-pointer group",
           rowHeight,
-          isHovered && "bg-[var(--row-hover)]"
+          // Gold-tinted hover states
+          "hover:bg-[#c69c6d]/[0.05] dark:hover:bg-[#c69c6d]/[0.10]"
         )}
         style={{ 
           gridTemplateColumns: GRID_COLS,
@@ -154,13 +156,13 @@ export function OperationsGridRow({
           </div>
         </div>
 
-        {/* Level - brighter in dark mode */}
-        <div className="text-sm truncate text-gray-600 dark:text-gray-300">
-          {item.level || 'Release'}
+        {/* Level - styled tag */}
+        <div className="min-w-0">
+          <LevelTag level={item.level || 'Release'} />
         </div>
 
         {/* Updated */}
-        <div className="text-sm tabular-nums text-gray-500 dark:text-gray-400">
+        <div className="text-sm tabular-nums text-muted-foreground">
           {timeAgo} ago
         </div>
 
@@ -290,12 +292,13 @@ export function DeliveryGridRow({
 
   return (
     <>
-      {/* Desktop Row */}
+      {/* Desktop Row - Gold tinted hover for Catalyst brand */}
       <div 
         className={cn(
-          "hidden md:grid items-center px-4 transition-colors cursor-pointer group",
+          "hidden md:grid items-center px-4 transition-all duration-150 cursor-pointer group",
           rowHeight,
-          isHovered && "bg-[var(--row-hover)]"
+          // Gold-tinted hover states
+          "hover:bg-[#c69c6d]/[0.05] dark:hover:bg-[#c69c6d]/[0.10]"
         )}
         style={{ 
           gridTemplateColumns: GRID_COLS,
@@ -318,13 +321,13 @@ export function DeliveryGridRow({
           </div>
         </div>
 
-        {/* Level - brighter in dark mode */}
-        <div className="text-sm truncate text-gray-600 dark:text-gray-300">
-          {item.level || 'Project'}
+        {/* Level - styled tag */}
+        <div className="min-w-0">
+          <LevelTag level={item.level || 'Project'} />
         </div>
 
         {/* Updated */}
-        <div className="text-sm tabular-nums text-gray-500 dark:text-gray-400">
+        <div className="text-sm tabular-nums text-muted-foreground">
           {timeAgo} ago
         </div>
 
@@ -454,12 +457,13 @@ export function PlannerGridRow({
 
   return (
     <>
-      {/* Desktop Row */}
+      {/* Desktop Row - Gold tinted hover for Catalyst brand */}
       <div 
         className={cn(
-          "hidden md:grid items-center px-4 transition-colors cursor-pointer group",
+          "hidden md:grid items-center px-4 transition-all duration-150 cursor-pointer group",
           rowHeight,
-          isHovered && "bg-[var(--row-hover)]"
+          // Gold-tinted hover states
+          "hover:bg-[#c69c6d]/[0.05] dark:hover:bg-[#c69c6d]/[0.10]"
         )}
         style={{ 
           gridTemplateColumns: GRID_COLS,
@@ -482,13 +486,13 @@ export function PlannerGridRow({
           </div>
         </div>
 
-        {/* Level - brighter in dark mode */}
-        <div className="text-sm truncate text-gray-600 dark:text-gray-300">
-          {item.level || 'Planner'}
+        {/* Level - styled tag */}
+        <div className="min-w-0">
+          <LevelTag level={item.level || 'Planner'} />
         </div>
 
         {/* Updated */}
-        <div className="text-sm tabular-nums text-gray-500 dark:text-gray-400">
+        <div className="text-sm tabular-nums text-muted-foreground">
           {timeAgo} ago
         </div>
 
