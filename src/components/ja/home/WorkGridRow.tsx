@@ -69,6 +69,7 @@ export function OperationsGridRow({
   item, 
   density = 'comfortable',
   currentUserId,
+  currentUserName,
   onAssignToMe,
   onAcknowledge,
   onResolve,
@@ -76,6 +77,7 @@ export function OperationsGridRow({
   item: BaseWorkItem; 
   density?: 'compact' | 'comfortable';
   currentUserId?: string;
+  currentUserName?: string;
   onAssignToMe?: (id: string) => void;
   onAcknowledge?: (id: string) => void;
   onResolve?: (id: string) => void;
@@ -127,7 +129,9 @@ export function OperationsGridRow({
   };
 
   // Check if user can take actions
-  const isAlreadyAssignedToMe = currentUserId && item.assignee === currentUserId;
+  const isAlreadyAssignedToMe =
+    (!!currentUserName && item.assignee === currentUserName) ||
+    (!!currentUserId && item.assignee === currentUserId);
   const canAssign = !isAlreadyAssignedToMe;
   const canAcknowledge = isIncident && item.status === 'triage';
   const canResolve = isIncident && !['resolved', 'closed'].includes(item.status);
@@ -269,6 +273,7 @@ export function DeliveryGridRow({
   item, 
   density = 'comfortable',
   currentUserId,
+  currentUserName,
   isStarred = false,
   onToggleStar,
   onAssignToMe,
@@ -278,6 +283,7 @@ export function DeliveryGridRow({
   item: BaseWorkItem; 
   density?: 'compact' | 'comfortable';
   currentUserId?: string;
+  currentUserName?: string;
   isStarred?: boolean;
   onToggleStar?: (id: string) => void;
   onAssignToMe?: (id: string) => void;
@@ -291,7 +297,9 @@ export function DeliveryGridRow({
   const rowHeight = density === 'compact' ? 'py-1' : 'py-2';
   
   // Check if user can take actions
-  const isAlreadyAssignedToMe = currentUserId && item.assignee === currentUserId;
+  const isAlreadyAssignedToMe =
+    (!!currentUserName && item.assignee === currentUserName) ||
+    (!!currentUserId && item.assignee === currentUserId);
   const canAssign = !isAlreadyAssignedToMe;
   
   // Use nav.path/navPath if provided, otherwise fall back to centralized utility
@@ -451,6 +459,7 @@ export function PlannerGridRow({
   item, 
   density = 'comfortable',
   currentUserId,
+  currentUserName,
   onAssignToMe,
   onReviewItem,
   onAddNote,
@@ -460,6 +469,7 @@ export function PlannerGridRow({
   item: BaseWorkItem; 
   density?: 'compact' | 'comfortable';
   currentUserId?: string;
+  currentUserName?: string;
   onAssignToMe?: (id: string) => void;
   onReviewItem?: (id: string) => void;
   onAddNote?: (id: string) => void;
@@ -473,7 +483,9 @@ export function PlannerGridRow({
   const rowHeight = density === 'compact' ? 'py-1' : 'py-2';
   
   // Check if user can take actions
-  const isAlreadyAssignedToMe = currentUserId && item.assignee === currentUserId;
+  const isAlreadyAssignedToMe =
+    (!!currentUserName && item.assignee === currentUserName) ||
+    (!!currentUserId && item.assignee === currentUserId);
   const canAssign = !isAlreadyAssignedToMe;
   
   // Use nav.path/navPath if provided, otherwise fall back to centralized utility
@@ -632,6 +644,7 @@ export function ModeAwareGridRow({
   mode,
   density = 'comfortable',
   currentUserId,
+  currentUserName,
   isStarred = false,
   onToggleStar,
   onAssignToMe,
@@ -648,6 +661,7 @@ export function ModeAwareGridRow({
   mode: HomeRoleMode;
   density?: 'compact' | 'comfortable';
   currentUserId?: string;
+  currentUserName?: string;
   isStarred?: boolean;
   onToggleStar?: (id: string) => void;
   onAssignToMe?: (id: string) => void;
@@ -667,6 +681,7 @@ export function ModeAwareGridRow({
           item={item} 
           density={density}
           currentUserId={currentUserId}
+          currentUserName={currentUserName}
           onAssignToMe={onAssignToMe}
           onAcknowledge={onAcknowledge}
           onResolve={onResolve}
@@ -678,6 +693,7 @@ export function ModeAwareGridRow({
           item={item} 
           density={density}
           currentUserId={currentUserId}
+          currentUserName={currentUserName}
           onAssignToMe={onAssignToMe}
           onReviewItem={onReviewItem}
           onAddNote={onAddNote}
@@ -692,6 +708,7 @@ export function ModeAwareGridRow({
           item={item} 
           density={density}
           currentUserId={currentUserId}
+          currentUserName={currentUserName}
           isStarred={isStarred}
           onToggleStar={onToggleStar}
           onAssignToMe={onAssignToMe}
