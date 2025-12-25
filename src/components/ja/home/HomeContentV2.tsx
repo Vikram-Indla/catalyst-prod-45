@@ -130,6 +130,7 @@ function WorkItemsDataGrid({
   density,
   isLoading,
   currentUserId,
+  currentUserName,
   onAssignToMe,
 }: { 
   items: HomeWorkItem[];
@@ -144,6 +145,7 @@ function WorkItemsDataGrid({
   density: 'compact' | 'comfortable';
   isLoading: boolean;
   currentUserId?: string;
+  currentUserName?: string;
   onAssignToMe: (id: string, itemType: string) => void;
 }) {
   const groupedItems = groupItemsByTimePeriod(items);
@@ -241,7 +243,8 @@ function WorkItemsDataGrid({
                 mode={mode}
                 density={density}
                 currentUserId={currentUserId}
-                onAssignToMe={() => onAssignToMe(item.id, item.type)}
+                currentUserName={currentUserName}
+                onAssignToMe={() => onAssignToMe(item.id, item.domain === 'operations' ? 'incident' : item.type)}
               />
             ))}
           </div>
@@ -363,6 +366,7 @@ export function HomeContentV2() {
   const [sortBy, setSortBy] = useState<HomeSort>('updated');
   const [density, setDensity] = useState<'compact' | 'comfortable'>('comfortable');
   const [currentUserId, setCurrentUserId] = useState<string | undefined>();
+  const [currentUserName, setCurrentUserName] = useState<string | undefined>();
   const [filters, setFilters] = useState<HomeFiltersState>({
     status: [],
     priority: [],
@@ -382,6 +386,32 @@ export function HomeContentV2() {
       setCurrentUserId(data.user?.id);
     });
   }, []);
+
+  // Fetch current user's display name (used to hide "Assign to me" once assigned)
+  React.useEffect(() => {
+    let cancelled = false;
+    async function loadName() {
+      if (!currentUserId) {
+        setCurrentUserName(undefined);
+        return;
+      }
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('full_name')
+        .eq('id', currentUserId)
+        .maybeSingle();
+      if (cancelled) return;
+      if (error) {
+        setCurrentUserName(undefined);
+        return;
+      }
+      setCurrentUserName(data?.full_name || undefined);
+    }
+    loadName();
+    return () => {
+      cancelled = true;
+    };
+  }, [currentUserId]);
 
   // Debounced search for API
   const debouncedSearch = useDebounce(searchQuery, 300);
@@ -738,6 +768,7 @@ export function HomeContentV2() {
               density={density}
               isLoading={isLoading}
               currentUserId={currentUserId}
+              currentUserName={currentUserName}
               onAssignToMe={handleAssignToMe}
             />
           </div>
