@@ -48,14 +48,14 @@ export interface FeatureBacklogResponse {
 }
 
 export const FEATURE_COLUMNS = [
-  { id: 'key', label: 'Key', width: 'w-24', pinned: true },
-  { id: 'summary', label: 'Summary', width: 'min-w-[300px]', pinned: true },
-  { id: 'project', label: 'Project', width: 'w-36', pinned: false },
-  { id: 'epic', label: 'Epic', width: 'w-40', pinned: false },
-  { id: 'status', label: 'Status', width: 'w-28', pinned: false },
-  { id: 'priority', label: 'Priority', width: 'w-24', pinned: false },
-  { id: 'assignee', label: 'Assignee', width: 'w-32', pinned: false },
-  { id: 'updated', label: 'Updated', width: 'w-28', pinned: false },
+  { id: 'key', label: 'Key', width: 'w-24 min-w-[90px]', pinned: true },
+  { id: 'summary', label: 'Summary', width: 'min-w-[200px] max-w-[400px]', pinned: true },
+  { id: 'project', label: 'Project', width: 'min-w-[120px] max-w-[180px]', pinned: false },
+  { id: 'epic', label: 'Epic', width: 'min-w-[120px] max-w-[180px]', pinned: false },
+  { id: 'status', label: 'Status', width: 'w-28 min-w-[100px]', pinned: false },
+  { id: 'priority', label: 'Priority', width: 'w-24 min-w-[90px]', pinned: false },
+  { id: 'assignee', label: 'Assignee', width: 'min-w-[100px] max-w-[150px]', pinned: false },
+  { id: 'updated', label: 'Updated', width: 'w-28 min-w-[100px]', pinned: false },
 ];
 
 export const OPTIONAL_COLUMNS = [

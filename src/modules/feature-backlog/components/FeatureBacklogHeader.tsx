@@ -13,6 +13,7 @@ import {
   X,
   LayoutGrid,
   List,
+  Trash2,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -28,6 +29,7 @@ interface FeatureBacklogHeaderProps {
   onCreateClick: () => void;
   selectedCount: number;
   onClearSelection: () => void;
+  onBulkDelete?: () => void;
 }
 
 export function FeatureBacklogHeader({
@@ -42,6 +44,7 @@ export function FeatureBacklogHeader({
   onCreateClick,
   selectedCount,
   onClearSelection,
+  onBulkDelete,
 }: FeatureBacklogHeaderProps) {
   return (
     <div className="shrink-0" style={{ backgroundColor: 'var(--bg)' }}>
@@ -75,19 +78,30 @@ export function FeatureBacklogHeader({
           </h1>
         </div>
 
-        {/* Right: Selection indicator */}
+        {/* Right: Selection indicator + bulk actions */}
         {selectedCount > 0 && (
-          <div className="flex items-center gap-2 px-3 py-1 rounded-full" style={{ backgroundColor: 'var(--surface-1)' }}>
-            <span className="text-sm font-medium" style={{ color: 'var(--text-2)' }}>
-              {selectedCount} selected
-            </span>
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 px-3 py-1 rounded-full" style={{ backgroundColor: 'var(--surface-1)' }}>
+              <span className="text-sm font-medium" style={{ color: 'var(--text-2)' }}>
+                {selectedCount} selected
+              </span>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="h-5 w-5 p-0 hover:bg-transparent"
+                onClick={onClearSelection}
+              >
+                <X className="h-3.5 w-3.5" style={{ color: 'var(--icon-default)' }} />
+              </Button>
+            </div>
             <Button 
-              variant="ghost" 
-              size="sm" 
-              className="h-5 w-5 p-0 hover:bg-transparent"
-              onClick={onClearSelection}
+              variant="destructive" 
+              size="sm"
+              onClick={onBulkDelete}
+              className="gap-1.5"
             >
-              <X className="h-3.5 w-3.5" style={{ color: 'var(--icon-default)' }} />
+              <Trash2 className="h-4 w-4" />
+              Delete
             </Button>
           </div>
         )}
