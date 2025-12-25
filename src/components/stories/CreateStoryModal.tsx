@@ -44,6 +44,8 @@ interface ParentFeature {
   department_name?: string;
   release_id?: string;
   release_name?: string;
+  project_id?: string;
+  project_name?: string;
 }
 
 interface CreateStoryModalProps {
@@ -52,6 +54,7 @@ interface CreateStoryModalProps {
   parentFeature: ParentFeature;
   releases?: Array<{ id: string; name: string }>;
   teamMembers?: Array<{ id: string; full_name: string; avatar_url?: string }>;
+  projects?: Array<{ id: string; name: string }>;
 }
 
 export function CreateStoryModal({
@@ -60,6 +63,7 @@ export function CreateStoryModal({
   parentFeature,
   releases = [],
   teamMembers = [],
+  projects = [],
 }: CreateStoryModalProps) {
   const queryClient = useQueryClient();
   const [createAnother, setCreateAnother] = useState(false);
@@ -308,6 +312,33 @@ export function CreateStoryModal({
               <div>
                 <span className="text-muted-foreground">Department:</span>{' '}
                 <span>{parentFeature.department_name || 'N/A'}</span>
+              </div>
+              <div className="col-span-2">
+                <Label className="text-sm font-medium">Project</Label>
+                <Select 
+                  value={parentFeature.project_id || ''} 
+                  disabled
+                >
+                  <SelectTrigger className="mt-1">
+                    <SelectValue placeholder="No project assigned" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {projects.length > 0 ? (
+                      projects.map((project) => (
+                        <SelectItem key={project.id} value={project.id}>
+                          {project.name}
+                        </SelectItem>
+                      ))
+                    ) : parentFeature.project_id && parentFeature.project_name ? (
+                      <SelectItem value={parentFeature.project_id}>
+                        {parentFeature.project_name}
+                      </SelectItem>
+                    ) : null}
+                  </SelectContent>
+                </Select>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Project is inherited from the parent feature
+                </p>
               </div>
             </div>
           </div>
