@@ -25,6 +25,7 @@ interface FeatureBacklogHeaderProps {
   onOpenFilters: () => void;
   onOpenColumns: () => void;
   onExport: () => void;
+  onCreateClick: () => void;
   selectedCount: number;
   onClearSelection: () => void;
 }
@@ -38,6 +39,7 @@ export function FeatureBacklogHeader({
   onOpenFilters,
   onOpenColumns,
   onExport,
+  onCreateClick,
   selectedCount,
   onClearSelection,
 }: FeatureBacklogHeaderProps) {
@@ -215,6 +217,7 @@ export function FeatureBacklogHeader({
               size="icon"
               className="h-8 w-8 bg-brand-primary hover:bg-brand-primary-hover text-white"
               title="Create Feature"
+              onClick={onCreateClick}
             >
               <Plus className="h-4 w-4" />
             </Button>

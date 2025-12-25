@@ -11,6 +11,7 @@ import { FeatureBacklogTable } from './FeatureBacklogTable';
 import { FeatureBacklogFiltersDialog } from './FeatureBacklogFiltersDialog';
 import { FeatureBacklogColumnsDialog } from './FeatureBacklogColumnsDialog';
 import { FeatureDetailsPanel } from '@/components/items/features/FeatureDetailsPanel';
+import { CreateFeatureModal } from '@/components/features/CreateFeatureModal';
 import { fetchFeatureBacklog, fetchProgramProjects, fetchProgramEpics } from '../api/featureBacklogApi';
 import { useFeatureBacklogPreferences } from '../hooks/useFeatureBacklogPreferences';
 import { toast } from 'sonner';
@@ -33,6 +34,7 @@ export function FeatureBacklogWorkspace({ programId }: FeatureBacklogWorkspacePr
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
   const [isColumnsOpen, setIsColumnsOpen] = useState(false);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   // Pagination state
   const [page, setPage] = useState(1);
@@ -217,6 +219,7 @@ export function FeatureBacklogWorkspace({ programId }: FeatureBacklogWorkspacePr
         onOpenFilters={() => setIsFiltersOpen(true)}
         onOpenColumns={() => setIsColumnsOpen(true)}
         onExport={handleExport}
+        onCreateClick={() => setIsCreateModalOpen(true)}
         selectedCount={selectedItems.length}
         onClearSelection={handleClearSelection}
       />
@@ -275,6 +278,17 @@ export function FeatureBacklogWorkspace({ programId }: FeatureBacklogWorkspacePr
         onOpenChange={setIsColumnsOpen}
         visibleColumns={preferences.visible_columns}
         onColumnsChange={(columns) => updatePreferences({ visible_columns: columns })}
+      />
+
+      {/* Create Feature Modal */}
+      <CreateFeatureModal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+        onSuccess={(featureId) => {
+          setIsCreateModalOpen(false);
+          refetch();
+          toast.success('Feature created successfully');
+        }}
       />
     </div>
   );
