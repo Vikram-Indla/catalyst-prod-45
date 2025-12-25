@@ -287,7 +287,7 @@ export default function IncidentsListPage() {
               placeholder="Search incidents..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-8 h-8 text-sm bg-white border-border"
+              className="pl-8 h-8 text-sm bg-card border-border"
             />
           </div>
 
@@ -322,7 +322,7 @@ export default function IncidentsListPage() {
           </Link>
 
           {/* Pagination */}
-          <div className="flex items-center gap-1 border border-border rounded bg-white px-1 h-8">
+          <div className="flex items-center gap-1 border border-border rounded bg-card px-1 h-8">
             <Button variant="ghost" size="sm" onClick={() => goToPage(currentPage - 1)} disabled={currentPage === 1} className="h-6 w-6 p-0">
               <ChevronLeft className="h-3.5 w-3.5" />
             </Button>

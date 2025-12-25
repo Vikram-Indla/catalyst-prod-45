@@ -1,33 +1,37 @@
 /**
- * TablePill — Incident table status/severity/SLA visuals (Catalyst compliant)
+ * TablePill — Incident table status/severity/SLA visuals (theme-aware)
  *
- * Hard rules:
- * - No teal/cyan/blue/purple/pink/lime/orange/red UI states
- * - Use only Catalyst Golden Hour palette:
- *   Gold #c69c6d | Olive #5c7c5c | Bronze #8b7355 | Champagne #d4b896 | Grey #c8ccd0
+ * Rules:
+ * - Use semantic tokens (CSS vars) so dark mode stays correct
+ * - Brand colors exposed as HSL vars in index.css:
+ *   --catalyst-gold / --catalyst-olive / --catalyst-bronze / --catalyst-champagne / --catalyst-grey
  */
 
 import { cn } from '@/lib/utils';
 import { ReactNode } from 'react';
 import { AlertTriangle, CheckCircle } from 'lucide-react';
 
-const CATALYST = {
-  gold: '#c69c6d',
-  olive: '#5c7c5c',
-  bronze: '#8b7355',
-  champagne: '#d4b896',
-  grey: '#c8ccd0',
-  cream: '#faf7f1',
-  border: '#e5e0d8',
-  onyx: '#1a1a1a',
-  muted: '#6b7280',
-} as const;
-
 export interface TablePillProps {
   children: ReactNode;
   className?: string;
   style?: React.CSSProperties;
 }
+
+const brand = {
+  gold: 'hsl(var(--catalyst-gold))',
+  goldBg: 'hsl(var(--catalyst-gold) / 0.12)',
+  olive: 'hsl(var(--catalyst-olive))',
+  oliveBg: 'hsl(var(--catalyst-olive) / 0.12)',
+  bronze: 'hsl(var(--catalyst-bronze))',
+  bronzeBg: 'hsl(var(--catalyst-bronze) / 0.12)',
+  champagneBg: 'hsl(var(--catalyst-champagne) / 0.14)',
+  grey: 'hsl(var(--catalyst-grey))',
+  greyBg: 'hsl(var(--catalyst-grey) / 0.22)',
+  border: 'hsl(var(--border))',
+  foreground: 'hsl(var(--foreground))',
+  mutedFg: 'hsl(var(--muted-foreground))',
+  surface: 'hsl(var(--secondary))',
+} as const;
 
 export function TablePill({ children, className, style }: TablePillProps) {
   return (
@@ -49,15 +53,15 @@ export function TablePill({ children, className, style }: TablePillProps) {
  * Severity — dot + text only (no background pill)
  */
 export function SeverityPill({ severity }: { severity: string }) {
-  const severityColors: Record<string, string> = {
-    SEV1: CATALYST.gold,
-    SEV2: CATALYST.bronze,
-    SEV3: CATALYST.olive,
-    SEV4: CATALYST.grey,
+  const dotColor: Record<string, string> = {
+    SEV1: brand.gold,
+    SEV2: brand.bronze,
+    SEV3: brand.olive,
+    SEV4: brand.grey,
   };
 
-  const dot = severityColors[severity] || CATALYST.grey;
-  const text = severity === 'SEV4' ? CATALYST.muted : CATALYST.onyx;
+  const dot = dotColor[severity] || brand.grey;
+  const text = severity === 'SEV4' ? brand.mutedFg : brand.foreground;
 
   return (
     <div className="flex items-center gap-2">
@@ -75,78 +79,81 @@ export function SeverityPill({ severity }: { severity: string }) {
 export function StatusPill({ status }: { status: string }) {
   const normalized = status?.toLowerCase().replace(/[\s-]/g, '_');
 
-  const styles: Record<string, { label: string; bg: string; border: string; text: string; dot: string }> = {
+  const styles: Record<
+    string,
+    { label: string; bg: string; border: string; text: string; dot: string }
+  > = {
     open: {
       label: 'Open',
-      bg: CATALYST.cream,
-      border: CATALYST.gold,
-      text: CATALYST.gold,
-      dot: CATALYST.gold,
+      bg: brand.surface,
+      border: brand.gold,
+      text: brand.gold,
+      dot: brand.gold,
     },
     triage: {
       label: 'Triaging',
-      bg: 'rgba(198, 156, 109, 0.10)',
+      bg: brand.goldBg,
       border: 'transparent',
-      text: CATALYST.bronze,
-      dot: CATALYST.gold,
+      text: brand.bronze,
+      dot: brand.gold,
     },
     triaging: {
       label: 'Triaging',
-      bg: 'rgba(198, 156, 109, 0.10)',
+      bg: brand.goldBg,
       border: 'transparent',
-      text: CATALYST.bronze,
-      dot: CATALYST.gold,
+      text: brand.bronze,
+      dot: brand.gold,
     },
     to_committee: {
       label: 'Committee',
-      bg: 'rgba(200, 204, 208, 0.30)',
+      bg: brand.greyBg,
       border: 'transparent',
-      text: CATALYST.muted,
-      dot: CATALYST.grey,
+      text: brand.mutedFg,
+      dot: brand.grey,
     },
     committee: {
       label: 'Committee',
-      bg: 'rgba(200, 204, 208, 0.30)',
+      bg: brand.greyBg,
       border: 'transparent',
-      text: CATALYST.muted,
-      dot: CATALYST.grey,
+      text: brand.mutedFg,
+      dot: brand.grey,
     },
     in_progress: {
       label: 'In Progress',
-      bg: 'rgba(92, 124, 92, 0.10)',
+      bg: brand.oliveBg,
       border: 'transparent',
-      text: CATALYST.olive,
-      dot: CATALYST.olive,
+      text: brand.olive,
+      dot: brand.olive,
     },
     resolved: {
       label: 'Resolved',
-      bg: 'rgba(92, 124, 92, 0.15)',
+      bg: 'hsl(var(--catalyst-olive) / 0.16)',
       border: 'transparent',
-      text: CATALYST.olive,
-      dot: CATALYST.olive,
+      text: brand.olive,
+      dot: brand.olive,
     },
     converted: {
       label: 'Converted',
-      bg: 'rgba(200, 204, 208, 0.20)',
+      bg: 'hsl(var(--catalyst-grey) / 0.16)',
       border: 'transparent',
-      text: CATALYST.muted,
-      dot: CATALYST.grey,
+      text: brand.mutedFg,
+      dot: brand.grey,
     },
     closed: {
       label: 'Closed',
-      bg: 'rgba(200, 204, 208, 0.15)',
+      bg: 'hsl(var(--catalyst-grey) / 0.12)',
       border: 'transparent',
-      text: CATALYST.muted,
-      dot: CATALYST.grey,
+      text: brand.mutedFg,
+      dot: brand.grey,
     },
   };
 
   const cfg = styles[normalized] || {
     label: status || '—',
-    bg: 'rgba(200, 204, 208, 0.15)',
+    bg: 'hsl(var(--catalyst-grey) / 0.12)',
     border: 'transparent',
-    text: CATALYST.muted,
-    dot: CATALYST.grey,
+    text: brand.mutedFg,
+    dot: brand.grey,
   };
 
   return (
@@ -172,7 +179,7 @@ export function SlaPill({ status }: { status: string }) {
     return (
       <span
         className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold h-5"
-        style={{ backgroundColor: 'rgba(139, 115, 85, 0.12)', color: CATALYST.bronze }}
+        style={{ backgroundColor: brand.bronzeBg, color: brand.bronze }}
       >
         <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
         <span>Breached</span>
@@ -184,7 +191,7 @@ export function SlaPill({ status }: { status: string }) {
     return (
       <span
         className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold h-5"
-        style={{ backgroundColor: 'rgba(92, 124, 92, 0.12)', color: CATALYST.olive }}
+        style={{ backgroundColor: brand.oliveBg, color: brand.olive }}
       >
         <CheckCircle className="w-3.5 h-3.5 shrink-0" />
         <span>On Track</span>
@@ -195,15 +202,15 @@ export function SlaPill({ status }: { status: string }) {
   return <span className="text-[11px] text-muted-foreground leading-5">—</span>;
 }
 
-// Major — bronze emphasis (no red)
+// Major — bronze emphasis (theme-aware)
 export function MajorPill({ isMajor }: { isMajor: boolean }) {
   if (!isMajor) return <span className="text-[11px] text-muted-foreground leading-5">—</span>;
   return (
     <TablePill
       style={{
-        backgroundColor: 'rgba(139, 115, 85, 0.12)',
-        color: CATALYST.bronze,
-        border: `1px solid ${CATALYST.border}`,
+        backgroundColor: brand.bronzeBg,
+        color: brand.bronze,
+        border: `1px solid ${brand.border}`,
       }}
     >
       Major
