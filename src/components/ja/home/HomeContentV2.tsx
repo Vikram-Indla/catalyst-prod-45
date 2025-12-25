@@ -483,6 +483,7 @@ export function HomeContentV2() {
 
   // Assign to me handler
   const handleAssignToMe = useCallback(async (itemId: string, itemType: string) => {
+    console.log('[Assign to me] Starting assignment', { itemId, itemType });
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
@@ -492,7 +493,7 @@ export function HomeContentV2() {
 
       // Map item type to table name
       const tableMap: Record<string, string> = {
-        'defect': 'incidents',
+        'defect': 'defects',
         'incident': 'incidents',
         'story': 'stories',
         'feature': 'features',
@@ -500,19 +501,34 @@ export function HomeContentV2() {
         'task': 'work_manager_tasks',
       };
       
-      const tableName = tableMap[itemType] || 'stories';
+      const tableName = tableMap[itemType];
+      if (!tableName) {
+        console.error('[Assign to me] Unknown item type:', itemType);
+        toast.error(`Unknown item type: ${itemType}`);
+        return;
+      }
       
-      const { error } = await supabase
+      console.log('[Assign to me] Updating table:', tableName, 'with user:', user.id);
+      
+      const { error, data } = await supabase
         .from(tableName as any)
         .update({ assignee_id: user.id })
-        .eq('id', itemId);
+        .eq('id', itemId)
+        .select();
+
+      console.log('[Assign to me] Update result:', { error, data });
 
       if (error) throw error;
+
+      if (!data || data.length === 0) {
+        toast.error('Item not found or you do not have permission to update it');
+        return;
+      }
 
       toast.success('Item assigned to you');
       invalidateItems();
     } catch (err) {
-      console.error('Failed to assign item:', err);
+      console.error('[Assign to me] Failed to assign item:', err);
       toast.error('Failed to assign item');
     }
   }, [invalidateItems]);
