@@ -1,3 +1,7 @@
+/**
+ * BacklogHeader - Uses PageChrome-style inline breadcrumb (SECTION / Page Title)
+ * Updated to match /industry/backlog header pattern
+ */
 import { useBacklogState } from '../hooks/useBacklogState';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
