@@ -6,12 +6,12 @@
  * - Week markers in header
  * - Bar labels with key/title
  * - Milestone diamonds
- * - Health-colored bars
+ * - Status-colored bars
  * Uses semantic tokens from index.css for dark/light mode support
  */
 
 import React, { useState, useMemo } from 'react';
-import { WorkItem, HealthStatus } from '../types';
+import { WorkItem, ItemStatus } from '../types';
 import { ChevronRight, ChevronDown, Diamond } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { 
@@ -25,7 +25,6 @@ import {
   getWeek,
   startOfWeek,
   endOfWeek,
-  isSameMonth
 } from 'date-fns';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
@@ -41,6 +40,7 @@ function TypeBadge({ type }: { type: string }) {
     epic: { label: 'E', bgClass: 'bg-workitem-epic/20', textClass: 'text-workitem-epic' },
     feature: { label: 'F', bgClass: 'bg-workitem-feature/20', textClass: 'text-workitem-feature' },
     story: { label: 'S', bgClass: 'bg-muted', textClass: 'text-muted-foreground' },
+    subtask: { label: 'T', bgClass: 'bg-muted', textClass: 'text-muted-foreground' },
   };
   const { label, bgClass, textClass } = config[type] || config.story;
   
@@ -54,28 +54,28 @@ function TypeBadge({ type }: { type: string }) {
   );
 }
 
-function getHealthBarColor(health: HealthStatus): string {
-  switch (health) {
-    case 'On Track': return 'bg-secondary-green';
-    case 'At Risk': return 'bg-brand-gold';
+function getStatusBarColor(status: ItemStatus): string {
+  switch (status) {
+    case 'Done': return 'bg-secondary-green';
+    case 'In Progress': return 'bg-brand-gold';
     case 'Blocked': return 'bg-destructive';
     default: return 'bg-muted';
   }
 }
 
-function getHealthBarBg(health: HealthStatus): string {
-  switch (health) {
-    case 'On Track': return 'bg-secondary-green/30';
-    case 'At Risk': return 'bg-brand-gold/30';
+function getStatusBarBg(status: ItemStatus): string {
+  switch (status) {
+    case 'Done': return 'bg-secondary-green/30';
+    case 'In Progress': return 'bg-brand-gold/30';
     case 'Blocked': return 'bg-destructive/30';
     default: return 'bg-muted/30';
   }
 }
 
-function getHealthBorderColor(health: HealthStatus): string {
-  switch (health) {
-    case 'On Track': return 'border-secondary-green';
-    case 'At Risk': return 'border-brand-gold';
+function getStatusBorderColor(status: ItemStatus): string {
+  switch (status) {
+    case 'Done': return 'border-secondary-green';
+    case 'In Progress': return 'border-brand-gold';
     case 'Blocked': return 'border-destructive';
     default: return 'border-muted';
   }
@@ -119,6 +119,8 @@ function GanttRow({ item, depth, onItemClick, expandedIds, toggleExpand, timelin
 
   // Abbreviate title for bar label
   const barLabel = item.title.length > 15 ? item.title.slice(0, 15) + '…' : item.title;
+
+  const ownerName = item.owner?.full_name;
 
   return (
     <>
@@ -167,8 +169,8 @@ function GanttRow({ item, depth, onItemClick, expandedIds, toggleExpand, timelin
                   <div
                     className={cn(
                       "absolute top-1/2 -translate-y-1/2 h-6 rounded cursor-pointer transition-all border",
-                      getHealthBarBg(item.health),
-                      getHealthBorderColor(item.health)
+                      getStatusBarBg(item.status),
+                      getStatusBorderColor(item.status)
                     )}
                     style={{
                       left: `${barStart}%`,
@@ -181,7 +183,7 @@ function GanttRow({ item, depth, onItemClick, expandedIds, toggleExpand, timelin
                     <div 
                       className={cn(
                         "absolute left-0 top-0 bottom-0 rounded-l",
-                        getHealthBarColor(item.health)
+                        getStatusBarColor(item.status)
                       )}
                       style={{ width: `${item.progress}%` }}
                     />
@@ -200,14 +202,15 @@ function GanttRow({ item, depth, onItemClick, expandedIds, toggleExpand, timelin
                     <div className="flex items-center gap-2 text-[10px]">
                       <span className={cn(
                         "px-1.5 py-0.5 rounded text-[9px]",
-                        item.health === 'On Track' && "bg-secondary-green/20 text-secondary-green",
-                        item.health === 'At Risk' && "bg-brand-gold/20 text-brand-gold",
-                        item.health === 'Blocked' && "bg-destructive/20 text-destructive"
-                      )}>{item.health}</span>
+                        item.status === 'Done' && "bg-secondary-green/20 text-secondary-green",
+                        item.status === 'In Progress' && "bg-brand-gold/20 text-brand-gold",
+                        item.status === 'Blocked' && "bg-destructive/20 text-destructive",
+                        item.status === 'Backlog' && "bg-muted text-muted-foreground"
+                      )}>{item.status}</span>
                       <span>•</span>
                       <span>{item.progress}% complete</span>
                     </div>
-                    {item.owner && <p className="text-[10px]">Owner: {item.owner}</p>}
+                    {ownerName && <p className="text-[10px]">Owner: {ownerName}</p>}
                   </div>
                 </TooltipContent>
               </Tooltip>

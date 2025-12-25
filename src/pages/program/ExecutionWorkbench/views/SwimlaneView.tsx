@@ -6,9 +6,9 @@
  */
 
 import React, { useState, useMemo } from 'react';
-import { WorkItem, HealthStatus } from '../types';
+import { WorkItem, ItemStatus } from '../types';
 import { cn } from '@/lib/utils';
-import { ChevronRight, ChevronDown, Square, Gem, FileText, User } from 'lucide-react';
+import { ChevronRight, ChevronDown, Square, Gem, FileText } from 'lucide-react';
 
 interface SwimlaneViewProps {
   items: WorkItem[];
@@ -19,20 +19,20 @@ interface SwimlaneViewProps {
    HELPER FUNCTIONS
    ══════════════════════════════════════════════════════════ */
 
-function getHealthDotClass(health: HealthStatus): string {
-  switch (health) {
-    case 'On Track': return 'bg-[var(--status-success)]';
-    case 'At Risk': return 'bg-[var(--status-warning)]';
+function getStatusDotClass(status: ItemStatus): string {
+  switch (status) {
+    case 'Done': return 'bg-[var(--status-success)]';
+    case 'In Progress': return 'bg-[var(--status-warning)]';
     case 'Blocked': return 'bg-[var(--status-danger)]';
     default: return 'bg-[var(--text-muted)]';
   }
 }
 
-function getHealthBadgeClass(health: HealthStatus): string {
-  switch (health) {
-    case 'On Track': 
+function getStatusBadgeClass(status: ItemStatus): string {
+  switch (status) {
+    case 'Done': 
       return 'bg-[var(--status-success-bg)] text-[var(--status-success)] border-[var(--status-success-border,var(--status-success-bg))]';
-    case 'At Risk': 
+    case 'In Progress': 
       return 'bg-[var(--status-warning-bg)] text-[var(--status-warning)] border-[var(--status-warning-border,var(--status-warning-bg))]';
     case 'Blocked': 
       return 'bg-[var(--status-danger-bg)] text-[var(--status-danger)] border-[var(--status-danger-border,var(--status-danger-bg))]';
@@ -41,16 +41,16 @@ function getHealthBadgeClass(health: HealthStatus): string {
   }
 }
 
-function getProgressBarClass(health: HealthStatus): string {
-  switch (health) {
-    case 'On Track': return 'bg-[var(--status-success)]';
-    case 'At Risk': return 'bg-[var(--status-warning)]';
+function getProgressBarClass(status: ItemStatus): string {
+  switch (status) {
+    case 'Done': return 'bg-[var(--status-success)]';
+    case 'In Progress': return 'bg-[var(--status-warning)]';
     case 'Blocked': return 'bg-[var(--status-danger)]';
     default: return 'bg-[var(--brand-primary)]';
   }
 }
 
-function getStatusBadgeClass(status: string): string {
+function getStatusChipClass(status: string): string {
   switch (status) {
     case 'Done':
       return 'bg-[var(--status-success-bg)] text-[var(--status-success)]';
@@ -63,6 +63,11 @@ function getStatusBadgeClass(status: string): string {
   }
 }
 
+function getOwnerInitials(name?: string): string {
+  if (!name) return '';
+  return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+}
+
 /* ══════════════════════════════════════════════════════════
    STORY ROW COMPONENT
    ══════════════════════════════════════════════════════════ */
@@ -73,6 +78,8 @@ interface StoryRowProps {
 }
 
 function StoryRow({ story, onItemClick }: StoryRowProps) {
+  const ownerInitials = getOwnerInitials(story.owner?.full_name);
+  
   return (
     <div
       className="flex items-center gap-2 py-1.5 px-2 hover:bg-[var(--row-hover)] cursor-pointer transition-colors border-t border-[var(--border-subtle)]"
@@ -88,15 +95,15 @@ function StoryRow({ story, onItemClick }: StoryRowProps) {
       {/* Status chip */}
       <span className={cn(
         "text-[9px] px-1.5 py-0.5 rounded-full font-medium",
-        getStatusBadgeClass(story.status)
+        getStatusChipClass(story.status)
       )}>
         {story.status}
       </span>
       
       {/* Assignee avatar */}
-      {story.ownerInitials && (
+      {ownerInitials && (
         <div className="h-5 w-5 rounded-full bg-[var(--surface-subtle)] border border-[var(--border-default)] flex items-center justify-center flex-shrink-0">
-          <span className="text-[9px] font-medium text-[var(--text-secondary)]">{story.ownerInitials}</span>
+          <span className="text-[9px] font-medium text-[var(--text-secondary)]">{ownerInitials}</span>
         </div>
       )}
     </div>
@@ -116,6 +123,7 @@ function FeatureCard({ feature, onItemClick }: FeatureCardProps) {
   const [isExpanded, setIsExpanded] = useState(true);
   const storyCount = feature.children?.length || 0;
   const doneCount = feature.children?.filter(s => s.status === 'Done').length || 0;
+  const ownerInitials = getOwnerInitials(feature.owner?.full_name);
 
   return (
     <div 
@@ -149,8 +157,8 @@ function FeatureCard({ feature, onItemClick }: FeatureCardProps) {
         {/* Title */}
         <span className="text-xs font-medium text-[var(--text-primary)] flex-1 truncate">{feature.title}</span>
         
-        {/* Health dot */}
-        <span className={cn("w-2 h-2 rounded-full flex-shrink-0", getHealthDotClass(feature.health))} />
+        {/* Status dot */}
+        <span className={cn("w-2 h-2 rounded-full flex-shrink-0", getStatusDotClass(feature.status))} />
       </div>
 
       {/* Feature Metrics Bar */}
@@ -159,7 +167,7 @@ function FeatureCard({ feature, onItemClick }: FeatureCardProps) {
         <div className="flex items-center gap-1.5 flex-1">
           <div className="flex-1 h-1 bg-[var(--progress-bg)] rounded-full overflow-hidden">
             <div 
-              className={cn("h-full rounded-full transition-all", getProgressBarClass(feature.health))}
+              className={cn("h-full rounded-full transition-all", getProgressBarClass(feature.status))}
               style={{ width: `${feature.progress}%` }}
             />
           </div>
@@ -174,9 +182,9 @@ function FeatureCard({ feature, onItemClick }: FeatureCardProps) {
         </span>
         
         {/* Assignee */}
-        {feature.ownerInitials && (
+        {ownerInitials && (
           <div className="h-5 w-5 rounded-full bg-gradient-to-br from-[var(--secondary-bronze)] to-[var(--brand-primary)] text-white flex items-center justify-center flex-shrink-0">
-            <span className="text-[9px] font-semibold">{feature.ownerInitials}</span>
+            <span className="text-[9px] font-semibold">{ownerInitials}</span>
           </div>
         )}
       </div>
@@ -208,9 +216,10 @@ function EpicLane({ epic, onItemClick }: EpicLaneProps) {
   // Compute metrics
   const featureCount = epic.children?.length || 0;
   const storyCount = epic.children?.reduce((sum, f) => sum + (f.children?.length || 0), 0) || 0;
-  const onTrackCount = epic.children?.filter(f => f.health === 'On Track').length || 0;
-  const atRiskCount = epic.children?.filter(f => f.health === 'At Risk').length || 0;
-  const blockedCount = epic.children?.filter(f => f.health === 'Blocked').length || 0;
+  const doneCount = epic.children?.filter(f => f.status === 'Done').length || 0;
+  const inProgressCount = epic.children?.filter(f => f.status === 'In Progress').length || 0;
+  const blockedCount = epic.children?.filter(f => f.status === 'Blocked').length || 0;
+  const ownerInitials = getOwnerInitials(epic.owner?.full_name);
 
   return (
     <div className="rounded-lg border border-[var(--border-default)] overflow-hidden bg-[var(--surface-bg)]">
@@ -242,20 +251,20 @@ function EpicLane({ epic, onItemClick }: EpicLaneProps) {
           {epic.title}
         </span>
 
-        {/* Health badge */}
+        {/* Status badge */}
         <span className={cn(
           "inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium border",
-          getHealthBadgeClass(epic.health)
+          getStatusBadgeClass(epic.status)
         )}>
-          <span className={cn("w-1.5 h-1.5 rounded-full", getHealthDotClass(epic.health))} />
-          {epic.health}
+          <span className={cn("w-1.5 h-1.5 rounded-full", getStatusDotClass(epic.status))} />
+          {epic.status}
         </span>
 
         {/* Progress */}
         <div className="flex items-center gap-1.5 min-w-[80px]">
           <div className="flex-1 h-1.5 bg-[var(--progress-bg)] rounded-full overflow-hidden">
             <div 
-              className={cn("h-full rounded-full transition-all", getProgressBarClass(epic.health))}
+              className={cn("h-full rounded-full transition-all", getProgressBarClass(epic.status))}
               style={{ width: `${epic.progress}%` }}
             />
           </div>
@@ -278,18 +287,18 @@ function EpicLane({ epic, onItemClick }: EpicLaneProps) {
           </span>
         </div>
 
-        {/* Health summary dots */}
+        {/* Status summary dots */}
         <div className="flex items-center gap-3 text-[10px] flex-shrink-0">
-          {onTrackCount > 0 && (
+          {doneCount > 0 && (
             <span className="flex items-center gap-1">
               <span className="w-1.5 h-1.5 rounded-full bg-[var(--status-success)]" />
-              <span className="text-[var(--status-success)] font-medium">{onTrackCount}</span>
+              <span className="text-[var(--status-success)] font-medium">{doneCount}</span>
             </span>
           )}
-          {atRiskCount > 0 && (
+          {inProgressCount > 0 && (
             <span className="flex items-center gap-1">
               <span className="w-1.5 h-1.5 rounded-full bg-[var(--status-warning)]" />
-              <span className="text-[var(--status-warning)] font-medium">{atRiskCount}</span>
+              <span className="text-[var(--status-warning)] font-medium">{inProgressCount}</span>
             </span>
           )}
           {blockedCount > 0 && (
@@ -301,9 +310,9 @@ function EpicLane({ epic, onItemClick }: EpicLaneProps) {
         </div>
 
         {/* Epic Owner */}
-        {epic.ownerInitials && (
+        {ownerInitials && (
           <div className="h-7 w-7 rounded-full bg-gradient-to-br from-[var(--secondary-bronze)] to-[var(--brand-primary)] text-white flex items-center justify-center flex-shrink-0">
-            <span className="text-[10px] font-semibold">{epic.ownerInitials}</span>
+            <span className="text-[10px] font-semibold">{ownerInitials}</span>
           </div>
         )}
       </div>

@@ -2,8 +2,8 @@
  * WorkBench views: Roadmap View
  * 
  * Executive-grade quarterly roadmap with:
- * - Epic rows with type badge + health + title + owner
- * - Feature health dots summary row
+ * - Epic rows with type badge + status + title + owner
+ * - Feature status dots summary row
  * - Progress bars with date range
  * - Today marker
  * No checkboxes - clean executive presentation
@@ -11,7 +11,7 @@
  */
 
 import React, { useMemo } from 'react';
-import { WorkItem, HealthStatus } from '../types';
+import { WorkItem, ItemStatus } from '../types';
 import { cn } from '@/lib/utils';
 import { format, startOfQuarter, endOfQuarter, differenceInDays, addQuarters, subQuarters, getQuarter, getYear } from 'date-fns';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
@@ -34,6 +34,7 @@ function TypeBadge({ type }: { type: string }) {
     epic: { label: 'E', bgClass: 'bg-workitem-epic/20', textClass: 'text-workitem-epic' },
     feature: { label: 'F', bgClass: 'bg-workitem-feature/20', textClass: 'text-workitem-feature' },
     story: { label: 'S', bgClass: 'bg-muted', textClass: 'text-muted-foreground' },
+    subtask: { label: 'T', bgClass: 'bg-muted', textClass: 'text-muted-foreground' },
   };
   const { label, bgClass, textClass } = config[type] || config.story;
   
@@ -47,25 +48,26 @@ function TypeBadge({ type }: { type: string }) {
   );
 }
 
-// Health dot (small indicator)
-function HealthDot({ health, size = 'sm' }: { health: HealthStatus; size?: 'sm' | 'md' }) {
-  const colorClass: Record<HealthStatus, string> = {
-    'On Track': 'bg-secondary-green',
-    'At Risk': 'bg-brand-gold',
+// Status dot (small indicator)
+function StatusDot({ status, size = 'sm' }: { status: ItemStatus; size?: 'sm' | 'md' }) {
+  const colorClass: Record<ItemStatus, string> = {
+    'Done': 'bg-secondary-green',
+    'In Progress': 'bg-brand-gold',
     'Blocked': 'bg-destructive',
+    'Backlog': 'bg-muted-foreground',
   };
   
   return (
     <span className={cn(
       "rounded-full flex-shrink-0",
-      colorClass[health] || 'bg-muted',
+      colorClass[status] || 'bg-muted',
       size === 'sm' ? 'w-2 h-2' : 'w-2.5 h-2.5'
     )} />
   );
 }
 
-// Feature health dots row - shows health of all child features
-function FeatureHealthDots({ features }: { features: WorkItem[] }) {
+// Feature status dots row - shows status of all child features
+function FeatureStatusDots({ features }: { features: WorkItem[] }) {
   if (!features || features.length === 0) return null;
   
   // Take first 6 features for display
@@ -79,11 +81,11 @@ function FeatureHealthDots({ features }: { features: WorkItem[] }) {
           <Tooltip>
             <TooltipTrigger asChild>
               <span>
-                <HealthDot health={feature.health} />
+                <StatusDot status={feature.status} />
               </span>
             </TooltipTrigger>
             <TooltipContent side="bottom" className="text-[10px]">
-              {feature.key}: {feature.title} ({feature.health})
+              {feature.key}: {feature.title} ({feature.status})
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
@@ -95,28 +97,28 @@ function FeatureHealthDots({ features }: { features: WorkItem[] }) {
   );
 }
 
-function getHealthBarColor(health: HealthStatus): string {
-  switch (health) {
-    case 'On Track': return 'bg-secondary-green';
-    case 'At Risk': return 'bg-brand-gold';
+function getStatusBarColor(status: ItemStatus): string {
+  switch (status) {
+    case 'Done': return 'bg-secondary-green';
+    case 'In Progress': return 'bg-brand-gold';
     case 'Blocked': return 'bg-destructive';
     default: return 'bg-muted';
   }
 }
 
-function getHealthBarBg(health: HealthStatus): string {
-  switch (health) {
-    case 'On Track': return 'bg-secondary-green/25';
-    case 'At Risk': return 'bg-brand-gold/25';
+function getStatusBarBg(status: ItemStatus): string {
+  switch (status) {
+    case 'Done': return 'bg-secondary-green/25';
+    case 'In Progress': return 'bg-brand-gold/25';
     case 'Blocked': return 'bg-destructive/25';
     default: return 'bg-muted/25';
   }
 }
 
-function getHealthBorderColor(health: HealthStatus): string {
-  switch (health) {
-    case 'On Track': return 'border-secondary-green/50';
-    case 'At Risk': return 'border-brand-gold/50';
+function getStatusBorderColor(status: ItemStatus): string {
+  switch (status) {
+    case 'Done': return 'border-secondary-green/50';
+    case 'In Progress': return 'border-brand-gold/50';
     case 'Blocked': return 'border-destructive/50';
     default: return 'border-muted/50';
   }
@@ -144,11 +146,13 @@ function RoadmapRow({ item, onItemClick, timelineStart, totalDays }: RoadmapRowP
 
   const hasValidDates = startDate && endDate;
 
-  // Get child features for health dots
+  // Get child features for status dots
   const childFeatures = useMemo(() => {
     if (!item.children || item.type !== 'epic') return [];
     return item.children.filter(child => child.type === 'feature');
   }, [item.children, item.type]);
+
+  const ownerName = item.owner?.full_name;
 
   return (
     <div className="flex items-stretch border-b border-border/40 hover:bg-muted/30 transition-colors min-h-[64px]">
@@ -160,15 +164,15 @@ function RoadmapRow({ item, onItemClick, timelineStart, totalDays }: RoadmapRowP
         <TypeBadge type={item.type} />
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-0.5">
-            <HealthDot health={item.health} size="md" />
+            <StatusDot status={item.status} size="md" />
             <span className="font-mono text-[10px] text-brand-gold">{item.key}</span>
           </div>
           <p className="text-sm font-semibold truncate leading-tight">{item.title}</p>
-          {item.owner && (
-            <p className="text-[10px] text-muted-foreground truncate mt-0.5">{item.owner}</p>
+          {ownerName && (
+            <p className="text-[10px] text-muted-foreground truncate mt-0.5">{ownerName}</p>
           )}
-          {/* Feature health dots */}
-          <FeatureHealthDots features={childFeatures} />
+          {/* Feature status dots */}
+          <FeatureStatusDots features={childFeatures} />
         </div>
       </div>
 
@@ -181,8 +185,8 @@ function RoadmapRow({ item, onItemClick, timelineStart, totalDays }: RoadmapRowP
                 <div
                   className={cn(
                     "absolute top-1/2 -translate-y-1/2 h-9 rounded-md cursor-pointer transition-all border",
-                    getHealthBarBg(item.health),
-                    getHealthBorderColor(item.health)
+                    getStatusBarBg(item.status),
+                    getStatusBorderColor(item.status)
                   )}
                   style={{
                     left: `${barStart}%`,
@@ -195,7 +199,7 @@ function RoadmapRow({ item, onItemClick, timelineStart, totalDays }: RoadmapRowP
                   <div 
                     className={cn(
                       "absolute left-0 top-0 bottom-0 rounded-l-md",
-                      getHealthBarColor(item.health)
+                      getStatusBarColor(item.status)
                     )}
                     style={{ width: `${item.progress}%` }}
                   />
@@ -220,20 +224,21 @@ function RoadmapRow({ item, onItemClick, timelineStart, totalDays }: RoadmapRowP
                   <div className="flex items-center gap-2 text-[10px]">
                     <span className={cn(
                       "px-1.5 py-0.5 rounded text-[9px]",
-                      item.health === 'On Track' && "bg-secondary-green/20 text-secondary-green",
-                      item.health === 'At Risk' && "bg-brand-gold/20 text-brand-gold",
-                      item.health === 'Blocked' && "bg-destructive/20 text-destructive"
-                    )}>{item.health}</span>
+                      item.status === 'Done' && "bg-secondary-green/20 text-secondary-green",
+                      item.status === 'In Progress' && "bg-brand-gold/20 text-brand-gold",
+                      item.status === 'Blocked' && "bg-destructive/20 text-destructive",
+                      item.status === 'Backlog' && "bg-muted text-muted-foreground"
+                    )}>{item.status}</span>
                     <span>•</span>
                     <span>{item.progress}% complete</span>
                   </div>
-                  {item.owner && <p className="text-[10px]">Owner: {item.owner}</p>}
+                  {ownerName && <p className="text-[10px]">Owner: {ownerName}</p>}
                   {childFeatures.length > 0 && (
                     <div className="pt-1 border-t border-border">
                       <p className="text-[10px] font-medium mb-1">{childFeatures.length} Features:</p>
                       <div className="flex gap-1">
                         {childFeatures.slice(0, 8).map((f, i) => (
-                          <HealthDot key={i} health={f.health} />
+                          <StatusDot key={i} status={f.status} />
                         ))}
                         {childFeatures.length > 8 && (
                           <span className="text-[9px] text-muted-foreground">+{childFeatures.length - 8}</span>
