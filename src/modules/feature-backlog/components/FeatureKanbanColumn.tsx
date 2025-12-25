@@ -181,16 +181,16 @@ export function FeatureKanbanColumn({
                           </div>
                         </div>
 
-                        {/* Project & Epic info */}
+                        {/* Project & Epic info - Catalyst colors */}
                         {(item.project_name || item.epic_name) && (
                           <div className="flex flex-wrap gap-1.5 mb-2">
                             {item.project_name && (
-                              <span className="text-[10px] px-1.5 py-0.5 rounded bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300">
+                              <span className="text-[10px] px-1.5 py-0.5 rounded border bg-[#8b7355]/15 text-[#8b7355] dark:text-[#d4b896] border-[#8b7355]/25">
                                 {item.project_name}
                               </span>
                             )}
                             {item.epic_name && (
-                              <span className="text-[10px] px-1.5 py-0.5 rounded bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300">
+                              <span className="text-[10px] px-1.5 py-0.5 rounded border bg-[#5c7c5c]/15 text-[#5c7c5c] dark:text-[#7a9a7a] border-[#5c7c5c]/25">
                                 {item.epic_name}
                               </span>
                             )}
@@ -218,11 +218,11 @@ export function FeatureKanbanColumn({
 
                           {item.priority && (
                             <span className={cn(
-                              'text-[10px] px-1.5 py-0.5 rounded font-medium',
-                              item.priority === 'critical' && 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300',
-                              item.priority === 'high' && 'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300',
-                              item.priority === 'medium' && 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300',
-                              item.priority === 'low' && 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400',
+                              'text-[10px] px-1.5 py-0.5 rounded font-medium border',
+                              item.priority === 'critical' && 'bg-red-500/15 text-red-500 border-red-500/30',
+                              item.priority === 'high' && 'bg-amber-500/15 text-amber-500 border-amber-500/30',
+                              item.priority === 'medium' && 'bg-[#c69c6d]/15 text-[#c69c6d] border-[#c69c6d]/30',
+                              item.priority === 'low' && 'bg-[#5c7c5c]/15 text-[#5c7c5c] border-[#5c7c5c]/30',
                             )}>
                               {item.priority}
                             </span>

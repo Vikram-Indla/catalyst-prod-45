@@ -19,15 +19,15 @@ interface FeatureKanbanBoardProps {
   onAddFeature?: () => void;
 }
 
-// Feature statuses with colors matching Industry Kanban pattern
+// Feature statuses with Catalyst-approved colors
 const FEATURE_STATUSES = [
-  { id: 'funnel', label: 'Funnel', color: '#6b7280' },           // Gray
-  { id: 'analyzing', label: 'Analyzing', color: '#8b5cf6' },     // Purple
-  { id: 'backlog', label: 'Backlog', color: '#3b82f6' },         // Blue
-  { id: 'implementing', label: 'Implementing', color: '#f59e0b' }, // Amber
-  { id: 'validating', label: 'Validating', color: '#06b6d4' },   // Cyan
-  { id: 'deploying', label: 'Deploying', color: '#10b981' },     // Emerald
-  { id: 'done', label: 'Done', color: '#22c55e' },               // Green
+  { id: 'funnel', label: 'Funnel', color: '#c8ccd0' },           // Grey (Catalyst)
+  { id: 'analyzing', label: 'Analyzing', color: '#c69c6d' },     // Gold (Catalyst)
+  { id: 'backlog', label: 'Backlog', color: '#5c7c5c' },         // Olive (Catalyst)
+  { id: 'implementing', label: 'Implementing', color: '#f59e0b' }, // Amber (status)
+  { id: 'validating', label: 'Validating', color: '#22c55e' },   // Green (status)
+  { id: 'deploying', label: 'Deploying', color: '#22c55e' },     // Green (status)
+  { id: 'done', label: 'Done', color: '#22c55e' },               // Green (status)
 ];
 
 export function FeatureKanbanBoard({
