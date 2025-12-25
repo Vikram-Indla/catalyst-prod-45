@@ -13,6 +13,7 @@ import { FeatureBacklogColumnsDialog } from './FeatureBacklogColumnsDialog';
 import { FeatureDetailsPanel } from '@/components/items/features/FeatureDetailsPanel';
 import { CreateFeatureModal } from '@/components/features/CreateFeatureModal';
 import { fetchFeatureBacklog, fetchProgramProjects, fetchProgramEpics, clearProjectIdsCache } from '../api/featureBacklogApi';
+import { FeatureKanbanBoard } from './FeatureKanbanBoard';
 import { useFeatureBacklogPreferences } from '../hooks/useFeatureBacklogPreferences';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
@@ -271,11 +272,20 @@ export function FeatureBacklogWorkspace({ programId }: FeatureBacklogWorkspacePr
         onBulkDelete={handleBulkDelete}
       />
 
-      <div className="flex-1 overflow-auto px-4 sm:px-6 pt-2 pb-4">
+      <div className={viewMode === 'kanban' ? 'flex-1 overflow-hidden flex flex-col' : 'flex-1 overflow-auto px-4 sm:px-6 pt-2 pb-4'}>
         {isLoading ? (
           <div className="flex items-center justify-center h-full">
             <div className="text-muted-foreground">Loading...</div>
           </div>
+        ) : viewMode === 'kanban' ? (
+          <FeatureKanbanBoard
+            items={backlogData?.items || []}
+            programId={programId}
+            selectedItems={selectedItems}
+            onItemClick={handleFeatureClick}
+            onItemSelect={handleSelectItem}
+            onAddFeature={() => setIsCreateModalOpen(true)}
+          />
         ) : (
           <FeatureBacklogTable
             items={backlogData?.items || []}
