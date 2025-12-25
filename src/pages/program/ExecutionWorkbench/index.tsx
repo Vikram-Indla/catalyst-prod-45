@@ -1,5 +1,5 @@
 /**
- * WorkBench views: Table/Gantt/Roadmap/Board/Swimlane
+ * WorkBench - Table view only
  * 
  * Program Execution Workbench - Main Page
  */
@@ -7,16 +7,11 @@
 import React, { useState, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import { ProgramPageLayout } from '@/components/program/ProgramPageLayout';
-import { Search, Filter, ChevronDown, Check, Loader2, Table2, GanttChart, Map, LayoutGrid, Rows } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { WorkItem, WorkbenchView, WorkbenchFilters, DEFAULT_WORKBENCH_FILTERS, WorkTreeCounts } from './types';
+import { Loader2, Table2 } from 'lucide-react';
+import { WorkItem, WorkbenchFilters, DEFAULT_WORKBENCH_FILTERS } from './types';
 import { WorkbenchFiltersDialog } from './WorkbenchFiltersDialog';
 import { WorkbenchDetailsDrawer } from './WorkbenchDetailsDrawer';
 import { TableView } from './views/TableView';
-import { GanttView } from './views/GanttView';
-import { RoadmapView } from './views/RoadmapView';
-import { BoardView } from './views/BoardView';
-import { SwimlaneView } from './views/SwimlaneView';
 import { PageChrome } from '@/components/layout/PageChrome';
 import { useWorkbenchData } from './useWorkbenchData';
 import { startOfQuarter, endOfQuarter, addQuarters } from 'date-fns';
@@ -24,82 +19,6 @@ import { EpicDrawer } from '@/components/items/epics/EpicDrawer';
 import { FeatureDetailsPanel } from '@/components/items/features/FeatureDetailsPanel';
 import { supabase } from '@/integrations/supabase/client';
 import type { Feature } from '@/types/feature.types';
-
-// View configuration with icons
-const VIEW_CONFIG: { id: WorkbenchView; label: string; icon: React.ElementType }[] = [
-  { id: 'table', label: 'Table', icon: Table2 },
-  { id: 'gantt', label: 'Gantt', icon: GanttChart },
-  { id: 'roadmap', label: 'Roadmap', icon: Map },
-  { id: 'board', label: 'Board', icon: LayoutGrid },
-  { id: 'swimlane', label: 'Swimlane', icon: Rows },
-];
-
-// Segmented View Selector - Claude Variant A style
-function ViewSelector({ value, onChange }: { value: WorkbenchView; onChange: (v: WorkbenchView) => void }) {
-  return (
-    <div className="flex items-center gap-0.5 p-1 rounded-lg bg-muted/60 border border-border">
-      {VIEW_CONFIG.map(({ id, label, icon: Icon }) => (
-        <button
-          key={id}
-          onClick={() => onChange(id)}
-          className={cn(
-            "flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md transition-all",
-            value === id
-              ? "bg-gradient-to-r from-brand-gold to-secondary-bronze text-background shadow-sm"
-              : "text-muted-foreground hover:text-foreground hover:bg-muted/80"
-          )}
-        >
-          <Icon className="h-3.5 w-3.5" />
-          <span>{label}</span>
-        </button>
-      ))}
-    </div>
-  );
-}
-
-// Project Dropdown component
-function ProjectDropdown({ label, value, options, onChange, className }: {
-  label: string;
-  value: string;
-  options: { value: string; label: string }[];
-  onChange: (value: string) => void;
-  className?: string;
-}) {
-  const [open, setOpen] = useState(false);
-  const selectedLabel = options.find(o => o.value === value)?.label || label;
-
-  return (
-    <div className={cn("relative", className)}>
-      <button
-        onClick={() => setOpen(!open)}
-        className="flex items-center gap-2 px-3 py-1.5 text-sm border border-border rounded-md bg-background hover:bg-muted/50 transition-colors min-w-[140px]"
-      >
-        <span className="truncate">{selectedLabel}</span>
-        <ChevronDown className={cn("h-3.5 w-3.5 text-muted-foreground transition-transform flex-shrink-0", open && "rotate-180")} />
-      </button>
-      {open && (
-        <>
-          <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
-          <div className="absolute top-full left-0 mt-1 bg-background border border-border rounded-md shadow-lg z-[500] min-w-[180px] max-h-[300px] overflow-auto">
-            {options.map(opt => (
-              <div
-                key={opt.value}
-                onClick={() => { onChange(opt.value); setOpen(false); }}
-                className={cn(
-                  "flex items-center gap-2 px-3 py-2 text-sm hover:bg-muted cursor-pointer",
-                  opt.value === value && "bg-muted"
-                )}
-              >
-                {opt.value === value && <Check className="h-3.5 w-3.5 text-brand-primary" />}
-                <span className={opt.value !== value ? "pl-5" : ""}>{opt.label}</span>
-              </div>
-            ))}
-          </div>
-        </>
-      )}
-    </div>
-  );
-}
 
 // Get quarter date range helpers
 function getCurrentQuarterDates(): { start: Date; end: Date } {
@@ -149,9 +68,6 @@ function EmptyState({ message }: { message: string }) {
 export default function ExecutionWorkbenchPage() {
   const { programId } = useParams<{ programId: string }>();
   
-  const [selectedProject, setSelectedProject] = useState<string>('');
-  const [search, setSearch] = useState('');
-  const [view, setView] = useState<WorkbenchView>('table');
   const [filters, setFilters] = useState<WorkbenchFilters>(DEFAULT_WORKBENCH_FILTERS);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<WorkItem | null>(null);
@@ -161,36 +77,12 @@ export default function ExecutionWorkbenchPage() {
   const [selectedEpicId, setSelectedEpicId] = useState<string | null>(null);
   const [selectedFeature, setSelectedFeature] = useState<Feature | null>(null);
 
-  // Fetch real data
-  const { items: allItems, projects, owners, isLoading, error, counts, overallProgress } = useWorkbenchData(programId, selectedProject);
-
-  // Count active filters
-  const activeFilterCount = useMemo(() => {
-    let count = 0;
-    if (filters.owners.length > 0) count++;
-    if (filters.status.length > 0) count++;
-    if (filters.activeInPeriod !== 'any') count++;
-    if (filters.hasDependencies !== null) count++;
-    return count;
-  }, [filters]);
+  // Fetch real data - no project filter
+  const { items: allItems, owners, isLoading, error, counts, overallProgress } = useWorkbenchData(programId, '');
 
   // Filter items
   const filteredItems = useMemo(() => {
     let items = [...allItems];
-
-    if (search) {
-      const q = search.toLowerCase();
-      const matchesSearch = (item: WorkItem): boolean => {
-        if (item.key.toLowerCase().includes(q) || item.title.toLowerCase().includes(q)) {
-          return true;
-        }
-        if (item.children) {
-          return item.children.some(matchesSearch);
-        }
-        return false;
-      };
-      items = items.filter(matchesSearch);
-    }
 
     if (filters.owners.length > 0) {
       const matchesOwner = (item: WorkItem): boolean => {
@@ -241,7 +133,7 @@ export default function ExecutionWorkbenchPage() {
     }
 
     return items;
-  }, [allItems, search, filters]);
+  }, [allItems, filters]);
 
   const handleItemClick = (item: WorkItem) => {
     // For epics and features, open full drawer directly
@@ -277,16 +169,11 @@ export default function ExecutionWorkbenchPage() {
     }
   };
 
-  const projectOptions = [
-    { value: '', label: 'All projects' }, 
-    ...projects.map(p => ({ value: p.id, label: p.name }))
-  ];
-
   const getEmptyMessage = () => {
     if (allItems.length === 0) {
       return 'No execution items found in this program. Create epics with features and stories to see them here.';
     }
-    return 'No items match your current filters. Try adjusting your search or filter criteria.';
+    return 'No items match your current filters. Try adjusting your filter criteria.';
   };
 
   return (
@@ -324,49 +211,6 @@ export default function ExecutionWorkbenchPage() {
           </div>
         </div>
 
-        {/* Toolbar - Enhanced Claude Variant A style */}
-        <div className="flex items-center justify-between gap-4 px-4 py-2.5 border-b border-border bg-card/50">
-          {/* Left: Project + Search + Filters */}
-          <div className="flex items-center gap-2.5">
-            <ProjectDropdown 
-              label="Project" 
-              value={selectedProject} 
-              options={projectOptions} 
-              onChange={setSelectedProject} 
-            />
-            
-            <div className="relative">
-              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
-              <input
-                type="text"
-                placeholder="Search..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="pl-8 pr-3 py-1.5 text-sm border border-border rounded-md bg-background w-[180px] focus:outline-none focus:ring-1 focus:ring-brand-primary placeholder:text-muted-foreground"
-              />
-            </div>
-
-            <button
-              onClick={() => setFiltersOpen(true)}
-              className={cn(
-                "flex items-center gap-1.5 px-2.5 py-1.5 text-sm border rounded-md transition-colors",
-                activeFilterCount > 0
-                  ? "border-brand-gold/50 bg-brand-gold/10 text-brand-gold"
-                  : "border-border hover:bg-muted/50"
-              )}
-            >
-              <Filter className="h-3.5 w-3.5" />
-              <span>Filters</span>
-              {activeFilterCount > 0 && (
-                <span className="text-[10px] bg-brand-gold/20 px-1.5 py-0.5 rounded-full">{activeFilterCount}</span>
-              )}
-            </button>
-          </div>
-
-          {/* Right: View Selector */}
-          <ViewSelector value={view} onChange={setView} />
-        </div>
-
         {/* Content */}
         <div className="flex-1 overflow-hidden bg-background">
           {isLoading ? (
@@ -381,13 +225,7 @@ export default function ExecutionWorkbenchPage() {
           ) : filteredItems.length === 0 ? (
             <EmptyState message={getEmptyMessage()} />
           ) : (
-            <>
-              {view === 'table' && <TableView items={filteredItems} onItemClick={handleItemClick} counts={counts} overallProgress={overallProgress} />}
-              {view === 'gantt' && <GanttView items={filteredItems} onItemClick={handleItemClick} />}
-              {view === 'roadmap' && <RoadmapView items={filteredItems} onItemClick={handleItemClick} />}
-              {view === 'board' && <BoardView items={filteredItems} onItemClick={handleItemClick} />}
-              {view === 'swimlane' && <SwimlaneView items={filteredItems} onItemClick={handleItemClick} />}
-            </>
+            <TableView items={filteredItems} onItemClick={handleItemClick} counts={counts} overallProgress={overallProgress} />
           )}
         </div>
       </div>
