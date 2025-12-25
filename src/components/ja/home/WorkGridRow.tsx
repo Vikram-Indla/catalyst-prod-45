@@ -80,6 +80,7 @@ export function OperationsGridRow({
 }) {
   const navigate = useNavigate();
   const [isHovered, setIsHovered] = useState(false);
+  const [actionsOpen, setActionsOpen] = useState(false);
   const timeAgo = formatDistanceToNow(item.activityDate, { addSuffix: false });
   
   const rowHeight = density === 'compact' ? 'py-1' : 'py-2';
@@ -187,7 +188,7 @@ export function OperationsGridRow({
 
       {/* Quick actions - Operations specific: Kebab menu with Assign to me */}
       <div className={cn("flex items-center justify-end gap-0.5 transition-opacity", isHovered ? "opacity-100" : "opacity-0")}>
-        <DropdownMenu>
+        <DropdownMenu open={actionsOpen} onOpenChange={setActionsOpen}>
           <DropdownMenuTrigger asChild>
             <button 
               type="button"
@@ -207,9 +208,13 @@ export function OperationsGridRow({
             <DropdownMenuItem 
               onClick={(e) => e.stopPropagation()}
               onSelect={(e) => {
-                e.preventDefault();
                 e.stopPropagation();
-                onAssignToMe?.(item.id);
+                setActionsOpen(false);
+                try {
+                  onAssignToMe?.(item.id);
+                } finally {
+                  setActionsOpen(false);
+                }
               }}
               className="text-[var(--text-1)] cursor-pointer"
             >
