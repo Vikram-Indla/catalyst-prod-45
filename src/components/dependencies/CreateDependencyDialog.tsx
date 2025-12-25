@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { format } from 'date-fns';
@@ -28,10 +28,13 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { toast } from 'sonner';
-import { AlertTriangle, CalendarIcon } from 'lucide-react';
+import { CalendarIcon, Calendar as CalendarIcon2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { WorkItemDependencyType, DependencyTypeV2, RiskLevel, DependencyLevelV2 } from '@/lib/dependencies/types';
 import { DEPENDENCY_TYPE_LABELS, DEPENDENCY_LEVEL_LABELS } from '@/lib/dependencies/types';
+import { AutoSaveIndicator, AutoSaveStatus } from '@/components/business-requests/create-form/AutoSaveIndicator';
+
+const DRAFT_STORAGE_KEY = 'dependency-draft';
 
 interface CreateDependencyDialogProps {
   open: boolean;
@@ -72,6 +75,11 @@ export function CreateDependencyDialog({
 }: CreateDependencyDialogProps) {
   const queryClient = useQueryClient();
   
+  // Auto-save state
+  const [autoSaveStatus, setAutoSaveStatus] = useState<AutoSaveStatus>('idle');
+  const autoSaveTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const isInitialLoadRef = useRef(true);
+  
   // Form state - initialize from props to avoid race condition
   const [requestingWorkItemType, setRequestingWorkItemType] = useState<WorkItemDependencyType>(
     defaultRequestingWorkItemType || 'feature'
@@ -86,29 +94,132 @@ export function CreateDependencyDialog({
   const [neededByDate, setNeededByDate] = useState('');
   const [quarter, setQuarter] = useState(getCurrentQuarter());
   const [description, setDescription] = useState('');
+  const [neededBySprint, setNeededBySprint] = useState('');
+  const [committedBySprint, setCommittedBySprint] = useState('');
+  
+  // Draft data structure
+  interface DraftData {
+    requestingWorkItemType: WorkItemDependencyType;
+    requestingWorkItemId: string;
+    dependsOnWorkItemType: WorkItemDependencyType;
+    dependsOnWorkItemId: string;
+    dependencyType: DependencyTypeV2;
+    riskLevel: RiskLevel;
+    neededByDate: string;
+    quarter: string;
+    description: string;
+    neededBySprint: string;
+    committedBySprint: string;
+    savedAt: string;
+  }
+  
+  // Load draft from localStorage on mount
+  const loadDraft = useCallback(() => {
+    try {
+      const saved = localStorage.getItem(DRAFT_STORAGE_KEY);
+      if (saved) {
+        const draft: DraftData = JSON.parse(saved);
+        // Only restore if no default context is provided
+        if (!defaultRequestingWorkItemId) {
+          setRequestingWorkItemType(draft.requestingWorkItemType || 'feature');
+          setRequestingWorkItemId(draft.requestingWorkItemId || '');
+          setDependsOnWorkItemType(draft.dependsOnWorkItemType || 'feature');
+        }
+        setDependsOnWorkItemId(draft.dependsOnWorkItemId || '');
+        setDependencyType(draft.dependencyType || 'blocks');
+        setRiskLevel(draft.riskLevel || 'med');
+        setNeededByDate(draft.neededByDate || '');
+        setQuarter(draft.quarter || getCurrentQuarter());
+        setDescription(draft.description || '');
+        setNeededBySprint(draft.neededBySprint || '');
+        setCommittedBySprint(draft.committedBySprint || '');
+      }
+    } catch (e) {
+      console.error('Failed to load draft:', e);
+    }
+  }, [defaultRequestingWorkItemId]);
+  
+  // Save draft to localStorage
+  const saveDraft = useCallback(() => {
+    try {
+      setAutoSaveStatus('saving');
+      const draft: DraftData = {
+        requestingWorkItemType,
+        requestingWorkItemId,
+        dependsOnWorkItemType,
+        dependsOnWorkItemId,
+        dependencyType,
+        riskLevel,
+        neededByDate,
+        quarter,
+        description,
+        neededBySprint,
+        committedBySprint,
+        savedAt: new Date().toISOString(),
+      };
+      localStorage.setItem(DRAFT_STORAGE_KEY, JSON.stringify(draft));
+      setAutoSaveStatus('saved');
+      // Reset to idle after 2 seconds
+      setTimeout(() => setAutoSaveStatus('idle'), 2000);
+    } catch (e) {
+      console.error('Failed to save draft:', e);
+      setAutoSaveStatus('error');
+    }
+  }, [
+    requestingWorkItemType, requestingWorkItemId, dependsOnWorkItemType,
+    dependsOnWorkItemId, dependencyType, riskLevel, neededByDate,
+    quarter, description, neededBySprint, committedBySprint
+  ]);
+  
+  // Clear draft from localStorage
+  const clearDraft = useCallback(() => {
+    localStorage.removeItem(DRAFT_STORAGE_KEY);
+  }, []);
+  
+  // Debounced auto-save effect
+  useEffect(() => {
+    // Skip saving on initial load
+    if (isInitialLoadRef.current) {
+      isInitialLoadRef.current = false;
+      return;
+    }
+    
+    // Clear existing timer
+    if (autoSaveTimerRef.current) {
+      clearTimeout(autoSaveTimerRef.current);
+    }
+    
+    // Set new timer for debounced save
+    autoSaveTimerRef.current = setTimeout(() => {
+      saveDraft();
+    }, 1000);
+    
+    return () => {
+      if (autoSaveTimerRef.current) {
+        clearTimeout(autoSaveTimerRef.current);
+      }
+    };
+  }, [
+    dependsOnWorkItemId, dependencyType, riskLevel, neededByDate,
+    quarter, description, neededBySprint, committedBySprint, saveDraft
+  ]);
   
   // Sync state when props change (e.g., dialog reopens with different context)
   useEffect(() => {
     if (open) {
+      isInitialLoadRef.current = true;
       if (defaultRequestingWorkItemId && defaultRequestingWorkItemType) {
         setRequestingWorkItemType(defaultRequestingWorkItemType);
         setRequestingWorkItemId(defaultRequestingWorkItemId);
         setDependsOnWorkItemType(defaultRequestingWorkItemType);
+        // Load draft for other fields
+        loadDraft();
       } else {
-        // Reset to defaults if no context provided
-        setRequestingWorkItemType('feature');
-        setRequestingWorkItemId('');
-        setDependsOnWorkItemType('feature');
+        // Try to restore from draft
+        loadDraft();
       }
-      // Always reset target and other fields when dialog opens
-      setDependsOnWorkItemId('');
-      setDependencyType('blocks');
-      setRiskLevel('med');
-      setNeededByDate('');
-      setQuarter(getCurrentQuarter());
-      setDescription('');
     }
-  }, [open, defaultRequestingWorkItemId, defaultRequestingWorkItemType]);
+  }, [open, defaultRequestingWorkItemId, defaultRequestingWorkItemType, loadDraft]);
   
   // Derive dependency level
   const derivedLevel: DependencyLevelV2 = 
@@ -190,6 +301,7 @@ export function CreateDependencyDialog({
       queryClient.invalidateQueries({ queryKey: ['dependencies-grid'] });
       queryClient.invalidateQueries({ queryKey: ['team-dependencies'] });
       toast.success('Dependency created successfully');
+      clearDraft();
       handleClose();
     },
     onError: (error: any) => {
@@ -223,6 +335,9 @@ export function CreateDependencyDialog({
     setNeededByDate('');
     setQuarter(getCurrentQuarter());
     setDescription('');
+    setNeededBySprint('');
+    setCommittedBySprint('');
+    clearDraft();
     onOpenChange(false);
   };
 
@@ -232,11 +347,14 @@ export function CreateDependencyDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[650px]">
-        <DialogHeader>
-          <DialogTitle>Create Dependency</DialogTitle>
-          <DialogDescription>
-            Define a dependency between work items (Epic ↔ Epic or Feature ↔ Feature)
-          </DialogDescription>
+        <DialogHeader className="flex flex-row items-start justify-between">
+          <div>
+            <DialogTitle>Create Dependency</DialogTitle>
+            <DialogDescription>
+              Define a dependency between work items
+            </DialogDescription>
+          </div>
+          <AutoSaveIndicator status={autoSaveStatus} className="mt-1" />
         </DialogHeader>
         <form onSubmit={handleSubmit}>
           <div className="grid gap-4 py-4">
