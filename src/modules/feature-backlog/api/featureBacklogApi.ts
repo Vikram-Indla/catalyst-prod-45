@@ -1,115 +1,132 @@
 /**
  * Feature Backlog API — Server-side queries
  * All filtering, sorting, pagination is done server-side
+ * 
+ * PERFORMANCE OPTIMIZATION: Uses cached project IDs to avoid sequential queries
  */
 import { supabase } from '@/integrations/supabase/client';
 import type { FeatureBacklogQueryParams, FeatureBacklogResponse, FeatureBacklogItem } from '../types';
 
-export async function fetchFeatureBacklog(params: FeatureBacklogQueryParams): Promise<FeatureBacklogResponse> {
-  const { programId, page, pageSize, search, status, priority, projectId, epicId, sortField, sortDirection } = params;
+// Cache for program project IDs to avoid repeated lookups
+const projectIdsCache = new Map<string, { ids: string[]; timestamp: number }>();
+const CACHE_TTL = 60000; // 1 minute cache
 
-  // Build base query - Features scoped to Program via Epic relationship OR direct project relationship
-  let countQuery = supabase
-    .from('features')
-    .select('id', { count: 'exact', head: true })
-    .is('deleted_at', null);
-
-  let dataQuery = supabase
-    .from('features')
-    .select(`
-      id,
-      display_id,
-      name,
-      status,
-      priority,
-      health,
-      progress_pct,
-      planned_start_date,
-      planned_end_date,
-      created_at,
-      updated_at,
-      project_id,
-      epic_id,
-      owner_id,
-      assignee_id,
-      change_number_id,
-      projects!project_id(id, name, program_id),
-      epics!epic_id(id, name, epic_key, primary_program_id),
-      owner:profiles!features_owner_id_fkey(id, full_name),
-      assignee:profiles!features_assignee_id_fkey(id, full_name),
-      change_numbers!change_number_id(id, number)
-    `)
-    .is('deleted_at', null);
-
-  // Apply program scoping via project relationship (project belongs to program)
-  // Get projects for this program first
+async function getProgramProjectIds(programId: string): Promise<string[]> {
+  const now = Date.now();
+  const cached = projectIdsCache.get(programId);
+  
+  // Return cached value if still valid
+  if (cached && (now - cached.timestamp) < CACHE_TTL) {
+    return cached.ids;
+  }
+  
   const { data: programProjects } = await supabase
     .from('projects')
     .select('id')
     .eq('program_id', programId);
+  
+  const ids = programProjects?.map(p => p.id) || [];
+  projectIdsCache.set(programId, { ids, timestamp: now });
+  return ids;
+}
 
-  const projectIds = programProjects?.map(p => p.id) || [];
+export async function fetchFeatureBacklog(params: FeatureBacklogQueryParams): Promise<FeatureBacklogResponse> {
+  const { programId, page, pageSize, search, status, priority, projectId, epicId, sortField, sortDirection } = params;
 
-  if (projectIds.length > 0) {
-    countQuery = countQuery.in('project_id', projectIds);
-    dataQuery = dataQuery.in('project_id', projectIds);
-  } else {
+  // Get project IDs (cached)
+  const projectIds = await getProgramProjectIds(programId);
+  
+  if (projectIds.length === 0) {
     // No projects in program, return empty
     return { items: [], total: 0, page, pageSize };
   }
 
-  // Apply search filter (key + summary)
-  if (search) {
-    const searchPattern = `%${search}%`;
-    countQuery = countQuery.or(`name.ilike.${searchPattern},display_id.ilike.${searchPattern}`);
-    dataQuery = dataQuery.or(`name.ilike.${searchPattern},display_id.ilike.${searchPattern}`);
-  }
+  // Build queries in parallel for count and data
+  const buildQuery = (isCount: boolean) => {
+    let query = isCount 
+      ? supabase.from('features').select('id', { count: 'exact', head: true })
+      : supabase.from('features').select(`
+          id,
+          display_id,
+          name,
+          status,
+          priority,
+          health,
+          progress_pct,
+          planned_start_date,
+          planned_end_date,
+          created_at,
+          updated_at,
+          project_id,
+          epic_id,
+          owner_id,
+          assignee_id,
+          change_number_id,
+          projects!project_id(id, name, program_id),
+          epics!epic_id(id, name, epic_key, primary_program_id),
+          owner:profiles!features_owner_id_fkey(id, full_name),
+          assignee:profiles!features_assignee_id_fkey(id, full_name),
+          change_numbers!change_number_id(id, number)
+        `);
 
-  // Apply status filter
-  if (status) {
-    countQuery = countQuery.eq('status', status as any);
-    dataQuery = dataQuery.eq('status', status as any);
-  }
+    // Apply program scoping
+    query = query.is('deleted_at', null).in('project_id', projectIds);
 
-  // Apply priority filter
-  if (priority) {
-    countQuery = countQuery.eq('priority', priority);
-    dataQuery = dataQuery.eq('priority', priority);
-  }
+    // Apply search filter (key + summary)
+    if (search) {
+      const searchPattern = `%${search}%`;
+      query = query.or(`name.ilike.${searchPattern},display_id.ilike.${searchPattern}`);
+    }
 
-  // Apply project filter
-  if (projectId) {
-    countQuery = countQuery.eq('project_id', projectId);
-    dataQuery = dataQuery.eq('project_id', projectId);
-  }
+    // Apply status filter
+    if (status) {
+      query = query.eq('status', status as any);
+    }
 
-  // Apply epic filter
-  if (epicId === 'none') {
-    countQuery = countQuery.is('epic_id', null);
-    dataQuery = dataQuery.is('epic_id', null);
-  } else if (epicId) {
-    countQuery = countQuery.eq('epic_id', epicId);
-    dataQuery = dataQuery.eq('epic_id', epicId);
-  }
+    // Apply priority filter
+    if (priority) {
+      query = query.eq('priority', priority);
+    }
 
-  // Get total count
-  const { count, error: countError } = await countQuery;
-  if (countError) throw countError;
+    // Apply project filter
+    if (projectId) {
+      query = query.eq('project_id', projectId);
+    }
 
-  // Apply sorting
-  const dbSortField = mapSortField(sortField);
-  dataQuery = dataQuery.order(dbSortField, { ascending: sortDirection === 'asc' });
+    // Apply epic filter
+    if (epicId === 'none') {
+      query = query.is('epic_id', null);
+    } else if (epicId) {
+      query = query.eq('epic_id', epicId);
+    }
 
-  // Apply pagination
-  const from = (page - 1) * pageSize;
-  const to = from + pageSize - 1;
-  dataQuery = dataQuery.range(from, to);
+    return query;
+  };
 
-  const { data, error } = await dataQuery;
-  if (error) throw error;
+  // Execute count and data queries in parallel
+  const [countResult, dataResult] = await Promise.all([
+    buildQuery(true),
+    (() => {
+      let dataQuery = buildQuery(false);
+      
+      // Apply sorting
+      const dbSortField = mapSortField(sortField);
+      dataQuery = dataQuery.order(dbSortField, { ascending: sortDirection === 'asc' });
+      
+      // Apply pagination
+      const from = (page - 1) * pageSize;
+      const to = from + pageSize - 1;
+      dataQuery = dataQuery.range(from, to);
+      
+      return dataQuery;
+    })(),
+  ]);
+
+  if (countResult.error) throw countResult.error;
+  if (dataResult.error) throw dataResult.error;
 
   // Transform to FeatureBacklogItem
-  const items: FeatureBacklogItem[] = (data || []).map((f: any) => ({
+  const items: FeatureBacklogItem[] = (dataResult.data || []).map((f: any) => ({
     id: f.id,
     key: f.display_id || `FEAT-${f.id.slice(0, 6).toUpperCase()}`,
     summary: f.name,
@@ -136,7 +153,7 @@ export async function fetchFeatureBacklog(params: FeatureBacklogQueryParams): Pr
 
   return {
     items,
-    total: count || 0,
+    total: countResult.count || 0,
     page,
     pageSize,
   };
