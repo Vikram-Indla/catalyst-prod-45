@@ -476,12 +476,15 @@ export function HomeContent() {
   }, [mode, filters.scope, filters.status, filters.priority, filters.updatedRange, debouncedSearch, setPage]);
 
   // Get work items based on tab
+  // For 'delivery' mode, 'starred' scope shows actual starred items from user_starred_items table
+  // For other modes, 'starred' scope shows mode-specific items (decision_required, etc.) from the main query
   const workItems = useMemo(() => {
-    if (filters.scope === 'starred') {
+    if (filters.scope === 'starred' && mode === 'delivery') {
+      // Only use starred items from user_starred_items for delivery mode
       return starredItems.data?.items || [];
     }
     return accumulatedItems;
-  }, [filters.scope, starredItems.data, accumulatedItems]);
+  }, [filters.scope, mode, starredItems.data, accumulatedItems]);
 
   // Tab counts from backend
   const tabCounts = useMemo(() => {
@@ -489,9 +492,13 @@ export function HomeContent() {
     return {
       workedOn: data?.workedOn || 0,
       assigned: data?.assigned || 0,
-      starred: starredCount.data || data?.starred || 0,
+      // For delivery mode, use starredCount from user_starred_items table
+      // For other modes, use the count from the query (decision_required, etc.)
+      starred: mode === 'delivery' 
+        ? (starredCount.data || 0) 
+        : (data?.starred || 0),
     };
-  }, [itemsQuery.data?.counts, summary.data, starredCount.data]);
+  }, [itemsQuery.data?.counts, summary.data, starredCount.data, mode]);
 
   const isLoading = summary.isLoading || itemsQuery.isLoading;
   const hasMore = itemsQuery.data?.pagination?.hasMore || false;
