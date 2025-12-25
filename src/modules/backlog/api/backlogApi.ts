@@ -462,13 +462,13 @@ async function groupItemsIntoPISections(
 
 function getStatesForType(type: any): string[] {
   const stateMap: Record<string, string[]> = {
-    theme: ['Proposed', 'In Progress', 'Completed'],
-    epic: ['Proposed', 'Analyzing', 'Portfolio Backlog', 'Implementing', 'Done'],
-    capability: ['Funnel', 'Analyzing', 'Portfolio Backlog', 'Implementing', 'Done'],
-    feature: ['Funnel', 'Analyzing', 'Backlog', 'Implementing', 'Validating', 'Deploying', 'Done'],
-    story: ['Defined', 'In Progress', 'Completed', 'Accepted'],
-    defect: ['Open', 'In Progress', 'Fixed', 'Closed'],
-    objective: ['Not Started', 'On Track', 'At Risk', 'Achieved'],
+    theme: ['proposed', 'in_progress', 'completed'],
+    epic: ['not_started', 'in_progress', 'accepted', 'done'],
+    capability: ['funnel', 'analyzing', 'backlog', 'implementing', 'done'],
+    feature: ['funnel', 'analyzing', 'backlog', 'implementing', 'validating', 'deploying', 'done'],
+    story: ['defined', 'in_progress', 'completed', 'accepted'],
+    defect: ['open', 'in_progress', 'fixed', 'closed'],
+    objective: ['not_started', 'on_track', 'at_risk', 'achieved'],
   };
   return stateMap[type] || [];
 }
