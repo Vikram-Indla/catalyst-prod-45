@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useLocation, useParams, Outlet } from 'react-router-dom';
+import { useLocation, useParams, Outlet, useNavigate } from 'react-router-dom';
 import { CatalystHeader } from '@/components/ja/CatalystHeader';
 import { UnifiedSidebar } from './UnifiedSidebar';
 import { EnterpriseSidebar } from './EnterpriseSidebar';
@@ -18,6 +18,7 @@ function CatalystShellContent() {
   // Track room visits for Recent Rooms functionality
   useRecentPlaceTracker();
   const location = useLocation();
+  const navigate = useNavigate();
   const params = useParams<{ programId?: string; portfolioId?: string; teamId?: string }>();
   const { workspaceType, programId: contextProgramId, projectId: contextProjectId, selectedQuarter, setSelectedQuarter } = useCatalystContext();
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
@@ -39,6 +40,34 @@ function CatalystShellContent() {
   
   // Check if on release route
   const isReleaseRoute = location.pathname.startsWith('/release');
+
+  // Prevent full document reloads caused by accidental <a href="/..."> navigation.
+  // We intercept internal same-origin links and route via react-router instead.
+  const handleInternalLinkClickCapture = (e: React.MouseEvent) => {
+    // Only left click without modifiers
+    if (e.defaultPrevented) return;
+    if (e.button !== 0) return;
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+
+    const target = e.target as HTMLElement | null;
+    const anchor = target?.closest?.('a') as HTMLAnchorElement | null;
+    if (!anchor) return;
+
+    const href = anchor.getAttribute('href');
+    if (!href) return;
+
+    // Ignore new-tab/external/download/hash links
+    if (anchor.target && anchor.target !== '_self') return;
+    if (anchor.hasAttribute('download')) return;
+    if (href.startsWith('#') || href.startsWith('mailto:') || href.startsWith('tel:')) return;
+    if (href.startsWith('http://') || href.startsWith('https://')) return;
+
+    // Only handle internal absolute paths
+    if (!href.startsWith('/')) return;
+
+    e.preventDefault();
+    navigate(href);
+  };
 
   // Determine sidebar based on workspaceType (single source of truth)
   const renderSidebar = () => {
@@ -130,7 +159,7 @@ function CatalystShellContent() {
   };
 
   return (
-    <div className="h-screen flex flex-col bg-stone-50">
+    <div className="h-screen flex flex-col bg-stone-50" onClickCapture={handleInternalLinkClickCapture}>
       {/* Global Header - Catalyst Native */}
       <CatalystHeader />
 
@@ -165,3 +194,4 @@ export function CatalystShell() {
     </CatalystContextProvider>
   );
 }
+
