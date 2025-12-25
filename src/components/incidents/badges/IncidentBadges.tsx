@@ -8,23 +8,23 @@ import type { IncidentStatus, SeverityLevel, PriorityLevel, SupportLevel } from 
 // Used across: List, Detail, Dashboard, etc.
 // ============================================
 
-// STATUS - Brand-aligned teal/cyan tones for dark mode
-export const STATUS_CONFIG: Record<IncidentStatus, { label: string; className: string }> = {
-  open: { label: 'Open', className: 'bg-cyan-100 text-cyan-800 border-cyan-200 dark:bg-cyan-950 dark:text-cyan-300 dark:border-cyan-800' },
-  triage: { label: 'Triaging', className: 'bg-amber-100 text-amber-800 border-amber-200 dark:bg-amber-950 dark:text-amber-300 dark:border-amber-800' },
-  to_committee: { label: 'Committee', className: 'bg-cyan-100 text-cyan-800 border-cyan-200 dark:bg-cyan-950 dark:text-cyan-300 dark:border-cyan-800' },
-  in_progress: { label: 'In Progress', className: 'bg-cyan-100 text-cyan-800 border-cyan-200 dark:bg-cyan-950 dark:text-cyan-300 dark:border-cyan-800' },
-  resolved: { label: 'Resolved', className: 'bg-amber-100 text-amber-800 border-amber-200 dark:bg-amber-950 dark:text-amber-300 dark:border-amber-800' },
-  converted: { label: 'Converted', className: 'bg-gray-100 text-gray-700 border-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700' },
-  closed: { label: 'Closed', className: 'bg-muted text-muted-foreground border-border' },
+// STATUS - Catalyst brand olive/amber tones
+export const STATUS_CONFIG: Record<IncidentStatus, { label: string; className: string; dotColor: string }> = {
+  open: { label: 'Open', className: 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950 dark:text-emerald-300 dark:border-emerald-800', dotColor: 'bg-emerald-500' },
+  triage: { label: 'Triaging', className: 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950 dark:text-amber-300 dark:border-amber-800', dotColor: 'bg-amber-500' },
+  to_committee: { label: 'Committee', className: 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950 dark:text-amber-300 dark:border-amber-800', dotColor: 'bg-amber-500' },
+  in_progress: { label: 'In Progress', className: 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950 dark:text-emerald-300 dark:border-emerald-800', dotColor: 'bg-emerald-500' },
+  resolved: { label: 'Resolved', className: 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950 dark:text-emerald-300 dark:border-emerald-800', dotColor: 'bg-emerald-500' },
+  converted: { label: 'Converted', className: 'bg-gray-100 text-gray-700 border-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700', dotColor: 'bg-gray-400' },
+  closed: { label: 'Closed', className: 'bg-muted text-muted-foreground border-border', dotColor: 'bg-gray-400' },
 };
 
-// SEVERITY - Brand colors with dots indicator style
+// SEVERITY - Brand colors: red/orange/olive/gray with dot indicators
 export const SEVERITY_CONFIG: Record<SeverityLevel, { label: string; className: string; dotColor: string }> = {
-  SEV1: { label: 'SEV1', className: 'bg-red-100 text-red-800 border-red-200 dark:bg-red-950 dark:text-red-300 dark:border-red-800', dotColor: 'bg-red-500' },
-  SEV2: { label: 'SEV2', className: 'bg-orange-100 text-orange-800 border-orange-200 dark:bg-orange-950 dark:text-orange-300 dark:border-orange-800', dotColor: 'bg-orange-500' },
-  SEV3: { label: 'SEV3', className: 'bg-green-100 text-green-800 border-green-200 dark:bg-green-950 dark:text-green-300 dark:border-green-800', dotColor: 'bg-green-500' },
-  SEV4: { label: 'SEV4', className: 'bg-gray-100 text-gray-700 border-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-700', dotColor: 'bg-gray-400' },
+  SEV1: { label: 'SEV1', className: 'bg-red-50 text-red-700 border-red-200 dark:bg-red-950 dark:text-red-300 dark:border-red-800', dotColor: 'bg-red-500' },
+  SEV2: { label: 'SEV2', className: 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950 dark:text-amber-300 dark:border-amber-800', dotColor: 'bg-amber-500' },
+  SEV3: { label: 'SEV3', className: 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950 dark:text-emerald-300 dark:border-emerald-800', dotColor: 'bg-emerald-500' },
+  SEV4: { label: 'SEV4', className: 'bg-gray-100 text-gray-600 border-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-700', dotColor: 'bg-gray-400' },
 };
 
 // PRIORITY - Derived, brand-aligned tones
@@ -55,12 +55,6 @@ export function StatusBadge({ status, size = 'xs' }: StatusBadgeProps) {
   const config = STATUS_CONFIG[status];
   if (!config) return <span className="text-muted-foreground text-xs">-</span>;
   
-  const dotColor = status === 'in_progress' || status === 'to_committee' || status === 'open' 
-    ? 'bg-cyan-500' 
-    : status === 'triage' || status === 'resolved'
-    ? 'bg-amber-500'
-    : 'bg-gray-400';
-  
   return (
     <Badge 
       variant="outline" 
@@ -70,7 +64,7 @@ export function StatusBadge({ status, size = 'xs' }: StatusBadgeProps) {
         config.className
       )}
     >
-      <span className={cn('w-1.5 h-1.5 rounded-full', dotColor)} />
+      <span className={cn('w-1.5 h-1.5 rounded-full', config.dotColor)} />
       {config.label}
     </Badge>
   );
