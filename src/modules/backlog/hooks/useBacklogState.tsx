@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { BacklogState, BacklogScope, BacklogType, BacklogViewType, TimeboxType } from '../types';
 
@@ -69,6 +69,9 @@ const EPIC_BACKLOG_ALLOWED_COLUMNS = [
   'linkedTheme',
 ];
 
+// LocalStorage key for persisting column preferences
+const COLUMNS_STORAGE_KEY = 'epic-backlog-columns';
+
 export function BacklogStateProvider({ 
   children, 
   initialScope, 
@@ -80,8 +83,25 @@ export function BacklogStateProvider({
   const navigate = useNavigate();
   const location = useLocation();
   
+  // Get persisted columns from localStorage
+  const getPersistedColumns = useCallback((): string[] | null => {
+    if (!isEpicBacklog) return null;
+    try {
+      const stored = localStorage.getItem(COLUMNS_STORAGE_KEY);
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        // Validate stored columns are still allowed
+        const valid = parsed.filter((c: string) => EPIC_BACKLOG_ALLOWED_COLUMNS.includes(c));
+        return valid.length > 0 ? valid : null;
+      }
+    } catch (e) {
+      console.warn('Failed to load columns from localStorage:', e);
+    }
+    return null;
+  }, [isEpicBacklog]);
+  
   // Parse URL params to initialize state
-  const parseURLParams = (): BacklogState => {
+  const parseURLParams = useCallback((): BacklogState => {
     const params = new URLSearchParams(location.search);
     
     // For Epic Backlog, force type to 'epic' and timeboxType to 'all'
@@ -89,12 +109,20 @@ export function BacklogStateProvider({
     const effectiveTimeboxType = isEpicBacklog ? 'all' : ((params.get('timeboxType') as TimeboxType) || DEFAULT_STATE.timeboxType);
     const defaultColumns = isEpicBacklog ? EPIC_BACKLOG_DEFAULT_COLUMNS : DEFAULT_STATE.columnsShown;
 
-    const requestedColumns = params.get('columns') ? params.get('columns')!.split(',') : null;
-    const sanitizedColumns = requestedColumns
-      ? (isEpicBacklog
-          ? requestedColumns.filter((c) => EPIC_BACKLOG_ALLOWED_COLUMNS.includes(c))
-          : requestedColumns)
-      : defaultColumns;
+    // Priority: URL > localStorage > defaults
+    const urlColumns = params.get('columns') ? params.get('columns')!.split(',') : null;
+    const persistedColumns = getPersistedColumns();
+    
+    let columnsToUse: string[];
+    if (urlColumns && urlColumns.length > 0) {
+      columnsToUse = isEpicBacklog
+        ? urlColumns.filter((c) => EPIC_BACKLOG_ALLOWED_COLUMNS.includes(c))
+        : urlColumns;
+    } else if (persistedColumns) {
+      columnsToUse = persistedColumns;
+    } else {
+      columnsToUse = defaultColumns;
+    }
 
     return {
       scope: (params.get('scope') as BacklogScope) || initialScope || DEFAULT_STATE.scope,
@@ -104,13 +132,24 @@ export function BacklogStateProvider({
       view: (params.get('view') as BacklogViewType) || DEFAULT_STATE.view,
       filters: params.get('filters') ? JSON.parse(params.get('filters')!) : DEFAULT_STATE.filters,
       sort: params.get('sort') ? JSON.parse(params.get('sort')!) : DEFAULT_STATE.sort,
-      columnsShown: sanitizedColumns,
+      columnsShown: columnsToUse,
       hideAcceptedConfig: params.get('hideAccepted') ? JSON.parse(params.get('hideAccepted')!) : DEFAULT_STATE.hideAcceptedConfig,
       unassignedOpen: params.get('unassigned') === 'true',
     };
-  };
+  }, [location.search, isEpicBacklog, initialScope, initialType, getPersistedColumns]);
 
   const [state, setState] = useState<BacklogState>(parseURLParams);
+
+  // Persist columns to localStorage when they change (for Epic Backlog)
+  useEffect(() => {
+    if (isEpicBacklog && state.columnsShown.length > 0) {
+      try {
+        localStorage.setItem(COLUMNS_STORAGE_KEY, JSON.stringify(state.columnsShown));
+      } catch (e) {
+        console.warn('Failed to save columns to localStorage:', e);
+      }
+    }
+  }, [state.columnsShown, isEpicBacklog]);
 
   // Sync state to URL
   useEffect(() => {
