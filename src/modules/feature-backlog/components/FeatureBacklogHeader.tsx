@@ -228,12 +228,12 @@ export function FeatureBacklogHeader({
             </Button>
 
             <Button
-              size="icon"
-              className="h-8 w-8 bg-brand-primary hover:bg-brand-primary-hover text-white"
-              title="Create Feature"
+              size="sm"
+              className="h-8 px-3 bg-brand-primary hover:bg-brand-primary-hover text-white gap-1.5"
               onClick={onCreateClick}
             >
               <Plus className="h-4 w-4" />
+              Create Feature
             </Button>
           </div>
         </div>
