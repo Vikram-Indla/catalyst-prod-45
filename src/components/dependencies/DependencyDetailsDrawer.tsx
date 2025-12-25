@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { format } from 'date-fns';
@@ -29,13 +29,14 @@ import {
   RefreshCw, 
   X, 
   Link as LinkIcon,
-  ChevronDown,
   Maximize2,
   Minimize2,
   Layers,
   Calendar,
   CalendarIcon,
-  AlertTriangle
+  AlertTriangle,
+  Loader2,
+  Check
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -56,6 +57,9 @@ import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import type { WorkItemDependencyType, DependencyTypeV2, RiskLevel, DependencyLevelV2, DependencyStatus } from '@/lib/dependencies/types';
 import { DEPENDENCY_TYPE_LABELS, DEPENDENCY_LEVEL_LABELS, DEPENDENCY_STATUS_LABELS } from '@/lib/dependencies/types';
+
+// Auto-save delay (ms)
+const AUTO_SAVE_DELAY = 800;
 
 // Generate quarter options
 const generateQuarterOptions = () => {
@@ -171,8 +175,14 @@ export function DependencyDetailsDrawer({ open, onClose, dependencyId }: Depende
   const [activeTab, setActiveTab] = useState('details');
   const [isExpanded, setIsExpanded] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const [showUnsavedChangesDialog, setShowUnsavedChangesDialog] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [showSavedIndicator, setShowSavedIndicator] = useState(false);
   const isEdit = !!dependencyId;
+
+  // Auto-save refs
+  const autoSaveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const pendingChangesRef = useRef<Record<string, any>>({});
+  const skipNextFormResetRef = useRef(false);
 
   // Form state (work-item-centric model)
   const [requestingWorkItemType, setRequestingWorkItemType] = useState<WorkItemDependencyType>('epic');
@@ -192,9 +202,6 @@ export function DependencyDetailsDrawer({ open, onClose, dependencyId }: Depende
   const [targetDelayed, setTargetDelayed] = useState(false);
   const [targetDelayedReason, setTargetDelayedReason] = useState('');
   const [noWorkRequired, setNoWorkRequired] = useState(false);
-  
-  // Track initial values for dirty checking
-  const [initialValues, setInitialValues] = useState<Record<string, any> | null>(null);
 
   // Derived values
   const derivedLevel: DependencyLevelV2 = 
@@ -273,20 +280,22 @@ export function DependencyDetailsDrawer({ open, onClose, dependencyId }: Depende
     enabled: open,
   });
 
-  // External entities for legacy view
-  const { data: externalEntities } = useQuery({
-    queryKey: ['external-entities-lookup'],
-    queryFn: async () => {
-      const { data, error } = await supabase.from('external_entities').select('id, name, entity_type').eq('is_active', true).order('name');
-      if (error) throw error;
-      return data;
-    },
-    enabled: open && isLegacyDependency,
-  });
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (autoSaveTimeoutRef.current) {
+        clearTimeout(autoSaveTimeoutRef.current);
+      }
+    };
+  }, []);
 
   // Populate form when dependency loads
   useEffect(() => {
     if (existingDependency && open) {
+      if (skipNextFormResetRef.current) {
+        skipNextFormResetRef.current = false;
+        return;
+      }
       const dep = existingDependency as any;
       
       // Work item fields (new model) - or derive from legacy fields
@@ -314,29 +323,9 @@ export function DependencyDetailsDrawer({ open, onClose, dependencyId }: Depende
       setTargetDelayed(dep.target_delayed || dep.blocked_respondent || false);
       setTargetDelayedReason(dep.target_delayed_reason || dep.blocked_reason_respondent || '');
       setNoWorkRequired(dep.no_work_required || false);
-      
-      // Store initial values for dirty checking
-      setInitialValues({
-        requestingWorkItemType: reqType,
-        requestingWorkItemId: reqId,
-        dependsOnWorkItemType: depType,
-        dependsOnWorkItemId: depId,
-        dependencyType: dep.type || 'blocks',
-        riskLevel: dep.risk_level || 'med',
-        status: dep.status || 'open',
-        neededByDate: dep.needed_by_date || '',
-        committedByDate: dep.committed_by_date || '',
-        description: dep.description || '',
-        sourceBlocked: dep.source_blocked || dep.blocked_requestor || false,
-        sourceBlockedReason: dep.source_blocked_reason || dep.blocked_reason_requestor || '',
-        targetDelayed: dep.target_delayed || dep.blocked_respondent || false,
-        targetDelayedReason: dep.target_delayed_reason || dep.blocked_reason_respondent || '',
-        noWorkRequired: dep.no_work_required || false,
-      });
     } else if (!isEdit && open) {
       // Reset for new creation
       resetForm();
-      setInitialValues(null);
     }
   }, [existingDependency, open, isEdit]);
 
@@ -365,27 +354,8 @@ export function DependencyDetailsDrawer({ open, onClose, dependencyId }: Depende
     setTargetDelayed(false);
     setTargetDelayedReason('');
     setNoWorkRequired(false);
-    setInitialValues(null);
+    pendingChangesRef.current = {};
   };
-
-  // Check for unsaved changes
-  const hasChanges = initialValues ? (
-    requestingWorkItemType !== initialValues.requestingWorkItemType ||
-    requestingWorkItemId !== initialValues.requestingWorkItemId ||
-    dependsOnWorkItemType !== initialValues.dependsOnWorkItemType ||
-    dependsOnWorkItemId !== initialValues.dependsOnWorkItemId ||
-    dependencyType !== initialValues.dependencyType ||
-    riskLevel !== initialValues.riskLevel ||
-    status !== initialValues.status ||
-    neededByDate !== initialValues.neededByDate ||
-    committedByDate !== initialValues.committedByDate ||
-    description !== initialValues.description ||
-    sourceBlocked !== initialValues.sourceBlocked ||
-    sourceBlockedReason !== initialValues.sourceBlockedReason ||
-    targetDelayed !== initialValues.targetDelayed ||
-    targetDelayedReason !== initialValues.targetDelayedReason ||
-    noWorkRequired !== initialValues.noWorkRequired
-  ) : (requestingWorkItemId !== '' || dependsOnWorkItemId !== '');
 
   // Get work items for pickers
   const requestingWorkItems = requestingWorkItemType === 'epic' 
@@ -397,65 +367,24 @@ export function DependencyDetailsDrawer({ open, onClose, dependencyId }: Depende
     : features?.map(f => ({ id: f.id, display: `${f.display_id || f.id.slice(0, 8)} - ${f.name}` })) || []
   ).filter(item => item.id !== requestingWorkItemId);
 
-  // Save mutation
-  const mutation = useMutation({
-    mutationFn: async () => {
-      const payload: any = {
-        // New work-item-centric fields
-        requesting_work_item_id: requestingWorkItemId || null,
-        requesting_work_item_type: requestingWorkItemType,
-        depends_on_work_item_id: dependsOnWorkItemId || null,
-        depends_on_work_item_type: dependsOnWorkItemType,
-        dependency_level_v2: derivedLevel,
-        is_cross_level_exception: false,
-        type: dependencyType,
-        risk_level: riskLevel,
-        status,
-        needed_by_date: neededByDate || null,
-        committed_by_date: committedByDate || null,
-        needed_by_sprint_id: neededBySprint || null,
-        committed_by_sprint_id: committedBySprint || null,
-        quarter: derivedQuarter,
-        quarter_derived_from_date: !!neededByDate,
-        description: description || null,
-        source_blocked: sourceBlocked,
-        source_blocked_reason: sourceBlocked ? sourceBlockedReason : null,
-        target_delayed: targetDelayed,
-        target_delayed_reason: targetDelayed ? targetDelayedReason : null,
-        no_work_required: noWorkRequired,
-        // Legacy fields for backwards compatibility
-        from_feature_id: requestingWorkItemType === 'feature' ? requestingWorkItemId : null,
-        to_feature_id: dependsOnWorkItemType === 'feature' ? dependsOnWorkItemId : null,
-        // Clear legacy team fields for new model
-        requesting_team_id: null,
-        depends_on_team_id: null,
-        blocked_requestor: sourceBlocked,
-        blocked_respondent: targetDelayed,
-        blocked_reason_requestor: sourceBlocked ? sourceBlockedReason : null,
-        blocked_reason_respondent: targetDelayed ? targetDelayedReason : null,
-      };
-
-      if (isEdit) {
-        const { error } = await supabase
-          .from('dependencies')
-          .update(payload)
-          .eq('id', dependencyId);
-        if (error) throw error;
-      } else {
-        const { error } = await supabase.from('dependencies').insert(payload);
-        if (error) throw error;
-      }
+  // Update mutation
+  const updateMutation = useMutation({
+    mutationFn: async (data: Record<string, any>) => {
+      if (!dependencyId) throw new Error('No dependency ID');
+      const { error } = await supabase
+        .from('dependencies')
+        .update(data)
+        .eq('id', dependencyId);
+      if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['dependencies-grid'] });
       queryClient.invalidateQueries({ queryKey: ['work-item-dependencies'] });
       queryClient.invalidateQueries({ queryKey: ['dependency', dependencyId] });
-      toast.success(isEdit ? 'Dependency updated' : 'Dependency created');
-      handleClose();
     },
-    onError: (error: any) => {
-      toast.error(`Failed to ${isEdit ? 'update' : 'create'} dependency: ${error.message}`);
-    },
+    onError: (error) => {
+      toast.error('Failed to save dependency: ' + error.message);
+    }
   });
 
   // Delete mutation
@@ -475,40 +404,188 @@ export function DependencyDetailsDrawer({ open, onClose, dependencyId }: Depende
     },
   });
 
-  const handleAttemptClose = () => {
-    if (hasChanges) {
-      setShowUnsavedChangesDialog(true);
-    } else {
-      handleClose();
+  // Build current form payload
+  const buildPayload = useCallback(() => {
+    return {
+      requesting_work_item_id: requestingWorkItemId || null,
+      requesting_work_item_type: requestingWorkItemType,
+      depends_on_work_item_id: dependsOnWorkItemId || null,
+      depends_on_work_item_type: dependsOnWorkItemType,
+      dependency_level_v2: derivedLevel,
+      is_cross_level_exception: false,
+      type: dependencyType,
+      risk_level: riskLevel,
+      status,
+      needed_by_date: neededByDate || null,
+      committed_by_date: committedByDate || null,
+      needed_by_sprint_id: neededBySprint || null,
+      committed_by_sprint_id: committedBySprint || null,
+      quarter: derivedQuarter,
+      quarter_derived_from_date: !!neededByDate,
+      description: description || null,
+      source_blocked: sourceBlocked,
+      source_blocked_reason: sourceBlocked ? sourceBlockedReason : null,
+      target_delayed: targetDelayed,
+      target_delayed_reason: targetDelayed ? targetDelayedReason : null,
+      no_work_required: noWorkRequired,
+      // Legacy fields for backwards compatibility
+      from_feature_id: requestingWorkItemType === 'feature' ? requestingWorkItemId : null,
+      to_feature_id: dependsOnWorkItemType === 'feature' ? dependsOnWorkItemId : null,
+      // Clear legacy team fields for new model
+      requesting_team_id: null,
+      depends_on_team_id: null,
+      blocked_requestor: sourceBlocked,
+      blocked_respondent: targetDelayed,
+      blocked_reason_requestor: sourceBlocked ? sourceBlockedReason : null,
+      blocked_reason_respondent: targetDelayed ? targetDelayedReason : null,
+    };
+  }, [
+    requestingWorkItemId, requestingWorkItemType, dependsOnWorkItemId, dependsOnWorkItemType,
+    derivedLevel, dependencyType, riskLevel, status, neededByDate, committedByDate,
+    neededBySprint, committedBySprint, derivedQuarter, description, sourceBlocked,
+    sourceBlockedReason, targetDelayed, targetDelayedReason, noWorkRequired
+  ]);
+
+  // Auto-save function
+  const performAutoSave = useCallback(async () => {
+    if (!dependencyId || !isEdit) return;
+
+    const payload = buildPayload();
+    if (!payload.requesting_work_item_id || !payload.depends_on_work_item_id || !payload.needed_by_date) {
+      // Skip auto-save if required fields are missing
+      return;
     }
+
+    setIsSaving(true);
+
+    try {
+      await updateMutation.mutateAsync(payload);
+      pendingChangesRef.current = {};
+      skipNextFormResetRef.current = true;
+
+      // Show saved indicator briefly
+      setShowSavedIndicator(true);
+      setTimeout(() => setShowSavedIndicator(false), 2000);
+    } catch (error) {
+      console.error('Auto-save failed:', error);
+    } finally {
+      setIsSaving(false);
+    }
+  }, [dependencyId, isEdit, buildPayload, updateMutation]);
+
+  // Schedule auto-save
+  const scheduleAutoSave = useCallback(() => {
+    if (!isEdit) return;
+    
+    // Clear existing timeout
+    if (autoSaveTimeoutRef.current) {
+      clearTimeout(autoSaveTimeoutRef.current);
+    }
+
+    // Schedule auto-save
+    autoSaveTimeoutRef.current = setTimeout(() => {
+      performAutoSave();
+    }, AUTO_SAVE_DELAY);
+  }, [isEdit, performAutoSave]);
+
+  // Field change handlers with auto-save
+  const handleRequestingWorkItemTypeChange = (v: WorkItemDependencyType) => {
+    setRequestingWorkItemType(v);
+    setRequestingWorkItemId('');
+    scheduleAutoSave();
+  };
+
+  const handleRequestingWorkItemIdChange = (v: string) => {
+    setRequestingWorkItemId(v);
+    scheduleAutoSave();
+  };
+
+  const handleDependsOnWorkItemTypeChange = (v: WorkItemDependencyType) => {
+    setDependsOnWorkItemType(v);
+    setDependsOnWorkItemId('');
+    scheduleAutoSave();
+  };
+
+  const handleDependsOnWorkItemIdChange = (v: string) => {
+    setDependsOnWorkItemId(v);
+    scheduleAutoSave();
+  };
+
+  const handleDependencyTypeChange = (v: DependencyTypeV2) => {
+    setDependencyType(v);
+    scheduleAutoSave();
+  };
+
+  const handleRiskLevelChange = (v: RiskLevel) => {
+    setRiskLevel(v);
+    scheduleAutoSave();
+  };
+
+  const handleStatusChange = (v: DependencyStatus) => {
+    setStatus(v);
+    scheduleAutoSave();
+  };
+
+  const handleNeededByDateChange = (date: Date | undefined) => {
+    setNeededByDate(date ? format(date, 'yyyy-MM-dd') : '');
+    scheduleAutoSave();
+  };
+
+  const handleCommittedByDateChange = (date: Date | undefined) => {
+    setCommittedByDate(date ? format(date, 'yyyy-MM-dd') : '');
+    scheduleAutoSave();
+  };
+
+  const handleNeededBySprintChange = (v: string) => {
+    setNeededBySprint(v === "__none__" ? "" : v);
+    scheduleAutoSave();
+  };
+
+  const handleCommittedBySprintChange = (v: string) => {
+    setCommittedBySprint(v === "__none__" ? "" : v);
+    scheduleAutoSave();
+  };
+
+  const handleDescriptionChange = (v: string) => {
+    setDescription(v);
+    scheduleAutoSave();
+  };
+
+  const handleSourceBlockedChange = (checked: boolean) => {
+    setSourceBlocked(checked);
+    scheduleAutoSave();
+  };
+
+  const handleSourceBlockedReasonChange = (v: string) => {
+    setSourceBlockedReason(v);
+    scheduleAutoSave();
+  };
+
+  const handleTargetDelayedChange = (checked: boolean) => {
+    setTargetDelayed(checked);
+    scheduleAutoSave();
+  };
+
+  const handleTargetDelayedReasonChange = (v: string) => {
+    setTargetDelayedReason(v);
+    scheduleAutoSave();
+  };
+
+  const handleNoWorkRequiredChange = (checked: boolean) => {
+    setNoWorkRequired(checked);
+    scheduleAutoSave();
   };
 
   const handleClose = () => {
-    resetForm();
-    setShowUnsavedChangesDialog(false);
-    onClose();
-  };
-
-  const handleDiscardAndClose = () => {
-    resetForm();
-    setShowUnsavedChangesDialog(false);
-    onClose();
-  };
-
-  const handleSave = () => {
-    if (!requestingWorkItemId || !dependsOnWorkItemId) {
-      toast.error('Please select both requesting and dependent work items');
-      return;
+    // Flush any pending auto-save before closing
+    if (autoSaveTimeoutRef.current) {
+      clearTimeout(autoSaveTimeoutRef.current);
+      if (isEdit) {
+        performAutoSave();
+      }
     }
-    if (!neededByDate) {
-      toast.error('Please specify a needed-by date');
-      return;
-    }
-    mutation.mutate();
-  };
-
-  const handleSaveAndClose = () => {
-    handleSave();
+    resetForm();
+    onClose();
   };
 
   const handleCopyLink = () => {
@@ -619,7 +696,7 @@ export function DependencyDetailsDrawer({ open, onClose, dependencyId }: Depende
 
   return (
     <>
-      <Sheet open={open} onOpenChange={(isOpen) => !isOpen && handleAttemptClose()}>
+      <Sheet open={open} onOpenChange={(isOpen) => !isOpen && handleClose()}>
         <SheetContent 
           side="right" 
           hideClose 
@@ -635,17 +712,20 @@ export function DependencyDetailsDrawer({ open, onClose, dependencyId }: Depende
               className="px-5 pt-2.5 pb-1.5 flex items-center gap-1.5"
               style={{ borderBottom: '1px solid var(--border-subtle, hsl(var(--border)/0.5))' }}
             >
-              <span className="text-[10px] font-medium uppercase tracking-[0.5px] text-muted-foreground">
+              <span 
+                className="text-[10px] font-medium uppercase tracking-[0.5px]"
+                style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}
+              >
                 Dependencies
               </span>
-              <span className="text-[10px] text-muted-foreground">/</span>
+              <span className="text-[10px]" style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}>/</span>
               <span className="text-[11px] font-semibold font-mono" style={{ color: '#8B7355' }}>
                 {isEdit ? `DEP-${dependencyId?.slice(0, 4).toUpperCase()}` : 'New'}
               </span>
               {isEdit && (
                 <button
                   onClick={handleCopyLink}
-                  className="p-1 rounded hover:bg-muted transition-colors text-muted-foreground"
+                  className="p-1 rounded hover:bg-[var(--surface-hover,hsl(var(--muted)))] transition-smooth text-muted-foreground"
                   title="Copy link"
                 >
                   <LinkIcon className="h-3 w-3" />
@@ -656,10 +736,16 @@ export function DependencyDetailsDrawer({ open, onClose, dependencyId }: Depende
             {/* Hero Row */}
             <div className="flex items-start justify-between px-5 py-3 gap-4">
               <div className="flex-1 min-w-0 space-y-1">
-                <SheetTitle className="text-[18px] font-semibold tracking-[-0.3px] leading-tight">
+                <SheetTitle 
+                  className="text-[18px] font-semibold tracking-[-0.3px] leading-tight"
+                  style={{ color: 'var(--text-primary, hsl(var(--foreground)))' }}
+                >
                   {isEdit ? 'Edit Dependency' : 'Create Dependency'}
                 </SheetTitle>
-                <SheetDescription className="text-[13px] text-muted-foreground">
+                <SheetDescription 
+                  className="text-[13px]"
+                  style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}
+                >
                   {isEdit && existingDependency ? (
                     isLegacyDependency ? 'Legacy team-based dependency (read-only)' :
                     `Work Item ↔ Work Item Dependency`
@@ -671,39 +757,49 @@ export function DependencyDetailsDrawer({ open, onClose, dependencyId }: Depende
 
               {/* Action Buttons */}
               <div className="flex items-center gap-1.5 shrink-0">
-                {!isLegacyDependency && (
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button
-                        size="sm"
-                        className="h-8 px-3 text-[13px] font-medium text-white"
-                        style={{ background: 'var(--status-success)', boxShadow: '0 2px 4px var(--status-success-border)' }}
-                        onMouseEnter={(e) => e.currentTarget.style.background = 'var(--status-success-light)'}
-                        onMouseLeave={(e) => e.currentTarget.style.background = 'var(--status-success)'}
-                      >
-                        {isEdit ? 'Save' : 'Create'}
-                        <ChevronDown className="h-3.5 w-3.5 ml-1" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="z-[400] w-40">
-                      <DropdownMenuItem onSelect={handleSave}>
-                        {isEdit ? 'Save' : 'Create'}
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onSelect={handleSaveAndClose}>
-                        {isEdit ? 'Save & Close' : 'Create & Close'}
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                {/* Auto-save indicator */}
+                {isEdit && !isLegacyDependency && (
+                  <div className="min-w-[70px] flex items-center justify-end">
+                    <div 
+                      className={`
+                        flex items-center gap-1.5 px-2 py-1 rounded-md text-xs font-medium
+                        transition-all duration-300 ease-in-out
+                        ${isSaving 
+                          ? 'bg-amber-50 text-amber-700 dark:bg-amber-950/30 dark:text-amber-400 opacity-100' 
+                          : showSavedIndicator 
+                            ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-400 opacity-100' 
+                            : 'opacity-0'
+                        }
+                      `}
+                    >
+                      {isSaving ? (
+                        <>
+                          <Loader2 className="h-3 w-3 animate-spin" />
+                          <span>Saving</span>
+                        </>
+                      ) : showSavedIndicator ? (
+                        <>
+                          <Check className="h-3 w-3" />
+                          <span>Saved</span>
+                        </>
+                      ) : null}
+                    </div>
+                  </div>
                 )}
 
                 {isEdit && (
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-muted text-muted-foreground">
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        className="h-8 w-8 hover:bg-[var(--surface-hover,hsl(var(--muted)))]"
+                        style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}
+                      >
                         <MoreVertical className="h-4 w-4" />
                       </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-48 z-[400]">
+                    <DropdownMenuContent align="end" className="w-48 z-[400] bg-popover border">
                       <DropdownMenuItem onSelect={() => toast.info('Subscribe to dependency updates')}>
                         <Bell className="h-4 w-4 mr-2" />
                         Subscribe
@@ -737,7 +833,8 @@ export function DependencyDetailsDrawer({ open, onClose, dependencyId }: Depende
                   variant="ghost"
                   size="icon"
                   onClick={toggleExpand}
-                  className="h-8 w-8 hover:bg-muted text-muted-foreground"
+                  className="h-8 w-8 hover:bg-[var(--surface-hover,hsl(var(--muted)))]"
+                  style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}
                   title={isExpanded ? 'Collapse' : 'Expand'}
                 >
                   {isExpanded ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
@@ -746,8 +843,9 @@ export function DependencyDetailsDrawer({ open, onClose, dependencyId }: Depende
                 <Button 
                   variant="ghost" 
                   size="icon" 
-                  onClick={handleAttemptClose}
-                  className="h-8 w-8 hover:bg-muted text-muted-foreground"
+                  onClick={handleClose}
+                  className="h-8 w-8 hover:bg-[var(--surface-hover,hsl(var(--muted)))]"
+                  style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}
                 >
                   <X className="h-4 w-4" />
                 </Button>
@@ -763,13 +861,22 @@ export function DependencyDetailsDrawer({ open, onClose, dependencyId }: Depende
               className="w-full justify-start rounded-none h-10 shrink-0 overflow-x-auto flex-nowrap px-5 bg-transparent"
               style={{ borderBottom: '1px solid var(--border-default, hsl(var(--border)))' }}
             >
-              <TabsTrigger value="details" className="relative px-3.5 py-2.5 text-[13px] font-medium whitespace-nowrap bg-transparent border-none rounded-none data-[state=inactive]:text-muted-foreground data-[state=active]:text-foreground">
+              <TabsTrigger 
+                value="details" 
+                className="relative px-3.5 py-2.5 text-[13px] font-medium whitespace-nowrap bg-transparent border-none rounded-none data-[state=inactive]:text-muted-foreground data-[state=active]:text-foreground"
+              >
                 Details
               </TabsTrigger>
-              <TabsTrigger value="negotiation" className="relative px-3.5 py-2.5 text-[13px] font-medium whitespace-nowrap bg-transparent border-none rounded-none data-[state=inactive]:text-muted-foreground data-[state=active]:text-foreground">
+              <TabsTrigger 
+                value="negotiation" 
+                className="relative px-3.5 py-2.5 text-[13px] font-medium whitespace-nowrap bg-transparent border-none rounded-none data-[state=inactive]:text-muted-foreground data-[state=active]:text-foreground"
+              >
                 Negotiation
               </TabsTrigger>
-              <TabsTrigger value="audit" className="relative px-3.5 py-2.5 text-[13px] font-medium whitespace-nowrap bg-transparent border-none rounded-none data-[state=inactive]:text-muted-foreground data-[state=active]:text-foreground">
+              <TabsTrigger 
+                value="audit" 
+                className="relative px-3.5 py-2.5 text-[13px] font-medium whitespace-nowrap bg-transparent border-none rounded-none data-[state=inactive]:text-muted-foreground data-[state=active]:text-foreground"
+              >
                 Audit
               </TabsTrigger>
             </TabsList>
@@ -780,15 +887,18 @@ export function DependencyDetailsDrawer({ open, onClose, dependencyId }: Depende
               {/* Details Tab */}
               <TabsContent value="details" className="m-0 focus-visible:outline-none p-5 pb-8">
                 {isLoadingDep ? (
-                  <div className="text-center text-sm py-12 text-muted-foreground">Loading...</div>
+                  <div className="text-center text-sm py-12" style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}>Loading...</div>
                 ) : isLegacyDependency ? (
                   renderLegacyView()
                 ) : (
                   <div className="space-y-6">
                     {/* Dependency Level Indicator */}
-                    <div className="flex items-center gap-2 p-3 rounded-md bg-muted/50">
-                      <Layers className="h-4 w-4 text-muted-foreground" />
-                      <span className="text-sm text-muted-foreground">Dependency Level:</span>
+                    <div 
+                      className="flex items-center gap-2 p-3 rounded-md"
+                      style={{ background: 'var(--surface-bg, hsl(var(--muted)/0.5))' }}
+                    >
+                      <Layers className="h-4 w-4" style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }} />
+                      <span className="text-sm" style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}>Dependency Level:</span>
                       <Badge variant="secondary">
                         {DEPENDENCY_LEVEL_LABELS[derivedLevel]}
                       </Badge>
@@ -796,33 +906,46 @@ export function DependencyDetailsDrawer({ open, onClose, dependencyId }: Depende
 
                     {/* Requesting Work Item */}
                     <div className="space-y-2">
-                      <Label className="text-sm font-medium">Requesting Work Item (Source)</Label>
+                      <Label className="text-sm font-medium" style={{ color: 'var(--text-primary, hsl(var(--foreground)))' }}>
+                        Requesting Work Item (Source)
+                      </Label>
                       <div className="grid grid-cols-2 gap-3">
                         <div>
-                          <Label htmlFor="req-type" className="text-xs text-muted-foreground">Type</Label>
+                          <Label htmlFor="req-type" className="text-xs" style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}>Type</Label>
                           <Select 
                             value={requestingWorkItemType} 
-                            onValueChange={(v: WorkItemDependencyType) => {
-                              setRequestingWorkItemType(v);
-                              setRequestingWorkItemId('');
-                            }}
+                            onValueChange={handleRequestingWorkItemTypeChange}
                           >
-                            <SelectTrigger id="req-type" className="h-9">
+                            <SelectTrigger 
+                              id="req-type" 
+                              className="h-9"
+                              style={{ 
+                                background: 'var(--surface-bg, hsl(var(--background)))',
+                                borderColor: 'var(--border-default, hsl(var(--border)))'
+                              }}
+                            >
                               <SelectValue />
                             </SelectTrigger>
-                            <SelectContent className="z-[400]">
+                            <SelectContent className="z-[400] bg-popover border">
                               <SelectItem value="epic">Epic</SelectItem>
                               <SelectItem value="feature">Feature</SelectItem>
                             </SelectContent>
                           </Select>
                         </div>
                         <div>
-                          <Label htmlFor="req-item" className="text-xs text-muted-foreground">Work Item *</Label>
-                          <Select value={requestingWorkItemId} onValueChange={setRequestingWorkItemId}>
-                            <SelectTrigger id="req-item" className="h-9">
+                          <Label htmlFor="req-item" className="text-xs" style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}>Work Item *</Label>
+                          <Select value={requestingWorkItemId} onValueChange={handleRequestingWorkItemIdChange}>
+                            <SelectTrigger 
+                              id="req-item" 
+                              className="h-9"
+                              style={{ 
+                                background: 'var(--surface-bg, hsl(var(--background)))',
+                                borderColor: 'var(--border-default, hsl(var(--border)))'
+                              }}
+                            >
                               <SelectValue placeholder={`Select ${requestingWorkItemType}`} />
                             </SelectTrigger>
-                            <SelectContent className="z-[400]">
+                            <SelectContent className="z-[400] bg-popover border">
                               {requestingWorkItems.map((item) => (
                                 <SelectItem key={item.id} value={item.id}>{item.display}</SelectItem>
                               ))}
@@ -834,33 +957,46 @@ export function DependencyDetailsDrawer({ open, onClose, dependencyId }: Depende
 
                     {/* Depends On Work Item */}
                     <div className="space-y-2">
-                      <Label className="text-sm font-medium">Depends On (Target)</Label>
+                      <Label className="text-sm font-medium" style={{ color: 'var(--text-primary, hsl(var(--foreground)))' }}>
+                        Depends On (Target)
+                      </Label>
                       <div className="grid grid-cols-2 gap-3">
                         <div>
-                          <Label htmlFor="dep-type" className="text-xs text-muted-foreground">Type</Label>
+                          <Label htmlFor="dep-type" className="text-xs" style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}>Type</Label>
                           <Select 
                             value={dependsOnWorkItemType} 
-                            onValueChange={(v: WorkItemDependencyType) => {
-                              setDependsOnWorkItemType(v);
-                              setDependsOnWorkItemId('');
-                            }}
+                            onValueChange={handleDependsOnWorkItemTypeChange}
                           >
-                            <SelectTrigger id="dep-type" className="h-9">
+                            <SelectTrigger 
+                              id="dep-type" 
+                              className="h-9"
+                              style={{ 
+                                background: 'var(--surface-bg, hsl(var(--background)))',
+                                borderColor: 'var(--border-default, hsl(var(--border)))'
+                              }}
+                            >
                               <SelectValue />
                             </SelectTrigger>
-                            <SelectContent className="z-[400]">
+                            <SelectContent className="z-[400] bg-popover border">
                               <SelectItem value="epic">Epic</SelectItem>
                               <SelectItem value="feature">Feature</SelectItem>
                             </SelectContent>
                           </Select>
                         </div>
                         <div>
-                          <Label htmlFor="dep-item" className="text-xs text-muted-foreground">Work Item *</Label>
-                          <Select value={dependsOnWorkItemId} onValueChange={setDependsOnWorkItemId}>
-                            <SelectTrigger id="dep-item" className="h-9">
+                          <Label htmlFor="dep-item" className="text-xs" style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}>Work Item *</Label>
+                          <Select value={dependsOnWorkItemId} onValueChange={handleDependsOnWorkItemIdChange}>
+                            <SelectTrigger 
+                              id="dep-item" 
+                              className="h-9"
+                              style={{ 
+                                background: 'var(--surface-bg, hsl(var(--background)))',
+                                borderColor: 'var(--border-default, hsl(var(--border)))'
+                              }}
+                            >
                               <SelectValue placeholder={`Select ${dependsOnWorkItemType}`} />
                             </SelectTrigger>
-                            <SelectContent className="z-[400]">
+                            <SelectContent className="z-[400] bg-popover border">
                               {dependsOnWorkItems.map((item) => (
                                 <SelectItem key={item.id} value={item.id}>{item.display}</SelectItem>
                               ))}
@@ -873,12 +1009,18 @@ export function DependencyDetailsDrawer({ open, onClose, dependencyId }: Depende
                     {/* Dependency Type + Risk */}
                     <div className="grid grid-cols-2 gap-3">
                       <div>
-                        <Label className="text-xs text-muted-foreground">Dependency Type *</Label>
-                        <Select value={dependencyType} onValueChange={(v: DependencyTypeV2) => setDependencyType(v)}>
-                          <SelectTrigger className="h-9">
+                        <Label className="text-xs" style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}>Dependency Type *</Label>
+                        <Select value={dependencyType} onValueChange={handleDependencyTypeChange}>
+                          <SelectTrigger 
+                            className="h-9"
+                            style={{ 
+                              background: 'var(--surface-bg, hsl(var(--background)))',
+                              borderColor: 'var(--border-default, hsl(var(--border)))'
+                            }}
+                          >
                             <SelectValue />
                           </SelectTrigger>
-                          <SelectContent className="z-[400]">
+                          <SelectContent className="z-[400] bg-popover border">
                             <SelectItem value="blocks">Blocks</SelectItem>
                             <SelectItem value="is_blocked_by">Is Blocked By</SelectItem>
                             <SelectItem value="enables">Enables</SelectItem>
@@ -889,12 +1031,18 @@ export function DependencyDetailsDrawer({ open, onClose, dependencyId }: Depende
                         </Select>
                       </div>
                       <div>
-                        <Label className="text-xs text-muted-foreground">Risk Level</Label>
-                        <Select value={riskLevel} onValueChange={(v: RiskLevel) => setRiskLevel(v)}>
-                          <SelectTrigger className="h-9">
+                        <Label className="text-xs" style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}>Risk Level</Label>
+                        <Select value={riskLevel} onValueChange={handleRiskLevelChange}>
+                          <SelectTrigger 
+                            className="h-9"
+                            style={{ 
+                              background: 'var(--surface-bg, hsl(var(--background)))',
+                              borderColor: 'var(--border-default, hsl(var(--border)))'
+                            }}
+                          >
                             <SelectValue />
                           </SelectTrigger>
-                          <SelectContent className="z-[400]">
+                          <SelectContent className="z-[400] bg-popover border">
                             <SelectItem value="low">Low</SelectItem>
                             <SelectItem value="med">Medium</SelectItem>
                             <SelectItem value="high">High</SelectItem>
@@ -905,13 +1053,13 @@ export function DependencyDetailsDrawer({ open, onClose, dependencyId }: Depende
 
                     {/* Scheduling */}
                     <div className="space-y-3">
-                      <Label className="text-sm font-medium flex items-center gap-2">
+                      <Label className="text-sm font-medium flex items-center gap-2" style={{ color: 'var(--text-primary, hsl(var(--foreground)))' }}>
                         <Calendar className="h-4 w-4" />
                         Scheduling
                       </Label>
                       <div className="grid grid-cols-2 gap-3">
                         <div>
-                          <Label className="text-xs text-muted-foreground">Needed By Date *</Label>
+                          <Label className="text-xs" style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}>Needed By Date *</Label>
                           <Popover>
                             <PopoverTrigger asChild>
                               <Button
@@ -920,16 +1068,20 @@ export function DependencyDetailsDrawer({ open, onClose, dependencyId }: Depende
                                   "w-full h-9 justify-start text-left font-normal",
                                   !neededByDate && "text-muted-foreground"
                                 )}
+                                style={{ 
+                                  background: 'var(--surface-bg, hsl(var(--background)))',
+                                  borderColor: 'var(--border-default, hsl(var(--border)))'
+                                }}
                               >
                                 <CalendarIcon className="mr-2 h-4 w-4" />
                                 {neededByDate ? format(new Date(neededByDate), "PPP") : <span>Pick a date</span>}
                               </Button>
                             </PopoverTrigger>
-                            <PopoverContent className="w-auto p-0 z-[400]" align="start">
+                            <PopoverContent className="w-auto p-0 z-[400] bg-popover border" align="start">
                               <CalendarComponent
                                 mode="single"
                                 selected={neededByDate ? new Date(neededByDate) : undefined}
-                                onSelect={(date) => setNeededByDate(date ? format(date, 'yyyy-MM-dd') : '')}
+                                onSelect={handleNeededByDateChange}
                                 initialFocus
                                 className="p-3 pointer-events-auto"
                               />
@@ -937,11 +1089,15 @@ export function DependencyDetailsDrawer({ open, onClose, dependencyId }: Depende
                           </Popover>
                         </div>
                         <div>
-                          <Label className="text-xs text-muted-foreground">Quarter (derived)</Label>
+                          <Label className="text-xs" style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}>Quarter (derived)</Label>
                           <Input 
                             value={derivedQuarter} 
                             readOnly 
-                            className="h-9 bg-muted/50" 
+                            className="h-9" 
+                            style={{ 
+                              background: 'var(--surface-subtle, hsl(var(--muted)/0.5))',
+                              borderColor: 'var(--border-default, hsl(var(--border)))'
+                            }}
                           />
                         </div>
                       </div>
@@ -949,12 +1105,18 @@ export function DependencyDetailsDrawer({ open, onClose, dependencyId }: Depende
                       {/* Optional sprint fields */}
                       <div className="grid grid-cols-2 gap-3">
                         <div>
-                          <Label className="text-xs text-muted-foreground">Needed By Sprint (optional)</Label>
-                          <Select value={neededBySprint || "__none__"} onValueChange={(v) => setNeededBySprint(v === "__none__" ? "" : v)}>
-                            <SelectTrigger className="h-9">
+                          <Label className="text-xs" style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}>Needed By Sprint (optional)</Label>
+                          <Select value={neededBySprint || "__none__"} onValueChange={handleNeededBySprintChange}>
+                            <SelectTrigger 
+                              className="h-9"
+                              style={{ 
+                                background: 'var(--surface-bg, hsl(var(--background)))',
+                                borderColor: 'var(--border-default, hsl(var(--border)))'
+                              }}
+                            >
                               <SelectValue placeholder="Select sprint" />
                             </SelectTrigger>
-                            <SelectContent className="z-[400]">
+                            <SelectContent className="z-[400] bg-popover border">
                               <SelectItem value="__none__">None</SelectItem>
                               {iterations?.map(sprint => (
                                 <SelectItem key={sprint.id} value={sprint.id}>{sprint.name}</SelectItem>
@@ -963,12 +1125,18 @@ export function DependencyDetailsDrawer({ open, onClose, dependencyId }: Depende
                           </Select>
                         </div>
                         <div>
-                          <Label className="text-xs text-muted-foreground">Committed By Sprint (optional)</Label>
-                          <Select value={committedBySprint || "__none__"} onValueChange={(v) => setCommittedBySprint(v === "__none__" ? "" : v)}>
-                            <SelectTrigger className="h-9">
+                          <Label className="text-xs" style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}>Committed By Sprint (optional)</Label>
+                          <Select value={committedBySprint || "__none__"} onValueChange={handleCommittedBySprintChange}>
+                            <SelectTrigger 
+                              className="h-9"
+                              style={{ 
+                                background: 'var(--surface-bg, hsl(var(--background)))',
+                                borderColor: 'var(--border-default, hsl(var(--border)))'
+                              }}
+                            >
                               <SelectValue placeholder="Select sprint" />
                             </SelectTrigger>
-                            <SelectContent className="z-[400]">
+                            <SelectContent className="z-[400] bg-popover border">
                               <SelectItem value="__none__">None</SelectItem>
                               {iterations?.map(sprint => (
                                 <SelectItem key={sprint.id} value={sprint.id}>{sprint.name}</SelectItem>
@@ -981,12 +1149,16 @@ export function DependencyDetailsDrawer({ open, onClose, dependencyId }: Depende
 
                     {/* Description */}
                     <div>
-                      <Label className="text-xs text-muted-foreground">Description</Label>
+                      <Label className="text-xs" style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}>Description</Label>
                       <Textarea
                         value={description}
-                        onChange={(e) => setDescription(e.target.value)}
+                        onChange={(e) => handleDescriptionChange(e.target.value)}
                         placeholder="Describe what is needed and why..."
                         rows={3}
+                        style={{ 
+                          background: 'var(--surface-bg, hsl(var(--background)))',
+                          borderColor: 'var(--border-default, hsl(var(--border)))'
+                        }}
                       />
                     </div>
                   </div>
@@ -996,23 +1168,29 @@ export function DependencyDetailsDrawer({ open, onClose, dependencyId }: Depende
               {/* Negotiation Tab */}
               <TabsContent value="negotiation" className="m-0 focus-visible:outline-none p-5 pb-8">
                 {isLegacyDependency ? (
-                  <div className="text-center text-sm py-12 text-muted-foreground">
+                  <div className="text-center text-sm py-12" style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}>
                     Legacy dependencies cannot be edited. View details in the Details tab.
                   </div>
                 ) : (
                   <div className="space-y-6">
-                    <h3 className="text-[13px] font-semibold flex items-center gap-2">
+                    <h3 className="text-[13px] font-semibold flex items-center gap-2" style={{ color: 'var(--text-primary, hsl(var(--foreground)))' }}>
                       <Calendar className="h-4 w-4" />
                       Negotiation & Commitment
                     </h3>
 
                     <div>
-                      <Label className="text-xs text-muted-foreground">Status *</Label>
-                      <Select value={status} onValueChange={(v: DependencyStatus) => setStatus(v)}>
-                        <SelectTrigger className="h-9">
+                      <Label className="text-xs" style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}>Status *</Label>
+                      <Select value={status} onValueChange={handleStatusChange}>
+                        <SelectTrigger 
+                          className="h-9"
+                          style={{ 
+                            background: 'var(--surface-bg, hsl(var(--background)))',
+                            borderColor: 'var(--border-default, hsl(var(--border)))'
+                          }}
+                        >
                           <SelectValue />
                         </SelectTrigger>
-                        <SelectContent className="z-[400]">
+                        <SelectContent className="z-[400] bg-popover border">
                           <SelectItem value="draft">Draft</SelectItem>
                           <SelectItem value="open">Open</SelectItem>
                           <SelectItem value="pending_commit">Pending Commit</SelectItem>
@@ -1026,7 +1204,7 @@ export function DependencyDetailsDrawer({ open, onClose, dependencyId }: Depende
                     </div>
 
                     <div>
-                      <Label className="text-xs text-muted-foreground">Committed By Date</Label>
+                      <Label className="text-xs" style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}>Committed By Date</Label>
                       <Popover>
                         <PopoverTrigger asChild>
                           <Button
@@ -1035,16 +1213,20 @@ export function DependencyDetailsDrawer({ open, onClose, dependencyId }: Depende
                               "w-full h-9 justify-start text-left font-normal",
                               !committedByDate && "text-muted-foreground"
                             )}
+                            style={{ 
+                              background: 'var(--surface-bg, hsl(var(--background)))',
+                              borderColor: 'var(--border-default, hsl(var(--border)))'
+                            }}
                           >
                             <CalendarIcon className="mr-2 h-4 w-4" />
                             {committedByDate ? format(new Date(committedByDate), "PPP") : <span>Pick a date</span>}
                           </Button>
                         </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0 z-[400]" align="start">
+                        <PopoverContent className="w-auto p-0 z-[400] bg-popover border" align="start">
                           <CalendarComponent
                             mode="single"
                             selected={committedByDate ? new Date(committedByDate) : undefined}
-                            onSelect={(date) => setCommittedByDate(date ? format(date, 'yyyy-MM-dd') : '')}
+                            onSelect={handleCommittedByDateChange}
                             initialFocus
                             className="p-3 pointer-events-auto"
                           />
@@ -1059,20 +1241,24 @@ export function DependencyDetailsDrawer({ open, onClose, dependencyId }: Depende
                         <Checkbox 
                           id="source-blocked"
                           checked={sourceBlocked} 
-                          onCheckedChange={(checked) => setSourceBlocked(checked === true)} 
+                          onCheckedChange={(checked) => handleSourceBlockedChange(checked === true)} 
                         />
-                        <Label htmlFor="source-blocked" className="font-normal text-[13px]">
+                        <Label htmlFor="source-blocked" className="font-normal text-[13px]" style={{ color: 'var(--text-primary, hsl(var(--foreground)))' }}>
                           Source Blocked: Is the requesting party blocked?
                         </Label>
                       </div>
 
                       {sourceBlocked && (
                         <div>
-                          <Label className="text-xs text-muted-foreground">Blocked Reason</Label>
+                          <Label className="text-xs" style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}>Blocked Reason</Label>
                           <Textarea 
                             value={sourceBlockedReason}
-                            onChange={(e) => setSourceBlockedReason(e.target.value)}
+                            onChange={(e) => handleSourceBlockedReasonChange(e.target.value)}
                             placeholder="Why is the requesting party blocked?" 
+                            style={{ 
+                              background: 'var(--surface-bg, hsl(var(--background)))',
+                              borderColor: 'var(--border-default, hsl(var(--border)))'
+                            }}
                           />
                         </div>
                       )}
@@ -1081,20 +1267,24 @@ export function DependencyDetailsDrawer({ open, onClose, dependencyId }: Depende
                         <Checkbox 
                           id="target-delayed"
                           checked={targetDelayed} 
-                          onCheckedChange={(checked) => setTargetDelayed(checked === true)} 
+                          onCheckedChange={(checked) => handleTargetDelayedChange(checked === true)} 
                         />
-                        <Label htmlFor="target-delayed" className="font-normal text-[13px]">
+                        <Label htmlFor="target-delayed" className="font-normal text-[13px]" style={{ color: 'var(--text-primary, hsl(var(--foreground)))' }}>
                           Target Delayed: Is the responding party delayed?
                         </Label>
                       </div>
 
                       {targetDelayed && (
                         <div>
-                          <Label className="text-xs text-muted-foreground">Delayed Reason</Label>
+                          <Label className="text-xs" style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}>Delayed Reason</Label>
                           <Textarea 
                             value={targetDelayedReason}
-                            onChange={(e) => setTargetDelayedReason(e.target.value)}
+                            onChange={(e) => handleTargetDelayedReasonChange(e.target.value)}
                             placeholder="Why is the responding party delayed?" 
+                            style={{ 
+                              background: 'var(--surface-bg, hsl(var(--background)))',
+                              borderColor: 'var(--border-default, hsl(var(--border)))'
+                            }}
                           />
                         </div>
                       )}
@@ -1103,9 +1293,9 @@ export function DependencyDetailsDrawer({ open, onClose, dependencyId }: Depende
                         <Checkbox 
                           id="no-work"
                           checked={noWorkRequired} 
-                          onCheckedChange={(checked) => setNoWorkRequired(checked === true)} 
+                          onCheckedChange={(checked) => handleNoWorkRequiredChange(checked === true)} 
                         />
-                        <Label htmlFor="no-work" className="font-normal text-[13px]">
+                        <Label htmlFor="no-work" className="font-normal text-[13px]" style={{ color: 'var(--text-primary, hsl(var(--foreground)))' }}>
                           No Work Required
                         </Label>
                       </div>
@@ -1119,63 +1309,24 @@ export function DependencyDetailsDrawer({ open, onClose, dependencyId }: Depende
                 <AuditLogContent dependencyId={dependencyId} />
               </TabsContent>
             </div>
-
-            {/* Sticky Footer */}
-            {!isLegacyDependency && (
-              <div 
-                className="flex justify-end gap-3 px-5 py-4 border-t shrink-0"
-                style={{ background: 'var(--surface-bg, hsl(var(--background)))' }}
-              >
-                <Button type="button" variant="outline" onClick={handleAttemptClose} className="h-9 px-4 text-[13px]">
-                  Cancel
-                </Button>
-                <Button 
-                  type="button"
-                  onClick={handleSave}
-                  disabled={mutation.isPending} 
-                  className="h-9 px-4 text-[13px] text-white"
-                  style={{ background: '#5C7C5C' }}
-                  onMouseEnter={(e) => e.currentTarget.style.background = '#4A6A4A'}
-                  onMouseLeave={(e) => e.currentTarget.style.background = '#5C7C5C'}
-                >
-                  {mutation.isPending ? 'Saving...' : isEdit ? 'Save' : 'Create'}
-                </Button>
-              </div>
-            )}
           </Tabs>
         </SheetContent>
       </Sheet>
 
-      {/* Unsaved Changes Dialog */}
-      <AlertDialog open={showUnsavedChangesDialog} onOpenChange={setShowUnsavedChangesDialog}>
-        <AlertDialogContent className="z-[500]">
-          <AlertDialogHeader>
-            <AlertDialogTitle>Unsaved Changes</AlertDialogTitle>
-            <AlertDialogDescription>
-              You have unsaved changes. Are you sure you want to close without saving?
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Continue Editing</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDiscardAndClose}>Discard Changes</AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-
       {/* Delete Confirmation Dialog */}
       <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
-        <AlertDialogContent className="z-[500]">
+        <AlertDialogContent style={{ background: 'var(--surface-bg, hsl(var(--background)))' }}>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete Dependency</AlertDialogTitle>
-            <AlertDialogDescription>
-              Are you sure you want to delete this dependency? This action cannot be undone.
+            <AlertDialogTitle style={{ color: 'var(--text-primary, hsl(var(--foreground)))' }}>Delete Dependency?</AlertDialogTitle>
+            <AlertDialogDescription style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}>
+              This action cannot be undone. The dependency will be permanently deleted.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction 
+            <AlertDialogAction
               onClick={() => deleteMutation.mutate()}
-              className="bg-red-600 hover:bg-red-700"
+              className="bg-red-600 hover:bg-red-700 text-white"
             >
               Delete
             </AlertDialogAction>
