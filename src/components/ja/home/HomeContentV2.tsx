@@ -64,7 +64,7 @@ function groupItemsByTimePeriod(items: HomeWorkItem[]): { label: string; items: 
 }
 
 // ============================================
-// FOCUS WIDGET
+// FOCUS WIDGET - Styled with Catalyst brand colors
 // ============================================
 function FocusWidget({ 
   title, 
@@ -82,24 +82,31 @@ function FocusWidget({
   return (
     <button 
       className={cn(
-        "w-full p-2.5 rounded-md transition-all text-left",
+        "w-full p-3 rounded-lg transition-all text-left",
         "bg-transparent border border-transparent",
-        "hover:bg-[var(--surface-2)] hover:border-[var(--border-color)]",
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]"
+        // Gold-tinted hover for brand consistency
+        "hover:bg-[#c69c6d]/[0.06] dark:hover:bg-[#c69c6d]/[0.12]",
+        "hover:border-[#c69c6d]/20 dark:hover:border-[#c69c6d]/30",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#c69c6d]/50"
       )}
       onClick={onClick}
     >
       <div className="flex items-start justify-between gap-3">
-        <div className="flex items-start gap-2 min-w-0 flex-1">
-          <Icon className="w-4 h-4 shrink-0 text-[var(--icon-muted)] mt-0.5" />
+        <div className="flex items-start gap-2.5 min-w-0 flex-1">
+          <Icon className="w-4 h-4 shrink-0 text-[#8b7355] dark:text-[#c69c6d] mt-0.5" />
           <div className="min-w-0 flex-1">
-            <div className="text-sm font-medium text-[var(--text-1)]">{title}</div>
+            <div className="text-sm font-medium text-foreground">{title}</div>
             {subtitle && (
-              <div className="text-[10px] text-[var(--text-3)] mt-0.5">{subtitle}</div>
+              <div className="text-[11px] text-muted-foreground mt-0.5">{subtitle}</div>
             )}
           </div>
         </div>
-        <span className="text-sm font-semibold tabular-nums text-[var(--brand-primary)] shrink-0">
+        <span className={cn(
+          "text-base font-bold tabular-nums shrink-0",
+          primaryCount > 0 
+            ? "text-[#5c7c5c] dark:text-[#8aab8a]" 
+            : "text-muted-foreground"
+        )}>
           {primaryCount}
         </span>
       </div>
@@ -180,51 +187,50 @@ function WorkItemsDataGrid({
     <div className="mt-2 rounded-xl border border-[var(--border-color)] overflow-hidden bg-[var(--card-bg)] shadow-sm dark:shadow-[0_1px_3px_rgba(0,0,0,0.4)]">
       {/* Sticky Header - responsive: hide Level/Assignee on mobile */}
       <div 
-        className="hidden md:grid items-center py-2.5 px-4 text-[11px] font-semibold uppercase tracking-[0.08em] sticky top-0 z-10"
+        className="hidden md:grid items-center py-3 px-4 text-[11px] font-semibold uppercase tracking-[0.08em] sticky top-0 z-10 bg-muted/50 dark:bg-muted/30"
         style={{ 
           gridTemplateColumns: '100px 1fr 120px 110px 140px 80px',
-          color: 'var(--text-3)',
-          backgroundColor: 'var(--table-header-bg)',
           borderBottom: '1px solid var(--divider)',
         }}
       >
-        <div>Key</div>
-        <div>Summary</div>
-        <div>Level</div>
-        <div>Updated</div>
-        <div>Assignee</div>
+        <div className="text-muted-foreground">Key</div>
+        <div className="text-muted-foreground">Summary</div>
+        <div className="text-muted-foreground">Level</div>
+        <div className="text-muted-foreground">Updated</div>
+        <div className="text-muted-foreground">Assignee</div>
         <div></div>
       </div>
       {/* Mobile header */}
       <div 
-        className="grid md:hidden items-center py-2.5 px-3 text-[11px] font-semibold uppercase tracking-[0.08em] sticky top-0 z-10"
+        className="grid md:hidden items-center py-3 px-3 text-[11px] font-semibold uppercase tracking-[0.08em] sticky top-0 z-10 bg-muted/50 dark:bg-muted/30"
         style={{ 
           gridTemplateColumns: '80px 1fr 80px',
-          color: 'var(--text-3)',
-          backgroundColor: 'var(--table-header-bg)',
           borderBottom: '1px solid var(--divider)',
         }}
       >
-        <div>Key</div>
-        <div>Summary</div>
-        <div className="text-right">Updated</div>
+        <div className="text-muted-foreground">Key</div>
+        <div className="text-muted-foreground">Summary</div>
+        <div className="text-right text-muted-foreground">Updated</div>
       </div>
 
       {isLoading ? (
-        <div className="py-12 text-center text-[var(--text-3)]">Loading...</div>
+        <div className="py-12 text-center text-muted-foreground">Loading...</div>
       ) : (
         groupedItems.map((group, groupIndex) => (
           <div key={groupIndex}>
+            {/* Group Header with gold accent bar */}
             <div 
-              className="text-[11px] font-bold uppercase tracking-[0.1em] py-2.5 px-4"
+              className="relative text-[11px] font-bold uppercase tracking-[0.1em] py-2.5 px-4 bg-gradient-to-r from-[#c69c6d]/[0.08] to-transparent dark:from-[#c69c6d]/[0.15] dark:to-transparent"
               style={{ 
-                color: 'var(--text-3)',
-                backgroundColor: 'var(--table-section-bg)',
                 borderTop: groupIndex > 0 ? '1px solid var(--divider)' : 'none',
                 borderBottom: '1px solid var(--divider)',
               }}
             >
-              {group.label}
+              {/* Gold accent bar */}
+              <div className="absolute left-0 top-0 bottom-0 w-1 bg-[#c69c6d]" />
+              <span className="text-[#8b7355] dark:text-[#d4b896]">
+                {group.label}
+              </span>
             </div>
             {group.items.map((item, index) => (
               <ModeAwareGridRow 
@@ -712,16 +718,18 @@ export function HomeContentV2() {
           <div className="xl:sticky xl:top-20 xl:self-start">
             <div 
               className={cn(
-                "rounded-xl border-2 shadow-md",
-                "bg-[var(--surface-1)] border-[var(--border-color)]",
+                "rounded-xl border shadow-sm",
+                "bg-card border-border",
                 "p-4"
               )}
             >
-              <div className="text-[11px] font-bold uppercase tracking-wider mb-3 text-[var(--text-2)] border-b border-[var(--divider)] pb-2">
-                My focus
+              {/* Header with gold accent */}
+              <div className="relative text-[11px] font-bold uppercase tracking-wider mb-3 text-[#8b7355] dark:text-[#d4b896] border-b border-border pb-2">
+                <div className="absolute -left-4 top-0 bottom-0 w-1 bg-[#c69c6d] rounded-r" />
+                My Focus
               </div>
               
-              <div className="space-y-0.5">
+              <div className="space-y-1">
                 {renderFocusWidgets()}
               </div>
             </div>
