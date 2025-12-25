@@ -30,11 +30,13 @@ export async function fetchBacklogItems(params: BacklogQueryParams): Promise<Bac
   const tableName = getTableName(type);
   let query: any;
   
-  // For epics, include theme relation (no FK for business_requests on epics table)
+  // For epics, include theme and assignee relations
   if (type === 'epic') {
     query = (supabase as any).from(tableName).select(`
       *,
-      strategic_themes:theme_id(id, name)
+      strategic_themes:theme_id(id, name),
+      assignee:profiles!assignee_id(id, full_name),
+      owner:profiles!owner_id(id, full_name)
     `);
   } else {
     query = (supabase as any).from(tableName).select('*');
@@ -65,11 +67,13 @@ export async function fetchBacklogItems(params: BacklogQueryParams): Promise<Bac
   const { data, error } = await query;
   if (error) throw error;
   
-  // Transform epic data to include theme info
+  // Transform epic data to include theme and assignee info
   const transformedData = (data || []).map((item: any) => ({
     ...item,
     themeName: item.strategic_themes?.name || null,
     themeId: item.theme_id,
+    assigneeName: item.assignee?.full_name || null,
+    ownerName: item.owner?.full_name || null,
     brKey: null, // No FK for business_requests on epics table
     brTitle: null,
     brId: null,

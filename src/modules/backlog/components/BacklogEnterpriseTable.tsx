@@ -225,6 +225,16 @@ export function BacklogEnterpriseTable({
         <span className="text-sm font-medium text-right block">{value ?? '—'}</span>
       ),
     },
+    {
+      id: 'assignee',
+      header: 'Assignee',
+      accessor: 'assigneeName',
+      width: '120px',
+      sortable: true,
+      render: (value) => (
+        <span className="text-sm text-muted-foreground truncate block">{value || '—'}</span>
+      ),
+    },
   ], [programData?.key, onItemClick]);
 
   // Handle row update for inline editing

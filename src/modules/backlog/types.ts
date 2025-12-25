@@ -87,6 +87,8 @@ export interface BacklogItem {
   ownerId?: string | null;
   ownerName?: string | null;
   owner?: string;
+  assigneeId?: string | null;
+  assigneeName?: string | null;
   labels?: BacklogLabel[];
   tags?: string[];
   quarters?: string[];

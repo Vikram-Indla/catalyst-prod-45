@@ -45,8 +45,8 @@ const DEFAULT_STATE: BacklogState = {
   unassignedOpen: false,
 };
 
-// Epic Backlog specific columns matching Jira Align: Epic, Labels, Points, MVP, Process Step, Strategic Value Score
-const EPIC_BACKLOG_DEFAULT_COLUMNS = ['epic', 'labels', 'points', 'mvp', 'processStep', 'strategicValueScore'];
+// Epic Backlog specific columns matching Jira Align: Epic, Labels, Points, MVP, Process Step, Strategic Value Score, Assignee
+const EPIC_BACKLOG_DEFAULT_COLUMNS = ['epic', 'labels', 'points', 'mvp', 'processStep', 'strategicValueScore', 'assignee'];
 
 export function BacklogStateProvider({ 
   children, 
