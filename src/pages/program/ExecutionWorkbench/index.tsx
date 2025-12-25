@@ -17,7 +17,7 @@ import { GanttView } from './views/GanttView';
 import { RoadmapView } from './views/RoadmapView';
 import { BoardView } from './views/BoardView';
 import { SwimlaneView } from './views/SwimlaneView';
-import { GlobalPageHeader } from '@/components/layout/GlobalPageHeader';
+import { PageChrome } from '@/components/layout/PageChrome';
 import { useWorkbenchData } from './useWorkbenchData';
 import { startOfQuarter, endOfQuarter, addQuarters } from 'date-fns';
 import { EpicDrawer } from '@/components/items/epics/EpicDrawer';
@@ -302,7 +302,37 @@ export default function ExecutionWorkbenchPage() {
   return (
     <ProgramPageLayout>
       <div className="flex flex-col h-full">
-        <GlobalPageHeader sectionLabel="PROGRAM" pageTitle="Program Execution Workbench" />
+        {/* Header - PageChrome style (inline breadcrumb) */}
+        <div className="shrink-0" style={{ backgroundColor: 'var(--bg)' }}>
+          <div
+            className="flex items-center justify-between px-6"
+            style={{ 
+              height: '52px',
+              borderBottom: '1px solid var(--divider)',
+            }}
+          >
+            <div className="flex items-center gap-2">
+              <span
+                className="text-[11px] font-semibold uppercase tracking-wider"
+                style={{ color: 'var(--text-3)' }}
+              >
+                PROGRAM
+              </span>
+              <span 
+                className="text-[14px]" 
+                style={{ color: 'var(--text-4)' }}
+              >
+                /
+              </span>
+              <h1
+                className="text-[18px] font-semibold"
+                style={{ color: 'var(--text-1)' }}
+              >
+                Work Tree
+              </h1>
+            </div>
+          </div>
+        </div>
 
         {/* Toolbar - Enhanced Claude Variant A style */}
         <div className="flex items-center justify-between gap-4 px-4 py-2.5 border-b border-border bg-card/50">
