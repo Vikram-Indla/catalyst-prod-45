@@ -8,7 +8,7 @@
 
 import React, { useState } from 'react';
 import { WorkItem, HealthStatus, ItemStatus } from '../types';
-import { ChevronRight, ChevronDown, MoreHorizontal, Link2, AlertTriangle, Zap, AlignLeft } from 'lucide-react';
+import { ChevronRight, ChevronDown, MoreHorizontal, Link2, AlertTriangle, Zap, AlignLeft, type LucideIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import {
@@ -25,18 +25,22 @@ interface TableViewProps {
 
 // Type badge component - Approved icons from design system
 function TypeBadge({ type }: { type: string }) {
-  const config: Record<string, { Icon: typeof Zap; bgClass: string; textClass: string }> = {
-    epic: { Icon: Zap, bgClass: 'bg-[#7c3aed]/15', textClass: 'text-[#7c3aed]' },      // Purple - Epics
-    feature: { Icon: Zap, bgClass: 'bg-[#7c3aed]/15', textClass: 'text-[#7c3aed]' },   // Purple - Features
-    story: { Icon: AlignLeft, bgClass: 'bg-[#5c7c5c]/15', textClass: 'text-[#5c7c5c]' }, // Olive - Stories
+  const config: Record<string, { Icon: LucideIcon; bgClass: string; textClass: string }> = {
+    // Panel-approved mapping: Epics + Features use Zap but DIFFERENT semantic colors
+    epic: { Icon: Zap, bgClass: 'bg-workitem-epic/15', textClass: 'text-workitem-epic' },
+    feature: { Icon: Zap, bgClass: 'bg-workitem-feature/15', textClass: 'text-workitem-feature' },
+    story: { Icon: AlignLeft, bgClass: 'bg-workitem-story/15', textClass: 'text-workitem-story' },
   };
   const { Icon, bgClass, textClass } = config[type] || config.story;
-  
+
   return (
-    <span className={cn(
-      "inline-flex items-center justify-center w-6 h-6 rounded-md flex-shrink-0",
-      bgClass, textClass
-    )}>
+    <span
+      className={cn(
+        'inline-flex items-center justify-center w-6 h-6 rounded-md flex-shrink-0',
+        bgClass,
+        textClass
+      )}
+    >
       <Icon className="h-3.5 w-3.5" />
     </span>
   );
