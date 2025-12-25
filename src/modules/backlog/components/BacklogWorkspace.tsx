@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import { useBacklogState } from '../hooks/useBacklogState';
 import { BacklogHeader } from './BacklogHeader';
 import { BacklogListView } from './BacklogListView';
-import { BacklogKanbanView } from './BacklogKanbanView';
+import { EpicKanbanBoard } from './EpicKanbanBoard';
 import { EpicDrawer } from '@/components/items/epics/EpicDrawer';
 import { BacklogFiltersDialog } from './BacklogFiltersDialog';
 import { BacklogColumnsDialog } from './BacklogColumnsDialog';
@@ -263,12 +263,13 @@ export function BacklogWorkspace() {
               onItemSelect={handleItemSelect}
             />
           ) : (
-            <BacklogKanbanView
+            <EpicKanbanBoard
               items={backlogData?.items || []}
               meta={backlogData?.meta}
               selectedItems={selectedItems}
               onItemClick={handleItemClick}
               onItemSelect={handleItemSelect}
+              onAddEpic={() => setIsCreateEpicDialogOpen(true)}
             />
           )}
         </div>
