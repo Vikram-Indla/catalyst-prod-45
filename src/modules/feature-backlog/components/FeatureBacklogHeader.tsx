@@ -138,8 +138,9 @@ export function FeatureBacklogHeader({
             <div 
               className="flex items-center rounded-md overflow-hidden"
               style={{ 
-                backgroundColor: 'var(--surface-1)', 
-                border: '1px solid var(--border-color)' 
+                backgroundColor: 'var(--bg-card)', 
+                border: '1px solid var(--border-color)',
+                boxShadow: 'var(--shadow-xs)',
               }}
             >
               <button
@@ -150,7 +151,7 @@ export function FeatureBacklogHeader({
                     ? "bg-brand-primary text-white" 
                     : ""
                 )}
-                style={viewMode !== 'list' ? { color: 'var(--text-2)' } : undefined}
+                style={viewMode !== 'list' ? { color: 'var(--text-1)', backgroundColor: 'transparent' } : undefined}
                 onMouseOver={(e) => {
                   if (viewMode !== 'list') e.currentTarget.style.backgroundColor = 'var(--nav-hover-bg)';
                 }}
@@ -169,7 +170,7 @@ export function FeatureBacklogHeader({
                     ? "bg-brand-primary text-white" 
                     : ""
                 )}
-                style={viewMode !== 'kanban' ? { color: 'var(--text-2)' } : undefined}
+                style={viewMode !== 'kanban' ? { color: 'var(--text-1)', backgroundColor: 'transparent' } : undefined}
                 onMouseOver={(e) => {
                   if (viewMode !== 'kanban') e.currentTarget.style.backgroundColor = 'var(--nav-hover-bg)';
                 }}
