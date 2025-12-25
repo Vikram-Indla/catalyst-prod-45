@@ -1,8 +1,8 @@
 /**
- * EpicDrawer - Cloned from BusinessRequestDrawer
+ * EpicDrawer - Epic Details Drawer with BusinessRequestDrawer UI
  * 
- * GUARDRAILS: NO styling changes. Only labels/fields/tabs/data bindings changed.
- * Drawer behavior (open/close/save/tabs/scroll) is pixel-identical to BusinessRequestDrawer.
+ * Matches BusinessRequestDrawer layout/styling exactly.
+ * Uses Epic data, not BusinessRequest data.
  */
 
 import { useState, useEffect, useRef, useCallback } from 'react';
@@ -32,18 +32,20 @@ import {
   X, 
   Pencil, 
   Link as LinkIcon, 
-  ChevronDown, 
   Maximize2, 
   Minimize2,
   MoreVertical,
   Trash2,
-  Copy
+  Copy,
+  Check,
+  Loader2
 } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { cn } from '@/lib/utils';
 
-// Epic-specific tabs (cloned structure from BusinessRequest tabs)
+// Epic-specific tabs
 import { EpicDetailsViewTab } from './drawer-tabs/EpicDetailsViewTab';
 import { TechnicalScoreViewTab } from './drawer-tabs/TechnicalScoreViewTab';
 import { EpicBudgetViewTab } from './drawer-tabs/EpicBudgetViewTab';
@@ -52,19 +54,10 @@ import { EpicLinksViewTab } from './drawer-tabs/EpicLinksViewTab';
 import { EpicFeaturesViewTab } from './drawer-tabs/EpicFeaturesViewTab';
 import { EpicAuditHistoryTab } from './drawer-tabs/EpicAuditHistoryTab';
 import { EpicDependenciesTab } from './drawer-tabs/EpicDependenciesTab';
-import { EpicStatusModal } from './EpicStatusModal';
+import { EpicStatusDropdown } from './drawer/EpicStatusDropdown';
 
-// Epic status options (replacing BusinessRequest process_step)
-const EPIC_STATUS_OPTIONS = [
-  { value: 'new', label: 'New' },
-  { value: 'analysis', label: 'Analysis' },
-  { value: 'design', label: 'Design' },
-  { value: 'technical_validation', label: 'Technical validation' },
-  { value: 'ready_for_implementation', label: 'Ready for implementation' },
-  { value: 'in_implementation', label: 'In implementation' },
-  { value: 'on_hold', label: 'On hold' },
-  { value: 'done', label: 'Done' },
-];
+// Auto-save delay (ms)
+const AUTO_SAVE_DELAY = 800;
 
 // Tabs for Epic drawer
 const EPIC_TABS = [
@@ -111,11 +104,14 @@ export function EpicDrawer({ isOpen, onClose, epicId, onEpicChange }: EpicDrawer
   const [isEditingName, setIsEditingName] = useState(false);
   const [editedName, setEditedName] = useState('');
   const [isExpanded, setIsExpanded] = useState(false);
-  const [hasChanges, setHasChanges] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const [showUnsavedChangesDialog, setShowUnsavedChangesDialog] = useState(false);
-  const [statusModalOpen, setStatusModalOpen] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [showSavedIndicator, setShowSavedIndicator] = useState(false);
+  
   const nameInputRef = useRef<HTMLInputElement>(null);
+  const tabsBodyScrollRef = useRef<HTMLDivElement>(null);
+  const autoSaveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const pendingChangesRef = useRef<Record<string, any>>({});
   const skipNextFormResetRef = useRef(false);
 
   // Reset to default tab when drawer opens
@@ -125,6 +121,11 @@ export function EpicDrawer({ isOpen, onClose, epicId, onEpicChange }: EpicDrawer
     }
   }, [isOpen]);
 
+  // Reset scroll position when switching tabs
+  useEffect(() => {
+    tabsBodyScrollRef.current?.scrollTo({ top: 0 });
+  }, [activeTab, epicId]);
+
   // Sync form data when epic changes
   useEffect(() => {
     if (epic) {
@@ -132,7 +133,6 @@ export function EpicDrawer({ isOpen, onClose, epicId, onEpicChange }: EpicDrawer
         setFormData(epic);
         setOriginalData(epic);
         setEditedName(epic.name || '');
-        setHasChanges(false);
       } else {
         setOriginalData(epic);
       }
@@ -140,20 +140,14 @@ export function EpicDrawer({ isOpen, onClose, epicId, onEpicChange }: EpicDrawer
     }
   }, [epic]);
 
-  const handleFieldChange = (field: string, value: any) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-    if (!hasChanges) {
-      setHasChanges(true);
-    }
-    skipNextFormResetRef.current = true;
-  };
-
-  const handleDirtyChange = (isDirty: boolean) => {
-    if (isDirty) {
-      setHasChanges(true);
-      skipNextFormResetRef.current = true;
-    }
-  };
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (autoSaveTimeoutRef.current) {
+        clearTimeout(autoSaveTimeoutRef.current);
+      }
+    };
+  }, []);
 
   // Update mutation
   const updateMutation = useMutation({
@@ -202,16 +196,16 @@ export function EpicDrawer({ isOpen, onClose, epicId, onEpicChange }: EpicDrawer
       if (!epic) throw new Error('No epic data');
       const { data, error } = await supabase
         .from('epics')
-        .insert({
+        .insert([{
           name: `${epic.name} (Copy)`,
-          description: epic.description,
-          primary_program_id: epic.primary_program_id,
-          theme_id: epic.theme_id,
-          health: epic.health,
-          owner_id: epic.owner_id,
+          description: epic.description || null,
+          primary_program_id: epic.primary_program_id || null,
+          theme_id: epic.theme_id || null,
+          health: epic.health || null,
+          owner_id: epic.owner_id || null,
           mvp: false,
           state: 'not_started',
-        })
+        }])
         .select()
         .single();
       if (error) throw error;
@@ -230,54 +224,71 @@ export function EpicDrawer({ isOpen, onClose, epicId, onEpicChange }: EpicDrawer
     }
   });
 
-  const handleSave = async () => {
+  // Auto-save function
+  const performAutoSave = useCallback(async (dataToSave: Record<string, any>) => {
     if (!epicId) return;
-    
-    updateMutation.mutate(formData, {
-      onSuccess: () => {
-        setOriginalData(formData);
-        setHasChanges(false);
-        skipNextFormResetRef.current = true;
-        toast.success('Epic saved');
-      }
-    });
-  };
 
-  const handleAttemptClose = () => {
-    if (hasChanges) {
-      setShowUnsavedChangesDialog(true);
-    } else {
-      handleClose();
+    setIsSaving(true);
+
+    try {
+      await updateMutation.mutateAsync(dataToSave);
+      setOriginalData(dataToSave);
+      skipNextFormResetRef.current = true;
+
+      // Show saved indicator briefly
+      setShowSavedIndicator(true);
+      setTimeout(() => setShowSavedIndicator(false), 2000);
+    } catch (error) {
+      console.error('Auto-save failed:', error);
+      toast.error('Failed to save changes');
+    } finally {
+      setIsSaving(false);
+    }
+  }, [epicId, updateMutation]);
+
+  const handleFieldChange = useCallback((field: string, value: any) => {
+    setFormData(prev => {
+      // Handle batch updates (multiple fields at once)
+      const newData = field === '_batch' && value && typeof value === 'object'
+        ? { ...prev, ...value }
+        : { ...prev, [field]: value };
+
+      // Store pending changes for auto-save
+      pendingChangesRef.current = newData;
+
+      // Clear existing timeout
+      if (autoSaveTimeoutRef.current) {
+        clearTimeout(autoSaveTimeoutRef.current);
+      }
+
+      // Schedule auto-save
+      autoSaveTimeoutRef.current = setTimeout(() => {
+        performAutoSave(pendingChangesRef.current);
+      }, AUTO_SAVE_DELAY);
+
+      return newData;
+    });
+
+    skipNextFormResetRef.current = true;
+  }, [performAutoSave]);
+
+  const handleDirtyChange = (isDirty: boolean) => {
+    if (isDirty) {
+      skipNextFormResetRef.current = true;
     }
   };
 
   const handleClose = () => {
-    setHasChanges(false);
-    setShowUnsavedChangesDialog(false);
+    // Flush any pending auto-save before closing
+    if (autoSaveTimeoutRef.current) {
+      clearTimeout(autoSaveTimeoutRef.current);
+      // Perform immediate save if there are pending changes
+      if (Object.keys(pendingChangesRef.current).length > 0) {
+        performAutoSave(pendingChangesRef.current);
+      }
+    }
     queryClient.invalidateQueries({ queryKey: ['epics'] });
     onClose();
-  };
-
-  const handleDiscardAndClose = () => {
-    setFormData(originalData);
-    setHasChanges(false);
-    setShowUnsavedChangesDialog(false);
-    onClose();
-  };
-
-  const handleSaveAndClose = async () => {
-    if (!epicId) return;
-    
-    setShowUnsavedChangesDialog(false);
-    setHasChanges(false);
-    onClose();
-    
-    updateMutation.mutate(formData, {
-      onSuccess: () => {
-        setOriginalData(formData);
-        toast.success('Epic saved');
-      }
-    });
   };
 
   // Copy link handler
@@ -299,6 +310,7 @@ export function EpicDrawer({ isOpen, onClose, epicId, onEpicChange }: EpicDrawer
       updateMutation.mutate({ name: editedName.trim() }, {
         onSuccess: () => {
           setIsEditingName(false);
+          queryClient.invalidateQueries({ queryKey: ['epic-drawer', epicId] });
         }
       });
     } else {
@@ -335,41 +347,67 @@ export function EpicDrawer({ isOpen, onClose, epicId, onEpicChange }: EpicDrawer
     setShowDeleteConfirm(false);
   };
 
-  // Get status label
-  const getStatusLabel = (status: string | null) => {
-    const option = EPIC_STATUS_OPTIONS.find(o => o.value === status);
-    return option?.label || 'New';
-  };
-
-  // Drawer width - same as BusinessRequestDrawer
+  // Drawer width - matches BusinessRequestDrawer
   const drawerWidthClass = isExpanded 
-    ? 'w-screen sm:w-[70vw] sm:max-w-[1120px]' 
+    ? 'fixed inset-0 w-screen h-screen max-w-none' 
     : 'w-screen sm:w-[65vw] sm:max-w-[980px]';
 
   if (!isOpen) return null;
 
   return (
     <>
-      <Sheet open={isOpen} onOpenChange={(open) => !open && handleAttemptClose()}>
-        <SheetContent side="right" hideClose className={`executive-drawer ${drawerWidthClass} p-0 flex flex-col overflow-hidden bg-white`}>
-          <SheetHeader className="executive-drawer-header flex-col space-y-0 shrink-0 p-0 bg-white">
-            {/* Header row - identical structure to BusinessRequestDrawer */}
-            <div className="flex items-center justify-between px-4 md:px-5 pt-4 pb-3 border-b border-brand-primary/50 bg-white">
-              {/* Left side: Epic Key + Title */}
-              <div className="flex items-center gap-2.5 flex-1 min-w-0">
-                <div className="flex items-center gap-1 shrink-0">
-                  <span className="text-sm font-medium text-brand-primary">{epic?.epic_key || '...'}</span>
-                  <button
-                    onClick={handleCopyLink}
-                    className="text-muted-foreground/60 hover:text-brand-primary transition-colors p-0.5"
-                    title="Copy link"
-                  >
-                    <LinkIcon className="h-3 w-3" />
-                  </button>
-                </div>
+      <Sheet open={isOpen} onOpenChange={(open) => !open && handleClose()}>
+        <SheetContent 
+          side="right" 
+          hideClose 
+          className={cn("p-0 flex flex-col", drawerWidthClass)}
+          style={{ 
+            background: 'var(--surface-bg, hsl(var(--background)))',
+            borderLeft: '1px solid var(--border-default, hsl(var(--border)))'
+          }}
+        >
+          <SheetHeader className="flex-col space-y-0 shrink-0 p-0">
+            
+            {/* ═══════════════════════════════════════════════════════════
+                BREADCRUMB ROW - Matches BusinessRequestDrawer
+                ═══════════════════════════════════════════════════════════ */}
+            <div 
+              className="px-5 pt-2.5 pb-1.5 flex items-center gap-1.5"
+              style={{ borderBottom: '1px solid var(--border-subtle, hsl(var(--border)/0.5))' }}
+            >
+              <span 
+                className="text-[10px] font-medium uppercase tracking-[0.5px]"
+                style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}
+              >
+                Epic Backlog
+              </span>
+              <span className="text-[10px]" style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}>/</span>
+              <span 
+                className="text-[11px] font-semibold font-mono"
+                style={{ color: '#8B7355' }}
+              >
+                {epic?.epic_key || '...'}
+              </span>
+              <button
+                onClick={handleCopyLink}
+                className="p-1 rounded hover:bg-[var(--surface-hover,hsl(var(--muted)))] transition-smooth press-scale"
+                style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}
+                title="Copy link"
+              >
+                <LinkIcon className="h-3 w-3" />
+              </button>
+            </div>
+
+            {/* ═══════════════════════════════════════════════════════════
+                HERO ROW: Title + Status Badge - Matches BusinessRequestDrawer
+                ═══════════════════════════════════════════════════════════ */}
+            <div className="flex items-start justify-between px-5 py-4 gap-4">
+              
+              {/* Left Side: Title + Status Badge Row */}
+              <div className="flex-1 min-w-0 space-y-2.5">
                 
-                {/* Editable title - same as BusinessRequestDrawer */}
-                <div className="flex items-center gap-1.5 flex-1 min-w-0 group">
+                {/* Title with Edit */}
+                <div className="flex items-center gap-1.5 group">
                   {isEditingName ? (
                     <Input
                       ref={nameInputRef}
@@ -377,16 +415,24 @@ export function EpicDrawer({ isOpen, onClose, epicId, onEpicChange }: EpicDrawer
                       onChange={(e) => setEditedName(e.target.value)}
                       onBlur={handleSaveName}
                       onKeyDown={handleNameKeyDown}
-                      className="text-base font-medium h-auto py-1 px-2 border-brand-primary/50 focus:border-brand-primary"
+                      className="text-[22px] font-semibold h-auto py-1.5 px-2 max-w-[480px] border-[#c69c6d] focus-visible:ring-[#c69c6d]/20 focus-visible:glow-gold transition-smooth"
+                      style={{ 
+                        background: 'var(--surface-subtle, hsl(var(--muted)))',
+                        color: 'var(--text-primary, hsl(var(--foreground)))'
+                      }}
                     />
                   ) : (
                     <>
-                      <SheetTitle className="truncate text-base font-medium text-foreground">
+                      <SheetTitle 
+                        className="text-[22px] font-semibold tracking-[-0.3px] truncate max-w-[520px] leading-tight"
+                        style={{ color: 'var(--text-primary, hsl(var(--foreground)))' }}
+                      >
                         {epic?.name || 'Loading...'}
                       </SheetTitle>
                       <button
                         onClick={handleStartEditName}
-                        className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-brand-primary transition-all p-0.5"
+                        className="opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-[var(--surface-hover,hsl(var(--muted)))] transition-smooth press-scale"
+                        style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}
                         title="Rename"
                       >
                         <Pencil className="h-3.5 w-3.5" />
@@ -394,38 +440,78 @@ export function EpicDrawer({ isOpen, onClose, epicId, onEpicChange }: EpicDrawer
                     </>
                   )}
                 </div>
-              </div>
-              
-              {/* Right side: Save button + action icons - identical to BusinessRequestDrawer */}
-              <div className="flex items-center gap-2 shrink-0">
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button
-                      size="sm"
-                      className="h-8 px-3 text-sm font-medium bg-brand-primary hover:bg-brand-primary-hover text-white"
+
+                {/* Status Badge Row */}
+                <div className="flex items-center gap-2.5">
+                  {/* Status Dropdown - CLICKABLE */}
+                  <EpicStatusDropdown
+                    currentStatus={formData.state}
+                    onChange={(status) => handleFieldChange('state', status)}
+                  />
+
+                  {/* MVP Badge */}
+                  {formData.mvp && (
+                    <div 
+                      className="inline-flex items-center px-2 py-1 rounded text-[12px] font-semibold"
+                      style={{
+                        background: 'hsl(var(--muted))',
+                        color: 'var(--text-primary, hsl(var(--foreground)))'
+                      }}
                     >
-                      Save
-                      <ChevronDown className="h-3.5 w-3.5 ml-1" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="bg-popover">
-                    <DropdownMenuItem onSelect={handleSave}>
-                      Save
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onSelect={handleSaveAndClose}>
-                      Save & Close
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                      MVP
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Right Side: Action Buttons */}
+              <div className="flex items-center gap-1.5 shrink-0">
                 
-                {/* More options dropdown - same as BusinessRequestDrawer */}
+                {/* Auto-save indicator - smooth transition between states */}
+                <div className="min-w-[70px] flex items-center justify-end">
+                  <div 
+                    className={`
+                      flex items-center gap-1.5 px-2 py-1 rounded-md text-xs font-medium
+                      transition-all duration-300 ease-in-out
+                      ${isSaving 
+                        ? 'bg-amber-50 text-amber-700 dark:bg-amber-950/30 dark:text-amber-400 opacity-100' 
+                        : showSavedIndicator 
+                          ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-400 opacity-100' 
+                          : 'opacity-0'
+                      }
+                    `}
+                  >
+                    {isSaving ? (
+                      <>
+                        <Loader2 className="h-3 w-3 animate-spin" />
+                        <span>Saving...</span>
+                      </>
+                    ) : showSavedIndicator ? (
+                      <>
+                        <Check className="h-3 w-3" />
+                        <span>Saved</span>
+                      </>
+                    ) : null}
+                  </div>
+                </div>
+
+                {/* More Options */}
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-muted/50">
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      className="h-8 w-8 hover:bg-[var(--surface-hover,hsl(var(--muted)))] press-scale transition-smooth"
+                      style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}
+                    >
                       <MoreVertical className="h-4 w-4" />
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-56 bg-popover">
+                  <DropdownMenuContent 
+                    align="end" 
+                    className="w-48 z-[400] shadow-catalyst-lg"
+                    style={{ background: 'var(--surface-bg, hsl(var(--background)))', borderColor: 'var(--border-default, hsl(var(--border)))' }}
+                  >
                     <DropdownMenuItem onSelect={() => handleAdditionalOption('duplicate')}>
                       <Copy className="h-4 w-4 mr-2" />
                       Duplicate Epic
@@ -433,77 +519,87 @@ export function EpicDrawer({ isOpen, onClose, epicId, onEpicChange }: EpicDrawer
                     <DropdownMenuSeparator />
                     <DropdownMenuItem 
                       onSelect={() => handleAdditionalOption('delete')}
-                      className="text-destructive focus:text-destructive"
+                      className="text-red-600"
                     >
                       <Trash2 className="h-4 w-4 mr-2" />
                       Delete Epic
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
-                
+
+                {/* Expand/Collapse */}
                 <Button
                   variant="ghost"
                   size="icon"
                   onClick={toggleExpand}
-                  className="h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                  className="h-8 w-8 hover:bg-[var(--surface-hover,hsl(var(--muted)))] press-scale transition-smooth"
+                  style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}
                   title={isExpanded ? 'Collapse' : 'Expand'}
                 >
                   {isExpanded ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
                 </Button>
-                
+
+                {/* Close */}
                 <Button 
                   variant="ghost" 
                   size="icon" 
-                  onClick={handleAttemptClose}
-                  className="h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                  onClick={handleClose}
+                  className="h-8 w-8 hover:bg-[var(--surface-hover,hsl(var(--muted)))] press-scale transition-smooth"
+                  style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}
                 >
                   <X className="h-4 w-4" />
                 </Button>
               </div>
             </div>
+
+            {/* Bottom Border */}
+            <div style={{ borderBottom: '1px solid var(--border-default, hsl(var(--border)))' }} />
             <SheetDescription className="sr-only">Epic details panel</SheetDescription>
           </SheetHeader>
 
-          {/* Status row - same pattern as BusinessRequestDrawer */}
-          <div className="px-4 md:px-5 py-2 flex items-center bg-white shrink-0">
-            <button 
-              onClick={() => setStatusModalOpen(true)}
-              className="flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
-            >
-              <span>Status:</span>
-              <span className="text-brand-primary capitalize underline underline-offset-2">
-                {getStatusLabel(formData.state)}
-              </span>
-              <span className="text-xs font-normal text-muted-foreground/70">(click to update)</span>
-            </button>
-            <EpicStatusModal 
-              currentStatus={formData.state || 'new'}
-              epicId={epicId || ''}
-              onStatusChange={(status) => handleFieldChange('state', status)}
-              open={statusModalOpen}
-              onOpenChange={setStatusModalOpen}
-            />
-          </div>
-
-          {/* Tabs - same structure as BusinessRequestDrawer */}
+          {/* ═══════════════════════════════════════════════════════════
+              TABS - Catalyst Design System (Matches BusinessRequestDrawer)
+              ═══════════════════════════════════════════════════════════ */}
           <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col min-h-0">
-            <TabsList className="executive-tabs-list w-full justify-start rounded-none border-b border-border h-10 shrink-0 overflow-x-auto flex-nowrap bg-white px-4 md:px-5">
+            <TabsList 
+              className="w-full justify-start rounded-none h-auto shrink-0 flex-nowrap px-5 bg-transparent py-0"
+              style={{ borderBottom: '1px solid var(--border-default, hsl(var(--border)))' }}
+            >
               {EPIC_TABS.map((tab) => (
                 <TabsTrigger
                   key={tab.value}
                   value={tab.value}
-                  className="executive-tab whitespace-nowrap"
+                  className={cn(
+                    "relative px-3 md:px-4 py-3 text-xs md:text-[13px] font-medium whitespace-nowrap",
+                    "bg-transparent border-none rounded-none",
+                    "data-[state=inactive]:text-muted-foreground data-[state=active]:text-foreground",
+                    // Active indicator
+                    "after:absolute after:bottom-0 after:left-2 after:right-2",
+                    "after:h-[2px] after:rounded-t-sm after:transition-all",
+                    "data-[state=inactive]:after:bg-transparent data-[state=inactive]:after:opacity-0",
+                    "data-[state=active]:after:bg-[#c69c6d] data-[state=active]:after:opacity-100"
+                  )}
                 >
                   {tab.label}
                 </TabsTrigger>
               ))}
             </TabsList>
 
-            <div className="executive-drawer-content flex-1 flex flex-col min-h-0 overflow-y-auto">
-              <TabsContent value="epic-details" className="m-0 focus-visible:outline-none flex-1 p-4 md:p-5 pb-6">
+            {/* ═══════════════════════════════════════════════════════════
+                DRAWER BODY
+                ═══════════════════════════════════════════════════════════ */}
+            <div 
+              ref={tabsBodyScrollRef}
+              className="flex-1 min-h-0 overflow-y-auto"
+              style={{ background: 'var(--surface-subtle, hsl(var(--muted)/0.3))' }}
+            >
+              {/* Epic Details Tab */}
+              <TabsContent value="epic-details" className="mt-0 p-5 pb-8 focus-visible:outline-none">
                 <EpicDetailsViewTab data={formData} onChange={handleFieldChange} />
               </TabsContent>
-              <TabsContent value="technical-score" className="m-0 focus-visible:outline-none">
+              
+              {/* Technical Score Tab */}
+              <TabsContent value="technical-score" className="mt-0 p-5 pb-8 focus-visible:outline-none">
                 <TechnicalScoreViewTab 
                   data={formData} 
                   onChange={handleFieldChange} 
@@ -511,64 +607,48 @@ export function EpicDrawer({ isOpen, onClose, epicId, onEpicChange }: EpicDrawer
                   onDirtyChange={handleDirtyChange}
                 />
               </TabsContent>
-              <TabsContent value="budget" className="m-0 focus-visible:outline-none flex-1 p-4 md:p-5 pb-6">
+              
+              {/* Budget Tab */}
+              <TabsContent value="budget" className="mt-0 p-5 pb-8 focus-visible:outline-none">
                 <EpicBudgetViewTab data={formData} onChange={handleFieldChange} />
               </TabsContent>
-              <TabsContent value="risks" className="m-0 focus-visible:outline-none flex-1 p-4 md:p-5 pb-6">
+              
+              {/* Risks Tab */}
+              <TabsContent value="risks" className="mt-0 p-5 pb-8 focus-visible:outline-none">
                 {epicId && <EpicRisksViewTab epicId={epicId} />}
               </TabsContent>
-              <TabsContent value="dependencies" className="m-0 focus-visible:outline-none flex-1 p-4 md:p-5 pb-6">
+              
+              {/* Dependencies Tab */}
+              <TabsContent value="dependencies" className="mt-0 p-5 pb-8 focus-visible:outline-none">
                 {epicId && <EpicDependenciesTab epicId={epicId} epicName={epic?.name} />}
               </TabsContent>
-              <TabsContent value="links" className="m-0 focus-visible:outline-none">
+              
+              {/* Links Tab */}
+              <TabsContent value="links" className="mt-0 p-5 pb-8 focus-visible:outline-none">
                 {epicId && <EpicLinksViewTab epicId={epicId} />}
               </TabsContent>
-              <TabsContent value="features" className="m-0 focus-visible:outline-none">
+              
+              {/* Features Tab */}
+              <TabsContent value="features" className="mt-0 p-5 pb-8 focus-visible:outline-none">
                 {epicId && <EpicFeaturesViewTab epicId={epicId} />}
               </TabsContent>
-              <TabsContent value="audit-history" className="m-0 focus-visible:outline-none flex-1 flex flex-col min-h-0">
+              
+              {/* Audit History Tab */}
+              <TabsContent value="audit-history" className="mt-0 p-5 pb-8 focus-visible:outline-none">
                 {epicId && <EpicAuditHistoryTab epicId={epicId} />}
               </TabsContent>
             </div>
           </Tabs>
+
         </SheetContent>
       </Sheet>
 
-      {/* Unsaved Changes Dialog - identical to BusinessRequestDrawer */}
-      <AlertDialog open={showUnsavedChangesDialog} onOpenChange={setShowUnsavedChangesDialog}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Unsaved Changes</AlertDialogTitle>
-            <AlertDialogDescription>
-              You have unsaved changes. Are you sure you want to leave? Your changes will be lost.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setShowUnsavedChangesDialog(false)}>
-              Cancel
-            </AlertDialogCancel>
-            <AlertDialogAction 
-              onClick={handleDiscardAndClose}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            >
-              Discard Changes
-            </AlertDialogAction>
-            <AlertDialogAction 
-              onClick={handleSaveAndClose}
-              className="bg-brand-primary text-white hover:bg-brand-primary-hover"
-            >
-              Save & Close
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-
-      {/* Delete Confirmation Dialog - identical to BusinessRequestDrawer */}
+      {/* Delete Confirmation Dialog - Matches BusinessRequestDrawer */}
       <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
-        <AlertDialogContent>
+        <AlertDialogContent style={{ background: 'var(--surface-bg, hsl(var(--background)))', borderColor: 'var(--border-default, hsl(var(--border)))' }}>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete Epic</AlertDialogTitle>
-            <AlertDialogDescription>
+            <AlertDialogTitle style={{ color: 'var(--text-primary, hsl(var(--foreground)))' }}>Delete Epic</AlertDialogTitle>
+            <AlertDialogDescription style={{ color: 'var(--text-secondary, hsl(var(--muted-foreground)))' }}>
               Are you sure you want to delete <span className="font-semibold">{epic?.epic_key}</span>? 
               This epic will be moved to deleted items and can be restored within 30 days.
             </AlertDialogDescription>
