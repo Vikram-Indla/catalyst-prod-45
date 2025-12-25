@@ -40,6 +40,7 @@ import FeaturesPage from "./pages/items/FeaturesPage";
 import FeaturesBacklog from "./pages/FeaturesBacklog";
 import FeaturePrioritizationView from "./pages/items/FeaturePrioritizationView";
 const FeatureDetailPage = lazy(() => import("./pages/project/FeatureDetailPage"));
+const FeatureBacklogPage = lazy(() => import("./modules/feature-backlog/pages/FeatureBacklogPage"));
 const ProjectWorkspace = lazy(() => import("./pages/project/ProjectWorkspace"));
 const BoardView = lazy(() => import("./pages/project/BoardView"));
 const TimelineView = lazy(() => import("./pages/project/TimelineView"));
@@ -335,6 +336,7 @@ const App = () => (
               <Route path="/program/:programId/room" element={<ProgramRoom />} />
               <Route path="/program/:programId/epics" element={<ProgramEpicsPage />} />
               <Route path="/program/:programId/epic-backlog" element={<EpicBacklogWithSidebar />} />
+              <Route path="/program/:programId/feature-backlog" element={<Suspense fallback={<div className="p-8">Loading...</div>}><FeatureBacklogPage /></Suspense>} />
               <Route path="/program/:programId/features" element={<FeaturesWithSidebar />} />
               <Route path="/program/:programId/program-board" element={<ProgramBoardWithSidebar />} />
               <Route path="/program/:programId/dependencies" element={<DependenciesPage />} />

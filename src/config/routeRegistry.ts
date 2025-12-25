@@ -63,6 +63,7 @@ export const ROUTE_REGISTRY: Record<string, RouteConfig> = {
   // Program routes
   '/program/:programId/room': { section: 'PROGRAM', pageTitle: 'Program Room' },
   '/program/:programId/epic-backlog': { section: 'PROGRAM', pageTitle: 'Epic Backlog' },
+  '/program/:programId/feature-backlog': { section: 'PROGRAM', pageTitle: 'Feature Backlog' },
   '/program/:programId/features': { section: 'PROGRAM', pageTitle: 'Features' },
   '/program/:programId/roadmaps': { section: 'PROGRAM', pageTitle: 'Roadmaps' },
   '/program/:programId/dependencies': { section: 'PROGRAM', pageTitle: 'Dependencies' },
