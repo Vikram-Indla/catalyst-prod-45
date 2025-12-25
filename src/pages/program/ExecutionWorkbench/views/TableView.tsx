@@ -1,7 +1,7 @@
 /**
  * Program Work Tree - Enhanced Table View
- * Features: Stats bar, Expand/Collapse All, Density toggle, Column visibility
- * NO Health column per requirements
+ * Features: Compact stats bar, Expand/Collapse All, Density toggle, Column visibility
+ * Optimized spacing and visibility per design spec
  */
 
 import React, { useState, useMemo } from 'react';
@@ -34,82 +34,73 @@ function getOwnerInitials(owner: Owner | null | undefined): string {
   return owner.full_name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
 }
 
-// Status badge
+// Status badge - compact
 function StatusBadge({ status }: { status: ItemStatus }) {
   const styles: Record<ItemStatus, string> = {
-    'Backlog': 'bg-muted text-muted-foreground border-border',
+    'Backlog': 'bg-muted text-foreground/70 border-border',
     'In Progress': 'bg-brand-gold/15 text-brand-gold border-brand-gold/30',
     'Done': 'bg-secondary-green/15 text-secondary-green border-secondary-green/30',
     'Blocked': 'bg-destructive/15 text-destructive border-destructive/30',
   };
   
   return (
-    <span className={cn("inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium border", styles[status])}>
+    <span className={cn("inline-flex items-center px-1.5 py-0 rounded text-[10px] font-medium border", styles[status])}>
       {status}
     </span>
   );
 }
 
-// Owner avatar
+// Owner avatar - compact
 function OwnerAvatar({ owner }: { owner: Owner | null | undefined }) {
-  if (!owner) return <span className="text-muted-foreground/50 text-xs">—</span>;
+  if (!owner) return <span className="text-foreground/40 text-[11px]">—</span>;
   
   const initials = getOwnerInitials(owner);
   const firstName = owner.full_name?.split(' ')[0] || '';
   
   return (
-    <div className="flex items-center gap-2">
-      <div className="h-6 w-6 rounded-full bg-gradient-to-br from-secondary-bronze to-brand-primary flex items-center justify-center text-[10px] font-semibold text-white flex-shrink-0">
+    <div className="flex items-center gap-1.5">
+      <div className="h-5 w-5 rounded-full bg-gradient-to-br from-secondary-bronze to-brand-primary flex items-center justify-center text-[9px] font-semibold text-white flex-shrink-0">
         {initials}
       </div>
-      <span className="text-xs truncate max-w-[80px]">{firstName}</span>
+      <span className="text-[11px] truncate max-w-[70px]">{firstName}</span>
     </div>
   );
 }
 
-// Progress bar
+// Progress bar - compact
 function ProgressBar({ progress }: { progress: number }) {
   const colorClass = progress >= 100 ? 'bg-secondary-green' : progress > 0 ? 'bg-brand-gold' : 'bg-muted-foreground/30';
   
   return (
-    <div className="flex items-center gap-2 min-w-[100px]">
-      <div className="flex-1 h-1.5 bg-muted rounded-full overflow-hidden">
+    <div className="flex items-center gap-1.5 min-w-[80px]">
+      <div className="flex-1 h-1 bg-muted rounded-full overflow-hidden">
         <div className={cn("h-full rounded-full transition-all", colorClass)} style={{ width: `${progress}%` }} />
       </div>
-      <span className="text-[11px] text-muted-foreground w-8 text-right tabular-nums font-medium">{progress}%</span>
+      <span className="text-[10px] text-foreground/60 w-7 text-right tabular-nums font-medium">{progress}%</span>
     </div>
   );
 }
 
-// Stats bar component
+// Compact inline stats bar - 28px height
 function StatsBar({ counts, overallProgress }: { counts: WorkTreeCounts; overallProgress: number }) {
   return (
-    <div className="flex items-center justify-between px-4 py-2 bg-muted/30 border-b border-border">
-      <div className="flex items-center gap-6 text-xs">
-        <span className="flex items-center gap-1.5">
-          <span className="w-2 h-2 rounded-full bg-workitem-epic" />
-          <span className="text-muted-foreground">Epics:</span>
-          <span className="font-semibold">{counts.epics}</span>
+    <div className="flex items-center h-7 px-4 bg-muted/40 border-b border-border text-[11px]">
+      <div className="flex items-center gap-4">
+        <span className="text-foreground/60">
+          Epics: <span className="font-semibold text-foreground">{counts.epics}</span>
         </span>
-        <span className="flex items-center gap-1.5">
-          <span className="w-2 h-2 rounded-full bg-workitem-feature" />
-          <span className="text-muted-foreground">Features:</span>
-          <span className="font-semibold">{counts.features}</span>
+        <span className="text-foreground/60">
+          Features: <span className="font-semibold text-foreground">{counts.features}</span>
         </span>
-        <span className="flex items-center gap-1.5">
-          <span className="w-2 h-2 rounded-full bg-workitem-story" />
-          <span className="text-muted-foreground">Stories:</span>
-          <span className="font-semibold">{counts.stories}</span>
+        <span className="text-foreground/60">
+          Stories: <span className="font-semibold text-foreground">{counts.stories}</span>
         </span>
-        <span className="flex items-center gap-1.5">
-          <span className="w-2 h-2 rounded-full bg-muted-foreground" />
-          <span className="text-muted-foreground">Subtasks:</span>
-          <span className="font-semibold">{counts.subtasks}</span>
+        <span className="text-foreground/60">
+          Subtasks: <span className="font-semibold text-foreground">{counts.subtasks}</span>
         </span>
       </div>
-      <div className="text-xs">
-        <span className="text-muted-foreground">Overall:</span>
-        <span className="font-semibold text-brand-primary ml-1">{overallProgress}%</span>
+      <div className="ml-auto text-foreground/60">
+        Overall: <span className="font-semibold text-brand-primary">{overallProgress}%</span>
       </div>
     </div>
   );
@@ -128,7 +119,8 @@ interface TableRowProps {
 function TableRow({ item, depth, onItemClick, expandedIds, toggleExpand, columns, density }: TableRowProps) {
   const hasChildren = item.children && item.children.length > 0;
   const isExpanded = expandedIds.has(item.id);
-  const rowHeight = density === 'comfortable' ? 'py-3' : 'py-2';
+  // Compact row heights: comfortable=44px, compact=36px
+  const rowClass = density === 'comfortable' ? 'h-11' : 'h-9';
   
   const isVisible = (colId: string) => columns.find(c => c.id === colId)?.visible ?? true;
 
@@ -141,56 +133,56 @@ function TableRow({ item, depth, onItemClick, expandedIds, toggleExpand, columns
   return (
     <>
       <tr 
-        className={cn("border-b border-border/40 hover:bg-muted/40 cursor-pointer transition-colors group", depth === 0 && 'bg-surface-tinted')}
+        className={cn(rowClass, "border-b border-border/40 hover:bg-muted/40 cursor-pointer transition-colors group", depth === 0 && 'bg-surface-tinted')}
         onClick={() => onItemClick(item)}
       >
-        {/* Work Item */}
-        <td className={cn("px-3", rowHeight)}>
-          <div className="flex items-center gap-2" style={{ paddingLeft: `${depth * 20}px` }}>
+        {/* Work Item - tighter layout */}
+        <td className="px-3 py-0">
+          <div className="flex items-center gap-1.5" style={{ paddingLeft: `${depth * 16}px` }}>
             {hasChildren ? (
-              <button onClick={(e) => { e.stopPropagation(); toggleExpand(item.id); }} className="p-0.5 hover:bg-muted rounded flex-shrink-0">
-                {isExpanded ? <ChevronDown className="h-4 w-4 text-muted-foreground" /> : <ChevronRight className="h-4 w-4 text-muted-foreground" />}
+              <button onClick={(e) => { e.stopPropagation(); toggleExpand(item.id); }} className="w-5 h-5 flex items-center justify-center hover:bg-muted rounded flex-shrink-0">
+                {isExpanded ? <ChevronDown className="h-3.5 w-3.5 text-foreground/50" /> : <ChevronRight className="h-3.5 w-3.5 text-foreground/50" />}
               </button>
             ) : (
               <span className="w-5 flex-shrink-0" />
             )}
-            {depth > 0 && <div className="w-px h-4 bg-border/60 -ml-2 mr-0 flex-shrink-0" />}
-            <WorkItemIcon type={item.type === 'subtask' ? 'task' : item.type} size={20} hideTooltip />
-            <span className="font-mono text-[11px] text-muted-foreground flex-shrink-0">{item.key}</span>
-            <span className={cn("text-sm truncate", depth === 0 ? "font-semibold" : depth === 1 ? "font-medium" : "text-muted-foreground")}>{item.title}</span>
+            {depth > 0 && <div className="w-px h-3 bg-border/60 -ml-1.5 mr-0 flex-shrink-0" />}
+            <WorkItemIcon type={item.type === 'subtask' ? 'task' : item.type} size={18} hideTooltip />
+            <span className="font-mono text-[10px] text-foreground/50 flex-shrink-0">{item.key}</span>
+            <span className={cn("text-[13px] truncate", depth === 0 ? "font-semibold text-foreground" : depth === 1 ? "font-medium text-foreground" : "text-foreground/70")}>{item.title}</span>
             {/* Epic badges */}
             {item.type === 'epic' && (
-              <div className="flex items-center gap-1.5 ml-2">
-                {item.team && <Badge variant="outline" className="text-[10px] py-0 px-1.5">{item.team}</Badge>}
-                {item.businessRequest && <Badge variant="outline" className="text-[10px] py-0 px-1.5 bg-blue-500/10 text-blue-600 border-blue-500/30">BR {item.businessRequest.key}</Badge>}
+              <div className="flex items-center gap-1 ml-1.5">
+                {item.team && <Badge variant="outline" className="text-[9px] py-0 px-1 h-4">{item.team}</Badge>}
+                {item.businessRequest && <Badge variant="outline" className="text-[9px] py-0 px-1 h-4 bg-blue-500/10 text-blue-600 border-blue-500/30">BR {item.businessRequest.key}</Badge>}
               </div>
             )}
           </div>
         </td>
-        {isVisible('status') && <td className={cn("px-3", rowHeight)}><StatusBadge status={item.status} /></td>}
-        {isVisible('progress') && <td className={cn("px-3", rowHeight)}><ProgressBar progress={item.progress} /></td>}
-        {isVisible('owner') && <td className={cn("px-3", rowHeight)}><OwnerAvatar owner={item.owner} /></td>}
+        {isVisible('status') && <td className="px-3 py-0"><StatusBadge status={item.status} /></td>}
+        {isVisible('progress') && <td className="px-3 py-0"><ProgressBar progress={item.progress} /></td>}
+        {isVisible('owner') && <td className="px-3 py-0"><OwnerAvatar owner={item.owner} /></td>}
         {isVisible('targetDate') && (
-          <td className={cn("px-3", rowHeight)}>
-            {item.endDate ? <span className="text-xs font-medium">{format(new Date(item.endDate), 'dd MMM')}</span> : <span className="text-muted-foreground/50 text-xs italic">No date</span>}
+          <td className="px-3 py-0">
+            {item.endDate ? <span className="text-[11px] font-medium text-foreground">{format(new Date(item.endDate), 'dd MMM')}</span> : <span className="text-foreground/40 text-[11px]">No date</span>}
           </td>
         )}
         {isVisible('dependencies') && (
-          <td className={cn("px-3", rowHeight)}>
-            {item.dependencyCount > 0 ? <Badge variant="outline" className="text-[10px] py-0">{item.dependencyCount}</Badge> : <span className="text-muted-foreground/50 text-xs">—</span>}
+          <td className="px-3 py-0">
+            {item.dependencyCount > 0 ? <Badge variant="outline" className="text-[9px] py-0 h-4">{item.dependencyCount}</Badge> : <span className="text-foreground/40 text-[11px]">—</span>}
           </td>
         )}
         {isVisible('actions') && (
-          <td className={cn("px-2 w-10", rowHeight)}>
+          <td className="px-2 py-0 w-8">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button className="p-1 hover:bg-muted rounded opacity-0 group-hover:opacity-100 transition-opacity" onClick={(e) => e.stopPropagation()}>
-                  <MoreHorizontal className="h-4 w-4 text-muted-foreground" />
+                <button className="p-0.5 hover:bg-muted rounded opacity-0 group-hover:opacity-100 transition-opacity" onClick={(e) => e.stopPropagation()}>
+                  <MoreHorizontal className="h-3.5 w-3.5 text-foreground/50" />
                 </button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-40">
-                <DropdownMenuItem onClick={() => onItemClick(item)}><Eye className="h-3.5 w-3.5 mr-2" />View Details</DropdownMenuItem>
-                <DropdownMenuItem onClick={handleCopyKey}><Copy className="h-3.5 w-3.5 mr-2" />Copy Key</DropdownMenuItem>
+              <DropdownMenuContent align="end" className="w-36 bg-popover">
+                <DropdownMenuItem onClick={() => onItemClick(item)} className="text-xs"><Eye className="h-3 w-3 mr-1.5" />View Details</DropdownMenuItem>
+                <DropdownMenuItem onClick={handleCopyKey} className="text-xs"><Copy className="h-3 w-3 mr-1.5" />Copy Key</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </td>
@@ -244,46 +236,65 @@ export function TableView({ items, onItemClick, counts, overallProgress }: Table
 
   return (
     <div className="flex flex-col flex-1 overflow-hidden">
-      {/* Stats bar */}
+      {/* Compact stats bar - 28px */}
       <StatsBar counts={counts} overallProgress={overallProgress} />
       
-      {/* Table toolbar */}
-      <div className="flex items-center justify-between px-4 py-2 border-b border-border bg-card/50">
-        <div className="flex items-center gap-1">
-          <Button variant="ghost" size="sm" onClick={collapseAll} className="h-7 px-2 text-xs"><ChevronsUpDown className="h-3.5 w-3.5" /></Button>
-          <Button variant="ghost" size="sm" onClick={expandAll} className="h-7 px-2 text-xs"><ChevronsDownUp className="h-3.5 w-3.5" /></Button>
+      {/* Table toolbar - tight spacing */}
+      <div className="flex items-center justify-between px-4 py-1.5 border-b border-border bg-card/50">
+        <div className="flex items-center gap-0.5">
+          <Button variant="ghost" size="icon" onClick={collapseAll} className="h-7 w-7">
+            <ChevronsUpDown className="h-3.5 w-3.5" />
+          </Button>
+          <Button variant="ghost" size="icon" onClick={expandAll} className="h-7 w-7">
+            <ChevronsDownUp className="h-3.5 w-3.5" />
+          </Button>
         </div>
         <div className="flex items-center gap-2">
-          <div className="flex items-center gap-0.5 p-0.5 rounded bg-muted border border-border">
-            <button onClick={() => setDensity('comfortable')} className={cn("px-2.5 py-1 text-xs rounded transition-colors", density === 'comfortable' ? 'bg-background shadow-sm' : 'text-muted-foreground')}>Comfortable</button>
-            <button onClick={() => setDensity('compact')} className={cn("px-2.5 py-1 text-xs rounded transition-colors", density === 'compact' ? 'bg-background shadow-sm' : 'text-muted-foreground')}>Compact</button>
+          <div className="flex items-center p-0.5 rounded bg-muted border border-border">
+            <button 
+              onClick={() => setDensity('comfortable')} 
+              className={cn("px-2 py-0.5 text-[11px] rounded transition-colors", density === 'comfortable' ? 'bg-background shadow-sm text-foreground' : 'text-foreground/60')}
+            >
+              Comfortable
+            </button>
+            <button 
+              onClick={() => setDensity('compact')} 
+              className={cn("px-2 py-0.5 text-[11px] rounded transition-colors", density === 'compact' ? 'bg-background shadow-sm text-foreground' : 'text-foreground/60')}
+            >
+              Compact
+            </button>
           </div>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm" className="h-7 px-2 text-xs gap-1"><Columns className="h-3.5 w-3.5" />Columns</Button>
+              <Button variant="outline" size="sm" className="h-7 px-2 text-[11px] gap-1">
+                <Columns className="h-3 w-3" />
+                Columns
+              </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
+            <DropdownMenuContent align="end" className="bg-popover">
               {columns.filter(c => !c.required).map(col => (
-                <DropdownMenuCheckboxItem key={col.id} checked={col.visible} onCheckedChange={() => toggleColumn(col.id)}>{col.label}</DropdownMenuCheckboxItem>
+                <DropdownMenuCheckboxItem key={col.id} checked={col.visible} onCheckedChange={() => toggleColumn(col.id)} className="text-xs">
+                  {col.label}
+                </DropdownMenuCheckboxItem>
               ))}
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
       </div>
 
-      {/* Table */}
-      <div className="overflow-auto flex-1 p-3">
+      {/* Table - reduced padding */}
+      <div className="overflow-auto flex-1 p-2">
         <div className="rounded-lg border border-border overflow-hidden bg-card">
           <table className="w-full">
             <thead>
-              <tr className="bg-muted/60 border-b border-border">
-                <th className="py-3 px-3 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Work Item</th>
-                {isVisible('status') && <th className="py-3 px-3 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground w-[100px]">Status</th>}
-                {isVisible('progress') && <th className="py-3 px-3 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground w-[140px]">Progress</th>}
-                {isVisible('owner') && <th className="py-3 px-3 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground w-[120px]">Owner</th>}
-                {isVisible('targetDate') && <th className="py-3 px-3 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground w-[100px]">Target Date</th>}
-                {isVisible('dependencies') && <th className="py-3 px-3 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground w-[60px]">Deps</th>}
-                {isVisible('actions') && <th className="py-3 px-2 w-10"></th>}
+              <tr className="h-9 bg-muted/50 border-b border-border">
+                <th className="px-3 text-left text-[11px] font-semibold uppercase tracking-wide text-foreground/70">Work Item</th>
+                {isVisible('status') && <th className="px-3 text-left text-[11px] font-semibold uppercase tracking-wide text-foreground/70 w-24">Status</th>}
+                {isVisible('progress') && <th className="px-3 text-left text-[11px] font-semibold uppercase tracking-wide text-foreground/70 w-28">Progress</th>}
+                {isVisible('owner') && <th className="px-3 text-left text-[11px] font-semibold uppercase tracking-wide text-foreground/70 w-28">Owner</th>}
+                {isVisible('targetDate') && <th className="px-3 text-left text-[11px] font-semibold uppercase tracking-wide text-foreground/70 w-24">Target Date</th>}
+                {isVisible('dependencies') && <th className="px-3 text-left text-[11px] font-semibold uppercase tracking-wide text-foreground/70 w-14">Deps</th>}
+                {isVisible('actions') && <th className="px-2 w-8"></th>}
               </tr>
             </thead>
             <tbody>

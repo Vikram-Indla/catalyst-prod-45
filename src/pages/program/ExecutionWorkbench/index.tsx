@@ -179,32 +179,15 @@ export default function ExecutionWorkbenchPage() {
   return (
     <ProgramPageLayout>
       <div className="flex flex-col h-full">
-        {/* Header - PageChrome style (inline breadcrumb) */}
-        <div className="shrink-0" style={{ backgroundColor: 'var(--bg)' }}>
-          <div
-            className="flex items-center justify-between px-6"
-            style={{ 
-              height: '52px',
-              borderBottom: '1px solid var(--divider)',
-            }}
-          >
-            <div className="flex items-center gap-2">
-              <span
-                className="text-[11px] font-semibold uppercase tracking-wider"
-                style={{ color: 'var(--text-3)' }}
-              >
+        {/* Header - compact PageChrome style */}
+        <div className="shrink-0 bg-card">
+          <div className="flex items-center px-4 h-11 border-b border-border">
+            <div className="flex items-center gap-1.5">
+              <span className="text-[10px] font-semibold uppercase tracking-wide text-foreground/50">
                 PROGRAM
               </span>
-              <span 
-                className="text-[14px]" 
-                style={{ color: 'var(--text-4)' }}
-              >
-                /
-              </span>
-              <h1
-                className="text-[18px] font-semibold"
-                style={{ color: 'var(--text-1)' }}
-              >
+              <span className="text-[12px] text-foreground/40">/</span>
+              <h1 className="text-[16px] font-semibold text-foreground">
                 Work Tree
               </h1>
             </div>
