@@ -68,9 +68,16 @@ export function UnifiedToolbar({
     >
       {/* LEFT CLUSTER: Search + Filter + Sort */}
       <div className="flex items-center gap-1.5 flex-1 min-w-0">
-        {/* Search Input - no inner border, clean background */}
-        <div className="flex items-center gap-2 flex-1 min-w-0 max-w-xs h-7 px-2">
-          <Search className="h-3.5 w-3.5 text-[var(--brand-gold)] shrink-0" />
+        {/* Search Input - Enhanced visibility for both light and dark mode */}
+        <div className={cn(
+          "flex items-center gap-2 flex-1 min-w-0 max-w-xs h-7 px-2.5 rounded-md",
+          // Light mode: white bg distinct from cream page
+          "bg-white dark:bg-[#1f1f1f]",
+          // Subtle border for definition
+          "border border-[#e5e5e5] dark:border-[#404040]"
+        )}>
+          {/* Search Icon - INCREASED VISIBILITY */}
+          <Search className="h-3.5 w-3.5 shrink-0 text-[#737373] dark:text-[#a3a3a3]" />
           <input
             ref={inputRef}
             type="text"
@@ -79,8 +86,11 @@ export function UnifiedToolbar({
             placeholder={searchPlaceholder}
             style={{ outline: 'none', boxShadow: 'none', border: 'none', backgroundColor: 'transparent' }}
             className={cn(
-              "flex-1 min-w-0 !bg-transparent bg-transparent text-sm text-[var(--text-1)] pl-1",
-              "placeholder:text-[var(--text-3)]",
+              "flex-1 min-w-0 !bg-transparent bg-transparent text-sm pl-1",
+              // Text color
+              "text-[#0a0a0a] dark:text-[#fafafa]",
+              // Placeholder - CRITICAL FIX: brighter in dark mode
+              "placeholder:text-[#737373] dark:placeholder:text-[#8a8a8a]",
               "!outline-none !border-none !ring-0 !shadow-none",
               "focus:!outline-none focus:!border-none focus:!ring-0 focus:!shadow-none"
             )}
@@ -88,12 +98,18 @@ export function UnifiedToolbar({
           {searchValue ? (
             <button
               onClick={() => onSearchChange("")}
-              className={cn("p-0.5 rounded hover:bg-[var(--surface-2)]", focusRingClass)}
+              className={cn("p-0.5 rounded hover:bg-[#f5f5f5] dark:hover:bg-[#2a2a2a]", focusRingClass)}
             >
-              <X className="h-3 w-3 text-[var(--icon-muted)]" />
+              <X className="h-3 w-3 text-[#737373] dark:text-[#a3a3a3]" />
             </button>
           ) : (
-            <kbd className="hidden sm:inline-flex items-center px-1 py-0.5 rounded text-[9px] font-medium bg-[var(--surface-2)] text-[var(--text-3)] border border-[var(--border-color)]">
+            <kbd className={cn(
+              "hidden sm:inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-medium",
+              // Light mode: visible badge
+              "bg-[#f5f5f5] text-[#525252] border border-[#e5e5e5]",
+              // Dark mode: MORE VISIBLE badge
+              "dark:bg-[#2a2a2a] dark:text-[#a3a3a3] dark:border-[#404040]"
+            )}>
               {navigator.platform.includes("Mac") ? "⌘" : "⌃"}K
             </kbd>
           )}
