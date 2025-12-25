@@ -73,7 +73,9 @@ export async function fetchFeatureBacklog(params: FeatureBacklogQueryParams): Pr
           change_number_id,
           projects!project_id(id, name, program_id),
           epics!epic_id(id, name, epic_key, primary_program_id),
-          change_numbers!change_number_id(id, number)
+          change_numbers!change_number_id(id, number),
+          assignee:profiles!assignee_id(id, full_name),
+          owner:profiles!owner_id(id, full_name)
         `);
 
     // Apply program scoping
