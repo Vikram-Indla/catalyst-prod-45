@@ -29,7 +29,7 @@ export default function BrowsePage() {
 
   useEffect(() => {
     if (!key) {
-      setError('No work item key provided');
+      navigate('/home', { replace: true });
       setLoading(false);
       return;
     }
@@ -130,12 +130,13 @@ export default function BrowsePage() {
       if (result) {
         navigateToWorkItem(result);
       } else {
-        setError(`Work item "${workItemKey}" not found`);
+        // Redirect away from /browse/:key entirely (no dead-end error screen)
+        navigate('/home', { replace: true });
         setLoading(false);
       }
     } catch (err) {
       console.error('Error resolving work item key:', err);
-      setError('Failed to resolve work item key');
+      navigate('/home', { replace: true });
       setLoading(false);
     }
   }
