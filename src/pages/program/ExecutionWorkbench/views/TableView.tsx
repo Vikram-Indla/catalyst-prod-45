@@ -1,146 +1,134 @@
 /**
- * WorkBench views: Table View
- * 
- * Executive-grade hierarchical table (Epic → Feature → Story)
- * Columns: Work Item, Health, Progress, Owner, Target Date, Dependencies
- * Uses semantic tokens from index.css for dark/light mode support
+ * Program Work Tree - Enhanced Table View
+ * Features: Stats bar, Expand/Collapse All, Density toggle, Column visibility
+ * NO Health column per requirements
  */
 
-import React, { useState } from 'react';
-import { WorkItem, HealthStatus, ItemStatus } from '../types';
-import { ChevronRight, ChevronDown, MoreHorizontal, Link2, AlertTriangle, Zap, AlignLeft, type LucideIcon } from 'lucide-react';
+import React, { useState, useMemo } from 'react';
+import { WorkItem, ItemStatus, ColumnConfig, DEFAULT_COLUMNS, DensityMode, WorkTreeCounts, Owner } from '../types';
+import { ChevronRight, ChevronDown, MoreHorizontal, Link2, Zap, AlignLeft, ListTodo, ChevronsUpDown, ChevronsDownUp, Columns, Copy, Eye, type LucideIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuCheckboxItem,
+  DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
+import { toast } from 'sonner';
 
 interface TableViewProps {
   items: WorkItem[];
   onItemClick: (item: WorkItem) => void;
+  counts: WorkTreeCounts;
+  overallProgress: number;
 }
 
-// Type badge component - Approved icons from design system
+// Helper to get owner initials
+function getOwnerInitials(owner: Owner | null | undefined): string {
+  if (!owner?.full_name) return '??';
+  return owner.full_name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+}
+
+// Type badge component
 function TypeBadge({ type }: { type: string }) {
   const config: Record<string, { Icon: LucideIcon; bgClass: string; textClass: string }> = {
-    // Panel-approved mapping: Epics + Features use Zap but DIFFERENT semantic colors
     epic: { Icon: Zap, bgClass: 'bg-workitem-epic/15', textClass: 'text-workitem-epic' },
     feature: { Icon: Zap, bgClass: 'bg-workitem-feature/15', textClass: 'text-workitem-feature' },
     story: { Icon: AlignLeft, bgClass: 'bg-workitem-story/15', textClass: 'text-workitem-story' },
+    subtask: { Icon: ListTodo, bgClass: 'bg-muted', textClass: 'text-muted-foreground' },
   };
   const { Icon, bgClass, textClass } = config[type] || config.story;
 
   return (
-    <span
-      className={cn(
-        'inline-flex items-center justify-center w-6 h-6 rounded-md flex-shrink-0',
-        bgClass,
-        textClass
-      )}
-    >
+    <span className={cn('inline-flex items-center justify-center w-6 h-6 rounded-md flex-shrink-0', bgClass, textClass)}>
       <Icon className="h-3.5 w-3.5" />
     </span>
   );
 }
 
-// Owner avatar with initials
-function OwnerAvatar({ name, initials }: { name?: string; initials?: string }) {
-  if (!name) return <span className="text-muted-foreground/50 text-xs">—</span>;
-  
-  const displayInitials = initials || name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
-  
-  return (
-    <div className="flex items-center gap-2">
-      <div className="h-6 w-6 rounded-full bg-gradient-to-br from-secondary-bronze to-brand-primary flex items-center justify-center text-[10px] font-semibold text-white flex-shrink-0">
-        {displayInitials}
-      </div>
-      <span className="text-xs truncate max-w-[80px]">{name.split(' ')[0]}</span>
-    </div>
-  );
-}
-
-// Health status pill
-function HealthPill({ health }: { health: HealthStatus }) {
-  const styles: Record<HealthStatus, string> = {
-    'On Track': 'bg-secondary-green/15 text-secondary-green border-secondary-green/30',
-    'At Risk': 'bg-brand-gold/15 text-brand-gold border-brand-gold/30',
+// Status badge
+function StatusBadge({ status }: { status: ItemStatus }) {
+  const styles: Record<ItemStatus, string> = {
+    'Backlog': 'bg-muted text-muted-foreground border-border',
+    'In Progress': 'bg-brand-gold/15 text-brand-gold border-brand-gold/30',
+    'Done': 'bg-secondary-green/15 text-secondary-green border-secondary-green/30',
     'Blocked': 'bg-destructive/15 text-destructive border-destructive/30',
   };
   
   return (
-    <div className={cn(
-      "inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-medium border",
-      styles[health] || 'bg-muted text-muted-foreground'
-    )}>
-      <span className="w-1.5 h-1.5 rounded-full bg-current" />
-      {health}
+    <span className={cn("inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium border", styles[status])}>
+      {status}
+    </span>
+  );
+}
+
+// Owner avatar
+function OwnerAvatar({ owner }: { owner: Owner | null | undefined }) {
+  if (!owner) return <span className="text-muted-foreground/50 text-xs">—</span>;
+  
+  const initials = getOwnerInitials(owner);
+  const firstName = owner.full_name?.split(' ')[0] || '';
+  
+  return (
+    <div className="flex items-center gap-2">
+      <div className="h-6 w-6 rounded-full bg-gradient-to-br from-secondary-bronze to-brand-primary flex items-center justify-center text-[10px] font-semibold text-white flex-shrink-0">
+        {initials}
+      </div>
+      <span className="text-xs truncate max-w-[80px]">{firstName}</span>
     </div>
   );
 }
 
-// Progress bar colored by health
-function ProgressBar({ progress, health }: { progress: number; health: HealthStatus }) {
-  const colorClass: Record<HealthStatus, string> = {
-    'On Track': 'bg-secondary-green',
-    'At Risk': 'bg-brand-gold',
-    'Blocked': 'bg-destructive',
-  };
+// Progress bar
+function ProgressBar({ progress }: { progress: number }) {
+  const colorClass = progress >= 100 ? 'bg-secondary-green' : progress > 0 ? 'bg-brand-gold' : 'bg-muted-foreground/30';
   
   return (
     <div className="flex items-center gap-2 min-w-[100px]">
       <div className="flex-1 h-1.5 bg-muted rounded-full overflow-hidden">
-        <div 
-          className={cn("h-full rounded-full transition-all", colorClass[health] || 'bg-brand-primary')}
-          style={{ width: `${progress}%` }}
-        />
+        <div className={cn("h-full rounded-full transition-all", colorClass)} style={{ width: `${progress}%` }} />
       </div>
-      <span className="text-[11px] text-muted-foreground w-8 text-right tabular-nums font-medium">
-        {progress}%
-      </span>
+      <span className="text-[11px] text-muted-foreground w-8 text-right tabular-nums font-medium">{progress}%</span>
     </div>
   );
 }
 
-// Dependency chip/badge
-function DependencyBadge({ count, type }: { count: number; type: 'blocking' | 'blocked-by' }) {
-  if (count === 0) return <span className="text-muted-foreground/50 text-xs">—</span>;
-  
-  const isBlocking = type === 'blocking';
-  
+// Stats bar component
+function StatsBar({ counts, overallProgress }: { counts: WorkTreeCounts; overallProgress: number }) {
   return (
-    <div className={cn(
-      "inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium",
-      isBlocking 
-        ? "bg-destructive/15 text-destructive" 
-        : "bg-brand-gold/15 text-brand-gold"
-    )}>
-      {isBlocking ? <AlertTriangle className="h-3 w-3" /> : <Link2 className="h-3 w-3" />}
-      {isBlocking ? `${count} blocking` : `blocked by ${count}`}
+    <div className="flex items-center justify-between px-4 py-2 bg-muted/30 border-b border-border">
+      <div className="flex items-center gap-6 text-xs">
+        <span className="flex items-center gap-1.5">
+          <span className="w-2 h-2 rounded-full bg-workitem-epic" />
+          <span className="text-muted-foreground">Epics:</span>
+          <span className="font-semibold">{counts.epics}</span>
+        </span>
+        <span className="flex items-center gap-1.5">
+          <span className="w-2 h-2 rounded-full bg-workitem-feature" />
+          <span className="text-muted-foreground">Features:</span>
+          <span className="font-semibold">{counts.features}</span>
+        </span>
+        <span className="flex items-center gap-1.5">
+          <span className="w-2 h-2 rounded-full bg-workitem-story" />
+          <span className="text-muted-foreground">Stories:</span>
+          <span className="font-semibold">{counts.stories}</span>
+        </span>
+        <span className="flex items-center gap-1.5">
+          <span className="w-2 h-2 rounded-full bg-muted-foreground" />
+          <span className="text-muted-foreground">Subtasks:</span>
+          <span className="font-semibold">{counts.subtasks}</span>
+        </span>
+      </div>
+      <div className="text-xs">
+        <span className="text-muted-foreground">Overall:</span>
+        <span className="font-semibold text-brand-primary ml-1">{overallProgress}%</span>
+      </div>
     </div>
-  );
-}
-
-// Row actions menu
-function RowActions({ item, onItemClick }: { item: WorkItem; onItemClick: (item: WorkItem) => void }) {
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <button 
-          className="p-1 hover:bg-muted rounded opacity-0 group-hover:opacity-100 transition-opacity"
-          onClick={(e) => e.stopPropagation()}
-        >
-          <MoreHorizontal className="h-4 w-4 text-muted-foreground" />
-        </button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-40">
-        <DropdownMenuItem onClick={() => onItemClick(item)}>View Details</DropdownMenuItem>
-        <DropdownMenuItem>Edit</DropdownMenuItem>
-        <DropdownMenuItem>View Dependencies</DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
   );
 }
 
@@ -150,193 +138,178 @@ interface TableRowProps {
   onItemClick: (item: WorkItem) => void;
   expandedIds: Set<string>;
   toggleExpand: (id: string) => void;
+  columns: ColumnConfig[];
+  density: DensityMode;
 }
 
-function TableRow({ item, depth, onItemClick, expandedIds, toggleExpand }: TableRowProps) {
+function TableRow({ item, depth, onItemClick, expandedIds, toggleExpand, columns, density }: TableRowProps) {
   const hasChildren = item.children && item.children.length > 0;
   const isExpanded = expandedIds.has(item.id);
+  const rowHeight = density === 'comfortable' ? 'py-3' : 'py-2';
+  
+  const isVisible = (colId: string) => columns.find(c => c.id === colId)?.visible ?? true;
 
-  // Subtle row differentiation by depth
-  const rowBgClass = depth === 0 
-    ? 'bg-surface-tinted' 
-    : depth === 1 
-      ? 'bg-transparent' 
-      : 'bg-muted/10';
-
-  // Determine dependency display
-  const blockingCount = item.dependencyCount || 0;
-  const blockedByCount = (item as any).blockedByCount || 0;
+  const handleCopyKey = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    navigator.clipboard.writeText(item.key);
+    toast.success('Key copied to clipboard');
+  };
 
   return (
     <>
       <tr 
-        className={cn(
-          "border-b border-border/40 hover:bg-muted/40 cursor-pointer transition-colors group",
-          rowBgClass
-        )}
+        className={cn("border-b border-border/40 hover:bg-muted/40 cursor-pointer transition-colors group", depth === 0 && 'bg-surface-tinted')}
         onClick={() => onItemClick(item)}
       >
-        {/* Work Item - Type + Key + Title */}
-        <td className="py-2.5 px-3">
+        {/* Work Item */}
+        <td className={cn("px-3", rowHeight)}>
           <div className="flex items-center gap-2" style={{ paddingLeft: `${depth * 20}px` }}>
-            {/* Expand/Collapse */}
             {hasChildren ? (
-              <button 
-                onClick={(e) => { e.stopPropagation(); toggleExpand(item.id); }}
-                className="p-0.5 hover:bg-muted rounded flex-shrink-0"
-              >
-                {isExpanded ? (
-                  <ChevronDown className="h-4 w-4 text-muted-foreground" />
-                ) : (
-                  <ChevronRight className="h-4 w-4 text-muted-foreground" />
-                )}
+              <button onClick={(e) => { e.stopPropagation(); toggleExpand(item.id); }} className="p-0.5 hover:bg-muted rounded flex-shrink-0">
+                {isExpanded ? <ChevronDown className="h-4 w-4 text-muted-foreground" /> : <ChevronRight className="h-4 w-4 text-muted-foreground" />}
               </button>
             ) : (
               <span className="w-5 flex-shrink-0" />
             )}
-            
-            {/* Hierarchy connector for children */}
-            {depth > 0 && (
-              <div className="w-px h-4 bg-border/60 -ml-2 mr-0 flex-shrink-0" />
-            )}
-            
-            {/* Type Badge */}
+            {depth > 0 && <div className="w-px h-4 bg-border/60 -ml-2 mr-0 flex-shrink-0" />}
             <TypeBadge type={item.type} />
-            
-            {/* Key */}
             <span className="font-mono text-[11px] text-muted-foreground flex-shrink-0">{item.key}</span>
-            
-            {/* Title */}
-            <span className={cn(
-              "text-sm truncate",
-              depth === 0 ? "font-semibold" : depth === 1 ? "font-medium" : "text-muted-foreground"
-            )}>
-              {item.title}
-            </span>
+            <span className={cn("text-sm truncate", depth === 0 ? "font-semibold" : depth === 1 ? "font-medium" : "text-muted-foreground")}>{item.title}</span>
+            {/* Epic badges */}
+            {item.type === 'epic' && (
+              <div className="flex items-center gap-1.5 ml-2">
+                {item.team && <Badge variant="outline" className="text-[10px] py-0 px-1.5">{item.team}</Badge>}
+                {item.businessRequest && <Badge variant="outline" className="text-[10px] py-0 px-1.5 bg-blue-500/10 text-blue-600 border-blue-500/30">BR {item.businessRequest.key}</Badge>}
+              </div>
+            )}
           </div>
         </td>
-
-        {/* Health */}
-        <td className="py-2.5 px-3">
-          <HealthPill health={item.health} />
-        </td>
-
-        {/* Progress */}
-        <td className="py-2.5 px-3">
-          <ProgressBar progress={item.progress} health={item.health} />
-        </td>
-
-        {/* Owner */}
-        <td className="py-2.5 px-3">
-          <OwnerAvatar name={item.owner} initials={item.ownerInitials} />
-        </td>
-
-        {/* Target Date */}
-        <td className="py-2.5 px-3">
-          {item.endDate ? (
-            <span className={cn(
-              "text-xs font-medium",
-              item.health === 'At Risk' && "text-brand-gold",
-              item.health === 'Blocked' && "text-destructive"
-            )}>
-              {format(new Date(item.endDate), 'MMM d')}
-            </span>
-          ) : (
-            <span className="text-muted-foreground/50 text-xs">No date</span>
-          )}
-        </td>
-
-        {/* Dependencies */}
-        <td className="py-2.5 px-3">
-          {blockingCount > 0 ? (
-            <DependencyBadge count={blockingCount} type="blocking" />
-          ) : blockedByCount > 0 ? (
-            <DependencyBadge count={blockedByCount} type="blocked-by" />
-          ) : (
-            <span className="text-muted-foreground/50 text-xs">—</span>
-          )}
-        </td>
-
-        {/* Actions */}
-        <td className="py-2.5 px-2 w-10">
-          <RowActions item={item} onItemClick={onItemClick} />
-        </td>
+        {isVisible('status') && <td className={cn("px-3", rowHeight)}><StatusBadge status={item.status} /></td>}
+        {isVisible('progress') && <td className={cn("px-3", rowHeight)}><ProgressBar progress={item.progress} /></td>}
+        {isVisible('owner') && <td className={cn("px-3", rowHeight)}><OwnerAvatar owner={item.owner} /></td>}
+        {isVisible('targetDate') && (
+          <td className={cn("px-3", rowHeight)}>
+            {item.endDate ? <span className="text-xs font-medium">{format(new Date(item.endDate), 'dd MMM')}</span> : <span className="text-muted-foreground/50 text-xs italic">No date</span>}
+          </td>
+        )}
+        {isVisible('dependencies') && (
+          <td className={cn("px-3", rowHeight)}>
+            {item.dependencyCount > 0 ? <Badge variant="outline" className="text-[10px] py-0">{item.dependencyCount}</Badge> : <span className="text-muted-foreground/50 text-xs">—</span>}
+          </td>
+        )}
+        {isVisible('actions') && (
+          <td className={cn("px-2 w-10", rowHeight)}>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="p-1 hover:bg-muted rounded opacity-0 group-hover:opacity-100 transition-opacity" onClick={(e) => e.stopPropagation()}>
+                  <MoreHorizontal className="h-4 w-4 text-muted-foreground" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-40">
+                <DropdownMenuItem onClick={() => onItemClick(item)}><Eye className="h-3.5 w-3.5 mr-2" />View Details</DropdownMenuItem>
+                <DropdownMenuItem onClick={handleCopyKey}><Copy className="h-3.5 w-3.5 mr-2" />Copy Key</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </td>
+        )}
       </tr>
-
-      {/* Render children if expanded */}
       {hasChildren && isExpanded && item.children!.map(child => (
-        <TableRow
-          key={child.id}
-          item={child}
-          depth={depth + 1}
-          onItemClick={onItemClick}
-          expandedIds={expandedIds}
-          toggleExpand={toggleExpand}
-        />
+        <TableRow key={child.id} item={child} depth={depth + 1} onItemClick={onItemClick} expandedIds={expandedIds} toggleExpand={toggleExpand} columns={columns} density={density} />
       ))}
     </>
   );
 }
 
-export function TableView({ items, onItemClick }: TableViewProps) {
+export function TableView({ items, onItemClick, counts, overallProgress }: TableViewProps) {
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
+  const [density, setDensity] = useState<DensityMode>('comfortable');
+  const [columns, setColumns] = useState<ColumnConfig[]>(DEFAULT_COLUMNS);
+
+  // Collect all IDs for expand all
+  const allIds = useMemo(() => {
+    const ids: string[] = [];
+    const collect = (items: WorkItem[]) => {
+      items.forEach(item => {
+        if (item.children?.length) {
+          ids.push(item.id);
+          collect(item.children);
+        }
+      });
+    };
+    collect(items);
+    return ids;
+  }, [items]);
 
   const toggleExpand = (id: string) => {
     setExpandedIds(prev => {
       const next = new Set(prev);
-      if (next.has(id)) {
-        next.delete(id);
-      } else {
-        next.add(id);
-      }
+      if (next.has(id)) next.delete(id); else next.add(id);
       return next;
     });
   };
 
-  if (items.length === 0) {
-    return null;
-  }
+  const expandAll = () => setExpandedIds(new Set(allIds));
+  const collapseAll = () => setExpandedIds(new Set());
+
+  const toggleColumn = (colId: string) => {
+    setColumns(prev => prev.map(c => c.id === colId && !c.required ? { ...c, visible: !c.visible } : c));
+  };
+
+  const isVisible = (colId: string) => columns.find(c => c.id === colId)?.visible ?? true;
+
+  if (items.length === 0) return null;
 
   return (
-    <div className="overflow-auto flex-1 p-3">
-      <div className="rounded-lg border border-border overflow-hidden bg-card">
-        <table className="w-full">
-          <thead>
-            <tr className="bg-muted/60 border-b border-border">
-              <th className="py-3 px-3 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground w-[38%]">
-                Work Item
-              </th>
-              <th className="py-3 px-3 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground w-[10%]">
-                Health
-              </th>
-              <th className="py-3 px-3 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground w-[14%]">
-                Progress
-              </th>
-              <th className="py-3 px-3 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground w-[14%]">
-                Owner
-              </th>
-              <th className="py-3 px-3 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground w-[10%]">
-                Target Date
-              </th>
-              <th className="py-3 px-3 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground w-[12%]">
-                Dependencies
-              </th>
-              <th className="py-3 px-2 w-10"></th>
-            </tr>
-          </thead>
-          <tbody>
-            {items.map(item => (
-              <TableRow
-                key={item.id}
-                item={item}
-                depth={0}
-                onItemClick={onItemClick}
-                expandedIds={expandedIds}
-                toggleExpand={toggleExpand}
-              />
-            ))}
-          </tbody>
-        </table>
+    <div className="flex flex-col flex-1 overflow-hidden">
+      {/* Stats bar */}
+      <StatsBar counts={counts} overallProgress={overallProgress} />
+      
+      {/* Table toolbar */}
+      <div className="flex items-center justify-between px-4 py-2 border-b border-border bg-card/50">
+        <div className="flex items-center gap-1">
+          <Button variant="ghost" size="sm" onClick={collapseAll} className="h-7 px-2 text-xs"><ChevronsUpDown className="h-3.5 w-3.5" /></Button>
+          <Button variant="ghost" size="sm" onClick={expandAll} className="h-7 px-2 text-xs"><ChevronsDownUp className="h-3.5 w-3.5" /></Button>
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="flex items-center gap-0.5 p-0.5 rounded bg-muted border border-border">
+            <button onClick={() => setDensity('comfortable')} className={cn("px-2.5 py-1 text-xs rounded transition-colors", density === 'comfortable' ? 'bg-background shadow-sm' : 'text-muted-foreground')}>Comfortable</button>
+            <button onClick={() => setDensity('compact')} className={cn("px-2.5 py-1 text-xs rounded transition-colors", density === 'compact' ? 'bg-background shadow-sm' : 'text-muted-foreground')}>Compact</button>
+          </div>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm" className="h-7 px-2 text-xs gap-1"><Columns className="h-3.5 w-3.5" />Columns</Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              {columns.filter(c => !c.required).map(col => (
+                <DropdownMenuCheckboxItem key={col.id} checked={col.visible} onCheckedChange={() => toggleColumn(col.id)}>{col.label}</DropdownMenuCheckboxItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      </div>
+
+      {/* Table */}
+      <div className="overflow-auto flex-1 p-3">
+        <div className="rounded-lg border border-border overflow-hidden bg-card">
+          <table className="w-full">
+            <thead>
+              <tr className="bg-muted/60 border-b border-border">
+                <th className="py-3 px-3 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Work Item</th>
+                {isVisible('status') && <th className="py-3 px-3 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground w-[100px]">Status</th>}
+                {isVisible('progress') && <th className="py-3 px-3 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground w-[140px]">Progress</th>}
+                {isVisible('owner') && <th className="py-3 px-3 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground w-[120px]">Owner</th>}
+                {isVisible('targetDate') && <th className="py-3 px-3 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground w-[100px]">Target Date</th>}
+                {isVisible('dependencies') && <th className="py-3 px-3 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground w-[60px]">Deps</th>}
+                {isVisible('actions') && <th className="py-3 px-2 w-10"></th>}
+              </tr>
+            </thead>
+            <tbody>
+              {items.map(item => (
+                <TableRow key={item.id} item={item} depth={0} onItemClick={onItemClick} expandedIds={expandedIds} toggleExpand={toggleExpand} columns={columns} density={density} />
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );
