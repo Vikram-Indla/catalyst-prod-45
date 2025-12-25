@@ -187,6 +187,7 @@ export function OperationsGridRow({
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button 
+              type="button"
               className="w-5 h-5 rounded flex items-center justify-center hover:bg-[var(--nav-hover-bg)] text-[var(--icon-muted)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]"
               onClick={(e) => e.stopPropagation()}
               title="More actions"
@@ -199,7 +200,11 @@ export function OperationsGridRow({
             className="bg-white dark:bg-gray-800 border-[var(--border-color)] z-[300] shadow-lg"
           >
             <DropdownMenuItem 
-              onClick={(e) => { e.stopPropagation(); onAssignToMe?.(item.id); }}
+              onSelect={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                onAssignToMe?.(item.id);
+              }}
               className="text-[var(--text-1)] cursor-pointer"
             >
               <UserPlus className="w-4 h-4 mr-2" />
@@ -352,6 +357,7 @@ export function DeliveryGridRow({
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button 
+                type="button"
                 className="w-5 h-5 rounded flex items-center justify-center hover:bg-[var(--nav-hover-bg)] text-[var(--icon-muted)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]"
                 onClick={(e) => e.stopPropagation()}
                 title="More actions"
@@ -364,7 +370,11 @@ export function DeliveryGridRow({
               className="bg-white dark:bg-gray-800 border-[var(--border-color)] z-[300] shadow-lg"
             >
               <DropdownMenuItem 
-                onClick={(e) => { e.stopPropagation(); onAssignToMe?.(item.id); }}
+                onSelect={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  onAssignToMe?.(item.id);
+                }}
                 className="text-[var(--text-1)] cursor-pointer"
               >
                 <UserPlus className="w-4 h-4 mr-2" />

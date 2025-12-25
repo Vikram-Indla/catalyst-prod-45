@@ -256,7 +256,7 @@ async function fetchDelivery(params: {
     .from('stories')
     .select(`
       id, story_key, title, name, status, state, priority, assignee_id, blocked, created_at, updated_at,
-      feature:features(id, name, display_id)
+      feature:features(id, name, display_id, project_id)
     `, { count: 'exact' })
     .is('deleted_at', null);
 
@@ -285,9 +285,10 @@ async function fetchDelivery(params: {
   const storyProfileMap = new Map((storyProfiles || []).map(p => [p.id, p.full_name]));
 
   (stories || []).forEach(s => {
+    const storyKey = s.story_key || `US-${s.id.slice(0, 6)}`;
     items.push({
       id: s.id,
-      key: s.story_key || `US-${s.id.slice(0, 6)}`,
+      key: storyKey,
       summary: s.title || s.name || 'Untitled',
       project: s.feature?.name || 'Backlog',
       projectKey: s.feature?.display_id || 'BKL',
@@ -300,7 +301,9 @@ async function fetchDelivery(params: {
       activityType: 'Updated' as const,
       priority: s.priority,
       blocked: s.blocked,
-      navPath: `/industry/backlog?focusKey=${encodeURIComponent(s.story_key || s.id)}`,
+      navPath: s.feature?.project_id
+        ? `/projects/${s.feature.project_id}/work?focusKey=${encodeURIComponent(storyKey)}`
+        : `/industry/backlog?focusKey=${encodeURIComponent(storyKey)}`,
     });
   });
 
@@ -309,7 +312,7 @@ async function fetchDelivery(params: {
     let featureQuery = supabase
       .from('features')
       .select(`
-        id, display_id, name, status, priority, blocked, created_at, updated_at,
+        id, display_id, name, status, priority, blocked, created_at, updated_at, project_id,
         epic:epics(id, name, epic_key)
       `, { count: 'exact' })
       .is('deleted_at', null);
@@ -328,9 +331,10 @@ async function fetchDelivery(params: {
     totalFeatures = featureCount || 0;
 
     (features || []).forEach(f => {
+      const featureKey = f.display_id || `F-${f.id.slice(0, 6)}`;
       items.push({
         id: f.id,
-        key: f.display_id || `F-${f.id.slice(0, 6)}`,
+        key: featureKey,
         summary: f.name,
         project: f.epic?.name || 'Portfolio',
         projectKey: f.epic?.epic_key || 'PRT',
@@ -343,7 +347,8 @@ async function fetchDelivery(params: {
         activityType: 'Updated' as const,
         priority: f.priority,
         blocked: f.blocked,
-        navPath: `/industry/backlog?focusKey=${encodeURIComponent(f.display_id || f.id)}`,
+        // Prefer real feature detail page when project context exists
+        navPath: f.project_id ? `/projects/${f.project_id}/features/${f.id}` : `/features`,
       });
     });
 
