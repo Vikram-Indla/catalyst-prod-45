@@ -425,19 +425,19 @@ export function IncidentListTable({
                       key={incident.id} 
                       className={cn(
                         // CSS Grid row - exactly 36px height
-                        'grid items-center h-9 transition-colors cursor-pointer border-b border-border last:border-b-0',
-                        // SEV1 Critical - Strong red highlight with left border
-                        isCritical && 'bg-red-50 dark:bg-red-950/30 hover:bg-red-100 dark:hover:bg-red-950/50 border-l-4 border-l-red-500',
-                        // SLA Breached (non-critical) - Amber highlight with left border
-                        isBreached && !isCritical && 'bg-amber-50 dark:bg-amber-950/30 hover:bg-amber-100 dark:hover:bg-amber-950/50 border-l-4 border-l-amber-500',
-                        // SEV2 High - Subtle orange tint
-                        !isCritical && !isBreached && incident.severity === 'SEV2' && 'bg-orange-50/50 dark:bg-orange-950/20 hover:bg-orange-50 dark:hover:bg-orange-950/30',
+                        'grid items-center h-9 transition-colors cursor-pointer border-b border-border last:border-b-0 hover:bg-muted/30',
                         // Default rows
-                        !isCritical && !isBreached && incident.severity !== 'SEV2' && 'bg-card hover:bg-muted/30',
+                        !isCritical && !isBreached && 'bg-card',
                         // Hover override for non-highlighted rows
-                        isHovered && !isCritical && !isBreached && incident.severity !== 'SEV2' && 'bg-muted/30'
+                        isHovered && !isCritical && !isBreached && 'bg-muted/30'
                       )}
-                      style={{ gridTemplateColumns: gridTemplate }}
+                      style={{
+                        gridTemplateColumns: gridTemplate,
+                        // Warning rows only (SEV1 or breached SLA) — champagne tint at 15% opacity
+                        backgroundColor: (isCritical || isBreached)
+                          ? 'rgba(212, 184, 150, 0.15)'
+                          : undefined,
+                      }}
                       onClick={(e) => handleRowClick(incident.id, e)}
                       onMouseEnter={() => setHoveredId(incident.id)}
                       onMouseLeave={() => setHoveredId(null)}
