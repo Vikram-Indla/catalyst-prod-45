@@ -307,28 +307,44 @@ async function fetchDelivery(params: {
     });
   });
 
-  // Fetch features (only for worked-on scope since features don't have assignees)
-  if (scope === 'worked-on') {
+  // Fetch features + epics for worked-on and assigned scopes
+  // - worked-on: show all recent items
+  // - assigned: show only items assigned to the current user
+  if (scope === 'worked-on' || scope === 'assigned') {
+    // ------------------------------
+    // Features
+    // ------------------------------
     let featureQuery = supabase
       .from('features')
       .select(`
-        id, display_id, name, status, priority, blocked, created_at, updated_at, project_id,
+        id, display_id, name, status, priority, blocked, created_at, updated_at, project_id, assignee_id,
         epic:epics(id, name, epic_key)
       `, { count: 'exact' })
       .is('deleted_at', null);
+
+    if (scope === 'assigned' && userId) {
+      featureQuery = featureQuery.eq('assignee_id', userId);
+    }
 
     if (filters.status.length > 0) featureQuery = featureQuery.in('status', filters.status as any);
     if (filters.priority.length > 0) featureQuery = featureQuery.in('priority', filters.priority as any);
     if (search?.trim()) featureQuery = featureQuery.or(`name.ilike.%${search}%,display_id.ilike.%${search}%`);
     if (updatedRangeDate) featureQuery = featureQuery.gte('updated_at', updatedRangeDate.toISOString());
-    featureQuery = sort === 'priority' 
-      ? featureQuery.order('priority', { ascending: true }) 
+    featureQuery = sort === 'priority'
+      ? featureQuery.order('priority', { ascending: true })
       : featureQuery.order('updated_at', { ascending: false });
     featureQuery = featureQuery.limit(500);
 
     const { data: features, count: featureCount, error: featureErr } = await featureQuery;
     if (featureErr) throw featureErr;
     totalFeatures = featureCount || 0;
+
+    // Assignee names for features
+    const featureAssigneeIds = (features || []).map(f => f.assignee_id).filter(Boolean);
+    const { data: featureProfiles } = featureAssigneeIds.length > 0
+      ? await supabase.from('profiles').select('id, full_name').in('id', featureAssigneeIds as string[])
+      : { data: [] };
+    const featureProfileMap = new Map((featureProfiles || []).map(p => [p.id, p.full_name]));
 
     (features || []).forEach(f => {
       const featureKey = f.display_id || `F-${f.id.slice(0, 6)}`;
@@ -338,25 +354,30 @@ async function fetchDelivery(params: {
         summary: f.name,
         project: f.epic?.name || 'Portfolio',
         projectKey: f.epic?.epic_key || 'PRT',
-        level: 'Program' as HomeLevel, // Features are at Program level
+        level: 'Program' as HomeLevel,
         status: f.status || 'Open',
         type: 'feature' as WorkItemType,
         domain: 'delivery' as HomeDomain,
-        assignee: null,
+        assignee: f.assignee_id ? featureProfileMap.get(f.assignee_id) || null : null,
         activityDate: new Date(f.updated_at || f.created_at),
         activityType: 'Updated' as const,
         priority: f.priority,
         blocked: f.blocked,
-        // Prefer real feature detail page when project context exists
         navPath: f.project_id ? `/projects/${f.project_id}/features/${f.id}` : `/features`,
       });
     });
 
-    // Fetch epics
+    // ------------------------------
+    // Epics
+    // ------------------------------
     let epicQuery = supabase
       .from('epics')
       .select('id, epic_key, name, status, assignee_id, created_at, updated_at', { count: 'exact' })
       .is('deleted_at', null);
+
+    if (scope === 'assigned' && userId) {
+      epicQuery = epicQuery.eq('assignee_id', userId);
+    }
 
     if (search?.trim()) epicQuery = epicQuery.or(`name.ilike.%${search}%,epic_key.ilike.%${search}%`);
     if (updatedRangeDate) epicQuery = epicQuery.gte('updated_at', updatedRangeDate.toISOString());
@@ -368,8 +389,8 @@ async function fetchDelivery(params: {
 
     // Fetch assignee names for epics
     const epicAssigneeIds = (epics || []).map(e => e.assignee_id).filter(Boolean);
-    const { data: epicProfiles } = epicAssigneeIds.length > 0 
-      ? await supabase.from('profiles').select('id, full_name').in('id', epicAssigneeIds)
+    const { data: epicProfiles } = epicAssigneeIds.length > 0
+      ? await supabase.from('profiles').select('id, full_name').in('id', epicAssigneeIds as string[])
       : { data: [] };
     const epicProfileMap = new Map((epicProfiles || []).map(p => [p.id, p.full_name]));
 
@@ -380,7 +401,7 @@ async function fetchDelivery(params: {
         summary: e.name,
         project: 'Portfolio',
         projectKey: 'PRT',
-        level: 'Product' as HomeLevel, // Epics are at Product level
+        level: 'Product' as HomeLevel,
         status: e.status || 'Open',
         type: 'epic' as WorkItemType,
         domain: 'delivery' as HomeDomain,
@@ -400,16 +421,22 @@ async function fetchDelivery(params: {
   const paginatedItems = items.slice(from, from + pageSize);
 
   // Get scope counts
-  const [workedOnRes, assignedRes] = await Promise.all([
+  const [storiesTotalRes, storiesAssignedRes, featuresAssignedRes, epicsAssignedRes] = await Promise.all([
     supabase.from('stories').select('id', { count: 'exact', head: true }).is('deleted_at', null),
     supabase.from('stories').select('id', { count: 'exact', head: true }).is('deleted_at', null).not('assignee_id', 'is', null),
+    userId
+      ? supabase.from('features').select('id', { count: 'exact', head: true }).is('deleted_at', null).eq('assignee_id', userId)
+      : Promise.resolve({ count: 0 } as any),
+    userId
+      ? supabase.from('epics').select('id', { count: 'exact', head: true }).is('deleted_at', null).eq('assignee_id', userId)
+      : Promise.resolve({ count: 0 } as any),
   ]);
 
   return {
     items: paginatedItems,
     counts: {
-      workedOn: (workedOnRes.count || 0) + totalFeatures + totalEpics,
-      assigned: assignedRes.count || 0,
+      workedOn: (storiesTotalRes.count || 0) + totalFeatures + totalEpics,
+      assigned: (storiesAssignedRes.count || 0) + (featuresAssignedRes.count || 0) + (epicsAssignedRes.count || 0),
       starred: 0,
       total,
     },
