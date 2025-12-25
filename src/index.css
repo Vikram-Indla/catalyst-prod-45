@@ -54,6 +54,7 @@
     
     /* ═══════════════════════════════════════════════════════════════
        BRAND PALETTE — Catalyst Golden Hour
+       (HSL triples so Tailwind + dark mode behave correctly)
        ═══════════════════════════════════════════════════════════════ */
     --brand-olive: #5c7c5c;
     --brand-olive-dark: #4a6a4a;
@@ -61,6 +62,13 @@
     --brand-bronze: #8b7355;
     --brand-gold: #c69c6d;
     --brand-champagne: #d4b896;
+
+    /* HSL versions (preferred for theming + alpha) */
+    --catalyst-olive: 120 26% 42%;        /* #5c7c5c */
+    --catalyst-bronze: 30 24% 44%;        /* #8b7355 */
+    --catalyst-gold: 32 40% 60%;          /* #c69c6d */
+    --catalyst-champagne: 34 40% 71%;     /* #d4b896 */
+    --catalyst-grey: 210 6% 80%;          /* ~#c8ccd0 */
     
     /* Custom semantic tokens */
     --text-primary: #0a0a0a;

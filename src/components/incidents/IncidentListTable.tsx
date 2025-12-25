@@ -122,10 +122,10 @@ function LoadingSkeleton({
   visibleColumns: ColumnConfig[];
 }) {
   return (
-    <div className="rounded-md border border-[#e5e0d8] overflow-hidden bg-card">
+    <div className="rounded-md border border-border overflow-hidden bg-card">
       {/* Header - exactly 32px */}
       <div 
-        className="grid items-center h-8 bg-[#faf7f1] border-b border-[#e5e0d8]"
+        className="grid items-center h-8 bg-muted/60 border-b border-border"
         style={{ gridTemplateColumns: gridTemplate }}
       >
         <div className={cn(GRID_CELL_BASE, "pl-3 pr-2 flex items-center h-full")}>
@@ -152,7 +152,7 @@ function LoadingSkeleton({
       {[...Array(12)].map((_, i) => (
         <div 
           key={i} 
-          className="grid items-center h-9 border-b border-[#e5e0d8] last:border-b-0"
+          className="grid items-center h-9 border-b border-border last:border-b-0"
           style={{ gridTemplateColumns: gridTemplate }}
         >
           <div className={cn(GRID_CELL_BASE, "pl-3 pr-2 flex items-center h-full")}>
@@ -330,14 +330,14 @@ export function IncidentListTable({
         {/* Table container - horizontal scroll when content exceeds viewport */}
         <div 
           ref={containerRef}
-          className="rounded-md border border-[#e5e0d8] overflow-hidden bg-card flex-1"
+          className="rounded-md border border-border overflow-hidden bg-card flex-1"
         >
           <div className="overflow-x-auto w-full h-full">
             {/* Grid table - min-width ensures it can grow for horizontal scroll */}
             <div style={{ minWidth: '100%', width: '100%' }}>
               {/* Header row - exactly 32px height, CSS Grid layout */}
               <div 
-                className="grid items-center h-8 sticky top-0 z-20 bg-[#faf7f1] border-b border-[#e5e0d8]"
+                className="grid items-center h-8 sticky top-0 z-20 bg-muted/60 border-b border-border"
                 style={{ gridTemplateColumns: gridTemplate }}
               >
                 {/* Key - left aligned */}
@@ -433,9 +433,9 @@ export function IncidentListTable({
                       )}
                       style={{
                         gridTemplateColumns: gridTemplate,
-                        // Warning rows only (SEV1 or breached SLA) — champagne tint at 15% opacity
+                        // Warning rows only (SEV1 or breached SLA) — champagne tint at 14% opacity
                         backgroundColor: (isCritical || isBreached)
-                          ? 'rgba(212, 184, 150, 0.15)'
+                          ? 'hsl(var(--catalyst-champagne) / 0.14)'
                           : undefined,
                       }}
                       onClick={(e) => handleRowClick(incident.id, e)}
