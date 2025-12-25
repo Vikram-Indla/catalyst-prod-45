@@ -48,7 +48,6 @@ import { cn } from '@/lib/utils';
 // Epic-specific tabs
 import { EpicDetailsViewTab } from './drawer-tabs/EpicDetailsViewTab';
 import { TechnicalScoreViewTab } from './drawer-tabs/TechnicalScoreViewTab';
-import { EpicBudgetViewTab } from './drawer-tabs/EpicBudgetViewTab';
 import { EpicRisksViewTab } from './drawer-tabs/EpicRisksViewTab';
 import { EpicLinksViewTab } from './drawer-tabs/EpicLinksViewTab';
 import { EpicFeaturesViewTab } from './drawer-tabs/EpicFeaturesViewTab';
@@ -63,7 +62,6 @@ const AUTO_SAVE_DELAY = 800;
 const EPIC_TABS = [
   { value: 'epic-details', label: 'Epic Details' },
   { value: 'technical-score', label: 'Technical Score' },
-  { value: 'budget', label: 'Budget' },
   { value: 'risks', label: 'Risks' },
   { value: 'dependencies', label: 'Dependencies' },
   { value: 'links', label: 'Links' },
@@ -615,11 +613,6 @@ export function EpicDrawer({ isOpen, onClose, epicId, onEpicChange }: EpicDrawer
                   epicId={epicId || undefined}
                   onDirtyChange={handleDirtyChange}
                 />
-              </TabsContent>
-              
-              {/* Budget Tab */}
-              <TabsContent value="budget" className="mt-0 p-5 pb-8 focus-visible:outline-none">
-                <EpicBudgetViewTab data={formData} onChange={handleFieldChange} />
               </TabsContent>
               
               {/* Risks Tab */}
