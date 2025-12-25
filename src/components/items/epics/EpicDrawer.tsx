@@ -228,14 +228,20 @@ export function EpicDrawer({ isOpen, onClose, epicId, onEpicChange }: EpicDrawer
   });
 
   // Auto-save function
-  const performAutoSave = useCallback(async (dataToSave: Record<string, any>) => {
+  const performAutoSave = useCallback(async (patch: Record<string, any>) => {
     if (!epicId) return;
+    if (!patch || Object.keys(patch).length === 0) return;
 
     setIsSaving(true);
 
     try {
-      await updateMutation.mutateAsync(dataToSave);
-      setOriginalData(dataToSave);
+      await updateMutation.mutateAsync(patch);
+
+      // Merge into originalData (used for dirty tracking / change detection)
+      setOriginalData((prev) => ({ ...prev, ...patch }));
+
+      // Clear pending patch after a successful save
+      pendingChangesRef.current = {};
       skipNextFormResetRef.current = true;
 
       // Show saved indicator briefly
@@ -250,27 +256,26 @@ export function EpicDrawer({ isOpen, onClose, epicId, onEpicChange }: EpicDrawer
   }, [epicId, updateMutation]);
 
   const handleFieldChange = useCallback((field: string, value: any) => {
-    setFormData(prev => {
-      // Handle batch updates (multiple fields at once)
-      const newData = field === '_batch' && value && typeof value === 'object'
-        ? { ...prev, ...value }
-        : { ...prev, [field]: value };
+    // Build patch (only changed fields)
+    const patch = field === '_batch' && value && typeof value === 'object'
+      ? value
+      : { [field]: value };
 
-      // Store pending changes for auto-save
-      pendingChangesRef.current = newData;
+    // Update local form state
+    setFormData((prev) => ({ ...prev, ...patch }));
 
-      // Clear existing timeout
-      if (autoSaveTimeoutRef.current) {
-        clearTimeout(autoSaveTimeoutRef.current);
-      }
+    // Accumulate pending changes (patch-only)
+    pendingChangesRef.current = { ...pendingChangesRef.current, ...patch };
 
-      // Schedule auto-save
-      autoSaveTimeoutRef.current = setTimeout(() => {
-        performAutoSave(pendingChangesRef.current);
-      }, AUTO_SAVE_DELAY);
+    // Clear existing timeout
+    if (autoSaveTimeoutRef.current) {
+      clearTimeout(autoSaveTimeoutRef.current);
+    }
 
-      return newData;
-    });
+    // Schedule auto-save
+    autoSaveTimeoutRef.current = setTimeout(() => {
+      performAutoSave(pendingChangesRef.current);
+    }, AUTO_SAVE_DELAY);
 
     skipNextFormResetRef.current = true;
   }, [performAutoSave]);
