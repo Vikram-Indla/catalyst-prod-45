@@ -9,7 +9,7 @@ import { useParams } from 'react-router-dom';
 import { ProgramPageLayout } from '@/components/program/ProgramPageLayout';
 import { Search, Filter, ChevronDown, Check, Loader2, Table2, GanttChart, Map, LayoutGrid, Rows } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { WorkItem, WorkbenchView, WorkbenchFilters, DEFAULT_WORKBENCH_FILTERS } from './types';
+import { WorkItem, WorkbenchView, WorkbenchFilters, DEFAULT_WORKBENCH_FILTERS, WorkTreeCounts } from './types';
 import { WorkbenchFiltersDialog } from './WorkbenchFiltersDialog';
 import { WorkbenchDetailsDrawer } from './WorkbenchDetailsDrawer';
 import { TableView } from './views/TableView';
@@ -162,13 +162,12 @@ export default function ExecutionWorkbenchPage() {
   const [selectedFeature, setSelectedFeature] = useState<Feature | null>(null);
 
   // Fetch real data
-  const { items: allItems, projects, owners, isLoading, error } = useWorkbenchData(programId, selectedProject);
+  const { items: allItems, projects, owners, isLoading, error, counts, overallProgress } = useWorkbenchData(programId, selectedProject);
 
   // Count active filters
   const activeFilterCount = useMemo(() => {
     let count = 0;
     if (filters.owners.length > 0) count++;
-    if (filters.health.length > 0) count++;
     if (filters.status.length > 0) count++;
     if (filters.activeInPeriod !== 'any') count++;
     if (filters.hasDependencies !== null) count++;
@@ -195,20 +194,11 @@ export default function ExecutionWorkbenchPage() {
 
     if (filters.owners.length > 0) {
       const matchesOwner = (item: WorkItem): boolean => {
-        if (item.owner && filters.owners.includes(item.owner)) return true;
+        if (item.owner && filters.owners.includes(item.owner.id)) return true;
         if (item.children) return item.children.some(matchesOwner);
         return false;
       };
       items = items.filter(matchesOwner);
-    }
-
-    if (filters.health.length > 0) {
-      const matchesHealth = (item: WorkItem): boolean => {
-        if (filters.health.includes(item.health)) return true;
-        if (item.children) return item.children.some(matchesHealth);
-        return false;
-      };
-      items = items.filter(matchesHealth);
     }
 
     if (filters.status.length > 0) {
@@ -392,7 +382,7 @@ export default function ExecutionWorkbenchPage() {
             <EmptyState message={getEmptyMessage()} />
           ) : (
             <>
-              {view === 'table' && <TableView items={filteredItems} onItemClick={handleItemClick} />}
+              {view === 'table' && <TableView items={filteredItems} onItemClick={handleItemClick} counts={counts} overallProgress={overallProgress} />}
               {view === 'gantt' && <GanttView items={filteredItems} onItemClick={handleItemClick} />}
               {view === 'roadmap' && <RoadmapView items={filteredItems} onItemClick={handleItemClick} />}
               {view === 'board' && <BoardView items={filteredItems} onItemClick={handleItemClick} />}
