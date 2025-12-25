@@ -5,8 +5,9 @@
 import { useBacklogState } from '../hooks/useBacklogState';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Filter, Download, Search, List, LayoutGrid, Plus } from 'lucide-react';
+import { Filter, Download, Search, List, LayoutGrid, Plus, Columns } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface BacklogHeaderProps {
   onOpenFilters: () => void;
@@ -166,6 +167,29 @@ export function BacklogHeader({
             >
               <Filter className="h-4 w-4" />
             </Button>
+
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={onOpenColumns}
+                    className="h-8 w-8"
+                    style={{ 
+                      backgroundColor: 'var(--surface-1)', 
+                      borderColor: 'var(--border-color)',
+                      color: 'var(--icon-default)'
+                    }}
+                  >
+                    <Columns className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Manage columns</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
 
             <Button
               variant="outline"

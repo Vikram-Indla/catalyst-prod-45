@@ -35,17 +35,18 @@ const STANDARD_COLUMNS = [
   { id: 'portfolio', label: 'Portfolio', default: false },
 ];
 
-// Epic Backlog specific columns (matching Jira Align: Epic, Labels, Points, MVP, Process Step, Strategic Value Score, Assignee)
+// Epic Backlog specific columns (matching Jira Align: Epic, Labels, Points, MVP, Process Step, Assignee)
 const EPIC_BACKLOG_COLUMNS = [
   // Core columns - always visible
-  { id: 'epic', label: 'Epic', default: true },
-  { id: 'labels', label: 'Labels', default: true },
-  { id: 'points', label: 'Points', default: true },
+  { id: 'epic', label: 'Summary', default: true },
+  { id: 'themeName', label: 'Theme', default: true },
+  { id: 'quarters', label: 'Quarters', default: true },
   { id: 'mvp', label: 'MVP', default: true },
-  { id: 'processStep', label: 'Process Step', default: true },
-  { id: 'strategicValueScore', label: 'Strategic Value Score', default: true },
+  { id: 'processStep', label: 'Status', default: true },
   { id: 'assignee', label: 'Assignee', default: true },
   // Additional columns
+  { id: 'labels', label: 'Labels', default: false },
+  { id: 'points', label: 'Points', default: false },
   { id: 'owner', label: 'Owner', default: false },
   { id: 'health', label: 'Health', default: false },
   { id: 'progress', label: 'Progress %', default: false },
