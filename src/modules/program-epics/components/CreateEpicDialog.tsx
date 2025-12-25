@@ -22,7 +22,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
-import { generateNextEpicKey, isValidProgramKey } from '@/utils/epic-key-generator';
+import { isValidProgramKey } from '@/utils/epic-key-generator';
 import { RichTextEditor } from '@/components/business-requests/RichTextEditor';
 import { UserPicker } from '@/components/ui/user-picker';
 import { 
@@ -229,17 +229,15 @@ export function CreateEpicDialog({
       
       console.log('[CreateEpicDialog] Mutation starting with programId:', programId);
       
-      // Generate the next epic key for this program
-      const epicKey = await generateNextEpicKey(programId);
-      console.log('[CreateEpicDialog] Generated epic key:', epicKey);
-      
+      // Let the database trigger generate the epic_key atomically via generate_next_epic_key()
+      // This prevents race conditions where multiple concurrent inserts get the same key
       const { data, error } = await supabase
         .from('epics')
         .insert({
           name: name.trim(),
           description: description.trim() || null,
           primary_program_id: programId,
-          epic_key: epicKey,
+          // epic_key is NOT set - database trigger auto_generate_epic_key will generate it
           status: 'proposed',
           health: 'green',
           theme_id: themeId,
@@ -255,7 +253,7 @@ export function CreateEpicDialog({
         throw error;
       }
       
-      console.log('[CreateEpicDialog] Epic created:', data);
+      console.log('[CreateEpicDialog] Epic created with key:', data.epic_key);
 
       // Commit attachments if any were uploaded
       if (uploadSessionId && stagedFiles.some(f => f.status === 'uploaded')) {
@@ -271,7 +269,7 @@ export function CreateEpicDialog({
         }
       }
 
-      return { ...data, epic_key: epicKey };
+      return data;
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['epics'] });
