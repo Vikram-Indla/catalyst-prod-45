@@ -83,20 +83,39 @@ export function IncidentDetailHeader({
           {/* Badge Row */}
           <div className="flex items-center gap-2 mt-2 flex-wrap">
             {/* Status Pill */}
-            <Badge className={cn('font-medium', statusConfig.className)}>
+            <span 
+              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium"
+              style={{ 
+                backgroundColor: statusConfig.bg,
+                border: `1px solid ${statusConfig.border}`,
+                color: statusConfig.text
+              }}
+            >
+              <span 
+                className="w-1.5 h-1.5 rounded-full flex-shrink-0"
+                style={{ backgroundColor: statusConfig.dotColor }}
+              />
               {statusConfig.label}
-            </Badge>
+            </span>
             
-            {/* Severity Badge */}
-            <Badge variant="outline" className={cn('border', severityConfig.className)}>
-              {severityConfig.label}
-            </Badge>
+            {/* Severity Badge - dot only */}
+            <div className="flex items-center gap-2 text-sm">
+              <span 
+                className="w-2 h-2 rounded-full flex-shrink-0" 
+                style={{ backgroundColor: severityConfig.dotColor }}
+              />
+              <span className="font-medium text-foreground">{severityConfig.label}</span>
+            </div>
             
-            {/* Priority Badge */}
+            {/* Priority Badge - dot only */}
             {priorityConfig && (
-              <Badge variant="outline" className={cn('border', priorityConfig.className)}>
-                {priorityConfig.label}
-              </Badge>
+              <div className="flex items-center gap-2 text-sm">
+                <span 
+                  className="w-2 h-2 rounded-full flex-shrink-0" 
+                  style={{ backgroundColor: priorityConfig.dotColor }}
+                />
+                <span className="font-medium text-foreground">{priorityConfig.label}</span>
+              </div>
             )}
             
             {/* Support Level Badge */}
@@ -108,7 +127,7 @@ export function IncidentDetailHeader({
             
             {/* Major Incident Flag */}
             {isMajorIncident && (
-              <Badge variant="outline" className="bg-rose-50 text-rose-700 border-rose-200 font-medium">
+              <Badge variant="outline" className="bg-[rgba(139,115,85,0.15)] text-[#8b7355] border-[#8b7355]/30 font-medium">
                 Major Incident
               </Badge>
             )}
