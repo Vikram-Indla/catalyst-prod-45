@@ -453,9 +453,10 @@ export function EpicDrawer({ isOpen, onClose, epicId, onEpicChange }: EpicDrawer
                 <div className="flex items-center gap-2.5">
                   {/* Status Dropdown - CLICKABLE */}
                   <EpicStatusDropdown
-                    currentStatus={formData.state}
-                    onChange={(status) => handleFieldChange('state', status)}
+                    currentStatus={formData.status}
+                    onChange={(status) => handleFieldChange('status', status)}
                   />
+
 
                   {/* MVP Badge */}
                   {formData.mvp && (

@@ -69,9 +69,12 @@ export async function fetchBacklogItems(params: BacklogQueryParams): Promise<Bac
 
   // Resolve assignee/owner names (no FK relationship on epics table)
   const userIds = new Set<string>();
+  const processStepIds = new Set<string>();
+
   rawItems.forEach((item) => {
     if (item.assignee_id) userIds.add(item.assignee_id);
     if (item.owner_id) userIds.add(item.owner_id);
+    if (item.process_step_id) processStepIds.add(item.process_step_id);
   });
 
   let profilesMap: Record<string, string> = {};
@@ -88,19 +91,40 @@ export async function fetchBacklogItems(params: BacklogQueryParams): Promise<Bac
     }
   }
 
+  // Resolve process step names
+  let processStepsMap: Record<string, string> = {};
+  if (processStepIds.size > 0) {
+    const { data: steps, error: stepsError } = await supabase
+      .from('process_steps')
+      .select('id, name')
+      .in('id', Array.from(processStepIds));
+
+    if (!stepsError && steps) {
+      steps.forEach((s: any) => {
+        processStepsMap[s.id] = s.name || '';
+      });
+    }
+  }
+
   // Transform epic data to include theme info + display-friendly fields
-  const transformedData = rawItems.map((item: any) => ({
-    ...item,
-    themeName: item.strategic_themes?.name || null,
-    themeId: item.theme_id,
-    // Bind list "Status" to epic.status so updates in the drawer reflect immediately
-    processStep: item.status ?? null,
-    assigneeName: item.assignee_id ? profilesMap[item.assignee_id] || null : null,
-    ownerName: item.owner_id ? profilesMap[item.owner_id] || null : null,
-    brKey: null,
-    brTitle: null,
-    brId: null,
-  }));
+  const transformedData = rawItems.map((item: any) => {
+    const normalizedQuarters = Array.isArray(item.quarters) ? item.quarters.flat() : item.quarters;
+    const processStepName = item.process_step_id ? processStepsMap[item.process_step_id] || null : null;
+
+    return {
+      ...item,
+      quarters: normalizedQuarters,
+      themeName: item.strategic_themes?.name || null,
+      themeId: item.theme_id,
+      // List "Status" should reflect the workflow status users edit in the drawer
+      processStep: item.status ?? processStepName ?? null,
+      assigneeName: item.assignee_id ? profilesMap[item.assignee_id] || null : null,
+      ownerName: item.owner_id ? profilesMap[item.owner_id] || null : null,
+      brKey: null,
+      brTitle: null,
+      brId: null,
+    };
+  });
 
   // Fetch metadata
   const meta = await fetchBacklogMeta(params);

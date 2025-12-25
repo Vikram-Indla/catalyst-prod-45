@@ -11,6 +11,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
 import { useBacklogState } from '../hooks/useBacklogState';
+import { getEpicStatusConfig } from '@/components/items/epics/drawer';
 
 interface BacklogEnterpriseTableProps {
   items: BacklogItem[];
@@ -116,7 +117,7 @@ export function BacklogEnterpriseTable({
   // Format status for human-readable display
   const formatStatus = (status?: string) => {
     if (!status) return '—';
-    return status.replace(/_/g, ' ').toLowerCase();
+    return getEpicStatusConfig(status).label;
   };
 
   const buildEpicKey = (row: BacklogItem) => {
@@ -184,7 +185,7 @@ export function BacklogEnterpriseTable({
       id: 'processStep',
       header: 'Status',
       accessor: (row) => (row as any).status ?? row.processStep ?? row.state,
-      width: '140px',
+      width: '160px',
       sortable: true,
       render: (value) => (
         <Badge variant="outline" className="border-0 bg-muted text-xs font-medium">
@@ -196,10 +197,52 @@ export function BacklogEnterpriseTable({
       id: 'assignee',
       header: 'Assignee',
       accessor: 'assigneeName',
-      width: '140px',
+      width: '160px',
       sortable: true,
       render: (value) => (
         <span className="text-sm text-muted-foreground truncate block">{value || '—'}</span>
+      ),
+    },
+    {
+      id: 'owner',
+      header: 'Owner',
+      accessor: 'ownerName',
+      width: '160px',
+      sortable: true,
+      render: (value) => (
+        <span className="text-sm text-muted-foreground truncate block">{value || '—'}</span>
+      ),
+    },
+    {
+      id: 'health',
+      header: 'Health',
+      accessor: (row) => (row as any).health,
+      width: '110px',
+      sortable: true,
+      render: (value) => (
+        <Badge variant="outline" className="text-[11px]">
+          {value || '—'}
+        </Badge>
+      ),
+    },
+    {
+      id: 'progress',
+      header: 'Progress %',
+      accessor: (row) => (row as any).progress ?? (row as any).progress_pct,
+      width: '120px',
+      sortable: true,
+      render: (value) => (
+        <span className="text-sm font-medium">{typeof value === 'number' ? `${value}%` : (value ?? '—')}</span>
+      ),
+    },
+    {
+      id: 'featureCount',
+      header: 'Feature Count',
+      accessor: (row) => (row as any).featureCount ?? (row as any).feature_count_total,
+      width: '140px',
+      sortable: true,
+      render: (value) => (
+        <span className="text-sm font-medium">{value ?? '—'}</span>
       ),
     },
     {
