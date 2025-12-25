@@ -28,7 +28,7 @@ export function BacklogEnterpriseTable({
   onItemSelect,
 }: BacklogEnterpriseTableProps) {
   const queryClient = useQueryClient();
-  const { programId, isEpicBacklog } = useBacklogState();
+  const { programId, isEpicBacklog, columnsShown } = useBacklogState();
 
   // Fetch program key for epic numbering
   const { data: programData } = useQuery({
@@ -119,63 +119,57 @@ export function BacklogEnterpriseTable({
     return status.replace(/_/g, ' ').toLowerCase();
   };
 
-  // Define columns for the epic backlog
-  const columns: CatalystColumn<BacklogItem>[] = useMemo(() => [
+  const buildEpicKey = (row: BacklogItem) => {
+    const existing = (row as any).epic_key || row.epicKey;
+    if (existing) return existing;
+    if (programData?.key) {
+      const n = row.rank || row.globalRank || 1;
+      return `${programData.key}-${String(n).padStart(3, '0')}`;
+    }
+    return String(row.displayId || '—');
+  };
+
+  // Define columns for the epic backlog (filtered by columnsShown)
+  const allColumns: CatalystColumn<BacklogItem>[] = useMemo(() => [
     {
-      id: 'key',
-      header: 'Key',
-      accessor: (row) => row.epicKey || (programData?.key ? `${programData.key}-${String(row.rank || row.globalRank || 1).padStart(3, '0')}` : row.displayId || '—'),
-      width: '100px',
-      sortable: true,
-      render: (value, row) => (
-        <span 
-          className="font-mono text-xs text-[#c69c6d] dark:text-[#d4a855] hover:text-[#b8894d] dark:hover:text-[#c49545] hover:underline cursor-pointer"
-          onClick={(e) => {
-            e.stopPropagation();
-            // Explicitly open the drawer with this epic's id
-            onItemClick(row.id);
-          }}
-        >
-          {value}
-        </span>
-      ),
-    },
-    {
-      id: 'name',
+      id: 'epic',
       header: 'Summary',
-      accessor: 'name',
-      width: '300px',
+      accessor: (row) => row.name,
+      width: '360px',
       sortable: true,
       editable: true,
       type: 'text',
-      render: (value) => (
-        <span className="text-sm font-medium">{value}</span>
+      render: (value, row) => (
+        <div className="min-w-0">
+          <div className="flex items-center gap-2 min-w-0">
+            <span className="font-mono text-xs text-muted-foreground shrink-0">{buildEpicKey(row)}</span>
+            <span className="text-sm font-medium truncate">{value || '—'}</span>
+          </div>
+        </div>
       ),
     },
     {
       id: 'themeName',
       header: 'Theme',
       accessor: 'themeName',
-      width: '150px',
+      width: '160px',
       sortable: true,
-      filterable: true,
-      filterOptions: [], // Could be populated from meta
       render: (value) => (
-        <span className="text-sm text-muted-foreground truncate">{value || '—'}</span>
+        <span className="text-sm text-muted-foreground truncate block">{value || '—'}</span>
       ),
     },
     {
       id: 'quarters',
       header: 'Quarters',
       accessor: 'quarters',
-      width: '120px',
+      width: '140px',
       render: (value) => formatQuarters(value),
     },
     {
       id: 'mvp',
       header: 'MVP',
       accessor: 'mvp',
-      width: '60px',
+      width: '70px',
       editable: true,
       type: 'select',
       options: [
@@ -187,46 +181,63 @@ export function BacklogEnterpriseTable({
       ),
     },
     {
-      id: 'state',
+      id: 'processStep',
       header: 'Status',
-      accessor: (row) => row.processStep || row.state,
-      width: '120px',
+      accessor: (row) => (row as any).status ?? row.processStep ?? row.state,
+      width: '140px',
       sortable: true,
-      filterable: true,
-      filterOptions: [
-        { value: 'not_started', label: 'Not Started' },
-        { value: 'in_progress', label: 'In Progress' },
-        { value: 'done', label: 'Done' },
-        { value: 'blocked', label: 'Blocked' },
-      ],
-      render: (value) => {
-        const statusStyles: Record<string, string> = {
-          'not_started': 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300',
-          'in_progress': 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
-          'done': 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
-          'blocked': 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
-        };
-        const normalizedValue = value?.toLowerCase().replace(/\s+/g, '_') || 'not_started';
-        const styleClass = statusStyles[normalizedValue] || statusStyles['not_started'];
-        return (
-          <Badge className={`${styleClass} border-0 text-xs font-medium`}>
-            {formatStatus(value)}
-          </Badge>
-        );
-      },
+      render: (value) => (
+        <Badge variant="outline" className="border-0 bg-muted text-xs font-medium">
+          {formatStatus(value)}
+        </Badge>
+      ),
     },
-    // Score column removed - not applicable for epic backlog
     {
       id: 'assignee',
       header: 'Assignee',
       accessor: 'assigneeName',
-      width: '120px',
+      width: '140px',
       sortable: true,
       render: (value) => (
         <span className="text-sm text-muted-foreground truncate block">{value || '—'}</span>
       ),
     },
-  ], [programData?.key, onItemClick]);
+    {
+      id: 'points',
+      header: 'Points',
+      accessor: (row) => (row as any).points_estimate ?? row.points,
+      width: '90px',
+      sortable: true,
+      render: (value) => (
+        <span className="text-sm font-medium text-right block">{value ?? '—'}</span>
+      ),
+    },
+    {
+      id: 'labels',
+      header: 'Labels',
+      accessor: (row) => (row as any).tags,
+      width: '160px',
+      render: (value) => {
+        const tags = Array.isArray(value) ? value : [];
+        if (tags.length === 0) return <span className="text-sm text-muted-foreground">—</span>;
+        return (
+          <div className="flex flex-wrap gap-1">
+            {tags.slice(0, 2).map((t: string) => (
+              <Badge key={t} variant="outline" className="text-[10px] h-5 px-1.5">
+                {t}
+              </Badge>
+            ))}
+          </div>
+        );
+      },
+    },
+  ], [programData?.key]);
+
+  const columns: CatalystColumn<BacklogItem>[] = useMemo(() => {
+    if (!isEpicBacklog) return allColumns;
+    const allowed = new Set(columnsShown || []);
+    return allColumns.filter((c) => allowed.has(c.id));
+  }, [allColumns, columnsShown, isEpicBacklog]);
 
   // Handle row update for inline editing
   const handleRowUpdate = async (rowId: string, columnId: string, newValue: any) => {

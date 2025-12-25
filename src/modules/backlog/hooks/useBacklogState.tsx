@@ -45,8 +45,29 @@ const DEFAULT_STATE: BacklogState = {
   unassignedOpen: false,
 };
 
-// Epic Backlog specific columns matching Jira Align: Epic, Labels, Points, MVP, Process Step, Assignee
-const EPIC_BACKLOG_DEFAULT_COLUMNS = ['epic', 'labels', 'points', 'mvp', 'processStep', 'assignee'];
+// Epic Backlog specific columns (default view)
+const EPIC_BACKLOG_DEFAULT_COLUMNS = ['epic', 'themeName', 'quarters', 'mvp', 'processStep', 'assignee'];
+
+// Used to sanitize URL params when columns change over time
+const EPIC_BACKLOG_ALLOWED_COLUMNS = [
+  'epic',
+  'themeName',
+  'quarters',
+  'mvp',
+  'processStep',
+  'assignee',
+  'labels',
+  'points',
+  'owner',
+  'health',
+  'progress',
+  'featureCount',
+  'totalEstimate',
+  'targetDate',
+  'blocked',
+  'linkedObjective',
+  'linkedTheme',
+];
 
 export function BacklogStateProvider({ 
   children, 
@@ -67,7 +88,14 @@ export function BacklogStateProvider({
     const effectiveType = isEpicBacklog ? 'epic' : ((params.get('type') as BacklogType) || initialType || DEFAULT_STATE.type);
     const effectiveTimeboxType = isEpicBacklog ? 'all' : ((params.get('timeboxType') as TimeboxType) || DEFAULT_STATE.timeboxType);
     const defaultColumns = isEpicBacklog ? EPIC_BACKLOG_DEFAULT_COLUMNS : DEFAULT_STATE.columnsShown;
-    
+
+    const requestedColumns = params.get('columns') ? params.get('columns')!.split(',') : null;
+    const sanitizedColumns = requestedColumns
+      ? (isEpicBacklog
+          ? requestedColumns.filter((c) => EPIC_BACKLOG_ALLOWED_COLUMNS.includes(c))
+          : requestedColumns)
+      : defaultColumns;
+
     return {
       scope: (params.get('scope') as BacklogScope) || initialScope || DEFAULT_STATE.scope,
       type: effectiveType,
@@ -76,7 +104,7 @@ export function BacklogStateProvider({
       view: (params.get('view') as BacklogViewType) || DEFAULT_STATE.view,
       filters: params.get('filters') ? JSON.parse(params.get('filters')!) : DEFAULT_STATE.filters,
       sort: params.get('sort') ? JSON.parse(params.get('sort')!) : DEFAULT_STATE.sort,
-      columnsShown: params.get('columns') ? params.get('columns')!.split(',') : defaultColumns,
+      columnsShown: sanitizedColumns,
       hideAcceptedConfig: params.get('hideAccepted') ? JSON.parse(params.get('hideAccepted')!) : DEFAULT_STATE.hideAcceptedConfig,
       unassignedOpen: params.get('unassigned') === 'true',
     };

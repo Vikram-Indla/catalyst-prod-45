@@ -64,14 +64,39 @@ export async function fetchBacklogItems(params: BacklogQueryParams): Promise<Bac
 
   const { data, error } = await query;
   if (error) throw error;
-  
-  // Transform epic data to include theme info (assignee/owner fetched separately if needed)
-  const transformedData = (data || []).map((item: any) => ({
+
+  const rawItems = (data || []) as any[];
+
+  // Resolve assignee/owner names (no FK relationship on epics table)
+  const userIds = new Set<string>();
+  rawItems.forEach((item) => {
+    if (item.assignee_id) userIds.add(item.assignee_id);
+    if (item.owner_id) userIds.add(item.owner_id);
+  });
+
+  let profilesMap: Record<string, string> = {};
+  if (userIds.size > 0) {
+    const { data: profiles, error: profilesError } = await supabase
+      .from('profiles')
+      .select('id, full_name')
+      .in('id', Array.from(userIds));
+
+    if (!profilesError && profiles) {
+      profiles.forEach((p: any) => {
+        profilesMap[p.id] = p.full_name || '';
+      });
+    }
+  }
+
+  // Transform epic data to include theme info + display-friendly fields
+  const transformedData = rawItems.map((item: any) => ({
     ...item,
     themeName: item.strategic_themes?.name || null,
     themeId: item.theme_id,
-    assigneeName: null, // Would require separate query - epics.assignee_id has no FK to profiles
-    ownerName: null,    // Would require separate query - epics.owner_id has no FK to profiles
+    // Bind list "Status" to epic.status so updates in the drawer reflect immediately
+    processStep: item.status ?? null,
+    assigneeName: item.assignee_id ? profilesMap[item.assignee_id] || null : null,
+    ownerName: item.owner_id ? profilesMap[item.owner_id] || null : null,
     brKey: null,
     brTitle: null,
     brId: null,
