@@ -132,8 +132,32 @@ export async function fetchFeatureBacklog(params: FeatureBacklogQueryParams): Pr
   if (countResult.error) throw countResult.error;
   if (dataResult.error) throw dataResult.error;
 
+  const features = dataResult.data || [];
+
+  // Collect unique user IDs for assignee/owner lookups
+  const userIds = new Set<string>();
+  features.forEach((f: any) => {
+    if (f.assignee_id) userIds.add(f.assignee_id);
+    if (f.owner_id) userIds.add(f.owner_id);
+  });
+
+  // Fetch profile names if we have user IDs
+  let profilesMap: Record<string, string> = {};
+  if (userIds.size > 0) {
+    const { data: profiles } = await supabase
+      .from('profiles')
+      .select('id, full_name')
+      .in('id', Array.from(userIds));
+    
+    if (profiles) {
+      profiles.forEach(p => {
+        profilesMap[p.id] = p.full_name || '';
+      });
+    }
+  }
+
   // Transform to FeatureBacklogItem
-  const items: FeatureBacklogItem[] = (dataResult.data || []).map((f: any) => ({
+  const items: FeatureBacklogItem[] = features.map((f: any) => ({
     id: f.id,
     key: f.display_id || `FEAT-${f.id.slice(0, 6).toUpperCase()}`,
     summary: f.name,
@@ -144,7 +168,7 @@ export async function fetchFeatureBacklog(params: FeatureBacklogQueryParams): Pr
     status: f.status,
     priority: f.priority,
     assignee_id: f.assignee_id,
-    assignee_name: null, // No FK relationship to profiles on features table
+    assignee_name: f.assignee_id ? profilesMap[f.assignee_id] || null : null,
     health: f.health,
     progress_pct: f.progress_pct,
     planned_start_date: f.planned_start_date,
@@ -152,7 +176,7 @@ export async function fetchFeatureBacklog(params: FeatureBacklogQueryParams): Pr
     created_at: f.created_at,
     updated_at: f.updated_at,
     owner_id: f.owner_id,
-    owner_name: null, // No FK relationship to profiles on features table
+    owner_name: f.owner_id ? profilesMap[f.owner_id] || null : null,
     change_number_id: f.change_number_id,
     change_number: (f.change_numbers as any)?.number || null,
     labels: null, // TODO: Add labels support
