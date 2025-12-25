@@ -1,10 +1,11 @@
 /**
  * EpicKanbanBoard - Full Kanban board for Epic Backlog
+ * Fetches epic statuses from epic_statuses table (admin configured)
  * Styled like Industry Kanban with DnD and real-time updates
  */
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { DragDropContext, DropResult } from '@hello-pangea/dnd';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { BacklogItem, BacklogMeta } from '../types';
 import { EpicKanbanColumn } from './EpicKanbanColumn';
@@ -19,12 +20,25 @@ interface EpicKanbanBoardProps {
   onAddEpic?: () => void;
 }
 
-// Epic states with colors matching Industry Kanban pattern
-const EPIC_STATES = [
-  { id: 'not_started', label: 'Not Started', color: '#6b7280' },    // Gray
-  { id: 'in_progress', label: 'In Progress', color: '#f59e0b' },   // Amber
-  { id: 'accepted', label: 'Accepted', color: '#22c55e' },         // Green
-  { id: 'done', label: 'Done', color: '#3b82f6' },                 // Blue
+// Color mapping for semantic color names from admin
+const COLOR_MAP: Record<string, string> = {
+  info: '#3b82f6',      // Blue
+  warning: '#f59e0b',   // Amber
+  forest: '#16a34a',    // Green
+  stone: '#6b7280',     // Gray
+  success: '#22c55e',   // Green
+  danger: '#ef4444',    // Red
+  primary: '#5c7c5c',   // Brand olive
+};
+
+// Fallback states if fetch fails
+const FALLBACK_STATES = [
+  { id: 'proposed', label: 'New Epic', color: '#3b82f6' },
+  { id: 'analyzing', label: 'Analysis', color: '#3b82f6' },
+  { id: 'approved', label: 'Ready for Implementation', color: '#f59e0b' },
+  { id: 'in_progress', label: 'In Implementation', color: '#f59e0b' },
+  { id: 'done', label: 'Done', color: '#16a34a' },
+  { id: 'cancelled', label: 'Cancelled', color: '#6b7280' },
 ];
 
 export function EpicKanbanBoard({
@@ -38,27 +52,78 @@ export function EpicKanbanBoard({
   const queryClient = useQueryClient();
   const [collapsedColumns, setCollapsedColumns] = useState<string[]>([]);
 
-  // Use meta states if available, otherwise fall back to defaults
-  const states = useMemo(() => {
-    if (meta?.states && meta.states.length > 0) {
-      return meta.states.map(state => {
-        const predefined = EPIC_STATES.find(s => s.id === state);
-        return predefined || { 
-          id: state, 
-          label: state.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' '),
-          color: '#6b7280'
-        };
-      });
-    }
-    return EPIC_STATES;
-  }, [meta?.states]);
+  // Fetch epic statuses from database
+  const { data: epicStatuses } = useQuery({
+    queryKey: ['epic-statuses'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('epic_statuses')
+        .select('*')
+        .eq('is_active', true)
+        .order('sort_order');
+      
+      if (error) {
+        console.error('[EpicKanbanBoard] Failed to fetch statuses:', error);
+        return null;
+      }
+      return data;
+    },
+    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
+  });
 
-  // Group items by state
+  // Realtime subscription for epic_statuses changes
+  useEffect(() => {
+    const channel = supabase
+      .channel('epic-statuses-realtime')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'epic_statuses',
+        },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ['epic-statuses'] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [queryClient]);
+
+  // Build states from database or fallback
+  const states = useMemo(() => {
+    if (epicStatuses && epicStatuses.length > 0) {
+      return epicStatuses.map((status: any) => ({
+        id: status.value,
+        label: status.label,
+        color: COLOR_MAP[status.color] || status.color || '#6b7280',
+      }));
+    }
+    return FALLBACK_STATES;
+  }, [epicStatuses]);
+
+  // Group items by state - handle items with states not in config
   const itemsByState = useMemo(() => {
     const grouped: Record<string, BacklogItem[]> = {};
     states.forEach(state => {
-      grouped[state.id] = items.filter(item => item.state === state.id);
+      grouped[state.id] = [];
     });
+    
+    items.forEach(item => {
+      const itemState = item.state || 'proposed'; // Default to first state
+      if (grouped[itemState]) {
+        grouped[itemState].push(item);
+      } else {
+        // Put items with unknown states in first column
+        const firstState = states[0]?.id || 'proposed';
+        if (!grouped[firstState]) grouped[firstState] = [];
+        grouped[firstState].push(item);
+      }
+    });
+    
     return grouped;
   }, [items, states]);
 
@@ -105,6 +170,9 @@ export function EpicKanbanBoard({
     );
   };
 
+  // Get first state for "Add Epic" button
+  const firstStateId = states[0]?.id || 'proposed';
+
   return (
     <DragDropContext onDragEnd={handleDragEnd}>
       <div
@@ -114,7 +182,7 @@ export function EpicKanbanBoard({
           paddingBottom: 'calc(12px + env(safe-area-inset-bottom, 0px))',
         }}
       >
-        {states.map(state => (
+        {states.map((state, index) => (
           <EpicKanbanColumn
             key={state.id}
             columnId={state.id}
@@ -126,7 +194,7 @@ export function EpicKanbanBoard({
             onItemSelect={onItemSelect}
             collapsed={collapsedColumns.includes(state.id)}
             onToggleCollapse={() => toggleColumnCollapse(state.id)}
-            onAddEpic={state.id === 'not_started' ? onAddEpic : undefined}
+            onAddEpic={index === 0 ? onAddEpic : undefined}
           />
         ))}
       </div>
