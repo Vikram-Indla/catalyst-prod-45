@@ -2,6 +2,7 @@
  * FeatureBacklogTable — Data table for Features
  * Matches EpicBacklogListView structure exactly
  */
+import { useNavigate } from 'react-router-dom';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
@@ -18,6 +19,7 @@ interface FeatureBacklogTableProps {
   visibleColumns: string[];
   selectedItems: string[];
   onItemClick: (id: string) => void;
+  onKeyClick?: (id: string, projectId: string | null) => void;
   onItemSelect: (id: string, selected: boolean) => void;
   onSelectAll: (selected: boolean) => void;
   sortField: string;
@@ -32,25 +34,25 @@ interface FeatureBacklogTableProps {
 }
 
 const STATUS_CONFIG: Record<string, { label: string; className: string }> = {
-  funnel: { label: 'Funnel', className: 'bg-muted text-muted-foreground' },
-  analyzing: { label: 'Analyzing', className: 'bg-blue-500/10 text-blue-600' },
-  backlog: { label: 'Backlog', className: 'bg-slate-500/10 text-slate-600' },
-  implementing: { label: 'In Progress', className: 'bg-brand-primary/10 text-brand-primary' },
-  done: { label: 'Done', className: 'bg-status-success/10 text-status-success' },
+  funnel: { label: 'Funnel', className: 'bg-muted text-muted-foreground border-muted-foreground/30' },
+  analyzing: { label: 'Analyzing', className: 'bg-blue-100 text-blue-700 border-blue-300 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-700' },
+  backlog: { label: 'Backlog', className: 'bg-slate-100 text-slate-700 border-slate-300 dark:bg-slate-800/50 dark:text-slate-300 dark:border-slate-600' },
+  implementing: { label: 'In Progress', className: 'bg-brand-primary/15 text-brand-primary border-brand-primary/30' },
+  done: { label: 'Done', className: 'bg-emerald-100 text-emerald-700 border-emerald-300 dark:bg-emerald-900/30 dark:text-emerald-300 dark:border-emerald-700' },
 };
 
 const PRIORITY_CONFIG: Record<string, { label: string; className: string }> = {
-  critical: { label: 'Critical', className: 'bg-status-danger/10 text-status-danger' },
-  high: { label: 'High', className: 'bg-status-warning/10 text-status-warning' },
-  medium: { label: 'Medium', className: 'bg-muted text-muted-foreground' },
-  low: { label: 'Low', className: 'bg-muted text-muted-foreground' },
+  critical: { label: 'Critical', className: 'bg-red-100 text-red-700 border-red-300 dark:bg-red-900/30 dark:text-red-300 dark:border-red-700' },
+  high: { label: 'High', className: 'bg-amber-100 text-amber-700 border-amber-300 dark:bg-amber-900/30 dark:text-amber-300 dark:border-amber-700' },
+  medium: { label: 'Medium', className: 'bg-slate-100 text-slate-600 border-slate-300 dark:bg-slate-800/50 dark:text-slate-400 dark:border-slate-600' },
+  low: { label: 'Low', className: 'bg-gray-100 text-gray-600 border-gray-300 dark:bg-gray-800/50 dark:text-gray-400 dark:border-gray-600' },
 };
 
 const HEALTH_CONFIG: Record<string, { label: string; className: string }> = {
-  green: { label: 'On Track', className: 'bg-status-success/10 text-status-success' },
-  yellow: { label: 'At Risk', className: 'bg-status-warning/10 text-status-warning' },
-  amber: { label: 'At Risk', className: 'bg-status-warning/10 text-status-warning' },
-  red: { label: 'Off Track', className: 'bg-status-danger/10 text-status-danger' },
+  green: { label: 'On Track', className: 'bg-emerald-100 text-emerald-700 border-emerald-300 dark:bg-emerald-900/30 dark:text-emerald-300' },
+  yellow: { label: 'At Risk', className: 'bg-amber-100 text-amber-700 border-amber-300 dark:bg-amber-900/30 dark:text-amber-300' },
+  amber: { label: 'At Risk', className: 'bg-amber-100 text-amber-700 border-amber-300 dark:bg-amber-900/30 dark:text-amber-300' },
+  red: { label: 'Off Track', className: 'bg-red-100 text-red-700 border-red-300 dark:bg-red-900/30 dark:text-red-300' },
 };
 
 export function FeatureBacklogTable({
@@ -70,6 +72,7 @@ export function FeatureBacklogTable({
   onPageChange,
   onPageSizeChange,
 }: FeatureBacklogTableProps) {
+  const navigate = useNavigate();
   const allColumns = [...FEATURE_COLUMNS, ...OPTIONAL_COLUMNS];
   const displayColumns = allColumns.filter(col => 
     col.pinned || visibleColumns.includes(col.id)
@@ -148,12 +151,25 @@ export function FeatureBacklogTable({
                   {displayColumns.map(col => (
                     <TableCell
                       key={col.id}
-                      onClick={() => col.id === 'key' || col.id === 'summary' ? onItemClick(item.id) : undefined}
+                      onClick={() => {
+                        if (col.id === 'key') {
+                          // Navigate to feature detail page
+                          if (item.project_id) {
+                            navigate(`/projects/${item.project_id}/features/${item.id}`);
+                          } else {
+                            onItemClick(item.id);
+                          }
+                        } else if (col.id === 'summary') {
+                          onItemClick(item.id);
+                        }
+                      }}
                       className={cn(
-                        col.id === 'summary' && 'font-medium hover:underline cursor-pointer'
+                        col.id === 'key' && 'cursor-pointer',
+                        col.id === 'summary' && 'font-medium hover:underline cursor-pointer',
+                        'truncate'
                       )}
                     >
-                      {renderCell(item, col.id)}
+                      {renderCell(item, col.id, navigate)}
                     </TableCell>
                   ))}
                 </TableRow>
@@ -209,24 +225,36 @@ export function FeatureBacklogTable({
   );
 }
 
-function renderCell(item: FeatureBacklogItem, columnId: string) {
+function renderCell(item: FeatureBacklogItem, columnId: string, navigate: ReturnType<typeof useNavigate>) {
   switch (columnId) {
     case 'key':
       return (
-        <span className="font-mono text-sm text-gold-link hover:text-gold-link-hover">
+        <span className="font-mono text-sm text-gold-link hover:text-gold-link-hover hover:underline whitespace-nowrap">
           {item.key}
         </span>
       );
     case 'summary':
-      return item.summary;
+      return (
+        <span className="block truncate max-w-[300px]" title={item.summary}>
+          {item.summary}
+        </span>
+      );
     case 'project':
-      return item.project_name || '–';
+      return (
+        <span className="block truncate max-w-[150px]" title={item.project_name || ''}>
+          {item.project_name || '–'}
+        </span>
+      );
     case 'epic':
-      return item.epic_name || '–';
+      return (
+        <span className="block truncate max-w-[150px]" title={item.epic_name || ''}>
+          {item.epic_name || '–'}
+        </span>
+      );
     case 'status': {
       const config = STATUS_CONFIG[item.status || 'funnel'] || STATUS_CONFIG.funnel;
       return (
-        <Badge variant="secondary" className={cn("text-xs font-normal", config.className)}>
+        <Badge variant="outline" className={cn("text-xs font-medium whitespace-nowrap", config.className)}>
           {config.label}
         </Badge>
       );
@@ -234,43 +262,69 @@ function renderCell(item: FeatureBacklogItem, columnId: string) {
     case 'priority': {
       const config = PRIORITY_CONFIG[item.priority || 'medium'] || PRIORITY_CONFIG.medium;
       return (
-        <Badge variant="secondary" className={cn("text-xs font-normal", config.className)}>
+        <Badge variant="outline" className={cn("text-xs font-medium whitespace-nowrap", config.className)}>
           {config.label}
         </Badge>
       );
     }
     case 'assignee':
-      return item.assignee_name || '–';
+      return (
+        <span className="block truncate max-w-[120px]" title={item.assignee_name || ''}>
+          {item.assignee_name || '–'}
+        </span>
+      );
     case 'updated':
-      return item.updated_at 
-        ? formatDistanceToNow(new Date(item.updated_at), { addSuffix: true })
-        : '–';
+      return (
+        <span className="whitespace-nowrap text-muted-foreground text-sm">
+          {item.updated_at 
+            ? formatDistanceToNow(new Date(item.updated_at), { addSuffix: true })
+            : '–'}
+        </span>
+      );
     case 'created':
-      return item.created_at
-        ? format(new Date(item.created_at), 'MMM d, yyyy')
-        : '–';
+      return (
+        <span className="whitespace-nowrap text-muted-foreground text-sm">
+          {item.created_at
+            ? format(new Date(item.created_at), 'MMM d, yyyy')
+            : '–'}
+        </span>
+      );
     case 'owner':
-      return item.owner_name || '–';
+      return (
+        <span className="block truncate max-w-[120px]" title={item.owner_name || ''}>
+          {item.owner_name || '–'}
+        </span>
+      );
     case 'health': {
       const config = HEALTH_CONFIG[item.health || 'green'] || HEALTH_CONFIG.green;
       return (
-        <Badge variant="outline" className={cn("text-xs font-normal", config.className)}>
+        <Badge variant="outline" className={cn("text-xs font-normal whitespace-nowrap", config.className)}>
           {config.label}
         </Badge>
       );
     }
     case 'progress':
-      return `${item.progress_pct || 0}%`;
+      return (
+        <span className="whitespace-nowrap">{item.progress_pct || 0}%</span>
+      );
     case 'planned_start':
-      return item.planned_start_date
-        ? format(new Date(item.planned_start_date), 'MMM d')
-        : '–';
+      return (
+        <span className="whitespace-nowrap text-sm">
+          {item.planned_start_date
+            ? format(new Date(item.planned_start_date), 'MMM d')
+            : '–'}
+        </span>
+      );
     case 'planned_end':
-      return item.planned_end_date
-        ? format(new Date(item.planned_end_date), 'MMM d')
-        : '–';
+      return (
+        <span className="whitespace-nowrap text-sm">
+          {item.planned_end_date
+            ? format(new Date(item.planned_end_date), 'MMM d')
+            : '–'}
+        </span>
+      );
     case 'change_number':
-      return item.change_number || '–';
+      return <span className="whitespace-nowrap">{item.change_number || '–'}</span>;
     case 'labels':
       return '–'; // TODO: Implement labels
     default:

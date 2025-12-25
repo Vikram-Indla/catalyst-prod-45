@@ -3,7 +3,7 @@
  * Matches EpicBacklogWorkspace structure exactly
  */
 import { useState, useCallback, useEffect } from 'react';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { FeatureBacklogHeader } from './FeatureBacklogHeader';
@@ -17,6 +17,16 @@ import { useFeatureBacklogPreferences } from '../hooks/useFeatureBacklogPreferen
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 import type { FeatureBacklogQueryParams } from '../types';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 
 interface FeatureBacklogWorkspaceProps {
   programId: string;
@@ -35,6 +45,7 @@ export function FeatureBacklogWorkspace({ programId }: FeatureBacklogWorkspacePr
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
   const [isColumnsOpen, setIsColumnsOpen] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
   // Pagination state
   const [page, setPage] = useState(1);
@@ -164,6 +175,41 @@ export function FeatureBacklogWorkspace({ programId }: FeatureBacklogWorkspacePr
     setSelectedItems([]);
   };
 
+  // Bulk delete mutation
+  const bulkDeleteMutation = useMutation({
+    mutationFn: async (ids: string[]) => {
+      // Soft delete by setting deleted_at
+      const { error } = await supabase
+        .from('features')
+        .update({ deleted_at: new Date().toISOString() })
+        .in('id', ids);
+      if (error) throw error;
+      return ids;
+    },
+    onSuccess: (deletedIds) => {
+      toast.success(`${deletedIds.length} feature(s) deleted`);
+      setSelectedItems([]);
+      clearProjectIdsCache(programId);
+      refetch();
+    },
+    onError: (error: any) => {
+      toast.error('Failed to delete features', {
+        description: error.message,
+      });
+    },
+  });
+
+  const handleBulkDelete = () => {
+    if (selectedItems.length > 0) {
+      setIsDeleteDialogOpen(true);
+    }
+  };
+
+  const confirmBulkDelete = () => {
+    bulkDeleteMutation.mutate(selectedItems);
+    setIsDeleteDialogOpen(false);
+  };
+
   const handleExport = useCallback(() => {
     const items = backlogData?.items || [];
     if (items.length === 0) {
@@ -222,6 +268,7 @@ export function FeatureBacklogWorkspace({ programId }: FeatureBacklogWorkspacePr
         onCreateClick={() => setIsCreateModalOpen(true)}
         selectedCount={selectedItems.length}
         onClearSelection={handleClearSelection}
+        onBulkDelete={handleBulkDelete}
       />
 
       <div className="flex-1 overflow-auto px-4 sm:px-6 pt-2 pb-4">
@@ -291,6 +338,27 @@ export function FeatureBacklogWorkspace({ programId }: FeatureBacklogWorkspacePr
           refetch();
         }}
       />
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete {selectedItems.length} Feature(s)?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will move the selected features to trash. You can restore them later if needed.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={confirmBulkDelete}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
