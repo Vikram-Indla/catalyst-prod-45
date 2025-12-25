@@ -1,16 +1,13 @@
 /**
- * GlobalPageHeader — Unified enterprise page header with breadcrumb hierarchy
+ * GlobalPageHeader — Unified enterprise page header with inline breadcrumb
  * 
- * CATALYST BREADCRUMB CONTRACT:
- * - Max 2 segments in breadcrumb
- * - Page title is the final segment (H1, most prominent)
- * - Breadcrumb is visually subordinate (smaller, lighter)
+ * CATALYST BREADCRUMB CONTRACT (PageChrome style):
+ * - Inline format: SECTION / Page Title (single row)
  * - No duplication between breadcrumb and title
  * 
  * Structure:
- * - Row 1: Breadcrumb (max 2 segments) above title
- * - Row 2: Page Title (H1) + optional right actions
- * - Row 3 (optional): Toolbar with controls + single divider below
+ * - Row 1: Breadcrumb + Title (inline) + optional right actions
+ * - Row 2 (optional): Toolbar with controls
  */
 
 import React, { ReactNode } from 'react';
@@ -28,7 +25,7 @@ interface GlobalPageHeaderProps {
   pageTitle: string;
   /** Optional right-side actions (filters, buttons, selectors) */
   rightActions?: ReactNode;
-  /** Optional toolbar content - when provided, shows Row 3 with divider */
+  /** Optional toolbar content - when provided, shows Row 2 with divider */
   toolbar?: ReactNode;
   /** Whether to show divider under header (default: true when no toolbar) */
   showDivider?: boolean;
@@ -73,14 +70,21 @@ export function GlobalPageHeader({
       className={cn('shrink-0', className)} 
       style={{ backgroundColor: 'var(--bg)' }}
     >
-      {/* Row 1: Breadcrumb (subordinate, above title) */}
-      <div className="px-6 pt-4 pb-1">
-        <nav className="flex items-center gap-1.5" aria-label="Breadcrumb">
+      {/* Row 1: Inline Breadcrumb + Title + Actions (PageChrome style) */}
+      <div
+        className="flex items-center justify-between px-6"
+        style={{ 
+          height: '52px',
+          borderBottom: !toolbar && showDivider ? '1px solid var(--divider)' : undefined,
+        }}
+      >
+        {/* Left: Breadcrumb + Title (inline) */}
+        <div className="flex items-center gap-2">
           {breadcrumbSegments.map((segment, idx) => (
             <React.Fragment key={idx}>
               {idx > 0 && (
                 <span 
-                  className="text-[11px]" 
+                  className="text-[14px]" 
                   style={{ color: 'var(--text-4)' }}
                   aria-hidden="true"
                 >
@@ -88,30 +92,28 @@ export function GlobalPageHeader({
                 </span>
               )}
               <span
-                className="text-[11px] font-medium tracking-wide"
+                className="text-[11px] font-semibold uppercase tracking-wider"
                 style={{ color: 'var(--text-3)' }}
               >
                 {segment.toUpperCase()}
               </span>
             </React.Fragment>
           ))}
-        </nav>
-      </div>
-
-      {/* Row 2: Title + Actions */}
-      <div
-        className="flex items-center justify-between px-6 pb-3"
-        style={{ 
-          borderBottom: !toolbar && showDivider ? '1px solid var(--divider)' : undefined,
-        }}
-      >
-        {/* Left: Page Title (H1, most prominent) */}
-        <h1
-          className="text-[20px] font-semibold tracking-tight"
-          style={{ color: 'var(--text-1)' }}
-        >
-          {pageTitle}
-        </h1>
+          {breadcrumbSegments.length > 0 && (
+            <span 
+              className="text-[14px]" 
+              style={{ color: 'var(--text-4)' }}
+            >
+              /
+            </span>
+          )}
+          <h1
+            className="text-[18px] font-semibold"
+            style={{ color: 'var(--text-1)' }}
+          >
+            {pageTitle}
+          </h1>
+        </div>
 
         {/* Right: Actions slot */}
         {rightActions && (
@@ -121,7 +123,7 @@ export function GlobalPageHeader({
         )}
       </div>
 
-      {/* Row 3: Toolbar - only rendered if toolbar provided */}
+      {/* Row 2: Toolbar - only rendered if toolbar provided */}
       {toolbar && (
         <div
           className="flex items-center px-6"

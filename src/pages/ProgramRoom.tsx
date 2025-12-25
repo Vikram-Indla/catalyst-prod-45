@@ -70,11 +70,32 @@ export default function ProgramRoom() {
 
   return (
     <div className="h-full w-full flex flex-col bg-background overflow-hidden">
-      {/* Header - aligned with sidebar header (h-12 = 48px) */}
-      <div className="h-12 border-b bg-card px-3 sm:px-6 flex items-center flex-shrink-0">
-        <div className="flex items-center justify-between w-full gap-3">
-          <div className="min-w-0">
-            <h1 className="text-xl font-semibold truncate">
+      {/* Header - PageChrome style (inline breadcrumb) */}
+      <div className="shrink-0" style={{ backgroundColor: 'var(--bg)' }}>
+        <div
+          className="flex items-center justify-between px-6"
+          style={{ 
+            height: '52px',
+            borderBottom: '1px solid var(--divider)',
+          }}
+        >
+          <div className="flex items-center gap-2">
+            <span
+              className="text-[11px] font-semibold uppercase tracking-wider"
+              style={{ color: 'var(--text-3)' }}
+            >
+              PROGRAM
+            </span>
+            <span 
+              className="text-[14px]" 
+              style={{ color: 'var(--text-4)' }}
+            >
+              /
+            </span>
+            <h1
+              className="text-[18px] font-semibold"
+              style={{ color: 'var(--text-1)' }}
+            >
               {isProject ? 'Project Room' : 'Program Room'}
             </h1>
           </div>

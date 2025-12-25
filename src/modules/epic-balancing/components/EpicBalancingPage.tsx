@@ -54,13 +54,34 @@ export function EpicBalancingPage() {
 
   return (
     <div className="flex flex-col h-full bg-background">
-      {/* Header */}
-      <div className="h-[72px] border-b border-border bg-card flex-shrink-0 flex items-center justify-between px-6">
-        <div className="flex items-center gap-3">
-          <Scale className="h-5 w-5 text-brand-primary" />
-          <div>
-            <h1 className="text-lg font-semibold text-foreground">Epic Balancing</h1>
-            <p className="text-xs text-muted-foreground">Visual balancing of epics using Technical Score (WSJF)</p>
+      {/* Header - PageChrome style (inline breadcrumb) */}
+      <div className="shrink-0" style={{ backgroundColor: 'var(--bg)' }}>
+        <div
+          className="flex items-center justify-between px-6"
+          style={{ 
+            height: '52px',
+            borderBottom: '1px solid var(--divider)',
+          }}
+        >
+          <div className="flex items-center gap-2">
+            <span
+              className="text-[11px] font-semibold uppercase tracking-wider"
+              style={{ color: 'var(--text-3)' }}
+            >
+              PROGRAM
+            </span>
+            <span 
+              className="text-[14px]" 
+              style={{ color: 'var(--text-4)' }}
+            >
+              /
+            </span>
+            <h1
+              className="text-[18px] font-semibold"
+              style={{ color: 'var(--text-1)' }}
+            >
+              Epic Balancing
+            </h1>
           </div>
         </div>
       </div>
