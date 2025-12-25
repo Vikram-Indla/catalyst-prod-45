@@ -122,10 +122,10 @@ function LoadingSkeleton({
   visibleColumns: ColumnConfig[];
 }) {
   return (
-    <div className="rounded-md border border-border overflow-hidden bg-card">
+    <div className="rounded-md border border-[#e5e0d8] overflow-hidden bg-card">
       {/* Header - exactly 32px */}
       <div 
-        className="grid items-center h-8 bg-muted border-b border-border"
+        className="grid items-center h-8 bg-[#faf7f1] border-b border-[#e5e0d8]"
         style={{ gridTemplateColumns: gridTemplate }}
       >
         <div className={cn(GRID_CELL_BASE, "pl-3 pr-2 flex items-center h-full")}>
@@ -152,7 +152,7 @@ function LoadingSkeleton({
       {[...Array(12)].map((_, i) => (
         <div 
           key={i} 
-          className="grid items-center h-9 border-b border-border last:border-b-0"
+          className="grid items-center h-9 border-b border-[#e5e0d8] last:border-b-0"
           style={{ gridTemplateColumns: gridTemplate }}
         >
           <div className={cn(GRID_CELL_BASE, "pl-3 pr-2 flex items-center h-full")}>
@@ -330,14 +330,14 @@ export function IncidentListTable({
         {/* Table container - horizontal scroll when content exceeds viewport */}
         <div 
           ref={containerRef}
-          className="rounded-md border border-border overflow-hidden bg-card flex-1"
+          className="rounded-md border border-[#e5e0d8] overflow-hidden bg-card flex-1"
         >
           <div className="overflow-x-auto w-full h-full">
             {/* Grid table - min-width ensures it can grow for horizontal scroll */}
             <div style={{ minWidth: '100%', width: '100%' }}>
               {/* Header row - exactly 32px height, CSS Grid layout */}
               <div 
-                className="grid items-center h-8 sticky top-0 z-20 bg-muted border-b border-border"
+                className="grid items-center h-8 sticky top-0 z-20 bg-[#faf7f1] border-b border-[#e5e0d8]"
                 style={{ gridTemplateColumns: gridTemplate }}
               >
                 {/* Key - left aligned */}
@@ -453,20 +453,22 @@ export function IncidentListTable({
                           className={cn(
                             CELL_TEXT,
                             'font-medium font-mono',
-                            'text-[#c69c6d] dark:text-[#d4a855] hover:text-[#b8894d] dark:hover:text-[#c49545]',
+                            'text-gold-link hover:text-gold-link-hover',
                             'hover:underline truncate'
                           )}
                           onClick={(e) => e.stopPropagation()}
                         >
                           {incident.incident_key}
                         </Link>
-                        {incident.is_major_incident && (
+                        {(incident.is_major_incident || isCritical || isBreached) && (
                           <Tooltip>
                             <TooltipTrigger asChild>
-                              <AlertTriangle className="h-3.5 w-3.5 ml-1 text-amber-500 shrink-0" />
+                              <AlertTriangle className="h-3.5 w-3.5 ml-1 text-[#8b7355] shrink-0" />
                             </TooltipTrigger>
                             <TooltipContent side="right" className="text-xs">
-                              <p className="font-medium">Major Incident</p>
+                              <p className="font-medium">
+                                {incident.is_major_incident ? 'Major Incident' : isBreached ? 'SLA Breached' : 'SEV1 Warning'}
+                              </p>
                             </TooltipContent>
                           </Tooltip>
                         )}

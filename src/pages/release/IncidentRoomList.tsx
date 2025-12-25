@@ -202,18 +202,18 @@ export default function IncidentRoomList() {
             
             {/* Right: Controls */}
             <div className="flex items-center gap-2">
-              {/* Summary Counts - Subtle chips */}
+              {/* Summary Counts - Subtle chips (Catalyst compliant) */}
               <div className="hidden lg:flex items-center gap-3 text-xs text-muted-foreground mr-3">
                 <span className="flex items-center gap-1.5">
-                  <span className="h-2 w-2 rounded-full bg-red-500" />
+                  <span className="h-2 w-2 rounded-full" style={{ backgroundColor: '#c69c6d' }} />
                   <span className="font-medium text-foreground">{stats.critical}</span> critical
                 </span>
                 <span className="flex items-center gap-1.5">
-                  <span className="h-2 w-2 rounded-full bg-blue-500" />
+                  <span className="h-2 w-2 rounded-full" style={{ backgroundColor: '#5c7c5c' }} />
                   <span className="font-medium text-foreground">{stats.open}</span> open
                 </span>
                 <span className="flex items-center gap-1.5">
-                  <span className="h-2 w-2 rounded-full bg-amber-500" />
+                  <span className="h-2 w-2 rounded-full" style={{ backgroundColor: '#8b7355' }} />
                   <span className="font-medium text-foreground">{stats.slaBreached}</span> SLA breached
                 </span>
               </div>
