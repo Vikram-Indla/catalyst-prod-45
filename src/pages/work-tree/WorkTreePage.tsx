@@ -16,6 +16,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { EpicDrawer } from '@/components/items/epics/EpicDrawer';
 import { FeatureDetailsPanel } from '@/components/items/features/FeatureDetailsPanel';
+import { ProgramPageLayout } from '@/components/program/ProgramPageLayout';
 import type { Feature } from '@/types/feature.types';
 
 type WorkTreeView = 'top-down' | 'bottom-up' | 'team' | 'strategy' | 'theme-group';
@@ -120,176 +121,178 @@ export function WorkTreePage() {
   const hasDashboard = view === 'top-down' || view === 'bottom-up' || view === 'team';
 
   return (
-    <div className={`flex flex-col bg-background overflow-hidden ${isMaximized ? 'fixed inset-0 z-50' : 'h-full w-full'}`}>
-      {/* Header */}
-      <div className="border-b bg-card">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between px-[var(--s4)] sm:px-[var(--s6)] h-14 gap-[var(--s3)]">
-          <div className="flex items-center gap-[var(--s3)]">
-            <h1 className="text-lg font-semibold">Work Tree</h1>
-            <Select value={view} onValueChange={handleViewChange}>
-              <SelectTrigger className="w-[240px]">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="top-down">Top-Down View from Epic</SelectItem>
-                <SelectItem value="bottom-up">Bottom-Up View from Story</SelectItem>
-                <SelectItem value="team">Team View</SelectItem>
-                <SelectItem value="strategy">Strategy View</SelectItem>
-                <SelectItem value="theme-group">Theme Group View</SelectItem>
-              </SelectContent>
-            </Select>
-            
-            {/* PI Selector - Available for all views */}
-            {programIncrements && programIncrements.length > 0 && (
-              <Select 
-                value={selectedPIId || currentPI?.id || ''} 
-                onValueChange={setSelectedPIId}
-              >
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Select PI" />
+    <ProgramPageLayout>
+      <div className={`flex flex-col bg-background overflow-hidden ${isMaximized ? 'fixed inset-0 z-50' : 'h-full w-full'}`}>
+        {/* Header */}
+        <div className="border-b bg-card">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between px-[var(--s4)] sm:px-[var(--s6)] h-14 gap-[var(--s3)]">
+            <div className="flex items-center gap-[var(--s3)]">
+              <h1 className="text-lg font-semibold">Work Tree</h1>
+              <Select value={view} onValueChange={handleViewChange}>
+                <SelectTrigger className="w-[240px]">
+                  <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {programIncrements.map(pi => (
-                    <SelectItem key={pi.id} value={pi.id}>
-                      {pi.name}
-                    </SelectItem>
-                  ))}
+                  <SelectItem value="top-down">Top-Down View from Epic</SelectItem>
+                  <SelectItem value="bottom-up">Bottom-Up View from Story</SelectItem>
+                  <SelectItem value="team">Team View</SelectItem>
+                  <SelectItem value="strategy">Strategy View</SelectItem>
+                  <SelectItem value="theme-group">Theme Group View</SelectItem>
                 </SelectContent>
               </Select>
-            )}
-          </div>
-          <div className="flex items-center gap-[var(--s2)]">
-            {/* Card Visibility Selector - Available for views with dashboard */}
-            {hasDashboard && (
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button variant="ghost" size="sm">
-                    <Eye className="h-4 w-4" />
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-56" align="end">
-                  <div className="space-y-2">
-                    <h4 className="font-medium text-sm">Show Progress Cards</h4>
-                    {METRIC_IDS.map(id => (
-                      <div key={id} className="flex items-center space-x-2">
-                        <Checkbox
-                          id={`show-${id}`}
-                          checked={!hiddenCards.includes(id)}
-                          onCheckedChange={(checked) => handleToggleCard(id, !!checked)}
-                        />
-                        <label
-                          htmlFor={`show-${id}`}
-                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                        >
-                          {METRIC_LABELS[id]}
-                        </label>
-                      </div>
+              
+              {/* PI Selector - Available for all views */}
+              {programIncrements && programIncrements.length > 0 && (
+                <Select 
+                  value={selectedPIId || currentPI?.id || ''} 
+                  onValueChange={setSelectedPIId}
+                >
+                  <SelectTrigger className="w-[180px]">
+                    <SelectValue placeholder="Select PI" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {programIncrements.map(pi => (
+                      <SelectItem key={pi.id} value={pi.id}>
+                        {pi.name}
+                      </SelectItem>
                     ))}
-                  </div>
-                </PopoverContent>
-              </Popover>
-            )}
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setConfigsOpen(true)}
-            >
-              <Settings className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleReset}
-            >
-              <RotateCcw className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setLegendOpen(true)}
-            >
-              <Info className="h-4 w-4" />
-            </Button>
-            <Button 
-              variant="ghost" 
-              size="sm"
-              onClick={() => setIsMaximized(!isMaximized)}
-              aria-label={isMaximized ? 'Minimize' : 'Maximize'}
-            >
-              {isMaximized ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
-            </Button>
+                  </SelectContent>
+                </Select>
+              )}
+            </div>
+            <div className="flex items-center gap-[var(--s2)]">
+              {/* Card Visibility Selector - Available for views with dashboard */}
+              {hasDashboard && (
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button variant="ghost" size="sm">
+                      <Eye className="h-4 w-4" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-56" align="end">
+                    <div className="space-y-2">
+                      <h4 className="font-medium text-sm">Show Progress Cards</h4>
+                      {METRIC_IDS.map(id => (
+                        <div key={id} className="flex items-center space-x-2">
+                          <Checkbox
+                            id={`show-${id}`}
+                            checked={!hiddenCards.includes(id)}
+                            onCheckedChange={(checked) => handleToggleCard(id, !!checked)}
+                          />
+                          <label
+                            htmlFor={`show-${id}`}
+                            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                          >
+                            {METRIC_LABELS[id]}
+                          </label>
+                        </div>
+                      ))}
+                    </div>
+                  </PopoverContent>
+                </Popover>
+              )}
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setConfigsOpen(true)}
+              >
+                <Settings className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleReset}
+              >
+                <RotateCcw className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setLegendOpen(true)}
+              >
+                <Info className="h-4 w-4" />
+              </Button>
+              <Button 
+                variant="ghost" 
+                size="sm"
+                onClick={() => setIsMaximized(!isMaximized)}
+                aria-label={isMaximized ? 'Minimize' : 'Maximize'}
+              >
+                {isMaximized ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
+              </Button>
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Content */}
-      <div className="flex-1 overflow-auto px-[var(--s4)] sm:px-[var(--s6)] py-[var(--s6)] space-y-[var(--s6)]">
-        {/* Team View Info Banner */}
-        {view === 'team' && teamId && (
-          <Alert className="bg-brand-primary/10 dark:bg-brand-primary/5 border-brand-primary/30">
-            <AlertCircle className="h-4 w-4 text-brand-primary" />
-            <AlertDescription className="text-foreground">
-              Team view: Showing your work filtered by selected teams in Configuration bar. This report starts with stories, then builds the hierarchy up.
-            </AlertDescription>
-          </Alert>
-        )}
+        {/* Content */}
+        <div className="flex-1 overflow-auto px-[var(--s4)] sm:px-[var(--s6)] py-[var(--s6)] space-y-[var(--s6)]">
+          {/* Team View Info Banner */}
+          {view === 'team' && teamId && (
+            <Alert className="bg-brand-primary/10 dark:bg-brand-primary/5 border-brand-primary/30">
+              <AlertCircle className="h-4 w-4 text-brand-primary" />
+              <AlertDescription className="text-foreground">
+                Team view: Showing your work filtered by selected teams in Configuration bar. This report starts with stories, then builds the hierarchy up.
+              </AlertDescription>
+            </Alert>
+          )}
 
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-base">{getViewTitle()}</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-[var(--s6)]">
-            {/* Dashboard - only for top-down, bottom-up, and team views */}
-            {hasDashboard && (
-              <WorkTreeDashboard 
-                view={view} 
-                data={data} 
-                isLoading={isLoading} 
-                teamId={teamId}
-                currentPI={currentPI}
-                hiddenCards={hiddenCards}
-                onHideCard={handleHideCard}
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base">{getViewTitle()}</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-[var(--s6)]">
+              {/* Dashboard - only for top-down, bottom-up, and team views */}
+              {hasDashboard && (
+                <WorkTreeDashboard 
+                  view={view} 
+                  data={data} 
+                  isLoading={isLoading} 
+                  teamId={teamId}
+                  currentPI={currentPI}
+                  hiddenCards={hiddenCards}
+                  onHideCard={handleHideCard}
+                />
+              )}
+
+              {/* Tree Hierarchy */}
+              <WorkTreeHierarchy
+                view={view}
+                data={data}
+                isLoading={isLoading}
+                narrowToProgram={narrowToProgram}
+                onItemClick={handleItemClick}
               />
-            )}
+            </CardContent>
+          </Card>
+        </div>
 
-            {/* Tree Hierarchy */}
-            <WorkTreeHierarchy
-              view={view}
-              data={data}
-              isLoading={isLoading}
-              narrowToProgram={narrowToProgram}
-              onItemClick={handleItemClick}
-            />
-          </CardContent>
-        </Card>
+        {/* Extra Configs Drawer */}
+        <WorkTreeExtraConfigs
+          open={configsOpen}
+          onClose={() => setConfigsOpen(false)}
+          view={view}
+        />
+
+        {/* Legend Dialog */}
+        <WorkTreeLegend
+          open={legendOpen}
+          onClose={() => setLegendOpen(false)}
+        />
+
+        {/* Epic Drawer */}
+        <EpicDrawer
+          isOpen={!!selectedEpicId}
+          onClose={() => setSelectedEpicId(null)}
+          epicId={selectedEpicId}
+        />
+
+        {/* Feature Details Panel */}
+        <FeatureDetailsPanel
+          feature={selectedFeature || undefined}
+          open={!!selectedFeature}
+          onClose={() => setSelectedFeature(null)}
+        />
       </div>
-
-      {/* Extra Configs Drawer */}
-      <WorkTreeExtraConfigs
-        open={configsOpen}
-        onClose={() => setConfigsOpen(false)}
-        view={view}
-      />
-
-      {/* Legend Dialog */}
-      <WorkTreeLegend
-        open={legendOpen}
-        onClose={() => setLegendOpen(false)}
-      />
-
-      {/* Epic Drawer */}
-      <EpicDrawer
-        isOpen={!!selectedEpicId}
-        onClose={() => setSelectedEpicId(null)}
-        epicId={selectedEpicId}
-      />
-
-      {/* Feature Details Panel */}
-      <FeatureDetailsPanel
-        feature={selectedFeature || undefined}
-        open={!!selectedFeature}
-        onClose={() => setSelectedFeature(null)}
-      />
-    </div>
+    </ProgramPageLayout>
   );
 }
