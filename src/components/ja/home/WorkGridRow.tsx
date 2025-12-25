@@ -68,12 +68,14 @@ export const GRID_COLS_MOBILE = '80px 1fr 80px';
 export function OperationsGridRow({ 
   item, 
   density = 'comfortable',
+  currentUserId,
   onAssignToMe,
   onAcknowledge,
   onResolve,
 }: { 
   item: BaseWorkItem; 
   density?: 'compact' | 'comfortable';
+  currentUserId?: string;
   onAssignToMe?: (id: string) => void;
   onAcknowledge?: (id: string) => void;
   onResolve?: (id: string) => void;
@@ -124,8 +126,9 @@ export function OperationsGridRow({
     }
   };
 
-  // Check if user can take actions (placeholder - would check permissions)
-  const canAssign = true;
+  // Check if user can take actions
+  const isAlreadyAssignedToMe = currentUserId && item.assignee === currentUserId;
+  const canAssign = !isAlreadyAssignedToMe;
   const canAcknowledge = isIncident && item.status === 'triage';
   const canResolve = isIncident && !['resolved', 'closed'].includes(item.status);
 
@@ -187,43 +190,45 @@ export function OperationsGridRow({
         </div>
 
       {/* Quick actions - Operations specific: Kebab menu with Assign to me */}
-      <div className={cn("flex items-center justify-end gap-0.5 transition-opacity", isHovered ? "opacity-100" : "opacity-0")}>
-        <DropdownMenu open={actionsOpen} onOpenChange={setActionsOpen}>
-          <DropdownMenuTrigger asChild>
-            <button 
-              type="button"
-              className="w-5 h-5 rounded flex items-center justify-center hover:bg-[var(--nav-hover-bg)] text-[var(--icon-muted)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]"
+      {canAssign && (
+        <div className={cn("flex items-center justify-end gap-0.5 transition-opacity", isHovered ? "opacity-100" : "opacity-0")}>
+          <DropdownMenu open={actionsOpen} onOpenChange={setActionsOpen}>
+            <DropdownMenuTrigger asChild>
+              <button 
+                type="button"
+                className="w-5 h-5 rounded flex items-center justify-center hover:bg-[var(--nav-hover-bg)] text-[var(--icon-muted)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]"
+                onClick={(e) => e.stopPropagation()}
+                title="More actions"
+              >
+                <MoreHorizontal className="w-3 h-3" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent 
+              align="end" 
               onClick={(e) => e.stopPropagation()}
-              title="More actions"
+              onPointerDown={(e) => e.stopPropagation()}
+              className="bg-white dark:bg-gray-800 border-[var(--border-color)] z-[300] shadow-lg"
             >
-              <MoreHorizontal className="w-3 h-3" />
-            </button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent 
-            align="end" 
-            onClick={(e) => e.stopPropagation()}
-            onPointerDown={(e) => e.stopPropagation()}
-            className="bg-white dark:bg-gray-800 border-[var(--border-color)] z-[300] shadow-lg"
-          >
-            <DropdownMenuItem 
-              onClick={(e) => e.stopPropagation()}
-              onSelect={(e) => {
-                e.stopPropagation();
-                setActionsOpen(false);
-                try {
-                  onAssignToMe?.(item.id);
-                } finally {
+              <DropdownMenuItem 
+                onClick={(e) => e.stopPropagation()}
+                onSelect={(e) => {
+                  e.stopPropagation();
                   setActionsOpen(false);
-                }
-              }}
-              className="text-[var(--text-1)] cursor-pointer"
-            >
-              <UserPlus className="w-4 h-4 mr-2" />
-              Assign to me
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
+                  try {
+                    onAssignToMe?.(item.id);
+                  } finally {
+                    setActionsOpen(false);
+                  }
+                }}
+                className="text-[var(--text-1)] cursor-pointer"
+              >
+                <UserPlus className="w-4 h-4 mr-2" />
+                Assign to me
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      )}
       </div>
       
       {/* Mobile Row */}
@@ -263,6 +268,7 @@ export function OperationsGridRow({
 export function DeliveryGridRow({ 
   item, 
   density = 'comfortable',
+  currentUserId,
   isStarred = false,
   onToggleStar,
   onAssignToMe,
@@ -271,6 +277,7 @@ export function DeliveryGridRow({
 }: { 
   item: BaseWorkItem; 
   density?: 'compact' | 'comfortable';
+  currentUserId?: string;
   isStarred?: boolean;
   onToggleStar?: (id: string) => void;
   onAssignToMe?: (id: string) => void;
@@ -282,6 +289,10 @@ export function DeliveryGridRow({
   const timeAgo = formatDistanceToNow(item.activityDate, { addSuffix: false });
   
   const rowHeight = density === 'compact' ? 'py-1' : 'py-2';
+  
+  // Check if user can take actions
+  const isAlreadyAssignedToMe = currentUserId && item.assignee === currentUserId;
+  const canAssign = !isAlreadyAssignedToMe;
   
   // Use nav.path/navPath if provided, otherwise fall back to centralized utility
   const getItemRoute = (): string | null => {
@@ -366,39 +377,40 @@ export function DeliveryGridRow({
         </div>
 
         {/* Quick actions - Delivery specific: Kebab menu with Assign to me */}
-        <div className={cn("flex items-center justify-end gap-0.5 transition-opacity", isHovered ? "opacity-100" : "opacity-0")}>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button 
-                type="button"
-                className="w-5 h-5 rounded flex items-center justify-center hover:bg-[var(--nav-hover-bg)] text-[var(--icon-muted)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]"
+        {canAssign && (
+          <div className={cn("flex items-center justify-end gap-0.5 transition-opacity", isHovered ? "opacity-100" : "opacity-0")}>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button 
+                  type="button"
+                  className="w-5 h-5 rounded flex items-center justify-center hover:bg-[var(--nav-hover-bg)] text-[var(--icon-muted)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]"
+                  onClick={(e) => e.stopPropagation()}
+                  title="More actions"
+                >
+                  <MoreHorizontal className="w-3 h-3" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent 
+                align="end" 
                 onClick={(e) => e.stopPropagation()}
-                title="More actions"
+                onPointerDown={(e) => e.stopPropagation()}
+                className="bg-white dark:bg-gray-800 border-[var(--border-color)] z-[300] shadow-lg"
               >
-                <MoreHorizontal className="w-3 h-3" />
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent 
-              align="end" 
-              onClick={(e) => e.stopPropagation()}
-              onPointerDown={(e) => e.stopPropagation()}
-              className="bg-white dark:bg-gray-800 border-[var(--border-color)] z-[300] shadow-lg"
-            >
-              <DropdownMenuItem 
-                onClick={(e) => e.stopPropagation()}
-                onSelect={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  onAssignToMe?.(item.id);
-                }}
-                className="text-[var(--text-1)] cursor-pointer"
-              >
-                <UserPlus className="w-4 h-4 mr-2" />
-                Assign to me
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
+                <DropdownMenuItem 
+                  onClick={(e) => e.stopPropagation()}
+                  onSelect={(e) => {
+                    e.stopPropagation();
+                    onAssignToMe?.(item.id);
+                  }}
+                  className="text-[var(--text-1)] cursor-pointer"
+                >
+                  <UserPlus className="w-4 h-4 mr-2" />
+                  Assign to me
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        )}
       </div>
       
       {/* Mobile Row */}
@@ -438,6 +450,7 @@ export function DeliveryGridRow({
 export function PlannerGridRow({ 
   item, 
   density = 'comfortable',
+  currentUserId,
   onAssignToMe,
   onReviewItem,
   onAddNote,
@@ -446,6 +459,7 @@ export function PlannerGridRow({
 }: { 
   item: BaseWorkItem; 
   density?: 'compact' | 'comfortable';
+  currentUserId?: string;
   onAssignToMe?: (id: string) => void;
   onReviewItem?: (id: string) => void;
   onAddNote?: (id: string) => void;
@@ -457,6 +471,10 @@ export function PlannerGridRow({
   const timeAgo = formatDistanceToNow(item.activityDate, { addSuffix: false });
   
   const rowHeight = density === 'compact' ? 'py-1' : 'py-2';
+  
+  // Check if user can take actions
+  const isAlreadyAssignedToMe = currentUserId && item.assignee === currentUserId;
+  const canAssign = !isAlreadyAssignedToMe;
   
   // Use nav.path/navPath if provided, otherwise fall back to centralized utility
   const getItemRoute = (): string | null => {
@@ -541,39 +559,40 @@ export function PlannerGridRow({
         </div>
 
         {/* Quick actions - Planner specific: Kebab menu with Assign to me */}
-        <div className={cn("flex items-center justify-end gap-0.5 transition-opacity", isHovered ? "opacity-100" : "opacity-0")}>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button 
-                type="button"
-                className="w-5 h-5 rounded flex items-center justify-center hover:bg-[var(--nav-hover-bg)] text-[var(--icon-muted)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]"
+        {canAssign && (
+          <div className={cn("flex items-center justify-end gap-0.5 transition-opacity", isHovered ? "opacity-100" : "opacity-0")}>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button 
+                  type="button"
+                  className="w-5 h-5 rounded flex items-center justify-center hover:bg-[var(--nav-hover-bg)] text-[var(--icon-muted)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]"
+                  onClick={(e) => e.stopPropagation()}
+                  title="More actions"
+                >
+                  <MoreHorizontal className="w-3 h-3" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent 
+                align="end" 
                 onClick={(e) => e.stopPropagation()}
-                title="More actions"
+                onPointerDown={(e) => e.stopPropagation()}
+                className="bg-white dark:bg-gray-800 border-[var(--border-color)] z-[300] shadow-lg"
               >
-                <MoreHorizontal className="w-3 h-3" />
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent 
-              align="end" 
-              onClick={(e) => e.stopPropagation()}
-              onPointerDown={(e) => e.stopPropagation()}
-              className="bg-white dark:bg-gray-800 border-[var(--border-color)] z-[300] shadow-lg"
-            >
-              <DropdownMenuItem 
-                onClick={(e) => e.stopPropagation()}
-                onSelect={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  onAssignToMe?.(item.id);
-                }}
-                className="text-[var(--text-1)] cursor-pointer"
-              >
-                <UserPlus className="w-4 h-4 mr-2" />
-                Assign to me
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
+                <DropdownMenuItem 
+                  onClick={(e) => e.stopPropagation()}
+                  onSelect={(e) => {
+                    e.stopPropagation();
+                    onAssignToMe?.(item.id);
+                  }}
+                  className="text-[var(--text-1)] cursor-pointer"
+                >
+                  <UserPlus className="w-4 h-4 mr-2" />
+                  Assign to me
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        )}
       </div>
       
       {/* Mobile Row */}
@@ -612,6 +631,7 @@ export function ModeAwareGridRow({
   item,
   mode,
   density = 'comfortable',
+  currentUserId,
   isStarred = false,
   onToggleStar,
   onAssignToMe,
@@ -627,6 +647,7 @@ export function ModeAwareGridRow({
   item: BaseWorkItem;
   mode: HomeRoleMode;
   density?: 'compact' | 'comfortable';
+  currentUserId?: string;
   isStarred?: boolean;
   onToggleStar?: (id: string) => void;
   onAssignToMe?: (id: string) => void;
@@ -645,6 +666,7 @@ export function ModeAwareGridRow({
         <OperationsGridRow 
           item={item} 
           density={density}
+          currentUserId={currentUserId}
           onAssignToMe={onAssignToMe}
           onAcknowledge={onAcknowledge}
           onResolve={onResolve}
@@ -655,6 +677,7 @@ export function ModeAwareGridRow({
         <PlannerGridRow 
           item={item} 
           density={density}
+          currentUserId={currentUserId}
           onAssignToMe={onAssignToMe}
           onReviewItem={onReviewItem}
           onAddNote={onAddNote}
@@ -668,6 +691,7 @@ export function ModeAwareGridRow({
         <DeliveryGridRow 
           item={item} 
           density={density}
+          currentUserId={currentUserId}
           isStarred={isStarred}
           onToggleStar={onToggleStar}
           onAssignToMe={onAssignToMe}

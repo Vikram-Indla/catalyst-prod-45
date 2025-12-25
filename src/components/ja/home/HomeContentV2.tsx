@@ -129,6 +129,7 @@ function WorkItemsDataGrid({
   activeScope,
   density,
   isLoading,
+  currentUserId,
   onAssignToMe,
 }: { 
   items: HomeWorkItem[];
@@ -142,6 +143,7 @@ function WorkItemsDataGrid({
   activeScope: HomeScope;
   density: 'compact' | 'comfortable';
   isLoading: boolean;
+  currentUserId?: string;
   onAssignToMe: (id: string, itemType: string) => void;
 }) {
   const groupedItems = groupItemsByTimePeriod(items);
@@ -238,6 +240,7 @@ function WorkItemsDataGrid({
                 item={item}
                 mode={mode}
                 density={density}
+                currentUserId={currentUserId}
                 onAssignToMe={() => onAssignToMe(item.id, item.type)}
               />
             ))}
@@ -359,6 +362,7 @@ export function HomeContentV2() {
   const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || '');
   const [sortBy, setSortBy] = useState<HomeSort>('updated');
   const [density, setDensity] = useState<'compact' | 'comfortable'>('comfortable');
+  const [currentUserId, setCurrentUserId] = useState<string | undefined>();
   const [filters, setFilters] = useState<HomeFiltersState>({
     status: [],
     priority: [],
@@ -371,6 +375,13 @@ export function HomeContentV2() {
     plannedDateFrom: null,
     plannedDateTo: null,
   });
+
+  // Fetch current user ID on mount
+  React.useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => {
+      setCurrentUserId(data.user?.id);
+    });
+  }, []);
 
   // Debounced search for API
   const debouncedSearch = useDebounce(searchQuery, 300);
@@ -726,6 +737,7 @@ export function HomeContentV2() {
               activeScope={scope}
               density={density}
               isLoading={isLoading}
+              currentUserId={currentUserId}
               onAssignToMe={handleAssignToMe}
             />
           </div>
