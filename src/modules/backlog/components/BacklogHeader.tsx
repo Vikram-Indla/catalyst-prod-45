@@ -183,11 +183,11 @@ export function BacklogHeader({
 
             <Button
               onClick={onCreateEpic}
-              size="icon"
-              className="h-8 w-8 bg-brand-primary hover:bg-brand-primary-hover text-white"
-              title="Create Epic"
+              size="sm"
+              className="h-8 px-3 bg-brand-primary hover:bg-brand-primary-hover text-white gap-1.5"
             >
               <Plus className="h-4 w-4" />
+              Create Epic
             </Button>
           </div>
         </div>
