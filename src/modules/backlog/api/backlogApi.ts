@@ -461,9 +461,11 @@ async function groupItemsIntoPISections(
 }
 
 function getStatesForType(type: any): string[] {
+  // Note: For epics, the EpicKanbanBoard fetches states directly from epic_statuses table
+  // This fallback is for meta.states in list view
   const stateMap: Record<string, string[]> = {
     theme: ['proposed', 'in_progress', 'completed'],
-    epic: ['not_started', 'in_progress', 'accepted', 'done'],
+    epic: ['proposed', 'analyzing', 'approved', 'in_progress', 'done', 'cancelled'],
     capability: ['funnel', 'analyzing', 'backlog', 'implementing', 'done'],
     feature: ['funnel', 'analyzing', 'backlog', 'implementing', 'validating', 'deploying', 'done'],
     story: ['defined', 'in_progress', 'completed', 'accepted'],
