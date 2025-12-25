@@ -21,6 +21,8 @@ import {
   Settings,
   Square,
   Home,
+  Layers,
+  LayoutList,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -40,8 +42,8 @@ interface UnifiedSidebarProps {
 const menuConfigs: Record<WorkspaceType, Array<{ id: string; label: string; icon: any; pathTemplate: string; badge?: string }>> = {
   program: [
     { id: 'room', label: 'Program Room', icon: LayoutDashboard, pathTemplate: '/program/:id/room' },
-    { id: 'epic-backlog', label: 'Epic Backlog', icon: Square, pathTemplate: '/program/:id/epic-backlog' },
-    { id: 'feature-backlog', label: 'Feature Backlog', icon: Square, pathTemplate: '/program/:id/feature-backlog' },
+    { id: 'epic-backlog', label: 'Epic Backlog', icon: Layers, pathTemplate: '/program/:id/epic-backlog' },
+    { id: 'feature-backlog', label: 'Feature Backlog', icon: LayoutList, pathTemplate: '/program/:id/feature-backlog' },
     { id: 'work-tree', label: 'Work Tree', icon: Network, pathTemplate: '/program/:id/work-tree' },
     { id: 'dependencies', label: 'Dependencies', icon: GitBranch, pathTemplate: '/program/:id/dependencies' },
     { id: 'roadmaps', label: 'Roadmaps', icon: Map, pathTemplate: '/program/:id/roadmaps' },
