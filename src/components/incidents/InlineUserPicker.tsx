@@ -85,15 +85,15 @@ export function InlineUserPicker({
       <div className={cn(textSize, 'flex items-center justify-center gap-2 text-muted-foreground cursor-not-allowed')}>
         {value ? (
           <>
-            <div className="h-6 w-6 rounded-full bg-muted flex items-center justify-center flex-shrink-0">
-              <span className="text-[10px] font-medium text-muted-foreground">
+            <div className="h-6 w-6 rounded-full flex items-center justify-center flex-shrink-0" style={{ backgroundColor: '#d4b896' }}>
+              <span className="text-[10px] font-medium" style={{ color: '#1a1a1a' }}>
                 {value.avatar_initials || value.full_name?.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() || 'U'}
               </span>
             </div>
             <span className="truncate">{value.full_name}</span>
           </>
         ) : (
-          <span className="italic">Unassigned</span>
+          <span className="italic" style={{ color: '#6b7280' }}>Unassigned</span>
         )}
       </div>
     );
@@ -111,15 +111,15 @@ export function InlineUserPicker({
         >
           {value ? (
             <>
-              <div className="h-6 w-6 rounded-full bg-[#c69c6d] dark:bg-[#d4a855] flex items-center justify-center flex-shrink-0">
-                <span className="text-[10px] font-medium text-white">
+              <div className="h-6 w-6 rounded-full flex items-center justify-center flex-shrink-0" style={{ backgroundColor: '#d4b896' }}>
+                <span className="text-[10px] font-medium" style={{ color: '#1a1a1a' }}>
                   {value.avatar_initials || value.full_name?.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() || 'U'}
                 </span>
               </div>
               <span className="text-foreground truncate">{value.full_name}</span>
             </>
           ) : (
-            <span className="text-muted-foreground italic">Unassigned</span>
+            <span className="text-muted-foreground italic" style={{ color: '#6b7280' }}>Unassigned</span>
           )}
         </button>
       </PopoverTrigger>
@@ -175,8 +175,8 @@ export function InlineUserPicker({
                 onClick={() => handleSelect(user.id)}
                 disabled={isSaving}
               >
-                <div className="h-7 w-7 rounded-full bg-[#c69c6d] dark:bg-[#d4a855] flex items-center justify-center flex-shrink-0">
-                  <span className="text-[10px] font-medium text-white">
+                <div className="h-7 w-7 rounded-full flex items-center justify-center flex-shrink-0" style={{ backgroundColor: '#d4b896' }}>
+                  <span className="text-[10px] font-medium" style={{ color: '#1a1a1a' }}>
                     {user.avatar_initials || user.full_name?.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() || 'U'}
                   </span>
                 </div>

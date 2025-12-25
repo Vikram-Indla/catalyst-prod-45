@@ -1,206 +1,219 @@
 /**
- * TablePill — Enterprise-grade table pill/badge component
- * 
- * Proper severity-based colors with visual hierarchy:
- * - SEV1: RED - Critical, demands immediate attention
- * - SEV2: ORANGE - High priority
- * - SEV3: YELLOW - Medium priority
- * - SEV4: GRAY - Low priority
+ * TablePill — Incident table status/severity/SLA visuals (Catalyst compliant)
+ *
+ * Hard rules:
+ * - No teal/cyan/blue/purple/pink/lime/orange/red UI states
+ * - Use only Catalyst Golden Hour palette:
+ *   Gold #c69c6d | Olive #5c7c5c | Bronze #8b7355 | Champagne #d4b896 | Grey #c8ccd0
  */
 
 import { cn } from '@/lib/utils';
 import { ReactNode } from 'react';
-import { AlertTriangle, Clock, CheckCircle } from 'lucide-react';
+import { AlertTriangle, CheckCircle } from 'lucide-react';
+
+const CATALYST = {
+  gold: '#c69c6d',
+  olive: '#5c7c5c',
+  bronze: '#8b7355',
+  champagne: '#d4b896',
+  grey: '#c8ccd0',
+  cream: '#faf7f1',
+  border: '#e5e0d8',
+  onyx: '#1a1a1a',
+  muted: '#6b7280',
+} as const;
 
 export interface TablePillProps {
   children: ReactNode;
-  variant?: 'default' | 'success' | 'warning' | 'danger' | 'info' | 'muted' | 'accent' | 'orange' | 'yellow' | 'purple';
-  dot?: boolean;
-  dotColor?: string;
   className?: string;
+  style?: React.CSSProperties;
 }
 
-// Variant styles - proper color coding
-const variantStyles: Record<string, string> = {
-  default: 'bg-muted/60 text-foreground',
-  success: 'bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-400',
-  warning: 'bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-400',
-  danger: 'bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-400',
-  info: 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-400',
-  muted: 'bg-gray-100 dark:bg-gray-800/40 text-gray-600 dark:text-gray-400',
-  accent: 'bg-gray-100 dark:bg-gray-900/40 text-gray-700 dark:text-gray-300',
-  orange: 'bg-orange-100 dark:bg-orange-900/40 text-orange-700 dark:text-orange-400',
-  yellow: 'bg-yellow-100 dark:bg-yellow-900/40 text-yellow-700 dark:text-yellow-400',
-  purple: 'bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-400',
-};
-
-const dotStyles: Record<string, string> = {
-  default: 'bg-foreground/40',
-  success: 'bg-green-500',
-  warning: 'bg-amber-500',
-  danger: 'bg-red-500',
-  info: 'bg-blue-500',
-  muted: 'bg-gray-400',
-  accent: 'bg-gray-400',
-  orange: 'bg-orange-500',
-  yellow: 'bg-yellow-500',
-  purple: 'bg-purple-500',
-};
-
-export function TablePill({ 
-  children, 
-  variant = 'default', 
-  dot = false,
-  dotColor,
-  className 
-}: TablePillProps) {
+export function TablePill({ children, className, style }: TablePillProps) {
   return (
     <span
       className={cn(
-        // Fixed 20px height for strict compact density
-        'inline-flex items-center',
-        'h-5', // 20px height
-        'px-2', // 8px horizontal padding
-        'rounded-full', // Pill shape
-        // Typography - 11px, line-height for perfect centering
+        'inline-flex items-center h-5 px-2 rounded-full',
         'text-[11px] font-semibold leading-5',
-        // CRITICAL: Prevent pill from exceeding column width
         'max-w-full overflow-hidden whitespace-nowrap',
-        // Variant styling
-        variantStyles[variant] || variantStyles.default,
         className
       )}
+      style={style}
     >
-      {dot && (
-        <span 
-          className={cn(
-            'w-1.5 h-1.5 rounded-full mr-1.5 shrink-0',
-            dotColor || dotStyles[variant] || dotStyles.default
-          )} 
-        />
-      )}
       <span className="truncate">{children}</span>
     </span>
   );
 }
 
 /**
- * Severity Pill - proper RED for SEV1 (Critical)
- * SEV1 = RED - Critical, demands immediate attention
- * SEV2 = ORANGE - High priority
- * SEV3 = YELLOW - Medium priority
- * SEV4 = GRAY - Low priority
+ * Severity — dot + text only (no background pill)
  */
 export function SeverityPill({ severity }: { severity: string }) {
-  const severityConfig: Record<string, { label: string; variant: TablePillProps['variant']; dotColor: string }> = {
-    SEV1: { label: 'SEV1', variant: 'danger', dotColor: 'bg-red-500' },
-    SEV2: { label: 'SEV2', variant: 'orange', dotColor: 'bg-orange-500' },
-    SEV3: { label: 'SEV3', variant: 'yellow', dotColor: 'bg-yellow-600' },
-    SEV4: { label: 'SEV4', variant: 'muted', dotColor: 'bg-gray-400' },
+  const severityColors: Record<string, string> = {
+    SEV1: CATALYST.gold,
+    SEV2: CATALYST.bronze,
+    SEV3: CATALYST.olive,
+    SEV4: CATALYST.grey,
   };
 
-  const config = severityConfig[severity] || { label: severity, variant: 'muted' as TablePillProps['variant'], dotColor: 'bg-gray-400' };
-  
+  const dot = severityColors[severity] || CATALYST.grey;
+  const text = severity === 'SEV4' ? CATALYST.muted : CATALYST.onyx;
+
   return (
-    <TablePill variant={config.variant} dot dotColor={config.dotColor}>
-      {config.label}
-    </TablePill>
+    <div className="flex items-center gap-2">
+      <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: dot }} />
+      <span className="text-[12px] font-medium" style={{ color: text }}>
+        {severity}
+      </span>
+    </div>
   );
 }
 
 /**
- * Status Pill - distinct colors for each status
+ * Status — subtle pill with dot (Catalyst mapping)
  */
 export function StatusPill({ status }: { status: string }) {
-  const statusConfig: Record<string, { label: string; variant: TablePillProps['variant']; dot?: boolean }> = {
-    open: { label: 'Open', variant: 'info', dot: true },
-    triage: { label: 'Triaging', variant: 'warning', dot: true },
-    triaging: { label: 'Triaging', variant: 'warning', dot: true },
-    to_committee: { label: 'Committee', variant: 'purple', dot: true },
-    under_review: { label: 'Under Review', variant: 'purple', dot: true },
-    committee: { label: 'Committee', variant: 'purple', dot: true },
-    in_progress: { label: 'In Progress', variant: 'info', dot: true },
-    resolved: { label: 'Resolved', variant: 'success', dot: true },
-    converted: { label: 'Converted', variant: 'muted' },
-    closed: { label: 'Closed', variant: 'muted' },
+  const normalized = status?.toLowerCase().replace(/[\s-]/g, '_');
+
+  const styles: Record<string, { label: string; bg: string; border: string; text: string; dot: string }> = {
+    open: {
+      label: 'Open',
+      bg: CATALYST.cream,
+      border: CATALYST.gold,
+      text: CATALYST.gold,
+      dot: CATALYST.gold,
+    },
+    triage: {
+      label: 'Triaging',
+      bg: 'rgba(198, 156, 109, 0.10)',
+      border: 'transparent',
+      text: CATALYST.bronze,
+      dot: CATALYST.gold,
+    },
+    triaging: {
+      label: 'Triaging',
+      bg: 'rgba(198, 156, 109, 0.10)',
+      border: 'transparent',
+      text: CATALYST.bronze,
+      dot: CATALYST.gold,
+    },
+    to_committee: {
+      label: 'Committee',
+      bg: 'rgba(200, 204, 208, 0.30)',
+      border: 'transparent',
+      text: CATALYST.muted,
+      dot: CATALYST.grey,
+    },
+    committee: {
+      label: 'Committee',
+      bg: 'rgba(200, 204, 208, 0.30)',
+      border: 'transparent',
+      text: CATALYST.muted,
+      dot: CATALYST.grey,
+    },
+    in_progress: {
+      label: 'In Progress',
+      bg: 'rgba(92, 124, 92, 0.10)',
+      border: 'transparent',
+      text: CATALYST.olive,
+      dot: CATALYST.olive,
+    },
+    resolved: {
+      label: 'Resolved',
+      bg: 'rgba(92, 124, 92, 0.15)',
+      border: 'transparent',
+      text: CATALYST.olive,
+      dot: CATALYST.olive,
+    },
+    converted: {
+      label: 'Converted',
+      bg: 'rgba(200, 204, 208, 0.20)',
+      border: 'transparent',
+      text: CATALYST.muted,
+      dot: CATALYST.grey,
+    },
+    closed: {
+      label: 'Closed',
+      bg: 'rgba(200, 204, 208, 0.15)',
+      border: 'transparent',
+      text: CATALYST.muted,
+      dot: CATALYST.grey,
+    },
   };
 
-  const normalizedStatus = status?.toLowerCase().replace(/[\s-]/g, '_');
-  const config = statusConfig[normalizedStatus] || statusConfig[status] || { label: status, variant: 'muted' as const };
-  
+  const cfg = styles[normalized] || {
+    label: status || '—',
+    bg: 'rgba(200, 204, 208, 0.15)',
+    border: 'transparent',
+    text: CATALYST.muted,
+    dot: CATALYST.grey,
+  };
+
   return (
-    <TablePill variant={config.variant} dot={config.dot}>
-      {config.label}
-    </TablePill>
+    <span
+      className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold h-5"
+      style={{
+        backgroundColor: cfg.bg,
+        border: `1px solid ${cfg.border}`,
+        color: cfg.text,
+      }}
+    >
+      <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: cfg.dot }} />
+      <span className="truncate">{cfg.label}</span>
+    </span>
   );
 }
 
 /**
- * SLA Pill - visual urgency with icons
- * - Breached: Red with alert icon
- * - At Risk: Amber with clock icon  
- * - On Track: Green with check icon
+ * SLA — Olive (On Track) / Bronze (Breached)
  */
 export function SlaPill({ status }: { status: string }) {
   if (status === 'breached') {
     return (
-      <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-400 rounded-full text-[11px] font-semibold h-5">
-        <AlertTriangle className="w-3 h-3 shrink-0" />
+      <span
+        className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold h-5"
+        style={{ backgroundColor: 'rgba(139, 115, 85, 0.12)', color: CATALYST.bronze }}
+      >
+        <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
         <span>Breached</span>
       </span>
     );
   }
-  
-  if (status === 'at_risk') {
-    return (
-      <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-400 rounded-full text-[11px] font-semibold h-5">
-        <Clock className="w-3 h-3 shrink-0" />
-        <span>At Risk</span>
-      </span>
-    );
-  }
-  
+
   if (status === 'on_track') {
     return (
-      <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-400 rounded-full text-[11px] font-medium h-5">
-        <CheckCircle className="w-3 h-3 shrink-0" />
+      <span
+        className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold h-5"
+        style={{ backgroundColor: 'rgba(92, 124, 92, 0.12)', color: CATALYST.olive }}
+      >
+        <CheckCircle className="w-3.5 h-3.5 shrink-0" />
         <span>On Track</span>
       </span>
     );
   }
-  
-  // Default/unknown
+
   return <span className="text-[11px] text-muted-foreground leading-5">—</span>;
 }
 
-// Major - small badge only when applicable, otherwise "—"
+// Major — bronze emphasis (no red)
 export function MajorPill({ isMajor }: { isMajor: boolean }) {
-  if (!isMajor) {
-    return <span className="text-[11px] text-muted-foreground leading-5">—</span>;
-  }
-  
+  if (!isMajor) return <span className="text-[11px] text-muted-foreground leading-5">—</span>;
   return (
-    <TablePill variant="danger" dot dotColor="bg-red-500">
+    <TablePill
+      style={{
+        backgroundColor: 'rgba(139, 115, 85, 0.12)',
+        color: CATALYST.bronze,
+        border: `1px solid ${CATALYST.border}`,
+      }}
+    >
       Major
     </TablePill>
   );
 }
 
-// Committee - text with subtle styling
 export function CommitteePill({ status, label }: { status: string; label: string }) {
   if (status === 'n/a' || status === 'none' || !status || label === 'N/A') {
     return <span className="text-[11px] text-muted-foreground leading-5">—</span>;
   }
-  
-  const colorClass = status === 'approved' 
-    ? 'text-green-600 dark:text-green-400'
-    : status === 'rejected'
-    ? 'text-red-600 dark:text-red-400'
-    : 'text-muted-foreground';
-  
-  return (
-    <span className={cn('text-[11px] font-medium whitespace-nowrap leading-5 truncate', colorClass)}>
-      {label}
-    </span>
-  );
+  return <span className="text-[11px] font-medium whitespace-nowrap leading-5 truncate">{label}</span>;
 }
