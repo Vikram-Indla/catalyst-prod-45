@@ -119,6 +119,294 @@ function createQueryKey(params: HomeWorkItemsParams): (string | number | object)
 }
 
 // ============================================
+// FETCH STARRED ITEMS (from user_starred_items table)
+// ============================================
+async function fetchStarredItems(params: {
+  domain: HomeDomain;
+  search: string;
+  filters: HomeFiltersState;
+  sort: HomeSort;
+  page: number;
+  pageSize: number;
+  userId?: string;
+}): Promise<HomeWorkItemsResponse> {
+  const { domain, search, sort, page, pageSize, userId } = params;
+  const from = (page - 1) * pageSize;
+
+  if (!userId) {
+    return {
+      items: [],
+      counts: { workedOn: 0, assigned: 0, starred: 0, total: 0 },
+      pagination: { page, pageSize, total: 0, hasMore: false },
+    };
+  }
+
+  // Get starred items for this user
+  const { data: starredItems, error: starredError } = await supabase
+    .from('user_starred_items')
+    .select('item_id, item_type, starred_at')
+    .eq('user_id', userId)
+    .order('starred_at', { ascending: false });
+
+  if (starredError) throw starredError;
+  if (!starredItems || starredItems.length === 0) {
+    return {
+      items: [],
+      counts: { workedOn: 0, assigned: 0, starred: 0, total: 0 },
+      pagination: { page, pageSize, total: 0, hasMore: false },
+    };
+  }
+
+  // Filter by domain
+  const domainTypeMap: Record<HomeDomain, string[]> = {
+    all: ['epic', 'feature', 'story', 'task', 'incident', 'defect'],
+    operations: ['incident', 'defect'],
+    delivery: ['epic', 'feature', 'story'],
+    planner: ['task'],
+  };
+  const allowedTypes = domainTypeMap[domain];
+  const filteredStarred = starredItems.filter(s => allowedTypes.includes(s.item_type));
+
+  if (filteredStarred.length === 0) {
+    return {
+      items: [],
+      counts: { workedOn: 0, assigned: 0, starred: starredItems.length, total: 0 },
+      pagination: { page, pageSize, total: 0, hasMore: false },
+    };
+  }
+
+  // Group by type for efficient fetching
+  const storyIds = filteredStarred.filter(s => s.item_type === 'story').map(s => s.item_id);
+  const featureIds = filteredStarred.filter(s => s.item_type === 'feature').map(s => s.item_id);
+  const epicIds = filteredStarred.filter(s => s.item_type === 'epic').map(s => s.item_id);
+  const taskIds = filteredStarred.filter(s => s.item_type === 'task').map(s => s.item_id);
+  const incidentIds = filteredStarred.filter(s => s.item_type === 'incident' || s.item_type === 'defect').map(s => s.item_id);
+
+  const items: HomeWorkItem[] = [];
+
+  // Fetch stories
+  if (storyIds.length > 0) {
+    const { data: stories } = await supabase
+      .from('stories')
+      .select('id, story_key, title, name, status, state, priority, assignee_id, blocked, updated_at, created_at, feature:features(id, name, display_id, project_id)')
+      .in('id', storyIds)
+      .is('deleted_at', null);
+
+    const assigneeIds = (stories || []).map(s => s.assignee_id).filter(Boolean);
+    const { data: profiles } = assigneeIds.length > 0
+      ? await supabase.from('profiles').select('id, full_name').in('id', assigneeIds)
+      : { data: [] };
+    const profileMap = new Map((profiles || []).map(p => [p.id, p.full_name]));
+
+    (stories || []).forEach(s => {
+      const starredItem = filteredStarred.find(st => st.item_id === s.id);
+      const storyKey = s.story_key || `US-${s.id.slice(0, 6)}`;
+      items.push({
+        id: s.id,
+        key: storyKey,
+        summary: s.title || s.name || 'Untitled',
+        project: s.feature?.name || 'Backlog',
+        projectKey: s.feature?.display_id || 'BKL',
+        level: 'Project' as HomeLevel,
+        status: s.status || s.state || 'Open',
+        type: 'story' as WorkItemType,
+        domain: 'delivery' as HomeDomain,
+        assignee: s.assignee_id ? profileMap.get(s.assignee_id) || null : null,
+        activityDate: new Date(starredItem?.starred_at || s.updated_at || s.created_at),
+        activityType: 'Updated' as const,
+        priority: s.priority,
+        blocked: s.blocked,
+        navPath: s.feature?.project_id
+          ? `/projects/${s.feature.project_id}/work?focusKey=${encodeURIComponent(storyKey)}`
+          : `/industry/backlog?focusKey=${encodeURIComponent(storyKey)}`,
+      });
+    });
+  }
+
+  // Fetch features
+  if (featureIds.length > 0) {
+    const { data: features } = await supabase
+      .from('features')
+      .select('id, display_id, name, status, priority, blocked, updated_at, created_at, project_id, assignee_id, epic:epics(id, name, epic_key)')
+      .in('id', featureIds)
+      .is('deleted_at', null);
+
+    const assigneeIds = (features || []).map(f => f.assignee_id).filter(Boolean);
+    const { data: profiles } = assigneeIds.length > 0
+      ? await supabase.from('profiles').select('id, full_name').in('id', assigneeIds as string[])
+      : { data: [] };
+    const profileMap = new Map((profiles || []).map(p => [p.id, p.full_name]));
+
+    (features || []).forEach(f => {
+      const starredItem = filteredStarred.find(st => st.item_id === f.id);
+      const featureKey = f.display_id || `F-${f.id.slice(0, 6)}`;
+      items.push({
+        id: f.id,
+        key: featureKey,
+        summary: f.name,
+        project: f.epic?.name || 'Portfolio',
+        projectKey: f.epic?.epic_key || 'PRT',
+        level: 'Program' as HomeLevel,
+        status: f.status || 'Open',
+        type: 'feature' as WorkItemType,
+        domain: 'delivery' as HomeDomain,
+        assignee: f.assignee_id ? profileMap.get(f.assignee_id) || null : null,
+        activityDate: new Date(starredItem?.starred_at || f.updated_at || f.created_at),
+        activityType: 'Updated' as const,
+        priority: f.priority,
+        blocked: f.blocked,
+        navPath: f.project_id ? `/projects/${f.project_id}/features/${f.id}` : `/features`,
+      });
+    });
+  }
+
+  // Fetch epics
+  if (epicIds.length > 0) {
+    const { data: epics } = await supabase
+      .from('epics')
+      .select('id, epic_key, name, status, assignee_id, updated_at, created_at')
+      .in('id', epicIds)
+      .is('deleted_at', null);
+
+    const assigneeIds = (epics || []).map(e => e.assignee_id).filter(Boolean);
+    const { data: profiles } = assigneeIds.length > 0
+      ? await supabase.from('profiles').select('id, full_name').in('id', assigneeIds as string[])
+      : { data: [] };
+    const profileMap = new Map((profiles || []).map(p => [p.id, p.full_name]));
+
+    (epics || []).forEach(e => {
+      const starredItem = filteredStarred.find(st => st.item_id === e.id);
+      items.push({
+        id: e.id,
+        key: e.epic_key || `E-${e.id.slice(0, 6)}`,
+        summary: e.name,
+        project: 'Portfolio',
+        projectKey: 'PRT',
+        level: 'Product' as HomeLevel,
+        status: e.status || 'Open',
+        type: 'epic' as WorkItemType,
+        domain: 'delivery' as HomeDomain,
+        assignee: e.assignee_id ? profileMap.get(e.assignee_id) || null : null,
+        activityDate: new Date(starredItem?.starred_at || e.updated_at || e.created_at),
+        activityType: 'Updated' as const,
+        navPath: `/industry/backlog?focusKey=${encodeURIComponent(e.epic_key || e.id)}`,
+      });
+    });
+  }
+
+  // Fetch tasks
+  if (taskIds.length > 0) {
+    const { data: tasks } = await supabase
+      .from('work_manager_tasks')
+      .select('id, key, title, status, priority, blocked, updated_at, created_at, assignee_id, planned_date, ready_for_sprint, decision_required, review_status')
+      .in('id', taskIds);
+
+    const assigneeIds = (tasks || []).map(t => t.assignee_id).filter(Boolean);
+    const { data: profiles } = assigneeIds.length > 0
+      ? await supabase.from('profiles').select('id, full_name').in('id', assigneeIds)
+      : { data: [] };
+    const profileMap = new Map((profiles || []).map(p => [p.id, p.full_name]));
+
+    (tasks || []).forEach(t => {
+      const starredItem = filteredStarred.find(st => st.item_id === t.id);
+      items.push({
+        id: t.id,
+        key: t.key || `TSK-${t.id.slice(0, 6)}`,
+        summary: t.title || 'Untitled Task',
+        project: 'Work Manager',
+        projectKey: 'WM',
+        level: 'Planner' as HomeLevel,
+        status: t.status || 'Open',
+        type: 'task' as WorkItemType,
+        domain: 'planner' as HomeDomain,
+        assignee: t.assignee_id ? profileMap.get(t.assignee_id) || null : null,
+        activityDate: new Date(starredItem?.starred_at || t.updated_at || t.created_at),
+        activityType: 'Updated' as const,
+        priority: t.priority,
+        blocked: t.blocked || false,
+        plannedDate: t.planned_date ? new Date(t.planned_date) : undefined,
+        readyForSprint: t.ready_for_sprint || false,
+        decisionRequired: t.decision_required || false,
+        reviewStatus: t.review_status || 'none',
+        navPath: `/planner/tasks?taskId=${t.id}`,
+      });
+    });
+  }
+
+  // Fetch incidents
+  if (incidentIds.length > 0) {
+    const { data: incidents } = await supabase
+      .from('incidents')
+      .select('id, incident_key, title, status, severity, assignee_id, updated_at, created_at, project:projects!incidents_project_id_fkey(id, name, key)')
+      .in('id', incidentIds)
+      .is('deleted_at', null);
+
+    const assigneeIds = (incidents || []).map(i => i.assignee_id).filter(Boolean);
+    const { data: profiles } = assigneeIds.length > 0
+      ? await supabase.from('profiles').select('id, full_name').in('id', assigneeIds)
+      : { data: [] };
+    const profileMap = new Map((profiles || []).map(p => [p.id, p.full_name]));
+
+    (incidents || []).forEach(inc => {
+      const starredItem = filteredStarred.find(st => st.item_id === inc.id);
+      items.push({
+        id: inc.id,
+        key: inc.incident_key || `INC-${inc.id.slice(0, 6)}`,
+        summary: inc.title,
+        project: inc.project?.name || 'Unknown',
+        projectKey: inc.project?.key || 'UNK',
+        level: 'Release' as HomeLevel,
+        status: inc.status,
+        type: 'defect' as WorkItemType,
+        domain: 'operations' as HomeDomain,
+        assignee: inc.assignee_id ? profileMap.get(inc.assignee_id) || null : null,
+        activityDate: new Date(starredItem?.starred_at || inc.updated_at || inc.created_at),
+        activityType: 'Updated' as const,
+        severity: inc.severity,
+        navPath: `/release/incidents/${inc.id}`,
+      });
+    });
+  }
+
+  // Apply search filter
+  let filteredItems = items;
+  if (search?.trim()) {
+    const searchLower = search.toLowerCase();
+    filteredItems = items.filter(item =>
+      item.summary.toLowerCase().includes(searchLower) ||
+      item.key.toLowerCase().includes(searchLower)
+    );
+  }
+
+  // Sort by starred_at (most recent first) - activityDate is set to starred_at
+  if (sort === 'priority') {
+    const priorityOrder = { 'Critical': 0, 'SEV1': 0, 'High': 1, 'SEV2': 1, 'Medium': 2, 'SEV3': 2, 'Low': 3, 'SEV4': 3 };
+    filteredItems.sort((a, b) => {
+      const aOrder = priorityOrder[(a.priority || a.severity) as keyof typeof priorityOrder] ?? 4;
+      const bOrder = priorityOrder[(b.priority || b.severity) as keyof typeof priorityOrder] ?? 4;
+      return aOrder - bOrder;
+    });
+  } else {
+    filteredItems.sort((a, b) => b.activityDate.getTime() - a.activityDate.getTime());
+  }
+
+  // Paginate
+  const total = filteredItems.length;
+  const paginatedItems = filteredItems.slice(from, from + pageSize);
+
+  return {
+    items: paginatedItems,
+    counts: {
+      workedOn: 0, // Will be filled by the caller
+      assigned: 0,
+      starred: starredItems.length, // Total starred items count (all types)
+      total,
+    },
+    pagination: { page, pageSize, total, hasMore: from + paginatedItems.length < total },
+  };
+}
+
+// ============================================
 // FETCH OPERATIONS (INCIDENTS ONLY)
 // ============================================
 async function fetchOperations(params: {
@@ -668,6 +956,83 @@ export function useHomeWorkItems(params: HomeWorkItemsParams) {
   const query = useQuery({
     queryKey,
     queryFn: async (): Promise<HomeWorkItemsResponse> => {
+      // STARRED SCOPE: Always fetch from user_starred_items table
+      if (scope === 'starred') {
+        // Get current user if not provided
+        let effectiveUserId = userId;
+        if (!effectiveUserId) {
+          const { data: { user } } = await supabase.auth.getUser();
+          effectiveUserId = user?.id;
+        }
+        
+        const starredResult = await fetchStarredItems({
+          domain,
+          search,
+          filters: effectiveFilters,
+          sort,
+          page,
+          pageSize,
+          userId: effectiveUserId,
+        });
+
+        // Get other scope counts for the tabs (workedOn, assigned)
+        const fetchParams = {
+          scope: 'worked-on' as HomeScope,
+          search: '',
+          filters: defaultFilters,
+          sort,
+          page: 1,
+          pageSize: 1,
+          updatedRangeDate: null,
+          userId: effectiveUserId,
+        };
+
+        let workedOnCount = 0;
+        let assignedCount = 0;
+
+        try {
+          switch (domain) {
+            case 'all': {
+              const allRes = await fetchAll({ ...fetchParams, scope: 'worked-on' });
+              workedOnCount = allRes.counts.workedOn;
+              const allAssigned = await fetchAll({ ...fetchParams, scope: 'assigned' });
+              assignedCount = allAssigned.counts.assigned;
+              break;
+            }
+            case 'operations': {
+              const opsRes = await fetchOperations({ ...fetchParams, scope: 'worked-on' });
+              workedOnCount = opsRes.counts.workedOn;
+              assignedCount = opsRes.counts.assigned;
+              break;
+            }
+            case 'delivery': {
+              const delRes = await fetchDelivery({ ...fetchParams, scope: 'worked-on' });
+              workedOnCount = delRes.counts.workedOn;
+              assignedCount = delRes.counts.assigned;
+              break;
+            }
+            case 'planner': {
+              const planRes = await fetchPlanner({ ...fetchParams, scope: 'worked-on' });
+              workedOnCount = planRes.counts.workedOn;
+              assignedCount = planRes.counts.assigned;
+              break;
+            }
+          }
+        } catch (e) {
+          // Ignore count errors
+        }
+
+        return {
+          ...starredResult,
+          counts: {
+            workedOn: workedOnCount,
+            assigned: assignedCount,
+            starred: starredResult.counts.starred,
+            total: starredResult.pagination.total,
+          },
+        };
+      }
+
       const fetchParams = {
         scope,
         search,
