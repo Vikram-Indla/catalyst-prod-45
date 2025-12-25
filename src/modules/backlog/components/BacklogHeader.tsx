@@ -3,7 +3,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Filter, Download, Search, List, LayoutGrid, Plus } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { GlobalPageHeader } from '@/components/layout/GlobalPageHeader';
 
 interface BacklogHeaderProps {
   onOpenFilters: () => void;
@@ -38,125 +37,157 @@ export function BacklogHeader({
     }
   };
 
-  // Toolbar content for Row 2
-  const toolbarContent = (
-    <div className="flex items-center justify-between gap-4 w-full">
-      {/* Left - Search */}
-      <div className="relative w-full max-w-md">
-        <Search 
-          className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4" 
-          style={{ color: 'var(--icon-muted)' }}
-        />
-        <Input
-          placeholder="Search epics..."
-          value={searchQuery}
-          onChange={(e) => onSearchChange?.(e.target.value)}
-          className="pl-9 h-9"
-          style={{ 
-            backgroundColor: 'var(--input-bg)', 
-            borderColor: 'var(--input-border)',
-            color: 'var(--input-text)',
-          }}
-        />
-      </div>
-
-      {/* Right - View Toggle and Action Buttons */}
-      <div className="flex items-center gap-2">
-        {/* View Toggle */}
-        <div 
-          className="flex items-center rounded-md overflow-hidden"
-          style={{ 
-            backgroundColor: 'var(--surface-1)', 
-            border: '1px solid var(--border-color)' 
-          }}
-        >
-          <button
-            onClick={() => setView('list')}
-            className={cn(
-              "flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium transition-colors",
-              view === 'list' 
-                ? "bg-brand-primary text-white" 
-                : ""
-            )}
-            style={view !== 'list' ? { color: 'var(--text-2)' } : undefined}
-            onMouseOver={(e) => {
-              if (view !== 'list') e.currentTarget.style.backgroundColor = 'var(--nav-hover-bg)';
-            }}
-            onMouseOut={(e) => {
-              if (view !== 'list') e.currentTarget.style.backgroundColor = 'transparent';
-            }}
-          >
-            <List className="h-4 w-4" />
-            List
-          </button>
-          <button
-            onClick={() => setView('state')}
-            className={cn(
-              "flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium transition-colors",
-              view === 'state' 
-                ? "bg-brand-primary text-white" 
-                : ""
-            )}
-            style={view !== 'state' ? { color: 'var(--text-2)' } : undefined}
-            onMouseOver={(e) => {
-              if (view !== 'state') e.currentTarget.style.backgroundColor = 'var(--nav-hover-bg)';
-            }}
-            onMouseOut={(e) => {
-              if (view !== 'state') e.currentTarget.style.backgroundColor = 'transparent';
-            }}
-          >
-            <LayoutGrid className="h-4 w-4" />
-            Kanban
-          </button>
-        </div>
-
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={onOpenFilters}
-          className="h-8 w-8"
-          style={{ 
-            backgroundColor: 'var(--surface-1)', 
-            borderColor: 'var(--border-color)',
-            color: 'var(--icon-default)'
-          }}
-          title="Filters"
-        >
-          <Filter className="h-4 w-4" />
-        </Button>
-
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={handleExport}
-          className="h-8 w-8"
-          style={{ 
-            backgroundColor: 'var(--surface-1)', 
-            borderColor: 'var(--border-color)',
-            color: 'var(--icon-default)'
-          }}
-          title="Export"
-        >
-          <Download className="h-4 w-4" />
-        </Button>
-
-        <Button
-          onClick={onCreateEpic}
-          size="icon"
-          className="h-8 w-8 bg-brand-primary hover:bg-brand-primary-hover text-white"
-          title="Create Epic"
-        >
-          <Plus className="h-4 w-4" />
-        </Button>
-      </div>
-    </div>
-  );
+  const pageTitle = isEpicBacklog ? "Epic Backlog" : "Program Backlog";
 
   return (
-    <GlobalPageHeader
-      sectionLabel="Program"
-      pageTitle={isEpicBacklog ? "Epic Backlog" : "Program Backlog"}
-      toolbar={toolbarContent}
-    />
+    <div className="shrink-0" style={{ backgroundColor: 'var(--bg)' }}>
+      {/* Row 1: Breadcrumb + Title - PageChrome style (inline) */}
+      <div
+        className="flex items-center justify-between px-6"
+        style={{ 
+          height: '52px',
+          borderBottom: '1px solid var(--divider)',
+        }}
+      >
+        {/* Left: Breadcrumb + Title (NO ICONS) */}
+        <div className="flex items-center gap-2">
+          <span
+            className="text-[11px] font-semibold uppercase tracking-wider"
+            style={{ color: 'var(--text-3)' }}
+          >
+            PROGRAM
+          </span>
+          <span 
+            className="text-[14px]" 
+            style={{ color: 'var(--text-4)' }}
+          >
+            /
+          </span>
+          <h1
+            className="text-[18px] font-semibold"
+            style={{ color: 'var(--text-1)' }}
+          >
+            {pageTitle}
+          </h1>
+        </div>
+      </div>
+
+      {/* Row 2: Toolbar */}
+      <div
+        className="flex items-center px-6"
+        style={{ height: '44px' }}
+      >
+        <div className="flex items-center justify-between gap-4 w-full">
+          {/* Left - Search */}
+          <div className="relative w-full max-w-md">
+            <Search 
+              className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4" 
+              style={{ color: 'var(--icon-muted)' }}
+            />
+            <Input
+              placeholder="Search epics..."
+              value={searchQuery}
+              onChange={(e) => onSearchChange?.(e.target.value)}
+              className="pl-9 h-9"
+              style={{ 
+                backgroundColor: 'var(--input-bg)', 
+                borderColor: 'var(--input-border)',
+                color: 'var(--input-text)',
+              }}
+            />
+          </div>
+
+          {/* Right - View Toggle and Action Buttons */}
+          <div className="flex items-center gap-2">
+            {/* View Toggle */}
+            <div 
+              className="flex items-center rounded-md overflow-hidden"
+              style={{ 
+                backgroundColor: 'var(--surface-1)', 
+                border: '1px solid var(--border-color)' 
+              }}
+            >
+              <button
+                onClick={() => setView('list')}
+                className={cn(
+                  "flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium transition-colors",
+                  view === 'list' 
+                    ? "bg-brand-primary text-white" 
+                    : ""
+                )}
+                style={view !== 'list' ? { color: 'var(--text-2)' } : undefined}
+                onMouseOver={(e) => {
+                  if (view !== 'list') e.currentTarget.style.backgroundColor = 'var(--nav-hover-bg)';
+                }}
+                onMouseOut={(e) => {
+                  if (view !== 'list') e.currentTarget.style.backgroundColor = 'transparent';
+                }}
+              >
+                <List className="h-4 w-4" />
+                List
+              </button>
+              <button
+                onClick={() => setView('state')}
+                className={cn(
+                  "flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium transition-colors",
+                  view === 'state' 
+                    ? "bg-brand-primary text-white" 
+                    : ""
+                )}
+                style={view !== 'state' ? { color: 'var(--text-2)' } : undefined}
+                onMouseOver={(e) => {
+                  if (view !== 'state') e.currentTarget.style.backgroundColor = 'var(--nav-hover-bg)';
+                }}
+                onMouseOut={(e) => {
+                  if (view !== 'state') e.currentTarget.style.backgroundColor = 'transparent';
+                }}
+              >
+                <LayoutGrid className="h-4 w-4" />
+                Kanban
+              </button>
+            </div>
+
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={onOpenFilters}
+              className="h-8 w-8"
+              style={{ 
+                backgroundColor: 'var(--surface-1)', 
+                borderColor: 'var(--border-color)',
+                color: 'var(--icon-default)'
+              }}
+              title="Filters"
+            >
+              <Filter className="h-4 w-4" />
+            </Button>
+
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={handleExport}
+              className="h-8 w-8"
+              style={{ 
+                backgroundColor: 'var(--surface-1)', 
+                borderColor: 'var(--border-color)',
+                color: 'var(--icon-default)'
+              }}
+              title="Export"
+            >
+              <Download className="h-4 w-4" />
+            </Button>
+
+            <Button
+              onClick={onCreateEpic}
+              size="icon"
+              className="h-8 w-8 bg-brand-primary hover:bg-brand-primary-hover text-white"
+              title="Create Epic"
+            >
+              <Plus className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
