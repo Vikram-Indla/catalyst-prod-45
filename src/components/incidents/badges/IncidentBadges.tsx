@@ -4,38 +4,81 @@ import { CheckCircle, AlertTriangle } from 'lucide-react';
 import type { IncidentStatus, SeverityLevel, PriorityLevel, SupportLevel } from '@/types/incident';
 
 // ============================================
-// SHARED BADGE TOKENS - SINGLE SOURCE OF TRUTH
-// Used across: List, Detail, Dashboard, etc.
+// CATALYST BRAND PALETTE (Single Source of Truth)
+// Gold #c69c6d | Olive #5c7c5c | Bronze #8b7355 | Champagne #d4b896 | Grey #c8ccd0
 // ============================================
 
-// STATUS - Catalyst brand olive/amber tones
-export const STATUS_CONFIG: Record<IncidentStatus, { label: string; className: string; dotColor: string }> = {
-  open: { label: 'Open', className: 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950 dark:text-emerald-300 dark:border-emerald-800', dotColor: 'bg-emerald-500' },
-  triage: { label: 'Triaging', className: 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950 dark:text-amber-300 dark:border-amber-800', dotColor: 'bg-amber-500' },
-  to_committee: { label: 'Committee', className: 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950 dark:text-amber-300 dark:border-amber-800', dotColor: 'bg-amber-500' },
-  in_progress: { label: 'In Progress', className: 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950 dark:text-emerald-300 dark:border-emerald-800', dotColor: 'bg-emerald-500' },
-  resolved: { label: 'Resolved', className: 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950 dark:text-emerald-300 dark:border-emerald-800', dotColor: 'bg-emerald-500' },
-  converted: { label: 'Converted', className: 'bg-gray-100 text-gray-700 border-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700', dotColor: 'bg-gray-400' },
-  closed: { label: 'Closed', className: 'bg-muted text-muted-foreground border-border', dotColor: 'bg-gray-400' },
+// STATUS - Catalyst brand colors (no teal/cyan/lime)
+export const STATUS_CONFIG: Record<IncidentStatus, { label: string; bg: string; text: string; border: string; dotColor: string }> = {
+  open: { 
+    label: 'Open', 
+    bg: 'rgba(198, 156, 109, 0.08)', 
+    text: '#c69c6d', 
+    border: '#c69c6d',
+    dotColor: '#c69c6d' 
+  },
+  triage: { 
+    label: 'Triaging', 
+    bg: 'rgba(139, 115, 85, 0.1)', 
+    text: '#8b7355', 
+    border: 'transparent',
+    dotColor: '#c69c6d' 
+  },
+  to_committee: { 
+    label: 'Committee', 
+    bg: 'rgba(200, 204, 208, 0.3)', 
+    text: '#6b7280', 
+    border: 'transparent',
+    dotColor: '#c8ccd0' 
+  },
+  in_progress: { 
+    label: 'In Progress', 
+    bg: 'rgba(92, 124, 92, 0.1)', 
+    text: '#5c7c5c', 
+    border: 'transparent',
+    dotColor: '#5c7c5c' 
+  },
+  resolved: { 
+    label: 'Resolved', 
+    bg: 'rgba(92, 124, 92, 0.15)', 
+    text: '#5c7c5c', 
+    border: 'transparent',
+    dotColor: '#5c7c5c' 
+  },
+  converted: { 
+    label: 'Converted', 
+    bg: 'rgba(200, 204, 208, 0.2)', 
+    text: '#6b7280', 
+    border: 'transparent',
+    dotColor: '#c8ccd0' 
+  },
+  closed: { 
+    label: 'Closed', 
+    bg: 'rgba(200, 204, 208, 0.15)', 
+    text: '#6b7280', 
+    border: 'transparent',
+    dotColor: '#c8ccd0' 
+  },
 };
 
-// SEVERITY - Brand colors: red/orange/olive/gray with dot indicators
-export const SEVERITY_CONFIG: Record<SeverityLevel, { label: string; className: string; dotColor: string }> = {
-  SEV1: { label: 'SEV1', className: 'bg-red-50 text-red-700 border-red-200 dark:bg-red-950 dark:text-red-300 dark:border-red-800', dotColor: 'bg-red-500' },
-  SEV2: { label: 'SEV2', className: 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950 dark:text-amber-300 dark:border-amber-800', dotColor: 'bg-amber-500' },
-  SEV3: { label: 'SEV3', className: 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950 dark:text-emerald-300 dark:border-emerald-800', dotColor: 'bg-emerald-500' },
-  SEV4: { label: 'SEV4', className: 'bg-gray-100 text-gray-600 border-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-700', dotColor: 'bg-gray-400' },
+// SEVERITY - Catalyst brand: Gold (critical), Bronze (high), Olive (medium), Grey (low)
+// Dot-only display with text, no background pills
+export const SEVERITY_CONFIG: Record<SeverityLevel, { label: string; dotColor: string; textColor: string }> = {
+  SEV1: { label: 'SEV1', dotColor: '#c69c6d', textColor: '#1a1a1a' },  // Gold - Critical
+  SEV2: { label: 'SEV2', dotColor: '#8b7355', textColor: '#1a1a1a' },  // Bronze - High
+  SEV3: { label: 'SEV3', dotColor: '#5c7c5c', textColor: '#1a1a1a' },  // Olive - Medium
+  SEV4: { label: 'SEV4', dotColor: '#c8ccd0', textColor: '#6b7280' },  // Grey - Low
 };
 
-// PRIORITY - Derived, brand-aligned tones
-export const PRIORITY_CONFIG: Record<PriorityLevel, { label: string; fullLabel: string; className: string }> = {
-  P1: { label: 'P1', fullLabel: 'P1 — Critical', className: 'bg-red-100 text-red-800 border-red-200 dark:bg-red-950 dark:text-red-300 dark:border-red-800' },
-  P2: { label: 'P2', fullLabel: 'P2 — High', className: 'bg-orange-100 text-orange-800 border-orange-200 dark:bg-orange-950 dark:text-orange-300 dark:border-orange-800' },
-  P3: { label: 'P3', fullLabel: 'P3 — Medium', className: 'bg-amber-100 text-amber-800 border-amber-200 dark:bg-amber-950 dark:text-amber-300 dark:border-amber-800' },
-  P4: { label: 'P4', fullLabel: 'P4 — Low', className: 'bg-gray-100 text-gray-700 border-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-700' },
+// PRIORITY - Catalyst aligned
+export const PRIORITY_CONFIG: Record<PriorityLevel, { label: string; fullLabel: string; dotColor: string; textColor: string }> = {
+  P1: { label: 'P1', fullLabel: 'P1 — Critical', dotColor: '#c69c6d', textColor: '#1a1a1a' },
+  P2: { label: 'P2', fullLabel: 'P2 — High', dotColor: '#8b7355', textColor: '#1a1a1a' },
+  P3: { label: 'P3', fullLabel: 'P3 — Medium', dotColor: '#5c7c5c', textColor: '#1a1a1a' },
+  P4: { label: 'P4', fullLabel: 'P4 — Low', dotColor: '#c8ccd0', textColor: '#6b7280' },
 };
 
-// SUPPORT LEVEL - Neutral enterprise tones
+// SUPPORT LEVEL - Neutral grey tones
 export const SUPPORT_LEVEL_CONFIG: Record<SupportLevel, { label: string; className: string }> = {
   L1: { label: 'L1', className: 'bg-gray-100 text-gray-700 border-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-700' },
   L2: { label: 'L2', className: 'bg-gray-100 text-gray-700 border-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700' },
@@ -56,17 +99,23 @@ export function StatusBadge({ status, size = 'xs' }: StatusBadgeProps) {
   if (!config) return <span className="text-muted-foreground text-xs">-</span>;
   
   return (
-    <Badge 
-      variant="outline" 
+    <span 
       className={cn(
-        'font-medium px-1.5 py-0 whitespace-nowrap flex items-center gap-1',
-        size === 'xs' ? 'text-[10px]' : 'text-xs',
-        config.className
+        'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full font-medium',
+        size === 'xs' ? 'text-[10px]' : 'text-xs'
       )}
+      style={{ 
+        backgroundColor: config.bg,
+        border: `1px solid ${config.border}`,
+        color: config.text
+      }}
     >
-      <span className={cn('w-1.5 h-1.5 rounded-full', config.dotColor)} />
+      <span 
+        className="w-1.5 h-1.5 rounded-full flex-shrink-0"
+        style={{ backgroundColor: config.dotColor }}
+      />
       {config.label}
-    </Badge>
+    </span>
   );
 }
 
@@ -79,18 +128,23 @@ export function SeverityBadge({ severity, size = 'xs' }: SeverityBadgeProps) {
   const config = SEVERITY_CONFIG[severity];
   if (!config) return <span className="text-muted-foreground text-xs">-</span>;
   
+  // Dot-only display with text, no background pill
   return (
-    <Badge 
-      variant="outline" 
-      className={cn(
-        'font-medium px-1.5 py-0 border flex items-center gap-1',
-        size === 'xs' ? 'text-[10px]' : 'text-xs',
-        config.className
-      )}
-    >
-      <span className={cn('w-1.5 h-1.5 rounded-full', config.dotColor)} />
-      {config.label}
-    </Badge>
+    <div className={cn(
+      'flex items-center gap-2',
+      size === 'xs' ? 'text-xs' : 'text-sm'
+    )}>
+      <span 
+        className="w-2 h-2 rounded-full flex-shrink-0" 
+        style={{ backgroundColor: config.dotColor }}
+      />
+      <span 
+        className="font-medium dark:text-gray-300"
+        style={{ color: config.textColor }}
+      >
+        {config.label}
+      </span>
+    </div>
   );
 }
 
@@ -105,17 +159,23 @@ export function PriorityBadge({ priority, size = 'xs' }: PriorityBadgeProps) {
   const config = PRIORITY_CONFIG[priority];
   if (!config) return <span className="text-muted-foreground text-xs">-</span>;
   
+  // Dot-only display like severity
   return (
-    <Badge 
-      variant="outline" 
-      className={cn(
-        'font-medium px-1.5 py-0 border',
-        size === 'xs' ? 'text-[10px]' : 'text-xs',
-        config.className
-      )}
-    >
-      {config.label}
-    </Badge>
+    <div className={cn(
+      'flex items-center gap-2',
+      size === 'xs' ? 'text-xs' : 'text-sm'
+    )}>
+      <span 
+        className="w-2 h-2 rounded-full flex-shrink-0" 
+        style={{ backgroundColor: config.dotColor }}
+      />
+      <span 
+        className="font-medium dark:text-gray-300"
+        style={{ color: config.textColor }}
+      >
+        {config.label}
+      </span>
+    </div>
   );
 }
 
@@ -145,7 +205,7 @@ export function SupportLevelBadge({ level, size = 'xs' }: SupportLevelBadgeProps
 }
 
 // ============================================
-// SLA BADGE COMPONENT
+// SLA BADGE COMPONENT - Olive (on track) / Bronze (breached)
 // ============================================
 
 export type SlaStatus = 'on_track' | 'at_risk' | 'breached';
@@ -155,20 +215,23 @@ interface SlaBadgeProps {
   size?: 'xs' | 'sm';
 }
 
-const SLA_CONFIG: Record<SlaStatus, { label: string; className: string; Icon: typeof CheckCircle }> = {
+const SLA_CONFIG: Record<SlaStatus, { label: string; bg: string; text: string; Icon: typeof CheckCircle }> = {
   on_track: { 
     label: 'On Track', 
-    className: 'bg-green-100 text-green-800 border-green-200 dark:bg-green-950 dark:text-green-300 dark:border-green-800',
+    bg: 'rgba(92, 124, 92, 0.12)',
+    text: '#5c7c5c',
     Icon: CheckCircle 
   },
   at_risk: { 
     label: 'At Risk', 
-    className: 'bg-amber-100 text-amber-800 border-amber-200 dark:bg-amber-950 dark:text-amber-300 dark:border-amber-800',
+    bg: 'rgba(198, 156, 109, 0.12)',
+    text: '#c69c6d',
     Icon: AlertTriangle 
   },
   breached: { 
     label: 'Breached', 
-    className: 'bg-orange-100 text-orange-800 border-orange-200 dark:bg-orange-950 dark:text-orange-300 dark:border-orange-800',
+    bg: 'rgba(139, 115, 85, 0.12)',
+    text: '#8b7355',
     Icon: AlertTriangle 
   },
 };
@@ -180,17 +243,19 @@ export function SlaBadge({ status, size = 'xs' }: SlaBadgeProps) {
   const { Icon } = config;
   
   return (
-    <Badge 
-      variant="outline" 
+    <span 
       className={cn(
-        'font-medium px-1.5 py-0 border flex items-center gap-1',
-        size === 'xs' ? 'text-[10px]' : 'text-xs',
-        config.className
+        'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full font-medium',
+        size === 'xs' ? 'text-[10px]' : 'text-xs'
       )}
+      style={{ 
+        backgroundColor: config.bg,
+        color: config.text
+      }}
     >
-      <Icon className="w-3 h-3" />
+      <Icon className="w-3.5 h-3.5" />
       {config.label}
-    </Badge>
+    </span>
   );
 }
 
@@ -211,4 +276,12 @@ export function getAgingTime(createdAt: string): string {
   if (diffDays < 7) return `${diffDays}d`;
   if (diffDays < 30) return `${Math.floor(diffDays / 7)}w`;
   return `${Math.floor(diffDays / 30)}mo`;
+}
+
+// Row background helper for warning states (SEV1 or breached SLA)
+export function getIncidentRowBackground(severity: SeverityLevel, slaBreached: boolean): string {
+  if (slaBreached || severity === 'SEV1') {
+    return 'rgba(212, 184, 150, 0.15)'; // Champagne at 15% opacity
+  }
+  return 'transparent';
 }

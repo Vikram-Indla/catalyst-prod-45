@@ -31,7 +31,7 @@ import { useState } from 'react';
 const SEVERITY_OPTIONS = Object.entries(SEVERITY_OPTIONS_CONFIG).map(([value, config]) => ({
   value,
   label: `${value} — ${value === 'SEV1' ? 'Critical' : value === 'SEV2' ? 'High' : value === 'SEV3' ? 'Medium' : 'Low'}`,
-  className: config.className,
+  dotColor: config.dotColor,
 }));
 
 const DELIVERY_STAGE_OPTIONS: { value: DeliveryStage; label: string }[] = [
@@ -154,7 +154,14 @@ export function IncidentTriageRail({
               onValueChange={(v) => onStatusChange(v as IncidentStatus)}
               disabled={isConverted || status === 'closed'}
             >
-              <SelectTrigger className={cn('h-9 text-sm font-medium', STATUS_CONFIG[status].className)}>
+              <SelectTrigger 
+                className="h-9 text-sm font-medium"
+                style={{ 
+                  backgroundColor: STATUS_CONFIG[status].bg,
+                  color: STATUS_CONFIG[status].text,
+                  borderColor: STATUS_CONFIG[status].border
+                }}
+              >
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -231,13 +238,25 @@ export function IncidentTriageRail({
           <div className="grid grid-cols-2 gap-3">
             <FieldRow label="Severity">
               <Select value={severity} onValueChange={onSeverityChange} disabled={isConverted}>
-                <SelectTrigger className={cn('h-9 text-sm', currentSeverity?.className)}>
-                  <SelectValue />
+                <SelectTrigger className="h-9 text-sm">
+                  <div className="flex items-center gap-2">
+                    <span 
+                      className="w-2 h-2 rounded-full flex-shrink-0"
+                      style={{ backgroundColor: currentSeverity?.dotColor }}
+                    />
+                    <SelectValue />
+                  </div>
                 </SelectTrigger>
                 <SelectContent>
                   {SEVERITY_OPTIONS.map(opt => (
                     <SelectItem key={opt.value} value={opt.value} className="text-sm">
-                      {opt.label}
+                      <div className="flex items-center gap-2">
+                        <span 
+                          className="w-2 h-2 rounded-full flex-shrink-0"
+                          style={{ backgroundColor: opt.dotColor }}
+                        />
+                        {opt.label}
+                      </div>
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -246,10 +265,14 @@ export function IncidentTriageRail({
 
             <FieldRow label="Priority (derived)">
               {priority ? (
-                <div className="h-9 flex items-center">
-                  <Badge variant="outline" className={cn('text-sm px-2 py-1 border', PRIORITY_CONFIG[priority].className)}>
+                <div className="h-9 flex items-center gap-2">
+                  <span 
+                    className="w-2 h-2 rounded-full flex-shrink-0"
+                    style={{ backgroundColor: PRIORITY_CONFIG[priority].dotColor }}
+                  />
+                  <span className="text-sm font-medium text-foreground">
                     {PRIORITY_CONFIG[priority].fullLabel}
-                  </Badge>
+                  </span>
                 </div>
               ) : (
                 <div className="h-9 flex items-center">

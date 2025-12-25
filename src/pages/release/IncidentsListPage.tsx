@@ -13,7 +13,8 @@ import {
   SeverityBadge, 
   PriorityBadge, 
   SupportLevelBadge,
-  getAgingTime 
+  getAgingTime,
+  getIncidentRowBackground 
 } from '@/components/incidents/badges/IncidentBadges';
 
 type SortField = 'incident_key' | 'severity' | 'created_at';
