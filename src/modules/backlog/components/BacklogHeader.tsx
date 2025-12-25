@@ -155,7 +155,7 @@ export function BacklogHeader({
   return (
     <GlobalPageHeader
       sectionLabel="Program"
-      pageTitle="Program Backlog"
+      pageTitle={isEpicBacklog ? "Epic Backlog" : "Program Backlog"}
       toolbar={toolbarContent}
     />
   );
