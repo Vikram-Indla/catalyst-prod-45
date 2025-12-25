@@ -4,10 +4,11 @@
  * Replaces ProgramSidebar and ProjectSidebar with shared structure
  */
 
+import { useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { 
+import {
   ChevronLeft, 
   ChevronRight, 
   LayoutDashboard,
@@ -78,7 +79,21 @@ export function UnifiedSidebar({
 }: UnifiedSidebarProps) {
   const navigate = useNavigate();
   const location = useLocation();
-  
+
+  // Dev-only instrumentation: prove sidebar doesn't remount on route changes
+  const mountRef = useRef({ workspaceType, entityId });
+  useEffect(() => {
+    if (import.meta.env.DEV) {
+      console.debug('[UnifiedSidebar] mount', mountRef.current);
+    }
+    return () => {
+      if (import.meta.env.DEV) {
+        console.debug('[UnifiedSidebar] unmount', mountRef.current);
+      }
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const menuItems = menuConfigs[workspaceType];
   const entityLabel = workspaceType === 'program' ? 'Program' : 'Project';
   const tableName = workspaceType === 'program' ? 'programs' : 'projects';
@@ -102,10 +117,22 @@ export function UnifiedSidebar({
   const currentQuarter = getCurrentQuarter();
   const effectiveQuarter = selectedQuarter || currentQuarter;
 
+  const buildNextSearch = () => {
+    const params = new URLSearchParams(location.search);
+    if (effectiveQuarter) {
+      params.set('quarter', effectiveQuarter);
+    } else {
+      params.delete('quarter');
+    }
+    const s = params.toString();
+    return s ? `?${s}` : '';
+  };
+
   const handleNavigation = (pathTemplate: string) => {
+    performance.mark?.('program_nav_click');
     const resolvedPath = pathTemplate.replace(':id', entityId);
-    const quarterQuery = effectiveQuarter ? `?quarter=${encodeURIComponent(effectiveQuarter)}` : '';
-    navigate(resolvedPath + quarterQuery);
+    navigate({ pathname: resolvedPath, search: buildNextSearch() });
+
     if (expanded) {
       onToggle();
     }

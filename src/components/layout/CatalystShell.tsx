@@ -12,6 +12,12 @@ import { useEnabledModules } from '@/hooks/useModules';
 import { useRecentPlaceTracker } from '@/hooks/useRecentPlaceTracker';
 
 function CatalystShellContent() {
+  // Dev-only instrumentation: prove shell doesn't remount on program navigation
+  if (import.meta.env.DEV) {
+    // eslint-disable-next-line no-console
+    console.debug('[CatalystShell] render');
+  }
+
   // Track last visited route for session persistence
   useTrackLastRoute();
   
@@ -42,7 +48,8 @@ function CatalystShellContent() {
   const isReleaseRoute = location.pathname.startsWith('/release');
 
   // Prevent full document reloads caused by accidental <a href="/..."> navigation.
-  // We intercept internal same-origin links and route via react-router instead.
+  // IMPORTANT: In Preview, the URL contains special query params (e.g. __lovable_token).
+  // If we drop them during navigation, the iframe may force a hard reload.
   const handleInternalLinkClickCapture = (e: React.MouseEvent) => {
     // Only left click without modifiers
     if (e.defaultPrevented) return;
@@ -66,7 +73,16 @@ function CatalystShellContent() {
     if (!href.startsWith('/')) return;
 
     e.preventDefault();
-    navigate(href);
+
+    // Merge current query params into the link (link query takes precedence)
+    const [pathOnly, hrefQuery = ''] = href.split('?');
+    const merged = new URLSearchParams(location.search);
+    const linkParams = new URLSearchParams(hrefQuery);
+    for (const [k, v] of linkParams.entries()) merged.set(k, v);
+
+    const search = merged.toString();
+    performance.mark?.('internal_link_nav');
+    navigate(`${pathOnly}${search ? `?${search}` : ''}`);
   };
 
   // Determine sidebar based on workspaceType (single source of truth)
