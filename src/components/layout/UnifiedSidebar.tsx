@@ -104,7 +104,8 @@ export function UnifiedSidebar({
 
   const handleNavigation = (pathTemplate: string) => {
     const resolvedPath = pathTemplate.replace(':id', entityId);
-    navigate(resolvedPath + (effectiveQuarter ? `?quarter=${effectiveQuarter}` : ''));
+    const quarterQuery = effectiveQuarter ? `?quarter=${encodeURIComponent(effectiveQuarter)}` : '';
+    navigate(resolvedPath + quarterQuery);
     if (expanded) {
       onToggle();
     }
@@ -134,6 +135,7 @@ export function UnifiedSidebar({
     >
       {/* Toggle Handle */}
       <button
+        type="button"
         onClick={onToggle}
         style={{
           position: 'absolute',
@@ -236,6 +238,7 @@ export function UnifiedSidebar({
 
             return (
               <button
+                type="button"
                 key={item.id}
                 onClick={() => handleNavigation(item.pathTemplate)}
                 style={{
@@ -310,13 +313,12 @@ export function UnifiedSidebar({
         {expanded && (
           <div style={{ borderTop: '1px solid var(--divider)', padding: '12px 8px' }}>
             <button 
+              type="button"
               style={{
                 width: '100%',
                 height: '40px',
                 padding: '0 12px',
                 display: 'flex',
-                alignItems: 'center',
-                gap: '12px',
                 borderRadius: '6px',
                 border: 'none',
                 background: 'transparent',
