@@ -82,8 +82,9 @@ export function BacklogWorkspace() {
     );
   };
 
-  const handleEpicCreated = (epicId: string) => {
-    setSelectedItemId(epicId);
+  const handleEpicCreated = (_epicId: string) => {
+    // Don't open the drawer after creation - just let the list refresh
+    // The query invalidation in CreateEpicDialog handles refreshing the list
   };
 
   // Export epics to CSV
