@@ -1,7 +1,8 @@
 /**
  * WorkBench views: Table/Gantt/Roadmap/Board/Swimlane
  * 
- * Filters dialog following Program Roadmap pattern (dropdown panel with Apply/Reset/Cancel)
+ * Filters dialog following Program Roadmap pattern
+ * (Health filter removed per requirements)
  */
 
 import React, { useState, useEffect } from 'react';
@@ -17,12 +18,11 @@ import { startOfQuarter, endOfQuarter, addMonths } from 'date-fns';
 import { 
   WorkbenchFilters, 
   DEFAULT_WORKBENCH_FILTERS,
-  HEALTH_OPTIONS,
-  STATUS_OPTIONS 
+  STATUS_OPTIONS,
+  Owner,
 } from './types';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
-// Helper functions
 function getCurrentQuarterDates(): { start: Date; end: Date } {
   const now = new Date();
   return { start: startOfQuarter(now), end: endOfQuarter(now) };
@@ -117,7 +117,7 @@ interface WorkbenchFiltersDialogProps {
   onOpenChange: (open: boolean) => void;
   filters: WorkbenchFilters;
   onFiltersChange: (filters: WorkbenchFilters) => void;
-  owners: string[];
+  owners: Owner[];
 }
 
 export function WorkbenchFiltersDialog({
@@ -129,6 +129,8 @@ export function WorkbenchFiltersDialog({
 }: WorkbenchFiltersDialogProps) {
   const [draftFilters, setDraftFilters] = useState<WorkbenchFilters>(filters);
   const [dateValidationError, setDateValidationError] = useState<string | null>(null);
+
+  const ownerNames = owners.map(o => o.full_name);
 
   useEffect(() => {
     if (open) {
@@ -190,7 +192,7 @@ export function WorkbenchFiltersDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl max-h-[85vh] overflow-auto">
         <DialogHeader>
-          <DialogTitle>Execution Workbench Filters</DialogTitle>
+          <DialogTitle>Work Tree Filters</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-5 py-4">
@@ -202,7 +204,7 @@ export function WorkbenchFiltersDialog({
               </Label>
               <MultiSelectDropdown
                 label="Owner"
-                options={owners}
+                options={ownerNames}
                 selected={draftFilters.owners}
                 onChange={(selected) => setDraftFilters(prev => ({ ...prev, owners: selected }))}
               />
@@ -220,20 +222,7 @@ export function WorkbenchFiltersDialog({
             </div>
           </div>
 
-          {/* Row 2: Health */}
-          <div className="space-y-2">
-            <Label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-              Health Status
-            </Label>
-            <MultiSelectDropdown
-              label="Health"
-              options={HEALTH_OPTIONS}
-              selected={draftFilters.health}
-              onChange={(selected) => setDraftFilters(prev => ({ ...prev, health: selected as any }))}
-            />
-          </div>
-
-          {/* Row 3: Active In Period */}
+          {/* Row 2: Active In Period */}
           <div className="space-y-2">
             <Label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
               Active In Period
@@ -296,7 +285,7 @@ export function WorkbenchFiltersDialog({
                   ...prev, 
                   hasDependencies: checked === true ? true : null 
                 }))}
-                disabled // TODO: Enable when dependency model is integrated
+                disabled
               />
               <label htmlFor="hasDependencies" className="text-sm cursor-pointer text-muted-foreground">
                 Has Dependencies
