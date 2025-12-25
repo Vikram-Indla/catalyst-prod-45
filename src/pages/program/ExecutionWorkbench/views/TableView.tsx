@@ -6,7 +6,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { WorkItem, ItemStatus, ColumnConfig, DEFAULT_COLUMNS, DensityMode, WorkTreeCounts, Owner } from '../types';
-import { ChevronRight, ChevronDown, MoreHorizontal, Link2, Zap, AlignLeft, ListTodo, ChevronsUpDown, ChevronsDownUp, Columns, Copy, Eye, type LucideIcon } from 'lucide-react';
+import { ChevronRight, ChevronDown, MoreHorizontal, ChevronsUpDown, ChevronsDownUp, Columns, Copy, Eye } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { Badge } from '@/components/ui/badge';
@@ -17,9 +17,9 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
   DropdownMenuCheckboxItem,
-  DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
 import { toast } from 'sonner';
+import { WorkItemIcon } from '@/components/ja/icons/WorkItemIcon';
 
 interface TableViewProps {
   items: WorkItem[];
@@ -32,23 +32,6 @@ interface TableViewProps {
 function getOwnerInitials(owner: Owner | null | undefined): string {
   if (!owner?.full_name) return '??';
   return owner.full_name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
-}
-
-// Type badge component
-function TypeBadge({ type }: { type: string }) {
-  const config: Record<string, { Icon: LucideIcon; bgClass: string; textClass: string }> = {
-    epic: { Icon: Zap, bgClass: 'bg-workitem-epic/15', textClass: 'text-workitem-epic' },
-    feature: { Icon: Zap, bgClass: 'bg-workitem-feature/15', textClass: 'text-workitem-feature' },
-    story: { Icon: AlignLeft, bgClass: 'bg-workitem-story/15', textClass: 'text-workitem-story' },
-    subtask: { Icon: ListTodo, bgClass: 'bg-muted', textClass: 'text-muted-foreground' },
-  };
-  const { Icon, bgClass, textClass } = config[type] || config.story;
-
-  return (
-    <span className={cn('inline-flex items-center justify-center w-6 h-6 rounded-md flex-shrink-0', bgClass, textClass)}>
-      <Icon className="h-3.5 w-3.5" />
-    </span>
-  );
 }
 
 // Status badge
@@ -172,7 +155,7 @@ function TableRow({ item, depth, onItemClick, expandedIds, toggleExpand, columns
               <span className="w-5 flex-shrink-0" />
             )}
             {depth > 0 && <div className="w-px h-4 bg-border/60 -ml-2 mr-0 flex-shrink-0" />}
-            <TypeBadge type={item.type} />
+            <WorkItemIcon type={item.type === 'subtask' ? 'task' : item.type} size={20} hideTooltip />
             <span className="font-mono text-[11px] text-muted-foreground flex-shrink-0">{item.key}</span>
             <span className={cn("text-sm truncate", depth === 0 ? "font-semibold" : depth === 1 ? "font-medium" : "text-muted-foreground")}>{item.title}</span>
             {/* Epic badges */}
