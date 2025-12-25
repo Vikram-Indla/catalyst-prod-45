@@ -163,6 +163,9 @@ export function EpicDrawer({ isOpen, onClose, epicId, onEpicChange }: EpicDrawer
       queryClient.invalidateQueries({ queryKey: ['epics'] });
       queryClient.invalidateQueries({ queryKey: ['epic-drawer', epicId] });
       queryClient.invalidateQueries({ queryKey: ['backlog-items'] });
+      queryClient.invalidateQueries({ queryKey: ['program-epics'] });
+      queryClient.invalidateQueries({ queryKey: ['program-epics-quarters'] });
+      queryClient.invalidateQueries({ queryKey: ['program-epics-roadmap'] });
     },
     onError: (error) => {
       toast.error('Failed to save epic: ' + error.message);
