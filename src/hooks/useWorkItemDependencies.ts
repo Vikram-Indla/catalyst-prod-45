@@ -12,7 +12,8 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import type { 
+import { useEffect } from 'react';
+import type {
   WorkItemDependencyType, 
   DependencyLevelV2, 
   DependencyTypeV2, 
@@ -123,25 +124,45 @@ export function useWorkItemDependencies(
 
       if (inError) throw inError;
 
-      // Also fetch epic data for epic-level dependencies
+      // Collect ALL epic IDs that need to be fetched
       const epicIds = new Set<string>();
       [...(outgoingDeps || []), ...(incomingDeps || [])].forEach(dep => {
+        // Add requesting work item if it's an epic
         if (dep.requesting_work_item_type === 'epic' && dep.requesting_work_item_id) {
           epicIds.add(dep.requesting_work_item_id);
         }
+        // Add depends_on work item if it's an epic
         if (dep.depends_on_work_item_type === 'epic' && dep.depends_on_work_item_id) {
           epicIds.add(dep.depends_on_work_item_id);
         }
+        // Also add feature's parent epic IDs if available
+        if (dep.from_feature?.epic_id) {
+          epicIds.add(dep.from_feature.epic_id);
+        }
+        if (dep.to_feature?.epic_id) {
+          epicIds.add(dep.to_feature.epic_id);
+        }
       });
+
+      // Always add the current work item ID if it's an epic
+      if (workItemType === 'epic') {
+        epicIds.add(workItemId);
+      }
 
       let epicsMap: Record<string, { id: string; name: string; epic_key: string; program_id: string }> = {};
       if (epicIds.size > 0) {
-        const { data: epics } = await supabase
+        const { data: epics, error: epicError } = await supabase
           .from('epics')
-          .select('id, name, epic_key, program_id')
+          .select('id, name, epic_key, primary_program_id')
           .in('id', Array.from(epicIds));
-        if (epics) {
-          epicsMap = Object.fromEntries(epics.map(e => [e.id, e]));
+        
+        if (!epicError && epics) {
+          epicsMap = Object.fromEntries(epics.map(e => [e.id, { 
+            id: e.id, 
+            name: e.name, 
+            epic_key: e.epic_key, 
+            program_id: e.primary_program_id 
+          }]));
         }
       }
 
@@ -171,6 +192,31 @@ export function useWorkItemDependencies(
     },
     enabled: !!workItemId,
   });
+
+  // Real-time subscription for dependencies table
+  useEffect(() => {
+    if (!workItemId) return;
+
+    const channel = supabase
+      .channel(`dependencies-${workItemId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'dependencies',
+        },
+        (payload) => {
+          // Invalidate and refetch when any dependency changes
+          queryClient.invalidateQueries({ queryKey: ['work-item-dependencies', workItemType, workItemId] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [workItemId, workItemType, queryClient]);
 
   // Create dependency mutation
   const createDependency = useMutation({
