@@ -146,6 +146,8 @@ import DeliveryPlatforms from "./pages/admin/DeliveryPlatforms";
 import RiskSeverityLevels from "./pages/admin/RiskSeverityLevels";
 import DevelopmentInventory from "./pages/admin/DevelopmentInventory";
 import RoutesComponentsRegistry from "./pages/admin/RoutesComponentsRegistry";
+import EpicStatuses from "./pages/admin/EpicStatuses";
+import FeatureStatuses from "./pages/admin/FeatureStatuses";
 import SnapshotsAdmin from "./pages/admin/SnapshotsAdmin";
 import {
   IncidentWorkgroups,
@@ -739,6 +741,8 @@ const App = () => (
                 <Route path="business-owners" element={<BusinessOwnersAdmin />} />
                 <Route path="business-processes" element={<BusinessProcesses />} />
                 <Route path="business/ProcessStep" element={<ProcessSteps />} />
+                <Route path="business/EpicStatus" element={<EpicStatuses />} />
+                <Route path="business/FeatureStatus" element={<FeatureStatuses />} />
                 <Route path="create-menu-config" element={<CreateMenuConfig />} />
                 <Route path="business/RiskSeverity" element={<RiskSeverityLevels />} />
                 <Route path="business/DeliveryPlatforms" element={<DeliveryPlatforms />} />

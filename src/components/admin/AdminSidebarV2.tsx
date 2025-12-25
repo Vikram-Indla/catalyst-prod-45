@@ -74,6 +74,8 @@ const adminPockets = [
       { label: 'Product Lines', path: '/admin/product-settings' },
       { label: 'Strategic Themes', path: '/admin/theme-groups' },
       { label: 'BR Status', path: '/admin/business/ProcessStep' },
+      { label: 'Epic Status', path: '/admin/business/EpicStatus' },
+      { label: 'Feature Status', path: '/admin/business/FeatureStatus' },
       { label: 'Risk Severity Levels', path: '/admin/business/RiskSeverity' },
       { label: 'Delivery Platforms', path: '/admin/business/DeliveryPlatforms' },
     ],

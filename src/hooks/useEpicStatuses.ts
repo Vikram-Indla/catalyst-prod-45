@@ -175,17 +175,23 @@ export function useLinkedEpics(statusValue: string | null) {
   return useQuery({
     queryKey: ['linked-epics', statusValue],
     queryFn: async () => {
-      if (!statusValue) return { count: 0, epics: [] };
+      if (!statusValue) return { count: 0, epics: [] as { id: string; epic_key: string | null; title: string }[] };
       
       const { data, error, count } = await supabase
         .from('epics')
-        .select('id, epic_key, title', { count: 'exact' })
-        .eq('status', statusValue)
+        .select('id, epic_key, name', { count: 'exact' })
+        .eq('status', statusValue as any)
         .is('deleted_at', null)
         .limit(50);
 
       if (error) throw error;
-      return { count: count || 0, epics: data || [] };
+      // Map name to title for display
+      const epics = (data || []).map(e => ({
+        id: e.id,
+        epic_key: e.epic_key,
+        title: e.name || '',
+      }));
+      return { count: count || 0, epics };
     },
     enabled: !!statusValue,
   });
@@ -199,8 +205,8 @@ export function useReassignEpics() {
     mutationFn: async ({ fromStatus, toStatus }: { fromStatus: string; toStatus: string }) => {
       const { error } = await supabase
         .from('epics')
-        .update({ status: toStatus })
-        .eq('status', fromStatus)
+        .update({ status: toStatus as any })
+        .eq('status', fromStatus as any)
         .is('deleted_at', null);
 
       if (error) throw error;
