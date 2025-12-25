@@ -5,10 +5,10 @@
  * All colors use CSS variables from index.css - no hardcoded HSL values.
  */
 
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Card } from '@/components/ui/card';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { DependencyWheelDetailsPanel } from './DependencyWheelDetailsPanel';
@@ -42,6 +42,7 @@ interface WheelLink {
 }
 
 export function DependencyWheelMap({ quarter, selectedProgram, onDependencyClick, selectedProgramId, onProgramSelect }: DependencyWheelMapProps) {
+  const queryClient = useQueryClient();
   const [showFeatures, setShowFeatures] = useState(false);
   const [showEpics, setShowEpics] = useState(true);
   const [showOnlyAssociated, setShowOnlyAssociated] = useState(false);
@@ -64,16 +65,20 @@ export function DependencyWheelMap({ quarter, selectedProgram, onDependencyClick
     },
   });
 
-  // Fetch epics for container resolution
+  // Fetch epics for container resolution - use primary_program_id
   const { data: epics } = useQuery({
     queryKey: ['epics-for-wheel'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('epics')
-        .select('id, name, epic_key, program_id')
+        .select('id, name, epic_key, primary_program_id')
         .is('deleted_at', null);
       if (error) throw error;
-      return data;
+      // Map primary_program_id to program_id for buildWorkItemMaps compatibility
+      return (data || []).map(e => ({
+        ...e,
+        program_id: e.primary_program_id
+      }));
     },
   });
 
@@ -108,6 +113,60 @@ export function DependencyWheelMap({ quarter, selectedProgram, onDependencyClick
       return data;
     },
   });
+
+  // Real-time subscription for dependencies and epics
+  useEffect(() => {
+    const depsChannel = supabase
+      .channel('wheel-deps-realtime')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'dependencies',
+        },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ['dependencies-wheel'] });
+        }
+      )
+      .subscribe();
+
+    const epicsChannel = supabase
+      .channel('wheel-epics-realtime')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'epics',
+        },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ['epics-for-wheel'] });
+        }
+      )
+      .subscribe();
+
+    const featuresChannel = supabase
+      .channel('wheel-features-realtime')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'features',
+        },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ['features-for-wheel'] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(depsChannel);
+      supabase.removeChannel(epicsChannel);
+      supabase.removeChannel(featuresChannel);
+    };
+  }, [queryClient]);
 
   // Build work item maps
   const workItemMaps = useMemo(() => {
