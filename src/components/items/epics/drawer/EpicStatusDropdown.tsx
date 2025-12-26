@@ -1,6 +1,6 @@
 /**
  * EpicStatusDropdown - Epic Status Control with Clickable Dropdown
- * Catalyst Design System - Matches BusinessRequestDrawer StatusDropdown pattern
+ * Catalyst Design System - Uses database-driven epic statuses from admin panel
  */
 
 import { ChevronDown, Loader2 } from 'lucide-react';
@@ -11,87 +11,80 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { cn } from '@/lib/utils';
+import { useActiveEpicStatuses, EpicStatus } from '@/hooks/useEpicStatuses';
+import { getBrandColorHex, BRAND_COLORS } from '@/components/admin/BrandColorPicker';
 
-// Epic status options with Catalyst brand colors
-export const EPIC_STATUS_OPTIONS = [
-  { value: 'new', label: 'New', colorType: 'olive' as const },
-  { value: 'analysis', label: 'Analysis', colorType: 'gold' as const },
-  { value: 'design', label: 'Design', colorType: 'gold' as const },
-  { value: 'technical_validation', label: 'Technical Validation', colorType: 'bronze' as const },
-  { value: 'ready_for_implementation', label: 'Ready for Implementation', colorType: 'olive' as const },
-  { value: 'in_implementation', label: 'In Implementation', colorType: 'oliveDark' as const },
-  { value: 'on_hold', label: 'On Hold', colorType: 'champagne' as const },
-  { value: 'done', label: 'Done', colorType: 'oliveLight' as const },
-] as const;
-
-type ColorType = 'olive' | 'oliveDark' | 'oliveLight' | 'bronze' | 'gold' | 'champagne' | 'gray';
-
-// Catalyst Brand Colors - aligned with CSS variables in index.css
-const CATALYST_COLORS = {
-  olive: '#5c7c5c',
-  oliveDark: '#4a6a4a',
-  oliveLight: '#6b8b6b',
-  bronze: '#8b7355',
-  gold: '#c69c6d',
-  champagne: '#d4b896',
-  gray: '#737373',
-};
-
-// Get status styling based on color type - using Catalyst brand colors
-const getStatusStyles = (colorType: ColorType) => {
-  const styles: Record<ColorType, { bg: string; text: string; dot: string; border: string }> = {
-    olive: {
-      bg: `rgba(92, 124, 92, 0.12)`,
-      text: CATALYST_COLORS.olive,
-      dot: CATALYST_COLORS.olive,
-      border: `rgba(92, 124, 92, 0.25)`,
-    },
-    oliveDark: {
-      bg: `rgba(74, 106, 74, 0.12)`,
-      text: CATALYST_COLORS.oliveDark,
-      dot: CATALYST_COLORS.oliveDark,
-      border: `rgba(74, 106, 74, 0.25)`,
-    },
-    oliveLight: {
-      bg: `rgba(107, 139, 107, 0.12)`,
-      text: CATALYST_COLORS.oliveLight,
-      dot: CATALYST_COLORS.oliveLight,
-      border: `rgba(107, 139, 107, 0.25)`,
-    },
-    bronze: {
-      bg: `rgba(139, 115, 85, 0.12)`,
-      text: CATALYST_COLORS.bronze,
-      dot: CATALYST_COLORS.bronze,
-      border: `rgba(139, 115, 85, 0.25)`,
-    },
-    gold: {
-      bg: `rgba(198, 156, 109, 0.12)`,
-      text: CATALYST_COLORS.gold,
-      dot: CATALYST_COLORS.gold,
-      border: `rgba(198, 156, 109, 0.25)`,
-    },
-    champagne: {
-      bg: `rgba(212, 184, 150, 0.15)`,
-      text: CATALYST_COLORS.champagne,
-      dot: CATALYST_COLORS.champagne,
-      border: `rgba(212, 184, 150, 0.3)`,
-    },
-    gray: {
-      bg: `rgba(115, 115, 115, 0.1)`,
-      text: CATALYST_COLORS.gray,
-      dot: CATALYST_COLORS.gray,
-      border: `rgba(115, 115, 115, 0.25)`,
-    },
+// Get status styling based on brand color from database
+const getStatusStylesFromColor = (colorValue: string | null | undefined) => {
+  const hex = getBrandColorHex(colorValue);
+  // Convert hex to RGB for rgba backgrounds
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  
+  return {
+    bg: `rgba(${r}, ${g}, ${b}, 0.12)`,
+    text: hex,
+    dot: hex,
+    border: `rgba(${r}, ${g}, ${b}, 0.25)`,
   };
-  return styles[colorType];
 };
 
-// Get epic status info
+// Centralized utility to get epic status config from database statuses
+export function getEpicStatusConfigFromList(
+  value: string | null | undefined, 
+  statuses: EpicStatus[]
+): { value: string; label: string; color: string | null } {
+  if (!value) {
+    const firstStatus = statuses[0];
+    return firstStatus 
+      ? { value: firstStatus.value, label: firstStatus.label, color: firstStatus.color }
+      : { value: 'proposed', label: 'New Epic', color: 'info' };
+  }
+  
+  const normalized = value.toLowerCase();
+  const status = statuses.find(s => s.value.toLowerCase() === normalized);
+  
+  if (status) {
+    return { value: status.value, label: status.label, color: status.color };
+  }
+  
+  // Fallback for unknown values - display formatted value
+  return { 
+    value, 
+    label: value.replace(/_/g, ' ').replace(/^\w/, c => c.toUpperCase()), 
+    color: 'neutral' 
+  };
+}
+
+// Legacy compatibility: Synchronous getEpicStatusConfig for use without React Query
+// This uses a cached fallback - for real-time data, use useEpicStatusConfig hook instead
+let cachedStatuses: EpicStatus[] = [];
+
 export const getEpicStatusConfig = (value: string | null | undefined) => {
-  if (!value) return EPIC_STATUS_OPTIONS[0];
-  const status = EPIC_STATUS_OPTIONS.find(s => s.value === value.toLowerCase());
-  return status || { value, label: value.replace(/_/g, ' '), colorType: 'olive' as const };
+  return getEpicStatusConfigFromList(value, cachedStatuses);
 };
+
+// Hook to get epic status config - preferred method
+export function useEpicStatusConfig(value: string | null | undefined) {
+  const { data: statuses = [] } = useActiveEpicStatuses();
+  
+  // Update cache for legacy fallback
+  if (statuses.length > 0) {
+    cachedStatuses = statuses;
+  }
+  
+  return getEpicStatusConfigFromList(value, statuses);
+}
+
+// Get styles for rendering a status badge/pill
+export function getEpicStatusStyles(colorValue: string | null | undefined) {
+  return getStatusStylesFromColor(colorValue);
+}
+
+// For backwards compatibility - EPIC_STATUS_OPTIONS will be deprecated
+// Use useActiveEpicStatuses() instead
+export const EPIC_STATUS_OPTIONS: { value: string; label: string; colorType: string }[] = [];
 
 interface EpicStatusDropdownProps {
   currentStatus: string | null | undefined;
@@ -101,13 +94,20 @@ interface EpicStatusDropdownProps {
 }
 
 export function EpicStatusDropdown({ currentStatus, onChange, disabled = false, isLoading = false }: EpicStatusDropdownProps) {
-  const currentConfig = getEpicStatusConfig(currentStatus);
-  const styles = getStatusStyles(currentConfig.colorType);
+  const { data: statuses = [], isLoading: isLoadingStatuses } = useActiveEpicStatuses();
+  
+  // Update cache for legacy fallback
+  if (statuses.length > 0) {
+    cachedStatuses = statuses;
+  }
+  
+  const currentConfig = getEpicStatusConfigFromList(currentStatus, statuses);
+  const styles = getStatusStylesFromColor(currentConfig.color);
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
-        disabled={disabled || isLoading}
+        disabled={disabled || isLoading || isLoadingStatuses}
         className={cn(
           "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full",
           "text-[11px] font-semibold uppercase tracking-wide",
@@ -122,7 +122,7 @@ export function EpicStatusDropdown({ currentStatus, onChange, disabled = false, 
         }}
         aria-label={`Status: ${currentConfig.label}. Click to change.`}
       >
-        {isLoading ? (
+        {isLoading || isLoadingStatuses ? (
           <Loader2 className="h-3 w-3 animate-spin" />
         ) : (
           <span
@@ -142,13 +142,13 @@ export function EpicStatusDropdown({ currentStatus, onChange, disabled = false, 
           borderColor: 'var(--border-default, hsl(var(--border)))',
         }}
       >
-        {EPIC_STATUS_OPTIONS.map((status) => {
-          const statusStyles = getStatusStyles(status.colorType);
-          const isActive = status.value === currentStatus?.toLowerCase();
+        {statuses.map((status) => {
+          const statusStyles = getStatusStylesFromColor(status.color);
+          const isActive = status.value.toLowerCase() === currentStatus?.toLowerCase();
 
           return (
             <DropdownMenuItem
-              key={status.value}
+              key={status.id}
               onSelect={() => onChange(status.value)}
               className={cn(
                 "flex items-center gap-2 cursor-pointer",

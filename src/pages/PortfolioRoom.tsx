@@ -9,6 +9,7 @@ import { PIRoadmapTimeline } from '@/components/shared/PIRoadmapTimeline';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
+import { EpicStatusBadge } from '@/components/items/epics/EpicStatusBadge';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -349,7 +350,7 @@ export default function PortfolioRoom() {
                           </p>
                         </div>
                         <div className="flex items-center gap-2">
-                          <Badge variant="outline" className="text-xs">{epic.status}</Badge>
+                          <EpicStatusBadge status={epic.status} />
                           <HealthBadge health={epic.health} />
                         </div>
                       </div>

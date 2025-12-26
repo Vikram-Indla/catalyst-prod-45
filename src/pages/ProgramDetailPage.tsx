@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Plus, MoreHorizontal, Settings, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { EpicStatusBadge } from '@/components/items/epics/EpicStatusBadge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
@@ -314,7 +315,7 @@ function EpicListItem({ epic, programKey, isLast }: { epic: Epic; programKey: st
           <span className="text-xs font-semibold text-primary">
             {epic.key}
           </span>
-          <Badge variant="secondary">{epic.status}</Badge>
+          <EpicStatusBadge status={epic.status} />
         </div>
         <div className="text-sm font-medium text-foreground truncate">
           {epic.summary}

@@ -11,7 +11,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
 import { useBacklogState } from '../hooks/useBacklogState';
-import { getEpicStatusConfig } from '@/components/items/epics/drawer';
+import { getEpicStatusConfigFromList, getEpicStatusStyles } from '@/components/items/epics/drawer';
+import { useActiveEpicStatuses } from '@/hooks/useEpicStatuses';
 
 interface BacklogEnterpriseTableProps {
   items: BacklogItem[];
@@ -30,6 +31,9 @@ export function BacklogEnterpriseTable({
 }: BacklogEnterpriseTableProps) {
   const queryClient = useQueryClient();
   const { programId, isEpicBacklog, columnsShown } = useBacklogState();
+  
+  // Fetch epic statuses from database for proper label/color rendering
+  const { data: epicStatuses = [] } = useActiveEpicStatuses();
 
   // Fetch program key for epic numbering
   const { data: programData } = useQuery({
@@ -114,10 +118,11 @@ export function BacklogEnterpriseTable({
     );
   };
 
-  // Format status for human-readable display
-  const formatStatus = (status?: string) => {
-    if (!status) return '—';
-    return getEpicStatusConfig(status).label;
+  // Format status for human-readable display with color from database
+  const getStatusInfo = (status?: string) => {
+    if (!status) return { label: '—', color: null };
+    const config = getEpicStatusConfigFromList(status, epicStatuses);
+    return config;
   };
 
   const buildEpicKey = (row: BacklogItem) => {
@@ -187,11 +192,26 @@ export function BacklogEnterpriseTable({
       accessor: (row) => (row as any).status ?? row.processStep ?? row.state,
       width: '160px',
       sortable: true,
-      render: (value) => (
-        <Badge variant="outline" className="border-0 bg-muted text-xs font-medium">
-          {formatStatus(value)}
-        </Badge>
-      ),
+      render: (value) => {
+        const statusInfo = getStatusInfo(value);
+        const styles = getEpicStatusStyles(statusInfo.color);
+        return (
+          <span
+            className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-semibold uppercase tracking-wide"
+            style={{
+              background: styles.bg,
+              color: styles.text,
+              border: `1px solid ${styles.border}`,
+            }}
+          >
+            <span
+              className="w-1.5 h-1.5 rounded-full"
+              style={{ background: styles.dot }}
+            />
+            {statusInfo.label}
+          </span>
+        );
+      },
     },
     {
       id: 'assignee',
@@ -274,7 +294,7 @@ export function BacklogEnterpriseTable({
         );
       },
     },
-  ], [programData?.key]);
+  ], [programData?.key, epicStatuses]);
 
   const columns: CatalystColumn<BacklogItem>[] = useMemo(() => {
     if (!isEpicBacklog) return allColumns;
