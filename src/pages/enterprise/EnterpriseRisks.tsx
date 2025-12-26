@@ -26,11 +26,11 @@ import {
 import { supabase } from '@/integrations/supabase/client';
 import { PageChrome } from '@/components/layout/PageChrome';
 
-// Catalyst Golden Hour Palette (semantic tokens)
+// Catalyst Blue + Teal Palette (semantic tokens)
 const palette = {
   olive: 'hsl(var(--palette-expert))',
   bronze: 'hsl(var(--palette-advanced))',
-  gold: 'hsl(var(--brand-primary))',
+  primary: 'hsl(var(--brand-primary))',
   champagne: 'hsl(var(--palette-beginner))',
   grey: 'hsl(var(--palette-none))',
 };
@@ -38,10 +38,10 @@ const palette = {
 const CHART_COLORS = {
   olive: '#5c7c5c',
   bronze: '#8b7355',
-  gold: '#c69c6d',
+  primary: '#2563eb',
   champagne: '#d4b896',
   grey: '#c8ccd0',
-  critical: '#a65d57',
+  critical: '#ef4444',
 };
 
 const DEFAULT_FILTERS: RiskGridFilters = {
@@ -292,20 +292,20 @@ export default function EnterpriseRisks() {
 
   // Chart data
   const openClosedData = [
-    { name: 'Open', value: openRisks.length, color: CHART_COLORS.gold },
+    { name: 'Open', value: openRisks.length, color: CHART_COLORS.primary },
     { name: 'Closed', value: allRisks.filter(r => r.status === 'Closed').length, color: CHART_COLORS.olive },
   ];
 
   const occurrenceData = [
     { name: 'High', value: openRisks.filter(r => r.occurrence === 'High').length, color: CHART_COLORS.bronze },
-    { name: 'Medium', value: openRisks.filter(r => r.occurrence === 'Medium').length, color: CHART_COLORS.gold },
+    { name: 'Medium', value: openRisks.filter(r => r.occurrence === 'Medium').length, color: CHART_COLORS.primary },
     { name: 'Low', value: openRisks.filter(r => r.occurrence === 'Low').length, color: CHART_COLORS.champagne },
   ];
 
   const impactData = [
     { name: 'Critical', value: openRisks.filter(r => r.impact === 'Critical').length, color: CHART_COLORS.critical },
     { name: 'High', value: openRisks.filter(r => r.impact === 'High').length, color: CHART_COLORS.bronze },
-    { name: 'Medium', value: openRisks.filter(r => r.impact === 'Medium').length, color: CHART_COLORS.gold },
+    { name: 'Medium', value: openRisks.filter(r => r.impact === 'Medium').length, color: CHART_COLORS.primary },
     { name: 'Low', value: openRisks.filter(r => r.impact === 'Low').length, color: CHART_COLORS.olive },
   ];
 
@@ -621,7 +621,7 @@ export default function EnterpriseRisks() {
                           tickLine={false} 
                         />
                         <Tooltip contentStyle={{ background: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: '8px', fontSize: '12px' }} />
-                        <Bar dataKey="value" fill={CHART_COLORS.gold} radius={[0, 4, 4, 0]} />
+                        <Bar dataKey="value" fill={CHART_COLORS.primary} radius={[0, 4, 4, 0]} />
                       </BarChart>
                     </ResponsiveContainer>
                   </div>
@@ -696,7 +696,7 @@ export default function EnterpriseRisks() {
             <div className="grid grid-cols-4 gap-4">
               {[
                 { key: 'resolved' as const, label: 'Resolved', color: CHART_COLORS.olive, icon: Check },
-                { key: 'owned' as const, label: 'Owned', color: CHART_COLORS.gold, icon: Circle },
+                { key: 'owned' as const, label: 'Owned', color: CHART_COLORS.primary, icon: Circle },
                 { key: 'accepted' as const, label: 'Accepted', color: CHART_COLORS.champagne, icon: Circle },
                 { key: 'mitigated' as const, label: 'Mitigated', color: CHART_COLORS.bronze, icon: Diamond },
               ].map(({ key, label, color, icon: Icon }) => (

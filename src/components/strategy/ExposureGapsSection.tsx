@@ -260,7 +260,7 @@ export function ExposureGapsSection({ snapshotId }: ExposureGapsSectionProps) {
                 ))}
                 {attentionItems.length > 4 && (
                   <div className="text-center pt-1.5">
-                    <span className={cn(TYPOGRAPHY.microcopy, 'text-[#5c7c5c] dark:text-[#7a9a7a] font-medium')}>
+                    <span className={cn(TYPOGRAPHY.microcopy, 'text-[#2563eb] dark:text-[#60a5fa] font-medium')}>
                       +{attentionItems.length - 4} more
                     </span>
                   </div>
@@ -284,9 +284,9 @@ interface CockpitCardProps {
 
 function CockpitCard({ title, icon, iconColor, children, cta }: CockpitCardProps) {
   return (
-    <div className="rounded-md overflow-hidden flex flex-col bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 min-h-[150px]">
+    <div className="rounded-md overflow-hidden flex flex-col bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 min-h-[150px]">
       {/* Card header */}
-      <div className="px-3 py-2.5 flex items-center gap-2 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
+      <div className="px-3 py-2.5 flex items-center gap-2 border-b border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-900">
         <span className={iconColor}>{icon}</span>
         <span className={cn(TYPOGRAPHY.sectionTitle, TEXT_COLORS.primary)}>
           {title}
@@ -295,7 +295,7 @@ function CockpitCard({ title, icon, iconColor, children, cta }: CockpitCardProps
       
       <div className="p-3 flex-1">{children}</div>
 
-      {/* CTA - olive green for discoverability */}
+      {/* CTA - blue for links */}
       {cta && (
         <div className="px-3 pb-2.5">
           <Button
@@ -304,10 +304,10 @@ function CockpitCard({ title, icon, iconColor, children, cta }: CockpitCardProps
             className={cn(
               TYPOGRAPHY.ctaButton, 
               "w-full h-8",
-              "text-[#5c7c5c] dark:text-[#7a9a7a]",
+              "text-[#2563eb] dark:text-[#60a5fa]",
               "transition-[background-color,color] duration-150",
-              "hover:bg-[#5c7c5c]/10 dark:hover:bg-[#7a9a7a]/10",
-              "hover:text-[#4a6a4a] dark:hover:text-[#8aaa8a]",
+              "hover:bg-[#2563eb]/10 dark:hover:bg-[#60a5fa]/10",
+              "hover:text-[#1d4ed8] dark:hover:text-[#93c5fd]",
               "focus-visible:ring-1"
             )}
             onClick={cta.onClick}

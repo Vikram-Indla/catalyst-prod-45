@@ -264,9 +264,9 @@ export default function Auth() {
 
   return (
     <div className="min-h-screen flex flex-col lg:flex-row">
-      {/* Left Panel - Brand Panel with cream background */}
+      {/* Left Panel - Brand Panel with white background */}
       <div 
-        className="hidden lg:flex relative w-full lg:w-[45%] flex-col justify-start p-6 sm:p-8 md:p-12 lg:p-16 overflow-hidden min-h-[40vh] lg:min-h-screen bg-[#faf7f1]"
+        className="hidden lg:flex relative w-full lg:w-[45%] flex-col justify-start p-6 sm:p-8 md:p-12 lg:p-16 overflow-hidden min-h-[40vh] lg:min-h-screen bg-white"
         style={{ paddingTop: "clamp(100px, 15vh, 160px)" }}
       >
         {/* Decorative Gradient 1 */}

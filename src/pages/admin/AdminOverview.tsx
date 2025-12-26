@@ -260,7 +260,7 @@ export default function AdminOverview() {
                     <Activity className="h-4 w-4 text-muted-foreground" />
                     <CardTitle className="text-sm font-medium">Recent Admin Changes</CardTitle>
                   </div>
-                  <Button variant="ghost" size="sm" asChild className="text-xs">
+                  <Button variant="ghost" size="sm" asChild className="text-xs text-[#2563eb] hover:text-[#1d4ed8]">
                     <Link to="/admin/activity">View all</Link>
                   </Button>
                 </div>
