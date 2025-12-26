@@ -8,15 +8,14 @@ import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/comp
 // CATALYST ENTERPRISE TABLE - ENTERPRISE-GRADE VISUAL QUALITY
 // ============================================================================
 
-// Catalyst Golden Hour Color Palette - uses CSS tokens for dark mode support
+// Catalyst Blue + Teal Palette - uses CSS tokens for dark mode support
 const colors = {
   olive: 'var(--secondary-green, #5c7c5c)',
   bronze: 'var(--secondary-bronze, #8b7355)',
-  gold: 'var(--brand-accent, #c69c6d)',
-  goldHover: 'var(--brand-accent-hover, #b8894f)',
+  primary: 'var(--brand-primary, #2563eb)',
+  primaryHover: 'var(--brand-primary-hover, #1d4ed8)',
   champagne: 'var(--secondary-champagne, #d4b896)',
   grey: 'var(--secondary-grey, #c8ccd0)',
-  cream: 'var(--surface-1, #faf7f1)',
   white: 'var(--surface-1, #ffffff)',
   border: 'var(--border-color, #e5e5e5)',
   muted: 'var(--text-2, #6b7280)',

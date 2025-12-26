@@ -124,13 +124,13 @@ export default function TimelineView() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#c69c6d]" />
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#2563eb]" />
       </div>
     );
   }
 
   return (
-    <div className="h-full flex flex-col bg-[#faf7f1]">
+    <div className="h-full flex flex-col bg-white">
       {/* Header */}
       <div className="sticky top-0 z-30 bg-white border-b shadow-sm">
         <div className="px-6 py-4">

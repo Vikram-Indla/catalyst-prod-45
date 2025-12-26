@@ -163,14 +163,14 @@ const POBAWidget: React.FC<POBAWidgetProps> = ({
                     <button
                       key={resource.name}
                       onClick={() => toggleResource(resource.name)}
-                      className={`w-full flex items-center gap-3 px-3 py-2.5 hover:bg-gray-50 transition-colors ${
-                        isSelected ? "bg-amber-50" : ""
+                      className={`w-full flex items-center gap-3 px-3 py-2.5 hover:bg-neutral-50 transition-colors ${
+                        isSelected ? "bg-[rgba(37,99,235,0.08)]" : ""
                       }`}
                     >
                       {/* Checkbox */}
                       <div
                         className={`w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all ${
-                          isSelected ? "border-amber-500 bg-amber-500" : "border-gray-300"
+                          isSelected ? "border-[#2563eb] bg-[#2563eb]" : "border-neutral-300"
                         }`}
                       >
                         {isSelected && <Check className="w-3 h-3 text-white" />}

@@ -112,7 +112,7 @@ export default function ReleaseCalendarPage() {
   );
 
   return (
-    <div className="h-full flex flex-col bg-[#faf7f1] dark:bg-[#0a0a0a]">
+    <div className="h-full flex flex-col bg-white dark:bg-[#0a0a0a]">
       <PageHeader
         title="Release Calendar"
         toolbar={toolbar}

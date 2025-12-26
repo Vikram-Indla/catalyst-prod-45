@@ -86,7 +86,7 @@ export default function BoardView() {
   }
 
   return (
-    <div className="h-full flex flex-col bg-[#faf7f1] dark:bg-background">
+    <div className="h-full flex flex-col bg-white dark:bg-background">
       {/* Header */}
       <div className="sticky top-0 z-20 bg-white dark:bg-card border-b shadow-sm">
         <div className="px-6 py-4">

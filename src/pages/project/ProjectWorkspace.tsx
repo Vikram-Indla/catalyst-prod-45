@@ -29,10 +29,10 @@ export default function ProjectWorkspace() {
 
   if (isLoading) {
     return (
-      <div className="h-screen flex items-center justify-center bg-[#faf7f1]">
+      <div className="h-screen flex items-center justify-center bg-white">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#c69c6d] mx-auto mb-4" />
-          <p className="text-gray-500">Loading project...</p>
+          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#2563eb] mx-auto mb-4" />
+          <p className="text-neutral-500">Loading project...</p>
         </div>
       </div>
     );
@@ -40,10 +40,10 @@ export default function ProjectWorkspace() {
 
   if (error || !project) {
     return (
-      <div className="h-screen flex items-center justify-center bg-[#faf7f1]">
+      <div className="h-screen flex items-center justify-center bg-white">
         <div className="text-center">
           <h2 className="text-xl font-semibold mb-2">Project Not Found</h2>
-          <p className="text-gray-500 mb-4">
+          <p className="text-neutral-500 mb-4">
             The project you're looking for doesn't exist or you don't have access.
           </p>
           <Button onClick={() => navigate('/projects')}>
@@ -55,7 +55,7 @@ export default function ProjectWorkspace() {
   }
 
   return (
-    <div className="h-screen flex flex-col bg-[#faf7f1]">
+    <div className="h-screen flex flex-col bg-white">
       {/* Project Header with View Selector */}
       <ProjectHeader 
         project={project} 
