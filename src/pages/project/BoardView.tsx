@@ -14,6 +14,7 @@ import { EmptyBoardState } from '@/components/empty-states/EmptyBoardState';
 import { useBoardData, useBoardStats, useMoveFeature, useBoardReleases } from '@/hooks/useBoardView';
 import { BoardFilters } from '@/services/boardService';
 import { WorkflowStatus } from '@/types/views';
+import { useFeatureRealtime } from '@/hooks/useWorkItemRealtime';
 
 export default function BoardView() {
   const [searchParams] = useSearchParams();
@@ -28,6 +29,9 @@ export default function BoardView() {
     featureIdentifier: string;
     featureTitle: string;
   } | null>(null);
+
+  // Realtime subscription for automatic UI refresh
+  useFeatureRealtime([['board-features']]);
 
   // Data fetching
   const { data: columns, isLoading } = useBoardData(projectId, filters);

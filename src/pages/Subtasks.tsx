@@ -11,6 +11,7 @@ import { ListScreenToolbar } from '@/components/shared/ListScreenToolbar';
 import { SubtaskDialog } from '@/components/forms/SubtaskDialog';
 import { Plus } from 'lucide-react';
 import { PermissionGuard } from '@/components/shared/PermissionGuard';
+import { useSubtaskRealtime } from '@/hooks/useWorkItemRealtime';
 
 export default function Subtasks() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -18,6 +19,9 @@ export default function Subtasks() {
   const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingSubtask, setEditingSubtask] = useState<any>(null);
+
+  // Realtime subscription for automatic UI refresh
+  useSubtaskRealtime();
 
   const { data: subtasks } = useQuery({
     queryKey: ['subtasks', searchTerm, statusFilter],
