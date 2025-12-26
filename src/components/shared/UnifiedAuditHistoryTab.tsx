@@ -167,8 +167,8 @@ export function UnifiedAuditHistoryTab({ entityId, entityType }: UnifiedAuditHis
     <div className="flex flex-col flex-1 min-h-0 bg-white dark:bg-[#0D1117] rounded-lg overflow-hidden">
       {/* Header */}
       <div className="flex flex-nowrap items-end gap-2 px-5 py-4 border-b border-[#EAECEF] dark:border-[#21262D] shrink-0">
-        <History className="h-4 w-4 text-[#C69C6D] flex-shrink-0" />
-        <span className="text-[13px] font-semibold text-[#C69C6D] uppercase tracking-[0.5px] leading-none whitespace-nowrap">
+        <History className="h-4 w-4 text-[#2563eb] flex-shrink-0" />
+        <span className="text-[13px] font-semibold text-[#2563eb] uppercase tracking-[0.5px] leading-none whitespace-nowrap">
           Audit History
         </span>
         <span className="text-[13px] text-[#8B949E] dark:text-[#6E7681] font-normal leading-none whitespace-nowrap">
@@ -200,10 +200,10 @@ export function UnifiedAuditHistoryTab({ entityId, entityType }: UnifiedAuditHis
                 className="flex gap-3 px-5 py-4 hover:bg-muted/30 transition-colors duration-150 border-b border-border/50 last:border-b-0"
                 style={{ animation: 'fadeIn 0.3s ease' }}
               >
-                {/* Gold Avatar */}
+                {/* Blue Avatar */}
                 <div 
                   className="w-9 h-9 rounded-full flex items-center justify-center text-[13px] font-semibold text-white shrink-0"
-                  style={{ backgroundColor: '#C4944C' }}
+                  style={{ backgroundColor: '#2563eb' }}
                 >
                   {getInitials(log.actor_name)}
                 </div>

@@ -84,16 +84,16 @@ function FocusWidget({
       className={cn(
         "w-full p-3 rounded-lg transition-all text-left",
         "bg-transparent border border-transparent",
-        // Gold-tinted hover for brand consistency
-        "hover:bg-[#c69c6d]/[0.06] dark:hover:bg-[#c69c6d]/[0.12]",
-        "hover:border-[#c69c6d]/20 dark:hover:border-[#c69c6d]/30",
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#c69c6d]/50"
+        // Blue-tinted hover for brand consistency
+        "hover:bg-[rgba(37,99,235,0.06)] dark:hover:bg-[rgba(37,99,235,0.12)]",
+        "hover:border-[rgba(37,99,235,0.2)] dark:hover:border-[rgba(37,99,235,0.3)]",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(37,99,235,0.5)]"
       )}
       onClick={onClick}
     >
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-start gap-2.5 min-w-0 flex-1">
-          <Icon className="w-4 h-4 shrink-0 text-[#8b7355] dark:text-[#c69c6d] mt-0.5" />
+          <Icon className="w-4 h-4 shrink-0 text-[#2563eb] dark:text-[#60a5fa] mt-0.5" />
           <div className="min-w-0 flex-1">
             <div className="text-sm font-medium text-foreground">{title}</div>
             {subtitle && (

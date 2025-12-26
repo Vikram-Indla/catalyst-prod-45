@@ -479,14 +479,14 @@ export function CreateEpicDialog({
                             const isActive = theme.status === 'active';
                             const statusStyle = isActive 
                               ? {
-                                  backgroundColor: 'rgba(92, 124, 92, 0.2)',
-                                  color: '#5c7c5c',
-                                  border: '1px solid rgba(92, 124, 92, 0.3)'
+                                  backgroundColor: 'rgba(13, 148, 136, 0.1)',
+                                  color: '#0d9488',
+                                  border: '1px solid rgba(13, 148, 136, 0.3)'
                                 }
                               : {
-                                  backgroundColor: 'rgba(198, 156, 109, 0.15)',
-                                  color: '#c69c6d',
-                                  border: '1px solid rgba(198, 156, 109, 0.25)'
+                                  backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                                  color: '#b45309',
+                                  border: '1px solid rgba(245, 158, 11, 0.25)'
                                 };
                             
                             return (
@@ -499,10 +499,10 @@ export function CreateEpicDialog({
                                 }}
                                 className={cn(
                                   "cursor-pointer transition-colors py-3 px-4",
-                                  themeId === theme.id && "!bg-[rgba(198,156,109,0.12)]"
+                                  themeId === theme.id && "!bg-[rgba(37,99,235,0.08)]"
                                 )}
                                 style={{
-                                  borderLeft: themeId === theme.id ? '3px solid #c69c6d' : '3px solid transparent'
+                                  borderLeft: themeId === theme.id ? '3px solid #2563eb' : '3px solid transparent'
                                 }}
                               >
                                 <Check
@@ -510,7 +510,7 @@ export function CreateEpicDialog({
                                     'mr-2 h-4 w-4 flex-shrink-0',
                                     themeId === theme.id ? 'opacity-100' : 'opacity-0'
                                   )}
-                                  style={{ color: '#c69c6d' }}
+                                  style={{ color: '#2563eb' }}
                                 />
                                 <span 
                                   className="flex-1 text-sm font-medium"
@@ -548,7 +548,7 @@ export function CreateEpicDialog({
                       >
                         {selectedBR ? (
                           <span className="flex items-center gap-2">
-                            <span className="font-mono" style={{ color: '#c69c6d' }}>
+                            <span className="font-mono" style={{ color: '#2563eb' }}>
                               {selectedBR.request_key}
                             </span>
                             <span className="truncate">{selectedBR.title}</span>
@@ -598,10 +598,10 @@ export function CreateEpicDialog({
                               }}
                               className={cn(
                                 "cursor-pointer transition-colors py-3 px-4",
-                                linkedBusinessRequestId === br.id && "!bg-[rgba(198,156,109,0.12)]"
+                                linkedBusinessRequestId === br.id && "!bg-[rgba(37,99,235,0.08)]"
                               )}
                               style={{
-                                borderLeft: linkedBusinessRequestId === br.id ? '3px solid #c69c6d' : '3px solid transparent'
+                                borderLeft: linkedBusinessRequestId === br.id ? '3px solid #2563eb' : '3px solid transparent'
                               }}
                             >
                               <Check
@@ -609,10 +609,10 @@ export function CreateEpicDialog({
                                   'mr-2 h-4 w-4 flex-shrink-0',
                                   linkedBusinessRequestId === br.id ? 'opacity-100' : 'opacity-0'
                                 )}
-                                style={{ color: '#c69c6d' }}
+                                style={{ color: '#2563eb' }}
                               />
                               <div className="flex items-center gap-2 flex-1 min-w-0">
-                                <span className="font-mono shrink-0" style={{ color: '#c69c6d' }}>
+                                <span className="font-mono shrink-0" style={{ color: '#2563eb' }}>
                                   {br.request_key}
                                 </span>
                                 <span 
@@ -627,9 +627,9 @@ export function CreateEpicDialog({
                                   <span
                                     className="px-2 py-0.5 rounded text-[10px] font-medium"
                                     style={{
-                                      backgroundColor: 'rgba(92, 124, 92, 0.2)',
-                                      color: '#5c7c5c',
-                                      border: '1px solid rgba(92, 124, 92, 0.3)'
+                                      backgroundColor: 'rgba(13, 148, 136, 0.1)',
+                                      color: '#0d9488',
+                                      border: '1px solid rgba(13, 148, 136, 0.3)'
                                     }}
                                   >
                                     Rank #{br.rank}
@@ -639,9 +639,9 @@ export function CreateEpicDialog({
                                   <span
                                     className="px-2 py-0.5 rounded text-[10px] font-medium"
                                     style={{
-                                      backgroundColor: 'rgba(198, 156, 109, 0.15)',
-                                      color: '#c69c6d',
-                                      border: '1px solid rgba(198, 156, 109, 0.25)'
+                                      backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                                      color: '#2563eb',
+                                      border: '1px solid rgba(37, 99, 235, 0.25)'
                                     }}
                                   >
                                     Score: {br.business_score}
@@ -738,9 +738,9 @@ export function CreateEpicDialog({
                         <Badge 
                           className="text-[10px]"
                           style={{ 
-                            backgroundColor: 'rgba(92, 124, 92, 0.15)',
-                            color: '#5c7c5c',
-                            border: '1px solid rgba(92, 124, 92, 0.3)'
+                            backgroundColor: 'rgba(13, 148, 136, 0.1)',
+                            color: '#0d9488',
+                            border: '1px solid rgba(13, 148, 136, 0.3)'
                           }}
                         >
                           Uploaded
@@ -789,9 +789,9 @@ export function CreateEpicDialog({
             disabled={!isValid || createEpicMutation.isPending}
             className="px-5 py-2.5 transition-all disabled:opacity-50"
             style={{
-              backgroundColor: '#5c7c5c',
+              backgroundColor: '#2563eb',
               border: '1px solid rgba(255, 255, 255, 0.1)',
-              color: '#f5f5f5',
+              color: '#ffffff',
               boxShadow: '0 1px 2px rgba(0, 0, 0, 0.2)'
             }}
             title={

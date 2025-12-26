@@ -29,8 +29,7 @@ function checkIsCurrentQuarter(quarter: string): boolean {
 }
 
 /**
- * Quarter badge styling using ONLY Catalyst brand colors
- * Brand palette: olive (#5c7c5c), bronze (#8b7355), gold (#c69c6d), champagne (#d4b896)
+ * Quarter badge styling using Blue + Teal Catalyst palette
  */
 export function QuarterCell({ quarter, isCurrentQuarter }: QuarterCellProps) {
   if (!quarter) {
@@ -42,17 +41,17 @@ export function QuarterCell({ quarter, isCurrentQuarter }: QuarterCellProps) {
   return (
     <span 
       className={cn(
-        "inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium border",
+        "inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium border",
         isCurrent 
           ? cn(
-              // Current quarter - gold highlight
-              "bg-[#c69c6d]/15 text-[#8b7355] border-[#c69c6d]/40",
-              "dark:bg-[#c69c6d]/25 dark:text-[#d4b896] dark:border-[#c69c6d]/50"
+              // Current quarter - blue highlight
+              "bg-[rgba(37,99,235,0.1)] text-[#2563eb] border-[rgba(37,99,235,0.3)]",
+              "dark:bg-[rgba(37,99,235,0.15)] dark:text-[#60a5fa] dark:border-[rgba(37,99,235,0.4)]"
             )
           : cn(
-              // Regular quarter - olive tint
-              "bg-[#5c7c5c]/10 text-[#5c7c5c] border-[#5c7c5c]/30",
-              "dark:bg-[#5c7c5c]/20 dark:text-[#6b8b6b] dark:border-[#5c7c5c]/40"
+              // Regular quarter - gray tint
+              "bg-[rgba(107,114,128,0.1)] text-[#6b7280] border-[rgba(107,114,128,0.3)]",
+              "dark:bg-[rgba(107,114,128,0.15)] dark:text-[#9ca3af] dark:border-[rgba(107,114,128,0.4)]"
             )
       )}
     >

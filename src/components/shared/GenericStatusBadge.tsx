@@ -12,12 +12,12 @@
  * - Automatically applies brand colors based on status category
  * - Supports admin-configurable statuses via props
  * 
- * BRAND COLORS (Catalyst Palette):
- * - Olive #5c7c5c: Success states (done, complete, active)
- * - Gold #c69c6d: Warning/attention states (at risk, pending)
- * - Bronze #8b7355: Critical/blocked states (off track, blocked)
- * - Grey #c8ccd0: Neutral states (draft, backlog)
- * - Champagne #d4b896: Highlight states
+ * BRAND COLORS (Blue + Teal Professional Palette):
+ * - Teal #0d9488: Success states (done, complete, active)
+ * - Amber #f59e0b: Warning/attention states (at risk, pending)
+ * - Red #ef4444: Critical/blocked states (off track, blocked)
+ * - Gray #6b7280: Neutral states (draft, backlog)
+ * - Blue #2563eb: Progress/active states
  */
 
 import { cn } from '@/lib/utils';
@@ -32,43 +32,43 @@ type StatusCategory =
   | 'info' 
   | 'progress';
 
-// Brand-aligned color configuration
+// Brand-aligned color configuration - Blue + Teal palette
 const CATEGORY_STYLES: Record<StatusCategory, { bg: string; text: string; border: string; dot: string }> = {
   success: {
-    bg: 'rgba(92, 124, 92, 0.12)',    // Olive 12%
-    text: '#5c7c5c',                   // Olive
+    bg: 'rgba(13, 148, 136, 0.1)',     // Teal 10%
+    text: '#0d9488',                    // Teal
     border: 'transparent',
-    dot: '#5c7c5c',
+    dot: '#0d9488',
   },
   warning: {
-    bg: 'rgba(198, 156, 109, 0.12)',  // Gold 12%
-    text: '#c69c6d',                   // Gold
+    bg: 'rgba(245, 158, 11, 0.1)',     // Amber 10%
+    text: '#b45309',                    // Amber dark
     border: 'transparent',
-    dot: '#c69c6d',
+    dot: '#f59e0b',
   },
   critical: {
-    bg: 'rgba(139, 115, 85, 0.12)',   // Bronze 12%
-    text: '#8b7355',                   // Bronze
+    bg: 'rgba(239, 68, 68, 0.1)',      // Red 10%
+    text: '#ef4444',                    // Red
     border: 'transparent',
-    dot: '#8b7355',
+    dot: '#ef4444',
   },
   neutral: {
-    bg: 'rgba(200, 204, 208, 0.2)',   // Grey 20%
+    bg: 'rgba(107, 114, 128, 0.1)',    // Gray 10%
     text: '#6b7280',
     border: 'transparent',
-    dot: '#c8ccd0',
+    dot: '#6b7280',
   },
   info: {
-    bg: 'rgba(200, 204, 208, 0.15)',
+    bg: 'rgba(107, 114, 128, 0.1)',
     text: '#6b7280',
     border: 'transparent',
-    dot: '#a1a1aa',
+    dot: '#9ca3af',
   },
   progress: {
-    bg: 'rgba(92, 124, 92, 0.08)',    // Olive 8% (lighter)
-    text: '#5c7c5c',
-    border: '#5c7c5c',
-    dot: '#5c7c5c',
+    bg: 'rgba(37, 99, 235, 0.1)',      // Blue 10%
+    text: '#2563eb',
+    border: '#2563eb',
+    dot: '#2563eb',
   },
 };
 
