@@ -39,11 +39,11 @@ export default {
           300: "#d4d4d4",
           400: "#a3a3a3",
           500: "#737373",
-          600: "#525252",    /* Was light, now readable */
-          700: "#404040",    /* Was medium, now dark */
+          600: "#525252",
+          700: "#404040",
           800: "#262626",
-          900: "#171717",    /* Near black */
-          950: "#0a0a0a",    /* True black */
+          900: "#171717",
+          950: "#0a0a0a",
         },
         
         /* Slate override - also Pure Onyx */
@@ -93,7 +93,7 @@ export default {
         
         /* Stone override - Pure Onyx */
         stone: {
-          50: "#faf7f1",     /* Your cream! */
+          50: "#fafafa",
           100: "#f5f5f5",
           200: "#e5e5e5",
           300: "#d4d4d4",
@@ -106,7 +106,41 @@ export default {
           950: "#0a0a0a",
         },
         
-        /* Brand colors - Catalyst Golden Hour */
+        /* Brand colors - Blue + Teal Professional */
+        blue: {
+          DEFAULT: "#2563eb",
+          50: "#eff6ff",
+          100: "#dbeafe",
+          200: "#bfdbfe",
+          300: "#93c5fd",
+          400: "#60a5fa",
+          500: "#3b82f6",
+          600: "#2563eb",
+          700: "#1d4ed8",
+          800: "#1e40af",
+          900: "#1e3a8a",
+          950: "#172554",
+          link: "hsl(var(--link-color))",
+          "link-hover": "hsl(var(--link-color-hover))",
+        },
+        
+        /* Teal - Success brand */
+        teal: {
+          DEFAULT: "#0d9488",
+          50: "#f0fdfa",
+          100: "#ccfbf1",
+          200: "#99f6e4",
+          300: "#5eead4",
+          400: "#2dd4bf",
+          500: "#14b8a6",
+          600: "#0d9488",
+          700: "#0f766e",
+          800: "#115e59",
+          900: "#134e4a",
+          950: "#042f2e",
+        },
+        
+        /* Legacy brand colors - kept for special elements */
         gold: {
           DEFAULT: "#c69c6d",
           50: "#fdf8f3",
@@ -120,11 +154,9 @@ export default {
           800: "#7d5a38",
           900: "#664a30",
           950: "#382618",
-          link: "hsl(var(--gold-link))",
-          "link-hover": "hsl(var(--gold-link-hover))",
         },
         
-        /* Olive - Primary brand */
+        /* Olive - Secondary brand (legacy) */
         olive: {
           DEFAULT: "#5c7c5c",
           50: "#f4f7f4",
@@ -140,7 +172,7 @@ export default {
           950: "#151d15",
         },
         
-        /* Bronze - Secondary brand */
+        /* Bronze - Secondary brand (legacy) */
         bronze: {
           DEFAULT: "#8b7355",
           50: "#f9f7f4",
@@ -212,11 +244,13 @@ export default {
         /* Brand primary alias */
         brand: {
           primary: {
-            DEFAULT: "#5c7c5c",
-            hover: "#4a6a4a",
-            pale: "rgba(92, 124, 92, 0.08)",
-            border: "rgba(92, 124, 92, 0.2)",
+            DEFAULT: "#2563eb",
+            hover: "#1d4ed8",
+            pale: "rgba(37, 99, 235, 0.08)",
+            border: "rgba(37, 99, 235, 0.2)",
           },
+          blue: "#2563eb",
+          teal: "#0d9488",
           olive: "#5c7c5c",
           bronze: "#8b7355",
           gold: "#c69c6d",
@@ -247,7 +281,9 @@ export default {
           },
         },
         
-        /* Secondary palette - Catalyst Golden Hour */
+        /* Secondary palette - Catalyst Professional */
+        'secondary-blue': '#2563eb',
+        'secondary-teal': '#0d9488',
         'secondary-olive': '#5c7c5c',
         'secondary-bronze': '#8b7355',
         'secondary-champagne': '#d4b896',

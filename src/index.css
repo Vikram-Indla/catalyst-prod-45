@@ -3,83 +3,89 @@
 @tailwind utilities;
 
 /* ════════════════════════════════════════════════════════════════════════════
-   CATALYST V4 — PREMIUM ENTERPRISE DESIGN SYSTEM
-   CIO-Grade Polish with Depth, Layering & Brand Integration
+   CATALYST V5 — BLUE + TEAL ENTERPRISE DESIGN SYSTEM
+   CIO-Grade Polish with Blue Primary & Teal Success
    ════════════════════════════════════════════════════════════════════════════ */
 
 @layer base {
   :root {
     /* ═══════════════════════════════════════════════════════════════
-       LIGHT MODE — Warm Stone backgrounds, Premium depth
+       LIGHT MODE — Clean White backgrounds, Blue Primary
        ═══════════════════════════════════════════════════════════════ */
-    --background: 40 20% 98%;           /* #fafaf9 warm stone-50 */
-    --foreground: 0 0% 4%;              /* #0a0a0a near-black */
+    --background: 0 0% 98%;              /* #fafafa clean white */
+    --foreground: 0 0% 4%;               /* #0a0a0a near-black */
     
-    --card: 0 0% 100%;                  /* #ffffff */
-    --card-foreground: 0 0% 4%;         /* #0a0a0a */
+    --card: 0 0% 100%;                   /* #ffffff */
+    --card-foreground: 0 0% 4%;          /* #0a0a0a */
     
     --popover: 0 0% 100%;
     --popover-foreground: 0 0% 4%;
     
-    --primary: 120 26% 42%;             /* #5c7c5c olive - PRIMARY BRAND */
-    --primary-foreground: 0 0% 100%;    /* white */
+    --primary: 217 91% 60%;              /* #3b82f6 blue-500 - PRIMARY BRAND */
+    --primary-foreground: 0 0% 100%;     /* white */
     
-    --secondary: 40 20% 97%;            /* warm off-white */
-    --secondary-foreground: 0 0% 9%;    /* #171717 */
+    --secondary: 0 0% 96%;               /* neutral off-white */
+    --secondary-foreground: 0 0% 9%;     /* #171717 */
     
-    --muted: 40 15% 96%;                /* warm muted */
-    --muted-foreground: 0 0% 35%;       /* #595959 - better contrast */
+    --muted: 0 0% 96%;                   /* neutral muted */
+    --muted-foreground: 0 0% 35%;        /* #595959 - better contrast */
     
-    --accent: 32 40% 60%;               /* #c69c6d gold accent */
+    --accent: 217 91% 60%;               /* #3b82f6 blue accent */
     --accent-foreground: 0 0% 100%;
     
-    --destructive: 0 72% 51%;           /* red */
+    --destructive: 0 72% 51%;            /* red */
     --destructive-foreground: 0 0% 100%;
     
-    --border: 0 0% 91%;                 /* #e8e8e8 - softer */
-    --input: 0 0% 85%;                  /* #d9d9d9 */
-    --ring: 120 26% 42%;                /* olive focus ring */
+    --border: 0 0% 91%;                  /* #e8e8e8 - softer */
+    --input: 0 0% 85%;                   /* #d9d9d9 */
+    --ring: 217 91% 60%;                 /* blue focus ring */
     
     --radius: 8px;
     
     /* Sidebar */
-    --sidebar-background: 0 0% 99%;     /* #fcfcfc */
-    --sidebar-foreground: 0 0% 9%;      /* #171717 */
-    --sidebar-primary: 120 26% 42%;     /* olive */
+    --sidebar-background: 0 0% 99%;      /* #fcfcfc */
+    --sidebar-foreground: 0 0% 9%;       /* #171717 */
+    --sidebar-primary: 217 91% 60%;      /* blue */
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 120 26% 42%;      /* olive for active */
+    --sidebar-accent: 217 91% 60%;       /* blue for active */
     --sidebar-accent-foreground: 0 0% 100%;
     --sidebar-border: 0 0% 93%;
-    --sidebar-ring: 120 26% 42%;
+    --sidebar-ring: 217 91% 60%;
     
     /* ═══════════════════════════════════════════════════════════════
-       BRAND PALETTE — Catalyst Golden Hour
+       BRAND PALETTE — Blue + Teal Professional
        (HSL triples so Tailwind + dark mode behave correctly)
        ═══════════════════════════════════════════════════════════════ */
+    --brand-blue: #2563eb;
+    --brand-blue-dark: #1d4ed8;
+    --brand-blue-light: #3b82f6;
+    --brand-teal: #0d9488;
+    --brand-teal-dark: #0f766e;
+    --brand-teal-light: #14b8a6;
+
+    /* HSL versions (preferred for theming + alpha) */
+    --catalyst-blue: 217 91% 53%;         /* #2563eb */
+    --catalyst-blue-light: 217 91% 60%;   /* #3b82f6 */
+    --catalyst-teal: 173 58% 39%;         /* #0d9488 */
+    --catalyst-teal-light: 173 58% 50%;   /* #14b8a6 */
+    --catalyst-grey: 210 6% 80%;          /* ~#c8ccd0 */
+    
+    /* Legacy brand colors (kept for special elements only) */
     --brand-olive: #5c7c5c;
-    --brand-olive-dark: #4a6a4a;
-    --brand-olive-light: #6b8b6b;
     --brand-bronze: #8b7355;
     --brand-gold: #c69c6d;
     --brand-champagne: #d4b896;
-
-    /* HSL versions (preferred for theming + alpha) */
-    --catalyst-olive: 120 26% 42%;        /* #5c7c5c */
-    --catalyst-bronze: 30 24% 44%;        /* #8b7355 */
-    --catalyst-gold: 32 40% 60%;          /* #c69c6d */
-    --catalyst-champagne: 34 40% 71%;     /* #d4b896 */
-    --catalyst-grey: 210 6% 80%;          /* ~#c8ccd0 */
     
     /* Custom semantic tokens */
     --text-primary: #0a0a0a;
     --text-secondary: #171717;
     --text-tertiary: #404040;
     --text-muted: #6b7280;
-    --bg-cream: #fafaf9;
+    --bg-cream: #fafafa;
     --bg-card: #ffffff;
     --bg-sidebar: #fcfcfc;
-    --accent-gold: #c69c6d;
-    --accent-gold-hover: #b8894d;
+    --accent-blue: #2563eb;
+    --accent-blue-hover: #1d4ed8;
     
     /* ═══════════════════════════════════════════════════════════════
        PREMIUM SHADOWS — Layered depth system
@@ -89,11 +95,11 @@
     --shadow-card: 0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.03);
     --shadow-elevated: 0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04);
     --shadow-hover: 0 8px 24px rgba(0,0,0,0.1), 0 4px 8px rgba(0,0,0,0.05);
-    --shadow-brand: 0 4px 12px rgba(92,124,92,0.15);
+    --shadow-brand: 0 4px 12px rgba(37,99,235,0.15);
     
     /* Legacy variable mappings for existing components */
-    --bg: #fafaf9;
-    --bg-workspace: #fafaf9;
+    --bg: #fafafa;
+    --bg-workspace: #fafafa;
     --surface-1: #f8f8f7;
     --surface-2: #ffffff;
     --surface-3: #fafafa;
@@ -108,48 +114,49 @@
     --border-color: #e5e5e5;
     --nav-bg: #ffffff;
     --nav-hover-bg: rgba(0, 0, 0, 0.03);
-    --nav-active-bg: rgba(92, 124, 92, 0.1);
-    --brand-active: #5c7c5c;
-    --brand-primary: #5c7c5c;
-    --brand-primary-hover: #4a6a4a;
+    --nav-active-bg: rgba(37, 99, 235, 0.1);
+    --brand-active: #2563eb;
+    --brand-primary: #2563eb;
+    --brand-primary-hover: #1d4ed8;
     --card-bg: #ffffff;
     --card-border: #f0f0f0;
     --card-shadow: var(--shadow-card);
     --table-row-bg: #ffffff;
     --table-row-hover: rgba(0, 0, 0, 0.02);
-    --table-header-bg: rgba(0, 0, 0, 0.02);  /* Light mode header bg */
-    --table-section-bg: rgba(0, 0, 0, 0.02);  /* Section headers */
+    --table-header-bg: rgba(0, 0, 0, 0.02);
+    --table-section-bg: rgba(0, 0, 0, 0.02);
     --row-hover: rgba(0, 0, 0, 0.02);
-    --selection-row-bg: rgba(92, 124, 92, 0.06);
-    --selection-bar-accent: #5c7c5c;
-    --focus-ring: #5c7c5c;
+    --selection-row-bg: rgba(37, 99, 235, 0.06);
+    --selection-bar-accent: #2563eb;
+    --focus-ring: #2563eb;
     
     /* Status/Semantic colors - Light Mode */
-    --status-success: #16a34a;
-    --status-success-light: #22c55e;
-    --status-success-bg: rgba(22, 163, 74, 0.08);
-    --status-success-bg-hover: rgba(22, 163, 74, 0.12);
-    --status-success-border: rgba(22, 163, 74, 0.2);
+    --status-success: #0d9488;
+    --status-success-light: #14b8a6;
+    --status-success-bg: rgba(13, 148, 136, 0.08);
+    --status-success-bg-hover: rgba(13, 148, 136, 0.12);
+    --status-success-border: rgba(13, 148, 136, 0.2);
     
     --status-warning: #d97706;
     --status-warning-bg: rgba(217, 119, 6, 0.08);
     --status-warning-border: rgba(217, 119, 6, 0.2);
     
-    --status-info: #3b82f6;
-    --status-info-bg: rgba(59, 130, 246, 0.08);
-    --status-info-border: rgba(59, 130, 246, 0.2);
+    --status-info: #2563eb;
+    --status-info-bg: rgba(37, 99, 235, 0.08);
+    --status-info-border: rgba(37, 99, 235, 0.2);
     
     --status-muted: #6b7280;
     --status-muted-bg: rgba(107, 114, 128, 0.08);
     --status-muted-border: rgba(107, 114, 128, 0.2);
     
     /* Secondary brand colors */
-    --secondary-green: 120 26% 42%;
+    --secondary-blue: 217 91% 53%;
+    --secondary-teal: 173 58% 39%;
+    --secondary-olive: 120 26% 42%;
     --secondary-bronze: 30 24% 44%;
     --secondary-champagne: 34 40% 71%;
-    --secondary-olive: 120 26% 42%;     /* Olive for buttons/toggles */
-    --secondary-green-bg: rgba(92, 124, 92, 0.1);
-    --secondary-bronze-bg: rgba(139, 115, 85, 0.1);
+    --secondary-blue-bg: rgba(37, 99, 235, 0.1);
+    --secondary-teal-bg: rgba(13, 148, 136, 0.1);
     
     /* Strategy Room tokens - borders */
     --border-default: #e8e8e8;
@@ -157,9 +164,9 @@
     
     /* Strategy Room tokens - surfaces */
     --surface-bg: #ffffff;
-    --surface-subtle: #fafaf9;
+    --surface-subtle: #fafafa;
     --surface-hover: #f5f5f4;
-    --surface-active: rgba(92, 124, 92, 0.1);
+    --surface-active: rgba(37, 99, 235, 0.1);
     --surface-card: #ffffff;
     --surface-muted: #f8f8f7;
     
@@ -167,23 +174,23 @@
     --progress-bg: #e8e8e8;
     
     /* Strategy Room tokens - brand backgrounds */
-    --brand-gold-bg: rgba(198, 156, 109, 0.1);
-    --brand-olive-bg: rgba(92, 124, 92, 0.08);
+    --brand-blue-bg: rgba(37, 99, 235, 0.1);
+    --brand-teal-bg: rgba(13, 148, 136, 0.08);
     
     /* Status danger */
     --status-danger: #dc2626;
     --status-danger-bg: rgba(220, 38, 38, 0.08);
     --status-danger-border: rgba(220, 38, 38, 0.2);
     
-    /* Gold link colors - Light mode (WCAG AA compliant) */
-    --gold-link: 30 33% 49%;
-    --gold-link-hover: 40 75% 32%;
+    /* Link colors - Light mode (WCAG AA compliant) */
+    --link-color: 217 91% 53%;
+    --link-color-hover: 217 91% 45%;
     
     /* Industry Backlog Table tokens - Light Mode */
-    --industry-bg-page: #f8f6f1;
+    --industry-bg-page: #f8f8f8;
     --industry-bg-card: #ffffff;
     --industry-bg-subtle: #f5f5f4;
-    --industry-bg-hover: #fafaf9;
+    --industry-bg-hover: #fafafa;
     --industry-border-default: #e5e5e5;
     --industry-border-subtle: #ebebeb;
     --industry-text-primary: #0f0f0f;
@@ -192,31 +199,30 @@
     --industry-text-disabled: #999999;
     
     /* Industry Status Colors - Light Mode */
-    --industry-status-new: #3b82f6;         /* Blue for new items */
-    --industry-status-progress: #c69c6d;    /* Brand gold for in-progress */
+    --industry-status-new: #2563eb;         /* Blue for new items */
+    --industry-status-progress: #2563eb;    /* Blue for in-progress */
     --industry-status-review: #8b5cf6;      /* Purple for review */
-    --industry-status-approved: #22c55e;    /* Green for approved */
+    --industry-status-approved: #0d9488;    /* Teal for approved */
     --industry-status-blocked: #ef4444;     /* Red for blocked */
     
     /* ═══════════════════════════════════════════════════════════════
-       CATALYST PROCESS STEP STATUS COLORS — Brand-Aligned
-       Only using: Olive, Bronze, Gold, Champagne + neutral grays
+       CATALYST PROCESS STEP STATUS COLORS — Blue/Teal Aligned
        ═══════════════════════════════════════════════════════════════ */
-    --process-new-demand: #5c7c5c;          /* Olive - New items */
-    --process-in-review: #c69c6d;           /* Gold - Under review */
-    --process-ea-review: #8b7355;           /* Bronze - EA review */
-    --process-analyse: #c69c6d;             /* Gold - Analysis */
-    --process-approved: #4a6a4a;            /* Olive Dark - Approved */
-    --process-ready-to-implement: #5c7c5c;  /* Olive - Ready */
-    --process-implement: #3d563d;           /* Olive Darker - In progress */
-    --process-closed: #6b8b6b;              /* Olive Light - Completed */
+    --process-new-demand: #2563eb;          /* Blue - New items */
+    --process-in-review: #3b82f6;           /* Blue-500 - Under review */
+    --process-ea-review: #6366f1;           /* Indigo - EA review */
+    --process-analyse: #3b82f6;             /* Blue - Analysis */
+    --process-approved: #0d9488;            /* Teal - Approved */
+    --process-ready-to-implement: #0f766e;  /* Teal Dark - Ready */
+    --process-implement: #1d4ed8;           /* Blue Dark - In progress */
+    --process-closed: #0d9488;              /* Teal - Completed */
     --process-rejected: #737373;            /* Gray-500 - Rejected */
-    --process-on-hold: #d4b896;             /* Champagne - On hold */
+    --process-on-hold: #f59e0b;             /* Amber - On hold */
     
-    /* Industry Priority Colors - Brand Aligned */
-    --industry-priority-high: #5c7c5c;      /* Olive */
-    --industry-priority-medium: #c69c6d;    /* Gold */
-    --industry-priority-low: #d4b896;       /* Champagne */
+    /* Industry Priority Colors */
+    --industry-priority-high: #1d4ed8;      /* Blue Dark */
+    --industry-priority-medium: #2563eb;    /* Blue */
+    --industry-priority-low: #60a5fa;       /* Blue Light */
     
     /* ═══════════════════════════════════════════════════════════════
        DIALOG TOKENS - Light Mode
@@ -233,54 +239,54 @@
     --dialog-input-bg: #ffffff;
     --dialog-input-border: #d9d9d9;
     --dialog-label-color: #525252;
-    --dialog-label-required: #c69c6d;
+    --dialog-label-required: #2563eb;
   }
   
   [data-theme="dark"],
   .dark {
     /* ═══════════════════════════════════════════════════════════════
-       DARK MODE — Golden Hour Dark palette with proper contrast
+       DARK MODE — Blue/Teal palette with proper contrast
        Not pure black - softer #1a1a1a base
        ═══════════════════════════════════════════════════════════════ */
-    --background: 0 0% 10%;             /* #1a1a1a - softer than pure black */
-    --foreground: 0 0% 96%;             /* #f5f5f5 */
+    --background: 0 0% 10%;              /* #1a1a1a - softer than pure black */
+    --foreground: 0 0% 96%;              /* #f5f5f5 */
     
-    --card: 0 0% 15%;                   /* #262626 */
+    --card: 0 0% 15%;                    /* #262626 */
     --card-foreground: 0 0% 96%;
     
-    --popover: 0 0% 18%;                /* #2d2d2d elevated */
+    --popover: 0 0% 18%;                 /* #2d2d2d elevated */
     --popover-foreground: 0 0% 96%;
     
-    --primary: 32 40% 60%;              /* #c69c6d gold - brand primary */
-    --primary-foreground: 0 0% 100%;    /* white text on gold */
+    --primary: 217 91% 60%;              /* #3b82f6 blue - brand primary */
+    --primary-foreground: 0 0% 100%;     /* white text on blue */
     
-    --secondary: 0 0% 15%;              /* #262626 */
+    --secondary: 0 0% 15%;               /* #262626 */
     --secondary-foreground: 0 0% 96%;
     
-    --muted: 0 0% 18%;                  /* #2d2d2d */
-    --muted-foreground: 0 0% 70%;       /* #b3b3b3 - increased for better dark mode contrast */
+    --muted: 0 0% 18%;                   /* #2d2d2d */
+    --muted-foreground: 0 0% 70%;        /* #b3b3b3 - increased for better dark mode contrast */
     
-    --accent: 32 40% 60%;               /* gold accent */
+    --accent: 217 91% 60%;               /* blue accent */
     --accent-foreground: 0 0% 100%;
     
     --destructive: 0 62% 60%;
     --destructive-foreground: 0 0% 98%;
     
-    --border: 0 0% 25%;                 /* #404040 */
-    --input: 0 0% 18%;                  /* #2d2d2d */
-    --ring: 32 40% 60%;                 /* gold focus ring */
+    --border: 0 0% 25%;                  /* #404040 */
+    --input: 0 0% 18%;                   /* #2d2d2d */
+    --ring: 217 91% 60%;                 /* blue focus ring */
     
     /* Sidebar dark */
-    --sidebar-background: 0 0% 12%;     /* #1f1f1f slightly elevated */
+    --sidebar-background: 0 0% 12%;      /* #1f1f1f slightly elevated */
     --sidebar-foreground: 0 0% 90%;
-    --sidebar-primary: 32 40% 60%;      /* gold */
+    --sidebar-primary: 217 91% 60%;      /* blue */
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 32 40% 60%;
+    --sidebar-accent: 217 91% 60%;
     --sidebar-accent-foreground: 0 0% 100%;
-    --sidebar-border: 0 0% 20%;         /* #333333 */
-    --sidebar-ring: 32 40% 60%;
+    --sidebar-border: 0 0% 20%;          /* #333333 */
+    --sidebar-ring: 217 91% 60%;
     
-    /* Custom tokens dark - Golden Hour */
+    /* Custom tokens dark - Blue/Teal */
     --text-primary: #f5f5f5;
     --text-secondary: #a3a3a3;
     --text-tertiary: #737373;
@@ -288,8 +294,8 @@
     --bg-cream: #1a1a1a;
     --bg-card: #262626;
     --bg-sidebar: #1f1f1f;
-    --accent-gold: #c69c6d;
-    --accent-gold-hover: #b8894d;
+    --accent-blue: #3b82f6;
+    --accent-blue-hover: #2563eb;
     
     /* Legacy variable mappings for dark mode */
     --bg: #1a1a1a;
@@ -298,39 +304,39 @@
     --surface-2: #262626;
     --surface-3: #2d2d2d;
     --text-1: #f5f5f5;
-    --text-2: #d4d4d4;            /* Brightened from #a3a3a3 for better contrast */
-    --text-3: #b3b3b3;            /* Increased from #a3a3a3 for table headers (70% lightness) */
-    --text-4: #8a8a8a;            /* Increased from #737373 for better visibility */
+    --text-2: #d4d4d4;
+    --text-3: #b3b3b3;
+    --text-4: #8a8a8a;
     --text-secondary-strong: 0 0% 75%;
-    --icon-default: #b3b3b3;      /* Increased for better icon visibility */
-    --icon-muted: #8a8a8a;        /* Increased from #737373 */
-    --divider: #2a2a2a;           /* Visible row dividers */
-    --border-color: #2c2c2c;      /* Card borders */
+    --icon-default: #b3b3b3;
+    --icon-muted: #8a8a8a;
+    --divider: #2a2a2a;
+    --border-color: #2c2c2c;
     --nav-bg: #1f1f1f;
     --nav-hover-bg: rgba(255, 255, 255, 0.04);
-    --nav-active-bg: rgba(92, 124, 92, 0.15);
-    --brand-active: #5c7c5c;
-    --brand-gold: #c69c6d;
-    --brand-primary: #5c7c5c;
-    --brand-primary-hover: #6b8b6b;
+    --nav-active-bg: rgba(59, 130, 246, 0.15);
+    --brand-active: #3b82f6;
+    --brand-blue: #3b82f6;
+    --brand-primary: #3b82f6;
+    --brand-primary-hover: #60a5fa;
     --card-bg: #141414;
     --card-border: #2c2c2c;
     --card-shadow: 0 1px 3px rgba(0,0,0,0.4);
     --table-row-bg: #141414;
     --table-row-hover: #1c1c1c;
-    --table-header-bg: rgba(92, 124, 92, 0.1);  /* Olive-tinted header */
-    --table-section-bg: #1a1a1a;  /* Section headers (TODAY/THIS WEEK) */
+    --table-header-bg: rgba(59, 130, 246, 0.1);
+    --table-section-bg: #1a1a1a;
     --row-hover: #1c1c1c;
-    --selection-row-bg: rgba(198, 156, 109, 0.15);
-    --selection-bar-accent: #c69c6d;
-    --focus-ring: #d4a855;
+    --selection-row-bg: rgba(59, 130, 246, 0.12);
+    --selection-bar-accent: #3b82f6;
+    --focus-ring: #3b82f6;
     
     /* Status/Semantic colors - Dark Mode */
-    --status-success: #22c55e;
-    --status-success-light: #4ade80;
-    --status-success-bg: rgba(34, 197, 94, 0.15);
-    --status-success-bg-hover: rgba(34, 197, 94, 0.2);
-    --status-success-border: rgba(34, 197, 94, 0.4);
+    --status-success: #14b8a6;
+    --status-success-light: #2dd4bf;
+    --status-success-bg: rgba(20, 184, 166, 0.15);
+    --status-success-bg-hover: rgba(20, 184, 166, 0.2);
+    --status-success-border: rgba(20, 184, 166, 0.4);
     
     --status-warning: #f59e0b;
     --status-warning-bg: rgba(245, 158, 11, 0.15);
@@ -345,12 +351,13 @@
     --status-muted-border: rgba(107, 114, 128, 0.4);
     
     /* Secondary brand colors */
-    --secondary-green: 120 26% 42%;
+    --secondary-blue: 217 91% 60%;
+    --secondary-teal: 173 58% 50%;
+    --secondary-olive: 120 26% 42%;
     --secondary-bronze: 30 24% 44%;
     --secondary-champagne: 34 40% 71%;
-    --secondary-olive: 120 26% 42%;     /* Olive for buttons/toggles in dark mode */
-    --secondary-green-bg: rgba(92, 124, 92, 0.2);
-    --secondary-bronze-bg: rgba(139, 115, 85, 0.2);
+    --secondary-blue-bg: rgba(59, 130, 246, 0.2);
+    --secondary-teal-bg: rgba(20, 184, 166, 0.2);
     
     /* Strategy Room tokens - borders */
     --border-default: #404040;
@@ -360,7 +367,7 @@
     --surface-bg: #1a1a1a;
     --surface-subtle: #1f1f1f;
     --surface-hover: #333333;
-    --surface-active: rgba(198, 156, 109, 0.15);
+    --surface-active: rgba(59, 130, 246, 0.15);
     --surface-card: #262626;
     --surface-muted: #2d2d2d;
     
@@ -368,46 +375,46 @@
     --progress-bg: #404040;
     
     /* Strategy Room tokens - brand backgrounds */
-    --brand-gold-bg: rgba(198, 156, 109, 0.2);
-    --brand-olive-bg: rgba(92, 124, 92, 0.15);
+    --brand-blue-bg: rgba(59, 130, 246, 0.2);
+    --brand-teal-bg: rgba(20, 184, 166, 0.15);
     
     /* Status danger */
-    --status-danger: #ef4444;
-    --status-danger-bg: rgba(239, 68, 68, 0.15);
-    --status-danger-border: rgba(239, 68, 68, 0.4);
+    --status-danger: #f87171;
+    --status-danger-bg: rgba(248, 113, 113, 0.15);
+    --status-danger-border: rgba(248, 113, 113, 0.4);
     
-    /* Gold link colors - Dark mode (champagne for visibility) */
-    --gold-link: 34 40% 71%;             /* #d4b896 champagne */
-    --gold-link-hover: 34 50% 78%;       /* brighter */
+    /* Link colors - Dark mode (brighter for visibility) */
+    --link-color: 217 91% 70%;           /* #60a5fa blue-400 */
+    --link-color-hover: 217 91% 78%;     /* brighter */
     
     /* ═══════════════════════════════════════════════════════════════
-       Industry Backlog Table tokens - Dark Mode (9.5 Grade Compliance)
+       Industry Backlog Table tokens - Dark Mode
        ═══════════════════════════════════════════════════════════════ */
-    --industry-bg-page: #0a0a0a;           /* Gray-900 page background */
-    --industry-bg-card: #171717;           /* Gray-800 table container */
-    --industry-bg-subtle: #0f0f0f;         /* Gray-900 header background */
-    --industry-bg-hover: rgba(64, 64, 64, 0.5);  /* gray-700/50 hover */
-    --industry-border-default: #404040;    /* Gray-700 visible borders */
-    --industry-border-subtle: #404040;     /* Gray-700 row dividers */
-    --industry-text-primary: #fafafa;      /* Gray-100 primary text */
-    --industry-text-secondary: #d4d4d4;    /* Gray-300 secondary text */
-    --industry-text-muted: #a3a3a3;        /* Gray-400 muted (never 500) */
-    --industry-text-disabled: #737373;     /* Gray-500 for disabled only */
+    --industry-bg-page: #0a0a0a;
+    --industry-bg-card: #171717;
+    --industry-bg-subtle: #0f0f0f;
+    --industry-bg-hover: rgba(64, 64, 64, 0.5);
+    --industry-border-default: #404040;
+    --industry-border-subtle: #404040;
+    --industry-text-primary: #fafafa;
+    --industry-text-secondary: #d4d4d4;
+    --industry-text-muted: #a3a3a3;
+    --industry-text-disabled: #737373;
     
     /* Industry Status Colors - Dark Mode (brighter for contrast) */
     --industry-status-new: #60a5fa;        /* Blue-400 */
-    --industry-status-progress: #d4a855;   /* Brighter gold */
+    --industry-status-progress: #3b82f6;   /* Blue-500 */
     --industry-status-review: #a78bfa;     /* Purple-400 */
-    --industry-status-approved: #4ade80;   /* Green-400 */
+    --industry-status-approved: #14b8a6;   /* Teal-400 */
     --industry-status-blocked: #f87171;    /* Red-400 */
     
     /* Industry Priority Colors - Dark Mode (brighter) */
-    --industry-priority-high: #7a9a7a;     /* Brighter olive */
-    --industry-priority-medium: #d4a855;   /* Brighter gold */
-    --industry-priority-low: #e5c9a8;      /* Brighter champagne */
+    --industry-priority-high: #3b82f6;     /* Blue-500 */
+    --industry-priority-medium: #60a5fa;   /* Blue-400 */
+    --industry-priority-low: #93c5fd;      /* Blue-300 */
     
     /* ═══════════════════════════════════════════════════════════════
-       DIALOG TOKENS - Dark Mode (Catalyst Enterprise Grade)
+       DIALOG TOKENS - Dark Mode
        ═══════════════════════════════════════════════════════════════ */
     --dialog-bg: #1a1a1a;
     --dialog-border: #333333;
@@ -421,7 +428,7 @@
     --dialog-input-bg: #2a2a2a;
     --dialog-input-border: #404040;
     --dialog-label-color: #a3a3a3;
-    --dialog-label-required: #c69c6d;
+    --dialog-label-required: #3b82f6;
   }
   
   * {
@@ -444,7 +451,7 @@
    ════════════════════════════════════════════════════════════════════════════ */
 
 @layer components {
-  /* Active sidebar items should be gold - ONLY sidebar elements */
+  /* Active sidebar items should be blue - ONLY sidebar elements */
   [data-sidebar] [data-active="true"],
   [data-sidebar] .active,
   [data-sidebar="menu-button"][data-state="active"],
@@ -631,7 +638,7 @@
 
 /* Background for main page */
 .bg-background {
-  background-color: #faf7f1 !important;
+  background-color: #fafafa !important;
 }
 
 .dark .bg-background,
@@ -650,7 +657,7 @@
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   NEUTRAL SCROLLBARS — No Gold
+   NEUTRAL SCROLLBARS
    ═══════════════════════════════════════════════════════════════ */
 
 ::-webkit-scrollbar {
@@ -699,7 +706,7 @@
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   CATALYST 9.5 EXECUTIVE SHADOW SYSTEM
+   CATALYST V5 EXECUTIVE SHADOW SYSTEM
    Premium shadows with proper light/dark mode variants
    ═══════════════════════════════════════════════════════════════ */
 
@@ -715,16 +722,16 @@
 .dark .shadow-catalyst-md { box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.3); }
 .dark .shadow-catalyst-lg { box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.3); }
 
-/* Gold focus glow */
-.glow-gold { box-shadow: 0 0 0 3px rgba(198, 156, 109, 0.12); }
-.dark .glow-gold { box-shadow: 0 0 0 3px rgba(212, 168, 85, 0.15); }
+/* Blue focus glow */
+.glow-blue { box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12); }
+.dark .glow-blue { box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15); }
 
 /* Inner shadow for inputs */
 .shadow-inner-subtle { box-shadow: inset 0 1px 2px rgba(26, 26, 26, 0.04); }
 .dark .shadow-inner-subtle { box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.2); }
 
 /* ═══════════════════════════════════════════════════════════════
-   CATALYST 9.5 MICRO-INTERACTIONS
+   CATALYST V5 MICRO-INTERACTIONS
    Premium animations and hover effects
    ═══════════════════════════════════════════════════════════════ */
 
@@ -770,23 +777,23 @@
   transition: box-shadow 0.2s ease;
 }
 .avatar-ring:hover {
-  box-shadow: 0 0 0 2px #faf7f1, 0 0 0 4px #c69c6d;
+  box-shadow: 0 0 0 2px #fafafa, 0 0 0 4px #2563eb;
 }
 .dark .avatar-ring:hover {
-  box-shadow: 0 0 0 2px #141414, 0 0 0 4px #d4a855;
+  box-shadow: 0 0 0 2px #141414, 0 0 0 4px #3b82f6;
 }
 
 /* Focus ring utility */
 .focus-ring:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px rgba(198, 156, 109, 0.4);
+  box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px rgba(37, 99, 235, 0.4);
 }
 .dark .focus-ring:focus-visible {
-  box-shadow: 0 0 0 2px #1a1a1a, 0 0 0 4px rgba(212, 168, 85, 0.4);
+  box-shadow: 0 0 0 2px #1a1a1a, 0 0 0 4px rgba(59, 130, 246, 0.4);
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   CATALYST 9.5 SCROLLBAR
+   CATALYST V5 SCROLLBAR
    Premium styled scrollbar for drawer content
    ═══════════════════════════════════════════════════════════════ */
 
@@ -816,7 +823,7 @@
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   CATALYST 9.5 WORK MANAGER TABLE STYLES
+   CATALYST V5 WORK MANAGER TABLE STYLES
    Executive-grade polish for tables and interactions
    ═══════════════════════════════════════════════════════════════ */
 
@@ -848,8 +855,8 @@
   transition: box-shadow 0.2s ease;
 }
 .avatar-ring:hover {
-  box-shadow: 0 0 0 2px #faf7f1, 0 0 0 4px #5c7c5c;
+  box-shadow: 0 0 0 2px #fafafa, 0 0 0 4px #2563eb;
 }
 .dark .avatar-ring:hover {
-  box-shadow: 0 0 0 2px #141414, 0 0 0 4px #7a9a7a;
+  box-shadow: 0 0 0 2px #141414, 0 0 0 4px #3b82f6;
 }
