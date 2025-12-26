@@ -109,9 +109,10 @@ export function useSeedPurge() {
         }
 
         try {
-          // Use raw SQL via RPC to handle dynamic tables
-          const { data, error } = await supabase.rpc('get_table_ids', { table_name: table });
-          
+          // NOTE: Our generated Database types only include known RPC function names.
+          // These purge helpers are dynamic/admin-only, so we intentionally bypass the strict RPC name typing.
+          const { data, error } = await (supabase as any).rpc('get_table_ids', { table_name: table });
+
           if (error) {
             results.push({ table, count: 0, status: 'error', error: error.message });
             setProgress(prev => [...prev, { table, count: 0, status: 'error', error: error.message }]);
@@ -125,7 +126,10 @@ export function useSeedPurge() {
             results.push({ table, count: seededIds.length, status: 'pending' });
             setProgress(prev => [...prev, { table, count: seededIds.length, status: 'pending' }]);
           } else if (seededIds.length > 0) {
-            const { error: delError } = await supabase.rpc('delete_by_ids', { table_name: table, ids: seededIds });
+            const { error: delError } = await (supabase as any).rpc('delete_by_ids', {
+              table_name: table,
+              ids: seededIds,
+            });
             results.push({ table, count: delError ? 0 : seededIds.length, status: delError ? 'error' : 'deleted', error: delError?.message });
             setProgress(prev => [...prev, { table, count: delError ? 0 : seededIds.length, status: delError ? 'error' : 'deleted' }]);
           } else {
