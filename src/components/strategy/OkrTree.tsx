@@ -22,12 +22,13 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, Maximize2, ChevronRight, ChevronDown, X, Loader2 } from 'lucide-react';
+import { Search, Maximize2, ChevronRight, ChevronDown, X, Loader2, Layers, Target, TrendingUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useOKRTreeV2, OKRTreeV2Item } from '@/hooks/useOKRTreeV2';
 import { cn } from '@/lib/utils';
 import { TYPOGRAPHY } from './strategyRoomTypography';
 import { getLKGData, setLKGData, safeNumber, safePercentage } from '@/utils/strategyRoomCache';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface OkrTreeProps {
   selectedSnapshot: string;
@@ -61,14 +62,15 @@ function getProgressBarColor(progress: number): string {
   return 'var(--brand-primary)';
 }
 
-// Type tags - neutral grey styling per governance (type indicators should be neutral)
+// Type config with icons
 const typeStyles = {
   theme: {
     bg: 'rgb(229, 231, 235)',        // gray-200
     darkBg: 'rgb(55, 65, 81)',       // gray-700
     color: 'rgb(55, 65, 81)',        // gray-700
     darkColor: 'rgb(209, 213, 219)', // gray-300
-    label: 'THM',
+    label: 'Theme',
+    Icon: Layers,
     rowBg: 'var(--surface-subtle)',
   },
   objective: {
@@ -76,7 +78,8 @@ const typeStyles = {
     darkBg: 'rgb(55, 65, 81)',       // gray-700
     color: 'rgb(55, 65, 81)',        // gray-700
     darkColor: 'rgb(209, 213, 219)', // gray-300
-    label: 'OBJ',
+    label: 'Objective',
+    Icon: Target,
     rowBg: 'transparent',
   },
   key_result: {
@@ -84,7 +87,8 @@ const typeStyles = {
     darkBg: 'rgb(55, 65, 81)',       // gray-700
     color: 'rgb(55, 65, 81)',        // gray-700
     darkColor: 'rgb(209, 213, 219)', // gray-300
-    label: 'KR',
+    label: 'Key Result',
+    Icon: TrendingUp,
     rowBg: 'transparent',
   },
 };
@@ -246,16 +250,24 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
               <div className="w-4 flex-shrink-0" />
             )}
             
-            {/* Type chip - neutral grey styling */}
-            <span 
-              className={cn(
-                TYPOGRAPHY.typeBadge, 
-                'px-1 py-0.5 rounded flex-shrink-0',
-                'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
-              )}
-            >
-              {typeStyle.label}
-            </span>
+            {/* Type icon with tooltip */}
+            <TooltipProvider delayDuration={200}>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span 
+                    className={cn(
+                      'p-1 rounded flex-shrink-0 flex items-center justify-center',
+                      'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
+                    )}
+                  >
+                    <typeStyle.Icon size={12} />
+                  </span>
+                </TooltipTrigger>
+                <TooltipContent side="top" className="text-xs">
+                  {typeStyle.label}
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
             
             {/* Name */}
             <span 
@@ -404,21 +416,28 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
               <span>Refreshing…</span>
             </div>
           )}
-          {/* Type legend - neutral grey styling */}
-          <div className="flex items-center gap-0.5">
-            {Object.entries(typeStyles).map(([key, style]) => (
-              <span 
-                key={key}
-                className={cn(
-                  TYPOGRAPHY.typeBadge, 
-                  'px-1 py-0.5 rounded',
-                  'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
-                )}
-              >
-                {style.label}
-              </span>
-            ))}
-          </div>
+          {/* Type legend - icons with tooltips */}
+          <TooltipProvider delayDuration={200}>
+            <div className="flex items-center gap-1">
+              {Object.entries(typeStyles).map(([key, style]) => (
+                <Tooltip key={key}>
+                  <TooltipTrigger asChild>
+                    <span 
+                      className={cn(
+                        'p-1 rounded flex items-center justify-center cursor-help',
+                        'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
+                      )}
+                    >
+                      <style.Icon size={12} />
+                    </span>
+                  </TooltipTrigger>
+                  <TooltipContent side="bottom" className="text-xs">
+                    {style.label}
+                  </TooltipContent>
+                </Tooltip>
+              ))}
+            </div>
+          </TooltipProvider>
         </div>
         
         {/* Search + expand */}

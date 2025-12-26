@@ -1,5 +1,6 @@
-import { useQuery, keepPreviousData } from '@tanstack/react-query';
+import { useQuery, useQueryClient, keepPreviousData } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { useEffect } from 'react';
 
 // OKR v2 Tree Structure: Theme → Objective → Key Results
 export interface OKRTreeV2Item {
@@ -22,6 +23,30 @@ export interface OKRTreeV2Item {
 }
 
 export function useOKRTreeV2(snapshotId?: string) {
+  const queryClient = useQueryClient();
+  
+  // Real-time subscriptions for OKR data
+  useEffect(() => {
+    if (!snapshotId) return;
+    
+    const channel = supabase
+      .channel(`okr-tree-${snapshotId}`)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'strategic_themes' }, () => {
+        queryClient.invalidateQueries({ queryKey: ['okr-tree-v2', snapshotId] });
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'objectives' }, () => {
+        queryClient.invalidateQueries({ queryKey: ['okr-tree-v2', snapshotId] });
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'key_results_v2' }, () => {
+        queryClient.invalidateQueries({ queryKey: ['okr-tree-v2', snapshotId] });
+      })
+      .subscribe();
+    
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [snapshotId, queryClient]);
+  
   return useQuery({
     queryKey: ['okr-tree-v2', snapshotId],
     queryFn: async (): Promise<OKRTreeV2Item[]> => {
