@@ -292,6 +292,7 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
   const [isEditingName, setIsEditingName] = useState(false);
   const [editedName, setEditedName] = useState('');
   const [showUnsavedChangesDialog, setShowUnsavedChangesDialog] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showLinkObjectiveDialog, setShowLinkObjectiveDialog] = useState(false);
   const [showLinkEpicDialog, setShowLinkEpicDialog] = useState(false);
   const [selectedEpicId, setSelectedEpicId] = useState<string | null>(null);
@@ -853,7 +854,7 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
                       Duplicate
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem onSelect={() => deleteMutation.mutate()} className="text-destructive">
+                    <DropdownMenuItem onSelect={() => setShowDeleteDialog(true)} className="text-destructive">
                       <Trash2 size={12} className="mr-2" />
                       Delete
                     </DropdownMenuItem>
@@ -1347,6 +1348,51 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
               style={{ backgroundColor: 'var(--brand-primary)', color: 'white' }}
             >
               Save & Close
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
+              <AlertTriangle className="h-5 w-5 text-destructive" />
+              Delete Theme?
+            </AlertDialogTitle>
+            <AlertDialogDescription className="space-y-2">
+              <p>Are you sure you want to delete <strong>"{theme?.name}"</strong>? This action cannot be undone.</p>
+              {(objectives.length > 0 || epics.length > 0) && (
+                <div className="mt-3 p-3 rounded-lg bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800">
+                  <p className="text-sm font-medium text-amber-800 dark:text-amber-200 mb-1">
+                    This theme has linked items:
+                  </p>
+                  <ul className="text-sm text-amber-700 dark:text-amber-300 list-disc list-inside">
+                    {objectives.length > 0 && (
+                      <li>{objectives.length} objective{objectives.length !== 1 ? 's' : ''}</li>
+                    )}
+                    {epics.length > 0 && (
+                      <li>{epics.length} epic{epics.length !== 1 ? 's' : ''}</li>
+                    )}
+                  </ul>
+                  <p className="text-xs text-amber-600 dark:text-amber-400 mt-2">
+                    Linked items will be unlinked from this theme.
+                  </p>
+                </div>
+              )}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={() => {
+                setShowDeleteDialog(false);
+                deleteMutation.mutate();
+              }}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {deleteMutation.isPending ? 'Deleting...' : 'Delete Theme'}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
