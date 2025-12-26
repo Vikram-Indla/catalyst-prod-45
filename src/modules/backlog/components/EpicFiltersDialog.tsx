@@ -1,6 +1,6 @@
 /**
  * =====================================================
- * BacklogFiltersDialog - Epic Backlog Filters
+ * EpicFiltersDialog - Epic Backlog Filters
  * =====================================================
  * Catalyst Epics vNext Phase II
  * 
@@ -29,19 +29,19 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useActiveEpicStatuses } from '@/hooks/useEpicStatuses';
 
-interface BacklogFiltersDialogProps {
+interface EpicFiltersDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   filters: Record<string, unknown>;
   onFiltersChange: (filters: Record<string, unknown>) => void;
 }
 
-export function BacklogFiltersDialog({
+export function EpicFiltersDialog({
   open,
   onOpenChange,
   filters,
   onFiltersChange,
-}: BacklogFiltersDialogProps) {
+}: EpicFiltersDialogProps) {
   const [localFilters, setLocalFilters] = useState(filters);
 
   useEffect(() => {

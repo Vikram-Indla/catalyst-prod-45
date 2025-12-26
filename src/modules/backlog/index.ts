@@ -20,7 +20,7 @@ export { BacklogKanbanView } from './components/BacklogKanbanView';
 export { BacklogSection } from './components/BacklogSection';
 export { UnassignedBacklogPanel } from './components/UnassignedBacklogPanel';
 export { EpicDetailsPanel } from './components/EpicDetailsPanel';
-export { BacklogFiltersDialog } from './components/BacklogFiltersDialog';
+export { EpicFiltersDialog } from './components/EpicFiltersDialog';
 export { BacklogColumnsDialog } from './components/BacklogColumnsDialog';
 export { PrioritizationDialog } from './components/PrioritizationDialog';
 export { BacklogContextMenu } from './components/BacklogContextMenu';
