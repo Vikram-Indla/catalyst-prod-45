@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
@@ -13,8 +14,33 @@ export interface EpicStatus {
   updated_at: string;
 }
 
-// Fetch all epic statuses (including inactive for admin)
+// Fetch all epic statuses (including inactive for admin) with real-time sync
 export function useEpicStatuses() {
+  const queryClient = useQueryClient();
+
+  // Subscribe to real-time changes
+  useEffect(() => {
+    const channel = supabase
+      .channel('epic-statuses-realtime')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'epic_statuses',
+        },
+        () => {
+          // Invalidate cache on any change
+          queryClient.invalidateQueries({ queryKey: ['epic-statuses'] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [queryClient]);
+
   return useQuery({
     queryKey: ['epic-statuses'],
     queryFn: async () => {
