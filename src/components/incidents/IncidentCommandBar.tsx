@@ -110,9 +110,11 @@ export function IncidentCommandBar({ onCreateClick, additionalActions }: Inciden
         </nav>
 
         {/* Right: Actions */}
-        <div className="flex items-center gap-2 sm:gap-3 flex-wrap sm:flex-nowrap">
+        <div className="w-full sm:w-auto flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
           {/* Secondary actions - rendered with lower emphasis */}
-          {additionalActions}
+          <div className="w-full sm:w-auto min-w-0 flex items-center gap-2 sm:gap-3 flex-wrap">
+            {additionalActions}
+          </div>
           
           {/* Primary CTA: Create Incident */}
           <Button 
@@ -120,6 +122,7 @@ export function IncidentCommandBar({ onCreateClick, additionalActions }: Inciden
             onClick={onCreateClick}
             className={cn(
               "h-9 px-4 text-sm font-semibold",
+              "w-full sm:w-auto",
               "bg-[var(--brand-primary)] hover:bg-[var(--brand-primary-hover)]",
               "text-white border-0"
             )}
