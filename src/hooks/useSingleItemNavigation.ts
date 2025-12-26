@@ -42,7 +42,13 @@ export function useSingleItemNavigation() {
   }, [businessLines, productLoading]);
 
   // Program: Check for single accessible program (excluding Default)
+  // Admins always see dropdown for Create/Manage actions
   const programNav = useMemo((): SingleItemNavResult => {
+    // Admins always see dropdown to access Create Program and Manage Programs
+    if (isAdmin) {
+      return { hasSingleItem: false, directPath: null, isLoading: programsLoading };
+    }
+    
     const accessiblePrograms = programs.filter(p => p.canAccess);
     
     if (accessiblePrograms.length === 1) {
@@ -54,7 +60,7 @@ export function useSingleItemNavigation() {
     }
     
     return { hasSingleItem: false, directPath: null, isLoading: programsLoading };
-  }, [programs, programsLoading]);
+  }, [programs, programsLoading, isAdmin]);
 
   // Project: Check for single accessible project within current program context
   const projectNav = useMemo((): SingleItemNavResult => {
