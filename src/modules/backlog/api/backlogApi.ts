@@ -560,10 +560,13 @@ function getFieldsForType(type: any): any[] {
 
 function getAvailableViewsForType(type: any): any[] {
   if (type === 'story') {
-    return ['list', 'state', 'sprint'];
+    return ['list', 'table', 'state', 'sprint'];
   }
   if (type === 'feature') {
-    return ['list', 'state', 'processFlow', 'column', 'teamFeatures'];
+    return ['list', 'table', 'state', 'processFlow', 'column', 'teamFeatures'];
   }
-  return ['list', 'state', 'processFlow', 'column'];
+  if (type === 'epic') {
+    return ['list', 'table', 'state', 'processFlow', 'column'];
+  }
+  return ['list', 'table', 'state', 'processFlow', 'column'];
 }

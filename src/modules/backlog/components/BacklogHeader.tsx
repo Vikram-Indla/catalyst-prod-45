@@ -5,7 +5,7 @@
 import { useBacklogState } from '../hooks/useBacklogState';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Filter, Download, Search, List, LayoutGrid, Plus, Columns } from 'lucide-react';
+import { Filter, Download, Search, List, LayoutGrid, Table, Plus, Columns } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
@@ -152,7 +152,26 @@ export function BacklogHeader({
                 }}
               >
                 <LayoutGrid className="h-4 w-4" />
-                Kanban
+                Board
+              </button>
+              <button
+                onClick={() => setView('table')}
+                className={cn(
+                  "flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium transition-colors",
+                  view === 'table'
+                    ? "bg-brand-primary text-white"
+                    : ""
+                )}
+                style={view !== 'table' ? { color: 'var(--text-1)', backgroundColor: 'transparent' } : undefined}
+                onMouseOver={(e) => {
+                  if (view !== 'table') e.currentTarget.style.backgroundColor = 'var(--nav-hover-bg)';
+                }}
+                onMouseOut={(e) => {
+                  if (view !== 'table') e.currentTarget.style.backgroundColor = 'transparent';
+                }}
+              >
+                <Table className="h-4 w-4" />
+                Table
               </button>
             </div>
 

@@ -7,6 +7,7 @@ export type BacklogType = 'theme' | 'epic' | 'capability' | 'feature' | 'story' 
 
 export type BacklogViewType = 
   | 'list' 
+  | 'table'
   | 'state' 
   | 'processFlow' 
   | 'column' 
