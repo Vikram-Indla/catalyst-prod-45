@@ -130,18 +130,23 @@ export default function IncidentAnalyticsPage() {
       <IncidentCommandBar
         onCreateClick={() => setCreateDialogOpen(true)}
         additionalActions={
-          <>
+          <div className="w-full flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-2">
             <TimeRangeSelector
               value={timeRange}
               onChange={handleTimeRangeChange}
               customStart={customStart}
               customEnd={customEnd}
             />
-            <Button variant="outline" size="sm" onClick={handlePrint} className="h-9 px-3 text-sm">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handlePrint}
+              className="h-9 px-3 text-sm w-full sm:w-auto justify-center"
+            >
               <Printer className="h-4 w-4 mr-2" />
               Print
             </Button>
-          </>
+          </div>
         }
       />
 
