@@ -89,12 +89,19 @@ export function EpicDialog({ open, onOpenChange, epic }: EpicDialogProps) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validate required theme
+    if (!themeId) {
+      toast.error('Strategic Theme is required for epics');
+      return;
+    }
+    
     mutation.mutate({
       name,
       description,
       status,
       health,
-      theme_id: themeId || null,
+      theme_id: themeId,
       primary_program_id: programId || null,
       estimate,
       start_date: startDate || null,
@@ -172,10 +179,10 @@ export function EpicDialog({ open, onOpenChange, epic }: EpicDialogProps) {
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="theme">Theme</Label>
-              <Select value={themeId} onValueChange={setThemeId}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select theme" />
+              <Label htmlFor="theme">Theme *</Label>
+              <Select value={themeId} onValueChange={setThemeId} required>
+                <SelectTrigger className={!themeId ? 'border-destructive/50' : ''}>
+                  <SelectValue placeholder="Select theme (required)" />
                 </SelectTrigger>
                 <SelectContent>
                   {themes?.map((theme) => (
@@ -185,6 +192,9 @@ export function EpicDialog({ open, onOpenChange, epic }: EpicDialogProps) {
                   ))}
                 </SelectContent>
               </Select>
+              {!themeId && (
+                <p className="text-xs text-destructive mt-1">Theme is required</p>
+              )}
             </div>
             <div>
               <Label htmlFor="program">Primary Program</Label>
