@@ -97,7 +97,7 @@ export function WorkManagerTeams({ tasks, teams, users, onCreateTeam }: WorkMana
         </div>
         <Button
           onClick={() => setIsNewTeamDialogOpen(true)}
-          className="bg-[#5c7c5c] hover:bg-[#4a6a4a] text-white gap-2 shadow-sm hover:shadow-md transition-all duration-200"
+          className="bg-[#2563eb] hover:bg-[#1d4ed8] text-white gap-2 shadow-sm hover:shadow-md transition-all duration-200"
         >
           <Plus className="w-4 h-4" />
           New Team

@@ -282,7 +282,7 @@ export function IndustryHeaderToolbarV2({
         {onCreateRequest && (
           <button
             onClick={onCreateRequest}
-            className="md:hidden h-9 px-3 flex items-center gap-2 rounded-lg bg-secondary-olive hover:bg-secondary-olive/85 text-white text-sm font-medium transition-colors shadow-sm"
+            className="md:hidden h-9 px-3 flex items-center gap-2 rounded-lg bg-[#2563eb] hover:bg-[#1d4ed8] text-white text-sm font-medium transition-colors shadow-sm"
           >
             <div className="w-4 h-4">
               <Icons.Plus />
@@ -442,11 +442,11 @@ export function IndustryHeaderToolbarV2({
           </DropdownMenu>
         )}
 
-        {/* Create Button - Primary CTA (Catalyst Olive Green) - Desktop only */}
+        {/* Create Button - Primary CTA (Blue) - Desktop only */}
         {onCreateRequest && (
           <button
             onClick={onCreateRequest}
-            className="hidden md:flex h-9 px-4 items-center gap-2 rounded-lg bg-secondary-olive hover:bg-secondary-olive/85 text-white text-sm font-medium transition-colors shadow-sm"
+            className="hidden md:flex h-9 px-4 items-center gap-2 rounded-lg bg-[#2563eb] hover:bg-[#1d4ed8] text-white text-sm font-medium transition-colors shadow-sm"
           >
             <div className="w-4 h-4">
               <Icons.Plus />

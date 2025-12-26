@@ -568,7 +568,7 @@ export function CreateFeatureModal({
               disabled={!isValid || createMutation.isPending}
               className={cn(
                 "px-4 py-2 text-sm font-medium",
-                "text-white bg-[#5c7c5c] hover:bg-[#4a6a4a]",
+                "text-white bg-[#2563eb] hover:bg-[#1d4ed8]",
                 "rounded-md shadow-sm",
                 "flex items-center gap-1.5",
                 "disabled:opacity-50 disabled:cursor-not-allowed"

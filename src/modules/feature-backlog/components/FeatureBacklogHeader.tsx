@@ -224,7 +224,7 @@ export function FeatureBacklogHeader({
               className={cn(
                 'h-8 px-3 flex items-center gap-2 rounded-md border text-sm font-medium transition-all',
                 activeFiltersCount > 0
-                  ? 'border-[#c69c6d] text-[#c69c6d] bg-[#c69c6d]/5 hover:bg-[#c69c6d]/10'
+                  ? 'border-[#2563eb] text-[#2563eb] bg-[#2563eb]/5 hover:bg-[#2563eb]/10'
                   : 'border-border text-muted-foreground hover:bg-muted hover:text-foreground'
               )}
               style={activeFiltersCount === 0 ? { 
@@ -236,7 +236,7 @@ export function FeatureBacklogHeader({
               <Filter className="h-4 w-4" />
               <span className="hidden sm:inline">Filters</span>
               {activeFiltersCount > 0 && (
-                <span className="min-w-5 h-5 px-1.5 rounded-full bg-[#c69c6d] text-[10px] font-semibold text-white flex items-center justify-center">
+                <span className="min-w-5 h-5 px-1.5 rounded-full bg-[#2563eb] text-[10px] font-semibold text-white flex items-center justify-center">
                   {activeFiltersCount}
                 </span>
               )}

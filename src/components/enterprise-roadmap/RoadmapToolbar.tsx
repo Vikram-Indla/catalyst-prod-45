@@ -114,7 +114,7 @@ export function RoadmapToolbar({
           onClick={onTodayClick}
           className={cn(
             "px-3 py-2 rounded-lg text-sm font-medium",
-            "bg-[#C69C6D] hover:bg-[#B8905F] text-white"
+            "bg-[#2563eb] hover:bg-[#1d4ed8] text-white"
           )}
         >
           Today

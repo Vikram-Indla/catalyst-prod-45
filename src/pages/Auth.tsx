@@ -377,8 +377,8 @@ export default function Auth() {
               letterSpacing: "-0.02em"
             }}
           >
-            <span className="text-foreground">Cata</span>
-            <span className="text-gold-500">lyst</span>
+            <span className="text-foreground dark:text-white">Cata</span>
+            <span className="text-[#c69c6d] dark:text-[#d4b896]">lyst</span>
             <sup style={{ color: 'var(--text-1)', fontWeight: 400 }} className="ml-0.5 text-[0.4em]">TM</sup>
           </h1>
         </div>

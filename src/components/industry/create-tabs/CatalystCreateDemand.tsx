@@ -49,7 +49,7 @@ function SectionCard({
     )}>
       <h3 className="
         text-[12px] font-semibold uppercase tracking-wider
-        text-secondary-olive dark:text-green-400
+        text-[#2563eb] dark:text-blue-400
         mb-5
         flex items-center gap-2
       ">
