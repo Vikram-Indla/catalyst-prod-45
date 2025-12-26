@@ -1,11 +1,10 @@
 /**
  * =====================================================
- * BacklogFiltersDialog - Enhanced filters for Epic Backlog
+ * BacklogFiltersDialog - Epic Backlog Filters
  * =====================================================
  * Catalyst Epics vNext Phase II
  * 
- * Filters: Status, Health, Technical Score range, Business Score range,
- * Progress %, Target timeframe (date/quarter)
+ * Filters: Status, Theme, Target Quarter
  */
 
 import { useState, useEffect } from 'react';
@@ -18,7 +17,6 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
 import {
   Select,
   SelectContent,
@@ -26,7 +24,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Slider } from '@/components/ui/slider';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -51,12 +48,12 @@ export function BacklogFiltersDialog({
     }
   }, [open, filters]);
 
-  // Fetch programs for filter (renamed from portfolios in vNext)
-  const { data: programs } = useQuery({
-    queryKey: ['programs-filter'],
+  // Fetch strategic themes for filter
+  const { data: themes } = useQuery({
+    queryKey: ['strategic-themes-filter'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('programs')
+        .from('strategic_themes')
         .select('id, name')
         .order('name');
 
@@ -75,17 +72,12 @@ export function BacklogFiltersDialog({
     onFiltersChange({});
   };
 
-  const states = [
-    { value: 'not_started', label: 'Not Started' },
+  const statusOptions = [
+    { value: 'proposed', label: 'Proposed' },
+    { value: 'analyzing', label: 'Analyzing' },
+    { value: 'approved', label: 'Approved' },
     { value: 'in_progress', label: 'In Progress' },
-    { value: 'accepted', label: 'Accepted' },
-  ];
-
-  const healthOptions = [
-    { value: 'green', label: 'Green' },
-    { value: 'yellow', label: 'Yellow' },
-    { value: 'red', label: 'Red' },
-    { value: 'gray', label: 'Gray' },
+    { value: 'done', label: 'Done' },
   ];
 
   // Generate quarters for next 2 years
@@ -109,161 +101,49 @@ export function BacklogFiltersDialog({
           <DialogTitle>Filter Backlog Items</DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-5 py-4 max-h-[60vh] overflow-y-auto">
-          {/* Program Filter */}
+        <div className="space-y-5 py-4">
+          {/* Status Filter */}
           <div className="space-y-2">
-            <Label>Program</Label>
+            <Label>Status</Label>
             <Select
-              value={localFilters.program_id as string || 'all'}
+              value={localFilters.status as string || 'all'}
               onValueChange={(value) =>
-                setLocalFilters({ ...localFilters, program_id: value === 'all' ? undefined : value })
+                setLocalFilters({ ...localFilters, status: value === 'all' ? undefined : value })
               }
             >
               <SelectTrigger>
-                <SelectValue placeholder="All Programs" />
+                <SelectValue placeholder="All Statuses" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Programs</SelectItem>
-                {programs?.filter((program) => program.id).map((program) => (
-                  <SelectItem key={program.id} value={program.id}>
-                    {program.name}
+                <SelectItem value="all">All Statuses</SelectItem>
+                {statusOptions.map((status) => (
+                  <SelectItem key={status.value} value={status.value}>
+                    {status.label}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
           </div>
 
-          {/* State Filter */}
+          {/* Theme Filter */}
           <div className="space-y-2">
-            <Label>State</Label>
+            <Label>Theme</Label>
             <Select
-              value={localFilters.state as string || 'all'}
+              value={localFilters.theme_id as string || 'all'}
               onValueChange={(value) =>
-                setLocalFilters({ ...localFilters, state: value === 'all' ? undefined : value })
+                setLocalFilters({ ...localFilters, theme_id: value === 'all' ? undefined : value })
               }
             >
               <SelectTrigger>
-                <SelectValue placeholder="All States" />
+                <SelectValue placeholder="All Themes" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All States</SelectItem>
-                {states.map((state) => (
-                  <SelectItem key={state.value} value={state.value}>
-                    {state.label}
+                <SelectItem value="all">All Themes</SelectItem>
+                {themes?.filter((theme) => theme.id).map((theme) => (
+                  <SelectItem key={theme.id} value={theme.id}>
+                    {theme.name}
                   </SelectItem>
                 ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Health Filter */}
-          <div className="space-y-2">
-            <Label>Health</Label>
-            <Select
-              value={localFilters.health as string || 'all'}
-              onValueChange={(value) =>
-                setLocalFilters({ ...localFilters, health: value === 'all' ? undefined : value })
-              }
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="All Health Statuses" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Health Statuses</SelectItem>
-                {healthOptions.map((health) => (
-                  <SelectItem key={health.value} value={health.value}>
-                    {health.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Technical Score Range */}
-          <div className="space-y-2">
-            <Label>Technical Score Range</Label>
-            <div className="flex items-center gap-3">
-              <Input
-                type="number"
-                placeholder="Min"
-                value={localFilters.tech_score_min as string || ''}
-                onChange={(e) =>
-                  setLocalFilters({ ...localFilters, tech_score_min: e.target.value || undefined })
-                }
-                className="w-24"
-              />
-              <span className="text-muted-foreground">to</span>
-              <Input
-                type="number"
-                placeholder="Max"
-                value={localFilters.tech_score_max as string || ''}
-                onChange={(e) =>
-                  setLocalFilters({ ...localFilters, tech_score_max: e.target.value || undefined })
-                }
-                className="w-24"
-              />
-            </div>
-          </div>
-
-          {/* Business Score Range */}
-          <div className="space-y-2">
-            <Label>Business Score Range</Label>
-            <div className="flex items-center gap-3">
-              <Input
-                type="number"
-                placeholder="Min"
-                value={localFilters.business_score_min as string || ''}
-                onChange={(e) =>
-                  setLocalFilters({ ...localFilters, business_score_min: e.target.value || undefined })
-                }
-                className="w-24"
-              />
-              <span className="text-muted-foreground">to</span>
-              <Input
-                type="number"
-                placeholder="Max"
-                value={localFilters.business_score_max as string || ''}
-                onChange={(e) =>
-                  setLocalFilters({ ...localFilters, business_score_max: e.target.value || undefined })
-                }
-                className="w-24"
-              />
-            </div>
-          </div>
-
-          {/* Progress % Filter */}
-          <div className="space-y-3">
-            <Label>Progress % (Min: {localFilters.progress_min as number || 0}%)</Label>
-            <Slider
-              value={[localFilters.progress_min as number || 0]}
-              onValueChange={([value]) =>
-                setLocalFilters({ ...localFilters, progress_min: value || undefined })
-              }
-              max={100}
-              step={5}
-              className="w-full"
-            />
-          </div>
-
-          {/* Target Timeframe */}
-          <div className="space-y-2">
-            <Label>Target Timeframe</Label>
-            <Select
-              value={localFilters.timeframe as string || 'all'}
-              onValueChange={(value) =>
-                setLocalFilters({ ...localFilters, timeframe: value === 'all' ? undefined : value })
-              }
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="All Timeframes" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Timeframes</SelectItem>
-                <SelectItem value="this_month">This Month</SelectItem>
-                <SelectItem value="next_3_months">Next 3 Months</SelectItem>
-                <SelectItem value="this_quarter">This Quarter</SelectItem>
-                <SelectItem value="next_quarter">Next Quarter</SelectItem>
-                <SelectItem value="overdue">Overdue</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -287,27 +167,6 @@ export function BacklogFiltersDialog({
                     {quarter.label}
                   </SelectItem>
                 ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Show Filter */}
-          <div className="space-y-2">
-            <Label>Show</Label>
-            <Select
-              value={localFilters.show as string || 'active'}
-              onValueChange={(value) =>
-                setLocalFilters({ ...localFilters, show: value })
-              }
-            >
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="active">Active Items</SelectItem>
-                <SelectItem value="mvp">MVP Items Only</SelectItem>
-                <SelectItem value="blocked">Blocked Items Only</SelectItem>
-                <SelectItem value="all">All Items</SelectItem>
               </SelectContent>
             </Select>
           </div>
