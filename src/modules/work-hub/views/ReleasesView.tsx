@@ -259,7 +259,7 @@ export function ReleasesView() {
 
         {/* Create version button */}
         <Button 
-          className="h-9 px-4 text-[14px] font-medium bg-[#c69c6d] hover:bg-[#b8894d] text-white gap-2"
+          className="h-9 px-4 text-[14px] font-medium bg-[#2563eb] hover:bg-[#1d4ed8] text-white gap-2"
         >
           <Plus className="h-4 w-4" />
           Create version

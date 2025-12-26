@@ -168,8 +168,8 @@ export function CatalystHeader() {
               lineHeight: 1
             }}
           >
-            <span className="text-foreground">Cata</span>
-            <span className="text-gold-500">lyst</span>
+            <span className="text-foreground dark:text-white">Cata</span>
+            <span className="text-[#c69c6d] dark:text-[#d4b896]">lyst</span>
           </span>
         </a>
         

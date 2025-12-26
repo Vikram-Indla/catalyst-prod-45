@@ -628,7 +628,7 @@ export function TaskDrawer({ isOpen, task, activeTab, onClose, onTabChange, onUp
               <Button 
                 onClick={handleSave} 
                 disabled={isSaving}
-                className="bg-[#5c7c5c] hover:bg-[#4a6a4a] text-white min-w-[120px] transition-all duration-200"
+                className="bg-[#2563eb] hover:bg-[#1d4ed8] text-white min-w-[120px] transition-all duration-200"
               >
                 {isSaving ? (
                   <RefreshCw className="w-4 h-4 animate-spin" />

@@ -597,7 +597,7 @@ export function EpicDrawer({ isOpen, onClose, epicId, onEpicChange }: EpicDrawer
                     "after:absolute after:bottom-0 after:left-2 after:right-2",
                     "after:h-[2px] after:rounded-t-sm after:transition-all",
                     "data-[state=inactive]:after:bg-transparent data-[state=inactive]:after:opacity-0",
-                    "data-[state=active]:after:bg-[#c69c6d] data-[state=active]:after:opacity-100"
+                    "data-[state=active]:after:bg-[#2563eb] data-[state=active]:after:opacity-100"
                   )}
                 >
                   {tab.label}

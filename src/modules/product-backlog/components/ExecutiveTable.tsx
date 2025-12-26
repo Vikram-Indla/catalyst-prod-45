@@ -505,7 +505,7 @@ function EmptyState({ hasFilters, onClearFilters, onCreateNew }: {
         )}
         <button
           onClick={onCreateNew}
-          className="h-9 px-4 text-sm font-medium rounded-lg transition-colors shadow-sm bg-secondary-olive hover:bg-secondary-olive/85 text-white flex items-center gap-2"
+          className="h-9 px-4 text-sm font-medium rounded-lg transition-colors shadow-sm bg-[#2563eb] hover:bg-[#1d4ed8] text-white flex items-center gap-2"
         >
           <Plus className="w-4 h-4" />
           <span className="hidden sm:inline">Create request</span>

@@ -120,7 +120,7 @@ export function RequestListPanel({
       <div className="flex-1 overflow-y-auto">
         {isLoading ? (
           <div className="flex items-center justify-center h-32">
-            <div className="animate-spin rounded-full h-6 w-6 border-b-2" style={{ borderColor: 'hsl(var(--secondary-olive))' }} />
+            <div className="animate-spin rounded-full h-6 w-6 border-b-2" style={{ borderColor: '#2563eb' }} />
           </div>
         ) : requests.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-32 text-sm" style={{ color: 'var(--text-3)' }}>
@@ -129,7 +129,7 @@ export function RequestListPanel({
               <button 
                 onClick={() => onFilterChange('all')}
                 className="mt-2 text-xs underline"
-                style={{ color: 'hsl(var(--secondary-olive))' }}
+                style={{ color: '#2563eb' }}
               >
                 Clear filter
               </button>

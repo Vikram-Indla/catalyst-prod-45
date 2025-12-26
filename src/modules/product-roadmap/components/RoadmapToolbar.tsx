@@ -304,10 +304,10 @@ export function RoadmapToolbar({
           <TooltipContent>Export roadmap</TooltipContent>
         </Tooltip>
 
-        {/* Create button - Catalyst olive green CTA */}
+        {/* Create button - Blue CTA */}
         <button
           onClick={onOpenCreateDialog}
-          className="inline-flex items-center gap-2 h-9 px-4 font-medium text-sm rounded-lg transition-colors shadow-sm bg-secondary-olive hover:bg-secondary-olive/85 text-white"
+          className="inline-flex items-center gap-2 h-9 px-4 font-medium text-sm rounded-lg transition-colors shadow-sm bg-[#2563eb] hover:bg-[#1d4ed8] text-white"
           data-create-button
         >
           <Plus className="w-4 h-4" />
