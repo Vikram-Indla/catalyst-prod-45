@@ -111,9 +111,9 @@ const getStatusStyles = (status: string) => {
       text: 'text-green-700 dark:text-green-400',
     },
     'implement': {
-      dot: 'bg-[#c69c6d]',
-      bg: 'bg-[#c69c6d]/10 dark:bg-[#c69c6d]/20',
-      text: 'text-[#8b7355] dark:text-[#d4b896]',
+      dot: 'bg-[#2563eb]',
+      bg: 'bg-[#2563eb]/10 dark:bg-[#3b82f6]/20',
+      text: 'text-[#1d4ed8] dark:text-[#60a5fa]',
     },
     'closed': {
       dot: 'bg-gray-500',
@@ -212,8 +212,8 @@ export function ProductBacklogEnterpriseTable({
         <span 
           className={cn(
             "font-mono text-sm font-medium cursor-pointer",
-            "text-[#c69c6d] dark:text-[#d4b896]",
-            "hover:text-[#b8894f] dark:hover:text-[#c49545] hover:underline"
+            "text-[#2563eb] dark:text-[#60a5fa]",
+            "hover:text-[#1d4ed8] dark:hover:text-[#93c5fd] hover:underline"
           )}
           onClick={(e) => {
             e.stopPropagation();
@@ -354,8 +354,8 @@ export function ProductBacklogEnterpriseTable({
             <div className="flex items-center gap-2 min-w-0">
               <div className={cn(
                 "flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-xs font-medium",
-                "bg-[#c69c6d]/20 text-[#8b7355]",
-                "dark:bg-[#c69c6d]/30 dark:text-[#d4b896]"
+                "bg-[#2563eb]/20 text-[#1d4ed8]",
+                "dark:bg-[#3b82f6]/30 dark:text-[#60a5fa]"
               )}>
                 {getInitials(value)}
               </div>
@@ -411,7 +411,7 @@ export function ProductBacklogEnterpriseTable({
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#c69c6d]"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#2563eb]"></div>
       </div>
     );
   }

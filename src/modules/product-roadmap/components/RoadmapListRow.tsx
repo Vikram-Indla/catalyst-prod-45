@@ -27,9 +27,9 @@ const getStatusStyle = (status: string | null, isDark: boolean): { bg: string; t
   
   const styles: Record<string, { bg: string; text: string; border: string }> = {
     new_request: {
-      bg: 'rgba(198, 156, 109, 0.15)',
-      text: '#b8894d',
-      border: 'rgba(198, 156, 109, 0.3)',
+      bg: 'rgba(37, 99, 235, 0.15)',
+      text: '#2563eb',
+      border: 'rgba(37, 99, 235, 0.3)',
     },
     new_demand: {
       bg: catalystTokens.secondary.olive.bg,
@@ -54,7 +54,7 @@ const getStatusStyle = (status: string | null, isDark: boolean): { bg: string; t
     approved: {
       bg: catalystTokens.status.success.bg,
       text: catalystTokens.status.success.text,
-      border: 'rgba(34, 197, 94, 0.2)',
+      border: 'rgba(13, 148, 136, 0.2)',
     },
     rejected: {
       bg: catalystTokens.status.danger.bg,
@@ -69,7 +69,7 @@ const getStatusStyle = (status: string | null, isDark: boolean): { bg: string; t
     completed: {
       bg: catalystTokens.status.success.bg,
       text: catalystTokens.status.success.text,
-      border: 'rgba(34, 197, 94, 0.2)',
+      border: 'rgba(13, 148, 136, 0.2)',
     },
     cancelled: {
       bg: catalystTokens.secondary.grey.bg,
