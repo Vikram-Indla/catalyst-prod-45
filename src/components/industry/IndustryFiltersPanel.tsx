@@ -1,13 +1,11 @@
-import { useState } from 'react';
-import { X, Filter, Calendar } from 'lucide-react';
+import { X, Filter, Calendar, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { PROCESS_STEPS } from '@/types/business-request';
+import { useProcessSteps } from '@/contexts/ProcessStepsContext';
 import { cn } from '@/lib/utils';
-
 interface FilterOption {
   value: string;
   label: string;
@@ -39,6 +37,7 @@ export function IndustryFiltersPanel({
   deliveryPlatformOptions,
   quarterOptions
 }: IndustryFiltersPanelProps) {
+  const { processStepOptions, isLoading: isLoadingSteps } = useProcessSteps();
   const handleDeliveryPlatformChange = (value: string) => {
     onFiltersChange({ ...filters, deliveryPlatform: value });
   };
@@ -124,19 +123,25 @@ export function IndustryFiltersPanel({
             Process Step
           </Label>
           <div className="space-y-1.5 max-h-48 overflow-auto border border-border rounded-md p-2 bg-background">
-            {PROCESS_STEPS.map(step => (
-              <label
-                key={step.value}
-                className="flex items-center gap-2 py-1 px-1 rounded hover:bg-muted/50 cursor-pointer"
-              >
-                <Checkbox
-                  checked={filters.processSteps.includes(step.value)}
-                  onCheckedChange={() => handleProcessStepToggle(step.value)}
-                  className="h-3.5 w-3.5"
-                />
-                <span className="text-sm text-foreground">{step.label}</span>
-              </label>
-            ))}
+            {isLoadingSteps ? (
+              <div className="flex items-center justify-center py-4">
+                <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+              </div>
+            ) : (
+              processStepOptions.map(step => (
+                <label
+                  key={step.value}
+                  className="flex items-center gap-2 py-1 px-1 rounded hover:bg-muted/50 cursor-pointer"
+                >
+                  <Checkbox
+                    checked={filters.processSteps.includes(step.value)}
+                    onCheckedChange={() => handleProcessStepToggle(step.value)}
+                    className="h-3.5 w-3.5"
+                  />
+                  <span className="text-sm text-foreground">{step.label}</span>
+                </label>
+              ))
+            )}
           </div>
           {filters.processSteps.length > 0 && (
             <button

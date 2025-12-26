@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { ChevronDown, Check, X, Filter } from 'lucide-react';
+import { ChevronDown, Check, X, Filter, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useCatalystContext } from '@/contexts/CatalystContext';
-import { PROCESS_STEPS, DELIVERY_PLATFORM_OPTIONS } from '@/types/business-request';
+import { useProcessSteps } from '@/contexts/ProcessStepsContext';
+import { DELIVERY_PLATFORM_OPTIONS } from '@/types/business-request';
 
 const quarterOptions = [
   { value: 'Q1-2025', label: 'Q1 2025' },
@@ -19,6 +20,7 @@ const quarterOptions = [
 
 export function IndustryFilterBar() {
   const { industryFilters, setIndustryFilters } = useCatalystContext();
+  const { processStepOptions, isLoading: isLoadingSteps } = useProcessSteps();
   const [deliveryPlatformOpen, setDeliveryPlatformOpen] = useState(false);
   const [processStepOpen, setProcessStepOpen] = useState(false);
   const [quarterOpen, setQuarterOpen] = useState(false);
@@ -63,7 +65,7 @@ export function IndustryFilterBar() {
   const getProcessStepDisplayText = () => {
     if (processSteps.length === 0) return 'Status';
     if (processSteps.length === 1) {
-      return PROCESS_STEPS.find(s => s.value === processSteps[0])?.label || processSteps[0];
+      return processStepOptions.find(s => s.value === processSteps[0])?.label || processSteps[0];
     }
     return `${processSteps.length} statuses`;
   };
@@ -147,21 +149,27 @@ export function IndustryFilterBar() {
         </PopoverTrigger>
         <PopoverContent className="w-52 p-0 bg-popover border shadow-lg z-50" align="start">
           <div className="max-h-60 overflow-auto">
-            {PROCESS_STEPS.map(step => (
-              <div
-                key={step.value}
-                className="flex items-center gap-2 px-3 py-2 cursor-pointer hover:bg-muted/50"
-                onClick={() => handleProcessStepToggle(step.value)}
-              >
-                <div className={cn(
-                  "h-4 w-4 border rounded flex items-center justify-center",
-                  processSteps.includes(step.value) ? "bg-brand-primary border-brand-primary" : "border-border"
-                )}>
-                  {processSteps.includes(step.value) && <Check className="h-3 w-3 text-white" />}
-                </div>
-                <span className="text-sm">{step.label}</span>
+            {isLoadingSteps ? (
+              <div className="flex items-center justify-center py-4">
+                <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
               </div>
-            ))}
+            ) : (
+              processStepOptions.map(step => (
+                <div
+                  key={step.value}
+                  className="flex items-center gap-2 px-3 py-2 cursor-pointer hover:bg-muted/50"
+                  onClick={() => handleProcessStepToggle(step.value)}
+                >
+                  <div className={cn(
+                    "h-4 w-4 border rounded flex items-center justify-center",
+                    processSteps.includes(step.value) ? "bg-brand-primary border-brand-primary" : "border-border"
+                  )}>
+                    {processSteps.includes(step.value) && <Check className="h-3 w-3 text-white" />}
+                  </div>
+                  <span className="text-sm">{step.label}</span>
+                </div>
+              ))
+            )}
           </div>
           {processSteps.length > 0 && (
             <div className="border-t p-2">

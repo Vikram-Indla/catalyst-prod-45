@@ -1,22 +1,15 @@
 // Bulk Operations Configuration for Demands (Business Requests)
+// NOTE: Process steps are loaded dynamically - the config provides structure only
 import { BulkOperationConfig } from '../types';
-import { PROCESS_STEPS, DELIVERY_PLATFORM_OPTIONS } from '@/types/business-request';
+import { DELIVERY_PLATFORM_OPTIONS } from '@/types/business-request';
 
-// Quarter options for bulk edit
-const QUARTER_OPTIONS = [
-  { value: 'Q1 2024', label: 'Q1 2024' },
-  { value: 'Q2 2024', label: 'Q2 2024' },
-  { value: 'Q3 2024', label: 'Q3 2024' },
-  { value: 'Q4 2024', label: 'Q4 2024' },
-  { value: 'Q1 2025', label: 'Q1 2025' },
-  { value: 'Q2 2025', label: 'Q2 2025' },
-  { value: 'Q3 2025', label: 'Q3 2025' },
-  { value: 'Q4 2025', label: 'Q4 2025' },
-  { value: 'Q1 2026', label: 'Q1 2026' },
-  { value: 'Q2 2026', label: 'Q2 2026' },
-  { value: 'Q3 2026', label: 'Q3 2026' },
-  { value: 'Q4 2026', label: 'Q4 2026' },
-];
+// Quarter options for bulk edit - dynamically generated
+const currentYear = new Date().getFullYear();
+const QUARTER_OPTIONS = Array.from({ length: 12 }, (_, i) => {
+  const year = currentYear + Math.floor(i / 4);
+  const quarter = (i % 4) + 1;
+  return { value: `Q${quarter} ${year}`, label: `Q${quarter} ${year}` };
+});
 
 export const demandBulkConfig: BulkOperationConfig = {
   entityType: 'demand',
@@ -29,7 +22,8 @@ export const demandBulkConfig: BulkOperationConfig = {
       label: 'Process Step',
       type: 'select',
       dbColumn: 'process_step',
-      options: PROCESS_STEPS.map(s => ({ value: s.value, label: s.label })),
+      // Process step options loaded dynamically via useProcessStepOptions hook at runtime
+      options: [],
     },
     {
       id: 'delivery_platform',
@@ -71,6 +65,7 @@ export const demandBulkConfig: BulkOperationConfig = {
     label: 'Target Status',
     type: 'select',
     dbColumn: 'process_step',
-    options: PROCESS_STEPS.map(s => ({ value: s.value, label: s.label })),
+    // Process step options loaded dynamically via useProcessStepOptions hook at runtime
+    options: [],
   },
 };
