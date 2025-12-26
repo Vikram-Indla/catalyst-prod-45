@@ -54,8 +54,11 @@ import {
   Settings,
   Trash2,
   Copy,
-  Search
+  Search,
+  AlertTriangle,
+  ExternalLink
 } from 'lucide-react';
+import { getSnapshotDeleteImpact, SnapshotDeleteImpact } from '@/utils/snapshotDeleteImpact';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { catalystToast } from '@/lib/catalystToast';
@@ -88,6 +91,8 @@ export function SnapshotDrawer({ isOpen, onClose, snapshotId, onSave }: Snapshot
   const [themeSearch, setThemeSearch] = useState('');
   const [quarterSearch, setQuarterSearch] = useState('');
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deleteImpact, setDeleteImpact] = useState<SnapshotDeleteImpact | null>(null);
+  const [isCheckingDelete, setIsCheckingDelete] = useState(false);
   
   // Form state
   const [formData, setFormData] = useState<SnapshotFormData>({
@@ -315,13 +320,36 @@ export function SnapshotDrawer({ isOpen, onClose, snapshotId, onSave }: Snapshot
     },
   });
 
-  const handleDelete = () => {
-    setShowDeleteConfirm(true);
+  const handleDelete = async () => {
+    if (!snapshotId) return;
+    
+    setIsCheckingDelete(true);
+    try {
+      const impact = await getSnapshotDeleteImpact(snapshotId);
+      setDeleteImpact(impact);
+      setShowDeleteConfirm(true);
+    } catch (err) {
+      catalystToast.error('Error', 'Could not check linked items. Please try again.');
+    } finally {
+      setIsCheckingDelete(false);
+    }
   };
 
   const handleDeleteConfirm = () => {
+    // Only allow deletion if nothing is linked
+    if (deleteImpact && deleteImpact.total > 0) {
+      catalystToast.warning('Cannot Delete', 'Please unlink all items before deleting this snapshot.');
+      return;
+    }
     deleteSnapshotMutation.mutate();
     setShowDeleteConfirm(false);
+    setDeleteImpact(null);
+  };
+
+  const handleNavigateToThemes = () => {
+    setShowDeleteConfirm(false);
+    setDeleteImpact(null);
+    setActiveTab('themes');
   };
 
   // Format snapshot ID for display
@@ -839,22 +867,76 @@ export function SnapshotDrawer({ isOpen, onClose, snapshotId, onSave }: Snapshot
       </SheetContent>
 
       {/* Delete Confirmation Dialog */}
-      <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
-        <AlertDialogContent>
+      <AlertDialog open={showDeleteConfirm} onOpenChange={(open) => {
+        setShowDeleteConfirm(open);
+        if (!open) setDeleteImpact(null);
+      }}>
+        <AlertDialogContent className="max-w-md">
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete Snapshot</AlertDialogTitle>
-            <AlertDialogDescription>
-              Are you sure you want to delete "{formData.name}"? This action cannot be undone.
+            <AlertDialogTitle className="flex items-center gap-2">
+              {deleteImpact && deleteImpact.total > 0 ? (
+                <>
+                  <AlertTriangle className="h-5 w-5 text-amber-500" />
+                  Cannot Delete Snapshot
+                </>
+              ) : (
+                'Delete Snapshot'
+              )}
+            </AlertDialogTitle>
+            <AlertDialogDescription asChild>
+              <div className="space-y-3">
+                {deleteImpact && deleteImpact.total > 0 ? (
+                  <>
+                    <p className="text-sm text-muted-foreground">
+                      This snapshot has linked items that must be removed before deletion:
+                    </p>
+                    <ul className="space-y-2 mt-3">
+                      {deleteImpact.items.map((item) => (
+                        <li 
+                          key={item.key} 
+                          className="flex items-center justify-between p-2.5 rounded-lg bg-amber-500/10 border border-amber-500/20"
+                        >
+                          <span className="text-sm font-medium text-foreground">
+                            {item.count} {item.label}
+                          </span>
+                          {item.key === 'strategic_themes' && (
+                            <Button
+                              variant="link"
+                              size="sm"
+                              className="h-auto p-0 text-brand-primary hover:text-brand-primary-hover"
+                              onClick={handleNavigateToThemes}
+                            >
+                              <ExternalLink className="h-3.5 w-3.5 mr-1" />
+                              Go to Themes
+                            </Button>
+                          )}
+                        </li>
+                      ))}
+                    </ul>
+                    <p className="text-xs text-muted-foreground mt-3">
+                      Navigate to the Themes tab to unlink themes from this snapshot, then try deleting again.
+                    </p>
+                  </>
+                ) : (
+                  <p>
+                    Are you sure you want to delete "{formData.name}"? This action cannot be undone.
+                  </p>
+                )}
+              </div>
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleDeleteConfirm}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            >
-              {deleteSnapshotMutation.isPending ? 'Deleting...' : 'Delete'}
-            </AlertDialogAction>
+            <AlertDialogCancel onClick={() => setDeleteImpact(null)}>
+              {deleteImpact && deleteImpact.total > 0 ? 'Close' : 'Cancel'}
+            </AlertDialogCancel>
+            {(!deleteImpact || deleteImpact.total === 0) && (
+              <AlertDialogAction
+                onClick={handleDeleteConfirm}
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              >
+                {deleteSnapshotMutation.isPending ? 'Deleting...' : 'Delete'}
+              </AlertDialogAction>
+            )}
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

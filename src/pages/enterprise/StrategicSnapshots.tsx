@@ -1,9 +1,9 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
-import { Search, Plus, Grid3x3, List, FileText, MoreVertical, AlertTriangle } from 'lucide-react';
+import { Search, Plus, Grid3x3, List, FileText, MoreVertical, AlertTriangle, ExternalLink, Loader2 } from 'lucide-react';
 import { useStrategicSnapshots, useDeleteSnapshot, StrategicSnapshot, useSnapshotConfiguration } from '@/hooks/useStrategicSnapshots';
 import { useSnapshotStrategyLinks } from '@/hooks/useStrategicBacklog';
 import { CreateSnapshotModal } from '@/components/strategy/snapshots/CreateSnapshotModal';
@@ -17,6 +17,8 @@ import { cn } from '@/lib/utils';
 import { PageChrome } from '@/components/layout/PageChrome';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { getSnapshotDeleteImpact, SnapshotDeleteImpact } from '@/utils/snapshotDeleteImpact';
+import { catalystToast } from '@/lib/catalystToast';
 
 type SortOption = 'updated_desc' | 'updated_asc' | 'name_asc' | 'name_desc';
 type StatusFilter = 'all' | 'draft' | 'active' | 'archived';
@@ -264,6 +266,8 @@ export default function StrategicSnapshots() {
   const [sortBy, setSortBy] = useState<SortOption>('updated_desc');
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [deleteSnapshot, setDeleteSnapshot] = useState<StrategicSnapshot | null>(null);
+  const [deleteImpact, setDeleteImpact] = useState<SnapshotDeleteImpact | null>(null);
+  const [isCheckingDelete, setIsCheckingDelete] = useState(false);
   const [selectedSnapshot, setSelectedSnapshot] = useState<StrategicSnapshot | null>(null);
 
   const showArchived = statusFilter === 'all' || statusFilter === 'archived';
@@ -309,10 +313,40 @@ export default function StrategicSnapshots() {
     return result;
   }, [snapshots, searchQuery, statusFilter, sortBy]);
 
-  const handleDeleteConfirm = async () => {
-    if (deleteSnapshot) {
-      await deleteSnapshotMutation.mutateAsync(deleteSnapshot.id);
+  // Check for linked items when delete is requested
+  const handleDeleteRequest = async (snapshot: StrategicSnapshot) => {
+    setDeleteSnapshot(snapshot);
+    setIsCheckingDelete(true);
+    try {
+      const impact = await getSnapshotDeleteImpact(snapshot.id);
+      setDeleteImpact(impact);
+    } catch (err) {
+      catalystToast.error('Error', 'Could not check linked items.');
       setDeleteSnapshot(null);
+    } finally {
+      setIsCheckingDelete(false);
+    }
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!deleteSnapshot) return;
+    
+    // Block deletion if items are still linked
+    if (deleteImpact && deleteImpact.total > 0) {
+      catalystToast.warning('Cannot Delete', 'Please unlink all items before deleting.');
+      return;
+    }
+    
+    await deleteSnapshotMutation.mutateAsync(deleteSnapshot.id);
+    setDeleteSnapshot(null);
+    setDeleteImpact(null);
+  };
+
+  const handleNavigateToSnapshot = () => {
+    if (deleteSnapshot) {
+      setSelectedSnapshot(deleteSnapshot);
+      setDeleteSnapshot(null);
+      setDeleteImpact(null);
     }
   };
 
@@ -486,7 +520,7 @@ export default function StrategicSnapshots() {
                     snapshot={snapshot}
                     owner={snapshot.created_by ? ownersMap[snapshot.created_by] : null}
                     onSelect={setSelectedSnapshot}
-                    onDelete={setDeleteSnapshot}
+                    onDelete={handleDeleteRequest}
                   />
                 ))}
               </tbody>
@@ -499,7 +533,7 @@ export default function StrategicSnapshots() {
                 key={snapshot.id}
                 snapshot={snapshot}
                 onViewDetails={setSelectedSnapshot}
-                onDelete={setDeleteSnapshot}
+                onDelete={handleDeleteRequest}
               />
             ))}
           </div>
@@ -520,22 +554,85 @@ export default function StrategicSnapshots() {
       />
 
       {/* Delete Confirmation */}
-      <AlertDialog open={!!deleteSnapshot} onOpenChange={() => setDeleteSnapshot(null)}>
-        <AlertDialogContent>
+      <AlertDialog open={!!deleteSnapshot} onOpenChange={(open) => {
+        if (!open) {
+          setDeleteSnapshot(null);
+          setDeleteImpact(null);
+        }
+      }}>
+        <AlertDialogContent className="max-w-md">
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete Snapshot</AlertDialogTitle>
-            <AlertDialogDescription>
-              Are you sure you want to delete "{deleteSnapshot?.name}"? This action cannot be undone.
+            <AlertDialogTitle className="flex items-center gap-2">
+              {isCheckingDelete ? (
+                <>
+                  <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+                  Checking linked items...
+                </>
+              ) : deleteImpact && deleteImpact.total > 0 ? (
+                <>
+                  <AlertTriangle className="h-5 w-5 text-amber-500" />
+                  Cannot Delete Snapshot
+                </>
+              ) : (
+                'Delete Snapshot'
+              )}
+            </AlertDialogTitle>
+            <AlertDialogDescription asChild>
+              <div className="space-y-3">
+                {isCheckingDelete ? (
+                  <p className="text-sm text-muted-foreground">Please wait...</p>
+                ) : deleteImpact && deleteImpact.total > 0 ? (
+                  <>
+                    <p className="text-sm text-muted-foreground">
+                      This snapshot has linked items that must be removed before deletion:
+                    </p>
+                    <ul className="space-y-2 mt-3">
+                      {deleteImpact.items.map((item) => (
+                        <li 
+                          key={item.key} 
+                          className="flex items-center justify-between p-2.5 rounded-lg bg-amber-500/10 border border-amber-500/20"
+                        >
+                          <span className="text-sm font-medium text-foreground">
+                            {item.count} {item.label}
+                          </span>
+                          {item.key === 'strategic_themes' && (
+                            <Button
+                              variant="link"
+                              size="sm"
+                              className="h-auto p-0 text-brand-primary hover:text-brand-primary-hover"
+                              onClick={handleNavigateToSnapshot}
+                            >
+                              <ExternalLink className="h-3.5 w-3.5 mr-1" />
+                              Go to Themes
+                            </Button>
+                          )}
+                        </li>
+                      ))}
+                    </ul>
+                    <p className="text-xs text-muted-foreground mt-3">
+                      Open the snapshot and navigate to the Themes tab to unlink themes, then try deleting again.
+                    </p>
+                  </>
+                ) : (
+                  <p>
+                    Are you sure you want to delete "{deleteSnapshot?.name}"? This action cannot be undone.
+                  </p>
+                )}
+              </div>
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleDeleteConfirm}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            >
-              Delete
-            </AlertDialogAction>
+            <AlertDialogCancel onClick={() => { setDeleteSnapshot(null); setDeleteImpact(null); }}>
+              {deleteImpact && deleteImpact.total > 0 ? 'Close' : 'Cancel'}
+            </AlertDialogCancel>
+            {!isCheckingDelete && (!deleteImpact || deleteImpact.total === 0) && (
+              <AlertDialogAction
+                onClick={handleDeleteConfirm}
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              >
+                {deleteSnapshotMutation.isPending ? 'Deleting...' : 'Delete'}
+              </AlertDialogAction>
+            )}
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
