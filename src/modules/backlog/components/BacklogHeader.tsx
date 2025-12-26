@@ -17,6 +17,8 @@ interface BacklogHeaderProps {
   onCreateEpic?: () => void;
   searchQuery?: string;
   onSearchChange?: (query: string) => void;
+  /** Number of active filters to show on the Filters button */
+  activeFiltersCount?: number;
 }
 
 export function BacklogHeader({ 
@@ -27,6 +29,7 @@ export function BacklogHeader({
   onCreateEpic,
   searchQuery = '',
   onSearchChange,
+  activeFiltersCount = 0,
 }: BacklogHeaderProps) {
   const {
     view,
@@ -153,20 +156,29 @@ export function BacklogHeader({
               </button>
             </div>
 
-            <Button
-              variant="outline"
-              size="icon"
+            {/* Filters Button with Count Badge */}
+            <button
               onClick={onOpenFilters}
-              className="h-8 w-8"
-              style={{ 
+              className={cn(
+                'h-8 px-3 flex items-center gap-2 rounded-md border text-sm font-medium transition-all',
+                activeFiltersCount > 0
+                  ? 'border-[#c69c6d] text-[#c69c6d] bg-[#c69c6d]/5 hover:bg-[#c69c6d]/10'
+                  : 'border-border text-muted-foreground hover:bg-muted hover:text-foreground'
+              )}
+              style={activeFiltersCount === 0 ? { 
                 backgroundColor: 'var(--surface-1)', 
                 borderColor: 'var(--border-color)',
-                color: 'var(--icon-default)'
-              }}
+              } : undefined}
               title="Filters"
             >
               <Filter className="h-4 w-4" />
-            </Button>
+              <span className="hidden sm:inline">Filters</span>
+              {activeFiltersCount > 0 && (
+                <span className="min-w-5 h-5 px-1.5 rounded-full bg-[#c69c6d] text-[10px] font-semibold text-white flex items-center justify-center">
+                  {activeFiltersCount}
+                </span>
+              )}
+            </button>
 
             <TooltipProvider>
               <Tooltip>
