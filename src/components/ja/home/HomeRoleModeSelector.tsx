@@ -34,8 +34,8 @@ export function HomeRoleModeSelector({ value, onChange }: HomeRoleModeSelectorPr
             index === modes.length - 1 && "rounded-r-lg",
             index !== 0 && "border-l border-border",
             value === mode.value
-              // Active state: Olive background (#5c7c5c) - NEVER blue
-              ? "bg-[#5c7c5c] text-white shadow-sm"
+              // Active state: Blue background per design system v2.0
+              ? "bg-[#2563eb] text-white shadow-sm"
               : "text-foreground hover:bg-muted/50"
           )}
         >

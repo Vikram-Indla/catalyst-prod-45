@@ -759,12 +759,14 @@ export function HomeContent() {
           <div className="xl:sticky xl:top-20 xl:self-start">
             <div 
               className={cn(
-                "rounded-xl border-2 shadow-md",
-                "bg-[var(--surface-1)] border-[var(--border-color)]",
+                "rounded-xl border shadow-sm",
+                "bg-card border-border",
                 "p-4"
               )}
             >
-              <div className="text-[11px] font-bold uppercase tracking-wider mb-3 text-[var(--text-2)] border-b border-[var(--divider)] pb-2">
+              {/* Header with blue accent per design system v2.0 */}
+              <div className="relative text-[11px] font-bold uppercase tracking-wider mb-3 text-[#525252] dark:text-[#a3a3a3] border-b border-border pb-2">
+                <div className="absolute -left-4 top-0 bottom-0 w-1 bg-[#2563eb] rounded-r" />
                 My focus
               </div>
               
