@@ -40,70 +40,8 @@ interface WorkItem {
   description?: string;
 }
 
-const mockItems: WorkItem[] = [
-  {
-    id: '1',
-    type: 'Feature',
-    key: 'ICP-371',
-    summary: 'Alignment issue - The system display alignment issue in Competitiveness P...',
-    status: 'In Progress',
-    statusCategory: 'in_progress',
-    reporter: 'Mohammed Hassan',
-    assignee: 'Yazeed Daraz',
-    created: 'Dec 07, 2025, 3:11 PM',
-    parent: 'EPIC-45',
-    parentType: 'Epic',
-    description: 'The system is displaying alignment issues in the Competitiveness Portal. This affects the user experience and needs to be fixed urgently.',
-    children: [
-      { id: '1-1', type: 'Story', key: 'ICP-363', summary: 'Operation L2, L3 update Solutions inside the assigned solutions packages...', status: 'In Progress', statusCategory: 'in_progress', reporter: 'Mohammed Hassan', assignee: 'Abdulrahman Saad', created: 'Nov 30, 2025, 12:42 PM', parent: 'ICP-371', parentType: 'Feature' },
-      { id: '1-2', type: 'Task', key: 'ICP-362', summary: 'a testing account that has a factory before 2022', status: 'Backlog', statusCategory: 'todo', reporter: 'Mohammed Hassan', assignee: 'Faisal Javed Paracha', created: 'Nov 25, 2025, 12:44 PM', parent: 'ICP-371', parentType: 'Feature' },
-    ],
-  },
-  {
-    id: '2',
-    type: 'Defect',
-    key: 'ICP-354',
-    summary: 'Remove the disclaimer message "Bank account Information" when it\'s a n...',
-    status: 'Ready for QA',
-    statusCategory: 'in_progress',
-    reporter: 'Mohammed Hassan',
-    assignee: 'menna nasser',
-    created: 'Nov 19, 2025, 6:22 PM',
-    parent: 'FTR-128',
-    parentType: 'Feature',
-    description: 'The disclaimer message for Bank account Information should be removed when it is not applicable to the current context.',
-    children: [
-      { id: '2-1', type: 'Subtask', key: 'ICP-352', summary: 'Change the rebate start date for one license', status: 'In Production', statusCategory: 'done', reporter: 'Mohammed Hassan', assignee: 'Abdulrahman Saad', created: 'Nov 17, 2025, 6:23 PM', parent: 'ICP-354', parentType: 'Feature' },
-    ],
-  },
-  {
-    id: '3',
-    type: 'Defect',
-    key: 'ICP-350',
-    summary: 'UX UAT issues',
-    status: 'Ready for QA',
-    statusCategory: 'in_progress',
-    reporter: 'Mohammed Hassan',
-    assignee: 'Mazen',
-    created: 'Nov 17, 2025, 4:09 PM',
-    parent: 'EPIC-42',
-    parentType: 'Epic',
-  },
-  {
-    id: '4',
-    type: 'Story',
-    key: 'ICP-342',
-    summary: 'Automating the Financial Evaluation Process - أتمتة عملية التقييم المالي',
-    status: 'Backlog',
-    statusCategory: 'todo',
-    reporter: 'Mohammed Hassan Ali Mohamm...',
-    assignee: 'eid mahmoud',
-    created: 'Nov 15, 2025, 3:57 PM',
-    parent: 'FTR-99',
-    parentType: 'Feature',
-    description: 'Automate the financial evaluation process to reduce manual work and improve accuracy.',
-  },
-];
+// Empty array - data should come from database queries
+const mockItems: WorkItem[] = [];
 
 const typeColors: Record<string, string> = {
   Feature: 'bg-amber-500',

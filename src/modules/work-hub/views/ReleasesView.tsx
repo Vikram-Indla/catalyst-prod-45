@@ -37,45 +37,8 @@ interface Release {
   };
 }
 
-// Mock data
-const mockReleases: Release[] = [
-  {
-    id: 'v1',
-    name: 'Version 1.0',
-    status: 'RELEASED',
-    startDate: '2024-10-01',
-    releaseDate: '2024-11-15',
-    description: 'Initial release with core features',
-    progress: { done: 15, inProgress: 0, toDo: 0 },
-  },
-  {
-    id: 'v2',
-    name: 'Version 2.0',
-    status: 'UNRELEASED',
-    startDate: '2024-11-20',
-    releaseDate: '2024-12-20',
-    description: 'Major update with new dashboard',
-    progress: { done: 8, inProgress: 5, toDo: 7 },
-  },
-  {
-    id: 'v2.1',
-    name: 'Version 2.1',
-    status: 'UNRELEASED',
-    startDate: '2024-12-15',
-    releaseDate: '2024-12-08', // Overdue
-    description: 'Bug fixes and improvements',
-    progress: { done: 2, inProgress: 3, toDo: 10 },
-  },
-  {
-    id: 'v0.9',
-    name: 'Version 0.9 Beta',
-    status: 'ARCHIVED',
-    startDate: '2024-08-01',
-    releaseDate: '2024-09-15',
-    description: 'Beta testing release',
-    progress: { done: 10, inProgress: 0, toDo: 0 },
-  },
-];
+// Empty array - data should come from database queries
+const mockReleases: Release[] = [];
 
 // Status pill - NEUTRAL STYLING (no colors per status)
 function ReleaseStatusPill({ status }: { status: ReleaseStatus }) {

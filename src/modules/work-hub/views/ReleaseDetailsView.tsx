@@ -26,12 +26,8 @@ interface WorkItem {
   assignee: string | null;
 }
 
-const mockWorkItems: WorkItem[] = [
-  { id: '1', key: 'PROJ-10', summary: 'Implement OAuth login', type: 'Story', status: 'Done', assignee: 'John D.' },
-  { id: '2', key: 'PROJ-11', summary: 'Add user profile page', type: 'Story', status: 'In Progress', assignee: 'Sarah M.' },
-  { id: '3', key: 'PROJ-12', summary: 'Fix login redirect bug', type: 'Defect', status: 'To Do', assignee: null },
-  { id: '4', key: 'PROJ-13', summary: 'Update API documentation', type: 'Task', status: 'Done', assignee: 'Mike R.' },
-];
+// Empty array - data should come from database queries
+const mockWorkItems: WorkItem[] = [];
 
 const typeColors: Record<string, string> = {
   Story: 'bg-green-500',

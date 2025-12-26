@@ -90,16 +90,10 @@ export function IssueDetailPanel({ item, onClose, onFieldChange }: IssueDetailPa
     return colors[name.charCodeAt(0) % colors.length];
   };
 
-  // Mock attachments data
-  const attachments = item.attachments || [
-    { id: '1', name: 'image-20251207-121059.png', size: 181248, dateAdded: '2025-12-07T17:11:00.000Z' }
-  ];
-
-  // Mock reporter
-  const reporter = item.reporter || { name: 'Yazeed Daraz' };
-
-  // Mock fix versions  
-  const fixVersions = item.fixVersions || ['ICP-Sprint 2.8- 04 Dec 25'];
+  // Use item data or empty defaults
+  const attachments = item.attachments || [];
+  const reporter = item.reporter || null;
+  const fixVersions = item.fixVersions || [];
 
   return (
     <div 
