@@ -12,6 +12,7 @@ import { BacklogHeader } from './BacklogHeader';
 import { EpicListPanel, EpicListItem } from './split-panel/EpicListPanel';
 import { EpicDetailPanel, EpicDetailItem } from './split-panel/EpicDetailPanel';
 import { EpicKanbanBoard } from './EpicKanbanBoard';
+import { EpicTable } from './EpicTable';
 import { EpicDrawer } from '@/components/items/epics/EpicDrawer';
 import { EpicFiltersDialog } from './EpicFiltersDialog';
 import { BacklogColumnsDialog } from './BacklogColumnsDialog';
@@ -81,11 +82,17 @@ export function BacklogWorkspace() {
 
   // Sync view changes to user preferences
   useEffect(() => {
-    if (preferences && backlogState.view !== preferences.last_view) {
-      const validView = backlogState.view === 'column' ? 'kanban' : backlogState.view;
-      updatePreferences({ last_view: validView as 'list' | 'kanban' });
+    if (!preferences) return;
+
+    // Preferences only support last_view: 'list' | 'kanban'.
+    const prefView = backlogState.view === 'state' || backlogState.view === 'column' || backlogState.view === 'processFlow'
+      ? 'kanban'
+      : 'list';
+
+    if (prefView !== preferences.last_view) {
+      updatePreferences({ last_view: prefView });
     }
-  }, [backlogState.view, preferences]);
+  }, [backlogState.view, preferences, updatePreferences]);
 
   // REALTIME: Subscribe to epics table changes
   useEffect(() => {
@@ -347,6 +354,7 @@ export function BacklogWorkspace() {
   };
 
   const isListView = ['list', 'sprint'].includes(backlogState.view);
+  const isTableView = backlogState.view === 'table';
   const activeFiltersCount = Object.values(backlogState.filters).filter(v => v !== undefined && v !== 'all').length;
 
   return (
@@ -397,6 +405,21 @@ export function BacklogWorkspace() {
         {isLoading ? (
           <div className="flex items-center justify-center h-full">
             <div className="text-muted-foreground">Loading...</div>
+          </div>
+        ) : isTableView ? (
+          /* Table View */
+          <div className="h-full overflow-auto px-4 sm:px-6 pt-2 pb-4">
+            <EpicTable
+              items={backlogData?.items || []}
+              meta={backlogData?.meta}
+              selectedItems={selectedItems}
+              onItemClick={(id) => setDrawerEpicId(id)}
+              onItemSelect={(id, selected) => {
+                setSelectedItems(prev => 
+                  selected ? [...prev, id] : prev.filter(x => x !== id)
+                );
+              }}
+            />
           </div>
         ) : isListView ? (
           /* Split Panel Layout for List View */
