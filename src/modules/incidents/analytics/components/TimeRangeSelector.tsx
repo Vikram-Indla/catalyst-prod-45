@@ -48,7 +48,7 @@ export function TimeRangeSelector({ value, onChange, customStart, customEnd }: T
   };
 
   return (
-    <div className="w-full sm:w-auto overflow-x-auto">
+    <div className="w-full md:w-auto overflow-x-auto">
       <div className="flex items-center gap-1 w-max pr-1">
         {RANGES.map((range) => (
           range.value === 'custom' ? (

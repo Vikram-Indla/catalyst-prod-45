@@ -46,11 +46,11 @@ export function IncidentCommandBar({ onCreateClick, additionalActions }: Inciden
   };
 
   return (
-    <div className="px-4 sm:px-6 py-3 print:hidden">
+    <div className="px-4 md:px-6 py-3 print:hidden">
       {/* Command Strip Container - Executive Surface */}
       <div 
         className={cn(
-          "flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4",
+          "flex flex-col md:flex-row md:items-center md:justify-between gap-3 md:gap-4",
           "px-4 py-2.5 rounded-lg",
           "bg-[var(--surface-2)] border border-[var(--border-subtle)]",
           "border-t-[1px] border-t-[var(--brand-primary)]"
@@ -58,7 +58,7 @@ export function IncidentCommandBar({ onCreateClick, additionalActions }: Inciden
       >
         {/* Left: View Mode Control Strip */}
         <nav 
-          className="inline-flex items-center gap-0.5 w-full sm:w-auto"
+          className="inline-flex items-center gap-0.5 w-full md:w-auto"
           role="tablist"
           aria-label="Incident views"
         >
@@ -73,7 +73,7 @@ export function IncidentCommandBar({ onCreateClick, additionalActions }: Inciden
                 aria-selected={isActive}
                 aria-controls={`${mode.value}-panel`}
                 className={cn(
-                  "relative flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5",
+                  "relative flex-1 md:flex-none inline-flex items-center justify-center gap-1.5",
                   "px-3 py-2 text-sm transition-colors rounded-md",
                   isActive 
                     ? [
@@ -110,9 +110,9 @@ export function IncidentCommandBar({ onCreateClick, additionalActions }: Inciden
         </nav>
 
         {/* Right: Actions */}
-        <div className="w-full sm:w-auto flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
+        <div className="w-full md:w-auto flex flex-col gap-2 md:flex-row md:items-center md:gap-3">
           {/* Secondary actions - stack on mobile, row on desktop */}
-          <div className="w-full sm:w-auto min-w-0 flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
+          <div className="w-full md:w-auto min-w-0 flex flex-col gap-2 md:flex-row md:items-center md:gap-3">
             {additionalActions}
           </div>
           
@@ -122,7 +122,7 @@ export function IncidentCommandBar({ onCreateClick, additionalActions }: Inciden
             onClick={onCreateClick}
             className={cn(
               "h-9 px-4 text-sm font-semibold",
-              "w-full sm:w-auto",
+              "w-full md:w-auto",
               "bg-[var(--brand-primary)] hover:bg-[var(--brand-primary-hover)]",
               "text-white border-0"
             )}
