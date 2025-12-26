@@ -631,19 +631,19 @@ export function SnapshotDrawer({ isOpen, onClose, snapshotId, onSave }: Snapshot
           />
           
           {/* Date */}
-          <div className="flex items-center gap-1.5" style={{ color: '#737373' }}>
+          <div className="flex items-center gap-1.5" style={{ color: '#a3a3a3' }}>
             <CalendarIcon className="h-4 w-4" />
             <span>{formData.end_date ? format(new Date(formData.end_date), 'MM/dd/yyyy') : '—'}</span>
           </div>
           
           {/* Quarters Count */}
-          <div className="flex items-center gap-1.5" style={{ color: '#737373' }}>
+          <div className="flex items-center gap-1.5" style={{ color: '#a3a3a3' }}>
             <Layers className="h-4 w-4" />
             <span>{selectedQuarters.length} Quarters</span>
           </div>
           
           {/* Themes Count */}
-          <div className="flex items-center gap-1.5" style={{ color: '#737373' }}>
+          <div className="flex items-center gap-1.5" style={{ color: '#a3a3a3' }}>
             <Settings className="h-4 w-4" />
             <span>{selectedThemes.length} Themes</span>
           </div>
@@ -678,7 +678,7 @@ export function SnapshotDrawer({ isOpen, onClose, snapshotId, onSave }: Snapshot
                   key={tab.value}
                   onClick={() => setActiveTab(tab.value)}
                   className="relative px-4 py-3 text-sm font-medium transition-colors"
-                  style={{ color: activeTab === tab.value ? '#f5f5f5' : '#737373' }}
+                  style={{ color: activeTab === tab.value ? '#f5f5f5' : '#a3a3a3' }}
                 >
                   {tab.label}
                   {activeTab === tab.value && (
