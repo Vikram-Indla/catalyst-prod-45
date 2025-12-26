@@ -111,6 +111,7 @@
     --nav-active-bg: rgba(92, 124, 92, 0.1);
     --brand-active: #5c7c5c;
     --brand-primary: #5c7c5c;
+    --brand-primary-hover: #4a6a4a;
     --card-bg: #ffffff;
     --card-border: #f0f0f0;
     --card-shadow: var(--shadow-card);
@@ -307,10 +308,11 @@
     --border-color: #2c2c2c;      /* Card borders */
     --nav-bg: #1f1f1f;
     --nav-hover-bg: rgba(255, 255, 255, 0.04);
-    --nav-active-bg: rgba(198, 156, 109, 0.15);
-    --brand-active: #c69c6d;
+    --nav-active-bg: rgba(92, 124, 92, 0.15);
+    --brand-active: #5c7c5c;
     --brand-gold: #c69c6d;
-    --brand-primary: #c69c6d;
+    --brand-primary: #5c7c5c;
+    --brand-primary-hover: #6b8b6b;
     --card-bg: #141414;
     --card-border: #2c2c2c;
     --card-shadow: 0 1px 3px rgba(0,0,0,0.4);
