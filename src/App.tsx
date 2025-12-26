@@ -72,6 +72,7 @@ import ProgramRoadmapPage from "./pages/program/ProgramRoadmapPage";
 import RoadmapsTestPage from "./pages/program/RoadmapsTestPage";
 import ExecutionWorkbenchPage from "./pages/program/ExecutionWorkbench";
 import FeaturesWithSidebar from "./pages/program/FeaturesWithSidebar";
+import { ProgramRedirect } from "./pages/program/ProgramRedirect";
 import PIObjectives from "./pages/PIObjectives";
 import CapacityPlanning from "./pages/CapacityPlanning";
 import Forecast from "./pages/Forecast";
@@ -334,6 +335,7 @@ const App = () => (
               <Route path="/enterprise/okr-hub" element={<OKRHub />} />
               <Route path="/portfolio/:portfolioId/okr-hub" element={<OKRHub />} />
               <Route path="/program/:programId/okr-hub" element={<OKRHub />} />
+              <Route path="/program" element={<ProgramRedirect />} />
               <Route path="/program/:programId/work-tree" element={<ExecutionWorkbenchPage />} />
               <Route path="/program/:programId/room" element={<ProgramRoom />} />
               <Route path="/program/:programId/epics" element={<ProgramEpicsPage />} />

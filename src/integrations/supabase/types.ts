@@ -4438,6 +4438,42 @@ export type Database = {
           },
         ]
       }
+      feature_projects: {
+        Row: {
+          created_at: string | null
+          feature_id: string
+          id: string
+          project_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          feature_id: string
+          id?: string
+          project_id: string
+        }
+        Update: {
+          created_at?: string | null
+          feature_id?: string
+          id?: string
+          project_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "feature_projects_feature_id_fkey"
+            columns: ["feature_id"]
+            isOneToOne: false
+            referencedRelation: "features"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "feature_projects_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       feature_scheduling_history: {
         Row: {
           changed_at: string
@@ -4561,6 +4597,7 @@ export type Database = {
           planned_start_date: string | null
           priority: string | null
           program_epic_inherited: boolean | null
+          program_id: string | null
           progress_pct: number | null
           project_id: string
           rank_within_epic: number | null
@@ -4614,6 +4651,7 @@ export type Database = {
           planned_start_date?: string | null
           priority?: string | null
           program_epic_inherited?: boolean | null
+          program_id?: string | null
           progress_pct?: number | null
           project_id: string
           rank_within_epic?: number | null
@@ -4667,6 +4705,7 @@ export type Database = {
           planned_start_date?: string | null
           priority?: string | null
           program_epic_inherited?: boolean | null
+          program_id?: string | null
           progress_pct?: number | null
           project_id?: string
           rank_within_epic?: number | null
@@ -4724,6 +4763,13 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "features_program_id_fkey1"
+            columns: ["program_id"]
+            isOneToOne: false
+            referencedRelation: "programs"
             referencedColumns: ["id"]
           },
           {
