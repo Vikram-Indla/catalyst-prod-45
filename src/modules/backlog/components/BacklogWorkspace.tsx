@@ -5,7 +5,7 @@ import { BacklogHeader } from './BacklogHeader';
 import { BacklogListView } from './BacklogListView';
 import { EpicKanbanBoard } from './EpicKanbanBoard';
 import { EpicDrawer } from '@/components/items/epics/EpicDrawer';
-import { BacklogFiltersDialog } from './BacklogFiltersDialog';
+import { EpicFiltersDialog } from './EpicFiltersDialog';
 import { BacklogColumnsDialog } from './BacklogColumnsDialog';
 import { CreateEpicDialog } from '@/modules/program-epics/components/CreateEpicDialog';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -281,7 +281,7 @@ export function BacklogWorkspace() {
         />
       </div>
 
-      <BacklogFiltersDialog
+      <EpicFiltersDialog
         open={isFiltersDialogOpen}
         onOpenChange={setIsFiltersDialogOpen}
         filters={backlogState.filters}
