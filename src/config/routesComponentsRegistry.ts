@@ -301,9 +301,9 @@ export const routesComponentsRegistry: RegistryEntry[] = [
   {
     id: 'product-backlog',
     category: 'Product',
-    name: 'ProductBacklogPage',
+    name: 'CatalystDemandList',
     route: '/industry/backlog',
-    filePath: 'src/modules/product-backlog/pages/ProductBacklogPage.tsx',
+    filePath: 'src/modules/product-backlog/pages/CatalystDemandList.tsx',
     description: 'Product backlog (business requests list)',
     type: 'Page',
     tags: ['backlog', 'demand', 'business-requests']
@@ -311,9 +311,9 @@ export const routesComponentsRegistry: RegistryEntry[] = [
   {
     id: 'product-kanban',
     category: 'Product',
-    name: 'BusinessRequestsKanbanPage',
+    name: 'CatalystDemandKanban',
     route: '/industry/kanban',
-    filePath: 'src/modules/kanban/pages/BusinessRequestsKanbanPage.tsx',
+    filePath: 'src/modules/kanban/pages/CatalystDemandKanban.tsx',
     description: 'Business requests Kanban board',
     type: 'Page',
     tags: ['kanban', 'demand', 'business-requests']

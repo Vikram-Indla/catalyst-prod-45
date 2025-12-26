@@ -57,7 +57,7 @@ interface RequestItem {
   hasAttachments?: boolean;
 }
 
-export default function ProductBacklogPage() {
+export default function CatalystDemandList() {
   const queryClient = useQueryClient();
   
   // Get current user for "My Items" filter

@@ -38,7 +38,7 @@ interface BusinessRequestRow {
   ea_review_required: boolean | null;
 }
 
-export default function ProductBacklogTablePage() {
+export default function CatalystDemandTable() {
   const queryClient = useQueryClient();
   
   // Shared state from store

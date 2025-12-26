@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { X, Save } from 'lucide-react';
 import { useCreateBusinessRequest } from '@/hooks/useBusinessRequests';
 import { catalystToast } from '@/lib/catalystToast';
-import { DemandDetailsTab } from './create-tabs/DemandDetailsTab';
+import { CatalystCreateDemand } from './create-tabs/CatalystCreateDemand';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
 import { ProgressRing, KeyboardShortcuts, AutoSaveIndicator, AutoSaveStatus } from './create-form';
@@ -268,7 +268,7 @@ export function CreateBusinessRequestModal({ isOpen, onClose }: CreateBusinessRe
 
         {/* Scrollable Content */}
         <div className="flex-1 overflow-y-auto max-h-[calc(100vh-220px)]">
-          <DemandDetailsTab data={formData} onChange={handleFieldChange} />
+          <CatalystCreateDemand data={formData} onChange={handleFieldChange} />
         </div>
 
         {/* Footer with Keyboard Shortcuts */}
