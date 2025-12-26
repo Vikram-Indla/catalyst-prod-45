@@ -120,6 +120,8 @@ export function useEpicRealtime(additionalQueryKeys?: string[][]) {
       ['epics'],
       ['backlog-items'],
       ['epic-backlog'],
+      // Invalidate all Enterprise Strategic Backlog epic queries (any filters)
+      ['strategic-backlog-all-epics'],
       ...(additionalQueryKeys || []),
     ],
   });

@@ -108,7 +108,8 @@ export default function StrategicBacklog() {
     queryFn: async () => {
       let query = supabase
         .from('epics')
-        .select('*');
+        .select('*')
+        .is('deleted_at', null);
       
       if (themeIds.length > 0) {
         query = query.in('theme_id', themeIds);
