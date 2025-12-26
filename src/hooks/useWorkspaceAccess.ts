@@ -70,13 +70,14 @@ export function useWorkspaceAccess() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('programs')
-        .select('id, key, name, description')
+        .select('id, key, name, description, status')
+        .eq('status', 'active')
         .neq('id', DEFAULT_PROGRAM_ID)
         .order('name');
       if (error) throw error;
       return data || [];
     },
-    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
+    staleTime: 30 * 1000, // Cache for 30 seconds - shorter for quick refresh after creation
   });
 
   // Fetch all projects - NO dependency on memberships (calculate access after)
