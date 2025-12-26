@@ -5,6 +5,7 @@
  * Catalyst Epics vNext Phase II
  * 
  * Filters: Status, Theme, Target Quarter
+ * All values are dynamically fetched from the database
  */
 
 import { useState, useEffect } from 'react';
@@ -26,6 +27,7 @@ import {
 } from '@/components/ui/select';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { useActiveEpicStatuses } from '@/hooks/useEpicStatuses';
 
 interface BacklogFiltersDialogProps {
   open: boolean;
@@ -48,17 +50,50 @@ export function BacklogFiltersDialog({
     }
   }, [open, filters]);
 
-  // Fetch strategic themes for filter
-  const { data: themes } = useQuery({
-    queryKey: ['strategic-themes-filter'],
+  // Fetch epic statuses from admin configuration (dynamic)
+  const { data: epicStatuses = [] } = useActiveEpicStatuses();
+
+  // Fetch active strategic themes (dynamic)
+  const { data: themes = [] } = useQuery({
+    queryKey: ['strategic-themes-filter-active'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('strategic_themes')
-        .select('id, name')
+        .select('id, name, status')
+        .eq('status', 'active')
         .order('name');
 
       if (error) throw error;
       return data || [];
+    },
+  });
+
+  // Fetch distinct quarters from epics (dynamic)
+  const { data: quarters = [] } = useQuery({
+    queryKey: ['epic-quarters-filter'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('epics')
+        .select('quarters')
+        .not('quarters', 'is', null);
+
+      if (error) throw error;
+
+      // Extract unique quarters from the arrays
+      const allQuarters = new Set<string>();
+      (data || []).forEach((epic) => {
+        if (epic.quarters && Array.isArray(epic.quarters)) {
+          epic.quarters.forEach((q: string) => allQuarters.add(q));
+        }
+      });
+
+      // Sort quarters (Q1 2025, Q2 2025, etc.)
+      return Array.from(allQuarters).sort((a, b) => {
+        const [qA, yearA] = a.split(' ');
+        const [qB, yearB] = b.split(' ');
+        if (yearA !== yearB) return parseInt(yearA) - parseInt(yearB);
+        return parseInt(qA.replace('Q', '')) - parseInt(qB.replace('Q', ''));
+      });
     },
   });
 
@@ -72,28 +107,6 @@ export function BacklogFiltersDialog({
     onFiltersChange({});
   };
 
-  const statusOptions = [
-    { value: 'proposed', label: 'Proposed' },
-    { value: 'analyzing', label: 'Analyzing' },
-    { value: 'approved', label: 'Approved' },
-    { value: 'in_progress', label: 'In Progress' },
-    { value: 'done', label: 'Done' },
-  ];
-
-  // Generate quarters for next 2 years
-  const generateQuarters = () => {
-    const quarters = [];
-    const currentYear = new Date().getFullYear();
-    for (let year = currentYear; year <= currentYear + 1; year++) {
-      for (let q = 1; q <= 4; q++) {
-        quarters.push({ value: `Q${q} ${year}`, label: `Q${q} ${year}` });
-      }
-    }
-    return quarters;
-  };
-
-  const quarterOptions = generateQuarters();
-
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-lg">
@@ -102,7 +115,7 @@ export function BacklogFiltersDialog({
         </DialogHeader>
 
         <div className="space-y-5 py-4">
-          {/* Status Filter */}
+          {/* Status Filter - Dynamic from epic_statuses table */}
           <div className="space-y-2">
             <Label>Status</Label>
             <Select
@@ -116,7 +129,7 @@ export function BacklogFiltersDialog({
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Statuses</SelectItem>
-                {statusOptions.map((status) => (
+                {epicStatuses.map((status) => (
                   <SelectItem key={status.value} value={status.value}>
                     {status.label}
                   </SelectItem>
@@ -125,7 +138,7 @@ export function BacklogFiltersDialog({
             </Select>
           </div>
 
-          {/* Theme Filter */}
+          {/* Theme Filter - Dynamic from strategic_themes table */}
           <div className="space-y-2">
             <Label>Theme</Label>
             <Select
@@ -139,7 +152,7 @@ export function BacklogFiltersDialog({
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Themes</SelectItem>
-                {themes?.filter((theme) => theme.id).map((theme) => (
+                {themes.map((theme) => (
                   <SelectItem key={theme.id} value={theme.id}>
                     {theme.name}
                   </SelectItem>
@@ -148,7 +161,7 @@ export function BacklogFiltersDialog({
             </Select>
           </div>
 
-          {/* Target Quarter */}
+          {/* Target Quarter - Dynamic from epics.quarters field */}
           <div className="space-y-2">
             <Label>Target Quarter</Label>
             <Select
@@ -162,9 +175,9 @@ export function BacklogFiltersDialog({
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Quarters</SelectItem>
-                {quarterOptions.map((quarter) => (
-                  <SelectItem key={quarter.value} value={quarter.value}>
-                    {quarter.label}
+                {quarters.map((quarter) => (
+                  <SelectItem key={quarter} value={quarter}>
+                    {quarter}
                   </SelectItem>
                 ))}
               </SelectContent>
