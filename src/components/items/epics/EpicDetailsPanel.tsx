@@ -278,6 +278,9 @@ export function EpicDetailsPanel({ epic: initialEpic, open, onClose }: EpicDetai
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['epics'] });
       queryClient.invalidateQueries({ queryKey: ['backlog-items'] });
+      // Enterprise Strategic Backlog (and any filtered variants)
+      queryClient.invalidateQueries({ queryKey: ['strategic-backlog-all-epics'] });
+      queryClient.invalidateQueries({ queryKey: ['strategic-backlog-epics'] });
       toast.success(`Epic ${epic.epic_key || ''} deleted`);
       onClose();
     },
