@@ -422,14 +422,16 @@ export function SnapshotDrawer({ isOpen, onClose, snapshotId, onSave }: Snapshot
 
   // Get status config - Catalyst Design System v1.0
   const getStatusConfig = (status: string) => {
-    switch (status?.toUpperCase()) {
+    const normalizedStatus = status?.toUpperCase()?.replace(/\s+/g, '_');
+    switch (normalizedStatus) {
       case 'ACTIVE':
+      case 'ON_TRACK':
         return { 
           label: 'on track', 
           style: {
-            backgroundColor: 'rgba(92, 124, 92, 0.15)',
-            border: '1px solid rgba(92, 124, 92, 0.3)',
-            color: '#6b9b6b'
+            backgroundColor: 'rgba(92, 124, 92, 0.25)',
+            border: '1px solid rgba(92, 124, 92, 0.5)',
+            color: '#8FBC8F'
           },
           healthColor: '#5c7c5c'
         };
@@ -437,9 +439,9 @@ export function SnapshotDrawer({ isOpen, onClose, snapshotId, onSave }: Snapshot
         return { 
           label: 'at risk', 
           style: {
-            backgroundColor: 'rgba(198, 156, 109, 0.15)',
-            border: '1px solid rgba(198, 156, 109, 0.3)',
-            color: '#c69c6d'
+            backgroundColor: 'rgba(198, 156, 109, 0.25)',
+            border: '1px solid rgba(198, 156, 109, 0.5)',
+            color: '#d4a574'
           },
           healthColor: '#c69c6d'
         };
@@ -447,9 +449,9 @@ export function SnapshotDrawer({ isOpen, onClose, snapshotId, onSave }: Snapshot
         return { 
           label: 'off track', 
           style: {
-            backgroundColor: 'rgba(180, 83, 83, 0.15)',
-            border: '1px solid rgba(180, 83, 83, 0.3)',
-            color: '#b45353'
+            backgroundColor: 'rgba(180, 83, 83, 0.25)',
+            border: '1px solid rgba(180, 83, 83, 0.5)',
+            color: '#cf7070'
           },
           healthColor: '#b45353'
         };
@@ -457,9 +459,9 @@ export function SnapshotDrawer({ isOpen, onClose, snapshotId, onSave }: Snapshot
         return { 
           label: 'archived', 
           style: {
-            backgroundColor: 'rgba(115, 115, 115, 0.15)',
-            border: '1px solid rgba(115, 115, 115, 0.3)',
-            color: '#8a8a8a'
+            backgroundColor: 'rgba(115, 115, 115, 0.2)',
+            border: '1px solid rgba(115, 115, 115, 0.4)',
+            color: '#a3a3a3'
           },
           healthColor: '#737373'
         };
@@ -467,9 +469,9 @@ export function SnapshotDrawer({ isOpen, onClose, snapshotId, onSave }: Snapshot
         return { 
           label: 'draft', 
           style: {
-            backgroundColor: 'rgba(115, 115, 115, 0.15)',
-            border: '1px solid rgba(115, 115, 115, 0.3)',
-            color: '#8a8a8a'
+            backgroundColor: 'rgba(115, 115, 115, 0.2)',
+            border: '1px solid rgba(115, 115, 115, 0.4)',
+            color: '#a3a3a3'
           },
           healthColor: '#737373'
         };
