@@ -66,224 +66,33 @@ interface Quarter {
 
 // (ProgramFilters and DEFAULT_FILTERS imported from ProgramRoadmapFiltersDialog)
 
-// ===== MOCK DATA =====
-const TODAY = new Date('2025-11-15');
+// ===== REAL DATA (Mock data removed) =====
+const TODAY = new Date();
 
-const PROJECTS: Project[] = [
-  { id: 'proj-1', name: 'Investor Portal' },
-  { id: 'proj-2', name: 'Licensing System' },
-  { id: 'proj-3', name: 'Analytics Hub' },
-  { id: 'proj-4', name: 'Mobile App' }
-];
-
-const OWNERS = ['Vikram Indla', 'Sarah Chen', 'Ahmed Khalid', 'Layla Hassan', 'Omar Farooq', 'Fatima Al-Rashid', 'Mohammed Al-Saud'];
+// Empty arrays - data should come from database queries
+const PROJECTS: Project[] = [];
+const OWNERS: string[] = [];
 const PROGRAM_STATUSES = ['Draft', 'Active', 'Completed', 'On Hold'] as const;
 const HEALTH_STATUSES = ['On Track', 'At Risk', 'Blocked'] as const;
 const ACTIVE_IN_PERIOD_OPTIONS = ['This Quarter', 'Next Quarter', 'Custom Range'] as const;
 
-const PROGRAMS: ProgramItem[] = [
-  {
-    id: 1, key: 'PRG-101', title: 'Digital Identity Verification',
-    owner: 'Vikram Indla', platform: 'Seneai Platform', health: 'On Track', status: 'Active',
-    startDate: '2025-01-15', endDate: '2025-09-30', progress: 82,
-    linkedProjects: ['proj-1', 'proj-2'], hasDependencies: true, isBlocked: false, isBlocking: false,
-    milestones: [
-      { title: 'Architecture Design', date: '2025-02-28', status: 'complete' },
-      { title: 'API Integration', date: '2025-05-15', status: 'complete' },
-      { title: 'Security Audit', date: '2025-07-31', status: 'complete' },
-      { title: 'Production Release', date: '2025-09-30', status: 'complete' }
-    ],
-    linkedFeatures: [
-      { key: 'FTR-201', title: 'Biometric Authentication Module', status: 'In Progress' },
-      { key: 'FTR-202', title: 'Document Verification API', status: 'Open' },
-      { key: 'FTR-203', title: 'KYC Workflow Engine', status: 'In Progress' },
-      { key: 'FTR-204', title: 'Risk Assessment Dashboard', status: 'Open' },
-      { key: 'FTR-205', title: 'Compliance Report Generator', status: 'Done' }
-    ]
-  },
-  {
-    id: 2, key: 'PRG-102', title: 'Investor Portal Enhancement',
-    owner: 'Sarah Chen', platform: 'Core Platform', health: 'At Risk', status: 'Active',
-    startDate: '2025-01-01', endDate: '2025-12-31', progress: 48,
-    linkedProjects: ['proj-1', 'proj-4'], hasDependencies: true, isBlocked: false, isBlocking: true,
-    milestones: [
-      { title: 'UX Research', date: '2025-03-15', status: 'complete' },
-      { title: 'Phase 1 Launch', date: '2025-06-30', status: 'complete' },
-      { title: 'Phase 2 Features', date: '2025-09-30', status: 'overdue' },
-      { title: 'Full Rollout', date: '2025-12-31', status: 'pending' }
-    ],
-    linkedFeatures: [
-      { key: 'FTR-301', title: 'Portfolio Dashboard Redesign', status: 'In Progress' },
-      { key: 'FTR-302', title: 'Real-time Investment Tracking', status: 'Open' },
-      { key: 'FTR-303', title: 'Dividend Calculator Widget', status: 'Open' },
-      { key: 'FTR-304', title: 'Tax Report Generation', status: 'In Progress' },
-      { key: 'FTR-305', title: 'Mobile Push Notifications', status: 'Open' },
-      { key: 'FTR-306', title: 'Document Upload Portal', status: 'In Progress' },
-      { key: 'FTR-307', title: 'Secure Messaging System', status: 'Open' },
-      { key: 'FTR-308', title: 'Investment Performance Charts', status: 'Done' }
-    ]
-  },
-  {
-    id: 3, key: 'PRG-103', title: 'Regulatory Compliance Engine',
-    owner: 'Ahmed Khalid', platform: 'Seneai Platform', health: 'On Track', status: 'Completed',
-    startDate: '2025-01-10', endDate: '2025-07-30', progress: 100,
-    linkedProjects: ['proj-2'], hasDependencies: false, isBlocked: false, isBlocking: false,
-    milestones: [
-      { title: 'Rules Engine', date: '2025-03-01', status: 'complete' },
-      { title: 'Integration Testing', date: '2025-05-15', status: 'complete' },
-      { title: 'UAT Sign-off', date: '2025-06-30', status: 'complete' },
-      { title: 'Go Live', date: '2025-07-30', status: 'complete' }
-    ],
-    linkedFeatures: [
-      { key: 'FTR-401', title: 'Rules Configuration Panel', status: 'Done' },
-      { key: 'FTR-402', title: 'Audit Trail Module', status: 'Done' },
-      { key: 'FTR-403', title: 'Violation Alert System', status: 'Closed' }
-    ]
-  },
-  {
-    id: 4, key: 'PRG-104', title: 'Industrial Marketplace',
-    owner: 'Layla Hassan', platform: 'Innovation Platform', health: 'At Risk', status: 'Active',
-    startDate: '2025-01-01', endDate: '2025-12-31', progress: 35,
-    linkedProjects: ['proj-3'], hasDependencies: true, isBlocked: true, isBlocking: false,
-    milestones: [
-      { title: 'Vendor Onboarding', date: '2025-04-30', status: 'complete' },
-      { title: 'Catalog MVP', date: '2025-07-31', status: 'overdue' },
-      { title: 'Payment Integration', date: '2025-10-31', status: 'current' },
-      { title: 'Launch', date: '2025-12-31', status: 'pending' }
-    ],
-    linkedFeatures: [
-      { key: 'FTR-501', title: 'Vendor Registration Flow', status: 'Open' },
-      { key: 'FTR-502', title: 'Product Catalog Management', status: 'In Progress' },
-      { key: 'FTR-503', title: 'Search & Filter Engine', status: 'Open' },
-      { key: 'FTR-504', title: 'Shopping Cart Module', status: 'Open' },
-      { key: 'FTR-505', title: 'Order Management System', status: 'In Progress' },
-      { key: 'FTR-506', title: 'Payment Gateway Integration', status: 'Open' },
-      { key: 'FTR-507', title: 'Vendor Analytics Dashboard', status: 'Open' },
-      { key: 'FTR-508', title: 'Rating & Review System', status: 'Open' },
-      { key: 'FTR-509', title: 'Inventory Sync API', status: 'In Progress' },
-      { key: 'FTR-510', title: 'Bulk Import Tool', status: 'Open' },
-      { key: 'FTR-511', title: 'Notification Center', status: 'Open' },
-      { key: 'FTR-512', title: 'Customer Support Chat', status: 'Open' }
-    ]
-  },
-  {
-    id: 5, key: 'PRG-105', title: 'Smart Document Processing',
-    owner: 'Omar Farooq', platform: 'Seneai Platform', health: 'On Track', status: 'Active',
-    startDate: '2025-04-01', endDate: '2026-03-31', progress: 28,
-    linkedProjects: ['proj-1', 'proj-2', 'proj-3'], hasDependencies: false, isBlocked: false, isBlocking: false,
-    milestones: [
-      { title: 'OCR Engine', date: '2025-05-31', status: 'complete' },
-      { title: 'ML Training', date: '2025-09-30', status: 'complete' },
-      { title: 'Arabic Support', date: '2025-12-31', status: 'current' },
-      { title: 'Deployment', date: '2026-03-31', status: 'pending' }
-    ],
-    linkedFeatures: [
-      { key: 'FTR-601', title: 'OCR Processing Pipeline', status: 'In Progress' },
-      { key: 'FTR-602', title: 'Document Classification Model', status: 'Open' },
-      { key: 'FTR-603', title: 'Arabic Text Extraction', status: 'Open' },
-      { key: 'FTR-604', title: 'Template Matching System', status: 'In Progress' }
-    ]
-  },
-  {
-    id: 6, key: 'PRG-106', title: 'Workflow Automation Suite',
-    owner: 'Fatima Al-Rashid', platform: 'Core Platform', health: 'On Track', status: 'Active',
-    startDate: '2025-03-01', endDate: '2025-11-30', progress: 70,
-    linkedProjects: ['proj-2', 'proj-3'], hasDependencies: true, isBlocked: false, isBlocking: false,
-    milestones: [
-      { title: 'Process Mapping', date: '2025-04-30', status: 'complete' },
-      { title: 'Automation Engine', date: '2025-07-31', status: 'complete' },
-      { title: 'User Training', date: '2025-10-31', status: 'current' },
-      { title: 'Full Deploy', date: '2025-11-30', status: 'pending' }
-    ],
-    linkedFeatures: [
-      { key: 'FTR-701', title: 'Visual Workflow Builder', status: 'In Progress' },
-      { key: 'FTR-702', title: 'Task Assignment Engine', status: 'Open' },
-      { key: 'FTR-703', title: 'SLA Monitoring Dashboard', status: 'Open' }
-    ]
-  },
-  {
-    id: 7, key: 'PRG-107', title: 'Investment Tracking Dashboard',
-    owner: 'Mohammed Al-Saud', platform: 'Innovation Platform', health: 'On Track', status: 'Draft',
-    startDate: '2025-06-01', endDate: '2026-02-28', progress: 22,
-    linkedProjects: ['proj-1', 'proj-3'], hasDependencies: false, isBlocked: false, isBlocking: false,
-    milestones: [
-      { title: 'Requirements', date: '2025-07-15', status: 'complete' },
-      { title: 'Wireframes', date: '2025-09-30', status: 'complete' },
-      { title: 'Data Integration', date: '2025-12-31', status: 'current' },
-      { title: 'Beta Release', date: '2026-02-28', status: 'pending' }
-    ],
-    linkedFeatures: [
-      { key: 'FTR-801', title: 'Portfolio Overview Widget', status: 'In Progress' },
-      { key: 'FTR-802', title: 'Performance Comparison Tool', status: 'Open' },
-      { key: 'FTR-803', title: 'Custom Report Builder', status: 'Open' },
-      { key: 'FTR-804', title: 'Export to Excel/PDF', status: 'Open' },
-      { key: 'FTR-805', title: 'Data Refresh Scheduler', status: 'In Progress' }
-    ]
-  },
-  {
-    id: 8, key: 'PRG-108', title: 'Partner Integration Hub',
-    owner: 'Vikram Indla', platform: 'Core Platform', health: 'Blocked', status: 'On Hold',
-    startDate: '2025-02-15', endDate: '2025-10-15', progress: 55,
-    linkedProjects: ['proj-4'], hasDependencies: true, isBlocked: true, isBlocking: true,
-    milestones: [
-      { title: 'API Spec', date: '2025-03-31', status: 'complete' },
-      { title: 'Partner SDK', date: '2025-06-30', status: 'complete' },
-      { title: 'Certification', date: '2025-08-31', status: 'overdue' },
-      { title: 'Hub Launch', date: '2025-10-15', status: 'pending' }
-    ],
-    linkedFeatures: [
-      { key: 'FTR-901', title: 'Partner Registration Portal', status: 'In Progress' },
-      { key: 'FTR-902', title: 'API Key Management', status: 'Open' },
-      { key: 'FTR-903', title: 'Webhook Configuration', status: 'Open' }
-    ]
-  },
-  {
-    id: 9, key: 'PRG-109', title: 'Analytics & Reporting Platform',
-    owner: 'Sarah Chen', platform: 'Seneai Platform', health: 'On Track', status: 'Active',
-    startDate: '2025-07-01', endDate: '2026-06-30', progress: 8,
-    linkedProjects: ['proj-3'], hasDependencies: false, isBlocked: false, isBlocking: false,
-    milestones: [
-      { title: 'Data Model', date: '2025-09-30', status: 'complete' },
-      { title: 'ETL Pipeline', date: '2025-12-31', status: 'current' },
-      { title: 'Dashboard Suite', date: '2026-03-31', status: 'pending' },
-      { title: 'Self-Service BI', date: '2026-06-30', status: 'pending' }
-    ],
-    linkedFeatures: [
-      { key: 'FTR-1001', title: 'Data Warehouse Schema', status: 'In Progress' },
-      { key: 'FTR-1002', title: 'ETL Job Orchestrator', status: 'Open' },
-      { key: 'FTR-1003', title: 'Query Performance Monitor', status: 'Open' }
-    ]
-  },
-  {
-    id: 10, key: 'PRG-110', title: 'Mobile App Refresh',
-    owner: 'Ahmed Khalid', platform: 'Innovation Platform', health: 'On Track', status: 'Draft',
-    startDate: '2025-09-01', endDate: '2026-04-30', progress: 5,
-    linkedProjects: ['proj-1', 'proj-4'], hasDependencies: false, isBlocked: false, isBlocking: false,
-    milestones: [
-      { title: 'Design System', date: '2025-11-30', status: 'current' },
-      { title: 'iOS Dev', date: '2026-02-28', status: 'pending' },
-      { title: 'Android Dev', date: '2026-03-31', status: 'pending' },
-      { title: 'App Store', date: '2026-04-30', status: 'pending' }
-    ],
-    linkedFeatures: [
-      { key: 'FTR-1101', title: 'New Design System Components', status: 'In Progress' },
-      { key: 'FTR-1102', title: 'Dark Mode Support', status: 'Open' },
-      { key: 'FTR-1103', title: 'Biometric Login', status: 'Open' },
-      { key: 'FTR-1104', title: 'Offline Mode', status: 'Open' },
-      { key: 'FTR-1105', title: 'Push Notification Revamp', status: 'Open' },
-      { key: 'FTR-1106', title: 'Performance Optimization', status: 'Open' }
-    ]
-  }
-];
+// Programs will be fetched from database
+const PROGRAMS: ProgramItem[] = [];
 
-const QUARTERS: Quarter[] = [
-  { label: 'Q1 2025', start: new Date('2025-01-01'), end: new Date('2025-03-31') },
-  { label: 'Q2 2025', start: new Date('2025-04-01'), end: new Date('2025-06-30') },
-  { label: 'Q3 2025', start: new Date('2025-07-01'), end: new Date('2025-09-30') },
-  { label: 'Q4 2025', start: new Date('2025-10-01'), end: new Date('2025-12-31') },
-  { label: 'Q1 2026', start: new Date('2026-01-01'), end: new Date('2026-03-31') },
-  { label: 'Q2 2026', start: new Date('2026-04-01'), end: new Date('2026-06-30') }
-];
+// Dynamic quarters based on current date
+const generateQuarters = (): Quarter[] => {
+  const currentYear = new Date().getFullYear();
+  return [
+    { label: `Q1 ${currentYear}`, start: new Date(`${currentYear}-01-01`), end: new Date(`${currentYear}-03-31`) },
+    { label: `Q2 ${currentYear}`, start: new Date(`${currentYear}-04-01`), end: new Date(`${currentYear}-06-30`) },
+    { label: `Q3 ${currentYear}`, start: new Date(`${currentYear}-07-01`), end: new Date(`${currentYear}-09-30`) },
+    { label: `Q4 ${currentYear}`, start: new Date(`${currentYear}-10-01`), end: new Date(`${currentYear}-12-31`) },
+    { label: `Q1 ${currentYear + 1}`, start: new Date(`${currentYear + 1}-01-01`), end: new Date(`${currentYear + 1}-03-31`) },
+    { label: `Q2 ${currentYear + 1}`, start: new Date(`${currentYear + 1}-04-01`), end: new Date(`${currentYear + 1}-06-30`) }
+  ];
+};
+
+const QUARTERS: Quarter[] = generateQuarters();
 
 // ===== UTILITIES =====
 function parseDate(str: string): Date {

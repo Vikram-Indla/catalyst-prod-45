@@ -46,26 +46,8 @@ interface WorkItem {
   description?: string;
 }
 
-// Mock data matching Jira screenshot
-const mockItems: WorkItem[] = [
-  { id: '1', type: 'Feature', key: 'ICP-1', summary: 'Invoices Management', status: 'Backlog', comments: 0, assignee: null, dueDate: null, priority: 'Medium', labels: [], created: '2025-07-02', updated: '2025-07-29', hasChildren: true },
-  { id: '2', type: 'Feature', key: 'ICP-6', summary: 'Upload 2025 Invoices for Review in the System - 2025 رفع فواتير عام', status: 'In Requirement', comments: 4, assignee: { name: 'Mohammed Hassan' }, dueDate: null, priority: 'Medium', labels: [], created: '2025-07-03', updated: '2025-09-24', hasChildren: true, parentKey: 'ICP-1', parentSummary: 'Invoices Management' },
-  { id: '3', type: 'Feature', key: 'ICP-51', summary: 'Upload 2025 Invoices for Review in the System - 2025 رفع فواتير', status: 'Backlog', comments: 0, assignee: null, dueDate: null, priority: 'Medium', labels: [], created: '2025-07-30', updated: '2025-11-25', hasChildren: false },
-  { id: '4', type: 'Feature', key: 'ICP-8', summary: 'Update Terminology in the Invoices Page [Back Office] - ...', status: 'In Production', comments: 0, assignee: { name: 'Waad Alasim' }, dueDate: null, priority: 'Medium', labels: [], created: '2025-07-03', updated: '2025-07-29', hasChildren: false },
-  { id: '5', type: 'Feature', key: 'ICP-22', summary: 'Update Terminology in the Requests Page [Back Office] ...', status: 'In Production', comments: 0, assignee: { name: 'Waad Alasim' }, dueDate: null, priority: 'Medium', labels: [], created: '2025-07-14', updated: '2025-11-30', hasChildren: false },
-  { id: '6', type: 'Feature', key: 'ICP-19', summary: 'Add Filter Option "Request Status" in the Invoice Page - ...', status: 'In Production', comments: 0, assignee: { name: 'Waad Alasim' }, dueDate: null, priority: 'Medium', labels: [], created: '2025-07-14', updated: '2025-08-17', hasChildren: false },
-  { id: '7', type: 'Feature', key: 'ICP-23', summary: 'Update Pop-up Content in the Invoices Page - تحديث محتوى البوب', status: 'In Production', comments: 0, assignee: { name: 'Waad Alasim' }, dueDate: null, priority: 'Medium', labels: [], created: '2025-07-14', updated: '2025-08-05', hasChildren: false },
-  { id: '8', type: 'Feature', key: 'ICP-20', summary: 'Modify Invoice Rejection Mechanism by Removing the D...', status: 'In Production', comments: 0, assignee: { name: 'Waad Alasim' }, dueDate: null, priority: 'Medium', labels: [], created: '2025-07-14', updated: '2025-12-01', hasChildren: false },
-  { id: '9', type: 'Feature', key: 'ICP-7', summary: 'Improve Investor Experience in Invoice Submission Fea...', status: 'In Production', comments: 5, assignee: { name: 'Waad Alasim' }, dueDate: null, priority: 'Medium', labels: [], created: '2025-07-03', updated: '2025-10-30', hasChildren: false },
-  { id: '10', type: 'Defect', key: 'ICP-105', summary: 'Invoice table label and date column format do not match...', status: 'Closed', comments: 0, assignee: { name: 'Abdulrahman Saad' }, dueDate: null, priority: 'Medium', labels: [], created: '2025-08-11', updated: '2025-08-17', hasChildren: false },
-  { id: '11', type: 'Defect', key: 'ICP-59', summary: 'Financial data fields no longer accept negative values', status: 'Closed', comments: 4, assignee: { name: 'Waad Alasim' }, dueDate: null, priority: 'Medium', labels: [], created: '2025-07-31', updated: '2025-08-17', hasChildren: false },
-  { id: '12', type: 'Defect', key: 'ICP-96', summary: 'Amount field design issues - عدم تطابق تصميم حقل المبلغ', status: 'Closed', comments: 0, assignee: null, dueDate: null, priority: 'Medium', labels: [], created: '2025-08-06', updated: '2025-08-17', hasChildren: false },
-  { id: '13', type: 'Defect', key: 'ICP-97', summary: 'Currency symbol design mismatch in pop-up - تصميم رمز العملة', status: 'Closed', comments: 0, assignee: { name: 'Waad Alasim' }, dueDate: null, priority: 'Medium', labels: [], created: '2025-08-06', updated: '2025-11-30', hasChildren: false },
-  { id: '14', type: 'Defect', key: 'ICP-98', summary: 'Error when confirming rejection pop-up – Undefined arr...', status: 'Closed', comments: 0, assignee: { name: 'Waad Alasim' }, dueDate: null, priority: 'Medium', labels: [], created: '2025-08-06', updated: '2025-11-30', hasChildren: false },
-  { id: '15', type: 'Defect', key: 'ICP-99', summary: 'Investor cannot view details of a rejected request with t...', status: 'Closed', comments: 5, assignee: { name: 'Waad Alasim' }, dueDate: null, priority: 'Medium', labels: [], created: '2025-08-10', updated: '2025-08-21', hasChildren: false },
-  { id: '16', type: 'Defect', key: 'ICP-100', summary: '"Approve" button label not updated in "Industrial Compa...', status: 'Closed', comments: 2, assignee: { name: 'Waad Alasim' }, dueDate: null, priority: 'Medium', labels: [], created: '2025-08-11', updated: '2025-08-24', hasChildren: false },
-  { id: '17', type: 'Defect', key: 'ICP-101', summary: 'Menu item name does not match the required name', status: 'Closed', comments: 2, assignee: { name: 'Abdulrahman Saad' }, dueDate: null, priority: 'Medium', labels: [], created: '2025-08-11', updated: '2025-08-24', hasChildren: false },
-];
+// Empty array - data should come from database queries
+const mockItems: WorkItem[] = [];
 
 // Type icons
 const typeIcons: Record<string, { icon: React.ReactNode; color: string }> = {
