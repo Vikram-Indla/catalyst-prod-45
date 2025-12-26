@@ -1,21 +1,22 @@
 /**
  * Catalyst Design System Tokens for Product Roadmap
  * These tokens ensure visual consistency across the roadmap module
+ * V5 - Blue + Teal Professional Palette
  */
 
 export const catalystTokens = {
   // Brand
   brand: {
-    primary: '#c69c6d',
-    primaryHover: '#b8894d',
+    primary: '#2563eb',
+    primaryHover: '#1d4ed8',
   },
 
   // Semantic Status
   status: {
     success: {
-      base: '#22c55e',
-      bg: 'rgba(34, 197, 94, 0.1)',
-      text: '#15803d',
+      base: '#0d9488',
+      bg: 'rgba(13, 148, 136, 0.1)',
+      text: '#115e59',
     },
     warning: {
       base: '#f59e0b',
@@ -28,14 +29,22 @@ export const catalystTokens = {
       text: '#b91c1c',
     },
     info: {
-      base: '#3b82f6',
-      bg: 'rgba(59, 130, 246, 0.1)',
+      base: '#2563eb',
+      bg: 'rgba(37, 99, 235, 0.1)',
       text: '#1d4ed8',
     },
   },
 
   // Secondary Palette (Product Colors)
   secondary: {
+    blue: {
+      base: '#2563eb',
+      bg: 'rgba(37, 99, 235, 0.15)',
+    },
+    teal: {
+      base: '#0d9488',
+      bg: 'rgba(13, 148, 136, 0.15)',
+    },
     olive: {
       base: '#5c7c5c',
       bg: 'rgba(92, 124, 92, 0.15)',
@@ -62,10 +71,10 @@ export const catalystTokens = {
       muted: '#737373',
     },
     surface: {
-      bg: '#faf7f1',
+      bg: '#fafafa',
       card: '#ffffff',
       hover: '#f0f0f0',
-      active: 'rgba(198, 156, 109, 0.12)',
+      active: 'rgba(37, 99, 235, 0.12)',
     },
     border: {
       default: '#e5e5e5',
@@ -85,7 +94,7 @@ export const catalystTokens = {
       bg: '#0a0a0a',
       card: '#171717',
       hover: '#2a2a2a',
-      active: 'rgba(198, 156, 109, 0.2)',
+      active: 'rgba(59, 130, 246, 0.2)',
     },
     border: {
       default: '#2a2a2a',
@@ -97,8 +106,8 @@ export const catalystTokens = {
 
 // Timeline bar colors by product
 export const PRODUCT_COLORS: Record<string, string> = {
-  MINI: '#c69c6d',
-  SEN: '#5c7c5c',
+  MINI: '#2563eb',
+  SEN: '#0d9488',
   ENT: '#8b7355',
   UNA: '#c8ccd0',
 };
@@ -114,7 +123,7 @@ export const TIMELINE_COLORS = {
   gridLine: 'rgba(0, 0, 0, 0.06)',
   gridLineDark: 'rgba(255, 255, 255, 0.06)',
   todayLine: '#ef4444',
-  milestoneMarker: '#c69c6d',
-  barDefault: '#c69c6d',
-  barHover: '#b8894d',
+  milestoneMarker: '#2563eb',
+  barDefault: '#2563eb',
+  barHover: '#1d4ed8',
 };
