@@ -339,13 +339,12 @@ export function CreateEpicDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-hidden flex flex-col min-h-0">
-        <DialogHeader>
+      <DialogContent className="sm:max-w-[600px] max-h-[85vh] flex flex-col">
+        <DialogHeader className="flex-shrink-0">
           <DialogTitle>Create Epic</DialogTitle>
         </DialogHeader>
         
-        
-        <ScrollArea className="flex-1 pr-4">
+        <ScrollArea className="flex-1 min-h-0 pr-4 -mr-4">
           <div className="flex flex-col gap-5 py-4">
             {/* Section 1: Epic Name */}
             <div className="space-y-3">
@@ -613,10 +612,13 @@ export function CreateEpicDialog({
                 </div>
               )}
             </div>
+            
+            {/* Bottom padding for scroll */}
+            <div className="h-4" />
           </div>
         </ScrollArea>
 
-        <DialogFooter className="border-t pt-4">
+        <DialogFooter className="flex-shrink-0 border-t pt-4 mt-2">
           <Button variant="outline" onClick={handleClose}>
             Cancel
           </Button>
