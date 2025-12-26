@@ -89,27 +89,50 @@ function SnapshotTableRow({
     }
   };
 
+  // Status badge styling - Catalyst dark mode compliant
   const getStatusBadge = () => {
-    switch (snapshot.status) {
-      case 'ACTIVE':
-        return (
-          <Badge className="bg-[var(--status-success-bg)] text-[var(--status-success)] border border-[var(--status-success-border)] text-[10px] font-semibold uppercase tracking-wider">
-            ACTIVE
-          </Badge>
-        );
-      case 'ARCHIVED':
-        return (
-          <Badge className="bg-[var(--status-muted-bg)] text-[var(--status-muted)] border border-[var(--status-muted-border)] text-[10px] font-semibold uppercase tracking-wider">
-            ARCHIVED
-          </Badge>
-        );
-      default:
-        return (
-          <Badge className="bg-[var(--status-muted-bg)] text-[var(--status-muted)] border border-[var(--status-muted-border)] text-[10px] font-semibold uppercase tracking-wider">
-            DRAFT
-          </Badge>
-        );
-    }
+    // Dark mode compliant status styles with proper contrast
+    const statusStyles: Record<string, { bg: string; text: string; border: string; label: string }> = {
+      ACTIVE: {
+        bg: 'bg-[rgba(92,124,92,0.15)] dark:bg-[rgba(92,124,92,0.2)]',
+        text: 'text-[#5c7c5c] dark:text-[#7a9a7a]',
+        border: 'border-[rgba(92,124,92,0.3)] dark:border-[rgba(92,124,92,0.4)]',
+        label: 'ACTIVE'
+      },
+      ARCHIVED: {
+        bg: 'bg-[rgba(82,82,82,0.08)] dark:bg-[rgba(82,82,82,0.15)]',
+        text: 'text-[#737373] dark:text-[#8a8a8a]',
+        border: 'border-[rgba(82,82,82,0.2)] dark:border-[rgba(82,82,82,0.3)]',
+        label: 'ARCHIVED'
+      },
+      DRAFT: {
+        bg: 'bg-[rgba(115,115,115,0.08)] dark:bg-[rgba(115,115,115,0.15)]',
+        text: 'text-[#737373] dark:text-[#a3a3a3]',
+        border: 'border-[rgba(115,115,115,0.2)] dark:border-[rgba(115,115,115,0.3)]',
+        label: 'DRAFT'
+      },
+      PROPOSED: {
+        bg: 'bg-[rgba(198,156,109,0.1)] dark:bg-[rgba(198,156,109,0.15)]',
+        text: 'text-[#c69c6d] dark:text-[#d4b896]',
+        border: 'border-[rgba(198,156,109,0.25)] dark:border-[rgba(198,156,109,0.3)]',
+        label: 'PROPOSED'
+      }
+    };
+    
+    const style = statusStyles[snapshot.status] || statusStyles.DRAFT;
+    
+    return (
+      <Badge 
+        className={cn(
+          "text-[10px] font-semibold uppercase tracking-wider border",
+          style.bg,
+          style.text,
+          style.border
+        )}
+      >
+        {style.label}
+      </Badge>
+    );
   };
 
   const ownerName = owner?.full_name || 'Unassigned';
@@ -121,52 +144,98 @@ function SnapshotTableRow({
     <tr 
       className={cn(
         "cursor-pointer transition-all duration-150 group",
-        "border-b border-[#E8E4DC] dark:border-[#21262D]",
-        // Hover state with champagne left border
-        "hover:bg-[rgba(198,156,109,0.06)] dark:hover:bg-[rgba(198,156,109,0.08)]",
-        "hover:border-l-[3px] hover:border-l-[var(--status-warning)]",
-        // Active snapshot styling
-        isActive && "border-l-[3px] border-l-[var(--status-success)] bg-[var(--status-success-bg)]",
+        "border-b border-[#E8E4DC] dark:border-[#242424]",
+        // Hover state - Catalyst champagne tint
+        "hover:bg-[rgba(198,156,109,0.06)] dark:hover:bg-[#1a1a1a]",
+        "hover:border-l-[3px] hover:border-l-[#c69c6d]",
+        // Active snapshot styling - olive accent
+        isActive && "border-l-[3px] border-l-[#5c7c5c] bg-[rgba(92,124,92,0.06)] dark:bg-[rgba(92,124,92,0.1)]",
         // Selected state (when drawer open)
         isSelected && !isActive && [
-          "bg-[var(--status-info-bg)]",
-          "border-l-[3px] border-l-[var(--status-info)]"
+          "bg-[rgba(198,156,109,0.06)] dark:bg-[rgba(198,156,109,0.08)]",
+          "border-l-[3px] border-l-[#c69c6d]"
         ]
       )}
       onClick={() => onSelect(snapshot)}
     >
-      <td className="py-3 px-4">
-        <span className="font-medium text-foreground group-hover:text-[hsl(var(--brand-primary))] transition-colors">
+      {/* Snapshot Name - 14px medium */}
+      <td className="py-4 px-4">
+        <span className="text-sm font-medium text-[#24292F] dark:text-[#f5f5f5] group-hover:text-[#5c7c5c] dark:group-hover:text-[#7a9a7a] transition-colors">
           {snapshot.name}
         </span>
       </td>
-      <td className="py-3 px-4">{getStatusBadge()}</td>
-      <td className="py-3 px-4 text-sm text-muted-foreground tabular-nums">{formatDateRange()}</td>
-      <td className="py-3 px-4 text-right tabular-nums">
-        <span className={cn("text-sm", quarterCount === 0 && "text-[#C69C6D] font-medium")}>
+      
+      {/* Status Badge - dark mode compliant */}
+      <td className="py-4 px-4">{getStatusBadge()}</td>
+      
+      {/* Date Range - 14px normal, secondary color */}
+      <td className="py-4 px-4">
+        <span className="text-sm text-[#6E7681] dark:text-[#a3a3a3] tabular-nums">
+          {formatDateRange()}
+        </span>
+      </td>
+      
+      {/* Quarters - right aligned */}
+      <td className="py-4 px-4 text-right tabular-nums">
+        <span className={cn(
+          "text-sm font-medium",
+          quarterCount === 0 
+            ? "text-[#8b7355] dark:text-[#c69c6d]" 
+            : "text-[#24292F] dark:text-[#f5f5f5]"
+        )}>
           {quarterCount}
-          {quarterCount === 0 && <AlertTriangle className="h-3 w-3 inline ml-1 text-[#C69C6D]" />}
+          {quarterCount === 0 && <AlertTriangle className="h-3.5 w-3.5 inline ml-1 text-[#8b7355] dark:text-[#c69c6d]" />}
         </span>
       </td>
-      <td className="py-3 px-4 text-right tabular-nums">
-        <span className={cn("text-sm", themeCount === 0 && "text-[#C69C6D] font-medium")}>
+      
+      {/* Themes - right aligned */}
+      <td className="py-4 px-4 text-right tabular-nums">
+        <span className={cn(
+          "text-sm font-medium",
+          themeCount === 0 
+            ? "text-[#8b7355] dark:text-[#c69c6d]" 
+            : "text-[#24292F] dark:text-[#f5f5f5]"
+        )}>
           {themeCount}
-          {themeCount === 0 && <AlertTriangle className="h-3 w-3 inline ml-1 text-[#C69C6D]" />}
+          {themeCount === 0 && <AlertTriangle className="h-3.5 w-3.5 inline ml-1 text-[#8b7355] dark:text-[#c69c6d]" />}
         </span>
       </td>
-      <td className="py-3 px-4">
+      
+      {/* Owner - with avatar */}
+      <td className="py-4 px-4">
         <div className="flex items-center gap-2">
-          <Avatar className="h-6 w-6">
-            <AvatarFallback className="text-[10px] bg-[hsl(var(--secondary-green))] text-white">{ownerInitials}</AvatarFallback>
+          <Avatar className="h-7 w-7">
+            <AvatarFallback className="text-[10px] font-medium bg-[#5c7c5c] text-white">
+              {ownerInitials}
+            </AvatarFallback>
           </Avatar>
-          <span className="text-sm text-muted-foreground truncate max-w-[120px]">{ownerName}</span>
+          <span className={cn(
+            "text-sm truncate max-w-[120px]",
+            ownerName === 'Unassigned' 
+              ? "text-[#737373] dark:text-[#737373] italic" 
+              : "text-[#6E7681] dark:text-[#a3a3a3]"
+          )}>
+            {ownerName}
+          </span>
         </div>
       </td>
-      <td className="py-3 px-4 text-sm text-muted-foreground">{formatUpdatedAt()}</td>
-      <td className="py-3 px-4">
+      
+      {/* Last Updated - muted */}
+      <td className="py-4 px-4">
+        <span className="text-sm text-[#6E7681] dark:text-[#737373]">
+          {formatUpdatedAt()}
+        </span>
+      </td>
+      
+      {/* Actions */}
+      <td className="py-4 px-4">
         <DropdownMenu>
           <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
-            <Button variant="ghost" size="icon" className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity">
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity text-[#6E7681] dark:text-[#a3a3a3] hover:text-[#24292F] dark:hover:text-[#f5f5f5]"
+            >
               <MoreVertical className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
@@ -261,32 +330,32 @@ export default function StrategicSnapshots() {
   // Toolbar - matches Strategy Room control styling
   const toolbar = (
     <div className="flex items-center gap-3 w-full">
-      {/* Search */}
+      {/* Search - Catalyst dark mode styling */}
       <div className={cn(
-        "relative flex items-center gap-2 px-3 py-2 rounded-lg w-64",
-        "bg-white dark:bg-[#0D1117]",
-        "border border-[#E1E4E8] dark:border-[#30363D]",
-        "focus-within:border-[#C69C6D] focus-within:ring-1 focus-within:ring-[rgba(198,156,109,0.3)]"
+        "relative flex items-center gap-2 px-3 py-2.5 rounded-lg w-64",
+        "bg-white dark:bg-[#1a1a1a]",
+        "border border-[#E1E4E8] dark:border-[#333333]",
+        "focus-within:border-[#c69c6d] focus-within:ring-1 focus-within:ring-[rgba(198,156,109,0.3)]"
       )}>
-        <Search className="h-4 w-4 text-[#8B949E]" />
+        <Search className="h-4 w-4 text-[#8B949E] dark:text-[#525252]" />
         <input
           type="text"
           placeholder="Search snapshots..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="flex-1 bg-transparent text-sm text-[#24292F] dark:text-[#E6EDF3] placeholder:text-[#8B949E] outline-none"
+          className="flex-1 bg-transparent text-sm text-[#24292F] dark:text-[#f5f5f5] placeholder:text-[#8B949E] dark:placeholder:text-[#525252] outline-none"
         />
       </div>
 
-      {/* Status Filter */}
+      {/* Status Filter - Catalyst dark mode */}
       <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v as StatusFilter)}>
         <SelectTrigger 
           className={cn(
             "w-[120px] h-8 text-sm",
-            "bg-white dark:bg-[#0D1117]",
-            "border border-[#E1E4E8] dark:border-[#30363D]",
-            "hover:border-[#D0D7DE] dark:hover:border-[#3D444D]",
-            "text-[#24292F] dark:text-[#E6EDF3]"
+            "bg-white dark:bg-[#1a1a1a]",
+            "border border-[#E1E4E8] dark:border-[#333333]",
+            "hover:border-[#D0D7DE] dark:hover:border-[#404040]",
+            "text-[#24292F] dark:text-[#a3a3a3]"
           )}
         >
           <SelectValue placeholder="All Status" />
@@ -299,15 +368,15 @@ export default function StrategicSnapshots() {
         </SelectContent>
       </Select>
 
-      {/* Owner Filter */}
+      {/* Owner Filter - Catalyst dark mode */}
       <Select value="all">
         <SelectTrigger 
           className={cn(
             "w-[120px] h-8 text-sm",
-            "bg-white dark:bg-[#0D1117]",
-            "border border-[#E1E4E8] dark:border-[#30363D]",
-            "hover:border-[#D0D7DE] dark:hover:border-[#3D444D]",
-            "text-[#24292F] dark:text-[#E6EDF3]"
+            "bg-white dark:bg-[#1a1a1a]",
+            "border border-[#E1E4E8] dark:border-[#333333]",
+            "hover:border-[#D0D7DE] dark:hover:border-[#404040]",
+            "text-[#24292F] dark:text-[#a3a3a3]"
           )}
         >
           <SelectValue placeholder="All Owners" />
@@ -317,15 +386,15 @@ export default function StrategicSnapshots() {
         </SelectContent>
       </Select>
 
-      {/* Sort */}
+      {/* Sort - Catalyst dark mode */}
       <Select value={sortBy} onValueChange={(v) => setSortBy(v as SortOption)}>
         <SelectTrigger 
           className={cn(
             "w-[130px] h-8 text-sm",
-            "bg-white dark:bg-[#0D1117]",
-            "border border-[#E1E4E8] dark:border-[#30363D]",
-            "hover:border-[#D0D7DE] dark:hover:border-[#3D444D]",
-            "text-[#24292F] dark:text-[#E6EDF3]"
+            "bg-white dark:bg-[#1a1a1a]",
+            "border border-[#E1E4E8] dark:border-[#333333]",
+            "hover:border-[#D0D7DE] dark:hover:border-[#404040]",
+            "text-[#24292F] dark:text-[#a3a3a3]"
           )}
         >
           <SelectValue placeholder="Last Updated" />
@@ -338,14 +407,14 @@ export default function StrategicSnapshots() {
         </SelectContent>
       </Select>
 
-      {/* View Toggle */}
-      <div className="flex items-center p-1 bg-[#F6F8FA] dark:bg-[#21262D] rounded-lg ml-auto">
+      {/* View Toggle - Catalyst dark mode */}
+      <div className="flex items-center p-1 bg-[#F6F8FA] dark:bg-[#242424] rounded-lg border border-transparent dark:border-[#333333] ml-auto">
         <button
           className={cn(
             "p-1.5 rounded-md transition-colors",
             view === 'table' 
-              ? "bg-white dark:bg-[#30363D] text-[#24292F] dark:text-[#E6EDF3] shadow-sm"
-              : "text-[#8B949E] hover:text-[#57606A]"
+              ? "bg-white dark:bg-[#333333] text-[#24292F] dark:text-[#f5f5f5] shadow-sm"
+              : "text-[#8B949E] dark:text-[#525252] hover:text-[#57606A] dark:hover:text-[#a3a3a3]"
           )}
           onClick={() => setView('table')}
           aria-label="Table view"
@@ -356,8 +425,8 @@ export default function StrategicSnapshots() {
           className={cn(
             "p-1.5 rounded-md transition-colors",
             view === 'cards' 
-              ? "bg-white dark:bg-[#30363D] text-[#24292F] dark:text-[#E6EDF3] shadow-sm"
-              : "text-[#8B949E] hover:text-[#57606A]"
+              ? "bg-white dark:bg-[#333333] text-[#24292F] dark:text-[#f5f5f5] shadow-sm"
+              : "text-[#8B949E] dark:text-[#525252] hover:text-[#57606A] dark:hover:text-[#a3a3a3]"
           )}
           onClick={() => setView('cards')}
           aria-label="Card view"
@@ -396,17 +465,17 @@ export default function StrategicSnapshots() {
             )}
           </div>
         ) : view === 'table' ? (
-          <div className="bg-white dark:bg-[#0D1117] border border-[#E1E4E8] dark:border-[#30363D] rounded-xl overflow-hidden">
+          <div className="bg-white dark:bg-[#141414] border border-[#E1E4E8] dark:border-[#333333] rounded-xl overflow-hidden">
             <table className="w-full">
               <thead>
-                <tr className="bg-[#F5F3F0] dark:bg-[#21262D] border-b border-[#E8E4DC] dark:border-[#30363D]">
-                  <th className="py-3 px-4 text-left text-[11px] font-semibold uppercase tracking-wider text-[#8B949E] dark:text-[#6E7681]">Snapshot Name</th>
-                  <th className="py-3 px-4 text-left text-[11px] font-semibold uppercase tracking-wider text-[#8B949E] dark:text-[#6E7681]">Status</th>
-                  <th className="py-3 px-4 text-left text-[11px] font-semibold uppercase tracking-wider text-[#8B949E] dark:text-[#6E7681]">Date Range</th>
-                  <th className="py-3 px-4 text-right text-[11px] font-semibold uppercase tracking-wider text-[#8B949E] dark:text-[#6E7681]">Quarters</th>
-                  <th className="py-3 px-4 text-right text-[11px] font-semibold uppercase tracking-wider text-[#8B949E] dark:text-[#6E7681]">Themes</th>
-                  <th className="py-3 px-4 text-left text-[11px] font-semibold uppercase tracking-wider text-[#8B949E] dark:text-[#6E7681]">Owner</th>
-                  <th className="py-3 px-4 text-left text-[11px] font-semibold uppercase tracking-wider text-[#8B949E] dark:text-[#6E7681]">Last Updated</th>
+                <tr className="bg-[#F5F3F0] dark:bg-[#1a1a1a] border-b border-[#E8E4DC] dark:border-[#333333]">
+                  <th className="py-3 px-4 text-left text-[11px] font-semibold uppercase tracking-[0.05em] text-[#8B949E] dark:text-[#737373]">Snapshot Name</th>
+                  <th className="py-3 px-4 text-left text-[11px] font-semibold uppercase tracking-[0.05em] text-[#8B949E] dark:text-[#737373]">Status</th>
+                  <th className="py-3 px-4 text-left text-[11px] font-semibold uppercase tracking-[0.05em] text-[#8B949E] dark:text-[#737373]">Date Range</th>
+                  <th className="py-3 px-4 text-right text-[11px] font-semibold uppercase tracking-[0.05em] text-[#8B949E] dark:text-[#737373]">Quarters</th>
+                  <th className="py-3 px-4 text-right text-[11px] font-semibold uppercase tracking-[0.05em] text-[#8B949E] dark:text-[#737373]">Themes</th>
+                  <th className="py-3 px-4 text-left text-[11px] font-semibold uppercase tracking-[0.05em] text-[#8B949E] dark:text-[#737373]">Owner</th>
+                  <th className="py-3 px-4 text-left text-[11px] font-semibold uppercase tracking-[0.05em] text-[#8B949E] dark:text-[#737373]">Last Updated</th>
                   <th className="py-3 px-4 w-[50px]"></th>
                 </tr>
               </thead>
