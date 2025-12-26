@@ -6,7 +6,7 @@ import { useState, useCallback, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
-import { FeatureBacklogHeader } from './FeatureBacklogHeader';
+import { FeatureBacklogHeader, FeatureViewMode } from './FeatureBacklogHeader';
 import { FeatureBacklogTable } from './FeatureBacklogTable';
 import { FeatureBacklogFiltersDialog } from './FeatureBacklogFiltersDialog';
 import { FeatureBacklogColumnsDialog } from './FeatureBacklogColumnsDialog';
@@ -39,7 +39,7 @@ export function FeatureBacklogWorkspace({ programId }: FeatureBacklogWorkspacePr
   const { preferences, updatePreferences } = useFeatureBacklogPreferences(programId);
 
   // State
-  const [viewMode, setViewMode] = useState<'list' | 'kanban'>(preferences.last_view);
+  const [viewMode, setViewMode] = useState<FeatureViewMode>(preferences.last_view === 'kanban' ? 'board' : preferences.last_view as FeatureViewMode || 'table');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedFeatureId, setSelectedFeatureId] = useState<string | null>(null);
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
@@ -64,10 +64,11 @@ export function FeatureBacklogWorkspace({ programId }: FeatureBacklogWorkspacePr
   const [sortField, setSortField] = useState('updated');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
 
-  // Sync view preference
+  // Sync view preference - map to storage format
   useEffect(() => {
-    if (viewMode !== preferences.last_view) {
-      updatePreferences({ last_view: viewMode });
+    const storageView = viewMode === 'board' ? 'kanban' : viewMode;
+    if (storageView !== preferences.last_view) {
+      updatePreferences({ last_view: storageView as 'list' | 'kanban' });
     }
   }, [viewMode]);
 
@@ -272,12 +273,12 @@ export function FeatureBacklogWorkspace({ programId }: FeatureBacklogWorkspacePr
         onBulkDelete={handleBulkDelete}
       />
 
-      <div className={viewMode === 'kanban' ? 'flex-1 overflow-hidden flex flex-col' : 'flex-1 overflow-auto px-4 sm:px-6 pt-2 pb-4'}>
+      <div className={viewMode === 'board' ? 'flex-1 overflow-hidden flex flex-col' : 'flex-1 overflow-auto px-4 sm:px-6 pt-2 pb-4'}>
         {isLoading ? (
           <div className="flex items-center justify-center h-full">
             <div className="text-muted-foreground">Loading...</div>
           </div>
-        ) : viewMode === 'kanban' ? (
+        ) : viewMode === 'board' ? (
           <FeatureKanbanBoard
             items={backlogData?.items || []}
             programId={programId}
@@ -286,7 +287,29 @@ export function FeatureBacklogWorkspace({ programId }: FeatureBacklogWorkspacePr
             onItemSelect={handleSelectItem}
             onAddFeature={() => setIsCreateModalOpen(true)}
           />
+        ) : viewMode === 'table' ? (
+          <FeatureBacklogTable
+            items={backlogData?.items || []}
+            visibleColumns={preferences.visible_columns}
+            selectedItems={selectedItems}
+            onItemClick={handleFeatureClick}
+            onItemSelect={handleSelectItem}
+            onSelectAll={handleSelectAll}
+            sortField={sortField}
+            sortDirection={sortDirection}
+            onSort={handleSort}
+            page={page}
+            pageSize={pageSize}
+            totalItems={backlogData?.total || 0}
+            totalPages={totalPages}
+            onPageChange={setPage}
+            onPageSizeChange={(size) => {
+              setPageSize(size);
+              setPage(1);
+            }}
+          />
         ) : (
+          /* List View - Split panel layout (matches Epic Backlog) */
           <FeatureBacklogTable
             items={backlogData?.items || []}
             visibleColumns={preferences.visible_columns}

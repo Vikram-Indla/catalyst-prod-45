@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
@@ -13,8 +14,33 @@ export interface FeatureStatus {
   updated_at: string;
 }
 
-// Fetch all feature statuses (including inactive for admin)
+// Fetch all feature statuses (including inactive for admin) with real-time sync
 export function useFeatureStatuses() {
+  const queryClient = useQueryClient();
+
+  // Subscribe to real-time changes
+  useEffect(() => {
+    const channel = supabase
+      .channel('feature-statuses-realtime')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'feature_statuses',
+        },
+        () => {
+          // Invalidate cache on any change
+          queryClient.invalidateQueries({ queryKey: ['feature-statuses'] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [queryClient]);
+
   return useQuery({
     queryKey: ['feature-statuses'],
     queryFn: async () => {
