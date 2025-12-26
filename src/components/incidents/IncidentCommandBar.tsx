@@ -53,7 +53,7 @@ export function IncidentCommandBar({ onCreateClick, additionalActions }: Inciden
           "flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4",
           "px-4 py-2.5 rounded-lg",
           "bg-[var(--surface-2)] border border-[var(--border-subtle)]",
-          "border-t-[1px] border-t-[var(--brand-gold)]"
+          "border-t-[1px] border-t-[var(--brand-primary)]"
         )}
       >
         {/* Left: View Mode Control Strip */}
@@ -91,16 +91,16 @@ export function IncidentCommandBar({ onCreateClick, additionalActions }: Inciden
                   className={cn(
                     "h-4 w-4 flex-shrink-0 transition-colors",
                     isActive 
-                      ? "text-[var(--brand-gold)]" 
+                      ? "text-[var(--brand-primary)]" 
                       : "text-current"
                   )} 
                 />
                 <span className="hidden xs:inline sm:inline">{mode.label}</span>
                 
-                {/* Active indicator - gold bottom border */}
+                {/* Active indicator */}
                 {isActive && (
                   <span 
-                    className="absolute bottom-0 left-2 right-2 h-0.5 rounded-full bg-[var(--brand-gold)]"
+                    className="absolute bottom-0 left-2 right-2 h-0.5 rounded-full bg-[var(--brand-primary)]"
                     aria-hidden="true"
                   />
                 )}
@@ -111,8 +111,8 @@ export function IncidentCommandBar({ onCreateClick, additionalActions }: Inciden
 
         {/* Right: Actions */}
         <div className="w-full sm:w-auto flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
-          {/* Secondary actions - rendered with lower emphasis */}
-          <div className="w-full sm:w-auto min-w-0 flex items-center gap-2 sm:gap-3 flex-wrap">
+          {/* Secondary actions - stack on mobile, row on desktop */}
+          <div className="w-full sm:w-auto min-w-0 flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
             {additionalActions}
           </div>
           
