@@ -75,9 +75,11 @@ export function useWorkspaceAccess() {
         .neq('id', DEFAULT_PROGRAM_ID)
         .order('name');
       if (error) throw error;
+      console.log('[useWorkspaceAccess] Loaded programs:', data?.length, data?.map(p => p.name));
       return data || [];
     },
-    staleTime: 30 * 1000, // Cache for 30 seconds - shorter for quick refresh after creation
+    staleTime: 10 * 1000, // Cache for 10 seconds for quicker refresh
+    refetchOnWindowFocus: true,
   });
 
   // Fetch all projects - NO dependency on memberships (calculate access after)
