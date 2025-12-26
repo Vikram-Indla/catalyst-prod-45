@@ -93,17 +93,25 @@ function getInitials(name: string): string {
   return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
 }
 
-// Mock data for fields not in DB
-const MOCK_DATA = {
-  program: 'MIM Digital Transformation 2026',
-  product: 'Investor Portal',
-  department: 'License Dept',
-  businessOwner: { name: 'Abu Badr', initials: 'AB' },
-  release: 'REL-2026-Q1',
-  priority: 'High',
-  risk: 'Medium',
-  labels: ['compliance', 'investor-journey', 'q1-2026'],
-  components: ['rule-engine', 'dashboard', 'audit-service'],
+/**
+ * PLACEHOLDER DATA - Fields not yet connected to database
+ * TODO: Connect these to actual database relationships:
+ * - Program: from feature.epic.primary_program_id → programs table
+ * - Product: from feature.product_id → products table (needs schema update)
+ * - Department: from feature owner's department
+ * - Business Owner: from feature.business_owner_id → profiles table
+ * - Labels, Components: from feature_labels, feature_components tables (needs creation)
+ */
+const PLACEHOLDER_FIELDS = {
+  program: null as string | null,
+  product: null as string | null,
+  department: null as string | null,
+  businessOwner: null as { name: string; initials: string } | null,
+  release: null as string | null,
+  priority: null as string | null,
+  risk: null as string | null,
+  labels: [] as string[],
+  components: [] as string[],
   environment: 'Production',
 };
 
@@ -182,9 +190,13 @@ export function FeatureRightRail({ feature, collapsed, onToggleCollapse, onUpdat
         </FieldRow>
 
         <FieldRow label="Program">
-          <span className="text-gold-link hover:text-gold-link-hover cursor-pointer hover:underline transition-colors font-medium">
-            {MOCK_DATA.program}
-          </span>
+          {PLACEHOLDER_FIELDS.program ? (
+            <span className="text-gold-link hover:text-gold-link-hover cursor-pointer hover:underline transition-colors font-medium">
+              {PLACEHOLDER_FIELDS.program}
+            </span>
+          ) : (
+            <span className="text-muted-foreground">Not assigned</span>
+          )}
         </FieldRow>
 
         <FieldRow label="Parent Epic">
@@ -198,20 +210,24 @@ export function FeatureRightRail({ feature, collapsed, onToggleCollapse, onUpdat
         </FieldRow>
 
         <FieldRow label="Product">
-          <span>{MOCK_DATA.product}</span>
+          <span>{PLACEHOLDER_FIELDS.product || <span className="text-muted-foreground">Not assigned</span>}</span>
         </FieldRow>
 
         <FieldRow label="Department">
-          <span>{MOCK_DATA.department}</span>
+          <span>{PLACEHOLDER_FIELDS.department || <span className="text-muted-foreground">Not assigned</span>}</span>
         </FieldRow>
 
         <FieldRow label="Business Owner">
-          <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded-full bg-brand-primary/10 text-brand-primary flex items-center justify-center text-xs font-medium">
-              {MOCK_DATA.businessOwner.initials}
+          {PLACEHOLDER_FIELDS.businessOwner ? (
+            <div className="flex items-center gap-2">
+              <div className="w-6 h-6 rounded-full bg-brand-primary/10 text-brand-primary flex items-center justify-center text-xs font-medium">
+                {PLACEHOLDER_FIELDS.businessOwner.initials}
+              </div>
+              <span>{PLACEHOLDER_FIELDS.businessOwner.name}</span>
             </div>
-            <span>{MOCK_DATA.businessOwner.name}</span>
-          </div>
+          ) : (
+            <span className="text-muted-foreground">Not assigned</span>
+          )}
         </FieldRow>
       </CollapsibleSection>
 
@@ -238,9 +254,13 @@ export function FeatureRightRail({ feature, collapsed, onToggleCollapse, onUpdat
         </div>
 
         <FieldRow label="Release">
-          <span className="text-gold-link hover:text-gold-link-hover cursor-pointer hover:underline transition-colors font-mono text-xs font-medium">
-            {MOCK_DATA.release}
-          </span>
+          {PLACEHOLDER_FIELDS.release ? (
+            <span className="text-gold-link hover:text-gold-link-hover cursor-pointer hover:underline transition-colors font-mono text-xs font-medium">
+              {PLACEHOLDER_FIELDS.release}
+            </span>
+          ) : (
+            <span className="text-muted-foreground">Not assigned</span>
+          )}
         </FieldRow>
 
         <FieldRow label="Change Number">
@@ -255,15 +275,23 @@ export function FeatureRightRail({ feature, collapsed, onToggleCollapse, onUpdat
 
         <div className="grid grid-cols-2 gap-3">
           <FieldRow label="Priority">
-            <Badge className="bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400">
-              {MOCK_DATA.priority}
-            </Badge>
+            {PLACEHOLDER_FIELDS.priority ? (
+              <Badge className="bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400">
+                {PLACEHOLDER_FIELDS.priority}
+              </Badge>
+            ) : (
+              <span className="text-muted-foreground">—</span>
+            )}
           </FieldRow>
 
           <FieldRow label="Risk">
-            <Badge className="bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400">
-              {MOCK_DATA.risk}
-            </Badge>
+            {PLACEHOLDER_FIELDS.risk ? (
+              <Badge className="bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400">
+                {PLACEHOLDER_FIELDS.risk}
+              </Badge>
+            ) : (
+              <span className="text-muted-foreground">—</span>
+            )}
           </FieldRow>
         </div>
       </CollapsibleSection>
@@ -272,26 +300,34 @@ export function FeatureRightRail({ feature, collapsed, onToggleCollapse, onUpdat
       <CollapsibleSection title="Classification">
         <FieldRow label="Labels">
           <div className="flex flex-wrap gap-1">
-            {MOCK_DATA.labels.map((label) => (
-              <Badge key={label} variant="outline" className="text-xs">
-                {label}
-              </Badge>
-            ))}
+            {PLACEHOLDER_FIELDS.labels.length > 0 ? (
+              PLACEHOLDER_FIELDS.labels.map((label) => (
+                <Badge key={label} variant="outline" className="text-xs">
+                  {label}
+                </Badge>
+              ))
+            ) : (
+              <span className="text-muted-foreground">None</span>
+            )}
           </div>
         </FieldRow>
 
         <FieldRow label="Components / Services">
           <div className="flex flex-wrap gap-1">
-            {MOCK_DATA.components.map((component) => (
-              <Badge key={component} variant="outline" className="text-xs">
-                {component}
-              </Badge>
-            ))}
+            {PLACEHOLDER_FIELDS.components.length > 0 ? (
+              PLACEHOLDER_FIELDS.components.map((component) => (
+                <Badge key={component} variant="outline" className="text-xs">
+                  {component}
+                </Badge>
+              ))
+            ) : (
+              <span className="text-muted-foreground">None</span>
+            )}
           </div>
         </FieldRow>
 
         <FieldRow label="Environment">
-          <span>{MOCK_DATA.environment}</span>
+          <span>{PLACEHOLDER_FIELDS.environment}</span>
         </FieldRow>
       </CollapsibleSection>
 

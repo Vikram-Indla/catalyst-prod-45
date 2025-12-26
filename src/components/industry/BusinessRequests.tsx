@@ -7,10 +7,10 @@ import { ImportDialog } from '@/components/shared/ImportDialog';
 import { CommentsSection } from '@/components/shared/CommentsSection';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
 import { RightDetailsPanel } from '@/components/shared/RightDetailsPanel';
 import { ListScreenToolbar } from '@/components/shared/ListScreenToolbar';
 import { HealthBadge } from '@/components/shared/HealthBadge';
+import { GenericStatusBadge } from '@/components/shared/GenericStatusBadge';
 import { EpicDialog } from '@/components/forms/EpicDialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -47,17 +47,7 @@ export default function BusinessRequests() {
 
   const selectedData = items?.find(i => i.id === selectedItem);
 
-  const getStatusBadge = (status: string) => {
-    const variants: Record<string, "default" | "destructive" | "outline" | "secondary"> = {
-      proposed: 'secondary',
-      analyzing: 'secondary',
-      approved: 'default',
-      in_progress: 'default',
-      done: 'outline',
-      cancelled: 'destructive',
-    };
-    return <Badge variant={variants[status] || 'secondary'}>{status.replace('_', ' ')}</Badge>;
-  };
+  // Removed inline getStatusBadge - now using GenericStatusBadge component
 
   const handleCreate = () => {
     setEditingEpic(null);
@@ -145,7 +135,7 @@ export default function BusinessRequests() {
                     <TableCell className="font-medium">{item.name}</TableCell>
                     <TableCell className="text-sm">{item.strategic_themes?.name || '-'}</TableCell>
                     <TableCell className="text-sm">{item.programs?.name || '-'}</TableCell>
-                    <TableCell>{getStatusBadge(item.status || 'proposed')}</TableCell>
+                    <TableCell><GenericStatusBadge status={item.status || 'proposed'} /></TableCell>
                     <TableCell><HealthBadge health={item.health} /></TableCell>
                     <TableCell className="text-sm text-muted-foreground">
                       {item.start_date && item.end_date 
@@ -174,7 +164,7 @@ export default function BusinessRequests() {
                   </Button>
                 </PermissionGuard>
                 <div><label className="text-sm font-medium text-muted-foreground">Status</label>
-                  <div className="mt-1">{getStatusBadge(selectedData.status || 'proposed')}</div></div>
+                  <div className="mt-1"><GenericStatusBadge status={selectedData.status || 'proposed'} /></div></div>
                 <div><label className="text-sm font-medium text-muted-foreground">Health</label>
                   <div className="mt-1"><HealthBadge health={selectedData.health} /></div></div>
                 <div className="grid grid-cols-2 gap-4">

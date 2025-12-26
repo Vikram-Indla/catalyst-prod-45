@@ -33,11 +33,12 @@ import {
 } from '@/components/ui/breadcrumb';
 import { cn } from '@/lib/utils';
 import { useIncident, useUpdateIncident } from '@/hooks/useIncidents';
+import { useAvailableApprovers } from '@/hooks/useIncidentUserProfiles';
 import { format, formatDistanceToNow } from 'date-fns';
 import { toast } from 'sonner';
 import { ConversionDialog } from '@/components/incidents/ConversionDialog';
 import { AddApproverDialog } from '@/components/incidents/AddApproverDialog';
-import type { IncidentStatus, SeverityLevel, VoteStatus, IncidentUserProfile } from '@/types/incident';
+import type { IncidentStatus, SeverityLevel, VoteStatus } from '@/types/incident';
 
 // Status options
 const STATUS_OPTIONS: { value: IncidentStatus; label: string }[] = [
@@ -52,17 +53,11 @@ const STATUS_OPTIONS: { value: IncidentStatus; label: string }[] = [
 
 const SEVERITIES: SeverityLevel[] = ['SEV1', 'SEV2', 'SEV3', 'SEV4'];
 
-// Mock approvers
-const MOCK_APPROVERS: IncidentUserProfile[] = [
-  { id: '1', full_name: 'Khalid Al-Farsi', email: 'khalid@company.com', avatar_initials: 'KA', incident_role: 'committee_member', has_veto_power: false },
-  { id: '2', full_name: 'Sara Mohammed', email: 'sara@company.com', avatar_initials: 'SM', incident_role: 'committee_member', has_veto_power: false },
-  { id: '3', full_name: 'Zara Ahmed', email: 'zara@company.com', avatar_initials: 'ZA', incident_role: 'committee_member', has_veto_power: true },
-];
-
 export default function IncidentViewPage() {
   const { incidentId } = useParams<{ incidentId: string }>();
   const { data: incident, isLoading, error } = useIncident(incidentId || '');
   const updateIncident = useUpdateIncident();
+  const { data: availableApprovers = [] } = useAvailableApprovers();
   
   const [showConvertDialog, setShowConvertDialog] = useState(false);
   const [showAddApprover, setShowAddApprover] = useState(false);
@@ -662,7 +657,7 @@ export default function IncidentViewPage() {
       <AddApproverDialog
         open={showAddApprover}
         onOpenChange={setShowAddApprover}
-        availableApprovers={MOCK_APPROVERS}
+        availableApprovers={availableApprovers}
         existingApproverIds={approvers.map(a => a.user_id)}
         onAdd={(userId, hasVeto, note) => {
           toast.success('Approver added');
