@@ -215,13 +215,13 @@ export function CatalystHeader() {
               const isActive = item.label === activeNavItem;
               
               // TopNav item styles - executive grade
-              // Active nav items use green tint background and brand-active for underline
+              // Active nav items use blue text + blue underline per design system v2.0
               const navButtonStyle: React.CSSProperties = {
                 height: '36px',
                 padding: '0 14px',
                 fontSize: '14px',
                 fontWeight: isActive ? 600 : 500,
-                color: isActive ? 'var(--text-primary)' : 'var(--nav-text)',
+                color: isActive ? '#2563eb' : 'var(--nav-text)',
                 borderRadius: '6px',
                 display: 'flex',
                 alignItems: 'center',
@@ -229,7 +229,7 @@ export function CatalystHeader() {
                 cursor: 'pointer',
                 transition: 'background 0.15s ease, color 0.15s ease',
                 border: 'none',
-                background: isActive ? 'var(--nav-active-bg)' : 'transparent',
+                background: isActive ? 'rgba(37, 99, 235, 0.08)' : 'transparent',
                 position: 'relative' as const,
                 fontFamily: 'inherit',
                 outline: 'none',
