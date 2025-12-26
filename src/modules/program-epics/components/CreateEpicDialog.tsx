@@ -46,7 +46,7 @@ import {
   useCommitAttachments,
   UnifiedAttachment 
 } from '@/hooks/useUnifiedAttachments';
-import { ScrollArea } from '@/components/ui/scroll-area';
+
 
 interface CreateEpicDialogProps {
   open: boolean;
@@ -406,12 +406,12 @@ export function CreateEpicDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[600px] max-h-[85vh] flex flex-col !p-0">
+      <DialogContent className="sm:max-w-[600px] max-h-[85vh] flex flex-col !p-0 overflow-hidden">
         <DialogHeader className="flex-shrink-0 px-6 pt-5">
           <DialogTitle>Create Epic</DialogTitle>
         </DialogHeader>
         
-        <ScrollArea className="flex-1 min-h-0 px-6 scrollbar-catalyst">
+        <div className="flex-1 min-h-0 overflow-y-auto px-6 scrollbar-catalyst">
           <div className="flex flex-col gap-5 py-4">
             
             {/* Section 1: Epic Name */}
@@ -729,7 +729,7 @@ export function CreateEpicDialog({
             {/* Bottom padding for scroll */}
             <div className="h-4" />
           </div>
-        </ScrollArea>
+        </div>
 
         <DialogFooter className="flex-shrink-0 px-6 pb-5">
           {/* Cancel Button - Secondary */}
