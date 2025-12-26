@@ -144,36 +144,33 @@ const CatalystInput = React.forwardRef<
 ));
 CatalystInput.displayName = 'CatalystInput';
 
-// Styled Select Trigger for dark mode
-const CatalystSelectTrigger = ({ 
-  children, 
-  onClick, 
-  isOpen,
-  hasValue 
-}: { 
-  children: React.ReactNode;
-  onClick?: () => void;
-  isOpen?: boolean;
-  hasValue?: boolean;
-}) => (
-  <button
+// Styled Select Trigger for dark mode - matches UserPicker Button styling
+const CatalystSelectTrigger = React.forwardRef<
+  HTMLButtonElement, 
+  { 
+    children: React.ReactNode;
+    onClick?: () => void;
+    isOpen?: boolean;
+    hasValue?: boolean;
+  }
+>(({ children, onClick, isOpen, hasValue }, ref) => (
+  <Button
+    ref={ref}
     type="button"
+    variant="outline"
+    role="combobox"
     onClick={onClick}
-    className="w-full flex items-center justify-between px-4 py-3 rounded-lg text-sm transition-all text-left"
-    style={{
-      backgroundColor: 'var(--dialog-input-bg)',
-      border: '1px solid var(--dialog-input-border)',
-      color: hasValue ? 'var(--dialog-title-color)' : 'var(--dialog-desc-color)',
-      boxShadow: 'inset 0 1px 2px rgba(0, 0, 0, 0.1)'
-    }}
+    className={cn(
+      'w-full justify-between font-normal h-9',
+      'focus:ring-0 focus:ring-offset-0 focus-visible:ring-2 focus-visible:ring-ring/30 focus-visible:ring-offset-0',
+      !hasValue && 'text-muted-foreground'
+    )}
   >
-    <span className="truncate flex-1">{children}</span>
-    <ChevronsUpDown 
-      className="w-4 h-4 ml-2 flex-shrink-0" 
-      style={{ color: 'var(--dialog-desc-color)' }} 
-    />
-  </button>
-);
+    <span className="truncate flex-1 text-left">{children}</span>
+    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+  </Button>
+));
+CatalystSelectTrigger.displayName = 'CatalystSelectTrigger';
 
 export function CreateEpicDialog({ 
   open, 
