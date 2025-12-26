@@ -22,13 +22,14 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, Maximize2, ChevronRight, ChevronDown, X, Loader2, Layers, Target, TrendingUp } from 'lucide-react';
+import { Search, Maximize2, ChevronRight, ChevronDown, X, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useOKRTreeV2, OKRTreeV2Item } from '@/hooks/useOKRTreeV2';
 import { cn } from '@/lib/utils';
 import { TYPOGRAPHY } from './strategyRoomTypography';
 import { getLKGData, setLKGData, safeNumber, safePercentage } from '@/utils/strategyRoomCache';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { WorkItemIcon } from '@/components/ja/icons/WorkItemIcon';
 
 interface OkrTreeProps {
   selectedSnapshot: string;
@@ -62,33 +63,28 @@ function getProgressBarColor(progress: number): string {
   return 'var(--brand-primary)';
 }
 
-// Type config with icons
+// Type config - using centralized WorkItemIcon, no hardcoded Lucide icons
+// Maps OKR tree item types to work item types for the icon registry
+const TYPE_TO_WORK_ITEM: Record<string, string> = {
+  theme: 'theme',
+  objective: 'objective',
+  key_result: 'key_result', // Special type for KRs
+};
+
 const typeStyles = {
   theme: {
-    bg: 'rgb(229, 231, 235)',        // gray-200
-    darkBg: 'rgb(55, 65, 81)',       // gray-700
-    color: 'rgb(55, 65, 81)',        // gray-700
-    darkColor: 'rgb(209, 213, 219)', // gray-300
     label: 'Theme',
-    Icon: Layers,
+    workItemType: 'theme',
     rowBg: 'var(--surface-subtle)',
   },
   objective: {
-    bg: 'rgb(229, 231, 235)',        // gray-200
-    darkBg: 'rgb(55, 65, 81)',       // gray-700
-    color: 'rgb(55, 65, 81)',        // gray-700
-    darkColor: 'rgb(209, 213, 219)', // gray-300
     label: 'Objective',
-    Icon: Target,
+    workItemType: 'objective',
     rowBg: 'transparent',
   },
   key_result: {
-    bg: 'rgb(229, 231, 235)',        // gray-200
-    darkBg: 'rgb(55, 65, 81)',       // gray-700
-    color: 'rgb(55, 65, 81)',        // gray-700
-    darkColor: 'rgb(209, 213, 219)', // gray-300
     label: 'Key Result',
-    Icon: TrendingUp,
+    workItemType: 'key_result',
     rowBg: 'transparent',
   },
 };
@@ -250,24 +246,12 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
               <div className="w-4 flex-shrink-0" />
             )}
             
-            {/* Type icon with tooltip */}
-            <TooltipProvider delayDuration={200}>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <span 
-                    className={cn(
-                      'p-1 rounded flex-shrink-0 flex items-center justify-center',
-                      'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
-                    )}
-                  >
-                    <typeStyle.Icon size={12} />
-                  </span>
-                </TooltipTrigger>
-                <TooltipContent side="top" className="text-xs">
-                  {typeStyle.label}
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
+            {/* Type icon with tooltip - Using centralized WorkItemIcon */}
+            <WorkItemIcon 
+              type={typeStyle.workItemType} 
+              size={16} 
+              hideTooltip={false}
+            />
             
             {/* Name */}
             <span 
@@ -416,28 +400,17 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
               <span>Refreshing…</span>
             </div>
           )}
-          {/* Type legend - icons with tooltips */}
-          <TooltipProvider delayDuration={200}>
-            <div className="flex items-center gap-1">
-              {Object.entries(typeStyles).map(([key, style]) => (
-                <Tooltip key={key}>
-                  <TooltipTrigger asChild>
-                    <span 
-                      className={cn(
-                        'p-1 rounded flex items-center justify-center cursor-help',
-                        'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
-                      )}
-                    >
-                      <style.Icon size={12} />
-                    </span>
-                  </TooltipTrigger>
-                  <TooltipContent side="bottom" className="text-xs">
-                    {style.label}
-                  </TooltipContent>
-                </Tooltip>
-              ))}
-            </div>
-          </TooltipProvider>
+          {/* Type legend - icons with tooltips using centralized WorkItemIcon */}
+          <div className="flex items-center gap-1">
+            {Object.entries(typeStyles).map(([key, style]) => (
+              <WorkItemIcon 
+                key={key}
+                type={style.workItemType} 
+                size={16} 
+                hideTooltip={false}
+              />
+            ))}
+          </div>
         </div>
         
         {/* Search + expand */}
