@@ -21,8 +21,8 @@ export function UserAvatar({ initials, size = 'md', className }: UserAvatarProps
         className
       )}
       style={{ 
-        backgroundColor: 'rgba(198, 156, 109, 0.1)', 
-        color: '#C69C6D' 
+        backgroundColor: 'rgba(37, 99, 235, 0.1)', 
+        color: '#2563eb' 
       }}
     >
       {initials}
