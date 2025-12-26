@@ -94,10 +94,9 @@ export function BacklogWorkspace() {
     }
   }, [backlogState.view, preferences, updatePreferences]);
 
-  // REALTIME: Subscribe to epics table changes
+  // REALTIME: Subscribe to epics table changes (all changes, not just program-scoped)
+  // This ensures orphan epics and cross-program updates are captured
   useEffect(() => {
-    if (!backlogState.programId) return;
-
     const channel = supabase
       .channel('epic-backlog-realtime')
       .on(
@@ -106,10 +105,10 @@ export function BacklogWorkspace() {
           event: '*',
           schema: 'public',
           table: 'epics',
-          filter: `primary_program_id=eq.${backlogState.programId}`,
         },
         () => {
           queryClient.invalidateQueries({ queryKey: ['backlog-items'] });
+          queryClient.invalidateQueries({ queryKey: ['epics'] });
         }
       )
       .subscribe();
@@ -117,7 +116,7 @@ export function BacklogWorkspace() {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [backlogState.programId, queryClient]);
+  }, [queryClient]);
 
   // Fetch backlog items
   const { data: backlogData, isLoading } = useQuery({
