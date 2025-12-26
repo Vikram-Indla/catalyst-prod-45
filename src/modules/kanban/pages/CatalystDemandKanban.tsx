@@ -19,7 +19,7 @@ import { BusinessRequestDrawer } from '@/components/business-requests/BusinessRe
 import { PageChrome } from '@/components/layout/PageChrome';
 import { useIndustryViewStore } from '@/stores/useIndustryViewStore';
 
-export default function BusinessRequestsKanbanPage() {
+export default function CatalystDemandKanban() {
   const navigate = useNavigate();
   
   // Shared state from store

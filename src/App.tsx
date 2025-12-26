@@ -208,9 +208,9 @@ import DemandSummaryPage from "./pages/enterprise/DemandSummaryPage";
 import ProductRoomPage from "./pages/ProductRoomPage";
 import CapacityPlanningPage from "./pages/CapacityPlanningPage";
 import ExecutiveRoadmapPage from "./pages/enterprise/ExecutiveRoadmapPage";
-import BusinessRequestsKanbanPage from "./modules/kanban/pages/BusinessRequestsKanbanPage";
-import ProductBacklogPage from "./modules/product-backlog/pages/ProductBacklogPage";
-import ProductBacklogTablePage from "./modules/product-backlog/pages/ProductBacklogTablePage";
+import CatalystDemandKanban from "./modules/kanban/pages/CatalystDemandKanban";
+import CatalystDemandList from "./modules/product-backlog/pages/CatalystDemandList";
+import CatalystDemandTable from "./modules/product-backlog/pages/CatalystDemandTable";
 
 import SubmitDemandRequest from "./pages/SubmitDemandRequest";
 import ResetPassword from "./pages/ResetPassword";
@@ -304,9 +304,9 @@ const App = () => (
               <Route path="/industry" element={<Navigate to="/industry/backlog" replace />} />
               <Route path="/industry1" element={<IndustryPage />} />
               <Route path="/industry/industry" element={<IndustryPage />} />
-              <Route path="/industry/backlog" element={<ProductBacklogPage />} />
-              <Route path="/industry/table" element={<ProductBacklogTablePage />} />
-              <Route path="/industry/kanban" element={<BusinessRequestsKanbanPage />} />
+              <Route path="/industry/backlog" element={<CatalystDemandList />} />
+              <Route path="/industry/table" element={<CatalystDemandTable />} />
+              <Route path="/industry/kanban" element={<CatalystDemandKanban />} />
               <Route path="/industry/dashboard" element={<DemandSummaryPage />} />
               <Route path="/industry/roadmaps" element={<ProductRoadmapV2Page />} />
               <Route path="/industry/roadmaps-v1" element={<IndustryRoadmapPage />} />

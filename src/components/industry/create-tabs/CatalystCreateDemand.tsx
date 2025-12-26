@@ -94,7 +94,7 @@ function HelperText({ children }: { children: React.ReactNode }) {
   );
 }
 
-export function DemandDetailsTab({ data, onChange }: DemandDetailsTabProps) {
+export function CatalystCreateDemand({ data, onChange }: DemandDetailsTabProps) {
   const { data: departments } = useDepartments();
   const { data: owners } = useBusinessOwners();
   const { data: mappings } = useDepartmentOwnerMappings();

@@ -36,7 +36,7 @@ function countWords(html: string): number {
   return text.split(' ').filter(Boolean).length;
 }
 
-export function DemandDetailsTab({ data, onChange }: DemandDetailsTabProps) {
+export function CatalystCreateDemand({ data, onChange }: DemandDetailsTabProps) {
   const { user } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
