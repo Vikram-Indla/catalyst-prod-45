@@ -10,7 +10,8 @@ import {
 import { Button } from '@/components/ui/button';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
-import { PROCESS_STEPS } from '@/types/business-request';
+import { useProcessSteps } from '@/contexts/ProcessStepsContext';
+import { Loader2 } from 'lucide-react';
 
 interface DemandBulkStatusModalProps {
   isOpen: boolean;
@@ -21,6 +22,7 @@ interface DemandBulkStatusModalProps {
 
 export function DemandBulkStatusModal({ isOpen, onClose, onConfirm, selectedCount }: DemandBulkStatusModalProps) {
   const [selectedStatus, setSelectedStatus] = useState<string>('');
+  const { processStepOptions, isLoading } = useProcessSteps();
 
   const handleConfirm = () => {
     if (selectedStatus) {
@@ -45,20 +47,26 @@ export function DemandBulkStatusModal({ isOpen, onClose, onConfirm, selectedCoun
           </DialogDescription>
         </DialogHeader>
         
-        <RadioGroup 
-          value={selectedStatus} 
-          onValueChange={setSelectedStatus}
-          className="space-y-3"
-        >
-          {PROCESS_STEPS.map((step) => (
-            <div key={step.value} className="flex items-center space-x-3">
-              <RadioGroupItem value={step.value} id={step.value} />
-              <Label htmlFor={step.value} className="cursor-pointer">
-                {step.label}
-              </Label>
-            </div>
-          ))}
-        </RadioGroup>
+        {isLoading ? (
+          <div className="flex items-center justify-center py-8">
+            <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+          </div>
+        ) : (
+          <RadioGroup 
+            value={selectedStatus} 
+            onValueChange={setSelectedStatus}
+            className="space-y-3"
+          >
+            {processStepOptions.map((step) => (
+              <div key={step.value} className="flex items-center space-x-3">
+                <RadioGroupItem value={step.value} id={step.value} />
+                <Label htmlFor={step.value} className="cursor-pointer">
+                  {step.label}
+                </Label>
+              </div>
+            ))}
+          </RadioGroup>
+        )}
         
         <DialogFooter>
           <Button variant="outline" onClick={handleClose}>
@@ -66,7 +74,7 @@ export function DemandBulkStatusModal({ isOpen, onClose, onConfirm, selectedCoun
           </Button>
           <Button 
             onClick={handleConfirm}
-            disabled={!selectedStatus}
+            disabled={!selectedStatus || isLoading}
           >
             Update {selectedCount} Request{selectedCount > 1 ? 's' : ''}
           </Button>

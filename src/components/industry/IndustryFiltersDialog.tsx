@@ -4,8 +4,9 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { ChevronUp, ChevronDown } from 'lucide-react';
-import { PROCESS_STEPS, DELIVERY_PLATFORM_OPTIONS } from '@/types/business-request';
+import { ChevronUp, ChevronDown, Loader2 } from 'lucide-react';
+import { DELIVERY_PLATFORM_OPTIONS } from '@/types/business-request';
+import { useProcessSteps } from '@/contexts/ProcessStepsContext';
 import { useDepartments } from '@/hooks/useDepartmentsAndOwners';
 
 interface IndustryFiltersDialogProps {
@@ -55,6 +56,9 @@ export function IndustryFiltersDialog({
   const [peopleOpen, setPeopleOpen] = useState(true);
   const [statusOpen, setStatusOpen] = useState(true);
   const [datesOpen, setDatesOpen] = useState(true);
+  
+  // Fetch process steps from database (dynamic)
+  const { processStepOptions } = useProcessSteps();
   
   // Fetch departments from admin-configured data (ZERO-SEED policy)
   const { data: departments = [] } = useDepartments();
@@ -222,7 +226,7 @@ export function IndustryFiltersDialog({
                       </SelectTrigger>
                       <SelectContent className="bg-white">
                         <SelectItem value="all">Select...</SelectItem>
-                        {PROCESS_STEPS.map((step) => (
+                        {processStepOptions.map((step) => (
                           <SelectItem key={step.value} value={step.value}>
                             {step.label}
                           </SelectItem>

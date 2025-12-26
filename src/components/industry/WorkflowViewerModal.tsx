@@ -1,9 +1,9 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { GitBranch, ArrowRight, Pause, Clock, Check, XCircle } from 'lucide-react';
+import { GitBranch, ArrowRight, Pause, Clock, Check, XCircle, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { PROCESS_STEPS } from '@/types/business-request';
+import { useProcessSteps } from '@/contexts/ProcessStepsContext';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { format } from 'date-fns';
@@ -24,18 +24,12 @@ interface TransitionEntry {
   formattedDate: string;
 }
 
-// Step value to label mapping
-const STEP_LABELS: Record<string, string> = {};
-PROCESS_STEPS.forEach(step => {
-  STEP_LABELS[step.value] = step.label;
-});
-
 // Orphan statuses that aren't part of the main flow
 const ORPHAN_STATUSES = ['on_hold', 'rejected'];
-const MAIN_STEPS = PROCESS_STEPS.filter(s => !ORPHAN_STATUSES.includes(s.value));
 
 export function WorkflowViewerModal({ currentStep, requestId, submittedDate, onStepChange, open, onOpenChange }: WorkflowViewerModalProps) {
   const [internalOpen, setInternalOpen] = useState(false);
+  const { processStepOptions, getProcessStepLabel, isLoading: isLoadingSteps } = useProcessSteps();
   
   // Support both controlled and uncontrolled modes
   const isOpen = open !== undefined ? open : internalOpen;
@@ -44,8 +38,14 @@ export function WorkflowViewerModal({ currentStep, requestId, submittedDate, onS
   const isPaused = currentStep === 'on_hold';
   const isRejected = currentStep === 'rejected';
 
+  // Filter out orphan statuses for main flow
+  const mainSteps = useMemo(() => 
+    processStepOptions.filter(s => !ORPHAN_STATUSES.includes(s.value)),
+    [processStepOptions]
+  );
+
   // Find current step index in main flow
-  const currentIndex = MAIN_STEPS.findIndex(s => s.value === currentStep);
+  const currentIndex = mainSteps.findIndex(s => s.value === currentStep);
 
   // Fetch ALL process_step changes as chronological timeline
   const { data: transitions } = useQuery({
@@ -89,10 +89,6 @@ export function WorkflowViewerModal({ currentStep, requestId, submittedDate, onS
     enabled: !!requestId && isOpen
   });
 
-  const getStepLabel = (stepValue: string): string => {
-    return STEP_LABELS[stepValue] || stepValue?.replace(/_/g, ' ') || stepValue;
-  };
-
   const isOptionalStep = (stepValue: string): boolean => {
     return ORPHAN_STATUSES.includes(stepValue);
   };
@@ -124,11 +120,17 @@ export function WorkflowViewerModal({ currentStep, requestId, submittedDate, onS
                     <SelectValue placeholder="Select status" />
                   </SelectTrigger>
                   <SelectContent>
-                    {PROCESS_STEPS.map((step) => (
-                      <SelectItem key={step.value} value={step.value}>
-                        {step.label}
-                      </SelectItem>
-                    ))}
+                    {isLoadingSteps ? (
+                      <div className="flex items-center justify-center py-2">
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      </div>
+                    ) : (
+                      processStepOptions.map((step) => (
+                        <SelectItem key={step.value} value={step.value}>
+                          {step.label}
+                        </SelectItem>
+                      ))
+                    )}
                   </SelectContent>
                 </Select>
               )}
@@ -144,14 +146,14 @@ export function WorkflowViewerModal({ currentStep, requestId, submittedDate, onS
                 className="absolute top-6 left-4 h-0.5 bg-brand-primary transition-all duration-300"
                 style={{ 
                   width: currentIndex >= 0 
-                    ? `calc(${(currentIndex / (MAIN_STEPS.length - 1)) * 100}% - 32px)` 
+                    ? `calc(${(currentIndex / (mainSteps.length - 1)) * 100}% - 32px)` 
                     : '0%' 
                 }}
               />
               
               {/* Steps */}
               <div className="relative flex justify-between px-0">
-                {MAIN_STEPS.map((step, index) => {
+                {mainSteps.map((step, index) => {
                   const isCompleted = index < currentIndex;
                   const isCurrent = step.value === currentStep;
                   
@@ -259,14 +261,14 @@ export function WorkflowViewerModal({ currentStep, requestId, submittedDate, onS
                             {transition.fromStep ? (
                               <>
                                 <span className="text-sm text-muted-foreground">
-                                  {getStepLabel(transition.fromStep)}
+                                  {getProcessStepLabel(transition.fromStep)}
                                 </span>
                                 <ArrowRight className="h-3 w-3 text-muted-foreground shrink-0" />
                                 <span className={cn(
                                   "text-sm font-medium",
                                   isOptional ? "text-amber-600" : isLast ? "text-brand-primary" : "text-foreground"
                                 )}>
-                                  {getStepLabel(transition.toStep)}
+                                  {getProcessStepLabel(transition.toStep)}
                                 </span>
                               </>
                             ) : (
@@ -274,7 +276,7 @@ export function WorkflowViewerModal({ currentStep, requestId, submittedDate, onS
                                 "text-sm font-medium",
                                 isLast ? "text-brand-primary" : "text-foreground"
                               )}>
-                                {getStepLabel(transition.toStep)}
+                                {getProcessStepLabel(transition.toStep)}
                                 <span className="text-muted-foreground font-normal ml-1">(Submitted)</span>
                               </span>
                             )}
