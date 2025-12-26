@@ -21,6 +21,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { Progress } from '@/components/ui/progress';
 import { ZoomIn, ZoomOut, Search, Filter, Calendar, Star } from 'lucide-react';
 import { EpicOverdueIndicator } from '@/components/items/epics/EpicTimeBadges';
+import { useEpicStatusLabel } from '@/components/items/epics/EpicStatusBadge';
 import { getQuarterLabel, isEpicOverdue, isEpicDueThisQuarter, getEpicDuration } from '@/lib/epic-time-utils';
 import { cn } from '@/lib/utils';
 import { format, differenceInDays, addMonths, startOfMonth, endOfMonth, eachMonthOfInterval } from 'date-fns';

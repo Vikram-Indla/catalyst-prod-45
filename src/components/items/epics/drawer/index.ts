@@ -1,1 +1,8 @@
-export { EpicStatusDropdown, EPIC_STATUS_OPTIONS, getEpicStatusConfig } from './EpicStatusDropdown';
+export { 
+  EpicStatusDropdown, 
+  EPIC_STATUS_OPTIONS, 
+  getEpicStatusConfig,
+  useEpicStatusConfig,
+  getEpicStatusConfigFromList,
+  getEpicStatusStyles,
+} from './EpicStatusDropdown';
