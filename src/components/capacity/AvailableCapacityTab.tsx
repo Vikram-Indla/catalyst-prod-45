@@ -79,8 +79,8 @@ export function AvailableCapacityTab({
       {/* Weekly Summary Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {weekSummaries.map((w) => {
-          const colorClass = w.total > 200 ? 'text-[#5c7c5c]' : 
-                            w.total >= 50 ? 'text-[#8b7355]' : 'text-[#8b5c5c]';
+          const colorClass = w.total > 200 ? 'text-[#0d9488]' : 
+                            w.total >= 50 ? 'text-[#f59e0b]' : 'text-[#ef4444]';
           
           return (
             <div
@@ -169,9 +169,9 @@ export function AvailableCapacityTab({
                     <td className="p-3 text-center">
                       <span className={cn(
                         "font-semibold text-sm",
-                        avgAvailable >= 50 ? 'text-[#5c7c5c]' :
-                        avgAvailable >= 20 ? 'text-[#8b7355]' :
-                        avgAvailable > 0 ? 'text-[#8b5c5c]' : 'text-[#c8ccd0]'
+                        avgAvailable >= 50 ? 'text-[#0d9488]' :
+                        avgAvailable >= 20 ? 'text-[#f59e0b]' :
+                        avgAvailable > 0 ? 'text-[#ef4444]' : 'text-[#6b7280]'
                       )}>
                         {avgAvailable}%
                       </span>
@@ -208,14 +208,14 @@ export function AvailableCapacityTab({
 // Capacity Cell Component with visual progress bar
 function CapacityCell({ availablePercent }: { availablePercent: number }) {
   const colorClass = 
-    availablePercent >= 50 ? 'bg-[#5c7c5c]' :
-    availablePercent >= 20 ? 'bg-[#8b7355]' :
-    availablePercent > 0 ? 'bg-[#8b5c5c]' : 'bg-[#c8ccd0]';
+    availablePercent >= 50 ? 'bg-[#0d9488]' :
+    availablePercent >= 20 ? 'bg-[#f59e0b]' :
+    availablePercent > 0 ? 'bg-[#ef4444]' : 'bg-[#6b7280]';
   
   const textClass =
-    availablePercent >= 50 ? 'text-[#5c7c5c]' :
-    availablePercent >= 20 ? 'text-[#8b7355]' :
-    availablePercent > 0 ? 'text-[#8b5c5c]' : 'text-[#c8ccd0]';
+    availablePercent >= 50 ? 'text-[#0d9488]' :
+    availablePercent >= 20 ? 'text-[#f59e0b]' :
+    availablePercent > 0 ? 'text-[#ef4444]' : 'text-[#6b7280]';
 
   return (
     <div className="flex items-center gap-2 justify-center">

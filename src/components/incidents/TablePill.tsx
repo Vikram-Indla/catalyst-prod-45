@@ -3,8 +3,7 @@
  *
  * Rules:
  * - Use semantic tokens (CSS vars) so dark mode stays correct
- * - Brand colors exposed as HSL vars in index.css:
- *   --catalyst-gold / --catalyst-olive / --catalyst-bronze / --catalyst-champagne / --catalyst-grey
+ * - Brand colors: Blue #2563eb | Teal #0d9488 | Amber #f59e0b | Red #ef4444 | Gray #6b7280
  */
 
 import { cn } from '@/lib/utils';
@@ -17,16 +16,19 @@ export interface TablePillProps {
   style?: React.CSSProperties;
 }
 
+// Updated brand colors - Blue + Teal palette
 const brand = {
-  gold: 'hsl(var(--catalyst-gold))',
-  goldBg: 'hsl(var(--catalyst-gold) / 0.12)',
-  olive: 'hsl(var(--catalyst-olive))',
-  oliveBg: 'hsl(var(--catalyst-olive) / 0.12)',
-  bronze: 'hsl(var(--catalyst-bronze))',
-  bronzeBg: 'hsl(var(--catalyst-bronze) / 0.12)',
-  champagneBg: 'hsl(var(--catalyst-champagne) / 0.14)',
-  grey: 'hsl(var(--catalyst-grey))',
-  greyBg: 'hsl(var(--catalyst-grey) / 0.22)',
+  blue: '#2563eb',
+  blueBg: 'rgba(37, 99, 235, 0.1)',
+  teal: '#0d9488',
+  tealBg: 'rgba(13, 148, 136, 0.1)',
+  amber: '#f59e0b',
+  amberBg: 'rgba(245, 158, 11, 0.1)',
+  amberText: '#b45309',
+  red: '#ef4444',
+  redBg: 'rgba(239, 68, 68, 0.1)',
+  grey: '#6b7280',
+  greyBg: 'rgba(107, 114, 128, 0.1)',
   border: 'hsl(var(--border))',
   foreground: 'hsl(var(--foreground))',
   mutedFg: 'hsl(var(--muted-foreground))',
@@ -51,12 +53,13 @@ export function TablePill({ children, className, style }: TablePillProps) {
 
 /**
  * Severity — dot + text only (no background pill)
+ * Red (SEV1), Amber (SEV2), Blue (SEV3), Gray (SEV4)
  */
 export function SeverityPill({ severity }: { severity: string }) {
   const dotColor: Record<string, string> = {
-    SEV1: brand.gold,
-    SEV2: brand.bronze,
-    SEV3: brand.olive,
+    SEV1: brand.red,
+    SEV2: brand.amber,
+    SEV3: brand.blue,
     SEV4: brand.grey,
   };
 
@@ -74,7 +77,7 @@ export function SeverityPill({ severity }: { severity: string }) {
 }
 
 /**
- * Status — subtle pill with dot (Catalyst mapping)
+ * Status — subtle pill with dot (Blue + Teal mapping)
  */
 export function StatusPill({ status }: { status: string }) {
   const normalized = status?.toLowerCase().replace(/[\s-]/g, '_');
@@ -85,74 +88,74 @@ export function StatusPill({ status }: { status: string }) {
   > = {
     open: {
       label: 'Open',
-      bg: brand.surface,
-      border: brand.gold,
-      text: brand.gold,
-      dot: brand.gold,
+      bg: brand.blueBg,
+      border: brand.blue,
+      text: brand.blue,
+      dot: brand.blue,
     },
     triage: {
       label: 'Triaging',
-      bg: brand.goldBg,
+      bg: brand.amberBg,
       border: 'transparent',
-      text: brand.bronze,
-      dot: brand.gold,
+      text: brand.amberText,
+      dot: brand.amber,
     },
     triaging: {
       label: 'Triaging',
-      bg: brand.goldBg,
+      bg: brand.amberBg,
       border: 'transparent',
-      text: brand.bronze,
-      dot: brand.gold,
+      text: brand.amberText,
+      dot: brand.amber,
     },
     to_committee: {
       label: 'Committee',
       bg: brand.greyBg,
       border: 'transparent',
-      text: brand.mutedFg,
+      text: brand.grey,
       dot: brand.grey,
     },
     committee: {
       label: 'Committee',
       bg: brand.greyBg,
       border: 'transparent',
-      text: brand.mutedFg,
+      text: brand.grey,
       dot: brand.grey,
     },
     in_progress: {
       label: 'In Progress',
-      bg: brand.oliveBg,
+      bg: brand.blueBg,
       border: 'transparent',
-      text: brand.olive,
-      dot: brand.olive,
+      text: brand.blue,
+      dot: brand.blue,
     },
     resolved: {
       label: 'Resolved',
-      bg: 'hsl(var(--catalyst-olive) / 0.16)',
+      bg: brand.tealBg,
       border: 'transparent',
-      text: brand.olive,
-      dot: brand.olive,
+      text: brand.teal,
+      dot: brand.teal,
     },
     converted: {
       label: 'Converted',
-      bg: 'hsl(var(--catalyst-grey) / 0.16)',
+      bg: brand.greyBg,
       border: 'transparent',
-      text: brand.mutedFg,
+      text: brand.grey,
       dot: brand.grey,
     },
     closed: {
       label: 'Closed',
-      bg: 'hsl(var(--catalyst-grey) / 0.12)',
+      bg: brand.tealBg,
       border: 'transparent',
-      text: brand.mutedFg,
-      dot: brand.grey,
+      text: brand.teal,
+      dot: brand.teal,
     },
   };
 
   const cfg = styles[normalized] || {
     label: status || '—',
-    bg: 'hsl(var(--catalyst-grey) / 0.12)',
+    bg: brand.greyBg,
     border: 'transparent',
-    text: brand.mutedFg,
+    text: brand.grey,
     dot: brand.grey,
   };
 
@@ -172,17 +175,29 @@ export function StatusPill({ status }: { status: string }) {
 }
 
 /**
- * SLA — Olive (On Track) / Bronze (Breached)
+ * SLA — Teal (On Track) / Amber (At Risk) / Red (Breached)
  */
 export function SlaPill({ status }: { status: string }) {
   if (status === 'breached') {
     return (
       <span
         className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold h-5"
-        style={{ backgroundColor: brand.bronzeBg, color: brand.bronze }}
+        style={{ backgroundColor: brand.redBg, color: brand.red }}
       >
         <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
         <span>Breached</span>
+      </span>
+    );
+  }
+
+  if (status === 'at_risk') {
+    return (
+      <span
+        className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold h-5"
+        style={{ backgroundColor: brand.amberBg, color: brand.amberText }}
+      >
+        <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
+        <span>At Risk</span>
       </span>
     );
   }
@@ -191,7 +206,7 @@ export function SlaPill({ status }: { status: string }) {
     return (
       <span
         className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold h-5"
-        style={{ backgroundColor: brand.oliveBg, color: brand.olive }}
+        style={{ backgroundColor: brand.tealBg, color: brand.teal }}
       >
         <CheckCircle className="w-3.5 h-3.5 shrink-0" />
         <span>On Track</span>
@@ -202,14 +217,14 @@ export function SlaPill({ status }: { status: string }) {
   return <span className="text-[11px] text-muted-foreground leading-5">—</span>;
 }
 
-// Major — bronze emphasis (theme-aware)
+// Major — red emphasis for urgent items
 export function MajorPill({ isMajor }: { isMajor: boolean }) {
   if (!isMajor) return <span className="text-[11px] text-muted-foreground leading-5">—</span>;
   return (
     <TablePill
       style={{
-        backgroundColor: brand.bronzeBg,
-        color: brand.bronze,
+        backgroundColor: brand.redBg,
+        color: brand.red,
         border: `1px solid ${brand.border}`,
       }}
     >
