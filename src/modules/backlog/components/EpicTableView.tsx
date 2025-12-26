@@ -3,15 +3,23 @@
  * Enhanced data table with drag-and-drop, bulk actions, and keyboard navigation
  */
 
-import { useMemo, useCallback, useState } from 'react';
+import { useMemo, useCallback, useState, useEffect } from 'react';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 import { cn } from '@/lib/utils';
 import { Checkbox } from '@/components/ui/checkbox';
-import { ChevronUp, ChevronDown, GripVertical, Pencil, MoreVertical } from 'lucide-react';
+import { ChevronUp, ChevronDown, GripVertical, Pencil, MoreVertical, Columns, Check } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/integrations/supabase/client';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { useQueryClient, useQuery } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { useActiveEpicStatuses } from '@/hooks/useEpicStatuses';
@@ -127,10 +135,56 @@ export function EpicTableView({
     enabled: !!programId,
   });
 
-  // Column visibility state
+  // Storage key for column persistence
+  const columnsStorageKey = `epic:program:${programId || 'default'}:columns`;
+
+  // Column visibility state with persistence
   const [visibleColumns, setVisibleColumns] = useState<Set<string>>(() => {
+    try {
+      const stored = localStorage.getItem(columnsStorageKey);
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        return new Set(parsed);
+      }
+    } catch {
+      // Fallback to defaults
+    }
     return new Set(DEFAULT_COLUMNS.filter(c => c.visible !== false).map(c => c.key));
   });
+
+  // Persist column visibility changes
+  useEffect(() => {
+    try {
+      localStorage.setItem(columnsStorageKey, JSON.stringify(Array.from(visibleColumns)));
+    } catch {
+      // Ignore storage errors
+    }
+  }, [visibleColumns, columnsStorageKey]);
+
+  // Column toggle handlers
+  const toggleColumn = (columnKey: string) => {
+    setVisibleColumns(prev => {
+      const next = new Set(prev);
+      if (next.has(columnKey)) {
+        // Don't allow hiding checkbox column
+        if (columnKey !== 'checkbox') {
+          next.delete(columnKey);
+        }
+      } else {
+        next.add(columnKey);
+      }
+      return next;
+    });
+  };
+
+  const showAllColumns = () => {
+    setVisibleColumns(new Set(DEFAULT_COLUMNS.map(c => c.key)));
+  };
+
+  const hideAllColumns = () => {
+    // Keep checkbox visible
+    setVisibleColumns(new Set(['checkbox', 'id', 'name']));
+  };
 
   // Selection helpers
   const selectedSet = new Set(selectedItems);
@@ -341,6 +395,53 @@ export function EpicTableView({
               <strong className="font-semibold text-[var(--industry-text-primary)] dark:text-gray-100">{sortedData.length}</strong> {sortedData.length === 1 ? 'epic' : 'epics'}
             </span>
           </div>
+
+          {/* Columns Dropdown */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-8 px-3 gap-1.5 text-xs font-medium"
+                style={{ 
+                  backgroundColor: 'var(--surface-1)', 
+                  borderColor: 'var(--border-color)',
+                  color: 'var(--text-1)'
+                }}
+              >
+                <Columns className="h-3.5 w-3.5" />
+                Columns
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-48">
+              <DropdownMenuLabel className="text-xs font-semibold">Toggle Columns</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              {DEFAULT_COLUMNS.filter(col => col.key !== 'checkbox').map(column => (
+                <DropdownMenuItem
+                  key={column.key}
+                  onClick={() => toggleColumn(column.key)}
+                  className="flex items-center gap-2 cursor-pointer"
+                >
+                  <div className={cn(
+                    "w-4 h-4 rounded border flex items-center justify-center",
+                    visibleColumns.has(column.key) 
+                      ? "bg-brand-primary border-brand-primary" 
+                      : "border-muted-foreground/30"
+                  )}>
+                    {visibleColumns.has(column.key) && <Check className="w-3 h-3 text-white" />}
+                  </div>
+                  <span className="text-sm">{column.label || column.key}</span>
+                </DropdownMenuItem>
+              ))}
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={showAllColumns} className="text-xs text-muted-foreground">
+                Show All
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={hideAllColumns} className="text-xs text-muted-foreground">
+                Hide All
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
 
         {/* Table */}
