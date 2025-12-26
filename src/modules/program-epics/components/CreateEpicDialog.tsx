@@ -478,39 +478,60 @@ export function CreateEpicDialog({
                       <CommandList className="max-h-64">
                         <CommandEmpty>No themes found.</CommandEmpty>
                         <CommandGroup>
-                          {themes.map((theme) => (
-                            <CommandItem
-                              key={theme.id}
-                              value={theme.name}
-                              onSelect={() => {
-                                setThemeId(theme.id);
-                                setThemePopoverOpen(false);
-                              }}
-                              className={cn(
-                                "cursor-pointer transition-colors",
-                                themeId === theme.id && "!bg-[rgba(198,156,109,0.15)]"
-                              )}
-                              style={{
-                                borderLeft: themeId === theme.id ? '2px solid #c69c6d' : '2px solid transparent'
-                              }}
-                            >
-                              <Check
+                          {themes.map((theme) => {
+                            const isActive = theme.status === 'active';
+                            const statusStyle = isActive 
+                              ? {
+                                  backgroundColor: 'rgba(92, 124, 92, 0.2)',
+                                  color: '#5c7c5c',
+                                  border: '1px solid rgba(92, 124, 92, 0.3)'
+                                }
+                              : {
+                                  backgroundColor: 'rgba(198, 156, 109, 0.15)',
+                                  color: '#c69c6d',
+                                  border: '1px solid rgba(198, 156, 109, 0.25)'
+                                };
+                            
+                            return (
+                              <CommandItem
+                                key={theme.id}
+                                value={theme.name}
+                                onSelect={() => {
+                                  setThemeId(theme.id);
+                                  setThemePopoverOpen(false);
+                                }}
                                 className={cn(
-                                  'mr-2 h-4 w-4',
-                                  themeId === theme.id ? 'opacity-100' : 'opacity-0'
+                                  "cursor-pointer transition-colors py-3 px-4",
+                                  themeId === theme.id && "!bg-[rgba(198,156,109,0.12)]"
                                 )}
-                                style={{ color: '#c69c6d' }}
-                              />
-                              <span style={{ color: themeId === theme.id ? 'var(--dialog-title-color)' : 'inherit' }}>
-                                {theme.name}
-                              </span>
-                              {theme.status && (
-                                <Badge variant="outline" className="ml-auto text-xs">
-                                  {theme.status}
-                                </Badge>
-                              )}
-                            </CommandItem>
-                          ))}
+                                style={{
+                                  borderLeft: themeId === theme.id ? '3px solid #c69c6d' : '3px solid transparent'
+                                }}
+                              >
+                                <Check
+                                  className={cn(
+                                    'mr-2 h-4 w-4 flex-shrink-0',
+                                    themeId === theme.id ? 'opacity-100' : 'opacity-0'
+                                  )}
+                                  style={{ color: '#c69c6d' }}
+                                />
+                                <span 
+                                  className="flex-1 text-sm font-medium"
+                                  style={{ color: 'var(--dialog-title-color, #f5f5f5)' }}
+                                >
+                                  {theme.name}
+                                </span>
+                                {theme.status && (
+                                  <span
+                                    className="ml-auto px-2 py-0.5 rounded text-xs font-medium"
+                                    style={statusStyle}
+                                  >
+                                    {theme.status}
+                                  </span>
+                                )}
+                              </CommandItem>
+                            );
+                          })}
                         </CommandGroup>
                       </CommandList>
                     </Command>
@@ -579,16 +600,16 @@ export function CreateEpicDialog({
                                 setBrPopoverOpen(false);
                               }}
                               className={cn(
-                                "cursor-pointer transition-colors",
-                                linkedBusinessRequestId === br.id && "!bg-[rgba(198,156,109,0.15)]"
+                                "cursor-pointer transition-colors py-3 px-4",
+                                linkedBusinessRequestId === br.id && "!bg-[rgba(198,156,109,0.12)]"
                               )}
                               style={{
-                                borderLeft: linkedBusinessRequestId === br.id ? '2px solid #c69c6d' : '2px solid transparent'
+                                borderLeft: linkedBusinessRequestId === br.id ? '3px solid #c69c6d' : '3px solid transparent'
                               }}
                             >
                               <Check
                                 className={cn(
-                                  'mr-2 h-4 w-4',
+                                  'mr-2 h-4 w-4 flex-shrink-0',
                                   linkedBusinessRequestId === br.id ? 'opacity-100' : 'opacity-0'
                                 )}
                                 style={{ color: '#c69c6d' }}
@@ -597,18 +618,37 @@ export function CreateEpicDialog({
                                 <span className="font-mono shrink-0" style={{ color: '#c69c6d' }}>
                                   {br.request_key}
                                 </span>
-                                <span className="truncate">{br.title}</span>
+                                <span 
+                                  className="truncate"
+                                  style={{ color: 'var(--dialog-title-color, #f5f5f5)' }}
+                                >
+                                  {br.title}
+                                </span>
                               </div>
                               <div className="flex items-center gap-1 shrink-0 ml-2">
                                 {br.rank && (
-                                  <Badge variant="outline" className="text-[10px]">
+                                  <span
+                                    className="px-2 py-0.5 rounded text-[10px] font-medium"
+                                    style={{
+                                      backgroundColor: 'rgba(92, 124, 92, 0.2)',
+                                      color: '#5c7c5c',
+                                      border: '1px solid rgba(92, 124, 92, 0.3)'
+                                    }}
+                                  >
                                     Rank #{br.rank}
-                                  </Badge>
+                                  </span>
                                 )}
                                 {br.business_score && (
-                                  <Badge variant="secondary" className="text-[10px]">
+                                  <span
+                                    className="px-2 py-0.5 rounded text-[10px] font-medium"
+                                    style={{
+                                      backgroundColor: 'rgba(198, 156, 109, 0.15)',
+                                      color: '#c69c6d',
+                                      border: '1px solid rgba(198, 156, 109, 0.25)'
+                                    }}
+                                  >
                                     Score: {br.business_score}
-                                  </Badge>
+                                  </span>
                                 )}
                               </div>
                             </CommandItem>
