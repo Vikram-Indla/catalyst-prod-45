@@ -104,7 +104,7 @@ export function FilterModal({
                   className={cn(
                     "cursor-pointer transition-colors",
                     activeQuickFilters.includes(filter.id) 
-                      ? "bg-[#c69c6d] hover:bg-[#8b7355] text-white" 
+                      ? "bg-[#2563eb] hover:bg-[#1d4ed8] text-white" 
                       : "hover:bg-muted"
                   )}
                   onClick={() => onToggleQuickFilter(filter.id)}
@@ -262,12 +262,12 @@ export function FilterModal({
         {/* Footer */}
         <div className="border-t border-border px-6 py-4 flex items-center justify-between flex-shrink-0">
           <span className="text-sm">
-            <span className="text-[#c69c6d] font-medium">{totalActiveFilters}</span>
+            <span className="text-[#2563eb] font-medium">{totalActiveFilters}</span>
             <span className="text-muted-foreground"> filters applied</span>
           </span>
           <div className="flex gap-2">
             <Button variant="outline" onClick={handleClear}>Clear All</Button>
-            <Button onClick={handleApply} className="bg-[#c69c6d] hover:bg-[#8b7355] text-white">
+            <Button onClick={handleApply} className="bg-[#2563eb] hover:bg-[#1d4ed8] text-white">
               Apply
             </Button>
           </div>

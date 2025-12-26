@@ -45,10 +45,10 @@ const mockItems: WorkItem[] = [];
 
 const typeColors: Record<string, string> = {
   Feature: 'bg-amber-500',
-  Story: 'bg-green-500',
+  Story: 'bg-[#0d9488]',
   Task: 'bg-blue-500',
   Defect: 'bg-red-500',
-  Subtask: 'bg-gray-500',
+  Subtask: 'bg-neutral-500',
 };
 
 // Available columns for configuration
@@ -98,9 +98,9 @@ const mockStatuses = [
 // Jira-style status lozenge component
 function StatusLozenge({ status, category }: { status: string; category: 'todo' | 'in_progress' | 'done' }) {
   const categoryStyles = {
-    todo: 'bg-slate-100 text-slate-700 border-slate-200',
+    todo: 'bg-neutral-100 text-neutral-700 border-neutral-200',
     in_progress: 'bg-blue-50 text-blue-700 border-blue-200',
-    done: 'bg-green-50 text-green-700 border-green-200',
+    done: 'bg-[rgba(13,148,136,0.1)] text-[#0d9488] border-[rgba(13,148,136,0.2)]',
   };
 
   return (
@@ -116,9 +116,9 @@ function StatusLozenge({ status, category }: { status: string; category: 'todo' 
 // Status badge for filter dropdown
 function StatusBadge({ name, category }: { name: string; category: string }) {
   const categoryStyles: Record<string, string> = {
-    todo: 'bg-slate-100 text-slate-700',
-    in_progress: 'bg-yellow-100 text-yellow-800',
-    done: 'bg-green-100 text-green-700',
+    todo: 'bg-neutral-100 text-neutral-700',
+    in_progress: 'bg-amber-100 text-amber-800',
+    done: 'bg-[rgba(13,148,136,0.1)] text-[#0d9488]',
   };
 
   return (

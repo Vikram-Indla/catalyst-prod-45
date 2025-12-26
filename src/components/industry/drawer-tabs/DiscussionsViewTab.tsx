@@ -122,7 +122,7 @@ export function DiscussionsViewTab({ data }: DiscussionsViewTabProps) {
     formatted = formatted.replace(/_([^_]+)_/g, '<em>$1</em>');
     // Handle @mentions
     formatted = formatted.replace(/@\[([^\]]+)\]\([^)]+\)/g, (_, name) => {
-      return `<span class="text-[#c69c6d] font-medium">@${name}</span>`;
+      return `<span class="text-[#2563eb] font-medium">@${name}</span>`;
     });
     return formatted;
   };
@@ -163,7 +163,7 @@ export function DiscussionsViewTab({ data }: DiscussionsViewTabProps) {
                       className={`text-xs ${
                         isSystemUser 
                           ? 'bg-amber-100 dark:bg-amber-800/30 text-amber-700 dark:text-amber-400' 
-                          : 'bg-[#c69c6d]/20 text-[#c69c6d]'
+                          : 'bg-[#2563eb]/20 text-[#2563eb]'
                       }`}
                     >
                       {isSystemUser ? <Bot className="h-4 w-4" /> : initials}
@@ -211,7 +211,7 @@ export function DiscussionsViewTab({ data }: DiscussionsViewTabProps) {
           <Button
             onClick={handleSubmit}
             disabled={!newMessage.trim() || addDiscussion.isPending}
-            className="bg-[#c69c6d] hover:bg-[#b8894d] text-white self-end"
+            className="bg-[#2563eb] hover:bg-[#1d4ed8] text-white self-end"
           >
             <Send className="h-4 w-4" />
           </Button>

@@ -20,7 +20,7 @@ export function ExecutionAgainstOutcomesWidget({ snapshotId }: ExecutionAgainstO
     switch (color) {
       case 'red': return 'bg-red-500';
       case 'yellow': return 'bg-amber-500';
-      case 'green': return 'bg-green-500';
+      case 'green': return 'bg-[#0d9488]';
       default: return 'bg-muted';
     }
   };
@@ -29,7 +29,7 @@ export function ExecutionAgainstOutcomesWidget({ snapshotId }: ExecutionAgainstO
     switch (color) {
       case 'red': return 'text-red-600';
       case 'yellow': return 'text-amber-600';
-      case 'green': return 'text-green-600';
+      case 'green': return 'text-[#0d9488]';
       default: return 'text-muted-foreground';
     }
   };
@@ -89,7 +89,7 @@ export function ExecutionAgainstOutcomesWidget({ snapshotId }: ExecutionAgainstO
     <div className="flex items-center gap-1">
       <span className="w-2 h-2 rounded-full bg-red-500"></span>
       <span className="w-2 h-2 rounded-full bg-amber-500"></span>
-      <span className="w-2 h-2 rounded-full bg-green-500"></span>
+      <span className="w-2 h-2 rounded-full bg-[#0d9488]"></span>
     </div>
   );
 
