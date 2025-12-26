@@ -61,6 +61,8 @@ export function ThemeDialog({ open, onOpenChange, theme }: ThemeDialogProps) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['themes'] });
+      queryClient.invalidateQueries({ queryKey: ['theme-groups-with-counts'] });
+      queryClient.invalidateQueries({ queryKey: ['strategic-themes'] });
       toast.success(theme ? 'Theme updated' : 'Theme created');
       onOpenChange(false);
     },
