@@ -111,7 +111,7 @@ export function BacklogFiltersDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-lg">
         <DialogHeader>
-          <DialogTitle>Filter Backlog Items</DialogTitle>
+          <DialogTitle>Epic Filter</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-5 py-4">
