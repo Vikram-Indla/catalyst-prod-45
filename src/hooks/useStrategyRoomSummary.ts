@@ -47,7 +47,7 @@ export interface StrategyRoomSummaryData {
   topRisks: RiskSummary[];
   
   // Derived Status
-  overallStatus: 'on-track' | 'at-risk' | 'off-track';
+  overallStatus: 'on-track' | 'at-risk' | 'off-track' | 'no-data';
 }
 
 interface ObjectiveSummary {
@@ -77,7 +77,7 @@ export const EMPTY_SUMMARY: StrategyRoomSummaryData = {
   lowRisks: 0,
   overdueRisks: 0,
   topRisks: [],
-  overallStatus: 'at-risk',
+  overallStatus: 'no-data',
 };
 
 // Request ID for concurrency control
@@ -248,9 +248,13 @@ async function fetchSummaryData(
 
   // Determine overall status
   const hasObjectives = objectivesCount > 0;
-  let overallStatus: 'on-track' | 'at-risk' | 'off-track' = 'at-risk';
+  const hasAnyData = hasObjectives || risks.length > 0 || totalEpics > 0 || totalFeatures > 0;
+  let overallStatus: 'on-track' | 'at-risk' | 'off-track' | 'no-data' = 'no-data';
   
-  if (!hasObjectives) {
+  if (!hasAnyData) {
+    overallStatus = 'no-data';
+  } else if (!hasObjectives) {
+    // We have some data but no objectives - treat as at-risk (no strategy defined)
     overallStatus = 'at-risk';
   } else if (highRisks > 2 || atRiskObjectives.length > 3 || avgProgress < 30) {
     overallStatus = 'off-track';
