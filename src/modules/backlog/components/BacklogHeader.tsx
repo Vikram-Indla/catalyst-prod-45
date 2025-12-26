@@ -80,20 +80,88 @@ export function BacklogHeader({
         </div>
       </div>
 
-      {/* Row 2: Toolbar */}
+      {/* Row 2: Toolbar - matches Industry Backlog layout */}
       <div
         className="flex items-center px-6"
         style={{ height: '44px' }}
       >
         <div className="flex items-center justify-between gap-4 w-full">
-          {/* Left - Search */}
-          <div className="relative w-full max-w-md">
+          {/* Left - View Toggle */}
+          <div 
+            className="flex items-center rounded-md overflow-hidden shrink-0"
+            style={{ 
+              backgroundColor: 'var(--bg-card)', 
+              border: '1px solid var(--border-color)',
+              boxShadow: 'var(--shadow-xs)',
+            }}
+          >
+            <button
+              onClick={() => setView('list')}
+              className={cn(
+                "flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium transition-colors",
+                view === 'list' 
+                  ? "bg-brand-primary text-white" 
+                  : ""
+              )}
+              style={view !== 'list' ? { color: 'var(--text-1)', backgroundColor: 'transparent' } : undefined}
+              onMouseOver={(e) => {
+                if (view !== 'list') e.currentTarget.style.backgroundColor = 'var(--nav-hover-bg)';
+              }}
+              onMouseOut={(e) => {
+                if (view !== 'list') e.currentTarget.style.backgroundColor = 'transparent';
+              }}
+            >
+              <List className="h-4 w-4" />
+              List
+            </button>
+            <button
+              onClick={() => setView('state')}
+              className={cn(
+                "flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium transition-colors",
+                view === 'state' 
+                  ? "bg-brand-primary text-white" 
+                  : ""
+              )}
+              style={view !== 'state' ? { color: 'var(--text-1)', backgroundColor: 'transparent' } : undefined}
+              onMouseOver={(e) => {
+                if (view !== 'state') e.currentTarget.style.backgroundColor = 'var(--nav-hover-bg)';
+              }}
+              onMouseOut={(e) => {
+                if (view !== 'state') e.currentTarget.style.backgroundColor = 'transparent';
+              }}
+            >
+              <LayoutGrid className="h-4 w-4" />
+              Board
+            </button>
+            <button
+              onClick={() => setView('table')}
+              className={cn(
+                "flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium transition-colors",
+                view === 'table'
+                  ? "bg-brand-primary text-white"
+                  : ""
+              )}
+              style={view !== 'table' ? { color: 'var(--text-1)', backgroundColor: 'transparent' } : undefined}
+              onMouseOver={(e) => {
+                if (view !== 'table') e.currentTarget.style.backgroundColor = 'var(--nav-hover-bg)';
+              }}
+              onMouseOut={(e) => {
+                if (view !== 'table') e.currentTarget.style.backgroundColor = 'transparent';
+              }}
+            >
+              <Table className="h-4 w-4" />
+              Table
+            </button>
+          </div>
+
+          {/* Center - Search */}
+          <div className="relative flex-1 max-w-md">
             <Search 
               className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4" 
               style={{ color: 'var(--icon-muted)' }}
             />
             <Input
-              placeholder="Search epics..."
+              placeholder="Search..."
               value={searchQuery}
               onChange={(e) => onSearchChange?.(e.target.value)}
               className="pl-9 h-9"
@@ -103,78 +171,20 @@ export function BacklogHeader({
                 color: 'var(--input-text)',
               }}
             />
-          </div>
-
-          {/* Right - View Toggle and Action Buttons */}
-          <div className="flex items-center gap-2">
-            {/* View Toggle */}
-            <div 
-              className="flex items-center rounded-md overflow-hidden"
+            <span 
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-xs px-1.5 py-0.5 rounded border"
               style={{ 
-                backgroundColor: 'var(--bg-card)', 
-                border: '1px solid var(--border-color)',
-                boxShadow: 'var(--shadow-xs)',
+                color: 'var(--text-4)', 
+                borderColor: 'var(--border-color)',
+                backgroundColor: 'var(--surface-1)'
               }}
             >
-              <button
-                onClick={() => setView('list')}
-                className={cn(
-                  "flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium transition-colors",
-                  view === 'list' 
-                    ? "bg-brand-primary text-white" 
-                    : ""
-                )}
-                style={view !== 'list' ? { color: 'var(--text-1)', backgroundColor: 'transparent' } : undefined}
-                onMouseOver={(e) => {
-                  if (view !== 'list') e.currentTarget.style.backgroundColor = 'var(--nav-hover-bg)';
-                }}
-                onMouseOut={(e) => {
-                  if (view !== 'list') e.currentTarget.style.backgroundColor = 'transparent';
-                }}
-              >
-                <List className="h-4 w-4" />
-                List
-              </button>
-              <button
-                onClick={() => setView('state')}
-                className={cn(
-                  "flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium transition-colors",
-                  view === 'state' 
-                    ? "bg-brand-primary text-white" 
-                    : ""
-                )}
-                style={view !== 'state' ? { color: 'var(--text-1)', backgroundColor: 'transparent' } : undefined}
-                onMouseOver={(e) => {
-                  if (view !== 'state') e.currentTarget.style.backgroundColor = 'var(--nav-hover-bg)';
-                }}
-                onMouseOut={(e) => {
-                  if (view !== 'state') e.currentTarget.style.backgroundColor = 'transparent';
-                }}
-              >
-                <LayoutGrid className="h-4 w-4" />
-                Board
-              </button>
-              <button
-                onClick={() => setView('table')}
-                className={cn(
-                  "flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium transition-colors",
-                  view === 'table'
-                    ? "bg-brand-primary text-white"
-                    : ""
-                )}
-                style={view !== 'table' ? { color: 'var(--text-1)', backgroundColor: 'transparent' } : undefined}
-                onMouseOver={(e) => {
-                  if (view !== 'table') e.currentTarget.style.backgroundColor = 'var(--nav-hover-bg)';
-                }}
-                onMouseOut={(e) => {
-                  if (view !== 'table') e.currentTarget.style.backgroundColor = 'transparent';
-                }}
-              >
-                <Table className="h-4 w-4" />
-                Table
-              </button>
-            </div>
+              ⌘K
+            </span>
+          </div>
 
+          {/* Right - Action Buttons */}
+          <div className="flex items-center gap-2 shrink-0">
             {/* Filters Button with Count Badge */}
             <button
               onClick={onOpenFilters}
@@ -204,38 +214,24 @@ export function BacklogHeader({
                 <TooltipTrigger asChild>
                   <Button
                     variant="outline"
-                    size="icon"
-                    onClick={onOpenColumns}
-                    className="h-8 w-8"
+                    size="sm"
+                    onClick={handleExport}
+                    className="h-8 px-3 gap-1.5"
                     style={{ 
                       backgroundColor: 'var(--surface-1)', 
                       borderColor: 'var(--border-color)',
-                      color: 'var(--icon-default)'
+                      color: 'var(--text-1)'
                     }}
                   >
-                    <Columns className="h-4 w-4" />
+                    <Download className="h-4 w-4" />
+                    Export
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p>Manage columns</p>
+                  <p>Export data</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
-
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={handleExport}
-              className="h-8 w-8"
-              style={{ 
-                backgroundColor: 'var(--surface-1)', 
-                borderColor: 'var(--border-color)',
-                color: 'var(--icon-default)'
-              }}
-              title="Export"
-            >
-              <Download className="h-4 w-4" />
-            </Button>
 
             <Button
               onClick={onCreateEpic}
