@@ -194,49 +194,34 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
   };
 
   const getLayerDetails = (key: LayerKey): LayerDetailsData => {
+    // Return empty arrays - no mock data, real data comes from database
     switch (key) {
       case 'objectives':
         return {
           title: 'Objectives',
           description: 'Strategic objectives with progress and health status',
-          items: [
-            { name: 'Establish Cloud Infrastructure', progress: 75, status: 'On Track', owner: 'Sarah Chen' },
-            { name: 'Modernize Customer Experience', progress: 45, status: 'At Risk', owner: 'Mike Ross' },
-            { name: 'Data Platform Initiative', progress: 15, status: 'Behind', owner: 'Alex Kim' },
-          ],
-          gapItems: [
-            { name: 'Data Platform Initiative', reason: 'No linked key results' },
-          ],
+          items: [],
+          gapItems: [],
         };
       case 'themes':
         return {
           title: 'Themes',
           description: 'Strategic themes organizing objectives',
-          items: [
-            { name: 'Digital Maturity 2026', progress: 42, status: 'On Track', owner: 'Emma Davis' },
-          ],
+          items: [],
           gapItems: [],
         };
       case 'epics':
         return {
           title: 'Epics',
           description: 'Epics aligned to strategic objectives',
-          items: [
-            { name: 'Cloud Migration Epic', progress: 68, status: 'On Track', linked: 'Establish Cloud Infrastructure' },
-            { name: 'Customer Portal Redesign', progress: 35, status: 'At Risk', linked: 'Modernize Customer Experience' },
-          ],
-          gapItems: [
-            { name: 'Legacy System Maintenance', reason: 'Not linked to any objective' },
-          ],
+          items: [],
+          gapItems: [],
         };
       case 'features':
         return {
           title: 'Features',
           description: 'Feature delivery across epics',
-          items: [
-            { name: 'User Authentication v2', progress: 90, status: 'On Track', linked: 'Cloud Migration Epic' },
-            { name: 'Dashboard Redesign', progress: 55, status: 'On Track', linked: 'Customer Portal Redesign' },
-          ],
+          items: [],
           gapItems: [],
         };
       default:
