@@ -506,7 +506,6 @@ export function BacklogWorkspace() {
           onClose={() => setIsCreateEpicDialogOpen(false)}
           programId={backlogState.programId}
         />
-        />
       )}
 
       {/* Bulk Delete Dialog */}
