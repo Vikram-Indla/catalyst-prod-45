@@ -201,7 +201,11 @@ export function UserPicker({
         <PopoverContent 
           className="w-[300px] p-0 z-[400]" 
           align="start"
-          style={{ background: 'var(--surface-1)', borderColor: 'var(--border-color)' }}
+          style={{ 
+            backgroundColor: 'var(--dialog-section-bg, var(--surface-1))', 
+            borderColor: 'var(--dialog-input-border, var(--border-color))',
+            boxShadow: '0 10px 40px -10px rgba(0, 0, 0, 0.5)'
+          }}
         >
           <Command shouldFilter={false}>
             <CommandInput
@@ -246,40 +250,43 @@ export function UserPicker({
                         value={user.id}
                         onSelect={() => handleSelect(user.id)}
                         className={cn(
-                          "cursor-pointer",
-                          isSelected(user.id) && "bg-[hsl(var(--secondary-bronze))] text-white"
+                          "cursor-pointer transition-colors",
+                          isSelected(user.id) && "!bg-[rgba(198,156,109,0.15)]"
                         )}
+                        style={{
+                          borderLeft: isSelected(user.id) ? '2px solid #c69c6d' : '2px solid transparent'
+                        }}
                       >
                         <Check
                           className={cn(
                             'mr-2 h-4 w-4',
                             isSelected(user.id) ? 'opacity-100' : 'opacity-0'
                           )}
+                          style={{ color: '#c69c6d' }}
                         />
                         <Avatar className="h-6 w-6 mr-2">
                           <AvatarImage src={user.avatar_url || undefined} />
                           <AvatarFallback 
-                            className={cn(
-                              "text-[10px]",
-                              isSelected(user.id) 
-                                ? "bg-white/20 text-white" 
-                                : "bg-[hsl(var(--secondary-bronze)/0.15)] text-[hsl(var(--secondary-bronze))]"
-                            )}
+                            className="text-[10px]"
+                            style={{
+                              backgroundColor: '#d4b896',
+                              color: '#1a1a1a'
+                            }}
                           >
                             {getInitials(user.full_name, user.email)}
                           </AvatarFallback>
                         </Avatar>
                         <div className="flex flex-col">
-                          <span className={cn(
-                            "text-sm font-medium",
-                            isSelected(user.id) ? "text-white" : "text-foreground"
-                          )}>
+                          <span 
+                            className="text-sm font-medium"
+                            style={{ color: isSelected(user.id) ? 'var(--dialog-title-color, #f5f5f5)' : 'var(--foreground)' }}
+                          >
                             {user.full_name || 'No name'}
                           </span>
-                          <span className={cn(
-                            "text-xs",
-                            isSelected(user.id) ? "text-white/80" : "text-muted-foreground"
-                          )}>
+                          <span 
+                            className="text-xs"
+                            style={{ color: isSelected(user.id) ? '#c69c6d' : 'var(--dialog-desc-color, #737373)' }}
+                          >
                             {user.email}
                           </span>
                         </div>
