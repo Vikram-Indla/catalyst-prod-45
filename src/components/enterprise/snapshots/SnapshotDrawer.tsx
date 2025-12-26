@@ -2,7 +2,7 @@
  * SnapshotDrawer - Strategic Snapshot Details Drawer
  * Follows standard Catalyst drawer pattern
  */
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -48,7 +48,6 @@ import {
   Link2, 
   MoreVertical, 
   Maximize2, 
-  ChevronDown, 
   Calendar as CalendarIcon, 
   Layers, 
   Settings,
@@ -97,6 +96,8 @@ export function SnapshotDrawer({ isOpen, onClose, snapshotId, onSave }: Snapshot
   const [deleteImpact, setDeleteImpact] = useState<SnapshotDeleteImpact | null>(null);
   const [isCheckingDelete, setIsCheckingDelete] = useState(false);
   const [linkedThemeCount, setLinkedThemeCount] = useState<number | null>(null);
+  const autosaveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const isInitialLoadRef = useRef(true);
   
   // Form state
   const [formData, setFormData] = useState<SnapshotFormData>({
@@ -233,7 +234,7 @@ export function SnapshotDrawer({ isOpen, onClose, snapshotId, onSave }: Snapshot
     }
   }, [configuration]);
 
-  // Update mutation
+  // Update mutation (silent autosave)
   const updateSnapshotMutation = useMutation({
     mutationFn: async () => {
       if (!snapshotId) throw new Error('No snapshot ID');
@@ -268,14 +269,56 @@ export function SnapshotDrawer({ isOpen, onClose, snapshotId, onSave }: Snapshot
       queryClient.invalidateQueries({ queryKey: ['snapshot-drawer', snapshotId] });
       queryClient.invalidateQueries({ queryKey: ['snapshot-configuration', snapshotId] });
       queryClient.invalidateQueries({ queryKey: ['strategic-snapshots'] });
-      catalystToast.success('Success', 'Snapshot saved successfully');
       setIsDirty(false);
       onSave?.(formData);
     },
     onError: (error: any) => {
-      catalystToast.error('Error', `Failed to save: ${error.message}`);
+      catalystToast.error('Autosave failed', `${error.message}`);
     },
   });
+
+  // Autosave function
+  const triggerAutosave = useCallback(() => {
+    if (autosaveTimeoutRef.current) {
+      clearTimeout(autosaveTimeoutRef.current);
+    }
+    autosaveTimeoutRef.current = setTimeout(() => {
+      if (!isInitialLoadRef.current && snapshotId) {
+        updateSnapshotMutation.mutate();
+      }
+    }, 800); // Debounce 800ms
+  }, [snapshotId]);
+
+  // Autosave effect - triggers on form/selection changes
+  useEffect(() => {
+    if (isInitialLoadRef.current) return;
+    if (isDirty) {
+      triggerAutosave();
+    }
+    return () => {
+      if (autosaveTimeoutRef.current) {
+        clearTimeout(autosaveTimeoutRef.current);
+      }
+    };
+  }, [formData, selectedQuarters, selectedThemes, isDirty, triggerAutosave]);
+
+  // Mark initial load complete after data loads
+  useEffect(() => {
+    if (snapshot && isOpen) {
+      // Small delay to ensure form is populated before enabling autosave
+      const timer = setTimeout(() => {
+        isInitialLoadRef.current = false;
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [snapshot, isOpen]);
+
+  // Reset initial load flag when drawer closes
+  useEffect(() => {
+    if (!isOpen) {
+      isInitialLoadRef.current = true;
+    }
+  }, [isOpen]);
 
   // Handlers
   const handleFormChange = (field: keyof SnapshotFormData, value: any) => {
@@ -307,9 +350,6 @@ export function SnapshotDrawer({ isOpen, onClose, snapshotId, onSave }: Snapshot
     catalystToast.success('Copied', 'Link copied to clipboard');
   };
 
-  const handleSave = () => {
-    updateSnapshotMutation.mutate();
-  };
 
   // Delete mutation
   const deleteSnapshotMutation = useMutation({
@@ -460,28 +500,6 @@ export function SnapshotDrawer({ isOpen, onClose, snapshotId, onSave }: Snapshot
           <span className="flex-1 font-semibold text-foreground truncate">
             {formData.name || 'Untitled Snapshot'}
           </span>
-          
-          {/* Save Button with dropdown */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button 
-                size="sm" 
-                className="bg-brand-primary hover:bg-brand-primary-hover text-white gap-1"
-                disabled={updateSnapshotMutation.isPending}
-              >
-                {updateSnapshotMutation.isPending ? 'Saving...' : 'Save'}
-                <ChevronDown className="h-3 w-3" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="z-[400]">
-              <DropdownMenuItem onClick={handleSave}>
-                Save Changes
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => { handleSave(); onClose(); }}>
-                Save & Close
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
           
           {/* Kebab Menu */}
           <DropdownMenu>
