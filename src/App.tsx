@@ -136,6 +136,7 @@ import ReportsDiscovery from "./pages/admin/ReportsDiscovery";
 import PIWizard from "./pages/admin/PIWizard";
 import JiraIntegration from "./pages/admin/JiraIntegration";
 import ImportData from "./pages/admin/ImportData";
+import DataHygiene from "./pages/admin/DataHygiene";
 import ProductSettings from "./pages/admin/ProductSettings";
 import AdminOverview from "./pages/admin/AdminOverview";
 import AuditActivityPage from "./pages/admin/AuditActivityPage";
@@ -753,6 +754,7 @@ const App = () => (
                 <Route path="jira-config" element={<JiraIntegrationConfig />} />
                 <Route path="product-settings" element={<ProductSettings />} />
                 <Route path="import-data" element={<ImportData />} />
+                <Route path="data-hygiene" element={<DataHygiene />} />
                 <Route path="design-audit" element={<DesignAuditPage />} />
                 <Route path="theme-audit" element={<ThemeAuditPage />} />
                 <Route path="kanban-settings" element={<KanbanSettings />} />

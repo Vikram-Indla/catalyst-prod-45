@@ -93,6 +93,7 @@ const adminSections = [
     items: [
       { label: 'Announcements', path: '/admin/announcements', icon: Megaphone },
       { label: 'Import Data', path: '/admin/import-data', icon: Upload },
+      { label: 'Data Hygiene', path: '/admin/data-hygiene', icon: AlertTriangle },
     ],
   },
 ];
