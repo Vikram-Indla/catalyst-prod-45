@@ -11072,6 +11072,45 @@ export type Database = {
           },
         ]
       }
+      seed_purge_audit_log: {
+        Row: {
+          confirmation_text: string | null
+          environment: string | null
+          error_message: string | null
+          executed_at: string
+          executed_by: string
+          execution_time_ms: number | null
+          id: string
+          is_dry_run: boolean
+          purge_counts: Json
+          status: string
+        }
+        Insert: {
+          confirmation_text?: string | null
+          environment?: string | null
+          error_message?: string | null
+          executed_at?: string
+          executed_by: string
+          execution_time_ms?: number | null
+          id?: string
+          is_dry_run?: boolean
+          purge_counts?: Json
+          status?: string
+        }
+        Update: {
+          confirmation_text?: string | null
+          environment?: string | null
+          error_message?: string | null
+          executed_at?: string
+          executed_by?: string
+          execution_time_ms?: number | null
+          id?: string
+          is_dry_run?: boolean
+          purge_counts?: Json
+          status?: string
+        }
+        Relationships: []
+      }
       shared_service_allocations: {
         Row: {
           allocated_points: number | null
