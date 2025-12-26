@@ -420,29 +420,58 @@ export function SnapshotDrawer({ isOpen, onClose, snapshotId, onSave }: Snapshot
     return `SNAP-${String(num).padStart(3, '0')}`;
   };
 
-  // Get status config
+  // Get status config - Catalyst Design System v1.0
   const getStatusConfig = (status: string) => {
     switch (status?.toUpperCase()) {
       case 'ACTIVE':
         return { 
           label: 'on track', 
-          bgClass: 'bg-[var(--status-success-bg)]', 
-          textClass: 'text-[var(--status-success)]',
-          healthColor: 'var(--status-success)'
+          style: {
+            backgroundColor: 'rgba(92, 124, 92, 0.15)',
+            border: '1px solid rgba(92, 124, 92, 0.3)',
+            color: '#6b9b6b'
+          },
+          healthColor: '#5c7c5c'
+        };
+      case 'AT_RISK':
+        return { 
+          label: 'at risk', 
+          style: {
+            backgroundColor: 'rgba(198, 156, 109, 0.15)',
+            border: '1px solid rgba(198, 156, 109, 0.3)',
+            color: '#c69c6d'
+          },
+          healthColor: '#c69c6d'
+        };
+      case 'OFF_TRACK':
+        return { 
+          label: 'off track', 
+          style: {
+            backgroundColor: 'rgba(180, 83, 83, 0.15)',
+            border: '1px solid rgba(180, 83, 83, 0.3)',
+            color: '#b45353'
+          },
+          healthColor: '#b45353'
         };
       case 'ARCHIVED':
         return { 
           label: 'archived', 
-          bgClass: 'bg-muted', 
-          textClass: 'text-muted-foreground',
-          healthColor: 'var(--status-muted)'
+          style: {
+            backgroundColor: 'rgba(115, 115, 115, 0.15)',
+            border: '1px solid rgba(115, 115, 115, 0.3)',
+            color: '#8a8a8a'
+          },
+          healthColor: '#737373'
         };
       default:
         return { 
           label: 'draft', 
-          bgClass: 'bg-muted', 
-          textClass: 'text-muted-foreground',
-          healthColor: 'var(--status-muted)'
+          style: {
+            backgroundColor: 'rgba(115, 115, 115, 0.15)',
+            border: '1px solid rgba(115, 115, 115, 0.3)',
+            color: '#8a8a8a'
+          },
+          healthColor: '#737373'
         };
     }
   };
@@ -475,7 +504,11 @@ export function SnapshotDrawer({ isOpen, onClose, snapshotId, onSave }: Snapshot
     <Sheet open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <SheetContent 
         side="right" 
-        className="w-screen sm:w-[65vw] sm:max-w-[980px] p-0 flex flex-col bg-background border-l border-border"
+        className="w-screen sm:w-[65vw] sm:max-w-[980px] p-0 flex flex-col"
+        style={{
+          backgroundColor: '#141414',
+          borderLeft: '1px solid #333333'
+        }}
         hideClose
       >
         <SheetHeader className="sr-only">
@@ -484,20 +517,29 @@ export function SnapshotDrawer({ isOpen, onClose, snapshotId, onSave }: Snapshot
         </SheetHeader>
 
         {/* Header Row */}
-        <div className="flex items-center gap-2 px-4 py-3 border-b border-brand-primary">
-          {/* ID with copy link */}
-          <span className="text-brand-primary font-mono font-semibold text-sm">
+        <div className="flex items-center gap-3 px-4 py-3" style={{ borderBottom: '1px solid #333333' }}>
+          {/* ID */}
+          <span 
+            className="px-2.5 py-1 rounded text-xs font-mono font-medium"
+            style={{
+              backgroundColor: '#242424',
+              border: '1px solid #404040',
+              color: '#c69c6d'
+            }}
+          >
             {formatSnapshotId(snapshotId)}
           </span>
+          
+          {/* Link */}
           <button 
             onClick={handleCopyLink}
-            className="text-muted-foreground hover:text-foreground transition-colors"
+            className="p-1.5 rounded transition-colors hover:bg-[#333333]"
           >
-            <Link2 className="h-4 w-4" />
+            <Link2 className="h-4 w-4" style={{ color: '#737373' }} />
           </button>
           
           {/* Title - truncated */}
-          <span className="flex-1 font-semibold text-foreground truncate">
+          <span className="flex-1 text-lg font-semibold truncate" style={{ color: '#f5f5f5' }}>
             {formData.name || 'Untitled Snapshot'}
           </span>
           
@@ -562,9 +604,12 @@ export function SnapshotDrawer({ isOpen, onClose, snapshotId, onSave }: Snapshot
         </div>
 
         {/* Context Bar */}
-        <div className="flex items-center gap-3 px-4 py-2.5 bg-muted/50 border-b border-border text-sm">
+        <div 
+          className="flex items-center gap-3 px-4 py-2.5 flex-wrap text-sm"
+          style={{ backgroundColor: '#1a1a1a', borderBottom: '1px solid #333333' }}
+        >
           {/* Primary Theme */}
-          <span className="font-medium text-foreground">
+          <span style={{ color: '#a3a3a3' }}>
             {selectedThemes.length > 0 
               ? themes.find(t => t.id === selectedThemes[0])?.name || 'Digital Maturity'
               : 'No Theme'
@@ -572,9 +617,12 @@ export function SnapshotDrawer({ isOpen, onClose, snapshotId, onSave }: Snapshot
           </span>
           
           {/* Status Badge */}
-          <Badge className={cn('text-[10px] font-medium uppercase', statusConfig.bgClass, statusConfig.textClass)}>
+          <span 
+            className="px-2.5 py-1 rounded text-[11px] font-medium uppercase"
+            style={statusConfig.style}
+          >
             {statusConfig.label}
-          </Badge>
+          </span>
           
           {/* Health Dot */}
           <span 
@@ -583,100 +631,120 @@ export function SnapshotDrawer({ isOpen, onClose, snapshotId, onSave }: Snapshot
           />
           
           {/* Date */}
-          <div className="flex items-center gap-1 text-muted-foreground">
-            <CalendarIcon className="h-3.5 w-3.5" />
+          <div className="flex items-center gap-1.5" style={{ color: '#737373' }}>
+            <CalendarIcon className="h-4 w-4" />
             <span>{formData.end_date ? format(new Date(formData.end_date), 'MM/dd/yyyy') : '—'}</span>
           </div>
           
           {/* Quarters Count */}
-          <div className="flex items-center gap-1 text-muted-foreground">
-            <Layers className="h-3.5 w-3.5" />
-            <span>{selectedQuarters.length}</span>
-            <span>Quarters</span>
+          <div className="flex items-center gap-1.5" style={{ color: '#737373' }}>
+            <Layers className="h-4 w-4" />
+            <span>{selectedQuarters.length} Quarters</span>
           </div>
           
           {/* Themes Count */}
-          <div className="flex items-center gap-1 text-muted-foreground">
-            <Settings className="h-3.5 w-3.5" />
-            <span>{selectedThemes.length}</span>
-            <span>Themes</span>
+          <div className="flex items-center gap-1.5" style={{ color: '#737373' }}>
+            <Settings className="h-4 w-4" />
+            <span>{selectedThemes.length} Themes</span>
           </div>
         </div>
 
-        {/* Progress Row */}
-        <div className="flex items-center gap-3 px-4 py-3 border-b border-border">
-          <span className="text-sm text-muted-foreground">Overall Progress</span>
-          <div className="flex-1">
-            <Progress value={progress} className="h-2 bg-border [&>div]:bg-brand-primary" />
+        {/* Progress Row - VISIBLE track */}
+        <div className="flex items-center gap-3 px-4 py-3" style={{ borderBottom: '1px solid #333333' }}>
+          <span className="text-xs font-medium" style={{ color: '#737373' }}>Overall Progress</span>
+          <div className="flex-1 h-2 rounded-full" style={{ backgroundColor: '#333333' }}>
+            <div 
+              className="h-full rounded-full"
+              style={{ 
+                backgroundColor: '#5c7c5c',
+                width: `${progress}%`
+              }}
+            />
           </div>
-          <span className="text-sm font-medium text-foreground">{progress}%</span>
+          <span className="text-sm font-semibold" style={{ color: '#f5f5f5' }}>{progress}%</span>
         </div>
 
-        {/* Tabs */}
+        {/* Tabs - with visible gold underline */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col overflow-hidden">
-          <TabsList className="w-full justify-start px-4 py-0 h-10 bg-transparent border-b border-border rounded-none">
-            <TabsTrigger 
-              value="overview" 
-              className="data-[state=active]:border-b-2 data-[state=active]:border-brand-primary rounded-none"
-            >
-              Overview
-            </TabsTrigger>
-            <TabsTrigger 
-              value="quarters"
-              className="data-[state=active]:border-b-2 data-[state=active]:border-brand-primary rounded-none"
-            >
-              Quarters
-            </TabsTrigger>
-            <TabsTrigger 
-              value="themes"
-              className="data-[state=active]:border-b-2 data-[state=active]:border-brand-primary rounded-none"
-            >
-              Themes
-            </TabsTrigger>
-            <TabsTrigger 
-              value="audit"
-              className="data-[state=active]:border-b-2 data-[state=active]:border-brand-primary rounded-none"
-            >
-              Audit History
-            </TabsTrigger>
-          </TabsList>
+          <div style={{ borderBottom: '1px solid #333333' }}>
+            <div className="flex px-4">
+              {[
+                { value: 'overview', label: 'Overview' },
+                { value: 'quarters', label: 'Quarters' },
+                { value: 'themes', label: 'Themes' },
+                { value: 'audit', label: 'Audit History' }
+              ].map((tab) => (
+                <button
+                  key={tab.value}
+                  onClick={() => setActiveTab(tab.value)}
+                  className="relative px-4 py-3 text-sm font-medium transition-colors"
+                  style={{ color: activeTab === tab.value ? '#f5f5f5' : '#737373' }}
+                >
+                  {tab.label}
+                  {activeTab === tab.value && (
+                    <div 
+                      className="absolute bottom-0 left-2 right-2 h-[3px] rounded-full"
+                      style={{ backgroundColor: '#c69c6d' }}
+                    />
+                  )}
+                </button>
+              ))}
+            </div>
+          </div>
 
           <ScrollArea className="flex-1">
             {/* Overview Tab */}
             <TabsContent value="overview" className="p-4 space-y-4 m-0">
               {/* Name */}
-              <div className="space-y-1.5">
-                <Label htmlFor="name" className="text-sm">
-                  Name <span className="text-destructive">*</span>
-                </Label>
-                <Input
-                  id="name"
+              <div className="space-y-2">
+                <label className="text-sm font-medium" style={{ color: '#a3a3a3' }}>
+                  Name <span style={{ color: '#c69c6d' }}>*</span>
+                </label>
+                <input
                   value={formData.name}
                   onChange={(e) => handleFormChange('name', e.target.value)}
                   placeholder="Enter snapshot name"
+                  className="w-full px-4 py-3 rounded-lg text-sm"
+                  style={{
+                    backgroundColor: '#1a1a1a',
+                    border: '1px solid #333333',
+                    color: '#f5f5f5'
+                  }}
                 />
               </div>
 
               {/* Description */}
-              <div className="space-y-1.5">
-                <Label htmlFor="description" className="text-sm">Description</Label>
-                <Textarea
-                  id="description"
+              <div className="space-y-2">
+                <label className="text-sm font-medium" style={{ color: '#a3a3a3' }}>Description</label>
+                <textarea
                   value={formData.description}
                   onChange={(e) => handleFormChange('description', e.target.value)}
                   placeholder="Enter description..."
                   rows={4}
+                  className="w-full px-4 py-3 rounded-lg text-sm resize-none"
+                  style={{
+                    backgroundColor: '#1a1a1a',
+                    border: '1px solid #333333',
+                    color: '#f5f5f5'
+                  }}
                 />
               </div>
 
               {/* Status */}
-              <div className="space-y-1.5">
-                <Label className="text-sm">Status</Label>
+              <div className="space-y-2">
+                <label className="text-sm font-medium" style={{ color: '#a3a3a3' }}>Status</label>
                 <Select 
                   value={formData.status} 
                   onValueChange={(value) => handleFormChange('status', value)}
                 >
-                  <SelectTrigger className="w-full">
+                  <SelectTrigger 
+                    className="w-full"
+                    style={{
+                      backgroundColor: '#1a1a1a',
+                      border: '1px solid #333333',
+                      color: '#f5f5f5'
+                    }}
+                  >
                     <SelectValue placeholder="Select status" />
                   </SelectTrigger>
                   <SelectContent className="z-[400]">
@@ -692,23 +760,24 @@ export function SnapshotDrawer({ isOpen, onClose, snapshotId, onSave }: Snapshot
               {/* Date Row */}
               <div className="grid grid-cols-2 gap-4">
                 {/* Start Date */}
-                <div className="space-y-1.5">
-                  <Label className="text-sm">Start Date</Label>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium" style={{ color: '#a3a3a3' }}>Start Date</label>
                   <Popover>
                     <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        className={cn(
-                          'w-full justify-start text-left font-normal',
-                          !formData.start_date && 'text-muted-foreground'
-                        )}
+                      <button
+                        className="w-full flex items-center justify-start gap-2 px-4 py-3 rounded-lg text-sm text-left"
+                        style={{
+                          backgroundColor: '#1a1a1a',
+                          border: '1px solid #333333',
+                          color: formData.start_date ? '#f5f5f5' : '#737373'
+                        }}
                       >
-                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        <CalendarIcon className="h-4 w-4" style={{ color: '#737373' }} />
                         {formData.start_date 
                           ? format(new Date(formData.start_date), 'MM/dd/yyyy')
                           : 'Pick a date'
                         }
-                      </Button>
+                      </button>
                     </PopoverTrigger>
                     <PopoverContent className="w-auto p-0 z-[400]" align="start">
                       <Calendar
@@ -723,23 +792,24 @@ export function SnapshotDrawer({ isOpen, onClose, snapshotId, onSave }: Snapshot
                 </div>
 
                 {/* End Date */}
-                <div className="space-y-1.5">
-                  <Label className="text-sm">End Date</Label>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium" style={{ color: '#a3a3a3' }}>End Date</label>
                   <Popover>
                     <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        className={cn(
-                          'w-full justify-start text-left font-normal',
-                          !formData.end_date && 'text-muted-foreground'
-                        )}
+                      <button
+                        className="w-full flex items-center justify-start gap-2 px-4 py-3 rounded-lg text-sm text-left"
+                        style={{
+                          backgroundColor: '#1a1a1a',
+                          border: '1px solid #333333',
+                          color: formData.end_date ? '#f5f5f5' : '#737373'
+                        }}
                       >
-                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        <CalendarIcon className="h-4 w-4" style={{ color: '#737373' }} />
                         {formData.end_date 
                           ? format(new Date(formData.end_date), 'MM/dd/yyyy')
                           : 'Pick a date'
                         }
-                      </Button>
+                      </button>
                     </PopoverTrigger>
                     <PopoverContent className="w-auto p-0 z-[400]" align="start">
                       <Calendar
@@ -755,8 +825,8 @@ export function SnapshotDrawer({ isOpen, onClose, snapshotId, onSave }: Snapshot
               </div>
 
               {/* Owner */}
-              <div className="space-y-1.5">
-                <Label className="text-sm">Owner</Label>
+              <div className="space-y-2">
+                <label className="text-sm font-medium" style={{ color: '#a3a3a3' }}>Owner</label>
                 <UserPicker
                   value={formData.created_by}
                   onChange={(value) => handleFormChange('created_by', value)}
@@ -765,14 +835,19 @@ export function SnapshotDrawer({ isOpen, onClose, snapshotId, onSave }: Snapshot
               </div>
 
               {/* Notes */}
-              <div className="space-y-1.5">
-                <Label htmlFor="notes" className="text-sm">Notes</Label>
-                <Textarea
-                  id="notes"
+              <div className="space-y-2">
+                <label className="text-sm font-medium" style={{ color: '#a3a3a3' }}>Notes</label>
+                <textarea
                   value={formData.notes}
                   onChange={(e) => handleFormChange('notes', e.target.value)}
                   placeholder="Add notes..."
                   rows={4}
+                  className="w-full px-4 py-3 rounded-lg text-sm resize-none"
+                  style={{
+                    backgroundColor: '#1a1a1a',
+                    border: '1px solid #333333',
+                    color: '#f5f5f5'
+                  }}
                 />
               </div>
             </TabsContent>
@@ -781,27 +856,42 @@ export function SnapshotDrawer({ isOpen, onClose, snapshotId, onSave }: Snapshot
             <TabsContent value="quarters" className="p-4 space-y-4 m-0">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <h3 className="font-medium text-foreground">Assign Quarters</h3>
-                  <Badge variant="secondary" className="text-xs">
+                  <h3 className="font-medium" style={{ color: '#f5f5f5' }}>Assign Quarters</h3>
+                  <span 
+                    className="px-2 py-0.5 rounded text-xs font-medium"
+                    style={{ backgroundColor: '#333333', color: '#a3a3a3' }}
+                  >
                     {selectedQuarters.length}
-                  </Badge>
+                  </span>
                 </div>
               </div>
 
               {/* Search */}
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4" style={{ color: '#737373' }} />
+                <input
                   value={quarterSearch}
                   onChange={(e) => setQuarterSearch(e.target.value)}
                   placeholder="Search quarters..."
-                  className="pl-9"
+                  className="w-full pl-9 pr-4 py-3 rounded-lg text-sm"
+                  style={{
+                    backgroundColor: '#1a1a1a',
+                    border: '1px solid #333333',
+                    color: '#f5f5f5'
+                  }}
                 />
               </div>
 
               {/* Warning Banner */}
               {selectedQuarters.length === 0 && (
-                <div className="p-3 bg-brand-primary/10 border border-brand-primary/30 rounded-lg text-sm text-brand-primary">
+                <div 
+                  className="p-3 rounded-lg text-sm"
+                  style={{
+                    backgroundColor: 'rgba(198, 156, 109, 0.1)',
+                    border: '1px solid rgba(198, 156, 109, 0.3)',
+                    color: '#c69c6d'
+                  }}
+                >
                   No quarters selected. Please assign at least one quarter.
                 </div>
               )}
@@ -815,35 +905,45 @@ export function SnapshotDrawer({ isOpen, onClose, snapshotId, onSave }: Snapshot
                   return (
                     <label
                       key={quarter.id}
-                      className={cn(
-                        'flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-colors',
-                        isSelected 
-                          ? 'bg-[var(--status-success-bg)] border-brand-primary/30' 
-                          : 'bg-background border-border hover:border-brand-primary/20'
-                      )}
+                      className="flex items-center gap-4 p-4 rounded-lg cursor-pointer transition-colors"
+                      style={{
+                        backgroundColor: isSelected ? 'rgba(92, 124, 92, 0.08)' : '#1a1a1a',
+                        border: isSelected ? '1px solid rgba(92, 124, 92, 0.3)' : '1px solid #333333'
+                      }}
                     >
                       <Checkbox
                         checked={isSelected}
                         onCheckedChange={() => handleQuarterToggle(quarter.id)}
-                        className="data-[state=checked]:bg-brand-primary data-[state=checked]:border-brand-primary"
+                        className="data-[state=checked]:bg-[#5c7c5c] data-[state=checked]:border-[#5c7c5c]"
+                        style={{
+                          borderColor: isSelected ? '#5c7c5c' : '#404040',
+                          backgroundColor: isSelected ? '#5c7c5c' : 'transparent'
+                        }}
                       />
                       <div className="flex-1">
-                        <div className="font-medium text-foreground">{quarter.name}</div>
-                        <div className="text-xs text-muted-foreground">
+                        <div className="text-sm font-semibold" style={{ color: '#f5f5f5' }}>{quarter.name}</div>
+                        <div className="text-xs" style={{ color: '#737373' }}>
                           {format(new Date(quarter.startDate), 'MMM d')} — {format(new Date(quarter.endDate), 'MMM d, yyyy')}
                         </div>
                       </div>
                       {outOfRange && (
-                        <Badge variant="outline" className="text-[10px] text-destructive border-destructive/30">
+                        <span 
+                          className="px-2.5 py-1 rounded text-[11px] font-medium"
+                          style={{
+                            backgroundColor: 'rgba(115, 115, 115, 0.15)',
+                            border: '1px solid rgba(115, 115, 115, 0.3)',
+                            color: '#8a8a8a'
+                          }}
+                        >
                           Out of range
-                        </Badge>
+                        </span>
                       )}
                     </label>
                   );
                 })}
               </div>
 
-              <p className="text-xs text-muted-foreground">
+              <p className="text-xs" style={{ color: '#737373' }}>
                 Quarters must fall within the snapshot date range
               </p>
             </TabsContent>
@@ -852,27 +952,35 @@ export function SnapshotDrawer({ isOpen, onClose, snapshotId, onSave }: Snapshot
             <TabsContent value="themes" className="p-4 space-y-4 m-0">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <h3 className="font-medium text-foreground">Link Themes</h3>
-                  <Badge variant="secondary" className="text-xs">
+                  <h3 className="font-medium" style={{ color: '#f5f5f5' }}>Link Themes</h3>
+                  <span 
+                    className="px-2 py-0.5 rounded text-xs font-medium"
+                    style={{ backgroundColor: '#333333', color: '#a3a3a3' }}
+                  >
                     {selectedThemes.length}
-                  </Badge>
+                  </span>
                 </div>
               </div>
 
               {/* Search */}
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4" style={{ color: '#737373' }} />
+                <input
                   value={themeSearch}
                   onChange={(e) => setThemeSearch(e.target.value)}
                   placeholder="Search themes..."
-                  className="pl-9"
+                  className="w-full pl-9 pr-4 py-3 rounded-lg text-sm"
+                  style={{
+                    backgroundColor: '#1a1a1a',
+                    border: '1px solid #333333',
+                    color: '#f5f5f5'
+                  }}
                 />
               </div>
 
               {/* Empty State */}
               {filteredThemes.length === 0 && (
-                <div className="text-center py-8 text-muted-foreground">
+                <div className="text-center py-8" style={{ color: '#737373' }}>
                   {themes.length === 0 ? 'No themes available' : 'No themes match your search'}
                 </div>
               )}
@@ -885,32 +993,42 @@ export function SnapshotDrawer({ isOpen, onClose, snapshotId, onSave }: Snapshot
                   return (
                     <label
                       key={theme.id}
-                      className={cn(
-                        'flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-colors',
-                        isSelected 
-                          ? 'bg-[rgba(198,156,109,0.08)] border-brand-primary/30' 
-                          : 'bg-background border-border hover:border-brand-primary/20'
-                      )}
+                      className="flex items-center gap-4 p-4 rounded-lg cursor-pointer transition-colors"
+                      style={{
+                        backgroundColor: isSelected ? 'rgba(92, 124, 92, 0.08)' : '#1a1a1a',
+                        border: isSelected ? '1px solid rgba(92, 124, 92, 0.3)' : '1px solid #333333'
+                      }}
                     >
                       <Checkbox
                         checked={isSelected}
                         onCheckedChange={() => handleThemeToggle(theme.id)}
-                        className="data-[state=checked]:bg-brand-primary data-[state=checked]:border-brand-primary"
+                        className="data-[state=checked]:bg-[#5c7c5c] data-[state=checked]:border-[#5c7c5c]"
+                        style={{
+                          borderColor: isSelected ? '#5c7c5c' : '#404040',
+                          backgroundColor: isSelected ? '#5c7c5c' : 'transparent'
+                        }}
                       />
                       <div className="flex-1">
-                        <div className="font-medium text-foreground">{theme.name}</div>
+                        <div className="text-sm font-semibold" style={{ color: '#f5f5f5' }}>{theme.name}</div>
                       </div>
-                      <Badge 
-                        variant="outline" 
-                        className={cn(
-                          'text-[10px] font-medium',
+                      <span 
+                        className="px-2.5 py-1 rounded text-[11px] font-medium"
+                        style={
                           theme.status === 'active' 
-                            ? 'bg-secondary-green/15 text-secondary-green border-secondary-green/40 dark:bg-secondary-green/25 dark:text-[#8FBC8F] dark:border-secondary-green/50' 
-                            : 'bg-muted text-muted-foreground border-border'
-                        )}
+                            ? {
+                                backgroundColor: 'rgba(92, 124, 92, 0.15)',
+                                border: '1px solid rgba(92, 124, 92, 0.3)',
+                                color: '#6b9b6b'
+                              }
+                            : {
+                                backgroundColor: 'rgba(198, 156, 109, 0.15)',
+                                border: '1px solid rgba(198, 156, 109, 0.3)',
+                                color: '#c69c6d'
+                              }
+                        }
                       >
                         {theme.status === 'active' ? 'Active' : 'Proposed'}
-                      </Badge>
+                      </span>
                     </label>
                   );
                 })}
