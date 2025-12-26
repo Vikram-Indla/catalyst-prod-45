@@ -295,6 +295,25 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
             hasNoData: true,
           };
         }
+        // Check if there's ANY work in the entire stack
+        // If no objectives, no epics, no features exist, don't show gaps - show "No Data" for the entire strategy
+        const totalObjectives = objectivesCount;
+        const totalEpics = safeNumber(displayCounts.epics);
+        const totalFeatures = safeNumber(displayCounts.features);
+        const hasAnyWorkInStack = totalObjectives > 0 || totalEpics > 0 || totalFeatures > 0;
+        
+        // If themes exist but no work items anywhere, show themes count but no gap (strategy not started yet)
+        if (!hasAnyWorkInStack) {
+          return { 
+            count: total, 
+            aligned: null, 
+            gap: null,
+            coverage: null,
+            hasNoData: true,
+            message: 'Add objectives or epics to track coverage',
+          };
+        }
+        
         // Coverage is based on themes that have at least one objective or epic
         const coverage = safePercentage(Math.round((withWork / total) * 100));
         const gap = Math.max(0, total - withWork);
