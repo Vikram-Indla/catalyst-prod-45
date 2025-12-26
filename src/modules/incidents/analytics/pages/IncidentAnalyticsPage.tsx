@@ -147,7 +147,7 @@ export default function IncidentAnalyticsPage() {
 
       {/* Content */}
       <div className="flex-1 overflow-auto">
-        <div className="px-4 sm:px-6 py-4 sm:py-6 max-w-[1600px]">
+        <div className="px-4 sm:px-6 lg:px-8 py-4 sm:py-6 max-w-[1600px] mx-auto">
           <ExecutiveSnapshot
             snapshot={snapshot}
             onDrilldown={handleDrilldown}

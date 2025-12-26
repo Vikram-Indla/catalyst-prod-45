@@ -287,38 +287,40 @@ export function RequiresAttentionTabs({ incidents, onRowClick }: RequiresAttenti
       </h2>
 
       <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as AttentionTab)}>
-        <TabsList className="mb-4 p-1 bg-muted/40 border border-border h-10">
-          {TABS_CONFIG.map(tab => {
-            const Icon = tab.icon;
-            const count = tabCounts[tab.value];
-            const hasItems = count > 0;
-            
-            return (
-              <TabsTrigger 
-                key={tab.value} 
-                value={tab.value} 
-                className={cn(
-                  "px-4 py-2 text-sm font-medium gap-2 data-[state=active]:bg-background data-[state=active]:shadow-sm",
-                  hasItems && tab.value === 'breached' && "data-[state=active]:text-destructive",
-                  hasItems && tab.value === 'major' && "data-[state=active]:text-destructive"
-                )}
-              >
-                <Icon className="h-3.5 w-3.5" />
-                {tab.label}
-                <span className={cn(
-                  "ml-1 px-1.5 py-0.5 text-xs rounded-full tabular-nums",
-                  hasItems 
-                    ? (tab.value === 'breached' || tab.value === 'major') 
-                      ? "bg-destructive/10 text-destructive" 
-                      : "bg-muted text-muted-foreground"
-                    : "bg-muted/50 text-muted-foreground"
-                )}>
-                  {count}
-                </span>
-              </TabsTrigger>
-            );
-          })}
-        </TabsList>
+        <div className="overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0">
+          <TabsList className="mb-4 p-1 bg-muted/40 border border-border h-10 w-max sm:w-auto">
+            {TABS_CONFIG.map(tab => {
+              const Icon = tab.icon;
+              const count = tabCounts[tab.value];
+              const hasItems = count > 0;
+              
+              return (
+                <TabsTrigger 
+                  key={tab.value} 
+                  value={tab.value} 
+                  className={cn(
+                    "px-2.5 sm:px-4 py-2 text-xs sm:text-sm font-medium gap-1.5 sm:gap-2 data-[state=active]:bg-background data-[state=active]:shadow-sm",
+                    hasItems && tab.value === 'breached' && "data-[state=active]:text-destructive",
+                    hasItems && tab.value === 'major' && "data-[state=active]:text-destructive"
+                  )}
+                >
+                  <Icon className="h-3.5 w-3.5 flex-shrink-0" />
+                  <span className="whitespace-nowrap">{tab.label}</span>
+                  <span className={cn(
+                    "ml-0.5 sm:ml-1 px-1.5 py-0.5 text-xs rounded-full tabular-nums",
+                    hasItems 
+                      ? (tab.value === 'breached' || tab.value === 'major') 
+                        ? "bg-destructive/10 text-destructive" 
+                        : "bg-muted text-muted-foreground"
+                      : "bg-muted/50 text-muted-foreground"
+                  )}>
+                    {count}
+                  </span>
+                </TabsTrigger>
+              );
+            })}
+          </TabsList>
+        </div>
 
         <TabsContent value="major" className="mt-0">
           <IncidentTable 
