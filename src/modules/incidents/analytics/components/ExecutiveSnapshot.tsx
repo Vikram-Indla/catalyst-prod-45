@@ -41,7 +41,7 @@ export function ExecutiveSnapshot({ snapshot, onDrilldown, activeFilter }: Execu
               key={key}
               onClick={() => onDrilldown({ type: filterType, label })}
               className={cn(
-                "group relative p-5 rounded-lg border text-left transition-all cursor-pointer",
+                "group relative p-3 sm:p-4 md:p-5 rounded-lg border text-left transition-all cursor-pointer",
                 "hover:shadow-md hover:border-[var(--brand-primary)] hover:-translate-y-0.5",
                 "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-primary)] focus-visible:ring-offset-2",
                 "bg-card border-border",
@@ -55,7 +55,7 @@ export function ExecutiveSnapshot({ snapshot, onDrilldown, activeFilter }: Execu
               
               {/* Value - Large and prominent */}
               <div className={cn(
-                "text-4xl font-bold tabular-nums leading-none",
+                "text-2xl sm:text-3xl md:text-4xl font-bold tabular-nums leading-none",
                 showCritical && "text-destructive",
                 showWarning && "text-[hsl(var(--warning))]",
                 !showCritical && !showWarning && "text-foreground"

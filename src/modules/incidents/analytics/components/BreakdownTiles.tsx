@@ -45,17 +45,17 @@ function Tile({ label, value, isActive, valueClassName, onClick }: TileProps) {
     <button
       onClick={onClick}
       className={cn(
-        "p-4 rounded-lg border text-left transition-all cursor-pointer min-h-[72px]",
+        "p-3 sm:p-4 rounded-lg border text-left transition-all cursor-pointer min-h-[60px] sm:min-h-[72px]",
         "hover:shadow-sm hover:border-[var(--brand-primary)] hover:-translate-y-0.5",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-primary)]",
         "bg-card border-border",
         isActive && "ring-2 ring-[var(--brand-primary)] border-[var(--brand-primary)] shadow-sm"
       )}
     >
-      <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground mb-1.5">
+      <div className="text-[10px] sm:text-xs font-medium uppercase tracking-wide text-muted-foreground mb-1 sm:mb-1.5">
         {label}
       </div>
-      <div className={cn("text-2xl font-bold tabular-nums text-foreground leading-none", valueClassName)}>
+      <div className={cn("text-xl sm:text-2xl font-bold tabular-nums text-foreground leading-none", valueClassName)}>
         {value}
       </div>
     </button>
@@ -69,8 +69,8 @@ interface BreakdownCardProps {
 
 function BreakdownCard({ title, children }: BreakdownCardProps) {
   return (
-    <div className="bg-card border border-border rounded-lg p-4">
-      <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4">
+    <div className="bg-card border border-border rounded-lg p-3 sm:p-4">
+      <h3 className="text-xs sm:text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-3 sm:mb-4">
         {title}
       </h3>
       {children}
@@ -92,10 +92,10 @@ export function BreakdownTiles({ breakdowns, onDrilldown, activeFilter }: Breakd
       <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4">
         Operational Distribution
       </h2>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 lg:gap-5">
         {/* Severity Breakdown */}
         <BreakdownCard title="Severity">
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 gap-2 sm:gap-3">
             {SEVERITY_ORDER.map(sev => (
               <Tile
                 key={sev}
@@ -110,7 +110,7 @@ export function BreakdownTiles({ breakdowns, onDrilldown, activeFilter }: Breakd
 
         {/* Level Breakdown */}
         <BreakdownCard title="Support Level">
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-3 gap-2 sm:gap-3">
             {LEVEL_ORDER.map(level => (
               <Tile
                 key={level}
@@ -125,7 +125,7 @@ export function BreakdownTiles({ breakdowns, onDrilldown, activeFilter }: Breakd
 
         {/* Status Breakdown */}
         <BreakdownCard title="Status">
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-3 gap-2 sm:gap-3">
             {STATUS_ORDER.map(status => (
               <Tile
                 key={status}
@@ -140,7 +140,7 @@ export function BreakdownTiles({ breakdowns, onDrilldown, activeFilter }: Breakd
 
         {/* SLA State Breakdown - Semantic colors only here */}
         <BreakdownCard title="SLA State">
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 gap-2 sm:gap-3">
             {SLA_ORDER.map(state => {
               const value = breakdowns.sla_state[state] || 0;
               return (

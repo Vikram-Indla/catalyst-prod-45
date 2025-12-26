@@ -92,8 +92,8 @@ export function AgingPressureBar({ incidents, onDrilldown }: AgingPressureBarPro
         </span>
       </div>
 
-      {/* Pressure Bar */}
-      <div className="flex items-stretch gap-1 h-16 rounded-lg overflow-hidden border border-border bg-card">
+      {/* Pressure Bar - Horizontal on desktop, grid on mobile */}
+      <div className="grid grid-cols-4 sm:flex sm:items-stretch gap-1 sm:gap-1 sm:h-16 rounded-lg overflow-hidden border border-border bg-card">
         {bucketCounts.map((bucket) => {
           const percentage = hasData ? (bucket.count / total) * 100 : 25;
           const styles = URGENCY_STYLES[bucket.urgency];
@@ -105,7 +105,8 @@ export function AgingPressureBar({ incidents, onDrilldown }: AgingPressureBarPro
               disabled={bucket.count === 0}
               style={{ flex: hasData ? bucket.count || 0.1 : 1 }}
               className={cn(
-                "relative flex flex-col items-center justify-center transition-all min-w-[80px]",
+                "relative flex flex-col items-center justify-center transition-all",
+                "py-3 sm:py-0 sm:min-w-[70px] md:min-w-[80px]",
                 "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--brand-primary)]",
                 styles.bg,
                 bucket.count > 0 && styles.bgHover,
@@ -115,20 +116,20 @@ export function AgingPressureBar({ incidents, onDrilldown }: AgingPressureBarPro
             >
               {/* Count */}
               <span className={cn(
-                "text-2xl font-bold tabular-nums leading-none mb-1",
+                "text-xl sm:text-2xl font-bold tabular-nums leading-none mb-1",
                 bucket.count > 0 ? styles.text : 'text-muted-foreground/50'
               )}>
                 {bucket.count}
               </span>
               
               {/* Label */}
-              <span className="text-xs font-medium text-muted-foreground">
+              <span className="text-[10px] sm:text-xs font-medium text-muted-foreground">
                 {bucket.label}
               </span>
 
-              {/* Percentage indicator for non-empty buckets */}
+              {/* Percentage indicator for non-empty buckets - hidden on mobile */}
               {hasData && bucket.count > 0 && (
-                <span className="absolute bottom-1 right-2 text-[10px] text-muted-foreground/60 tabular-nums">
+                <span className="hidden sm:block absolute bottom-1 right-2 text-[10px] text-muted-foreground/60 tabular-nums">
                   {Math.round(percentage)}%
                 </span>
               )}
@@ -137,8 +138,8 @@ export function AgingPressureBar({ incidents, onDrilldown }: AgingPressureBarPro
         })}
       </div>
 
-      {/* Legend */}
-      <div className="flex items-center justify-center gap-6 mt-3 text-xs text-muted-foreground">
+      {/* Legend - wrap on mobile */}
+      <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 sm:gap-6 mt-3 text-xs text-muted-foreground">
         <span className="flex items-center gap-1.5">
           <span className="w-2 h-2 rounded-full bg-muted" />
           Fresh
