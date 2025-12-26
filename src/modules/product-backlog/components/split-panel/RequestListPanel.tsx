@@ -91,19 +91,6 @@ export function RequestListPanel({
           </span>
         </div>
 
-        {/* Search */}
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: 'var(--text-3)' }} />
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => onSearchChange(e.target.value)}
-            placeholder="Search requests..."
-            className="w-full pl-10 pr-4 py-2 text-[13px] bg-background border rounded-lg text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/20 focus:border-ring"
-            style={{ borderColor: 'var(--divider)' }}
-          />
-        </div>
-
         {/* Quick Filters */}
         <div className="flex gap-2">
           {(['all', 'high', 'unscored', 'my'] as const).map((filter) => {
