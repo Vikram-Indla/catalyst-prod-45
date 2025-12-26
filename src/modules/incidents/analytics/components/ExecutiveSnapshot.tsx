@@ -27,7 +27,7 @@ export function ExecutiveSnapshot({ snapshot, onDrilldown, activeFilter }: Execu
       <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4">
         Executive Snapshot
       </h2>
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 sm:gap-4">
+      <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
         {KPI_CONFIG.map(({ key, label, filterType, urgency, description }) => {
           const value = snapshot[key as keyof AnalyticsSnapshot];
           const isActive = activeFilter?.type === filterType;

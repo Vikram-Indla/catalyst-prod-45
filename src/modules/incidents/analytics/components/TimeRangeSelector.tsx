@@ -48,83 +48,85 @@ export function TimeRangeSelector({ value, onChange, customStart, customEnd }: T
   };
 
   return (
-    <div className="flex items-center gap-1">
-      {RANGES.map((range) => (
-        range.value === 'custom' ? (
-          <Popover key={range.value} open={isOpen} onOpenChange={setIsOpen}>
-            <PopoverTrigger asChild>
-              <Button
-                variant={value === 'custom' ? 'default' : 'outline'}
-                size="sm"
-                className={cn(
-                  "h-8 text-xs",
-                  value === 'custom' 
-                    ? "bg-[var(--brand-primary)] hover:bg-[var(--brand-primary-hover)] text-white" 
-                    : "border-border"
-                )}
-              >
-                <Calendar className="h-3.5 w-3.5 mr-1" />
-                {value === 'custom' && customStart && customEnd
-                  ? `${format(customStart, 'MMM d')} - ${format(customEnd, 'MMM d')}`
-                  : 'Custom'
-                }
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-4" align="end">
-              <div className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <div className="text-xs font-medium text-muted-foreground mb-2">Start Date</div>
-                    <CalendarComponent
-                      mode="single"
-                      selected={tempStart}
-                      onSelect={setTempStart}
-                      disabled={(date) => date > new Date()}
-                    />
+    <div className="w-full sm:w-auto overflow-x-auto">
+      <div className="flex items-center gap-1 w-max pr-1">
+        {RANGES.map((range) => (
+          range.value === 'custom' ? (
+            <Popover key={range.value} open={isOpen} onOpenChange={setIsOpen}>
+              <PopoverTrigger asChild>
+                <Button
+                  variant={value === 'custom' ? 'default' : 'outline'}
+                  size="sm"
+                  className={cn(
+                    "h-8 text-xs",
+                    value === 'custom' 
+                      ? "bg-[var(--brand-primary)] hover:bg-[var(--brand-primary-hover)] text-white" 
+                      : "border-border"
+                  )}
+                >
+                  <Calendar className="h-3.5 w-3.5 mr-1" />
+                  {value === 'custom' && customStart && customEnd
+                    ? `${format(customStart, 'MMM d')} - ${format(customEnd, 'MMM d')}`
+                    : 'Custom'
+                  }
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-4" align="end">
+                <div className="space-y-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <div className="text-xs font-medium text-muted-foreground mb-2">Start Date</div>
+                      <CalendarComponent
+                        mode="single"
+                        selected={tempStart}
+                        onSelect={setTempStart}
+                        disabled={(date) => date > new Date()}
+                      />
+                    </div>
+                    <div>
+                      <div className="text-xs font-medium text-muted-foreground mb-2">End Date</div>
+                      <CalendarComponent
+                        mode="single"
+                        selected={tempEnd}
+                        onSelect={setTempEnd}
+                        disabled={(date) => date > new Date() || (tempStart && date < tempStart)}
+                      />
+                    </div>
                   </div>
-                  <div>
-                    <div className="text-xs font-medium text-muted-foreground mb-2">End Date</div>
-                    <CalendarComponent
-                      mode="single"
-                      selected={tempEnd}
-                      onSelect={setTempEnd}
-                      disabled={(date) => date > new Date() || (tempStart && date < tempStart)}
-                    />
+                  <div className="flex justify-end gap-2">
+                    <Button variant="outline" size="sm" onClick={() => setIsOpen(false)}>
+                      Cancel
+                    </Button>
+                    <Button 
+                      size="sm" 
+                      onClick={handleCustomApply}
+                      disabled={!tempStart || !tempEnd}
+                      className="bg-[var(--brand-primary)] hover:bg-[var(--brand-primary-hover)]"
+                    >
+                      Apply
+                    </Button>
                   </div>
                 </div>
-                <div className="flex justify-end gap-2">
-                  <Button variant="outline" size="sm" onClick={() => setIsOpen(false)}>
-                    Cancel
-                  </Button>
-                  <Button 
-                    size="sm" 
-                    onClick={handleCustomApply}
-                    disabled={!tempStart || !tempEnd}
-                    className="bg-[var(--brand-primary)] hover:bg-[var(--brand-primary-hover)]"
-                  >
-                    Apply
-                  </Button>
-                </div>
-              </div>
-            </PopoverContent>
-          </Popover>
-        ) : (
-          <Button
-            key={range.value}
-            variant={value === range.value ? 'default' : 'outline'}
-            size="sm"
-            onClick={() => handleRangeClick(range.value)}
-            className={cn(
-              "h-8 text-xs",
-              value === range.value 
-                ? "bg-[var(--brand-primary)] hover:bg-[var(--brand-primary-hover)] text-white" 
-                : "border-border"
-            )}
-          >
-            {range.label}
-          </Button>
-        )
-      ))}
+              </PopoverContent>
+            </Popover>
+          ) : (
+            <Button
+              key={range.value}
+              variant={value === range.value ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => handleRangeClick(range.value)}
+              className={cn(
+                "h-8 text-xs",
+                value === range.value 
+                  ? "bg-[var(--brand-primary)] hover:bg-[var(--brand-primary-hover)] text-white" 
+                  : "border-border"
+              )}
+            >
+              {range.label}
+            </Button>
+          )
+        ))}
+      </div>
     </div>
   );
 }
