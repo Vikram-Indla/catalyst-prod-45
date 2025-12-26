@@ -173,7 +173,7 @@ export function SidebarBase({
                   marginBottom: '2px',
                   position: 'relative',
                   background: active ? 'var(--nav-active-bg)' : 'transparent',
-                  color: active ? 'var(--text-1)' : 'var(--text-2)',
+                  color: active ? '#2563eb' : 'var(--text-2)',
                   fontWeight: active ? 600 : 500,
                   fontSize: '13px',
                   fontFamily: 'inherit',
@@ -213,7 +213,7 @@ export function SidebarBase({
                   {CustomIcon && (
                     <CustomIcon 
                       className="h-[18px] w-[18px]" 
-                      style={{ color: active ? 'var(--text-1)' : 'var(--icon-default)' }}
+                      style={{ color: active ? '#2563eb' : 'var(--icon-default)' }}
                     />
                   )}
                 </span>
@@ -294,7 +294,7 @@ export function SidebarBase({
                     transition: 'background 0.15s ease, color 0.15s ease',
                     position: 'relative',
                     background: active ? 'var(--nav-active-bg)' : 'transparent',
-                    color: active ? 'var(--text-1)' : 'var(--text-2)',
+                    color: active ? '#2563eb' : 'var(--text-2)',
                     fontWeight: active ? 600 : 500,
                     fontSize: '13px',
                     fontFamily: 'inherit',
@@ -333,7 +333,7 @@ export function SidebarBase({
                     {CustomIcon && (
                       <CustomIcon 
                         className="h-[18px] w-[18px]" 
-                        style={{ color: active ? 'var(--text-1)' : 'var(--icon-muted)' }}
+                        style={{ color: active ? '#2563eb' : 'var(--icon-muted)' }}
                       />
                     )}
                   </span>
