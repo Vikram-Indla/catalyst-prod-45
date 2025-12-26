@@ -347,19 +347,8 @@ export function CreateEpicDialog({
         
         <ScrollArea className="flex-1 pr-4">
           <div className="flex flex-col gap-5 py-4">
-            {/* Section 1: Identity */}
+            {/* Section 1: Epic Name */}
             <div className="space-y-3">
-              <h4 className="text-sm font-medium text-muted-foreground">Identity</h4>
-              
-              {/* Epic Number Preview */}
-              <div className="flex items-center gap-2 p-3 rounded-md bg-muted/50 border border-border">
-                <span className="text-sm text-muted-foreground">Epic Number:</span>
-                <span className="font-mono font-medium text-brand-primary">
-                  {isProgramMissing ? '???-###' : `${getProgramKeyPreview()}-###`}
-                </span>
-                <span className="text-xs text-muted-foreground">(auto-generated)</span>
-              </div>
-
               <div className="space-y-2">
                 <Label htmlFor="epic-name">
                   Epic Name <span className="text-destructive">*</span>
