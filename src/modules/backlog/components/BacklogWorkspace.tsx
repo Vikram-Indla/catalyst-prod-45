@@ -49,7 +49,7 @@ export function BacklogWorkspace() {
   
   // Local search for list panel (separate from toolbar)
   const [listSearchQuery, setListSearchQuery] = useState('');
-  const [activeQuickFilter, setActiveQuickFilter] = useState<'all' | 'my' | 'mvp' | 'unassigned'>('all');
+  const [activeQuickFilter, setActiveQuickFilter] = useState<'all' | 'my' | 'theme' | 'unassigned'>('all');
   
   // Toolbar search
   const [searchQuery, setSearchQuery] = useState('');
@@ -170,8 +170,8 @@ export function BacklogWorkspace() {
     // Apply quick filter
     if (activeQuickFilter === 'my' && currentUserId) {
       filtered = filtered.filter(e => e.assigneeId === currentUserId);
-    } else if (activeQuickFilter === 'mvp') {
-      filtered = filtered.filter(e => e.mvp);
+    } else if (activeQuickFilter === 'theme') {
+      filtered = filtered.filter(e => e.themeName !== null && e.themeName !== '');
     } else if (activeQuickFilter === 'unassigned') {
       filtered = filtered.filter(e => !e.assigneeId);
     }
