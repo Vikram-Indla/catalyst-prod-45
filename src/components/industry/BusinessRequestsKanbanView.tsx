@@ -10,6 +10,7 @@ import { useQueryClient } from '@tanstack/react-query';
 // Native scroll used instead of ScrollArea for better horizontal/vertical scroll support
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { format } from 'date-fns';
+import { useProcessStepOptions } from '@/contexts/ProcessStepsContext';
 
 interface BusinessRequest {
   id: string;
@@ -31,16 +32,16 @@ interface BusinessRequestsKanbanViewProps {
   onExpandedChange?: (expanded: boolean) => void;
 }
 
-import { PROCESS_STEPS } from '@/types/business-request';
-
-// Use the centralized PROCESS_STEPS as Kanban columns - no colors (neutral styling)
-const KANBAN_COLUMNS = PROCESS_STEPS.map(step => ({
-  id: step.value,
-  label: step.label,
-}));
-
 export function BusinessRequestsKanbanView({ requests, onRequestSelect, allExpanded, onExpandedChange }: BusinessRequestsKanbanViewProps) {
   const queryClient = useQueryClient();
+  const processStepOptions = useProcessStepOptions();
+  
+  // Use the centralized process steps as Kanban columns - no colors (neutral styling)
+  const KANBAN_COLUMNS = processStepOptions.map(step => ({
+    id: step.value,
+    label: step.label,
+  }));
+  
   // All columns collapsed by default except 'in_progress'
   const [collapsedColumns, setCollapsedColumns] = useState<Set<string>>(
     new Set(['request_received', 'under_study', 'awaiting_business_response', 'reopen', 'on_hold', 'closed', 'completed'])
@@ -53,7 +54,7 @@ export function BusinessRequestsKanbanView({ requests, onRequestSelect, allExpan
     } else if (allExpanded === false) {
       setCollapsedColumns(new Set(KANBAN_COLUMNS.map(c => c.id)));
     }
-  }, [allExpanded]);
+  }, [allExpanded, KANBAN_COLUMNS]);
 
   const toggleColumnCollapse = (columnId: string) => {
     setCollapsedColumns(prev => {

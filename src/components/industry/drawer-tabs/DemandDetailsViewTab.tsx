@@ -7,7 +7,7 @@ import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
-import { BusinessRequest, PROCESS_STEPS } from '@/types/business-request';
+import { BusinessRequest } from '@/types/business-request';
 import { DepartmentSelect } from '@/components/business-requests/DepartmentSelect';
 import { BusinessOwnerSelect } from '@/components/business-requests/BusinessOwnerSelect';
 import { useDepartments, useBusinessOwners, useDepartmentOwnerMappings, getOwnerIdForDepartment } from '@/hooks/useDepartmentsAndOwners';
@@ -199,7 +199,7 @@ export function DemandDetailsViewTab({ data, onChange, onDirtyChange }: DemandDe
   const { data: departments } = useDepartments();
   const { data: owners } = useBusinessOwners();
   const { data: mappings } = useDepartmentOwnerMappings();
-  const { data: processSteps = PROCESS_STEPS } = useActiveDemandProcessSteps();
+  const { data: processSteps = [] } = useActiveDemandProcessSteps();
 
   // Resolve legacy text values to IDs on initial load
   useEffect(() => {
