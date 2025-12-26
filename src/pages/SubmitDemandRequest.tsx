@@ -340,12 +340,12 @@ export default function SubmitDemandRequest() {
       {/* Header */}
       <header className="bg-white border-b border-gray-200 px-6 py-4">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-[#5c7c5c] flex items-center justify-center text-white font-bold text-sm">
+          <div className="w-8 h-8 rounded-lg bg-[#2563eb] flex items-center justify-center text-white font-bold text-sm">
             C
           </div>
           <span className="text-lg font-semibold">
-            <span className="text-[#5c7c5c]">Cata</span>
-            <span className="text-[#c69c6d]">lyst</span>
+            <span className="text-[#0a0a0a] dark:text-white">Cata</span>
+            <span className="text-[#c69c6d] dark:text-[#d4b896]">lyst</span>
           </span>
         </div>
       </header>

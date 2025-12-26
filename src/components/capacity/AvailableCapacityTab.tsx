@@ -88,7 +88,7 @@ export function AvailableCapacityTab({
               className={cn(
                 "rounded-md p-3 text-center transition-colors",
                 w.isCurrent 
-                  ? "border-2 border-[#c69c6d] bg-[#F5EDE4]" 
+                  ? "border-2 border-[#2563eb] bg-[rgba(37,99,235,0.08)]" 
                   : "border border-border bg-card"
               )}
             >
@@ -141,7 +141,7 @@ export function AvailableCapacityTab({
                     {/* Resource */}
                     <td className="p-3">
                       <div className="flex items-center gap-2">
-                        <div className="w-7 h-7 rounded-full bg-[#F5EDE4] text-[#c69c6d] flex items-center justify-center text-xs font-semibold flex-shrink-0">
+                        <div className="w-7 h-7 rounded-full bg-[rgba(37,99,235,0.1)] text-[#2563eb] flex items-center justify-center text-xs font-semibold flex-shrink-0">
                           {resource.initials}
                         </div>
                         <div className="min-w-0">
@@ -184,7 +184,7 @@ export function AvailableCapacityTab({
                           size="sm" 
                           variant="outline"
                           onClick={() => onAllocate(resource.id)}
-                          className="text-xs h-7 px-3 border-[#c69c6d] text-[#c69c6d] hover:bg-[#F5EDE4]"
+                          className="text-xs h-7 px-3 border-[#2563eb] text-[#2563eb] hover:bg-[rgba(37,99,235,0.08)]"
                         >
                           Allocate
                         </Button>

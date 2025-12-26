@@ -188,8 +188,8 @@ function IncidentHealthSection({
                 />
                 <Legend wrapperStyle={{ fontSize: '11px' }} />
                 <Line type="monotone" dataKey="logged" stroke="#3b82f6" strokeWidth={2} name="Logged" dot={{ r: 3 }} />
-                <Line type="monotone" dataKey="closed" stroke="#22c55e" strokeWidth={2} name="Closed" dot={{ r: 3 }} />
-                <Line type="monotone" dataKey="converted" stroke="#a855f7" strokeWidth={2} name="Converted" dot={{ r: 3 }} />
+                <Line type="monotone" dataKey="closed" stroke="#0d9488" strokeWidth={2} name="Closed" dot={{ r: 3 }} />
+                <Line type="monotone" dataKey="converted" stroke="#2563eb" strokeWidth={2} name="Converted" dot={{ r: 3 }} />
               </LineChart>
             </ResponsiveContainer>
           </div>
@@ -272,9 +272,9 @@ function CAPEffectivenessSection({
   onDrillDown: (filter: string) => void;
 }) {
   const data = [
-    { name: 'Approved', value: effectiveness.approved, color: '#22c55e' },
+    { name: 'Approved', value: effectiveness.approved, color: '#0d9488' },
     { name: 'Rejected', value: effectiveness.rejected, color: '#ef4444' },
-    { name: 'Vetoed', value: effectiveness.vetoed, color: '#8b5cf6' },
+    { name: 'Vetoed', value: effectiveness.vetoed, color: '#2563eb' },
   ];
 
   const formatTime = (minutes: number) => {

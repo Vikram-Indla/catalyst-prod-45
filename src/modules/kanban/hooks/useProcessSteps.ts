@@ -18,15 +18,15 @@ export interface ProcessStep {
 // Color palette for dynamic columns
 const COLUMN_COLORS = [
   '#3b82f6', // Blue
-  '#f59e0b', // Amber
-  '#8b5cf6', // Purple
-  '#22c55e', // Green
+  '#2563eb', // Blue-600
+  '#1d4ed8', // Blue-700
+  '#0d9488', // Teal
   '#ef4444', // Red
   '#f97316', // Orange
-  '#06b6d4', // Cyan
-  '#ec4899', // Pink
+  '#0f766e', // Teal-dark
+  '#5c7c5c', // Olive
   '#78716c', // Stone
-  '#84cc16', // Lime
+  '#8b7355', // Bronze
 ];
 
 export function useProcessSteps() {

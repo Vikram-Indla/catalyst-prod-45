@@ -9,17 +9,16 @@ import { Button } from '@/components/ui/button';
 
 // Catalyst Brand Color Palette
 export const BRAND_COLORS = [
+  { name: 'Blue', value: 'blue', hex: '#2563eb', bgClass: 'bg-blue-600' },
+  { name: 'Blue Dark', value: 'blue-dark', hex: '#1d4ed8', bgClass: 'bg-blue-700' },
+  { name: 'Blue Light', value: 'blue-light', hex: '#3b82f6', bgClass: 'bg-blue-500' },
+  { name: 'Teal', value: 'teal', hex: '#0d9488', bgClass: 'bg-teal-600' },
+  { name: 'Teal Dark', value: 'teal-dark', hex: '#0f766e', bgClass: 'bg-teal-700' },
+  { name: 'Teal Light', value: 'teal-light', hex: '#14b8a6', bgClass: 'bg-teal-500' },
   { name: 'Olive', value: 'olive', hex: '#5c7c5c', bgClass: 'bg-olive-500' },
-  { name: 'Olive Dark', value: 'olive-dark', hex: '#4a6a4a', bgClass: 'bg-olive-600' },
-  { name: 'Olive Light', value: 'olive-light', hex: '#7d9c7d', bgClass: 'bg-olive-400' },
   { name: 'Bronze', value: 'bronze', hex: '#8b7355', bgClass: 'bg-bronze-500' },
-  { name: 'Bronze Dark', value: 'bronze-dark', hex: '#7a6349', bgClass: 'bg-bronze-600' },
-  { name: 'Gold', value: 'gold', hex: '#c69c6d', bgClass: 'bg-gold-500' },
-  { name: 'Gold Light', value: 'gold-light', hex: '#d4a66f', bgClass: 'bg-gold-400' },
-  { name: 'Champagne', value: 'champagne', hex: '#d4b896', bgClass: 'bg-gold-300' },
-  { name: 'Success', value: 'success', hex: '#16a34a', bgClass: 'bg-green-600' },
-  { name: 'Warning', value: 'warning', hex: '#d97706', bgClass: 'bg-amber-600' },
-  { name: 'Info', value: 'info', hex: '#3b82f6', bgClass: 'bg-blue-500' },
+  { name: 'Warning', value: 'warning', hex: '#f59e0b', bgClass: 'bg-amber-500' },
+  { name: 'Danger', value: 'danger', hex: '#ef4444', bgClass: 'bg-red-500' },
   { name: 'Neutral', value: 'neutral', hex: '#6b7280', bgClass: 'bg-gray-500' },
 ] as const;
 

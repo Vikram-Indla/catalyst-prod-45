@@ -110,7 +110,7 @@ const getExpiryStatus = (expiryDate: string): { label: string; color: string; bg
   } else if (daysUntilExpiry <= 30) {
     return { label: 'Expiring Soon', color: '#f59e0b', bgColor: 'rgba(245, 158, 11, 0.15)' };
   }
-  return { label: 'Valid', color: '#22c55e', bgColor: 'rgba(34, 197, 94, 0.15)' };
+  return { label: 'Valid', color: '#0d9488', bgColor: 'rgba(13, 148, 136, 0.15)' };
 };
 
 const StarRating: React.FC<{ level: SkillProficiencyLevel }> = ({ level }) => {
