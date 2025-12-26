@@ -28,6 +28,16 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import {
   Popover,
   PopoverContent,
   PopoverTrigger,
@@ -44,7 +54,6 @@ import {
   Settings,
   Trash2,
   Copy,
-  FileDown,
   Search
 } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -78,6 +87,7 @@ export function SnapshotDrawer({ isOpen, onClose, snapshotId, onSave }: Snapshot
   const [isDirty, setIsDirty] = useState(false);
   const [themeSearch, setThemeSearch] = useState('');
   const [quarterSearch, setQuarterSearch] = useState('');
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   
   // Form state
   const [formData, setFormData] = useState<SnapshotFormData>({
@@ -275,6 +285,45 @@ export function SnapshotDrawer({ isOpen, onClose, snapshotId, onSave }: Snapshot
     updateSnapshotMutation.mutate();
   };
 
+  // Delete mutation
+  const deleteSnapshotMutation = useMutation({
+    mutationFn: async () => {
+      if (!snapshotId) throw new Error('No snapshot ID');
+      
+      // First delete configuration
+      await supabase
+        .from('snapshot_configurations')
+        .delete()
+        .eq('snapshot_id', snapshotId);
+      
+      // Then delete snapshot
+      const { error } = await supabase
+        .from('strategy_snapshots')
+        .delete()
+        .eq('id', snapshotId);
+      
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['strategic-snapshots'] });
+      queryClient.invalidateQueries({ queryKey: ['strategy-snapshots'] });
+      catalystToast.success('Snapshot Deleted', 'Snapshot has been permanently deleted.');
+      onClose();
+    },
+    onError: (error: any) => {
+      catalystToast.error('Error', error.message || 'Failed to delete snapshot.');
+    },
+  });
+
+  const handleDelete = () => {
+    setShowDeleteConfirm(true);
+  };
+
+  const handleDeleteConfirm = () => {
+    deleteSnapshotMutation.mutate();
+    setShowDeleteConfirm(false);
+  };
+
   // Format snapshot ID for display
   const formatSnapshotId = (id: string | null) => {
     if (!id) return 'SNAP-???';
@@ -397,12 +446,11 @@ export function SnapshotDrawer({ isOpen, onClose, snapshotId, onSave }: Snapshot
                 <Copy className="h-4 w-4 mr-2" />
                 Duplicate
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => catalystToast.info('Info', 'Export not implemented')}>
-                <FileDown className="h-4 w-4 mr-2" />
-                Export
-              </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem className="text-destructive focus:text-destructive">
+              <DropdownMenuItem 
+                onClick={handleDelete}
+                className="text-destructive focus:text-destructive"
+              >
                 <Trash2 className="h-4 w-4 mr-2" />
                 Delete
               </DropdownMenuItem>
@@ -789,6 +837,27 @@ export function SnapshotDrawer({ isOpen, onClose, snapshotId, onSave }: Snapshot
           </ScrollArea>
         </Tabs>
       </SheetContent>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Snapshot</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete "{formData.name}"? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeleteConfirm}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {deleteSnapshotMutation.isPending ? 'Deleting...' : 'Delete'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Sheet>
   );
 }
