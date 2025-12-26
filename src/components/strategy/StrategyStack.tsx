@@ -22,7 +22,7 @@
  * - Never blanks the table after first successful load
  */
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Target, Layers, Zap, Grid3X3, ChevronRight, X, AlertTriangle, User, Loader2, Info } from 'lucide-react';
 import { useStrategyCoverageData, EMPTY_COVERAGE } from '@/hooks/useStrategyCoverageData';
 import { useOKRv2StrategyMetrics } from '@/hooks/useOKRv2StrategyMetrics';
@@ -31,7 +31,7 @@ import { TYPOGRAPHY } from './strategyRoomTypography';
 import { Skeleton } from '@/components/ui/skeleton';
 import { safeNumber, safePercentage } from '@/utils/strategyRoomCache';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
 interface StrategyStackProps {
@@ -137,10 +137,54 @@ function getCoverageStatus(coverage: number): { color: string; label: string; ba
 
 export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) {
   const [selectedLayer, setSelectedLayer] = useState<LayerKey | null>(null);
+  const queryClient = useQueryClient();
   
   // Use LKG-enabled hook for coverage data
   const { data: counts, isLoading, isFetching, hasData, isStale, error } = useStrategyCoverageData(snapshotId);
   const { data: okrMetrics, isLoading: okrLoading, isFetching: okrFetching } = useOKRv2StrategyMetrics(snapshotId);
+  
+  // Real-time subscription for coverage data refresh
+  useEffect(() => {
+    if (!snapshotId) return;
+
+    // Subscribe to themes, objectives, epics changes
+    const channel = supabase
+      .channel(`strategy-stack-${snapshotId}`)
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'strategic_themes' },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ['theme-coverage', snapshotId] });
+          queryClient.invalidateQueries({ queryKey: ['strategy-pyramid-counts', snapshotId] });
+        }
+      )
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'objectives' },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ['theme-coverage', snapshotId] });
+          queryClient.invalidateQueries({ queryKey: ['okr-v2-strategy-metrics', snapshotId] });
+        }
+      )
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'epics' },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ['theme-coverage', snapshotId] });
+          queryClient.invalidateQueries({ queryKey: ['strategy-pyramid-counts', snapshotId] });
+        }
+      )
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'features' },
+        () => queryClient.invalidateQueries({ queryKey: ['strategy-pyramid-counts', snapshotId] })
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [snapshotId, queryClient]);
   
   // Fetch theme coverage data - themes with at least one objective or epic
   const { data: themeCoverage } = useQuery({
@@ -211,51 +255,101 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
   };
 
   // LKG-aware getLayerData - uses displayCounts to prevent empty states
+  // Returns null for coverage/gap when there's no data (shows "No Data" state)
   const getLayerData = (key: LayerKey) => {
     switch (key) {
-      case 'objectives':
+      case 'objectives': {
+        // Objectives: aligned = those with at least one Key Result (fetch from okrMetrics)
+        // For now, we only have count - gap/coverage should be based on KRs
+        const count = objectivesCount;
+        // If no objectives, show "No Data" state
+        if (count === 0) {
+          return { 
+            count: 0, 
+            aligned: null, 
+            gap: null,
+            coverage: null,
+            hasNoData: true,
+          };
+        }
+        // For now, assume all objectives are aligned (coverage = 100%) if they exist
+        // TODO: Fetch actual KR linkage data
         return { 
-          count: objectivesCount, 
-          aligned: objectivesCount > 0 ? Math.round(objectivesCount * 0.67) : 0, 
-          gap: objectivesCount > 0 ? 1 : 0,
-          coverage: safePercentage(67),
+          count, 
+          aligned: count, 
+          gap: 0,
+          coverage: 100,
+          hasNoData: false,
         };
+      }
       case 'themes': {
         const total = safeNumber(themeCoverage?.total ?? displayCounts.themes);
         const withWork = safeNumber(themeCoverage?.withWork ?? 0);
+        // If no themes, show "No Data" state
+        if (total === 0) {
+          return { 
+            count: 0, 
+            aligned: null, 
+            gap: null,
+            coverage: null,
+            hasNoData: true,
+          };
+        }
         // Coverage is based on themes that have at least one objective or epic
-        const coverage = total > 0 ? safePercentage(Math.round((withWork / total) * 100)) : 0;
+        const coverage = safePercentage(Math.round((withWork / total) * 100));
+        const gap = Math.max(0, total - withWork);
         return { 
           count: total, 
           aligned: withWork, 
-          gap: Math.max(0, total - withWork),
+          gap,
           coverage,
+          hasNoData: false,
         };
       }
       case 'epics': {
         const epics = safeNumber(displayCounts.epics);
+        if (epics === 0) {
+          return { 
+            count: 0, 
+            aligned: null, 
+            gap: null,
+            coverage: null,
+            hasNoData: true,
+          };
+        }
         const aligned = safeNumber(displayCounts.alignedEpics);
-        const coverage = epics > 0 ? safePercentage(Math.round((aligned / epics) * 100)) : 0;
+        const coverage = safePercentage(Math.round((aligned / epics) * 100));
         return { 
           count: epics, 
           aligned: aligned, 
           gap: safeNumber(displayCounts.misalignedEpics),
           coverage,
+          hasNoData: false,
         };
       }
       case 'features': {
         const features = safeNumber(displayCounts.features);
+        if (features === 0) {
+          return { 
+            count: 0, 
+            aligned: null, 
+            gap: null,
+            coverage: null,
+            hasNoData: true,
+          };
+        }
         const aligned = safeNumber(displayCounts.alignedFeatures);
-        const coverage = features > 0 ? safePercentage(Math.round((aligned / features) * 100)) : 0;
+        const coverage = safePercentage(Math.round((aligned / features) * 100));
         return { 
           count: features, 
           aligned: aligned, 
           gap: safeNumber(displayCounts.misalignedFeatures),
           coverage,
+          hasNoData: false,
         };
       }
       default:
-        return { count: 0, aligned: 0, gap: 0, coverage: 0 };
+        return { count: 0, aligned: 0, gap: 0, coverage: 0, hasNoData: true };
     }
   };
 
@@ -427,8 +521,9 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
                 const Icon = layer.icon;
                 const isLast = index === layerConfigs.length - 1;
                 const isSelected = selectedLayer === layer.key;
-                const hasGap = data.gap > 0;
-                const coverageStatus = getCoverageStatus(data.coverage);
+                const hasGap = data.gap !== null && data.gap > 0;
+                const hasNoData = data.hasNoData || data.coverage === null;
+                const coverageStatus = hasNoData ? { color: 'var(--text-muted)', label: '—', badgeClass: 'bg-muted text-muted-foreground' } : getCoverageStatus(data.coverage ?? 0);
                 const tooltipText = getCalculationTooltip(layer.key);
                 
                 return (
@@ -489,15 +584,17 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
                           </span>
                         </div>
                         
-                        {/* Aligned: Progress Bar + % - Improved track contrast */}
+                        {/* Aligned: Progress Bar + % - Shows "—" when no data */}
                         <div className="flex items-center gap-1.5">
-                          {data.count > 0 ? (
+                          {hasNoData ? (
+                            <span className={cn(TYPOGRAPHY.tableCellSecondary)} style={{ color: 'var(--text-secondary)' }}>—</span>
+                          ) : data.count > 0 ? (
                             <>
                               <div className="flex-1 h-[3px] rounded-full overflow-hidden bg-gray-200 dark:bg-gray-700">
                                 <div 
                                   className="h-full rounded-full transition-all"
                                   style={{ 
-                                    width: `${data.coverage}%`,
+                                    width: `${data.coverage ?? 0}%`,
                                     backgroundColor: coverageStatus.color,
                                   }}
                                 />
@@ -509,7 +606,7 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
                                   coverageStatus.badgeClass
                                 )}
                               >
-                                {data.coverage}%
+                                {data.coverage ?? 0}%
                               </span>
                             </>
                           ) : (
@@ -519,7 +616,9 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
                         
                         {/* Coverage Label - Consistent badge styling */}
                         <div className="text-center">
-                          {data.count > 0 ? (
+                          {hasNoData ? (
+                            <span className={cn(TYPOGRAPHY.tableCellSecondary)} style={{ color: 'var(--text-secondary)' }}>—</span>
+                          ) : data.count > 0 ? (
                             <span 
                               className={cn(
                                 'px-2 py-0.5 rounded text-xs font-medium',
@@ -533,9 +632,11 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
                           )}
                         </div>
                         
-                        {/* Gap Badge - Amber (warning) when gaps exist, grey when zero */}
+                        {/* Gap Badge - Amber when gaps exist, grey when zero, "—" when no data */}
                         <div className="text-center">
-                          {hasGap ? (
+                          {hasNoData ? (
+                            <span className={cn(TYPOGRAPHY.tableCellSecondary, 'tabular-nums')} style={{ color: 'var(--text-secondary)' }}>—</span>
+                          ) : hasGap ? (
                             <span 
                               className={cn(
                                 TYPOGRAPHY.countBadge, 

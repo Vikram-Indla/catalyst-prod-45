@@ -370,7 +370,69 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
     enabled: !!theme?.id,
   });
 
-  // Calculate KPI metrics
+  // Real-time subscriptions for auto-refresh
+  useEffect(() => {
+    if (!theme?.id || !isOpen) return;
+
+    // Subscribe to changes on objectives linked to this theme
+    const objectivesChannel = supabase
+      .channel(`theme-objectives-${theme.id}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'objectives',
+          filter: `theme_id=eq.${theme.id}`,
+        },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ['theme-objectives', theme.id] });
+        }
+      )
+      .subscribe();
+
+    // Subscribe to changes on epics linked to this theme
+    const epicsChannel = supabase
+      .channel(`theme-epics-${theme.id}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'epics',
+          filter: `theme_id=eq.${theme.id}`,
+        },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ['theme-epics', theme.id] });
+        }
+      )
+      .subscribe();
+
+    // Subscribe to theme changes
+    const themeChannel = supabase
+      .channel(`theme-details-${theme.id}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'strategic_themes',
+          filter: `id=eq.${theme.id}`,
+        },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ['strategic_themes'] });
+          queryClient.invalidateQueries({ queryKey: ['themes'] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(objectivesChannel);
+      supabase.removeChannel(epicsChannel);
+      supabase.removeChannel(themeChannel);
+    };
+  }, [theme?.id, isOpen, queryClient]);
+
   const kpiMetrics = useMemo(() => {
     // Calculate average progress across objectives
     const objectivesWithProgress = objectives.filter(o => o.overall_progress !== null);
@@ -397,8 +459,10 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
       return acc;
     }, {} as Record<string, number>);
     
-    // Count gaps (themes without objectives or epics)
-    const gaps = (objectives.length === 0 ? 1 : 0) + (epics.length === 0 ? 1 : 0);
+    // Gaps: only count if theme has NO objectives AND NO epics (completely empty)
+    // If theme has at least one objective OR one epic, gaps = 0 (theme is "covered")
+    const hasAnyWork = objectives.length > 0 || epics.length > 0;
+    const gaps = hasAnyWork ? 0 : null; // null = "No Data" state
     
     return {
       overallProgress: overallProgress.percent,
@@ -408,6 +472,7 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
       epicCount: epics.length,
       epicStateBreakdown,
       gaps,
+      hasAnyWork,
     };
   }, [objectives, epics]);
 
@@ -910,12 +975,12 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
                         : undefined
                       }
                     />
-                    {kpiMetrics.gaps > 0 && (
+                    {kpiMetrics.gaps === null && !kpiMetrics.hasAnyWork && (
                       <KPICard 
                         icon={AlertTriangle}
                         label="Gaps" 
-                        value={kpiMetrics.gaps}
-                        subValue="Missing links"
+                        value="—"
+                        subValue="No objectives or epics linked"
                       />
                     )}
                   </div>
