@@ -23,13 +23,16 @@
  */
 
 import { useState } from 'react';
-import { Target, Layers, Zap, Grid3X3, ChevronRight, X, AlertTriangle, User, Loader2 } from 'lucide-react';
+import { Target, Layers, Zap, Grid3X3, ChevronRight, X, AlertTriangle, User, Loader2, Info } from 'lucide-react';
 import { useStrategyCoverageData, EMPTY_COVERAGE } from '@/hooks/useStrategyCoverageData';
 import { useOKRv2StrategyMetrics } from '@/hooks/useOKRv2StrategyMetrics';
 import { cn } from '@/lib/utils';
 import { TYPOGRAPHY } from './strategyRoomTypography';
 import { Skeleton } from '@/components/ui/skeleton';
 import { safeNumber, safePercentage } from '@/utils/strategyRoomCache';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 
 interface StrategyStackProps {
   onLayerClick: (label: string) => void;
@@ -139,6 +142,48 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
   const { data: counts, isLoading, isFetching, hasData, isStale, error } = useStrategyCoverageData(snapshotId);
   const { data: okrMetrics, isLoading: okrLoading, isFetching: okrFetching } = useOKRv2StrategyMetrics(snapshotId);
   
+  // Fetch theme coverage data - themes with at least one objective or epic
+  const { data: themeCoverage } = useQuery({
+    queryKey: ['theme-coverage', snapshotId],
+    queryFn: async () => {
+      if (!snapshotId) return { total: 0, withWork: 0 };
+      
+      // Get themes for this snapshot
+      const { data: themes } = await supabase
+        .from('strategic_themes')
+        .select('id')
+        .eq('snapshot_id', snapshotId);
+      
+      if (!themes || themes.length === 0) return { total: 0, withWork: 0 };
+      
+      const themeIds = themes.map(t => t.id);
+      
+      // Check which themes have objectives
+      const { data: objectives } = await supabase
+        .from('objectives')
+        .select('theme_id')
+        .in('theme_id', themeIds);
+      
+      // Check which themes have epics
+      const { data: epics } = await supabase
+        .from('epics')
+        .select('theme_id')
+        .in('theme_id', themeIds);
+      
+      const themesWithWork = new Set([
+        ...(objectives || []).map(o => o.theme_id),
+        ...(epics || []).map(e => e.theme_id),
+      ]);
+      
+      return { 
+        total: themes.length, 
+        withWork: themesWithWork.size 
+      };
+    },
+    enabled: !!snapshotId,
+    staleTime: 60 * 1000,
+  });
+  
   // Use safe fallbacks - never show undefined/NaN
   const displayCounts = counts ?? EMPTY_COVERAGE;
 
@@ -148,6 +193,22 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
   // Show stale indicator when showing cached data after error
   const showStaleIndicator = isStale && !isFetching && !!error;
   const isRefreshing = (isFetching || okrFetching) && hasData;
+
+  // Calculation tooltips for each layer
+  const getCalculationTooltip = (key: LayerKey): string => {
+    switch (key) {
+      case 'objectives':
+        return 'Coverage = Objectives with at least one Key Result ÷ Total Objectives';
+      case 'themes':
+        return 'Coverage = Themes with at least one Objective or Epic ÷ Total Themes. Empty themes (no work items) count as 0% coverage.';
+      case 'epics':
+        return 'Coverage = Epics linked to a Theme or Objective ÷ Total Epics';
+      case 'features':
+        return 'Coverage = Features belonging to aligned Epics ÷ Total Features';
+      default:
+        return '';
+    }
+  };
 
   // LKG-aware getLayerData - uses displayCounts to prevent empty states
   const getLayerData = (key: LayerKey) => {
@@ -159,13 +220,18 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
           gap: objectivesCount > 0 ? 1 : 0,
           coverage: safePercentage(67),
         };
-      case 'themes':
+      case 'themes': {
+        const total = safeNumber(themeCoverage?.total ?? displayCounts.themes);
+        const withWork = safeNumber(themeCoverage?.withWork ?? 0);
+        // Coverage is based on themes that have at least one objective or epic
+        const coverage = total > 0 ? safePercentage(Math.round((withWork / total) * 100)) : 0;
         return { 
-          count: safeNumber(displayCounts.themes), 
-          aligned: safeNumber(displayCounts.themes), 
-          gap: 0,
-          coverage: safePercentage(100),
+          count: total, 
+          aligned: withWork, 
+          gap: Math.max(0, total - withWork),
+          coverage,
         };
+      }
       case 'epics': {
         const epics = safeNumber(displayCounts.epics);
         const aligned = safeNumber(displayCounts.alignedEpics);
@@ -354,146 +420,156 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
           </div>
 
           {/* Table Rows - Compact */}
-          <div>
-            {layerConfigs.map((layer, index) => {
-              const data = getLayerData(layer.key);
-              const Icon = layer.icon;
-              const isLast = index === layerConfigs.length - 1;
-              const isSelected = selectedLayer === layer.key;
-              const hasGap = data.gap > 0;
-              const coverageStatus = getCoverageStatus(data.coverage);
-              
-              return (
-                <div
-                  key={layer.key}
-                  onClick={() => handleRowClick(layer.key)}
-                  className={cn(
-                    "grid items-center py-1.5 px-3 cursor-pointer",
-                    "transition-[background-color] duration-100",
-                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
-                  )}
-                  tabIndex={0}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                      e.preventDefault();
-                      handleRowClick(layer.key);
-                    }
-                  }}
-                  style={{
-                    gridTemplateColumns: '1fr 50px 120px 70px 50px 20px',
-                    borderBottom: isLast ? 'none' : '1px solid var(--border-subtle)',
-                    backgroundColor: isSelected ? 'var(--surface-hover)' : 'transparent',
-                    boxShadow: isSelected ? 'inset 0 0 0 1px var(--brand-primary)' : 'none',
-                    minHeight: '36px',
-                  }}
-                  onMouseEnter={(e) => {
-                    if (!isSelected) e.currentTarget.style.backgroundColor = 'hsl(var(--accent) / 0.4)';
-                  }}
-                  onMouseLeave={(e) => {
-                    if (!isSelected) e.currentTarget.style.backgroundColor = 'transparent';
-                  }}
-                >
-                  {/* Layer Name with Icon */}
-                  <div className="flex items-center gap-2">
-                    <div 
-                      className="w-5 h-5 rounded flex items-center justify-center flex-shrink-0"
-                      style={{ backgroundColor: layer.iconBgColor }}
-                    >
-                      <Icon size={12} style={{ color: layer.iconColor }} />
-                    </div>
-                    <span 
-                      className={cn(TYPOGRAPHY.tableCellEmphasis, 'truncate')}
-                      style={{ color: 'var(--text-primary)' }}
-                    >
-                      {layer.label}
-                    </span>
-                  </div>
-                  
-                  {/* Count */}
-                  <div className="text-center">
-                    <span 
-                      className={cn(TYPOGRAPHY.tableCell, 'tabular-nums font-medium')}
-                      style={{ color: data.count === 0 ? 'var(--text-secondary)' : 'var(--text-primary)' }}
-                    >
-                      {isLoading || okrLoading ? '–' : data.count}
-                    </span>
-                  </div>
-                  
-                  {/* Aligned: Progress Bar + % - Improved track contrast */}
-                  <div className="flex items-center gap-1.5">
-                    {data.count > 0 ? (
-                      <>
-                        <div className="flex-1 h-[3px] rounded-full overflow-hidden bg-gray-200 dark:bg-gray-700">
+          <TooltipProvider delayDuration={300}>
+            <div>
+              {layerConfigs.map((layer, index) => {
+                const data = getLayerData(layer.key);
+                const Icon = layer.icon;
+                const isLast = index === layerConfigs.length - 1;
+                const isSelected = selectedLayer === layer.key;
+                const hasGap = data.gap > 0;
+                const coverageStatus = getCoverageStatus(data.coverage);
+                const tooltipText = getCalculationTooltip(layer.key);
+                
+                return (
+                  <Tooltip key={layer.key}>
+                    <TooltipTrigger asChild>
+                      <div
+                        onClick={() => handleRowClick(layer.key)}
+                        className={cn(
+                          "grid items-center py-1.5 px-3 cursor-pointer",
+                          "transition-[background-color] duration-100",
+                          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
+                        )}
+                        tabIndex={0}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            handleRowClick(layer.key);
+                          }
+                        }}
+                        style={{
+                          gridTemplateColumns: '1fr 50px 120px 70px 50px 20px',
+                          borderBottom: isLast ? 'none' : '1px solid var(--border-subtle)',
+                          backgroundColor: isSelected ? 'var(--surface-hover)' : 'transparent',
+                          boxShadow: isSelected ? 'inset 0 0 0 1px var(--brand-primary)' : 'none',
+                          minHeight: '36px',
+                        }}
+                        onMouseEnter={(e) => {
+                          if (!isSelected) e.currentTarget.style.backgroundColor = 'hsl(var(--accent) / 0.4)';
+                        }}
+                        onMouseLeave={(e) => {
+                          if (!isSelected) e.currentTarget.style.backgroundColor = 'transparent';
+                        }}
+                      >
+                        {/* Layer Name with Icon */}
+                        <div className="flex items-center gap-2">
                           <div 
-                            className="h-full rounded-full transition-all"
-                            style={{ 
-                              width: `${data.coverage}%`,
-                              backgroundColor: coverageStatus.color,
-                            }}
+                            className="w-5 h-5 rounded flex items-center justify-center flex-shrink-0"
+                            style={{ backgroundColor: layer.iconBgColor }}
+                          >
+                            <Icon size={12} style={{ color: layer.iconColor }} />
+                          </div>
+                          <span 
+                            className={cn(TYPOGRAPHY.tableCellEmphasis, 'truncate')}
+                            style={{ color: 'var(--text-primary)' }}
+                          >
+                            {layer.label}
+                          </span>
+                          <Info size={12} className="text-muted-foreground opacity-50" />
+                        </div>
+                        
+                        {/* Count */}
+                        <div className="text-center">
+                          <span 
+                            className={cn(TYPOGRAPHY.tableCell, 'tabular-nums font-medium')}
+                            style={{ color: data.count === 0 ? 'var(--text-secondary)' : 'var(--text-primary)' }}
+                          >
+                            {isLoading || okrLoading ? '–' : data.count}
+                          </span>
+                        </div>
+                        
+                        {/* Aligned: Progress Bar + % - Improved track contrast */}
+                        <div className="flex items-center gap-1.5">
+                          {data.count > 0 ? (
+                            <>
+                              <div className="flex-1 h-[3px] rounded-full overflow-hidden bg-gray-200 dark:bg-gray-700">
+                                <div 
+                                  className="h-full rounded-full transition-all"
+                                  style={{ 
+                                    width: `${data.coverage}%`,
+                                    backgroundColor: coverageStatus.color,
+                                  }}
+                                />
+                              </div>
+                              <span 
+                                className={cn(
+                                  TYPOGRAPHY.countBadge, 
+                                  'px-1.5 py-0.5 rounded font-medium',
+                                  coverageStatus.badgeClass
+                                )}
+                              >
+                                {data.coverage}%
+                              </span>
+                            </>
+                          ) : (
+                            <span className={cn(TYPOGRAPHY.tableCellSecondary)} style={{ color: 'var(--text-secondary)' }}>—</span>
+                          )}
+                        </div>
+                        
+                        {/* Coverage Label - Consistent badge styling */}
+                        <div className="text-center">
+                          {data.count > 0 ? (
+                            <span 
+                              className={cn(
+                                'px-2 py-0.5 rounded text-xs font-medium',
+                                coverageStatus.badgeClass
+                              )}
+                            >
+                              {coverageStatus.label}
+                            </span>
+                          ) : (
+                            <span className={cn(TYPOGRAPHY.tableCellSecondary)} style={{ color: 'var(--text-secondary)' }}>—</span>
+                          )}
+                        </div>
+                        
+                        {/* Gap Badge - Amber (warning) when gaps exist, grey when zero */}
+                        <div className="text-center">
+                          {hasGap ? (
+                            <span 
+                              className={cn(
+                                TYPOGRAPHY.countBadge, 
+                                'inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded',
+                                'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400',
+                                'border border-amber-300 dark:border-amber-600/50'
+                              )}
+                            >
+                              <AlertTriangle size={10} />
+                              {data.gap}
+                            </span>
+                          ) : (
+                            <span className={cn(TYPOGRAPHY.tableCellSecondary, 'tabular-nums')} style={{ color: 'var(--text-secondary)' }}>0</span>
+                          )}
+                        </div>
+                        
+                        {/* Chevron */}
+                        <div className="flex justify-center">
+                          <ChevronRight 
+                            size={14} 
+                            className={cn("transition-transform", isSelected && "rotate-90")}
+                            style={{ color: 'var(--text-secondary)' }}
                           />
                         </div>
-                        <span 
-                          className={cn(
-                            TYPOGRAPHY.countBadge, 
-                            'px-1.5 py-0.5 rounded font-medium',
-                            coverageStatus.badgeClass
-                          )}
-                        >
-                          {data.coverage}%
-                        </span>
-                      </>
-                    ) : (
-                      <span className={cn(TYPOGRAPHY.tableCellSecondary)} style={{ color: 'var(--text-secondary)' }}>—</span>
-                    )}
-                  </div>
-                  
-                  {/* Coverage Label - Consistent badge styling */}
-                  <div className="text-center">
-                    {data.count > 0 ? (
-                      <span 
-                        className={cn(
-                          'px-2 py-0.5 rounded text-xs font-medium',
-                          coverageStatus.badgeClass
-                        )}
-                      >
-                        {coverageStatus.label}
-                      </span>
-                    ) : (
-                      <span className={cn(TYPOGRAPHY.tableCellSecondary)} style={{ color: 'var(--text-secondary)' }}>—</span>
-                    )}
-                  </div>
-                  
-                  {/* Gap Badge - Amber (warning) when gaps exist, grey when zero */}
-                  <div className="text-center">
-                    {hasGap ? (
-                      <span 
-                        className={cn(
-                          TYPOGRAPHY.countBadge, 
-                          'inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded',
-                          'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400',
-                          'border border-amber-300 dark:border-amber-600/50'
-                        )}
-                      >
-                        <AlertTriangle size={10} />
-                        {data.gap}
-                      </span>
-                    ) : (
-                      <span className={cn(TYPOGRAPHY.tableCellSecondary, 'tabular-nums')} style={{ color: 'var(--text-secondary)' }}>0</span>
-                    )}
-                  </div>
-                  
-                  {/* Chevron */}
-                  <div className="flex justify-center">
-                    <ChevronRight 
-                      size={14} 
-                      className={cn("transition-transform", isSelected && "rotate-90")}
-                      style={{ color: 'var(--text-secondary)' }}
-                    />
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent side="top" className="max-w-xs text-xs">
+                      <p>{tooltipText}</p>
+                    </TooltipContent>
+                  </Tooltip>
+                );
+              })}
+            </div>
+          </TooltipProvider>
         </div>
 
         {/* Right: Drilldown Preview Panel */}
