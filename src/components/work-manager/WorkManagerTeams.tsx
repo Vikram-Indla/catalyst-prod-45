@@ -29,11 +29,11 @@ import { AddTeamMemberDialog } from '@/components/teams/AddTeamMemberDialog';
 import { useDeleteTeams } from '@/hooks/useTeams';
 import { toast } from 'sonner';
 
-// Team accent colors - kept but with opacity in dark mode
+// Team accent colors - Blue + Teal palette
 const teamColors: Record<string, string> = {
-  'investment': '#5c7c5c',
-  'portfolio': '#8b7355',
-  'compliance': '#c69c6d',
+  'investment': '#2563eb',
+  'portfolio': '#0d9488',
+  'compliance': '#f59e0b',
 };
 
 interface WorkManagerTeamsProps {
@@ -108,7 +108,7 @@ export function WorkManagerTeams({ tasks, teams, users, onCreateTeam }: WorkMana
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {teams.map((team) => {
           const stats = getTeamStats(team.id);
-          const teamColor = teamColors[team.id] || '#5c7c5c';
+          const teamColor = teamColors[team.id] || '#2563eb';
 
           return (
             <div
@@ -126,7 +126,7 @@ export function WorkManagerTeams({ tasks, teams, users, onCreateTeam }: WorkMana
                 {/* Header */}
                 <div className="flex items-start justify-between mb-1">
                   <div>
-                    <h3 className="font-semibold text-[15px] text-foreground group-hover:text-[#5c7c5c] transition-colors">
+                    <h3 className="font-semibold text-[15px] text-foreground group-hover:text-[#2563eb] transition-colors">
                       {team.name}
                     </h3>
                     {team.description && (
@@ -225,7 +225,7 @@ export function WorkManagerTeams({ tasks, teams, users, onCreateTeam }: WorkMana
                     
                     {/* Done - text color only */}
                     <div className="p-3 rounded-lg bg-muted text-center">
-                      <div className="text-xl font-bold text-green-600 dark:text-green-400">{stats.done}</div>
+                      <div className="text-xl font-bold text-[#0d9488] dark:text-[#14b8a6]">{stats.done}</div>
                       <div className="text-[10px] uppercase tracking-wide text-muted-foreground mt-0.5">Done</div>
                     </div>
                   </div>

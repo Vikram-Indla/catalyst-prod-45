@@ -4,78 +4,77 @@ import { CheckCircle, AlertTriangle } from 'lucide-react';
 import type { IncidentStatus, SeverityLevel, PriorityLevel, SupportLevel } from '@/types/incident';
 
 // ============================================
-// CATALYST BRAND PALETTE (Single Source of Truth)
-// Gold #c69c6d | Olive #5c7c5c | Bronze #8b7355 | Champagne #d4b896 | Grey #c8ccd0
+// CATALYST BRAND PALETTE - Blue + Teal Professional
+// Blue #2563eb | Teal #0d9488 | Amber #f59e0b | Red #ef4444 | Gray #6b7280
 // ============================================
 
-// STATUS - Catalyst brand colors (no teal/cyan/lime)
+// STATUS - Updated to Blue + Teal palette
 export const STATUS_CONFIG: Record<IncidentStatus, { label: string; bg: string; text: string; border: string; dotColor: string }> = {
   open: { 
     label: 'Open', 
-    bg: 'rgba(198, 156, 109, 0.08)', 
-    text: '#c69c6d', 
-    border: '#c69c6d',
-    dotColor: '#c69c6d' 
+    bg: 'rgba(37, 99, 235, 0.1)', 
+    text: '#2563eb', 
+    border: '#2563eb',
+    dotColor: '#2563eb' 
   },
   triage: { 
     label: 'Triaging', 
-    bg: 'rgba(139, 115, 85, 0.1)', 
-    text: '#8b7355', 
+    bg: 'rgba(245, 158, 11, 0.1)', 
+    text: '#b45309', 
     border: 'transparent',
-    dotColor: '#c69c6d' 
+    dotColor: '#f59e0b' 
   },
   to_committee: { 
     label: 'Committee', 
-    bg: 'rgba(200, 204, 208, 0.3)', 
+    bg: 'rgba(107, 114, 128, 0.1)', 
     text: '#6b7280', 
     border: 'transparent',
-    dotColor: '#c8ccd0' 
+    dotColor: '#6b7280' 
   },
   in_progress: { 
     label: 'In Progress', 
-    bg: 'rgba(92, 124, 92, 0.1)', 
-    text: '#5c7c5c', 
+    bg: 'rgba(37, 99, 235, 0.1)', 
+    text: '#2563eb', 
     border: 'transparent',
-    dotColor: '#5c7c5c' 
+    dotColor: '#2563eb' 
   },
   resolved: { 
     label: 'Resolved', 
-    bg: 'rgba(92, 124, 92, 0.15)', 
-    text: '#5c7c5c', 
+    bg: 'rgba(13, 148, 136, 0.1)', 
+    text: '#0d9488', 
     border: 'transparent',
-    dotColor: '#5c7c5c' 
+    dotColor: '#0d9488' 
   },
   converted: { 
     label: 'Converted', 
-    bg: 'rgba(200, 204, 208, 0.2)', 
+    bg: 'rgba(107, 114, 128, 0.1)', 
     text: '#6b7280', 
     border: 'transparent',
-    dotColor: '#c8ccd0' 
+    dotColor: '#6b7280' 
   },
   closed: { 
     label: 'Closed', 
-    bg: 'rgba(200, 204, 208, 0.15)', 
-    text: '#6b7280', 
+    bg: 'rgba(13, 148, 136, 0.1)', 
+    text: '#0d9488', 
     border: 'transparent',
-    dotColor: '#c8ccd0' 
+    dotColor: '#0d9488' 
   },
 };
 
-// SEVERITY - Catalyst brand: Gold (critical), Bronze (high), Olive (medium), Grey (low)
-// Dot-only display with text, no background pills
+// SEVERITY - Updated: Red (critical), Amber (high), Blue (medium), Gray (low)
 export const SEVERITY_CONFIG: Record<SeverityLevel, { label: string; dotColor: string; textColor: string }> = {
-  SEV1: { label: 'SEV1', dotColor: '#c69c6d', textColor: '#1a1a1a' },  // Gold - Critical
-  SEV2: { label: 'SEV2', dotColor: '#8b7355', textColor: '#1a1a1a' },  // Bronze - High
-  SEV3: { label: 'SEV3', dotColor: '#5c7c5c', textColor: '#1a1a1a' },  // Olive - Medium
-  SEV4: { label: 'SEV4', dotColor: '#c8ccd0', textColor: '#6b7280' },  // Grey - Low
+  SEV1: { label: 'SEV1', dotColor: '#ef4444', textColor: '#1a1a1a' },  // Red - Critical
+  SEV2: { label: 'SEV2', dotColor: '#f59e0b', textColor: '#1a1a1a' },  // Amber - High
+  SEV3: { label: 'SEV3', dotColor: '#2563eb', textColor: '#1a1a1a' },  // Blue - Medium
+  SEV4: { label: 'SEV4', dotColor: '#6b7280', textColor: '#6b7280' },  // Gray - Low
 };
 
-// PRIORITY - Catalyst aligned
+// PRIORITY - Updated to new palette
 export const PRIORITY_CONFIG: Record<PriorityLevel, { label: string; fullLabel: string; dotColor: string; textColor: string }> = {
-  P1: { label: 'P1', fullLabel: 'P1 — Critical', dotColor: '#c69c6d', textColor: '#1a1a1a' },
-  P2: { label: 'P2', fullLabel: 'P2 — High', dotColor: '#8b7355', textColor: '#1a1a1a' },
-  P3: { label: 'P3', fullLabel: 'P3 — Medium', dotColor: '#5c7c5c', textColor: '#1a1a1a' },
-  P4: { label: 'P4', fullLabel: 'P4 — Low', dotColor: '#c8ccd0', textColor: '#6b7280' },
+  P1: { label: 'P1', fullLabel: 'P1 — Critical', dotColor: '#ef4444', textColor: '#1a1a1a' },
+  P2: { label: 'P2', fullLabel: 'P2 — High', dotColor: '#f59e0b', textColor: '#1a1a1a' },
+  P3: { label: 'P3', fullLabel: 'P3 — Medium', dotColor: '#2563eb', textColor: '#1a1a1a' },
+  P4: { label: 'P4', fullLabel: 'P4 — Low', dotColor: '#6b7280', textColor: '#6b7280' },
 };
 
 // SUPPORT LEVEL - Neutral grey tones
@@ -205,7 +204,7 @@ export function SupportLevelBadge({ level, size = 'xs' }: SupportLevelBadgeProps
 }
 
 // ============================================
-// SLA BADGE COMPONENT - Olive (on track) / Bronze (breached)
+// SLA BADGE COMPONENT - Teal (on track) / Amber (at risk) / Red (breached)
 // ============================================
 
 export type SlaStatus = 'on_track' | 'at_risk' | 'breached';
@@ -218,20 +217,20 @@ interface SlaBadgeProps {
 const SLA_CONFIG: Record<SlaStatus, { label: string; bg: string; text: string; Icon: typeof CheckCircle }> = {
   on_track: { 
     label: 'On Track', 
-    bg: 'rgba(92, 124, 92, 0.12)',
-    text: '#5c7c5c',
+    bg: 'rgba(13, 148, 136, 0.1)',
+    text: '#0d9488',
     Icon: CheckCircle 
   },
   at_risk: { 
     label: 'At Risk', 
-    bg: 'rgba(198, 156, 109, 0.12)',
-    text: '#c69c6d',
+    bg: 'rgba(245, 158, 11, 0.1)',
+    text: '#b45309',
     Icon: AlertTriangle 
   },
   breached: { 
     label: 'Breached', 
-    bg: 'rgba(139, 115, 85, 0.12)',
-    text: '#8b7355',
+    bg: 'rgba(239, 68, 68, 0.1)',
+    text: '#ef4444',
     Icon: AlertTriangle 
   },
 };
@@ -281,7 +280,7 @@ export function getAgingTime(createdAt: string): string {
 // Row background helper for warning states (SEV1 or breached SLA)
 export function getIncidentRowBackground(severity: SeverityLevel, slaBreached: boolean): string {
   if (slaBreached || severity === 'SEV1') {
-    return 'rgba(212, 184, 150, 0.15)'; // Champagne at 15% opacity
+    return 'rgba(239, 68, 68, 0.08)'; // Red at 8% opacity
   }
   return 'transparent';
 }
