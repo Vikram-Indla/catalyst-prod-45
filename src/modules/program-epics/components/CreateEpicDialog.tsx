@@ -1,12 +1,13 @@
 /**
  * Create Epic Dialog - Enhanced with full Epic domain model
+ * Enterprise Dark Mode Quality (9.5/10) - Catalyst Design System
  * 
  * SECTIONS:
- * 1. Identity: Epic Number (auto), Epic Name (required)
- * 2. Strategic Alignment: Strategic Theme (required), Linked Business Request (optional)
- * 3. Description: Rich Text Editor
- * 4. Attachments: File uploads (flow to Links tab)
- * 5. Ownership: Reporter (required), Assignee (required)
+ * 1. Identity: Epic Name (required)
+ * 2. Ownership: Reporter (required), Assignee (required)
+ * 3. Strategic Alignment: Strategic Theme (required), Linked Business Request (optional)
+ * 4. Description: Rich Text Editor
+ * 5. Attachments: File uploads (flow to Links tab)
  */
 import React, { useState, useCallback } from 'react';
 import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
@@ -19,19 +20,10 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 import { isValidProgramKey } from '@/utils/epic-key-generator';
 import { RichTextEditor } from '@/components/business-requests/RichTextEditor';
 import { UserPicker } from '@/components/ui/user-picker';
-import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
-} from '@/components/ui/select';
 import { 
   Command,
   CommandEmpty,
@@ -59,7 +51,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 interface CreateEpicDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  programId: string | null | undefined; // Can be null/undefined - handled with error state
+  programId: string | null | undefined;
   onCreated?: (epicId: string) => void;
 }
 
@@ -70,6 +62,119 @@ interface StagedFile {
   error?: string;
 }
 
+// Form Section Component for visual grouping
+const FormSection = ({ 
+  title, 
+  children 
+}: { 
+  title: string; 
+  children: React.ReactNode;
+}) => (
+  <div className="space-y-3">
+    {/* Section header with divider line */}
+    <div className="flex items-center gap-3">
+      <h3 
+        className="text-xs font-semibold uppercase tracking-wider flex-shrink-0"
+        style={{ color: 'var(--dialog-label-color)' }}
+      >
+        {title}
+      </h3>
+      <div 
+        className="flex-1 h-px"
+        style={{ backgroundColor: 'var(--dialog-divider)' }}
+      />
+    </div>
+    
+    {/* Section content card */}
+    <div 
+      className="p-4 rounded-lg space-y-4"
+      style={{ 
+        backgroundColor: 'var(--dialog-section-bg)',
+        border: '1px solid var(--dialog-section-border)'
+      }}
+    >
+      {children}
+    </div>
+  </div>
+);
+
+// Form Label Component
+const FormLabel = ({ 
+  children, 
+  required = false 
+}: { 
+  children: React.ReactNode; 
+  required?: boolean;
+}) => (
+  <label className="block space-y-1.5">
+    <span className="flex items-center gap-1">
+      <span 
+        className="text-sm font-medium"
+        style={{ color: 'var(--dialog-label-color)' }}
+      >
+        {children}
+      </span>
+      {required && (
+        <span style={{ color: 'var(--dialog-label-required)' }}>*</span>
+      )}
+    </span>
+  </label>
+);
+
+// Styled Input Component for dark mode
+const CatalystInput = React.forwardRef<
+  HTMLInputElement, 
+  React.InputHTMLAttributes<HTMLInputElement>
+>(({ className, ...props }, ref) => (
+  <input
+    ref={ref}
+    className={cn(
+      "w-full px-4 py-3 rounded-lg text-sm transition-all outline-none",
+      "focus:ring-2 focus:ring-offset-0",
+      className
+    )}
+    style={{
+      backgroundColor: 'var(--dialog-input-bg)',
+      border: '1px solid var(--dialog-input-border)',
+      color: 'var(--dialog-title-color)',
+      boxShadow: 'inset 0 1px 2px rgba(0, 0, 0, 0.1)'
+    }}
+    {...props}
+  />
+));
+CatalystInput.displayName = 'CatalystInput';
+
+// Styled Select Trigger for dark mode
+const CatalystSelectTrigger = ({ 
+  children, 
+  onClick, 
+  isOpen,
+  hasValue 
+}: { 
+  children: React.ReactNode;
+  onClick?: () => void;
+  isOpen?: boolean;
+  hasValue?: boolean;
+}) => (
+  <button
+    type="button"
+    onClick={onClick}
+    className="w-full flex items-center justify-between px-4 py-3 rounded-lg text-sm transition-all text-left"
+    style={{
+      backgroundColor: 'var(--dialog-input-bg)',
+      border: '1px solid var(--dialog-input-border)',
+      color: hasValue ? 'var(--dialog-title-color)' : 'var(--dialog-desc-color)',
+      boxShadow: 'inset 0 1px 2px rgba(0, 0, 0, 0.1)'
+    }}
+  >
+    <span className="truncate flex-1">{children}</span>
+    <ChevronsUpDown 
+      className="w-4 h-4 ml-2 flex-shrink-0" 
+      style={{ color: 'var(--dialog-desc-color)' }} 
+    />
+  </button>
+);
+
 export function CreateEpicDialog({ 
   open, 
   onOpenChange, 
@@ -77,9 +182,6 @@ export function CreateEpicDialog({
   onCreated,
 }: CreateEpicDialogProps) {
   const queryClient = useQueryClient();
-  
-  // TEMPORARY LOGGING - remove after fix confirmed
-  console.log('[CreateEpicDialog] Render', { open, programId });
   
   // Check if programId is missing - will show error state
   const isProgramMissing = !programId;
@@ -146,14 +248,6 @@ export function CreateEpicDialog({
   const createUploadSession = useCreateUploadSession();
   const stageAttachment = useStageAttachment();
   const commitAttachments = useCommitAttachments();
-
-  // Derive the 3-letter key for display
-  const getProgramKeyPreview = () => {
-    if (!program?.key) return '???';
-    if (isValidProgramKey(program.key)) return program.key;
-    const upper = program.key.toUpperCase().replace(/[^A-Z]/g, '');
-    return upper.length >= 3 ? upper.substring(0, 3) : 'PRG';
-  };
 
   // Get selected theme name
   const selectedTheme = themes.find(t => t.id === themeId);
@@ -227,17 +321,13 @@ export function CreateEpicDialog({
         throw new Error('Program ID is required to create an epic');
       }
       
-      console.log('[CreateEpicDialog] Mutation starting with programId:', programId);
-      
-      // Let the database trigger generate the epic_key atomically via generate_next_epic_key()
-      // This prevents race conditions where multiple concurrent inserts get the same key
+      // Let the database trigger generate the epic_key atomically
       const { data, error } = await supabase
         .from('epics')
         .insert({
           name: name.trim(),
           description: description.trim() || null,
           primary_program_id: programId,
-          // epic_key is NOT set - database trigger auto_generate_epic_key will generate it
           status: 'proposed',
           health: 'green',
           theme_id: themeId,
@@ -252,8 +342,6 @@ export function CreateEpicDialog({
         console.error('[CreateEpicDialog] Insert error:', error);
         throw error;
       }
-      
-      console.log('[CreateEpicDialog] Epic created with key:', data.epic_key);
 
       // Commit attachments if any were uploaded
       if (uploadSessionId && stagedFiles.some(f => f.status === 'uploaded')) {
@@ -265,7 +353,6 @@ export function CreateEpicDialog({
           });
         } catch (attachError) {
           console.error('Failed to commit attachments:', attachError);
-          // Don't fail the whole creation for attachment errors
         }
       }
 
@@ -302,21 +389,12 @@ export function CreateEpicDialog({
   };
 
   const handleSubmit = () => {
-    // TEMPORARY LOGGING - remove after fix confirmed
-    console.log('[CreateEpicDialog] handleSubmit called', { isValid, isProgramMissing, programId, name, themeId });
-    
-    if (!isValid) {
-      console.warn('[CreateEpicDialog] Form invalid, not submitting');
-      return;
-    }
-    if (isProgramMissing) {
-      console.error('[CreateEpicDialog] Cannot create epic without programId');
-      return;
-    }
+    if (!isValid) return;
+    if (isProgramMissing) return;
     createEpicMutation.mutate();
   };
 
-  // Validation: programId, name, theme, reporter, assignee are required
+  // Validation
   const missingFields: string[] = [];
   if (isProgramMissing) missingFields.push('Program context');
   if (!name.trim()) missingFields.push('Epic Name');
@@ -325,103 +403,79 @@ export function CreateEpicDialog({
   if (!assigneeId) missingFields.push('Assignee');
   
   const isValid = missingFields.length === 0;
-  
-  // TEMPORARY LOGGING - remove after fix confirmed
-  console.log('[CreateEpicDialog] Validation state:', {
-    missingFields,
-    isValid,
-    name: name.trim(),
-    themeId,
-    reporterId,
-    assigneeId,
-    programId,
-  });
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[600px] max-h-[85vh] flex flex-col">
-        <DialogHeader className="flex-shrink-0">
+      <DialogContent className="sm:max-w-[600px] max-h-[85vh] flex flex-col !p-0">
+        <DialogHeader className="flex-shrink-0 px-6 pt-5">
           <DialogTitle>Create Epic</DialogTitle>
         </DialogHeader>
         
-        <ScrollArea className="flex-1 min-h-0 pr-4 -mr-4">
+        <ScrollArea className="flex-1 min-h-0 px-6 scrollbar-catalyst">
           <div className="flex flex-col gap-5 py-4">
+            
             {/* Section 1: Epic Name */}
-            <div className="space-y-3">
-              <div className="space-y-2">
-                <Label htmlFor="epic-name">
-                  Epic Name <span className="text-destructive">*</span>
-                </Label>
-                <Input
-                  id="epic-name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="Enter epic name"
-                  autoFocus
-                />
-              </div>
+            <div className="space-y-2">
+              <FormLabel required>Epic Name</FormLabel>
+              <CatalystInput
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Enter epic name..."
+                autoFocus
+              />
             </div>
 
-            {/* Section 2: Ownership (moved up - required fields visible immediately) */}
-            <div className="space-y-3">
-              <h4 className="text-sm font-medium text-muted-foreground">Ownership</h4>
-              
-              <div className="grid grid-cols-2 gap-3">
+            {/* Section 2: Ownership */}
+            <FormSection title="Ownership">
+              <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label>
-                    Reporter <span className="text-destructive">*</span>
-                  </Label>
+                  <FormLabel required>Reporter</FormLabel>
                   <UserPicker
                     value={reporterId}
-                    onChange={(val) => {
-                      console.log('[CreateEpicDialog] Reporter changed:', val);
-                      setReporterId(val as string | null);
-                    }}
+                    onChange={(val) => setReporterId(val as string | null)}
                     placeholder="Select reporter..."
                   />
                 </div>
                 
                 <div className="space-y-2">
-                  <Label>
-                    Assignee <span className="text-destructive">*</span>
-                  </Label>
+                  <FormLabel required>Assignee</FormLabel>
                   <UserPicker
                     value={assigneeId}
-                    onChange={(val) => {
-                      console.log('[CreateEpicDialog] Assignee changed:', val);
-                      setAssigneeId(val as string | null);
-                    }}
+                    onChange={(val) => setAssigneeId(val as string | null)}
                     placeholder="Select assignee..."
                   />
                 </div>
               </div>
-            </div>
+            </FormSection>
 
             {/* Section 3: Strategic Alignment */}
-            <div className="space-y-3">
-              <h4 className="text-sm font-medium text-muted-foreground">Strategic Alignment</h4>
-              
-              {/* Strategic Theme - Required, Searchable */}
+            <FormSection title="Strategic Alignment">
+              {/* Strategic Theme - Required */}
               <div className="space-y-2">
-                <Label>
-                  Strategic Theme <span className="text-destructive">*</span>
-                </Label>
+                <FormLabel required>Strategic Theme</FormLabel>
                 <Popover open={themePopoverOpen} onOpenChange={setThemePopoverOpen}>
                   <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      role="combobox"
-                      aria-expanded={themePopoverOpen}
-                      className="w-full justify-between font-normal h-9"
-                    >
-                      {selectedTheme ? selectedTheme.name : 'Select strategic theme...'}
-                      <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                    </Button>
+                    <div>
+                      <CatalystSelectTrigger 
+                        isOpen={themePopoverOpen}
+                        hasValue={!!selectedTheme}
+                      >
+                        {selectedTheme ? selectedTheme.name : 'Select strategic theme...'}
+                      </CatalystSelectTrigger>
+                    </div>
                   </PopoverTrigger>
-                  <PopoverContent className="w-[400px] p-0 z-[400]" align="start">
+                  <PopoverContent 
+                    className="w-[400px] p-0 z-[400]" 
+                    align="start"
+                    style={{ 
+                      backgroundColor: 'var(--dialog-section-bg)',
+                      border: '1px solid var(--dialog-input-border)',
+                      boxShadow: '0 10px 40px -10px rgba(0, 0, 0, 0.5)'
+                    }}
+                  >
                     <Command>
                       <CommandInput placeholder="Search themes..." />
-                      <CommandList>
+                      <CommandList className="max-h-64">
                         <CommandEmpty>No themes found.</CommandEmpty>
                         <CommandGroup>
                           {themes.map((theme) => (
@@ -432,14 +486,24 @@ export function CreateEpicDialog({
                                 setThemeId(theme.id);
                                 setThemePopoverOpen(false);
                               }}
+                              className={cn(
+                                "cursor-pointer transition-colors",
+                                themeId === theme.id && "!bg-[rgba(198,156,109,0.15)]"
+                              )}
+                              style={{
+                                borderLeft: themeId === theme.id ? '2px solid #c69c6d' : '2px solid transparent'
+                              }}
                             >
                               <Check
                                 className={cn(
                                   'mr-2 h-4 w-4',
                                   themeId === theme.id ? 'opacity-100' : 'opacity-0'
                                 )}
+                                style={{ color: '#c69c6d' }}
                               />
-                              <span>{theme.name}</span>
+                              <span style={{ color: themeId === theme.id ? 'var(--dialog-title-color)' : 'inherit' }}>
+                                {theme.name}
+                              </span>
                               {theme.status && (
                                 <Badge variant="outline" className="ml-auto text-xs">
                                   {theme.status}
@@ -454,32 +518,41 @@ export function CreateEpicDialog({
                 </Popover>
               </div>
 
-              {/* Linked Business Request - Optional, Searchable with details */}
+              {/* Linked Business Request - Optional */}
               <div className="space-y-2">
-                <Label>Linked Business Request</Label>
+                <FormLabel>Linked Business Request</FormLabel>
                 <Popover open={brPopoverOpen} onOpenChange={setBrPopoverOpen}>
                   <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      role="combobox"
-                      aria-expanded={brPopoverOpen}
-                      className="w-full justify-between font-normal h-9"
-                    >
-                      {selectedBR ? (
-                        <span className="flex items-center gap-2 truncate">
-                          <span className="font-mono text-brand-primary">{selectedBR.request_key}</span>
-                          <span className="truncate">{selectedBR.title}</span>
-                        </span>
-                      ) : (
-                        'Select business request (optional)...'
-                      )}
-                      <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                    </Button>
+                    <div>
+                      <CatalystSelectTrigger 
+                        isOpen={brPopoverOpen}
+                        hasValue={!!selectedBR}
+                      >
+                        {selectedBR ? (
+                          <span className="flex items-center gap-2">
+                            <span className="font-mono" style={{ color: '#c69c6d' }}>
+                              {selectedBR.request_key}
+                            </span>
+                            <span className="truncate">{selectedBR.title}</span>
+                          </span>
+                        ) : (
+                          'Select business request (optional)...'
+                        )}
+                      </CatalystSelectTrigger>
+                    </div>
                   </PopoverTrigger>
-                  <PopoverContent className="w-[500px] p-0 z-[400]" align="start">
+                  <PopoverContent 
+                    className="w-[500px] p-0 z-[400]" 
+                    align="start"
+                    style={{ 
+                      backgroundColor: 'var(--dialog-section-bg)',
+                      border: '1px solid var(--dialog-input-border)',
+                      boxShadow: '0 10px 40px -10px rgba(0, 0, 0, 0.5)'
+                    }}
+                  >
                     <Command>
                       <CommandInput placeholder="Search by ID or title..." />
-                      <CommandList>
+                      <CommandList className="max-h-64">
                         <CommandEmpty>No business requests found.</CommandEmpty>
                         <CommandGroup>
                           {/* Clear option */}
@@ -490,7 +563,8 @@ export function CreateEpicDialog({
                                 setLinkedBusinessRequestId(null);
                                 setBrPopoverOpen(false);
                               }}
-                              className="text-muted-foreground"
+                              className="cursor-pointer"
+                              style={{ color: 'var(--dialog-desc-color)' }}
                             >
                               <X className="mr-2 h-4 w-4" />
                               Clear selection
@@ -504,15 +578,23 @@ export function CreateEpicDialog({
                                 setLinkedBusinessRequestId(br.id);
                                 setBrPopoverOpen(false);
                               }}
+                              className={cn(
+                                "cursor-pointer transition-colors",
+                                linkedBusinessRequestId === br.id && "!bg-[rgba(198,156,109,0.15)]"
+                              )}
+                              style={{
+                                borderLeft: linkedBusinessRequestId === br.id ? '2px solid #c69c6d' : '2px solid transparent'
+                              }}
                             >
                               <Check
                                 className={cn(
                                   'mr-2 h-4 w-4',
                                   linkedBusinessRequestId === br.id ? 'opacity-100' : 'opacity-0'
                                 )}
+                                style={{ color: '#c69c6d' }}
                               />
                               <div className="flex items-center gap-2 flex-1 min-w-0">
-                                <span className="font-mono text-brand-primary shrink-0">
+                                <span className="font-mono shrink-0" style={{ color: '#c69c6d' }}>
                                   {br.request_key}
                                 </span>
                                 <span className="truncate">{br.title}</span>
@@ -537,25 +619,36 @@ export function CreateEpicDialog({
                   </PopoverContent>
                 </Popover>
               </div>
-            </div>
+            </FormSection>
 
             {/* Section 4: Description */}
-            <div className="space-y-3">
-              <h4 className="text-sm font-medium text-muted-foreground">Description</h4>
-              <RichTextEditor
-                value={description}
-                onChange={setDescription}
-                placeholder="Enter epic description..."
-                minHeight="120px"
-              />
-            </div>
+            <FormSection title="Description">
+              <div 
+                className="rounded-lg overflow-hidden"
+                style={{ 
+                  backgroundColor: 'var(--dialog-input-bg)',
+                  border: '1px solid var(--dialog-input-border)'
+                }}
+              >
+                <RichTextEditor
+                  value={description}
+                  onChange={setDescription}
+                  placeholder="Enter epic description..."
+                  minHeight="120px"
+                />
+              </div>
+            </FormSection>
 
             {/* Section 5: Attachments */}
-            <div className="space-y-3">
-              <h4 className="text-sm font-medium text-muted-foreground">Attachments</h4>
-              
+            <FormSection title="Attachments">
               {/* File upload area */}
-              <div className="border border-dashed border-border rounded-md p-4">
+              <div 
+                className="rounded-lg p-4"
+                style={{
+                  border: '1px dashed var(--dialog-input-border)',
+                  backgroundColor: 'transparent'
+                }}
+              >
                 <input
                   type="file"
                   id="epic-attachments"
@@ -565,13 +658,13 @@ export function CreateEpicDialog({
                 />
                 <label
                   htmlFor="epic-attachments"
-                  className="flex flex-col items-center gap-2 cursor-pointer"
+                  className="flex flex-col items-center gap-2 cursor-pointer transition-opacity hover:opacity-80"
                 >
-                  <Upload className="h-6 w-6 text-muted-foreground" />
-                  <span className="text-sm text-muted-foreground">
+                  <Upload className="h-6 w-6" style={{ color: 'var(--dialog-desc-color)' }} />
+                  <span className="text-sm" style={{ color: 'var(--dialog-desc-color)' }}>
                     Click to upload or drag and drop
                   </span>
-                  <span className="text-xs text-muted-foreground">
+                  <span className="text-xs" style={{ color: 'var(--dialog-desc-color)' }}>
                     Files will appear in Epic Drawer → Links tab
                   </span>
                 </label>
@@ -579,53 +672,91 @@ export function CreateEpicDialog({
 
               {/* Staged files list */}
               {stagedFiles.length > 0 && (
-                <div className="space-y-2">
+                <div className="space-y-2 mt-3">
                   {stagedFiles.map((sf, idx) => (
                     <div
                       key={idx}
                       className={cn(
-                        'flex items-center gap-2 p-2 rounded-md border',
-                        sf.status === 'error' ? 'border-destructive bg-destructive/5' : 'border-border bg-muted/30'
+                        'flex items-center gap-2 p-3 rounded-lg',
+                        sf.status === 'error' && 'border-destructive'
                       )}
+                      style={{
+                        backgroundColor: sf.status === 'error' ? 'rgba(239, 68, 68, 0.1)' : 'var(--dialog-input-bg)',
+                        border: `1px solid ${sf.status === 'error' ? 'var(--status-danger)' : 'var(--dialog-section-border)'}`
+                      }}
                     >
-                      <FileText className="h-4 w-4 shrink-0 text-muted-foreground" />
-                      <span className="text-sm truncate flex-1">{sf.file.name}</span>
+                      <FileText className="h-4 w-4 shrink-0" style={{ color: 'var(--dialog-desc-color)' }} />
+                      <span 
+                        className="text-sm truncate flex-1"
+                        style={{ color: 'var(--dialog-title-color)' }}
+                      >
+                        {sf.file.name}
+                      </span>
                       {sf.status === 'uploading' && (
-                        <span className="text-xs text-muted-foreground">Uploading...</span>
+                        <span className="text-xs" style={{ color: 'var(--dialog-desc-color)' }}>
+                          Uploading...
+                        </span>
                       )}
                       {sf.status === 'uploaded' && (
-                        <Badge variant="secondary" className="text-[10px]">Uploaded</Badge>
+                        <Badge 
+                          className="text-[10px]"
+                          style={{ 
+                            backgroundColor: 'rgba(92, 124, 92, 0.15)',
+                            color: '#5c7c5c',
+                            border: '1px solid rgba(92, 124, 92, 0.3)'
+                          }}
+                        >
+                          Uploaded
+                        </Badge>
                       )}
                       {sf.status === 'error' && (
                         <span className="text-xs text-destructive">{sf.error}</span>
                       )}
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-6 w-6 p-0"
+                      <button
+                        type="button"
                         onClick={() => removeFile(sf.file)}
+                        className="h-6 w-6 p-0 flex items-center justify-center rounded transition-colors"
+                        style={{ color: 'var(--dialog-desc-color)' }}
                       >
                         <X className="h-3 w-3" />
-                      </Button>
+                      </button>
                     </div>
                   ))}
                 </div>
               )}
-            </div>
+            </FormSection>
             
             {/* Bottom padding for scroll */}
             <div className="h-4" />
           </div>
         </ScrollArea>
 
-        <DialogFooter className="flex-shrink-0 border-t pt-4 mt-2">
-          <Button variant="outline" onClick={handleClose}>
+        <DialogFooter className="flex-shrink-0 px-6 pb-5">
+          {/* Cancel Button - Secondary */}
+          <Button
+            variant="outline"
+            onClick={handleClose}
+            className="px-5 py-2.5 transition-all"
+            style={{
+              backgroundColor: 'transparent',
+              borderColor: 'var(--dialog-input-border)',
+              color: 'var(--dialog-label-color)'
+            }}
+          >
             Cancel
           </Button>
+          
+          {/* Create Epic Button - Primary */}
           <Button 
             onClick={handleSubmit} 
             disabled={!isValid || createEpicMutation.isPending}
-            className="bg-brand-primary hover:bg-brand-primary-hover text-background disabled:opacity-50"
+            className="px-5 py-2.5 transition-all disabled:opacity-50"
+            style={{
+              backgroundColor: '#5c7c5c',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
+              color: '#f5f5f5',
+              boxShadow: '0 1px 2px rgba(0, 0, 0, 0.2)'
+            }}
             title={
               isProgramMissing 
                 ? 'Program context required' 
