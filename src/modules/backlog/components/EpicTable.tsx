@@ -1,5 +1,5 @@
 /**
- * BacklogEnterpriseTable - Uses CatalystEnterpriseTable for Epic Backlog
+ * EpicTable - Uses CatalystEnterpriseTable for Epic Backlog
  * Maintains drag-drop functionality while using the new table styling
  */
 
@@ -14,7 +14,7 @@ import { useBacklogState } from '../hooks/useBacklogState';
 import { getEpicStatusConfigFromList, getEpicStatusStyles } from '@/components/items/epics/drawer';
 import { useActiveEpicStatuses } from '@/hooks/useEpicStatuses';
 
-interface BacklogEnterpriseTableProps {
+interface EpicTableProps {
   items: BacklogItem[];
   meta?: BacklogMeta;
   selectedItems: string[];
@@ -22,13 +22,13 @@ interface BacklogEnterpriseTableProps {
   onItemSelect: (itemId: string, selected: boolean) => void;
 }
 
-export function BacklogEnterpriseTable({
+export function EpicTable({
   items,
   meta,
   selectedItems,
   onItemClick,
   onItemSelect,
-}: BacklogEnterpriseTableProps) {
+}: EpicTableProps) {
   const queryClient = useQueryClient();
   const { programId, isEpicBacklog, columnsShown } = useBacklogState();
   
