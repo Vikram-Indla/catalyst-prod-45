@@ -52,6 +52,26 @@ export async function fetchBacklogItems(params: BacklogQueryParams): Promise<Bac
     query = query.ilike('name', `%${search}%`);
   }
 
+  // Apply Epic Backlog filters (Status, Theme, Assignee, Target Quarter)
+  if (type === 'epic' && filters) {
+    // Status filter - matches epics.status string
+    if (filters.status && typeof filters.status === 'string') {
+      query = query.eq('status', filters.status);
+    }
+    // Theme filter - matches epics.theme_id (FK to strategic_themes)
+    if (filters.theme_id && typeof filters.theme_id === 'string') {
+      query = query.eq('theme_id', filters.theme_id);
+    }
+    // Assignee filter - matches epics.assignee_id (FK to profiles)
+    if (filters.assignee_id && typeof filters.assignee_id === 'string') {
+      query = query.eq('assignee_id', filters.assignee_id);
+    }
+    // Target Quarter filter - matches if quarters array contains the selected quarter
+    if (filters.target_quarter && typeof filters.target_quarter === 'string') {
+      query = query.contains('quarters', [filters.target_quarter]);
+    }
+  }
+
   // Apply sorting (default to rank)
   if (sort) {
     query = query.order(sort.field, { ascending: sort.direction === 'asc' });

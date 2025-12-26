@@ -205,6 +205,9 @@ export function BacklogWorkspace() {
 
   const isListView = ['list', 'sprint'].includes(backlogState.view);
 
+  // Calculate active filter count for header badge
+  const activeFiltersCount = Object.values(backlogState.filters).filter(v => v !== undefined && v !== 'all').length;
+
   return (
     <div className="h-full flex flex-col bg-background">
       <BacklogHeader
@@ -214,6 +217,7 @@ export function BacklogWorkspace() {
         onExport={handleExport}
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
+        activeFiltersCount={activeFiltersCount}
       />
 
       {/* Bulk Actions Bar - shows when items are selected */}

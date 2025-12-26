@@ -4,8 +4,9 @@
  * =====================================================
  * Catalyst Epics vNext Phase II
  * 
- * Filters: Status, Theme, Target Quarter
+ * Filters: Status, Theme, Assignee, Target Quarter
  * All values are dynamically fetched from the database
+ * Matches Product Demand filter UX exactly
  */
 
 import { useState, useEffect } from 'react';
@@ -25,7 +26,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useActiveEpicStatuses } from '@/hooks/useEpicStatuses';
 
@@ -43,6 +44,7 @@ export function EpicFiltersDialog({
   onFiltersChange,
 }: EpicFiltersDialogProps) {
   const [localFilters, setLocalFilters] = useState(filters);
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     if (open) {
@@ -53,6 +55,28 @@ export function EpicFiltersDialog({
   // Fetch epic statuses from admin configuration (dynamic)
   const { data: epicStatuses = [] } = useActiveEpicStatuses();
 
+  // Realtime subscription for epic_statuses changes (sync filter dropdown immediately)
+  useEffect(() => {
+    const channel = supabase
+      .channel('epic-statuses-filter-realtime')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'epic_statuses',
+        },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ['active-epic-statuses'] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [queryClient]);
+
   // Fetch active strategic themes (dynamic)
   const { data: themes = [] } = useQuery({
     queryKey: ['strategic-themes-filter-active'],
@@ -62,6 +86,21 @@ export function EpicFiltersDialog({
         .select('id, name, status')
         .eq('status', 'active')
         .order('name');
+
+      if (error) throw error;
+      return data || [];
+    },
+  });
+
+  // Fetch assignees from profiles (users who can be assigned to epics)
+  const { data: assignees = [] } = useQuery({
+    queryKey: ['epic-assignees-filter'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('id, full_name')
+        .not('full_name', 'is', null)
+        .order('full_name');
 
       if (error) throw error;
       return data || [];
@@ -107,14 +146,17 @@ export function EpicFiltersDialog({
     onFiltersChange({});
   };
 
+  // Calculate active filter count for the apply button
+  const activeFilterCount = Object.values(localFilters).filter(v => v !== undefined && v !== 'all').length;
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-lg">
         <DialogHeader>
-          <DialogTitle>Epic Filter</DialogTitle>
+          <DialogTitle>Filter Epics</DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-5 py-4">
+        <div className="space-y-5 py-4 max-h-[60vh] overflow-y-auto">
           {/* Status Filter - Dynamic from epic_statuses table */}
           <div className="space-y-2">
             <Label>Status</Label>
@@ -161,6 +203,29 @@ export function EpicFiltersDialog({
             </Select>
           </div>
 
+          {/* Assignee Filter - Dynamic from profiles table */}
+          <div className="space-y-2">
+            <Label>Assignee</Label>
+            <Select
+              value={localFilters.assignee_id as string || 'all'}
+              onValueChange={(value) =>
+                setLocalFilters({ ...localFilters, assignee_id: value === 'all' ? undefined : value })
+              }
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="All Assignees" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Assignees</SelectItem>
+                {assignees.map((assignee) => (
+                  <SelectItem key={assignee.id} value={assignee.id}>
+                    {assignee.full_name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
           {/* Target Quarter - Dynamic from epics.quarters field */}
           <div className="space-y-2">
             <Label>Target Quarter</Label>
@@ -189,7 +254,9 @@ export function EpicFiltersDialog({
           <Button variant="outline" onClick={handleClear}>
             Clear All
           </Button>
-          <Button onClick={handleApply}>Apply Filters</Button>
+          <Button onClick={handleApply}>
+            Apply Filters {activeFilterCount > 0 && `(${activeFilterCount})`}
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
