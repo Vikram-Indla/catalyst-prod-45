@@ -23,7 +23,7 @@
  */
 
 import { useState, useEffect } from 'react';
-import { Target, Layers, Zap, Grid3X3, ChevronRight, X, AlertTriangle, User, Loader2, Info } from 'lucide-react';
+import { ChevronRight, X, AlertTriangle, User, Loader2, Info } from 'lucide-react';
 import { useStrategyCoverageData, EMPTY_COVERAGE } from '@/hooks/useStrategyCoverageData';
 import { useOKRv2StrategyMetrics } from '@/hooks/useOKRv2StrategyMetrics';
 import { cn } from '@/lib/utils';
@@ -33,6 +33,8 @@ import { safeNumber, safePercentage } from '@/utils/strategyRoomCache';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { WorkItemIcon } from '@/components/ja/icons/WorkItemIcon';
+import { getWorkItemVisual } from '@/hooks/useWorkItemRegistry';
 
 interface StrategyStackProps {
   onLayerClick: (label: string) => void;
@@ -41,46 +43,55 @@ interface StrategyStackProps {
 
 type LayerKey = 'objectives' | 'themes' | 'epics' | 'features';
 
+// Work item type mapping for each layer (uses centralized WorkItemIcon registry)
+const LAYER_WORK_ITEM_TYPES: Record<LayerKey, string> = {
+  objectives: 'objective',
+  themes: 'theme',
+  epics: 'epic',
+  features: 'feature',
+};
+
 interface LayerConfig {
   key: LayerKey;
   label: string;
-  icon: typeof Target;
+  workItemType: string; // Maps to WorkItemIcon type
   iconColor: string;
   iconBgColor: string;
   description: string;
 }
 
+// Layer configs using the centralized icon registry
 const layerConfigs: LayerConfig[] = [
   { 
     key: 'objectives', 
     label: 'Objectives', 
-    icon: Target,
-    iconColor: 'var(--brand-gold)',
-    iconBgColor: 'var(--brand-gold-bg)',
+    workItemType: 'objective',
+    iconColor: getWorkItemVisual('objective').color,
+    iconBgColor: getWorkItemVisual('objective').bgColor,
     description: 'Strategic objectives driving business outcomes',
   },
   { 
     key: 'themes', 
     label: 'Themes', 
-    icon: Layers,
-    iconColor: 'var(--secondary-green)',
-    iconBgColor: 'var(--secondary-green-bg)',
+    workItemType: 'theme',
+    iconColor: getWorkItemVisual('theme').color,
+    iconBgColor: getWorkItemVisual('theme').bgColor,
     description: 'Cross-cutting strategic themes',
   },
   { 
     key: 'epics', 
     label: 'Epics', 
-    icon: Zap,
-    iconColor: 'var(--secondary-bronze)',
-    iconBgColor: 'var(--secondary-bronze-bg)',
+    workItemType: 'epic',
+    iconColor: getWorkItemVisual('epic').color,
+    iconBgColor: getWorkItemVisual('epic').bgColor,
     description: 'Large bodies of work delivering value',
   },
   { 
     key: 'features', 
     label: 'Features', 
-    icon: Grid3X3,
-    iconColor: 'var(--text-secondary)',
-    iconBgColor: 'var(--surface-subtle)',
+    workItemType: 'feature',
+    iconColor: getWorkItemVisual('feature').color,
+    iconBgColor: getWorkItemVisual('feature').bgColor,
     description: 'Discrete deliverables within epics',
   },
 ];
@@ -537,7 +548,7 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
             <div>
               {layerConfigs.map((layer, index) => {
                 const data = getLayerData(layer.key);
-                const Icon = layer.icon;
+                // Use centralized WorkItemIcon instead of hardcoded icons
                 const isLast = index === layerConfigs.length - 1;
                 const isSelected = selectedLayer === layer.key;
                 const hasGap = data.gap !== null && data.gap > 0;
@@ -576,14 +587,13 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
                           if (!isSelected) e.currentTarget.style.backgroundColor = 'transparent';
                         }}
                       >
-                        {/* Layer Name with Icon */}
+                        {/* Layer Name with Icon - Using centralized WorkItemIcon */}
                         <div className="flex items-center gap-2">
-                          <div 
-                            className="w-5 h-5 rounded flex items-center justify-center flex-shrink-0"
-                            style={{ backgroundColor: layer.iconBgColor }}
-                          >
-                            <Icon size={12} style={{ color: layer.iconColor }} />
-                          </div>
+                          <WorkItemIcon 
+                            type={layer.workItemType} 
+                            size={20} 
+                            hideTooltip 
+                          />
                           <span 
                             className={cn(TYPOGRAPHY.tableCellEmphasis, 'truncate')}
                             style={{ color: 'var(--text-primary)' }}
@@ -704,12 +714,11 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
               style={{ borderBottom: '1px solid var(--border-subtle)' }}
             >
               <div className="flex items-center gap-2">
-                <div 
-                  className="w-5 h-5 rounded flex items-center justify-center"
-                  style={{ backgroundColor: selectedConfig.iconBgColor }}
-                >
-                  <selectedConfig.icon size={12} style={{ color: selectedConfig.iconColor }} />
-                </div>
+                <WorkItemIcon 
+                  type={selectedConfig.workItemType} 
+                  size={20} 
+                  hideTooltip 
+                />
                 <div>
                   <h3 
                     className={cn(TYPOGRAPHY.cardLabel)}
