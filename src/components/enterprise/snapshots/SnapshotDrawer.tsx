@@ -56,9 +56,11 @@ import {
   Copy,
   Search,
   AlertTriangle,
-  ExternalLink
+  ExternalLink,
+  Archive
 } from 'lucide-react';
 import { getSnapshotDeleteImpact, SnapshotDeleteImpact } from '@/utils/snapshotDeleteImpact';
+import { useArchiveSnapshot } from '@/hooks/useStrategicSnapshots';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { catalystToast } from '@/lib/catalystToast';
@@ -86,6 +88,7 @@ interface SnapshotFormData {
 
 export function SnapshotDrawer({ isOpen, onClose, snapshotId, onSave }: SnapshotDrawerProps) {
   const queryClient = useQueryClient();
+  const archiveSnapshotMutation = useArchiveSnapshot();
   const [activeTab, setActiveTab] = useState('overview');
   const [isDirty, setIsDirty] = useState(false);
   const [themeSearch, setThemeSearch] = useState('');
@@ -93,6 +96,7 @@ export function SnapshotDrawer({ isOpen, onClose, snapshotId, onSave }: Snapshot
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleteImpact, setDeleteImpact] = useState<SnapshotDeleteImpact | null>(null);
   const [isCheckingDelete, setIsCheckingDelete] = useState(false);
+  const [linkedThemeCount, setLinkedThemeCount] = useState<number | null>(null);
   
   // Form state
   const [formData, setFormData] = useState<SnapshotFormData>({
@@ -154,6 +158,23 @@ export function SnapshotDrawer({ isOpen, onClose, snapshotId, onSave }: Snapshot
     },
     enabled: isOpen,
   });
+
+  // Fetch linked themes count for this snapshot
+  const { data: linkedThemesData } = useQuery({
+    queryKey: ['snapshot-linked-themes-count', snapshotId],
+    queryFn: async () => {
+      if (!snapshotId) return { count: 0 };
+      const { count, error } = await supabase
+        .from('strategic_themes')
+        .select('id', { count: 'exact', head: true })
+        .eq('snapshot_id', snapshotId);
+      if (error) throw error;
+      return { count: count ?? 0 };
+    },
+    enabled: isOpen && !!snapshotId,
+  });
+
+  const canDelete = linkedThemesData?.count === 0;
 
   // Fetch owner profile
   const { data: ownerProfile } = useQuery({
@@ -475,13 +496,39 @@ export function SnapshotDrawer({ isOpen, onClose, snapshotId, onSave }: Snapshot
                 Duplicate
               </DropdownMenuItem>
               <DropdownMenuSeparator />
+              {/* Archive option - always available */}
               <DropdownMenuItem 
-                onClick={handleDelete}
-                className="text-destructive focus:text-destructive"
+                onClick={() => {
+                  if (snapshotId) {
+                    archiveSnapshotMutation.mutate(snapshotId);
+                    onClose();
+                  }
+                }}
+                disabled={formData.status === 'ARCHIVED'}
+                className={formData.status === 'ARCHIVED' ? 'opacity-50' : ''}
               >
-                <Trash2 className="h-4 w-4 mr-2" />
-                Delete
+                <Archive className="h-4 w-4 mr-2" />
+                {formData.status === 'ARCHIVED' ? 'Already Archived' : 'Archive'}
               </DropdownMenuItem>
+              {/* Delete - only available when no themes linked */}
+              {canDelete ? (
+                <DropdownMenuItem 
+                  onClick={handleDelete}
+                  className="text-destructive focus:text-destructive"
+                >
+                  <Trash2 className="h-4 w-4 mr-2" />
+                  Delete
+                </DropdownMenuItem>
+              ) : (
+                <DropdownMenuItem 
+                  disabled
+                  className="opacity-50 cursor-not-allowed"
+                  title="Unlink all themes before deleting"
+                >
+                  <Trash2 className="h-4 w-4 mr-2 text-muted-foreground" />
+                  <span className="text-muted-foreground">Delete (unlink themes first)</span>
+                </DropdownMenuItem>
+              )}
             </DropdownMenuContent>
           </DropdownMenu>
           
