@@ -1,0 +1,59 @@
+
+-- Clean purge of work item data - only verified existing tables
+
+TRUNCATE TABLE sla_records CASCADE;
+TRUNCATE TABLE committee_votes CASCADE;
+TRUNCATE TABLE committee_members CASCADE;
+TRUNCATE TABLE incident_committees CASCADE;
+TRUNCATE TABLE incidents CASCADE;
+
+TRUNCATE TABLE defects CASCADE;
+TRUNCATE TABLE stories CASCADE;
+TRUNCATE TABLE features CASCADE;
+TRUNCATE TABLE epics CASCADE;
+TRUNCATE TABLE objectives CASCADE;
+
+TRUNCATE TABLE change_cards CASCADE;
+TRUNCATE TABLE change_numbers CASCADE;
+TRUNCATE TABLE release_versions CASCADE;
+TRUNCATE TABLE releases CASCADE;
+
+TRUNCATE TABLE business_requests CASCADE;
+
+TRUNCATE TABLE capacity_allocations CASCADE;
+TRUNCATE TABLE capacity_bookings CASCADE;
+TRUNCATE TABLE capacity_plans CASCADE;
+
+TRUNCATE TABLE iterations CASCADE;
+TRUNCATE TABLE anchor_sprints CASCADE;
+TRUNCATE TABLE program_increments CASCADE;
+
+TRUNCATE TABLE team_members CASCADE;
+TRUNCATE TABLE teams CASCADE;
+
+TRUNCATE TABLE projects CASCADE;
+
+TRUNCATE TABLE risks CASCADE;
+TRUNCATE TABLE dependencies CASCADE;
+TRUNCATE TABLE milestones CASCADE;
+
+TRUNCATE TABLE ideas CASCADE;
+TRUNCATE TABLE idea_groups CASCADE;
+TRUNCATE TABLE initiatives CASCADE;
+TRUNCATE TABLE goals CASCADE;
+
+TRUNCATE TABLE kb_documents CASCADE;
+
+TRUNCATE TABLE announcements CASCADE;
+TRUNCATE TABLE notifications CASCADE;
+TRUNCATE TABLE starred_items CASCADE;
+
+TRUNCATE TABLE custom_field_values CASCADE;
+TRUNCATE TABLE board_configs CASCADE;
+TRUNCATE TABLE certifications CASCADE;
+
+TRUNCATE TABLE forecast_entries CASCADE;
+TRUNCATE TABLE kanban_cards CASCADE;
+TRUNCATE TABLE kanban_columns CASCADE;
+TRUNCATE TABLE kanban_swim_lanes CASCADE;
+TRUNCATE TABLE kanban_boards CASCADE;
