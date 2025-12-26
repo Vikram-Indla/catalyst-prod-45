@@ -29,8 +29,8 @@ interface EpicListPanelProps {
   onSelectEpic: (epic: EpicListItem) => void;
   searchQuery: string;
   onSearchChange: (value: string) => void;
-  activeFilter: 'all' | 'my' | 'mvp' | 'unassigned';
-  onFilterChange: (filter: 'all' | 'my' | 'mvp' | 'unassigned') => void;
+  activeFilter: 'all' | 'my' | 'theme' | 'unassigned';
+  onFilterChange: (filter: 'all' | 'my' | 'theme' | 'unassigned') => void;
   onCreateEpic: () => void;
   isLoading?: boolean;
 }
@@ -75,7 +75,7 @@ export function EpicListPanel({
 
         {/* Quick Filters */}
         <div className="flex gap-2 flex-wrap">
-          {(['all', 'my', 'mvp', 'unassigned'] as const).map((filter) => {
+          {(['all', 'my', 'theme', 'unassigned'] as const).map((filter) => {
             const isActive = activeFilter === filter;
             return (
               <button
@@ -90,7 +90,7 @@ export function EpicListPanel({
               >
                 {filter === 'all' && 'All'}
                 {filter === 'my' && 'My Epics'}
-                {filter === 'mvp' && 'MVP'}
+                {filter === 'theme' && 'Theme'}
                 {filter === 'unassigned' && 'Unassigned'}
               </button>
             );
