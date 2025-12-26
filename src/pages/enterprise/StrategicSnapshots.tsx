@@ -337,17 +337,17 @@ export default function StrategicSnapshots() {
         "border border-[#E1E4E8] dark:border-[#333333]",
         "focus-within:border-[#c69c6d] focus-within:ring-1 focus-within:ring-[rgba(198,156,109,0.3)]"
       )}>
-        <Search className="h-4 w-4 text-[#8B949E] dark:text-[#525252]" />
+        <Search className="h-4 w-4 text-[#8B949E] dark:text-[#9ca3af]" />
         <input
           type="text"
           placeholder="Search snapshots..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="flex-1 bg-transparent text-sm text-[#24292F] dark:text-[#f5f5f5] placeholder:text-[#8B949E] dark:placeholder:text-[#525252] outline-none"
+          className="flex-1 bg-transparent text-sm text-[#24292F] dark:text-[#f5f5f5] placeholder:text-[#8B949E] dark:placeholder:text-[#6b7280] outline-none"
         />
       </div>
 
-      {/* Status Filter - Catalyst dark mode */}
+      {/* Status Filter - Catalyst dark mode with visible text */}
       <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v as StatusFilter)}>
         <SelectTrigger 
           className={cn(
@@ -355,7 +355,7 @@ export default function StrategicSnapshots() {
             "bg-white dark:bg-[#1a1a1a]",
             "border border-[#E1E4E8] dark:border-[#333333]",
             "hover:border-[#D0D7DE] dark:hover:border-[#404040]",
-            "text-[#24292F] dark:text-[#a3a3a3]"
+            "text-[#24292F] dark:text-[#e6e6e6]"
           )}
         >
           <SelectValue placeholder="All Status" />
@@ -368,7 +368,7 @@ export default function StrategicSnapshots() {
         </SelectContent>
       </Select>
 
-      {/* Owner Filter - Catalyst dark mode */}
+      {/* Owner Filter - Catalyst dark mode with visible text */}
       <Select value="all">
         <SelectTrigger 
           className={cn(
@@ -376,7 +376,7 @@ export default function StrategicSnapshots() {
             "bg-white dark:bg-[#1a1a1a]",
             "border border-[#E1E4E8] dark:border-[#333333]",
             "hover:border-[#D0D7DE] dark:hover:border-[#404040]",
-            "text-[#24292F] dark:text-[#a3a3a3]"
+            "text-[#24292F] dark:text-[#e6e6e6]"
           )}
         >
           <SelectValue placeholder="All Owners" />
@@ -386,7 +386,7 @@ export default function StrategicSnapshots() {
         </SelectContent>
       </Select>
 
-      {/* Sort - Catalyst dark mode */}
+      {/* Sort - Catalyst dark mode with visible text */}
       <Select value={sortBy} onValueChange={(v) => setSortBy(v as SortOption)}>
         <SelectTrigger 
           className={cn(
@@ -394,7 +394,7 @@ export default function StrategicSnapshots() {
             "bg-white dark:bg-[#1a1a1a]",
             "border border-[#E1E4E8] dark:border-[#333333]",
             "hover:border-[#D0D7DE] dark:hover:border-[#404040]",
-            "text-[#24292F] dark:text-[#a3a3a3]"
+            "text-[#24292F] dark:text-[#e6e6e6]"
           )}
         >
           <SelectValue placeholder="Last Updated" />
@@ -469,13 +469,13 @@ export default function StrategicSnapshots() {
             <table className="w-full">
               <thead>
                 <tr className="bg-[#F5F3F0] dark:bg-[#1a1a1a] border-b border-[#E8E4DC] dark:border-[#333333]">
-                  <th className="py-3 px-4 text-left text-[11px] font-semibold uppercase tracking-[0.05em] text-[#8B949E] dark:text-[#737373]">Snapshot Name</th>
-                  <th className="py-3 px-4 text-left text-[11px] font-semibold uppercase tracking-[0.05em] text-[#8B949E] dark:text-[#737373]">Status</th>
-                  <th className="py-3 px-4 text-left text-[11px] font-semibold uppercase tracking-[0.05em] text-[#8B949E] dark:text-[#737373]">Date Range</th>
-                  <th className="py-3 px-4 text-right text-[11px] font-semibold uppercase tracking-[0.05em] text-[#8B949E] dark:text-[#737373]">Quarters</th>
-                  <th className="py-3 px-4 text-right text-[11px] font-semibold uppercase tracking-[0.05em] text-[#8B949E] dark:text-[#737373]">Themes</th>
-                  <th className="py-3 px-4 text-left text-[11px] font-semibold uppercase tracking-[0.05em] text-[#8B949E] dark:text-[#737373]">Owner</th>
-                  <th className="py-3 px-4 text-left text-[11px] font-semibold uppercase tracking-[0.05em] text-[#8B949E] dark:text-[#737373]">Last Updated</th>
+                  <th className="py-3 px-4 text-left text-[11px] font-semibold uppercase tracking-[0.05em] text-[#6E7681] dark:text-[#9ca3af]">Snapshot Name</th>
+                  <th className="py-3 px-4 text-left text-[11px] font-semibold uppercase tracking-[0.05em] text-[#6E7681] dark:text-[#9ca3af]">Status</th>
+                  <th className="py-3 px-4 text-left text-[11px] font-semibold uppercase tracking-[0.05em] text-[#6E7681] dark:text-[#9ca3af]">Date Range</th>
+                  <th className="py-3 px-4 text-right text-[11px] font-semibold uppercase tracking-[0.05em] text-[#6E7681] dark:text-[#9ca3af]">Quarters</th>
+                  <th className="py-3 px-4 text-right text-[11px] font-semibold uppercase tracking-[0.05em] text-[#6E7681] dark:text-[#9ca3af]">Themes</th>
+                  <th className="py-3 px-4 text-left text-[11px] font-semibold uppercase tracking-[0.05em] text-[#6E7681] dark:text-[#9ca3af]">Owner</th>
+                  <th className="py-3 px-4 text-left text-[11px] font-semibold uppercase tracking-[0.05em] text-[#6E7681] dark:text-[#9ca3af]">Last Updated</th>
                   <th className="py-3 px-4 w-[50px]"></th>
                 </tr>
               </thead>
