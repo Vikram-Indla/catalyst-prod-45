@@ -5,138 +5,221 @@ interface StatusCellProps {
 }
 
 /**
- * Status styling using ONLY Catalyst brand colors
- * Brand palette: olive (#5c7c5c), bronze (#8b7355), gold (#c69c6d), champagne (#d4b896)
+ * Status styling using Catalyst Design System v2.0
+ * Blue (#2563eb), Teal (#0d9488), Amber (#f59e0b), Red (#ef4444), Gray (#6b7280)
  */
 const STATUS_CONFIG: Record<string, { label: string; lightClass: string; darkClass: string; dotLight: string; dotDark: string }> = {
+  // Blue statuses - New/In Progress
   new: { 
     label: 'New', 
-    lightClass: 'bg-[#5c7c5c]/10 text-[#5c7c5c]',
-    darkClass: 'dark:bg-[#5c7c5c]/20 dark:text-[#6b8b6b]',
-    dotLight: 'bg-[#5c7c5c]',
-    dotDark: 'dark:bg-[#6b8b6b]'
+    lightClass: 'bg-[rgba(37,99,235,0.1)] text-[#2563eb]',
+    darkClass: 'dark:bg-[rgba(59,130,246,0.15)] dark:text-[#60a5fa]',
+    dotLight: 'bg-[#2563eb]',
+    dotDark: 'dark:bg-[#60a5fa]'
   },
   new_request: { 
     label: 'New Request', 
-    lightClass: 'bg-[#5c7c5c]/10 text-[#5c7c5c]',
-    darkClass: 'dark:bg-[#5c7c5c]/20 dark:text-[#6b8b6b]',
-    dotLight: 'bg-[#5c7c5c]',
-    dotDark: 'dark:bg-[#6b8b6b]'
+    lightClass: 'bg-[rgba(37,99,235,0.1)] text-[#2563eb]',
+    darkClass: 'dark:bg-[rgba(59,130,246,0.15)] dark:text-[#60a5fa]',
+    dotLight: 'bg-[#2563eb]',
+    dotDark: 'dark:bg-[#60a5fa]'
   },
   new_demand: { 
     label: 'New Demand', 
-    lightClass: 'bg-[#5c7c5c]/10 text-[#5c7c5c]',
-    darkClass: 'dark:bg-[#5c7c5c]/20 dark:text-[#6b8b6b]',
-    dotLight: 'bg-[#5c7c5c]',
-    dotDark: 'dark:bg-[#6b8b6b]'
+    lightClass: 'bg-[rgba(37,99,235,0.1)] text-[#2563eb]',
+    darkClass: 'dark:bg-[rgba(59,130,246,0.15)] dark:text-[#60a5fa]',
+    dotLight: 'bg-[#2563eb]',
+    dotDark: 'dark:bg-[#60a5fa]'
   },
+  // Blue - Active work
   'in-progress': {
     label: 'In Progress',
-    lightClass: 'bg-[#c69c6d]/10 text-[#8b7355]',
-    darkClass: 'dark:bg-[#c69c6d]/20 dark:text-[#d4b896]',
-    dotLight: 'bg-[#c69c6d]',
-    dotDark: 'dark:bg-[#d4b896]'
+    lightClass: 'bg-[rgba(37,99,235,0.1)] text-[#2563eb]',
+    darkClass: 'dark:bg-[rgba(59,130,246,0.15)] dark:text-[#60a5fa]',
+    dotLight: 'bg-[#2563eb]',
+    dotDark: 'dark:bg-[#60a5fa]'
   },
   in_progress: { 
     label: 'In Progress', 
-    lightClass: 'bg-[#c69c6d]/10 text-[#8b7355]',
-    darkClass: 'dark:bg-[#c69c6d]/20 dark:text-[#d4b896]',
-    dotLight: 'bg-[#c69c6d]',
-    dotDark: 'dark:bg-[#d4b896]'
-  },
-  scored: { 
-    label: 'Scored', 
-    lightClass: 'bg-[#c69c6d]/10 text-[#8b7355]',
-    darkClass: 'dark:bg-[#c69c6d]/20 dark:text-[#d4b896]',
-    dotLight: 'bg-[#c69c6d]',
-    dotDark: 'dark:bg-[#d4b896]'
-  },
-  'ea-review': {
-    label: 'EA Review',
-    lightClass: 'bg-[#8b7355]/10 text-[#8b7355]',
-    darkClass: 'dark:bg-[#8b7355]/20 dark:text-[#c69c6d]',
-    dotLight: 'bg-[#8b7355]',
-    dotDark: 'dark:bg-[#c69c6d]'
-  },
-  ea_review: { 
-    label: 'EA Review', 
-    lightClass: 'bg-[#8b7355]/10 text-[#8b7355]',
-    darkClass: 'dark:bg-[#8b7355]/20 dark:text-[#c69c6d]',
-    dotLight: 'bg-[#8b7355]',
-    dotDark: 'dark:bg-[#c69c6d]'
-  },
-  analyse: {
-    label: 'Analyse',
-    lightClass: 'bg-[#c69c6d]/15 text-[#8b7355]',
-    darkClass: 'dark:bg-[#c69c6d]/25 dark:text-[#d4b896]',
-    dotLight: 'bg-[#c69c6d]',
-    dotDark: 'dark:bg-[#d4b896]'
-  },
-  budget_review: { 
-    label: 'Budget Review', 
-    lightClass: 'bg-[#8b7355]/10 text-[#8b7355]',
-    darkClass: 'dark:bg-[#8b7355]/20 dark:text-[#c69c6d]',
-    dotLight: 'bg-[#8b7355]',
-    dotDark: 'dark:bg-[#c69c6d]'
-  },
-  ready: { 
-    label: 'Ready', 
-    lightClass: 'bg-[#5c7c5c]/15 text-[#4a6a4a]',
-    darkClass: 'dark:bg-[#5c7c5c]/25 dark:text-[#6b8b6b]',
-    dotLight: 'bg-[#5c7c5c]',
-    dotDark: 'dark:bg-[#6b8b6b]'
-  },
-  approved: {
-    label: 'Approved',
-    lightClass: 'bg-[#5c7c5c]/15 text-[#4a6a4a]',
-    darkClass: 'dark:bg-[#5c7c5c]/25 dark:text-[#6b8b6b]',
-    dotLight: 'bg-[#5c7c5c]',
-    dotDark: 'dark:bg-[#6b8b6b]'
+    lightClass: 'bg-[rgba(37,99,235,0.1)] text-[#2563eb]',
+    darkClass: 'dark:bg-[rgba(59,130,246,0.15)] dark:text-[#60a5fa]',
+    dotLight: 'bg-[#2563eb]',
+    dotDark: 'dark:bg-[#60a5fa]'
   },
   implement: {
     label: 'Implement',
-    lightClass: 'bg-[#c69c6d]/10 text-[#8b7355]',
-    darkClass: 'dark:bg-[#c69c6d]/20 dark:text-[#d4b896]',
-    dotLight: 'bg-[#c69c6d]',
-    dotDark: 'dark:bg-[#d4b896]'
+    lightClass: 'bg-[rgba(37,99,235,0.1)] text-[#2563eb]',
+    darkClass: 'dark:bg-[rgba(59,130,246,0.15)] dark:text-[#60a5fa]',
+    dotLight: 'bg-[#2563eb]',
+    dotDark: 'dark:bg-[#60a5fa]'
   },
-  blocked: {
-    label: 'Blocked',
-    lightClass: 'bg-[#8b7355]/15 text-[#6b5544]',
-    darkClass: 'dark:bg-[#8b7355]/25 dark:text-[#c69c6d]',
-    dotLight: 'bg-[#8b7355]',
-    dotDark: 'dark:bg-[#c69c6d]'
+  // Amber statuses - Review/Pending
+  scored: { 
+    label: 'Scored', 
+    lightClass: 'bg-[rgba(245,158,11,0.1)] text-[#b45309]',
+    darkClass: 'dark:bg-[rgba(251,191,36,0.15)] dark:text-[#fbbf24]',
+    dotLight: 'bg-[#f59e0b]',
+    dotDark: 'dark:bg-[#fbbf24]'
   },
-  rejected: {
-    label: 'Rejected',
-    lightClass: 'bg-[#8b7355]/15 text-[#6b5544]',
-    darkClass: 'dark:bg-[#8b7355]/25 dark:text-[#c69c6d]',
-    dotLight: 'bg-[#8b7355]',
-    dotDark: 'dark:bg-[#c69c6d]'
+  in_review: {
+    label: 'In Review',
+    lightClass: 'bg-[rgba(245,158,11,0.1)] text-[#b45309]',
+    darkClass: 'dark:bg-[rgba(251,191,36,0.15)] dark:text-[#fbbf24]',
+    dotLight: 'bg-[#f59e0b]',
+    dotDark: 'dark:bg-[#fbbf24]'
+  },
+  'ea-review': {
+    label: 'EA Review',
+    lightClass: 'bg-[rgba(245,158,11,0.1)] text-[#b45309]',
+    darkClass: 'dark:bg-[rgba(251,191,36,0.15)] dark:text-[#fbbf24]',
+    dotLight: 'bg-[#f59e0b]',
+    dotDark: 'dark:bg-[#fbbf24]'
+  },
+  ea_review: { 
+    label: 'EA Review', 
+    lightClass: 'bg-[rgba(245,158,11,0.1)] text-[#b45309]',
+    darkClass: 'dark:bg-[rgba(251,191,36,0.15)] dark:text-[#fbbf24]',
+    dotLight: 'bg-[#f59e0b]',
+    dotDark: 'dark:bg-[#fbbf24]'
+  },
+  analyse: {
+    label: 'Analyse',
+    lightClass: 'bg-[rgba(245,158,11,0.1)] text-[#b45309]',
+    darkClass: 'dark:bg-[rgba(251,191,36,0.15)] dark:text-[#fbbf24]',
+    dotLight: 'bg-[#f59e0b]',
+    dotDark: 'dark:bg-[#fbbf24]'
+  },
+  analysis: {
+    label: 'Analysis',
+    lightClass: 'bg-[rgba(245,158,11,0.1)] text-[#b45309]',
+    darkClass: 'dark:bg-[rgba(251,191,36,0.15)] dark:text-[#fbbf24]',
+    dotLight: 'bg-[#f59e0b]',
+    dotDark: 'dark:bg-[#fbbf24]'
+  },
+  budget_review: { 
+    label: 'Budget Review', 
+    lightClass: 'bg-[rgba(245,158,11,0.1)] text-[#b45309]',
+    darkClass: 'dark:bg-[rgba(251,191,36,0.15)] dark:text-[#fbbf24]',
+    dotLight: 'bg-[#f59e0b]',
+    dotDark: 'dark:bg-[#fbbf24]'
+  },
+  on_hold: {
+    label: 'On Hold',
+    lightClass: 'bg-[rgba(245,158,11,0.1)] text-[#b45309]',
+    darkClass: 'dark:bg-[rgba(251,191,36,0.15)] dark:text-[#fbbf24]',
+    dotLight: 'bg-[#f59e0b]',
+    dotDark: 'dark:bg-[#fbbf24]'
+  },
+  'on-hold': {
+    label: 'On Hold',
+    lightClass: 'bg-[rgba(245,158,11,0.1)] text-[#b45309]',
+    darkClass: 'dark:bg-[rgba(251,191,36,0.15)] dark:text-[#fbbf24]',
+    dotLight: 'bg-[#f59e0b]',
+    dotDark: 'dark:bg-[#fbbf24]'
+  },
+  // Teal statuses - Success/Complete
+  ready: { 
+    label: 'Ready', 
+    lightClass: 'bg-[rgba(13,148,136,0.1)] text-[#0d9488]',
+    darkClass: 'dark:bg-[rgba(20,184,166,0.15)] dark:text-[#14b8a6]',
+    dotLight: 'bg-[#0d9488]',
+    dotDark: 'dark:bg-[#14b8a6]'
+  },
+  ready_to_implement: {
+    label: 'Ready to Implement',
+    lightClass: 'bg-[rgba(13,148,136,0.1)] text-[#0d9488]',
+    darkClass: 'dark:bg-[rgba(20,184,166,0.15)] dark:text-[#14b8a6]',
+    dotLight: 'bg-[#0d9488]',
+    dotDark: 'dark:bg-[#14b8a6]'
+  },
+  approved: {
+    label: 'Approved',
+    lightClass: 'bg-[rgba(13,148,136,0.1)] text-[#0d9488]',
+    darkClass: 'dark:bg-[rgba(20,184,166,0.15)] dark:text-[#14b8a6]',
+    dotLight: 'bg-[#0d9488]',
+    dotDark: 'dark:bg-[#14b8a6]'
   },
   completed: { 
     label: 'Completed', 
-    lightClass: 'bg-[#d4b896]/20 text-[#8b7355]',
-    darkClass: 'dark:bg-[#d4b896]/15 dark:text-[#d4b896]',
-    dotLight: 'bg-[#d4b896]',
-    dotDark: 'dark:bg-[#d4b896]'
+    lightClass: 'bg-[rgba(13,148,136,0.1)] text-[#0d9488]',
+    darkClass: 'dark:bg-[rgba(20,184,166,0.15)] dark:text-[#14b8a6]',
+    dotLight: 'bg-[#0d9488]',
+    dotDark: 'dark:bg-[#14b8a6]'
   },
   closed: {
     label: 'Closed',
-    lightClass: 'bg-[#d4b896]/20 text-[#8b7355]',
-    darkClass: 'dark:bg-[#d4b896]/15 dark:text-[#d4b896]',
-    dotLight: 'bg-[#d4b896]',
-    dotDark: 'dark:bg-[#d4b896]'
+    lightClass: 'bg-[rgba(13,148,136,0.1)] text-[#0d9488]',
+    darkClass: 'dark:bg-[rgba(20,184,166,0.15)] dark:text-[#14b8a6]',
+    dotLight: 'bg-[#0d9488]',
+    dotDark: 'dark:bg-[#14b8a6]'
+  },
+  done: {
+    label: 'Done',
+    lightClass: 'bg-[rgba(13,148,136,0.1)] text-[#0d9488]',
+    darkClass: 'dark:bg-[rgba(20,184,166,0.15)] dark:text-[#14b8a6]',
+    dotLight: 'bg-[#0d9488]',
+    dotDark: 'dark:bg-[#14b8a6]'
+  },
+  // Red statuses - Blocked/Rejected
+  blocked: {
+    label: 'Blocked',
+    lightClass: 'bg-[rgba(239,68,68,0.1)] text-[#ef4444]',
+    darkClass: 'dark:bg-[rgba(248,113,113,0.15)] dark:text-[#f87171]',
+    dotLight: 'bg-[#ef4444]',
+    dotDark: 'dark:bg-[#f87171]'
+  },
+  rejected: {
+    label: 'Rejected',
+    lightClass: 'bg-[rgba(239,68,68,0.1)] text-[#ef4444]',
+    darkClass: 'dark:bg-[rgba(248,113,113,0.15)] dark:text-[#f87171]',
+    dotLight: 'bg-[#ef4444]',
+    dotDark: 'dark:bg-[#f87171]'
+  },
+  cancelled: {
+    label: 'Cancelled',
+    lightClass: 'bg-[rgba(239,68,68,0.1)] text-[#ef4444]',
+    darkClass: 'dark:bg-[rgba(248,113,113,0.15)] dark:text-[#f87171]',
+    dotLight: 'bg-[#ef4444]',
+    dotDark: 'dark:bg-[#f87171]'
+  },
+  // Gray statuses - Backlog/Draft
+  backlog: {
+    label: 'Backlog',
+    lightClass: 'bg-[rgba(107,114,128,0.1)] text-[#6b7280]',
+    darkClass: 'dark:bg-[rgba(156,163,175,0.15)] dark:text-[#9ca3af]',
+    dotLight: 'bg-[#6b7280]',
+    dotDark: 'dark:bg-[#9ca3af]'
+  },
+  draft: {
+    label: 'Draft',
+    lightClass: 'bg-[rgba(107,114,128,0.1)] text-[#6b7280]',
+    darkClass: 'dark:bg-[rgba(156,163,175,0.15)] dark:text-[#9ca3af]',
+    dotLight: 'bg-[#6b7280]',
+    dotDark: 'dark:bg-[#9ca3af]'
+  },
+  funnel: {
+    label: 'Funnel',
+    lightClass: 'bg-[rgba(37,99,235,0.1)] text-[#2563eb]',
+    darkClass: 'dark:bg-[rgba(59,130,246,0.15)] dark:text-[#60a5fa]',
+    dotLight: 'bg-[#2563eb]',
+    dotDark: 'dark:bg-[#60a5fa]'
+  },
+  implementing: {
+    label: 'Implementing',
+    lightClass: 'bg-[rgba(37,99,235,0.1)] text-[#2563eb]',
+    darkClass: 'dark:bg-[rgba(59,130,246,0.15)] dark:text-[#60a5fa]',
+    dotLight: 'bg-[#2563eb]',
+    dotDark: 'dark:bg-[#60a5fa]'
   },
 };
 
 export function StatusCell({ status }: StatusCellProps) {
-  const normalizedStatus = status?.toLowerCase().replace(/\s+/g, '_') || 'new';
-  const config = STATUS_CONFIG[normalizedStatus] || STATUS_CONFIG.new;
+  const normalizedStatus = status?.toLowerCase().replace(/\s+/g, '_').replace(/-/g, '_') || 'new';
+  const config = STATUS_CONFIG[normalizedStatus] || STATUS_CONFIG[status?.toLowerCase()] || STATUS_CONFIG.new;
   
   return (
     <span className={cn(
-      "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md",
+      "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full",
       "text-xs font-medium",
       config.lightClass,
       config.darkClass
@@ -150,3 +233,6 @@ export function StatusCell({ status }: StatusCellProps) {
     </span>
   );
 }
+
+// Export for reuse across the application
+export { STATUS_CONFIG };
