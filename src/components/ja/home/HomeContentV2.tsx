@@ -782,9 +782,9 @@ export function HomeContentV2() {
                 "p-4"
               )}
             >
-              {/* Header with gold accent */}
-              <div className="relative text-[11px] font-bold uppercase tracking-wider mb-3 text-[#8b7355] dark:text-[#d4b896] border-b border-border pb-2">
-                <div className="absolute -left-4 top-0 bottom-0 w-1 bg-[#c69c6d] rounded-r" />
+              {/* Header with blue accent per design system v2.0 */}
+              <div className="relative text-[11px] font-bold uppercase tracking-wider mb-3 text-[#525252] dark:text-[#a3a3a3] border-b border-border pb-2">
+                <div className="absolute -left-4 top-0 bottom-0 w-1 bg-[#2563eb] rounded-r" />
                 My Focus
               </div>
               
