@@ -7,6 +7,7 @@ import { useState, useEffect } from 'react';
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import { useSearchParams, useParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
+import { useEpicRealtime } from '@/hooks/useWorkItemRealtime';
 import { Card, CardContent } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -97,6 +98,9 @@ export default function EpicsPage() {
 
   const portfolioId = searchParams.get('portfolioId');
   const queryClient = useQueryClient();
+
+  // Realtime subscription for automatic UI refresh
+  useEpicRealtime();
 
   // Check for create parameter in URL
   useEffect(() => {

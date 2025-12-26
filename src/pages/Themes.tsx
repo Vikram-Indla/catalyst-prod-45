@@ -18,6 +18,7 @@ import { CommentsSection } from '@/components/shared/CommentsSection';
 import { useUserRole } from '@/hooks/useUserRole';
 import { PermissionGuard } from '@/components/shared/PermissionGuard';
 import { PageHeader } from '@/components/layout/PageHeader';
+import { useThemeRealtime } from '@/hooks/useWorkItemRealtime';
 
 export default function Themes() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -29,6 +30,9 @@ export default function Themes() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const { isTeamLead, isProgramManager } = useUserRole();
+
+  // Realtime subscription for automatic UI refresh
+  useThemeRealtime();
 
   const { data: themes, isLoading } = useQuery({
     queryKey: ['strategic_themes', searchQuery],

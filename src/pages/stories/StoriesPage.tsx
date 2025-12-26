@@ -9,12 +9,16 @@ import { StoryDetailPanel } from '@/components/stories/StoryDetailPanel';
 import { CreateEditStoryPanel } from '@/components/stories/CreateEditStoryPanel';
 import { StoriesSidebar } from '@/components/stories/StoriesSidebar';
 import { useToast } from '@/hooks/use-toast';
+import { useStoryRealtime } from '@/hooks/useWorkItemRealtime';
 
 export function StoriesPage() {
   const [selectedStoryId, setSelectedStoryId] = useState<string | null>(null);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [filterState, setFilterState] = useState<string>('all');
   const { toast } = useToast();
+
+  // Realtime subscription for automatic UI refresh
+  useStoryRealtime();
 
   const { data: stories = [], isLoading, refetch } = useQuery({
     queryKey: ['stories', filterState],
