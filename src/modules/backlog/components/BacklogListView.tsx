@@ -1,7 +1,7 @@
 import { DragDropContext, DropResult } from '@hello-pangea/dnd';
 import { BacklogItem, BacklogMeta, BacklogPISection } from '../types';
 import { BacklogSection } from './BacklogSection';
-import { BacklogEnterpriseTable } from './BacklogEnterpriseTable';
+import { EpicTable } from './EpicTable';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -69,11 +69,11 @@ export function BacklogListView({
     updateRanksMutation.mutate({ updates });
   };
 
-  // Use CatalystEnterpriseTable for Epic Backlog (flat list view)
+  // Use EpicTable for Epic Backlog (flat list view)
   if (isEpicBacklog && (!sections || sections.length === 0 || (sections.length === 1 && sections[0].id === 'all'))) {
     return (
       <div className="p-4">
-        <BacklogEnterpriseTable
+        <EpicTable
           items={items}
           meta={meta}
           selectedItems={selectedItems}
@@ -103,10 +103,10 @@ export function BacklogListView({
     );
   }
 
-  // Fallback: render flat list with BacklogEnterpriseTable
+  // Fallback: render flat list with EpicTable
   return (
     <div className="p-4">
-      <BacklogEnterpriseTable
+      <EpicTable
         items={items}
         meta={meta}
         selectedItems={selectedItems}
