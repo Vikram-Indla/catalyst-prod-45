@@ -24,20 +24,20 @@ interface EpicKanbanBoardProps {
 const COLOR_MAP: Record<string, string> = {
   info: '#3b82f6',      // Blue
   warning: '#f59e0b',   // Amber
-  forest: '#16a34a',    // Green
+  forest: '#0d9488',    // Teal (was Green)
   stone: '#6b7280',     // Gray
-  success: '#22c55e',   // Green
+  success: '#0d9488',   // Teal (was Green)
   danger: '#ef4444',    // Red
-  primary: '#5c7c5c',   // Brand olive
+  primary: '#2563eb',   // Blue (was Olive)
 };
 
 // Fallback states if fetch fails
 const FALLBACK_STATES = [
   { id: 'proposed', label: 'New Epic', color: '#3b82f6' },
   { id: 'analyzing', label: 'Analysis', color: '#3b82f6' },
-  { id: 'approved', label: 'Ready for Implementation', color: '#f59e0b' },
-  { id: 'in_progress', label: 'In Implementation', color: '#f59e0b' },
-  { id: 'done', label: 'Done', color: '#16a34a' },
+  { id: 'approved', label: 'Ready for Implementation', color: '#0d9488' },
+  { id: 'in_progress', label: 'In Implementation', color: '#2563eb' },
+  { id: 'done', label: 'Done', color: '#0d9488' },
   { id: 'cancelled', label: 'Cancelled', color: '#6b7280' },
 ];
 

@@ -16,7 +16,7 @@ export function HeroPanel() {
 
   return (
     <div className="flex-1 bg-gradient-to-br from-brand-dark via-[#2D2D2D] to-brand-dark flex flex-col justify-between p-12 relative overflow-hidden">
-      <div className="absolute -top-1/2 -right-1/5 w-4/5 h-[200%] bg-[radial-gradient(ellipse,rgba(198,156,109,0.08)_0%,transparent_70%)] pointer-events-none" />
+      <div className="absolute -top-1/2 -right-1/5 w-4/5 h-[200%] bg-[radial-gradient(ellipse,rgba(37,99,235,0.08)_0%,transparent_70%)] pointer-events-none" />
       <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-brand-primary to-transparent" />
 
       <div className="relative z-10">

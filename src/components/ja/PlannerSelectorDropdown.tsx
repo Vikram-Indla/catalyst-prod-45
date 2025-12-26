@@ -21,15 +21,15 @@ interface PlannerSelectorDropdownProps {
 const teamTypeColors: Record<string, string> = {
   'AGILE': '#5c7c5c',
   'KANBAN': '#8b7355',
-  'COP': '#c69c6d',
+  'COP': '#2563eb',
   'PROGRAM': '#2563eb',
-  'PORTFOLIO': '#6366f1',
+  'PORTFOLIO': '#1d4ed8',
   'SOLUTION': '#0d9488',
-  'PROCESS_FLOW': '#9333ea',
+  'PROCESS_FLOW': '#0f766e',
   // Mock team colors
   'olive': '#5c7c5c',
   'bronze': '#8b7355',
-  'gold': '#c69c6d',
+  'blue': '#2563eb',
 };
 
 export const PlannerSelectorDropdown = React.memo(function PlannerSelectorDropdown({ 

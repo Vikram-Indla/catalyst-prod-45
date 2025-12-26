@@ -48,8 +48,8 @@ interface WorkManagerBoardsProps {
 const dueDateGroups = [
   { id: 'overdue', name: 'Overdue', color: '#dc2626' },
   { id: 'today', name: 'Due Today', color: '#ea580c' },
-  { id: 'next7', name: 'Next 7 Days', color: '#ca8a04' },
-  { id: 'future', name: 'Future', color: '#16a34a' },
+  { id: 'next7', name: 'Next 7 Days', color: '#f59e0b' },
+  { id: 'future', name: 'Future', color: '#0d9488' },
   { id: 'none', name: 'No Due Date', color: '#6b7280' },
 ];
 

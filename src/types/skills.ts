@@ -150,8 +150,8 @@ export const PROFICIENCY_LEVELS: Record<SkillProficiencyLevel, {
     label: 'Expert',
     label_ar: 'خبير',
     value: 5,
-    color: '#22c55e',
-    bgColor: 'rgba(34, 197, 94, 0.15)',
+    color: '#0d9488',
+    bgColor: 'rgba(13, 148, 136, 0.15)',
     description: 'Industry-leading expertise'
   }
 };

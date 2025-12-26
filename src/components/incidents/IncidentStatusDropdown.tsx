@@ -147,7 +147,7 @@ export function IncidentStatusDropdown({
       {onAssignToMe && (
         <button
           onClick={onAssignToMe}
-          className="text-sm text-[#c69c6d] hover:text-[#b8894d] hover:underline transition-colors"
+          className="text-sm text-[#2563eb] hover:text-[#1d4ed8] hover:underline transition-colors"
         >
           Assign to me
         </button>

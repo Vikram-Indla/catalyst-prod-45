@@ -75,10 +75,10 @@ const DEFAULT_SETTINGS: KanbanBoardSettings = {
   columns: [
     { id: 'col_new', name: 'New Request', color: '#9ca3af', category: 'todo', statuses: ['NEW_REQUEST', 'NEW_DEMAND'], wipLimit: null, sortOrder: 0 },
     { id: 'col_analyse', name: 'Analyse', color: '#3b82f6', category: 'in_progress', statuses: ['IN_REVIEW', 'ANALYSE'], wipLimit: null, sortOrder: 1 },
-    { id: 'col_approved', name: 'Approved', color: '#22c55e', category: 'in_progress', statuses: ['APPROVED'], wipLimit: null, sortOrder: 2 },
-    { id: 'col_ready', name: 'Ready to Implement', color: '#8b5cf6', category: 'in_progress', statuses: ['READY_TO_IMPLEMENT'], wipLimit: null, sortOrder: 3 },
-    { id: 'col_implement', name: 'Implement', color: '#f59e0b', category: 'in_progress', statuses: ['IMPLEMENT'], wipLimit: null, sortOrder: 4 },
-    { id: 'col_closed', name: 'Closed', color: '#10b981', category: 'done', statuses: ['CLOSED'], wipLimit: null, sortOrder: 5 },
+    { id: 'col_approved', name: 'Approved', color: '#0d9488', category: 'in_progress', statuses: ['APPROVED'], wipLimit: null, sortOrder: 2 },
+    { id: 'col_ready', name: 'Ready to Implement', color: '#2563eb', category: 'in_progress', statuses: ['READY_TO_IMPLEMENT'], wipLimit: null, sortOrder: 3 },
+    { id: 'col_implement', name: 'Implement', color: '#1d4ed8', category: 'in_progress', statuses: ['IMPLEMENT'], wipLimit: null, sortOrder: 4 },
+    { id: 'col_closed', name: 'Closed', color: '#0d9488', category: 'done', statuses: ['CLOSED'], wipLimit: null, sortOrder: 5 },
     { id: 'col_rejected', name: 'Rejected', color: '#ef4444', category: 'done', statuses: ['REJECTED'], wipLimit: null, sortOrder: 6 },
     { id: 'col_onhold', name: 'On-Hold', color: '#6b7280', category: 'blocked', statuses: ['ON_HOLD'], wipLimit: null, sortOrder: 7 },
   ],
@@ -99,8 +99,8 @@ const DEFAULT_SETTINGS: KanbanBoardSettings = {
     priorityColors: {
       critical: '#ef4444',
       high: '#f97316',
-      medium: '#eab308',
-      low: '#22c55e',
+      medium: '#f59e0b',
+      low: '#0d9488',
     },
   },
 };
