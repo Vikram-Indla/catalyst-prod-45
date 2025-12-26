@@ -12,11 +12,11 @@ import { BacklogHeader } from './BacklogHeader';
 import { EpicListPanel, EpicListItem } from './split-panel/EpicListPanel';
 import { EpicDetailPanel, EpicDetailItem } from './split-panel/EpicDetailPanel';
 import { EpicKanbanBoard } from './EpicKanbanBoard';
-import { EpicTable } from './EpicTable';
+import { EpicTableView } from './EpicTableView';
 import { EpicDrawer } from '@/components/items/epics/EpicDrawer';
 import { EpicFiltersDialog } from './EpicFiltersDialog';
 import { BacklogColumnsDialog } from './BacklogColumnsDialog';
-import { CreateEpicDialog } from '@/modules/program-epics/components/CreateEpicDialog';
+import { CreateEpicModal } from './CreateEpicModal';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { fetchBacklogItems } from '../api/backlogApi';
 import { useEpicBacklogPreferences } from '@/hooks/useEpicBacklogPreferences';
@@ -407,13 +407,14 @@ export function BacklogWorkspace() {
             <div className="text-muted-foreground">Loading...</div>
           </div>
         ) : isTableView ? (
-          /* Table View */
-          <div className="h-full overflow-auto px-4 sm:px-6 pt-2 pb-4">
-            <EpicTable
-              items={backlogData?.items || []}
-              meta={backlogData?.meta}
+          /* Table View - Full width like Demand Table */
+          <div className="h-full overflow-auto">
+            <EpicTableView
+              data={backlogData?.items || []}
+              isLoading={isLoading}
+              onRowClick={(id) => setDrawerEpicId(id)}
+              programId={backlogState.programId}
               selectedItems={selectedItems}
-              onItemClick={(id) => setDrawerEpicId(id)}
               onItemSelect={(id, selected) => {
                 setSelectedItems(prev => 
                   selected ? [...prev, id] : prev.filter(x => x !== id)
@@ -500,11 +501,11 @@ export function BacklogWorkspace() {
       />
 
       {backlogState.programId && (
-        <CreateEpicDialog
-          open={isCreateEpicDialogOpen}
-          onOpenChange={setIsCreateEpicDialogOpen}
+        <CreateEpicModal
+          isOpen={isCreateEpicDialogOpen}
+          onClose={() => setIsCreateEpicDialogOpen(false)}
           programId={backlogState.programId}
-          onCreated={() => {}}
+        />
         />
       )}
 
