@@ -44,6 +44,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
+import { ProgressWithTooltip } from '@/components/shared/ProgressWithTooltip';
 
 // Epic-specific tabs
 import { EpicDetailsViewTab } from './drawer-tabs/EpicDetailsViewTab';
@@ -563,6 +564,18 @@ export function EpicDrawer({ isOpen, onClose, epicId, onEpicChange }: EpicDrawer
             <div style={{ borderBottom: '1px solid var(--border-default, hsl(var(--border)))' }} />
             <SheetDescription className="sr-only">Epic details panel</SheetDescription>
           </SheetHeader>
+
+          {/* Progress Row - with tooltip */}
+          <div 
+            className="px-5 py-3"
+            style={{ borderBottom: '1px solid var(--border-default, hsl(var(--border)))' }}
+          >
+            <ProgressWithTooltip
+              entityType="epic"
+              entityId={epicId}
+              size="md"
+            />
+          </div>
 
           {/* ═══════════════════════════════════════════════════════════
               TABS - Catalyst Design System (Matches BusinessRequestDrawer)
