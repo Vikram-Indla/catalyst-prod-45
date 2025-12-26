@@ -31,6 +31,7 @@ import { LinkedWorkTabV2 } from './LinkedWorkTabV2';
 import { UnifiedLinksTab } from '@/components/shared/UnifiedLinksTab';
 import { UnifiedAuditHistoryTab } from '@/components/shared/UnifiedAuditHistoryTab';
 import { toast } from 'sonner';
+import { ProgressWithTooltip } from '@/components/shared/ProgressWithTooltip';
 import { useQueryClient } from '@tanstack/react-query';
 import { logAuditEntry, getChangedFields } from '@/lib/auditLogger';
 
@@ -393,13 +394,11 @@ export function ObjectiveDrawerV2({ objectiveId, open, onClose, onDuplicated }: 
           <span>{keyResults?.length || 0} Key Results</span>
         </div>
       </div>
-      <div>
-        <div className="flex items-center justify-between text-sm mb-1">
-          <span className="text-muted-foreground">Overall Progress</span>
-          <span className="font-medium">{v2Progress}%</span>
-        </div>
-        <Progress value={v2Progress} className="h-2" />
-      </div>
+      <ProgressWithTooltip
+        entityType="objective"
+        entityId={objectiveId}
+        size="md"
+      />
     </div>
   );
 

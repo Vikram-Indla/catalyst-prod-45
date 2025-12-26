@@ -67,6 +67,7 @@ import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { UserPicker } from '@/components/ui/user-picker';
 import { UnifiedAuditHistoryTab } from '@/components/shared/UnifiedAuditHistoryTab';
+import { ProgressWithTooltip } from '@/components/shared/ProgressWithTooltip';
 
 interface SnapshotDrawerProps {
   isOpen: boolean;
@@ -176,36 +177,6 @@ export function SnapshotDrawer({ isOpen, onClose, snapshotId, onSave }: Snapshot
   });
 
   const canDelete = linkedThemesData?.count === 0;
-
-  // Fetch progress data from linked goals
-  const { data: progressData } = useQuery({
-    queryKey: ['snapshot-progress', snapshotId],
-    queryFn: async () => {
-      if (!snapshotId) return { progress: 0 };
-      
-      // Get all goals linked to this snapshot
-      const { data: goals, error } = await supabase
-        .from('strategic_goals')
-        .select('complete_percent')
-        .eq('snapshot_id', snapshotId);
-      
-      if (error) throw error;
-      
-      if (!goals || goals.length === 0) {
-        return { progress: 0, goalCount: 0 };
-      }
-      
-      // Calculate average completion percentage
-      const totalPercent = goals.reduce((sum, goal) => {
-        return sum + (Number(goal.complete_percent) || 0);
-      }, 0);
-      
-      const avgProgress = Math.round(totalPercent / goals.length);
-      
-      return { progress: avgProgress, goalCount: goals.length };
-    },
-    enabled: isOpen && !!snapshotId,
-  });
 
   // Fetch owner profile
   const { data: ownerProfile } = useQuery({
@@ -509,9 +480,6 @@ export function SnapshotDrawer({ isOpen, onClose, snapshotId, onSave }: Snapshot
   };
 
   const statusConfig = getStatusConfig(formData.status);
-  
-  // Dynamic progress from linked goals (average complete_percent)
-  const progress = progressData?.progress ?? 0;
 
   // Filter quarters and themes
   const filteredQuarters = quarterOptions.filter(q => 
@@ -683,19 +651,13 @@ export function SnapshotDrawer({ isOpen, onClose, snapshotId, onSave }: Snapshot
           </div>
         </div>
 
-        {/* Progress Row - VISIBLE track */}
-        <div className="flex items-center gap-3 px-4 py-3" style={{ borderBottom: '1px solid #333333' }}>
-          <span className="text-xs font-medium" style={{ color: '#737373' }}>Overall Progress</span>
-          <div className="flex-1 h-2 rounded-full" style={{ backgroundColor: '#333333' }}>
-            <div 
-              className="h-full rounded-full"
-              style={{ 
-                backgroundColor: '#5c7c5c',
-                width: `${progress}%`
-              }}
-            />
-          </div>
-          <span className="text-sm font-semibold" style={{ color: '#f5f5f5' }}>{progress}%</span>
+        {/* Progress Row - with tooltip */}
+        <div className="px-4 py-3" style={{ borderBottom: '1px solid #333333' }}>
+          <ProgressWithTooltip
+            entityType="snapshot"
+            entityId={snapshotId}
+            size="md"
+          />
         </div>
 
         {/* Tabs - with visible gold underline */}

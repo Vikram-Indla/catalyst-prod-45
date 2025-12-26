@@ -67,6 +67,7 @@ import { EpicDetailsPanel } from '@/components/items/epics/EpicDetailsPanel';
 import { LinkObjectivePicker } from './pickers/LinkObjectivePicker';
 import { LinkEpicPicker } from './pickers/LinkEpicPicker';
 import { ProgressSparkline, generateMockProgressHistory } from './ProgressSparkline';
+import { ProgressWithTooltip } from '@/components/shared/ProgressWithTooltip';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { formatDistanceToNow } from 'date-fns';
@@ -817,6 +818,18 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
             </div>
             <SheetDescription className="sr-only">Theme details panel</SheetDescription>
           </SheetHeader>
+
+          {/* Progress Row - with tooltip */}
+          <div 
+            className="px-4 md:px-5 py-3"
+            style={{ borderBottom: '1px solid var(--border-subtle)' }}
+          >
+            <ProgressWithTooltip
+              entityType="theme"
+              entityId={theme.id}
+              size="md"
+            />
+          </div>
 
           {/* Tabs Navigation */}
           <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col min-h-0">
