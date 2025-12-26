@@ -50,7 +50,7 @@ export function InlineSummaryEdit({ value, onChange, isSelected }: InlineSummary
         onBlur={handleBlur}
         onKeyDown={handleKeyDown}
         onClick={(e) => e.stopPropagation()}
-        className="h-7 text-sm text-foreground border-[#c69c6d] rounded-md bg-background px-1.5 focus:ring-0 focus:ring-offset-0"
+        className="h-7 text-sm text-foreground border-[#2563eb] rounded-md bg-background px-1.5 focus:ring-0 focus:ring-offset-0"
       />
     );
   }
@@ -59,7 +59,7 @@ export function InlineSummaryEdit({ value, onChange, isSelected }: InlineSummary
     <span 
       className={cn(
         "text-sm text-foreground truncate block cursor-text px-1.5 py-1 -mx-1.5 rounded-md hover:bg-muted",
-        isSelected && "bg-[#c69c6d]/10"
+        isSelected && "bg-[#2563eb]/10"
       )}
       onDoubleClick={handleDoubleClick}
       title="Double-click to edit"

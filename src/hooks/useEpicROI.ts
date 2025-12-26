@@ -118,7 +118,7 @@ export const useValueComparison = (epicId: string) => {
 };
 
 export const getGaugeColor = (score: number): string => {
-  if (score >= 100) return '#22c55e'; // green-500
+  if (score >= 100) return '#0d9488'; // teal-600
   if (score >= 66) return '#14b8a6'; // teal-500
   if (score >= 33) return '#eab308'; // yellow-500
   return '#ef4444'; // red-500

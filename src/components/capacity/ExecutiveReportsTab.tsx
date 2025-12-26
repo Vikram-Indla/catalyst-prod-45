@@ -87,14 +87,14 @@ export function ExecutiveReportsTab({
   return (
     <div className="space-y-4">
       {/* PDF Header - Hidden until print */}
-      <div className="hidden print:block mb-6 pb-4 border-b-2 border-[#c69c6d]">
+      <div className="hidden print:block mb-6 pb-4 border-b-2 border-[#2563eb]">
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-[#c69c6d] rounded-lg flex items-center justify-center text-white font-bold text-lg">
+            <div className="w-10 h-10 bg-[#2563eb] rounded-lg flex items-center justify-center text-white font-bold text-lg">
               C
             </div>
             <div>
-              <div className="text-base font-bold text-[#c69c6d]">CATALYST</div>
+              <div className="text-base font-bold text-[#2563eb]">CATALYST</div>
               <div className="text-xs text-muted-foreground">Ministry of Investment</div>
             </div>
           </div>
@@ -125,7 +125,7 @@ export function ExecutiveReportsTab({
                 className={cn(
                   "px-3 py-1 text-xs rounded capitalize transition-colors",
                   period === p 
-                    ? "bg-card shadow text-[#c69c6d] font-medium" 
+                    ? "bg-card shadow text-[#2563eb] font-medium" 
                     : "text-muted-foreground hover:text-foreground"
                 )}
               >
@@ -134,7 +134,7 @@ export function ExecutiveReportsTab({
             ))}
           </div>
           {/* Export Button */}
-          <Button onClick={handleExportPDF} size="sm" className="bg-[#c69c6d] hover:bg-[#8b7355] text-white">
+          <Button onClick={handleExportPDF} size="sm" className="bg-[#2563eb] hover:bg-[#1d4ed8] text-white">
             <FileDown className="w-4 h-4 mr-2" />
             Export PDF
           </Button>
@@ -150,11 +150,11 @@ export function ExecutiveReportsTab({
           </h4>
           <div className="grid grid-cols-2 gap-2 mb-3">
             <div className="text-center p-2 bg-card rounded">
-              <div className="text-2xl font-bold text-[#c69c6d]">{totalFTE}</div>
+              <div className="text-2xl font-bold text-[#2563eb]">{totalFTE}</div>
               <div className="text-[10px] text-muted-foreground uppercase">Total FTE</div>
             </div>
             <div className="text-center p-2 bg-card rounded">
-              <div className="text-2xl font-bold text-[#c69c6d]">{allocatedFTE.toFixed(1)}</div>
+              <div className="text-2xl font-bold text-[#2563eb]">{allocatedFTE.toFixed(1)}</div>
               <div className="text-[10px] text-muted-foreground uppercase">Allocated FTE</div>
             </div>
           </div>
@@ -165,7 +165,7 @@ export function ExecutiveReportsTab({
             </div>
             <div className="h-1.5 bg-muted rounded-full overflow-hidden">
               <div 
-                className="h-full bg-[#c69c6d] rounded-full transition-all"
+                className="h-full bg-[#2563eb] rounded-full transition-all"
                 style={{ width: `${Math.min(utilizationRate, 100)}%` }}
               />
             </div>

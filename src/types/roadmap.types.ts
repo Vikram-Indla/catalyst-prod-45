@@ -264,8 +264,8 @@ export const STATE_BADGE_CONFIG: Record<WorkItemState, StateBadgeConfig> = {
   },
   accepted: {
     label: 'ACCEPTED',
-    backgroundColor: '#dcfce7',
-    textColor: '#16a34a',
+    backgroundColor: '#ccfbf1',
+    textColor: '#0d9488',
     fillCount: 6,
   },
   blocked: {
@@ -276,8 +276,8 @@ export const STATE_BADGE_CONFIG: Record<WorkItemState, StateBadgeConfig> = {
   },
   done: {
     label: 'DONE',
-    backgroundColor: '#dcfce7',
-    textColor: '#16a34a',
+    backgroundColor: '#ccfbf1',
+    textColor: '#0d9488',
     fillCount: 6,
   },
 };
@@ -288,18 +288,18 @@ export const STATE_BADGE_CONFIG: Record<WorkItemState, StateBadgeConfig> = {
 
 export const BAR_COLORS: Record<WorkItemState, string> = {
   not_started: '#FF8B00',  // Orange
-  in_progress: '#36B37E',  // Green
-  accepted: '#36B37E',     // Green
+  in_progress: '#2563eb',  // Blue
+  accepted: '#0d9488',     // Teal
   blocked: '#FF5630',      // Red
-  done: '#36B37E',         // Green
+  done: '#0d9488',         // Teal
 };
 
 export const BAR_TYPE_COLORS: Record<WorkItemType, string> = {
-  theme: '#c69c6d',   // Gold (brand primary)
-  epic: '#2563eb',    // Blue
-  feature: '#16a34a', // Green
+  theme: '#2563eb',   // Blue (brand primary)
+  epic: '#3b82f6',    // Blue-500
+  feature: '#0d9488', // Teal
   capability: '#f59e0b', // Amber
-  story: '#16a34a',   // Green
+  story: '#0d9488',   // Teal
 };
 
 // ============================================

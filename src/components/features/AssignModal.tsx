@@ -185,11 +185,11 @@ export function AssignModal({
                 Current Owner
               </p>
               {selectedOwnerData ? (
-                <div className="flex items-center justify-between p-3 rounded-lg border bg-[rgba(198,156,109,0.12)] border-brand-primary">
+                <div className="flex items-center justify-between p-3 rounded-lg border bg-[rgba(37,99,235,0.12)] border-[#2563eb]">
                   <div className="flex items-center gap-3">
                     <Avatar className="h-8 w-8">
                       <AvatarImage src={selectedOwnerData.avatar_url || undefined} />
-                      <AvatarFallback className="bg-[#c69c6d] text-white text-sm">
+                      <AvatarFallback className="bg-[#2563eb] text-white text-sm">
                         {getInitials(selectedOwnerData.full_name)}
                       </AvatarFallback>
                     </Avatar>
@@ -252,7 +252,7 @@ export function AssignModal({
                           className={cn(
                             "w-full flex items-center justify-between p-2.5 rounded-lg transition-colors text-left",
                             isSelected 
-                              ? "bg-[rgba(198,156,109,0.12)] border-2 border-[#c69c6d]" 
+                              ? "bg-[rgba(37,99,235,0.12)] border-2 border-[#2563eb]" 
                               : "hover:bg-muted/50 border-2 border-transparent"
                           )}
                         >
@@ -261,7 +261,7 @@ export function AssignModal({
                               <AvatarImage src={member.avatar_url || undefined} />
                               <AvatarFallback className={cn(
                                 "text-white text-sm",
-                                isSelected ? "bg-[#c69c6d]" : "bg-muted-foreground/20 text-foreground"
+                                isSelected ? "bg-[#2563eb]" : "bg-muted-foreground/20 text-foreground"
                               )}>
                                 {getInitials(member.full_name)}
                               </AvatarFallback>
@@ -274,7 +274,7 @@ export function AssignModal({
                             </div>
                           </div>
                           {isSelected && (
-                            <Check className="h-5 w-5 text-[#c69c6d]" />
+                            <Check className="h-5 w-5 text-[#2563eb]" />
                           )}
                         </button>
                       );
@@ -370,7 +370,7 @@ export function AssignModal({
                       >
                         <div className="h-5 w-5 rounded border-2 border-muted-foreground/30 flex items-center justify-center">
                           {selectedContributorIds.includes(member.id) && (
-                            <Check className="h-3 w-3 text-[#c69c6d]" />
+                            <Check className="h-3 w-3 text-[#2563eb]" />
                           )}
                         </div>
                         <Avatar className="h-7 w-7">
@@ -412,7 +412,7 @@ export function AssignModal({
             <Button 
               onClick={() => saveMutation.mutate()}
               disabled={!hasChanges || saveMutation.isPending}
-              className="bg-[#c69c6d] hover:bg-[#b8894d] text-white"
+              className="bg-[#2563eb] hover:bg-[#1d4ed8] text-white"
             >
               {saveMutation.isPending ? (
                 <>

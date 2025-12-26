@@ -68,12 +68,12 @@ export const SUBTASK_STATUS_CONFIG = {
   },
   in_progress: {
     label: 'In Progress',
-    color: '#c69c6d',
-    bgColor: 'rgba(198, 156, 109, 0.15)',
+    color: '#2563eb',
+    bgColor: 'rgba(37, 99, 235, 0.15)',
   },
   done: {
     label: 'Done',
-    color: '#22c55e',
-    bgColor: 'rgba(34, 197, 94, 0.1)',
+    color: '#0d9488',
+    bgColor: 'rgba(13, 148, 136, 0.1)',
   },
 } as const;

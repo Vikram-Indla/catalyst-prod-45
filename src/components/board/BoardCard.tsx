@@ -42,7 +42,7 @@ export function BoardCard({
       className={cn(
         'board-card relative bg-white dark:bg-gray-800 rounded-lg p-3 mb-2 border cursor-grab',
         'transition-all hover:shadow-md hover:-translate-y-0.5',
-        'hover:border-[#c69c6d]',
+        'hover:border-[#2563eb]',
         'active:cursor-grabbing'
       )}
       style={{
@@ -62,7 +62,7 @@ export function BoardCard({
 
       {/* Header */}
       <div className="flex items-center justify-between mb-2">
-        <span className="text-xs font-mono text-[#c69c6d]">
+        <span className="text-xs font-mono text-[#2563eb] dark:text-[#60a5fa]">
           {feature.feature_id}
         </span>
         <span
@@ -104,7 +104,7 @@ export function BoardCard({
               className="h-full rounded-full transition-all"
               style={{
                 width: `${feature.progress_percentage}%`,
-                background: feature.progress_percentage === 100 ? '#22c55e' : '#c69c6d'
+                background: feature.progress_percentage === 100 ? '#0d9488' : '#2563eb'
               }}
             />
           </div>
