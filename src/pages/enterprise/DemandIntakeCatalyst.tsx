@@ -40,8 +40,7 @@ import { useBusinessRequests } from '@/hooks/useBusinessRequests';
 import { CreateBusinessRequestModal } from '@/components/business-requests/CreateBusinessRequestModal';
 import { BusinessRequestDrawer } from '@/components/business-requests/BusinessRequestDrawer';
 import { StatusSummaryKanbanView } from '@/components/business-requests/StatusSummaryKanbanView';
-import { PROCESS_STEPS } from '@/types/business-request';
-import { useProcessSteps } from '@/contexts/ProcessStepsContext';
+import { useProcessStepOptions, useProcessStepInfo } from '@/contexts/ProcessStepsContext';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { cn } from '@/lib/utils';
@@ -104,7 +103,8 @@ export default function DemandIntakeCatalyst() {
   
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const { getProcessStepInfo } = useProcessSteps();
+  const processStepOptions = useProcessStepOptions();
+  const getProcessStepInfo = useProcessStepInfo();
 
   // Handle create=true from URL
   useEffect(() => {
@@ -154,7 +154,7 @@ export default function DemandIntakeCatalyst() {
       filtered = filtered.filter((r: any) => {
         const dbValue = r.process_step;
         if (filters.processStep!.includes(dbValue)) return true;
-        const matchingStep = PROCESS_STEPS.find(s => s.label === dbValue);
+        const matchingStep = processStepOptions.find(s => s.label === dbValue);
         if (matchingStep && filters.processStep!.includes(matchingStep.value)) return true;
         return false;
       });
@@ -322,7 +322,7 @@ export default function DemandIntakeCatalyst() {
       accessor: 'process_step',
       sortable: true,
       filterable: true,
-      filterOptions: PROCESS_STEPS.map(step => ({
+      filterOptions: processStepOptions.map(step => ({
         value: step.value,
         label: step.label,
       })),

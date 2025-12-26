@@ -15,8 +15,7 @@ import { useResizableColumns } from '@/components/business-requests/ResizableCol
 import { BusinessRequestsKanbanView } from '@/components/business-requests/BusinessRequestsKanbanView';
 import { ViewToggle, ViewMode } from '@/components/business-requests/ViewToggle';
 import { InlineEditableCell } from '@/components/business-requests/InlineEditableCell';
-import { PROCESS_STEPS } from '@/types/business-request';
-import { useProcessSteps } from '@/contexts/ProcessStepsContext';
+import { useProcessStepOptions, useProcessStepInfo } from '@/contexts/ProcessStepsContext';
 import { useToast } from '@/hooks/use-toast';
 import { ColumnsDropdown, ColumnConfig } from '@/components/backlog/ColumnsDropdown';
 import { supabase } from '@/integrations/supabase/client';
@@ -317,7 +316,8 @@ export default function IndustryPage() {
   const [bulkDeleteOpen, setBulkDeleteOpen] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const { getProcessStepInfo } = useProcessSteps();
+  const processStepOptions = useProcessStepOptions();
+  const getProcessStepInfo = useProcessStepInfo();
 
   // Bulk operations hook
   const { bulkEdit, bulkTransition, bulkDelete } = useBulkOperations({
@@ -473,10 +473,10 @@ export default function IndustryPage() {
         // Check if DB value matches filter value directly
         if (filters.processStep!.includes(dbValue)) return true;
         // Check if DB stores label but filter uses value - find matching step
-        const matchingStep = PROCESS_STEPS.find(s => s.label === dbValue);
+        const matchingStep = processStepOptions.find(s => s.label === dbValue);
         if (matchingStep && filters.processStep!.includes(matchingStep.value)) return true;
         // Check if DB stores value but filter uses label
-        const matchingStepByValue = PROCESS_STEPS.find(s => s.value === dbValue);
+        const matchingStepByValue = processStepOptions.find(s => s.value === dbValue);
         if (matchingStepByValue && filters.processStep!.includes(matchingStepByValue.label)) return true;
         return false;
       });

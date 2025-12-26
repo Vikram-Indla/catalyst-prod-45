@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { GitBranch, ArrowRight, Pause, Clock, Check, XCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { PROCESS_STEPS } from '@/types/business-request';
+import { useProcessStepOptions, useProcessStepInfo } from '@/contexts/ProcessStepsContext';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { format } from 'date-fns';
@@ -24,15 +24,8 @@ interface TransitionEntry {
   formattedDate: string;
 }
 
-// Step value to label mapping
-const STEP_LABELS: Record<string, string> = {};
-PROCESS_STEPS.forEach(step => {
-  STEP_LABELS[step.value] = step.label;
-});
-
 // Orphan statuses that aren't part of the main flow
 const ORPHAN_STATUSES = ['on_hold', 'rejected'];
-const MAIN_STEPS = PROCESS_STEPS.filter(s => !ORPHAN_STATUSES.includes(s.value));
 
 export function WorkflowViewerModal({ currentStep, requestId, submittedDate, onStepChange, open, onOpenChange }: WorkflowViewerModalProps) {
   const [internalOpen, setInternalOpen] = useState(false);
@@ -43,9 +36,16 @@ export function WorkflowViewerModal({ currentStep, requestId, submittedDate, onS
   
   const isPaused = currentStep === 'on_hold';
   const isRejected = currentStep === 'rejected';
+  
+  // Get process steps from context
+  const processStepOptions = useProcessStepOptions();
+  const getProcessStepInfo = useProcessStepInfo();
+  
+  // Filter out orphan statuses for main flow
+  const mainSteps = processStepOptions.filter(s => !ORPHAN_STATUSES.includes(s.value));
 
   // Find current step index in main flow
-  const currentIndex = MAIN_STEPS.findIndex(s => s.value === currentStep);
+  const currentIndex = mainSteps.findIndex(s => s.value === currentStep);
 
   // Fetch ALL process_step changes as chronological timeline
   const { data: transitions } = useQuery({
@@ -90,7 +90,8 @@ export function WorkflowViewerModal({ currentStep, requestId, submittedDate, onS
   });
 
   const getStepLabel = (stepValue: string): string => {
-    return STEP_LABELS[stepValue] || stepValue?.replace(/_/g, ' ') || stepValue;
+    const info = getProcessStepInfo(stepValue);
+    return info.label || stepValue?.replace(/_/g, ' ') || stepValue;
   };
 
   const isOptionalStep = (stepValue: string): boolean => {
@@ -124,7 +125,7 @@ export function WorkflowViewerModal({ currentStep, requestId, submittedDate, onS
                     <SelectValue placeholder="Select status" />
                   </SelectTrigger>
                   <SelectContent>
-                    {PROCESS_STEPS.map((step) => (
+                    {processStepOptions.map((step) => (
                       <SelectItem key={step.value} value={step.value}>
                         {step.label}
                       </SelectItem>
@@ -144,14 +145,14 @@ export function WorkflowViewerModal({ currentStep, requestId, submittedDate, onS
                 className="absolute top-6 left-4 h-0.5 bg-brand-primary transition-all duration-300"
                 style={{ 
                   width: currentIndex >= 0 
-                    ? `calc(${(currentIndex / (MAIN_STEPS.length - 1)) * 100}% - 32px)` 
+                    ? `calc(${(currentIndex / (mainSteps.length - 1)) * 100}% - 32px)` 
                     : '0%' 
                 }}
               />
               
               {/* Steps */}
               <div className="relative flex justify-between px-0">
-                {MAIN_STEPS.map((step, index) => {
+                {mainSteps.map((step, index) => {
                   const isCompleted = index < currentIndex;
                   const isCurrent = step.value === currentStep;
                   

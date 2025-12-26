@@ -13,7 +13,7 @@ import { Lock, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { CatalystDatePicker } from '@/components/ui/catalyst-date-picker';
 import { RichTextEditor } from '../RichTextEditor';
-import { BusinessRequest, PROCESS_STEPS } from '@/types/business-request';
+import { BusinessRequest } from '@/types/business-request';
 import { DepartmentSelect } from '@/components/business-requests/DepartmentSelect';
 import { UserSelect } from '@/components/business-requests/UserSelect';
 import { useDepartments, useBusinessOwners, useDepartmentOwnerMappings, getOwnerIdForDepartment } from '@/hooks/useDepartmentsAndOwners';
@@ -84,7 +84,7 @@ export function DemandDetailsViewTab({ data, onChange, onDirtyChange, requestId 
   const { data: departments } = useDepartments();
   const { data: owners } = useBusinessOwners();
   const { data: mappings } = useDepartmentOwnerMappings();
-  const { data: processSteps = PROCESS_STEPS } = useActiveDemandProcessSteps();
+  const { data: processSteps = [] } = useActiveDemandProcessSteps();
   const updateMutation = useUpdateBusinessRequest();
   
   // Auto-save state
