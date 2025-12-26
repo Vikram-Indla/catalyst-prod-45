@@ -12,8 +12,8 @@ interface OwnerCellProps {
 }
 
 /**
- * Owner/User Cell with dark mode support (9.5 grade compliance)
- * Avatar uses /30 opacity in dark mode for better visibility
+ * Owner/User Cell with dark mode support
+ * Avatar uses blue tint for brand consistency
  * Includes tooltip for truncated names
  */
 export function OwnerCell({ name }: OwnerCellProps) {
@@ -42,8 +42,8 @@ export function OwnerCell({ name }: OwnerCellProps) {
           <div className="flex items-center gap-2 min-w-0">
             <div className={cn(
               "flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center",
-              "bg-[#c69c6d]/20 text-[#8b7355]",
-              "dark:bg-[#c69c6d]/30 dark:text-[#d4a855]"
+              "bg-[rgba(37,99,235,0.1)] text-[#2563eb]",
+              "dark:bg-[rgba(37,99,235,0.15)] dark:text-[#60a5fa]"
             )}>
               <span className="text-[10px] font-semibold">
                 {displayInitials}

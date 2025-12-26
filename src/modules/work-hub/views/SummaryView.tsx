@@ -363,15 +363,15 @@ function EpicProgress() {
       <CardContent>
         <div className="flex items-center gap-4 text-xs text-muted-foreground mb-4">
           <div className="flex items-center gap-1">
-            <div className="w-3 h-3 rounded bg-green-500" />
+            <div className="w-3 h-3 rounded bg-[#0d9488]" />
             <span>Done</span>
           </div>
           <div className="flex items-center gap-1">
-            <div className="w-3 h-3 rounded bg-blue-500" />
+            <div className="w-3 h-3 rounded bg-[#2563eb]" />
             <span>In progress</span>
           </div>
           <div className="flex items-center gap-1">
-            <div className="w-3 h-3 rounded bg-gray-300" />
+            <div className="w-3 h-3 rounded bg-[#6b7280]" />
             <span>To do</span>
           </div>
         </div>
@@ -386,15 +386,15 @@ function EpicProgress() {
               <div className="flex items-center gap-2">
                 <div className="flex-1 h-5 bg-muted rounded overflow-hidden flex">
                   {epic.done > 0 && (
-                    <div className="h-full bg-green-500 flex items-center justify-center" style={{ width: `${epic.done}%` }}>
+                    <div className="h-full bg-[#0d9488] flex items-center justify-center" style={{ width: `${epic.done}%` }}>
                       <span className="text-xs font-medium text-white">{epic.done}%</span>
                     </div>
                   )}
                   {epic.inProgress > 0 && (
-                    <div className="h-full bg-blue-500" style={{ width: `${epic.inProgress}%` }} />
+                    <div className="h-full bg-[#2563eb]" style={{ width: `${epic.inProgress}%` }} />
                   )}
                   {epic.todo > 0 && (
-                    <div className="h-full bg-gray-300" style={{ width: `${epic.todo}%` }} />
+                    <div className="h-full bg-[#6b7280]" style={{ width: `${epic.todo}%` }} />
                   )}
                 </div>
               </div>
@@ -422,7 +422,7 @@ export function SummaryView() {
       {/* Metric Cards */}
       <div className="grid grid-cols-4 gap-4 mb-6">
         <MetricCard
-          icon={<CheckCircle className="h-5 w-5 text-green-600" />}
+          icon={<CheckCircle className="h-5 w-5 text-[#0d9488]" />}
           value={8}
           label="completed"
           subtitle="in the last 7 days"
@@ -434,7 +434,7 @@ export function SummaryView() {
           subtitle="in the last 7 days"
         />
         <MetricCard
-          icon={<Plus className="h-5 w-5 text-green-600" />}
+          icon={<Plus className="h-5 w-5 text-[#0d9488]" />}
           value={6}
           label="created"
           subtitle="in the last 7 days"

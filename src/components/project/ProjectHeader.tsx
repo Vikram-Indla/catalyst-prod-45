@@ -61,7 +61,7 @@ export function ProjectHeader({ project, onCreateFeature }: ProjectHeaderProps) 
           <div className="flex items-center gap-3">
             <Button
               onClick={onCreateFeature}
-              className="bg-[#c69c6d] hover:bg-[#b8894d] text-white"
+              className="bg-[#2563eb] hover:bg-[#1d4ed8] text-white"
             >
               <Plus className="w-4 h-4 mr-2" />
               Create Feature

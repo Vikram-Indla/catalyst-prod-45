@@ -17,8 +17,8 @@ export function EmptyBoardState({ projectId, onCreateFeature }: EmptyBoardStateP
     <div className="flex-1 flex items-center justify-center p-8">
       <div className="text-center max-w-md">
         {/* Icon */}
-        <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-[rgba(198,156,109,0.15)] flex items-center justify-center">
-          <Kanban className="w-8 h-8 text-[#c69c6d]" />
+        <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-[rgba(37,99,235,0.1)] flex items-center justify-center">
+          <Kanban className="w-8 h-8 text-[#2563eb]" />
         </div>
 
         {/* Title */}
@@ -34,7 +34,7 @@ export function EmptyBoardState({ projectId, onCreateFeature }: EmptyBoardStateP
         <div className="flex items-center justify-center gap-3">
           <Button 
             onClick={onCreateFeature}
-            className="bg-[#c69c6d] hover:bg-[#b8894d] text-white"
+            className="bg-[#2563eb] hover:bg-[#1d4ed8] text-white"
           >
             <Plus className="w-4 h-4 mr-2" />
             Create Feature

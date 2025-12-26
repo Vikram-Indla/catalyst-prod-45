@@ -123,7 +123,7 @@ export default function ProgramBacklog() {
       case 'implementing': return 'bg-primary/10 text-primary';
       case 'validating': return 'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200';
       case 'deploying': return 'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200';
-      case 'done': return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
+      case 'done': return 'bg-[rgba(13,148,136,0.1)] text-[#0d9488] dark:bg-[rgba(13,148,136,0.15)] dark:text-[#14b8a6]';
       default: return 'bg-muted text-muted-foreground';
     }
   };
@@ -132,8 +132,8 @@ export default function ProgramBacklog() {
     switch (status) {
       case 'todo': return 'bg-muted text-muted-foreground';
       case 'in_progress': return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200';
-      case 'done': return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
-      case 'accepted': return 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200';
+      case 'done': return 'bg-[rgba(13,148,136,0.1)] text-[#0d9488] dark:bg-[rgba(13,148,136,0.15)] dark:text-[#14b8a6]';
+      case 'accepted': return 'bg-[rgba(13,148,136,0.15)] text-[#0f766e] dark:bg-[rgba(13,148,136,0.2)] dark:text-[#14b8a6]';
       case 'blocked': return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200';
       default: return 'bg-muted text-muted-foreground';
     }
