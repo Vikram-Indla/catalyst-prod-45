@@ -102,8 +102,8 @@ export function RequestListPanel({
                 className={cn(
                   'px-3 py-1 text-xs font-medium rounded-full transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-1',
                   isActive
-                    ? 'bg-primary text-primary-foreground hover:bg-primary/90 focus-visible:ring-primary'
-                    : 'bg-muted text-foreground hover:bg-muted/80 focus-visible:ring-ring'
+                    ? 'bg-[#2563eb] text-white hover:bg-[#1d4ed8] focus-visible:ring-[#2563eb]'
+                    : 'bg-[#f5f5f5] text-[#525252] hover:bg-[#e5e5e5] focus-visible:ring-ring'
                 )}
               >
                 {filter === 'all' && 'All'}
