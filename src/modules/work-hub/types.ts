@@ -159,7 +159,7 @@ export const MORE_MENU_ITEMS = [
 
 // Type icons and colors
 export const WORK_ITEM_TYPE_CONFIG: Record<WorkItemType, { label: string; color: string }> = {
-  FEATURE: { label: 'Epic', color: '#c69c6d' },
+  FEATURE: { label: 'Epic', color: '#2563eb' },
   STORY: { label: 'Story', color: '#16a34a' },
   SUBTASK: { label: 'Subtask', color: '#2563eb' },
   DEFECT: { label: 'Bug', color: '#dc2626' },

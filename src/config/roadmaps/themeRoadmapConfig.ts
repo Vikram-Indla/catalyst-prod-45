@@ -157,9 +157,9 @@ export const themeRoadmapConfig: RoadmapConfig = {
 
   translations: THEME_TRANSLATIONS,
 
-  header: {
+header: {
     icon: 'TH',
-    iconGradient: 'linear-gradient(135deg, #C69C6D, #E8D5C0)',
+    iconGradient: 'linear-gradient(135deg, #2563eb, #60a5fa)',
   },
 
   legend: {

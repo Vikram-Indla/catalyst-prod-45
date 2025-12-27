@@ -268,11 +268,11 @@ export function ExecutiveSummaryCard({ snapshotId }: ExecutiveSummaryCardProps) 
             subtext={atRiskSubtext}
             onClick={() => navigate('/enterprise/okr-hub')}
             isLoading={okrLoading}
-            accentColor="bronze"
-            iconBgColor="rgba(139, 115, 85, 0.1)"
-            icon={<AlertTriangle size={16} style={{ color: '#8B7355' }} />}
+accentColor="bronze"
+            iconBgColor="rgba(245, 158, 11, 0.1)"
+            icon={<AlertTriangle size={16} style={{ color: '#f59e0b' }} />}
           />
-          {/* Alignment Gaps - Bronze */}
+          {/* Alignment Gaps - Amber */}
           <KPITile
             label="Alignment Gaps"
             value={gapValue}
@@ -280,8 +280,8 @@ export function ExecutiveSummaryCard({ snapshotId }: ExecutiveSummaryCardProps) 
             onClick={() => navigate('/enterprise/strategic-backlog')}
             isLoading={countsLoading}
             accentColor="bronze"
-            iconBgColor="rgba(139, 115, 85, 0.1)"
-            icon={<Target size={16} style={{ color: '#8B7355' }} />}
+            iconBgColor="rgba(245, 158, 11, 0.1)"
+            icon={<Target size={16} style={{ color: '#f59e0b' }} />}
           />
           {/* Risk Exposure - Muted Red */}
           <KPITile

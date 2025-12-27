@@ -467,7 +467,7 @@ export function RoadmapEngine({ config, items, isLoading, className, onItemClick
 
   // Get status gradient from config
   const getStatusGradient = (statusKey: string) => {
-    return config.statusColors[statusKey]?.gradient || 'linear-gradient(90deg, #C69C6D, #E8D5C0)';
+    return config.statusColors[statusKey]?.gradient || 'linear-gradient(90deg, #2563eb, #60a5fa)';
   };
 
   // Get status label from config

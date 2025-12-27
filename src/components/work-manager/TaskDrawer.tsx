@@ -323,7 +323,7 @@ export function TaskDrawer({ isOpen, task, activeTab, onClose, onTabChange, onUp
                           <div className="flex items-center gap-2.5">
                             <div 
                               className="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 text-white"
-                              style={{ backgroundColor: assignee.avatarColor || '#8b7355' }}
+                              style={{ backgroundColor: assignee.avatarColor || '#2563eb' }}
                             >
                               {assignee.initials}
                             </div>
@@ -442,7 +442,7 @@ export function TaskDrawer({ isOpen, task, activeTab, onClose, onTabChange, onUp
                 {/* Linked Item - styled with brand colors */}
                 {task.linkedItem && (
                   <FieldRow label="Linked Item">
-                    <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-bronze-50 text-bronze-600 text-[12px] font-mono font-medium border border-bronze-200 hover:bg-[#d4b896]/40 transition-colors cursor-pointer">
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-blue-50 text-blue-600 text-[12px] font-mono font-medium border border-blue-200 hover:bg-blue-100/60 transition-colors cursor-pointer">
                       <Link2 className="w-3.5 h-3.5" />
                       {task.linkedItem.key}
                     </span>

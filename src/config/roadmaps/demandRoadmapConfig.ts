@@ -147,9 +147,9 @@ export const demandRoadmapConfig: RoadmapConfig = {
 
   translations: DEMAND_TRANSLATIONS,
 
-  header: {
+header: {
     icon: 'MIM',
-    iconGradient: 'linear-gradient(135deg, #C69C6D, #E8D5C0)',
+    iconGradient: 'linear-gradient(135deg, #2563eb, #60a5fa)',
   },
 
   legend: {

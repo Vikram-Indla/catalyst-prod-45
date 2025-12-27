@@ -161,7 +161,7 @@ export function EpicDesignTab({ epic }: EpicDesignTabProps) {
                         href={item.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-[#c69c6d] hover:text-[#b8905f] transition-colors duration-150"
+                        className="text-[#2563eb] hover:text-[#1d4ed8] transition-colors duration-150"
                         onClick={(e) => e.stopPropagation()}
                       >
                         <ExternalLink className="h-4 w-4" />

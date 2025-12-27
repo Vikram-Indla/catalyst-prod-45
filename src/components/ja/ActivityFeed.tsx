@@ -17,7 +17,7 @@ const typeConfig: Record<ActivityType, { icon: React.ElementType; bgStyle: React
   demand: { icon: FileText, bgStyle: { backgroundColor: 'var(--surface-3)' }, iconStyle: { color: 'var(--text-2)' } },
 };
 
-const avatarColors = ["#C69C6D", "#5243AA", "#00875A", "#8b7355", "#FF5630"];
+const avatarColors = ["#2563eb", "#5243AA", "#00875A", "#0d9488", "#FF5630"];
 
 function getTimeGroup(date: Date): string {
   const now = new Date();

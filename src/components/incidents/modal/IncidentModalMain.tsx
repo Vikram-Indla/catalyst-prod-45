@@ -188,7 +188,7 @@ export function IncidentModalMain({ incident, onFieldChange }: IncidentModalMain
       {/* Linked Work Items Section */}
       <div className="mb-6">
         <h2 className="text-base font-semibold text-foreground mb-2">Linked work items</h2>
-        <a className="text-sm text-muted-foreground hover:text-[#c69c6d] hover:underline cursor-pointer">
+        <a className="text-sm text-muted-foreground hover:text-[#2563eb] hover:underline cursor-pointer">
           Add linked work item
         </a>
       </div>

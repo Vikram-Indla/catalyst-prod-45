@@ -131,7 +131,7 @@ export function CalendarView({ changeCards, onDayClick, onChangeClick, isLoading
               className={cn(
                 "min-h-[100px] p-2 border-b border-r border-gray-100 dark:border-gray-800 cursor-pointer transition-colors",
                 !isCurrentMonth && "bg-gray-50 dark:bg-gray-950",
-                isTodayDate && "bg-[#c69c6d]/10 dark:bg-[#d4a855]/15 border-2 border-[#c69c6d] dark:border-[#d4a855]",
+                isTodayDate && "bg-[#2563eb]/10 dark:bg-[#60a5fa]/15 border-2 border-[#2563eb] dark:border-[#60a5fa]",
                 !isTodayDate && "hover:bg-gray-50 dark:hover:bg-gray-800"
               )}
             >

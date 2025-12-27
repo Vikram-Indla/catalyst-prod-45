@@ -127,7 +127,7 @@ export function IncidentDetailHeader({
             
             {/* Major Incident Flag */}
             {isMajorIncident && (
-              <Badge variant="outline" className="bg-[rgba(139,115,85,0.15)] text-[#8b7355] border-[#8b7355]/30 font-medium">
+              <Badge variant="outline" className="bg-amber-500/15 text-amber-600 border-amber-500/30 font-medium">
                 Major Incident
               </Badge>
             )}
