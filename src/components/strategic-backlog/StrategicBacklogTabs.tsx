@@ -3,7 +3,7 @@
  * Pixel-perfect implementation matching mockups
  */
 import { cn } from '@/lib/utils';
-import { Layers, Target, Box, Calendar } from 'lucide-react';
+import { WorkItemIcon, WorkItemIconType } from '@/components/dependencies/WorkItemIcon';
 
 type SubSection = 'themes' | 'snapshots' | 'objectives' | 'epics';
 
@@ -18,11 +18,11 @@ interface TabsProps {
   };
 }
 
-const TABS: { id: SubSection; label: string; icon: React.ElementType }[] = [
-  { id: 'themes', label: 'Themes', icon: Layers },
-  { id: 'snapshots', label: 'Snapshots', icon: Calendar },
-  { id: 'objectives', label: 'Objectives', icon: Target },
-  { id: 'epics', label: 'Epics', icon: Box },
+const TABS: { id: SubSection; label: string; iconType: WorkItemIconType }[] = [
+  { id: 'themes', label: 'Themes', iconType: 'theme' },
+  { id: 'snapshots', label: 'Snapshots', iconType: 'snapshot' },
+  { id: 'objectives', label: 'Objectives', iconType: 'objective' },
+  { id: 'epics', label: 'Epics', iconType: 'epic' },
 ];
 
 export function StrategicBacklogTabs({
@@ -33,7 +33,6 @@ export function StrategicBacklogTabs({
   return (
     <div className="flex items-center gap-1 p-1 rounded-lg" style={{ background: 'var(--surface-subtle)' }}>
       {TABS.map((tab) => {
-        const Icon = tab.icon;
         const isActive = activeSection === tab.id;
         const count = counts[tab.id];
 
@@ -51,10 +50,7 @@ export function StrategicBacklogTabs({
               color: isActive ? 'var(--text-primary)' : 'var(--text-muted)',
             }}
           >
-            <Icon 
-              className="h-4 w-4"
-              style={{ color: isActive ? '#2563eb' : 'var(--text-muted)' }}
-            />
+            <WorkItemIcon type={tab.iconType} size="sm" />
             {tab.label}
             <span 
               className="px-1.5 py-0.5 text-[11px] font-semibold rounded-full min-w-[20px] text-center"
