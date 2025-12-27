@@ -61,7 +61,7 @@
 /* Login Container */
 .login-container {
   display: grid;
-  grid-template-columns: 1.1fr 0.9fr;
+  grid-template-columns: 1fr 1fr;
   min-height: 100vh;
   font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
 }
