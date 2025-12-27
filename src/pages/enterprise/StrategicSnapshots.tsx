@@ -454,7 +454,7 @@ export default function StrategicSnapshots() {
   const createSnapshotCta = (
     <Button 
       onClick={() => setCreateModalOpen(true)} 
-      className="h-8 bg-[hsl(var(--brand-primary))] hover:bg-[hsl(var(--brand-primary-hover))] text-white"
+      className="h-9 px-4 bg-teal-600 hover:bg-teal-700 dark:bg-teal-600 dark:hover:bg-teal-500 text-white font-medium rounded-md shadow-sm"
     >
       <Plus className="h-4 w-4 mr-2" />
       Create Snapshot
@@ -591,7 +591,7 @@ export default function StrategicSnapshots() {
             {!searchQuery && (
               <Button 
                 onClick={() => setCreateModalOpen(true)} 
-                className="bg-[hsl(var(--brand-primary))] hover:bg-[hsl(var(--brand-primary-hover))] text-white"
+                className="h-9 px-4 bg-teal-600 hover:bg-teal-700 dark:bg-teal-600 dark:hover:bg-teal-500 text-white font-medium rounded-md shadow-sm"
               >
                 <Plus className="h-4 w-4 mr-2" />
                 Create Snapshot
