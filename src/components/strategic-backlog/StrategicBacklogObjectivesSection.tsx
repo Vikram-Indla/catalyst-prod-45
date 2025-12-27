@@ -17,6 +17,7 @@ const OBJECTIVE_COLUMNS: ColumnDefinition[] = [
   { key: 'type', label: 'Type', defaultVisible: true, required: true, width: 'w-12' },
   { key: 'name', label: 'OKRs', defaultVisible: true, required: true },
   { key: 'theme', label: 'Theme', defaultVisible: true, width: 'w-44' },
+  { key: 'quarters', label: 'Quarters', defaultVisible: true, width: 'w-48' },
   { key: 'status', label: 'Status', defaultVisible: true, width: 'w-28' },
   { key: 'progress', label: 'Progress vs Plan', defaultVisible: true, width: 'w-44' },
   { key: 'risks', label: 'Risks', defaultVisible: true, width: 'w-16' },
@@ -25,7 +26,13 @@ const OBJECTIVE_COLUMNS: ColumnDefinition[] = [
 
 const STORAGE_KEY = 'strategic_backlog_columns_objectives';
 
-type SortColumn = 'name' | 'theme' | 'status' | 'progress' | 'risks' | 'linked';
+type SortColumn = 'name' | 'theme' | 'quarters' | 'status' | 'progress' | 'risks' | 'linked';
+
+interface SnapshotConfiguration {
+  id: string;
+  snapshot_id: string;
+  quarters: string[];
+}
 
 interface Objective {
   id: string;
@@ -35,6 +42,7 @@ interface Objective {
   health?: string | null;
   overall_progress?: number | null;
   theme_id?: string | null;
+  snapshot_id?: string | null;
   owner_id?: string | null;
   start_date?: string | null;
   end_date?: string | null;
@@ -174,6 +182,31 @@ export function StrategicBacklogObjectivesSection({
     enabled: objectiveIds.length > 0,
   });
 
+  // Fetch snapshot configurations for quarters
+  const snapshotIds = useMemo(() => {
+    const ids = objectives.map(o => o.snapshot_id).filter(Boolean) as string[];
+    return [...new Set(ids)];
+  }, [objectives]);
+
+  const { data: snapshotConfigs = [] } = useQuery({
+    queryKey: ['objective-snapshot-configs', snapshotIds],
+    queryFn: async () => {
+      if (snapshotIds.length === 0) return [];
+      const { data } = await supabase
+        .from('snapshot_configurations')
+        .select('snapshot_id, quarters')
+        .in('snapshot_id', snapshotIds);
+      return (data || []) as SnapshotConfiguration[];
+    },
+    enabled: snapshotIds.length > 0,
+  });
+
+  const snapshotQuartersMap = useMemo(() => {
+    const map: Record<string, string[]> = {};
+    snapshotConfigs.forEach(c => { map[c.snapshot_id] = c.quarters || []; });
+    return map;
+  }, [snapshotConfigs]);
+
   const themeLookup = useMemo(() => {
     const map: Record<string, string> = {};
     themes.forEach(t => { map[t.id] = t.name; });
@@ -188,7 +221,8 @@ export function StrategicBacklogObjectivesSection({
       result = result.filter(obj =>
         obj.name.toLowerCase().includes(query) ||
         obj.description?.toLowerCase().includes(query) ||
-        (obj.theme_id && themeLookup[obj.theme_id]?.toLowerCase().includes(query))
+        (obj.theme_id && themeLookup[obj.theme_id]?.toLowerCase().includes(query)) ||
+        (obj.snapshot_id && snapshotQuartersMap[obj.snapshot_id]?.some(q => q.toLowerCase().includes(query)))
       );
     }
 
@@ -203,6 +237,10 @@ export function StrategicBacklogObjectivesSection({
         case 'theme':
           aVal = a.theme_id ? themeLookup[a.theme_id] || '' : '';
           bVal = b.theme_id ? themeLookup[b.theme_id] || '' : '';
+          break;
+        case 'quarters':
+          aVal = a.snapshot_id ? (snapshotQuartersMap[a.snapshot_id]?.length || 0) : 0;
+          bVal = b.snapshot_id ? (snapshotQuartersMap[b.snapshot_id]?.length || 0) : 0;
           break;
         case 'status':
           aVal = a.status || '';
@@ -230,7 +268,7 @@ export function StrategicBacklogObjectivesSection({
     });
 
     return result;
-  }, [objectives, searchQuery, sortColumn, sortDirection, themeLookup, riskCounts, linkedCounts]);
+  }, [objectives, searchQuery, sortColumn, sortDirection, themeLookup, riskCounts, linkedCounts, snapshotQuartersMap]);
 
   const handleSort = (column: SortColumn) => {
     if (sortColumn === column) {
@@ -278,7 +316,7 @@ export function StrategicBacklogObjectivesSection({
   const isColumnVisible = (key: string) => visibleColumns.includes(key);
 
   // Grid columns matching Themes section pattern
-  const gridCols = `${isColumnVisible('type') ? '48px ' : ''}1fr ${isColumnVisible('theme') ? '180px ' : ''}${isColumnVisible('status') ? '120px ' : ''}${isColumnVisible('progress') ? '180px ' : ''}${isColumnVisible('risks') ? '70px ' : ''}${isColumnVisible('linked') ? '70px ' : ''}40px`.trim();
+  const gridCols = `${isColumnVisible('type') ? '48px ' : ''}1fr ${isColumnVisible('theme') ? '180px ' : ''}${isColumnVisible('quarters') ? '180px ' : ''}${isColumnVisible('status') ? '120px ' : ''}${isColumnVisible('progress') ? '180px ' : ''}${isColumnVisible('risks') ? '70px ' : ''}${isColumnVisible('linked') ? '70px ' : ''}40px`.trim();
 
   return (
     <div className="flex flex-col gap-4 w-full">
@@ -384,6 +422,15 @@ export function StrategicBacklogObjectivesSection({
               onSort={handleSort} 
             />
           )}
+          {isColumnVisible('quarters') && (
+            <SortableHeader 
+              label="Quarters" 
+              column="quarters" 
+              currentSort={sortColumn} 
+              direction={sortDirection} 
+              onSort={handleSort} 
+            />
+          )}
           {isColumnVisible('status') && (
             <SortableHeader 
               label="Status" 
@@ -483,6 +530,29 @@ export function StrategicBacklogObjectivesSection({
                       <span className="text-sm text-muted-foreground truncate">
                         {obj.theme_id ? themeLookup[obj.theme_id] || '—' : '—'}
                       </span>
+                    </div>
+                  )}
+                  {isColumnVisible('quarters') && (
+                    <div className="flex items-center">
+                      {obj.snapshot_id && snapshotQuartersMap[obj.snapshot_id]?.length > 0 ? (
+                        <div className="flex flex-wrap gap-1.5">
+                          {snapshotQuartersMap[obj.snapshot_id].slice(0, 3).map((q, idx) => (
+                            <span
+                              key={idx}
+                              className="text-sm text-muted-foreground px-2 py-0.5 bg-muted/50 rounded"
+                            >
+                              {q}
+                            </span>
+                          ))}
+                          {snapshotQuartersMap[obj.snapshot_id].length > 3 && (
+                            <span className="text-sm text-muted-foreground px-2 py-0.5 bg-muted/50 rounded">
+                              +{snapshotQuartersMap[obj.snapshot_id].length - 3}
+                            </span>
+                          )}
+                        </div>
+                      ) : (
+                        <span className="text-sm text-muted-foreground">—</span>
+                      )}
                     </div>
                   )}
                   {isColumnVisible('status') && (
