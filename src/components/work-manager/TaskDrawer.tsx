@@ -81,9 +81,9 @@ const priorityColors: Record<Priority, { dot: string; text: string }> = {
 
 // Team colors
 const teamColors: Record<string, string> = {
-  'olive': 'bg-[#5c7c5c]',
-  'bronze': 'bg-[#cd7f32]',
-  'gold': 'bg-[#d4b896]',
+  'olive': 'bg-[#0d9488]',
+  'bronze': 'bg-[#6b7280]',
+  'gold': 'bg-[#2563eb]',
 };
 
 // Task type icons
@@ -243,16 +243,16 @@ export function TaskDrawer({ isOpen, task, activeTab, onClose, onTabChange, onUp
           <div className="shrink-0 px-6 py-3 bg-card border-b border-border">
             <div className="flex gap-1 p-1 bg-muted rounded-full">
               {(['overview', 'activity', 'comments'] as const).map((tab) => (
-                <button
-                  key={tab}
-                  onClick={() => onTabChange(tab)}
-                  className={cn(
-                    'flex-1 px-4 py-2 text-[13px] font-medium rounded-full transition-all duration-200',
-                    activeTab === tab
-                      ? 'bg-[#5c7c5c] text-white shadow-sm'
-                      : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
-                  )}
-                >
+                  <button
+                    key={tab}
+                    onClick={() => onTabChange(tab)}
+                    className={cn(
+                      'flex-1 px-4 py-2 text-[13px] font-medium rounded-full transition-all duration-200',
+                      activeTab === tab
+                        ? 'bg-[#2563eb] text-white shadow-sm'
+                        : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+                    )}
+                  >
                   {tab.charAt(0).toUpperCase() + tab.slice(1)}
                 </button>
               ))}
@@ -334,7 +334,7 @@ export function TaskDrawer({ isOpen, task, activeTab, onClose, onTabChange, onUp
                     </SelectTrigger>
                     <SelectContent className="min-w-[260px]">
                       {teamMembers.map((u, idx) => {
-                        const avatarColors = ['#5c7c5c', '#8b7355', '#c69c6d', '#d4b896', '#6b8b6b'];
+                        const avatarColors = ['#2563eb', '#0d9488', '#6b7280', '#0f766e', '#1d4ed8'];
                         const avatarColor = u.avatarColor || avatarColors[idx % avatarColors.length];
                         return (
                           <SelectItem key={u.id} value={u.id} className="py-2">

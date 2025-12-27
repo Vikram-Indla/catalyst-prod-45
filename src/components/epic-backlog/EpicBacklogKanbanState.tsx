@@ -30,10 +30,10 @@ const STATES = [
 ];
 
 const STATE_BORDER_COLORS: Record<string, string> = {
-  'funnel': 'border-l-[#C69C6D]',
+  'funnel': 'border-l-[#2563eb]',
   'analyzing': 'border-l-[#FF8B00]',
   'portfolio_backlog': 'border-l-[#6B778C]',
-  'implementing': 'border-l-[#36B37E]',
+  'implementing': 'border-l-[#0d9488]',
 };
 
 // Map database state values to Kanban column keys

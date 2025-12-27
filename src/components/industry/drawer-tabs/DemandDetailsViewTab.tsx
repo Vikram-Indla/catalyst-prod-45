@@ -307,7 +307,7 @@ export function DemandDetailsViewTab({ data, onChange, onDirtyChange }: DemandDe
           <FieldLabel>EA Review Required?</FieldLabel>
           <div 
             className="h-10 px-3 rounded-md flex items-center justify-between"
-            style={{ backgroundColor: 'hsl(var(--secondary-olive) / 0.08)', border: '1px solid hsl(var(--secondary-olive) / 0.2)' }}
+            style={{ backgroundColor: 'rgba(37, 99, 235, 0.08)', border: '1px solid rgba(37, 99, 235, 0.2)' }}
           >
             <span className="text-sm font-medium truncate" style={{ color: 'var(--text-1)' }}>
               {data.ea_review_required ? 'Yes' : 'No'}
@@ -316,7 +316,7 @@ export function DemandDetailsViewTab({ data, onChange, onDirtyChange }: DemandDe
               id="ea-review"
               checked={data.ea_review_required ?? true}
               onCheckedChange={(checked) => handleChange('ea_review_required', checked)}
-              className="data-[state=checked]:bg-[hsl(var(--secondary-olive))] flex-shrink-0 ml-2"
+              className="data-[state=checked]:bg-[#2563eb] flex-shrink-0 ml-2"
             />
           </div>
         </div>

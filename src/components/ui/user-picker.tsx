@@ -251,10 +251,10 @@ export function UserPicker({
                         onSelect={() => handleSelect(user.id)}
                         className={cn(
                           "cursor-pointer transition-colors py-3 px-4",
-                          isSelected(user.id) && "!bg-[rgba(198,156,109,0.12)]"
+                          isSelected(user.id) && "!bg-[rgba(37,99,235,0.08)]"
                         )}
                         style={{
-                          borderLeft: isSelected(user.id) ? '3px solid #c69c6d' : '3px solid transparent'
+                          borderLeft: isSelected(user.id) ? '3px solid #2563eb' : '3px solid transparent'
                         }}
                       >
                         <Check
@@ -262,15 +262,15 @@ export function UserPicker({
                             'mr-2 h-4 w-4 flex-shrink-0',
                             isSelected(user.id) ? 'opacity-100' : 'opacity-0'
                           )}
-                          style={{ color: '#c69c6d' }}
+                          style={{ color: '#2563eb' }}
                         />
                         <Avatar className="h-9 w-9 mr-3 flex-shrink-0">
                           <AvatarImage src={user.avatar_url || undefined} />
                           <AvatarFallback 
                             className="text-xs font-semibold"
                             style={{
-                              backgroundColor: '#d4b896',
-                              color: '#1a1a1a'
+                              backgroundColor: 'rgba(37, 99, 235, 0.15)',
+                              color: '#2563eb'
                             }}
                           >
                             {getInitials(user.full_name, user.email)}
