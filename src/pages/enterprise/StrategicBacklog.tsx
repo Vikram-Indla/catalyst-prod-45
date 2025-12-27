@@ -232,11 +232,11 @@ export default function StrategicBacklog() {
         </div>
 
         {/* Main Content Area */}
-        <div className="flex-1 flex overflow-hidden min-h-0">
+        <div className="flex-1 flex flex-col lg:flex-row overflow-hidden min-h-0">
           {/* Main Content with Padding */}
-          <div className="flex-1 flex gap-6 px-6 pb-6 overflow-hidden min-h-0">
-            {/* Left: Coverage Panel */}
-            <div className="w-72 shrink-0">
+          <div className="flex-1 flex flex-col lg:flex-row gap-4 lg:gap-6 px-4 lg:px-6 pb-6 overflow-hidden min-h-0">
+            {/* Left: Coverage Panel - Hidden on mobile, visible on lg+ */}
+            <div className="hidden lg:block w-72 shrink-0">
               <StrategicBacklogCoveragePanel
                 themes={counts.themes}
                 themesWithObjectives={themesWithObjectives}
