@@ -74,7 +74,7 @@ export default function VersionDetail() {
             Edit
           </Button>
           {release.status !== 'released' && (
-            <Button className="bg-[#C69C6D] hover:bg-[#B8894D] text-white">
+            <Button className="bg-[#2563eb] hover:bg-[#1d4ed8] text-white">
               Release
             </Button>
           )}

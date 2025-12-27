@@ -44,11 +44,11 @@ export function EnterpriseStatusControl({
         <button
           className={cn(
             "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-semibold uppercase tracking-[0.3px]",
-            "cursor-pointer transition-colors bg-[#c69c6d] hover:bg-[#b8894d] text-white",
+            "cursor-pointer transition-colors bg-[#2563eb] hover:bg-[#1d4ed8] text-white",
             disabled && "opacity-50 cursor-not-allowed"
           )}
           style={{
-            boxShadow: '0 2px 4px rgba(198, 156, 109, 0.25)',
+            boxShadow: '0 2px 4px rgba(37, 99, 235, 0.25)',
           }}
         >
           <span 

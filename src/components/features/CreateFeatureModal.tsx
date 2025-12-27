@@ -75,8 +75,8 @@ function SectionHeader({
 }) {
   return (
     <div className="flex items-center gap-2 mb-3">
-      <Icon className="w-4 h-4 text-[#5c7c5c]" />
-      <span className="text-sm font-semibold text-[#5c7c5c]">{title}</span>
+      <Icon className="w-4 h-4 text-[#2563eb]" />
+      <span className="text-sm font-semibold text-[#2563eb]">{title}</span>
     </div>
   );
 }

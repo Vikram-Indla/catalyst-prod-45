@@ -110,7 +110,7 @@ export function BoardToolbar({
               className={cn(
                 'px-2 py-1 text-xs rounded transition-colors',
                 filter.active
-                  ? 'bg-[#c69c6d] text-white'
+                  ? 'bg-[#2563eb] text-white'
                   : 'bg-white dark:bg-gray-800 border text-foreground hover:bg-gray-100 dark:hover:bg-gray-700'
               )}
             >
