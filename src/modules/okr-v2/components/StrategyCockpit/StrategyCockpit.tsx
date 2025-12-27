@@ -211,7 +211,7 @@ export function StrategyCockpit({ snapshotId }: StrategyCockpitProps) {
               placeholder="Search objectives, KRs, work items…"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="flex-1 border-0 bg-transparent shadow-none focus-visible:ring-0 h-auto p-0 text-sm"
+              className="flex-1 border-0 bg-transparent shadow-none focus-visible:ring-0 h-auto p-0 text-sm text-foreground placeholder:text-muted-foreground"
             />
             {searchQuery && (
               <button
