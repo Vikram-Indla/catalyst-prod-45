@@ -1,18 +1,28 @@
 /**
  * =====================================================
- * Objective Drawer V2 - Unified with Canonical Shell
+ * Objective Drawer V2 - Catalyst Theme Styled
  * =====================================================
  * 
- * Uses the CanonicalDrawerShell for unified drawer structure.
- * Module-specific content: OKR overview, key results, linked work
+ * Styled to match CatalystThemeDrawer exactly.
+ * Features premium progress bar, KPI cards, and enterprise styling.
  */
 
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useObjectiveV2, useUpdateObjectiveV2, useDeleteObjectiveV2, useCreateObjectiveV2 } from '@/hooks/useObjectivesV2';
 import { useKeyResultsV2 } from '@/hooks/useKeyResultsV2';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
 import { Skeleton } from '@/components/ui/skeleton';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator,
+} from '@/components/ui/dropdown-menu';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -23,23 +33,32 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { Trash2, Users, Calendar, Target, Copy, Download } from 'lucide-react';
-import { CanonicalDrawerShell, DrawerTab, KebabMenuItem } from '@/components/shared/CanonicalDrawerShell';
+import { 
+  Trash2, Copy, X, Pencil, Link as LinkIcon, 
+  MoreVertical, Download, Target, Clock, Users, Calendar,
+  TrendingUp, HelpCircle
+} from 'lucide-react';
 import { ObjectiveOverviewTabV2, ObjectiveFormData } from './ObjectiveOverviewTabV2';
 import { KeyResultsTabV2 } from './KeyResultsTabV2';
 import { LinkedWorkTabV2 } from './LinkedWorkTabV2';
 import { UnifiedLinksTab } from '@/components/shared/UnifiedLinksTab';
 import { UnifiedAuditHistoryTab } from '@/components/shared/UnifiedAuditHistoryTab';
 import { toast } from 'sonner';
-import { ProgressWithTooltip } from '@/components/shared/ProgressWithTooltip';
 import { useQueryClient } from '@tanstack/react-query';
 import { logAuditEntry, getChangedFields } from '@/lib/auditLogger';
+import { cn } from '@/lib/utils';
+import { formatDistanceToNow } from 'date-fns';
 
 interface ObjectiveDrawerV2Props {
   objectiveId: string | null;
   open: boolean;
   onClose: () => void;
   onDuplicated?: (newObjectiveId: string) => void;
+}
+
+// Format objective key
+function formatObjectiveKey(id: string): string {
+  return `OBJ-${id.slice(0, 4).toUpperCase()}`;
 }
 
 // Determine health from progress (v2 logic)
@@ -52,12 +71,128 @@ function determineHealthFromProgress(progress: number): string {
 
 function getHealthColor(health?: string): string {
   switch (health) {
-    case 'good': return 'bg-green-500';
-    case 'fair': return 'bg-amber-500';
-    case 'poor': return 'bg-red-500';
-    case 'at_risk': return 'bg-orange-500';
-    default: return 'bg-muted';
+    case 'good': return 'hsl(173 58% 39%)';
+    case 'fair': return 'hsl(38 92% 50%)';
+    case 'poor': return 'hsl(0 84% 60%)';
+    case 'at_risk': return 'hsl(25 95% 53%)';
+    default: return 'hsl(var(--muted-foreground))';
   }
+}
+
+// Premium Progress Bar - matching CatalystThemeDrawer
+function PremiumProgressBar({ progress, health }: { progress: number; health: string }) {
+  const getProgressColor = () => {
+    if (progress === 0) return {
+      fill: 'hsl(var(--muted))',
+      glow: 'none',
+      text: 'hsl(var(--muted-foreground))'
+    };
+    if (progress === 100) return {
+      fill: 'linear-gradient(90deg, hsl(var(--success)) 0%, hsl(173 58% 45%) 100%)',
+      glow: '0 0 20px hsl(var(--success) / 0.4), 0 0 40px hsl(var(--success) / 0.2)',
+      text: 'hsl(var(--success))'
+    };
+    return {
+      fill: 'linear-gradient(90deg, hsl(var(--primary)) 0%, hsl(217 91% 65%) 100%)',
+      glow: '0 0 16px hsl(var(--primary) / 0.3)',
+      text: 'hsl(var(--primary))'
+    };
+  };
+
+  const colors = getProgressColor();
+
+  return (
+    <div 
+      className="px-6 py-5"
+      style={{ 
+        background: 'linear-gradient(180deg, hsl(var(--background)) 0%, hsl(var(--muted) / 0.3) 100%)',
+        borderBottom: '1px solid hsl(var(--border))'
+      }}
+    >
+      {/* Header Row */}
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-2">
+          <div 
+            className="p-1.5 rounded-lg"
+            style={{ background: 'hsl(var(--primary) / 0.1)' }}
+          >
+            <TrendingUp className="h-4 w-4" style={{ color: 'hsl(var(--primary))' }} />
+          </div>
+          <span 
+            className="text-sm font-semibold uppercase tracking-wide"
+            style={{ color: 'hsl(var(--foreground))' }}
+          >
+            Overall Progress
+          </span>
+        </div>
+        
+        <div className="flex items-center gap-2">
+          <span 
+            className="text-2xl font-bold tabular-nums tracking-tight"
+            style={{ color: colors.text }}
+          >
+            {progress}%
+          </span>
+          <button
+            className="p-1.5 rounded-lg hover:bg-muted transition-colors"
+            style={{ color: 'hsl(var(--muted-foreground))' }}
+            title="How is progress calculated?"
+          >
+            <HelpCircle className="h-4 w-4" />
+          </button>
+        </div>
+      </div>
+      
+      {/* Progress Track */}
+      <div 
+        className="relative h-3 w-full rounded-full overflow-hidden"
+        style={{ 
+          background: 'hsl(var(--muted))',
+          boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.1)'
+        }}
+      >
+        <div 
+          className="absolute inset-0 opacity-30"
+          style={{
+            backgroundImage: 'repeating-linear-gradient(90deg, transparent, transparent 10px, rgba(255,255,255,0.03) 10px, rgba(255,255,255,0.03) 20px)'
+          }}
+        />
+        <div 
+          className="absolute inset-y-0 left-0 rounded-full transition-all duration-700 ease-out"
+          style={{ 
+            width: `${Math.max(progress, 0)}%`,
+            background: colors.fill,
+            boxShadow: colors.glow
+          }}
+        >
+          <div 
+            className="absolute inset-0 rounded-full"
+            style={{
+              background: 'linear-gradient(180deg, rgba(255,255,255,0.25) 0%, transparent 50%, rgba(0,0,0,0.1) 100%)'
+            }}
+          />
+        </div>
+        {[25, 50, 75].map((marker) => (
+          <div
+            key={marker}
+            className="absolute top-0 bottom-0 w-px"
+            style={{ 
+              left: `${marker}%`,
+              background: 'hsl(var(--border))',
+              opacity: 0.5
+            }}
+          />
+        ))}
+      </div>
+      
+      {/* Progress Labels */}
+      <div className="flex justify-between mt-2">
+        <span className="text-[10px] font-medium" style={{ color: 'hsl(var(--muted-foreground))' }}>0%</span>
+        <span className="text-[10px] font-medium" style={{ color: 'hsl(var(--muted-foreground))' }}>50%</span>
+        <span className="text-[10px] font-medium" style={{ color: 'hsl(var(--muted-foreground))' }}>100%</span>
+      </div>
+    </div>
+  );
 }
 
 export function ObjectiveDrawerV2({ objectiveId, open, onClose, onDuplicated }: ObjectiveDrawerV2Props) {
@@ -65,6 +200,9 @@ export function ObjectiveDrawerV2({ objectiveId, open, onClose, onDuplicated }: 
   const [activeTab, setActiveTab] = useState('overview');
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [isDuplicating, setIsDuplicating] = useState(false);
+  const [isEditingName, setIsEditingName] = useState(false);
+  const [editedName, setEditedName] = useState('');
+  const nameInputRef = useRef<HTMLInputElement>(null);
   
   // Form state for dirty tracking
   const [formData, setFormData] = useState<ObjectiveFormData | null>(null);
@@ -111,6 +249,7 @@ export function ObjectiveDrawerV2({ objectiveId, open, onClose, onDuplicated }: 
       };
       setFormData(data);
       setOriginalData(data);
+      setEditedName(objective.name);
       setHasOverviewChanges(false);
       setHasChildChanges(false);
     }
@@ -288,182 +427,427 @@ export function ObjectiveDrawerV2({ objectiveId, open, onClose, onDuplicated }: 
     }
   };
 
-  // Handle title change
-  const handleTitleChange = async (newName: string) => {
-    if (!objectiveId) return;
-    
-    try {
-      await updateObjective.mutateAsync({
-        id: objectiveId,
-        name: newName,
-      });
-      queryClient.invalidateQueries({ queryKey: ['objectives-v2'] });
-      queryClient.invalidateQueries({ queryKey: ['objective-v2', objectiveId] });
-      toast.success('Objective name updated');
-    } catch (error: any) {
-      toast.error(`Failed to update name: ${error?.message || 'Unknown error'}`);
+  // Copy link handler
+  const handleCopyLink = () => {
+    const url = `${window.location.origin}/okr/objectives/${objectiveId}`;
+    navigator.clipboard.writeText(url);
+    toast.success('Link copied to clipboard');
+  };
+
+  // Edit name handlers
+  const handleStartEditName = () => {
+    setIsEditingName(true);
+    setEditedName(objective?.name || '');
+    setTimeout(() => nameInputRef.current?.focus(), 0);
+  };
+
+  const handleSaveName = async () => {
+    if (editedName.trim() && editedName !== objective?.name && objectiveId) {
+      try {
+        await updateObjective.mutateAsync({
+          id: objectiveId,
+          name: editedName.trim(),
+        });
+        queryClient.invalidateQueries({ queryKey: ['objectives-v2'] });
+        queryClient.invalidateQueries({ queryKey: ['objective-v2', objectiveId] });
+        toast.success('Objective name updated');
+      } catch (error: any) {
+        toast.error(`Failed to update name: ${error?.message || 'Unknown error'}`);
+      }
+    }
+    setIsEditingName(false);
+  };
+
+  const handleNameKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') handleSaveName();
+    else if (e.key === 'Escape') {
+      setIsEditingName(false);
+      setEditedName(objective?.name || '');
     }
   };
 
+  // Status badge
+  const getStatusConfig = (status?: string) => {
+    const configs: Record<string, { label: string; bg: string; text: string }> = {
+      pending: { label: 'Pending', bg: 'hsl(var(--muted))', text: 'hsl(var(--muted-foreground))' },
+      in_progress: { label: 'In Progress', bg: 'hsl(217 91% 60% / 0.12)', text: 'hsl(var(--primary))' },
+      on_track: { label: 'On Track', bg: 'hsl(173 58% 39% / 0.12)', text: 'hsl(var(--success))' },
+      at_risk: { label: 'At Risk', bg: 'hsl(38 92% 50% / 0.12)', text: 'hsl(38 92% 45%)' },
+      off_track: { label: 'Off Track', bg: 'hsl(0 84% 60% / 0.12)', text: 'hsl(var(--destructive))' },
+      completed: { label: 'Completed', bg: 'hsl(173 58% 39% / 0.12)', text: 'hsl(var(--success))' },
+    };
+    return configs[status || ''] || configs.pending;
+  };
+
+  if (!open) return null;
+
   if (isLoading) {
     return (
-      <CanonicalDrawerShell
-        open={open}
-        onClose={onClose}
-        entityId=""
-        entityTitle="Loading..."
-        entityType="okr/objectives"
-        tabs={[{ value: 'loading', label: 'Loading', content: (
+      <Sheet open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
+        <SheetContent
+          side="right"
+          hideClose
+          className={cn(
+            "flex flex-col p-0 gap-0 border-l border-border-default",
+            "bg-surface-0 text-text-primary",
+            "rounded-l-[20px] rounded-r-none",
+            "transition-all duration-300 ease-out",
+            "w-[640px] sm:max-w-[640px]",
+          )}
+        >
           <div className="p-6 space-y-4">
             <Skeleton className="h-8 w-3/4" />
             <Skeleton className="h-4 w-1/2" />
             <Skeleton className="h-32 w-full" />
           </div>
-        )}]}
-      />
+        </SheetContent>
+      </Sheet>
     );
   }
 
   if (!objective) {
     return (
-      <CanonicalDrawerShell
-        open={open}
-        onClose={onClose}
-        entityId=""
-        entityTitle="Not Found"
-        entityType="okr/objectives"
-        tabs={[{ value: 'error', label: 'Error', content: (
+      <Sheet open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
+        <SheetContent
+          side="right"
+          hideClose
+          className={cn(
+            "flex flex-col p-0 gap-0 border-l border-border-default",
+            "bg-surface-0 text-text-primary",
+            "rounded-l-[20px] rounded-r-none",
+            "w-[640px] sm:max-w-[640px]",
+          )}
+        >
           <div className="flex items-center justify-center h-full text-muted-foreground p-6">
             Objective not found
           </div>
-        )}]}
-      />
+        </SheetContent>
+      </Sheet>
     );
   }
 
-  // Build kebab menu items
-  const kebabMenuItems: KebabMenuItem[] = [
-    {
-      label: isDuplicating ? 'Duplicating...' : 'Duplicate',
-      icon: <Copy className="h-4 w-4 mr-2" />,
-      onClick: handleDuplicate,
-    },
-    {
-      label: 'Export',
-      icon: <Download className="h-4 w-4 mr-2" />,
-      onClick: handleExport,
-    },
-    {
-      label: 'Delete',
-      icon: <Trash2 className="h-4 w-4 mr-2" />,
-      onClick: () => setShowDeleteDialog(true),
-      variant: 'destructive',
-      separator: true,
-    },
-  ];
-
-  // Secondary header row with progress and meta
-  const secondaryHeaderRow = (
-    <div className="space-y-2">
-      <div className="flex items-center gap-4">
-        {objective.theme_name && (
-          <Badge variant="secondary" className="text-xs">
-            {objective.theme_name}
-          </Badge>
-        )}
-        <Badge variant="outline" className="text-xs">
-          {objective.status?.replace('_', ' ')}
-        </Badge>
-        <div className={`w-2 h-2 rounded-full ${getHealthColor(v2Health)}`} />
-      </div>
-      <div className="flex items-center gap-6 text-sm text-muted-foreground">
-        {objective.owner_name && (
-          <div className="flex items-center gap-1.5">
-            <Users className="h-3.5 w-3.5" />
-            <span>{objective.owner_name}</span>
-          </div>
-        )}
-        {objective.end_date && (
-          <div className="flex items-center gap-1.5">
-            <Calendar className="h-3.5 w-3.5" />
-            <span>{new Date(objective.end_date).toLocaleDateString()}</span>
-          </div>
-        )}
-        <div className="flex items-center gap-1.5">
-          <Target className="h-3.5 w-3.5" />
-          <span>{keyResults?.length || 0} Key Results</span>
-        </div>
-      </div>
-      <ProgressWithTooltip
-        entityType="objective"
-        entityId={objectiveId}
-        size="md"
-      />
-    </div>
-  );
-
-  // Build tabs
-  const tabs: DrawerTab[] = [
-    {
-      value: 'overview',
-      label: 'Overview',
-      content: formData && (
-        <ObjectiveOverviewTabV2 
-          formData={formData} 
-          onChange={handleFormChange}
-          objective={objective}
-        />
-      ),
-    },
-    {
-      value: 'key-results',
-      label: 'Key Results',
-      content: <KeyResultsTabV2 objectiveId={objective.id} onMutation={markDrawerChanged} />,
-    },
-    {
-      value: 'work',
-      label: 'Work',
-      content: <LinkedWorkTabV2 objectiveId={objective.id} onMutation={markDrawerChanged} />,
-    },
-    {
-      value: 'links',
-      label: 'Links',
-      content: <UnifiedLinksTab entityType="objective" entityId={objective.id} hideTiles={['implementation', 'knowledge-hub']} />,
-    },
-    {
-      value: 'audit',
-      label: 'Audit History',
-      content: (
-        <div className="h-[500px]">
-          <UnifiedAuditHistoryTab entityType="objective" entityId={objective.id} />
-        </div>
-      ),
-    },
-  ];
+  const statusConfig = getStatusConfig(objective.status);
+  const lastUpdated = objective.updated_at || objective.created_at;
 
   return (
     <>
-      <CanonicalDrawerShell
-        open={open}
-        onClose={onClose}
-        entityId={objective.id}
-        entityKey={`OBJ-${objective.id.slice(0, 4)}`}
-        entityTitle={objective.name}
-        entityType="okr/objectives"
-        onTitleChange={handleTitleChange}
-        isTitleEditable={true}
-        onSave={handleSave}
-        onSaveAndClose={handleSaveAndClose}
-        hasChanges={hasChanges}
-        isSaving={updateObjective.isPending}
-        secondaryHeaderRow={secondaryHeaderRow}
-        tabs={tabs}
-        defaultTab="overview"
-        activeTab={activeTab}
-        onTabChange={setActiveTab}
-        kebabMenuItems={kebabMenuItems}
-        description="Objective details and key results"
-      />
+      <Sheet open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
+        <SheetContent
+          side="right"
+          hideClose
+          className={cn(
+            "flex flex-col p-0 gap-0 border-l border-border-default",
+            "bg-surface-0 text-text-primary",
+            "rounded-l-[20px] rounded-r-none",
+            "transition-all duration-300 ease-out",
+            "w-[640px] sm:max-w-[640px]",
+          )}
+        >
+          {/* HEADER */}
+          <SheetHeader className="shrink-0 space-y-0">
+            {/* Breadcrumb + Controls */}
+            <div 
+              className="flex items-center justify-between px-6 py-3"
+              style={{ borderBottom: '1px solid hsl(var(--border) / 0.5)' }}
+            >
+              <div className="flex items-center gap-2.5">
+                <span 
+                  className="text-[10px] font-semibold uppercase tracking-[0.5px]"
+                  style={{ color: 'hsl(var(--muted-foreground))' }}
+                >
+                  Objectives
+                </span>
+                <span style={{ color: 'hsl(var(--muted-foreground))' }}>/</span>
+                <span 
+                  className="text-[11px] font-bold font-mono px-2 py-0.5 rounded-md"
+                  style={{ 
+                    color: 'hsl(var(--primary))',
+                    background: 'hsl(var(--primary) / 0.1)'
+                  }}
+                >
+                  {formatObjectiveKey(objective.id)}
+                </span>
+                <button
+                  onClick={handleCopyLink}
+                  className="p-1.5 rounded-lg hover:bg-muted transition-colors"
+                  style={{ color: 'hsl(var(--muted-foreground))' }}
+                  title="Copy link"
+                >
+                  <LinkIcon className="h-3.5 w-3.5" />
+                </button>
+              </div>
+
+              {/* Actions in header */}
+              <div className="flex items-center gap-1">
+                {/* Save Button */}
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      size="sm"
+                      className="h-8 px-3 text-sm font-medium bg-brand-primary hover:bg-brand-primary-hover text-white rounded-lg"
+                      disabled={updateObjective.isPending}
+                    >
+                      {updateObjective.isPending ? 'Saving...' : 'Save'}
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent 
+                    align="end" 
+                    className="w-40 rounded-xl"
+                    style={{ 
+                      background: 'hsl(var(--background))',
+                      borderColor: 'hsl(var(--border))',
+                    }}
+                  >
+                    <DropdownMenuItem className="rounded-lg" onSelect={handleSave}>Save</DropdownMenuItem>
+                    <DropdownMenuItem className="rounded-lg" onSelect={handleSaveAndClose}>Save & Close</DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      className="h-8 w-8 rounded-lg hover:bg-muted transition-colors"
+                      style={{ color: 'hsl(var(--muted-foreground))' }}
+                    >
+                      <MoreVertical className="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent 
+                    align="end" 
+                    className="w-48 rounded-xl"
+                    style={{ 
+                      background: 'hsl(var(--background))',
+                      borderColor: 'hsl(var(--border))',
+                    }}
+                  >
+                    <DropdownMenuItem className="rounded-lg" onSelect={handleDuplicate}>
+                      <Copy className="h-4 w-4 mr-2" />
+                      {isDuplicating ? 'Duplicating...' : 'Duplicate'}
+                    </DropdownMenuItem>
+                    <DropdownMenuItem className="rounded-lg" onSelect={handleExport}>
+                      <Download className="h-4 w-4 mr-2" />
+                      Export
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem className="rounded-lg text-destructive" onSelect={() => setShowDeleteDialog(true)}>
+                      <Trash2 className="h-4 w-4 mr-2" />
+                      Delete Objective
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  onClick={onClose}
+                  className="h-8 w-8 rounded-lg hover:bg-muted transition-colors"
+                  style={{ color: 'hsl(var(--muted-foreground))' }}
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+
+            {/* Hero Row */}
+            <div className="flex items-start px-6 py-5 gap-4">
+              <div className="flex-1 min-w-0 space-y-3">
+                {/* Title with Edit */}
+                <div className="flex items-center gap-1.5 group">
+                  {isEditingName ? (
+                    <Input
+                      ref={nameInputRef}
+                      value={editedName}
+                      onChange={(e) => setEditedName(e.target.value)}
+                      onBlur={handleSaveName}
+                      onKeyDown={handleNameKeyDown}
+                      className="text-2xl font-bold h-auto py-1.5 px-2 max-w-[480px] border-primary focus-visible:ring-primary/20"
+                      style={{ 
+                        background: 'hsl(var(--muted))',
+                        color: 'hsl(var(--foreground))'
+                      }}
+                    />
+                  ) : (
+                    <>
+                      <SheetTitle 
+                        className="text-2xl font-bold tracking-tight truncate max-w-[520px] leading-tight"
+                        style={{ color: 'hsl(var(--foreground))' }}
+                      >
+                        {objective.name || 'Untitled Objective'}
+                      </SheetTitle>
+                      <button
+                        onClick={handleStartEditName}
+                        className="opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-muted transition-all"
+                        style={{ color: 'hsl(var(--muted-foreground))' }}
+                        title="Rename"
+                      >
+                        <Pencil className="h-3.5 w-3.5" />
+                      </button>
+                    </>
+                  )}
+                </div>
+
+                {/* Meta row */}
+                <div className="flex items-center gap-3 flex-wrap">
+                  {/* Theme badge */}
+                  {objective.theme_name && (
+                    <span 
+                      className="text-xs font-medium px-2.5 py-1 rounded-lg"
+                      style={{ 
+                        background: 'hsl(var(--muted))',
+                        color: 'hsl(var(--foreground))'
+                      }}
+                    >
+                      {objective.theme_name}
+                    </span>
+                  )}
+
+                  {/* Status badge */}
+                  <span 
+                    className="text-xs font-medium px-2.5 py-1 rounded-lg"
+                    style={{ 
+                      background: statusConfig.bg,
+                      color: statusConfig.text
+                    }}
+                  >
+                    {statusConfig.label}
+                  </span>
+
+                  {/* Health dot */}
+                  <div 
+                    className="w-2.5 h-2.5 rounded-full"
+                    style={{ backgroundColor: getHealthColor(v2Health) }}
+                    title={`Health: ${v2Health}`}
+                  />
+
+                  <div className="w-px h-5" style={{ background: 'hsl(var(--border))' }} />
+
+                  {/* Owner */}
+                  {objective.owner_name && (
+                    <div 
+                      className="flex items-center gap-1.5 text-xs"
+                      style={{ color: 'hsl(var(--muted-foreground))' }}
+                    >
+                      <Users className="h-3.5 w-3.5" />
+                      <span>{objective.owner_name}</span>
+                    </div>
+                  )}
+
+                  {/* End date */}
+                  {objective.end_date && (
+                    <div 
+                      className="flex items-center gap-1.5 text-xs"
+                      style={{ color: 'hsl(var(--muted-foreground))' }}
+                    >
+                      <Calendar className="h-3.5 w-3.5" />
+                      <span>{new Date(objective.end_date).toLocaleDateString()}</span>
+                    </div>
+                  )}
+
+                  {/* Key Results count */}
+                  <div 
+                    className="flex items-center gap-1.5 text-xs"
+                    style={{ color: 'hsl(var(--muted-foreground))' }}
+                  >
+                    <Target className="h-3.5 w-3.5" />
+                    <span>{keyResults?.length || 0} Key Results</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <SheetDescription className="sr-only">Objective details panel</SheetDescription>
+          </SheetHeader>
+
+          {/* PROGRESS BAR */}
+          <PremiumProgressBar progress={v2Progress} health={v2Health} />
+
+          {/* TABS */}
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col min-h-0">
+            <TabsList
+              className={cn(
+                "w-full justify-start rounded-none shrink-0",
+                "!bg-transparent !p-0 !h-auto",
+                "px-6",
+                "border-b border-border-default",
+              )}
+            >
+              {[
+                { value: 'overview', label: 'Overview' },
+                { value: 'key-results', label: 'Key Results', count: keyResults?.length || 0 },
+                { value: 'work', label: 'Work' },
+                { value: 'links', label: 'Links' },
+                { value: 'audit', label: 'Audit History' },
+              ].map((tab) => (
+                <TabsTrigger
+                  key={tab.value}
+                  value={tab.value}
+                  className={cn(
+                    "relative",
+                    "px-4 py-3.5",
+                    "text-[14px] font-medium",
+                    "rounded-none",
+                    "bg-transparent",
+                    "text-text-muted hover:text-text-secondary",
+                    "data-[state=active]:text-text-primary",
+                    "data-[state=active]:bg-transparent",
+                    "data-[state=active]:shadow-none",
+                    "focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0",
+                    "after:absolute after:bottom-0 after:left-2 after:right-2",
+                    "after:h-[3px] after:rounded-t-full after:transition-all after:duration-200",
+                    "data-[state=inactive]:after:bg-transparent data-[state=inactive]:after:scale-x-0",
+                    "data-[state=active]:after:bg-brand-primary data-[state=active]:after:scale-x-100",
+                  )}
+                >
+                  <span className="flex items-center gap-2">
+                    {tab.label}
+                    {tab.count !== undefined && tab.count > 0 && (
+                      <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-md min-w-[20px] text-center bg-surface-2 text-text-muted">
+                        {tab.count}
+                      </span>
+                    )}
+                  </span>
+                </TabsTrigger>
+              ))}
+            </TabsList>
+
+            {/* TAB CONTENT */}
+            <div 
+              className="flex-1 min-h-0 overflow-y-auto"
+              style={{ background: 'hsl(var(--muted) / 0.3)' }}
+            >
+              <TabsContent value="overview" className="mt-0 focus-visible:outline-none">
+                {formData && (
+                  <ObjectiveOverviewTabV2 
+                    formData={formData} 
+                    onChange={handleFormChange}
+                    objective={objective}
+                  />
+                )}
+              </TabsContent>
+
+              <TabsContent value="key-results" className="mt-0 p-6 focus-visible:outline-none">
+                <KeyResultsTabV2 objectiveId={objective.id} onMutation={markDrawerChanged} />
+              </TabsContent>
+
+              <TabsContent value="work" className="mt-0 p-6 focus-visible:outline-none">
+                <LinkedWorkTabV2 objectiveId={objective.id} onMutation={markDrawerChanged} />
+              </TabsContent>
+
+              <TabsContent value="links" className="mt-0 p-6 focus-visible:outline-none">
+                <UnifiedLinksTab entityType="objective" entityId={objective.id} hideTiles={['implementation', 'knowledge-hub']} />
+              </TabsContent>
+
+              <TabsContent value="audit" className="mt-0 p-6 focus-visible:outline-none">
+                <div className="h-[500px]">
+                  <UnifiedAuditHistoryTab entityType="objective" entityId={objective.id} />
+                </div>
+              </TabsContent>
+            </div>
+          </Tabs>
+        </SheetContent>
+      </Sheet>
 
       {/* Delete confirmation */}
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
