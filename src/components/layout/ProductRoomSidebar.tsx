@@ -18,6 +18,7 @@ const productSidebarConfig: SidebarConfig = {
     { id: 'Product Backlog', title: 'Product Backlog', path: '/industry/backlog', exact: false },
     { id: 'Product Kanban', title: 'Product Kanban', path: '/industry/kanban', exact: true },
     { id: 'Product Roadmap', title: 'Product Roadmap', path: '/industry/roadmaps-v1', exact: false },
+    { id: 'EF Designer', title: 'EF Designer', path: '/product/ef-designer', exact: false },
   ],
 };
 
