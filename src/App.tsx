@@ -10,7 +10,7 @@ import { CatalystToastProvider } from "./contexts/CatalystToastContext";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { CatalystShell } from "./components/layout/CatalystShell";
 import { ErrorBoundary } from "./components/ErrorBoundary";
-import Auth from "./pages/Auth";
+import { CatalystLoginPage } from "./components/auth/login";
 // Jira test pages removed - AtlasKit migration complete
 import BrowsePage from "./pages/BrowsePage";
 import DependencyMapsPage from "./pages/reports/DependencyMapsPage";
@@ -276,7 +276,7 @@ const App = () => (
               <BrowserRouter>
               <Routes>
 <Route path="/" element={<Navigate to="/home" replace />} />
-              <Route path="/auth" element={<Auth />} />
+              <Route path="/auth" element={<CatalystLoginPage />} />
               {/* Jira test routes removed */}
               <Route path="/submit-request" element={<SubmitDemandRequest />} />
               
