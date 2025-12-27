@@ -12709,7 +12709,7 @@ export type Database = {
           name: string
           owner_id: string | null
           portfolio_ask_date: string | null
-          snapshot_id: string
+          snapshot_id: string | null
           start_date: string | null
           status: Database["public"]["Enums"]["theme_status"] | null
           updated_at: string | null
@@ -12723,7 +12723,7 @@ export type Database = {
           name: string
           owner_id?: string | null
           portfolio_ask_date?: string | null
-          snapshot_id: string
+          snapshot_id?: string | null
           start_date?: string | null
           status?: Database["public"]["Enums"]["theme_status"] | null
           updated_at?: string | null
@@ -12737,7 +12737,7 @@ export type Database = {
           name?: string
           owner_id?: string | null
           portfolio_ask_date?: string | null
-          snapshot_id?: string
+          snapshot_id?: string | null
           start_date?: string | null
           status?: Database["public"]["Enums"]["theme_status"] | null
           updated_at?: string | null
