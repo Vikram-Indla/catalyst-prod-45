@@ -331,7 +331,8 @@ export function StrategicBacklogThemesSection({
                 >
                   {isColumnVisible('name') && (
                     <div className="flex items-center gap-3 min-w-0">
-                      <span className="text-sm font-medium text-[hsl(var(--text-primary))] group-hover:text-[hsl(var(--brand-primary))] truncate transition-colors">
+                      <Layers className="h-4 w-4 shrink-0 text-muted-foreground" />
+                      <span className="text-sm text-muted-foreground group-hover:text-[hsl(var(--brand-primary))] truncate transition-colors">
                         {theme.name}
                       </span>
                     </div>
