@@ -191,7 +191,7 @@ export function FeatureRightRail({ feature, collapsed, onToggleCollapse, onUpdat
 
         <FieldRow label="Program">
           {PLACEHOLDER_FIELDS.program ? (
-            <span className="text-gold-link hover:text-gold-link-hover cursor-pointer hover:underline transition-colors font-medium">
+            <span className="text-[#2563eb] hover:text-[#1d4ed8] cursor-pointer hover:underline transition-colors font-medium">
               {PLACEHOLDER_FIELDS.program}
             </span>
           ) : (
@@ -201,7 +201,7 @@ export function FeatureRightRail({ feature, collapsed, onToggleCollapse, onUpdat
 
         <FieldRow label="Parent Epic">
           {feature.epic ? (
-            <span className="text-gold-link hover:text-gold-link-hover cursor-pointer hover:underline transition-colors font-medium">
+            <span className="text-[#2563eb] hover:text-[#1d4ed8] cursor-pointer hover:underline transition-colors font-medium">
               {feature.epic.epic_key} {feature.epic.name}
             </span>
           ) : (

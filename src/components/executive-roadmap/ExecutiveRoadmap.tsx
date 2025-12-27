@@ -715,7 +715,7 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
       {/* Print Header */}
       <div className="hidden print:flex items-center justify-between px-6 py-4 border-b bg-white" style={{ borderColor: 'hsl(var(--roadmap-sandstone))' }}>
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-[10px] flex items-center justify-center text-white font-bold text-sm" style={{ background: 'linear-gradient(135deg, #C69C6D, #E8D5C0)' }}>
+          <div className="w-10 h-10 rounded-[10px] flex items-center justify-center text-white font-bold text-sm" style={{ background: 'linear-gradient(135deg, #2563eb, #60a5fa)' }}>
             MIM
           </div>
           <div>
@@ -1391,7 +1391,7 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
                                   barPos.continuesLeft ? "rounded-l-none" : "rounded-l-full",
                                   barPos.continuesRight ? "rounded-r-none" : "rounded-r-full"
                                 )}
-                                style={{ background: STATUS_BAR_GRADIENTS[item.status] || 'linear-gradient(90deg, #C69C6D, #E8D5C0)', position: 'relative', zIndex: 5 }}
+                                style={{ background: STATUS_BAR_GRADIENTS[item.status] || 'linear-gradient(90deg, #2563eb, #60a5fa)', position: 'relative', zIndex: 5 }}
                               >
 
                                 {/* Milestones - Properly centered on bar */}

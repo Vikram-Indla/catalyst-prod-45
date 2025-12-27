@@ -229,7 +229,7 @@ function renderCell(item: FeatureBacklogItem, columnId: string, navigate: Return
   switch (columnId) {
     case 'key':
       return (
-        <span className="font-mono text-sm text-gold-link hover:text-gold-link-hover hover:underline whitespace-nowrap">
+        <span className="font-mono text-sm text-[#2563eb] hover:text-[#1d4ed8] hover:underline whitespace-nowrap">
           {item.key}
         </span>
       );

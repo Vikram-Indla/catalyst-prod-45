@@ -237,7 +237,7 @@ export function WorkManagerInsights({ tasks }: WorkManagerInsightsProps) {
       {/* Header - Premium treatment */}
       <div className="flex items-center justify-between mb-8">
         <div className="flex items-center gap-3">
-          <div className="w-1 h-8 bg-gradient-to-b from-olive-500 to-bronze-500 rounded-full" />
+          <div className="w-1 h-8 bg-gradient-to-b from-[#2563eb] to-[#0d9488] rounded-full" />
           <div>
             <h2 className="text-xl font-bold text-stone-900 tracking-tight">Weekly Insights</h2>
             <p className="text-[13px] text-stone-500 mt-0.5">{formatDateRange()}</p>
@@ -251,7 +251,7 @@ export function WorkManagerInsights({ tasks }: WorkManagerInsightsProps) {
               className={cn(
                 'px-4 py-2 text-[12px] font-semibold transition-all duration-200',
                 viewMode === 'individual' 
-                  ? 'bg-gradient-to-r from-olive-500 to-olive-600 text-white shadow-brand' 
+                  ? 'bg-[#2563eb] text-white shadow-brand' 
                   : 'bg-card dark:bg-gray-800 text-muted-foreground hover:bg-muted dark:hover:bg-gray-700'
               )}
             >
@@ -262,7 +262,7 @@ export function WorkManagerInsights({ tasks }: WorkManagerInsightsProps) {
               className={cn(
                 'px-4 py-2 text-[12px] font-semibold transition-all duration-200',
                 viewMode === 'team' 
-                  ? 'bg-gradient-to-r from-olive-500 to-olive-600 text-white shadow-brand' 
+                  ? 'bg-[#2563eb] text-white shadow-brand' 
                   : 'bg-card dark:bg-gray-800 text-muted-foreground hover:bg-muted dark:hover:bg-gray-700'
               )}
             >

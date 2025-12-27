@@ -297,7 +297,7 @@ export function CreateStoryModal({
             <div className="grid grid-cols-2 gap-3 text-sm">
               <div>
                 <span className="text-muted-foreground">Program:</span>{' '}
-                <span className="text-gold-link font-medium">
+                <span className="text-[#2563eb] font-medium">
                   {parentFeature.program_name || 'N/A'}
                 </span>
               </div>
