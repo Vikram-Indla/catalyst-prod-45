@@ -43,9 +43,9 @@ const ENTITY_LABELS: Record<ProgressEntityType, string> = {
 };
 
 function getProgressColor(progress: number): string {
-  if (progress >= 70) return '#0d9488'; // Teal
-  if (progress >= 40) return '#2563eb'; // Blue
-  return '#b45353'; // Red
+  if (progress === 0) return 'hsl(var(--muted-foreground))'; // Gray for 0%
+  if (progress === 100) return 'hsl(var(--success))'; // Teal for 100%
+  return 'hsl(var(--info))'; // Blue for in-progress
 }
 
 export function ProgressWithTooltip({
@@ -67,8 +67,8 @@ export function ProgressWithTooltip({
   const Icon = ENTITY_ICONS[entityType];
 
   const sizeClasses = {
-    sm: { bar: 'h-1.5', text: 'text-[10px]', label: 'text-[10px]' },
-    md: { bar: 'h-2', text: 'text-[11px]', label: 'text-[11px]' },
+    sm: { bar: 'h-2', text: 'text-[10px]', label: 'text-[10px]' },
+    md: { bar: 'h-2.5', text: 'text-[11px]', label: 'text-[11px]' },
     lg: { bar: 'h-3', text: 'text-xs', label: 'text-xs' },
   };
 
@@ -102,14 +102,18 @@ export function ProgressWithTooltip({
               </div>
             )}
             <div 
-              className={cn('w-full rounded-full overflow-hidden', sizes.bar)}
-              style={{ backgroundColor: '#333333' }}
+              className={cn('relative w-full rounded-full overflow-hidden', sizes.bar)}
+              style={{ 
+                backgroundColor: 'hsl(var(--muted))',
+                boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.15)'
+              }}
             >
               <div 
                 className={cn('h-full rounded-full transition-all duration-500', sizes.bar)}
                 style={{ 
                   width: `${progress}%`, 
-                  backgroundColor: progressColor 
+                  backgroundColor: 'hsl(var(--success))',
+                  boxShadow: progress > 0 ? '0 0 6px hsl(var(--success) / 0.4)' : 'none'
                 }}
               />
             </div>
