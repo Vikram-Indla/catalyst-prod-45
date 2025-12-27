@@ -166,7 +166,7 @@ import ThemeAuditProbe from "./pages/ThemeAuditProbe";
 import ValueStreamView from "./pages/ValueStreamView";
 import UserProfile from "./pages/UserProfile";
 import NotFound from "./pages/NotFound";
-import EFDesignerPage from "./pages/EFDesignerPage";
+import EFDesignerPage from "./modules/ef-designer/pages/EFDesignerPage";
 import ProgramDirectory from "./pages/ProgramDirectory";
 import ProjectDirectory from "./pages/ProjectDirectory";
 import ProjectSettingsPage from "./pages/ProjectSettingsPage";

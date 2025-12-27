@@ -20,3 +20,12 @@ verify_jwt = false
 
 [functions.user-update-password]
 verify_jwt = false
+
+[functions.efd-parse-document]
+verify_jwt = false
+
+[functions.efd-generate-epics]
+verify_jwt = false
+
+[functions.efd-generate-features]
+verify_jwt = false
