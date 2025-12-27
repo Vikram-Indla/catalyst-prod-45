@@ -154,16 +154,7 @@ export function CreateDropdown() {
         </DropdownMenuTrigger>
         <DropdownMenuContent
           align="end"
-          style={{
-            width: '256px',
-            maxHeight: '600px',
-            overflowY: 'auto',
-            background: 'var(--surface-1)',
-            border: '1px solid var(--border-color)',
-            borderRadius: '8px',
-            boxShadow: 'var(--card-shadow)',
-          }}
-          className="z-[300]"
+          className="w-64 max-h-[600px] overflow-y-auto z-[1000]"
         >
           {renderSection('Enterprise', filteredEnterpriseItems)}
           
