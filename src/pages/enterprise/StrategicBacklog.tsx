@@ -2,8 +2,8 @@
  * Strategic Backlog - Enterprise Strategy Command Center
  * Pixel-perfect implementation matching Catalyst design specs
  */
-import { useState, useCallback, useMemo } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useState, useCallback, useMemo, useEffect } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { PageChrome } from '@/components/layout/PageChrome';
@@ -33,6 +33,7 @@ import type { StrategicTheme } from '@/types/strategicBacklog';
 type SubSection = 'themes' | 'snapshots' | 'objectives' | 'epics';
 
 export default function StrategicBacklog() {
+  const queryClient = useQueryClient();
   const [searchParams, setSearchParams] = useSearchParams();
   const tabParam = searchParams.get('tab') as SubSection | null;
   
@@ -175,6 +176,38 @@ export default function StrategicBacklog() {
   const themesWithObjectives = useMemo(() => {
     return Object.keys(objectiveCounts).filter(id => objectiveCounts[id] > 0).length;
   }, [objectiveCounts]);
+
+  // Real-time subscription for objectives, themes, and epics
+  useEffect(() => {
+    const channel = supabase
+      .channel('strategic-backlog-realtime')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'objectives' },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ['strategic-backlog-all-objectives'] });
+        }
+      )
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'strategic_themes' },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ['strategic-backlog-all-themes'] });
+        }
+      )
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'epics' },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ['strategic-backlog-all-epics'] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [queryClient]);
 
   const handleSelectItem = (item: any, type: 'theme' | 'snapshot' | 'objective' | 'epic') => {
     setSelectedItem(item);
