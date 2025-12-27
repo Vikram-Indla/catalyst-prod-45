@@ -103,17 +103,17 @@ export function ColumnSelector({
                     ? "text-foreground"
                     : "text-muted-foreground",
                   !isDisabled && "hover:bg-muted dark:hover:bg-[#21262D] cursor-pointer",
-                  isDisabled && "cursor-not-allowed"
+                  isDisabled && "cursor-not-allowed opacity-60"
                 )}
               >
                 <div className="flex items-center gap-2">
                   <div className={cn(
-                    "w-4 h-4 rounded border flex items-center justify-center",
+                    "w-4 h-4 rounded border-2 flex items-center justify-center transition-colors",
                     isVisible
-                      ? "bg-brand-primary border-brand-primary"
-                      : "border-muted-foreground/40"
+                      ? "bg-primary border-primary"
+                      : "bg-transparent border-muted-foreground/50"
                   )}>
-                    {isVisible && <Check className="h-3 w-3 text-white" />}
+                    {isVisible && <Check className="h-3 w-3 text-primary-foreground" />}
                   </div>
                   <span>{column.label}</span>
                 </div>

@@ -15,7 +15,7 @@ import { getBrandColorHex } from '@/components/admin/BrandColorPicker';
 
 // Column definitions for Themes table
 const THEME_COLUMNS: ColumnDefinition[] = [
-  { key: 'name', label: 'Theme', defaultVisible: true },
+  { key: 'name', label: 'Theme', defaultVisible: true, required: true },
   { key: 'status', label: 'Status', defaultVisible: true, width: 'w-28' },
   { key: 'objectives', label: 'Objectives', defaultVisible: true, width: 'w-28' },
   { key: 'updated', label: 'Updated', defaultVisible: true, width: 'w-36' },
@@ -180,7 +180,7 @@ export function StrategicBacklogThemesSection({
             placeholder="Search themes..."
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 bg-background border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-primary transition-all"
+            className="w-full pl-10 pr-4 py-2 bg-background border border-border rounded-md text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary/50 focus:border-primary transition-colors"
           />
         </div>
         <ColumnSelector
@@ -209,7 +209,7 @@ export function StrategicBacklogThemesSection({
           )}
           {isColumnVisible('status') && (
             <SortableHeader 
-              label="State" 
+              label="Status" 
               column="status" 
               currentSort={sortColumn} 
               direction={sortDirection} 
