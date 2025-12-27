@@ -73,7 +73,7 @@
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  padding: 2.5rem 3.5rem;
+  padding: 2.5rem 4rem 2.5rem 3.5rem;
 }
 
 .pattern-canvas {
@@ -226,7 +226,7 @@
   font-weight: 400;
   line-height: 1.7;
   color: var(--login-text-secondary);
-  max-width: 440px;
+  max-width: 90%;
   margin-bottom: 2.5rem;
   opacity: 0;
   transform: translateY(20px);
@@ -242,7 +242,7 @@
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 0.875rem;
-  max-width: 520px;
+  max-width: 100%;
   opacity: 0;
   transform: translateY(25px);
   animation: fadeSlideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.9s forwards;
