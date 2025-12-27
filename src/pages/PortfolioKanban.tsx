@@ -32,7 +32,7 @@ export default function PortfolioKanban() {
 
   // Fetch themes for swimlanes
   const { data: themes } = useQuery({
-    queryKey: ['strategic_themes'],
+    queryKey: ['strategic-themes'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('strategic_themes')
