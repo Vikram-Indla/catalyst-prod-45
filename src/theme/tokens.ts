@@ -335,13 +335,13 @@ export const status = {
 } as const;
 
 // ============================================
-// GOLDEN HOUR CHART PALETTE
+// BLUE + TEAL CHART PALETTE
 // ============================================
 export const chartPalette = {
-  expert: '#5c7c5c',      // Olive green - Level 5
-  advanced: '#8b7355',    // Bronze/brown - Level 4
-  intermediate: '#c69c6d', // Catalyst gold - Level 3
-  beginner: '#d4b896',    // Light champagne - Level 2
+  expert: '#2563eb',      // Blue - Level 5
+  advanced: '#0d9488',    // Teal - Level 4
+  intermediate: '#6b7280', // Gray - Level 3
+  beginner: '#9ca3af',    // Light gray - Level 2
   none: '#c8ccd0',        // Cool grey - Level 1
 } as const;
 

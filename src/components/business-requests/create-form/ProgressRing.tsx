@@ -19,10 +19,10 @@ export function ProgressRing({
   
   // Color based on completion - using Catalyst brand colors
   const getColor = () => {
-    if (percent >= 100) return 'text-[#5c7c5c]'; // olive - complete
-    if (percent >= 75) return 'text-[#5c7c5c]'; // olive - almost complete
-    if (percent >= 50) return 'text-[#c69c6d]'; // gold - progress
-    return 'text-[#d4b896]'; // champagne - starting
+    if (percent >= 100) return 'text-[#0d9488]'; // teal - complete
+    if (percent >= 75) return 'text-[#0d9488]'; // teal - almost complete
+    if (percent >= 50) return 'text-[#2563eb]'; // blue - progress
+    return 'text-[#9ca3af]'; // gray - starting
   };
 
   return (

@@ -148,12 +148,12 @@ export function RequestListPanel({
                 className={cn(
                   'px-4 py-3 border-b cursor-pointer transition-colors border-l-2',
                   isSelected
-                    ? 'border-l-[hsl(var(--secondary-olive))]'
+                    ? 'border-l-[hsl(var(--brand-primary))]'
                     : 'border-l-transparent hover:bg-muted/50'
                 )}
                 style={{
                   borderBottomColor: 'var(--divider)',
-                  backgroundColor: isSelected ? 'hsl(var(--secondary-olive) / 0.05)' : undefined,
+                  backgroundColor: isSelected ? 'hsl(var(--brand-primary) / 0.05)' : undefined,
                 }}
               >
                 <div className="flex items-start gap-3">
@@ -163,7 +163,7 @@ export function RequestListPanel({
                   <div className="flex-1 min-w-0">
                     {/* Top Row: ID + Badges */}
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className="text-xs font-mono font-semibold" style={{ color: 'hsl(var(--secondary-bronze))' }}>
+                      <span className="text-xs font-mono font-semibold" style={{ color: 'hsl(var(--brand-primary))' }}>
                         {request.id}
                       </span>
 

@@ -733,7 +733,7 @@ export function ExecutiveTable({
       return (
         <span 
           onClick={(e) => { e.stopPropagation(); onOpenFullView(row.id); }}
-          className="font-semibold font-mono text-sm cursor-pointer hover:underline transition-colors focus:outline-none text-[#c69c6d] dark:text-[#d4a855] hover:text-[#b8894d] dark:hover:text-[#c49545]"
+          className="font-semibold font-mono text-sm cursor-pointer hover:underline transition-colors focus:outline-none text-[#2563eb] dark:text-[#60a5fa] hover:text-[#1d4ed8] dark:hover:text-[#93c5fd]"
           tabIndex={0}
           role="button"
           aria-label={`View request ${value}`}

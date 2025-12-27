@@ -32,9 +32,9 @@ const getStatusStyle = (status: string | null, isDark: boolean): { bg: string; t
       border: 'rgba(37, 99, 235, 0.3)',
     },
     new_demand: {
-      bg: catalystTokens.secondary.olive.bg,
-      text: catalystTokens.secondary.olive.base,
-      border: 'rgba(92, 124, 92, 0.3)',
+      bg: 'rgba(13, 148, 136, 0.15)',
+      text: '#0d9488',
+      border: 'rgba(13, 148, 136, 0.3)',
     },
     draft: {
       bg: catalystTokens.secondary.grey.bg,

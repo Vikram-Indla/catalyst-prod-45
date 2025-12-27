@@ -339,7 +339,7 @@ const StrategyPerformanceOverview = ({ metrics }: { metrics: PerformanceMetrics 
                 )}>
                   <span className={cn(
                     "text-3xl font-bold leading-none",
-                    item.count > 0 ? "text-[#C69C6D]" : "text-[#24292F] dark:text-[#E6EDF3]"
+                    item.count > 0 ? "text-[#2563eb]" : "text-[#24292F] dark:text-[#E6EDF3]"
                   )}>
                     {item.count}
                   </span>
@@ -584,9 +584,9 @@ const RisksBlockersSummary = ({ riskMetrics, onDrillDown }: RisksBlockersSummary
 
 const FocusAreaItem = ({ number, text, severity }: { number: number; text: string; severity: FocusSeverity }) => {
   const severityColors: Record<FocusSeverity, string> = {
-    high: '#b85c38',
-    medium: '#b8860b',
-    low: '#8b7355',
+    high: '#ef4444',
+    medium: '#f59e0b',
+    low: '#6b7280',
   };
   
   return (
@@ -759,7 +759,7 @@ export function StrategyAnalyticsModal({
                     className="flex items-center justify-between"
                   >
                     <span className="font-medium">All Themes</span>
-                    {selectedThemeIds.length === 0 && <Check className="h-4 w-4 text-[#C69C6D]" />}
+                    {selectedThemeIds.length === 0 && <Check className="h-4 w-4 text-[#2563eb]" />}
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   {themes.map(theme => (
@@ -775,7 +775,7 @@ export function StrategyAnalyticsModal({
                         />
                         <span className="truncate">{theme.name}</span>
                       </div>
-                      {selectedThemeIds.includes(theme.id) && <Check className="h-4 w-4 text-[#C69C6D]" />}
+                      {selectedThemeIds.includes(theme.id) && <Check className="h-4 w-4 text-[#2563eb]" />}
                     </DropdownMenuItem>
                   ))}
                 </DropdownMenuContent>
@@ -834,7 +834,7 @@ export function StrategyAnalyticsModal({
                   "bg-white dark:bg-[#161B22]",
                   "border border-[#E1E4E8] dark:border-[#30363D]",
                   "text-[#24292F] dark:text-[#E6EDF3]",
-                  "hover:border-[#C69C6D]",
+                  "hover:border-[#2563eb]",
                   "disabled:opacity-50"
                 )}
                 onClick={handleExportPDF}

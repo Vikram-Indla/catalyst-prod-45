@@ -35,7 +35,7 @@ export function RoadmapTimelineHeader({ periods, zoom }: RoadmapTimelineHeaderPr
             minWidth: `${periodMinWidth}px`,
             width: `${100 / periods.length}%`,
             backgroundColor: period.isCurrent 
-              ? (isDark ? 'rgba(198, 156, 109, 0.15)' : 'rgba(198, 156, 109, 0.08)')
+              ? (isDark ? 'rgba(37, 99, 235, 0.15)' : 'rgba(37, 99, 235, 0.08)')
               : index % 2 === 0 
                 ? tokens.surface.bg 
                 : tokens.surface.card,

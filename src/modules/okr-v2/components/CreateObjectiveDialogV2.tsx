@@ -102,7 +102,7 @@ export function CreateObjectiveDialogV2({ open, onOpenChange }: CreateObjectiveD
 
   const isValid = name.trim() && themeId;
 
-  const inputClasses = "w-full px-3 py-2.5 rounded-lg text-sm bg-white dark:bg-[#0D1117] border border-[#E1E4E8] dark:border-[#30363D] text-[#24292F] dark:text-[#E6EDF3] placeholder:text-[#8B949E] dark:placeholder:text-[#6E7681] focus:border-[#C69C6D] focus:ring-1 focus:ring-[rgba(198,156,109,0.3)] outline-none";
+  const inputClasses = "w-full px-3 py-2.5 rounded-lg text-sm bg-white dark:bg-[#0D1117] border border-[#E1E4E8] dark:border-[#30363D] text-[#24292F] dark:text-[#E6EDF3] placeholder:text-[#8B949E] dark:placeholder:text-[#6E7681] focus:border-[#2563eb] focus:ring-1 focus:ring-[rgba(37,99,235,0.3)] outline-none";
   const labelClasses = "text-sm font-medium text-[#24292F] dark:text-[#E6EDF3]";
 
   return (
@@ -261,7 +261,7 @@ export function CreateObjectiveDialogV2({ open, onOpenChange }: CreateObjectiveD
             <button 
               type="submit" 
               disabled={!isValid || createObjective.isPending}
-              className="px-4 py-2 rounded-lg text-sm font-medium bg-[#C69C6D] hover:bg-[#B8905F] text-white disabled:opacity-50"
+              className="px-4 py-2 rounded-lg text-sm font-medium bg-[#2563eb] hover:bg-[#1d4ed8] text-white disabled:opacity-50"
             >
               {createObjective.isPending ? 'Creating...' : 'Create Objective'}
             </button>

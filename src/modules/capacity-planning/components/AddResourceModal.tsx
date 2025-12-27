@@ -96,10 +96,10 @@ export function AddResourceModal({
                         className="w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-semibold text-white"
                         style={{ 
                           background: resource.role_code === 'PO' 
-                            ? 'hsl(var(--secondary-green))' 
+                            ? 'hsl(var(--brand-teal))' 
                             : resource.role_code === 'BA' 
                               ? 'hsl(var(--brand-primary))' 
-                              : 'hsl(var(--secondary-bronze))'
+                              : 'hsl(var(--secondary-grey))'
                         }}
                       >
                         {resource.name.split(' ').map(n => n[0]).join('').slice(0, 2)}

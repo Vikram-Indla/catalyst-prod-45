@@ -30,8 +30,8 @@ const COLOR_MAP: Record<string, string> = {
   // Catalyst brand colors
   blue: '#2563eb',
   teal: '#0d9488',
-  olive: '#5c7c5c',
-  bronze: '#8b7355',
+  olive: '#0d9488',     // Changed to teal
+  bronze: '#6b7280',    // Changed to gray
   grey: '#c8ccd0',
   // Fallbacks
   default: '#c8ccd0',
@@ -41,7 +41,7 @@ const COLOR_MAP: Record<string, string> = {
 const FALLBACK_STATUSES = [
   { id: 'funnel', label: 'Funnel', color: '#c8ccd0' },
   { id: 'analyzing', label: 'Analyzing', color: '#2563eb' },
-  { id: 'backlog', label: 'Backlog', color: '#5c7c5c' },
+  { id: 'backlog', label: 'Backlog', color: '#0d9488' },
   { id: 'implementing', label: 'Implementing', color: '#f59e0b' },
   { id: 'done', label: 'Done', color: '#0d9488' },
 ];

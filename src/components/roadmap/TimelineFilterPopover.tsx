@@ -182,7 +182,7 @@ export function TimelineFilterPopover({
                   className={cn(
                     "px-4 py-2 text-sm rounded-lg border transition-colors",
                     draft.selectedYears.includes(year)
-                      ? "bg-[hsl(var(--secondary-olive))] text-white border-[hsl(var(--secondary-olive))]"
+                      ? "bg-[hsl(var(--brand-primary))] text-white border-[hsl(var(--brand-primary))]"
                       : "bg-background border-border hover:bg-muted text-foreground"
                   )}
                   onClick={() => toggleYear(year)}
@@ -204,7 +204,7 @@ export function TimelineFilterPopover({
                   "text-sm transition-colors",
                   allQuartersSelected 
                     ? "text-muted-foreground" 
-                    : "text-[hsl(var(--secondary-olive))] hover:underline"
+                    : "text-[hsl(var(--brand-primary))] hover:underline"
                 )}
                 onClick={selectAllQuarters}
               >
@@ -218,7 +218,7 @@ export function TimelineFilterPopover({
                   className={cn(
                     "flex-1 px-4 py-2 text-sm rounded-lg border transition-colors",
                     draft.selectedQuarters.includes(quarter)
-                      ? "bg-[hsl(var(--secondary-olive))] text-white border-[hsl(var(--secondary-olive))]"
+                      ? "bg-[hsl(var(--brand-primary))] text-white border-[hsl(var(--brand-primary))]"
                       : "bg-background border-border hover:bg-muted text-foreground"
                   )}
                   onClick={() => toggleQuarter(quarter)}

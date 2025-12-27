@@ -345,7 +345,7 @@ export default function SubmitDemandRequest() {
           </div>
           <span className="text-lg font-semibold">
             <span className="text-[#0a0a0a] dark:text-white">Cata</span>
-            <span className="text-[#c69c6d] dark:text-[#d4b896]">lyst</span>
+            <span className="text-[#2563eb] dark:text-[#60a5fa]">lyst</span>
           </span>
         </div>
       </header>
