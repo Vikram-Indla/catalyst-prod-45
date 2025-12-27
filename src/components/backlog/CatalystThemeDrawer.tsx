@@ -728,6 +728,7 @@ export function CatalystThemeDrawer({ theme, isOpen, onClose }: CatalystThemeDra
       .channel(`theme-details-${theme.id}`)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'strategic_themes', filter: `id=eq.${theme.id}` },
         () => {
+          queryClient.invalidateQueries({ queryKey: ['strategic-themes'] });
           queryClient.invalidateQueries({ queryKey: ['strategic_themes'] });
           queryClient.invalidateQueries({ queryKey: ['themes'] });
         }
@@ -828,6 +829,7 @@ export function CatalystThemeDrawer({ theme, isOpen, onClose }: CatalystThemeDra
       if (error) throw error;
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['strategic-themes'] });
       queryClient.invalidateQueries({ queryKey: ['strategic_themes'] });
       queryClient.invalidateQueries({ queryKey: ['themes'] });
       toast.success('Theme name updated');
@@ -846,6 +848,7 @@ export function CatalystThemeDrawer({ theme, isOpen, onClose }: CatalystThemeDra
     },
     onSuccess: (newStatus) => {
       setFormData(prev => ({ ...prev, status: newStatus }));
+      queryClient.invalidateQueries({ queryKey: ['strategic-themes'] });
       queryClient.invalidateQueries({ queryKey: ['strategic_themes'] });
       queryClient.invalidateQueries({ queryKey: ['themes'] });
       toast.success('Status updated');
@@ -865,6 +868,7 @@ export function CatalystThemeDrawer({ theme, isOpen, onClose }: CatalystThemeDra
       if (error) throw error;
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['strategic-themes'] });
       queryClient.invalidateQueries({ queryKey: ['strategic_themes'] });
       queryClient.invalidateQueries({ queryKey: ['themes'] });
       toast.success('Theme deleted');
@@ -886,6 +890,7 @@ export function CatalystThemeDrawer({ theme, isOpen, onClose }: CatalystThemeDra
       if (error) throw error;
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['strategic-themes'] });
       queryClient.invalidateQueries({ queryKey: ['strategic_themes'] });
       queryClient.invalidateQueries({ queryKey: ['themes'] });
       toast.success('Theme duplicated');
@@ -902,6 +907,7 @@ export function CatalystThemeDrawer({ theme, isOpen, onClose }: CatalystThemeDra
       if (error) throw error;
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['strategic-themes'] });
       queryClient.invalidateQueries({ queryKey: ['strategic_themes'] });
       queryClient.invalidateQueries({ queryKey: ['themes'] });
     },
