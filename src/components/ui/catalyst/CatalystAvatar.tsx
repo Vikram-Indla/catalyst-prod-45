@@ -2,16 +2,16 @@ import { cn } from '@/lib/utils';
 
 interface CatalystAvatarProps {
   initials: string;
-  variant?: 'gold' | 'olive' | 'bronze';
+  variant?: 'blue' | 'teal' | 'gray';
   interactive?: boolean;
   size?: 'sm' | 'md' | 'lg';
   className?: string;
 }
 
 const avatarVariants = {
-  gold: 'bg-gradient-to-br from-[#c69c6d] to-[#8b7355]',
-  olive: 'bg-gradient-to-br from-[#5c7c5c] to-[#4a6a4a]',
-  bronze: 'bg-gradient-to-br from-[#8b7355] to-[#6b5a45]',
+  blue: 'bg-gradient-to-br from-[#2563eb] to-[#1d4ed8]',
+  teal: 'bg-gradient-to-br from-[#0d9488] to-[#0f766e]',
+  gray: 'bg-gradient-to-br from-[#6b7280] to-[#4b5563]',
 };
 
 const avatarSizes = {
@@ -22,7 +22,7 @@ const avatarSizes = {
 
 export const CatalystAvatar = ({ 
   initials, 
-  variant = 'gold', 
+  variant = 'blue', 
   interactive = false,
   size = 'md',
   className 

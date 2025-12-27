@@ -36,9 +36,9 @@ export type SubtaskType = 'frontend' | 'backend' | 'integration' | 'technical';
 
 export const SUBTASK_TYPES = [
   { type: 'frontend' as const, label: 'Frontend', icon: 'Palette', color: '#3b82f6', bgColor: 'rgba(59, 130, 246, 0.1)' },
-  { type: 'backend' as const, label: 'Backend', icon: 'Server', color: '#5c7c5c', bgColor: 'rgba(92, 124, 92, 0.15)' },
+  { type: 'backend' as const, label: 'Backend', icon: 'Server', color: '#0d9488', bgColor: 'rgba(13, 148, 136, 0.15)' },
   { type: 'integration' as const, label: 'Integration', icon: 'Plug', color: '#f59e0b', bgColor: 'rgba(245, 158, 11, 0.1)' },
-  { type: 'technical' as const, label: 'Technical', icon: 'Cog', color: '#8b7355', bgColor: 'rgba(139, 115, 85, 0.15)' },
+  { type: 'technical' as const, label: 'Technical', icon: 'Cog', color: '#6b7280', bgColor: 'rgba(107, 114, 128, 0.15)' },
 ] as const;
 
 export const PRIORITY_OPTIONS = [

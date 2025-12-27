@@ -45,9 +45,9 @@ export function StrategicBacklogCoveragePanel({
           <div className="flex items-center gap-3">
             <div 
               className="w-8 h-8 rounded-lg flex items-center justify-center"
-              style={{ background: 'rgba(92, 124, 92, 0.1)' }}
+              style={{ background: 'rgba(13, 148, 136, 0.1)' }}
             >
-              <Layers className="h-4 w-4" style={{ color: '#5C7C5C' }} />
+              <Layers className="h-4 w-4" style={{ color: '#0d9488' }} />
             </div>
             <div className="text-left">
               <div className="flex items-center gap-1.5">
@@ -60,9 +60,9 @@ export function StrategicBacklogCoveragePanel({
             </div>
           </div>
           {themesComplete ? (
-            <Check className="h-4 w-4" style={{ color: '#5C7C5C' }} />
+            <Check className="h-4 w-4" style={{ color: '#0d9488' }} />
           ) : themes > 0 ? (
-            <AlertTriangle className="h-4 w-4" style={{ color: '#C69C6D' }} />
+            <AlertTriangle className="h-4 w-4" style={{ color: '#f59e0b' }} />
           ) : null}
         </button>
 
@@ -104,9 +104,9 @@ export function StrategicBacklogCoveragePanel({
           <div className="flex items-center gap-3">
             <div 
               className="w-8 h-8 rounded-lg flex items-center justify-center"
-              style={{ background: 'rgba(139, 115, 85, 0.1)' }}
+              style={{ background: 'rgba(107, 114, 128, 0.1)' }}
             >
-              <Box className="h-4 w-4" style={{ color: '#8B7355' }} />
+              <Box className="h-4 w-4" style={{ color: '#6b7280' }} />
             </div>
             <div className="text-left">
               <div className="flex items-center gap-1.5">
@@ -116,7 +116,7 @@ export function StrategicBacklogCoveragePanel({
             </div>
           </div>
           {epicsComplete ? (
-            <Check className="h-4 w-4" style={{ color: '#5C7C5C' }} />
+            <Check className="h-4 w-4" style={{ color: '#0d9488' }} />
           ) : null}
         </button>
       </div>
