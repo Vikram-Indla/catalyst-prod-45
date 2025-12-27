@@ -33,8 +33,8 @@ export function CapacitySummaryCards({
       label: 'Underallocated', 
       value: underallocated, 
       icon: AlertTriangle, 
-      iconBg: 'bg-[#8b7355]/10', 
-      iconColor: 'text-[#8b7355]', // Bronze
+      iconBg: 'bg-[#f59e0b]/10', 
+      iconColor: 'text-[#f59e0b]', // Amber
     },
     { 
       label: 'Fully Allocated', 

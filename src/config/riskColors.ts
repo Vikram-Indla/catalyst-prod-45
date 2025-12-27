@@ -13,14 +13,14 @@ export type RiskSeverity = 'critical' | 'high' | 'medium' | 'low';
  * Visual meaning:
  * - Critical (#922b21) – "Stop everything, fix immediately"
  * - High (#cb4335) – "Needs immediate attention"  
- * - Medium (#c69c6d) – "Monitor closely, plan mitigation" (Catalyst Gold)
- * - Low (#5c7c5c) – "Manageable, track over time" (Catalyst Olive)
+ * - Medium (#f59e0b) – "Monitor closely, plan mitigation" (Amber)
+ * - Low (#0d9488) – "Manageable, track over time" (Teal)
  */
 export const RISK_COLORS = {
   critical: '#922b21',
   high: '#cb4335',
-  medium: '#c69c6d',
-  low: '#5c7c5c',
+  medium: '#f59e0b',
+  low: '#0d9488',
 } as const;
 
 /**

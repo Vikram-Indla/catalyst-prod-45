@@ -162,7 +162,7 @@ export function OperationsGridRow({
 
         {/* Summary - hover changes to olive */}
         <div className="min-w-0 pr-4">
-          <div className="text-sm font-medium leading-5 text-[var(--text-1)] truncate group-hover:text-[#5c7c5c] dark:group-hover:text-[#7a9a7a] transition-colors">
+          <div className="text-sm font-medium leading-5 text-[var(--text-1)] truncate group-hover:text-[#2563eb] dark:group-hover:text-[#60a5fa] transition-colors">
             {item.summary}
           </div>
         </div>
@@ -182,7 +182,7 @@ export function OperationsGridRow({
           {item.assignee ? (
             <>
               <Avatar className="w-6 h-6 shrink-0">
-                <AvatarFallback className="text-[10px] font-bold bg-gradient-to-br from-[#5c7c5c] to-[#4a6a4a] text-white">
+                <AvatarFallback className="text-[10px] font-bold bg-gradient-to-br from-[#0d9488] to-[#0f766e] text-white">
                   {item.assignee.slice(0, 2).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
@@ -249,7 +249,7 @@ export function OperationsGridRow({
       >
         <div className="flex items-center gap-1.5">
           <WorkItemIcon type={item.type} size={12} />
-          <span className="text-xs font-mono font-medium text-[#8b7355] dark:text-[#d4a855]">{item.key}</span>
+          <span className="text-xs font-mono font-medium text-[#2563eb] dark:text-[#60a5fa]">{item.key}</span>
         </div>
         <div className="min-w-0 px-2">
           <div className="text-sm font-medium leading-5 text-[var(--text-1)] truncate">
@@ -353,7 +353,7 @@ export function DeliveryGridRow({
 
         {/* Summary - hover changes to olive */}
         <div className="min-w-0 pr-4">
-          <div className="text-sm font-medium leading-5 text-[var(--text-1)] truncate group-hover:text-[#5c7c5c] dark:group-hover:text-[#7a9a7a] transition-colors">
+          <div className="text-sm font-medium leading-5 text-[var(--text-1)] truncate group-hover:text-[#2563eb] dark:group-hover:text-[#60a5fa] transition-colors">
             {item.summary}
           </div>
         </div>
@@ -373,7 +373,7 @@ export function DeliveryGridRow({
           {item.assignee ? (
             <>
               <Avatar className="w-6 h-6 shrink-0">
-                <AvatarFallback className="text-[10px] font-bold bg-gradient-to-br from-[#5c7c5c] to-[#4a6a4a] text-white">
+                <AvatarFallback className="text-[10px] font-bold bg-gradient-to-br from-[#0d9488] to-[#0f766e] text-white">
                   {item.assignee.slice(0, 2).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
@@ -435,7 +435,7 @@ export function DeliveryGridRow({
       >
         <div className="flex items-center gap-1.5">
           <WorkItemIcon type={item.type} size={12} />
-          <span className="text-xs font-mono font-medium text-[#8b7355] dark:text-[#d4a855]">{item.key}</span>
+          <span className="text-xs font-mono font-medium text-[#2563eb] dark:text-[#60a5fa]">{item.key}</span>
         </div>
         <div className="min-w-0 px-2">
           <div className="text-sm font-medium leading-5 text-[var(--text-1)] truncate">
@@ -534,12 +534,12 @@ export function PlannerGridRow({
         {/* Key - bronze/gold color */}
         <div className="flex items-center gap-2.5">
           <WorkItemIcon type={item.type} size={14} />
-          <span className="text-[13px] font-mono font-medium text-[#8b7355] dark:text-[#d4a855]">{item.key}</span>
+          <span className="text-[13px] font-mono font-medium text-[#2563eb] dark:text-[#60a5fa]">{item.key}</span>
         </div>
 
         {/* Summary - hover changes to olive */}
         <div className="min-w-0 pr-4">
-          <div className="text-sm font-medium leading-5 text-[var(--text-1)] truncate group-hover:text-[#5c7c5c] dark:group-hover:text-[#7a9a7a] transition-colors">
+          <div className="text-sm font-medium leading-5 text-[var(--text-1)] truncate group-hover:text-[#2563eb] dark:group-hover:text-[#60a5fa] transition-colors">
             {item.summary}
           </div>
         </div>
@@ -559,7 +559,7 @@ export function PlannerGridRow({
           {item.assignee ? (
             <>
               <Avatar className="w-6 h-6 shrink-0">
-                <AvatarFallback className="text-[10px] font-bold bg-gradient-to-br from-[#5c7c5c] to-[#4a6a4a] text-white">
+                <AvatarFallback className="text-[10px] font-bold bg-gradient-to-br from-[#0d9488] to-[#0f766e] text-white">
                   {item.assignee.slice(0, 2).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
@@ -621,7 +621,7 @@ export function PlannerGridRow({
       >
         <div className="flex items-center gap-1.5">
           <WorkItemIcon type={item.type} size={12} />
-          <span className="text-xs font-mono font-medium text-[#8b7355] dark:text-[#d4a855]">{item.key}</span>
+          <span className="text-xs font-mono font-medium text-[#2563eb] dark:text-[#60a5fa]">{item.key}</span>
         </div>
         <div className="min-w-0 px-2">
           <div className="text-sm font-medium leading-5 text-[var(--text-1)] truncate">

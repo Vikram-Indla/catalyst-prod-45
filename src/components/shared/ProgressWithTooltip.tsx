@@ -43,8 +43,8 @@ const ENTITY_LABELS: Record<ProgressEntityType, string> = {
 };
 
 function getProgressColor(progress: number): string {
-  if (progress >= 70) return '#5c7c5c'; // Green
-  if (progress >= 40) return '#c69c6d'; // Gold
+  if (progress >= 70) return '#0d9488'; // Teal
+  if (progress >= 40) return '#2563eb'; // Blue
   return '#b45353'; // Red
 }
 

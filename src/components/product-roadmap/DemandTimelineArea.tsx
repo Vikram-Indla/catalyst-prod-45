@@ -256,11 +256,10 @@ interface DemandTimelineRowProps {
 }
 
 // Status-based color mapping for progress bars - CATALYST BRAND COLORS ONLY
-// Olive: #5c7c5c, #4a6a4a, #3d563d, #6b8b6b
-// Bronze: #8b7355
-// Gold: #c69c6d
-// Champagne: #d4b896
-// Gray: #737373
+// Blue: #2563eb, #1d4ed8
+// Teal: #0d9488, #0f766e
+// Gray: #6b7280, #9ca3af
+// Amber: #f59e0b
 const STATUS_COLORS: Record<string, string> = {
   new: 'var(--process-new-demand)',
   new_request: 'var(--process-new-demand)',
@@ -280,7 +279,7 @@ const STATUS_COLORS: Record<string, string> = {
 
 function getStatusColor(status: string): string {
   const normalized = status.toLowerCase().replace(/[\s-]/g, '_');
-  return STATUS_COLORS[normalized] || 'var(--brand-olive)';
+  return STATUS_COLORS[normalized] || 'var(--brand-primary)';
 }
 
 const DemandTimelineRow: React.FC<DemandTimelineRowProps> = ({

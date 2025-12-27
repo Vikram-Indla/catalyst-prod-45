@@ -230,9 +230,8 @@ function WorkItemsDataGrid({
                 borderBottom: '1px solid var(--divider)',
               }}
             >
-              {/* Gold accent bar */}
-              <div className="absolute left-0 top-0 bottom-0 w-1 bg-[#c69c6d]" />
-              <span className="text-[#8b7355] dark:text-[#d4b896]">
+              <div className="absolute left-0 top-0 bottom-0 w-1 bg-[#2563eb]" />
+              <span className="text-[#2563eb] dark:text-[#60a5fa]">
                 {group.label}
               </span>
             </div>

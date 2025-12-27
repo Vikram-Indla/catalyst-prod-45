@@ -846,7 +846,7 @@ export function CatalystEnterpriseTable<T extends { id: string }>({
           <div className={cn(
             "fixed top-6 right-6 z-[1000]",
             "flex items-center gap-2 px-5 py-3 rounded-lg",
-            "bg-[#5c7c5c] text-white shadow-lg"
+            "bg-[#0d9488] text-white shadow-lg"
           )}>
             <Icons.Check /> {toast}
           </div>

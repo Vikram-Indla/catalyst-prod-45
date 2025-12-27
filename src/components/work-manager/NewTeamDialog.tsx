@@ -102,7 +102,7 @@ export function NewTeamDialog({ open, onOpenChange, users, onCreateTeam }: NewTe
                     className={cn(
                       "flex items-center gap-3 px-3 py-2.5 text-sm cursor-pointer transition-colors",
                       checked 
-                        ? "bg-[#C69C6D]/10 border-l-2 border-l-[#C69C6D]" 
+                        ? "bg-[#2563eb]/10 border-l-2 border-l-[#2563eb]" 
                         : "border-l-2 border-l-transparent hover:bg-muted/50"
                     )}
                   >

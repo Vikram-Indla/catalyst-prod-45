@@ -111,7 +111,7 @@ function ReleaseRow({
       <div className="min-w-[140px]">
         <button
           onClick={onClick}
-          className="text-[14px] font-medium text-[#c69c6d] dark:text-[#d4a855] hover:underline text-left"
+          className="text-[14px] font-medium text-[#2563eb] dark:text-[#60a5fa] hover:underline text-left"
         >
           {release.name}
         </button>
@@ -239,7 +239,7 @@ export function ReleasesView() {
               placeholder="Search releases"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-9 h-9 text-[14px] border-border focus:border-[#c69c6d] focus:ring-[#c69c6d]"
+              className="pl-9 h-9 text-[14px] border-border focus:border-[#2563eb] focus:ring-[#2563eb]"
             />
           </div>
           

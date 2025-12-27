@@ -199,7 +199,7 @@ function SnapshotTableRow({
             : "text-[#24292F] dark:text-[#f5f5f5]"
         )}>
           {themeCount}
-          {themeCount === 0 && <AlertTriangle className="h-3.5 w-3.5 inline ml-1 text-[#8b7355] dark:text-[#c69c6d]" />}
+          {themeCount === 0 && <AlertTriangle className="h-3.5 w-3.5 inline ml-1 text-[#f59e0b] dark:text-[#fbbf24]" />}
         </span>
       </td>
       

@@ -185,12 +185,12 @@ export function FeatureKanbanColumn({
                         {(item.project_name || item.epic_name) && (
                           <div className="flex flex-wrap gap-1.5 mb-2">
                             {item.project_name && (
-                              <span className="text-[10px] px-1.5 py-0.5 rounded border bg-[#8b7355]/15 text-[#8b7355] dark:text-[#d4b896] border-[#8b7355]/25">
+                              <span className="text-[10px] px-1.5 py-0.5 rounded border bg-[#6b7280]/15 text-[#6b7280] dark:text-[#9ca3af] border-[#6b7280]/25">
                                 {item.project_name}
                               </span>
                             )}
                             {item.epic_name && (
-                              <span className="text-[10px] px-1.5 py-0.5 rounded border bg-[#5c7c5c]/15 text-[#5c7c5c] dark:text-[#7a9a7a] border-[#5c7c5c]/25">
+                              <span className="text-[10px] px-1.5 py-0.5 rounded border bg-[#0d9488]/15 text-[#0d9488] dark:text-[#2dd4bf] border-[#0d9488]/25">
                                 {item.epic_name}
                               </span>
                             )}
