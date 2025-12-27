@@ -727,68 +727,69 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
         <SheetContent
           side="right"
           hideClose
-          className={cn("p-0 flex flex-col overflow-hidden", drawerWidthClass)}
-          style={{ backgroundColor: 'var(--surface-bg)' }}
+          className={cn("p-0 flex flex-col", drawerWidthClass)}
+          style={{ 
+            background: 'var(--surface-bg, hsl(var(--background)))',
+            borderLeft: '1px solid var(--border-default, hsl(var(--border)))'
+          }}
         >
-          {/* Left accent bar */}
-          <div
-            aria-hidden
-            className="pointer-events-none fixed left-0 top-0 bottom-0 w-1 z-[201]"
-            style={{ backgroundColor: 'var(--brand-primary)' }}
-          />
-          
           <SheetHeader className="flex-col space-y-0 shrink-0 p-0">
-            {/* Header Row */}
+            
+            {/* ═══════════════════════════════════════════════════════════
+                BREADCRUMB ROW - Matching BusinessRequestDrawer
+                ═══════════════════════════════════════════════════════════ */}
             <div 
-              className="px-4 md:px-5 pt-4 pb-3 flex items-start justify-between gap-4"
-              style={{ borderBottom: '1px solid var(--border-subtle)' }}
+              className="px-5 pt-2.5 pb-1.5 flex items-center gap-1.5"
+              style={{ borderBottom: '1px solid var(--border-subtle, hsl(var(--border)/0.5))' }}
             >
-              {/* Left: ID, Title, Meta */}
-              <div className="flex-1 min-w-0">
-                {/* ID + Status + Snapshot Lens */}
-                <div className="flex items-center gap-2 mb-1.5 flex-wrap">
-                  <span 
-                    className="text-[11px] font-semibold px-1.5 py-0.5 rounded"
-                    style={{ backgroundColor: 'var(--secondary-green-bg)', color: 'var(--secondary-green)' }}
-                  >
-                    {formatThemeKey(theme.id)}
-                  </span>
-                  <button
-                    onClick={handleCopyLink}
-                    className="p-1 rounded transition-colors"
-                    style={{ color: 'var(--text-muted)' }}
-                    onMouseEnter={(e) => e.currentTarget.style.color = 'var(--brand-primary)'}
-                    onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-muted)'}
-                    title="Copy link"
-                  >
-                    <LinkIcon size={12} />
-                  </button>
-                  
-                  {/* Inline editable status dropdown */}
-                  <ThemeStatusDropdown
-                    currentStatus={formData.status || theme.status || 'draft'}
-                    onChange={(newStatus) => updateStatusMutation.mutate(newStatus)}
-                    isLoading={updateStatusMutation.isPending}
-                  />
-                  
-                  {/* Snapshot lens - shown once */}
-                  {snapshot && (
-                    <span 
-                      className="text-[10px] px-2 py-0.5 rounded-full"
-                      style={{ 
-                        backgroundColor: 'var(--surface-subtle)',
-                        border: '1px solid var(--border-subtle)',
-                        color: 'var(--text-muted)'
-                      }}
-                    >
-                      <Eye size={10} className="inline mr-1" style={{ marginTop: -1 }} />
-                      Viewing under: {snapshot.name}
-                    </span>
-                  )}
-                </div>
+              <span 
+                className="text-[10px] font-medium uppercase tracking-[0.5px]"
+                style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}
+              >
+                Strategic Themes
+              </span>
+              <span className="text-[10px]" style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}>/</span>
+              <span 
+                className="text-[11px] font-semibold font-mono"
+                style={{ color: '#2563eb' }}
+              >
+                {formatThemeKey(theme.id)}
+              </span>
+              <button
+                onClick={handleCopyLink}
+                className="p-1 rounded hover:bg-[var(--surface-hover,hsl(var(--muted)))] transition-smooth press-scale"
+                style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}
+                title="Copy link"
+              >
+                <LinkIcon className="h-3 w-3" />
+              </button>
+              
+              {/* Snapshot lens */}
+              {snapshot && (
+                <span 
+                  className="ml-2 text-[10px] px-2 py-0.5 rounded-full"
+                  style={{ 
+                    backgroundColor: 'hsl(var(--muted))',
+                    border: '1px solid hsl(var(--border))',
+                    color: 'var(--text-muted, hsl(var(--muted-foreground)))'
+                  }}
+                >
+                  <Eye size={10} className="inline mr-1" style={{ marginTop: -1 }} />
+                  Viewing: {snapshot.name}
+                </span>
+              )}
+            </div>
 
-                {/* Editable title - always inline editable */}
-                <div className="flex items-center gap-1.5 group mb-2">
+            {/* ═══════════════════════════════════════════════════════════
+                HERO ROW: Title + Status Badge - Matching BusinessRequestDrawer
+                ═══════════════════════════════════════════════════════════ */}
+            <div className="flex items-start justify-between px-5 py-4 gap-4">
+              
+              {/* Left Side: Title + Status Badge Row */}
+              <div className="flex-1 min-w-0 space-y-2.5">
+                
+                {/* Title with Edit */}
+                <div className="flex items-center gap-1.5 group">
                   {isEditingName ? (
                     <Input
                       ref={nameInputRef}
@@ -796,103 +797,125 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
                       onChange={(e) => setEditedName(e.target.value)}
                       onBlur={handleSaveName}
                       onKeyDown={handleNameKeyDown}
-                      className="text-[16px] font-semibold h-auto py-1 px-2"
+                      className="text-[22px] font-semibold h-auto py-1.5 px-2 max-w-[480px] border-[#2563eb] focus-visible:ring-[#2563eb]/20 transition-smooth"
                       style={{ 
-                        backgroundColor: 'var(--surface-bg)', 
-                        borderColor: 'var(--brand-primary)',
-                        color: 'var(--text-primary)'
+                        background: 'var(--surface-subtle, hsl(var(--muted)))',
+                        color: 'var(--text-primary, hsl(var(--foreground)))'
                       }}
                     />
                   ) : (
                     <>
                       <SheetTitle 
-                        className="truncate text-[16px] font-semibold cursor-pointer hover:text-primary transition-colors"
-                        style={{ color: 'var(--text-primary)' }}
-                        onClick={handleStartEditName}
-                        title="Click to edit"
+                        className="text-[22px] font-semibold tracking-[-0.3px] truncate max-w-[520px] leading-tight"
+                        style={{ color: 'var(--text-primary, hsl(var(--foreground)))' }}
                       >
-                        {formData.name || theme.name}
+                        {formData.name || theme.name || 'Untitled Theme'}
                       </SheetTitle>
                       <button
                         onClick={handleStartEditName}
-                        className="opacity-0 group-hover:opacity-100 p-1 rounded transition-all"
-                        style={{ color: 'var(--text-muted)' }}
+                        className="opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-[var(--surface-hover,hsl(var(--muted)))] transition-smooth press-scale"
+                        style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}
                         title="Rename"
                       >
-                        <Pencil size={12} />
+                        <Pencil className="h-3.5 w-3.5" />
                       </button>
                     </>
                   )}
                 </div>
 
-                {/* Meta row */}
-                <div className="flex items-center gap-3 text-[11px]" style={{ color: 'var(--text-muted)' }}>
-                  <div className="flex items-center gap-1">
+                {/* Status Badge Row */}
+                <div className="flex items-center gap-2.5">
+                  {/* Status Dropdown */}
+                  <ThemeStatusDropdown
+                    currentStatus={formData.status || theme.status || 'draft'}
+                    onChange={(newStatus) => updateStatusMutation.mutate(newStatus)}
+                    isLoading={updateStatusMutation.isPending}
+                  />
+
+                  {/* Updated timestamp */}
+                  <div 
+                    className="flex items-center gap-1 text-[11px]"
+                    style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}
+                  >
                     <Clock size={10} />
                     <span>Updated {formatDistanceToNow(new Date(lastUpdated), { addSuffix: true })}</span>
                   </div>
                 </div>
               </div>
 
-              {/* Right: Actions - simplified, no Edit button */}
+              {/* Right Side: Action Buttons */}
               <div className="flex items-center gap-1.5 shrink-0">
-                {/* More actions menu */}
+                
+                {/* More Options */}
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button 
                       variant="ghost" 
                       size="icon" 
-                      className="h-7 w-7"
-                      style={{ color: 'var(--text-muted)' }}
+                      className="h-8 w-8 hover:bg-[var(--surface-hover,hsl(var(--muted)))] press-scale transition-smooth"
+                      style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}
                     >
-                      <MoreVertical size={14} />
+                      <MoreVertical className="h-4 w-4" />
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-44 z-[400] bg-background border-border">
+                  <DropdownMenuContent 
+                    align="end" 
+                    className="w-48 z-[400] shadow-catalyst-lg"
+                    style={{ background: 'var(--surface-bg, hsl(var(--background)))', borderColor: 'var(--border-default, hsl(var(--border)))' }}
+                  >
                     <DropdownMenuItem onSelect={() => setMode('edit')}>
-                      <Pencil size={12} className="mr-2" />
+                      <Pencil className="h-4 w-4 mr-2" />
                       Edit Details
                     </DropdownMenuItem>
                     <DropdownMenuItem onSelect={() => duplicateMutation.mutate()}>
-                      <Copy size={12} className="mr-2" />
-                      Duplicate
+                      <Copy className="h-4 w-4 mr-2" />
+                      Duplicate Theme
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem onSelect={() => setShowDeleteDialog(true)} className="text-destructive">
-                      <Trash2 size={12} className="mr-2" />
-                      Delete
+                    <DropdownMenuItem 
+                      onSelect={() => setShowDeleteDialog(true)}
+                      className="text-red-600"
+                    >
+                      <Trash2 className="h-4 w-4 mr-2" />
+                      Delete Theme
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
 
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
-                  onClick={() => setIsExpanded(!isExpanded)} 
-                  className="h-7 w-7"
-                  style={{ color: 'var(--text-muted)' }}
+                {/* Expand/Collapse */}
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setIsExpanded(!isExpanded)}
+                  className="h-8 w-8 hover:bg-[var(--surface-hover,hsl(var(--muted)))] press-scale transition-smooth"
+                  style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}
+                  title={isExpanded ? 'Collapse' : 'Expand'}
                 >
-                  {isExpanded ? <Minimize2 size={14} /> : <Maximize2 size={14} />}
+                  {isExpanded ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
                 </Button>
 
+                {/* Close */}
                 <Button 
                   variant="ghost" 
                   size="icon" 
-                  onClick={handleAttemptClose} 
-                  className="h-7 w-7"
-                  style={{ color: 'var(--text-muted)' }}
+                  onClick={handleAttemptClose}
+                  className="h-8 w-8 hover:bg-[var(--surface-hover,hsl(var(--muted)))] press-scale transition-smooth"
+                  style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}
                 >
-                  <X size={14} />
+                  <X className="h-4 w-4" />
                 </Button>
               </div>
             </div>
+
+            {/* Bottom Border */}
+            <div style={{ borderBottom: '1px solid var(--border-default, hsl(var(--border)))' }} />
             <SheetDescription className="sr-only">Theme details panel</SheetDescription>
           </SheetHeader>
 
           {/* Progress Row - with tooltip */}
           <div 
-            className="px-4 md:px-5 py-3"
-            style={{ borderBottom: '1px solid var(--border-subtle)' }}
+            className="px-5 py-3"
+            style={{ borderBottom: '1px solid var(--border-default, hsl(var(--border)))' }}
           >
             <ProgressWithTooltip
               entityType="theme"
@@ -901,45 +924,69 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
             />
           </div>
 
-          {/* Tabs Navigation */}
+          {/* ═══════════════════════════════════════════════════════════
+              TABS - Catalyst Design System (matching BusinessRequestDrawer)
+              ═══════════════════════════════════════════════════════════ */}
           <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col min-h-0">
-            <div 
-              className="px-4 md:px-5 shrink-0"
-              style={{ borderBottom: '1px solid var(--border-subtle)' }}
+            <TabsList 
+              className="w-full justify-start rounded-none h-auto shrink-0 flex-nowrap px-5 bg-transparent py-0"
+              style={{ borderBottom: '1px solid var(--border-default, hsl(var(--border)))' }}
             >
-              <TabsList className="h-10 bg-transparent p-0 gap-4">
-                <TabsTrigger 
-                  value="overview" 
-                  className="h-10 px-0 bg-transparent data-[state=active]:bg-transparent data-[state=active]:shadow-none rounded-none border-b-2 border-transparent data-[state=active]:border-[var(--brand-primary)] text-[12px] font-medium"
-                  style={{ color: activeTab === 'overview' ? 'var(--brand-primary)' : 'var(--text-muted)' }}
-                >
-                  Overview
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="alignment" 
-                  className="h-10 px-0 bg-transparent data-[state=active]:bg-transparent data-[state=active]:shadow-none rounded-none border-b-2 border-transparent data-[state=active]:border-[var(--brand-primary)] text-[12px] font-medium"
-                  style={{ color: activeTab === 'alignment' ? 'var(--brand-primary)' : 'var(--text-muted)' }}
-                >
-                  Alignment
-                  <span 
-                    className="ml-1.5 text-[10px] px-1.5 py-0.5 rounded bg-muted text-muted-foreground"
-                  >
-                    {objectives.length + epics.length}
-                  </span>
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="activity" 
-                  className="h-10 px-0 bg-transparent data-[state=active]:bg-transparent data-[state=active]:shadow-none rounded-none border-b-2 border-transparent data-[state=active]:border-[var(--brand-primary)] text-[12px] font-medium"
-                  style={{ color: activeTab === 'activity' ? 'var(--brand-primary)' : 'var(--text-muted)' }}
-                >
-                  Activity
-                </TabsTrigger>
-              </TabsList>
-            </div>
+              <TabsTrigger
+                value="overview"
+                className={cn(
+                  "relative px-3 md:px-4 py-3 text-xs md:text-[13px] font-medium whitespace-nowrap",
+                  "bg-transparent border-none rounded-none",
+                  "data-[state=inactive]:text-muted-foreground data-[state=active]:text-foreground",
+                  "after:absolute after:bottom-0 after:left-2 after:right-2",
+                  "after:h-[2px] after:rounded-t-sm after:transition-all",
+                  "data-[state=inactive]:after:bg-transparent data-[state=inactive]:after:opacity-0",
+                  "data-[state=active]:after:bg-[#2563eb] data-[state=active]:after:opacity-100"
+                )}
+              >
+                Overview
+              </TabsTrigger>
+              <TabsTrigger
+                value="alignment"
+                className={cn(
+                  "relative px-3 md:px-4 py-3 text-xs md:text-[13px] font-medium whitespace-nowrap",
+                  "bg-transparent border-none rounded-none",
+                  "data-[state=inactive]:text-muted-foreground data-[state=active]:text-foreground",
+                  "after:absolute after:bottom-0 after:left-2 after:right-2",
+                  "after:h-[2px] after:rounded-t-sm after:transition-all",
+                  "data-[state=inactive]:after:bg-transparent data-[state=inactive]:after:opacity-0",
+                  "data-[state=active]:after:bg-[#2563eb] data-[state=active]:after:opacity-100"
+                )}
+              >
+                Alignment
+                <span className="ml-1.5 text-[10px] px-1.5 py-0.5 rounded bg-muted text-muted-foreground">
+                  {objectives.length + epics.length}
+                </span>
+              </TabsTrigger>
+              <TabsTrigger
+                value="activity"
+                className={cn(
+                  "relative px-3 md:px-4 py-3 text-xs md:text-[13px] font-medium whitespace-nowrap",
+                  "bg-transparent border-none rounded-none",
+                  "data-[state=inactive]:text-muted-foreground data-[state=active]:text-foreground",
+                  "after:absolute after:bottom-0 after:left-2 after:right-2",
+                  "after:h-[2px] after:rounded-t-sm after:transition-all",
+                  "data-[state=inactive]:after:bg-transparent data-[state=inactive]:after:opacity-0",
+                  "data-[state=active]:after:bg-[#2563eb] data-[state=active]:after:opacity-100"
+                )}
+              >
+                Activity
+              </TabsTrigger>
+            </TabsList>
 
-            {/* Tab Content */}
-            <ScrollArea className="flex-1">
-              <div className="p-4 md:p-5">
+            {/* ═══════════════════════════════════════════════════════════
+                DRAWER BODY
+                ═══════════════════════════════════════════════════════════ */}
+            <ScrollArea 
+              className="flex-1"
+              style={{ background: 'var(--surface-subtle, hsl(var(--muted)/0.3))' }}
+            >
+              <div className="p-5 pb-8">
                 
                 {/* OVERVIEW TAB */}
                 <TabsContent value="overview" className="mt-0 space-y-4">
