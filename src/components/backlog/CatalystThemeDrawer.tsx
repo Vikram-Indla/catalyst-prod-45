@@ -15,7 +15,8 @@ import {
   Trash2, Copy, X, Pencil, Link as LinkIcon, 
   MoreVertical, Plus, ChevronRight,
   Target, Layers, Clock, FileText, History, BarChart3,
-  AlertTriangle, Search, ArrowUpDown, Eye, ChevronDown
+  AlertTriangle, Search, ArrowUpDown, Eye, ChevronDown,
+  TrendingUp, HelpCircle
 } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
@@ -193,55 +194,251 @@ function ProgressBar({ value, showOverflowWarning = false }: { value: number | n
   );
 }
 
-// KPI Card component with hover states
+// Premium KPI Card component matching HTML demo design
 function KPICard({ 
   label, 
   value, 
   subValue, 
   icon: Icon,
   overflow,
-  sparkline
+  variant = 'default'
 }: { 
   label: string; 
   value: string | number; 
   subValue?: string; 
   icon: React.ElementType;
   overflow?: boolean;
-  sparkline?: React.ReactNode;
+  variant?: 'default' | 'info' | 'success' | 'warning';
 }) {
+  // Determine variant based on value
+  const getAutoVariant = () => {
+    if (variant !== 'default') return variant;
+    
+    const numValue = typeof value === 'string' ? parseFloat(value) : value;
+    if (isNaN(numValue) || numValue === 0) return 'default';
+    if (numValue === 100) return 'success';
+    return 'info';
+  };
+  
+  const activeVariant = getAutoVariant();
+  
+  const variantStyles = {
+    default: {
+      iconBg: 'hsl(var(--muted))',
+      iconColor: 'var(--text-muted)',
+      valueColor: 'var(--text-primary)',
+    },
+    info: {
+      iconBg: 'hsl(217 91% 60% / 0.12)',
+      iconColor: '#2563eb',
+      valueColor: '#2563eb',
+    },
+    success: {
+      iconBg: 'hsl(173 58% 39% / 0.12)',
+      iconColor: 'hsl(173 58% 39%)',
+      valueColor: 'hsl(173 58% 39%)',
+    },
+    warning: {
+      iconBg: 'hsl(38 92% 50% / 0.12)',
+      iconColor: 'hsl(38 92% 50%)',
+      valueColor: 'hsl(38 92% 50%)',
+    },
+  };
+  
+  const styles = variantStyles[activeVariant];
+  
   return (
     <div 
-      className="flex-1 min-w-[140px] p-3 rounded-lg bg-white dark:bg-neutral-900 border border-gray-200 dark:border-gray-700"
+      className="group relative flex-1 min-w-[140px] p-5 rounded-2xl border transition-all duration-200 ease-out hover:shadow-md hover:-translate-y-0.5"
+      style={{ 
+        background: 'hsl(var(--background))',
+        borderColor: 'hsl(var(--border))',
+        boxShadow: '0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06)'
+      }}
     >
-      <div className="flex items-center gap-2 mb-1.5">
-        <Icon size={12} style={{ color: 'var(--text-muted)' }} />
-        <span className="text-[10px] font-medium uppercase tracking-wider" style={{ color: 'var(--text-muted)' }}>
-          {label}
-        </span>
-        {overflow && (
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <AlertTriangle size={10} style={{ color: 'var(--status-warning)' }} />
-              </TooltipTrigger>
-              <TooltipContent>
-                <p className="text-xs">Rollup exceeds 100%</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        )}
-      </div>
-      <div className="flex items-center justify-between gap-2">
-        <div className="text-[18px] font-semibold" style={{ color: 'var(--text-primary)' }}>
+      {/* Gradient overlay on hover */}
+      <div 
+        className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none"
+        style={{
+          background: 'linear-gradient(135deg, hsl(217 91% 60% / 0.03) 0%, transparent 50%)'
+        }}
+      />
+      
+      <div className="relative">
+        {/* Icon + Label */}
+        <div className="flex items-center gap-2.5 mb-3">
+          <div 
+            className="p-2 rounded-xl transition-transform duration-200 group-hover:scale-110"
+            style={{ background: styles.iconBg }}
+          >
+            <Icon className="h-4 w-4" style={{ color: styles.iconColor }} />
+          </div>
+          <span 
+            className="text-[11px] font-semibold uppercase tracking-wider"
+            style={{ color: 'var(--text-muted)' }}
+          >
+            {label}
+          </span>
+          {overflow && (
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <AlertTriangle size={12} style={{ color: 'hsl(38 92% 50%)' }} />
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p className="text-xs">Rollup exceeds 100%</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          )}
+        </div>
+        
+        {/* Value */}
+        <div 
+          className="text-[32px] font-bold tabular-nums tracking-tight leading-none"
+          style={{ color: styles.valueColor }}
+        >
           {value}
         </div>
-        {sparkline}
+        
+        {/* Subtext */}
+        {subValue && (
+          <p 
+            className="text-xs mt-2 leading-relaxed"
+            style={{ color: 'var(--text-muted)' }}
+          >
+            {subValue}
+          </p>
+        )}
       </div>
-      {subValue && (
-        <div className="text-[10px] mt-1" style={{ color: 'var(--text-muted)' }}>
-          {subValue}
+      
+      {/* Hover indicator */}
+      <div 
+        className="absolute bottom-0 left-4 right-4 h-0.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+        style={{ background: '#2563eb' }}
+      />
+    </div>
+  );
+}
+
+// Premium Progress Bar matching HTML demo
+function PremiumProgressBar({ progress }: { progress: number }) {
+  const getProgressColor = () => {
+    if (progress === 0) return {
+      fill: 'hsl(var(--muted))',
+      glow: 'none',
+      text: 'var(--text-muted)'
+    };
+    if (progress === 100) return {
+      fill: 'linear-gradient(90deg, hsl(173 58% 39%) 0%, hsl(173 58% 45%) 100%)',
+      glow: '0 0 20px hsl(173 58% 39% / 0.4), 0 0 40px hsl(173 58% 39% / 0.2)',
+      text: 'hsl(173 58% 39%)'
+    };
+    return {
+      fill: 'linear-gradient(90deg, #2563eb 0%, #3b82f6 100%)',
+      glow: '0 0 16px rgba(37, 99, 235, 0.3)',
+      text: '#2563eb'
+    };
+  };
+
+  const colors = getProgressColor();
+
+  return (
+    <div 
+      className="px-6 py-5"
+      style={{ 
+        background: 'linear-gradient(180deg, hsl(var(--background)) 0%, hsl(var(--muted) / 0.3) 100%)',
+        borderBottom: '1px solid hsl(var(--border))'
+      }}
+    >
+      {/* Header Row */}
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-2">
+          <div 
+            className="p-1.5 rounded-lg"
+            style={{ background: 'hsl(217 91% 60% / 0.1)' }}
+          >
+            <TrendingUp className="h-4 w-4" style={{ color: '#2563eb' }} />
+          </div>
+          <span 
+            className="text-sm font-semibold uppercase tracking-wide"
+            style={{ color: 'var(--text-primary)' }}
+          >
+            Overall Progress
+          </span>
         </div>
-      )}
+        
+        <div className="flex items-center gap-2">
+          <span 
+            className="text-2xl font-bold tabular-nums tracking-tight"
+            style={{ color: colors.text }}
+          >
+            {progress}%
+          </span>
+          <button
+            className="p-1.5 rounded-lg hover:bg-muted transition-colors"
+            style={{ color: 'var(--text-muted)' }}
+            title="How is progress calculated?"
+          >
+            <HelpCircle className="h-4 w-4" />
+          </button>
+        </div>
+      </div>
+      
+      {/* Progress Track */}
+      <div 
+        className="relative h-3 w-full rounded-full overflow-hidden"
+        style={{ 
+          background: 'hsl(var(--muted))',
+          boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.1)'
+        }}
+      >
+        {/* Animated Background Pattern */}
+        <div 
+          className="absolute inset-0 opacity-30"
+          style={{
+            backgroundImage: 'repeating-linear-gradient(90deg, transparent, transparent 10px, rgba(255,255,255,0.03) 10px, rgba(255,255,255,0.03) 20px)'
+          }}
+        />
+        
+        {/* Progress Fill */}
+        <div 
+          className="absolute inset-y-0 left-0 rounded-full transition-all duration-700 ease-out"
+          style={{ 
+            width: `${Math.max(progress, 0)}%`,
+            background: colors.fill,
+            boxShadow: colors.glow
+          }}
+        >
+          {/* Shine Effect */}
+          <div 
+            className="absolute inset-0 rounded-full"
+            style={{
+              background: 'linear-gradient(180deg, rgba(255,255,255,0.25) 0%, transparent 50%, rgba(0,0,0,0.1) 100%)'
+            }}
+          />
+        </div>
+        
+        {/* Milestone Markers */}
+        {[25, 50, 75].map((marker) => (
+          <div
+            key={marker}
+            className="absolute top-0 bottom-0 w-px"
+            style={{ 
+              left: `${marker}%`,
+              background: 'hsl(var(--border))',
+              opacity: 0.5
+            }}
+          />
+        ))}
+      </div>
+      
+      {/* Progress Labels */}
+      <div className="flex justify-between mt-2">
+        <span className="text-[10px] font-medium" style={{ color: 'var(--text-muted)' }}>0%</span>
+        <span className="text-[10px] font-medium" style={{ color: 'var(--text-muted)' }}>50%</span>
+        <span className="text-[10px] font-medium" style={{ color: 'var(--text-muted)' }}>100%</span>
+      </div>
     </div>
   );
 }
@@ -285,6 +482,61 @@ function TruncatedDescription({ content }: { content: string }) {
           {isExpanded ? 'Show less' : 'Expand'}
         </button>
       )}
+    </div>
+  );
+}
+
+// Premium Description Section Card with collapsible header
+function DescriptionSectionCard({ description, themeName }: { description?: string | null; themeName?: string }) {
+  const [isOpen, setIsOpen] = useState(true);
+  
+  // Strip HTML for display
+  const displayText = description?.replace(/<[^>]*>/g, '') || themeName || 'No description provided';
+  
+  return (
+    <div 
+      className="rounded-2xl border overflow-hidden"
+      style={{ 
+        background: 'hsl(var(--background))',
+        borderColor: 'hsl(var(--border))',
+        boxShadow: '0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06)'
+      }}
+    >
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="flex items-center justify-between w-full px-5 py-4 hover:bg-muted/50 transition-colors"
+      >
+        <div className="flex items-center gap-3">
+          <div 
+            className="p-2 rounded-xl"
+            style={{ background: 'hsl(217 91% 60% / 0.1)' }}
+          >
+            <FileText className="h-4 w-4" style={{ color: '#2563eb' }} />
+          </div>
+          <span className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>
+            Description
+          </span>
+        </div>
+        
+        <ChevronRight 
+          className={cn("h-4 w-4 transition-transform duration-200", isOpen && "rotate-90")}
+          style={{ color: 'var(--text-muted)' }}
+        />
+      </button>
+      
+      <div className={cn(
+        "overflow-hidden transition-all duration-300 ease-out",
+        isOpen ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0"
+      )}>
+        <div 
+          className="px-5 py-4"
+          style={{ borderTop: '1px solid hsl(var(--border) / 0.5)' }}
+        >
+          <p className="text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+            {displayText}
+          </p>
+        </div>
+      </div>
     </div>
   );
 }
@@ -862,17 +1114,10 @@ export function CatalystThemeDrawer({ theme, isOpen, onClose }: CatalystThemeDra
             <SheetDescription className="sr-only">Theme details panel</SheetDescription>
           </SheetHeader>
 
-          {/* Progress Row - with tooltip */}
-          <div 
-            className="px-5 py-3"
-            style={{ borderBottom: '1px solid var(--border-default, hsl(var(--border)))' }}
-          >
-            <ProgressWithTooltip
-              entityType="theme"
-              entityId={theme.id}
-              size="md"
-            />
-          </div>
+          {/* Premium Progress Bar Section */}
+          <PremiumProgressBar 
+            progress={kpiMetrics.overallProgress} 
+          />
 
           {/* ═══════════════════════════════════════════════════════════
               TABS - Catalyst Design System (matching BusinessRequestDrawer)
@@ -939,73 +1184,42 @@ export function CatalystThemeDrawer({ theme, isOpen, onClose }: CatalystThemeDra
               <div className="p-5 pb-8">
                 
                 {/* OVERVIEW TAB */}
-                <TabsContent value="overview" className="mt-0 space-y-4">
-                  {/* KPI Band */}
-                  <div className="flex flex-wrap gap-3">
+                <TabsContent value="overview" className="mt-0 space-y-5">
+                  {/* Premium 2x2 KPI Grid */}
+                  <div className="grid grid-cols-2 gap-4">
                     <KPICard 
                       icon={BarChart3}
                       label="Overall Progress" 
                       value={`${kpiMetrics.overallProgress}%`}
                       overflow={kpiMetrics.overallOverflow}
-                      sparkline={
-                        kpiMetrics.overallProgress > 0 ? (
-                          <ProgressSparkline 
-                            data={generateMockProgressHistory(kpiMetrics.overallProgress)}
-                            width={80}
-                            height={24}
-                            ariaLabel="Overall progress trend"
-                          />
-                        ) : undefined
-                      }
+                      variant={kpiMetrics.overallProgress === 100 ? 'success' : kpiMetrics.overallProgress > 0 ? 'info' : 'default'}
                     />
                     <KPICard 
                       icon={Target}
                       label="Objectives" 
                       value={kpiMetrics.objectiveCount}
-                      subValue={kpiMetrics.objectiveCount > 0 ? `Avg: ${kpiMetrics.avgObjectiveProgress}%` : undefined}
+                      variant={kpiMetrics.objectiveCount > 0 ? 'info' : 'default'}
                     />
                     <KPICard 
                       icon={Layers}
                       label="Epics" 
                       value={kpiMetrics.epicCount}
-                      subValue={kpiMetrics.epicCount > 0 
-                        ? Object.entries(kpiMetrics.epicStateBreakdown)
-                            .filter(([_, count]) => count > 0)
-                            .slice(0, 2)
-                            .map(([state, count]) => `${count} ${EPIC_STATES[state]?.label || state}`)
-                            .join(', ')
-                        : undefined
-                      }
+                      variant={kpiMetrics.epicCount > 0 ? 'info' : 'default'}
                     />
-                    {kpiMetrics.gaps === null && !kpiMetrics.hasAnyWork && (
-                      <KPICard 
-                        icon={AlertTriangle}
-                        label="Gaps" 
-                        value="—"
-                        subValue="No objectives or epics linked"
-                      />
-                    )}
+                    <KPICard 
+                      icon={AlertTriangle}
+                      label="Gaps" 
+                      value={kpiMetrics.hasAnyWork ? (kpiMetrics.gaps || 0) : "—"}
+                      subValue={kpiMetrics.hasAnyWork ? undefined : "No gaps identified"}
+                      variant={kpiMetrics.gaps && kpiMetrics.gaps > 0 ? 'warning' : 'default'}
+                    />
                   </div>
 
-                  {/* Summary / Description */}
-                  <section 
-                    className="rounded-lg p-4 bg-gray-50 dark:bg-neutral-900 border border-gray-200 dark:border-gray-700"
-                  >
-                    <div className="flex items-center gap-2 mb-3">
-                      <FileText size={14} style={{ color: 'var(--text-muted)' }} />
-                      <span className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: 'var(--text-muted)' }}>
-                        Description
-                      </span>
-                    </div>
-                    
-                    {formData.description ? (
-                      <TruncatedDescription content={formData.description} />
-                    ) : (
-                      <p className="text-[12px]" style={{ color: 'var(--text-muted)' }}>
-                        No description provided
-                      </p>
-                    )}
-                  </section>
+                  {/* Premium Description Section Card */}
+                  <DescriptionSectionCard 
+                    description={formData.description} 
+                    themeName={theme?.name}
+                  />
                 </TabsContent>
 
                 {/* ALIGNMENT TAB */}
