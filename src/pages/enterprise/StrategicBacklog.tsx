@@ -17,7 +17,7 @@ import { CatalystThemeDrawer } from '@/components/backlog/CatalystThemeDrawer';
 import { EpicDetailsPanel } from '@/components/items/epics/EpicDetailsPanel';
 import { ObjectiveDrawerV2 } from '@/modules/okr-v2/components/ObjectiveDrawerV2';
 import { SnapshotDetailsDrawerV2 } from '@/components/strategy/snapshots/SnapshotDetailsDrawerV2';
-import { CreateThemeDialog } from '@/components/strategic-backlog/CreateThemeDialog';
+import { CatalystCreateTheme } from '@/components/strategic-backlog/CatalystCreateTheme';
 import { CreateSnapshotModal } from '@/components/strategy/snapshots/CreateSnapshotModal';
 import { CreateObjectiveDialogV2 } from '@/modules/okr-v2/components/CreateObjectiveDialogV2';
 import { CreateEpicDialog } from '@/modules/program-epics/components/CreateEpicDialog';
@@ -310,7 +310,7 @@ export default function StrategicBacklog() {
 
 
       {/* Individual Create Dialogs for Empty States */}
-      <CreateThemeDialog
+      <CatalystCreateTheme
         open={showCreateTheme}
         onOpenChange={setShowCreateTheme}
         snapshotId={activeSnapshot?.id}

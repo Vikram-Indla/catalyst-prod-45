@@ -9,7 +9,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { CreateStrategyObjectDialog } from '@/components/strategic-backlog/CreateStrategyObjectDialog';
 import { CreateGoalDialog } from '@/components/strategic-backlog/CreateGoalDialog';
-import { CreateThemeDialog } from '@/components/strategic-backlog/CreateThemeDialog';
+import { CatalystCreateTheme } from '@/components/strategic-backlog/CatalystCreateTheme';
 import { CreateObjectiveDialogV2 } from '@/modules/okr-v2/components/CreateObjectiveDialogV2';
 
 interface CreateStrategyItemDropdownProps {
@@ -78,7 +78,7 @@ export function CreateStrategyItemDropdown({ snapshotId, isArchived }: CreateStr
 
       {/* Theme dialog */}
       {selectedType === 'theme' && (
-        <CreateThemeDialog
+        <CatalystCreateTheme
           open={true}
           onOpenChange={(open) => !open && handleClose()}
           snapshotId={snapshotId}

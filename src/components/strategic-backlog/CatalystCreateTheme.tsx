@@ -12,13 +12,13 @@ import { CATALYST_BRAND_COLORS, DEFAULT_THEME_COLOR } from '@/constants/brandCol
 import { cn } from '@/lib/utils';
 import { Circle, X, Loader2 } from 'lucide-react';
 
-interface CreateThemeDialogProps {
+interface CatalystCreateThemeProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   snapshotId?: string;
 }
 
-export function CreateThemeDialog({ open, onOpenChange, snapshotId }: CreateThemeDialogProps) {
+export function CatalystCreateTheme({ open, onOpenChange, snapshotId }: CatalystCreateThemeProps) {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [colorTag, setColorTag] = useState(DEFAULT_THEME_COLOR);

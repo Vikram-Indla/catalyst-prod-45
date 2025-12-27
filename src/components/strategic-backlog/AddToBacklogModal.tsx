@@ -10,7 +10,7 @@ import { Label } from '@/components/ui/label';
 import { Layers, Target, Calendar } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { CreateObjectiveDialogV2 } from '@/modules/okr-v2/components/CreateObjectiveDialogV2';
-import { CreateThemeDialog } from './CreateThemeDialog';
+import { CatalystCreateTheme } from './CatalystCreateTheme';
 import { CreateSnapshotModal } from '@/components/strategy/snapshots/CreateSnapshotModal';
 
 interface AddToBacklogModalProps {
@@ -163,8 +163,8 @@ export function AddToBacklogModal({ open, onOpenChange, snapshotId }: AddToBackl
         </DialogContent>
       </Dialog>
 
-      {/* CreateThemeDialog - canonical theme creation modal */}
-      <CreateThemeDialog
+      {/* CatalystCreateTheme - canonical theme creation modal */}
+      <CatalystCreateTheme
         open={showThemeDialog}
         onOpenChange={handleThemeDialogClose}
         snapshotId={snapshotId}
