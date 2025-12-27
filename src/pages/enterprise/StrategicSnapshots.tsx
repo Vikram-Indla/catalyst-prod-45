@@ -330,13 +330,37 @@ export default function StrategicSnapshots() {
 
   const handleDeleteConfirm = async () => {
     if (!deleteSnapshot) return;
-    
-    // Block deletion if items are still linked
-    if (deleteImpact && deleteImpact.total > 0) {
+
+    const hasBlocking = !!deleteImpact?.items?.some(
+      (i) => i.key !== 'snapshot_configurations' && i.count > 0
+    );
+
+    // Block deletion only when there are REAL linked entities that we shouldn't auto-remove here
+    if (hasBlocking) {
       catalystToast.warning('Cannot Delete', 'Please unlink all items before deleting.');
       return;
     }
-    
+
+    // Snapshot settings (and strategy links) are internal and should not block deletion.
+    // They also prevent deletion at the DB level, so we remove them first.
+    const { error: configErr } = await supabase
+      .from('snapshot_configurations')
+      .delete()
+      .eq('snapshot_id', deleteSnapshot.id);
+    if (configErr) {
+      catalystToast.error('Delete Failed', configErr.message || 'Could not remove snapshot settings.');
+      return;
+    }
+
+    const { error: linksErr } = await supabase
+      .from('snapshot_strategy_links')
+      .delete()
+      .eq('snapshot_id', deleteSnapshot.id);
+    if (linksErr) {
+      catalystToast.error('Delete Failed', linksErr.message || 'Could not remove snapshot links.');
+      return;
+    }
+
     await deleteSnapshotMutation.mutateAsync(deleteSnapshot.id);
     setDeleteSnapshot(null);
     setDeleteImpact(null);
@@ -644,7 +668,7 @@ export default function StrategicSnapshots() {
                   <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
                   Checking linked items...
                 </>
-              ) : deleteImpact && deleteImpact.total > 0 ? (
+              ) : deleteImpact?.items?.some((i) => i.key !== 'snapshot_configurations' && i.count > 0) ? (
                 <>
                   <AlertTriangle className="h-5 w-5 text-amber-500" />
                   Cannot Delete Snapshot
@@ -657,13 +681,13 @@ export default function StrategicSnapshots() {
               <div className="space-y-3">
                 {isCheckingDelete ? (
                   <p className="text-sm text-muted-foreground">Please wait...</p>
-                ) : deleteImpact && deleteImpact.total > 0 ? (
+                ) : deleteImpact?.items?.some((i) => i.key !== 'snapshot_configurations' && i.count > 0) ? (
                   <>
                     <p className="text-sm text-muted-foreground">
                       This snapshot has linked items that must be removed before deletion:
                     </p>
                     <ul className="space-y-2 mt-3">
-                      {deleteImpact.items.map((item) => (
+                      {deleteImpact?.items?.map((item) => (
                         <li 
                           key={item.key} 
                           className="flex items-center justify-between p-2.5 rounded-lg bg-amber-500/10 border border-amber-500/20"
@@ -686,22 +710,29 @@ export default function StrategicSnapshots() {
                       ))}
                     </ul>
                     <p className="text-xs text-muted-foreground mt-3">
-                      You can remove all linked items and delete the snapshot, or navigate to the Themes tab to manage them manually.
+                      Unlink the linked items, then try deleting again.
                     </p>
                   </>
                 ) : (
-                  <p>
-                    Are you sure you want to delete "{deleteSnapshot?.name}"? This action cannot be undone.
-                  </p>
+                  <>
+                    {deleteImpact?.items?.some((i) => i.key === 'snapshot_configurations' && i.count > 0) && (
+                      <p className="text-sm text-muted-foreground">
+                        This snapshot has saved settings. They will be removed when you delete the snapshot.
+                      </p>
+                    )}
+                    <p>
+                      Are you sure you want to delete "{deleteSnapshot?.name}"? This action cannot be undone.
+                    </p>
+                  </>
                 )}
               </div>
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className="flex-col sm:flex-row gap-2">
             <AlertDialogCancel onClick={() => { setDeleteSnapshot(null); setDeleteImpact(null); }}>
-              {deleteImpact && deleteImpact.total > 0 ? 'Close' : 'Cancel'}
+              {deleteImpact?.items?.some((i) => i.key !== 'snapshot_configurations' && i.count > 0) ? 'Close' : 'Cancel'}
             </AlertDialogCancel>
-            {!isCheckingDelete && deleteImpact && deleteImpact.total > 0 && (
+            {!isCheckingDelete && deleteImpact?.items?.some((i) => i.key !== 'snapshot_configurations' && i.count > 0) && (
               <Button
                 variant="destructive"
                 onClick={handleUnlinkAndDelete}
@@ -721,7 +752,7 @@ export default function StrategicSnapshots() {
                 )}
               </Button>
             )}
-            {!isCheckingDelete && (!deleteImpact || deleteImpact.total === 0) && (
+            {!isCheckingDelete && (!deleteImpact || !deleteImpact.items?.some((i) => i.key !== 'snapshot_configurations' && i.count > 0)) && (
               <AlertDialogAction
                 onClick={handleDeleteConfirm}
                 className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
