@@ -1,17 +1,18 @@
 /**
- * Strategic Backlog Tabs - Themes | Objectives | Epics
+ * Strategic Backlog Tabs - Themes | Snapshots | Objectives | Epics
  * Pixel-perfect implementation matching mockups
  */
 import { cn } from '@/lib/utils';
-import { Layers, Target, Box } from 'lucide-react';
+import { Layers, Target, Box, Calendar } from 'lucide-react';
 
-type SubSection = 'themes' | 'objectives' | 'epics';
+type SubSection = 'themes' | 'snapshots' | 'objectives' | 'epics';
 
 interface TabsProps {
   activeSection: SubSection;
   onSectionChange: (section: SubSection) => void;
   counts: {
     themes: number;
+    snapshots: number;
     objectives: number;
     epics: number;
   };
@@ -19,6 +20,7 @@ interface TabsProps {
 
 const TABS: { id: SubSection; label: string; icon: React.ElementType }[] = [
   { id: 'themes', label: 'Themes', icon: Layers },
+  { id: 'snapshots', label: 'Snapshots', icon: Calendar },
   { id: 'objectives', label: 'Objectives', icon: Target },
   { id: 'epics', label: 'Epics', icon: Box },
 ];

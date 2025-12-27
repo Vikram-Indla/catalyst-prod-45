@@ -11,12 +11,14 @@ import { PageChrome } from '@/components/layout/PageChrome';
 import { StrategicBacklogTabs } from '@/components/strategic-backlog/StrategicBacklogTabs';
 import { StrategicBacklogCoveragePanel } from '@/components/strategic-backlog/StrategicBacklogCoveragePanel';
 import { StrategicBacklogThemesSection } from '@/components/strategic-backlog/StrategicBacklogThemesSection';
+import { StrategicBacklogSnapshotsSection } from '@/components/strategic-backlog/StrategicBacklogSnapshotsSection';
 import { StrategicBacklogObjectivesSection } from '@/components/strategic-backlog/StrategicBacklogObjectivesSection';
 import { StrategicBacklogEpicsSection } from '@/components/strategic-backlog/StrategicBacklogEpicsSection';
 import { AddToBacklogModal } from '@/components/strategic-backlog/AddToBacklogModal';
 import { ThemeDetailsDrawer } from '@/components/backlog/ThemeDetailsDrawer';
 import { EpicDetailsPanel } from '@/components/items/epics/EpicDetailsPanel';
 import { ObjectiveDrawerV2 } from '@/modules/okr-v2/components/ObjectiveDrawerV2';
+import { SnapshotDetailsDrawerV2 } from '@/components/strategy/snapshots/SnapshotDetailsDrawerV2';
 import { 
   useThemeObjectiveCounts as useThemeObjCounts,
   useObjectiveKrCounts,
@@ -26,7 +28,7 @@ import { useSearchParams } from 'react-router-dom';
 import { useDebounce } from '@/hooks/useDebounce';
 import type { StrategicTheme } from '@/types/strategicBacklog';
 
-type SubSection = 'themes' | 'objectives' | 'epics';
+type SubSection = 'themes' | 'snapshots' | 'objectives' | 'epics';
 
 export default function StrategicBacklog() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -35,7 +37,7 @@ export default function StrategicBacklog() {
   const [activeSection, setActiveSection] = useState<SubSection>(tabParam || 'themes');
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<any>(null);
-  const [selectedItemType, setSelectedItemType] = useState<'theme' | 'objective' | 'epic' | null>(null);
+  const [selectedItemType, setSelectedItemType] = useState<'theme' | 'snapshot' | 'objective' | 'epic' | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   
   // Debounce search for performance
@@ -79,6 +81,24 @@ export default function StrategicBacklog() {
 
   const themeIds = useMemo(() => themes.map(t => t.id), [themes]);
 
+  // Fetch all snapshots
+  const { data: snapshots = [], isLoading: loadingSnapshots } = useQuery({
+    queryKey: ['strategic-backlog-all-snapshots', themeIds, debouncedSearch],
+    queryFn: async () => {
+      let query = supabase
+        .from('strategy_snapshots')
+        .select('*')
+        .neq('status', 'ARCHIVED');
+      
+      if (debouncedSearch && activeSection === 'snapshots') {
+        query = query.or(`name.ilike.%${debouncedSearch}%,description.ilike.%${debouncedSearch}%`);
+      }
+      
+      const { data, error } = await query.order('created_at', { ascending: false });
+      if (error) throw error;
+      return data || [];
+    },
+  });
   // Fetch all objectives
   const { data: objectives = [], isLoading: loadingObjectives, refetch: refetchObjectives } = useQuery({
     queryKey: ['strategic-backlog-all-objectives', themeIds, debouncedSearch],
@@ -129,9 +149,10 @@ export default function StrategicBacklog() {
   // Counts for tab badges
   const counts = useMemo(() => ({
     themes: themes.length,
+    snapshots: snapshots.length,
     objectives: objectives.length,
     epics: epics.length,
-  }), [themes.length, objectives.length, epics.length]);
+  }), [themes.length, snapshots.length, objectives.length, epics.length]);
 
   // Related counts
   const { data: objectiveCounts = {} } = useThemeObjCounts(themeIds);
@@ -143,7 +164,7 @@ export default function StrategicBacklog() {
     return Object.keys(objectiveCounts).filter(id => objectiveCounts[id] > 0).length;
   }, [objectiveCounts]);
 
-  const handleSelectItem = (item: any, type: 'theme' | 'objective' | 'epic') => {
+  const handleSelectItem = (item: any, type: 'theme' | 'snapshot' | 'objective' | 'epic') => {
     setSelectedItem(item);
     setSelectedItemType(type);
   };
@@ -209,6 +230,17 @@ export default function StrategicBacklog() {
                   objectiveCounts={objectiveCounts}
                 />
               )}
+              {activeSection === 'snapshots' && (
+                <StrategicBacklogSnapshotsSection
+                  snapshots={snapshots}
+                  themes={themes}
+                  isLoading={loadingSnapshots}
+                  onSelectItem={(item) => handleSelectItem(item, 'snapshot')}
+                  selectedItemId={selectedItemType === 'snapshot' ? selectedItem?.id : undefined}
+                  searchQuery={activeSection === 'snapshots' ? searchQuery : ''}
+                  onSearchChange={setSearchQuery}
+                />
+              )}
               {activeSection === 'objectives' && (
                 <StrategicBacklogObjectivesSection
                   objectives={objectives}
@@ -253,6 +285,15 @@ export default function StrategicBacklog() {
         {selectedItem && selectedItemType === 'epic' && (
           <EpicDetailsPanel
             epic={selectedItem}
+            open={true}
+            onClose={handleCloseDrawer}
+          />
+        )}
+
+        {/* Snapshot Details Drawer */}
+        {selectedItem && selectedItemType === 'snapshot' && (
+          <SnapshotDetailsDrawerV2
+            snapshot={selectedItem}
             open={true}
             onClose={handleCloseDrawer}
           />
