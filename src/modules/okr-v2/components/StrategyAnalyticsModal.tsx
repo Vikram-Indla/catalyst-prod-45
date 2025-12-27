@@ -39,7 +39,7 @@ export interface ThemeChip {
 // ─────────────────────────────────────────────────────────────────────────────────
 
 const SectionTitle = ({ children }: { children: React.ReactNode }) => (
-  <h3 className="mb-4 text-[11px] font-semibold text-[#C69C6D] uppercase tracking-wider">
+  <h3 className="mb-4 text-[11px] font-semibold text-[#2563eb] uppercase tracking-wider">
     {children}
   </h3>
 );
@@ -88,7 +88,7 @@ const KPICard = ({ title, children, wide = false }: { title: string; children: R
     "border border-[#E1E4E8] dark:border-[#30363D]",
     wide && "col-span-2"
   )}>
-    <div className="text-[11px] font-semibold text-[#C69C6D] uppercase tracking-wider mb-3">
+    <div className="text-[11px] font-semibold text-[#2563eb] uppercase tracking-wider mb-3">
       {title}
     </div>
     {children}

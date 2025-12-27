@@ -87,7 +87,7 @@ export function WorkItemDetailPanel({ item, onClose }: WorkItemDetailPanelProps)
         <div className="px-4 py-2 border-b border-border text-xs">
           <span className="text-muted-foreground">{item.parentKey}</span>
           <span className="text-muted-foreground mx-1">/</span>
-          <span className="text-[#c69c6d] hover:underline cursor-pointer">{item.key}</span>
+          <span className="text-[#2563eb] hover:underline cursor-pointer">{item.key}</span>
         </div>
       )}
 
@@ -122,7 +122,7 @@ export function WorkItemDetailPanel({ item, onClose }: WorkItemDetailPanelProps)
             <div className="text-xs font-semibold text-muted-foreground uppercase mb-1">Parent</div>
             <div className="flex items-center gap-2 p-2 bg-muted rounded-md">
               <span className="text-amber-500"><Zap className="h-4 w-4" /></span>
-              <span className="text-sm text-[#c69c6d] hover:underline cursor-pointer">
+              <span className="text-sm text-[#2563eb] hover:underline cursor-pointer">
                 {item.parentKey} {item.parentSummary}
               </span>
             </div>

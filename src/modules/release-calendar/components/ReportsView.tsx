@@ -61,7 +61,7 @@ export function ReportsView({ changeCards, isLoading }: ReportsViewProps) {
             <XAxis dataKey="name" tick={{ fontSize: 12 }} />
             <YAxis tick={{ fontSize: 12 }} />
             <Tooltip />
-            <Bar dataKey="value" fill="#c69c6d" radius={[4, 4, 0, 0]} />
+            <Bar dataKey="value" fill="#2563eb" radius={[4, 4, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>
       </Card>

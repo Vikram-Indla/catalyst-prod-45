@@ -366,7 +366,7 @@ export default function SubmitDemandRequest() {
             <div className="space-y-4">
               <div>
                 <Label className="text-sm font-medium text-gray-700">
-                  Summary <span className="text-[#c69c6d]">*</span>
+                  Summary <span className="text-[#ef4444]">*</span>
                 </Label>
                 <Input
                   placeholder="Brief title for your request"
@@ -385,7 +385,7 @@ export default function SubmitDemandRequest() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label className="text-sm font-medium text-gray-700">
-                    Business Ask <span className="text-[#c69c6d]">*</span>
+                    Business Ask <span className="text-[#ef4444]">*</span>
                   </Label>
                   <Select
                     value={formData.businessAsk}
@@ -407,7 +407,7 @@ export default function SubmitDemandRequest() {
                 
                 <div>
                   <Label className="text-sm font-medium text-gray-700">
-                    Delivery Platform <span className="text-[#c69c6d]">*</span>
+                    Delivery Platform <span className="text-[#ef4444]">*</span>
                   </Label>
                   <Select
                     value={formData.deliveryPlatform}
@@ -438,7 +438,7 @@ export default function SubmitDemandRequest() {
             
             <div>
               <Label className="text-sm font-medium text-gray-700">
-                Description <span className="text-[#c69c6d]">*</span>
+                Description <span className="text-[#ef4444]">*</span>
               </Label>
               <Textarea
                 placeholder="Describe your request..."
@@ -468,7 +468,7 @@ export default function SubmitDemandRequest() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label className="text-sm font-medium text-gray-700">
-                    Requested by <span className="text-[#c69c6d]">*</span>
+                    Requested by <span className="text-[#ef4444]">*</span>
                   </Label>
                   <Input
                     placeholder="Your full name"
@@ -483,7 +483,7 @@ export default function SubmitDemandRequest() {
                 
                 <div>
                   <Label className="text-sm font-medium text-gray-700">
-                    Email <span className="text-[#c69c6d]">*</span>
+                    Email <span className="text-[#ef4444]">*</span>
                   </Label>
                   <div className="flex mt-1.5">
                     <Input
@@ -509,7 +509,7 @@ export default function SubmitDemandRequest() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label className="text-sm font-medium text-gray-700">
-                    Department <span className="text-[#c69c6d]">*</span>
+                    Department <span className="text-[#ef4444]">*</span>
                   </Label>
                   <Select
                     value={formData.departmentId}
@@ -531,7 +531,7 @@ export default function SubmitDemandRequest() {
                 
                 <div>
                   <Label className="text-sm font-medium text-gray-700">
-                    Business Owner <span className="text-[#c69c6d]">*</span>
+                    Business Owner <span className="text-[#ef4444]">*</span>
                   </Label>
                   <Input
                     value={formData.businessOwner}
@@ -607,7 +607,7 @@ export default function SubmitDemandRequest() {
           <Button
             onClick={handleSubmit}
             disabled={isSubmitting}
-            className="gap-2 bg-gradient-to-r from-[#c69c6d] to-[#a67c52] hover:from-[#b8905f] hover:to-[#956c42] text-white px-6"
+            className="gap-2 bg-gradient-to-r from-[#2563eb] to-[#1d4ed8] hover:from-[#1d4ed8] hover:to-[#1e40af] text-white px-6"
           >
             {isSubmitting ? (
               <>
@@ -647,9 +647,9 @@ export default function SubmitDemandRequest() {
             
             {/* Request ID Box */}
             {submittedData && (
-              <div className="bg-[#f5ede3] rounded-lg p-4 mb-6">
+              <div className="bg-[#dbeafe] rounded-lg p-4 mb-6">
                 <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">Request ID</p>
-                <p className="text-2xl font-bold text-[#c69c6d]">{submittedData.requestId}</p>
+                <p className="text-2xl font-bold text-[#2563eb]">{submittedData.requestId}</p>
                 <p className="text-xs text-gray-500 mt-2">
                   Submitted: {format(submittedData.submittedAt, 'd MMMM yyyy \'at\' HH:mm')}
                 </p>
@@ -682,7 +682,7 @@ export default function SubmitDemandRequest() {
             <div className="flex flex-col gap-3">
               <Button
                 onClick={handleDownloadPDF}
-                className="w-full gap-2 bg-gradient-to-r from-[#c69c6d] to-[#a67c52] hover:from-[#b8905f] hover:to-[#956c42] text-white"
+                className="w-full gap-2 bg-gradient-to-r from-[#2563eb] to-[#1d4ed8] hover:from-[#1d4ed8] hover:to-[#1e40af] text-white"
               >
                 <Download className="h-4 w-4" />
                 Download Confirmation (PDF)
