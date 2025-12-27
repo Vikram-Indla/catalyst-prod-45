@@ -373,7 +373,7 @@ export function IndustryHeaderToolbarV2({
             className={cn(
               'h-9 px-3 flex items-center gap-2 rounded-lg border bg-background text-sm font-medium transition-all',
               activeFiltersCount > 0
-                ? 'border-[#c69c6d] text-[#c69c6d] bg-[#c69c6d]/5 hover:bg-[#c69c6d]/10'
+                ? 'border-blue-500 text-blue-600 bg-blue-500/5 hover:bg-blue-500/10 dark:text-blue-400'
                 : 'border-border text-muted-foreground hover:bg-muted hover:text-foreground'
             )}
           >
@@ -382,7 +382,7 @@ export function IndustryHeaderToolbarV2({
             </div>
             <span className="hidden sm:inline">Filters</span>
             {activeFiltersCount > 0 && (
-              <span className="min-w-5 h-5 px-1.5 rounded-full bg-[#c69c6d] text-[10px] font-semibold text-white flex items-center justify-center">
+              <span className="min-w-5 h-5 px-1.5 rounded-full bg-blue-600 text-[10px] font-semibold text-white flex items-center justify-center">
                 {activeFiltersCount}
               </span>
             )}

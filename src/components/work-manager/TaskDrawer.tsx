@@ -350,7 +350,7 @@ export function TaskDrawer({ isOpen, task, activeTab, onClose, onTabChange, onUp
                                 <div className="text-[11px] text-gray-500">{u.role || 'Team Member'}</div>
                               </div>
                               {u.id === (localTask.assigneeId || task.assigneeId) && (
-                                <Check className="w-4 h-4 ml-auto text-[#5c7c5c]" />
+                                <Check className="w-4 h-4 ml-auto text-teal-600 dark:text-teal-400" />
                               )}
                             </div>
                           </SelectItem>
@@ -459,7 +459,7 @@ export function TaskDrawer({ isOpen, task, activeTab, onClose, onTabChange, onUp
                       <div className="flex items-center gap-2">
                         <RefreshCw className={cn(
                           'w-3.5 h-3.5 text-gray-400 transition-all duration-300',
-                          currentRecurrence !== 'None' && 'text-[#5c7c5c] animate-spin'
+                          currentRecurrence !== 'None' && 'text-teal-600 dark:text-teal-400 animate-spin'
                         )} style={{ animationDuration: '3s' }} />
                         <SelectValue />
                       </div>
@@ -586,7 +586,7 @@ export function TaskDrawer({ isOpen, task, activeTab, onClose, onTabChange, onUp
                 
                 {/* Comment input */}
                 <div className="flex gap-3 mt-6 pt-6 border-t border-gray-100 dark:border-gray-800">
-                  <div className="w-8 h-8 rounded-full bg-[#5c7c5c] flex items-center justify-center text-[10px] font-bold text-white shrink-0">
+                  <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-[10px] font-bold text-white shrink-0">
                     U
                   </div>
                   <div className="flex-1 space-y-3">
@@ -603,7 +603,7 @@ export function TaskDrawer({ isOpen, task, activeTab, onClose, onTabChange, onUp
                       <div className="flex justify-end">
                         <Button 
                           size="sm" 
-                          className="bg-[#5c7c5c] hover:bg-[#4a6a4a] text-white"
+                          className="bg-blue-600 hover:bg-blue-700 text-white"
                         >
                           Post Comment
                         </Button>
@@ -664,7 +664,7 @@ export function TaskDrawer({ isOpen, task, activeTab, onClose, onTabChange, onUp
 
       {/* Toast */}
       {showToast && (
-        <div className="fixed bottom-4 right-4 flex items-center gap-2 px-4 py-3 bg-[#5c7c5c] text-white text-[13px] font-medium rounded-lg shadow-lg z-[300] animate-fade-in">
+        <div className="fixed bottom-4 right-4 flex items-center gap-2 px-4 py-3 bg-teal-600 text-white text-[13px] font-medium rounded-lg shadow-lg z-[300] animate-fade-in">
           <Check className="w-4 h-4" />
           Task updated successfully
         </div>

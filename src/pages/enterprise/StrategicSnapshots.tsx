@@ -207,7 +207,7 @@ function SnapshotTableRow({
       <td className="py-4 px-4">
         <div className="flex items-center gap-2">
           <Avatar className="h-7 w-7">
-            <AvatarFallback className="text-[10px] font-medium bg-[#5c7c5c] text-white">
+            <AvatarFallback className="text-[10px] font-medium bg-blue-600 text-white">
               {ownerInitials}
             </AvatarFallback>
           </Avatar>
@@ -369,7 +369,7 @@ export default function StrategicSnapshots() {
         "relative flex items-center gap-2 px-3 py-2.5 rounded-lg w-64",
         "bg-white dark:bg-[#1a1a1a]",
         "border border-[#E1E4E8] dark:border-[#333333]",
-        "focus-within:border-[#c69c6d] focus-within:ring-1 focus-within:ring-[rgba(198,156,109,0.3)]"
+        "focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500/30"
       )}>
         <Search className="h-4 w-4 text-[#8B949E] dark:text-[#9ca3af]" />
         <input

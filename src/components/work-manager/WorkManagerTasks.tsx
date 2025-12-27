@@ -45,8 +45,8 @@ const statusConfig: Record<string, { label: string; dot: string; text: string }>
   },
   'Done': {
     label: 'Done',
-    dot: 'bg-[#5c7c5c]',
-    text: 'text-[#5c7c5c] dark:text-[#7a9a7a]',
+    dot: 'bg-teal-600',
+    text: 'text-teal-600 dark:text-teal-400',
   },
 };
 
@@ -69,8 +69,8 @@ const priorityConfig: Record<string, { label: string; dot: string; text: string 
   },
   'low': {
     label: 'Low',
-    dot: 'bg-[#5c7c5c]',
-    text: 'text-[#5c7c5c] dark:text-[#7a9a7a]',
+    dot: 'bg-teal-600',
+    text: 'text-teal-600 dark:text-teal-400',
   },
 };
 
@@ -392,8 +392,8 @@ export function WorkManagerTasks({ tasks, onOpenTask }: WorkManagerTasksProps) {
             
             <button className={cn(
               "h-11 px-6 flex items-center gap-2.5 rounded-xl",
-              "bg-gradient-to-r from-[#5c7c5c] to-[#4a6a4a]",
-              "hover:from-[#4a6a4a] hover:to-[#3d5a3d]",
+              "bg-gradient-to-r from-blue-600 to-blue-700",
+              "hover:from-blue-700 hover:to-blue-800",
               "text-white text-sm font-semibold",
               "shadow-catalyst-md transition-smooth press-scale"
             )}>

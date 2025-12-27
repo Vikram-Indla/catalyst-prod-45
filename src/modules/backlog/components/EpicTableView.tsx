@@ -536,7 +536,7 @@ export function EpicTableView({
                               className={cn(
                                 "transition-colors cursor-pointer",
                                 "hover:bg-[var(--industry-bg-hover)] dark:hover:bg-[#262626]/50",
-                                selectedSet.has(row.id) && "bg-[var(--brand-gold)]/[0.08] dark:bg-[#c69c6d]/[0.15]",
+                                selectedSet.has(row.id) && "bg-blue-500/[0.08] dark:bg-blue-500/[0.15]",
                                 snapshot.isDragging && "bg-muted dark:bg-[#333333] shadow-lg"
                               )}
                               onClick={() => onRowClick(row.id)}

@@ -27,8 +27,8 @@ const teamTypeColors: Record<string, string> = {
   'SOLUTION': '#0d9488',
   'PROCESS_FLOW': '#0f766e',
   // Mock team colors
-  'olive': '#5c7c5c',
-  'bronze': '#8b7355',
+  'olive': '#0d9488',
+  'bronze': '#6b7280',
   'blue': '#2563eb',
 };
 
@@ -50,7 +50,7 @@ export const PlannerSelectorDropdown = React.memo(function PlannerSelectorDropdo
         team_type: team.team_type,
         description: team.description,
         project_name: team.project_name,
-        color: team.color || teamTypeColors[team.team_type] || '#5c7c5c',
+        color: team.color || teamTypeColors[team.team_type] || '#0d9488',
       }));
     }
     // Fall back to mock data for demo purposes
@@ -61,7 +61,7 @@ export const PlannerSelectorDropdown = React.memo(function PlannerSelectorDropdo
       team_type: 'AGILE',
       description: team.description,
       project_name: undefined,
-      color: teamTypeColors[team.color || ''] || '#5c7c5c',
+      color: teamTypeColors[team.color || ''] || '#0d9488',
     }));
   }, [accessibleTeams]);
 

@@ -53,7 +53,7 @@ const variantConfig: Record<CatalystToastType, {
     icon: <Trash2 className="w-5 h-5 text-white" />,
   },
   loading: {
-    bg: 'bg-[#c69c6d]', // Gold
+    bg: 'bg-blue-600',
     iconBg: 'bg-white/20',
     icon: <Loader2 className="w-5 h-5 text-white animate-spin" />,
   },

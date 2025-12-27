@@ -93,8 +93,7 @@ export function TimelineSidebar({
                 </div>
                 {feature.assignee && (
                   <div
-                    className="w-5 h-5 rounded-full flex items-center justify-center text-white text-[10px] flex-shrink-0"
-                    style={{ background: '#5c7c5c' }}
+                    className="w-5 h-5 rounded-full flex items-center justify-center text-white text-[10px] flex-shrink-0 bg-blue-600"
                     title={feature.assignee.full_name}
                   >
                     {feature.assignee.full_name.split(' ').map(n => n[0]).join('').slice(0, 2)}
