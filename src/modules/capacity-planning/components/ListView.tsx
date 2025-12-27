@@ -410,7 +410,7 @@ export function ListView({
                                   ? 'hsl(var(--secondary-green))' 
                                   : resource.role_code === 'BA' 
                                     ? 'hsl(var(--brand-primary))' 
-                                    : 'hsl(var(--secondary-bronze))'
+                                    : '#6b7280'
                               }}
                               title={!isResourceColumnExpanded ? `${resource.name} (${resource.role_code || 'N/A'})` : undefined}
                             >

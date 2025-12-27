@@ -134,7 +134,7 @@ export function ManageThemesPanel({ snapshot, onBack }: ManageThemesPanelProps) 
   // Helper for status badge styling
   const getStatusBadgeStyles = (status: string | null | undefined) => {
     const s = (status || '').toLowerCase();
-    if (s === 'active') return "bg-[rgba(92,124,92,0.15)] text-[#5C7C5C] border-transparent";
+    if (s === 'active') return "bg-[rgba(13,148,136,0.15)] text-[#0d9488] border-transparent";
     if (s === 'proposed') return "bg-brand-primary/15 text-brand-primary border-transparent";
     if (s === 'archived') return "bg-muted text-muted-foreground border-transparent";
     return "bg-muted text-muted-foreground border-transparent";
