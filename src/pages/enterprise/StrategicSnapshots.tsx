@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
-import { Search, Plus, Grid3x3, List, FileText, MoreVertical, AlertTriangle, ExternalLink, Loader2 } from 'lucide-react';
+import { Search, Plus, Grid3x3, List, FileText, MoreVertical, AlertTriangle, ExternalLink, Loader2, Trash2 } from 'lucide-react';
 import { useStrategicSnapshots, useDeleteSnapshot, StrategicSnapshot, useSnapshotConfiguration } from '@/hooks/useStrategicSnapshots';
 import { useSnapshotStrategyLinks } from '@/hooks/useStrategicBacklog';
 import { CreateSnapshotModal } from '@/components/strategy/snapshots/CreateSnapshotModal';
@@ -342,6 +342,82 @@ export default function StrategicSnapshots() {
     setDeleteImpact(null);
   };
 
+  // Unlink all items and then delete the snapshot
+  const [isUnlinking, setIsUnlinking] = useState(false);
+  
+  const handleUnlinkAndDelete = async () => {
+    if (!deleteSnapshot || !deleteImpact) return;
+    
+    setIsUnlinking(true);
+    try {
+      // Delete snapshot_configurations
+      if (deleteImpact.items.some(i => i.key === 'snapshot_configurations' && i.count > 0)) {
+        const { error: configError } = await supabase
+          .from('snapshot_configurations')
+          .delete()
+          .eq('snapshot_id', deleteSnapshot.id);
+        if (configError) throw configError;
+      }
+      
+      // Delete snapshot_strategy_links
+      if (deleteImpact.items.some(i => i.key === 'snapshot_strategy_links' && i.count > 0)) {
+        const { error: linksError } = await supabase
+          .from('snapshot_strategy_links')
+          .delete()
+          .eq('snapshot_id', deleteSnapshot.id);
+        if (linksError) throw linksError;
+      }
+      
+      // Delete strategic_themes linked to this snapshot
+      if (deleteImpact.items.some(i => i.key === 'strategic_themes' && i.count > 0)) {
+        const { error: themesError } = await supabase
+          .from('strategic_themes')
+          .delete()
+          .eq('snapshot_id', deleteSnapshot.id);
+        if (themesError) throw themesError;
+      }
+      
+      // Delete strategic_goals linked to this snapshot
+      if (deleteImpact.items.some(i => i.key === 'strategic_goals' && i.count > 0)) {
+        const { error: goalsError } = await supabase
+          .from('strategic_goals')
+          .delete()
+          .eq('snapshot_id', deleteSnapshot.id);
+        if (goalsError) throw goalsError;
+      }
+      
+      // Delete goals linked to this snapshot
+      if (deleteImpact.items.some(i => i.key === 'goals' && i.count > 0)) {
+        const { error: goalsError } = await supabase
+          .from('goals')
+          .delete()
+          .eq('snapshot_id', deleteSnapshot.id);
+        if (goalsError) throw goalsError;
+      }
+      
+      // Delete objectives linked to this snapshot
+      if (deleteImpact.items.some(i => i.key === 'objectives' && i.count > 0)) {
+        const { error: objectivesError } = await supabase
+          .from('objectives')
+          .delete()
+          .eq('snapshot_id', deleteSnapshot.id);
+        if (objectivesError) throw objectivesError;
+      }
+      
+      // Now delete the snapshot itself
+      await deleteSnapshotMutation.mutateAsync(deleteSnapshot.id);
+      
+      catalystToast.success('Snapshot Deleted', 'All linked items were removed and the snapshot was deleted.');
+      setDeleteSnapshot(null);
+      setDeleteImpact(null);
+    } catch (err: any) {
+      console.error('Error unlinking and deleting:', err);
+      catalystToast.error('Delete Failed', err?.message || 'Could not remove linked items.');
+    } finally {
+      setIsUnlinking(false);
+    }
+  };
+
   const handleNavigateToSnapshot = () => {
     if (deleteSnapshot) {
       setSelectedSnapshot(deleteSnapshot);
@@ -610,7 +686,7 @@ export default function StrategicSnapshots() {
                       ))}
                     </ul>
                     <p className="text-xs text-muted-foreground mt-3">
-                      Open the snapshot and navigate to the Themes tab to unlink themes, then try deleting again.
+                      You can remove all linked items and delete the snapshot, or navigate to the Themes tab to manage them manually.
                     </p>
                   </>
                 ) : (
@@ -621,10 +697,30 @@ export default function StrategicSnapshots() {
               </div>
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter>
+          <AlertDialogFooter className="flex-col sm:flex-row gap-2">
             <AlertDialogCancel onClick={() => { setDeleteSnapshot(null); setDeleteImpact(null); }}>
               {deleteImpact && deleteImpact.total > 0 ? 'Close' : 'Cancel'}
             </AlertDialogCancel>
+            {!isCheckingDelete && deleteImpact && deleteImpact.total > 0 && (
+              <Button
+                variant="destructive"
+                onClick={handleUnlinkAndDelete}
+                disabled={isUnlinking || deleteSnapshotMutation.isPending}
+                className="gap-2"
+              >
+                {isUnlinking ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Removing...
+                  </>
+                ) : (
+                  <>
+                    <Trash2 className="h-4 w-4" />
+                    Remove All & Delete
+                  </>
+                )}
+              </Button>
+            )}
             {!isCheckingDelete && (!deleteImpact || deleteImpact.total === 0) && (
               <AlertDialogAction
                 onClick={handleDeleteConfirm}
