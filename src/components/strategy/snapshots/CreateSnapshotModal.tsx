@@ -127,7 +127,7 @@ export function CreateSnapshotModal({ open, onClose }: CreateSnapshotModalProps)
   return (
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className={cn(
-        "sm:max-w-[700px] max-h-[90vh] p-0 flex flex-col overflow-hidden",
+        "sm:max-w-[700px] max-h-[85vh] p-0 flex flex-col",
         "bg-white dark:bg-[#141414]",
         "rounded-lg",
         "shadow-xl",
