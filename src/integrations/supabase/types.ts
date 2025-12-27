@@ -15487,6 +15487,39 @@ export type Database = {
         }
         Relationships: []
       }
+      theme_statuses: {
+        Row: {
+          color: string | null
+          created_at: string
+          id: string
+          is_active: boolean
+          label: string
+          sort_order: number
+          updated_at: string
+          value: string
+        }
+        Insert: {
+          color?: string | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          label: string
+          sort_order?: number
+          updated_at?: string
+          value: string
+        }
+        Update: {
+          color?: string | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          label?: string
+          sort_order?: number
+          updated_at?: string
+          value?: string
+        }
+        Relationships: []
+      }
       transition_approval_configs: {
         Row: {
           approval_type: string | null
