@@ -144,11 +144,19 @@ export function AdminSidebarV2({ expanded, onToggle, className }: AdminSidebarV2
   
   const filteredPaths = useMemo(() => {
     if (!searchQuery.trim()) return [];
-    const query = searchQuery.toLowerCase();
-    return allPaths.filter(p => 
-      p.label.toLowerCase().includes(query) || 
-      p.parent?.toLowerCase().includes(query)
-    );
+    // Normalize query: replace hyphens/underscores with spaces for flexible matching
+    const normalizedQuery = searchQuery.toLowerCase().replace(/[-_]/g, ' ').trim();
+    const queryParts = normalizedQuery.split(/\s+/);
+    
+    return allPaths.filter(p => {
+      const normalizedLabel = p.label.toLowerCase();
+      const normalizedParent = p.parent?.toLowerCase() || '';
+      
+      // Match if ALL query parts are found in label or parent
+      return queryParts.every(part => 
+        normalizedLabel.includes(part) || normalizedParent.includes(part)
+      );
+    });
   }, [searchQuery, allPaths]);
 
   const isActive = (path: string) => location.pathname === path;
