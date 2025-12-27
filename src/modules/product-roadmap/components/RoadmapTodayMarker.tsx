@@ -1,5 +1,5 @@
 /**
- * Today marker line for the timeline - Uses Catalyst olive color
+ * Today marker line for the timeline - Uses Catalyst blue color
  */
 
 import React from 'react';
@@ -21,23 +21,23 @@ export function RoadmapTodayMarker({ position }: RoadmapTodayMarkerProps) {
         <div 
           className="w-3 h-3 rotate-45 shadow-sm"
           style={{ 
-            backgroundColor: '#5c7c5c',
+            backgroundColor: '#2563eb',
             border: '2px solid var(--background)'
           }}
         />
       </div>
       
-      {/* Vertical line - Catalyst olive */}
+      {/* Vertical line - Catalyst blue */}
       <div 
         className="w-0.5 h-full"
-        style={{ backgroundColor: '#5c7c5c' }}
+        style={{ backgroundColor: '#2563eb' }}
       />
       
       {/* Today label */}
       <div 
         className="absolute top-6 -translate-x-1/2 px-2 py-0.5 text-[10px] font-semibold rounded whitespace-nowrap"
         style={{
-          backgroundColor: '#5c7c5c',
+          backgroundColor: '#2563eb',
           color: '#ffffff'
         }}
       >

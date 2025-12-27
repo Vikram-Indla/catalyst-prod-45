@@ -62,16 +62,16 @@ const toastFindings = [
 
 // Chart findings
 const chartFindings = [
-  { id: 'chart-palette', element: 'Primary Palette', current: 'Golden Hour (5 colors)', target: 'Golden Hour semantic', status: 'pass' as const, notes: 'Consistent brand palette' },
-  { id: 'chart-expert', element: 'Level 5 (Expert)', current: '#5c7c5c', target: 'var(--palette-expert)', status: 'pass' as const, notes: 'Token defined in CSS' },
-  { id: 'chart-advanced', element: 'Level 4 (Advanced)', current: '#8b7355', target: 'var(--palette-advanced)', status: 'pass' as const, notes: 'Token defined in CSS' },
-  { id: 'chart-intermediate', element: 'Level 3 (Intermediate)', current: '#c69c6d', target: 'var(--palette-intermediate)', status: 'pass' as const, notes: 'Brand gold - primary accent' },
-  { id: 'chart-beginner', element: 'Level 2 (Beginner)', current: '#d4b896', target: 'var(--palette-beginner)', status: 'pass' as const, notes: 'Token defined in CSS' },
+  { id: 'chart-palette', element: 'Primary Palette', current: 'Blue + Teal (5 colors)', target: 'Blue/Teal semantic', status: 'pass' as const, notes: 'Consistent brand palette' },
+  { id: 'chart-expert', element: 'Level 5 (Expert)', current: '#2563eb', target: 'var(--palette-expert)', status: 'pass' as const, notes: 'Token defined in CSS' },
+  { id: 'chart-advanced', element: 'Level 4 (Advanced)', current: '#0d9488', target: 'var(--palette-advanced)', status: 'pass' as const, notes: 'Token defined in CSS' },
+  { id: 'chart-intermediate', element: 'Level 3 (Intermediate)', current: '#1d4ed8', target: 'var(--palette-intermediate)', status: 'pass' as const, notes: 'Brand blue - primary accent' },
+  { id: 'chart-beginner', element: 'Level 2 (Beginner)', current: '#6b7280', target: 'var(--palette-beginner)', status: 'pass' as const, notes: 'Token defined in CSS' },
   { id: 'chart-none', element: 'Level 1 (None)', current: '#c8ccd0', target: 'var(--palette-none)', status: 'pass' as const, notes: 'Token defined in CSS' },
   { id: 'chart-gridline', element: 'Gridline Contrast', current: 'border-border (15%)', target: 'min 15% opacity', status: 'pass' as const, notes: 'Subtle but visible' },
   { id: 'chart-axis', element: 'Axis Labels', current: 'text-muted-foreground', target: 'WCAG AA', status: 'pass' as const, notes: '4.8:1 contrast ratio' },
   { id: 'chart-legend', element: 'Legend Size', current: '12px', target: '11-12px', status: 'pass' as const, notes: 'Compact and readable' },
-  { id: 'chart-drift', element: 'Palette Drift', current: 'No third-party', target: 'Golden Hour only', status: 'pass' as const, notes: 'Governance enforced' },
+  { id: 'chart-drift', element: 'Palette Drift', current: 'No third-party', target: 'Blue/Teal only', status: 'pass' as const, notes: 'Governance enforced' },
 ];
 
 // Interaction state findings - UPDATED POST FIX-PACK (FIX D)
