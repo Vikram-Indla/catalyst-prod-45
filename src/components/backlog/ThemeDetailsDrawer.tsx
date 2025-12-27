@@ -863,10 +863,6 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
                     className="w-48 z-[400] shadow-catalyst-lg"
                     style={{ background: 'var(--surface-bg, hsl(var(--background)))', borderColor: 'var(--border-default, hsl(var(--border)))' }}
                   >
-                    <DropdownMenuItem onSelect={() => setMode('edit')}>
-                      <Pencil className="h-4 w-4 mr-2" />
-                      Edit Details
-                    </DropdownMenuItem>
                     <DropdownMenuItem onSelect={() => duplicateMutation.mutate()}>
                       <Copy className="h-4 w-4 mr-2" />
                       Duplicate Theme
@@ -881,18 +877,6 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
-
-                {/* Expand/Collapse */}
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setIsExpanded(!isExpanded)}
-                  className="h-8 w-8 hover:bg-[var(--surface-hover,hsl(var(--muted)))] press-scale transition-smooth"
-                  style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}
-                  title={isExpanded ? 'Collapse' : 'Expand'}
-                >
-                  {isExpanded ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
-                </Button>
 
                 {/* Close */}
                 <Button 
