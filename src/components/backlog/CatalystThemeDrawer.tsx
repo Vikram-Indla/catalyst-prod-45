@@ -1030,12 +1030,11 @@ export function CatalystThemeDrawer({ theme, isOpen, onClose }: CatalystThemeDra
                       </div>
                       <Button 
                         size="sm" 
-                        variant="ghost" 
-                        className="h-6 text-[10px] gap-1"
-                        style={{ color: 'var(--text-muted)' }}
+                        variant="outline" 
+                        className="h-8 px-3 text-xs gap-1.5"
                         onClick={() => setShowLinkObjectiveDialog(true)}
                       >
-                        <Plus size={10} />
+                        <Plus size={14} />
                         Link
                       </Button>
                     </div>
@@ -1141,12 +1140,11 @@ export function CatalystThemeDrawer({ theme, isOpen, onClose }: CatalystThemeDra
                       </div>
                       <Button 
                         size="sm" 
-                        variant="ghost" 
-                        className="h-6 text-[10px] gap-1"
-                        style={{ color: 'var(--text-muted)' }}
+                        variant="outline" 
+                        className="h-8 px-3 text-xs gap-1.5"
                         onClick={() => setShowLinkEpicDialog(true)}
                       >
-                        <Plus size={10} />
+                        <Plus size={14} />
                         Link
                       </Button>
                     </div>
