@@ -41,7 +41,7 @@ export function CreateThemeDialog({ open, onOpenChange, snapshotId }: CreateThem
       name,
       description,
       color_tag: colorTag,
-      snapshot_id: snapshotId,
+      snapshot_id: snapshotId && snapshotId.trim() !== '' ? snapshotId : undefined,
       status: status,
       start_date: startDate?.toISOString().split('T')[0],
       end_date: endDate?.toISOString().split('T')[0],
