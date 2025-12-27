@@ -937,14 +937,12 @@ export function CatalystThemeDrawer({ theme, isOpen, onClose }: CatalystThemeDra
           side="right"
           hideClose
           className={cn(
-            "flex flex-col p-0 gap-0 border-l",
+            "flex flex-col p-0 gap-0 border-l border-border-default",
+            "bg-surface-0 text-text-primary",
+            "rounded-l-[20px] rounded-r-none",
             "transition-all duration-300 ease-out",
-            isExpanded ? "w-[90vw] sm:max-w-[90vw]" : "w-[640px] sm:max-w-[640px]"
+            isExpanded ? "w-[90vw] sm:max-w-[90vw]" : "w-[640px] sm:max-w-[640px]",
           )}
-          style={{ 
-            background: 'hsl(var(--background))',
-            borderColor: 'hsl(var(--border))'
-          }}
         >
           {/* HEADER */}
           <SheetHeader className="shrink-0 space-y-0">
@@ -1116,9 +1114,13 @@ export function CatalystThemeDrawer({ theme, isOpen, onClose }: CatalystThemeDra
 
           {/* TABS */}
           <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col min-h-0">
-            <TabsList 
-              className="w-full justify-start rounded-none h-auto shrink-0 px-6 bg-transparent py-0"
-              style={{ borderBottom: '1px solid hsl(var(--border))' }}
+            <TabsList
+              className={cn(
+                "w-full justify-start rounded-none shrink-0",
+                "!bg-transparent !p-0 !h-auto",
+                "px-6",
+                "border-b border-border-default",
+              )}
             >
               {[
                 { value: 'overview', label: 'Overview' },
@@ -1129,28 +1131,26 @@ export function CatalystThemeDrawer({ theme, isOpen, onClose }: CatalystThemeDra
                   key={tab.value}
                   value={tab.value}
                   className={cn(
-                    "relative px-4 py-3.5 text-sm font-medium",
-                    "bg-transparent border-none rounded-none",
-                    "transition-colors duration-150",
-                    "data-[state=inactive]:text-muted-foreground",
-                    "data-[state=inactive]:hover:text-foreground/80",
-                    "data-[state=active]:text-foreground",
+                    "relative",
+                    "px-4 py-3.5",
+                    "text-[14px] font-medium",
+                    "rounded-none",
+                    "bg-transparent",
+                    "text-text-muted hover:text-text-secondary",
+                    "data-[state=active]:text-text-primary",
+                    "data-[state=active]:bg-transparent",
+                    "data-[state=active]:shadow-none",
+                    "focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0",
                     "after:absolute after:bottom-0 after:left-2 after:right-2",
                     "after:h-[3px] after:rounded-t-full after:transition-all after:duration-200",
                     "data-[state=inactive]:after:bg-transparent data-[state=inactive]:after:scale-x-0",
-                    "data-[state=active]:after:bg-primary data-[state=active]:after:scale-x-100"
+                    "data-[state=active]:after:bg-brand-primary data-[state=active]:after:scale-x-100",
                   )}
                 >
                   <span className="flex items-center gap-2">
                     {tab.label}
                     {tab.count !== undefined && (
-                      <span 
-                        className="text-[10px] font-bold px-1.5 py-0.5 rounded-md min-w-[20px] text-center"
-                        style={{ 
-                          background: 'hsl(var(--muted))',
-                          color: 'hsl(var(--muted-foreground))'
-                        }}
-                      >
+                      <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-md min-w-[20px] text-center bg-surface-2 text-text-muted">
                         {tab.count}
                       </span>
                     )}
@@ -1160,10 +1160,7 @@ export function CatalystThemeDrawer({ theme, isOpen, onClose }: CatalystThemeDra
             </TabsList>
 
             {/* TAB CONTENT */}
-            <div 
-              className="flex-1 min-h-0 overflow-y-auto"
-              style={{ background: 'hsl(var(--muted) / 0.3)' }}
-            >
+            <div className="flex-1 min-h-0 overflow-y-auto bg-surface-1/30">
               {/* OVERVIEW */}
               <TabsContent value="overview" className="mt-0 p-6 space-y-5 focus-visible:outline-none">
                 <div className="grid grid-cols-2 gap-4">
@@ -1370,8 +1367,8 @@ export function CatalystThemeDrawer({ theme, isOpen, onClose }: CatalystThemeDra
               {/* ACTIVITY */}
               <TabsContent value="activity" className="mt-0 p-6 space-y-5 focus-visible:outline-none">
                 <SectionCard icon={History} title="Audit History">
-                  <div className="h-[460px]">
-                    <UnifiedAuditHistoryTab entityType="theme" entityId={theme.id} />
+                  <div className="h-[460px] px-3 py-2">
+                    <UnifiedAuditHistoryTab embedded entityType="theme" entityId={theme.id} />
                   </div>
                 </SectionCard>
               </TabsContent>
