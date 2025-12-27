@@ -44,7 +44,7 @@ export function RoadmapToolbar({
           "flex items-center gap-2 px-3 py-2 rounded-lg w-64",
           "bg-[#FAFBFC] dark:bg-[#0D1117]",
           "border border-[#E1E4E8] dark:border-[#30363D]",
-          "focus-within:border-[#C69C6D] focus-within:ring-1 focus-within:ring-[rgba(198,156,109,0.3)]"
+          "focus-within:border-[#2563eb] focus-within:ring-1 focus-within:ring-[rgba(37,99,235,0.3)]"
         )}>
           <Search size={16} className="text-[#8B949E] dark:text-[#6E7681]" />
           <input 
@@ -88,7 +88,7 @@ export function RoadmapToolbar({
           "bg-white dark:bg-[#161B22]",
           "border border-[#E1E4E8] dark:border-[#30363D]",
           "text-[#57606A] dark:text-[#8B949E]",
-          "hover:border-[rgba(198,156,109,0.3)]"
+          "hover:border-[rgba(37,99,235,0.3)]"
         )}>
           <Filter size={16} />
           Filters
@@ -100,7 +100,7 @@ export function RoadmapToolbar({
           "bg-white dark:bg-[#161B22]",
           "border border-[#E1E4E8] dark:border-[#30363D]",
           "text-[#57606A] dark:text-[#8B949E]",
-          "hover:border-[rgba(198,156,109,0.3)]"
+          "hover:border-[rgba(37,99,235,0.3)]"
         )}>
           <Calendar size={16} />
           {selectedYear}
@@ -128,7 +128,7 @@ export function RoadmapToolbar({
             "bg-white dark:bg-[#161B22]",
             "border border-[#E1E4E8] dark:border-[#30363D]",
             "text-[#57606A] dark:text-[#8B949E]",
-            showMilestones && "border-[#C69C6D] bg-[rgba(198,156,109,0.05)]"
+            showMilestones && "border-[#2563eb] bg-[rgba(37,99,235,0.05)]"
           )}
         >
           <Flag size={16} />
@@ -143,7 +143,7 @@ export function RoadmapToolbar({
             "bg-white dark:bg-[#161B22]",
             "border border-[#E1E4E8] dark:border-[#30363D]",
             "text-[#57606A] dark:text-[#8B949E]",
-            "hover:border-[rgba(198,156,109,0.3)]"
+            "hover:border-[rgba(37,99,235,0.3)]"
           )}
         >
           <Download size={16} />
@@ -158,7 +158,7 @@ export function RoadmapToolbar({
             "bg-white dark:bg-[#161B22]",
             "border border-[#E1E4E8] dark:border-[#30363D]",
             "text-[#57606A] dark:text-[#8B949E]",
-            "hover:border-[rgba(198,156,109,0.3)]"
+            "hover:border-[rgba(37,99,235,0.3)]"
           )}
         >
           <Maximize2 size={16} />

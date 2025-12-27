@@ -28,8 +28,8 @@ import type { LucideIcon } from 'lucide-react';
 // Icon colors for work items (matching WorkItemIcon.tsx)
 const ICON_COLORS: Record<string, string> = {
   // Enterprise
-  theme: '#5c7c5c',      // Olive
-  objective: '#c69c6d',  // Gold
+  theme: '#0d9488',      // Teal
+  objective: '#2563eb',  // Blue
   
   // Product
   'business-request': '#8b7355', // Bronze
@@ -49,13 +49,13 @@ const ICON_COLORS: Record<string, string> = {
   risk: '#F97316',       // Orange
   
   // Key Results (for OKR tree)
-  key_result: '#c69c6d', // Gold (same as objective)
+  key_result: '#2563eb', // Blue (same as objective)
 };
 
 // Background colors for icon containers
 const ICON_BG_COLORS: Record<string, string> = {
-  theme: 'rgba(92, 124, 92, 0.15)',
-  objective: 'rgba(198, 156, 109, 0.15)',
+  theme: 'rgba(13, 148, 136, 0.15)',
+  objective: 'rgba(37, 99, 235, 0.15)',
   'business-request': 'rgba(139, 115, 85, 0.15)',
   epic: 'rgba(144, 78, 226, 0.15)',
   feature: 'rgba(245, 158, 11, 0.15)',
@@ -65,7 +65,7 @@ const ICON_BG_COLORS: Record<string, string> = {
   incident: 'rgba(239, 68, 68, 0.15)',
   dependency: 'rgba(59, 130, 246, 0.15)',
   risk: 'rgba(249, 115, 22, 0.15)',
-  key_result: 'rgba(198, 156, 109, 0.15)',
+  key_result: 'rgba(37, 99, 235, 0.15)',
 };
 
 export interface WorkItemVisual {

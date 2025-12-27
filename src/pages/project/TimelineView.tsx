@@ -165,7 +165,7 @@ export default function TimelineView() {
               <Button
                 variant="outline"
                 onClick={() => setShowDependencies(!showDependencies)}
-                className={cn(showDependencies && 'border-[#c69c6d] text-[#c69c6d]')}
+                className={cn(showDependencies && 'border-[#2563eb] text-[#2563eb]')}
               >
                 <Link2 className="w-4 h-4 mr-2" />
                 Dependencies
@@ -225,7 +225,7 @@ export default function TimelineView() {
                   <div
                     className="h-9 flex items-center px-3"
                     style={{
-                      background: 'linear-gradient(135deg, #c69c6d 0%, #b8894d 100%)'
+                      background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)'
                     }}
                   >
                     <span className="text-white text-xs font-semibold">

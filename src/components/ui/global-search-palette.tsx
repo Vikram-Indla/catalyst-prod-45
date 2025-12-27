@@ -34,8 +34,8 @@ const focusRingClass = "focus:outline-none focus-visible:ring-2 focus-visible:ri
 
 // Type icons and colors
 const TYPE_CONFIG: Record<GlobalSearchWorkItemType, { icon: React.ElementType; color: string; label: string }> = {
-  'business-request': { icon: FileText, color: '#C69C6D', label: 'Business Request' },
-  'epic': { icon: Zap, color: '#8b7355', label: 'Epic' },
+  'business-request': { icon: FileText, color: '#2563eb', label: 'Business Request' },
+  'epic': { icon: Zap, color: '#904EE2', label: 'Epic' },
   'feature': { icon: Star, color: '#6554C0', label: 'Feature' },
   'story': { icon: BookOpen, color: '#36B37E', label: 'Story' },
   'incident': { icon: AlertTriangle, color: '#FF5630', label: 'Incident' },

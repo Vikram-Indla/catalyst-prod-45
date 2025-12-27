@@ -119,9 +119,9 @@ export default function IncidentsDashboard() {
               <div className="h-[180px]">
                 <svg viewBox="0 0 600 180" className="w-full h-full">
                   <defs>
-                    <linearGradient id="goldGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                      <stop offset="0%" style={{ stopColor: '#C69C6D', stopOpacity: 0.4 }} />
-                      <stop offset="100%" style={{ stopColor: '#C69C6D', stopOpacity: 0 }} />
+                    <linearGradient id="blueGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                      <stop offset="0%" style={{ stopColor: '#2563eb', stopOpacity: 0.4 }} />
+                      <stop offset="100%" style={{ stopColor: '#2563eb', stopOpacity: 0 }} />
                     </linearGradient>
                   </defs>
                   {[30, 60, 90, 120].map((y) => (
@@ -129,13 +129,13 @@ export default function IncidentsDashboard() {
                   ))}
                   <path
                     d="M80,80 L155,60 L230,100 L305,70 L380,90 L455,50 L530,40 L530,150 L80,150 Z"
-                    fill="url(#goldGradient)"
+                    fill="url(#blueGradient)"
                     opacity="0.3"
                   />
                   <path
                     d="M80,80 L155,60 L230,100 L305,70 L380,90 L455,50 L530,40"
                     fill="none"
-                    stroke="#C69C6D"
+                    stroke="#2563eb"
                     strokeWidth="2.5"
                   />
                   {[
@@ -147,7 +147,7 @@ export default function IncidentsDashboard() {
                     { cx: 455, cy: 50 },
                     { cx: 530, cy: 40 },
                   ].map((point, i) => (
-                    <circle key={i} cx={point.cx} cy={point.cy} r="4" fill="#C69C6D" />
+                    <circle key={i} cx={point.cx} cy={point.cy} r="4" fill="#2563eb" />
                   ))}
                   {['Nov 30', 'Dec 1', 'Dec 2', 'Dec 3', 'Dec 4', 'Dec 5', 'Today'].map((label, i) => (
                     <text key={label} x={80 + i * 75} y="170" fontSize="11" fill="#8C8C8C">
@@ -262,9 +262,9 @@ export default function IncidentsDashboard() {
                   <div
                     key={member.initials}
                     className="flex items-center gap-3 p-3 rounded-lg"
-                    style={{ backgroundColor: 'rgba(198, 156, 109, 0.1)' }}
+                    style={{ backgroundColor: 'rgba(37, 99, 235, 0.1)' }}
                   >
-                    <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center font-semibold text-[#C69C6D]">
+                    <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center font-semibold text-[#2563eb]">
                       {member.initials}
                     </div>
                     <div className="flex-1 min-w-0">

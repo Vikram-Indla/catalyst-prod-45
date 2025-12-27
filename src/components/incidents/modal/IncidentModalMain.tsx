@@ -48,7 +48,7 @@ export function IncidentModalMain({ incident, onFieldChange }: IncidentModalMain
           suppressContentEditableWarning
           className={`text-2xl font-semibold text-foreground leading-7 p-1 rounded border-2 transition-all cursor-text ${
             isTitleFocused 
-              ? 'border-[#c69c6d] shadow-[0_0_0_2px_rgba(198,156,109,0.3)] bg-card' 
+              ? 'border-[#2563eb] shadow-[0_0_0_2px_rgba(37,99,235,0.3)] bg-card' 
               : 'border-transparent hover:bg-muted hover:border-border'
           }`}
           onFocus={() => setIsTitleFocused(true)}
@@ -61,7 +61,7 @@ export function IncidentModalMain({ incident, onFieldChange }: IncidentModalMain
         </h1>
         <div className="flex gap-1 mt-2">
           <button 
-            className="w-8 h-8 flex items-center justify-center border border-border rounded bg-card text-muted-foreground hover:bg-muted hover:border-border focus:outline-none focus:border-[#c69c6d] focus:shadow-[0_0_0_1px_rgba(198,156,109,0.5)]"
+            className="w-8 h-8 flex items-center justify-center border border-border rounded bg-card text-muted-foreground hover:bg-muted hover:border-border focus:outline-none focus:border-[#2563eb] focus:shadow-[0_0_0_1px_rgba(37,99,235,0.5)]"
             title="Add"
           >
             <Plus className="w-4 h-4" />
