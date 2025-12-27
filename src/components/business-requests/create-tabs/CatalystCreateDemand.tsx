@@ -163,7 +163,7 @@ export function CatalystCreateDemand({ data, onChange }: DemandDetailsTabProps) 
     "rounded-lg",
     "text-gray-900 dark:text-gray-100",
     "placeholder:text-gray-400 dark:placeholder:text-gray-500",
-    "focus:border-[#c69c6d] focus:ring-2 focus:ring-[#c69c6d]/10",
+    "focus:border-[#2563eb] focus:ring-2 focus:ring-[#2563eb]/10",
     "transition-colors"
   );
 
@@ -198,7 +198,7 @@ export function CatalystCreateDemand({ data, onChange }: DemandDetailsTabProps) 
                 maxLength={SUMMARY_MAX_CHARS}
                 className={cn(
                   compactInputClass,
-                  isSummaryValid && "border-[#5c7c5c]/50 focus:border-[#5c7c5c]"
+                  isSummaryValid && "border-[#0d9488]/50 focus:border-[#0d9488]"
                 )}
               />
             </div>
@@ -217,7 +217,7 @@ export function CatalystCreateDemand({ data, onChange }: DemandDetailsTabProps) 
               placeholder="Describe the business need in detail..."
               minHeight="150px"
               className={cn(
-                isDescriptionValid && "border-[#5c7c5c]/50"
+                isDescriptionValid && "border-[#0d9488]/50"
               )}
             />
           </FormField>
@@ -260,7 +260,7 @@ export function CatalystCreateDemand({ data, onChange }: DemandDetailsTabProps) 
                 className={cn(
                   "h-9 w-9 shrink-0",
                   "border-gray-200 dark:border-gray-600",
-                  targetDateLocked && "bg-[#5c7c5c]/10 border-[#5c7c5c] text-[#5c7c5c]"
+                  targetDateLocked && "bg-[#0d9488]/10 border-[#0d9488] text-[#0d9488]"
                 )}
                 title={targetDateLocked ? `Locked by ${lockedByUser}` : 'Click to lock date'}
               >
@@ -298,7 +298,7 @@ export function CatalystCreateDemand({ data, onChange }: DemandDetailsTabProps) 
                   "w-full justify-start h-9 text-sm",
                   "text-gray-500 dark:text-gray-400",
                   "border-gray-200 dark:border-gray-600",
-                  "border-dashed hover:border-[#c69c6d] hover:bg-[#c69c6d]/5"
+                  "border-dashed hover:border-[#2563eb] hover:bg-[#2563eb]/5"
                 )}
                 onClick={() => fileInputRef.current?.click()}
                 disabled={attachments.length >= MAX_FILES}
@@ -318,7 +318,7 @@ export function CatalystCreateDemand({ data, onChange }: DemandDetailsTabProps) 
                         "border border-gray-200 dark:border-gray-700"
                       )}
                     >
-                      <FileText className="h-3 w-3 text-[#c69c6d] shrink-0" />
+                      <FileText className="h-3 w-3 text-[#2563eb] shrink-0" />
                       <span className="truncate max-w-[120px] text-gray-700 dark:text-gray-300">{file.name}</span>
                       <span className="text-gray-400 dark:text-gray-500">({formatFileSize(file.size)})</span>
                       <button

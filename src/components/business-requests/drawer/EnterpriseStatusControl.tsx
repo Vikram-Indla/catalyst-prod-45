@@ -1,6 +1,6 @@
 /**
- * EnterpriseStatusControl - Brand gold status control with dropdown
- * Catalyst Design System: Primary Gold (#c69c6d)
+ * EnterpriseStatusControl - Brand blue status control with dropdown
+ * Catalyst Design System: Primary Blue (#2563eb)
  */
 
 import { useState } from 'react';
@@ -74,12 +74,12 @@ export function EnterpriseStatusControl({
               }}
               className={cn(
                 "text-[13px] cursor-pointer",
-                isActive && "bg-[#c69c6d]/10 text-[#c69c6d]"
+                isActive && "bg-[#2563eb]/10 text-[#2563eb]"
               )}
             >
               <span className="flex-1">{step.label}</span>
               {isActive && (
-                <Check className="h-4 w-4 shrink-0 text-[#c69c6d]" />
+                <Check className="h-4 w-4 shrink-0 text-[#2563eb]" />
               )}
             </DropdownMenuItem>
           );

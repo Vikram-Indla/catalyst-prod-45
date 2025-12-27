@@ -34,7 +34,7 @@ interface ThemeDrawerProps {
 export function ThemeDrawer({ open, onOpenChange, theme, isArchived }: ThemeDrawerProps) {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
-  const [colorTag, setColorTag] = useState('#c69c6d');
+  const [colorTag, setColorTag] = useState('#2563eb');
   const [status, setStatus] = useState<'active' | 'draft' | 'archived'>('active');
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('details');
@@ -46,7 +46,7 @@ export function ThemeDrawer({ open, onOpenChange, theme, isArchived }: ThemeDraw
     if (theme) {
       setName(theme.name);
       setDescription(theme.description || '');
-      setColorTag(theme.color_tag || '#c69c6d');
+      setColorTag(theme.color_tag || '#2563eb');
       setStatus((theme.status as 'active' | 'draft' | 'archived') || 'active');
       setActiveTab('details');
     }

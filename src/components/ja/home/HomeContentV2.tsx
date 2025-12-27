@@ -104,7 +104,7 @@ function FocusWidget({
         <span className={cn(
           "text-base font-bold tabular-nums shrink-0",
           primaryCount > 0 
-            ? "text-[#5c7c5c] dark:text-[#8aab8a]" 
+            ? "text-[#0d9488] dark:text-[#2dd4bf]" 
             : "text-muted-foreground"
         )}>
           {primaryCount}
