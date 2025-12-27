@@ -334,9 +334,9 @@ export function StrategicBacklogObjectivesSection({
   return (
     <div className="space-y-4">
       {/* Search + Column Selector */}
-      <div className="flex items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4">
         <div className={cn(
-          "flex items-center gap-2 px-3 py-2 rounded-lg flex-1 max-w-md",
+          "flex items-center gap-2 px-3 py-2 rounded-lg flex-1 sm:max-w-md",
           "bg-white dark:bg-[#0D1117]",
           "border border-[#E1E4E8] dark:border-[#30363D]",
           "focus-within:border-[#2563eb] focus-within:ring-1 focus-within:ring-[rgba(37,99,235,0.3)]"
@@ -362,9 +362,9 @@ export function StrategicBacklogObjectivesSection({
         />
       </div>
 
-      {/* Table */}
-      <div className="bg-surface border border-border rounded-lg overflow-hidden">
-        <table className="w-full table-fixed">
+      {/* Table with horizontal scroll for mobile */}
+      <div className="bg-surface border border-border rounded-lg overflow-x-auto">
+        <table className="w-full min-w-[700px]">
           <thead className="border-b border-border">
             <tr className="bg-muted/30">
               {isColumnVisible('type') && (

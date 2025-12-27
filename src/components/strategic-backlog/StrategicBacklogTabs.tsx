@@ -31,7 +31,7 @@ export function StrategicBacklogTabs({
   counts,
 }: TabsProps) {
   return (
-    <div className="flex items-center gap-1 p-1 rounded-lg" style={{ background: 'var(--surface-subtle)' }}>
+    <div className="flex items-center gap-1 p-1 rounded-lg overflow-x-auto" style={{ background: 'var(--surface-subtle)' }}>
       {TABS.map((tab) => {
         const isActive = activeSection === tab.id;
         const count = counts[tab.id];
@@ -41,7 +41,7 @@ export function StrategicBacklogTabs({
             key={tab.id}
             onClick={() => onSectionChange(tab.id)}
             className={cn(
-              "flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-md transition-all whitespace-nowrap",
+              "flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-2 text-xs sm:text-sm font-medium rounded-md transition-all whitespace-nowrap shrink-0",
               isActive
                 ? "bg-white dark:bg-[#161B22] shadow-sm"
                 : "hover:bg-[var(--surface-hover)]"
@@ -51,9 +51,9 @@ export function StrategicBacklogTabs({
             }}
           >
             <WorkItemIcon type={tab.iconType} size="sm" />
-            {tab.label}
+            <span className="hidden xs:inline sm:inline">{tab.label}</span>
             <span 
-              className="px-1.5 py-0.5 text-[11px] font-semibold rounded-full min-w-[20px] text-center"
+              className="px-1.5 py-0.5 text-[10px] sm:text-[11px] font-semibold rounded-full min-w-[18px] sm:min-w-[20px] text-center"
               style={{
                 background: isActive ? '#2563eb' : 'var(--border-default)',
                 color: isActive ? '#FFFFFF' : 'var(--text-muted)',
