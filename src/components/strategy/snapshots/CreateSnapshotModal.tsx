@@ -422,13 +422,43 @@ export function CreateSnapshotModal({ open, onClose }: CreateSnapshotModalProps)
               </div>
 
               {/* Summary */}
-              <div className="p-4 bg-gray-50 dark:bg-[#1a1a1a] border border-gray-200 dark:border-[#333333] rounded-lg space-y-2">
+              <div className="p-4 bg-gray-50 dark:bg-[#1a1a1a] border border-gray-200 dark:border-[#333333] rounded-lg space-y-3">
                 <h4 className="font-medium text-sm text-gray-900 dark:text-[#f5f5f5]">Summary</h4>
-                <div className="text-sm text-gray-600 dark:text-[#a3a3a3] space-y-1">
+                <div className="text-sm text-gray-600 dark:text-[#a3a3a3] space-y-2">
                   <p><span className="font-medium text-gray-700 dark:text-[#e6e6e6]">Name:</span> {formData.name}</p>
                   <p><span className="font-medium text-gray-700 dark:text-[#e6e6e6]">Period:</span> {formData.start_date} to {formData.end_date}</p>
-                  <p><span className="font-medium text-gray-700 dark:text-[#e6e6e6]">Themes:</span> {selectedThemes.length} selected</p>
-                  <p><span className="font-medium text-gray-700 dark:text-[#e6e6e6]">Quarters:</span> {selectedQuarters.length} selected</p>
+                  
+                  <div>
+                    <span className="font-medium text-gray-700 dark:text-[#e6e6e6]">Themes:</span>
+                    <div className="flex flex-wrap gap-1.5 mt-1">
+                      {selectedThemes.map(themeId => {
+                        const theme = themes.find(t => t.id === themeId);
+                        return theme ? (
+                          <span 
+                            key={themeId}
+                            className="inline-flex px-2 py-0.5 text-xs rounded-full bg-[#2563eb]/10 text-[#2563eb] dark:bg-[#2563eb]/20 dark:text-[#60a5fa]"
+                          >
+                            {theme.name}
+                          </span>
+                        ) : null;
+                      })}
+                    </div>
+                  </div>
+
+                  <div>
+                    <span className="font-medium text-gray-700 dark:text-[#e6e6e6]">Quarters:</span>
+                    <div className="flex flex-wrap gap-1.5 mt-1">
+                      {selectedQuarters.sort().map(quarter => (
+                        <span 
+                          key={quarter}
+                          className="inline-flex px-2 py-0.5 text-xs rounded-full bg-[#0d9488]/10 text-[#0d9488] dark:bg-[#0d9488]/20 dark:text-[#5eead4]"
+                        >
+                          {quarter}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+
                   {selectedProducts.length > 0 && (
                     <p><span className="font-medium text-gray-700 dark:text-[#e6e6e6]">Products:</span> {selectedProducts.length} selected</p>
                   )}
