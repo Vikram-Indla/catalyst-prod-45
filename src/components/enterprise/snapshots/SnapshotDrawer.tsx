@@ -356,19 +356,26 @@ export function SnapshotDrawer({ isOpen, onClose, snapshotId, onSave }: Snapshot
   const deleteSnapshotMutation = useMutation({
     mutationFn: async () => {
       if (!snapshotId) throw new Error('No snapshot ID');
-      
-      // First delete configuration
-      await supabase
+
+      // Remove internal snapshot dependencies that would block deletion at the DB level
+      const { error: configError } = await supabase
         .from('snapshot_configurations')
         .delete()
         .eq('snapshot_id', snapshotId);
-      
+      if (configError) throw configError;
+
+      const { error: linksError } = await supabase
+        .from('snapshot_strategy_links')
+        .delete()
+        .eq('snapshot_id', snapshotId);
+      if (linksError) throw linksError;
+
       // Then delete snapshot
       const { error } = await supabase
         .from('strategy_snapshots')
         .delete()
         .eq('id', snapshotId);
-      
+
       if (error) throw error;
     },
     onSuccess: () => {
@@ -384,7 +391,7 @@ export function SnapshotDrawer({ isOpen, onClose, snapshotId, onSave }: Snapshot
 
   const handleDelete = async () => {
     if (!snapshotId) return;
-    
+
     setIsCheckingDelete(true);
     try {
       const impact = await getSnapshotDeleteImpact(snapshotId);
@@ -398,11 +405,16 @@ export function SnapshotDrawer({ isOpen, onClose, snapshotId, onSave }: Snapshot
   };
 
   const handleDeleteConfirm = () => {
-    // Only allow deletion if nothing is linked
-    if (deleteImpact && deleteImpact.total > 0) {
+    // Block deletion only when there are REAL linked entities that we shouldn't auto-remove here
+    const hasBlocking = !!deleteImpact?.items?.some(
+      (i) => i.key !== 'snapshot_configurations' && i.key !== 'snapshot_strategy_links' && i.count > 0
+    );
+
+    if (hasBlocking) {
       catalystToast.warning('Cannot Delete', 'Please unlink all items before deleting this snapshot.');
       return;
     }
+
     deleteSnapshotMutation.mutate();
     setShowDeleteConfirm(false);
     setDeleteImpact(null);
@@ -413,6 +425,13 @@ export function SnapshotDrawer({ isOpen, onClose, snapshotId, onSave }: Snapshot
     setDeleteImpact(null);
     setActiveTab('themes');
   };
+
+  const hasBlockingLinkedItems = !!deleteImpact?.items?.some(
+    (i) => i.key !== 'snapshot_configurations' && i.key !== 'snapshot_strategy_links' && i.count > 0
+  );
+
+  const hasThemeBlocking = !!deleteImpact?.items?.some((i) => i.key === 'strategic_themes' && i.count > 0);
+
 
   // Format snapshot ID for display
   const formatSnapshotId = (id: string | null) => {
@@ -1046,14 +1065,17 @@ export function SnapshotDrawer({ isOpen, onClose, snapshotId, onSave }: Snapshot
       </SheetContent>
 
       {/* Delete Confirmation Dialog */}
-      <AlertDialog open={showDeleteConfirm} onOpenChange={(open) => {
-        setShowDeleteConfirm(open);
-        if (!open) setDeleteImpact(null);
-      }}>
+      <AlertDialog
+        open={showDeleteConfirm}
+        onOpenChange={(open) => {
+          setShowDeleteConfirm(open);
+          if (!open) setDeleteImpact(null);
+        }}
+      >
         <AlertDialogContent className="max-w-md">
           <AlertDialogHeader>
             <AlertDialogTitle className="flex items-center gap-2">
-              {deleteImpact && deleteImpact.total > 0 ? (
+              {hasBlockingLinkedItems ? (
                 <>
                   <AlertTriangle className="h-5 w-5 text-amber-500" />
                   Cannot Delete Snapshot
@@ -1064,41 +1086,49 @@ export function SnapshotDrawer({ isOpen, onClose, snapshotId, onSave }: Snapshot
             </AlertDialogTitle>
             <AlertDialogDescription asChild>
               <div className="space-y-3">
-                {deleteImpact && deleteImpact.total > 0 ? (
+                {hasBlockingLinkedItems ? (
                   <>
                     <p className="text-sm text-muted-foreground">
                       This snapshot has linked items that must be removed before deletion:
                     </p>
                     <ul className="space-y-2 mt-3">
-                      {deleteImpact.items.map((item) => (
-                        <li 
-                          key={item.key} 
-                          className="flex items-center justify-between p-2.5 rounded-lg bg-amber-500/10 border border-amber-500/20"
-                        >
-                          <span className="text-sm font-medium text-foreground">
-                            {item.count} {item.label}
-                          </span>
-                          {item.key === 'strategic_themes' && (
-                            <Button
-                              variant="link"
-                              size="sm"
-                              className="h-auto p-0 text-brand-primary hover:text-brand-primary-hover"
-                              onClick={handleNavigateToThemes}
-                            >
-                              <ExternalLink className="h-3.5 w-3.5 mr-1" />
-                              Go to Themes
-                            </Button>
-                          )}
-                        </li>
-                      ))}
+                      {(deleteImpact?.items || [])
+                        .filter(
+                          (item) =>
+                            item.key !== 'snapshot_configurations' && item.key !== 'snapshot_strategy_links'
+                        )
+                        .map((item) => (
+                          <li
+                            key={item.key}
+                            className="flex items-center justify-between p-2.5 rounded-lg bg-amber-500/10 border border-amber-500/20"
+                          >
+                            <span className="text-sm font-medium text-foreground">
+                              {item.count} {item.label}
+                            </span>
+                            {item.key === 'strategic_themes' && (
+                              <Button
+                                variant="link"
+                                size="sm"
+                                className="h-auto p-0 text-brand-primary hover:text-brand-primary-hover"
+                                onClick={handleNavigateToThemes}
+                              >
+                                <ExternalLink className="h-3.5 w-3.5 mr-1" />
+                                Go to Themes
+                              </Button>
+                            )}
+                          </li>
+                        ))}
                     </ul>
                     <p className="text-xs text-muted-foreground mt-3">
-                      Navigate to the Themes tab to unlink themes from this snapshot, then try deleting again.
+                      {hasThemeBlocking
+                        ? 'Navigate to the Themes tab to unlink themes from this snapshot, then try deleting again.'
+                        : 'Remove the linked items above, then try deleting again.'}
                     </p>
                   </>
                 ) : (
                   <p>
-                    Are you sure you want to delete "{formData.name}"? This action cannot be undone.
+                    Are you sure you want to delete "{formData.name}"? This will also remove snapshot settings and internal links.
+                    This action cannot be undone.
                   </p>
                 )}
               </div>
@@ -1106,9 +1136,9 @@ export function SnapshotDrawer({ isOpen, onClose, snapshotId, onSave }: Snapshot
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel onClick={() => setDeleteImpact(null)}>
-              {deleteImpact && deleteImpact.total > 0 ? 'Close' : 'Cancel'}
+              {hasBlockingLinkedItems ? 'Close' : 'Cancel'}
             </AlertDialogCancel>
-            {(!deleteImpact || deleteImpact.total === 0) && (
+            {!hasBlockingLinkedItems && (
               <AlertDialogAction
                 onClick={handleDeleteConfirm}
                 className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
