@@ -344,6 +344,7 @@ export function useCreateTheme() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['strategic-themes'] });
+      queryClient.invalidateQueries({ queryKey: ['strategic-backlog-all-themes'] });
       queryClient.invalidateQueries({ queryKey: ['strategy-pyramid-counts'] });
       catalystToast.success('Theme Created', 'Strategic theme has been created.');
     },
