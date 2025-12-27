@@ -129,8 +129,8 @@ function CatalystShellContent() {
         }
         // Show empty state if no program selected
         return (
-          <div className="w-14 h-full flex items-center justify-center p-2 text-center" style={{ borderRight: '1px solid var(--border)', backgroundColor: 'var(--surface-1)' }}>
-            <div style={{ color: 'var(--text-3)' }} className="text-xs">
+          <div className="w-14 h-full flex items-center justify-center p-2 text-center border-r border-border-default bg-surface-2">
+            <div className="text-xs text-text-tertiary">
               <p className="font-medium">No Program</p>
             </div>
           </div>
@@ -151,8 +151,8 @@ function CatalystShellContent() {
         }
         // Show empty state if no project selected
         return (
-          <div className="w-14 h-full flex items-center justify-center p-2 text-center" style={{ borderRight: '1px solid var(--border)', backgroundColor: 'var(--surface-1)' }}>
-            <div style={{ color: 'var(--text-3)' }} className="text-xs">
+          <div className="w-14 h-full flex items-center justify-center p-2 text-center border-r border-border-default bg-surface-2">
+            <div className="text-xs text-text-tertiary">
               <p className="font-medium">No Project</p>
             </div>
           </div>
@@ -175,7 +175,7 @@ function CatalystShellContent() {
   };
 
   return (
-    <div className="h-screen flex flex-col bg-stone-50" onClickCapture={handleInternalLinkClickCapture}>
+    <div className="h-screen flex flex-col bg-surface-1 text-text-primary" onClickCapture={handleInternalLinkClickCapture}>
       {/* Global Header - Catalyst Native */}
       <CatalystHeader />
 
@@ -187,12 +187,7 @@ function CatalystShellContent() {
         </div>
 
         {/* Route content scroll container (single scroll parent) - workspace frame */}
-        <main 
-          className="flex-1 min-w-0 flex flex-col overflow-hidden"
-          style={{ 
-            background: 'var(--bg-workspace, var(--bg))',
-          }}
-        >
+        <main className="flex-1 min-w-0 flex flex-col overflow-hidden bg-surface-1">
           <AnnouncementBanner />
           <div className="flex-1 min-h-0 overflow-auto">
             <Outlet />
