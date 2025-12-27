@@ -137,8 +137,8 @@ export function CatalystCreateDemand({ data, onChange }: DemandDetailsTabProps) 
     "text-gray-900 dark:text-gray-100",
     "placeholder:text-gray-400 dark:placeholder:text-gray-500",
     "focus:outline-none",
-    "focus:ring-2 focus:ring-secondary-olive/20",
-    "focus:border-secondary-olive",
+    "focus:ring-2 focus:ring-[#2563eb]/20",
+    "focus:border-[#2563eb]",
     "transition-all"
   );
 

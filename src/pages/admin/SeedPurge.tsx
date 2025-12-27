@@ -60,11 +60,11 @@ export default function SeedPurge() {
   const getStatusBadge = (result: PurgeResult) => {
     switch (result.status) {
       case 'deleted':
-        return <Badge className="bg-catalyst-olive/20 text-catalyst-olive">Deleted</Badge>;
+        return <Badge className="bg-[#0d9488]/20 text-[#0d9488]">Deleted</Badge>;
       case 'skipped':
         return <Badge variant="secondary">Skipped</Badge>;
       case 'pending':
-        return <Badge className="bg-catalyst-gold/20 text-catalyst-gold">Pending</Badge>;
+        return <Badge className="bg-[#2563eb]/20 text-[#2563eb]">Pending</Badge>;
       case 'error':
         return <Badge variant="destructive">Error</Badge>;
       default:
@@ -95,7 +95,7 @@ export default function SeedPurge() {
         {/* Guardrail Status */}
         <Card className={cn(
           "border-2",
-          guardrailStatus.allowed ? "border-catalyst-olive/50" : "border-destructive/50"
+          guardrailStatus.allowed ? "border-[#0d9488]/50" : "border-destructive/50"
         )}>
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-lg">
@@ -105,10 +105,10 @@ export default function SeedPurge() {
           </CardHeader>
           <CardContent>
             {guardrailStatus.allowed ? (
-              <Alert className="bg-catalyst-olive/10 border-catalyst-olive/30">
-                <CheckCircle2 className="h-4 w-4 text-catalyst-olive" />
-                <AlertTitle className="text-catalyst-olive">Purge Allowed</AlertTitle>
-                <AlertDescription className="text-catalyst-olive/80">
+              <Alert className="bg-[#0d9488]/10 border-[#0d9488]/30">
+                <CheckCircle2 className="h-4 w-4 text-[#0d9488]" />
+                <AlertTitle className="text-[#0d9488]">Purge Allowed</AlertTitle>
+                <AlertDescription className="text-[#0d9488]/80">
                   Environment checks passed. You may proceed with dry run.
                 </AlertDescription>
               </Alert>
@@ -195,7 +195,7 @@ export default function SeedPurge() {
                     placeholder="Type confirmation text..."
                     className={cn(
                       "max-w-md",
-                      isConfirmationValid && "border-catalyst-olive focus-visible:ring-catalyst-olive"
+                      isConfirmationValid && "border-[#0d9488] focus-visible:ring-[#0d9488]"
                     )}
                   />
                 </div>
@@ -240,7 +240,7 @@ export default function SeedPurge() {
                 {summary.blocked ? (
                   <XCircle className="h-5 w-5 text-destructive" />
                 ) : (
-                  <CheckCircle2 className="h-5 w-5 text-catalyst-olive" />
+                  <CheckCircle2 className="h-5 w-5 text-[#0d9488]" />
                 )}
                 {summary.isDryRun ? 'Dry Run Results' : 'Purge Results'}
               </CardTitle>
