@@ -57,9 +57,9 @@
   --text-disabled: #9ca3af;   /* Grey-400: Disabled */
 
   /* ----- Text Colors: Brand ----- */
-  --text-olive: #5c7c5c;      /* Page titles, logo "Cata" */
-  --text-gold: #c69c6d;       /* Active states, logo "lyst" */
-  --text-bronze: #8b7355;     /* Count badges, secondary brand */
+  --text-olive: #2563eb;      /* Page titles, logo "Cata" - Updated to Blue */
+  --text-gold: #2563eb;       /* Active states, logo "lyst" - Updated to Blue */
+  --text-bronze: #0d9488;     /* Count badges, secondary brand - Updated to Teal */
 
   /* ----- Text Colors: Semantic ----- */
   --text-success: #22c55e;

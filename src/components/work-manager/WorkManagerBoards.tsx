@@ -394,7 +394,7 @@ function BoardColumn({
             {...dropProvided.droppableProps}
             className={cn(
               'flex-1 overflow-y-auto p-3 space-y-3 scroll-smooth',
-              dropSnapshot.isDraggingOver && isDragEnabled && 'bg-olive-500/10 ring-2 ring-inset ring-olive-500/20'
+              dropSnapshot.isDraggingOver && isDragEnabled && 'bg-[rgba(37,99,235,0.1)] ring-2 ring-inset ring-[rgba(37,99,235,0.2)]'
             )}
           >
             {tasks.length === 0 ? (

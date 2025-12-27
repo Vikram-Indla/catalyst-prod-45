@@ -453,7 +453,7 @@ export function IncidentListTable({
                           className={cn(
                             CELL_TEXT,
                             'font-medium font-mono',
-                            'text-gold-link hover:text-gold-link-hover',
+                            'text-[#2563eb] hover:text-[#1d4ed8] dark:text-[#60a5fa] dark:hover:text-[#93c5fd]',
                             'hover:underline truncate'
                           )}
                           onClick={(e) => e.stopPropagation()}

@@ -154,6 +154,9 @@ export default {
           800: "#7d5a38",
           900: "#664a30",
           950: "#382618",
+          /* Gold-link now maps to Blue for consistency */
+          link: "#2563eb",
+          "link-hover": "#1d4ed8",
         },
         
         /* Olive - Secondary brand (legacy) */

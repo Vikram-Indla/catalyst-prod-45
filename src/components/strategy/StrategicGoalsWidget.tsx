@@ -131,7 +131,7 @@ export function StrategicGoalsWidget({ snapshotId }: RiskExposureWidgetProps) {
               style={{ borderBottom: '1px solid var(--divider)' }}
             >
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full bg-green-500" />
+                <div className="w-3 h-3 rounded-full bg-[#0d9488]" />
                 <span className="text-[14px] font-medium" style={{ color: 'var(--text-1)' }}>Low</span>
               </div>
               <span className="text-[16px] font-bold" style={{ color: 'var(--text-3)' }}>
