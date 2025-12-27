@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import { LoginHeroPanel } from './LoginHeroPanel';
 import { LoginFormPanel } from './LoginFormPanel';
 import { useLoginState } from './useLoginState';
+import './login-styles.css';
 
 interface CatalystLoginPageProps {
   onSignIn: (email: string, password: string) => Promise<{ error?: Error | null }>;
@@ -34,25 +35,15 @@ export function CatalystLoginPage({
   };
 
   return (
-    <div 
-      className="min-h-screen grid lg:grid-cols-[1.1fr_0.9fr]"
-      style={{ fontFamily: "'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif" }}
-    >
+    <>
       {/* Skip Link for Accessibility */}
-      <a
-        href="#login-form"
-        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-blue-600 focus:text-white focus:rounded-lg"
-      >
-        Skip to login form
-      </a>
+      <a href="#main-form" className="login-skip-link">Skip to login form</a>
 
-      {/* Left Panel - Hero (hidden on mobile) */}
-      <div className="hidden lg:block">
+      <div className="login-container">
+        {/* Left Panel - Hero (hidden on mobile via CSS) */}
         <LoginHeroPanel />
-      </div>
 
-      {/* Right Panel - Form */}
-      <div id="login-form">
+        {/* Right Panel - Form */}
         <LoginFormPanel
           userType={userType}
           authType={authType}
@@ -65,7 +56,7 @@ export function CatalystLoginPage({
           error={error}
         />
       </div>
-    </div>
+    </>
   );
 }
 
