@@ -154,7 +154,7 @@ export function StrategicBacklogEpicsSection({
           "flex items-center gap-2 px-3 py-2 rounded-lg flex-1 max-w-md",
           "bg-white dark:bg-[#0D1117]",
           "border border-[#E1E4E8] dark:border-[#30363D]",
-          "focus-within:border-[#C69C6D] focus-within:ring-1 focus-within:ring-[rgba(198,156,109,0.3)]"
+          "focus-within:border-[#2563eb] focus-within:ring-1 focus-within:ring-[rgba(37,99,235,0.3)]"
         )}>
           <Search className="h-4 w-4 text-[#8B949E] dark:text-[#6E7681]" />
           <input

@@ -197,7 +197,7 @@ export default function IncidentDetailModal({ incident, isOpen, onClose, parentI
             </button>
             <button 
               ref={closeButtonRef}
-              className="w-8 h-8 flex items-center justify-center rounded hover:bg-[#F4F5F7] text-[#42526E] hover:text-[#172B4D] focus:outline-none focus:ring-2 focus:ring-[#C69C6D] focus:ring-offset-2"
+              className="w-8 h-8 flex items-center justify-center rounded hover:bg-[#F4F5F7] text-[#42526E] hover:text-[#172B4D] focus:outline-none focus:ring-2 focus:ring-[#2563eb] focus:ring-offset-2"
               title="Close"
               onClick={onClose}
             >

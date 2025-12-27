@@ -134,14 +134,14 @@ function DiamondChart({ scores, averages }: { scores: Record<string, number>; av
         {/* Your epic polygon - Brand Gold */}
         <polygon
           points={yourEpicPoints.map(p => `${p.x},${p.y}`).join(' ')}
-          fill="rgba(198, 156, 109, 0.3)"
-          stroke="#c69c6d"
+          fill="rgba(37, 99, 235, 0.3)"
+          stroke="#2563eb"
           strokeWidth="2"
         />
 
         {/* Points */}
         {yourEpicPoints.map((p, i) => (
-          <circle key={`epic-${i}`} cx={p.x} cy={p.y} r="4" fill="#c69c6d" />
+          <circle key={`epic-${i}`} cx={p.x} cy={p.y} r="4" fill="#2563eb" />
         ))}
       </svg>
 

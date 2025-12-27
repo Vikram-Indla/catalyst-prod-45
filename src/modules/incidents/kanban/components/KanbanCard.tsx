@@ -175,7 +175,7 @@ export const KanbanCard = memo(function KanbanCard({
       <div className="flex items-center justify-between mb-2">
         <button
           onClick={handleKeyClick}
-          className="font-mono text-sm font-medium text-[#c69c6d] dark:text-[#d4a855] hover:underline"
+          className="font-mono text-sm font-medium text-[#2563eb] dark:text-[#60a5fa] hover:underline"
         >
           {incident.incident_key}
         </button>
@@ -248,7 +248,7 @@ export const KanbanCard = memo(function KanbanCard({
       {isInCommittee && (
         <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground mt-2 pt-2 border-t border-border">
           {/* Approvers count */}
-          <span className="flex items-center gap-0.5 text-[#c69c6d] dark:text-[#d4a855]">
+          <span className="flex items-center gap-0.5 text-[#2563eb] dark:text-[#60a5fa]">
             <Users className="h-3 w-3" />
             <span className="font-medium">{approverCount}</span>
           </span>
@@ -275,7 +275,7 @@ export const KanbanCard = memo(function KanbanCard({
                 <TooltipTrigger asChild>
                   <button
                     onClick={handleEditCommitteeClick}
-                    className="p-0.5 rounded hover:bg-muted text-muted-foreground hover:text-[#c69c6d] dark:hover:text-[#d4a855] transition-colors"
+                    className="p-0.5 rounded hover:bg-muted text-muted-foreground hover:text-[#2563eb] dark:hover:text-[#60a5fa] transition-colors"
                   >
                     <Settings className="h-3 w-3" />
                   </button>

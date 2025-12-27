@@ -68,7 +68,7 @@ export function TimelineSidebar({
               <div
                 key={feature.id}
                 onClick={() => onFeatureClick?.(feature.id)}
-                className="h-12 flex items-center px-3 border-b hover:bg-[rgba(198,156,109,0.08)] cursor-pointer"
+                className="h-12 flex items-center px-3 border-b hover:bg-[rgba(37,99,235,0.08)] cursor-pointer"
               >
                 <div
                   className="w-1 h-6 rounded mr-3"
@@ -76,7 +76,7 @@ export function TimelineSidebar({
                 />
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <span className="text-xs font-mono text-[#c69c6d]">
+                    <span className="text-xs font-mono text-[#2563eb]">
                       {feature.feature_id}
                     </span>
                     <span
