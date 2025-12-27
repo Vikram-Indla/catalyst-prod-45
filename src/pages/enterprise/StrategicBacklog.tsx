@@ -159,7 +159,7 @@ export default function StrategicBacklog() {
       <Button 
         size="sm" 
         onClick={() => setCreateModalOpen(true)}
-        className="bg-brand-primary hover:bg-brand-primary-hover text-white gap-1.5"
+        className="bg-blue-600 hover:bg-blue-700 dark:hover:bg-blue-500 text-white gap-1.5"
       >
         <Plus className="h-4 w-4" />
         Create
