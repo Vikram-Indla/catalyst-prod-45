@@ -129,7 +129,7 @@ export function EpicKanbanColumn({
             {...provided.droppableProps}
             className={cn(
               'flex-1 overflow-y-auto p-3 flex flex-col gap-2.5',
-              snapshot.isDraggingOver && 'bg-olive-50/50 dark:bg-olive-900/10'
+              snapshot.isDraggingOver && 'bg-[rgba(37,99,235,0.08)] dark:bg-[rgba(37,99,235,0.1)]'
             )}
             style={{ minHeight: 0 }}
           >
@@ -175,7 +175,7 @@ export function EpicKanbanColumn({
                             <div className="font-mono text-[11px] text-gray-500 dark:text-gray-400 mb-1">
                               {item.displayId || item.key || item.id.slice(0, 8)}
                             </div>
-                            <div className="text-[14px] font-medium line-clamp-2 text-gray-900 dark:text-gray-100 group-hover:text-olive-600 dark:group-hover:text-olive-400 transition-colors">
+                            <div className="text-[14px] font-medium line-clamp-2 text-gray-900 dark:text-gray-100 group-hover:text-[#2563eb] dark:group-hover:text-[#60a5fa] transition-colors">
                               {item.name}
                             </div>
                           </div>

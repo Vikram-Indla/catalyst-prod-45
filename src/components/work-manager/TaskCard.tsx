@@ -78,7 +78,7 @@ export function TaskCard({ task, onClick, isDragging = false }: TaskCardProps) {
         'transition-all duration-200 ease-out',
         'hover:shadow-[0_8px_24px_rgba(0,0,0,0.1),0_4px_8px_rgba(0,0,0,0.06)]',
         'hover:border-border hover:-translate-y-0.5',
-        'focus:ring-2 focus:ring-olive-500/20 focus:outline-none focus:border-olive-300',
+        'focus:ring-2 focus:ring-[#2563eb]/20 focus:outline-none focus:border-[#93c5fd]',
         // Dragging state
         isDragging && 'shadow-hover cursor-grabbing rotate-1 scale-[1.02]',
         !isDragging && 'cursor-grab',
@@ -98,7 +98,7 @@ export function TaskCard({ task, onClick, isDragging = false }: TaskCardProps) {
       {/* Done Checkmark - subtle */}
       {isDone && (
         <div className="absolute top-3 right-3">
-          <CheckCircle className="w-4 h-4 text-green-500/60" />
+          <CheckCircle className="w-4 h-4 text-[#0d9488]/60" />
         </div>
       )}
 
@@ -159,7 +159,7 @@ export function TaskCard({ task, onClick, isDragging = false }: TaskCardProps) {
           {/* Show completed date for done tasks, otherwise due date */}
           {isDone && task.completedAt ? (
             <span className="inline-flex items-center gap-1 text-[11px] text-stone-400">
-              <CheckCircle className="w-3 h-3 text-green-500/60" />
+              <CheckCircle className="w-3 h-3 text-[#0d9488]/60" />
               Completed {formatCompletedDate(task.completedAt)}
             </span>
           ) : task.dueDate ? (
@@ -193,7 +193,7 @@ export function TaskCard({ task, onClick, isDragging = false }: TaskCardProps) {
             'ring-2 ring-white dark:ring-gray-800',
             'bg-gradient-to-br from-stone-100 to-stone-200 text-stone-600',
             'dark:from-gray-600 dark:to-gray-700 dark:text-gray-200',
-            'transition-transform duration-200 hover:scale-110 hover:ring-olive-200'
+            'transition-transform duration-200 hover:scale-110 hover:ring-[#bfdbfe]'
           )}
           title={assignee?.name || 'Unassigned'}
         >

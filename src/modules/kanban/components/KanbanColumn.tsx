@@ -134,7 +134,7 @@ export function KanbanColumn({
         flex flex-col flex-shrink-0 transition-all duration-150 
         rounded-xl border shadow-sm
         ${isDragOver 
-          ? 'border-2 border-dashed border-olive-500 dark:border-olive-400 bg-olive-50/50 dark:bg-olive-900/10' 
+          ? 'border-2 border-dashed border-[#2563eb] dark:border-[#60a5fa] bg-[rgba(37,99,235,0.1)] dark:bg-[rgba(37,99,235,0.1)]' 
           : 'border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50'
         }
       `}

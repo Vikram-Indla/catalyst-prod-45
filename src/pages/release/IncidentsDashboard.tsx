@@ -7,19 +7,19 @@ import { cn } from '@/lib/utils';
 const timeFilters = ['24h', '7D', '30D', '90D'];
 
 const stats = [
-  { label: 'Critical Incidents', value: 3, className: 'text-red-700', trend: '↑ +2 from last week', trendUp: true },
-  { label: 'Open Incidents', value: 24, className: 'text-orange-700', trend: '↑ +5 from last week', trendUp: true },
-  { label: 'Resolved This Week', value: 18, className: 'text-green-700', trend: '↑ +12 improvement', trendUp: false },
+  { label: 'Critical Incidents', value: 3, className: 'text-[#ef4444]', trend: '↑ +2 from last week', trendUp: true },
+  { label: 'Open Incidents', value: 24, className: 'text-[#f59e0b]', trend: '↑ +5 from last week', trendUp: true },
+  { label: 'Resolved This Week', value: 18, className: 'text-[#0d9488]', trend: '↑ +12 improvement', trendUp: false },
   { label: 'Avg Resolution Time', value: '4.2h', className: 'text-[#1A1A1A]', trend: '↓ -1.2h improvement', trendUp: false },
-  { label: 'SLA Compliance', value: '94%', className: 'text-green-700', trend: '↑ +3% improvement', trendUp: false },
+  { label: 'SLA Compliance', value: '94%', className: 'text-[#0d9488]', trend: '↑ +3% improvement', trendUp: false },
 ];
 
 const statusData = [
-  { label: 'Open', count: 24, color: 'bg-blue-600' },
-  { label: 'In Progress', count: 15, color: 'bg-amber-600' },
-  { label: 'Pending', count: 8, color: 'bg-orange-600' },
-  { label: 'Resolved', count: 45, color: 'bg-green-600' },
-  { label: 'Closed', count: 55, color: 'bg-gray-500' },
+  { label: 'Open', count: 24, color: 'bg-[#2563eb]' },
+  { label: 'In Progress', count: 15, color: 'bg-[#f59e0b]' },
+  { label: 'Pending', count: 8, color: 'bg-[#f59e0b]' },
+  { label: 'Resolved', count: 45, color: 'bg-[#0d9488]' },
+  { label: 'Closed', count: 55, color: 'bg-[#6b7280]' },
 ];
 
 const teamData = [
@@ -36,9 +36,9 @@ const matrixData = [
 ];
 
 const matrixColors = [
-  ['bg-red-50 text-red-700', 'bg-orange-50 text-orange-700', 'bg-yellow-50 text-yellow-600'],
-  ['bg-orange-50 text-orange-700', 'bg-yellow-50 text-yellow-600', 'bg-green-50 text-green-700'],
-  ['bg-yellow-50 text-yellow-600', 'bg-green-50 text-green-700', 'bg-green-50 text-green-700'],
+  ['bg-[rgba(239,68,68,0.1)] text-[#ef4444]', 'bg-[rgba(245,158,11,0.1)] text-[#b45309]', 'bg-[rgba(245,158,11,0.1)] text-[#b45309]'],
+  ['bg-[rgba(245,158,11,0.1)] text-[#b45309]', 'bg-[rgba(245,158,11,0.1)] text-[#b45309]', 'bg-[rgba(13,148,136,0.1)] text-[#0d9488]'],
+  ['bg-[rgba(245,158,11,0.1)] text-[#b45309]', 'bg-[rgba(13,148,136,0.1)] text-[#0d9488]', 'bg-[rgba(13,148,136,0.1)] text-[#0d9488]'],
 ];
 
 const matrixLabels = [
@@ -98,7 +98,7 @@ export default function IncidentsDashboard() {
               <p className={cn("text-[28px] font-bold mb-1", stat.className)}>
                 {stat.value}
               </p>
-              <p className={cn("text-[13px]", stat.trendUp ? "text-red-700" : "text-green-700")}>
+              <p className={cn("text-[13px]", stat.trendUp ? "text-[#ef4444]" : "text-[#0d9488]")}>
                 {stat.trend}
               </p>
             </CardContent>
@@ -272,7 +272,7 @@ export default function IncidentsDashboard() {
                       <div className="text-[11px] text-[#8C8C8C]">{member.role}</div>
                     </div>
                     <div className="text-right">
-                      <div className="text-lg font-bold text-green-700">{member.resolved}</div>
+                      <div className="text-lg font-bold text-[#0d9488]">{member.resolved}</div>
                       <div className="text-[10px] text-[#8C8C8C]">Resolved</div>
                     </div>
                   </div>

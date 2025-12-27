@@ -221,12 +221,12 @@ export function DataManagementPanel() {
                     <tr>
                       <td className="px-4 py-2">Business Lines</td>
                       <td className="px-4 py-2">{dataCounts?.businessLines || 0}</td>
-                      <td className="px-4 py-2 text-green-600">Active</td>
+                      <td className="px-4 py-2 text-[#0d9488]">Active</td>
                     </tr>
                     <tr>
                       <td className="px-4 py-2">Status Configs</td>
                       <td className="px-4 py-2">{dataCounts?.statuses || 0}</td>
-                      <td className="px-4 py-2 text-green-600">Active</td>
+                      <td className="px-4 py-2 text-[#0d9488]">Active</td>
                     </tr>
                     <tr>
                       <td className="px-4 py-2">Sample Demands</td>

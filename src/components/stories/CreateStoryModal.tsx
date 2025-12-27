@@ -145,7 +145,7 @@ export function CreateStoryModal({
               <DialogTitle className="text-lg font-semibold">Create Story</DialogTitle>
               <p className="text-sm text-muted-foreground mt-1">
                 Parent Feature:{' '}
-                <span className="text-gold-link font-mono font-medium">{parentFeature.key}</span>
+                <span className="text-[#2563eb] dark:text-[#60a5fa] font-mono font-medium">{parentFeature.key}</span>
                 {' '}{parentFeature.title}
               </p>
             </div>

@@ -134,7 +134,7 @@ export function RoadmapExportDialog({
                 }`}
               >
                 <RadioGroupItem value="csv" />
-                <FileSpreadsheet className="w-5 h-5 text-green-500" />
+                <FileSpreadsheet className="w-5 h-5 text-[#0d9488]" />
                 <div>
                   <div className="font-medium text-sm">CSV</div>
                   <div className="text-xs text-muted-foreground">Spreadsheet data</div>

@@ -116,9 +116,9 @@ function RankBadge({ rank }: { rank: number | null }) {
         px-2 py-0.5 
         rounded 
         text-[10px] font-semibold 
-        bg-olive-50 dark:bg-olive-900/30
-        text-olive-700 dark:text-olive-300
-        border border-olive-200 dark:border-olive-700
+        bg-[rgba(37,99,235,0.1)] dark:bg-[rgba(37,99,235,0.15)]
+        text-[#2563eb] dark:text-[#60a5fa]
+        border border-[rgba(37,99,235,0.2)] dark:border-[rgba(96,165,250,0.3)]
       "
     >
       #{rank}
@@ -135,7 +135,7 @@ function BusinessOwnerAvatar({ name, size = 28 }: { name: string; size?: number 
       className="
         rounded-full flex items-center justify-center 
         font-bold shrink-0 cursor-pointer shadow-sm
-        bg-olive-500 dark:bg-olive-600
+        bg-[#2563eb] dark:bg-[#3b82f6]
         text-white
       "
       style={{
@@ -267,12 +267,12 @@ if (compactMode) {
           <RankBadge rank={ticket.rank} />
         </div>
 
-        {/* Title - hover uses secondary-olive from Catalyst palette */}
+        {/* Title - hover uses blue from new palette */}
         <h4 className="
           text-[14px] font-medium 
           text-gray-900 dark:text-gray-100
           mb-3 leading-snug line-clamp-2
-          group-hover:text-secondary-olive dark:group-hover:text-green-300
+          group-hover:text-[#2563eb] dark:group-hover:text-[#60a5fa]
           transition-colors
         ">
           {ticket.summary}

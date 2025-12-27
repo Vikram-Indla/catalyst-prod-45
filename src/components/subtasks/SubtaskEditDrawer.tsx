@@ -164,7 +164,7 @@ export function SubtaskEditDrawer({
             </div>
             <p className="text-sm text-muted-foreground">
               Parent:{' '}
-              <span className="text-gold-link font-mono font-medium">{parentStory.key}</span>
+              <span className="text-[#2563eb] dark:text-[#60a5fa] font-mono font-medium">{parentStory.key}</span>
               {' '}{parentStory.title}
             </p>
           </SheetHeader>
@@ -305,13 +305,13 @@ export function SubtaskEditDrawer({
               <div className="space-y-1 text-sm">
                 <div>
                   <span className="text-muted-foreground">Feature:</span>{' '}
-                  <span className="text-gold-link font-mono font-medium">
+                  <span className="text-[#2563eb] dark:text-[#60a5fa] font-mono font-medium">
                     {parentStory.feature_key}
                   </span>
                 </div>
                 <div>
                   <span className="text-muted-foreground">Story:</span>{' '}
-                  <span className="text-gold-link font-mono font-medium">
+                  <span className="text-[#2563eb] dark:text-[#60a5fa] font-mono font-medium">
                     {parentStory.key}
                   </span>
                 </div>

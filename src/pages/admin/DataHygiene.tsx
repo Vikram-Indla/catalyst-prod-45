@@ -153,9 +153,9 @@ export default function DataHygiene() {
 
   const getTypeBadge = (type: string) => {
     const colors: Record<string, string> = {
-      epic: 'bg-purple-500/20 text-purple-400 border-purple-500/30',
-      feature: 'bg-blue-500/20 text-blue-400 border-blue-500/30',
-      story: 'bg-green-500/20 text-green-400 border-green-500/30',
+      epic: 'bg-[rgba(37,99,235,0.2)] text-[#2563eb] border-[rgba(37,99,235,0.3)]',
+      feature: 'bg-[rgba(37,99,235,0.2)] text-[#2563eb] border-[rgba(37,99,235,0.3)]',
+      story: 'bg-[rgba(13,148,136,0.2)] text-[#0d9488] border-[rgba(13,148,136,0.3)]',
     };
     return (
       <Badge variant="outline" className={colors[type] || ''}>
@@ -246,7 +246,7 @@ export default function DataHygiene() {
                   </div>
                 ) : allOrphans.length === 0 ? (
                   <div className="flex flex-col items-center justify-center py-12 text-center">
-                    <CheckCircle2 className="w-12 h-12 text-green-500 mb-3" />
+                    <CheckCircle2 className="w-12 h-12 text-[#0d9488] mb-3" />
                     <h3 className="text-lg font-medium text-foreground">All Clean!</h3>
                     <p className="text-sm text-muted-foreground mt-1">
                       No orphan records detected in the system
