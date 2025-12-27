@@ -1181,26 +1181,26 @@ export function CatalystThemeDrawer({ theme, isOpen, onClose }: CatalystThemeDra
                     label="Overall Progress"
                     value={`${kpiMetrics.overallProgress}%`}
                     overflow={kpiMetrics.overallOverflow}
-                    variant={kpiMetrics.overallProgress === 100 ? 'success' : kpiMetrics.overallProgress > 0 ? 'info' : 'default'}
+                    variant="info"
                   />
                   <KPICard
                     icon={Target}
                     label="Objectives"
                     value={kpiMetrics.objectiveCount}
-                    variant={kpiMetrics.objectiveCount > 0 ? 'info' : 'default'}
+                    variant="info"
                   />
                   <KPICard
                     icon={Layers}
                     label="Epics"
                     value={kpiMetrics.epicCount}
-                    variant={kpiMetrics.epicCount > 0 ? 'info' : 'default'}
+                    variant="info"
                   />
                   <KPICard
                     icon={AlertTriangle}
                     label="Gaps"
                     value={kpiMetrics.hasAnyWork ? (kpiMetrics.gaps || 0) : "—"}
                     subtext={kpiMetrics.hasAnyWork ? undefined : "No gaps identified"}
-                    variant={kpiMetrics.gaps && kpiMetrics.gaps > 0 ? 'warning' : 'default'}
+                    variant="info"
                   />
                 </div>
 
