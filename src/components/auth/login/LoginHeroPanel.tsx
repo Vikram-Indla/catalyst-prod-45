@@ -58,7 +58,7 @@ export function LoginHeroPanel() {
                 </div>
                 <span className="widget-title">Portfolio Management</span>
               </div>
-              <div className="widget-desc" style={{ paddingLeft: '58px' }}>Strategic oversight & program alignment</div>
+              <div className="widget-desc">Strategic oversight & program alignment</div>
             </div>
 
             <div className="feature-widget" role="listitem">
@@ -70,7 +70,7 @@ export function LoginHeroPanel() {
                 </div>
                 <span className="widget-title">Dependency Management</span>
               </div>
-              <div className="widget-desc" style={{ paddingLeft: '58px' }}>Cross-team visibility & risk mitigation</div>
+              <div className="widget-desc">Cross-team visibility & risk mitigation</div>
             </div>
 
             <div className="feature-widget" role="listitem">
@@ -82,7 +82,7 @@ export function LoginHeroPanel() {
                 </div>
                 <span className="widget-title">Capacity Planning</span>
               </div>
-              <div className="widget-desc" style={{ paddingLeft: '58px' }}>Resource optimization & forecasting</div>
+              <div className="widget-desc">Resource optimization & forecasting</div>
             </div>
 
             <div className="feature-widget" role="listitem">
@@ -94,7 +94,7 @@ export function LoginHeroPanel() {
                 </div>
                 <span className="widget-title">Product Management</span>
               </div>
-              <div className="widget-desc" style={{ paddingLeft: '58px' }}>Roadmap & feature prioritization</div>
+              <div className="widget-desc">Roadmap & feature prioritization</div>
             </div>
 
             <div className="feature-widget" role="listitem">
@@ -106,7 +106,7 @@ export function LoginHeroPanel() {
                 </div>
                 <span className="widget-title">AI Use Cases</span>
               </div>
-              <div className="widget-desc" style={{ paddingLeft: '58px' }}>Intelligent automation & insights</div>
+              <div className="widget-desc">Intelligent automation & insights</div>
             </div>
 
             <div className="feature-widget" role="listitem">
@@ -118,7 +118,7 @@ export function LoginHeroPanel() {
                 </div>
                 <span className="widget-title">Release Schedule</span>
               </div>
-              <div className="widget-desc" style={{ paddingLeft: '58px' }}>Predictable & coordinated delivery</div>
+              <div className="widget-desc">Predictable & coordinated delivery</div>
             </div>
           </div>
         </div>
