@@ -4,7 +4,7 @@ import { Plus } from "lucide-react";
 import { useEnabledModules } from "@/hooks/useModules";
 import { useCreateMenuVisibility } from "@/hooks/useCreateMenuVisibility";
 import { WorkItemIcon } from "@/components/ja/icons/WorkItemIcon";
-import { ThemeDialog } from "@/components/forms/ThemeDialog";
+import { CreateThemeDialog } from "@/components/strategic-backlog/CreateThemeDialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -188,7 +188,7 @@ export function CreateDropdown() {
       </DropdownMenu>
 
       {/* Theme Create Dialog */}
-      <ThemeDialog
+      <CreateThemeDialog
         open={themeDialogOpen}
         onOpenChange={setThemeDialogOpen}
       />
