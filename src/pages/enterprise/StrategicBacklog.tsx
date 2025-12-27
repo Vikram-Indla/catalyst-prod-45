@@ -6,7 +6,6 @@ import { useState, useCallback, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
-import { Plus, ChevronDown } from 'lucide-react';
 import { PageChrome } from '@/components/layout/PageChrome';
 import { StrategicBacklogTabs } from '@/components/strategic-backlog/StrategicBacklogTabs';
 import { StrategicBacklogCoveragePanel } from '@/components/strategic-backlog/StrategicBacklogCoveragePanel';
@@ -14,7 +13,6 @@ import { StrategicBacklogThemesSection } from '@/components/strategic-backlog/St
 import { StrategicBacklogSnapshotsSection } from '@/components/strategic-backlog/StrategicBacklogSnapshotsSection';
 import { StrategicBacklogObjectivesSection } from '@/components/strategic-backlog/StrategicBacklogObjectivesSection';
 import { StrategicBacklogEpicsSection } from '@/components/strategic-backlog/StrategicBacklogEpicsSection';
-import { AddToBacklogModal } from '@/components/strategic-backlog/AddToBacklogModal';
 import { ThemeDetailsDrawer } from '@/components/backlog/ThemeDetailsDrawer';
 import { EpicDetailsPanel } from '@/components/items/epics/EpicDetailsPanel';
 import { ObjectiveDrawerV2 } from '@/modules/okr-v2/components/ObjectiveDrawerV2';
@@ -39,7 +37,6 @@ export default function StrategicBacklog() {
   const tabParam = searchParams.get('tab') as SubSection | null;
   
   const [activeSection, setActiveSection] = useState<SubSection>(tabParam || 'themes');
-  const [createModalOpen, setCreateModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<any>(null);
   const [selectedItemType, setSelectedItemType] = useState<'theme' | 'snapshot' | 'objective' | 'epic' | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
@@ -184,23 +181,8 @@ export default function StrategicBacklog() {
     setSelectedItemType(null);
   };
 
-  // Header actions - just the Create button
-  const headerActions = (
-    <div className="flex items-center gap-3">
-      <Button 
-        size="sm" 
-        onClick={() => setCreateModalOpen(true)}
-        className="bg-blue-600 hover:bg-blue-700 dark:hover:bg-blue-500 text-white gap-1.5"
-      >
-        <Plus className="h-4 w-4" />
-        Create
-        <ChevronDown className="h-3 w-3" />
-      </Button>
-    </div>
-  );
-
   return (
-    <PageChrome rightActions={headerActions}>
+    <PageChrome>
       <div className="h-full flex flex-col min-h-0 overflow-hidden">
         {/* Tabs */}
         <div className="shrink-0 px-6 py-4">
@@ -321,12 +303,6 @@ export default function StrategicBacklog() {
         />
       </div>
 
-      {/* Add to Backlog Modal */}
-      <AddToBacklogModal
-        open={createModalOpen}
-        onOpenChange={setCreateModalOpen}
-        snapshotId=""
-      />
 
       {/* Individual Create Dialogs for Empty States */}
       <CreateThemeDialog
