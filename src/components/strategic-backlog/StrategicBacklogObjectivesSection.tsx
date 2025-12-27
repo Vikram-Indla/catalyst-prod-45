@@ -212,50 +212,26 @@ export function StrategicBacklogObjectivesSection({
   };
 
   const getStatusBadge = (status?: string | null) => {
-    // Status styling matching Image 1 reference
-    const statusMap: Record<string, { label: string; className: string }> = {
-      pending: { 
-        label: 'Pending', 
-        className: 'bg-transparent text-muted-foreground border-[#c8ccd0]' 
-      },
-      in_progress: { 
-        label: 'In Progress', 
-        className: 'bg-transparent text-[#2563eb] border-[#2563eb]' 
-      },
-      on_track: { 
-        label: 'On track', 
-        className: 'bg-[#0d9488] text-white border-[#0d9488]' 
-      },
-      at_risk: { 
-        label: 'At risk', 
-        className: 'bg-[#f59e0b] text-white border-[#f59e0b]' 
-      },
-      off_track: { 
-        label: 'Off track', 
-        className: 'bg-[#ef4444] text-white border-[#ef4444]' 
-      },
-      completed: { 
-        label: 'Completed', 
-        className: 'bg-[#0d9488] text-white border-[#0d9488]' 
-      },
-      paused: { 
-        label: 'Paused', 
-        className: 'bg-transparent text-muted-foreground border-[#c8ccd0]' 
-      },
-      canceled: { 
-        label: 'Canceled', 
-        className: 'bg-transparent text-muted-foreground border-[#c8ccd0]' 
-      },
+    // Status styling matching themes table - filled badges with solid backgrounds
+    const statusMap: Record<string, { label: string; bgColor: string }> = {
+      pending: { label: 'PENDING', bgColor: '#9ca3af' },
+      draft: { label: 'DRAFT', bgColor: '#9ca3af' },
+      in_progress: { label: 'IN PROGRESS', bgColor: '#2563eb' },
+      on_track: { label: 'ON TRACK', bgColor: '#0d9488' },
+      at_risk: { label: 'AT RISK', bgColor: '#f59e0b' },
+      off_track: { label: 'OFF TRACK', bgColor: '#ef4444' },
+      completed: { label: 'COMPLETED', bgColor: '#0d9488' },
+      paused: { label: 'PAUSED', bgColor: '#9ca3af' },
+      canceled: { label: 'CANCELED', bgColor: '#9ca3af' },
     };
     
-    const config = statusMap[status || ''] || { label: 'Draft', className: 'bg-transparent text-muted-foreground border-[#c8ccd0]' };
+    const config = statusMap[status || ''] || { label: 'DRAFT', bgColor: '#9ca3af' };
     
     return (
-      <span className={cn(
-        "inline-flex items-center justify-center rounded-full border text-center",
-        "min-w-[70px] px-2 py-[3px] text-[10px] font-medium capitalize whitespace-nowrap",
-        config.className
-      )}>
+      <span 
+        className="inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-semibold uppercase tracking-wider text-white"
+        style={{ backgroundColor: config.bgColor }}
+      >
         {config.label}
       </span>
     );

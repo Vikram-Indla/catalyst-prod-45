@@ -171,27 +171,19 @@ export function StrategicBacklogSnapshotsSection({
   };
 
   const getStatusBadge = (status: string) => {
-    const statusConfig: Record<string, { label: string; className: string }> = {
-      ACTIVE: {
-        label: 'ACTIVE',
-        className: 'bg-[rgba(13,148,136,0.1)] dark:bg-[rgba(13,148,136,0.15)] text-[#0d9488] dark:text-[#14b8a6] border border-[rgba(13,148,136,0.3)]',
-      },
-      DRAFT: {
-        label: 'DRAFT',
-        className: 'bg-[#F6F8FA] dark:bg-[#21262D] text-[#57606A] dark:text-[#8B949E] border border-[#E1E4E8] dark:border-[#30363D]',
-      },
-      ARCHIVED: {
-        label: 'ARCHIVED',
-        className: 'bg-[#F6F8FA] dark:bg-[#21262D] text-[#57606A] dark:text-[#8B949E] border border-[#E1E4E8] dark:border-[#30363D]',
-      },
+    // Status styling matching themes table - filled badges with solid backgrounds
+    const statusConfig: Record<string, { label: string; bgColor: string }> = {
+      ACTIVE: { label: 'ACTIVE', bgColor: '#2563eb' },
+      DRAFT: { label: 'DRAFT', bgColor: '#9ca3af' },
+      ARCHIVED: { label: 'ARCHIVED', bgColor: '#9ca3af' },
     };
 
     const config = statusConfig[status] || statusConfig.DRAFT;
     return (
-      <span className={cn(
-        'inline-flex px-2 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wider',
-        config.className
-      )}>
+      <span 
+        className="inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-semibold uppercase tracking-wider text-white"
+        style={{ backgroundColor: config.bgColor }}
+      >
         {config.label}
       </span>
     );
