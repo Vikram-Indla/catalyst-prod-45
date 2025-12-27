@@ -118,10 +118,12 @@ export function ProgressWithTooltip({
         <TooltipContent 
           side="bottom" 
           align="start"
-          className="max-w-[280px] p-0"
+          sideOffset={8}
+          className="max-w-[280px] p-0 z-[9999]"
           style={{ 
             backgroundColor: 'var(--surface-overlay, hsl(var(--popover)))',
-            border: '1px solid var(--border-default, hsl(var(--border)))'
+            border: '1px solid var(--border-default, hsl(var(--border)))',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
           }}
         >
           <div className="p-3 space-y-2.5">
