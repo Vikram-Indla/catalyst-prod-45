@@ -3,7 +3,7 @@
  * Pixel-perfect implementation matching mockups
  */
 import { cn } from '@/lib/utils';
-import { Check, AlertTriangle, Layers, Target, Box } from 'lucide-react';
+import { Check, AlertTriangle, Layers, Target, Box, Calendar } from 'lucide-react';
 import {
   Tooltip,
   TooltipContent,
@@ -16,7 +16,8 @@ interface CoveragePanelProps {
   themesWithObjectives: number;
   objectives: number;
   epics: number;
-  onNavigate: (section: 'themes' | 'objectives' | 'epics') => void;
+  snapshots?: number;
+  onNavigate: (section: 'themes' | 'objectives' | 'epics' | 'snapshots') => void;
 }
 
 export function StrategicBacklogCoveragePanel({
@@ -24,12 +25,14 @@ export function StrategicBacklogCoveragePanel({
   themesWithObjectives,
   objectives,
   epics,
+  snapshots = 0,
   onNavigate,
 }: CoveragePanelProps) {
   const themesPercent = themes > 0 ? Math.round((themesWithObjectives / themes) * 100) : 0;
   const themesComplete = themesPercent === 100 && themes > 0;
   const objectivesComplete = objectives > 0;
   const epicsComplete = epics > 0;
+  const snapshotsComplete = snapshots > 0;
 
   return (
     <div style={{ background: 'var(--surface-bg)', border: '1px solid var(--border-default)', borderRadius: '10px', overflow: 'hidden' }}>
@@ -112,7 +115,7 @@ export function StrategicBacklogCoveragePanel({
         <button
           onClick={() => onNavigate('epics')}
           className="w-full flex items-center justify-between transition-colors group"
-          style={{ padding: '12px 16px', background: 'transparent' }}
+          style={{ padding: '12px 16px', borderBottom: '1px solid var(--border-subtle)', background: 'transparent' }}
           onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--surface-hover)'; }}
           onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
         >
@@ -131,6 +134,33 @@ export function StrategicBacklogCoveragePanel({
             </div>
           </div>
           {epicsComplete ? (
+            <Check className="h-4 w-4" style={{ color: '#0d9488' }} />
+          ) : null}
+        </button>
+
+        {/* Snapshots */}
+        <button
+          onClick={() => onNavigate('snapshots')}
+          className="w-full flex items-center justify-between transition-colors group"
+          style={{ padding: '12px 16px', background: 'transparent' }}
+          onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--surface-hover)'; }}
+          onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
+        >
+          <div className="flex items-center gap-3">
+            <div 
+              className="w-8 h-8 rounded-lg flex items-center justify-center"
+              style={{ background: 'rgba(124, 58, 237, 0.1)' }}
+            >
+              <Calendar className="h-4 w-4" style={{ color: '#7c3aed' }} />
+            </div>
+            <div className="text-left">
+              <div className="flex items-center gap-1.5">
+                <span className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>Snapshots</span>
+                <span className="text-sm" style={{ color: 'var(--text-muted)' }}>{snapshots}</span>
+              </div>
+            </div>
+          </div>
+          {snapshotsComplete ? (
             <Check className="h-4 w-4" style={{ color: '#0d9488' }} />
           ) : null}
         </button>

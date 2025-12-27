@@ -249,6 +249,7 @@ export default function StrategicBacklog() {
                 themesWithObjectives={themesWithObjectives}
                 objectives={counts.objectives}
                 epics={counts.epics}
+                snapshots={counts.snapshots}
                 onNavigate={handleSectionChange}
               />
             </div>
