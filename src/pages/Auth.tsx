@@ -326,14 +326,14 @@ export default function Auth() {
                   key={index}
                   className="flex items-center gap-3 group py-2.5 whitespace-nowrap"
                 >
-                  <div className="p-2 bg-[#5c7c5c]/15 rounded-lg transition-colors duration-300 group-hover:bg-[#5c7c5c]/25">
+                  <div className="p-2 bg-[#2563eb]/15 rounded-lg transition-colors duration-300 group-hover:bg-[#2563eb]/25">
                     <item.Icon 
-                      className="transition-transform duration-300 group-hover:scale-110 text-[#5c7c5c]"
+                      className="transition-transform duration-300 group-hover:scale-110 text-[#2563eb]"
                       size={18}
                       strokeWidth={2}
                     />
                   </div>
-                  <span className="font-body text-sm font-medium tracking-wide transition-colors duration-300 group-hover:text-[#5c7c5c] text-[#525252]">
+                  <span className="font-body text-sm font-medium tracking-wide transition-colors duration-300 group-hover:text-[#2563eb] text-[#525252]">
                     {item.label}
                   </span>
                 </div>
@@ -345,9 +345,9 @@ export default function Auth() {
         {/* Footer */}
         <div className="absolute bottom-6 sm:bottom-8 md:bottom-12 left-6 sm:left-8 md:left-12 lg:left-16 z-10">
           <div className="flex flex-col gap-3 mb-4">
-            <div className="rounded-sm w-20 h-[3px] bg-[#5c7c5c]" />
-            <div className="rounded-sm w-10 h-[3px] bg-[#5c7c5c]/50" />
-            <div className="rounded-sm w-5 h-[3px] bg-[#5c7c5c]/30" />
+            <div className="rounded-sm w-20 h-[3px] bg-[#2563eb]" />
+            <div className="rounded-sm w-10 h-[3px] bg-[#2563eb]/50" />
+            <div className="rounded-sm w-5 h-[3px] bg-[#2563eb]/30" />
           </div>
           <p className="font-body text-sm text-[#a3a3a3]">
             © 2025 Catalyst. All rights reserved.

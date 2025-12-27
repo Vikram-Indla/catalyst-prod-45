@@ -190,7 +190,7 @@ export function useTeamMembers() {
   return useMemo(() => {
     if (!profiles) return [];
     
-    const colors = ['#5c7c5c', '#8b7355', '#3b82f6', '#8b5cf6', '#22c55e', '#f59e0b'];
+    const colors = ['#2563eb', '#0d9488', '#3b82f6', '#8b5cf6', '#22c55e', '#f59e0b'];
     
     return profiles.map((p, idx) => {
       const name = p.full_name || 'Unknown';

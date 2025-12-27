@@ -21,14 +21,14 @@ const CATALYST_STATUS_COLORS: Record<string, string> = {
 
 // Fallback colors for any unmapped statuses - cycles through brand palette
 const BRAND_FALLBACK_COLORS = [
-  '#5c7c5c', // Olive
-  '#c69c6d', // Gold
-  '#8b7355', // Bronze
-  '#4a6a4a', // Olive Dark
-  '#d4b896', // Champagne
-  '#6b8b6b', // Olive Light
-  '#3d563d', // Olive Darker
-  '#737373', // Gray
+  '#0d9488', // Teal
+  '#2563eb', // Blue
+  '#6b7280', // Gray
+  '#0f766e', // Teal Dark
+  '#60a5fa', // Blue Light
+  '#1d4ed8', // Blue Dark
+  '#4b5563', // Gray Dark
+  '#9ca3af', // Gray Light
 ];
 
 function getStatusColor(statusKey: string, index: number): string {
