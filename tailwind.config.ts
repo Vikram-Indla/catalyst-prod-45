@@ -1,4 +1,5 @@
 import type { Config } from "tailwindcss";
+import plugin from "tailwindcss/plugin";
 
 export default {
   darkMode: ["class", '[data-theme="dark"]'],
@@ -27,168 +28,199 @@ export default {
     },
     extend: {
       /* ═══════════════════════════════════════════════════════════════
-         OVERRIDE GREY SCALE — Pure Onyx Neutrals
-         This replaces Tailwind's default grey with high-contrast colors
+         CATALYST V5 COLOR SYSTEM — All semantic tokens mapped
          ═══════════════════════════════════════════════════════════════ */
       colors: {
-        /* Gray scale override - Pure Onyx */
-        gray: {
-          50: "#fafafa",
-          100: "#f5f5f5",
-          200: "#e5e5e5",
-          300: "#d4d4d4",
-          400: "#a3a3a3",
-          500: "#737373",
-          600: "#525252",
-          700: "#404040",
-          800: "#262626",
-          900: "#171717",
-          950: "#0a0a0a",
+        /* === SEMANTIC TEXT COLORS === */
+        text: {
+          primary: "hsl(var(--text-primary))",
+          secondary: "hsl(var(--text-secondary))",
+          tertiary: "hsl(var(--text-tertiary))",
+          muted: "hsl(var(--text-muted))",
+          inverse: "hsl(var(--text-inverse))",
         },
         
-        /* Slate override - also Pure Onyx */
+        /* === SEMANTIC SURFACE COLORS === */
+        surface: {
+          0: "hsl(var(--surface-0))",
+          1: "hsl(var(--surface-1))",
+          2: "hsl(var(--surface-2))",
+          3: "hsl(var(--surface-3))",
+          elevated: "hsl(var(--surface-elevated))",
+          overlay: "hsl(var(--surface-overlay))",
+          card: "hsl(var(--surface-card))",
+          muted: "hsl(var(--surface-muted))",
+          subtle: "hsl(var(--surface-subtle))",
+          hover: "hsl(var(--surface-hover))",
+        },
+        
+        /* === SEMANTIC BORDER COLORS === */
+        "border-subtle": "hsl(var(--border-subtle))",
+        "border-default": "hsl(var(--border-default))",
+        "border-strong": "hsl(var(--border-strong))",
+        "border-focus": "hsl(var(--border-focus))",
+        
+        /* === BRAND/ACTION COLORS === */
+        "brand-primary": {
+          DEFAULT: "hsl(var(--brand-primary))",
+          hover: "hsl(var(--brand-primary-hover))",
+          foreground: "hsl(var(--brand-primary-foreground))",
+        },
+        "brand-teal": {
+          DEFAULT: "hsl(var(--brand-teal))",
+          hover: "hsl(var(--brand-teal-hover))",
+        },
+        
+        /* === STATE COLORS === */
+        success: {
+          DEFAULT: "hsl(var(--success))",
+          foreground: "hsl(var(--success-foreground))",
+          bg: "hsl(var(--success-bg) / 0.08)",
+          border: "hsl(var(--success-border) / 0.20)",
+        },
+        warning: {
+          DEFAULT: "hsl(var(--warning))",
+          foreground: "hsl(var(--warning-foreground))",
+          bg: "hsl(var(--warning-bg) / 0.08)",
+          border: "hsl(var(--warning-border) / 0.20)",
+        },
+        danger: {
+          DEFAULT: "hsl(var(--danger))",
+          foreground: "hsl(var(--danger-foreground))",
+          bg: "hsl(var(--danger-bg) / 0.08)",
+          border: "hsl(var(--danger-border) / 0.20)",
+        },
+        info: {
+          DEFAULT: "hsl(var(--info))",
+          foreground: "hsl(var(--info-foreground))",
+          bg: "hsl(var(--info-bg) / 0.08)",
+          border: "hsl(var(--info-border) / 0.20)",
+        },
+        
+        /* === FOCUS & OVERLAY === */
+        "focus-ring": "hsl(var(--focus-ring))",
+        overlay: "hsl(var(--overlay))",
+
+        /* === GRAY SCALE — Pure Onyx === */
+        gray: {
+          50: "hsl(0 0% 98%)",
+          100: "hsl(0 0% 96%)",
+          200: "hsl(0 0% 90%)",
+          300: "hsl(0 0% 83%)",
+          400: "hsl(0 0% 64%)",
+          500: "hsl(0 0% 45%)",
+          600: "hsl(0 0% 32%)",
+          700: "hsl(0 0% 25%)",
+          800: "hsl(0 0% 15%)",
+          900: "hsl(0 0% 9%)",
+          950: "hsl(0 0% 4%)",
+        },
+        
+        /* Slate override - Pure Onyx */
         slate: {
-          50: "#fafafa",
-          100: "#f5f5f5",
-          200: "#e5e5e5",
-          300: "#d4d4d4",
-          400: "#a3a3a3",
-          500: "#737373",
-          600: "#525252",
-          700: "#404040",
-          800: "#262626",
-          900: "#171717",
-          950: "#0a0a0a",
+          50: "hsl(0 0% 98%)",
+          100: "hsl(0 0% 96%)",
+          200: "hsl(0 0% 90%)",
+          300: "hsl(0 0% 83%)",
+          400: "hsl(0 0% 64%)",
+          500: "hsl(0 0% 45%)",
+          600: "hsl(0 0% 32%)",
+          700: "hsl(0 0% 25%)",
+          800: "hsl(0 0% 15%)",
+          900: "hsl(0 0% 9%)",
+          950: "hsl(0 0% 4%)",
         },
         
         /* Zinc override - Pure Onyx */
         zinc: {
-          50: "#fafafa",
-          100: "#f5f5f5",
-          200: "#e5e5e5",
-          300: "#d4d4d4",
-          400: "#a3a3a3",
-          500: "#737373",
-          600: "#525252",
-          700: "#404040",
-          800: "#262626",
-          900: "#171717",
-          950: "#0a0a0a",
+          50: "hsl(0 0% 98%)",
+          100: "hsl(0 0% 96%)",
+          200: "hsl(0 0% 90%)",
+          300: "hsl(0 0% 83%)",
+          400: "hsl(0 0% 64%)",
+          500: "hsl(0 0% 45%)",
+          600: "hsl(0 0% 32%)",
+          700: "hsl(0 0% 25%)",
+          800: "hsl(0 0% 15%)",
+          900: "hsl(0 0% 9%)",
+          950: "hsl(0 0% 4%)",
         },
         
         /* Neutral override - Pure Onyx */
         neutral: {
-          50: "#fafafa",
-          100: "#f5f5f5",
-          200: "#e5e5e5",
-          300: "#d4d4d4",
-          400: "#a3a3a3",
-          500: "#737373",
-          600: "#525252",
-          700: "#404040",
-          800: "#262626",
-          900: "#171717",
-          950: "#0a0a0a",
+          50: "hsl(0 0% 98%)",
+          100: "hsl(0 0% 96%)",
+          200: "hsl(0 0% 90%)",
+          300: "hsl(0 0% 83%)",
+          400: "hsl(0 0% 64%)",
+          500: "hsl(0 0% 45%)",
+          600: "hsl(0 0% 32%)",
+          700: "hsl(0 0% 25%)",
+          800: "hsl(0 0% 15%)",
+          900: "hsl(0 0% 9%)",
+          950: "hsl(0 0% 4%)",
         },
         
         /* Stone override - Pure Onyx */
         stone: {
-          50: "#fafafa",
-          100: "#f5f5f5",
-          200: "#e5e5e5",
-          300: "#d4d4d4",
-          400: "#a3a3a3",
-          500: "#737373",
-          600: "#525252",
-          700: "#404040",
-          800: "#262626",
-          900: "#171717",
-          950: "#0a0a0a",
+          50: "hsl(0 0% 98%)",
+          100: "hsl(0 0% 96%)",
+          200: "hsl(0 0% 90%)",
+          300: "hsl(0 0% 83%)",
+          400: "hsl(0 0% 64%)",
+          500: "hsl(0 0% 45%)",
+          600: "hsl(0 0% 32%)",
+          700: "hsl(0 0% 25%)",
+          800: "hsl(0 0% 15%)",
+          900: "hsl(0 0% 9%)",
+          950: "hsl(0 0% 4%)",
         },
         
         /* Brand colors - Blue + Teal Professional */
         blue: {
-          DEFAULT: "#2563eb",
-          50: "#eff6ff",
-          100: "#dbeafe",
-          200: "#bfdbfe",
-          300: "#93c5fd",
-          400: "#60a5fa",
-          500: "#3b82f6",
-          600: "#2563eb",
-          700: "#1d4ed8",
-          800: "#1e40af",
-          900: "#1e3a8a",
-          950: "#172554",
+          DEFAULT: "hsl(217 91% 53%)",
+          50: "hsl(214 100% 97%)",
+          100: "hsl(214 95% 93%)",
+          200: "hsl(213 97% 87%)",
+          300: "hsl(212 96% 78%)",
+          400: "hsl(213 94% 68%)",
+          500: "hsl(217 91% 60%)",
+          600: "hsl(217 91% 53%)",
+          700: "hsl(217 91% 45%)",
+          800: "hsl(217 88% 35%)",
+          900: "hsl(221 83% 28%)",
+          950: "hsl(224 71% 18%)",
           link: "hsl(var(--link-color))",
           "link-hover": "hsl(var(--link-color-hover))",
         },
         
         /* Teal - Success brand */
         teal: {
-          DEFAULT: "#0d9488",
-          50: "#f0fdfa",
-          100: "#ccfbf1",
-          200: "#99f6e4",
-          300: "#5eead4",
-          400: "#2dd4bf",
-          500: "#14b8a6",
-          600: "#0d9488",
-          700: "#0f766e",
-          800: "#115e59",
-          900: "#134e4a",
-          950: "#042f2e",
+          DEFAULT: "hsl(173 58% 39%)",
+          50: "hsl(166 76% 97%)",
+          100: "hsl(167 85% 89%)",
+          200: "hsl(168 84% 78%)",
+          300: "hsl(171 77% 64%)",
+          400: "hsl(172 66% 50%)",
+          500: "hsl(173 58% 50%)",
+          600: "hsl(173 58% 39%)",
+          700: "hsl(173 58% 33%)",
+          800: "hsl(173 55% 27%)",
+          900: "hsl(174 52% 23%)",
+          950: "hsl(176 57% 13%)",
         },
         
-        /* Legacy brand colors - kept for special elements */
+        /* Legacy brand colors */
         gold: {
-          DEFAULT: "#c69c6d",
-          50: "#fdf8f3",
-          100: "#f9eee0",
-          200: "#f2dbc1",
-          300: "#e8c298",
-          400: "#d4a66f",
-          500: "#c69c6d",
-          600: "#b8894d",
-          700: "#9a7040",
-          800: "#7d5a38",
-          900: "#664a30",
-          950: "#382618",
-          /* Gold-link now maps to Blue for consistency */
-          link: "#2563eb",
-          "link-hover": "#1d4ed8",
+          DEFAULT: "hsl(34 40% 60%)",
+          link: "hsl(217 91% 53%)",
+          "link-hover": "hsl(217 91% 45%)",
         },
-        
-        /* Olive - Secondary brand (legacy) */
         olive: {
-          DEFAULT: "#5c7c5c",
-          50: "#f4f7f4",
-          100: "#e6ece6",
-          200: "#cdd9cd",
-          300: "#a8bea8",
-          400: "#7d9c7d",
-          500: "#5c7c5c",
-          600: "#4a6a4a",
-          700: "#3d563d",
-          800: "#334533",
-          900: "#2b392b",
-          950: "#151d15",
+          DEFAULT: "hsl(120 26% 42%)",
         },
-        
-        /* Bronze - Secondary brand (legacy) */
         bronze: {
-          DEFAULT: "#8b7355",
-          50: "#f9f7f4",
-          100: "#f0ebe3",
-          200: "#e0d5c7",
-          300: "#ccb9a3",
-          400: "#b69a7a",
-          500: "#8b7355",
-          600: "#7a6349",
-          700: "#65503d",
-          800: "#534235",
-          900: "#46382e",
-          950: "#251d17",
+          DEFAULT: "hsl(30 24% 44%)",
         },
 
         /* Shadcn semantic colors */
@@ -236,74 +268,61 @@ export default {
           ring: "hsl(var(--sidebar-ring))",
         },
         
-        /* Surface colors for cards/containers */
-        surface: {
-          card: "var(--surface-card)",
-          muted: "var(--surface-muted)",
-          subtle: "var(--surface-subtle)",
-          hover: "var(--surface-hover)",
-        },
-        
-        /* Brand primary alias */
-        brand: {
-          primary: {
-            DEFAULT: "#2563eb",
-            hover: "#1d4ed8",
-            pale: "rgba(37, 99, 235, 0.08)",
-            border: "rgba(37, 99, 235, 0.2)",
-          },
-          blue: "#2563eb",
-          teal: "#0d9488",
-          olive: "#5c7c5c",
-          bronze: "#8b7355",
-          gold: "#c69c6d",
-          champagne: "#d4b896",
-        },
-        
-        /* Status colors */
+        /* Legacy status colors */
         status: {
           success: {
-            DEFAULT: "var(--status-success)",
-            bg: "var(--status-success-bg)",
-            border: "var(--status-success-border)",
+            DEFAULT: "hsl(var(--status-success))",
+            bg: "hsl(var(--status-success-bg) / 0.08)",
+            border: "hsl(var(--status-success-border) / 0.20)",
           },
           warning: {
-            DEFAULT: "var(--status-warning)",
-            bg: "var(--status-warning-bg)",
-            border: "var(--status-warning-border)",
+            DEFAULT: "hsl(var(--status-warning))",
+            bg: "hsl(var(--status-warning-bg) / 0.08)",
+            border: "hsl(var(--status-warning-border) / 0.20)",
           },
           danger: {
-            DEFAULT: "var(--status-danger)",
-            bg: "var(--status-danger-bg)",
-            border: "var(--status-danger-border)",
+            DEFAULT: "hsl(var(--status-danger))",
+            bg: "hsl(var(--status-danger-bg) / 0.08)",
+            border: "hsl(var(--status-danger-border) / 0.20)",
           },
           info: {
-            DEFAULT: "var(--status-info)",
-            bg: "var(--status-info-bg)",
-            border: "var(--status-info-border)",
+            DEFAULT: "hsl(var(--status-info))",
+            bg: "hsl(var(--status-info-bg) / 0.08)",
+            border: "hsl(var(--status-info-border) / 0.20)",
           },
         },
         
-        /* Secondary palette - Catalyst Professional */
-        'secondary-blue': '#2563eb',
-        'secondary-teal': '#0d9488',
-        'secondary-olive': '#5c7c5c',
-        'secondary-bronze': '#8b7355',
-        'secondary-champagne': '#d4b896',
-        
-        /* Surface tokens */
-        'surface-bg': 'var(--surface-bg)',
-        'surface-card': 'var(--surface-card)',
-        
-        /* Text colors from CSS vars */
-        text: {
-          primary: "var(--text-primary)",
-          secondary: "var(--text-secondary)",
-          tertiary: "var(--text-tertiary)",
-          muted: "var(--text-muted)",
+        /* Legacy brand object */
+        brand: {
+          primary: {
+            DEFAULT: "hsl(var(--brand-primary))",
+            hover: "hsl(var(--brand-primary-hover))",
+            pale: "hsl(var(--brand-primary) / 0.08)",
+            border: "hsl(var(--brand-primary) / 0.20)",
+          },
+          blue: "hsl(217 91% 53%)",
+          teal: "hsl(173 58% 39%)",
+          olive: "hsl(120 26% 42%)",
+          bronze: "hsl(30 24% 44%)",
+          gold: "hsl(34 40% 60%)",
+          champagne: "hsl(34 40% 71%)",
         },
+        
+        /* Secondary palette */
+        'secondary-blue': 'hsl(217 91% 53%)',
+        'secondary-teal': 'hsl(173 58% 39%)',
+        'secondary-olive': 'hsl(120 26% 42%)',
+        'secondary-bronze': 'hsl(30 24% 44%)',
+        'secondary-champagne': 'hsl(34 40% 71%)',
+        
+        /* Legacy surface tokens */
+        'surface-bg': 'hsl(var(--surface-bg))',
+        'surface-card': 'hsl(var(--surface-card))',
       },
       
+      /* ═══════════════════════════════════════════════════════════════
+         CATALYST TYPOGRAPHY SYSTEM — Enterprise-Grade
+         ═══════════════════════════════════════════════════════════════ */
       fontFamily: {
         sans: ["Inter", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "sans-serif"],
         mono: ["SF Mono", "Monaco", "Consolas", "monospace"],
@@ -311,16 +330,28 @@ export default {
       },
       
       fontSize: {
-        "2xs": "11px",
-        xs: "12px",
-        sm: "13px",
-        base: "14px",
-        md: "15px",
-        lg: "16px",
-        xl: "18px",
-        "2xl": "20px",
-        "3xl": "28px",
-        "4xl": "32px",
+        "2xs": ["0.6875rem", { lineHeight: "1rem" }],              // 11px
+        xs: ["0.75rem", { lineHeight: "1rem" }],                   // 12px
+        sm: ["0.8125rem", { lineHeight: "1.125rem" }],             // 13px
+        base: ["0.875rem", { lineHeight: "1.25rem" }],             // 14px
+        md: ["0.9375rem", { lineHeight: "1.375rem" }],             // 15px
+        lg: ["1rem", { lineHeight: "1.5rem" }],                    // 16px
+        xl: ["1.125rem", { lineHeight: "1.5rem" }],                // 18px
+        "2xl": ["1.25rem", { lineHeight: "1.75rem" }],             // 20px
+        "3xl": ["1.75rem", { lineHeight: "2rem" }],                // 28px
+        "4xl": ["2rem", { lineHeight: "2.25rem" }],                // 32px
+        "5xl": ["2.5rem", { lineHeight: "2.75rem" }],              // 40px
+        
+        /* Semantic font sizes */
+        overline: ["0.75rem", { lineHeight: "1.25rem", letterSpacing: "0.08em", fontWeight: "600" }],
+        title: ["1.125rem", { lineHeight: "1.5rem", letterSpacing: "-0.01em", fontWeight: "600" }],
+        subtitle: ["0.9375rem", { lineHeight: "1.375rem", letterSpacing: "-0.005em", fontWeight: "500" }],
+        kpi: ["2.5rem", { lineHeight: "2.75rem", letterSpacing: "-0.02em", fontWeight: "700" }],
+        "kpi-sm": ["1.75rem", { lineHeight: "2rem", letterSpacing: "-0.015em", fontWeight: "600" }],
+        body: ["0.875rem", { lineHeight: "1.25rem" }],
+        "body-sm": ["0.8125rem", { lineHeight: "1.125rem" }],
+        caption: ["0.8125rem", { lineHeight: "1.125rem", fontWeight: "500" }],
+        label: ["0.8125rem", { lineHeight: "1rem", fontWeight: "500" }],
       },
       
       borderRadius: {
@@ -332,18 +363,17 @@ export default {
       },
       
       boxShadow: {
-        xs: "var(--shadow-xs)",
-        sm: "var(--shadow-sm)",
-        card: "var(--shadow-card)",
-        DEFAULT: "var(--shadow-card)",
-        elevated: "var(--shadow-elevated)",
-        hover: "var(--shadow-hover)",
+        xs: "var(--shadow-elev-1)",
+        sm: "var(--shadow-elev-1)",
+        card: "var(--shadow-elev-1)",
+        DEFAULT: "var(--shadow-elev-1)",
+        md: "var(--shadow-elev-2)",
+        elevated: "var(--shadow-elev-2)",
+        lg: "var(--shadow-elev-3)",
+        hover: "var(--shadow-elev-3)",
         brand: "var(--shadow-brand)",
-        md: "0 4px 6px rgba(0,0,0,0.07)",
-        lg: "0 10px 15px rgba(0,0,0,0.1)",
-        /* Inner shadow for recessed containers */
-        "inner-sm": "inset 0 1px 2px rgba(0,0,0,0.03)",
-        "inner-md": "inset 0 2px 4px rgba(0,0,0,0.05)",
+        "inner-sm": "inset 0 1px 2px hsl(var(--shadow-color) / 0.03)",
+        "inner-md": "inset 0 2px 4px hsl(var(--shadow-color) / 0.05)",
       },
       
       keyframes: {
@@ -378,5 +408,15 @@ export default {
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [
+    require("tailwindcss-animate"),
+    /* Catalyst Typography Plugin */
+    plugin(function ({ addUtilities }) {
+      addUtilities({
+        ".c-tabular-nums": {
+          "font-variant-numeric": "tabular-nums",
+        },
+      });
+    }),
+  ],
 } satisfies Config;

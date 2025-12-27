@@ -51,103 +51,149 @@
     --sidebar-accent-foreground: 0 0% 100%;
     --sidebar-border: 0 0% 93%;
     --sidebar-ring: 217 91% 60%;
-    
-    /* ═══════════════════════════════════════════════════════════════
-       BRAND PALETTE — Blue + Teal Professional
-       (HSL triples so Tailwind + dark mode behave correctly)
-       ═══════════════════════════════════════════════════════════════ */
-    --brand-blue: #2563eb;
-    --brand-blue-dark: #1d4ed8;
-    --brand-blue-light: #3b82f6;
-    --brand-teal: #0d9488;
-    --brand-teal-dark: #0f766e;
-    --brand-teal-light: #14b8a6;
 
-    /* HSL versions (preferred for theming + alpha) */
-    --catalyst-blue: 217 91% 53%;         /* #2563eb */
-    --catalyst-blue-light: 217 91% 60%;   /* #3b82f6 */
-    --catalyst-teal: 173 58% 39%;         /* #0d9488 */
-    --catalyst-teal-light: 173 58% 50%;   /* #14b8a6 */
-    --catalyst-grey: 210 6% 80%;          /* ~#c8ccd0 */
-    
-    /* Legacy brand colors (kept for special elements only) */
-    --brand-olive: #5c7c5c;
-    --brand-bronze: #8b7355;
-    --brand-gold: #c69c6d;
-    --brand-champagne: #d4b896;
-    
-    /* Custom semantic tokens */
-    --text-primary: #0a0a0a;
-    --text-secondary: #171717;
-    --text-tertiary: #404040;
-    --text-muted: #6b7280;
-    --bg-cream: #fafafa;
-    --bg-card: #ffffff;
-    --bg-sidebar: #fcfcfc;
-    --accent-blue: #2563eb;
-    --accent-blue-hover: #1d4ed8;
-    
     /* ═══════════════════════════════════════════════════════════════
-       PREMIUM SHADOWS — Layered depth system
+       CATALYST SEMANTIC TOKENS — LIGHT MODE
+       These are the CANONICAL tokens for the entire design system
        ═══════════════════════════════════════════════════════════════ */
-    --shadow-xs: 0 1px 2px rgba(0,0,0,0.03);
-    --shadow-sm: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.02);
-    --shadow-card: 0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.03);
-    --shadow-elevated: 0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04);
-    --shadow-hover: 0 8px 24px rgba(0,0,0,0.1), 0 4px 8px rgba(0,0,0,0.05);
-    --shadow-brand: 0 4px 12px rgba(37,99,235,0.15);
     
-    /* Legacy variable mappings for existing components */
-    --bg: #fafafa;
-    --bg-workspace: #fafafa;
-    --surface-1: #f8f8f7;
-    --surface-2: #ffffff;
-    --surface-3: #fafafa;
-    --text-1: #0a0a0a;
-    --text-2: #404040;
-    --text-3: #525252;
-    --text-4: #737373;
+    /* === TEXT TOKENS === */
+    --text-primary: 0 0% 4%;             /* #0a0a0a */
+    --text-secondary: 0 0% 9%;           /* #171717 */
+    --text-tertiary: 0 0% 25%;           /* #404040 */
+    --text-muted: 0 0% 42%;              /* #6b7280 */
+    --text-inverse: 0 0% 100%;           /* #ffffff */
+    
+    /* === SURFACE TOKENS === */
+    --surface-0: 0 0% 100%;              /* #ffffff - cards, dialogs */
+    --surface-1: 0 0% 98%;               /* #fafafa - page background */
+    --surface-2: 0 0% 97%;               /* #f8f8f7 - subtle sections */
+    --surface-3: 0 0% 95%;               /* #f3f3f3 - muted containers */
+    --surface-elevated: 0 0% 100%;       /* #ffffff - popovers, dropdowns */
+    --surface-overlay: 0 0% 0%;          /* black base for overlays */
+    
+    /* === BORDER TOKENS === */
+    --border-subtle: 0 0% 94%;           /* #f0f0f0 */
+    --border-default: 0 0% 91%;          /* #e8e8e8 */
+    --border-strong: 0 0% 83%;           /* #d4d4d4 */
+    --border-focus: 217 91% 60%;         /* blue */
+    
+    /* === BRAND/ACTION TOKENS === */
+    --brand-primary: 217 91% 53%;        /* #2563eb */
+    --brand-primary-hover: 217 91% 45%;  /* #1d4ed8 */
+    --brand-primary-foreground: 0 0% 100%;
+    --brand-teal: 173 58% 39%;           /* #0d9488 */
+    --brand-teal-hover: 173 58% 33%;     /* #0f766e */
+    
+    /* === STATE TOKENS === */
+    --success: 173 58% 39%;              /* #0d9488 teal */
+    --success-foreground: 0 0% 100%;
+    --success-bg: 173 58% 39%;           /* 8% alpha via Tailwind */
+    --success-border: 173 58% 39%;       /* 20% alpha via Tailwind */
+    
+    --warning: 38 92% 50%;               /* #f59e0b amber */
+    --warning-foreground: 0 0% 100%;
+    --warning-bg: 38 92% 50%;
+    --warning-border: 38 92% 50%;
+    
+    --danger: 0 84% 60%;                 /* #ef4444 red */
+    --danger-foreground: 0 0% 100%;
+    --danger-bg: 0 84% 60%;
+    --danger-border: 0 84% 60%;
+    
+    --info: 217 91% 60%;                 /* #3b82f6 blue */
+    --info-foreground: 0 0% 100%;
+    --info-bg: 217 91% 60%;
+    --info-border: 217 91% 60%;
+    
+    /* === FOCUS & OVERLAY TOKENS === */
+    --focus-ring: 217 91% 60%;           /* #3b82f6 */
+    --overlay: 0 0% 0%;                  /* black - use with alpha */
+    
+    /* === SHADOW TOKENS (as HSL base for shadows) === */
+    --shadow-color: 0 0% 10%;            /* #1a1a1a */
+    --shadow-elev-1: 0 1px 3px hsl(0 0% 0% / 0.05), 0 1px 2px hsl(0 0% 0% / 0.03);
+    --shadow-elev-2: 0 4px 12px hsl(0 0% 0% / 0.08), 0 2px 4px hsl(0 0% 0% / 0.04);
+    --shadow-elev-3: 0 8px 24px hsl(0 0% 0% / 0.10), 0 4px 8px hsl(0 0% 0% / 0.05);
+    --shadow-brand: 0 4px 12px hsl(217 91% 60% / 0.15);
+
+    /* === LEGACY MAPPINGS (for existing components) === */
+    --bg-cream: 0 0% 98%;
+    --bg-card: 0 0% 100%;
+    --bg-sidebar: 0 0% 99%;
+    --accent-blue: 217 91% 53%;
+    --accent-blue-hover: 217 91% 45%;
+    
+    /* Legacy surface tokens */
+    --bg: 0 0% 98%;
+    --bg-workspace: 0 0% 98%;
+    --surface-bg: 0 0% 100%;
+    --surface-subtle: 0 0% 98%;
+    --surface-hover: 0 0% 96%;
+    --surface-active: 217 91% 60%;       /* 10% alpha via Tailwind */
+    --surface-card: 0 0% 100%;
+    --surface-muted: 0 0% 97%;
+    
+    /* Legacy text tokens (hex for direct use) */
+    --text-1: 0 0% 4%;
+    --text-2: 0 0% 25%;
+    --text-3: 0 0% 32%;
+    --text-4: 0 0% 45%;
     --text-secondary-strong: 0 0% 30%;
-    --icon-default: #525252;
-    --icon-muted: #737373;
-    --divider: #e5e5e5;
-    --border-color: #e5e5e5;
-    --nav-bg: #ffffff;
-    --nav-hover-bg: rgba(0, 0, 0, 0.03);
-    --nav-active-bg: rgba(37, 99, 235, 0.1);
-    --brand-active: #2563eb;
-    --brand-primary: #2563eb;
-    --brand-primary-hover: #1d4ed8;
-    --card-bg: #ffffff;
-    --card-border: #f0f0f0;
-    --card-shadow: var(--shadow-card);
-    --table-row-bg: #ffffff;
-    --table-row-hover: rgba(0, 0, 0, 0.02);
-    --table-header-bg: rgba(0, 0, 0, 0.02);
-    --table-section-bg: rgba(0, 0, 0, 0.02);
-    --row-hover: rgba(0, 0, 0, 0.02);
-    --selection-row-bg: rgba(37, 99, 235, 0.06);
-    --selection-bar-accent: #2563eb;
-    --focus-ring: #2563eb;
     
-    /* Status/Semantic colors - Light Mode */
-    --status-success: #0d9488;
-    --status-success-light: #14b8a6;
-    --status-success-bg: rgba(13, 148, 136, 0.08);
-    --status-success-bg-hover: rgba(13, 148, 136, 0.12);
-    --status-success-border: rgba(13, 148, 136, 0.2);
+    /* Icon tokens */
+    --icon-default: 0 0% 32%;
+    --icon-muted: 0 0% 45%;
     
-    --status-warning: #d97706;
-    --status-warning-bg: rgba(217, 119, 6, 0.08);
-    --status-warning-border: rgba(217, 119, 6, 0.2);
+    /* Divider and border legacy */
+    --divider: 0 0% 90%;
+    --border-color: 0 0% 90%;
     
-    --status-info: #2563eb;
-    --status-info-bg: rgba(37, 99, 235, 0.08);
-    --status-info-border: rgba(37, 99, 235, 0.2);
+    /* Navigation tokens */
+    --nav-bg: 0 0% 100%;
+    --nav-hover-bg: 0 0% 97%;
+    --nav-active-bg: 217 91% 60%;        /* 10% alpha */
+    --brand-active: 217 91% 53%;
     
-    --status-muted: #6b7280;
-    --status-muted-bg: rgba(107, 114, 128, 0.08);
-    --status-muted-border: rgba(107, 114, 128, 0.2);
+    /* Card tokens */
+    --card-bg: 0 0% 100%;
+    --card-border: 0 0% 94%;
+    
+    /* Table tokens */
+    --table-row-bg: 0 0% 100%;
+    --table-row-hover: 0 0% 98%;
+    --table-header-bg: 0 0% 98%;
+    --table-section-bg: 0 0% 98%;
+    --row-hover: 0 0% 98%;
+    --selection-row-bg: 217 91% 60%;     /* 6% alpha */
+    --selection-bar-accent: 217 91% 53%;
+    
+    /* Link colors */
+    --link-color: 217 91% 53%;
+    --link-color-hover: 217 91% 45%;
+    
+    /* Status colors (legacy hex) */
+    --status-success: 173 58% 39%;
+    --status-success-light: 173 58% 50%;
+    --status-success-bg: 173 58% 39%;    /* 8% alpha */
+    --status-success-bg-hover: 173 58% 39%; /* 12% alpha */
+    --status-success-border: 173 58% 39%; /* 20% alpha */
+    
+    --status-warning: 38 92% 44%;
+    --status-warning-bg: 38 92% 44%;
+    --status-warning-border: 38 92% 44%;
+    
+    --status-info: 217 91% 53%;
+    --status-info-bg: 217 91% 53%;
+    --status-info-border: 217 91% 53%;
+    
+    --status-muted: 0 0% 42%;
+    --status-muted-bg: 0 0% 42%;
+    --status-muted-border: 0 0% 42%;
+    
+    --status-danger: 0 84% 60%;
+    --status-danger-bg: 0 84% 60%;
+    --status-danger-border: 0 84% 60%;
     
     /* Secondary brand colors */
     --secondary-blue: 217 91% 53%;
@@ -155,95 +201,70 @@
     --secondary-olive: 120 26% 42%;
     --secondary-bronze: 30 24% 44%;
     --secondary-champagne: 34 40% 71%;
-    --secondary-blue-bg: rgba(37, 99, 235, 0.1);
-    --secondary-teal-bg: rgba(13, 148, 136, 0.1);
+    --secondary-blue-bg: 217 91% 53%;    /* 10% alpha */
+    --secondary-teal-bg: 173 58% 39%;    /* 10% alpha */
     
-    /* Strategy Room tokens - borders */
-    --border-default: #e8e8e8;
-    --border-subtle: #f0f0f0;
+    /* Progress tokens */
+    --progress-bg: 0 0% 91%;
     
-    /* Strategy Room tokens - surfaces */
-    --surface-bg: #ffffff;
-    --surface-subtle: #fafafa;
-    --surface-hover: #f5f5f4;
-    --surface-active: rgba(37, 99, 235, 0.1);
-    --surface-card: #ffffff;
-    --surface-muted: #f8f8f7;
+    /* Brand background tokens */
+    --brand-blue-bg: 217 91% 53%;        /* 10% alpha */
+    --brand-teal-bg: 173 58% 39%;        /* 8% alpha */
     
-    /* Strategy Room tokens - progress */
-    --progress-bg: #e8e8e8;
+    /* Industry Backlog tokens */
+    --industry-bg-page: 0 0% 97%;
+    --industry-bg-card: 0 0% 100%;
+    --industry-bg-subtle: 0 0% 96%;
+    --industry-bg-hover: 0 0% 98%;
+    --industry-border-default: 0 0% 90%;
+    --industry-border-subtle: 0 0% 92%;
+    --industry-text-primary: 0 0% 6%;
+    --industry-text-secondary: 0 0% 25%;
+    --industry-text-muted: 0 0% 40%;
+    --industry-text-disabled: 0 0% 60%;
     
-    /* Strategy Room tokens - brand backgrounds */
-    --brand-blue-bg: rgba(37, 99, 235, 0.1);
-    --brand-teal-bg: rgba(13, 148, 136, 0.08);
+    /* Industry Status Colors */
+    --industry-status-new: 217 91% 53%;
+    --industry-status-progress: 217 91% 53%;
+    --industry-status-review: 262 83% 58%;
+    --industry-status-approved: 173 58% 39%;
+    --industry-status-blocked: 0 84% 60%;
     
-    /* Status danger */
-    --status-danger: #dc2626;
-    --status-danger-bg: rgba(220, 38, 38, 0.08);
-    --status-danger-border: rgba(220, 38, 38, 0.2);
+    /* Process step colors */
+    --process-new-demand: 217 91% 53%;
+    --process-in-review: 217 91% 60%;
+    --process-ea-review: 239 84% 67%;
+    --process-analyse: 217 91% 60%;
+    --process-approved: 173 58% 39%;
+    --process-ready-to-implement: 173 58% 33%;
+    --process-implement: 217 91% 45%;
+    --process-closed: 173 58% 39%;
+    --process-rejected: 0 0% 45%;
+    --process-on-hold: 38 92% 50%;
     
-    /* Link colors - Light mode (WCAG AA compliant) */
-    --link-color: 217 91% 53%;
-    --link-color-hover: 217 91% 45%;
+    /* Industry priority colors */
+    --industry-priority-high: 217 91% 45%;
+    --industry-priority-medium: 217 91% 53%;
+    --industry-priority-low: 213 94% 68%;
     
-    /* Industry Backlog Table tokens - Light Mode */
-    --industry-bg-page: #f8f8f8;
-    --industry-bg-card: #ffffff;
-    --industry-bg-subtle: #f5f5f4;
-    --industry-bg-hover: #fafafa;
-    --industry-border-default: #e5e5e5;
-    --industry-border-subtle: #ebebeb;
-    --industry-text-primary: #0f0f0f;
-    --industry-text-secondary: #404040;
-    --industry-text-muted: #666666;
-    --industry-text-disabled: #999999;
-    
-    /* Industry Status Colors - Light Mode */
-    --industry-status-new: #2563eb;         /* Blue for new items */
-    --industry-status-progress: #2563eb;    /* Blue for in-progress */
-    --industry-status-review: #8b5cf6;      /* Purple for review */
-    --industry-status-approved: #0d9488;    /* Teal for approved */
-    --industry-status-blocked: #ef4444;     /* Red for blocked */
-    
-    /* ═══════════════════════════════════════════════════════════════
-       CATALYST PROCESS STEP STATUS COLORS — Blue/Teal Aligned
-       ═══════════════════════════════════════════════════════════════ */
-    --process-new-demand: #2563eb;          /* Blue - New items */
-    --process-in-review: #3b82f6;           /* Blue-500 - Under review */
-    --process-ea-review: #6366f1;           /* Indigo - EA review */
-    --process-analyse: #3b82f6;             /* Blue - Analysis */
-    --process-approved: #0d9488;            /* Teal - Approved */
-    --process-ready-to-implement: #0f766e;  /* Teal Dark - Ready */
-    --process-implement: #1d4ed8;           /* Blue Dark - In progress */
-    --process-closed: #0d9488;              /* Teal - Completed */
-    --process-rejected: #737373;            /* Gray-500 - Rejected */
-    --process-on-hold: #f59e0b;             /* Amber - On hold */
-    
-    /* Industry Priority Colors */
-    --industry-priority-high: #1d4ed8;      /* Blue Dark */
-    --industry-priority-medium: #2563eb;    /* Blue */
-    --industry-priority-low: #60a5fa;       /* Blue Light */
-    
-    /* ═══════════════════════════════════════════════════════════════
-       DIALOG TOKENS - Light Mode
-       ═══════════════════════════════════════════════════════════════ */
-    --dialog-bg: #ffffff;
-    --dialog-border: #e5e5e5;
-    --dialog-divider: #e5e5e5;
-    --dialog-footer-bg: #fafafa;
-    --dialog-title-color: #0a0a0a;
-    --dialog-desc-color: #737373;
-    --dialog-close-color: #737373;
-    --dialog-section-bg: #f8f8f7;
-    --dialog-section-border: #f0f0f0;
-    --dialog-input-bg: #ffffff;
-    --dialog-input-border: #d9d9d9;
-    --dialog-label-color: #525252;
-    --dialog-label-required: #2563eb;
+    /* Dialog tokens */
+    --dialog-bg: 0 0% 100%;
+    --dialog-border: 0 0% 90%;
+    --dialog-divider: 0 0% 90%;
+    --dialog-footer-bg: 0 0% 98%;
+    --dialog-title-color: 0 0% 4%;
+    --dialog-desc-color: 0 0% 45%;
+    --dialog-close-color: 0 0% 45%;
+    --dialog-section-bg: 0 0% 97%;
+    --dialog-section-border: 0 0% 94%;
+    --dialog-input-bg: 0 0% 100%;
+    --dialog-input-border: 0 0% 85%;
+    --dialog-label-color: 0 0% 32%;
+    --dialog-label-required: 217 91% 53%;
   }
   
-  [data-theme="dark"],
-  .dark {
+  .dark,
+  [data-theme="dark"] {
     /* ═══════════════════════════════════════════════════════════════
        DARK MODE — Blue/Teal palette with proper contrast
        Not pure black - softer #1a1a1a base
@@ -285,70 +306,148 @@
     --sidebar-accent-foreground: 0 0% 100%;
     --sidebar-border: 0 0% 20%;          /* #333333 */
     --sidebar-ring: 217 91% 60%;
+
+    /* ═══════════════════════════════════════════════════════════════
+       CATALYST SEMANTIC TOKENS — DARK MODE
+       ═══════════════════════════════════════════════════════════════ */
     
-    /* Custom tokens dark - Blue/Teal */
-    --text-primary: #f5f5f5;
-    --text-secondary: #a3a3a3;
-    --text-tertiary: #737373;
-    --text-muted: #737373;
-    --bg-cream: #1a1a1a;
-    --bg-card: #262626;
-    --bg-sidebar: #1f1f1f;
-    --accent-blue: #3b82f6;
-    --accent-blue-hover: #2563eb;
+    /* === TEXT TOKENS === */
+    --text-primary: 0 0% 96%;            /* #f5f5f5 */
+    --text-secondary: 0 0% 64%;          /* #a3a3a3 */
+    --text-tertiary: 0 0% 45%;           /* #737373 */
+    --text-muted: 0 0% 45%;              /* #737373 */
+    --text-inverse: 0 0% 4%;             /* #0a0a0a */
     
-    /* Legacy variable mappings for dark mode */
-    --bg: #1a1a1a;
-    --bg-workspace: #1a1a1a;
-    --surface-1: #1f1f1f;
-    --surface-2: #262626;
-    --surface-3: #2d2d2d;
-    --text-1: #f5f5f5;
-    --text-2: #d4d4d4;
-    --text-3: #b3b3b3;
-    --text-4: #8a8a8a;
+    /* === SURFACE TOKENS === */
+    --surface-0: 0 0% 15%;               /* #262626 - cards, dialogs */
+    --surface-1: 0 0% 10%;               /* #1a1a1a - page background */
+    --surface-2: 0 0% 12%;               /* #1f1f1f - subtle sections */
+    --surface-3: 0 0% 18%;               /* #2d2d2d - muted containers */
+    --surface-elevated: 0 0% 20%;        /* #333333 - popovers, dropdowns */
+    --surface-overlay: 0 0% 0%;          /* black base for overlays */
+    
+    /* === BORDER TOKENS === */
+    --border-subtle: 0 0% 20%;           /* #333333 */
+    --border-default: 0 0% 25%;          /* #404040 */
+    --border-strong: 0 0% 35%;           /* #595959 */
+    --border-focus: 217 91% 60%;         /* blue */
+    
+    /* === BRAND/ACTION TOKENS === */
+    --brand-primary: 217 91% 60%;        /* #3b82f6 */
+    --brand-primary-hover: 217 91% 68%;  /* #60a5fa */
+    --brand-primary-foreground: 0 0% 100%;
+    --brand-teal: 173 58% 50%;           /* #14b8a6 */
+    --brand-teal-hover: 173 58% 58%;
+    
+    /* === STATE TOKENS === */
+    --success: 173 58% 50%;              /* #14b8a6 teal */
+    --success-foreground: 0 0% 100%;
+    --success-bg: 173 58% 50%;
+    --success-border: 173 58% 50%;
+    
+    --warning: 38 92% 50%;               /* #f59e0b */
+    --warning-foreground: 0 0% 100%;
+    --warning-bg: 38 92% 50%;
+    --warning-border: 38 92% 50%;
+    
+    --danger: 0 72% 65%;                 /* #f87171 */
+    --danger-foreground: 0 0% 100%;
+    --danger-bg: 0 72% 65%;
+    --danger-border: 0 72% 65%;
+    
+    --info: 217 91% 60%;                 /* #3b82f6 */
+    --info-foreground: 0 0% 100%;
+    --info-bg: 217 91% 60%;
+    --info-border: 217 91% 60%;
+    
+    /* === FOCUS & OVERLAY TOKENS === */
+    --focus-ring: 217 91% 60%;
+    --overlay: 0 0% 0%;
+    
+    /* === SHADOW TOKENS === */
+    --shadow-color: 0 0% 0%;
+    --shadow-elev-1: 0 1px 3px hsl(0 0% 0% / 0.30), 0 1px 2px hsl(0 0% 0% / 0.20);
+    --shadow-elev-2: 0 4px 12px hsl(0 0% 0% / 0.40), 0 2px 4px hsl(0 0% 0% / 0.30);
+    --shadow-elev-3: 0 8px 24px hsl(0 0% 0% / 0.50), 0 4px 8px hsl(0 0% 0% / 0.35);
+    --shadow-brand: 0 4px 12px hsl(217 91% 60% / 0.20);
+
+    /* === LEGACY MAPPINGS === */
+    --bg-cream: 0 0% 10%;
+    --bg-card: 0 0% 15%;
+    --bg-sidebar: 0 0% 12%;
+    --accent-blue: 217 91% 60%;
+    --accent-blue-hover: 217 91% 53%;
+    
+    /* Legacy surface tokens */
+    --bg: 0 0% 10%;
+    --bg-workspace: 0 0% 10%;
+    --surface-bg: 0 0% 10%;
+    --surface-subtle: 0 0% 12%;
+    --surface-hover: 0 0% 20%;
+    --surface-active: 217 91% 60%;
+    --surface-card: 0 0% 15%;
+    --surface-muted: 0 0% 18%;
+    
+    /* Legacy text tokens */
+    --text-1: 0 0% 96%;
+    --text-2: 0 0% 83%;
+    --text-3: 0 0% 70%;
+    --text-4: 0 0% 54%;
     --text-secondary-strong: 0 0% 75%;
-    --icon-default: #b3b3b3;
-    --icon-muted: #8a8a8a;
-    --divider: #2a2a2a;
-    --border-color: #2c2c2c;
-    --nav-bg: #1f1f1f;
-    --nav-hover-bg: rgba(255, 255, 255, 0.04);
-    --nav-active-bg: rgba(59, 130, 246, 0.15);
-    --brand-active: #3b82f6;
-    --brand-blue: #3b82f6;
-    --brand-primary: #3b82f6;
-    --brand-primary-hover: #60a5fa;
-    --card-bg: #141414;
-    --card-border: #2c2c2c;
-    --card-shadow: 0 1px 3px rgba(0,0,0,0.4);
-    --table-row-bg: #141414;
-    --table-row-hover: #1c1c1c;
-    --table-header-bg: rgba(59, 130, 246, 0.1);
-    --table-section-bg: #1a1a1a;
-    --row-hover: #1c1c1c;
-    --selection-row-bg: rgba(59, 130, 246, 0.12);
-    --selection-bar-accent: #3b82f6;
-    --focus-ring: #3b82f6;
     
-    /* Status/Semantic colors - Dark Mode */
-    --status-success: #14b8a6;
-    --status-success-light: #2dd4bf;
-    --status-success-bg: rgba(20, 184, 166, 0.15);
-    --status-success-bg-hover: rgba(20, 184, 166, 0.2);
-    --status-success-border: rgba(20, 184, 166, 0.4);
+    /* Icon tokens */
+    --icon-default: 0 0% 70%;
+    --icon-muted: 0 0% 54%;
     
-    --status-warning: #f59e0b;
-    --status-warning-bg: rgba(245, 158, 11, 0.15);
-    --status-warning-border: rgba(245, 158, 11, 0.4);
+    /* Divider and border legacy */
+    --divider: 0 0% 17%;
+    --border-color: 0 0% 17%;
     
-    --status-info: #3b82f6;
-    --status-info-bg: rgba(59, 130, 246, 0.15);
-    --status-info-border: rgba(59, 130, 246, 0.4);
+    /* Navigation tokens */
+    --nav-bg: 0 0% 12%;
+    --nav-hover-bg: 0 0% 18%;
+    --nav-active-bg: 217 91% 60%;
+    --brand-active: 217 91% 60%;
     
-    --status-muted: #6b7280;
-    --status-muted-bg: rgba(107, 114, 128, 0.15);
-    --status-muted-border: rgba(107, 114, 128, 0.4);
+    /* Card tokens */
+    --card-bg: 0 0% 8%;
+    --card-border: 0 0% 17%;
+    
+    /* Table tokens */
+    --table-row-bg: 0 0% 8%;
+    --table-row-hover: 0 0% 11%;
+    --table-header-bg: 217 91% 60%;
+    --table-section-bg: 0 0% 10%;
+    --row-hover: 0 0% 11%;
+    --selection-row-bg: 217 91% 60%;
+    --selection-bar-accent: 217 91% 60%;
+    
+    /* Link colors - Dark mode */
+    --link-color: 217 91% 70%;
+    --link-color-hover: 217 91% 78%;
+    
+    /* Status colors (dark mode) */
+    --status-success: 173 58% 50%;
+    --status-success-light: 173 58% 58%;
+    --status-success-bg: 173 58% 50%;
+    --status-success-bg-hover: 173 58% 50%;
+    --status-success-border: 173 58% 50%;
+    
+    --status-warning: 38 92% 50%;
+    --status-warning-bg: 38 92% 50%;
+    --status-warning-border: 38 92% 50%;
+    
+    --status-info: 217 91% 60%;
+    --status-info-bg: 217 91% 60%;
+    --status-info-border: 217 91% 60%;
+    
+    --status-muted: 0 0% 42%;
+    --status-muted-bg: 0 0% 42%;
+    --status-muted-border: 0 0% 42%;
+    
+    --status-danger: 0 72% 65%;
+    --status-danger-bg: 0 72% 65%;
+    --status-danger-border: 0 72% 65%;
     
     /* Secondary brand colors */
     --secondary-blue: 217 91% 60%;
@@ -356,79 +455,54 @@
     --secondary-olive: 120 26% 42%;
     --secondary-bronze: 30 24% 44%;
     --secondary-champagne: 34 40% 71%;
-    --secondary-blue-bg: rgba(59, 130, 246, 0.2);
-    --secondary-teal-bg: rgba(20, 184, 166, 0.2);
+    --secondary-blue-bg: 217 91% 60%;
+    --secondary-teal-bg: 173 58% 50%;
     
-    /* Strategy Room tokens - borders */
-    --border-default: #404040;
-    --border-subtle: #333333;
+    /* Progress tokens */
+    --progress-bg: 0 0% 25%;
     
-    /* Strategy Room tokens - surfaces */
-    --surface-bg: #1a1a1a;
-    --surface-subtle: #1f1f1f;
-    --surface-hover: #333333;
-    --surface-active: rgba(59, 130, 246, 0.15);
-    --surface-card: #262626;
-    --surface-muted: #2d2d2d;
+    /* Brand background tokens */
+    --brand-blue-bg: 217 91% 60%;
+    --brand-teal-bg: 173 58% 50%;
     
-    /* Strategy Room tokens - progress */
-    --progress-bg: #404040;
+    /* Industry Backlog tokens */
+    --industry-bg-page: 0 0% 4%;
+    --industry-bg-card: 0 0% 9%;
+    --industry-bg-subtle: 0 0% 6%;
+    --industry-bg-hover: 0 0% 25%;
+    --industry-border-default: 0 0% 25%;
+    --industry-border-subtle: 0 0% 25%;
+    --industry-text-primary: 0 0% 98%;
+    --industry-text-secondary: 0 0% 83%;
+    --industry-text-muted: 0 0% 64%;
+    --industry-text-disabled: 0 0% 45%;
     
-    /* Strategy Room tokens - brand backgrounds */
-    --brand-blue-bg: rgba(59, 130, 246, 0.2);
-    --brand-teal-bg: rgba(20, 184, 166, 0.15);
+    /* Industry Status Colors - Dark */
+    --industry-status-new: 213 94% 68%;
+    --industry-status-progress: 217 91% 60%;
+    --industry-status-review: 270 91% 65%;
+    --industry-status-approved: 173 58% 50%;
+    --industry-status-blocked: 0 72% 65%;
     
-    /* Status danger */
-    --status-danger: #f87171;
-    --status-danger-bg: rgba(248, 113, 113, 0.15);
-    --status-danger-border: rgba(248, 113, 113, 0.4);
+    /* Industry Priority Colors - Dark */
+    --industry-priority-high: 217 91% 60%;
+    --industry-priority-medium: 213 94% 68%;
+    --industry-priority-low: 212 96% 78%;
     
-    /* Link colors - Dark mode (brighter for visibility) */
-    --link-color: 217 91% 70%;           /* #60a5fa blue-400 */
-    --link-color-hover: 217 91% 78%;     /* brighter */
-    
-    /* ═══════════════════════════════════════════════════════════════
-       Industry Backlog Table tokens - Dark Mode
-       ═══════════════════════════════════════════════════════════════ */
-    --industry-bg-page: #0a0a0a;
-    --industry-bg-card: #171717;
-    --industry-bg-subtle: #0f0f0f;
-    --industry-bg-hover: rgba(64, 64, 64, 0.5);
-    --industry-border-default: #404040;
-    --industry-border-subtle: #404040;
-    --industry-text-primary: #fafafa;
-    --industry-text-secondary: #d4d4d4;
-    --industry-text-muted: #a3a3a3;
-    --industry-text-disabled: #737373;
-    
-    /* Industry Status Colors - Dark Mode (brighter for contrast) */
-    --industry-status-new: #60a5fa;        /* Blue-400 */
-    --industry-status-progress: #3b82f6;   /* Blue-500 */
-    --industry-status-review: #a78bfa;     /* Purple-400 */
-    --industry-status-approved: #14b8a6;   /* Teal-400 */
-    --industry-status-blocked: #f87171;    /* Red-400 */
-    
-    /* Industry Priority Colors - Dark Mode (brighter) */
-    --industry-priority-high: #3b82f6;     /* Blue-500 */
-    --industry-priority-medium: #60a5fa;   /* Blue-400 */
-    --industry-priority-low: #93c5fd;      /* Blue-300 */
-    
-    /* ═══════════════════════════════════════════════════════════════
-       DIALOG TOKENS - Dark Mode
-       ═══════════════════════════════════════════════════════════════ */
-    --dialog-bg: #1a1a1a;
-    --dialog-border: #333333;
-    --dialog-divider: #333333;
-    --dialog-footer-bg: #242424;
-    --dialog-title-color: #f5f5f5;
-    --dialog-desc-color: #737373;
-    --dialog-close-color: #a3a3a3;
-    --dialog-section-bg: #242424;
-    --dialog-section-border: #2a2a2a;
-    --dialog-input-bg: #2a2a2a;
-    --dialog-input-border: #404040;
-    --dialog-label-color: #a3a3a3;
-    --dialog-label-required: #3b82f6;
+    /* Dialog tokens */
+    --dialog-bg: 0 0% 10%;
+    --dialog-border: 0 0% 20%;
+    --dialog-divider: 0 0% 20%;
+    --dialog-footer-bg: 0 0% 14%;
+    --dialog-title-color: 0 0% 96%;
+    --dialog-desc-color: 0 0% 45%;
+    --dialog-close-color: 0 0% 64%;
+    --dialog-section-bg: 0 0% 14%;
+    --dialog-section-border: 0 0% 17%;
+    --dialog-input-bg: 0 0% 17%;
+    --dialog-input-border: 0 0% 25%;
+    --dialog-label-color: 0 0% 64%;
+    --dialog-label-required: 217 91% 60%;
   }
   
   * {
@@ -443,6 +517,104 @@
   body {
     @apply bg-background text-foreground;
     font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   CATALYST TYPOGRAPHY SYSTEM — Enterprise-Grade Semantic Text Styles
+   ════════════════════════════════════════════════════════════════════════════ */
+
+@layer utilities {
+  /* Overline - Section headers, labels */
+  .c-overline {
+    font-size: 0.75rem;      /* 12px */
+    line-height: 1.25rem;    /* 20px */
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: hsl(var(--text-muted));
+  }
+  
+  /* Title - Card titles, section headings */
+  .c-title {
+    font-size: 1.125rem;     /* 18px */
+    line-height: 1.5rem;     /* 24px */
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: hsl(var(--text-primary));
+  }
+  
+  /* Subtitle - Secondary headings */
+  .c-subtitle {
+    font-size: 0.9375rem;    /* 15px */
+    line-height: 1.375rem;   /* 22px */
+    font-weight: 500;
+    letter-spacing: -0.005em;
+    color: hsl(var(--text-primary));
+  }
+  
+  /* KPI - Large numbers, metrics */
+  .c-kpi {
+    font-size: 2.5rem;       /* 40px */
+    line-height: 2.75rem;    /* 44px */
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+    color: hsl(var(--text-primary));
+  }
+  
+  /* KPI Small - Secondary metrics */
+  .c-kpi-sm {
+    font-size: 1.75rem;      /* 28px */
+    line-height: 2rem;       /* 32px */
+    font-weight: 600;
+    letter-spacing: -0.015em;
+    font-variant-numeric: tabular-nums;
+    color: hsl(var(--text-primary));
+  }
+  
+  /* Body - Default text */
+  .c-body {
+    font-size: 0.875rem;     /* 14px */
+    line-height: 1.25rem;    /* 20px */
+    font-weight: 400;
+    color: hsl(var(--text-primary));
+  }
+  
+  /* Body Small */
+  .c-body-sm {
+    font-size: 0.8125rem;    /* 13px */
+    line-height: 1.125rem;   /* 18px */
+    font-weight: 400;
+    color: hsl(var(--text-secondary));
+  }
+  
+  /* Caption - Small helper text */
+  .c-caption {
+    font-size: 0.8125rem;    /* 13px */
+    line-height: 1.125rem;   /* 18px */
+    font-weight: 500;
+    color: hsl(var(--text-tertiary));
+  }
+  
+  /* Label - Form labels */
+  .c-label {
+    font-size: 0.8125rem;    /* 13px */
+    line-height: 1rem;       /* 16px */
+    font-weight: 500;
+    color: hsl(var(--text-secondary));
+  }
+  
+  /* Tabular numbers utility */
+  .c-tabular-nums {
+    font-variant-numeric: tabular-nums;
+  }
+  
+  /* Mono text for code/IDs */
+  .c-mono {
+    font-family: "SF Mono", "Monaco", "Consolas", monospace;
+    font-size: 0.8125rem;    /* 13px */
+    line-height: 1.25rem;    /* 20px */
   }
 }
 
@@ -462,41 +634,44 @@
   
   /* Sidebar menu items */
   [data-sidebar="menu-button"] {
-    color: var(--text-secondary);
+    color: hsl(var(--text-secondary));
   }
   
   [data-sidebar="menu-button"]:hover {
-    background-color: hsl(0 0% 90%);
+    background-color: hsl(var(--surface-hover));
   }
   
   .dark [data-sidebar="menu-button"]:hover,
   [data-theme="dark"] [data-sidebar="menu-button"]:hover {
-    background-color: hsl(0 0% 20%);
+    background-color: hsl(var(--surface-hover));
   }
   
   /* Dark mode contrast utilities for muted elements */
   .text-muted-visible {
-    @apply text-muted-foreground;
+    color: hsl(var(--muted-foreground));
   }
   
-  .dark .text-muted-visible {
+  .dark .text-muted-visible,
+  [data-theme="dark"] .text-muted-visible {
     color: hsl(0 0% 65%);
   }
   
   .text-muted-subtle {
-    @apply text-muted-foreground;
+    color: hsl(var(--muted-foreground));
   }
   
-  .dark .text-muted-subtle {
+  .dark .text-muted-subtle,
+  [data-theme="dark"] .text-muted-subtle {
     color: hsl(0 0% 55%);
   }
   
   /* Icon visibility boost for dark mode empty states */
   .icon-muted-visible {
-    @apply text-muted-foreground;
+    color: hsl(var(--muted-foreground));
   }
   
-  .dark .icon-muted-visible {
+  .dark .icon-muted-visible,
+  [data-theme="dark"] .icon-muted-visible {
     color: hsl(0 0% 50%);
   }
 }
@@ -522,141 +697,6 @@
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   GLOBAL OVERRIDES - Force Pure Onyx (outside @layer for specificity)
-   ═══════════════════════════════════════════════════════════════ */
-
-/* Light Mode Card Backgrounds */
-.bg-white,
-.bg-card,
-[class*="dark:bg-gray-900"]:not(.dark *):not([data-theme="dark"] *) {
-  background-color: #ffffff !important;
-}
-
-.bg-gray-50 {
-  background-color: #fafafa !important;
-}
-
-.bg-gray-100 {
-  background-color: #f5f5f5 !important;
-}
-
-.bg-gray-800 {
-  background-color: #262626 !important;
-}
-
-.bg-gray-900 {
-  background-color: #171717 !important;
-}
-
-/* Dark Mode Card Backgrounds */
-.dark .bg-white,
-.dark .bg-card,
-[data-theme="dark"] .bg-white,
-[data-theme="dark"] .bg-card {
-  background-color: #171717 !important;
-}
-
-.dark .bg-gray-50,
-[data-theme="dark"] .bg-gray-50 {
-  background-color: #1f1f1f !important;
-}
-
-.dark .bg-gray-100,
-[data-theme="dark"] .bg-gray-100 {
-  background-color: #262626 !important;
-}
-
-.dark .bg-gray-800,
-[data-theme="dark"] .bg-gray-800 {
-  background-color: #1f1f1f !important;
-}
-
-.dark .bg-gray-900,
-[data-theme="dark"] .bg-gray-900 {
-  background-color: #171717 !important;
-}
-
-/* Dark mode explicit class overrides */
-.dark .dark\:bg-gray-800 {
-  background-color: #1f1f1f !important;
-}
-
-.dark .dark\:bg-gray-900 {
-  background-color: #171717 !important;
-}
-
-[data-theme="dark"] .dark\:bg-gray-800 {
-  background-color: #1f1f1f !important;
-}
-
-[data-theme="dark"] .dark\:bg-gray-900 {
-  background-color: #171717 !important;
-}
-
-/* Border overrides */
-.border-gray-200 {
-  border-color: #e5e5e5 !important;
-}
-
-.border-gray-700 {
-  border-color: #404040 !important;
-}
-
-.dark .border-gray-200,
-[data-theme="dark"] .border-gray-200 {
-  border-color: #404040 !important;
-}
-
-.dark .border-gray-700,
-[data-theme="dark"] .border-gray-700,
-.dark .dark\:border-gray-700,
-[data-theme="dark"] .dark\:border-gray-700 {
-  border-color: #404040 !important;
-}
-
-/* Text color overrides for dark mode */
-.dark .text-gray-100,
-[data-theme="dark"] .text-gray-100,
-.dark .dark\:text-gray-100,
-[data-theme="dark"] .dark\:text-gray-100 {
-  color: #f5f5f5 !important;
-}
-
-.dark .text-gray-300,
-[data-theme="dark"] .text-gray-300,
-.dark .dark\:text-gray-300,
-[data-theme="dark"] .dark\:text-gray-300 {
-  color: #d4d4d4 !important;
-}
-
-.dark .text-gray-400,
-[data-theme="dark"] .text-gray-400,
-.dark .dark\:text-gray-400,
-[data-theme="dark"] .dark\:text-gray-400 {
-  color: #a3a3a3 !important;
-}
-
-/* Background for main page */
-.bg-background {
-  background-color: #fafafa !important;
-}
-
-.dark .bg-background,
-[data-theme="dark"] .bg-background {
-  background-color: #1a1a1a !important;
-}
-
-/* Sidebar background */
-.bg-sidebar {
-  background-color: #f7f7f7 !important;
-}
-
-.dark .bg-sidebar,
-[data-theme="dark"] .bg-sidebar {
-  background-color: #1f1f1f !important;
-}
-
-/* ═══════════════════════════════════════════════════════════════
    NEUTRAL SCROLLBARS
    ═══════════════════════════════════════════════════════════════ */
 
@@ -666,43 +706,43 @@
 }
 
 ::-webkit-scrollbar-track {
-  background: #f5f5f5;
+  background: hsl(var(--surface-2));
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #d4d4d4;
+  background: hsl(var(--border-default));
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #a3a3a3;
+  background: hsl(var(--text-muted));
 }
 
 /* Dark mode scrollbars */
 .dark ::-webkit-scrollbar-track,
 [data-theme="dark"] ::-webkit-scrollbar-track {
-  background: #262626;
+  background: hsl(var(--surface-2));
 }
 
 .dark ::-webkit-scrollbar-thumb,
 [data-theme="dark"] ::-webkit-scrollbar-thumb {
-  background: #525252;
+  background: hsl(var(--border-default));
 }
 
 .dark ::-webkit-scrollbar-thumb:hover,
 [data-theme="dark"] ::-webkit-scrollbar-thumb:hover {
-  background: #737373;
+  background: hsl(var(--text-muted));
 }
 
 /* Firefox scrollbar */
 * {
   scrollbar-width: thin;
-  scrollbar-color: #d4d4d4 #f5f5f5;
+  scrollbar-color: hsl(var(--border-default)) hsl(var(--surface-2));
 }
 
 .dark *,
 [data-theme="dark"] * {
-  scrollbar-color: #525252 #262626;
+  scrollbar-color: hsl(var(--border-default)) hsl(var(--surface-2));
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -710,25 +750,27 @@
    Premium shadows with proper light/dark mode variants
    ═══════════════════════════════════════════════════════════════ */
 
-/* Light mode shadows */
-.shadow-catalyst-xs { box-shadow: 0 1px 2px rgba(26, 26, 26, 0.04); }
-.shadow-catalyst-sm { box-shadow: 0 1px 3px rgba(26, 26, 26, 0.06), 0 1px 2px rgba(26, 26, 26, 0.04); }
-.shadow-catalyst-md { box-shadow: 0 4px 6px -1px rgba(26, 26, 26, 0.06), 0 2px 4px -1px rgba(26, 26, 26, 0.04); }
-.shadow-catalyst-lg { box-shadow: 0 10px 15px -3px rgba(26, 26, 26, 0.06), 0 4px 6px -2px rgba(26, 26, 26, 0.03); }
+/* Shadow utilities using CSS variables */
+.shadow-elev-1 { box-shadow: var(--shadow-elev-1); }
+.shadow-elev-2 { box-shadow: var(--shadow-elev-2); }
+.shadow-elev-3 { box-shadow: var(--shadow-elev-3); }
+.shadow-brand { box-shadow: var(--shadow-brand); }
 
-/* Dark mode shadows */
-.dark .shadow-catalyst-xs { box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3); }
-.dark .shadow-catalyst-sm { box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4), 0 1px 2px rgba(0, 0, 0, 0.3); }
-.dark .shadow-catalyst-md { box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.3); }
-.dark .shadow-catalyst-lg { box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.3); }
+/* Legacy shadow classes */
+.shadow-catalyst-xs { box-shadow: var(--shadow-elev-1); }
+.shadow-catalyst-sm { box-shadow: var(--shadow-elev-1); }
+.shadow-catalyst-md { box-shadow: var(--shadow-elev-2); }
+.shadow-catalyst-lg { box-shadow: var(--shadow-elev-3); }
 
 /* Blue focus glow */
-.glow-blue { box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12); }
-.dark .glow-blue { box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15); }
+.glow-blue { box-shadow: 0 0 0 3px hsl(var(--brand-primary) / 0.12); }
+.dark .glow-blue,
+[data-theme="dark"] .glow-blue { box-shadow: 0 0 0 3px hsl(var(--brand-primary) / 0.15); }
 
 /* Inner shadow for inputs */
-.shadow-inner-subtle { box-shadow: inset 0 1px 2px rgba(26, 26, 26, 0.04); }
-.dark .shadow-inner-subtle { box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.2); }
+.shadow-inner-subtle { box-shadow: inset 0 1px 2px hsl(var(--shadow-color) / 0.04); }
+.dark .shadow-inner-subtle,
+[data-theme="dark"] .shadow-inner-subtle { box-shadow: inset 0 1px 2px hsl(var(--shadow-color) / 0.2); }
 
 /* ═══════════════════════════════════════════════════════════════
    CATALYST V5 MICRO-INTERACTIONS
@@ -777,19 +819,21 @@
   transition: box-shadow 0.2s ease;
 }
 .avatar-ring:hover {
-  box-shadow: 0 0 0 2px #fafafa, 0 0 0 4px #2563eb;
+  box-shadow: 0 0 0 2px hsl(var(--surface-0)), 0 0 0 4px hsl(var(--brand-primary));
 }
-.dark .avatar-ring:hover {
-  box-shadow: 0 0 0 2px #141414, 0 0 0 4px #3b82f6;
+.dark .avatar-ring:hover,
+[data-theme="dark"] .avatar-ring:hover {
+  box-shadow: 0 0 0 2px hsl(var(--surface-1)), 0 0 0 4px hsl(var(--brand-primary));
 }
 
 /* Focus ring utility */
 .focus-ring:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px rgba(37, 99, 235, 0.4);
+  box-shadow: 0 0 0 2px hsl(var(--surface-0)), 0 0 0 4px hsl(var(--focus-ring) / 0.4);
 }
-.dark .focus-ring:focus-visible {
-  box-shadow: 0 0 0 2px #1a1a1a, 0 0 0 4px rgba(59, 130, 246, 0.4);
+.dark .focus-ring:focus-visible,
+[data-theme="dark"] .focus-ring:focus-visible {
+  box-shadow: 0 0 0 2px hsl(var(--surface-1)), 0 0 0 4px hsl(var(--focus-ring) / 0.4);
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -806,57 +850,20 @@
 }
 
 .scrollbar-catalyst::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.08);
+  background: hsl(var(--border-default) / 0.5);
   border-radius: 3px;
 }
 
 .scrollbar-catalyst::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 0, 0, 0.15);
+  background: hsl(var(--border-default));
 }
 
-.dark .scrollbar-catalyst::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.1);
+.dark .scrollbar-catalyst::-webkit-scrollbar-thumb,
+[data-theme="dark"] .scrollbar-catalyst::-webkit-scrollbar-thumb {
+  background: hsl(var(--border-default) / 0.5);
 }
 
-.dark .scrollbar-catalyst::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.2);
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   CATALYST V5 WORK MANAGER TABLE STYLES
-   Executive-grade polish for tables and interactions
-   ═══════════════════════════════════════════════════════════════ */
-
-/* Custom Catalyst shadows */
-.shadow-catalyst-xs { box-shadow: 0 1px 2px rgba(26, 26, 26, 0.04); }
-.shadow-catalyst-sm { box-shadow: 0 1px 3px rgba(26, 26, 26, 0.06), 0 1px 2px rgba(26, 26, 26, 0.04); }
-.shadow-catalyst-md { box-shadow: 0 4px 6px -1px rgba(26, 26, 26, 0.06), 0 2px 4px -1px rgba(26, 26, 26, 0.04); }
-
-.dark .shadow-catalyst-xs { box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3); }
-.dark .shadow-catalyst-sm { box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4), 0 1px 2px rgba(0, 0, 0, 0.3); }
-.dark .shadow-catalyst-md { box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.3); }
-
-/* Inner shadow for inputs */
-.shadow-inner-subtle { box-shadow: inset 0 1px 2px rgba(26, 26, 26, 0.04); }
-.dark .shadow-inner-subtle { box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.2); }
-
-/* Smooth transitions */
-.transition-smooth {
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* Press scale effect */
-.press-scale:active {
-  transform: scale(0.97);
-}
-
-/* Avatar ring hover effect */
-.avatar-ring {
-  transition: box-shadow 0.2s ease;
-}
-.avatar-ring:hover {
-  box-shadow: 0 0 0 2px #fafafa, 0 0 0 4px #2563eb;
-}
-.dark .avatar-ring:hover {
-  box-shadow: 0 0 0 2px #141414, 0 0 0 4px #3b82f6;
+.dark .scrollbar-catalyst::-webkit-scrollbar-thumb:hover,
+[data-theme="dark"] .scrollbar-catalyst::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--border-default));
 }
