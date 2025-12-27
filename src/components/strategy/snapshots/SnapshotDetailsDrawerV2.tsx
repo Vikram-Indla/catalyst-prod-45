@@ -249,7 +249,7 @@ export function SnapshotDetailsDrawerV2({ open, onClose, snapshot }: SnapshotDet
                 <div>
                   <h4 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-2">READINESS</h4>
                   {isReady ? (
-                    <div className="flex items-center gap-3 p-3 rounded-lg bg-[rgba(92,124,92,0.1)] dark:bg-[rgba(92,124,92,0.15)] border border-[rgba(92,124,92,0.3)]">
+                    <div className="flex items-center gap-3 p-3 rounded-lg bg-[rgba(13,148,136,0.1)] dark:bg-[rgba(13,148,136,0.15)] border border-[rgba(13,148,136,0.3)]">
                       <CheckCircle2 className="h-4 w-4 text-secondary-green flex-shrink-0" />
                       <span className="text-sm text-foreground">Ready for activation</span>
                     </div>

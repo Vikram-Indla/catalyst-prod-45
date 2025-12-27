@@ -334,7 +334,7 @@ const StrategyPerformanceOverview = ({ metrics }: { metrics: PerformanceMetrics 
                 <div key={i} className={cn(
                   "flex items-start gap-3 p-3 rounded-lg border",
                   item.count > 0 
-                    ? "bg-[rgba(198,156,109,0.08)] dark:bg-[rgba(198,156,109,0.15)] border-[rgba(198,156,109,0.3)]" 
+                    ? "bg-[rgba(37,99,235,0.08)] dark:bg-[rgba(37,99,235,0.15)] border-[rgba(37,99,235,0.3)]" 
                     : "bg-[#F6F8FA] dark:bg-[#21262D] border-[#E1E4E8] dark:border-[#30363D]"
                 )}>
                   <span className={cn(
@@ -386,7 +386,7 @@ const ThemeLevelSnapshot = ({ themes }: { themes: ThemeAnalyticsRow[] }) => {
             className={cn(
               "grid grid-cols-[1.4fr_0.8fr_0.8fr_0.7fr_0.9fr_1fr] gap-3 px-5 py-3.5",
               index < themes.length - 1 && "border-b border-[#E1E4E8] dark:border-[#21262D]",
-              theme.isBehind && "bg-[rgba(198,156,109,0.08)] dark:bg-[rgba(198,156,109,0.1)]"
+              theme.isBehind && "bg-[rgba(37,99,235,0.08)] dark:bg-[rgba(37,99,235,0.1)]"
             )}
           >
             {/* Theme Name */}

@@ -231,7 +231,7 @@ export const TeamMemberSkillsProfile: React.FC<TeamMemberSkillsProfileProps> = (
                 return (
                   <div
                     key={cert.id}
-                    className="bg-[#2d3344] rounded-xl p-4 border border-[rgba(198,156,109,0.15)]"
+                    className="bg-[#2d3344] rounded-xl p-4 border border-[rgba(37,99,235,0.15)]"
                   >
                     <h4 className="font-medium text-[#f5f5f7] text-sm">{cert.name}</h4>
                     <p className="text-xs text-[#6b7280] mt-1">{cert.issuer}</p>

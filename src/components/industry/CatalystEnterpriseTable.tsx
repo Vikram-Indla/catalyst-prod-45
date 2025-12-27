@@ -237,7 +237,7 @@ function ColumnHeader<T>({
             className={cn(
               "p-0.5 rounded transition-colors",
               isSorted 
-                ? "text-[#c69c6d] dark:text-[#d4b896]" 
+                ? "text-[#2563eb] dark:text-[#60a5fa]" 
                 : "text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300"
             )}
             title="Sort"
@@ -566,7 +566,7 @@ export function CatalystEnterpriseTable<T extends { id: string }>({
             className={cn(
               "h-4 w-4 cursor-grab active:cursor-grabbing transition-colors",
               isDragging 
-                ? "text-[#c69c6d] dark:text-[#d4b896]" 
+                ? "text-[#2563eb] dark:text-[#60a5fa]" 
                 : "text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400"
             )} 
           />
@@ -581,9 +581,9 @@ export function CatalystEnterpriseTable<T extends { id: string }>({
             onChange={(e) => handleCheckboxChange(e, row.id)}
             className={cn(
               "w-4 h-4 rounded transition-all cursor-pointer",
-              "border-gray-300 text-[#c69c6d] focus:ring-[#c69c6d] focus:ring-offset-0",
-              "dark:border-gray-500 dark:bg-gray-800 dark:checked:bg-[#c69c6d] dark:checked:border-[#c69c6d]",
-              "hover:border-[#c69c6d] dark:hover:border-[#c69c6d]"
+              "border-gray-300 text-[#2563eb] focus:ring-[#2563eb] focus:ring-offset-0",
+              "dark:border-gray-500 dark:bg-gray-800 dark:checked:bg-[#2563eb] dark:checked:border-[#2563eb]",
+              "hover:border-[#2563eb] dark:hover:border-[#2563eb]"
             )}
           />
         </td>
@@ -657,7 +657,7 @@ export function CatalystEnterpriseTable<T extends { id: string }>({
           {onCreateNew && (
             <button 
               onClick={onCreateNew}
-              className="text-sm text-[#c69c6d] dark:text-[#d4b896] hover:underline font-medium"
+              className="text-sm text-[#2563eb] dark:text-[#60a5fa] hover:underline font-medium"
             >
               + Create new request
             </button>
@@ -717,8 +717,8 @@ export function CatalystEnterpriseTable<T extends { id: string }>({
                       onChange={handleSelectAll}
                       className={cn(
                         "w-4 h-4 rounded transition-all cursor-pointer",
-                        "border-gray-300 text-[#c69c6d] focus:ring-[#c69c6d] focus:ring-offset-0",
-                        "dark:border-gray-500 dark:bg-gray-800 dark:checked:bg-[#c69c6d] dark:checked:border-[#c69c6d]"
+                        "border-gray-300 text-[#2563eb] focus:ring-[#2563eb] focus:ring-offset-0",
+                        "dark:border-gray-500 dark:bg-gray-800 dark:checked:bg-[#2563eb] dark:checked:border-[#2563eb]"
                       )}
                     />
                   </th>

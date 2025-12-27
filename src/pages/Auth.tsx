@@ -295,9 +295,9 @@ export default function Auth() {
               lineHeight: 1.2
             }}
           >
-            <span className="text-[#8b7355]">Streamline your</span>{" "}
-            <span className="text-[#c69c6d] font-semibold italic">enterprise</span>{" "}
-            <span className="text-[#c69c6d] font-semibold italic">demand & delivery</span>
+            <span className="text-[#6b7280]">Streamline your</span>{" "}
+            <span className="text-[#2563eb] font-semibold italic">enterprise</span>{" "}
+            <span className="text-[#2563eb] font-semibold italic">demand & delivery</span>
           </h1>
 
           {/* Description - FIXED CONTRAST */}
@@ -378,7 +378,7 @@ export default function Auth() {
             }}
           >
             <span className="text-foreground dark:text-white">Cata</span>
-            <span className="text-[#c69c6d] dark:text-[#d4b896]">lyst</span>
+            <span className="text-[#2563eb] dark:text-[#60a5fa]">lyst</span>
             <sup style={{ color: 'var(--text-1)', fontWeight: 400 }} className="ml-0.5 text-[0.4em]">TM</sup>
           </h1>
         </div>

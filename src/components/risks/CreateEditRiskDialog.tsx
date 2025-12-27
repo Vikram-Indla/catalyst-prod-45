@@ -385,7 +385,7 @@ export function CreateEditRiskDialog({
               <button
                 type="submit"
                 disabled={!isValid || isSubmitting}
-                className="px-4 py-2 rounded-lg text-sm font-medium bg-[#C69C6D] hover:bg-[#B8905F] text-white disabled:opacity-50"
+                className="px-4 py-2 rounded-lg text-sm font-medium bg-[#2563eb] hover:bg-[#1d4ed8] text-white disabled:opacity-50"
               >
                 {isSubmitting ? "Saving..." : isEditing ? "Save Risk" : "Create Risk"}
               </button>
@@ -412,7 +412,7 @@ export function CreateEditRiskDialog({
             </AlertDialogCancel>
             <AlertDialogAction 
               onClick={handleConfirmDiscard}
-              className="bg-[#C69C6D] hover:bg-[#B8905F] text-white"
+              className="bg-[#2563eb] hover:bg-[#1d4ed8] text-white"
             >
               Discard Changes
             </AlertDialogAction>

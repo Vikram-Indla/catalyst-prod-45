@@ -463,7 +463,7 @@ export function IncidentListTable({
                         {(incident.is_major_incident || isCritical || isBreached) && (
                           <Tooltip>
                             <TooltipTrigger asChild>
-                              <AlertTriangle className="h-3.5 w-3.5 ml-1 text-[#8b7355] shrink-0" />
+                              <AlertTriangle className="h-3.5 w-3.5 ml-1 text-[#f59e0b] shrink-0" />
                             </TooltipTrigger>
                             <TooltipContent side="right" className="text-xs">
                               <p className="font-medium">

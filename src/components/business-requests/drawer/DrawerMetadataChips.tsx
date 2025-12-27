@@ -37,9 +37,9 @@ export function DrawerMetadataChips({
       <div
         className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[12px] font-medium"
         style={{
-          background: '#D4B896',
-          border: '1px solid rgba(139, 115, 85, 0.3)',
-          color: '#6D5A43',
+          background: '#2563eb',
+          border: '1px solid rgba(37, 99, 235, 0.3)',
+          color: '#ffffff',
         }}
       >
         <Star className="h-3.5 w-3.5" />
