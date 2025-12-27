@@ -221,8 +221,8 @@ export function FeatureKanbanColumn({
                               'text-[10px] px-1.5 py-0.5 rounded font-medium border',
                               item.priority === 'critical' && 'bg-red-500/15 text-red-500 border-red-500/30',
                               item.priority === 'high' && 'bg-amber-500/15 text-amber-500 border-amber-500/30',
-                              item.priority === 'medium' && 'bg-[#c69c6d]/15 text-[#c69c6d] border-[#c69c6d]/30',
-                              item.priority === 'low' && 'bg-[#5c7c5c]/15 text-[#5c7c5c] border-[#5c7c5c]/30',
+                              item.priority === 'medium' && 'bg-[#2563eb]/15 text-[#2563eb] border-[#2563eb]/30',
+                              item.priority === 'low' && 'bg-[#0d9488]/15 text-[#0d9488] border-[#0d9488]/30',
                             )}>
                               {item.priority}
                             </span>
