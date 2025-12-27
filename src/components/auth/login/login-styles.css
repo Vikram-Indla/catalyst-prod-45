@@ -306,7 +306,7 @@
 
 .widget-header {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 0.875rem;
   margin-bottom: 0.75rem;
 }
@@ -644,7 +644,7 @@
 }
 
 .auth-btn.active {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.08);
   color: var(--login-text-primary);
 }
 
