@@ -4,6 +4,7 @@ import { Plus } from "lucide-react";
 import { useEnabledModules } from "@/hooks/useModules";
 import { useCreateMenuVisibility } from "@/hooks/useCreateMenuVisibility";
 import { WorkItemIcon } from "@/components/ja/icons/WorkItemIcon";
+import { ThemeDialog } from "@/components/forms/ThemeDialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -48,6 +49,7 @@ const otherItems = getWorkItemsByCategory('other').map(item => ({
 export function CreateDropdown() {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
+  const [themeDialogOpen, setThemeDialogOpen] = useState(false);
   const { isModuleEnabled } = useEnabledModules();
   const { isWorkItemVisible } = useCreateMenuVisibility();
 
@@ -95,6 +97,12 @@ export function CreateDropdown() {
   const handleItemClick = (type: string) => {
     setOpen(false);
     
+    // Handle theme creation - open dialog directly
+    if (type === 'theme') {
+      setThemeDialogOpen(true);
+      return;
+    }
+    
     // Handle incident creation - route to create page
     if (type === 'incident') {
       navigate('/release/incidents/create');
@@ -103,7 +111,6 @@ export function CreateDropdown() {
     
     // Route to the appropriate page with create parameter
     const routeMap: Record<string, string> = {
-      'theme': '/themes?create=true',
       'business-request': '/industry?create=true',
       'epic': '/items/epics?create=true',
       'feature': '/features?create=true',
@@ -179,6 +186,12 @@ export function CreateDropdown() {
           {renderSection('Other', filteredOtherItems)}
         </DropdownMenuContent>
       </DropdownMenu>
+
+      {/* Theme Create Dialog */}
+      <ThemeDialog
+        open={themeDialogOpen}
+        onOpenChange={setThemeDialogOpen}
+      />
     </>
   );
 }
