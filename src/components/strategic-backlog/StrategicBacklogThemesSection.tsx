@@ -77,11 +77,11 @@ function SortableHeader({
     <button
       onClick={() => onSort(column)}
       className={cn(
-        "group flex items-center gap-1.5 text-[hsl(var(--text-muted))] hover:text-[hsl(var(--text-primary))] transition-colors",
+        "group flex items-center gap-1.5 text-[hsl(var(--text-tertiary))] hover:text-[hsl(var(--text-primary))] transition-colors",
         className
       )}
     >
-      <span className="text-[11px] font-semibold uppercase tracking-wider">{label}</span>
+      <span className="text-[11px] font-bold uppercase tracking-wider">{label}</span>
       <span className={cn(
         "flex flex-col -space-y-1",
         isActive ? "text-[hsl(var(--brand-primary))]" : "text-[hsl(var(--text-muted))]"
