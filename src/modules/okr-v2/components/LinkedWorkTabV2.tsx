@@ -231,13 +231,13 @@ export function LinkedWorkTabV2({ objectiveId, onMutation }: LinkedWorkTabV2Prop
                         <ChevronRight className="h-4 w-4" />
                       )}
                     </Button>
-                    <Target className="h-4 w-4 text-[#C69C6D] flex-shrink-0" />
+                    <Target className="h-4 w-4 text-[#2563eb] flex-shrink-0" />
                     <div className="flex-1 min-w-0">
                       <span className="text-sm font-medium truncate block text-[#24292F] dark:text-[#E6EDF3]">KR – {group.krName}</span>
                     </div>
                     <div className="flex items-center gap-3 flex-shrink-0">
                       <div className="w-20 h-2 rounded-full bg-[#E1E4E8] dark:bg-[#30363D] overflow-hidden">
-                        <div className="h-full rounded-full bg-[#5C7C5C] transition-all" style={{ width: `${group.krProgress}%` }} />
+                        <div className="h-full rounded-full bg-[#0d9488] transition-all" style={{ width: `${group.krProgress}%` }} />
                       </div>
                       <span className="text-sm text-[#57606A] dark:text-[#8B949E] w-10 text-right">{Math.round(group.krProgress)}%</span>
                     </div>
@@ -250,7 +250,7 @@ export function LinkedWorkTabV2({ objectiveId, onMutation }: LinkedWorkTabV2Prop
                       {hasWorkItems && (
                         <div className="flex items-center justify-between text-xs px-4 py-2 border-b border-[#E1E4E8] dark:border-[#30363D]">
                           <span className="text-[#57606A] dark:text-[#8B949E]">Contribution Total</span>
-                          <span className={`font-semibold ${status.valid ? 'text-[#5C7C5C]' : status.overweight ? 'text-red-600' : 'text-amber-600'}`}>
+                          <span className={`font-semibold ${status.valid ? 'text-[#0d9488]' : status.overweight ? 'text-red-600' : 'text-amber-600'}`}>
                             {group.totalContribution}% / 100%
                           </span>
                         </div>
@@ -289,10 +289,10 @@ export function LinkedWorkTabV2({ objectiveId, onMutation }: LinkedWorkTabV2Prop
                                 <tr key={item.id} className="border-b border-[#E1E4E8] dark:border-[#30363D] last:border-0 hover:bg-[#F6F8FA] dark:hover:bg-[#21262D]">
                                   <td className="py-2.5">
                                     <div className="flex items-center gap-2">
-                                      <Target className="h-3.5 w-3.5 text-[#C69C6D] flex-shrink-0" />
+                                      <Target className="h-3.5 w-3.5 text-[#2563eb] flex-shrink-0" />
                                       <button
                                         onClick={() => setSelectedWorkItem({ id: item.work_item_id, type: item.type })}
-                                        className="truncate text-left hover:text-[#C69C6D] hover:underline transition-colors cursor-pointer text-[#24292F] dark:text-[#E6EDF3]"
+                                        className="truncate text-left hover:text-[#2563eb] hover:underline transition-colors cursor-pointer text-[#24292F] dark:text-[#E6EDF3]"
                                       >
                                         {item.name}
                                       </button>
@@ -306,7 +306,7 @@ export function LinkedWorkTabV2({ objectiveId, onMutation }: LinkedWorkTabV2Prop
                                   <td className="py-2.5">
                                     <div className="flex items-center justify-center gap-2">
                                       <div className="w-12 h-1.5 rounded-full bg-[#E1E4E8] dark:bg-[#30363D] overflow-hidden">
-                                        <div className="h-full rounded-full bg-[#5C7C5C]" style={{ width: `${item.progress}%` }} />
+                                        <div className="h-full rounded-full bg-[#0d9488]" style={{ width: `${item.progress}%` }} />
                                       </div>
                                       <span className="text-xs text-[#57606A] dark:text-[#8B949E] w-8">{item.progress}%</span>
                                     </div>
@@ -330,7 +330,7 @@ export function LinkedWorkTabV2({ objectiveId, onMutation }: LinkedWorkTabV2Prop
                                     ) : (
                                       <button
                                         onClick={() => setEditingItem({ id: item.id, value: item.contributionPercent })}
-                                        className="text-sm font-medium hover:text-[#C69C6D] transition-colors px-2 py-0.5 rounded hover:bg-[#F6F8FA] dark:hover:bg-[#21262D] text-[#24292F] dark:text-[#E6EDF3]"
+                                        className="text-sm font-medium hover:text-[#2563eb] transition-colors px-2 py-0.5 rounded hover:bg-[#F6F8FA] dark:hover:bg-[#21262D] text-[#24292F] dark:text-[#E6EDF3]"
                                       >
                                         {item.contributionPercent}%
                                       </button>
@@ -341,7 +341,7 @@ export function LinkedWorkTabV2({ objectiveId, onMutation }: LinkedWorkTabV2Prop
                                       <Button
                                         variant="ghost"
                                         size="icon"
-                                        className="h-7 w-7 text-[#57606A] dark:text-[#8B949E] hover:text-[#C69C6D]"
+                                        className="h-7 w-7 text-[#57606A] dark:text-[#8B949E] hover:text-[#2563eb]"
                                         onClick={() => setEditingItem({ id: item.id, value: item.contributionPercent })}
                                         title="Edit contribution"
                                       >
