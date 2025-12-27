@@ -7,16 +7,10 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { CatalystDatePicker } from '@/components/ui/catalyst-date-picker';
 import { useCreateTheme } from '@/hooks/useStrategicBacklog';
+import { useActiveThemeStatuses } from '@/hooks/useThemeStatuses';
 import { CATALYST_BRAND_COLORS, DEFAULT_THEME_COLOR } from '@/constants/brandColors';
 import { cn } from '@/lib/utils';
-import { Circle, X } from 'lucide-react';
-
-// Status options - these map to CreateThemeInput types
-const STATUS_OPTIONS = [
-  { value: 'draft', label: 'Proposed' },
-  { value: 'active', label: 'Active' },
-  { value: 'archived', label: 'Done' },
-];
+import { Circle, X, Loader2 } from 'lucide-react';
 
 interface CreateThemeDialogProps {
   open: boolean;
@@ -28,11 +22,12 @@ export function CreateThemeDialog({ open, onOpenChange, snapshotId }: CreateThem
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [colorTag, setColorTag] = useState(DEFAULT_THEME_COLOR);
-  const [status, setStatus] = useState<'draft' | 'active' | 'archived'>('draft');
+  const [status, setStatus] = useState<string>('draft');
   const [startDate, setStartDate] = useState<Date | undefined>();
   const [endDate, setEndDate] = useState<Date | undefined>();
 
   const createTheme = useCreateTheme();
+  const { data: themeStatuses = [], isLoading: statusesLoading } = useActiveThemeStatuses();
 
   const handleSubmit = async () => {
     if (!name.trim()) return;
@@ -42,7 +37,7 @@ export function CreateThemeDialog({ open, onOpenChange, snapshotId }: CreateThem
       description,
       color_tag: colorTag,
       snapshot_id: snapshotId || undefined,
-      status: status,
+      status: status as any,
       start_date: startDate?.toISOString().split('T')[0],
       end_date: endDate?.toISOString().split('T')[0],
     });
@@ -160,16 +155,22 @@ export function CreateThemeDialog({ open, onOpenChange, snapshotId }: CreateThem
                 <Label className="text-sm font-medium text-gray-700 dark:text-[#e6e6e6]">
                   Status
                 </Label>
-                <Select value={status} onValueChange={(value) => setStatus(value as 'draft' | 'active' | 'archived')}>
+                <Select value={status} onValueChange={(value) => setStatus(value)}>
                   <SelectTrigger className={inputClasses}>
                     <SelectValue placeholder="Select status" />
                   </SelectTrigger>
                   <SelectContent className="z-[400] bg-white dark:bg-[#1a1a1a] border-gray-200 dark:border-[#333333]">
-                    {STATUS_OPTIONS.map((option) => (
-                      <SelectItem key={option.value} value={option.value}>
-                        {option.label}
-                      </SelectItem>
-                    ))}
+                    {statusesLoading ? (
+                      <div className="flex items-center justify-center py-2">
+                        <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+                      </div>
+                    ) : (
+                      themeStatuses.map((option) => (
+                        <SelectItem key={option.value} value={option.value}>
+                          {option.label}
+                        </SelectItem>
+                      ))
+                    )}
                   </SelectContent>
                 </Select>
               </div>

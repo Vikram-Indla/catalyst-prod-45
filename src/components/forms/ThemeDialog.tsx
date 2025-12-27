@@ -11,6 +11,8 @@ import { CatalystDatePicker } from '@/components/ui/catalyst-date-picker';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
 import { CATALYST_BRAND_COLORS, DEFAULT_THEME_COLOR } from '@/constants/brandColors';
+import { useActiveThemeStatuses } from '@/hooks/useThemeStatuses';
+import { Loader2 } from 'lucide-react';
 
 interface ThemeDialogProps {
   open: boolean;
@@ -21,18 +23,19 @@ interface ThemeDialogProps {
 export function ThemeDialog({ open, onOpenChange, theme }: ThemeDialogProps) {
   const [name, setName] = useState(theme?.name || '');
   const [description, setDescription] = useState(theme?.description || '');
-  const [status, setStatus] = useState(theme?.status || 'proposed');
+  const [status, setStatus] = useState(theme?.status || 'draft');
   const [startDate, setStartDate] = useState(theme?.start_date || '');
   const [endDate, setEndDate] = useState(theme?.end_date || '');
   const [colorTag, setColorTag] = useState(theme?.color_tag || DEFAULT_THEME_COLOR);
 
   const queryClient = useQueryClient();
+  const { data: themeStatuses = [], isLoading: statusesLoading } = useActiveThemeStatuses();
 
   useEffect(() => {
     if (open) {
       setName(theme?.name || '');
       setDescription(theme?.description || '');
-      setStatus(theme?.status || 'proposed');
+      setStatus(theme?.status || 'draft');
       setStartDate(theme?.start_date || '');
       setEndDate(theme?.end_date || '');
       setColorTag(theme?.color_tag || DEFAULT_THEME_COLOR);
@@ -116,10 +119,17 @@ export function ThemeDialog({ open, onOpenChange, theme }: ThemeDialogProps) {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent className="z-[400]">
-                  <SelectItem value="proposed">Proposed</SelectItem>
-                  <SelectItem value="active">Active</SelectItem>
-                  <SelectItem value="done">Done</SelectItem>
-                  <SelectItem value="cancelled">Cancelled</SelectItem>
+                  {statusesLoading ? (
+                    <div className="flex items-center justify-center py-2">
+                      <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+                    </div>
+                  ) : (
+                    themeStatuses.map((option) => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))
+                  )}
                 </SelectContent>
               </Select>
             </div>
