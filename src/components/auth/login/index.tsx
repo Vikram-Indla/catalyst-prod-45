@@ -104,7 +104,7 @@ export function CatalystLoginPage() {
     handleAuthRedirect();
   }, [user, loading, mustChangePassword, navigate, checkMustChangePassword]);
 
-  const handleSignIn = async (email: string, password: string): Promise<{ error?: Error | null }> => {
+  const handleSignIn = async (email: string, password: string, _rememberMe: boolean): Promise<{ error?: Error | null }> => {
     setIsLoading(true);
     setLoginError(null);
     
@@ -121,6 +121,8 @@ export function CatalystLoginPage() {
       setIsLoading(false);
       return { error: result.error };
     }
+    
+    // Note: Remember Me localStorage handling is done in LoginFormPanel
     
     const { data: { user: currentUser } } = await supabase.auth.getUser();
     
