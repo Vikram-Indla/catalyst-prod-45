@@ -315,8 +315,8 @@ export function StrategicBacklogObjectivesSection({
 
   const isColumnVisible = (key: string) => visibleColumns.includes(key);
 
-  // Grid columns matching Themes section pattern
-  const gridCols = `${isColumnVisible('type') ? '48px ' : ''}1fr ${isColumnVisible('theme') ? '180px ' : ''}${isColumnVisible('quarters') ? '180px ' : ''}${isColumnVisible('status') ? '120px ' : ''}${isColumnVisible('progress') ? '180px ' : ''}${isColumnVisible('risks') ? '70px ' : ''}${isColumnVisible('linked') ? '70px ' : ''}40px`.trim();
+  // Grid columns matching Themes section pattern - responsive with min-widths
+  const gridCols = `${isColumnVisible('type') ? '48px ' : ''}minmax(180px, 1fr) ${isColumnVisible('theme') ? 'minmax(140px, 180px) ' : ''}${isColumnVisible('quarters') ? 'minmax(140px, 180px) ' : ''}${isColumnVisible('status') ? 'minmax(100px, 120px) ' : ''}${isColumnVisible('progress') ? 'minmax(140px, 180px) ' : ''}${isColumnVisible('risks') ? '70px ' : ''}${isColumnVisible('linked') ? '70px ' : ''}40px`.trim();
 
   return (
     <div className="flex flex-col gap-4 w-full">
@@ -395,7 +395,8 @@ export function StrategicBacklogObjectivesSection({
       </div>
 
       {/* Desktop Table View - Matching Themes section exactly */}
-      <div className="hidden md:block bg-[hsl(var(--surface-0))] border border-[hsl(var(--border-default))] rounded-xl shadow-[var(--shadow-elev-1)] overflow-hidden">
+      <div className="hidden md:block bg-[hsl(var(--surface-0))] border border-[hsl(var(--border-default))] rounded-xl shadow-[var(--shadow-elev-1)] overflow-x-auto">
+        <div className="min-w-[900px]">
         {/* Header */}
         <div 
           className="grid gap-4 px-5 py-3.5 bg-[hsl(var(--surface-1))] border-b border-[hsl(var(--border-default))]"
@@ -591,6 +592,7 @@ export function StrategicBacklogObjectivesSection({
               );
             })
           )}
+        </div>
         </div>
       </div>
 
