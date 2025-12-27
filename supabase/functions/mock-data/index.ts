@@ -109,6 +109,7 @@ serve(async (req) => {
           source_name: body.sourceName,
           seed: body.seed,
           notes: body.notes,
+          file_path: body.filePath,
           status: "draft",
         })
         .select()

@@ -9,7 +9,7 @@ import { toast } from 'sonner';
 export interface MockRun {
   id: string;
   created_by: string;
-  source_type: 'pdf' | 'csv' | 'markdown' | 'text' | 'synthetic';
+  source_type: 'pdf' | 'csv' | 'excel' | 'markdown' | 'text' | 'synthetic';
   source_name?: string;
   seed?: string;
   config_json: Record<string, any>;
@@ -28,6 +28,7 @@ export interface CreateRunData {
   sourceName?: string;
   seed?: string;
   notes?: string;
+  file?: File;
 }
 
 export interface RunConfig {
@@ -120,15 +121,42 @@ export function useMockDataRuns() {
     setIsLoading(true);
     try {
       const headers = await getAuthHeaders();
+      
+      // If there's a file, upload it first to storage
+      let filePath: string | undefined;
+      if (data.file) {
+        const { data: { session } } = await supabase.auth.getSession();
+        const fileName = `${Date.now()}-${data.file.name}`;
+        const { error: uploadError } = await supabase.storage
+          .from('mock-data-uploads')
+          .upload(fileName, data.file);
+        
+        if (uploadError) {
+          console.error('File upload error:', uploadError);
+          toast.error('Failed to upload file');
+          throw uploadError;
+        }
+        filePath = fileName;
+      }
+
       const response = await fetch(
         `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/mock-data/runs`,
         {
           method: 'POST',
           headers,
-          body: JSON.stringify(data),
+          body: JSON.stringify({
+            sourceType: data.sourceType,
+            sourceName: data.sourceName || data.file?.name,
+            seed: data.seed,
+            notes: data.notes,
+            filePath,
+          }),
         }
       );
-      if (!response.ok) throw new Error('Failed to create run');
+      if (!response.ok) {
+        const errData = await response.json().catch(() => ({}));
+        throw new Error(errData.error || 'Failed to create run');
+      }
       const run = await response.json();
       setCurrentRun(run);
       await fetchRuns();
