@@ -7,10 +7,11 @@ import { useState } from 'react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
-import { Layers, Target } from 'lucide-react';
+import { Layers, Target, Calendar } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { CreateObjectiveDialogV2 } from '@/modules/okr-v2/components/CreateObjectiveDialogV2';
 import { CreateThemeDialog } from './CreateThemeDialog';
+import { CreateSnapshotModal } from '@/components/strategy/snapshots/CreateSnapshotModal';
 
 interface AddToBacklogModalProps {
   open: boolean;
@@ -18,13 +19,18 @@ interface AddToBacklogModalProps {
   snapshotId: string;
 }
 
-type ItemType = 'theme' | 'objective' | null;
+type ItemType = 'theme' | 'snapshot' | 'objective' | null;
 
 const TYPE_CONFIG = {
   theme: {
     icon: Layers,
     label: 'Theme',
     subtitle: 'Strategic pillar',
+  },
+  snapshot: {
+    icon: Calendar,
+    label: 'Snapshot',
+    subtitle: 'Planning period',
   },
   objective: {
     icon: Target,
@@ -36,6 +42,7 @@ const TYPE_CONFIG = {
 export function AddToBacklogModal({ open, onOpenChange, snapshotId }: AddToBacklogModalProps) {
   const [selectedType, setSelectedType] = useState<ItemType>(null);
   const [showThemeDialog, setShowThemeDialog] = useState(false);
+  const [showSnapshotDialog, setShowSnapshotDialog] = useState(false);
   const [showObjectiveDialog, setShowObjectiveDialog] = useState(false);
 
   const handleClose = () => {
@@ -53,6 +60,8 @@ export function AddToBacklogModal({ open, onOpenChange, snapshotId }: AddToBackl
     
     if (selectedType === 'theme') {
       setShowThemeDialog(true);
+    } else if (selectedType === 'snapshot') {
+      setShowSnapshotDialog(true);
     } else if (selectedType === 'objective') {
       setShowObjectiveDialog(true);
     }
@@ -63,6 +72,11 @@ export function AddToBacklogModal({ open, onOpenChange, snapshotId }: AddToBackl
     if (!isOpen) {
       setSelectedType(null);
     }
+  };
+
+  const handleSnapshotDialogClose = () => {
+    setShowSnapshotDialog(false);
+    setSelectedType(null);
   };
 
   const handleObjectiveDialogClose = (isOpen: boolean) => {
@@ -90,9 +104,9 @@ export function AddToBacklogModal({ open, onOpenChange, snapshotId }: AddToBackl
               What are you adding?
             </Label>
             
-            {/* Type Selector Cards - 2 columns */}
-            <div className="grid grid-cols-2 gap-3">
-              {(['theme', 'objective'] as const).map((type) => {
+            {/* Type Selector Cards - 3 columns */}
+            <div className="grid grid-cols-3 gap-3">
+              {(['theme', 'snapshot', 'objective'] as const).map((type) => {
                 const cfg = TYPE_CONFIG[type];
                 const Icon = cfg.icon;
                 const isSelected = selectedType === type;
@@ -154,6 +168,12 @@ export function AddToBacklogModal({ open, onOpenChange, snapshotId }: AddToBackl
         open={showThemeDialog}
         onOpenChange={handleThemeDialogClose}
         snapshotId={snapshotId}
+      />
+
+      {/* CreateSnapshotModal - canonical snapshot creation modal */}
+      <CreateSnapshotModal
+        open={showSnapshotDialog}
+        onClose={handleSnapshotDialogClose}
       />
 
       {/* CreateObjectiveDialogV2 - canonical objective creation modal */}

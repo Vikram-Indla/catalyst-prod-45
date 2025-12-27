@@ -12800,6 +12800,7 @@ export type Database = {
           name: string
           start_date: string | null
           status: string | null
+          theme_id: string | null
           total_funding: number | null
           updated_at: string | null
           values: Json | null
@@ -12819,6 +12820,7 @@ export type Database = {
           name: string
           start_date?: string | null
           status?: string | null
+          theme_id?: string | null
           total_funding?: number | null
           updated_at?: string | null
           values?: Json | null
@@ -12838,12 +12840,21 @@ export type Database = {
           name?: string
           start_date?: string | null
           status?: string | null
+          theme_id?: string | null
           total_funding?: number | null
           updated_at?: string | null
           values?: Json | null
           vision?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "strategy_snapshots_theme_id_fkey"
+            columns: ["theme_id"]
+            isOneToOne: false
+            referencedRelation: "strategic_themes"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       strategy_values: {
         Row: {
