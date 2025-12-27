@@ -24,8 +24,8 @@ export const generateDemandConfirmationPDF = (data: DemandConfirmationData): jsP
   doc.setFontSize(28);
   doc.setFont('helvetica', 'bold');
   
-  // "Cata" in olive green
-  doc.setTextColor(92, 124, 92); // #5c7c5c
+  // "Cata" in dark gray
+  doc.setTextColor(10, 10, 10); // #0a0a0a
   const cataText = 'Cata';
   const cataWidth = doc.getTextWidth(cataText);
   const logoStartX = (pageWidth - doc.getTextWidth('Catalyst')) / 2;

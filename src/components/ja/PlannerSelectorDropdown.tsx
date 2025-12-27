@@ -19,8 +19,8 @@ interface PlannerSelectorDropdownProps {
 
 // Team type colors for visual distinction
 const teamTypeColors: Record<string, string> = {
-  'AGILE': '#5c7c5c',
-  'KANBAN': '#8b7355',
+  'AGILE': '#0d9488',
+  'KANBAN': '#6b7280',
   'COP': '#2563eb',
   'PROGRAM': '#2563eb',
   'PORTFOLIO': '#1d4ed8',

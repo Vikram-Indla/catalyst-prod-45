@@ -119,7 +119,7 @@ const DueDateCell = ({ date, isOverdue, dueBucket }: { date: string | null; isOv
     <span className={cn(
       "text-sm font-medium",
       isOverdue && "text-red-600 dark:text-red-400",
-      isToday && !isOverdue && "text-[#c69c6d] dark:text-[#d4a855]",
+      isToday && !isOverdue && "text-[#2563eb] dark:text-[#60a5fa]",
       !isOverdue && !isToday && "text-gray-600 dark:text-gray-400"
     )}>
       {isToday && !isOverdue ? 'Today' : formatDate(date)}
@@ -212,8 +212,8 @@ export function WorkManagerTasks({ tasks, onOpenTask }: WorkManagerTasksProps) {
         {label}
         {sortField === field && (
           sortDirection === 'asc' 
-            ? <ChevronUp className="w-3 h-3 text-[#c69c6d] dark:text-[#d4a855]" /> 
-            : <ChevronDown className="w-3 h-3 text-[#c69c6d] dark:text-[#d4a855]" />
+            ? <ChevronUp className="w-3 h-3 text-[#2563eb] dark:text-[#60a5fa]" /> 
+            : <ChevronDown className="w-3 h-3 text-[#2563eb] dark:text-[#60a5fa]" />
         )}
       </div>
     </th>
@@ -268,7 +268,7 @@ export function WorkManagerTasks({ tasks, onOpenTask }: WorkManagerTasksProps) {
                 >
                   {/* ID Column - mono font, bronze/gold */}
                   <td className="px-4 py-3.5">
-                    <span className="text-[13px] font-mono font-medium text-[#8b7355] dark:text-[#d4a855]">
+                    <span className="text-[13px] font-mono font-medium text-[#2563eb] dark:text-[#60a5fa]">
                       {task.key}
                     </span>
                   </td>
@@ -279,7 +279,7 @@ export function WorkManagerTasks({ tasks, onOpenTask }: WorkManagerTasksProps) {
                       'text-sm font-medium transition-colors',
                       isDone 
                         ? 'text-muted-foreground line-through decoration-muted-foreground/50' 
-                        : 'text-gray-900 dark:text-white group-hover:text-[#5c7c5c] dark:group-hover:text-[#7a9a7a]'
+                        : 'text-gray-900 dark:text-white group-hover:text-[#2563eb] dark:group-hover:text-[#60a5fa]'
                     )}>
                       {task.title}
                     </span>
@@ -298,7 +298,7 @@ export function WorkManagerTasks({ tasks, onOpenTask }: WorkManagerTasksProps) {
                       <div className="flex items-center gap-2.5">
                         <div className={cn(
                           "w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0",
-                          "bg-gradient-to-br from-[#5c7c5c] to-[#4a6a4a]",
+                          "bg-gradient-to-br from-[#0d9488] to-[#0f766e]",
                           "text-white text-[10px] font-bold",
                           "shadow-sm avatar-ring"
                         )}>
@@ -323,7 +323,7 @@ export function WorkManagerTasks({ tasks, onOpenTask }: WorkManagerTasksProps) {
                   {/* Linked Item - mono text */}
                   <td className="px-4 py-3.5">
                     {task.linkedItem ? (
-                      <span className="text-[13px] font-mono text-[#c69c6d] dark:text-[#d4a855] hover:underline cursor-pointer">
+                      <span className="text-[13px] font-mono text-[#2563eb] dark:text-[#60a5fa] hover:underline cursor-pointer">
                         {task.linkedItem.key}
                       </span>
                     ) : (
@@ -375,12 +375,12 @@ export function WorkManagerTasks({ tasks, onOpenTask }: WorkManagerTasksProps) {
             {/* Branded icon container */}
             <div className={cn(
               "w-16 h-16 rounded-2xl flex items-center justify-center mb-5",
-              "bg-gradient-to-br from-[#d4b896]/30 to-[#d4b896]/10",
-              "dark:from-[#c69c6d]/15 dark:to-[#c69c6d]/5",
-              "border border-[#d4b896]/30 dark:border-[#c69c6d]/20",
+              "bg-gradient-to-br from-[#2563eb]/20 to-[#2563eb]/5",
+              "dark:from-[#2563eb]/15 dark:to-[#2563eb]/5",
+              "border border-[#2563eb]/20 dark:border-[#2563eb]/20",
               "shadow-catalyst-xs"
             )}>
-              <ListTodo className="w-8 h-8 text-[#8b7355] dark:text-[#d4a855]" />
+              <ListTodo className="w-8 h-8 text-[#2563eb] dark:text-[#60a5fa]" />
             </div>
             
             <h3 className="font-semibold text-gray-900 dark:text-white text-lg mb-1.5">

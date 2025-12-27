@@ -84,7 +84,7 @@ export const TimelineArea = forwardRef<HTMLDivElement, TimelineAreaProps>(
             >
               <span 
                 className="px-1.5 py-0.5 text-[9px] font-semibold text-white rounded whitespace-nowrap"
-                style={{ backgroundColor: '#8b7355' }}
+                style={{ backgroundColor: '#2563eb' }}
               >
                 TODAY
               </span>
@@ -128,7 +128,7 @@ export const TimelineArea = forwardRef<HTMLDivElement, TimelineAreaProps>(
                 style={{ 
                   left: `${todayPosition}%`, 
                   height: `${totalContentHeight}px`,
-                  backgroundColor: '#8b7355' 
+                  backgroundColor: '#2563eb' 
                 }}
               />
             )}

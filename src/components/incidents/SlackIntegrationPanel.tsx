@@ -20,7 +20,7 @@ export function SlackIntegrationPanel({ incident }: SlackIntegrationPanelProps) 
         <div className="space-y-2">
           <div className="flex items-center justify-between">
             <span className="text-sm font-medium text-[#5C5C5C]">{incident.slackChannel}</span>
-            <Button variant="ghost" size="sm" className="h-7 text-[#C69C6D] hover:text-[#B8894D]">
+            <Button variant="ghost" size="sm" className="h-7 text-[#2563eb] hover:text-[#1d4ed8]">
               <ExternalLink className="w-3.5 h-3.5 mr-1" />
               Open Slack
             </Button>

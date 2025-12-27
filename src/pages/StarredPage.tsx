@@ -119,7 +119,7 @@ function StarredItemRow({
 
       {/* Summary - hover changes to olive */}
       <div className="min-w-0 pr-4">
-        <div className="text-sm font-medium leading-5 text-[var(--text-1)] truncate group-hover:text-[#5c7c5c] dark:group-hover:text-[#7a9a7a] transition-colors">
+        <div className="text-sm font-medium leading-5 text-[var(--text-1)] truncate group-hover:text-[#2563eb] dark:group-hover:text-[#60a5fa] transition-colors">
           {item.summary}
         </div>
       </div>
@@ -138,7 +138,7 @@ function StarredItemRow({
       <div className="flex justify-start">
         {item.assignee ? (
           <Avatar className="w-6 h-6">
-            <AvatarFallback className="text-[10px] font-bold bg-gradient-to-br from-[#5c7c5c] to-[#4a6a4a] text-white">
+            <AvatarFallback className="text-[10px] font-bold bg-gradient-to-br from-[#0d9488] to-[#0f766e] text-white">
               {item.assignee.slice(0, 2).toUpperCase()}
             </AvatarFallback>
           </Avatar>

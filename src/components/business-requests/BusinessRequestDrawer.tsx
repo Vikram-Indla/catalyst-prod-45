@@ -558,7 +558,7 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
               <span className="text-[10px]" style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}>/</span>
               <span 
                 className="text-[11px] font-semibold font-mono"
-                style={{ color: '#8B7355' }}
+                style={{ color: '#2563eb' }}
               >
                 {request?.request_key || '...'}
               </span>

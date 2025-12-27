@@ -293,7 +293,7 @@ export function WorkManagerInsights({ tasks }: WorkManagerInsightsProps) {
               <SelectContent className="shadow-elevated">
                 {users.map((u, idx) => {
                   // Distinct avatar colors cycling through brand palette
-                  const avatarColors = ['#5c7c5c', '#8b7355', '#c69c6d', '#d4b896', '#6b8b6b'];
+                  const avatarColors = ['#0d9488', '#2563eb', '#6b7280', '#9ca3af', '#14b8a6'];
                   const avatarColor = avatarColors[idx % avatarColors.length];
                   return (
                     <SelectItem key={u.id} value={u.id}>
@@ -510,7 +510,7 @@ export function WorkManagerInsights({ tasks }: WorkManagerInsightsProps) {
               <tbody>
                 {teamInsights.memberStats.map((member, idx) => {
                   // Distinct avatar colors cycling through brand palette
-                  const avatarColors = ['#5c7c5c', '#8b7355', '#c69c6d', '#d4b896', '#6b8b6b'];
+                  const avatarColors = ['#0d9488', '#2563eb', '#6b7280', '#9ca3af', '#14b8a6'];
                   const avatarColor = avatarColors[idx % avatarColors.length];
                   return (
                     <tr key={member.userId} className="border-b border-border-subtle hover:bg-muted/50 transition-colors cursor-pointer">

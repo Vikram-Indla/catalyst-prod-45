@@ -36,7 +36,7 @@ export default function VersionDetail() {
     return (
       <div className="p-6 md:p-8">
         <h1 className="text-2xl font-semibold mb-4">Release Not Found</h1>
-        <Link to="/release/versions" className="text-[#C69C6D] hover:underline">
+        <Link to="/release/versions" className="text-[#2563eb] hover:underline">
           ← Back to Releases
         </Link>
       </div>

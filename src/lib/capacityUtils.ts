@@ -8,10 +8,10 @@ import { Resource, Allocation, AllocationStatusInfo, CapacityProject, Vacancy } 
 
 // Golden Hour palette colors (CSS variables must be defined in index.css)
 export const GOLDEN_HOUR = {
-  expert: '#5c7c5c',      // Olive - Full allocation, success
-  advanced: '#8b7355',    // Bronze - Warnings, underallocation
-  intermediate: '#c69c6d', // Gold - Brand accent
-  beginner: '#d4b896',    // Champagne - Light states
+  expert: '#0d9488',      // Teal - Full allocation, success
+  advanced: '#f59e0b',    // Amber - Warnings, underallocation
+  intermediate: '#2563eb', // Blue - Brand accent
+  beginner: '#9ca3af',    // Gray - Light states
   none: '#c8ccd0',        // Grey - Neutral
 } as const;
 
@@ -42,20 +42,20 @@ export function getStatus(percentage: number): AllocationStatusInfo {
     return { 
       status: 'over', 
       label: 'Overallocated', 
-      colorClass: 'text-[#c69c6d] bg-[#c69c6d]/10' // Gold for over
+      colorClass: 'text-[#f59e0b] bg-[#f59e0b]/10' // Amber for over
     };
   }
   if (percentage >= 80) {
     return { 
       status: 'full', 
       label: 'Fully Allocated', 
-      colorClass: 'text-[#5c7c5c] bg-[#5c7c5c]/10' // Olive for full
+      colorClass: 'text-[#0d9488] bg-[#0d9488]/10' // Teal for full
     };
   }
   return { 
     status: 'under', 
     label: 'Underallocated', 
-    colorClass: 'text-[#8b7355] bg-[#8b7355]/10' // Bronze for under
+    colorClass: 'text-[#6b7280] bg-[#6b7280]/10' // Gray for under
   };
 }
 

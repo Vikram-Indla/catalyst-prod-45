@@ -339,7 +339,7 @@ export function CreateFeatureModal({
         "[&>button]:hidden"
       )}>
         {/* Accent Bar - Catalyst brand gradient */}
-        <div className="h-1 bg-gradient-to-r from-[#5c7c5c] via-[#c69c6d] to-[#d4b896] flex-shrink-0" />
+        <div className="h-1 bg-gradient-to-r from-[#2563eb] via-[#0d9488] to-[#60a5fa] flex-shrink-0" />
 
         {/* Header with Progress Ring */}
         <div className="px-5 py-3 border-b border-gray-200 dark:border-gray-700 flex-shrink-0 bg-white dark:bg-[#171717]">
@@ -392,7 +392,7 @@ export function CreateFeatureModal({
                   maxLength={200}
                   className={cn(
                     "h-10 bg-background border-border",
-                    "focus:border-[#c69c6d] focus:ring-[3px] focus:ring-[#c69c6d]/15",
+                    "focus:border-[#2563eb] focus:ring-[3px] focus:ring-[#2563eb]/15",
                     "placeholder:text-muted-foreground/60"
                   )}
                 />
@@ -413,7 +413,7 @@ export function CreateFeatureModal({
                   onChange={(value) => handleFieldChange('description', value)}
                   placeholder="Describe the feature, its purpose, and key outcomes..."
                   minHeight="120px"
-                  className="border-border focus-within:border-[#c69c6d] focus-within:ring-[3px] focus-within:ring-[#c69c6d]/15"
+                  className="border-border focus-within:border-[#2563eb] focus-within:ring-[3px] focus-within:ring-[#2563eb]/15"
                 />
               </div>
             </div>
@@ -434,7 +434,7 @@ export function CreateFeatureModal({
                 >
                   <SelectTrigger className={cn(
                     "h-10 bg-background border-border",
-                    "focus:border-[#c69c6d] focus:ring-[3px] focus:ring-[#c69c6d]/15"
+                    "focus:border-[#2563eb] focus:ring-[3px] focus:ring-[#2563eb]/15"
                   )}>
                     <SelectValue placeholder={epicsLoading ? "Loading..." : "Select an epic"} />
                   </SelectTrigger>
@@ -445,7 +445,7 @@ export function CreateFeatureModal({
                         value={epic.id}
                         className="cursor-pointer hover:bg-muted focus:bg-muted"
                       >
-                        <span className="text-[#8b7355] dark:text-[#d4a855] font-mono text-xs mr-2">
+                        <span className="text-[#2563eb] dark:text-[#60a5fa] font-mono text-xs mr-2">
                           {epic.epic_key}
                         </span>
                         <span className="truncate">{epic.name}</span>
@@ -472,7 +472,7 @@ export function CreateFeatureModal({
                   {formData.projectId && (
                     <span className={cn(
                       "px-1.5 py-0.5 text-[10px] font-medium rounded",
-                      "bg-[#5c7c5c]/15 text-[#5c7c5c] dark:text-[#8aab8a]"
+                      "bg-[#0d9488]/15 text-[#0d9488] dark:text-[#2dd4bf]"
                     )}>
                       Auto
                     </span>
