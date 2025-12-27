@@ -1,151 +1,138 @@
-import { motion } from 'framer-motion';
+/**
+ * Login Hero Panel
+ * Left panel with animated geometric pattern and feature widgets
+ */
+
 import { GeometricCanvas } from './GeometricCanvas';
-import { VisionBadge } from './VisionBadge';
-import { Headline } from './Headline';
-import { FeatureGrid } from './FeatureGrid';
-import { loginColors } from './constants';
+import './login-styles.css';
 
 export function LoginHeroPanel() {
-  const prefersReducedMotion = typeof window !== 'undefined' 
-    ? window.matchMedia('(prefers-reduced-motion: reduce)').matches 
-    : false;
-
-  // Floating dust particles
-  const dustParticles = [
-    { left: '10%', top: '20%', delay: 0, color: loginColors.brand },
-    { left: '80%', top: '30%', delay: 2, color: loginColors.success },
-    { left: '30%', top: '60%', delay: 4, color: loginColors.champagne },
-    { left: '70%', top: '70%', delay: 6, color: loginColors.brand },
-    { left: '50%', top: '40%', delay: 8, color: loginColors.successLight },
-    { left: '20%', top: '80%', delay: 10, color: loginColors.brandLight },
-  ];
-
   return (
-    <div 
-      className="relative flex-1 flex flex-col justify-between overflow-hidden"
-      style={{
-        background: `linear-gradient(160deg, ${loginColors.heroDark} 0%, ${loginColors.heroMid} 40%, #0a0e14 100%)`,
-        padding: '2.5rem 3.5rem',
-      }}
-    >
-      {/* Geometric Canvas */}
+    <div className="hero-panel" aria-hidden="true">
       <GeometricCanvas />
+      
+      {/* Atmospheric Layers */}
+      <div className="atmosphere atmo-gradient" />
+      <div className="atmosphere atmo-vignette" />
+      
+      {/* Dust Particles */}
+      <div className="dust-particle" aria-hidden="true" />
+      <div className="dust-particle" aria-hidden="true" />
+      <div className="dust-particle" aria-hidden="true" />
+      <div className="dust-particle" aria-hidden="true" />
+      <div className="dust-particle" aria-hidden="true" />
+      <div className="dust-particle" aria-hidden="true" />
 
-      {/* Atmospheric Layer 1 - Gradient Glow */}
-      <div 
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          background: `
-            radial-gradient(ellipse 80% 60% at 20% 10%, rgba(198, 156, 109, 0.12) 0%, transparent 50%),
-            radial-gradient(ellipse 60% 50% at 80% 90%, rgba(13, 148, 136, 0.08) 0%, transparent 50%)
-          `,
-        }}
-        aria-hidden="true"
-      />
-
-      {/* Atmospheric Layer 2 - Vignette */}
-      <div 
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          background: 'radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,0.5) 100%)',
-        }}
-        aria-hidden="true"
-      />
-
-      {/* Floating Dust Particles */}
-      {!prefersReducedMotion && dustParticles.map((particle, i) => (
-        <div
-          key={i}
-          className="absolute w-0.5 h-0.5 rounded-full pointer-events-none"
-          style={{
-            left: particle.left,
-            top: particle.top,
-            backgroundColor: particle.color,
-            animation: `float 15s ease-in-out infinite`,
-            animationDelay: `${particle.delay}s`,
-          }}
-          aria-hidden="true"
-        />
-      ))}
-
-      {/* Content Container */}
-      <div className="relative z-10 flex flex-col h-full">
+      <div className="hero-content">
         {/* Top Section */}
-        <div className="mb-auto">
-          <VisionBadge />
-          <Headline />
-          
-          {/* Subheadline */}
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ 
-              duration: prefersReducedMotion ? 0.01 : 0.5, 
-              delay: prefersReducedMotion ? 0 : 0.75 
-            }}
-            className="mb-10"
-            style={{
-              maxWidth: 440,
-              fontSize: '1.0625rem',
-              lineHeight: 1.7,
-              color: loginColors.textSecondary,
-              fontFamily: "'Plus Jakarta Sans', sans-serif",
-            }}
-          >
-            Transform how your organization manages demand and delivery with intelligent workflows and real-time insights.
-          </motion.p>
+        <div className="hero-top">
+          <div className="vision-badge">
+            <svg className="badge-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+            </svg>
+            <span className="badge-text">Enterprise Excellence</span>
+          </div>
+        </div>
+
+        {/* Main Section */}
+        <div className="hero-main">
+          <h1 className="headline">
+            <span className="headline-line">Where <span className="gold">vision</span></span>
+            <span className="headline-line">becomes</span>
+            <span className="headline-line"><span className="teal">execution</span></span>
+          </h1>
+
+          <p className="subheadline">
+            Transform how your organization manages demand and delivery 
+            with intelligent workflows and real-time insights.
+          </p>
 
           {/* Feature Grid */}
-          <FeatureGrid />
+          <div className="feature-grid" role="list">
+            <div className="feature-widget" role="listitem">
+              <div className="widget-header">
+                <div className="widget-icon" aria-hidden="true">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
+                  </svg>
+                </div>
+                <div className="widget-title">Portfolio Management</div>
+              </div>
+              <div className="widget-desc">Strategic oversight & program alignment</div>
+            </div>
+
+            <div className="feature-widget" role="listitem">
+              <div className="widget-header">
+                <div className="widget-icon" aria-hidden="true">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+                  </svg>
+                </div>
+                <div className="widget-title">Dependency Management</div>
+              </div>
+              <div className="widget-desc">Cross-team visibility & risk mitigation</div>
+            </div>
+
+            <div className="feature-widget" role="listitem">
+              <div className="widget-header">
+                <div className="widget-icon" aria-hidden="true">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                  </svg>
+                </div>
+                <div className="widget-title">Capacity Planning</div>
+              </div>
+              <div className="widget-desc">Resource optimization & forecasting</div>
+            </div>
+
+            <div className="feature-widget" role="listitem">
+              <div className="widget-header">
+                <div className="widget-icon" aria-hidden="true">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M12 2a10 10 0 1 0 10 10H12V2z"/><path d="M20 12a8 8 0 0 0-8-8v8h8z"/><circle cx="12" cy="12" r="2"/>
+                  </svg>
+                </div>
+                <div className="widget-title">Product Management</div>
+              </div>
+              <div className="widget-desc">Roadmap & feature prioritization</div>
+            </div>
+
+            <div className="feature-widget" role="listitem">
+              <div className="widget-header">
+                <div className="widget-icon" aria-hidden="true">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83"/><circle cx="12" cy="12" r="4"/>
+                  </svg>
+                </div>
+                <div className="widget-title">AI Use Cases</div>
+              </div>
+              <div className="widget-desc">Intelligent automation & insights</div>
+            </div>
+
+            <div className="feature-widget" role="listitem">
+              <div className="widget-header">
+                <div className="widget-icon" aria-hidden="true">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+                  </svg>
+                </div>
+                <div className="widget-title">Release Schedule</div>
+              </div>
+              <div className="widget-desc">Predictable & coordinated delivery</div>
+            </div>
+          </div>
         </div>
 
         {/* Bottom Section */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ 
-            duration: prefersReducedMotion ? 0.01 : 0.5, 
-            delay: prefersReducedMotion ? 0 : 1.1 
-          }}
-          className="mt-8"
-        >
-          {/* Accent Bar */}
-          <div className="flex items-center gap-1.5 mb-4">
-            <div 
-              className="h-1 rounded-sm"
-              style={{ width: 32, backgroundColor: loginColors.brand }}
-            />
-            <div 
-              className="h-1 rounded-sm"
-              style={{ width: 20, backgroundColor: loginColors.success }}
-            />
-            <div 
-              className="h-1 rounded-sm"
-              style={{ width: 12, backgroundColor: loginColors.primary }}
-            />
+        <div className="hero-bottom">
+          <div className="accent-bar" aria-hidden="true">
+            <div className="bar-segment" />
+            <div className="bar-segment" />
+            <div className="bar-segment" />
           </div>
-
-          {/* Copyright */}
-          <p 
-            style={{ 
-              fontSize: '0.75rem', 
-              color: loginColors.textMuted,
-              fontFamily: "'Plus Jakarta Sans', sans-serif",
-            }}
-          >
-            © 2025 Catalyst. All rights reserved.
-          </p>
-        </motion.div>
+          <div className="copyright">© 2025 Catalyst. All rights reserved.</div>
+        </div>
       </div>
-
-      <style>{`
-        @keyframes float {
-          0%, 100% { transform: translateY(0) translateX(0); opacity: 0.4; }
-          25% { transform: translateY(-20px) translateX(10px); opacity: 0.8; }
-          50% { transform: translateY(-10px) translateX(-5px); opacity: 0.6; }
-          75% { transform: translateY(-30px) translateX(5px); opacity: 0.9; }
-        }
-      `}</style>
     </div>
   );
 }
