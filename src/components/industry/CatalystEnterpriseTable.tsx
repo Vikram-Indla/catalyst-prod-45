@@ -619,7 +619,7 @@ export function CatalystEnterpriseTable<T extends { id: string }>({
               <span
                 className={cn(
                   column.editable && "inline-block px-2 py-1 -mx-2 -my-1 rounded border border-transparent transition-all cursor-pointer",
-                  column.editable && "hover:border-[#c69c6d]/30 hover:bg-[#c69c6d]/5"
+                  column.editable && "hover:border-[rgba(37,99,235,0.3)] hover:bg-[rgba(37,99,235,0.05)]"
                 )}
               >
                 {value ?? <span className="text-gray-400 dark:text-gray-500">—</span>}
@@ -773,11 +773,11 @@ export function CatalystEnterpriseTable<T extends { id: string }>({
                                   ? "bg-white dark:bg-[#1a1a1a]" 
                                   : "bg-gray-50/50 dark:bg-[#222222]",
                                 // Hover state
-                                "hover:bg-[#c69c6d]/5 dark:hover:bg-[#c69c6d]/10",
+                                "hover:bg-[rgba(37,99,235,0.05)] dark:hover:bg-[rgba(37,99,235,0.1)]",
                                 // Selected state
-                                selectedRows.includes(row.id) && "bg-[#c69c6d]/10 dark:bg-[#c69c6d]/15 ring-1 ring-inset ring-[#c69c6d]/30",
+                                selectedRows.includes(row.id) && "bg-[rgba(37,99,235,0.1)] dark:bg-[rgba(37,99,235,0.15)] ring-1 ring-inset ring-[rgba(37,99,235,0.3)]",
                                 // Dragging state
-                                snapshot.isDragging && "bg-[#c69c6d]/15 dark:bg-[#c69c6d]/20 shadow-lg"
+                                snapshot.isDragging && "bg-[rgba(37,99,235,0.15)] dark:bg-[rgba(37,99,235,0.2)] shadow-lg"
                               )}
                             >
                               {renderRowContent(row, rowIndex, provided.dragHandleProps, snapshot.isDragging)}
@@ -806,9 +806,9 @@ export function CatalystEnterpriseTable<T extends { id: string }>({
                           ? "bg-white dark:bg-[#1a1a1a]" 
                           : "bg-gray-50/50 dark:bg-[#222222]",
                         // Hover state
-                        "hover:bg-[#c69c6d]/5 dark:hover:bg-[#c69c6d]/10",
+                        "hover:bg-[rgba(37,99,235,0.05)] dark:hover:bg-[rgba(37,99,235,0.1)]",
                         // Selected state
-                        selectedRows.includes(row.id) && "bg-[#c69c6d]/10 dark:bg-[#c69c6d]/15 ring-1 ring-inset ring-[#c69c6d]/30"
+                        selectedRows.includes(row.id) && "bg-[rgba(37,99,235,0.1)] dark:bg-[rgba(37,99,235,0.15)] ring-1 ring-inset ring-[rgba(37,99,235,0.3)]"
                       )}
                     >
                       {renderRowContent(row, rowIndex)}

@@ -38,9 +38,9 @@ export function PeopleRoster({
 
   const getStatusBadge = (status: 'over' | 'full' | 'under', label: string) => {
     const styles = {
-      over: 'bg-[#c69c6d]/10 text-[#c69c6d] border-[#c69c6d]/20',
-      full: 'bg-[#5c7c5c]/10 text-[#5c7c5c] border-[#5c7c5c]/20',
-      under: 'bg-[#8b7355]/10 text-[#8b7355] border-[#8b7355]/20',
+      over: 'bg-[rgba(239,68,68,0.1)] text-[#ef4444] border-[rgba(239,68,68,0.2)]',
+      full: 'bg-[rgba(13,148,136,0.1)] text-[#0d9488] border-[rgba(13,148,136,0.2)]',
+      under: 'bg-[rgba(245,158,11,0.1)] text-[#f59e0b] border-[rgba(245,158,11,0.2)]',
     };
     return (
       <Badge variant="outline" className={cn("text-xs font-medium", styles[status])}>
@@ -102,13 +102,13 @@ export function PeopleRoster({
                     className="flex items-center gap-3 cursor-pointer"
                     onClick={() => onResourceClick(resource.id)}
                   >
-                    <Avatar className="h-9 w-9 bg-[#c69c6d]/10 border border-[#c69c6d]/20">
-                      <AvatarFallback className="bg-[#c69c6d]/10 text-[#c69c6d] text-xs font-semibold">
+                    <Avatar className="h-9 w-9 bg-[rgba(37,99,235,0.1)] border border-[rgba(37,99,235,0.2)]">
+                      <AvatarFallback className="bg-[rgba(37,99,235,0.1)] text-[#2563eb] text-xs font-semibold">
                         {resource.initials}
                       </AvatarFallback>
                     </Avatar>
                     <div>
-                      <div className="font-medium text-foreground text-sm hover:text-[#c69c6d] transition-colors">
+                      <div className="font-medium text-foreground text-sm hover:text-[#2563eb] transition-colors">
                         {resource.name}
                       </div>
                       <div className="text-xs text-muted-foreground">{resource.role}</div>
@@ -125,9 +125,9 @@ export function PeopleRoster({
                 <td className="py-3 px-4">
                   <span className={cn(
                     "text-sm font-medium",
-                    utilization > 100 ? "text-[#c69c6d]" : 
-                    utilization >= 80 ? "text-[#5c7c5c]" : 
-                    "text-[#8b7355]"
+                    utilization > 100 ? "text-[#ef4444]" : 
+                    utilization >= 80 ? "text-[#0d9488]" : 
+                    "text-[#f59e0b]"
                   )}>
                     {utilization}%
                   </span>

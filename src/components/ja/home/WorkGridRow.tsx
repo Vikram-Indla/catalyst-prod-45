@@ -138,13 +138,13 @@ export function OperationsGridRow({
 
   return (
     <>
-      {/* Desktop Row - Gold tinted hover for Catalyst brand */}
+      {/* Desktop Row - Blue tinted hover for Catalyst brand */}
       <div 
         className={cn(
           "hidden md:grid items-center px-4 transition-all duration-150 cursor-pointer group",
           rowHeight,
-          // Gold-tinted hover states
-          "hover:bg-[#c69c6d]/[0.05] dark:hover:bg-[#c69c6d]/[0.10]"
+          // Blue-tinted hover states
+          "hover:bg-[rgba(37,99,235,0.04)] dark:hover:bg-[rgba(37,99,235,0.08)]"
         )}
         style={{ 
           gridTemplateColumns: GRID_COLS,
@@ -154,10 +154,10 @@ export function OperationsGridRow({
         onMouseLeave={() => setIsHovered(false)}
         onClick={handleRowClick}
       >
-        {/* Key - bronze/gold color */}
+        {/* Key - blue color */}
         <div className="flex items-center gap-2.5">
           <WorkItemIcon type={item.type} size={14} />
-          <span className="text-[13px] font-mono font-medium text-[#8b7355] dark:text-[#d4a855]">{item.key}</span>
+          <span className="text-[13px] font-mono font-medium text-[#2563eb] dark:text-[#60a5fa]">{item.key}</span>
         </div>
 
         {/* Summary - hover changes to olive */}
@@ -329,13 +329,13 @@ export function DeliveryGridRow({
 
   return (
     <>
-      {/* Desktop Row - Gold tinted hover for Catalyst brand */}
+      {/* Desktop Row - Blue tinted hover for Catalyst brand */}
       <div 
         className={cn(
           "hidden md:grid items-center px-4 transition-all duration-150 cursor-pointer group",
           rowHeight,
-          // Gold-tinted hover states
-          "hover:bg-[#c69c6d]/[0.05] dark:hover:bg-[#c69c6d]/[0.10]"
+          // Blue-tinted hover states
+          "hover:bg-[rgba(37,99,235,0.04)] dark:hover:bg-[rgba(37,99,235,0.08)]"
         )}
         style={{ 
           gridTemplateColumns: GRID_COLS,
@@ -345,10 +345,10 @@ export function DeliveryGridRow({
         onMouseLeave={() => setIsHovered(false)}
         onClick={handleRowClick}
       >
-        {/* Key - bronze/gold color */}
+        {/* Key - blue color */}
         <div className="flex items-center gap-2.5">
           <WorkItemIcon type={item.type} size={14} />
-          <span className="text-[13px] font-mono font-medium text-[#8b7355] dark:text-[#d4a855]">{item.key}</span>
+          <span className="text-[13px] font-mono font-medium text-[#2563eb] dark:text-[#60a5fa]">{item.key}</span>
         </div>
 
         {/* Summary - hover changes to olive */}
@@ -515,13 +515,13 @@ export function PlannerGridRow({
 
   return (
     <>
-      {/* Desktop Row - Gold tinted hover for Catalyst brand */}
+      {/* Desktop Row - Blue tinted hover for Catalyst brand */}
       <div 
         className={cn(
           "hidden md:grid items-center px-4 transition-all duration-150 cursor-pointer group",
           rowHeight,
-          // Gold-tinted hover states
-          "hover:bg-[#c69c6d]/[0.05] dark:hover:bg-[#c69c6d]/[0.10]"
+          // Blue-tinted hover states
+          "hover:bg-[rgba(37,99,235,0.04)] dark:hover:bg-[rgba(37,99,235,0.08)]"
         )}
         style={{ 
           gridTemplateColumns: GRID_COLS,
