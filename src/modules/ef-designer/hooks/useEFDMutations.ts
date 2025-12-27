@@ -3,6 +3,38 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useAuth } from '@/lib/auth';
 
+// Update generation settings
+export function useUpdateGenerationSettings() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ 
+      sessionId, 
+      settings 
+    }: { 
+      sessionId: string; 
+      settings: {
+        groupingStrategy: string;
+        featureGranularity: string;
+        language: string;
+      };
+    }) => {
+      const { error } = await supabase
+        .from('efd_wizard_sessions')
+        .update({ 
+          generation_settings: settings,
+          updated_at: new Date().toISOString() 
+        })
+        .eq('id', sessionId);
+      
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['efd-session'] });
+    },
+  });
+}
+
 // Update atom fields
 export function useUpdateAtom() {
   const queryClient = useQueryClient();
