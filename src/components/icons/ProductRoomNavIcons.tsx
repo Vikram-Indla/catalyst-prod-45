@@ -59,6 +59,16 @@ export const ProductCapacityIcon: React.FC<IconProps> = ({ className, style }) =
   </svg>
 );
 
+export const EFDesignerIcon: React.FC<IconProps> = ({ className, style }) => (
+  <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className={className} style={style}>
+    <rect x="3" y="3" width="6" height="5" rx="1" />
+    <rect x="11" y="3" width="6" height="5" rx="1" />
+    <rect x="7" y="12" width="6" height="5" rx="1" />
+    <path d="M6 8 L6 10 L10 10 L10 12" />
+    <path d="M14 8 L14 10 L10 10" />
+  </svg>
+);
+
 // Map of menu item titles to icon components
 export const PRODUCT_ROOM_NAV_ICONS: Record<string, React.FC<IconProps>> = {
   'Product Room': ProductRoomIcon,
@@ -66,4 +76,5 @@ export const PRODUCT_ROOM_NAV_ICONS: Record<string, React.FC<IconProps>> = {
   'Product Kanban': ProductKanbanIcon,
   'Product Roadmap': ProductRoadmapIcon,
   'Product Capacity': ProductCapacityIcon,
+  'EF Designer': EFDesignerIcon,
 };
