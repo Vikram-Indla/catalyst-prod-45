@@ -24,9 +24,9 @@ const COLUMN_COLORS = [
   '#ef4444', // Red
   '#f97316', // Orange
   '#0f766e', // Teal-dark
-  '#5c7c5c', // Olive
+  '#6b7280', // Gray
   '#78716c', // Stone
-  '#8b7355', // Bronze
+  '#9ca3af', // Gray Light
 ];
 
 export function useProcessSteps() {

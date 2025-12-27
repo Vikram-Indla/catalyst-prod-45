@@ -101,7 +101,7 @@ const POBAWidget: React.FC<POBAWidgetProps> = ({
             {selectedResources.length > 0 && (
               <span
                 className="px-2 py-0.5 rounded-full text-xs font-bold text-white"
-                style={{ backgroundColor: "#c69c6d" }}
+                style={{ backgroundColor: "#2563eb" }}
               >
                 {selectedResources.length}
               </span>
@@ -179,7 +179,7 @@ const POBAWidget: React.FC<POBAWidgetProps> = ({
                       {/* Mini Avatar */}
                       <div
                         className="w-8 h-8 rounded-lg flex items-center justify-center text-white text-xs font-bold"
-                        style={{ backgroundColor: isProductOwner ? "#8b7355" : "#5c7c5c" }}
+                        style={{ backgroundColor: isProductOwner ? "#2563eb" : "#0d9488" }}
                       >
                         {resource.initials}
                       </div>
@@ -193,8 +193,8 @@ const POBAWidget: React.FC<POBAWidgetProps> = ({
                       <span
                         className="text-[9px] px-1.5 py-0.5 rounded-full font-semibold"
                         style={{
-                          backgroundColor: isProductOwner ? "#f5efe8" : "#e8f0e8",
-                          color: isProductOwner ? "#8b7355" : "#5c7c5c",
+                          backgroundColor: isProductOwner ? "rgba(37,99,235,0.1)" : "rgba(13,148,136,0.1)",
+                          color: isProductOwner ? "#2563eb" : "#0d9488",
                         }}
                       >
                         {isProductOwner ? "PO" : "BA"}
@@ -209,7 +209,7 @@ const POBAWidget: React.FC<POBAWidgetProps> = ({
                 <button
                   onClick={applySelection}
                   className="w-full py-2 text-sm font-semibold text-white rounded-lg transition-all hover:opacity-90 active:scale-[0.98]"
-                  style={{ backgroundColor: "#c69c6d" }}
+                  style={{ backgroundColor: "#2563eb" }}
                 >
                   Apply Selection
                 </button>
@@ -237,7 +237,7 @@ const POBAWidget: React.FC<POBAWidgetProps> = ({
                 {/* Avatar */}
                 <div
                   className="w-12 h-12 rounded-xl flex items-center justify-center text-white text-sm font-bold flex-shrink-0 shadow-sm"
-                  style={{ backgroundColor: isProductOwner ? "#8b7355" : "#5c7c5c" }}
+                  style={{ backgroundColor: isProductOwner ? "#2563eb" : "#0d9488" }}
                 >
                   {resource.initials}
                 </div>
@@ -252,8 +252,8 @@ const POBAWidget: React.FC<POBAWidgetProps> = ({
                     <span
                       className="text-[10px] px-2 py-0.5 rounded-full font-semibold flex-shrink-0"
                       style={{
-                        backgroundColor: isProductOwner ? "#f5efe8" : "#e8f0e8",
-                        color: isProductOwner ? "#8b7355" : "#5c7c5c",
+                        backgroundColor: isProductOwner ? "rgba(37,99,235,0.1)" : "rgba(13,148,136,0.1)",
+                        color: isProductOwner ? "#2563eb" : "#0d9488",
                       }}
                     >
                       {isProductOwner ? "PO" : "BA"}
@@ -272,7 +272,7 @@ const POBAWidget: React.FC<POBAWidgetProps> = ({
                       Implement: <strong className="text-gray-700">{resource.implement}</strong>
                     </span>
                     <span className="text-gray-500">
-                      Closed: <strong style={{ color: "#5c7c5c" }}>{resource.closed}</strong>
+                      Closed: <strong style={{ color: "#0d9488" }}>{resource.closed}</strong>
                     </span>
                   </div>
                 </div>
@@ -284,7 +284,7 @@ const POBAWidget: React.FC<POBAWidgetProps> = ({
                     <div className="flex items-center gap-3 mb-3">
                       <div
                         className="w-10 h-10 rounded-xl flex items-center justify-center text-white text-sm font-bold"
-                        style={{ backgroundColor: isProductOwner ? "#8b7355" : "#5c7c5c" }}
+                        style={{ backgroundColor: isProductOwner ? "#2563eb" : "#0d9488" }}
                       >
                         {resource.initials}
                       </div>
@@ -318,7 +318,7 @@ const POBAWidget: React.FC<POBAWidgetProps> = ({
                         <span className="text-gray-500 flex items-center gap-2">
                           <FileCheck className="w-3 h-3" /> Closed
                         </span>
-                        <span className="font-semibold" style={{ color: "#5c7c5c" }}>
+                        <span className="font-semibold" style={{ color: "#0d9488" }}>
                           {resource.closed}
                         </span>
                       </div>
@@ -328,7 +328,7 @@ const POBAWidget: React.FC<POBAWidgetProps> = ({
                         <span className="text-gray-600 font-medium flex items-center gap-2">
                           <TrendingUp className="w-3 h-3" /> Total Throughput
                         </span>
-                        <span className="font-bold" style={{ color: "#c69c6d" }}>
+                        <span className="font-bold" style={{ color: "#2563eb" }}>
                           {total}
                         </span>
                       </div>
@@ -357,7 +357,7 @@ const POBAWidget: React.FC<POBAWidgetProps> = ({
           Showing {visibleResources.length} of {resources.length} resources
         </span>
         <span>
-          Total Closed: <strong style={{ color: "#5c7c5c" }}>{totalClosed}</strong>
+          Total Closed: <strong style={{ color: "#0d9488" }}>{totalClosed}</strong>
         </span>
       </div>
     </div>

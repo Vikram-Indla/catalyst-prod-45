@@ -236,7 +236,7 @@ export function CreateBusinessRequestModal({ isOpen, onClose }: CreateBusinessRe
         "[&>button]:hidden"
       )}>
         {/* Accent Bar */}
-        <div className="h-1 bg-gradient-to-r from-[#5c7c5c] via-[#c69c6d] to-[#d4b896] flex-shrink-0" />
+        <div className="h-1 bg-gradient-to-r from-[#2563eb] via-[#0d9488] to-[#60a5fa] flex-shrink-0" />
 
         {/* Header with Progress Ring */}
         <div className="px-5 py-3 border-b border-gray-200 dark:border-gray-700 flex-shrink-0 bg-white dark:bg-gray-900">
@@ -301,7 +301,7 @@ export function CreateBusinessRequestModal({ isOpen, onClose }: CreateBusinessRe
               disabled={createMutation.isPending || isUploading}
               className={cn(
                 "px-4 py-2 text-sm font-medium",
-                "text-white bg-[#5c7c5c] hover:bg-[#4a6a4a]",
+                "text-white bg-[#2563eb] hover:bg-[#1d4ed8]",
                 "rounded-md shadow-sm",
                 "flex items-center gap-1.5",
                 "disabled:opacity-50 disabled:cursor-not-allowed"

@@ -230,7 +230,7 @@ export function IncidentDetailsPanel({
                 key={label}
                 variant="ghost"
                 size="sm"
-                className="h-6 text-xs text-[#8C8C8C] hover:text-[#C69C6D]"
+                className="h-6 text-xs text-[#8C8C8C] hover:text-[#2563eb]"
                 onClick={() => handleAddLabel(label)}
               >
                 + {label}

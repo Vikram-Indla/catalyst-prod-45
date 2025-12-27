@@ -61,9 +61,9 @@ export const tokenCategories: TokenCategory[] = [
 export const baselineTokens: DesignToken[] = [
   // Brand Colors
   { name: 'Brand Dark', cssVar: '--brand-dark', value: '#1A1A1A', category: tokenCategories[0] },
-  { name: 'Brand Gold', cssVar: '--brand-primary', value: '#C69C6D', category: tokenCategories[0] },
-  { name: 'Brand Gold Hover', cssVar: '--brand-primary-hover', value: '#B8905F', category: tokenCategories[0] },
-  { name: 'Brand Gold Pale', cssVar: '--brand-primary-pale', value: 'rgba(198,156,109,0.08)', category: tokenCategories[0] },
+  { name: 'Brand Blue', cssVar: '--brand-primary', value: '#2563eb', category: tokenCategories[0] },
+  { name: 'Brand Blue Hover', cssVar: '--brand-primary-hover', value: '#1d4ed8', category: tokenCategories[0] },
+  { name: 'Brand Blue Pale', cssVar: '--brand-primary-pale', value: 'rgba(37,99,235,0.08)', category: tokenCategories[0] },
   
   // Text Colors
   { name: 'Text Primary', cssVar: '--text-primary', value: '#111827', category: tokenCategories[1] },
@@ -121,11 +121,11 @@ export const baselineTokens: DesignToken[] = [
   { name: 'Shadow LG', cssVar: '--shadow-lg', value: '0 10px 15px -3px rgba(0,0,0,0.1)', category: tokenCategories[7] },
   { name: 'Shadow Panel', cssVar: '--shadow-panel', value: '0 8px 24px rgba(0,0,0,0.12)', category: tokenCategories[7] },
   
-  // Chart Palette (Golden Hour)
-  { name: 'Expert (Olive)', cssVar: '--palette-expert', value: '#5c7c5c', category: tokenCategories[8] },
-  { name: 'Advanced (Bronze)', cssVar: '--palette-advanced', value: '#8b7355', category: tokenCategories[8] },
-  { name: 'Intermediate (Gold)', cssVar: '--palette-intermediate', value: '#c69c6d', category: tokenCategories[8] },
-  { name: 'Beginner (Champagne)', cssVar: '--palette-beginner', value: '#d4b896', category: tokenCategories[8] },
+  // Chart Palette (Blue + Teal)
+  { name: 'Expert (Blue)', cssVar: '--palette-expert', value: '#2563eb', category: tokenCategories[8] },
+  { name: 'Advanced (Teal)', cssVar: '--palette-advanced', value: '#0d9488', category: tokenCategories[8] },
+  { name: 'Intermediate (Blue Light)', cssVar: '--palette-intermediate', value: '#60a5fa', category: tokenCategories[8] },
+  { name: 'Beginner (Gray)', cssVar: '--palette-beginner', value: '#9ca3af', category: tokenCategories[8] },
   { name: 'None (Grey)', cssVar: '--palette-none', value: '#c8ccd0', category: tokenCategories[8] },
 ];
 

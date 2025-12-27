@@ -108,10 +108,10 @@ export const SkillAssessmentForm: React.FC<SkillAssessmentFormProps> = ({
       {/* Modal */}
       <div className="relative bg-[#242938] rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto mx-4 shadow-2xl">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-[rgba(198,156,109,0.15)]">
+        <div className="flex items-center justify-between p-6 border-b border-[rgba(37,99,235,0.15)]">
           <div className="flex items-center gap-4">
-            <div className="w-10 h-10 bg-[#c69c6d] rounded-xl flex items-center justify-center">
-              <Target className="w-5 h-5 text-[#1a1f2e]" />
+            <div className="w-10 h-10 bg-[#2563eb] rounded-xl flex items-center justify-center">
+              <Target className="w-5 h-5 text-white" />
             </div>
             <h2 className="text-xl font-semibold text-[#f5f5f7]">
               Add New Skill Assessment
@@ -119,7 +119,7 @@ export const SkillAssessmentForm: React.FC<SkillAssessmentFormProps> = ({
           </div>
           <button
             onClick={handleClose}
-            className="p-2 rounded-lg hover:bg-[rgba(198,156,109,0.1)] transition-colors"
+            className="p-2 rounded-lg hover:bg-[rgba(37,99,235,0.1)] transition-colors"
           >
             <X className="w-5 h-5 text-[#9ca3af]" />
           </button>
@@ -139,7 +139,7 @@ export const SkillAssessmentForm: React.FC<SkillAssessmentFormProps> = ({
                 className={`w-full px-4 py-3 bg-[#1a1f2e] border rounded-lg text-left flex items-center justify-between transition-colors ${
                   errors.teamMemberId
                     ? 'border-red-500'
-                    : 'border-[rgba(198,156,109,0.15)] focus:border-[#c69c6d]'
+                    : 'border-[rgba(37,99,235,0.15)] focus:border-[#2563eb]'
                 }`}
               >
                 {selectedTeamMember ? (
@@ -153,7 +153,7 @@ export const SkillAssessmentForm: React.FC<SkillAssessmentFormProps> = ({
                 <ChevronDown className="w-4 h-4 text-[#6b7280]" />
               </button>
               {teamMemberDropdownOpen && (
-                <div className="absolute z-20 top-full left-0 right-0 mt-1 bg-[#1a1f2e] border border-[rgba(198,156,109,0.15)] rounded-lg shadow-xl max-h-48 overflow-y-auto">
+                <div className="absolute z-20 top-full left-0 right-0 mt-1 bg-[#1a1f2e] border border-[rgba(37,99,235,0.15)] rounded-lg shadow-xl max-h-48 overflow-y-auto">
                   {teamMembers.map((member) => (
                     <button
                       key={member.id}
@@ -163,7 +163,7 @@ export const SkillAssessmentForm: React.FC<SkillAssessmentFormProps> = ({
                         setTeamMemberDropdownOpen(false);
                         setErrors({ ...errors, teamMemberId: undefined });
                       }}
-                      className="w-full px-4 py-3 text-left hover:bg-[rgba(198,156,109,0.1)] transition-colors"
+                      className="w-full px-4 py-3 text-left hover:bg-[rgba(37,99,235,0.1)] transition-colors"
                     >
                       <span className="text-[#f5f5f7]">{member.name}</span>
                       <span className="text-[#6b7280] ml-2">• {member.role}</span>
@@ -193,7 +193,7 @@ export const SkillAssessmentForm: React.FC<SkillAssessmentFormProps> = ({
               className={`w-full px-4 py-3 bg-[#1a1f2e] border rounded-lg text-[#f5f5f7] placeholder-[#6b7280] outline-none transition-colors ${
                 errors.skillName
                   ? 'border-red-500'
-                  : 'border-[rgba(198,156,109,0.15)] focus:border-[#c69c6d]'
+                  : 'border-[rgba(37,99,235,0.15)] focus:border-[#2563eb]'
               }`}
             />
             {errors.skillName && (
@@ -213,7 +213,7 @@ export const SkillAssessmentForm: React.FC<SkillAssessmentFormProps> = ({
                 className={`w-full px-4 py-3 bg-[#1a1f2e] border rounded-lg text-left flex items-center justify-between transition-colors ${
                   errors.category
                     ? 'border-red-500'
-                    : 'border-[rgba(198,156,109,0.15)] focus:border-[#c69c6d]'
+                    : 'border-[rgba(37,99,235,0.15)] focus:border-[#2563eb]'
                 }`}
               >
                 {selectedCategory ? (
@@ -224,7 +224,7 @@ export const SkillAssessmentForm: React.FC<SkillAssessmentFormProps> = ({
                 <ChevronDown className="w-4 h-4 text-[#6b7280]" />
               </button>
               {categoryDropdownOpen && (
-                <div className="absolute z-20 top-full left-0 right-0 mt-1 bg-[#1a1f2e] border border-[rgba(198,156,109,0.15)] rounded-lg shadow-xl max-h-48 overflow-y-auto">
+                <div className="absolute z-20 top-full left-0 right-0 mt-1 bg-[#1a1f2e] border border-[rgba(37,99,235,0.15)] rounded-lg shadow-xl max-h-48 overflow-y-auto">
                   {categoryOptions.map((category) => (
                     <button
                       key={category.key}
@@ -234,7 +234,7 @@ export const SkillAssessmentForm: React.FC<SkillAssessmentFormProps> = ({
                         setCategoryDropdownOpen(false);
                         setErrors({ ...errors, category: undefined });
                       }}
-                      className="w-full px-4 py-3 text-left text-[#f5f5f7] hover:bg-[rgba(198,156,109,0.1)] transition-colors"
+                      className="w-full px-4 py-3 text-left text-[#f5f5f7] hover:bg-[rgba(37,99,235,0.1)] transition-colors"
                     >
                       {category.label}
                     </button>
@@ -266,8 +266,8 @@ export const SkillAssessmentForm: React.FC<SkillAssessmentFormProps> = ({
                     }}
                     className={`p-3 rounded-lg border-2 transition-all ${
                       isSelected
-                        ? 'border-[#c69c6d] bg-[rgba(198,156,109,0.1)]'
-                        : 'border-[rgba(198,156,109,0.15)] bg-[#1a1f2e] hover:border-[rgba(198,156,109,0.3)]'
+                        ? 'border-[#2563eb] bg-[rgba(37,99,235,0.1)]'
+                        : 'border-[rgba(37,99,235,0.15)] bg-[#1a1f2e] hover:border-[rgba(37,99,235,0.3)]'
                     }`}
                   >
                     <div className="text-sm font-semibold text-[#f5f5f7]">
@@ -308,7 +308,7 @@ export const SkillAssessmentForm: React.FC<SkillAssessmentFormProps> = ({
                 })
               }
               placeholder="e.g., 3"
-              className="w-full px-4 py-3 bg-[#1a1f2e] border border-[rgba(198,156,109,0.15)] rounded-lg text-[#f5f5f7] placeholder-[#6b7280] outline-none focus:border-[#c69c6d] transition-colors"
+              className="w-full px-4 py-3 bg-[#1a1f2e] border border-[rgba(37,99,235,0.15)] rounded-lg text-[#f5f5f7] placeholder-[#6b7280] outline-none focus:border-[#2563eb] transition-colors"
             />
           </div>
 
@@ -324,7 +324,7 @@ export const SkillAssessmentForm: React.FC<SkillAssessmentFormProps> = ({
                 setFormData({ ...formData, certification: e.target.value })
               }
               placeholder="e.g., AWS Solutions Architect Professional"
-              className="w-full px-4 py-3 bg-[#1a1f2e] border border-[rgba(198,156,109,0.15)] rounded-lg text-[#f5f5f7] placeholder-[#6b7280] outline-none focus:border-[#c69c6d] transition-colors"
+              className="w-full px-4 py-3 bg-[#1a1f2e] border border-[rgba(37,99,235,0.15)] rounded-lg text-[#f5f5f7] placeholder-[#6b7280] outline-none focus:border-[#2563eb] transition-colors"
             />
           </div>
 
@@ -340,24 +340,24 @@ export const SkillAssessmentForm: React.FC<SkillAssessmentFormProps> = ({
                 setFormData({ ...formData, notes: e.target.value })
               }
               placeholder="Add any additional context..."
-              className="w-full px-4 py-3 bg-[#1a1f2e] border border-[rgba(198,156,109,0.15)] rounded-lg text-[#f5f5f7] placeholder-[#6b7280] outline-none focus:border-[#c69c6d] transition-colors resize-none"
+              className="w-full px-4 py-3 bg-[#1a1f2e] border border-[rgba(37,99,235,0.15)] rounded-lg text-[#f5f5f7] placeholder-[#6b7280] outline-none focus:border-[#2563eb] transition-colors resize-none"
             />
           </div>
         </div>
 
         {/* Footer */}
-        <div className="flex gap-4 p-6 border-t border-[rgba(198,156,109,0.15)] mt-2">
+        <div className="flex gap-4 p-6 border-t border-[rgba(37,99,235,0.15)] mt-2">
           <button
             type="button"
             onClick={handleClose}
-            className="flex-1 px-6 py-3 border border-[rgba(198,156,109,0.3)] text-[#9ca3af] rounded-lg font-medium hover:bg-[#242938] transition-colors"
+            className="flex-1 px-6 py-3 border border-[rgba(37,99,235,0.3)] text-[#9ca3af] rounded-lg font-medium hover:bg-[#242938] transition-colors"
           >
             Cancel
           </button>
           <button
             type="button"
             onClick={handleSubmit}
-            className="flex-1 px-6 py-3 bg-[#c69c6d] text-[#1a1f2e] rounded-lg font-medium hover:bg-[#d4b08c] transition-colors"
+            className="flex-1 px-6 py-3 bg-[#2563eb] text-white rounded-lg font-medium hover:bg-[#1d4ed8] transition-colors"
           >
             Save Skill Assessment
           </button>
