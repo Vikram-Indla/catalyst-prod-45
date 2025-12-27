@@ -107,6 +107,7 @@ const adminPockets = [
     path: '/admin/routes-registry',
     children: [
       { label: 'Routes & Components', path: '/admin/routes-registry' },
+      { label: 'Mock Data Generator', path: '/admin/mock-data' },
     ],
   },
 ];
