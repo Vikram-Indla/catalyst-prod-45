@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { EFDSession } from '../../types/efd.types';
-import { useUpdateSessionConfig } from '../../hooks/useEFDMutations';
+import { useUpdateSessionConfig, useUpdateGenerationSettings } from '../../hooks/useEFDMutations';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Settings, Palette, FileText, CheckCircle, Loader2 } from 'lucide-react';
@@ -14,12 +14,32 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 
+interface GenerationSettings {
+  groupingStrategy: 'business_capability' | 'user_journey' | 'technical_domain' | 'auto';
+  featureGranularity: 'fine' | 'medium' | 'coarse';
+  language: 'en' | 'ar' | 'both';
+}
+
 export const ConfigureStep: React.FC<{ session: EFDSession }> = ({ session }) => {
   const [themeId, setThemeId] = useState<string | null>(session.theme_id);
   const [brId, setBrId] = useState<string | null>(session.business_request_id);
+  
+  // Parse existing generation settings or use defaults
+  const existingSettings = (session as any).generation_settings as GenerationSettings | null;
+  const [groupingStrategy, setGroupingStrategy] = useState<GenerationSettings['groupingStrategy']>(
+    existingSettings?.groupingStrategy || 'business_capability'
+  );
+  const [featureGranularity, setFeatureGranularity] = useState<GenerationSettings['featureGranularity']>(
+    existingSettings?.featureGranularity || 'medium'
+  );
+  const [language, setLanguage] = useState<GenerationSettings['language']>(
+    existingSettings?.language || 'en'
+  );
+  
   const updateConfig = useUpdateSessionConfig();
+  const updateGenSettings = useUpdateGenerationSettings();
 
-  // Fetch strategic themes - using strategy_snapshots as themes source
+  // Fetch strategic themes
   const { data: themes = [], isLoading: themesLoading } = useQuery({
     queryKey: ['strategic-themes'],
     queryFn: async (): Promise<Array<{id: string; name: string; description: string | null}>> => {
@@ -48,23 +68,41 @@ export const ConfigureStep: React.FC<{ session: EFDSession }> = ({ session }) =>
     },
   });
 
-  const handleSave = () => {
-    updateConfig.mutate({
+  const handleSave = async () => {
+    // Save theme/BR config
+    await updateConfig.mutateAsync({
       sessionId: session.id,
       themeId: themeId || null,
       businessRequestId: brId || null,
     });
+    
+    // Save generation settings
+    await updateGenSettings.mutateAsync({
+      sessionId: session.id,
+      settings: {
+        groupingStrategy,
+        featureGranularity,
+        language,
+      },
+    });
   };
 
-  const hasChanges = themeId !== session.theme_id || brId !== session.business_request_id;
+  const hasChanges = 
+    themeId !== session.theme_id || 
+    brId !== session.business_request_id ||
+    groupingStrategy !== (existingSettings?.groupingStrategy || 'business_capability') ||
+    featureGranularity !== (existingSettings?.featureGranularity || 'medium') ||
+    language !== (existingSettings?.language || 'en');
+    
   const isConfigured = !!themeId;
+  const isSaving = updateConfig.isPending || updateGenSettings.isPending;
 
   return (
     <div className="max-w-4xl space-y-6">
       <div>
         <h2 className="text-xl font-semibold mb-1">Configure Session</h2>
         <p className="text-muted-foreground">
-          Link this session to a Strategic Theme and optionally a Business Request
+          Link this session to a Strategic Theme and configure AI generation settings
         </p>
       </div>
 
@@ -99,7 +137,7 @@ export const ConfigureStep: React.FC<{ session: EFDSession }> = ({ session }) =>
               ) : themes.length === 0 ? (
                 <div className="p-2 text-center text-muted-foreground">No themes available</div>
               ) : (
-                themes.map((theme: any) => (
+                themes.map((theme) => (
                   <SelectItem key={theme.id} value={theme.id}>
                     {theme.name}
                   </SelectItem>
@@ -109,7 +147,7 @@ export const ConfigureStep: React.FC<{ session: EFDSession }> = ({ session }) =>
           </Select>
           {themeId && (
             <p className="text-xs text-muted-foreground mt-2 italic">
-              {(themes.find((t) => t.id === themeId) as any)?.description || ''}
+              {themes.find((t) => t.id === themeId)?.description || ''}
             </p>
           )}
         </div>
@@ -153,10 +191,13 @@ export const ConfigureStep: React.FC<{ session: EFDSession }> = ({ session }) =>
           <Settings className="h-5 w-5 text-primary" />
           <h3 className="font-semibold">Generation Settings</h3>
         </div>
+        <p className="text-sm text-muted-foreground mb-4">
+          Configure how AI generates epics and features from your requirements
+        </p>
         <div className="grid md:grid-cols-3 gap-4">
           <div>
             <Label className="text-sm">Epic Grouping Strategy</Label>
-            <Select defaultValue="business_capability">
+            <Select value={groupingStrategy} onValueChange={(v: any) => setGroupingStrategy(v)}>
               <SelectTrigger className="mt-1">
                 <SelectValue />
               </SelectTrigger>
@@ -170,7 +211,7 @@ export const ConfigureStep: React.FC<{ session: EFDSession }> = ({ session }) =>
           </div>
           <div>
             <Label className="text-sm">Feature Granularity</Label>
-            <Select defaultValue="medium">
+            <Select value={featureGranularity} onValueChange={(v: any) => setFeatureGranularity(v)}>
               <SelectTrigger className="mt-1">
                 <SelectValue />
               </SelectTrigger>
@@ -183,7 +224,7 @@ export const ConfigureStep: React.FC<{ session: EFDSession }> = ({ session }) =>
           </div>
           <div>
             <Label className="text-sm">Language</Label>
-            <Select defaultValue="en">
+            <Select value={language} onValueChange={(v: any) => setLanguage(v)}>
               <SelectTrigger className="mt-1">
                 <SelectValue />
               </SelectTrigger>
@@ -199,8 +240,8 @@ export const ConfigureStep: React.FC<{ session: EFDSession }> = ({ session }) =>
 
       {hasChanges && (
         <div className="flex justify-end">
-          <Button onClick={handleSave} disabled={updateConfig.isPending}>
-            {updateConfig.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+          <Button onClick={handleSave} disabled={isSaving}>
+            {isSaving && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
             Save Configuration
           </Button>
         </div>

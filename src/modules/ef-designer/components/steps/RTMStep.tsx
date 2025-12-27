@@ -3,10 +3,25 @@ import { EFDSession } from '../../types/efd.types';
 import { useEFDEpics, useEFDFeatures, useEFDAtoms } from '../../hooks/useEFDSession';
 import { 
   ChevronDown, ChevronRight, Layers, Box, Atom, 
-  CheckCircle, AlertCircle, FileText, Link2 
+  CheckCircle, AlertCircle, FileText, Link2, Download, FileSpreadsheet, File 
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
+import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { toast } from 'sonner';
+import { 
+  exportRTMToCSV, 
+  exportRTMToExcel, 
+  exportRTMToPDF, 
+  downloadCSV, 
+  downloadBlob 
+} from '../../utils/rtmExport';
 
 export const RTMStep: React.FC<{ session: EFDSession }> = ({ session }) => {
   const { data: epics = [] } = useEFDEpics(session.id);
@@ -15,6 +30,7 @@ export const RTMStep: React.FC<{ session: EFDSession }> = ({ session }) => {
   
   const [expandedEpics, setExpandedEpics] = useState<Set<string>>(new Set(epics.map((e: any) => e.id)));
   const [expandedFeatures, setExpandedFeatures] = useState<Set<string>>(new Set());
+  const [isExporting, setIsExporting] = useState(false);
 
   const mappedAtoms = atoms.filter((a: any) => a.status === 'mapped');
   const coverage = atoms.length > 0 ? Math.round((mappedAtoms.length / atoms.length) * 100) : 0;
@@ -51,13 +67,85 @@ export const RTMStep: React.FC<{ session: EFDSession }> = ({ session }) => {
     setExpandedFeatures(next);
   };
 
+  const exportData = {
+    epics: epics as any[],
+    features: features as any[],
+    atoms: atoms as any[],
+  };
+
+  const handleExportCSV = () => {
+    setIsExporting(true);
+    try {
+      const csv = exportRTMToCSV(exportData);
+      downloadCSV(csv, `RTM_${session.id.slice(0, 8)}_${new Date().toISOString().slice(0, 10)}.csv`);
+      toast.success('RTM exported to CSV');
+    } catch (e) {
+      console.error('Export error:', e);
+      toast.error('Failed to export CSV');
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
+  const handleExportExcel = () => {
+    setIsExporting(true);
+    try {
+      const blob = exportRTMToExcel(exportData);
+      downloadBlob(blob, `RTM_${session.id.slice(0, 8)}_${new Date().toISOString().slice(0, 10)}.xlsx`);
+      toast.success('RTM exported to Excel');
+    } catch (e) {
+      console.error('Export error:', e);
+      toast.error('Failed to export Excel');
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
+  const handleExportPDF = () => {
+    setIsExporting(true);
+    try {
+      const blob = exportRTMToPDF(exportData);
+      downloadBlob(blob, `RTM_${session.id.slice(0, 8)}_${new Date().toISOString().slice(0, 10)}.pdf`);
+      toast.success('RTM exported to PDF');
+    } catch (e) {
+      console.error('Export error:', e);
+      toast.error('Failed to export PDF');
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
   return (
     <div className="max-w-6xl space-y-6">
-      <div>
-        <h2 className="text-xl font-semibold mb-1">Requirements Traceability Matrix</h2>
-        <p className="text-muted-foreground">
-          Full hierarchy view: Strategic Theme → Epics → Features → Requirements
-        </p>
+      <div className="flex items-start justify-between">
+        <div>
+          <h2 className="text-xl font-semibold mb-1">Requirements Traceability Matrix</h2>
+          <p className="text-muted-foreground">
+            Full hierarchy view: Strategic Theme → Epics → Features → Requirements
+          </p>
+        </div>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" disabled={isExporting}>
+              <Download className="h-4 w-4 mr-2" />
+              Export
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={handleExportCSV}>
+              <FileText className="h-4 w-4 mr-2" />
+              Export CSV
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={handleExportExcel}>
+              <FileSpreadsheet className="h-4 w-4 mr-2" />
+              Export Excel
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={handleExportPDF}>
+              <File className="h-4 w-4 mr-2" />
+              Export PDF
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
 
       {/* Stats Cards */}

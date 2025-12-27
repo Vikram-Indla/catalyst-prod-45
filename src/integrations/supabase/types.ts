@@ -3603,6 +3603,7 @@ export type Database = {
           created_at: string | null
           created_by: string
           current_step: number | null
+          generation_settings: Json | null
           id: string
           is_approved: boolean | null
           is_published: boolean | null
@@ -3623,6 +3624,7 @@ export type Database = {
           created_at?: string | null
           created_by: string
           current_step?: number | null
+          generation_settings?: Json | null
           id?: string
           is_approved?: boolean | null
           is_published?: boolean | null
@@ -3643,6 +3645,7 @@ export type Database = {
           created_at?: string | null
           created_by?: string
           current_step?: number | null
+          generation_settings?: Json | null
           id?: string
           is_approved?: boolean | null
           is_published?: boolean | null

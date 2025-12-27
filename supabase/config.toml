@@ -29,3 +29,6 @@ verify_jwt = false
 
 [functions.efd-generate-features]
 verify_jwt = false
+
+[functions.efd-extract-text]
+verify_jwt = false
