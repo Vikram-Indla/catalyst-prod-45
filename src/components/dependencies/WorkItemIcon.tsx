@@ -66,12 +66,12 @@ function getTypeColor(type: WorkItemIconType): string {
 function getIconPath(type: WorkItemIconType): React.ReactNode {
   switch (type) {
     case 'objective':
-      // Target/bullseye icon
+      // Target icon (matching lucide Target icon)
       return (
         <>
           <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" strokeWidth="2" />
           <circle cx="12" cy="12" r="6" fill="none" stroke="currentColor" strokeWidth="2" />
-          <circle cx="12" cy="12" r="2" fill="currentColor" />
+          <circle cx="12" cy="12" r="2" fill="none" stroke="currentColor" strokeWidth="2" />
         </>
       );
     case 'keyresult':
