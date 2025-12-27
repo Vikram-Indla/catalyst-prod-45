@@ -103,7 +103,7 @@ export function StrategicBacklogThemesSection({
         "inline-flex px-2 py-0.5 rounded",
         "text-[10px] font-semibold uppercase tracking-wider",
         isActive 
-          ? "bg-[rgba(92,124,92,0.1)] dark:bg-[rgba(92,124,92,0.15)] text-[#5C7C5C] dark:text-[#7DA37D] border border-[rgba(92,124,92,0.3)]"
+          ? "bg-[rgba(13,148,136,0.1)] dark:bg-[rgba(13,148,136,0.15)] text-[#0d9488] dark:text-[#14b8a6] border border-[rgba(13,148,136,0.3)]"
           : "bg-[#F6F8FA] dark:bg-[#21262D] text-[#57606A] dark:text-[#8B949E] border border-[#E1E4E8] dark:border-[#30363D]"
       )}>
         {isActive ? 'ACTIVE' : 'DRAFT'}
