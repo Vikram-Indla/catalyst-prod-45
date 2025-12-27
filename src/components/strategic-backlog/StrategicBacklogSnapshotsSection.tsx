@@ -207,11 +207,11 @@ export function StrategicBacklogSnapshotsSection({
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 w-full">
       {/* Search + Column Selector */}
-      <div className="flex items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4">
         <div className={cn(
-          'flex items-center gap-2 px-3 py-2 rounded-lg flex-1 max-w-md',
+          'flex items-center gap-2 px-3 py-2 rounded-lg flex-1 sm:max-w-md',
           'bg-white dark:bg-[#0D1117]',
           'border border-[#E1E4E8] dark:border-[#30363D]',
           'focus-within:border-[#2563eb] focus-within:ring-1 focus-within:ring-[rgba(37,99,235,0.3)]'
@@ -237,8 +237,97 @@ export function StrategicBacklogSnapshotsSection({
         />
       </div>
 
-      {/* Table */}
-      <div className="bg-surface border border-border rounded-lg overflow-x-auto">
+      {/* Mobile Card View */}
+      <div className="md:hidden space-y-3">
+        {filteredSnapshots.length === 0 ? (
+          <div className="bg-surface border border-border rounded-lg p-8 text-center">
+            <div className="w-12 h-12 rounded-full bg-[#F6F8FA] dark:bg-[#21262D] flex items-center justify-center mx-auto mb-4">
+              <Calendar className="h-6 w-6 text-[#8B949E]" />
+            </div>
+            <p className="text-sm font-medium text-foreground">No snapshots found</p>
+            <p className="text-sm mt-1 text-muted-foreground">Create a snapshot to define a planning period</p>
+            {onCreateSnapshot && (
+              <Button 
+                size="sm" 
+                onClick={onCreateSnapshot}
+                className="mt-4 bg-blue-600 hover:bg-blue-700 text-white gap-1.5"
+              >
+                <Plus className="h-4 w-4" />
+                Create Snapshot
+              </Button>
+            )}
+          </div>
+        ) : (
+          filteredSnapshots.map((snapshot) => {
+            const isSelected = selectedItemId === snapshot.id;
+            const config = configMap[snapshot.id];
+            const themeNames = config?.themes?.map(tid => themeMap[tid]).filter(Boolean) || [];
+            const quarters = config?.quarters || [];
+            
+            return (
+              <button
+                key={snapshot.id}
+                onClick={() => onSelectItem(snapshot)}
+                className={cn(
+                  "w-full text-left bg-surface border border-border rounded-lg p-4 transition-colors",
+                  "hover:bg-muted/50 hover:border-primary/50",
+                  isSelected && "border-primary bg-muted/50"
+                )}
+              >
+                <div className="flex items-start justify-between gap-3 mb-2">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <Calendar className="h-4 w-4 shrink-0 text-muted-foreground" />
+                    <span className="text-sm font-medium text-foreground truncate">{snapshot.name}</span>
+                  </div>
+                  {getStatusBadge(snapshot.status)}
+                </div>
+                {themeNames.length > 0 && (
+                  <div className="flex flex-wrap gap-1 mb-2">
+                    {themeNames.slice(0, 2).map((name, idx) => (
+                      <Badge
+                        key={idx}
+                        variant="outline"
+                        className="text-[10px] px-1.5 py-0.5 bg-[#2563eb]/5 text-[#2563eb] border-[#2563eb]/20"
+                      >
+                        {name}
+                      </Badge>
+                    ))}
+                    {themeNames.length > 2 && (
+                      <Badge variant="outline" className="text-[10px] px-1.5 py-0.5">
+                        +{themeNames.length - 2}
+                      </Badge>
+                    )}
+                  </div>
+                )}
+                {quarters.length > 0 && (
+                  <div className="flex flex-wrap gap-1 mb-2">
+                    {quarters.slice(0, 3).map((q, idx) => (
+                      <Badge
+                        key={idx}
+                        variant="outline"
+                        className="text-[10px] px-1.5 py-0.5 bg-[#0d9488]/5 text-[#0d9488] border-[#0d9488]/20"
+                      >
+                        {q}
+                      </Badge>
+                    ))}
+                    {quarters.length > 3 && (
+                      <Badge variant="outline" className="text-[10px] px-1.5 py-0.5">
+                        +{quarters.length - 3}
+                      </Badge>
+                    )}
+                  </div>
+                )}
+                <div className="text-xs text-muted-foreground">
+                  {snapshot.updated_at ? format(new Date(snapshot.updated_at), 'MMM d, yyyy') : ''}
+                </div>
+              </button>
+            );
+          })
+        )}
+      </div>
+
+      {/* Desktop Table */}
+      <div className="hidden md:block bg-surface border border-border rounded-lg overflow-x-auto">
         <table className="w-full min-w-[800px]">
           <thead>
             <tr className="border-b border-border">
