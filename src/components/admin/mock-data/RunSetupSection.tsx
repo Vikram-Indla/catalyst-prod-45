@@ -10,6 +10,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Upload, FileText, FileSpreadsheet, Code, Sparkles, Loader2, Sheet } from 'lucide-react';
+import { toast } from 'sonner';
 import { CreateRunData } from '@/hooks/useMockDataRuns';
 
 interface RunSetupSectionProps {
@@ -32,10 +33,26 @@ export function RunSetupSection({ onCreateRun, isLoading }: RunSetupSectionProps
   const [notes, setNotes] = useState('');
   const [file, setFile] = useState<File | null>(null);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
-    if (selectedFile) {
-      setFile(selectedFile);
+    if (!selectedFile) return;
+
+    setFile(selectedFile);
+
+    // Auto-create run for uploaded sources (no "Create Run" click needed)
+    if (isLoading || sourceType === 'synthetic') return;
+
+    try {
+      await onCreateRun({
+        sourceType,
+        sourceName: selectedFile.name,
+        seed: seed || undefined,
+        notes: notes || undefined,
+        file: selectedFile,
+      });
+      toast.success('Run created — moving to Configure');
+    } catch (err: any) {
+      toast.error(err?.message || 'Failed to create run');
     }
   };
 
