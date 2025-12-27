@@ -16,11 +16,12 @@ import {
   MoreVertical, Plus, ChevronRight,
   Target, Layers, Clock, FileText, History, BarChart3,
   AlertTriangle, Search, ArrowUpDown, Eye, ChevronDown,
-  TrendingUp, HelpCircle, Maximize2, Minimize2, Sparkles, CheckCircle2
+  TrendingUp, HelpCircle, Sparkles, CheckCircle2
 } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import {
   Select,
@@ -639,7 +640,8 @@ export function CatalystThemeDrawer({ theme, isOpen, onClose }: CatalystThemeDra
   const [selectedEpicId, setSelectedEpicId] = useState<string | null>(null);
   const [selectedEpic, setSelectedEpic] = useState<any>(null);
   const [activeTab, setActiveTab] = useState('overview');
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [isEditingDescription, setIsEditingDescription] = useState(false);
+  const [editedDescription, setEditedDescription] = useState('');
   
   const [objectiveSearch, setObjectiveSearch] = useState('');
   const [epicSearch, setEpicSearch] = useState('');
@@ -657,6 +659,7 @@ export function CatalystThemeDrawer({ theme, isOpen, onClose }: CatalystThemeDra
         snapshot_id: theme.snapshot_id,
       });
       setEditedName(theme.name);
+      setEditedDescription(theme.description || '');
       setActiveTab('overview');
     }
   }, [theme]);
@@ -889,6 +892,21 @@ export function CatalystThemeDrawer({ theme, isOpen, onClose }: CatalystThemeDra
     },
   });
 
+  const saveDescriptionMutation = useMutation({
+    mutationFn: async (newDescription: string) => {
+      if (!theme) throw new Error('No theme selected');
+      const { error } = await supabase
+        .from('strategic_themes')
+        .update({ description: newDescription })
+        .eq('id', theme.id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['strategic_themes'] });
+      queryClient.invalidateQueries({ queryKey: ['themes'] });
+    },
+  });
+
   if (!theme) return null;
 
   const statusConfig = STATUS_CONFIG[formData.status || theme.status || 'draft'] || STATUS_CONFIG.draft;
@@ -941,58 +959,104 @@ export function CatalystThemeDrawer({ theme, isOpen, onClose }: CatalystThemeDra
             "bg-surface-0 text-text-primary",
             "rounded-l-[20px] rounded-r-none",
             "transition-all duration-300 ease-out",
-            isExpanded ? "w-[90vw] sm:max-w-[90vw]" : "w-[640px] sm:max-w-[640px]",
+            "w-[640px] sm:max-w-[640px]",
           )}
         >
           {/* HEADER */}
           <SheetHeader className="shrink-0 space-y-0">
-            {/* Breadcrumb */}
+            {/* Breadcrumb + Controls */}
             <div 
-              className="flex items-center gap-2.5 px-6 py-3"
+              className="flex items-center justify-between px-6 py-3"
               style={{ borderBottom: '1px solid hsl(var(--border) / 0.5)' }}
             >
-              <span 
-                className="text-[10px] font-semibold uppercase tracking-[0.5px]"
-                style={{ color: 'hsl(var(--muted-foreground))' }}
-              >
-                Strategic Themes
-              </span>
-              <span style={{ color: 'hsl(var(--muted-foreground))' }}>/</span>
-              <span 
-                className="text-[11px] font-bold font-mono px-2 py-0.5 rounded-md"
-                style={{ 
-                  color: 'hsl(var(--primary))',
-                  background: 'hsl(var(--primary) / 0.1)'
-                }}
-              >
-                {formatThemeKey(theme.id)}
-              </span>
-              <button
-                onClick={handleCopyLink}
-                className="p-1.5 rounded-lg hover:bg-muted transition-colors"
-                style={{ color: 'hsl(var(--muted-foreground))' }}
-                title="Copy link"
-              >
-                <LinkIcon className="h-3.5 w-3.5" />
-              </button>
-              
-              {snapshot && (
+              <div className="flex items-center gap-2.5">
                 <span 
-                  className="ml-2 text-[10px] px-2 py-0.5 rounded-full"
+                  className="text-[10px] font-semibold uppercase tracking-[0.5px]"
+                  style={{ color: 'hsl(var(--muted-foreground))' }}
+                >
+                  Strategic Themes
+                </span>
+                <span style={{ color: 'hsl(var(--muted-foreground))' }}>/</span>
+                <span 
+                  className="text-[11px] font-bold font-mono px-2 py-0.5 rounded-md"
                   style={{ 
-                    backgroundColor: 'hsl(var(--muted))',
-                    border: '1px solid hsl(var(--border))',
-                    color: 'hsl(var(--muted-foreground))'
+                    color: 'hsl(var(--primary))',
+                    background: 'hsl(var(--primary) / 0.1)'
                   }}
                 >
-                  <Eye size={10} className="inline mr-1" style={{ marginTop: -1 }} />
-                  Viewing: {snapshot.name}
+                  {formatThemeKey(theme.id)}
                 </span>
-              )}
+                <button
+                  onClick={handleCopyLink}
+                  className="p-1.5 rounded-lg hover:bg-muted transition-colors"
+                  style={{ color: 'hsl(var(--muted-foreground))' }}
+                  title="Copy link"
+                >
+                  <LinkIcon className="h-3.5 w-3.5" />
+                </button>
+                
+                {snapshot && (
+                  <span 
+                    className="ml-2 text-[10px] px-2 py-0.5 rounded-full"
+                    style={{ 
+                      backgroundColor: 'hsl(var(--muted))',
+                      border: '1px solid hsl(var(--border))',
+                      color: 'hsl(var(--muted-foreground))'
+                    }}
+                  >
+                    <Eye size={10} className="inline mr-1" style={{ marginTop: -1 }} />
+                    Viewing: {snapshot.name}
+                  </span>
+                )}
+              </div>
+
+              {/* Actions in header */}
+              <div className="flex items-center gap-1">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      className="h-8 w-8 rounded-lg hover:bg-muted transition-colors"
+                      style={{ color: 'hsl(var(--muted-foreground))' }}
+                    >
+                      <MoreVertical className="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent 
+                    align="end" 
+                    className="w-48 rounded-xl"
+                    style={{ 
+                      background: 'hsl(var(--background))',
+                      borderColor: 'hsl(var(--border))',
+                    }}
+                  >
+                    <DropdownMenuItem className="rounded-lg" onSelect={() => duplicateMutation.mutate()}>
+                      <Copy className="h-4 w-4 mr-2" />
+                      Duplicate Theme
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem className="rounded-lg text-destructive" onSelect={() => setShowDeleteDialog(true)}>
+                      <Trash2 className="h-4 w-4 mr-2" />
+                      Delete Theme
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  onClick={handleAttemptClose}
+                  className="h-8 w-8 rounded-lg hover:bg-muted transition-colors"
+                  style={{ color: 'hsl(var(--muted-foreground))' }}
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
             </div>
 
             {/* Hero Row */}
-            <div className="flex items-start justify-between px-6 py-5 gap-4">
+            <div className="flex items-start px-6 py-5 gap-4">
               <div className="flex-1 min-w-0 space-y-3">
                 {/* Title with Edit */}
                 <div className="flex items-center gap-1.5 group">
@@ -1048,61 +1112,6 @@ export function CatalystThemeDrawer({ theme, isOpen, onClose }: CatalystThemeDra
                     <span>Updated {formatDistanceToNow(new Date(lastUpdated), { addSuffix: true })}</span>
                   </div>
                 </div>
-              </div>
-
-              {/* Actions */}
-              <div className="flex items-center gap-1 shrink-0">
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button 
-                      variant="ghost" 
-                      size="icon" 
-                      className="h-9 w-9 rounded-xl hover:bg-muted transition-colors"
-                      style={{ color: 'hsl(var(--muted-foreground))' }}
-                    >
-                      <MoreVertical className="h-4 w-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent 
-                    align="end" 
-                    className="w-48 rounded-xl"
-                    style={{ 
-                      background: 'hsl(var(--background))',
-                      borderColor: 'hsl(var(--border))',
-                    }}
-                  >
-                    <DropdownMenuItem className="rounded-lg" onSelect={() => duplicateMutation.mutate()}>
-                      <Copy className="h-4 w-4 mr-2" />
-                      Duplicate Theme
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem className="rounded-lg text-destructive" onSelect={() => setShowDeleteDialog(true)}>
-                      <Trash2 className="h-4 w-4 mr-2" />
-                      Delete Theme
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setIsExpanded(!isExpanded)}
-                  className="h-9 w-9 rounded-xl hover:bg-muted transition-colors"
-                  style={{ color: 'hsl(var(--muted-foreground))' }}
-                  title={isExpanded ? 'Collapse' : 'Expand'}
-                >
-                  {isExpanded ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
-                </Button>
-
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
-                  onClick={handleAttemptClose}
-                  className="h-9 w-9 rounded-xl hover:bg-muted transition-colors"
-                  style={{ color: 'hsl(var(--muted-foreground))' }}
-                >
-                  <X className="h-4 w-4" />
-                </Button>
               </div>
             </div>
 
@@ -1194,9 +1203,36 @@ export function CatalystThemeDrawer({ theme, isOpen, onClose }: CatalystThemeDra
 
                 <SectionCard icon={FileText} title="Description">
                   <div className="px-5 py-4">
-                    <p className="text-sm leading-relaxed" style={{ color: 'hsl(var(--muted-foreground))' }}>
-                      {formData.description || theme.name || 'No description provided'}
-                    </p>
+                    {isEditingDescription ? (
+                      <Textarea
+                        value={editedDescription}
+                        onChange={(e) => setEditedDescription(e.target.value)}
+                        onBlur={() => {
+                          setIsEditingDescription(false);
+                          if (editedDescription !== (formData.description || '')) {
+                            setFormData(prev => ({ ...prev, description: editedDescription }));
+                            saveDescriptionMutation.mutate(editedDescription);
+                          }
+                        }}
+                        className="text-sm leading-relaxed min-h-[80px] border-primary focus-visible:ring-primary/20"
+                        style={{ 
+                          background: 'hsl(var(--muted))',
+                          color: 'hsl(var(--foreground))'
+                        }}
+                        autoFocus
+                      />
+                    ) : (
+                      <div
+                        onClick={() => {
+                          setEditedDescription(formData.description || theme.description || '');
+                          setIsEditingDescription(true);
+                        }}
+                        className="text-sm leading-relaxed cursor-pointer hover:bg-muted/50 rounded-lg p-2 -m-2 transition-colors"
+                        style={{ color: 'hsl(var(--foreground))' }}
+                      >
+                        {formData.description || theme.description || 'Click to add a description...'}
+                      </div>
+                    )}
                   </div>
                 </SectionCard>
               </TabsContent>
@@ -1366,11 +1402,9 @@ export function CatalystThemeDrawer({ theme, isOpen, onClose }: CatalystThemeDra
 
               {/* ACTIVITY */}
               <TabsContent value="activity" className="mt-0 p-6 space-y-5 focus-visible:outline-none">
-                <SectionCard icon={History} title="Audit History">
-                  <div className="h-[460px] px-3 py-2">
-                    <UnifiedAuditHistoryTab embedded entityType="theme" entityId={theme.id} />
-                  </div>
-                </SectionCard>
+                <div className="h-[460px] px-3 py-2">
+                  <UnifiedAuditHistoryTab embedded entityType="theme" entityId={theme.id} />
+                </div>
               </TabsContent>
             </div>
           </Tabs>
