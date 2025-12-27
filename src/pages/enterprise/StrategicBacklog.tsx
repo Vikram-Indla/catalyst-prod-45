@@ -19,6 +19,10 @@ import { ThemeDetailsDrawer } from '@/components/backlog/ThemeDetailsDrawer';
 import { EpicDetailsPanel } from '@/components/items/epics/EpicDetailsPanel';
 import { ObjectiveDrawerV2 } from '@/modules/okr-v2/components/ObjectiveDrawerV2';
 import { SnapshotDetailsDrawerV2 } from '@/components/strategy/snapshots/SnapshotDetailsDrawerV2';
+import { CreateThemeDialog } from '@/components/strategic-backlog/CreateThemeDialog';
+import { CreateSnapshotModal } from '@/components/strategy/snapshots/CreateSnapshotModal';
+import { CreateObjectiveDialogV2 } from '@/modules/okr-v2/components/CreateObjectiveDialogV2';
+import { CreateEpicDialog } from '@/modules/program-epics/components/CreateEpicDialog';
 import { 
   useThemeObjectiveCounts as useThemeObjCounts,
   useObjectiveKrCounts,
@@ -39,6 +43,12 @@ export default function StrategicBacklog() {
   const [selectedItem, setSelectedItem] = useState<any>(null);
   const [selectedItemType, setSelectedItemType] = useState<'theme' | 'snapshot' | 'objective' | 'epic' | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  
+  // Individual create dialog states
+  const [showCreateTheme, setShowCreateTheme] = useState(false);
+  const [showCreateSnapshot, setShowCreateSnapshot] = useState(false);
+  const [showCreateObjective, setShowCreateObjective] = useState(false);
+  const [showCreateEpic, setShowCreateEpic] = useState(false);
   
   // Debounce search for performance
   const debouncedSearch = useDebounce(searchQuery, 300);
@@ -228,6 +238,7 @@ export default function StrategicBacklog() {
                   searchQuery={activeSection === 'themes' ? searchQuery : ''}
                   onSearchChange={setSearchQuery}
                   objectiveCounts={objectiveCounts}
+                  onCreateTheme={() => setShowCreateTheme(true)}
                 />
               )}
               {activeSection === 'snapshots' && (
@@ -239,6 +250,7 @@ export default function StrategicBacklog() {
                   selectedItemId={selectedItemType === 'snapshot' ? selectedItem?.id : undefined}
                   searchQuery={activeSection === 'snapshots' ? searchQuery : ''}
                   onSearchChange={setSearchQuery}
+                  onCreateSnapshot={() => setShowCreateSnapshot(true)}
                 />
               )}
               {activeSection === 'objectives' && (
@@ -252,6 +264,7 @@ export default function StrategicBacklog() {
                   searchQuery={activeSection === 'objectives' ? searchQuery : ''}
                   onSearchChange={setSearchQuery}
                   krCounts={krCounts}
+                  onCreateObjective={() => setShowCreateObjective(true)}
                 />
               )}
               {activeSection === 'epics' && (
@@ -265,6 +278,7 @@ export default function StrategicBacklog() {
                   searchQuery={activeSection === 'epics' ? searchQuery : ''}
                   onSearchChange={setSearchQuery}
                   featureCounts={featureCounts}
+                  onCreateEpic={() => setShowCreateEpic(true)}
                 />
               )}
             </div>
@@ -312,6 +326,29 @@ export default function StrategicBacklog() {
         open={createModalOpen}
         onOpenChange={setCreateModalOpen}
         snapshotId=""
+      />
+
+      {/* Individual Create Dialogs for Empty States */}
+      <CreateThemeDialog
+        open={showCreateTheme}
+        onOpenChange={setShowCreateTheme}
+        snapshotId=""
+      />
+
+      <CreateSnapshotModal
+        open={showCreateSnapshot}
+        onClose={() => setShowCreateSnapshot(false)}
+      />
+
+      <CreateObjectiveDialogV2
+        open={showCreateObjective}
+        onOpenChange={setShowCreateObjective}
+      />
+
+      <CreateEpicDialog
+        open={showCreateEpic}
+        onOpenChange={setShowCreateEpic}
+        programId={undefined}
       />
     </PageChrome>
   );

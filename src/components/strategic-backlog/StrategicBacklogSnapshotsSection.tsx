@@ -3,10 +3,11 @@
  * Displays snapshots grouped by their parent theme
  */
 import { useState, useMemo } from 'react';
-import { Search, ChevronRight, ArrowUpDown, ArrowUp, Calendar, Layers } from 'lucide-react';
+import { Search, ChevronRight, ArrowUpDown, ArrowUp, Calendar, Layers, Plus } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { ColumnSelector, useColumnVisibility, ColumnDefinition } from './ColumnSelector';
+import { Button } from '@/components/ui/button';
 import type { StrategicTheme } from '@/types/strategicBacklog';
 
 interface Snapshot {
@@ -39,6 +40,7 @@ interface SnapshotsSectionProps {
   selectedItemId?: string;
   searchQuery: string;
   onSearchChange: (query: string) => void;
+  onCreateSnapshot?: () => void;
 }
 
 export function StrategicBacklogSnapshotsSection({
@@ -49,6 +51,7 @@ export function StrategicBacklogSnapshotsSection({
   selectedItemId,
   searchQuery,
   onSearchChange,
+  onCreateSnapshot,
 }: SnapshotsSectionProps) {
   const [sortColumn, setSortColumn] = useState<'name' | 'theme' | 'status' | 'period' | 'updated'>('name');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
@@ -259,8 +262,26 @@ export function StrategicBacklogSnapshotsSection({
           <tbody>
             {filteredSnapshots.length === 0 ? (
               <tr>
-                <td colSpan={visibleColumns.length + 1} className="px-4 py-12 text-center" style={{ color: 'var(--text-muted)' }}>
-                  No snapshots found
+                <td colSpan={visibleColumns.length + 1} className="px-4 py-16 text-center">
+                  <div className="flex flex-col items-center gap-4">
+                    <div className="w-12 h-12 rounded-full bg-[#F6F8FA] dark:bg-[#21262D] flex items-center justify-center">
+                      <Calendar className="h-6 w-6 text-[#8B949E]" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>No snapshots found</p>
+                      <p className="text-sm mt-1" style={{ color: 'var(--text-muted)' }}>Create a snapshot to define a planning period</p>
+                    </div>
+                    {onCreateSnapshot && (
+                      <Button 
+                        size="sm" 
+                        onClick={onCreateSnapshot}
+                        className="bg-blue-600 hover:bg-blue-700 text-white gap-1.5"
+                      >
+                        <Plus className="h-4 w-4" />
+                        Create Snapshot
+                      </Button>
+                    )}
+                  </div>
                 </td>
               </tr>
             ) : (
