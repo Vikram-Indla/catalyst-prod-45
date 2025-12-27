@@ -51,13 +51,13 @@ export function StrategicBacklogTabs({
           >
             <Icon 
               className="h-4 w-4"
-              style={{ color: isActive ? '#C69C6D' : 'var(--text-muted)' }}
+              style={{ color: isActive ? '#2563eb' : 'var(--text-muted)' }}
             />
             {tab.label}
             <span 
               className="px-1.5 py-0.5 text-[11px] font-semibold rounded-full min-w-[20px] text-center"
               style={{
-                background: isActive ? '#C69C6D' : 'var(--border-default)',
+                background: isActive ? '#2563eb' : 'var(--border-default)',
                 color: isActive ? '#FFFFFF' : 'var(--text-muted)',
               }}
             >

@@ -178,7 +178,7 @@ export function EpicDesignTab({ epic }: EpicDesignTabProps) {
                 <Button
                   size="sm"
                   variant="ghost"
-                  className="text-[#6b6b6b] hover:bg-[rgba(198,156,109,0.08)] hover:text-[#1a1a1a]"
+                  className="text-[#6b6b6b] hover:bg-[rgba(37,99,235,0.08)] hover:text-[#1a1a1a]"
                   onClick={() => setDeleteItemId(item.id)}
                 >
                   <Trash2 className="h-4 w-4" />

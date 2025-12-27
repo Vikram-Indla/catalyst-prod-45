@@ -11,8 +11,8 @@ import {
 // Icon colors that work in both light and dark modes (from Catalyst design system)
 const ICON_COLORS: Record<string, string> = {
   // Enterprise
-  theme: '#5c7c5c',      // Olive
-  objective: '#c69c6d',  // Gold
+  theme: '#0d9488',      // Teal
+  objective: '#2563eb',  // Blue
   
   // Product
   'business-request': '#8b7355', // Bronze
@@ -34,8 +34,8 @@ const ICON_COLORS: Record<string, string> = {
 
 // Alternative colors for outline style (slightly muted for balance)
 const OUTLINE_COLORS: Record<string, string> = {
-  theme: '#6b8b6b',
-  objective: '#d4b896',
+  theme: '#14b8a6',
+  objective: '#3b82f6',
   'business-request': '#9c8466',
   epic: '#a060f0',
   feature: '#fbbf24',

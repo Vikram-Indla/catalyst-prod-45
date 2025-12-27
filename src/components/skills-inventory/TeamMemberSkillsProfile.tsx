@@ -247,7 +247,7 @@ export const TeamMemberSkillsProfile: React.FC<TeamMemberSkillsProfileProps> = (
                         href={cert.credentialUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center gap-1 text-xs text-[#c69c6d] hover:text-[#d4b08c] transition-colors"
+                        className="flex items-center gap-1 text-xs text-[#2563eb] hover:text-[#3b82f6] transition-colors"
                       >
                         <span>View</span>
                         <ExternalLink className="w-3 h-3" />
@@ -275,19 +275,19 @@ export const TeamMemberSkillsProfile: React.FC<TeamMemberSkillsProfileProps> = (
                 return (
                   <div
                     key={category}
-                    className="bg-[#1a1f2e] rounded-xl border border-[rgba(198,156,109,0.15)] overflow-hidden"
+                    className="bg-[#1a1f2e] rounded-xl border border-[rgba(37,99,235,0.15)] overflow-hidden"
                   >
                     {/* Category Header */}
                     <button
                       onClick={() => toggleCategory(category)}
-                      className="w-full flex items-center justify-between p-4 hover:bg-[rgba(198,156,109,0.05)] transition-colors"
+                      className="w-full flex items-center justify-between p-4 hover:bg-[rgba(37,99,235,0.05)] transition-colors"
                     >
                       <div className="flex items-center gap-3">
-                        <CategoryIcon className="w-5 h-5 text-[#c69c6d]" />
+                        <CategoryIcon className="w-5 h-5 text-[#2563eb]" />
                         <span className="font-medium text-[#f5f5f7]">
                           {categoryInfo.label}
                         </span>
-                        <span className="px-2 py-0.5 bg-[rgba(198,156,109,0.15)] text-[#c69c6d] text-xs rounded-full">
+                        <span className="px-2 py-0.5 bg-[rgba(37,99,235,0.15)] text-[#2563eb] text-xs rounded-full">
                           {skills.length}
                         </span>
                       </div>
@@ -306,7 +306,7 @@ export const TeamMemberSkillsProfile: React.FC<TeamMemberSkillsProfileProps> = (
                           return (
                             <div
                               key={skill.id}
-                              className="bg-[#2d3344] rounded-xl p-4 border border-[rgba(198,156,109,0.15)]"
+                              className="bg-[#2d3344] rounded-xl p-4 border border-[rgba(37,99,235,0.15)]"
                             >
                               {/* Row 1: Emoji + Name + Years */}
                               <div className="flex items-center justify-between mb-2">
@@ -339,9 +339,9 @@ export const TeamMemberSkillsProfile: React.FC<TeamMemberSkillsProfileProps> = (
                                 </span>
                                 <button
                                   onClick={() => handleEditSkill(skill)}
-                                  className="p-1.5 rounded-lg hover:bg-[rgba(198,156,109,0.1)] transition-colors"
+                                  className="p-1.5 rounded-lg hover:bg-[rgba(37,99,235,0.1)] transition-colors"
                                 >
-                                  <Edit2 className="w-4 h-4 text-[#6b7280] hover:text-[#c69c6d]" />
+                                  <Edit2 className="w-4 h-4 text-[#6b7280] hover:text-[#2563eb]" />
                                 </button>
                               </div>
                             </div>
