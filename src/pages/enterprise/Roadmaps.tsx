@@ -347,7 +347,7 @@ export default function EnterpriseRoadmapsPage() {
 
                     {/* Theme Icon */}
                     <div className="w-8 h-8 rounded-lg bg-brand-primary/15 flex items-center justify-center flex-shrink-0">
-                      <Layers className="w-[18px] h-[18px] text-secondary-bronze" />
+                      <Layers className="w-[18px] h-[18px] text-brand-primary" />
                     </div>
 
                     {/* Theme Details */}
@@ -459,7 +459,7 @@ export default function EnterpriseRoadmapsPage() {
                           return (
                             <div
                               key={milestone.id || mIdx}
-                              className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-3 h-3 bg-secondary-bronze rotate-45 border-2 border-card cursor-pointer hover:scale-125 transition-transform z-10 group"
+                              className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-3 h-3 bg-brand-primary rotate-45 border-2 border-card cursor-pointer hover:scale-125 transition-transform z-10 group"
                               style={{ left: `${positionPercent}%` }}
                             >
                               {/* Tooltip */}

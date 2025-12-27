@@ -371,7 +371,7 @@ export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableVi
                               className={cn(
                                 "transition-colors cursor-pointer",
                                 "hover:bg-[var(--industry-bg-hover)] dark:hover:bg-[#262626]/50",
-                                selectedIds.has(row.id) && "bg-[var(--brand-gold)]/[0.08] dark:bg-[#c69c6d]/[0.15]",
+                                selectedIds.has(row.id) && "bg-brand-primary/[0.08] dark:bg-brand-primary/[0.15]",
                                 snapshot.isDragging && "bg-muted dark:bg-[#333333] shadow-lg"
                               )}
                               onMouseEnter={() => setHoveredRowId(row.id)}

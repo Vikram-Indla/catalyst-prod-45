@@ -391,7 +391,7 @@ export function EpicDrawer({ isOpen, onClose, epicId, onEpicChange }: EpicDrawer
               <span className="text-[10px]" style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}>/</span>
               <span 
                 className="text-[11px] font-semibold font-mono"
-                style={{ color: '#8B7355' }}
+                style={{ color: '#2563eb' }}
               >
                 {epic?.epic_key || '...'}
               </span>
@@ -422,7 +422,7 @@ export function EpicDrawer({ isOpen, onClose, epicId, onEpicChange }: EpicDrawer
                       onChange={(e) => setEditedName(e.target.value)}
                       onBlur={handleSaveName}
                       onKeyDown={handleNameKeyDown}
-                      className="text-[22px] font-semibold h-auto py-1.5 px-2 max-w-[480px] border-[#c69c6d] focus-visible:ring-[#c69c6d]/20 focus-visible:glow-gold transition-smooth"
+                      className="text-[22px] font-semibold h-auto py-1.5 px-2 max-w-[480px] border-[#2563eb] focus-visible:ring-[#2563eb]/20 transition-smooth"
                       style={{ 
                         background: 'var(--surface-subtle, hsl(var(--muted)))',
                         color: 'var(--text-primary, hsl(var(--foreground)))'

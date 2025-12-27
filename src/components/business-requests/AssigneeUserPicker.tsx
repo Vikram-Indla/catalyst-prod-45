@@ -135,7 +135,7 @@ export function AssigneeUserPicker({
         <span className="flex items-center gap-2">
           <Avatar className="h-5 w-5">
             <AvatarImage src={selectedUser.avatar_url || undefined} />
-            <AvatarFallback className="text-[10px] bg-[hsl(var(--secondary-bronze))]/20 text-[hsl(var(--secondary-bronze))]">
+            <AvatarFallback className="text-[10px] bg-brand-primary/20 text-brand-primary">
               {getInitials(selectedUser.full_name, selectedUser.email)}
             </AvatarFallback>
           </Avatar>
@@ -148,7 +148,7 @@ export function AssigneeUserPicker({
     return (
       <span className="flex items-center gap-2">
         <Avatar className="h-5 w-5">
-          <AvatarFallback className="text-[10px] bg-[hsl(var(--secondary-bronze))]/20 text-[hsl(var(--secondary-bronze))]">
+          <AvatarFallback className="text-[10px] bg-brand-primary/20 text-brand-primary">
             {value.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2)}
           </AvatarFallback>
         </Avatar>
@@ -226,7 +226,7 @@ export function AssigneeUserPicker({
                         />
                         <Avatar className="h-6 w-6 mr-2">
                           <AvatarImage src={user.avatar_url || undefined} />
-                          <AvatarFallback className="text-[10px] bg-[hsl(var(--secondary-bronze))]/20 text-[hsl(var(--secondary-bronze))]">
+                          <AvatarFallback className="text-[10px] bg-brand-primary/20 text-brand-primary">
                             {getInitials(user.full_name, user.email)}
                           </AvatarFallback>
                         </Avatar>

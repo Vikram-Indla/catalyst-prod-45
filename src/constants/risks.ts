@@ -35,17 +35,17 @@ export const ROAM_BADGE_COLORS: Record<RoamStatus, { bg: string; text: string }>
 };
 
 // Chart colors using Catalyst Risk Colors
-// Source: catalyst-risk-colors-final.html
+// Source: Blue + Teal Professional Palette
 export const CHART_COLORS = {
   openVsClosed: {
-    Open: '#C69C6D',      // Brand gold
+    Open: '#2563eb',      // Brand blue
     Closed: '#36B37E'     // Green
   },
   severity: {
     Critical: '#922b21',  // Dark red - "Stop everything, fix immediately"
     High: '#cb4335',      // Red - "Needs immediate attention"
-    Medium: '#c69c6d',    // Catalyst Gold - "Monitor closely, plan mitigation"
-    Low: '#5c7c5c'        // Catalyst Olive - "Manageable, track over time"
+    Medium: '#f59e0b',    // Amber - "Monitor closely, plan mitigation"
+    Low: '#0d9488'        // Teal - "Manageable, track over time"
   }
 };
 

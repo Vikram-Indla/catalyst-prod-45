@@ -462,16 +462,16 @@ export function RiskLinksTab({ riskId, businessRequestId, relatedItemId, relatio
                   onClick={() => setOpenFeatureId(linkedFeature.id)}
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-secondary-bronze/10 flex items-center justify-center shrink-0">
-                      <Flag className="h-4 w-4 text-secondary-bronze" />
+                    <div className="w-8 h-8 rounded-lg bg-brand-primary/10 flex items-center justify-center shrink-0">
+                      <Flag className="h-4 w-4 text-brand-primary" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-0.5">
-                        <span className="px-1.5 py-0.5 text-[10px] font-medium uppercase rounded bg-secondary-bronze/10 text-secondary-bronze">
+                        <span className="px-1.5 py-0.5 text-[10px] font-medium uppercase rounded bg-brand-primary/10 text-brand-primary">
                           Feature
                         </span>
                       </div>
-                      <div className="text-[13px] font-medium text-foreground group-hover:text-secondary-bronze transition-colors">
+                      <div className="text-[13px] font-medium text-foreground group-hover:text-brand-primary transition-colors">
                         {linkedFeature.display_id || linkedFeature.id.slice(0, 8).toUpperCase()} – {linkedFeature.name}
                       </div>
                     </div>

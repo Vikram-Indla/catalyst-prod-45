@@ -348,7 +348,7 @@ export function WorkManager({ tab: initialTab }: WorkManagerProps) {
               className={`
                 flex items-center gap-2 px-4 py-2 rounded-md text-[13px] font-medium transition-all duration-200
                 ${isActive 
-                  ? 'bg-[#5c7c5c] text-white shadow-sm' 
+                  ? 'bg-[#2563eb] text-white shadow-sm' 
                   : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
                 }
               `}
@@ -388,7 +388,7 @@ export function WorkManager({ tab: initialTab }: WorkManagerProps) {
                 placeholder="Search tasks..."
                 value={filters.search}
                 onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
-                className="pl-9 w-[280px] h-9 text-[13px] border border-gray-300 dark:border-gray-600 shadow-sm bg-white dark:bg-gray-900 focus:ring-2 focus:ring-[#5c7c5c]/20 focus:border-[#5c7c5c] transition-all duration-200"
+                className="pl-9 w-[280px] h-9 text-[13px] border border-gray-300 dark:border-gray-600 shadow-sm bg-white dark:bg-gray-900 focus:ring-2 focus:ring-[#2563eb]/20 focus:border-[#2563eb] transition-all duration-200"
               />
             </div>
           </div>
@@ -419,7 +419,7 @@ export function WorkManager({ tab: initialTab }: WorkManagerProps) {
                   <Filter className="w-4 h-4" />
                   Filters
                   {activeFilterCount > 0 && (
-                    <span className="ml-1 px-1.5 py-0.5 bg-[#5c7c5c] text-white text-[10px] font-semibold rounded-full">
+                    <span className="ml-1 px-1.5 py-0.5 bg-[#2563eb] text-white text-[10px] font-semibold rounded-full">
                       {activeFilterCount}
                     </span>
                   )}

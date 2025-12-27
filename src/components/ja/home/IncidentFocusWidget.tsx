@@ -41,9 +41,9 @@ export function IncidentFocusWidget({
       className={cn(
         "p-2.5 rounded-lg transition-all cursor-pointer group",
         "border",
-        // Champagne gray surface with gold border - no red backgrounds
-        "bg-[var(--surface-champagne)] border-[var(--border-gold)]",
-        "hover:border-[var(--brand-gold)] hover:bg-[var(--surface-2)]"
+        // Gray surface with blue border
+        "bg-muted/30 border-brand-primary/30",
+        "hover:border-brand-primary hover:bg-muted/50"
       )}
       onClick={() => route && navigate(route)}
     >
@@ -52,15 +52,15 @@ export function IncidentFocusWidget({
           <div 
             className={cn(
               "w-7 h-7 rounded-md flex items-center justify-center",
-              // Gold background for icon container
-              "bg-[var(--brand-gold)]/10"
+              // Blue background for icon container
+              "bg-brand-primary/10"
             )}
           >
-            {/* Icon: red only for confirmed breach, gold otherwise */}
+            {/* Icon: red only for confirmed breach, blue otherwise */}
             <Icon 
               className={cn(
                 "w-3.5 h-3.5",
-                hasBreach ? "text-[hsl(var(--destructive))]" : "text-[var(--brand-gold)]"
+                hasBreach ? "text-[hsl(var(--destructive))]" : "text-brand-primary"
               )} 
             />
           </div>
@@ -74,9 +74,9 @@ export function IncidentFocusWidget({
                     {breached} breached
                   </span>
                 )}
-                {/* At risk count in gold */}
+                {/* At risk count in amber */}
                 {atRisk !== undefined && atRisk > 0 && (
-                  <span className="text-[10px] font-medium text-[var(--brand-gold)]">
+                  <span className="text-[10px] font-medium text-[#f59e0b]">
                     {atRisk} at risk
                   </span>
                 )}
