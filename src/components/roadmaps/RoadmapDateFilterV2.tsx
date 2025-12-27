@@ -246,7 +246,7 @@ export const RoadmapDateFilterV2: React.FC<RoadmapDateFilterV2Props> = ({
                 className={cn(
                   "flex-1 px-3 py-2 text-sm font-medium rounded-lg border transition-all",
                   draftViewport.scale === opt.value
-                    ? "bg-[#c69c6d] text-white border-[#c69c6d]"
+                    ? "bg-[#2563eb] text-white border-[#2563eb]"
                     : "bg-transparent border-gray-300 text-gray-700 hover:border-gray-400 dark:border-gray-600 dark:text-gray-300 dark:hover:border-gray-500"
                 )}
               >
@@ -270,13 +270,13 @@ export const RoadmapDateFilterV2: React.FC<RoadmapDateFilterV2Props> = ({
                   className={cn(
                     "relative px-4 py-2.5 text-sm font-medium rounded-lg border transition-all min-w-[72px]",
                     isSelected
-                      ? "bg-[#c69c6d] text-white border-[#c69c6d]"
+                      ? "bg-[#2563eb] text-white border-[#2563eb]"
                       : "bg-transparent border-gray-300 text-gray-700 hover:border-gray-400 dark:border-gray-600 dark:text-gray-300 dark:hover:border-gray-500"
                   )}
                 >
                   {year}
                   {isCurrent && !isSelected && (
-                    <div className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-[#c69c6d]" />
+                    <div className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-[#2563eb]" />
                   )}
                 </button>
               );
@@ -293,7 +293,7 @@ export const RoadmapDateFilterV2: React.FC<RoadmapDateFilterV2Props> = ({
                 onClick={selectAllQuarters}
                 className={cn(
                   "text-sm font-medium transition-colors",
-                  "text-[#c69c6d] hover:text-[#8b7355] dark:text-[#d4b896] dark:hover:text-[#c69c6d]"
+                  "text-[#2563eb] hover:text-[#1d4ed8] dark:text-[#60a5fa] dark:hover:text-[#93c5fd]"
                 )}
               >
                 All
@@ -310,13 +310,13 @@ export const RoadmapDateFilterV2: React.FC<RoadmapDateFilterV2Props> = ({
                     className={cn(
                       "relative px-3 py-2.5 text-sm font-medium rounded-lg border transition-all",
                       isSelected
-                        ? "bg-[#c69c6d] text-white border-[#c69c6d]"
+                        ? "bg-[#2563eb] text-white border-[#2563eb]"
                         : "bg-transparent border-gray-300 text-gray-700 hover:border-gray-400 dark:border-gray-600 dark:text-gray-300 dark:hover:border-gray-500"
                     )}
                   >
                     Q{q}
                     {isCurrent && !isSelected && (
-                      <div className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-[#c69c6d]" />
+                      <div className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-[#2563eb]" />
                     )}
                   </button>
                 );
@@ -349,8 +349,8 @@ export const RoadmapDateFilterV2: React.FC<RoadmapDateFilterV2Props> = ({
               className={cn(
                 "flex-1 px-4 py-2 text-sm font-medium rounded-lg transition-colors",
                 hasChanges || draftViewport.selectedYears.length === 0
-                  ? "bg-[#c69c6d] hover:bg-[#b08b5c] text-white border-0"
-                  : "bg-[#c69c6d]/50 text-white/70 cursor-not-allowed"
+                  ? "bg-[#2563eb] hover:bg-[#1d4ed8] text-white border-0"
+                  : "bg-[#2563eb]/50 text-white/70 cursor-not-allowed"
               )}
             >
               Apply

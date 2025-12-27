@@ -174,14 +174,14 @@ export function SnapshotCard({ snapshot, onViewDetails, onDelete }: SnapshotCard
           
           <div className="flex items-center gap-4 mt-4 pt-3 border-t border-[#EAECEF] dark:border-[#21262D]">
             <div className="flex items-center gap-1.5">
-              <Layers className={cn("h-3.5 w-3.5", quarterCount === 0 ? "text-[#C69C6D]" : "text-[#C69C6D]")} />
-              <span className={cn("text-sm font-medium text-[#24292F] dark:text-[#E6EDF3]", quarterCount === 0 && "text-[#C69C6D]")}>
+              <Layers className={cn("h-3.5 w-3.5", quarterCount === 0 ? "text-[#2563eb]" : "text-[#2563eb]")} />
+              <span className={cn("text-sm font-medium text-[#24292F] dark:text-[#E6EDF3]", quarterCount === 0 && "text-[#2563eb]")}>
                 {quarterCount} Quarters
               </span>
             </div>
             <div className="flex items-center gap-1.5">
-              <Users className={cn("h-3.5 w-3.5", themeCount === 0 ? "text-[#C69C6D]" : "text-[#C69C6D]")} />
-              <span className={cn("text-sm font-medium text-[#24292F] dark:text-[#E6EDF3]", themeCount === 0 && "text-[#C69C6D]")}>
+              <Users className={cn("h-3.5 w-3.5", themeCount === 0 ? "text-[#2563eb]" : "text-[#2563eb]")} />
+              <span className={cn("text-sm font-medium text-[#24292F] dark:text-[#E6EDF3]", themeCount === 0 && "text-[#2563eb]")}>
                 {themeCount} Themes
               </span>
             </div>

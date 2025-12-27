@@ -90,15 +90,15 @@ export function CopyWeekModal({
           {/* Stats */}
           <div className="grid grid-cols-3 gap-4 mb-6 p-4 bg-muted/50 rounded-lg">
             <div className="text-center">
-              <div className="text-2xl font-semibold text-[#c69c6d]">{weekAllocations.length}</div>
+              <div className="text-2xl font-semibold text-[#2563eb]">{weekAllocations.length}</div>
               <div className="text-xs text-muted-foreground">Allocations</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-semibold text-[#c69c6d]">{resourcesWithAllocations}</div>
+              <div className="text-2xl font-semibold text-[#2563eb]">{resourcesWithAllocations}</div>
               <div className="text-xs text-muted-foreground">Resources</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-semibold text-[#c69c6d]">{totalPercentage}%</div>
+              <div className="text-2xl font-semibold text-[#2563eb]">{totalPercentage}%</div>
               <div className="text-xs text-muted-foreground">Total</div>
             </div>
           </div>

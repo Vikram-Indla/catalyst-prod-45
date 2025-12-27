@@ -12,32 +12,32 @@ interface LevelTagProps {
 // Catalyst brand color palette for levels
 const LEVEL_STYLES: Record<string, { base: string; dark: string }> = {
   Enterprise: {
-    base: 'bg-[#c69c6d]/12 text-[#8b7355]',
-    dark: 'dark:bg-[#c69c6d]/20 dark:text-[#d4b896]',
+    base: 'bg-[#2563eb]/12 text-[#1d4ed8]',
+    dark: 'dark:bg-[#2563eb]/20 dark:text-[#60a5fa]',
   },
   Portfolio: {
-    base: 'bg-[#d4b896]/20 text-[#8b7355]',
-    dark: 'dark:bg-[#d4b896]/15 dark:text-[#d4b896]',
+    base: 'bg-[#0d9488]/12 text-[#0f766e]',
+    dark: 'dark:bg-[#0d9488]/20 dark:text-[#5eead4]',
   },
   Product: {
-    base: 'bg-[#8b7355]/12 text-[#8b7355]',
-    dark: 'dark:bg-[#8b7355]/20 dark:text-[#c4a67a]',
+    base: 'bg-[#2563eb]/12 text-[#1d4ed8]',
+    dark: 'dark:bg-[#2563eb]/20 dark:text-[#60a5fa]',
   },
   Release: {
-    base: 'bg-[#5c7c5c]/12 text-[#5c7c5c]',
-    dark: 'dark:bg-[#5c7c5c]/20 dark:text-[#8aab8a]',
+    base: 'bg-[#0d9488]/12 text-[#0f766e]',
+    dark: 'dark:bg-[#0d9488]/20 dark:text-[#5eead4]',
   },
   Program: {
-    base: 'bg-[#c69c6d]/12 text-[#c69c6d]',
-    dark: 'dark:bg-[#c69c6d]/20 dark:text-[#dbb88a]',
+    base: 'bg-[#2563eb]/12 text-[#2563eb]',
+    dark: 'dark:bg-[#2563eb]/20 dark:text-[#60a5fa]',
   },
   Project: {
-    base: 'bg-[#5c7c5c]/12 text-[#5c7c5c]',
-    dark: 'dark:bg-[#5c7c5c]/20 dark:text-[#8aab8a]',
+    base: 'bg-[#0d9488]/12 text-[#0f766e]',
+    dark: 'dark:bg-[#0d9488]/20 dark:text-[#5eead4]',
   },
   Planner: {
-    base: 'bg-[#d4b896]/15 text-[#8b7355]',
-    dark: 'dark:bg-[#d4b896]/20 dark:text-[#d4b896]',
+    base: 'bg-[#2563eb]/12 text-[#1d4ed8]',
+    dark: 'dark:bg-[#2563eb]/20 dark:text-[#60a5fa]',
   },
 };
 

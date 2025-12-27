@@ -120,7 +120,7 @@ const StarRating: React.FC<{ level: SkillProficiencyLevel }> = ({ level }) => {
       {[1, 2, 3, 4, 5].map((star) => (
         <Star
           key={star}
-          className={`w-4 h-4 ${star <= value ? 'text-[#c69c6d] fill-[#c69c6d]' : 'text-[#3d4454]'}`}
+          className={`w-4 h-4 ${star <= value ? 'text-[#2563eb] fill-[#2563eb]' : 'text-[#3d4454]'}`}
         />
       ))}
     </div>
@@ -169,7 +169,7 @@ export const TeamMemberSkillsProfile: React.FC<TeamMemberSkillsProfileProps> = (
     <div className="min-h-screen bg-[#0f1219]">
       <div className="flex">
         {/* Left Sidebar */}
-        <div className="w-[320px] min-h-screen bg-[#1a1f2e] border-r border-[rgba(198,156,109,0.15)] p-6">
+        <div className="w-[320px] min-h-screen bg-[#1a1f2e] border-r border-[rgba(37,99,235,0.15)] p-6">
           {/* Back Button */}
           <button
             onClick={onBack}
@@ -180,10 +180,10 @@ export const TeamMemberSkillsProfile: React.FC<TeamMemberSkillsProfileProps> = (
           </button>
 
           {/* Profile Card */}
-          <div className="bg-[#2d3344] rounded-xl p-6 border border-[rgba(198,156,109,0.15)]">
+          <div className="bg-[#2d3344] rounded-xl p-6 border border-[rgba(37,99,235,0.15)]">
             {/* Avatar */}
-            <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-[#c69c6d] to-[#a67c4e] flex items-center justify-center mx-auto mb-4">
-              <span className="text-2xl font-bold text-[#1a1f2e]">
+            <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-[#2563eb] to-[#1d4ed8] flex items-center justify-center mx-auto mb-4">
+              <span className="text-2xl font-bold text-white">
                 {memberData.initials}
               </span>
             </div>
@@ -204,14 +204,14 @@ export const TeamMemberSkillsProfile: React.FC<TeamMemberSkillsProfileProps> = (
               <div className="bg-[#1a1f2e] rounded-lg p-3 text-center">
                 <div className="flex items-center justify-center gap-1">
                   <span className="text-lg font-semibold text-[#f5f5f7]">{expertSkills}</span>
-                  <Star className="w-3 h-3 text-[#c69c6d] fill-[#c69c6d]" />
+                  <Star className="w-3 h-3 text-[#2563eb] fill-[#2563eb]" />
                 </div>
                 <div className="text-[10px] text-[#6b7280]">Expert Level</div>
               </div>
               <div className="bg-[#1a1f2e] rounded-lg p-3 text-center">
                 <div className="flex items-center justify-center gap-1">
                   <span className="text-lg font-semibold text-[#f5f5f7]">{certifications.length}</span>
-                  <Award className="w-3 h-3 text-[#c69c6d]" />
+                  <Award className="w-3 h-3 text-[#2563eb]" />
                 </div>
                 <div className="text-[10px] text-[#6b7280]">Certifications</div>
               </div>
@@ -221,7 +221,7 @@ export const TeamMemberSkillsProfile: React.FC<TeamMemberSkillsProfileProps> = (
           {/* Certifications Section */}
           <div className="mt-6">
             <div className="flex items-center gap-2 mb-4">
-              <Award className="w-5 h-5 text-[#c69c6d]" />
+              <Award className="w-5 h-5 text-[#2563eb]" />
               <h3 className="text-sm font-semibold text-[#f5f5f7]">Certifications</h3>
             </div>
             

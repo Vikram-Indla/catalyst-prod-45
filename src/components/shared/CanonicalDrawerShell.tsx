@@ -381,7 +381,7 @@ export function CanonicalDrawerShell({
           <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col min-h-0">
             <TabsList className="executive-tabs-list w-full justify-start rounded-none border-b border-[#EAECEF] dark:border-[#21262D] h-10 shrink-0 overflow-x-auto flex-nowrap bg-[#FAFBFC] dark:bg-[#0D1117] px-4 md:px-5">
               {tabs.map((tab) => (
-                <TabsTrigger key={tab.value} value={tab.value} className="executive-tab whitespace-nowrap px-4 py-3 text-sm font-medium border-b-2 border-transparent data-[state=active]:border-[#C69C6D] text-[#57606A] dark:text-[#8B949E] data-[state=active]:text-[#24292F] dark:data-[state=active]:text-[#E6EDF3] hover:text-[#24292F] dark:hover:text-[#E6EDF3]">
+                <TabsTrigger key={tab.value} value={tab.value} className="executive-tab whitespace-nowrap px-4 py-3 text-sm font-medium border-b-2 border-transparent data-[state=active]:border-[#2563eb] text-[#57606A] dark:text-[#8B949E] data-[state=active]:text-[#24292F] dark:data-[state=active]:text-[#E6EDF3] hover:text-[#24292F] dark:hover:text-[#E6EDF3]">
                   {tab.label}
                 </TabsTrigger>
               ))}
