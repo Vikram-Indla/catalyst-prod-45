@@ -81,9 +81,9 @@ export function IncidentActivitySection({ incident }: IncidentActivitySectionPro
     return activity.type === activeTab;
   });
 
-  const getAvatarColor = (initials: string) => {
+const getAvatarColor = (initials: string) => {
     const colors = [
-      'bg-[#C69C6D]', // Catalyst gold
+      'bg-[#2563eb]', // Blue
       'bg-[#0052CC]', // Blue
       'bg-[#5243AA]', // Purple
       'bg-[#00A3BF]', // Teal
@@ -164,7 +164,7 @@ export function IncidentActivitySection({ incident }: IncidentActivitySectionPro
             </div>
           ) : (
             <div>
-              <div className="border-2 border-[#C69C6D] rounded shadow-[0_0_0_2px_#C69C6D]">
+              <div className="border-2 border-[#2563eb] rounded shadow-[0_0_0_2px_#2563eb]">
                 {/* Editor Toolbar */}
                 <div className="flex items-center gap-0.5 p-2 border-b border-[#DFE1E6] flex-wrap">
                   <button className="h-7 min-w-7 flex items-center justify-center rounded hover:bg-[#F4F5F7] text-[#42526E] text-sm font-medium">Aa</button>

@@ -224,7 +224,7 @@ function WorkItemsDataGrid({
           <div key={groupIndex}>
             {/* Group Header with gold accent bar */}
             <div 
-              className="relative text-[11px] font-bold uppercase tracking-[0.1em] py-2.5 px-4 bg-gradient-to-r from-[#c69c6d]/[0.08] to-transparent dark:from-[#c69c6d]/[0.15] dark:to-transparent"
+              className="relative text-[11px] font-bold uppercase tracking-[0.1em] py-2.5 px-4 bg-gradient-to-r from-[#2563eb]/[0.08] to-transparent dark:from-[#2563eb]/[0.15] dark:to-transparent"
               style={{ 
                 borderTop: groupIndex > 0 ? '1px solid var(--divider)' : 'none',
                 borderBottom: '1px solid var(--divider)',

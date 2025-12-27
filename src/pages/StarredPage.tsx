@@ -114,7 +114,7 @@ function StarredItemRow({
         {['story', 'feature', 'task', 'defect', 'epic'].includes(item.type) && (
           <WorkItemIcon type={item.type as WorkItemType} size={14} />
         )}
-        <span className="text-[13px] font-mono font-medium text-[#8b7355] dark:text-[#d4a855]">{item.key}</span>
+        <span className="text-[13px] font-mono font-medium text-[#2563eb] dark:text-[#60a5fa]">{item.key}</span>
       </div>
 
       {/* Summary - hover changes to olive */}

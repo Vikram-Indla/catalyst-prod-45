@@ -169,19 +169,19 @@ function POTagsInput({
         "flex flex-wrap gap-2 p-2 min-h-[42px] border rounded-lg transition-colors",
         "bg-white dark:bg-gray-900",
         "border-gray-200 dark:border-gray-700",
-        "focus-within:border-[#c69c6d] focus-within:ring-1 focus-within:ring-[#c69c6d]/20"
+        "focus-within:border-[#2563eb] focus-within:ring-1 focus-within:ring-[#2563eb]/20"
       )}>
         {tags.map((tag, index) => (
           <Badge 
             key={index}
             variant="secondary"
-            className="h-6 gap-1 pr-1 bg-[#c69c6d]/10 text-[#8b7355] dark:bg-[#c69c6d]/20 dark:text-[#d4b896] border-[#c69c6d]/20"
+            className="h-6 gap-1 pr-1 bg-[#2563eb]/10 text-[#1d4ed8] dark:bg-[#2563eb]/20 dark:text-[#60a5fa] border-[#2563eb]/20"
           >
             {tag}
             <button 
               type="button"
               onClick={() => removeTag(tag)}
-              className="hover:bg-[#c69c6d]/20 rounded-full p-0.5"
+              className="hover:bg-[#2563eb]/20 rounded-full p-0.5"
             >
               <X className="h-3 w-3" />
             </button>
@@ -216,7 +216,7 @@ function FormSection({
     <Collapsible open={isOpen} onOpenChange={setIsOpen}>
       <div className="py-2">
         <CollapsibleTrigger className="w-full flex items-center justify-between pb-3 border-b border-gray-200 dark:border-gray-700">
-          <h3 className="text-sm font-semibold uppercase tracking-wide text-[#5c7c5c] dark:text-[#7da37d]">
+          <h3 className="text-sm font-semibold uppercase tracking-wide text-[#0d9488] dark:text-[#14b8a6]">
             {title}
           </h3>
           <ChevronDown className={cn(

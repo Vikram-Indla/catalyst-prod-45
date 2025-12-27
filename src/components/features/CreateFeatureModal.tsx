@@ -495,7 +495,7 @@ export function CreateFeatureModal({
               >
                 <SelectTrigger className={cn(
                   "h-10 bg-background border-border",
-                  "focus:border-[#c69c6d] focus:ring-[3px] focus:ring-[#c69c6d]/15"
+                  "focus:border-[#2563eb] focus:ring-[3px] focus:ring-[#2563eb]/15"
                 )}>
                   <SelectValue placeholder={usersLoading ? "Loading..." : "Select assignee"}>
                     {selectedAssignee && (

@@ -137,7 +137,7 @@ const tokenCategories = [
       { name: 'Secondary', value: '--text-secondary', computed: '#4B5563' },
       { name: 'Tertiary', value: '--text-tertiary', computed: '#6B7280' },
       { name: 'Muted', value: '--text-muted', computed: '#9CA3AF' },
-      { name: 'Brand', value: '--brand-primary', computed: '#C69C6D' },
+      { name: 'Brand', value: '--brand-primary', computed: '#2563eb' },
     ],
   },
   {

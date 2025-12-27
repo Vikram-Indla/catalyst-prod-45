@@ -138,7 +138,7 @@ export default function TimelineView() {
             <div>
               <div className="flex items-center gap-2">
                 <h1 className="text-xl font-bold">Timeline</h1>
-                <span className="px-2 py-0.5 rounded text-xs font-medium bg-[rgba(92,124,92,0.15)] text-[#5c7c5c]">
+                <span className="px-2 py-0.5 rounded text-xs font-medium bg-[rgba(13,148,136,0.15)] text-[#0d9488]">
                   Roadmap
                 </span>
               </div>

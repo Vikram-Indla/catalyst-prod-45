@@ -4,13 +4,12 @@ import { cn } from '@/lib/utils';
 
 // Brand Colors (from design system)
 const COLORS = {
-  gold: '#c69c6d',
-  goldLight: '#f5efe8',
-  goldDark: '#a67c4d',
-  bronze: '#8b7355',
-  olive: '#5c7c5c',
-  oliveLight: '#e8f0e8',
-  champagne: '#d4b896',
+  blue: '#2563eb',
+  blueLight: '#eff6ff',
+  blueDark: '#1d4ed8',
+  teal: '#0d9488',
+  tealLight: '#f0fdfa',
+  gray: '#6b7280',
   grey: '#c8ccd0',
   dark: '#1a1a2e',
   red: '#dc2626',
@@ -19,11 +18,11 @@ const COLORS = {
 
 const FUNNEL_COLORS: Record<string, string> = {
   'New Request': COLORS.dark,
-  'Analyse': COLORS.bronze,
-  'Ready to Implement': COLORS.champagne,
-  'Approved': COLORS.gold,
-  'Implement': COLORS.goldDark,
-  'Closed': COLORS.olive,
+  'Analyse': COLORS.teal,
+  'Ready to Implement': COLORS.gray,
+  'Approved': COLORS.blue,
+  'Implement': COLORS.blueDark,
+  'Closed': COLORS.teal,
 };
 
 // All resources with roles: Product Owner, Technical Product Owner, Business Analyst
@@ -75,19 +74,19 @@ const generateResourceWeeks = () => {
 
 const getRoleBadgeStyle = (role: string) => {
   if (role === 'Product Owner') {
-    return { bg: COLORS.goldLight, color: COLORS.bronze, label: 'PO' };
+    return { bg: COLORS.blueLight, color: COLORS.blueDark, label: 'PO' };
   }
   if (role === 'Technical Product Owner') {
-    return { bg: COLORS.goldLight, color: COLORS.goldDark, label: 'TPO' };
+    return { bg: COLORS.blueLight, color: COLORS.blue, label: 'TPO' };
   }
   // Business Analyst
-  return { bg: COLORS.oliveLight, color: COLORS.olive, label: 'BA' };
+  return { bg: COLORS.tealLight, color: COLORS.teal, label: 'BA' };
 };
 
 const getInitialsBg = (role: string) => {
-  if (role === 'Product Owner') return COLORS.bronze;
-  if (role === 'Technical Product Owner') return COLORS.goldDark;
-  return COLORS.olive;
+  if (role === 'Product Owner') return COLORS.blueDark;
+  if (role === 'Technical Product Owner') return COLORS.blue;
+  return COLORS.teal;
 };
 
 export default function CapacityPage() {
@@ -217,7 +216,7 @@ export default function CapacityPage() {
             <div className="flex items-center gap-4">
               <span 
                 className="px-3 py-1 rounded-full text-sm font-semibold"
-                style={{ backgroundColor: COLORS.goldLight, color: COLORS.bronze }}
+                style={{ backgroundColor: COLORS.blueLight, color: COLORS.blueDark }}
               >
                 {selectedQuarter?.q} {selectedQuarter?.year}
               </span>

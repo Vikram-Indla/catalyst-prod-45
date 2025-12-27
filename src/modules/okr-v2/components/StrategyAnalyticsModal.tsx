@@ -51,9 +51,9 @@ const TrendBadge = ({ trend, value }: { trend: TrendDirection; value: string }) 
   return (
     <span className={cn(
       "inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium",
-      isNeutral && "bg-[#f5f0e8] text-[#6b5b4f]",
+isNeutral && "bg-muted/50 text-muted-foreground",
       isPositive && "bg-[#e8f5e9] text-[#4a7c4a]",
-      !isPositive && !isNeutral && "bg-[#fef3e2] text-[#b8860b]"
+      !isPositive && !isNeutral && "bg-amber-50 text-amber-600"
     )}>
       {isPositive && <TrendingUp className="h-3 w-3" />}
       {isNeutral && <Minus className="h-3 w-3" />}
@@ -65,9 +65,9 @@ const TrendBadge = ({ trend, value }: { trend: TrendDirection; value: string }) 
 
 const StatusDot = ({ status }: { status: string }) => {
   const colors: Record<string, string> = {
-    ahead: 'bg-[#4a7c4a]',
+ahead: 'bg-[#4a7c4a]',
     'on-plan': 'bg-secondary-green',
-    behind: 'bg-[#b8860b]',
+    behind: 'bg-amber-500',
     'no-baseline': 'bg-muted-foreground',
   };
   
@@ -119,9 +119,9 @@ const DrillDownDialog = ({ isOpen, onClose, title, items }: DrillDownDialogProps
   const getStatusColor = (status?: string) => {
     switch (status) {
       case 'completed': return 'bg-secondary-green';
-      case 'on-track': return 'bg-secondary-green';
+case 'on-track': return 'bg-secondary-green';
       case 'in-progress': return 'bg-brand-primary';
-      case 'at-risk': return 'bg-[#b8860b]';
+      case 'at-risk': return 'bg-amber-500';
       case 'off-track': return 'bg-[#b85c38]';
       case 'blocked': return 'bg-[#b85c38]';
       default: return 'bg-muted-foreground';
@@ -419,7 +419,7 @@ const ThemeLevelSnapshot = ({ themes }: { themes: ThemeAnalyticsRow[] }) => {
             {/* Trend */}
             <div className="flex justify-end">
               {theme.trend === 'up' && <TrendingUp className="h-4 w-4 text-secondary-green" />}
-              {theme.trend === 'down' && <TrendingDown className="h-4 w-4 text-[#b8860b]" />}
+              {theme.trend === 'down' && <TrendingDown className="h-4 w-4 text-amber-500" />}
               {theme.trend === 'flat' && <Minus className="h-4 w-4 text-muted-foreground" />}
             </div>
 
@@ -439,7 +439,7 @@ const ThemeLevelSnapshot = ({ themes }: { themes: ThemeAnalyticsRow[] }) => {
               {theme.gaps > 0 && (
                 <>
                   <span>·</span>
-                  <span className="text-[#b8860b] font-medium">{theme.gaps} gaps</span>
+                  <span className="text-amber-600 font-medium">{theme.gaps} gaps</span>
                 </>
               )}
             </div>

@@ -30,12 +30,12 @@ type ColorType = 'olive' | 'oliveDark' | 'oliveLight' | 'bronze' | 'gold' | 'cha
 
 // Catalyst Brand Colors - aligned with CSS variables in index.css
 const CATALYST_COLORS = {
-  olive: '#5c7c5c',
-  oliveDark: '#4a6a4a',
-  oliveLight: '#6b8b6b',
-  bronze: '#8b7355',
-  gold: '#c69c6d',
-  champagne: '#d4b896',
+  olive: '#0d9488',
+  oliveDark: '#0f766e',
+  oliveLight: '#14b8a6',
+  bronze: '#6b7280',
+  gold: '#2563eb',
+  champagne: '#c8ccd0',
   gray: '#737373',
 };
 
