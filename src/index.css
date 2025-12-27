@@ -154,9 +154,10 @@
     --nav-bg: #ffffff;
     --nav-hover-bg: rgba(0, 0, 0, 0.03);
     --nav-active-bg: rgba(37, 99, 235, 0.1);
-    --brand-active: #2563eb;
-    --brand-primary: #2563eb;
-    --brand-primary-hover: #1d4ed8;
+    /* Legacy HEX aliases (DO NOT override canonical HSL tokens above) */
+    --brand-active-hex: #2563eb;
+    --brand-primary-hex: #2563eb;
+    --brand-primary-hover-hex: #1d4ed8;
     
     /* Brand colors (HEX) */
     --accent-blue: #2563eb;
@@ -174,7 +175,7 @@
     --row-hover: rgba(0, 0, 0, 0.02);
     --selection-row-bg: rgba(37, 99, 235, 0.06);
     --selection-bar-accent: #2563eb;
-    --focus-ring: #2563eb;
+    --focus-ring-hex: #2563eb;
     
     /* Link colors (HSL triplets for hsl() usage) */
     --link-color: 217 91% 53%;
@@ -416,9 +417,10 @@
     --nav-bg: #1f1f1f;
     --nav-hover-bg: rgba(255, 255, 255, 0.04);
     --nav-active-bg: rgba(59, 130, 246, 0.15);
-    --brand-active: #3b82f6;
-    --brand-primary: #3b82f6;
-    --brand-primary-hover: #60a5fa;
+    /* Legacy HEX aliases (DO NOT override canonical HSL tokens above) */
+    --brand-active-hex: #3b82f6;
+    --brand-primary-hex: #3b82f6;
+    --brand-primary-hover-hex: #60a5fa;
     
     /* Brand colors (HEX) */
     --accent-blue: #3b82f6;
@@ -436,7 +438,7 @@
     --row-hover: #1c1c1c;
     --selection-row-bg: rgba(59, 130, 246, 0.12);
     --selection-bar-accent: #3b82f6;
-    --focus-ring: #3b82f6;
+    --focus-ring-hex: #3b82f6;
     
     /* Link colors (HSL triplets for hsl() usage) */
     --link-color: 217 91% 70%;

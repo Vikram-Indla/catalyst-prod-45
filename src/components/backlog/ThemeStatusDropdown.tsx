@@ -20,25 +20,25 @@ interface ThemeStatusDropdownProps {
   isLoading?: boolean;
 }
 
-function colorTokenForBrandName(color: string | null | undefined): string {
+function colorVarForBrandName(color: string | null | undefined): string {
   switch ((color || '').toLowerCase()) {
     case 'teal':
     case 'teal-light':
     case 'teal-dark':
-      return 'hsl(var(--success))';
+      return '--success';
     case 'warning':
-      return 'hsl(var(--warning))';
+      return '--warning';
     case 'danger':
-      return 'hsl(var(--danger))';
+      return '--danger';
     case 'gray':
     case 'gray-dark':
     case 'neutral':
-      return 'hsl(var(--text-secondary))';
+      return '--text-secondary';
     case 'blue':
     case 'blue-light':
     case 'blue-dark':
     default:
-      return 'hsl(var(--brand-primary))';
+      return '--brand-primary';
   }
 }
 
@@ -60,7 +60,8 @@ export function ThemeStatusDropdown({
     statuses[0] ||
     ({ value: 'draft', label: 'Draft', color: 'neutral' } as any);
 
-  const baseColor = colorTokenForBrandName(currentConfig.color);
+  const colorVar = colorVarForBrandName(currentConfig.color);
+  const solid = `hsl(var(${colorVar}))`;
 
   const triggerStyle: React.CSSProperties = isDraftLike(currentConfig.value)
     ? {
@@ -69,9 +70,9 @@ export function ThemeStatusDropdown({
         color: 'hsl(var(--text-secondary))',
       }
     : {
-        background: `${baseColor.slice(0, -1)} / 0.12)`,
-        border: `${baseColor.slice(0, -1)} / 0.30) 1px solid`,
-        color: baseColor,
+        background: `hsl(var(${colorVar}) / 0.12)`,
+        border: `1px solid hsl(var(${colorVar}) / 0.30)`,
+        color: solid,
       };
 
   if (statusesLoading) {
@@ -110,8 +111,8 @@ export function ThemeStatusDropdown({
       <DropdownMenuContent align="start" className="w-52 z-[500] bg-surface-0 border-border-default rounded-xl">
         {statuses.map((status) => {
           const isActive = status.value.toLowerCase() === currentStatus?.toLowerCase();
-          const dotColor = colorTokenForBrandName(status.color);
-
+          const dotVar = colorVarForBrandName(status.color);
+          const dotColor = `hsl(var(${dotVar}))`;
           return (
             <DropdownMenuItem
               key={status.value}
