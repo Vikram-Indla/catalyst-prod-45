@@ -1,6 +1,6 @@
 /**
  * Strategic Backlog - Snapshots Section
- * Displays snapshots grouped by their parent theme
+ * Displays snapshots with linked themes and quarters from configuration
  */
 import { useState, useMemo } from 'react';
 import { Search, ChevronRight, ArrowUpDown, ArrowUp, Calendar, Layers, Plus } from 'lucide-react';
@@ -8,7 +8,10 @@ import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { ColumnSelector, useColumnVisibility, ColumnDefinition } from './ColumnSelector';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import type { StrategicTheme } from '@/types/strategicBacklog';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 
 interface Snapshot {
   id: string;
@@ -22,9 +25,22 @@ interface Snapshot {
   updated_at: string;
 }
 
+interface SnapshotConfiguration {
+  id: string;
+  snapshot_id: string;
+  themes: string[];
+  quarters: string[];
+  products: string[];
+  org_structures: string[];
+  members: string[];
+  notify_on_activation: boolean;
+  notify_on_changes: boolean;
+}
+
 const SNAPSHOT_COLUMNS: ColumnDefinition[] = [
   { key: 'name', label: 'Snapshot', defaultVisible: true },
-  { key: 'theme', label: 'Theme', defaultVisible: true, width: 'w-48' },
+  { key: 'themes', label: 'Themes', defaultVisible: true, width: 'w-52' },
+  { key: 'quarters', label: 'Quarters', defaultVisible: true, width: 'w-48' },
   { key: 'status', label: 'Status', defaultVisible: true, width: 'w-24' },
   { key: 'period', label: 'Period', defaultVisible: true, width: 'w-40' },
   { key: 'updated', label: 'Updated', defaultVisible: true, width: 'w-32' },
@@ -53,9 +69,32 @@ export function StrategicBacklogSnapshotsSection({
   onSearchChange,
   onCreateSnapshot,
 }: SnapshotsSectionProps) {
-  const [sortColumn, setSortColumn] = useState<'name' | 'theme' | 'status' | 'period' | 'updated'>('name');
+  const [sortColumn, setSortColumn] = useState<'name' | 'themes' | 'quarters' | 'status' | 'period' | 'updated'>('name');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
   const [visibleColumns, setVisibleColumns] = useColumnVisibility(SNAPSHOT_COLUMNS, STORAGE_KEY);
+
+  // Fetch all configurations for these snapshots
+  const snapshotIds = useMemo(() => snapshots.map(s => s.id), [snapshots]);
+
+  const { data: configurations = [] } = useQuery({
+    queryKey: ['snapshot-configurations-bulk', snapshotIds],
+    queryFn: async () => {
+      if (snapshotIds.length === 0) return [];
+      const { data, error } = await supabase
+        .from('snapshot_configurations')
+        .select('*')
+        .in('snapshot_id', snapshotIds);
+      if (error) throw error;
+      return (data || []) as SnapshotConfiguration[];
+    },
+    enabled: snapshotIds.length > 0,
+  });
+
+  const configMap = useMemo(() => {
+    const map: Record<string, SnapshotConfiguration> = {};
+    configurations.forEach(c => { map[c.snapshot_id] = c; });
+    return map;
+  }, [configurations]);
 
   const themeMap = useMemo(() => {
     return themes.reduce((acc, theme) => {
@@ -69,11 +108,17 @@ export function StrategicBacklogSnapshotsSection({
 
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
-      result = result.filter(snapshot =>
-        snapshot.name.toLowerCase().includes(query) ||
-        snapshot.description?.toLowerCase().includes(query) ||
-        (snapshot.theme_id && themeMap[snapshot.theme_id]?.toLowerCase().includes(query))
-      );
+      result = result.filter(snapshot => {
+        const config = configMap[snapshot.id];
+        const themeNames = config?.themes?.map(tid => themeMap[tid] || '').join(' ') || '';
+        const quarterStr = config?.quarters?.join(' ') || '';
+        return (
+          snapshot.name.toLowerCase().includes(query) ||
+          snapshot.description?.toLowerCase().includes(query) ||
+          themeNames.toLowerCase().includes(query) ||
+          quarterStr.toLowerCase().includes(query)
+        );
+      });
     }
 
     result = [...result].sort((a, b) => {
@@ -84,9 +129,13 @@ export function StrategicBacklogSnapshotsSection({
           aVal = a.name.toLowerCase();
           bVal = b.name.toLowerCase();
           break;
-        case 'theme':
-          aVal = a.theme_id ? themeMap[a.theme_id] || '' : '';
-          bVal = b.theme_id ? themeMap[b.theme_id] || '' : '';
+        case 'themes':
+          aVal = configMap[a.id]?.themes?.length || 0;
+          bVal = configMap[b.id]?.themes?.length || 0;
+          break;
+        case 'quarters':
+          aVal = configMap[a.id]?.quarters?.length || 0;
+          bVal = configMap[b.id]?.quarters?.length || 0;
           break;
         case 'status':
           aVal = a.status || '';
@@ -110,7 +159,7 @@ export function StrategicBacklogSnapshotsSection({
     });
 
     return result;
-  }, [snapshots, searchQuery, sortColumn, sortDirection, themeMap]);
+  }, [snapshots, searchQuery, sortColumn, sortDirection, themeMap, configMap]);
 
   const handleSort = (column: typeof sortColumn) => {
     if (sortColumn === column) {
@@ -197,37 +246,44 @@ export function StrategicBacklogSnapshotsSection({
       </div>
 
       {/* Table */}
-      <div style={{ background: 'var(--surface-bg)', border: '1px solid var(--border-default)', borderRadius: '10px', overflow: 'hidden' }}>
-        <table className="w-full table-fixed">
+      <div className="bg-surface border border-border rounded-lg overflow-x-auto">
+        <table className="w-full min-w-[800px]">
           <thead>
-            <tr style={{ borderBottom: '1px solid var(--border-default)' }}>
+            <tr className="border-b border-border">
               {isColumnVisible('name') && (
                 <th
-                  className="text-left px-4 py-3 cursor-pointer transition-colors"
+                  className="text-left px-4 py-3 cursor-pointer transition-colors text-xs font-semibold uppercase tracking-wide text-muted-foreground"
                   onClick={() => handleSort('name')}
-                  style={{ fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.3px', color: 'var(--text-muted)' }}
                 >
                   <button className="flex items-center hover:opacity-80">
                     Snapshot <SortIcon column="name" />
                   </button>
                 </th>
               )}
-              {isColumnVisible('theme') && (
+              {isColumnVisible('themes') && (
                 <th
-                  className="text-left px-4 py-3 w-48 cursor-pointer transition-colors"
-                  onClick={() => handleSort('theme')}
-                  style={{ fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.3px', color: 'var(--text-muted)' }}
+                  className="text-left px-4 py-3 w-52 cursor-pointer transition-colors text-xs font-semibold uppercase tracking-wide text-muted-foreground"
+                  onClick={() => handleSort('themes')}
                 >
                   <button className="flex items-center hover:opacity-80">
-                    Theme <SortIcon column="theme" />
+                    Themes <SortIcon column="themes" />
+                  </button>
+                </th>
+              )}
+              {isColumnVisible('quarters') && (
+                <th
+                  className="text-left px-4 py-3 w-48 cursor-pointer transition-colors text-xs font-semibold uppercase tracking-wide text-muted-foreground"
+                  onClick={() => handleSort('quarters')}
+                >
+                  <button className="flex items-center hover:opacity-80">
+                    Quarters <SortIcon column="quarters" />
                   </button>
                 </th>
               )}
               {isColumnVisible('status') && (
                 <th
-                  className="text-left px-4 py-3 w-24 cursor-pointer transition-colors"
+                  className="text-left px-4 py-3 w-24 cursor-pointer transition-colors text-xs font-semibold uppercase tracking-wide text-muted-foreground"
                   onClick={() => handleSort('status')}
-                  style={{ fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.3px', color: 'var(--text-muted)' }}
                 >
                   <button className="flex items-center hover:opacity-80">
                     Status <SortIcon column="status" />
@@ -236,9 +292,8 @@ export function StrategicBacklogSnapshotsSection({
               )}
               {isColumnVisible('period') && (
                 <th
-                  className="text-left px-4 py-3 w-40 cursor-pointer transition-colors"
+                  className="text-left px-4 py-3 w-40 cursor-pointer transition-colors text-xs font-semibold uppercase tracking-wide text-muted-foreground"
                   onClick={() => handleSort('period')}
-                  style={{ fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.3px', color: 'var(--text-muted)' }}
                 >
                   <button className="flex items-center hover:opacity-80">
                     Period <SortIcon column="period" />
@@ -247,9 +302,8 @@ export function StrategicBacklogSnapshotsSection({
               )}
               {isColumnVisible('updated') && (
                 <th
-                  className="text-left px-4 py-3 w-32 cursor-pointer transition-colors"
+                  className="text-left px-4 py-3 w-32 cursor-pointer transition-colors text-xs font-semibold uppercase tracking-wide text-muted-foreground"
                   onClick={() => handleSort('updated')}
-                  style={{ fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.3px', color: 'var(--text-muted)' }}
                 >
                   <button className="flex items-center hover:opacity-80">
                     Updated <SortIcon column="updated" />
@@ -259,7 +313,7 @@ export function StrategicBacklogSnapshotsSection({
               <th className="w-10"></th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="divide-y divide-border/50">
             {filteredSnapshots.length === 0 ? (
               <tr>
                 <td colSpan={visibleColumns.length + 1} className="px-4 py-16 text-center">
@@ -268,8 +322,8 @@ export function StrategicBacklogSnapshotsSection({
                       <Calendar className="h-6 w-6 text-[#8B949E]" />
                     </div>
                     <div>
-                      <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>No snapshots found</p>
-                      <p className="text-sm mt-1" style={{ color: 'var(--text-muted)' }}>Create a snapshot to define a planning period</p>
+                      <p className="text-sm font-medium text-foreground">No snapshots found</p>
+                      <p className="text-sm mt-1 text-muted-foreground">Create a snapshot to define a planning period</p>
                     </div>
                     {onCreateSnapshot && (
                       <Button 
@@ -287,27 +341,25 @@ export function StrategicBacklogSnapshotsSection({
             ) : (
               filteredSnapshots.map((snapshot) => {
                 const isSelected = selectedItemId === snapshot.id;
-                const themeName = snapshot.theme_id ? themeMap[snapshot.theme_id] : null;
+                const config = configMap[snapshot.id];
+                const themeNames = config?.themes?.map(tid => themeMap[tid]).filter(Boolean) || [];
+                const quarters = config?.quarters || [];
                 
                 return (
                   <tr
                     key={snapshot.id}
                     onClick={() => onSelectItem(snapshot)}
-                    className="cursor-pointer transition-colors group"
-                    style={{
-                      borderBottom: '1px solid var(--border-subtle)',
-                      background: isSelected ? 'var(--row-selected)' : 'transparent',
-                    }}
-                    onMouseEnter={(e) => { if (!isSelected) e.currentTarget.style.background = 'var(--row-hover)'; }}
-                    onMouseLeave={(e) => { e.currentTarget.style.background = isSelected ? 'var(--row-selected)' : 'transparent'; }}
+                    className={cn(
+                      "cursor-pointer transition-colors group hover:bg-muted/50",
+                      isSelected && "bg-muted/50"
+                    )}
                   >
                     {isColumnVisible('name') && (
                       <td className="px-4 py-3.5 min-w-0">
                         <div className="flex items-center gap-2">
-                          <Calendar className="h-4 w-4 shrink-0" style={{ color: 'var(--text-muted)' }} />
+                          <Calendar className="h-4 w-4 shrink-0 text-muted-foreground" />
                           <span
-                            className="text-sm font-medium block truncate"
-                            style={{ color: 'var(--text-primary)' }}
+                            className="text-sm font-medium text-foreground block truncate"
                             title={snapshot.name}
                           >
                             {snapshot.name}
@@ -315,15 +367,51 @@ export function StrategicBacklogSnapshotsSection({
                         </div>
                       </td>
                     )}
-                    {isColumnVisible('theme') && (
+                    {isColumnVisible('themes') && (
                       <td className="px-4 py-3.5">
-                        {themeName ? (
-                          <span className="inline-flex items-center gap-1.5 text-sm" style={{ color: 'var(--text-muted)' }}>
-                            <Layers className="h-3.5 w-3.5" />
-                            <span className="truncate max-w-[140px]" title={themeName}>{themeName}</span>
-                          </span>
+                        {themeNames.length > 0 ? (
+                          <div className="flex flex-wrap gap-1">
+                            {themeNames.slice(0, 2).map((name, idx) => (
+                              <Badge
+                                key={idx}
+                                variant="outline"
+                                className="text-[10px] px-1.5 py-0.5 bg-[#2563eb]/5 text-[#2563eb] border-[#2563eb]/20"
+                              >
+                                {name}
+                              </Badge>
+                            ))}
+                            {themeNames.length > 2 && (
+                              <Badge variant="outline" className="text-[10px] px-1.5 py-0.5">
+                                +{themeNames.length - 2}
+                              </Badge>
+                            )}
+                          </div>
                         ) : (
-                          <span className="text-sm" style={{ color: 'var(--text-muted)' }}>—</span>
+                          <span className="text-sm text-muted-foreground">—</span>
+                        )}
+                      </td>
+                    )}
+                    {isColumnVisible('quarters') && (
+                      <td className="px-4 py-3.5">
+                        {quarters.length > 0 ? (
+                          <div className="flex flex-wrap gap-1">
+                            {quarters.slice(0, 3).map((q, idx) => (
+                              <Badge
+                                key={idx}
+                                variant="outline"
+                                className="text-[10px] px-1.5 py-0.5 bg-[#0d9488]/5 text-[#0d9488] border-[#0d9488]/20"
+                              >
+                                {q}
+                              </Badge>
+                            ))}
+                            {quarters.length > 3 && (
+                              <Badge variant="outline" className="text-[10px] px-1.5 py-0.5">
+                                +{quarters.length - 3}
+                              </Badge>
+                            )}
+                          </div>
+                        ) : (
+                          <span className="text-sm text-muted-foreground">—</span>
                         )}
                       </td>
                     )}
@@ -333,7 +421,7 @@ export function StrategicBacklogSnapshotsSection({
                       </td>
                     )}
                     {isColumnVisible('period') && (
-                      <td className="px-4 py-3.5 text-sm" style={{ color: 'var(--text-muted)' }}>
+                      <td className="px-4 py-3.5 text-sm text-muted-foreground">
                         {snapshot.start_date && snapshot.end_date ? (
                           `${format(new Date(snapshot.start_date), 'MMM d')} - ${format(new Date(snapshot.end_date), 'MMM d, yyyy')}`
                         ) : (
@@ -342,14 +430,13 @@ export function StrategicBacklogSnapshotsSection({
                       </td>
                     )}
                     {isColumnVisible('updated') && (
-                      <td className="px-4 py-3.5 text-sm" style={{ color: 'var(--text-muted)' }}>
+                      <td className="px-4 py-3.5 text-sm text-muted-foreground">
                         {snapshot.updated_at ? format(new Date(snapshot.updated_at), 'MMM d, yyyy') : '—'}
                       </td>
                     )}
                     <td className="px-4 py-3.5">
                       <ChevronRight
-                        className="h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity"
-                        style={{ color: 'var(--text-muted)' }}
+                        className="h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground"
                       />
                     </td>
                   </tr>
