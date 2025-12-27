@@ -7877,6 +7877,27 @@ export type Database = {
           },
         ]
       }
+      key_sequences: {
+        Row: {
+          created_at: string
+          next_value: number
+          prefix: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          next_value?: number
+          prefix: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          next_value?: number
+          prefix?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       kr_work_contributions: {
         Row: {
           calculated_progress: number | null
@@ -8169,6 +8190,173 @@ export type Database = {
             columns: ["work_item_id"]
             isOneToOne: false
             referencedRelation: "features"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      mock_run_entity_map: {
+        Row: {
+          created_at: string
+          entity_id: string
+          entity_key: string | null
+          entity_type: string
+          id: string
+          run_id: string
+        }
+        Insert: {
+          created_at?: string
+          entity_id: string
+          entity_key?: string | null
+          entity_type: string
+          id?: string
+          run_id: string
+        }
+        Update: {
+          created_at?: string
+          entity_id?: string
+          entity_key?: string | null
+          entity_type?: string
+          id?: string
+          run_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mock_run_entity_map_run_id_fkey"
+            columns: ["run_id"]
+            isOneToOne: false
+            referencedRelation: "mock_runs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      mock_run_files: {
+        Row: {
+          created_at: string
+          extracted_text: string | null
+          file_name: string | null
+          file_size: number | null
+          id: string
+          mime_type: string
+          run_id: string
+          storage_path: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          extracted_text?: string | null
+          file_name?: string | null
+          file_size?: number | null
+          id?: string
+          mime_type: string
+          run_id: string
+          storage_path: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          extracted_text?: string | null
+          file_name?: string | null
+          file_size?: number | null
+          id?: string
+          mime_type?: string
+          run_id?: string
+          storage_path?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mock_run_files_run_id_fkey"
+            columns: ["run_id"]
+            isOneToOne: false
+            referencedRelation: "mock_runs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      mock_run_preview: {
+        Row: {
+          created_at: string
+          link_health_json: Json | null
+          preview_json: Json | null
+          run_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          link_health_json?: Json | null
+          preview_json?: Json | null
+          run_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          link_health_json?: Json | null
+          preview_json?: Json | null
+          run_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mock_run_preview_run_id_fkey"
+            columns: ["run_id"]
+            isOneToOne: true
+            referencedRelation: "mock_runs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      mock_runs: {
+        Row: {
+          config_json: Json | null
+          created_at: string
+          created_by: string
+          current_step: string | null
+          error_message: string | null
+          id: string
+          notes: string | null
+          progress: number
+          seed: string | null
+          source_name: string | null
+          source_type: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          config_json?: Json | null
+          created_at?: string
+          created_by: string
+          current_step?: string | null
+          error_message?: string | null
+          id?: string
+          notes?: string | null
+          progress?: number
+          seed?: string | null
+          source_name?: string | null
+          source_type: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          config_json?: Json | null
+          created_at?: string
+          created_by?: string
+          current_step?: string | null
+          error_message?: string | null
+          id?: string
+          notes?: string | null
+          progress?: number
+          seed?: string | null
+          source_name?: string | null
+          source_type?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mock_runs_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
