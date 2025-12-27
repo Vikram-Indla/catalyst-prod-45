@@ -3,16 +3,18 @@
  * Right panel with form, toggles, and all interactive elements
  */
 
-import { useState, FormEvent } from 'react';
+import { useState, useEffect, FormEvent } from 'react';
 import { UserType, AuthType, welcomeContent } from './constants';
 import './login-styles.css';
+
+const REMEMBERED_EMAIL_KEY = 'catalyst_remembered_email';
 
 interface LoginFormPanelProps {
   userType: UserType;
   authType: AuthType;
   onUserTypeChange: (type: UserType) => void;
   onAuthTypeChange: (type: AuthType) => void;
-  onSignIn: (email: string, password: string) => Promise<{ error?: Error | null }>;
+  onSignIn: (email: string, password: string, rememberMe: boolean) => Promise<{ error?: Error | null }>;
   onSignUp: (email: string, password: string, fullName: string) => Promise<{ error?: Error | null }>;
   onExternalSubmit: () => void;
   loading: boolean;
@@ -43,6 +45,15 @@ export function LoginFormPanel({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
 
+  // Load remembered email on mount
+  useEffect(() => {
+    const rememberedEmail = localStorage.getItem(REMEMBERED_EMAIL_KEY);
+    if (rememberedEmail) {
+      setSigninEmail(rememberedEmail);
+      setRememberMe(true);
+    }
+  }, []);
+
   const showAuthToggle = userType === 'existing';
   const showJiraSection = userType === 'existing';
 
@@ -60,9 +71,15 @@ export function LoginFormPanel({
     setIsSubmitting(true);
     setSubmitSuccess(false);
     
-    const result = await onSignIn(signinEmail, signinPassword);
+    const result = await onSignIn(signinEmail, signinPassword, rememberMe);
     
     if (!result.error) {
+      // Handle Remember Me - store email only (never password)
+      if (rememberMe) {
+        localStorage.setItem(REMEMBERED_EMAIL_KEY, signinEmail);
+      } else {
+        localStorage.removeItem(REMEMBERED_EMAIL_KEY);
+      }
       setSubmitSuccess(true);
     }
     setIsSubmitting(false);
