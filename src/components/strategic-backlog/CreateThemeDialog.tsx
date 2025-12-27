@@ -35,13 +35,13 @@ export function CreateThemeDialog({ open, onOpenChange, snapshotId }: CreateThem
   const createTheme = useCreateTheme();
 
   const handleSubmit = async () => {
-    if (!name.trim()) return;
+    if (!name.trim() || !snapshotId) return;
 
     await createTheme.mutateAsync({
       name,
       description,
       color_tag: colorTag,
-      snapshot_id: snapshotId && snapshotId.trim() !== '' ? snapshotId : undefined,
+      snapshot_id: snapshotId,
       status: status,
       start_date: startDate?.toISOString().split('T')[0],
       end_date: endDate?.toISOString().split('T')[0],
@@ -113,6 +113,16 @@ export function CreateThemeDialog({ open, onOpenChange, snapshotId }: CreateThem
 
         {/* Scrollable Content */}
         <div className="flex-1 overflow-y-auto px-6 py-5">
+          {!snapshotId ? (
+            <div className="flex flex-col items-center justify-center py-8 text-center">
+              <p className="text-amber-600 dark:text-amber-400 font-medium mb-2">
+                No Active Snapshot
+              </p>
+              <p className="text-sm text-muted-foreground">
+                Please create and activate a snapshot first before creating themes.
+              </p>
+            </div>
+          ) : (
           <div className="space-y-5">
             {/* Name */}
             <div className="space-y-2">
@@ -218,6 +228,7 @@ export function CreateThemeDialog({ open, onOpenChange, snapshotId }: CreateThem
               </div>
             </div>
           </div>
+          )}
         </div>
 
         {/* Footer */}
@@ -231,7 +242,7 @@ export function CreateThemeDialog({ open, onOpenChange, snapshotId }: CreateThem
           </Button>
           <Button
             onClick={handleSubmit}
-            disabled={!name.trim() || createTheme.isPending}
+            disabled={!name.trim() || !snapshotId || createTheme.isPending}
             className="bg-[#2563eb] hover:bg-[#1d4ed8] text-white px-6"
           >
             {createTheme.isPending ? 'Creating...' : 'Create Theme'}
