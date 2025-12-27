@@ -4,6 +4,12 @@
  */
 import { cn } from '@/lib/utils';
 import { Check, AlertTriangle, Layers, Target, Box } from 'lucide-react';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 
 interface CoveragePanelProps {
   themes: number;
@@ -62,7 +68,16 @@ export function StrategicBacklogCoveragePanel({
           {themesComplete ? (
             <Check className="h-4 w-4" style={{ color: '#0d9488' }} />
           ) : themes > 0 ? (
-            <AlertTriangle className="h-4 w-4" style={{ color: '#f59e0b' }} />
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <AlertTriangle className="h-4 w-4" style={{ color: '#f59e0b' }} />
+                </TooltipTrigger>
+                <TooltipContent side="left" className="max-w-[200px]">
+                  <p>Some themes have no objectives linked. Consider aligning objectives to improve strategic coverage.</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           ) : null}
         </button>
 
