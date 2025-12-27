@@ -180,28 +180,28 @@ export function ExecutiveReportsTab({
           <div className="space-y-2">
             <div className="flex justify-between items-center py-1.5 border-b border-border">
               <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-[#5c7c5c]" />
+                <div className="w-2 h-2 rounded-full bg-[#0d9488]" />
                 <span className="text-xs">Fully Allocated</span>
               </div>
-              <span className="font-semibold text-xs text-[#5c7c5c]">
+              <span className="font-semibold text-xs text-[#0d9488]">
                 {stats.full} ({totalFTE > 0 ? Math.round(stats.full/totalFTE*100) : 0}%)
               </span>
             </div>
             <div className="flex justify-between items-center py-1.5 border-b border-border">
               <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-[#8b7355]" />
+                <div className="w-2 h-2 rounded-full bg-[#f59e0b]" />
                 <span className="text-xs">Underallocated</span>
               </div>
-              <span className="font-semibold text-xs text-[#8b7355]">
+              <span className="font-semibold text-xs text-[#f59e0b]">
                 {stats.under} ({totalFTE > 0 ? Math.round(stats.under/totalFTE*100) : 0}%)
               </span>
             </div>
             <div className="flex justify-between items-center py-1.5">
               <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-[#8b5c5c]" />
+                <div className="w-2 h-2 rounded-full bg-[#ef4444]" />
                 <span className="text-xs">Overallocated</span>
               </div>
-              <span className="font-semibold text-xs text-[#8b5c5c]">
+              <span className="font-semibold text-xs text-[#ef4444]">
                 {stats.over} ({totalFTE > 0 ? Math.round(stats.over/totalFTE*100) : 0}%)
               </span>
             </div>
@@ -226,14 +226,14 @@ export function ExecutiveReportsTab({
               });
               
               const skillColors: Record<string, string> = {
-                'Frontend': '#5c7c5c',
-                'Backend': '#8b7355',
-                'Full Stack': '#c69c6d',
-                'DevOps': '#6b8e8e',
-                'QA': '#7c6b8e',
-                'Product': '#8e7c6b',
-                'Design': '#6b7c8e',
-                'Data': '#8e6b7c'
+                'Frontend': '#2563eb',
+                'Backend': '#0d9488',
+                'Full Stack': '#3b82f6',
+                'DevOps': '#6366f1',
+                'QA': '#8b5cf6',
+                'Product': '#ec4899',
+                'Design': '#f59e0b',
+                'Data': '#14b8a6'
               };
 
               const sortedSkills = Object.entries(skillCounts)
@@ -272,16 +272,16 @@ export function ExecutiveReportsTab({
           </h4>
           <ul className="space-y-2">
             <li className="flex justify-between items-center py-1.5 border-b border-border">
-              <span className="text-xs text-[#8b5c5c] flex items-center gap-1">
+              <span className="text-xs text-[#ef4444] flex items-center gap-1">
                 <AlertTriangle className="h-3 w-3" /> Overallocated
               </span>
-              <Badge variant="destructive" className="text-[10px] h-5 px-1.5 bg-[#8b5c5c]">
+              <Badge variant="destructive" className="text-[10px] h-5 px-1.5 bg-[#ef4444]">
                 {stats.over}
               </Badge>
             </li>
             <li className="flex justify-between items-center py-1.5 border-b border-border">
-              <span className="text-xs text-[#8b7355]">📋 Open Vacancies</span>
-              <Badge variant="secondary" className="text-[10px] h-5 px-1.5 bg-[#8b7355]/10 text-[#8b7355]">
+              <span className="text-xs text-[#f59e0b]">📋 Open Vacancies</span>
+              <Badge variant="secondary" className="text-[10px] h-5 px-1.5 bg-[rgba(245,158,11,0.1)] text-[#f59e0b]">
                 {openVacancyCount}
               </Badge>
             </li>
@@ -353,14 +353,14 @@ export function ExecutiveReportsTab({
                       </div>
                     </td>
                     <td className="p-2 text-center">
-                      <span className="font-bold text-sm text-[#c69c6d]">{totalAlloc}%</span>
+                      <span className="font-bold text-sm text-[#2563eb]">{totalAlloc}%</span>
                     </td>
                     <td className="p-2 text-center text-sm">{assignedResources.size}</td>
                     <td className="p-2 text-center text-sm">{hardAlloc}%</td>
                     <td className="p-2 text-center text-sm">{softAlloc}%</td>
                     <td className="p-2 text-center">
                       {projectVacancies > 0 ? (
-                        <Badge variant="destructive" className="text-[10px] h-5 px-1.5 bg-[#8b7355]/10 text-[#8b7355]">
+                        <Badge variant="destructive" className="text-[10px] h-5 px-1.5 bg-[rgba(245,158,11,0.1)] text-[#f59e0b]">
                           {projectVacancies}
                         </Badge>
                       ) : '-'}
@@ -395,9 +395,9 @@ export function ExecutiveReportsTab({
                     const util = calculateUtilization(resource, currentWeek, currentYear);
                     const status = util > 100 ? 'over' : util >= 80 ? 'full' : 'under';
                     const statusColors = {
-                      over: { bg: 'bg-[#8b5c5c]/10', text: 'text-[#8b5c5c]', label: 'Over' },
-                      full: { bg: 'bg-[#5c7c5c]/10', text: 'text-[#5c7c5c]', label: 'Full' },
-                      under: { bg: 'bg-[#8b7355]/10', text: 'text-[#8b7355]', label: 'Under' }
+                      over: { bg: 'bg-[rgba(239,68,68,0.1)]', text: 'text-[#ef4444]', label: 'Over' },
+                      full: { bg: 'bg-[rgba(13,148,136,0.1)]', text: 'text-[#0d9488]', label: 'Full' },
+                      under: { bg: 'bg-[rgba(245,158,11,0.1)]', text: 'text-[#f59e0b]', label: 'Under' }
                     };
 
                     const assignedProjects = resource.allocations
@@ -412,7 +412,7 @@ export function ExecutiveReportsTab({
                       <tr key={resource.id} className="border-b border-border last:border-b-0 hover:bg-muted/10">
                         <td className="p-2">
                           <div className="flex items-center gap-2">
-                            <div className="w-6 h-6 rounded-full bg-[#c69c6d]/20 flex items-center justify-center text-[10px] font-medium text-[#c69c6d]">
+                            <div className="w-6 h-6 rounded-full bg-[rgba(37,99,235,0.2)] flex items-center justify-center text-[10px] font-medium text-[#2563eb]">
                               {resource.initials}
                             </div>
                             <span className="text-sm font-medium">{resource.name}</span>

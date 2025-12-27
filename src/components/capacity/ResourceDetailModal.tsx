@@ -59,9 +59,9 @@ export function ResourceDetailModal({
 
   const getStatusBadge = (status: 'over' | 'full' | 'under', label: string) => {
     const styles = {
-      over: 'bg-[#c69c6d]/10 text-[#c69c6d] border-[#c69c6d]/20',
-      full: 'bg-[#5c7c5c]/10 text-[#5c7c5c] border-[#5c7c5c]/20',
-      under: 'bg-[#8b7355]/10 text-[#8b7355] border-[#8b7355]/20',
+      over: 'bg-[rgba(239,68,68,0.1)] text-[#ef4444] border-[rgba(239,68,68,0.2)]',
+      full: 'bg-[rgba(13,148,136,0.1)] text-[#0d9488] border-[rgba(13,148,136,0.2)]',
+      under: 'bg-[rgba(245,158,11,0.1)] text-[#f59e0b] border-[rgba(245,158,11,0.2)]',
     };
     return (
       <Badge variant="outline" className={cn("text-xs font-medium", styles[status])}>
@@ -80,8 +80,8 @@ export function ResourceDetailModal({
         <div className="flex-1 overflow-y-auto px-6 py-4 space-y-6">
           {/* Resource Header */}
           <div className="flex items-start gap-4">
-            <Avatar className="h-14 w-14 bg-[#c69c6d]/10 border-2 border-[#c69c6d]/20">
-              <AvatarFallback className="bg-[#c69c6d]/10 text-[#c69c6d] text-lg font-semibold">
+            <Avatar className="h-14 w-14 bg-[rgba(37,99,235,0.1)] border-2 border-[rgba(37,99,235,0.2)]">
+              <AvatarFallback className="bg-[rgba(37,99,235,0.1)] text-[#2563eb] text-lg font-semibold">
                 {resource.initials}
               </AvatarFallback>
             </Avatar>
@@ -92,9 +92,9 @@ export function ResourceDetailModal({
                 {getStatusBadge(statusInfo.status, statusInfo.label)}
                 <span className="text-sm font-medium">
                   <span className={cn(
-                    utilization > 100 ? "text-[#c69c6d]" : 
-                    utilization >= 80 ? "text-[#5c7c5c]" : 
-                    "text-[#8b7355]"
+                    utilization > 100 ? "text-[#ef4444]" : 
+                    utilization >= 80 ? "text-[#0d9488]" : 
+                    "text-[#f59e0b]"
                   )}>
                     {utilization}%
                   </span>
@@ -142,15 +142,15 @@ export function ResourceDetailModal({
                     key={`${year}-${week}`}
                     className={cn(
                       "p-3 rounded-lg text-center border",
-                      offset === 0 ? "border-[#c69c6d] bg-[#c69c6d]/5" : "border-border"
+                      offset === 0 ? "border-[#2563eb] bg-[rgba(37,99,235,0.05)]" : "border-border"
                     )}
                   >
                     <div className="text-xs text-muted-foreground mb-1">W{week}</div>
                     <div className={cn(
                       "text-lg font-semibold",
-                      weekUtil > 100 ? "text-[#c69c6d]" : 
-                      weekUtil >= 80 ? "text-[#5c7c5c]" : 
-                      "text-[#8b7355]"
+                      weekUtil > 100 ? "text-[#ef4444]" : 
+                      weekUtil >= 80 ? "text-[#0d9488]" : 
+                      "text-[#f59e0b]"
                     )}>
                       {weekUtil}%
                     </div>
@@ -196,13 +196,13 @@ export function ResourceDetailModal({
                       {allocations.map((allocation) => (
                         <div key={allocation.id} className="p-3 flex items-center justify-between bg-card">
                           <div className="flex items-center gap-2">
-                            <Badge 
+                          <Badge 
                               variant="outline" 
                               className={cn(
                                 "text-xs",
                                 allocation.type === 'HARD' 
-                                  ? "bg-[#5c7c5c]/10 text-[#5c7c5c] border-[#5c7c5c]/20" 
-                                  : "bg-[#8b7355]/10 text-[#8b7355] border-[#8b7355]/20"
+                                  ? "bg-[rgba(13,148,136,0.1)] text-[#0d9488] border-[rgba(13,148,136,0.2)]" 
+                                  : "bg-[rgba(245,158,11,0.1)] text-[#f59e0b] border-[rgba(245,158,11,0.2)]"
                               )}
                             >
                               {allocation.type}

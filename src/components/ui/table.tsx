@@ -54,7 +54,7 @@ const TableRow = React.forwardRef<HTMLTableRowElement, React.HTMLAttributes<HTML
       ref={ref}
       className={cn(
         "h-10 border-b border-gray-200 dark:border-gray-700 transition-colors hover:bg-gray-50 dark:hover:bg-gray-800",
-        selected && "bg-[#c69c6d]/10 dark:bg-[#d4a855]/10 border-l-2 border-l-[#c69c6d] dark:border-l-[#d4a855]",
+        selected && "bg-[rgba(37,99,235,0.1)] dark:bg-[rgba(96,165,250,0.1)] border-l-2 border-l-[#2563eb] dark:border-l-[#60a5fa]",
         className
       )}
       data-state={selected ? 'selected' : undefined}
