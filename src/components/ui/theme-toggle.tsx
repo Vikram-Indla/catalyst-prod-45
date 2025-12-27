@@ -34,9 +34,9 @@ export function ThemeToggle() {
               width: '44px',
               height: '24px',
               padding: '2px',
-              border: isDark ? '1px solid hsl(var(--secondary-champagne))' : '1px solid hsl(var(--secondary-bronze))',
+              border: isDark ? '1px solid #60a5fa' : '1px solid #93c5fd',
               cursor: isAdminRoute ? 'not-allowed' : 'pointer',
-              background: isDark ? 'hsl(var(--secondary-bronze))' : 'hsl(var(--secondary-champagne))',
+              background: isDark ? '#1d4ed8' : '#dbeafe',
             }}
           >
             <span
@@ -47,7 +47,7 @@ export function ThemeToggle() {
                 width: '20px',
                 height: '20px',
                 borderRadius: '50%',
-                background: '#FFFFFF',
+                background: isDark ? '#60a5fa' : '#2563eb',
                 boxShadow: '0 1px 3px rgba(0,0,0,0.15)',
                 display: 'flex',
                 alignItems: 'center',
@@ -56,9 +56,9 @@ export function ThemeToggle() {
               }}
             >
               {isDark ? (
-                <Moon style={{ width: '12px', height: '12px', color: 'var(--accent-color)' }} />
+                <Moon style={{ width: '12px', height: '12px', color: '#ffffff' }} />
               ) : (
-                <Sun style={{ width: '12px', height: '12px', color: 'var(--brand-gold)' }} />
+                <Sun style={{ width: '12px', height: '12px', color: '#ffffff' }} />
               )}
             </span>
           </button>
