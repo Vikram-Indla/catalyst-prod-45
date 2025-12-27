@@ -37,13 +37,14 @@ export function CreateObjectiveDialogV2({ open, onOpenChange }: CreateObjectiveD
   const [health, setHealth] = useState<ObjectiveHealthV2>('at_risk');
   const [notes, setNotes] = useState('');
 
-  // Fetch themes
+  // Fetch only active themes
   const { data: themes } = useQuery({
-    queryKey: ['strategic-themes'],
+    queryKey: ['strategic-themes-active'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('strategic_themes')
-        .select('id, name')
+        .select('id, name, status')
+        .eq('status', 'active')
         .order('name');
       if (error) throw error;
       return data;
@@ -208,7 +209,7 @@ export function CreateObjectiveDialogV2({ open, onOpenChange }: CreateObjectiveD
               {!themes?.length && (
                 <div className="flex items-center gap-2 text-xs text-amber-600 dark:text-amber-400">
                   <AlertCircle className="h-3 w-3" />
-                  Create a theme first to create objectives
+                  No active themes available. Only themes with "Active" status can be linked to objectives.
                 </div>
               )}
             </div>
