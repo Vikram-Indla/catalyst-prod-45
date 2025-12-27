@@ -68,6 +68,7 @@ import { LinkObjectivePicker } from './pickers/LinkObjectivePicker';
 import { LinkEpicPicker } from './pickers/LinkEpicPicker';
 import { ProgressSparkline, generateMockProgressHistory } from './ProgressSparkline';
 import { ProgressWithTooltip } from '@/components/shared/ProgressWithTooltip';
+import { ThemeStatusDropdown } from './ThemeStatusDropdown';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { formatDistanceToNow } from 'date-fns';
@@ -427,10 +428,28 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
       )
       .subscribe();
 
+    // Subscribe to theme_statuses changes for real-time status config updates
+    const statusesChannel = supabase
+      .channel('theme-statuses-config')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'theme_statuses',
+        },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ['theme-statuses'] });
+          queryClient.invalidateQueries({ queryKey: ['theme-statuses-active'] });
+        }
+      )
+      .subscribe();
+
     return () => {
       supabase.removeChannel(objectivesChannel);
       supabase.removeChannel(epicsChannel);
       supabase.removeChannel(themeChannel);
+      supabase.removeChannel(statusesChannel);
     };
   }, [theme?.id, isOpen, queryClient]);
 
@@ -567,6 +586,28 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
       queryClient.invalidateQueries({ queryKey: ['strategic_themes'] });
       queryClient.invalidateQueries({ queryKey: ['themes'] });
       toast.success('Theme name updated');
+    },
+  });
+
+  // Inline status update mutation - saves immediately
+  const updateStatusMutation = useMutation({
+    mutationFn: async (newStatus: string) => {
+      if (!theme) throw new Error('No theme selected');
+      const { error } = await supabase
+        .from('strategic_themes')
+        .update({ status: newStatus as 'proposed' | 'active' | 'done' | 'cancelled' })
+        .eq('id', theme.id);
+      if (error) throw error;
+      return newStatus;
+    },
+    onSuccess: (newStatus) => {
+      setFormData(prev => ({ ...prev, status: newStatus }));
+      queryClient.invalidateQueries({ queryKey: ['strategic_themes'] });
+      queryClient.invalidateQueries({ queryKey: ['themes'] });
+      toast.success('Status updated');
+    },
+    onError: () => {
+      toast.error('Failed to update status');
     },
   });
 
@@ -722,7 +763,13 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
                   >
                     <LinkIcon size={12} />
                   </button>
-                  <StatusChip status={formData.status || 'proposed'} />
+                  
+                  {/* Inline editable status dropdown */}
+                  <ThemeStatusDropdown
+                    currentStatus={formData.status || theme.status || 'draft'}
+                    onChange={(newStatus) => updateStatusMutation.mutate(newStatus)}
+                    isLoading={updateStatusMutation.isPending}
+                  />
                   
                   {/* Snapshot lens - shown once */}
                   {snapshot && (
@@ -740,7 +787,7 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
                   )}
                 </div>
 
-                {/* Editable title */}
+                {/* Editable title - always inline editable */}
                 <div className="flex items-center gap-1.5 group mb-2">
                   {isEditingName ? (
                     <Input
@@ -759,21 +806,21 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
                   ) : (
                     <>
                       <SheetTitle 
-                        className="truncate text-[16px] font-semibold"
+                        className="truncate text-[16px] font-semibold cursor-pointer hover:text-primary transition-colors"
                         style={{ color: 'var(--text-primary)' }}
+                        onClick={handleStartEditName}
+                        title="Click to edit"
                       >
                         {formData.name || theme.name}
                       </SheetTitle>
-                      {mode === 'edit' && (
-                        <button
-                          onClick={handleStartEditName}
-                          className="opacity-0 group-hover:opacity-100 p-1 rounded transition-all"
-                          style={{ color: 'var(--text-muted)' }}
-                          title="Rename"
-                        >
-                          <Pencil size={12} />
-                        </button>
-                      )}
+                      <button
+                        onClick={handleStartEditName}
+                        className="opacity-0 group-hover:opacity-100 p-1 rounded transition-all"
+                        style={{ color: 'var(--text-muted)' }}
+                        title="Rename"
+                      >
+                        <Pencil size={12} />
+                      </button>
                     </>
                   )}
                 </div>
@@ -787,56 +834,9 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
                 </div>
               </div>
 
-              {/* Right: Actions */}
+              {/* Right: Actions - simplified, no Edit button */}
               <div className="flex items-center gap-1.5 shrink-0">
-                {mode === 'read' ? (
-                  // READ MODE: Edit button
-                  <Button
-                    size="sm"
-                    className="h-7 px-3 text-[12px] font-medium"
-                    style={{ 
-                      backgroundColor: 'var(--brand-primary)', 
-                      color: 'white',
-                    }}
-                    onClick={() => setMode('edit')}
-                  >
-                    <Pencil size={12} className="mr-1.5" />
-                    Edit
-                  </Button>
-                ) : (
-                  // EDIT MODE: Save dropdown + Cancel
-                  <>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      className="h-7 px-3 text-[12px]"
-                      onClick={handleCancel}
-                    >
-                      Cancel
-                    </Button>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button
-                          size="sm"
-                          className="h-7 px-3 text-[12px] font-medium"
-                          style={{ 
-                            backgroundColor: 'var(--brand-primary)', 
-                            color: 'white',
-                          }}
-                          disabled={saveMutation.isPending}
-                        >
-                          {saveMutation.isPending ? 'Saving...' : 'Save'}
-                          <ChevronDown size={12} className="ml-1" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className="z-[400]">
-                        <DropdownMenuItem onSelect={handleSave}>Save</DropdownMenuItem>
-                        <DropdownMenuItem onSelect={handleSaveAndClose}>Save & Close</DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </>
-                )}
-
+                {/* More actions menu */}
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button 
@@ -848,7 +848,11 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
                       <MoreVertical size={14} />
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-44 z-[400]">
+                  <DropdownMenuContent align="end" className="w-44 z-[400] bg-background border-border">
+                    <DropdownMenuItem onSelect={() => setMode('edit')}>
+                      <Pencil size={12} className="mr-2" />
+                      Edit Details
+                    </DropdownMenuItem>
                     <DropdownMenuItem onSelect={() => duplicateMutation.mutate()}>
                       <Copy size={12} className="mr-2" />
                       Duplicate
