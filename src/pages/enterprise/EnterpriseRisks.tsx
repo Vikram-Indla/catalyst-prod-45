@@ -36,10 +36,10 @@ const palette = {
 };
 
 const CHART_COLORS = {
-  olive: '#5c7c5c',
-  bronze: '#8b7355',
+  olive: '#0d9488',
+  bronze: '#f59e0b',
   primary: '#2563eb',
-  champagne: '#d4b896',
+  champagne: '#94a3b8',
   grey: '#c8ccd0',
   critical: '#ef4444',
 };

@@ -16,8 +16,8 @@ export function EmptyTimelineState({ projectId, onCreateFeature }: EmptyTimeline
   return (
     <div className="flex-1 flex items-center justify-center p-8">
       <div className="text-center max-w-md">
-        <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-[rgba(198,156,109,0.15)] flex items-center justify-center">
-          <Calendar className="w-8 h-8 text-[#c69c6d]" />
+        <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-[rgba(37,99,235,0.15)] flex items-center justify-center">
+          <Calendar className="w-8 h-8 text-[#2563eb]" />
         </div>
 
         <h2 className="text-xl font-semibold mb-2">No Timeline Data</h2>

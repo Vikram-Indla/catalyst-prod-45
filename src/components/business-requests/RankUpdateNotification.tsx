@@ -32,7 +32,7 @@ export function RankUpdateNotification({
       <div 
         className="bg-gradient-to-r from-brand-primary/95 to-brand-primary-hover/95 backdrop-blur-sm text-white px-4 py-3 rounded-lg shadow-lg border border-brand-primary-hover/50 animate-in fade-in zoom-in-95 duration-300 whitespace-nowrap"
         style={{
-          boxShadow: '0 10px 30px -10px rgba(198, 156, 109, 0.5)'
+          boxShadow: '0 10px 30px -10px rgba(37, 99, 235, 0.5)'
         }}
       >
         <div className="flex items-center gap-3">

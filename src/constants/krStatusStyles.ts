@@ -3,37 +3,37 @@
  * Used by both legend and roadmap markers
  * 
  * AUTHORITATIVE COLOR MAPPING:
- * - Complete/On Track: Olive #5c7c5c (filled)
- * - Current/In Progress: Green #5c7c5c (outline + white fill)
- * - Pending/Planned: Champagne #d4b896 (outline)
- * - Overdue/Blocked: Terracotta #c75a4a (filled)
+ * - Complete/On Track: Teal #0d9488 (filled)
+ * - Current/In Progress: Teal #0d9488 (outline + white fill)
+ * - Pending/Planned: Gray #9ca3af (outline)
+ * - Overdue/Blocked: Red #ef4444 (filled)
  * - Not Started: Grey #c8ccd0 (muted)
- * - At Risk/Today Line: Bronze #8b7355 (solid line)
+ * - At Risk/Today Line: Amber #f59e0b (solid line)
  */
 
 export const KR_STATUS_STYLES = {
-  // Complete / On Track - Olive filled
+  // Complete / On Track - Teal filled
   complete: {
     label: 'Complete',
-    color: '#5c7c5c',
+    color: '#0d9488',
     filled: true,
   },
   'on-track': {
     label: 'Complete',
-    color: '#5c7c5c',
+    color: '#0d9488',
     filled: true,
   },
   
-  // Current / In Progress - Green outline + white fill
+  // Current / In Progress - Teal outline + white fill
   current: {
     label: 'Current',
-    color: '#5c7c5c',
+    color: '#0d9488',
     filled: false,
     fillColor: '#ffffff',
   },
   'in-progress': {
     label: 'Current',
-    color: '#5c7c5c',
+    color: '#0d9488',
     filled: false,
     fillColor: '#ffffff',
   },
@@ -72,19 +72,19 @@ export const KR_STATUS_STYLES = {
     filled: true,
   },
   
-  // At Risk - Bronze (for indicators)
+  // At Risk - Amber (for indicators)
   'at-risk': {
     label: 'At Risk',
-    color: '#8b7355',
+    color: '#f59e0b',
     filled: true,
   },
 } as const;
 
-// Today line color - Bronze
-export const TODAY_LINE_COLOR = '#8b7355';
+// Today line color - Blue
+export const TODAY_LINE_COLOR = '#2563eb';
 
-// Progress bar color - Gold
-export const PROGRESS_BAR_COLOR = '#c69c6d';
+// Progress bar color - Blue
+export const PROGRESS_BAR_COLOR = '#2563eb';
 
 // Normalize status strings to canonical keys
 export function normalizeKRStatus(status: string): keyof typeof KR_STATUS_STYLES {

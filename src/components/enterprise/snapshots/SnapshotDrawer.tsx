@@ -440,11 +440,11 @@ export function SnapshotDrawer({ isOpen, onClose, snapshotId, onSave }: Snapshot
         return { 
           label: 'at risk', 
           style: {
-            backgroundColor: 'rgba(198, 156, 109, 0.25)',
-            border: '1px solid rgba(198, 156, 109, 0.5)',
-            color: '#d4a574'
+            backgroundColor: 'rgba(245, 158, 11, 0.25)',
+            border: '1px solid rgba(245, 158, 11, 0.5)',
+            color: '#d97706'
           },
-          healthColor: '#c69c6d'
+          healthColor: '#f59e0b'
         };
       case 'OFF_TRACK':
         return { 
@@ -883,9 +883,9 @@ export function SnapshotDrawer({ isOpen, onClose, snapshotId, onSave }: Snapshot
                 <div 
                   className="p-3 rounded-lg text-sm"
                   style={{
-                    backgroundColor: 'rgba(198, 156, 109, 0.1)',
-                    border: '1px solid rgba(198, 156, 109, 0.3)',
-                    color: '#c69c6d'
+                    backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                    border: '1px solid rgba(245, 158, 11, 0.3)',
+                    color: '#d97706'
                   }}
                 >
                   No quarters selected. Please assign at least one quarter.
@@ -1017,9 +1017,9 @@ export function SnapshotDrawer({ isOpen, onClose, snapshotId, onSave }: Snapshot
                                 color: '#6b9b6b'
                               }
                             : {
-                                backgroundColor: 'rgba(198, 156, 109, 0.15)',
-                                border: '1px solid rgba(198, 156, 109, 0.3)',
-                                color: '#c69c6d'
+                                backgroundColor: 'rgba(37, 99, 235, 0.15)',
+                                border: '1px solid rgba(37, 99, 235, 0.3)',
+                                color: '#2563eb'
                               }
                         }
                       >
