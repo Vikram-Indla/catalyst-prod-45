@@ -69,7 +69,8 @@ export function FeatureWidget({
         }}
       />
       
-      <div className="relative flex items-start gap-3">
+      {/* Header row with icon and title aligned */}
+      <div className="relative flex items-center gap-3.5 mb-3">
         {/* Icon container */}
         <div
           className="flex-shrink-0 w-11 h-11 rounded-xl flex items-center justify-center transition-transform duration-300 group-hover:scale-110 group-hover:-rotate-3"
@@ -82,25 +83,25 @@ export function FeatureWidget({
           />
         </div>
         
-        {/* Text content */}
-        <div>
-          <h3 
-            className="text-sm font-bold mb-0.5"
-            style={{ 
-              color: loginColors.textPrimary,
-              fontFamily: "'Plus Jakarta Sans', sans-serif",
-            }}
-          >
-            {title}
-          </h3>
-          <p 
-            className="text-xs leading-relaxed"
-            style={{ color: loginColors.textMuted }}
-          >
-            {description}
-          </p>
-        </div>
+        {/* Title - directly in the flex row */}
+        <span 
+          className="text-[0.9375rem] font-bold leading-tight"
+          style={{ 
+            color: loginColors.textPrimary,
+            fontFamily: "'Plus Jakarta Sans', sans-serif",
+          }}
+        >
+          {title}
+        </span>
       </div>
+      
+      {/* Description - below header row with left padding */}
+      <p 
+        className="text-[0.8125rem] leading-relaxed pl-[58px]"
+        style={{ color: loginColors.textMuted }}
+      >
+        {description}
+      </p>
     </motion.div>
   );
 }

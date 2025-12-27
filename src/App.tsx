@@ -142,6 +142,7 @@ import AdminOverview from "./pages/admin/AdminOverview";
 import AuditActivityPage from "./pages/admin/AuditActivityPage";
 import KanbanSettings from "./pages/admin/KanbanSettings";
 import ResourceInventory from "./pages/admin/ResourceInventory";
+import MockDataGenerator from "./pages/admin/MockDataGenerator";
 import ProcessSteps from "./pages/admin/ProcessSteps";
 import CreateMenuConfig from "./pages/admin/CreateMenuConfig";
 import DeliveryPlatforms from "./pages/admin/DeliveryPlatforms";
@@ -769,6 +770,7 @@ const App = () => (
                 <Route path="incidents/conversion" element={<IncidentConversionRules />} />
                 <Route path="incidents/audit" element={<IncidentAuditCompliance />} />
                 <Route path="incidents/owning-teams" element={<IncidentOwningTeams />} />
+                <Route path="mock-data" element={<MockDataGenerator />} />
               </Route>
 
               <Route path="/items/epics/:epicId/status-report" element={<EpicStatusReport />} />
