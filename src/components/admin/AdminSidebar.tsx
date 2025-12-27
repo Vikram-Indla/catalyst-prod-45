@@ -18,7 +18,8 @@ import {
   Columns,
   Boxes,
   Code2,
-  AlertTriangle
+  AlertTriangle,
+  FlaskConical
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -94,6 +95,7 @@ const adminSections = [
       { label: 'Announcements', path: '/admin/announcements', icon: Megaphone },
       { label: 'Import Data', path: '/admin/import-data', icon: Upload },
       { label: 'Data Hygiene', path: '/admin/data-hygiene', icon: AlertTriangle },
+      { label: 'Mock Data Generator', path: '/admin/mock-data', icon: FlaskConical },
     ],
   },
 ];
