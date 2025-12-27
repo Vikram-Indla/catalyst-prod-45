@@ -5,7 +5,7 @@ import { ChevronRight, ChevronDown, GripVertical, ChevronLeft, Plus, X, List, Co
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
-import { ThemeDetailsDrawer } from './ThemeDetailsDrawer';
+import { CatalystThemeDrawer } from './CatalystThemeDrawer';
 import { ThemeColumnsDialog } from './ThemeColumnsDialog';
 import { ThemeFiltersDialog, ThemeFilters } from './ThemeFiltersDialog';
 import { ThemeKanbanView } from './ThemeKanbanView';
@@ -222,7 +222,7 @@ export function ThemeBacklog({ portfolioId, piId }: ThemeBacklogProps) {
           onThemeClick={handleThemeClick}
         />
 
-        <ThemeDetailsDrawer
+        <CatalystThemeDrawer
           theme={selectedTheme}
           isOpen={isDrawerOpen}
           onClose={() => {
@@ -543,7 +543,7 @@ export function ThemeBacklog({ portfolioId, piId }: ThemeBacklogProps) {
       </div>
 
       {/* Theme Details Drawer */}
-      <ThemeDetailsDrawer
+      <CatalystThemeDrawer
         theme={selectedTheme}
         isOpen={isDrawerOpen}
         onClose={() => {

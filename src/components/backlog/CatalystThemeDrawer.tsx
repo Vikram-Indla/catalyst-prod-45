@@ -1,21 +1,21 @@
 /**
  * =====================================================
- * Theme Intelligence Panel - Enterprise CIO-Grade Drawer
+ * CATALYST THEME DRAWER
  * =====================================================
  * 
- * Executive-grade Theme details drawer with READ/EDIT modes,
+ * Enterprise-grade Theme details drawer with auto-save,
  * KPI band, tabs layout, and enhanced link pickers.
- * NO HEALTH CONCEPT - Removed completely.
+ * Follows Catalyst V5 design system.
  */
 
-import { useState, useEffect, useRef, useMemo } from 'react';
+import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { 
-  Trash2, Copy, X, Pencil, Link as LinkIcon, ChevronDown, 
-  Maximize2, Minimize2, MoreVertical, Plus, ChevronRight,
+  Trash2, Copy, X, Pencil, Link as LinkIcon, 
+  MoreVertical, Plus, ChevronRight,
   Target, Layers, Clock, FileText, History, BarChart3,
-  AlertTriangle, Search, ArrowUpDown, Eye
+  AlertTriangle, Search, ArrowUpDown, Eye, ChevronDown
 } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
@@ -88,7 +88,7 @@ interface Theme {
   updated_at?: string;
 }
 
-interface ThemeDetailsDrawerProps {
+interface CatalystThemeDrawerProps {
   theme: Theme | null;
   isOpen: boolean;
   onClose: () => void;
@@ -148,26 +148,33 @@ function StatusChip({ status }: { status: string }) {
   );
 }
 
-// Progress bar with normalization
+// Progress bar with normalization - uses TEAL color per design system
 function ProgressBar({ value, showOverflowWarning = false }: { value: number | null; showOverflowWarning?: boolean }) {
   const { percent, overflow } = normalizeProgress(value);
-  const color = percent >= 70 ? 'var(--status-success)' : percent >= 40 ? 'var(--status-warning)' : 'var(--status-danger)';
+  
+  // Progress color based on completion: always teal for the fill
+  // Text color: neutral for 0%, blue for 1-99%, teal for 100%
+  const getTextColor = () => {
+    if (percent === 0) return 'var(--text-secondary)';
+    if (percent === 100) return 'hsl(var(--success))';
+    return 'var(--info)';
+  };
   
   return (
     <TooltipProvider>
       <div className="flex items-center gap-2">
         <div 
           className="w-16 h-1.5 rounded-full overflow-hidden"
-          style={{ backgroundColor: 'var(--progress-track)' }}
+          style={{ backgroundColor: 'hsl(var(--surface-2, var(--muted)))' }}
         >
           <div 
             className="h-full rounded-full transition-all"
-            style={{ width: `${percent}%`, backgroundColor: color }}
+            style={{ width: `${percent}%`, backgroundColor: 'hsl(var(--success))' }}
           />
         </div>
         <span 
           className="text-[10px] font-mono tabular-nums"
-          style={{ color: 'var(--text-muted)' }}
+          style={{ color: getTextColor() }}
         >
           {percent}%
         </span>
@@ -186,7 +193,7 @@ function ProgressBar({ value, showOverflowWarning = false }: { value: number | n
   );
 }
 
-// KPI Card component
+// KPI Card component with hover states
 function KPICard({ 
   label, 
   value, 
@@ -282,17 +289,13 @@ function TruncatedDescription({ content }: { content: string }) {
   );
 }
 
-export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawerProps) {
+export function CatalystThemeDrawer({ theme, isOpen, onClose }: CatalystThemeDrawerProps) {
   const queryClient = useQueryClient();
   
-  // Mode state: READ (default) or EDIT
-  const [mode, setMode] = useState<'read' | 'edit'>('read');
-  const [hasChanges, setHasChanges] = useState(false);
+  // Auto-save enabled - no edit mode needed
   const [formData, setFormData] = useState<Partial<Theme>>({});
-  const [isExpanded, setIsExpanded] = useState(false);
   const [isEditingName, setIsEditingName] = useState(false);
   const [editedName, setEditedName] = useState('');
-  const [showUnsavedChangesDialog, setShowUnsavedChangesDialog] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showLinkObjectiveDialog, setShowLinkObjectiveDialog] = useState(false);
   const [showLinkEpicDialog, setShowLinkEpicDialog] = useState(false);
@@ -318,8 +321,6 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
         snapshot_id: theme.snapshot_id,
       });
       setEditedName(theme.name);
-      setHasChanges(false);
-      setMode('read'); // Always open in read mode
       setActiveTab('overview');
     }
   }, [theme]);
@@ -565,8 +566,6 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
       queryClient.invalidateQueries({ queryKey: ['strategic_themes'] });
       queryClient.invalidateQueries({ queryKey: ['themes'] });
       toast.success('Theme saved');
-      setHasChanges(false);
-      setMode('read');
     },
     onError: () => {
       toast.error('Failed to save theme');
@@ -650,9 +649,8 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
 
   if (!theme) return null;
 
-  const drawerWidthClass = isExpanded
-    ? 'w-screen sm:w-[75vw] sm:max-w-[1200px]'
-    : 'w-screen sm:w-[65vw] sm:max-w-[900px]';
+  // Fixed drawer width (no expand button)
+  const drawerWidthClass = 'w-screen sm:w-[65vw] sm:max-w-[900px]';
 
   const handleCopyLink = () => {
     const url = `${window.location.origin}/backlog/themes/${theme.id}`;
@@ -682,42 +680,10 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
     }
   };
 
-  const handleAttemptClose = () => {
-    if (hasChanges) {
-      setShowUnsavedChangesDialog(true);
-    } else {
-      onClose();
-    }
-  };
-
-  const handleSave = () => saveMutation.mutate(formData);
-  const handleSaveAndClose = () => {
-    saveMutation.mutate(formData, { onSuccess: () => onClose() });
-  };
-
-  const handleCancel = () => {
-    if (hasChanges) {
-      setShowUnsavedChangesDialog(true);
-    } else {
-      setMode('read');
-    }
-  };
-
-  const handleDiscard = () => {
-    setFormData({
-      name: theme.name,
-      description: theme.description,
-      status: theme.status,
-      snapshot_id: theme.snapshot_id,
-    });
-    setHasChanges(false);
-    setMode('read');
-  };
-
-  const handleFieldChange = (field: string, value: any) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-    setHasChanges(true);
-  };
+  // Simplified close handler - auto-save means no unsaved changes prompt needed
+  const handleAttemptClose = useCallback(() => {
+    onClose();
+  }, [onClose]);
 
   const lastUpdated = theme.updated_at || theme.created_at;
 
@@ -1032,52 +998,12 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
                       </span>
                     </div>
                     
-                    {mode === 'read' ? (
-                      formData.description ? (
-                        <TruncatedDescription content={formData.description} />
-                      ) : (
-                        <p className="text-[12px]" style={{ color: 'var(--text-muted)' }}>
-                          No description provided
-                        </p>
-                      )
+                    {formData.description ? (
+                      <TruncatedDescription content={formData.description} />
                     ) : (
-                      <div className="space-y-3">
-                        <div className="space-y-1.5">
-                          <Label className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'var(--text-muted)' }}>
-                            State
-                          </Label>
-                          <Select 
-                            value={formData.status || 'proposed'} 
-                            onValueChange={(v) => handleFieldChange('status', v)}
-                          >
-                            <SelectTrigger 
-                              className="h-8 text-[12px]"
-                              style={{ 
-                                backgroundColor: 'var(--surface-bg)', 
-                                borderColor: 'var(--border-default)',
-                                color: 'var(--text-primary)'
-                              }}
-                            >
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent className="z-[400]">
-                              {Object.entries(THEME_STATES).map(([value, { label }]) => (
-                                <SelectItem key={value} value={value}>{label}</SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        </div>
-                        <div className="space-y-1.5">
-                          <Label className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'var(--text-muted)' }}>
-                            Description
-                          </Label>
-                          <RichTextEditor
-                            value={formData.description || ''}
-                            onChange={(value) => handleFieldChange('description', value)}
-                            placeholder="Describe the strategic intent..."
-                          />
-                        </div>
-                      </div>
+                      <p className="text-[12px]" style={{ color: 'var(--text-muted)' }}>
+                        No description provided
+                      </p>
                     )}
                   </section>
                 </TabsContent>
@@ -1356,37 +1282,6 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
           queryClient.invalidateQueries({ queryKey: ['theme-epics', theme?.id] });
         }}
       />
-
-      {/* Unsaved Changes Dialog */}
-      <AlertDialog open={showUnsavedChangesDialog} onOpenChange={setShowUnsavedChangesDialog}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Unsaved Changes</AlertDialogTitle>
-            <AlertDialogDescription>
-              You have unsaved changes. What would you like to do?
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction 
-              onClick={() => { 
-                setShowUnsavedChangesDialog(false); 
-                handleDiscard();
-                if (mode === 'read') onClose();
-              }} 
-              className="bg-destructive text-destructive-foreground"
-            >
-              Discard
-            </AlertDialogAction>
-            <AlertDialogAction 
-              onClick={() => { setShowUnsavedChangesDialog(false); handleSaveAndClose(); }} 
-              style={{ backgroundColor: 'var(--brand-primary)', color: 'white' }}
-            >
-              Save & Close
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
 
       {/* Delete Confirmation Dialog */}
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>

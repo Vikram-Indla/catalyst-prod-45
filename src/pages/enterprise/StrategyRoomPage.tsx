@@ -26,7 +26,7 @@ import { StrategyStack } from '@/components/strategy/StrategyStack';
 import { OkrTree } from '@/components/strategy/OkrTree';
 import { StrategyContextCard } from '@/components/strategy/StrategyContextCard';
 import { ObjectiveAnalyticsDrawer } from '@/modules/okr-v2';
-import { ThemeDetailsDrawer } from '@/components/backlog/ThemeDetailsDrawer';
+import { CatalystThemeDrawer } from '@/components/backlog/CatalystThemeDrawer';
 import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { PageChrome } from '@/components/layout/PageChrome';
@@ -314,7 +314,7 @@ export default function StrategyRoomPage() {
         }}
       />
 
-      <ThemeDetailsDrawer
+      <CatalystThemeDrawer
         theme={selectedTheme}
         isOpen={themeDrawerOpen}
         onClose={() => {

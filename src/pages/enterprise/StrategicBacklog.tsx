@@ -13,7 +13,7 @@ import { StrategicBacklogThemesSection } from '@/components/strategic-backlog/St
 import { StrategicBacklogSnapshotsSection } from '@/components/strategic-backlog/StrategicBacklogSnapshotsSection';
 import { StrategicBacklogObjectivesSection } from '@/components/strategic-backlog/StrategicBacklogObjectivesSection';
 import { StrategicBacklogEpicsSection } from '@/components/strategic-backlog/StrategicBacklogEpicsSection';
-import { ThemeDetailsDrawer } from '@/components/backlog/ThemeDetailsDrawer';
+import { CatalystThemeDrawer } from '@/components/backlog/CatalystThemeDrawer';
 import { EpicDetailsPanel } from '@/components/items/epics/EpicDetailsPanel';
 import { ObjectiveDrawerV2 } from '@/modules/okr-v2/components/ObjectiveDrawerV2';
 import { SnapshotDetailsDrawerV2 } from '@/components/strategy/snapshots/SnapshotDetailsDrawerV2';
@@ -274,7 +274,7 @@ export default function StrategicBacklog() {
 
         {/* Theme Details Drawer */}
         {selectedItem && selectedItemType === 'theme' && (
-          <ThemeDetailsDrawer
+          <CatalystThemeDrawer
             key={`theme-drawer-${selectedItem.id}`}
             theme={selectedItem}
             isOpen={true}

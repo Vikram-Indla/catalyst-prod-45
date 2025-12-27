@@ -42,7 +42,7 @@ import {
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { EpicDetailsPanel } from '@/components/items/epics/EpicDetailsPanel';
-import { ThemeDetailsDrawer } from '@/components/backlog/ThemeDetailsDrawer';
+import { CatalystThemeDrawer } from '@/components/backlog/CatalystThemeDrawer';
 import { ObjectiveAnalyticsDrawer } from '@/modules/okr-v2';
 import { BusinessRequestDrawer } from '@/components/business-requests/BusinessRequestDrawer';
 
@@ -851,7 +851,7 @@ export function RiskLinksTab({ riskId, businessRequestId, relatedItemId, relatio
 
     {/* Theme Details Drawer */}
     {openThemeId && linkedTheme && (
-      <ThemeDetailsDrawer
+      <CatalystThemeDrawer
         theme={linkedTheme as any}
         isOpen={!!openThemeId}
         onClose={() => setOpenThemeId(null)}
