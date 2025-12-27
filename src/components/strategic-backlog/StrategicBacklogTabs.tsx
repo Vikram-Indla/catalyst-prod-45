@@ -43,21 +43,19 @@ export function StrategicBacklogTabs({
             className={cn(
               "flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-2 text-xs sm:text-sm font-medium rounded-md transition-all whitespace-nowrap shrink-0",
               isActive
-                ? "bg-white dark:bg-[#161B22] shadow-sm"
-                : "hover:bg-[var(--surface-hover)]"
+                ? "bg-brand-primary text-white shadow-sm"
+                : "text-muted-foreground hover:bg-[var(--surface-hover)]"
             )}
-            style={{
-              color: isActive ? 'var(--text-primary)' : 'var(--text-muted)',
-            }}
           >
-            <WorkItemIcon type={tab.iconType} size="sm" />
+            <WorkItemIcon type={tab.iconType} size="sm" className={isActive ? "[&_*]:!text-white [&_*]:!fill-white/20" : ""} />
             <span className="hidden xs:inline sm:inline">{tab.label}</span>
             <span 
-              className="px-1.5 py-0.5 text-[10px] sm:text-[11px] font-semibold rounded-full min-w-[18px] sm:min-w-[20px] text-center"
-              style={{
-                background: isActive ? '#2563eb' : 'var(--border-default)',
-                color: isActive ? '#FFFFFF' : 'var(--text-muted)',
-              }}
+              className={cn(
+                "px-1.5 py-0.5 text-[10px] sm:text-[11px] font-semibold rounded-full min-w-[18px] sm:min-w-[20px] text-center",
+                isActive 
+                  ? "bg-white/20 text-white"
+                  : "bg-[var(--border-default)] text-[var(--text-muted)]"
+              )}
             >
               {count}
             </span>

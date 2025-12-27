@@ -100,27 +100,28 @@ function SortableHeader({
   );
 }
 
-// Status Badge matching Themes section style
+// Status Badge - Outlined style with dot indicator matching screenshot
 function StatusBadge({ status }: { status?: string | null }) {
-  const statusMap: Record<string, { label: string; bgColor: string }> = {
-    pending: { label: 'PENDING', bgColor: '#9ca3af' },
-    draft: { label: 'DRAFT', bgColor: '#9ca3af' },
-    in_progress: { label: 'IN PROGRESS', bgColor: '#2563eb' },
-    on_track: { label: 'ON TRACK', bgColor: '#0d9488' },
-    at_risk: { label: 'AT RISK', bgColor: '#f59e0b' },
-    off_track: { label: 'OFF TRACK', bgColor: '#ef4444' },
-    completed: { label: 'COMPLETED', bgColor: '#0d9488' },
-    paused: { label: 'PAUSED', bgColor: '#9ca3af' },
-    canceled: { label: 'CANCELED', bgColor: '#9ca3af' },
+  const statusMap: Record<string, { label: string; dotColor: string; borderColor: string; textColor: string }> = {
+    pending: { label: 'PENDING', dotColor: '#9ca3af', borderColor: '#e5e7eb', textColor: '#6b7280' },
+    draft: { label: 'DRAFT', dotColor: '#9ca3af', borderColor: '#e5e7eb', textColor: '#6b7280' },
+    in_progress: { label: 'IN PROGRESS', dotColor: '#2563eb', borderColor: '#93c5fd', textColor: '#1d4ed8' },
+    on_track: { label: 'ON TRACK', dotColor: '#10b981', borderColor: '#6ee7b7', textColor: '#059669' },
+    at_risk: { label: 'AT RISK', dotColor: '#f59e0b', borderColor: '#fcd34d', textColor: '#d97706' },
+    off_track: { label: 'OFF TRACK', dotColor: '#ef4444', borderColor: '#fca5a5', textColor: '#dc2626' },
+    completed: { label: 'COMPLETED', dotColor: '#10b981', borderColor: '#6ee7b7', textColor: '#059669' },
+    paused: { label: 'PAUSED', dotColor: '#9ca3af', borderColor: '#e5e7eb', textColor: '#6b7280' },
+    canceled: { label: 'CANCELED', dotColor: '#9ca3af', borderColor: '#e5e7eb', textColor: '#6b7280' },
   };
   
-  const config = statusMap[status || ''] || { label: 'DRAFT', bgColor: '#9ca3af' };
+  const config = statusMap[status || ''] || { label: 'DRAFT', dotColor: '#9ca3af', borderColor: '#e5e7eb', textColor: '#6b7280' };
   
   return (
     <span 
-      className="inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-semibold uppercase tracking-wider text-white"
-      style={{ backgroundColor: config.bgColor }}
+      className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-semibold uppercase tracking-wider border bg-white dark:bg-[#161B22]"
+      style={{ borderColor: config.borderColor, color: config.textColor }}
     >
+      <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: config.dotColor }} />
       {config.label}
     </span>
   );
@@ -282,33 +283,33 @@ export function StrategicBacklogObjectivesSection({
   const getProgressBar = (progress?: number | null, status?: string | null) => {
     const value = progress || 0;
     
-    let barColor = '#6b7280';
+    // Color based on status - matching screenshot
+    let barColor = '#d1d5db'; // grey default
     switch (status) {
       case 'on_track':
       case 'completed':
-        barColor = '#0d9488';
+        barColor = '#10b981'; // green
         break;
       case 'in_progress':
-        barColor = '#2563eb';
+        barColor = '#2563eb'; // blue
         break;
       case 'at_risk':
-        barColor = '#f59e0b';
+        barColor = '#f59e0b'; // amber
         break;
       case 'off_track':
-        barColor = '#ef4444';
+        barColor = '#ef4444'; // red
         break;
     }
 
     return (
-      <div className="flex items-center gap-2">
-        <div className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: barColor }} />
-        <div className="flex-1 h-1.5 bg-[#e8e8e8] dark:bg-[#2d333b] rounded-full overflow-hidden">
+      <div className="flex items-center gap-3">
+        <div className="flex-1 h-2 bg-[#e5e7eb] dark:bg-[#374151] rounded-full overflow-hidden min-w-[80px]">
           <div 
             className="h-full rounded-full transition-all"
             style={{ width: `${value}%`, backgroundColor: barColor }}
           />
         </div>
-        <span className="text-xs text-muted-foreground w-8 text-right tabular-nums">{value}%</span>
+        <span className="text-sm font-medium text-foreground w-10 text-right tabular-nums">{value}%</span>
       </div>
     );
   };
@@ -514,7 +515,7 @@ export function StrategicBacklogObjectivesSection({
                 >
                   {isColumnVisible('type') && (
                     <div className="flex items-center">
-                      <div className="w-7 h-7 rounded bg-brand-primary/10 flex items-center justify-center">
+                      <div className="w-9 h-9 rounded-full bg-brand-primary/10 flex items-center justify-center border border-brand-primary/20">
                         <Target className="h-4 w-4 text-brand-primary" />
                       </div>
                     </div>
@@ -527,7 +528,8 @@ export function StrategicBacklogObjectivesSection({
                     </div>
                   )}
                   {isColumnVisible('theme') && (
-                    <div className="flex items-center">
+                    <div className="flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full bg-brand-primary shrink-0" />
                       <span className="text-sm text-muted-foreground truncate">
                         {obj.theme_id ? themeLookup[obj.theme_id] || '—' : '—'}
                       </span>
@@ -580,7 +582,12 @@ export function StrategicBacklogObjectivesSection({
                   )}
                   {isColumnVisible('linked') && (
                     <div className="flex items-center justify-center">
-                      <span className="text-sm text-muted-foreground">
+                      <span className={cn(
+                        "inline-flex items-center justify-center min-w-[28px] h-7 px-2 rounded-lg text-sm font-medium",
+                        (linkedCounts[obj.id] || 0) > 0 
+                          ? "bg-brand-primary/10 text-brand-primary border border-brand-primary/20"
+                          : "text-muted-foreground"
+                      )}>
                         {linkedCounts[obj.id] || 0}
                       </span>
                     </div>

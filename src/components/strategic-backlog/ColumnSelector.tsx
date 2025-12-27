@@ -3,7 +3,7 @@
  * Matches Catalyst look & feel with popover style
  */
 import { useState, useEffect, useCallback } from 'react';
-import { Columns3, Check, RotateCcw } from 'lucide-react';
+import { LayoutGrid, Check, RotateCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Popover,
@@ -71,7 +71,7 @@ export function ColumnSelector({
             "text-sm text-muted-foreground"
           )}
         >
-          <Columns3 className="h-4 w-4" />
+          <LayoutGrid className="h-4 w-4" />
           Columns
         </Button>
       </PopoverTrigger>
