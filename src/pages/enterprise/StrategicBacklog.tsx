@@ -161,6 +161,11 @@ export default function StrategicBacklog() {
     epics: epics.length,
   }), [themes.length, snapshots.length, objectives.length, epics.length]);
 
+  // Get active snapshot for theme creation
+  const activeSnapshot = useMemo(() => {
+    return snapshots.find(s => s.status === 'ACTIVE');
+  }, [snapshots]);
+
   // Related counts
   const { data: objectiveCounts = {} } = useThemeObjCounts(themeIds);
   const { data: krCounts = {} } = useObjectiveKrCounts(objectives.map(o => o.id));
@@ -308,7 +313,7 @@ export default function StrategicBacklog() {
       <CreateThemeDialog
         open={showCreateTheme}
         onOpenChange={setShowCreateTheme}
-        snapshotId=""
+        snapshotId={activeSnapshot?.id}
       />
 
       <CreateSnapshotModal
