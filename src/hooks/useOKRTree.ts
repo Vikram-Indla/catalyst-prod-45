@@ -1,5 +1,6 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { useEffect } from 'react';
 
 export interface OKRTreeItem {
   id: string;
@@ -20,6 +21,33 @@ export interface OKRTreeItem {
 }
 
 export function useOKRTree(snapshotId?: string) {
+  const queryClient = useQueryClient();
+
+  // Subscribe to realtime changes for objectives
+  useEffect(() => {
+    const channel = supabase
+      .channel('okr-tree-realtime')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'objectives' },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ['okr-tree'] });
+        }
+      )
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'strategic_goals' },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ['okr-tree'] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [queryClient]);
+
   return useQuery({
     queryKey: ['okr-tree', snapshotId],
     queryFn: async () => {
