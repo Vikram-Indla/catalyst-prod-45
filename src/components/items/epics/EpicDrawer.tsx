@@ -32,8 +32,6 @@ import {
   X, 
   Pencil, 
   Link as LinkIcon, 
-  Maximize2, 
-  Minimize2,
   MoreVertical,
   Trash2,
   Copy,
@@ -102,7 +100,6 @@ export function EpicDrawer({ isOpen, onClose, epicId, onEpicChange }: EpicDrawer
   const [originalData, setOriginalData] = useState<Record<string, any>>({});
   const [isEditingName, setIsEditingName] = useState(false);
   const [editedName, setEditedName] = useState('');
-  const [isExpanded, setIsExpanded] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [showSavedIndicator, setShowSavedIndicator] = useState(false);
@@ -334,9 +331,6 @@ export function EpicDrawer({ isOpen, onClose, epicId, onEpicChange }: EpicDrawer
     }
   };
 
-  const toggleExpand = () => {
-    setIsExpanded(!isExpanded);
-  };
 
   const handleAdditionalOption = (action: string) => {
     switch (action) {
@@ -354,10 +348,8 @@ export function EpicDrawer({ isOpen, onClose, epicId, onEpicChange }: EpicDrawer
     setShowDeleteConfirm(false);
   };
 
-  // Drawer width - matches BusinessRequestDrawer
-  const drawerWidthClass = isExpanded 
-    ? 'fixed inset-0 w-screen h-screen max-w-none' 
-    : 'w-screen sm:w-[65vw] sm:max-w-[980px]';
+  // Fixed drawer width
+  const drawerWidthClass = 'w-screen sm:w-[65vw] sm:max-w-[980px]';
 
   if (!isOpen) return null;
 
@@ -534,18 +526,6 @@ export function EpicDrawer({ isOpen, onClose, epicId, onEpicChange }: EpicDrawer
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
-
-                {/* Expand/Collapse */}
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={toggleExpand}
-                  className="h-8 w-8 hover:bg-[var(--surface-hover,hsl(var(--muted)))] press-scale transition-smooth"
-                  style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}
-                  title={isExpanded ? 'Collapse' : 'Expand'}
-                >
-                  {isExpanded ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
-                </Button>
 
                 {/* Close */}
                 <Button 

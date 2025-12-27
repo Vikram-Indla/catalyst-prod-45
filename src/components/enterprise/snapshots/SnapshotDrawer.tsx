@@ -47,7 +47,6 @@ import {
   X, 
   Link2, 
   MoreVertical, 
-  Maximize2, 
   Calendar as CalendarIcon, 
   Layers, 
   Settings,
@@ -612,11 +611,6 @@ export function SnapshotDrawer({ isOpen, onClose, snapshotId, onSave }: Snapshot
               )}
             </DropdownMenuContent>
           </DropdownMenu>
-          
-          {/* Expand Icon */}
-          <Button variant="ghost" size="icon" className="h-8 w-8">
-            <Maximize2 className="h-4 w-4" />
-          </Button>
           
           {/* Close Icon */}
           <Button variant="ghost" size="icon" className="h-8 w-8" onClick={onClose}>

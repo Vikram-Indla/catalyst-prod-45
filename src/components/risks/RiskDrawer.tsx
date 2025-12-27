@@ -36,8 +36,6 @@ import {
   Pencil, 
   Link as LinkIcon, 
   ChevronDown, 
-  Maximize2, 
-  Minimize2,
   MoreVertical,
   Trash2,
   Copy,
@@ -73,7 +71,6 @@ export function RiskDrawer({ risk, isOpen, onClose, onUpdate }: RiskDrawerProps)
   const [originalData, setOriginalData] = useState<Partial<RiskFormData>>({});
   const [isEditingName, setIsEditingName] = useState(false);
   const [editedName, setEditedName] = useState('');
-  const [isExpanded, setIsExpanded] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showUnsavedChangesDialog, setShowUnsavedChangesDialog] = useState(false);
@@ -200,11 +197,6 @@ export function RiskDrawer({ risk, isOpen, onClose, onUpdate }: RiskDrawerProps)
     }
   };
 
-  // Toggle expand/collapse
-  const toggleExpand = () => {
-    setIsExpanded(!isExpanded);
-  };
-
   // Get risk level label
   const getRiskLevel = () => {
     if (risk?.related_item_id) {
@@ -213,10 +205,8 @@ export function RiskDrawer({ risk, isOpen, onClose, onUpdate }: RiskDrawerProps)
     return 'Enterprise Risk';
   };
 
-  // Get drawer width classes
-  const drawerWidthClass = isExpanded 
-    ? 'w-screen sm:w-[70vw] sm:max-w-[1120px]' 
-    : 'w-screen sm:w-[65vw] sm:max-w-[980px]';
+  // Fixed drawer width
+  const drawerWidthClass = 'w-screen sm:w-[65vw] sm:max-w-[980px]';
 
   if (!isOpen || !risk) return null;
 
@@ -315,16 +305,6 @@ export function RiskDrawer({ risk, isOpen, onClose, onUpdate }: RiskDrawerProps)
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
-                
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={toggleExpand}
-                  className="h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-muted/50"
-                  title={isExpanded ? 'Collapse' : 'Expand'}
-                >
-                  {isExpanded ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
-                </Button>
                 
                 <Button 
                   variant="ghost" 

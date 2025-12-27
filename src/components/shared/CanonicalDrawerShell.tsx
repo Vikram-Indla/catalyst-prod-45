@@ -12,7 +12,7 @@
  * - Entity ID in gold text with link icon
  * - Editable title
  * - Gold Save dropdown
- * - Kebab menu, expand/close icons
+ * - Kebab menu, close icon
  * - Status row (optional)
  * - executive-tab styled tabs
  * - Unsaved changes protection
@@ -45,8 +45,6 @@ import {
   Pencil,
   Link as LinkIcon,
   ChevronDown,
-  Maximize2,
-  Minimize2,
   MoreVertical,
 } from 'lucide-react';
 import { toast } from 'sonner';
@@ -127,7 +125,6 @@ export function CanonicalDrawerShell({
   kebabMenuItems = [],
   description,
 }: CanonicalDrawerShellProps) {
-  const [isExpanded, setIsExpanded] = useState(false);
   const [isEditingName, setIsEditingName] = useState(false);
   const [editedName, setEditedName] = useState(entityTitle);
   const [showUnsavedChangesDialog, setShowUnsavedChangesDialog] = useState(false);
@@ -143,10 +140,8 @@ export function CanonicalDrawerShell({
     setEditedName(entityTitle);
   }
 
-  // Width classes based on expanded state
-  const drawerWidthClass = isExpanded
-    ? 'w-screen sm:w-[70vw] sm:max-w-[1120px]'
-    : 'w-screen sm:w-[65vw] sm:max-w-[980px]';
+  // Fixed drawer width
+  const drawerWidthClass = 'w-screen sm:w-[65vw] sm:max-w-[980px]';
 
   // Copy link handler
   const handleCopyLink = () => {
@@ -203,10 +198,6 @@ export function CanonicalDrawerShell({
     }
   };
 
-  // Toggle expand/collapse
-  const toggleExpand = () => {
-    setIsExpanded(!isExpanded);
-  };
 
   // Handle save
   const handleSave = () => {
@@ -334,17 +325,6 @@ export function CanonicalDrawerShell({
                     </DropdownMenuContent>
                   </DropdownMenu>
                 )}
-
-                {/* Expand/collapse button */}
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={toggleExpand}
-                  className="h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-muted/50"
-                  title={isExpanded ? 'Collapse' : 'Expand'}
-                >
-                  {isExpanded ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
-                </Button>
 
                 {/* Close button */}
                 <Button

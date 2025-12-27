@@ -29,8 +29,6 @@ import {
   RefreshCw, 
   X, 
   Link as LinkIcon,
-  Maximize2,
-  Minimize2,
   Layers,
   Calendar,
   CalendarIcon,
@@ -173,7 +171,6 @@ interface DependencyDetailsDrawerProps {
 export function DependencyDetailsDrawer({ open, onClose, dependencyId }: DependencyDetailsDrawerProps) {
   const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState('details');
-  const [isExpanded, setIsExpanded] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [showSavedIndicator, setShowSavedIndicator] = useState(false);
@@ -594,14 +591,9 @@ export function DependencyDetailsDrawer({ open, onClose, dependencyId }: Depende
     toast.success('Link copied to clipboard');
   };
 
-  const toggleExpand = () => {
-    setIsExpanded(!isExpanded);
-  };
 
-  // Drawer width classes
-  const drawerWidthClass = isExpanded 
-    ? 'w-screen sm:w-[70vw] sm:max-w-[1120px]' 
-    : 'w-screen sm:w-[65vw] sm:max-w-[980px]';
+  // Fixed drawer width
+  const drawerWidthClass = 'w-screen sm:w-[65vw] sm:max-w-[980px]';
 
   if (!open) return null;
 
@@ -828,17 +820,6 @@ export function DependencyDetailsDrawer({ open, onClose, dependencyId }: Depende
                     </DropdownMenuContent>
                   </DropdownMenu>
                 )}
-
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={toggleExpand}
-                  className="h-8 w-8 hover:bg-[var(--surface-hover,hsl(var(--muted)))]"
-                  style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}
-                  title={isExpanded ? 'Collapse' : 'Expand'}
-                >
-                  {isExpanded ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
-                </Button>
 
                 <Button 
                   variant="ghost" 
