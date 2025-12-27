@@ -5,6 +5,8 @@
 
 import { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Button } from '@/components/ui/button';
+import { Loader2 } from 'lucide-react';
 import { MockDataHeader } from '@/components/admin/mock-data/MockDataHeader';
 import { RunSetupSection } from '@/components/admin/mock-data/RunSetupSection';
 import { ConfigurationWizard } from '@/components/admin/mock-data/ConfigurationWizard';
@@ -119,6 +121,27 @@ export default function MockDataGenerator() {
             />
           </TabsContent>
         </Tabs>
+
+        {/* Floating CTA to avoid "missing button" issues */}
+        {activeTab === 'setup' && (
+          <div className="fixed bottom-6 right-6 z-50">
+            <Button
+              type="submit"
+              form="create-run-form"
+              disabled={isLoading}
+              className="shadow-md"
+            >
+              {isLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Creating...
+                </>
+              ) : (
+                'Create Run'
+              )}
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   );
