@@ -256,8 +256,3 @@ export const SetupStep: React.FC<SetupStepProps> = ({ session }) => {
     </div>
   );
 };
-        </div>
-      )}
-    </div>
-  );
-};
