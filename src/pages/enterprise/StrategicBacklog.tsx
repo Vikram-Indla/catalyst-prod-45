@@ -8,7 +8,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { PageChrome } from '@/components/layout/PageChrome';
 import { StrategicBacklogTabs } from '@/components/strategic-backlog/StrategicBacklogTabs';
-import { StrategicBacklogCoveragePanel } from '@/components/strategic-backlog/StrategicBacklogCoveragePanel';
+
 import { StrategicBacklogThemesSection } from '@/components/strategic-backlog/StrategicBacklogThemesSection';
 import { StrategicBacklogSnapshotsSection } from '@/components/strategic-backlog/StrategicBacklogSnapshotsSection';
 import { StrategicBacklogObjectivesSection } from '@/components/strategic-backlog/StrategicBacklogObjectivesSection';
@@ -239,23 +239,10 @@ export default function StrategicBacklog() {
         </div>
 
         {/* Main Content Area */}
-        <div className="flex-1 flex flex-col lg:flex-row overflow-hidden min-h-0">
+        <div className="flex-1 overflow-hidden min-h-0">
           {/* Main Content with Padding */}
-          <div className="flex-1 flex flex-col lg:flex-row gap-4 lg:gap-6 px-3 sm:px-4 lg:px-6 pb-6 overflow-hidden min-h-0">
-            {/* Left: Coverage Panel - Hidden on mobile/tablet, visible on lg+ */}
-            <div className="hidden lg:block w-72 shrink-0">
-              <StrategicBacklogCoveragePanel
-                themes={counts.themes}
-                themesWithObjectives={themesWithObjectives}
-                objectives={counts.objectives}
-                epics={counts.epics}
-                snapshots={counts.snapshots}
-                onNavigate={handleSectionChange}
-              />
-            </div>
-
-            {/* Right: Table Content - Full width on mobile/tablet */}
-            <div className="flex-1 overflow-y-auto overflow-x-hidden min-h-0 w-full">
+          <div className="h-full px-3 sm:px-4 lg:px-6 pb-6 overflow-y-auto overflow-x-hidden">
+            {/* Table Content - Full width */}
               {activeSection === 'themes' && (
                 <StrategicBacklogThemesSection
                   themes={themes}
@@ -309,7 +296,6 @@ export default function StrategicBacklog() {
                   onCreateEpic={() => setShowCreateEpic(true)}
                 />
               )}
-            </div>
           </div>
         </div>
 
