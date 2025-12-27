@@ -30,13 +30,34 @@ export function RunSetupSection({ onCreateRun, isLoading }: RunSetupSectionProps
   const [sourceType, setSourceType] = useState('synthetic');
   const [seed, setSeed] = useState('');
   const [notes, setNotes] = useState('');
+  const [file, setFile] = useState<File | null>(null);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = e.target.files?.[0];
+    if (selectedFile) {
+      setFile(selectedFile);
+    }
+  };
+
+  const getAcceptedFileTypes = () => {
+    switch (sourceType) {
+      case 'pdf': return '.pdf';
+      case 'csv': return '.csv';
+      case 'excel': return '.xlsx,.xls';
+      case 'markdown': return '.md,.markdown';
+      case 'text': return '.txt';
+      default: return '*';
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     await onCreateRun({
       sourceType,
+      sourceName: file?.name,
       seed: seed || undefined,
       notes: notes || undefined,
+      file: file || undefined,
     });
   };
 
@@ -93,18 +114,42 @@ export function RunSetupSection({ onCreateRun, isLoading }: RunSetupSectionProps
               <div className="flex items-center justify-center w-full">
                 <label
                   htmlFor="file"
-                  className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer border-border hover:border-primary/50 hover:bg-muted/50"
+                  className={`flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer transition-colors ${
+                    file 
+                      ? 'border-primary bg-primary/5' 
+                      : 'border-border hover:border-primary/50 hover:bg-muted/50'
+                  }`}
                 >
                   <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                    <Upload className="w-8 h-8 mb-2 text-muted-foreground" />
-                    <p className="mb-1 text-sm text-muted-foreground">
-                      <span className="font-semibold">Click to upload</span> or drag and drop
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {sourceType.toUpperCase()} files only
-                    </p>
+                    {file ? (
+                      <>
+                        <FileSpreadsheet className="w-8 h-8 mb-2 text-primary" />
+                        <p className="mb-1 text-sm font-medium text-primary">
+                          {file.name}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          Click to change file
+                        </p>
+                      </>
+                    ) : (
+                      <>
+                        <Upload className="w-8 h-8 mb-2 text-muted-foreground" />
+                        <p className="mb-1 text-sm text-muted-foreground">
+                          <span className="font-semibold">Click to upload</span> or drag and drop
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          {sourceType.toUpperCase()} files only
+                        </p>
+                      </>
+                    )}
                   </div>
-                  <input id="file" type="file" className="hidden" />
+                  <input 
+                    id="file" 
+                    type="file" 
+                    className="hidden" 
+                    accept={getAcceptedFileTypes()}
+                    onChange={handleFileChange}
+                  />
                 </label>
               </div>
             </div>

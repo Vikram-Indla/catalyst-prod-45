@@ -8830,6 +8830,7 @@ export type Database = {
           created_by: string
           current_step: string | null
           error_message: string | null
+          file_path: string | null
           id: string
           notes: string | null
           progress: number
@@ -8845,6 +8846,7 @@ export type Database = {
           created_by: string
           current_step?: string | null
           error_message?: string | null
+          file_path?: string | null
           id?: string
           notes?: string | null
           progress?: number
@@ -8860,6 +8862,7 @@ export type Database = {
           created_by?: string
           current_step?: string | null
           error_message?: string | null
+          file_path?: string | null
           id?: string
           notes?: string | null
           progress?: number
