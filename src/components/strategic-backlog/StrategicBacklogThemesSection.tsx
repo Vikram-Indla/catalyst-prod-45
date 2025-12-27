@@ -165,15 +165,15 @@ export function StrategicBacklogThemesSection({
 
   const isColumnVisible = (key: string) => visibleColumns.includes(key);
 
-  // Calculate visible column count for grid
+  // Calculate visible column count for grid - responsive columns for desktop
   const visibleCount = visibleColumns.length;
   const gridCols = `1fr ${isColumnVisible('status') ? '120px ' : ''}${isColumnVisible('objectives') ? '120px ' : ''}${isColumnVisible('updated') ? '140px' : ''}`.trim();
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4 w-full">
       {/* Search + Column Selector */}
-      <div className="flex items-center justify-between gap-4">
-        <div className="relative flex-1 max-w-md">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4">
+        <div className="relative flex-1 sm:max-w-md">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <input
             type="text"
@@ -191,8 +191,62 @@ export function StrategicBacklogThemesSection({
         />
       </div>
 
-      {/* Table Card Container */}
-      <div className="bg-[hsl(var(--surface-0))] border border-[hsl(var(--border-default))] rounded-xl shadow-[var(--shadow-elev-1)] overflow-hidden">
+      {/* Mobile Card View */}
+      <div className="md:hidden space-y-3">
+        {filteredThemes.length === 0 ? (
+          <div className="bg-[hsl(var(--surface-0))] border border-[hsl(var(--border-default))] rounded-xl p-8 text-center">
+            <div className="w-12 h-12 rounded-full mb-4 bg-[hsl(var(--surface-2))] flex items-center justify-center mx-auto">
+              <Layers className="h-6 w-6 text-[hsl(var(--text-muted))]" />
+            </div>
+            <p className="text-sm font-medium text-[hsl(var(--text-secondary))]">No themes found</p>
+            <p className="text-xs text-[hsl(var(--text-muted))] mt-1">
+              {searchQuery ? "Try adjusting your search query" : "Create your first strategic theme to get started"}
+            </p>
+            {onCreateTheme && !searchQuery && (
+              <Button 
+                size="sm" 
+                onClick={onCreateTheme}
+                className="mt-4 bg-[hsl(var(--brand-primary))] hover:bg-[hsl(var(--brand-primary-hover))] text-white gap-1.5"
+              >
+                <Plus className="h-4 w-4" />
+                Create Theme
+              </Button>
+            )}
+          </div>
+        ) : (
+          filteredThemes.map((theme) => {
+            const isSelected = selectedItemId === theme.id;
+            return (
+              <button
+                key={theme.id}
+                onClick={() => onSelectItem(theme)}
+                className={cn(
+                  "w-full text-left bg-[hsl(var(--surface-0))] border border-[hsl(var(--border-default))] rounded-xl p-4 transition-all",
+                  "hover:bg-[hsl(var(--surface-2))] hover:border-[hsl(var(--brand-primary))]",
+                  isSelected && "border-[hsl(var(--brand-primary))] bg-[hsl(var(--surface-2))]"
+                )}
+              >
+                <div className="flex items-start justify-between gap-3 mb-3">
+                  <span className="text-sm font-medium text-[hsl(var(--text-primary))]">{theme.name}</span>
+                  <StatusBadge status={theme.status} statuses={themeStatuses} />
+                </div>
+                <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                  <div className="flex items-center gap-1.5">
+                    <Target className="h-3.5 w-3.5" />
+                    <span>{objectiveCounts[theme.id] || 0} objectives</span>
+                  </div>
+                  {theme.updated_at && (
+                    <span>{format(new Date(theme.updated_at), 'MMM d, yyyy')}</span>
+                  )}
+                </div>
+              </button>
+            );
+          })
+        )}
+      </div>
+
+      {/* Desktop Table View */}
+      <div className="hidden md:block bg-[hsl(var(--surface-0))] border border-[hsl(var(--border-default))] rounded-xl shadow-[var(--shadow-elev-1)] overflow-hidden">
         {/* Header */}
         <div 
           className="grid gap-4 px-5 py-3.5 bg-[hsl(var(--surface-1))] border-b border-[hsl(var(--border-default))]"

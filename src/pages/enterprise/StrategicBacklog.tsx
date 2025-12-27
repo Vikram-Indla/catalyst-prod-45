@@ -241,8 +241,8 @@ export default function StrategicBacklog() {
         {/* Main Content Area */}
         <div className="flex-1 flex flex-col lg:flex-row overflow-hidden min-h-0">
           {/* Main Content with Padding */}
-          <div className="flex-1 flex flex-col lg:flex-row gap-4 lg:gap-6 px-4 lg:px-6 pb-6 overflow-hidden min-h-0">
-            {/* Left: Coverage Panel - Hidden on mobile, visible on lg+ */}
+          <div className="flex-1 flex flex-col lg:flex-row gap-4 lg:gap-6 px-3 sm:px-4 lg:px-6 pb-6 overflow-hidden min-h-0">
+            {/* Left: Coverage Panel - Hidden on mobile/tablet, visible on lg+ */}
             <div className="hidden lg:block w-72 shrink-0">
               <StrategicBacklogCoveragePanel
                 themes={counts.themes}
@@ -254,8 +254,8 @@ export default function StrategicBacklog() {
               />
             </div>
 
-            {/* Right: Table Content */}
-            <div className="flex-1 overflow-y-auto overflow-x-hidden min-h-0">
+            {/* Right: Table Content - Full width on mobile/tablet */}
+            <div className="flex-1 overflow-y-auto overflow-x-hidden min-h-0 w-full">
               {activeSection === 'themes' && (
                 <StrategicBacklogThemesSection
                   themes={themes}
