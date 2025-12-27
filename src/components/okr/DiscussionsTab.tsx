@@ -71,13 +71,13 @@ export function DiscussionsTab({ objectiveId }: DiscussionsTabProps) {
             value={newComment}
             onChange={(e) => setNewComment(e.target.value)}
             rows={3}
-            className="w-full resize-none rounded-md border border-[#E1E4E8] dark:border-[#30363D] bg-white dark:bg-[#0D1117] px-3 py-2 text-sm text-[#24292F] dark:text-[#E6EDF3] placeholder:text-[#8B949E] dark:placeholder:text-[#6E7681] focus:outline-none focus:ring-1 focus:ring-[#C69C6D] focus:border-[#C69C6D]"
+            className="w-full resize-none rounded-md border border-[#E1E4E8] dark:border-[#30363D] bg-white dark:bg-[#0D1117] px-3 py-2 text-sm text-[#24292F] dark:text-[#E6EDF3] placeholder:text-[#8B949E] dark:placeholder:text-[#6E7681] focus:outline-none focus:ring-1 focus:ring-[#2563eb] focus:border-[#2563eb]"
           />
           <div className="flex justify-end">
             <button
               onClick={handleSubmit}
               disabled={!newComment.trim() || addCommentMutation.isPending}
-              className="inline-flex items-center gap-2 px-3 py-1.5 text-sm font-medium rounded-md bg-[#C69C6D] hover:bg-[#B8905F] text-white disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="inline-flex items-center gap-2 px-3 py-1.5 text-sm font-medium rounded-md bg-[#2563eb] hover:bg-[#1d4ed8] text-white disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               <Send className="w-4 h-4" />
               Post Comment

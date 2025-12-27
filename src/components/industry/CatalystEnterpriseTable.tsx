@@ -258,14 +258,14 @@ function ColumnHeader<T>({
             className={cn(
               "p-0.5 rounded transition-colors",
               hasFilters 
-                ? "text-[#c69c6d] dark:text-[#d4b896]" 
+                ? "text-[#2563eb] dark:text-[#60a5fa]" 
                 : "text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300"
             )}
             title="Filter"
           >
             <Icons.Filter />
             {hasFilters && (
-              <span className="ml-0.5 text-[10px] bg-[#c69c6d] text-white dark:bg-[#d4b896] dark:text-gray-900 rounded-full px-1">
+              <span className="ml-0.5 text-[10px] bg-[#2563eb] text-white dark:bg-[#60a5fa] dark:text-gray-900 rounded-full px-1">
                 {filterValues.length}
               </span>
             )}
@@ -294,7 +294,7 @@ function ColumnHeader<T>({
                 className={cn(
                   "flex items-center gap-2.5 px-3 py-2.5 cursor-pointer text-sm transition-colors",
                   selectedFilters.includes(opt.value) 
-                    ? "bg-[#c69c6d]/10 dark:bg-[#c69c6d]/20" 
+                    ? "bg-[rgba(37,99,235,0.1)] dark:bg-[rgba(37,99,235,0.2)]" 
                     : "hover:bg-gray-50 dark:hover:bg-gray-800"
                 )}
               >
@@ -304,8 +304,8 @@ function ColumnHeader<T>({
                   onChange={() => handleFilterToggle(opt.value)}
                   className={cn(
                     "w-4 h-4 rounded transition-all cursor-pointer",
-                    "border-gray-300 text-[#c69c6d] focus:ring-[#c69c6d] focus:ring-offset-0",
-                    "dark:border-gray-500 dark:bg-gray-800 dark:checked:bg-[#c69c6d] dark:checked:border-[#c69c6d]"
+                    "border-gray-300 text-[#2563eb] focus:ring-[#2563eb] focus:ring-offset-0",
+                    "dark:border-gray-500 dark:bg-gray-800 dark:checked:bg-[#2563eb] dark:checked:border-[#2563eb]"
                   )}
                 />
                 <span className="flex-1 text-gray-700 dark:text-gray-300">{opt.label}</span>
@@ -327,8 +327,8 @@ function ColumnHeader<T>({
               onClick={applyFilters}
               className={cn(
                 "px-4 py-1.5 text-sm font-medium rounded transition-colors",
-                "bg-[#c69c6d] text-white hover:bg-[#b8894f]",
-                "dark:bg-[#c69c6d] dark:hover:bg-[#b8894f]"
+                "bg-[#2563eb] text-white hover:bg-[#1d4ed8]",
+                "dark:bg-[#2563eb] dark:hover:bg-[#1d4ed8]"
               )}
             >
               Apply
@@ -833,7 +833,7 @@ export function CatalystEnterpriseTable<T extends { id: string }>({
               onClick={handleUndo}
               className={cn(
                 "flex items-center gap-1.5 px-3 py-1.5 rounded text-sm font-medium transition-colors",
-                "bg-[#c69c6d] text-white hover:bg-[#b8894f]"
+                "bg-[#2563eb] text-white hover:bg-[#1d4ed8]"
               )}
             >
               Undo (Ctrl+Z)

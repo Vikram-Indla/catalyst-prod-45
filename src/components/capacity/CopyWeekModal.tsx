@@ -147,7 +147,7 @@ export function CopyWeekModal({
           <Button variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
           <Button 
             onClick={handleCopy}
-            className="bg-[#c69c6d] hover:bg-[#8b7355] text-white"
+            className="bg-[#2563eb] hover:bg-[#1d4ed8] text-white"
             disabled={mode === 'selected' && selectedResources.length === 0}
           >
             Copy to W{toWeek}

@@ -139,7 +139,7 @@ export function IncidentActivitySection({ incident }: IncidentActivitySectionPro
 
       {/* Comment Composer */}
       <div className="flex gap-3 mb-5">
-        <div className="w-8 h-8 shrink-0 rounded-full bg-[#C69C6D] text-white text-xs font-medium flex items-center justify-center">V</div>
+        <div className="w-8 h-8 shrink-0 rounded-full bg-[#2563eb] text-white text-xs font-medium flex items-center justify-center">V</div>
         <div className="flex-1">
           {!isComposerExpanded ? (
             <div 

@@ -170,8 +170,8 @@ export function CatalystCreateDemand({ data, onChange }: DemandDetailsTabProps) 
   // Compact section header
   const SectionHeader = ({ icon: Icon, title }: { icon: React.ElementType; title: string }) => (
     <div className="flex items-center gap-2 pb-2 mb-3 border-b border-gray-200 dark:border-gray-700">
-      <Icon className="w-4 h-4 text-[#5c7c5c]" />
-      <h3 className="text-xs font-semibold uppercase tracking-wide text-[#5c7c5c]">
+      <Icon className="w-4 h-4 text-[#2563eb]" />
+      <h3 className="text-xs font-semibold uppercase tracking-wide text-[#2563eb]">
         {title}
       </h3>
     </div>

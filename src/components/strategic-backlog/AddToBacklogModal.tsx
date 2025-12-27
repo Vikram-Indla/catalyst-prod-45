@@ -105,14 +105,14 @@ export function AddToBacklogModal({ open, onOpenChange, snapshotId }: AddToBackl
                       "flex flex-col items-center py-5 px-3 rounded-xl transition-all",
                       "bg-white dark:bg-[#161B22]",
                       isSelected 
-                        ? "border-2 border-[#C69C6D] shadow-sm" 
-                        : "border border-[#E1E4E8] dark:border-[#30363D] hover:border-[rgba(198,156,109,0.3)]"
+                        ? "border-2 border-[#2563eb] shadow-sm" 
+                        : "border border-[#E1E4E8] dark:border-[#30363D] hover:border-[rgba(37,99,235,0.3)]"
                     )}
                   >
                     <div className={cn(
                       "w-12 h-12 rounded-full flex items-center justify-center mb-3",
                       isSelected 
-                        ? "bg-[#C69C6D] text-white" 
+                        ? "bg-[#2563eb] text-white" 
                         : "bg-[#F6F8FA] dark:bg-[#21262D] text-[#8B949E]"
                     )}>
                       <Icon className="h-5 w-5" />
@@ -139,7 +139,7 @@ export function AddToBacklogModal({ open, onOpenChange, snapshotId }: AddToBackl
               disabled={isCreateDisabled}
               className={cn(
                 "px-4 py-2 rounded-lg text-sm font-medium transition-colors",
-                "bg-[#C69C6D] hover:bg-[#B8905F] text-white",
+                "bg-[#2563eb] hover:bg-[#1d4ed8] text-white",
                 "disabled:opacity-50 disabled:cursor-not-allowed"
               )}
             >

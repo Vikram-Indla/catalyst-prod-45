@@ -746,7 +746,7 @@ export function StrategyAnalyticsModal({
                     <BarChart3 className="h-3.5 w-3.5" />
                     <span>{filterLabel}</span>
                     {selectedThemeIds.length > 0 && (
-                      <span className="px-1.5 py-0.5 bg-[#C69C6D] rounded-full text-[10px] font-semibold text-white">
+                      <span className="px-1.5 py-0.5 bg-[#2563eb] rounded-full text-[10px] font-semibold text-white">
                         {selectedThemeIds.length}/{themes.length}
                       </span>
                     )}
@@ -845,7 +845,7 @@ export function StrategyAnalyticsModal({
               </button>
               <button 
                 onClick={onClose} 
-                className="px-4 py-2 rounded-lg text-sm font-medium bg-[#C69C6D] hover:bg-[#B8905F] text-white"
+                className="px-4 py-2 rounded-lg text-sm font-medium bg-[#2563eb] hover:bg-[#1d4ed8] text-white"
               >
                 Close
               </button>

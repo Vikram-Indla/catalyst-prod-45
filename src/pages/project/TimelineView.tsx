@@ -153,7 +153,7 @@ export default function TimelineView() {
                     className={cn(
                       'px-3 py-1.5 text-xs border-r last:border-r-0 transition-colors',
                       zoom === level
-                        ? 'bg-[#c69c6d] text-white'
+                        ? 'bg-[#2563eb] text-white'
                         : 'bg-white text-gray-600 hover:bg-gray-50'
                     )}
                   >

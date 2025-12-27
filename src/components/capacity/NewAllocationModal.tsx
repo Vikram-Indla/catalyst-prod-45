@@ -164,9 +164,9 @@ export function NewAllocationModal({
           </div>
 
           {willExceed && resourceId && (
-            <div className="flex items-center gap-2 p-3 bg-[#c69c6d]/10 border border-[#c69c6d]/20 rounded-lg text-sm">
-              <AlertTriangle className="h-4 w-4 text-[#c69c6d] flex-shrink-0" />
-              <span className="text-[#8b7355]">
+            <div className="flex items-center gap-2 p-3 bg-[rgba(245,158,11,0.1)] border border-[rgba(245,158,11,0.2)] rounded-lg text-sm">
+              <AlertTriangle className="h-4 w-4 text-[#f59e0b] flex-shrink-0" />
+              <span className="text-[#d97706]">
                 This will exceed 100% allocation ({currentUtilization}% + {percentage}% = {currentUtilization + percentage}%)
               </span>
             </div>
@@ -196,7 +196,7 @@ export function NewAllocationModal({
           <Button 
             onClick={handleSubmit}
             disabled={!isValid}
-            className="bg-[#c69c6d] hover:bg-[#8b7355] text-white"
+            className="bg-[#2563eb] hover:bg-[#1d4ed8] text-white"
           >
             Create Allocation
           </Button>
