@@ -1,9 +1,9 @@
 /**
  * Strategic Backlog - Epics Section
- * Pixel-perfect table with column selector
+ * Pixel-perfect table matching Themes section styling
  */
 import { useState, useMemo } from 'react';
-import { Search, ChevronRight, ArrowUpDown, ArrowUp, Plus, Box } from 'lucide-react';
+import { Search, ChevronUp, ChevronDown, Plus, Box } from 'lucide-react';
 import { WorkItemIcon } from '@/components/ja/icons/WorkItemIcon';
 import type { StrategicTheme } from '@/types/strategicBacklog';
 import { cn } from '@/lib/utils';
@@ -13,11 +13,11 @@ import { Button } from '@/components/ui/button';
 
 // Column definitions for Epics table
 const EPIC_COLUMNS: ColumnDefinition[] = [
-  { key: 'name', label: 'Epic', defaultVisible: true },
+  { key: 'name', label: 'Epic', defaultVisible: true, required: true },
   { key: 'theme', label: 'Theme', defaultVisible: true, width: 'w-52' },
-  { key: 'status', label: 'State', defaultVisible: true, width: 'w-24' },
-  { key: 'features', label: 'Features', defaultVisible: true, width: 'w-24' },
-  { key: 'updated', label: 'Updated', defaultVisible: true, width: 'w-32' },
+  { key: 'status', label: 'State', defaultVisible: true, width: 'w-28' },
+  { key: 'features', label: 'Features', defaultVisible: true, width: 'w-28' },
+  { key: 'updated', label: 'Updated', defaultVisible: true, width: 'w-36' },
 ];
 
 const STORAGE_KEY = 'strategic_backlog_columns_epics';
@@ -46,6 +46,63 @@ interface EpicsSectionProps {
   onCreateEpic?: () => void;
 }
 
+type SortColumn = 'name' | 'theme' | 'status' | 'features' | 'updated';
+
+// Sortable header with stacked chevrons - matching Themes section
+function SortableHeader({ 
+  label, 
+  column, 
+  currentSort, 
+  direction, 
+  onSort,
+}: { 
+  label: string; 
+  column: SortColumn; 
+  currentSort: SortColumn; 
+  direction: 'asc' | 'desc'; 
+  onSort: (col: SortColumn) => void;
+}) {
+  const isActive = currentSort === column;
+  return (
+    <button
+      onClick={() => onSort(column)}
+      className="group flex items-center gap-1.5 text-muted-foreground hover:text-foreground transition-colors"
+    >
+      <span className="text-[11px] font-bold uppercase tracking-wider">{label}</span>
+      <span className={cn(
+        "flex flex-col -space-y-1",
+        isActive ? "text-primary" : "text-muted-foreground"
+      )}>
+        <ChevronUp className={cn("h-3 w-3", isActive && direction === 'asc' ? "opacity-100" : "opacity-40")} />
+        <ChevronDown className={cn("h-3 w-3", isActive && direction === 'desc' ? "opacity-100" : "opacity-40")} />
+      </span>
+    </button>
+  );
+}
+
+// Status Badge matching Themes section style
+function StatusBadge({ status }: { status?: string | null }) {
+  const statusMap: Record<string, { label: string; bgColor: string }> = {
+    active: { label: 'ACTIVE', bgColor: '#2563eb' },
+    in_progress: { label: 'IN PROGRESS', bgColor: '#2563eb' },
+    draft: { label: 'DRAFT', bgColor: '#9ca3af' },
+    backlog: { label: 'BACKLOG', bgColor: '#9ca3af' },
+    done: { label: 'DONE', bgColor: '#0d9488' },
+    completed: { label: 'COMPLETED', bgColor: '#0d9488' },
+  };
+  
+  const config = statusMap[status || ''] || { label: 'DRAFT', bgColor: '#9ca3af' };
+  
+  return (
+    <span 
+      className="inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-semibold uppercase tracking-wider text-white"
+      style={{ backgroundColor: config.bgColor }}
+    >
+      {config.label}
+    </span>
+  );
+}
+
 export function StrategicBacklogEpicsSection({ 
   epics,
   themes, 
@@ -58,7 +115,7 @@ export function StrategicBacklogEpicsSection({
   featureCounts,
   onCreateEpic,
 }: EpicsSectionProps) {
-  const [sortColumn, setSortColumn] = useState<'name' | 'theme' | 'status' | 'features' | 'updated'>('name');
+  const [sortColumn, setSortColumn] = useState<SortColumn>('name');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
   const [visibleColumns, setVisibleColumns] = useColumnVisibility(EPIC_COLUMNS, STORAGE_KEY);
 
@@ -116,7 +173,7 @@ export function StrategicBacklogEpicsSection({
     return result;
   }, [epics, searchQuery, sortColumn, sortDirection, themeLookup, featureCounts]);
 
-  const handleSort = (column: typeof sortColumn) => {
+  const handleSort = (column: SortColumn) => {
     if (sortColumn === column) {
       setSortDirection(prev => prev === 'asc' ? 'desc' : 'asc');
     } else {
@@ -125,51 +182,23 @@ export function StrategicBacklogEpicsSection({
     }
   };
 
-  const getStatusBadge = (status?: string | null) => {
-    const isActive = status === 'active' || status === 'in_progress';
-    return (
-      <span className={cn(
-        "inline-flex px-2 py-0.5 rounded",
-        "text-[10px] font-semibold uppercase tracking-wider",
-        isActive 
-          ? "bg-teal-100 dark:bg-teal-900/30 text-teal-700 dark:text-teal-400 border border-teal-300 dark:border-teal-700"
-          : "bg-[#F6F8FA] dark:bg-[#21262D] text-[#57606A] dark:text-[#8B949E] border border-[#E1E4E8] dark:border-[#30363D]"
-      )}>
-        {isActive ? 'ACTIVE' : 'DRAFT'}
-      </span>
-    );
-  };
-
-  const SortIcon = ({ column }: { column: typeof sortColumn }) => {
-    if (sortColumn === column) {
-      return <ArrowUp className={cn("h-3 w-3 ml-1", sortDirection === 'desc' && "rotate-180")} />;
-    }
-    return <ArrowUpDown className="h-3 w-3 ml-1 opacity-40" />;
-  };
-
   const isColumnVisible = (key: string) => visibleColumns.includes(key);
 
+  // Grid columns matching Themes section pattern
+  const gridCols = `1fr ${isColumnVisible('theme') ? '200px ' : ''}${isColumnVisible('status') ? '120px ' : ''}${isColumnVisible('features') ? '120px ' : ''}${isColumnVisible('updated') ? '140px' : ''}`.trim();
+
   return (
-    <div className="space-y-4">
+    <div className="flex flex-col gap-4 w-full">
       {/* Search + Column Selector */}
-      <div className="flex items-center justify-between gap-4">
-        <div className={cn(
-          "flex items-center gap-2 px-3 py-2 rounded-lg flex-1 max-w-md",
-          "bg-white dark:bg-[#0D1117]",
-          "border border-[#E1E4E8] dark:border-[#30363D]",
-          "focus-within:border-[#2563eb] focus-within:ring-1 focus-within:ring-[rgba(37,99,235,0.3)]"
-        )}>
-          <Search className="h-4 w-4 text-[#8B949E] dark:text-[#6E7681]" />
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4">
+        <div className="relative flex-1 sm:max-w-md">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <input
             type="text"
             placeholder="Search epics..."
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
-            className={cn(
-              "flex-1 bg-transparent text-sm outline-none",
-              "text-[#24292F] dark:text-[#E6EDF3]",
-              "placeholder:text-[#8B949E] dark:placeholder:text-[#6E7681]"
-            )}
+            className="w-full pl-10 pr-4 py-2 bg-background border border-border rounded-md text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary/50 focus:border-primary transition-colors"
           />
         </div>
         <ColumnSelector
@@ -180,145 +209,204 @@ export function StrategicBacklogEpicsSection({
         />
       </div>
 
-      {/* Table */}
-      <div className="bg-surface border border-border rounded-lg overflow-hidden">
-        <table className="w-full">
-          <thead className="bg-muted/50 border-b border-border">
-            <tr>
-              {isColumnVisible('name') && (
-                <th 
-                  className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider cursor-pointer hover:text-foreground transition-colors"
-                  onClick={() => handleSort('name')}
-                >
-                  <button className="flex items-center">
-                    Epic <SortIcon column="name" />
-                  </button>
-                </th>
-              )}
-              {isColumnVisible('theme') && (
-                <th 
-                  className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider w-52 cursor-pointer hover:text-foreground transition-colors"
-                  onClick={() => handleSort('theme')}
-                >
-                  <button className="flex items-center">
-                    Theme <SortIcon column="theme" />
-                  </button>
-                </th>
-              )}
-              {isColumnVisible('status') && (
-                <th 
-                  className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider w-24 cursor-pointer hover:text-foreground transition-colors"
-                  onClick={() => handleSort('status')}
-                >
-                  <button className="flex items-center">
-                    State <SortIcon column="status" />
-                  </button>
-                </th>
-              )}
-              {isColumnVisible('features') && (
-                <th 
-                  className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider w-24 cursor-pointer hover:text-foreground transition-colors"
-                  onClick={() => handleSort('features')}
-                >
-                  <button className="flex items-center">
-                    Features <SortIcon column="features" />
-                  </button>
-                </th>
-              )}
-              {isColumnVisible('updated') && (
-                <th 
-                  className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider w-32 cursor-pointer hover:text-foreground transition-colors"
-                  onClick={() => handleSort('updated')}
-                >
-                  <button className="flex items-center">
-                    Updated <SortIcon column="updated" />
-                  </button>
-                </th>
-              )}
-              <th className="w-10"></th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-border/50">
-            {isLoading ? (
-              <tr>
-                <td colSpan={visibleColumns.length + 1} className="px-4 py-12 text-center text-muted-foreground">
-                  Loading epics...
-                </td>
-              </tr>
-            ) : filteredEpics.length === 0 ? (
-              <tr>
-                <td colSpan={visibleColumns.length + 1} className="px-4 py-16 text-center">
-                  <div className="flex flex-col items-center gap-4">
-                    <div className="w-12 h-12 rounded-full bg-[#F6F8FA] dark:bg-[#21262D] flex items-center justify-center">
-                      <Box className="h-6 w-6 text-[#8B949E]" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium text-foreground">No epics found</p>
-                      <p className="text-sm mt-1 text-muted-foreground">Create epics to organize your work items</p>
-                    </div>
-                    {onCreateEpic && (
-                      <Button 
-                        size="sm" 
-                        onClick={onCreateEpic}
-                        className="bg-blue-600 hover:bg-blue-700 text-white gap-1.5"
-                      >
-                        <Plus className="h-4 w-4" />
-                        Create Epic
-                      </Button>
-                    )}
-                  </div>
-                </td>
-              </tr>
-            ) : (
-              filteredEpics.map((epic) => {
-                const isSelected = selectedItemId === epic.id;
-                return (
-                  <tr
-                    key={epic.id}
-                    onClick={() => onSelectItem(epic)}
-                    className={cn(
-                      "cursor-pointer hover:bg-[rgba(92,124,92,0.08)] transition-colors",
-                      isSelected && "bg-[rgba(92,124,92,0.08)] border-l-2 border-l-brand-primary"
-                    )}
-                  >
-                    {isColumnVisible('name') && (
-                      <td className="px-4 py-3">
-                        <div className="flex items-center gap-2">
-                          <WorkItemIcon type="epic" size={14} />
-                          <span className="text-sm font-medium text-foreground">{epic.name}</span>
-                        </div>
-                      </td>
-                    )}
-                    {isColumnVisible('theme') && (
-                      <td className="px-4 py-3 text-sm text-muted-foreground">
-                        {epic.theme_id ? themeLookup[epic.theme_id] || '—' : '—'}
-                      </td>
-                    )}
-                    {isColumnVisible('status') && (
-                      <td className="px-4 py-3">
-                        {getStatusBadge(epic.status)}
-                      </td>
-                    )}
-                    {isColumnVisible('features') && (
-                      <td className="px-4 py-3 text-sm text-muted-foreground">
-                        {featureCounts[epic.id] || 0}
-                      </td>
-                    )}
-                    {isColumnVisible('updated') && (
-                      <td className="px-4 py-3 text-sm text-muted-foreground">
-                        {epic.updated_at ? format(new Date(epic.updated_at), 'MMM d, yyyy') : '—'}
-                      </td>
-                    )}
-                    <td className="px-4 py-3">
-                      <ChevronRight className="h-4 w-4 text-muted-foreground" />
-                    </td>
-                  </tr>
-                );
-              })
+      {/* Mobile Card View */}
+      <div className="md:hidden space-y-3">
+        {isLoading ? (
+          <div className="bg-[hsl(var(--surface-0))] border border-[hsl(var(--border-default))] rounded-xl p-8 text-center text-muted-foreground">
+            Loading epics...
+          </div>
+        ) : filteredEpics.length === 0 ? (
+          <div className="bg-[hsl(var(--surface-0))] border border-[hsl(var(--border-default))] rounded-xl p-8 text-center">
+            <div className="w-12 h-12 rounded-full mb-4 bg-[hsl(var(--surface-2))] flex items-center justify-center mx-auto">
+              <Box className="h-6 w-6 text-[hsl(var(--text-muted))]" />
+            </div>
+            <p className="text-sm font-medium text-[hsl(var(--text-secondary))]">No epics found</p>
+            <p className="text-xs text-[hsl(var(--text-muted))] mt-1">Create epics to organize your work items</p>
+            {onCreateEpic && (
+              <Button 
+                size="sm" 
+                onClick={onCreateEpic}
+                className="mt-4 bg-[hsl(var(--brand-primary))] hover:bg-[hsl(var(--brand-primary-hover))] text-white gap-1.5"
+              >
+                <Plus className="h-4 w-4" />
+                Create Epic
+              </Button>
             )}
-          </tbody>
-        </table>
+          </div>
+        ) : (
+          filteredEpics.map((epic) => {
+            const isSelected = selectedItemId === epic.id;
+            return (
+              <button
+                key={epic.id}
+                onClick={() => onSelectItem(epic)}
+                className={cn(
+                  "w-full text-left bg-[hsl(var(--surface-0))] border border-[hsl(var(--border-default))] rounded-xl p-4 transition-all",
+                  "hover:bg-[hsl(var(--surface-2))] hover:border-[hsl(var(--brand-primary))]",
+                  isSelected && "border-[hsl(var(--brand-primary))] bg-[hsl(var(--surface-2))]"
+                )}
+              >
+                <div className="flex items-start justify-between gap-3 mb-2">
+                  <div className="flex items-center gap-2">
+                    <WorkItemIcon type="epic" size={14} />
+                    <span className="text-sm font-medium text-[hsl(var(--text-primary))]">{epic.name}</span>
+                  </div>
+                  <StatusBadge status={epic.status} />
+                </div>
+                <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                  <span>{epic.theme_id ? themeLookup[epic.theme_id] : '—'}</span>
+                  <span>{featureCounts[epic.id] || 0} features</span>
+                </div>
+              </button>
+            );
+          })
+        )}
       </div>
+
+      {/* Desktop Table View - Matching Themes section exactly */}
+      <div className="hidden md:block bg-[hsl(var(--surface-0))] border border-[hsl(var(--border-default))] rounded-xl shadow-[var(--shadow-elev-1)] overflow-hidden">
+        {/* Header */}
+        <div 
+          className="grid gap-4 px-5 py-3.5 bg-[hsl(var(--surface-1))] border-b border-[hsl(var(--border-default))]"
+          style={{ gridTemplateColumns: gridCols }}
+        >
+          {isColumnVisible('name') && (
+            <SortableHeader 
+              label="Epic" 
+              column="name" 
+              currentSort={sortColumn} 
+              direction={sortDirection} 
+              onSort={handleSort} 
+            />
+          )}
+          {isColumnVisible('theme') && (
+            <SortableHeader 
+              label="Theme" 
+              column="theme" 
+              currentSort={sortColumn} 
+              direction={sortDirection} 
+              onSort={handleSort} 
+            />
+          )}
+          {isColumnVisible('status') && (
+            <SortableHeader 
+              label="State" 
+              column="status" 
+              currentSort={sortColumn} 
+              direction={sortDirection} 
+              onSort={handleSort} 
+            />
+          )}
+          {isColumnVisible('features') && (
+            <SortableHeader 
+              label="Features" 
+              column="features" 
+              currentSort={sortColumn} 
+              direction={sortDirection} 
+              onSort={handleSort} 
+            />
+          )}
+          {isColumnVisible('updated') && (
+            <SortableHeader 
+              label="Updated" 
+              column="updated" 
+              currentSort={sortColumn} 
+              direction={sortDirection} 
+              onSort={handleSort} 
+            />
+          )}
+        </div>
+
+        {/* Body */}
+        <div className="divide-y divide-[hsl(var(--border-subtle))]">
+          {isLoading ? (
+            <div className="flex items-center justify-center py-16 px-4 text-muted-foreground">
+              Loading epics...
+            </div>
+          ) : filteredEpics.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-16 px-4">
+              <div className="w-12 h-12 rounded-full mb-4 bg-[hsl(var(--surface-2))] flex items-center justify-center">
+                <Box className="h-6 w-6 text-[hsl(var(--text-muted))]" />
+              </div>
+              <p className="text-sm font-medium text-[hsl(var(--text-secondary))]">No epics found</p>
+              <p className="text-xs text-[hsl(var(--text-muted))] mt-1">Create epics to organize your work items</p>
+              {onCreateEpic && (
+                <Button 
+                  size="sm" 
+                  onClick={onCreateEpic}
+                  className="mt-4 bg-[hsl(var(--brand-primary))] hover:bg-[hsl(var(--brand-primary-hover))] text-white gap-1.5"
+                >
+                  <Plus className="h-4 w-4" />
+                  Create Epic
+                </Button>
+              )}
+            </div>
+          ) : (
+            filteredEpics.map((epic, index) => {
+              const isSelected = selectedItemId === epic.id;
+              return (
+                <button
+                  key={epic.id}
+                  onClick={() => onSelectItem(epic)}
+                  className={cn(
+                    "group w-full text-left grid gap-4 px-5 py-4 transition-all",
+                    "border-l-2 border-l-transparent",
+                    "hover:border-l-[hsl(var(--brand-primary))] hover:bg-[hsl(var(--surface-2))]",
+                    "focus:outline-none focus:bg-[hsl(var(--surface-2))] focus:border-l-[hsl(var(--brand-primary))]",
+                    index % 2 === 0 ? "bg-[hsl(var(--surface-0))]" : "bg-[hsl(var(--surface-1))]",
+                    isSelected && "border-l-[hsl(var(--brand-primary))] bg-[hsl(var(--surface-2))]"
+                  )}
+                  style={{ gridTemplateColumns: gridCols }}
+                >
+                  {isColumnVisible('name') && (
+                    <div className="flex items-center gap-3 min-w-0">
+                      <WorkItemIcon type="epic" size={14} />
+                      <span className="text-sm font-medium text-[hsl(var(--text-primary))] group-hover:text-[hsl(var(--brand-primary))] truncate transition-colors">
+                        {epic.name}
+                      </span>
+                    </div>
+                  )}
+                  {isColumnVisible('theme') && (
+                    <div className="flex items-center">
+                      <span className="text-sm text-muted-foreground truncate">
+                        {epic.theme_id ? themeLookup[epic.theme_id] || '—' : '—'}
+                      </span>
+                    </div>
+                  )}
+                  {isColumnVisible('status') && (
+                    <div className="flex items-center">
+                      <StatusBadge status={epic.status} />
+                    </div>
+                  )}
+                  {isColumnVisible('features') && (
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm text-foreground tabular-nums">
+                        {featureCounts[epic.id] || 0}
+                      </span>
+                    </div>
+                  )}
+                  {isColumnVisible('updated') && (
+                    <div className="flex items-center">
+                      <span className="text-sm text-muted-foreground">
+                        {epic.updated_at ? format(new Date(epic.updated_at), 'MMM d, yyyy') : '—'}
+                      </span>
+                    </div>
+                  )}
+                </button>
+              );
+            })
+          )}
+        </div>
+      </div>
+
+      {/* Footer: Row Count */}
+      {filteredEpics.length > 0 && (
+        <div className="flex items-center justify-between px-1">
+          <p className="text-xs text-muted-foreground">
+            Showing {filteredEpics.length} of {epics.length} epics
+          </p>
+        </div>
+      )}
     </div>
   );
 }
