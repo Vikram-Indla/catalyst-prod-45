@@ -1,9 +1,9 @@
 /**
  * Strategic Backlog - Objectives Section
- * Pixel-perfect table with column selector
+ * Pixel-perfect table matching Themes section styling
  */
 import { useState, useMemo } from 'react';
-import { Search, ChevronRight, ArrowUpDown, ArrowUp, Target, TrendingUp, Plus } from 'lucide-react';
+import { Search, ChevronUp, ChevronDown, Target, TrendingUp, Plus, ChevronRight } from 'lucide-react';
 import type { StrategicTheme } from '@/types/strategicBacklog';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
@@ -17,16 +17,15 @@ const OBJECTIVE_COLUMNS: ColumnDefinition[] = [
   { key: 'type', label: 'Type', defaultVisible: true, required: true, width: 'w-12' },
   { key: 'name', label: 'OKRs', defaultVisible: true, required: true },
   { key: 'theme', label: 'Theme', defaultVisible: true, width: 'w-44' },
-  { key: 'owner', label: 'Owner', defaultVisible: false, width: 'w-36' },
   { key: 'status', label: 'Status', defaultVisible: true, width: 'w-28' },
   { key: 'progress', label: 'Progress vs Plan', defaultVisible: true, width: 'w-44' },
-  { key: 'startDate', label: 'Start Date', defaultVisible: false, width: 'w-28' },
-  { key: 'endDate', label: 'End Date', defaultVisible: false, width: 'w-28' },
   { key: 'risks', label: 'Risks', defaultVisible: true, width: 'w-16' },
   { key: 'linked', label: 'Linked', defaultVisible: true, width: 'w-16' },
 ];
 
 const STORAGE_KEY = 'strategic_backlog_columns_objectives';
+
+type SortColumn = 'name' | 'theme' | 'status' | 'progress' | 'risks' | 'linked';
 
 interface Objective {
   id: string;
@@ -56,6 +55,69 @@ interface ObjectivesSectionProps {
   onCreateObjective?: () => void;
 }
 
+// Sortable header with stacked chevrons - matching Themes section
+function SortableHeader({ 
+  label, 
+  column, 
+  currentSort, 
+  direction, 
+  onSort,
+  className = ""
+}: { 
+  label: string; 
+  column: SortColumn; 
+  currentSort: SortColumn; 
+  direction: 'asc' | 'desc'; 
+  onSort: (col: SortColumn) => void;
+  className?: string;
+}) {
+  const isActive = currentSort === column;
+  return (
+    <button
+      onClick={() => onSort(column)}
+      className={cn(
+        "group flex items-center gap-1.5 text-muted-foreground hover:text-foreground transition-colors",
+        className
+      )}
+    >
+      <span className="text-[11px] font-bold uppercase tracking-wider">{label}</span>
+      <span className={cn(
+        "flex flex-col -space-y-1",
+        isActive ? "text-primary" : "text-muted-foreground"
+      )}>
+        <ChevronUp className={cn("h-3 w-3", isActive && direction === 'asc' ? "opacity-100" : "opacity-40")} />
+        <ChevronDown className={cn("h-3 w-3", isActive && direction === 'desc' ? "opacity-100" : "opacity-40")} />
+      </span>
+    </button>
+  );
+}
+
+// Status Badge matching Themes section style
+function StatusBadge({ status }: { status?: string | null }) {
+  const statusMap: Record<string, { label: string; bgColor: string }> = {
+    pending: { label: 'PENDING', bgColor: '#9ca3af' },
+    draft: { label: 'DRAFT', bgColor: '#9ca3af' },
+    in_progress: { label: 'IN PROGRESS', bgColor: '#2563eb' },
+    on_track: { label: 'ON TRACK', bgColor: '#0d9488' },
+    at_risk: { label: 'AT RISK', bgColor: '#f59e0b' },
+    off_track: { label: 'OFF TRACK', bgColor: '#ef4444' },
+    completed: { label: 'COMPLETED', bgColor: '#0d9488' },
+    paused: { label: 'PAUSED', bgColor: '#9ca3af' },
+    canceled: { label: 'CANCELED', bgColor: '#9ca3af' },
+  };
+  
+  const config = statusMap[status || ''] || { label: 'DRAFT', bgColor: '#9ca3af' };
+  
+  return (
+    <span 
+      className="inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-semibold uppercase tracking-wider text-white"
+      style={{ backgroundColor: config.bgColor }}
+    >
+      {config.label}
+    </span>
+  );
+}
+
 export function StrategicBacklogObjectivesSection({ 
   objectives,
   themes, 
@@ -68,29 +130,9 @@ export function StrategicBacklogObjectivesSection({
   krCounts,
   onCreateObjective,
 }: ObjectivesSectionProps) {
-  const [sortColumn, setSortColumn] = useState<string>('name');
+  const [sortColumn, setSortColumn] = useState<SortColumn>('name');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
   const [visibleColumns, setVisibleColumns] = useColumnVisibility(OBJECTIVE_COLUMNS, STORAGE_KEY);
-
-  // Fetch owner profiles
-  const ownerIds = useMemo(() => {
-    return [...new Set(objectives.map(o => o.owner_id).filter(Boolean))] as string[];
-  }, [objectives]);
-
-  const { data: owners = {} } = useQuery({
-    queryKey: ['profiles-lookup', ownerIds],
-    queryFn: async () => {
-      if (ownerIds.length === 0) return {};
-      const { data } = await supabase
-        .from('profiles')
-        .select('id, full_name')
-        .in('id', ownerIds);
-      const map: Record<string, string> = {};
-      data?.forEach(p => { map[p.id] = p.full_name || 'Unknown'; });
-      return map;
-    },
-    enabled: ownerIds.length > 0,
-  });
 
   // Fetch risk counts for objectives via objective_risks junction table
   const objectiveIds = useMemo(() => objectives.map(o => o.id), [objectives]);
@@ -162,10 +204,6 @@ export function StrategicBacklogObjectivesSection({
           aVal = a.theme_id ? themeLookup[a.theme_id] || '' : '';
           bVal = b.theme_id ? themeLookup[b.theme_id] || '' : '';
           break;
-        case 'owner':
-          aVal = a.owner_id ? owners[a.owner_id] || '' : '';
-          bVal = b.owner_id ? owners[b.owner_id] || '' : '';
-          break;
         case 'status':
           aVal = a.status || '';
           bVal = b.status || '';
@@ -173,14 +211,6 @@ export function StrategicBacklogObjectivesSection({
         case 'progress':
           aVal = a.overall_progress || 0;
           bVal = b.overall_progress || 0;
-          break;
-        case 'startDate':
-          aVal = a.start_date || '';
-          bVal = b.start_date || '';
-          break;
-        case 'endDate':
-          aVal = a.end_date || '';
-          bVal = b.end_date || '';
           break;
         case 'risks':
           aVal = riskCounts[a.id] || 0;
@@ -200,9 +230,9 @@ export function StrategicBacklogObjectivesSection({
     });
 
     return result;
-  }, [objectives, searchQuery, sortColumn, sortDirection, themeLookup, owners, riskCounts, linkedCounts]);
+  }, [objectives, searchQuery, sortColumn, sortDirection, themeLookup, riskCounts, linkedCounts]);
 
-  const handleSort = (column: string) => {
+  const handleSort = (column: SortColumn) => {
     if (sortColumn === column) {
       setSortDirection(prev => prev === 'asc' ? 'desc' : 'asc');
     } else {
@@ -211,123 +241,57 @@ export function StrategicBacklogObjectivesSection({
     }
   };
 
-  const getStatusBadge = (status?: string | null) => {
-    // Status styling matching themes table - filled badges with solid backgrounds
-    const statusMap: Record<string, { label: string; bgColor: string }> = {
-      pending: { label: 'PENDING', bgColor: '#9ca3af' },
-      draft: { label: 'DRAFT', bgColor: '#9ca3af' },
-      in_progress: { label: 'IN PROGRESS', bgColor: '#2563eb' },
-      on_track: { label: 'ON TRACK', bgColor: '#0d9488' },
-      at_risk: { label: 'AT RISK', bgColor: '#f59e0b' },
-      off_track: { label: 'OFF TRACK', bgColor: '#ef4444' },
-      completed: { label: 'COMPLETED', bgColor: '#0d9488' },
-      paused: { label: 'PAUSED', bgColor: '#9ca3af' },
-      canceled: { label: 'CANCELED', bgColor: '#9ca3af' },
-    };
-    
-    const config = statusMap[status || ''] || { label: 'DRAFT', bgColor: '#9ca3af' };
-    
-    return (
-      <span 
-        className="inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-semibold uppercase tracking-wider text-white"
-        style={{ backgroundColor: config.bgColor }}
-      >
-        {config.label}
-      </span>
-    );
-  };
-
   const getProgressBar = (progress?: number | null, status?: string | null) => {
     const value = progress || 0;
     
-    // Determine bar color based on status (matching Image 1)
-    let dotColor = 'bg-[#c8ccd0]';
-    let barColor = 'bg-[#c8ccd0]';
-    
+    let barColor = '#6b7280';
     switch (status) {
       case 'on_track':
       case 'completed':
-        dotColor = 'bg-[#0d9488]';
-        barColor = 'bg-[#0d9488]';
+        barColor = '#0d9488';
         break;
       case 'in_progress':
-        dotColor = 'bg-[#2563eb]';
-        barColor = 'bg-[#2563eb]';
+        barColor = '#2563eb';
         break;
       case 'at_risk':
-        dotColor = 'bg-[#f59e0b]';
-        barColor = 'bg-[#f59e0b]';
+        barColor = '#f59e0b';
         break;
       case 'off_track':
-        dotColor = 'bg-[#ef4444]';
-        barColor = 'bg-[#ef4444]';
-        break;
-      case 'pending':
-      default:
-        dotColor = 'bg-[#6b7280]';
-        barColor = 'bg-[#6b7280]';
+        barColor = '#ef4444';
         break;
     }
 
-    // Show trend icon only if there's progress
-    const showTrend = value > 0;
-
     return (
       <div className="flex items-center gap-2">
-        {/* Colored dot indicator */}
-        <div className={cn("w-2 h-2 rounded-full shrink-0", dotColor)} />
-        
-        {/* Progress bar track */}
+        <div className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: barColor }} />
         <div className="flex-1 h-1.5 bg-[#e8e8e8] dark:bg-[#2d333b] rounded-full overflow-hidden">
           <div 
-            className={cn("h-full rounded-full transition-all", barColor)}
-            style={{ width: `${value}%` }}
+            className="h-full rounded-full transition-all"
+            style={{ width: `${value}%`, backgroundColor: barColor }}
           />
         </div>
-        
-        {/* Percentage */}
         <span className="text-xs text-muted-foreground w-8 text-right tabular-nums">{value}%</span>
-        
-        {/* Trend icon */}
-        {showTrend && (
-          <TrendingUp className="h-3 w-3 text-muted-foreground shrink-0" />
-        )}
       </div>
     );
   };
 
-  const SortIcon = ({ column }: { column: string }) => {
-    if (sortColumn === column) {
-      return <ArrowUp className={cn("h-3 w-3 ml-1", sortDirection === 'desc' && "rotate-180")} />;
-    }
-    return <ArrowUpDown className="h-3 w-3 ml-1 opacity-40" />;
-  };
-
   const isColumnVisible = (key: string) => visibleColumns.includes(key);
 
-  const visibleColumnCount = visibleColumns.length;
+  // Grid columns matching Themes section pattern
+  const gridCols = `${isColumnVisible('type') ? '48px ' : ''}1fr ${isColumnVisible('theme') ? '180px ' : ''}${isColumnVisible('status') ? '120px ' : ''}${isColumnVisible('progress') ? '180px ' : ''}${isColumnVisible('risks') ? '70px ' : ''}${isColumnVisible('linked') ? '70px ' : ''}40px`.trim();
 
   return (
-    <div className="space-y-4">
+    <div className="flex flex-col gap-4 w-full">
       {/* Search + Column Selector */}
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4">
-        <div className={cn(
-          "flex items-center gap-2 px-3 py-2 rounded-lg flex-1 sm:max-w-md",
-          "bg-white dark:bg-[#0D1117]",
-          "border border-[#E1E4E8] dark:border-[#30363D]",
-          "focus-within:border-[#2563eb] focus-within:ring-1 focus-within:ring-[rgba(37,99,235,0.3)]"
-        )}>
-          <Search className="h-4 w-4 text-[#8B949E] dark:text-[#6E7681]" />
+        <div className="relative flex-1 sm:max-w-md">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <input
             type="text"
             placeholder="Search objectives..."
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
-            className={cn(
-              "flex-1 bg-transparent text-sm outline-none",
-              "text-[#24292F] dark:text-[#E6EDF3]",
-              "placeholder:text-[#8B949E] dark:placeholder:text-[#6E7681]"
-            )}
+            className="w-full pl-10 pr-4 py-2 bg-background border border-border rounded-md text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary/50 focus:border-primary transition-colors"
           />
         </div>
         <ColumnSelector
@@ -338,311 +302,236 @@ export function StrategicBacklogObjectivesSection({
         />
       </div>
 
-      {/* Mobile list (cards) */}
+      {/* Mobile Card View */}
       <div className="md:hidden space-y-3">
         {isLoading ? (
-          <div className="bg-surface border border-border rounded-lg px-4 py-10 text-center text-muted-foreground">
+          <div className="bg-[hsl(var(--surface-0))] border border-[hsl(var(--border-default))] rounded-xl p-8 text-center text-muted-foreground">
             Loading objectives...
           </div>
         ) : filteredObjectives.length === 0 ? (
-          <div className="bg-surface border border-border rounded-lg px-4 py-12 text-center">
-            <div className="flex flex-col items-center gap-4">
-              <div className="w-12 h-12 rounded-full bg-[#F6F8FA] dark:bg-[#21262D] flex items-center justify-center">
-                <Target className="h-6 w-6 text-[#8B949E]" />
-              </div>
-              <div>
-                <p className="text-sm font-medium text-foreground">No objectives found</p>
-                <p className="text-sm mt-1 text-muted-foreground">Create objectives to define your measurable goals</p>
-              </div>
-              {onCreateObjective && (
-                <Button
-                  size="sm"
-                  onClick={onCreateObjective}
-                  className="bg-blue-600 hover:bg-blue-700 text-white gap-1.5"
-                >
-                  <Plus className="h-4 w-4" />
-                  Create Objective
-                </Button>
-              )}
+          <div className="bg-[hsl(var(--surface-0))] border border-[hsl(var(--border-default))] rounded-xl p-8 text-center">
+            <div className="w-12 h-12 rounded-full mb-4 bg-[hsl(var(--surface-2))] flex items-center justify-center mx-auto">
+              <Target className="h-6 w-6 text-[hsl(var(--text-muted))]" />
             </div>
+            <p className="text-sm font-medium text-[hsl(var(--text-secondary))]">No objectives found</p>
+            <p className="text-xs text-[hsl(var(--text-muted))] mt-1">Create objectives to define your measurable goals</p>
+            {onCreateObjective && (
+              <Button 
+                size="sm" 
+                onClick={onCreateObjective}
+                className="mt-4 bg-[hsl(var(--brand-primary))] hover:bg-[hsl(var(--brand-primary-hover))] text-white gap-1.5"
+              >
+                <Plus className="h-4 w-4" />
+                Create Objective
+              </Button>
+            )}
           </div>
         ) : (
           filteredObjectives.map((obj) => {
             const isSelected = selectedItemId === obj.id;
-            const themeName = obj.theme_id ? themeLookup[obj.theme_id] || '—' : '—';
-
             return (
               <button
                 key={obj.id}
-                type="button"
                 onClick={() => onSelectItem(obj)}
                 className={cn(
-                  "w-full text-left bg-surface border border-border rounded-lg p-3 transition-colors",
-                  "hover:bg-muted/40",
-                  isSelected && "ring-2 ring-primary/20"
+                  "w-full text-left bg-[hsl(var(--surface-0))] border border-[hsl(var(--border-default))] rounded-xl p-4 transition-all",
+                  "hover:bg-[hsl(var(--surface-2))] hover:border-[hsl(var(--brand-primary))]",
+                  isSelected && "border-[hsl(var(--brand-primary))] bg-[hsl(var(--surface-2))]"
                 )}
               >
-                <div className="flex items-start gap-3">
-                  <div className="w-8 h-8 rounded bg-brand-primary/10 flex items-center justify-center shrink-0">
+                <div className="flex items-start justify-between gap-3 mb-2">
+                  <div className="flex items-center gap-2">
                     <Target className="h-4 w-4 text-brand-primary" />
+                    <span className="text-sm font-medium text-[hsl(var(--text-primary))] line-clamp-2">{obj.name}</span>
                   </div>
-
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="min-w-0">
-                        <div className="text-sm font-medium text-foreground line-clamp-2">{obj.name}</div>
-                        <div className="mt-1 text-xs text-muted-foreground truncate">{themeName}</div>
-                      </div>
-                      <ChevronRight className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
-                    </div>
-
-                    <div className="mt-2 flex flex-wrap items-center gap-2">
-                      {getStatusBadge(obj.status)}
-
-                      <span
-                        className={cn(
-                          "inline-flex items-center justify-center rounded-full px-2 py-0.5 text-[10px] font-medium",
-                          (riskCounts[obj.id] || 0) > 0
-                            ? "bg-destructive/10 text-destructive"
-                            : "bg-muted text-muted-foreground"
-                        )}
-                      >
-                        Risks: {riskCounts[obj.id] || 0}
-                      </span>
-
-                      <span className="inline-flex items-center justify-center rounded-full px-2 py-0.5 text-[10px] font-medium bg-muted text-muted-foreground">
-                        Linked: {linkedCounts[obj.id] || 0}
-                      </span>
-
-                      <span className="inline-flex items-center justify-center rounded-full px-2 py-0.5 text-[10px] font-medium bg-muted text-muted-foreground">
-                        KRs: {krCounts[obj.id] || 0}
-                      </span>
-                    </div>
-
-                    <div className="mt-2">{getProgressBar(obj.overall_progress, obj.status)}</div>
-                  </div>
+                  <StatusBadge status={obj.status} />
                 </div>
+                <div className="text-xs text-muted-foreground mb-2">
+                  {obj.theme_id ? themeLookup[obj.theme_id] : '—'}
+                </div>
+                <div className="mt-2">{getProgressBar(obj.overall_progress, obj.status)}</div>
               </button>
             );
           })
         )}
       </div>
 
-      {/* Table (desktop) */}
-      <div className="hidden md:block bg-surface border border-border rounded-lg overflow-x-auto">
-        <table className="w-full min-w-[700px]">
-          <thead className="border-b border-border">
-            <tr className="bg-muted/30">
-              {isColumnVisible('type') && (
-                <th className="text-left px-3 py-3 text-xs font-medium text-muted-foreground w-12">
-                  Type
-                </th>
-              )}
-              {isColumnVisible('name') && (
-                <th 
-                  className="text-left px-3 py-3 text-xs font-medium text-muted-foreground cursor-pointer hover:text-foreground transition-colors"
-                  onClick={() => handleSort('name')}
+      {/* Desktop Table View - Matching Themes section exactly */}
+      <div className="hidden md:block bg-[hsl(var(--surface-0))] border border-[hsl(var(--border-default))] rounded-xl shadow-[var(--shadow-elev-1)] overflow-hidden">
+        {/* Header */}
+        <div 
+          className="grid gap-4 px-5 py-3.5 bg-[hsl(var(--surface-1))] border-b border-[hsl(var(--border-default))]"
+          style={{ gridTemplateColumns: gridCols }}
+        >
+          {isColumnVisible('type') && (
+            <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Type</span>
+          )}
+          {isColumnVisible('name') && (
+            <SortableHeader 
+              label="OKRs" 
+              column="name" 
+              currentSort={sortColumn} 
+              direction={sortDirection} 
+              onSort={handleSort} 
+            />
+          )}
+          {isColumnVisible('theme') && (
+            <SortableHeader 
+              label="Theme" 
+              column="theme" 
+              currentSort={sortColumn} 
+              direction={sortDirection} 
+              onSort={handleSort} 
+            />
+          )}
+          {isColumnVisible('status') && (
+            <SortableHeader 
+              label="Status" 
+              column="status" 
+              currentSort={sortColumn} 
+              direction={sortDirection} 
+              onSort={handleSort} 
+            />
+          )}
+          {isColumnVisible('progress') && (
+            <SortableHeader 
+              label="Progress vs Plan" 
+              column="progress" 
+              currentSort={sortColumn} 
+              direction={sortDirection} 
+              onSort={handleSort} 
+            />
+          )}
+          {isColumnVisible('risks') && (
+            <SortableHeader 
+              label="Risks" 
+              column="risks" 
+              currentSort={sortColumn} 
+              direction={sortDirection} 
+              onSort={handleSort} 
+            />
+          )}
+          {isColumnVisible('linked') && (
+            <SortableHeader 
+              label="Linked" 
+              column="linked" 
+              currentSort={sortColumn} 
+              direction={sortDirection} 
+              onSort={handleSort} 
+            />
+          )}
+          <span></span>
+        </div>
+
+        {/* Body */}
+        <div className="divide-y divide-[hsl(var(--border-subtle))]">
+          {isLoading ? (
+            <div className="flex items-center justify-center py-16 px-4 text-muted-foreground">
+              Loading objectives...
+            </div>
+          ) : filteredObjectives.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-16 px-4">
+              <div className="w-12 h-12 rounded-full mb-4 bg-[hsl(var(--surface-2))] flex items-center justify-center">
+                <Target className="h-6 w-6 text-[hsl(var(--text-muted))]" />
+              </div>
+              <p className="text-sm font-medium text-[hsl(var(--text-secondary))]">No objectives found</p>
+              <p className="text-xs text-[hsl(var(--text-muted))] mt-1">Create objectives to define your measurable goals</p>
+              {onCreateObjective && (
+                <Button 
+                  size="sm" 
+                  onClick={onCreateObjective}
+                  className="mt-4 bg-[hsl(var(--brand-primary))] hover:bg-[hsl(var(--brand-primary-hover))] text-white gap-1.5"
                 >
-                  <button className="flex items-center">
-                    OKRs <SortIcon column="name" />
-                  </button>
-                </th>
+                  <Plus className="h-4 w-4" />
+                  Create Objective
+                </Button>
               )}
-              {isColumnVisible('theme') && (
-                <th 
-                  className="text-left px-3 py-3 text-xs font-medium text-muted-foreground w-44 cursor-pointer hover:text-foreground transition-colors"
-                  onClick={() => handleSort('theme')}
+            </div>
+          ) : (
+            filteredObjectives.map((obj, index) => {
+              const isSelected = selectedItemId === obj.id;
+              return (
+                <button
+                  key={obj.id}
+                  onClick={() => onSelectItem(obj)}
+                  className={cn(
+                    "group w-full text-left grid gap-4 px-5 py-4 transition-all",
+                    "border-l-2 border-l-transparent",
+                    "hover:border-l-[hsl(var(--brand-primary))] hover:bg-[hsl(var(--surface-2))]",
+                    "focus:outline-none focus:bg-[hsl(var(--surface-2))] focus:border-l-[hsl(var(--brand-primary))]",
+                    index % 2 === 0 ? "bg-[hsl(var(--surface-0))]" : "bg-[hsl(var(--surface-1))]",
+                    isSelected && "border-l-[hsl(var(--brand-primary))] bg-[hsl(var(--surface-2))]"
+                  )}
+                  style={{ gridTemplateColumns: gridCols }}
                 >
-                  <button className="flex items-center">
-                    Theme <SortIcon column="theme" />
-                  </button>
-                </th>
-              )}
-              {isColumnVisible('owner') && (
-                <th 
-                  className="text-left px-3 py-3 text-xs font-medium text-muted-foreground w-36 cursor-pointer hover:text-foreground transition-colors"
-                  onClick={() => handleSort('owner')}
-                >
-                  <button className="flex items-center">
-                    Owner <SortIcon column="owner" />
-                  </button>
-                </th>
-              )}
-              {isColumnVisible('status') && (
-                <th 
-                  className="text-left px-3 py-3 text-xs font-medium text-muted-foreground w-28 cursor-pointer hover:text-foreground transition-colors uppercase"
-                  onClick={() => handleSort('status')}
-                >
-                  <button className="flex items-center">
-                    Status <SortIcon column="status" />
-                  </button>
-                </th>
-              )}
-              {isColumnVisible('progress') && (
-                <th 
-                  className="text-left px-3 py-3 text-xs font-medium text-muted-foreground w-44 cursor-pointer hover:text-foreground transition-colors uppercase"
-                  onClick={() => handleSort('progress')}
-                >
-                  <button className="flex items-center">
-                    Progress vs Plan <SortIcon column="progress" />
-                  </button>
-                </th>
-              )}
-              {isColumnVisible('startDate') && (
-                <th 
-                  className="text-left px-3 py-3 text-xs font-medium text-muted-foreground w-28 cursor-pointer hover:text-foreground transition-colors"
-                  onClick={() => handleSort('startDate')}
-                >
-                  <button className="flex items-center">
-                    Start <SortIcon column="startDate" />
-                  </button>
-                </th>
-              )}
-              {isColumnVisible('endDate') && (
-                <th 
-                  className="text-left px-3 py-3 text-xs font-medium text-muted-foreground w-28 cursor-pointer hover:text-foreground transition-colors"
-                  onClick={() => handleSort('endDate')}
-                >
-                  <button className="flex items-center">
-                    End <SortIcon column="endDate" />
-                  </button>
-                </th>
-              )}
-              {isColumnVisible('risks') && (
-                <th 
-                  className="text-center px-3 py-3 text-xs font-medium text-muted-foreground w-16 cursor-pointer hover:text-foreground transition-colors"
-                  onClick={() => handleSort('risks')}
-                >
-                  <button className="flex items-center justify-center w-full">
-                    Risks <SortIcon column="risks" />
-                  </button>
-                </th>
-              )}
-              {isColumnVisible('linked') && (
-                <th 
-                  className="text-center px-3 py-3 text-xs font-medium text-muted-foreground w-16 cursor-pointer hover:text-foreground transition-colors"
-                  onClick={() => handleSort('linked')}
-                >
-                  <button className="flex items-center justify-center w-full">
-                    Linked <SortIcon column="linked" />
-                  </button>
-                </th>
-              )}
-              <th className="w-10"></th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-border/50">
-            {isLoading ? (
-              <tr>
-                <td colSpan={visibleColumnCount + 1} className="px-4 py-12 text-center text-muted-foreground">
-                  Loading objectives...
-                </td>
-              </tr>
-            ) : filteredObjectives.length === 0 ? (
-              <tr>
-                <td colSpan={visibleColumnCount + 1} className="px-4 py-16 text-center">
-                  <div className="flex flex-col items-center gap-4">
-                    <div className="w-12 h-12 rounded-full bg-[#F6F8FA] dark:bg-[#21262D] flex items-center justify-center">
-                      <Target className="h-6 w-6 text-[#8B949E]" />
+                  {isColumnVisible('type') && (
+                    <div className="flex items-center">
+                      <div className="w-7 h-7 rounded bg-brand-primary/10 flex items-center justify-center">
+                        <Target className="h-4 w-4 text-brand-primary" />
+                      </div>
                     </div>
-                    <div>
-                      <p className="text-sm font-medium text-foreground">No objectives found</p>
-                      <p className="text-sm mt-1 text-muted-foreground">Create objectives to define your measurable goals</p>
+                  )}
+                  {isColumnVisible('name') && (
+                    <div className="flex items-center min-w-0">
+                      <span className="text-sm font-medium text-[hsl(var(--text-primary))] group-hover:text-[hsl(var(--brand-primary))] line-clamp-2 transition-colors">
+                        {obj.name}
+                      </span>
                     </div>
-                    {onCreateObjective && (
-                      <Button 
-                        size="sm" 
-                        onClick={onCreateObjective}
-                        className="bg-blue-600 hover:bg-blue-700 text-white gap-1.5"
-                      >
-                        <Plus className="h-4 w-4" />
-                        Create Objective
-                      </Button>
-                    )}
-                  </div>
-                </td>
-              </tr>
-            ) : (
-              filteredObjectives.map((obj) => {
-                const isSelected = selectedItemId === obj.id;
-                return (
-                  <tr
-                    key={obj.id}
-                    onClick={() => onSelectItem(obj)}
-                    className={cn(
-                      "cursor-pointer hover:bg-muted/50 transition-colors",
-                      isSelected && "bg-muted/50"
-                    )}
-                  >
-                    {isColumnVisible('type') && (
-                      <td className="px-3 py-3">
-                        <div className="w-6 h-6 rounded bg-brand-primary/10 flex items-center justify-center">
-                          <Target className="h-3.5 w-3.5 text-brand-primary" />
-                        </div>
-                      </td>
-                    )}
-                    {isColumnVisible('name') && (
-                      <td className="px-3 py-3">
-                        <span className="text-sm font-medium text-foreground line-clamp-2">{obj.name}</span>
-                      </td>
-                    )}
-                    {isColumnVisible('theme') && (
-                      <td className="px-3 py-3 text-sm text-muted-foreground truncate">
+                  )}
+                  {isColumnVisible('theme') && (
+                    <div className="flex items-center">
+                      <span className="text-sm text-muted-foreground truncate">
                         {obj.theme_id ? themeLookup[obj.theme_id] || '—' : '—'}
-                      </td>
-                    )}
-                    {isColumnVisible('owner') && (
-                      <td className="px-3 py-3 text-sm text-muted-foreground truncate">
-                        {obj.owner_id ? owners[obj.owner_id] || '—' : '—'}
-                      </td>
-                    )}
-                    {isColumnVisible('status') && (
-                      <td className="px-3 py-3">
-                        {getStatusBadge(obj.status)}
-                      </td>
-                    )}
-                    {isColumnVisible('progress') && (
-                      <td className="px-3 py-3">
-                        {getProgressBar(obj.overall_progress, obj.status)}
-                      </td>
-                    )}
-                    {isColumnVisible('startDate') && (
-                      <td className="px-3 py-3 text-sm text-muted-foreground">
-                        {obj.start_date ? format(new Date(obj.start_date), 'MMM d, yyyy') : '—'}
-                      </td>
-                    )}
-                    {isColumnVisible('endDate') && (
-                      <td className="px-3 py-3 text-sm text-muted-foreground">
-                        {obj.end_date ? format(new Date(obj.end_date), 'MMM d, yyyy') : '—'}
-                      </td>
-                    )}
-                    {isColumnVisible('risks') && (
-                      <td className="px-3 py-3 text-sm text-center">
-                        <span className={cn(
-                          "inline-flex items-center justify-center min-w-[24px] h-6 px-1.5 rounded text-xs font-medium",
-                          (riskCounts[obj.id] || 0) > 0 
-                            ? "bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400"
-                            : "text-muted-foreground"
-                        )}>
-                          {riskCounts[obj.id] || 0}
-                        </span>
-                      </td>
-                    )}
-                    {isColumnVisible('linked') && (
-                      <td className="px-3 py-3 text-sm text-center text-muted-foreground">
+                      </span>
+                    </div>
+                  )}
+                  {isColumnVisible('status') && (
+                    <div className="flex items-center">
+                      <StatusBadge status={obj.status} />
+                    </div>
+                  )}
+                  {isColumnVisible('progress') && (
+                    <div className="flex items-center">
+                      {getProgressBar(obj.overall_progress, obj.status)}
+                    </div>
+                  )}
+                  {isColumnVisible('risks') && (
+                    <div className="flex items-center justify-center">
+                      <span className={cn(
+                        "inline-flex items-center justify-center min-w-[24px] h-6 px-1.5 rounded text-xs font-medium",
+                        (riskCounts[obj.id] || 0) > 0 
+                          ? "bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400"
+                          : "text-muted-foreground"
+                      )}>
+                        {riskCounts[obj.id] || 0}
+                      </span>
+                    </div>
+                  )}
+                  {isColumnVisible('linked') && (
+                    <div className="flex items-center justify-center">
+                      <span className="text-sm text-muted-foreground">
                         {linkedCounts[obj.id] || 0}
-                      </td>
-                    )}
-                    <td className="px-3 py-3">
-                      <ChevronRight className="h-4 w-4 text-muted-foreground" />
-                    </td>
-                  </tr>
-                );
-              })
-            )}
-          </tbody>
-        </table>
+                      </span>
+                    </div>
+                  )}
+                  <div className="flex items-center justify-center">
+                    <ChevronRight className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+                  </div>
+                </button>
+              );
+            })
+          )}
+        </div>
       </div>
+
+      {/* Footer: Row Count */}
+      {filteredObjectives.length > 0 && (
+        <div className="flex items-center justify-between px-1">
+          <p className="text-xs text-muted-foreground">
+            Showing {filteredObjectives.length} of {objectives.length} objectives
+          </p>
+        </div>
+      )}
     </div>
   );
 }
