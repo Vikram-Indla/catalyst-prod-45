@@ -3,7 +3,8 @@
 // Fetches and transforms DB data into the unified OKR domain model
 // ═══════════════════════════════════════════════════════════════════════════════
 
-import { useQuery } from '@tanstack/react-query';
+import { useEffect } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { 
   Theme, 
@@ -93,6 +94,27 @@ function mapRiskSeverity(occurrence?: string | null, impact?: string | null): 'h
  * Returns hierarchical Theme → Objective → KeyResult → WorkItem structure
  */
 export function useOKRStrategicData(snapshotId?: string) {
+  const queryClient = useQueryClient();
+
+  // Real-time refresh: ensure newly-created objectives/themes show up immediately
+  useEffect(() => {
+    const invalidate = () => {
+      queryClient.invalidateQueries({ queryKey: ['okr-strategic-data', snapshotId] });
+      queryClient.invalidateQueries({ queryKey: ['okr-themes-list', snapshotId] });
+    };
+
+    const channel = supabase
+      .channel(`okr-strategic-data-${snapshotId ?? 'live'}`)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'objectives' }, invalidate)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'strategic_themes' }, invalidate)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'key_results_v2' }, invalidate)
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [queryClient, snapshotId]);
+
   return useQuery({
     queryKey: ['okr-strategic-data', snapshotId],
     queryFn: async (): Promise<StrategicData> => {
