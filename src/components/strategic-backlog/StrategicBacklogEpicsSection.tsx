@@ -3,12 +3,13 @@
  * Pixel-perfect table with column selector
  */
 import { useState, useMemo } from 'react';
-import { Search, ChevronRight, ArrowUpDown, ArrowUp } from 'lucide-react';
+import { Search, ChevronRight, ArrowUpDown, ArrowUp, Plus, Box } from 'lucide-react';
 import { WorkItemIcon } from '@/components/ja/icons/WorkItemIcon';
 import type { StrategicTheme } from '@/types/strategicBacklog';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { ColumnSelector, useColumnVisibility, ColumnDefinition } from './ColumnSelector';
+import { Button } from '@/components/ui/button';
 
 // Column definitions for Epics table
 const EPIC_COLUMNS: ColumnDefinition[] = [
@@ -42,6 +43,7 @@ interface EpicsSectionProps {
   searchQuery: string;
   onSearchChange: (query: string) => void;
   featureCounts: Record<string, number>;
+  onCreateEpic?: () => void;
 }
 
 export function StrategicBacklogEpicsSection({ 
@@ -54,6 +56,7 @@ export function StrategicBacklogEpicsSection({
   searchQuery,
   onSearchChange,
   featureCounts,
+  onCreateEpic,
 }: EpicsSectionProps) {
   const [sortColumn, setSortColumn] = useState<'name' | 'theme' | 'status' | 'features' | 'updated'>('name');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
@@ -244,8 +247,26 @@ export function StrategicBacklogEpicsSection({
               </tr>
             ) : filteredEpics.length === 0 ? (
               <tr>
-                <td colSpan={visibleColumns.length + 1} className="px-4 py-12 text-center text-muted-foreground">
-                  No epics found
+                <td colSpan={visibleColumns.length + 1} className="px-4 py-16 text-center">
+                  <div className="flex flex-col items-center gap-4">
+                    <div className="w-12 h-12 rounded-full bg-[#F6F8FA] dark:bg-[#21262D] flex items-center justify-center">
+                      <Box className="h-6 w-6 text-[#8B949E]" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-foreground">No epics found</p>
+                      <p className="text-sm mt-1 text-muted-foreground">Create epics to organize your work items</p>
+                    </div>
+                    {onCreateEpic && (
+                      <Button 
+                        size="sm" 
+                        onClick={onCreateEpic}
+                        className="bg-blue-600 hover:bg-blue-700 text-white gap-1.5"
+                      >
+                        <Plus className="h-4 w-4" />
+                        Create Epic
+                      </Button>
+                    )}
+                  </div>
                 </td>
               </tr>
             ) : (

@@ -3,11 +3,12 @@
  * Pixel-perfect table with column selector
  */
 import { useState, useMemo } from 'react';
-import { Search, ChevronRight, ArrowUpDown, ArrowUp, Target, TrendingUp } from 'lucide-react';
+import { Search, ChevronRight, ArrowUpDown, ArrowUp, Target, TrendingUp, Plus } from 'lucide-react';
 import type { StrategicTheme } from '@/types/strategicBacklog';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { ColumnSelector, useColumnVisibility, ColumnDefinition } from './ColumnSelector';
+import { Button } from '@/components/ui/button';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -52,6 +53,7 @@ interface ObjectivesSectionProps {
   searchQuery: string;
   onSearchChange: (query: string) => void;
   krCounts: Record<string, number>;
+  onCreateObjective?: () => void;
 }
 
 export function StrategicBacklogObjectivesSection({ 
@@ -64,6 +66,7 @@ export function StrategicBacklogObjectivesSection({
   searchQuery,
   onSearchChange,
   krCounts,
+  onCreateObjective,
 }: ObjectivesSectionProps) {
   const [sortColumn, setSortColumn] = useState<string>('name');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
@@ -471,8 +474,26 @@ export function StrategicBacklogObjectivesSection({
               </tr>
             ) : filteredObjectives.length === 0 ? (
               <tr>
-                <td colSpan={visibleColumnCount + 1} className="px-4 py-12 text-center text-muted-foreground">
-                  No objectives found
+                <td colSpan={visibleColumnCount + 1} className="px-4 py-16 text-center">
+                  <div className="flex flex-col items-center gap-4">
+                    <div className="w-12 h-12 rounded-full bg-[#F6F8FA] dark:bg-[#21262D] flex items-center justify-center">
+                      <Target className="h-6 w-6 text-[#8B949E]" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-foreground">No objectives found</p>
+                      <p className="text-sm mt-1 text-muted-foreground">Create objectives to define your measurable goals</p>
+                    </div>
+                    {onCreateObjective && (
+                      <Button 
+                        size="sm" 
+                        onClick={onCreateObjective}
+                        className="bg-blue-600 hover:bg-blue-700 text-white gap-1.5"
+                      >
+                        <Plus className="h-4 w-4" />
+                        Create Objective
+                      </Button>
+                    )}
+                  </div>
                 </td>
               </tr>
             ) : (

@@ -3,11 +3,12 @@
  * Pixel-perfect table with column selector
  */
 import { useState, useMemo } from 'react';
-import { Search, Target, ChevronRight, ArrowUpDown, ArrowUp } from 'lucide-react';
+import { Search, Target, ChevronRight, ArrowUpDown, ArrowUp, Plus, Layers } from 'lucide-react';
 import { format } from 'date-fns';
 import type { StrategicTheme } from '@/types/strategicBacklog';
 import { cn } from '@/lib/utils';
 import { ColumnSelector, useColumnVisibility, ColumnDefinition } from './ColumnSelector';
+import { Button } from '@/components/ui/button';
 
 // Column definitions for Themes table
 const THEME_COLUMNS: ColumnDefinition[] = [
@@ -28,6 +29,7 @@ interface ThemesSectionProps {
   searchQuery: string;
   onSearchChange: (query: string) => void;
   objectiveCounts: Record<string, number>;
+  onCreateTheme?: () => void;
 }
 
 export function StrategicBacklogThemesSection({ 
@@ -39,6 +41,7 @@ export function StrategicBacklogThemesSection({
   searchQuery,
   onSearchChange,
   objectiveCounts,
+  onCreateTheme,
 }: ThemesSectionProps) {
   const [sortColumn, setSortColumn] = useState<'name' | 'status' | 'objectives' | 'updated'>('name');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
@@ -206,8 +209,26 @@ export function StrategicBacklogThemesSection({
           <tbody>
             {filteredThemes.length === 0 ? (
               <tr>
-                <td colSpan={visibleColumns.length + 1} className="px-4 py-12 text-center" style={{ color: 'var(--text-muted)' }}>
-                  No themes found
+                <td colSpan={visibleColumns.length + 1} className="px-4 py-16 text-center">
+                  <div className="flex flex-col items-center gap-4">
+                    <div className="w-12 h-12 rounded-full bg-[#F6F8FA] dark:bg-[#21262D] flex items-center justify-center">
+                      <Layers className="h-6 w-6 text-[#8B949E]" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>No themes found</p>
+                      <p className="text-sm mt-1" style={{ color: 'var(--text-muted)' }}>Create your first strategic theme to get started</p>
+                    </div>
+                    {onCreateTheme && (
+                      <Button 
+                        size="sm" 
+                        onClick={onCreateTheme}
+                        className="bg-blue-600 hover:bg-blue-700 text-white gap-1.5"
+                      >
+                        <Plus className="h-4 w-4" />
+                        Create Theme
+                      </Button>
+                    )}
+                  </div>
                 </td>
               </tr>
             ) : (
