@@ -9,11 +9,13 @@ import {
   FileText,
   Bug,
   Siren,
+  Calendar,
   type LucideIcon
 } from 'lucide-react';
 
 export type WorkItemType = 
   | 'theme'
+  | 'snapshot'
   | 'objective'
   | 'business-request'
   | 'epic'
@@ -52,6 +54,15 @@ export const workItemConfig: Record<WorkItemType, WorkItemConfig> = {
     icon: Circle,
     color: 'text-workitem-theme',
     bgColor: 'bg-workitem-theme',
+    moduleCode: 'ENTERPRISE',
+    category: 'enterprise',
+  },
+  'snapshot': {
+    key: 'snapshot',
+    label: 'Snapshots',
+    icon: Calendar,
+    color: 'text-brand-primary',
+    bgColor: 'bg-brand-primary',
     moduleCode: 'ENTERPRISE',
     category: 'enterprise',
   },
