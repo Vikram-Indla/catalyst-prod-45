@@ -15,7 +15,7 @@ const ICON_COLORS: Record<string, string> = {
   objective: '#2563eb',  // Blue
   
   // Product
-  'business-request': '#8b7355', // Bronze
+  'business-request': '#2563eb', // Blue
   
   // Program
   epic: '#904EE2',       // Purple

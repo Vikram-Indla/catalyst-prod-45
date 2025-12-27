@@ -48,7 +48,7 @@ export function FormField({
             </span>
           )}
           {showValidation && isValid && (
-            <Check className="w-3.5 h-3.5 text-[#5c7c5c]" />
+            <Check className="w-3.5 h-3.5 text-teal-600 dark:text-teal-400" />
           )}
         </div>
       </div>

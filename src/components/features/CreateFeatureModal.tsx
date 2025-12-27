@@ -504,7 +504,7 @@ export function CreateFeatureModal({
                           {selectedAssignee.avatar_url && (
                             <AvatarImage src={selectedAssignee.avatar_url} />
                           )}
-                          <AvatarFallback className="text-[9px] font-bold bg-gradient-to-br from-[#5c7c5c] to-[#4a6a4a] text-white">
+                          <AvatarFallback className="text-[9px] font-bold bg-gradient-to-br from-blue-600 to-blue-700 text-white">
                             {getInitials(selectedAssignee.full_name)}
                           </AvatarFallback>
                         </Avatar>
@@ -523,7 +523,7 @@ export function CreateFeatureModal({
                       <div className="flex items-center gap-2">
                         <Avatar className="w-5 h-5">
                           {user.avatar_url && <AvatarImage src={user.avatar_url} />}
-                          <AvatarFallback className="text-[9px] font-bold bg-gradient-to-br from-[#5c7c5c] to-[#4a6a4a] text-white">
+                          <AvatarFallback className="text-[9px] font-bold bg-gradient-to-br from-blue-600 to-blue-700 text-white">
                             {getInitials(user.full_name)}
                           </AvatarFallback>
                         </Avatar>

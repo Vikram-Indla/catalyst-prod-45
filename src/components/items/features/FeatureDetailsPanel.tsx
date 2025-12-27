@@ -523,7 +523,7 @@ export function FeatureDetailsPanel({ feature, open, onClose }: FeatureDetailsPa
 
                 <FieldRow label="Parent Epic">
                   {featureData?.epic ? (
-                    <span className="text-gold-link hover:text-gold-link-hover cursor-pointer hover:underline transition-colors font-medium text-sm">
+                    <span className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 cursor-pointer hover:underline transition-colors font-medium text-sm">
                       {featureData.epic.epic_key} {featureData.epic.name}
                     </span>
                   ) : (

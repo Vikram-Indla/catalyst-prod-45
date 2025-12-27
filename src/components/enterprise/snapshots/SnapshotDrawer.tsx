@@ -430,11 +430,11 @@ export function SnapshotDrawer({ isOpen, onClose, snapshotId, onSave }: Snapshot
         return { 
           label: 'on track', 
           style: {
-            backgroundColor: 'rgba(92, 124, 92, 0.25)',
-            border: '1px solid rgba(92, 124, 92, 0.5)',
-            color: '#8FBC8F'
+            backgroundColor: 'rgba(13, 148, 136, 0.25)',
+            border: '1px solid rgba(13, 148, 136, 0.5)',
+            color: '#5eead4'
           },
-          healthColor: '#5c7c5c'
+          healthColor: '#0d9488'
         };
       case 'AT_RISK':
         return { 
@@ -526,7 +526,7 @@ export function SnapshotDrawer({ isOpen, onClose, snapshotId, onSave }: Snapshot
             style={{
               backgroundColor: '#242424',
               border: '1px solid #404040',
-              color: '#c69c6d'
+              color: '#60a5fa'
             }}
           >
             {formatSnapshotId(snapshotId)}
@@ -680,7 +680,7 @@ export function SnapshotDrawer({ isOpen, onClose, snapshotId, onSave }: Snapshot
                   {activeTab === tab.value && (
                     <div 
                       className="absolute bottom-0 left-2 right-2 h-[3px] rounded-full"
-                      style={{ backgroundColor: '#c69c6d' }}
+                      style={{ backgroundColor: '#3b82f6' }}
                     />
                   )}
                 </button>
@@ -694,7 +694,7 @@ export function SnapshotDrawer({ isOpen, onClose, snapshotId, onSave }: Snapshot
               {/* Name */}
               <div className="space-y-2">
                 <label className="text-sm font-medium" style={{ color: '#a3a3a3' }}>
-                  Name <span style={{ color: '#c69c6d' }}>*</span>
+                  Name <span style={{ color: '#3b82f6' }}>*</span>
                 </label>
                 <input
                   value={formData.name}
@@ -903,17 +903,17 @@ export function SnapshotDrawer({ isOpen, onClose, snapshotId, onSave }: Snapshot
                       key={quarter.id}
                       className="flex items-center gap-4 p-4 rounded-lg cursor-pointer transition-colors"
                       style={{
-                        backgroundColor: isSelected ? 'rgba(92, 124, 92, 0.08)' : '#1a1a1a',
-                        border: isSelected ? '1px solid rgba(92, 124, 92, 0.3)' : '1px solid #333333'
+                        backgroundColor: isSelected ? 'rgba(13, 148, 136, 0.08)' : '#1a1a1a',
+                        border: isSelected ? '1px solid rgba(13, 148, 136, 0.3)' : '1px solid #333333'
                       }}
                     >
                       <Checkbox
                         checked={isSelected}
                         onCheckedChange={() => handleQuarterToggle(quarter.id)}
-                        className="data-[state=checked]:bg-[#5c7c5c] data-[state=checked]:border-[#5c7c5c]"
+                        className="data-[state=checked]:bg-teal-600 data-[state=checked]:border-teal-600"
                         style={{
-                          borderColor: isSelected ? '#5c7c5c' : '#404040',
-                          backgroundColor: isSelected ? '#5c7c5c' : 'transparent'
+                          borderColor: isSelected ? '#0d9488' : '#404040',
+                          backgroundColor: isSelected ? '#0d9488' : 'transparent'
                         }}
                       />
                       <div className="flex-1">
@@ -991,17 +991,17 @@ export function SnapshotDrawer({ isOpen, onClose, snapshotId, onSave }: Snapshot
                       key={theme.id}
                       className="flex items-center gap-4 p-4 rounded-lg cursor-pointer transition-colors"
                       style={{
-                        backgroundColor: isSelected ? 'rgba(92, 124, 92, 0.08)' : '#1a1a1a',
-                        border: isSelected ? '1px solid rgba(92, 124, 92, 0.3)' : '1px solid #333333'
+                        backgroundColor: isSelected ? 'rgba(13, 148, 136, 0.08)' : '#1a1a1a',
+                        border: isSelected ? '1px solid rgba(13, 148, 136, 0.3)' : '1px solid #333333'
                       }}
                     >
                       <Checkbox
                         checked={isSelected}
                         onCheckedChange={() => handleThemeToggle(theme.id)}
-                        className="data-[state=checked]:bg-[#5c7c5c] data-[state=checked]:border-[#5c7c5c]"
+                        className="data-[state=checked]:bg-teal-600 data-[state=checked]:border-teal-600"
                         style={{
-                          borderColor: isSelected ? '#5c7c5c' : '#404040',
-                          backgroundColor: isSelected ? '#5c7c5c' : 'transparent'
+                          borderColor: isSelected ? '#0d9488' : '#404040',
+                          backgroundColor: isSelected ? '#0d9488' : 'transparent'
                         }}
                       />
                       <div className="flex-1">

@@ -255,7 +255,7 @@ export function FeatureRightRail({ feature, collapsed, onToggleCollapse, onUpdat
 
         <FieldRow label="Release">
           {PLACEHOLDER_FIELDS.release ? (
-            <span className="text-gold-link hover:text-gold-link-hover cursor-pointer hover:underline transition-colors font-mono text-xs font-medium">
+            <span className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 cursor-pointer hover:underline transition-colors font-mono text-xs font-medium">
               {PLACEHOLDER_FIELDS.release}
             </span>
           ) : (
