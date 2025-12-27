@@ -2,20 +2,60 @@ import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import type { ObjectiveStatus } from "../../types/objective.types";
 
-const STATUS_CONFIG: Record<string, { label: string; className: string }> = {
+const STATUS_CONFIG: Record<string, { label: string; className: string; style?: React.CSSProperties }> = {
   pending: { label: "Pending", className: "bg-muted text-muted-foreground" },
-  "in-progress": { label: "In Progress", className: "bg-brand-primary/20 text-brand-primary border-brand-primary/30" },
-  in_progress: { label: "In Progress", className: "bg-brand-primary/20 text-brand-primary border-brand-primary/30" },
-  "on-track": { label: "On Track", className: "bg-success/20 text-success border-success/30" },
-  on_track: { label: "On Track", className: "bg-success/20 text-success border-success/30" },
-  "at-risk": { label: "At Risk", className: "bg-warning/20 text-warning border-warning/30" },
-  at_risk: { label: "At Risk", className: "bg-warning/20 text-warning border-warning/30" },
-  "off-track": { label: "Off Track", className: "bg-destructive/20 text-destructive border-destructive/30" },
-  off_track: { label: "Off Track", className: "bg-destructive/20 text-destructive border-destructive/30" },
+  "in-progress": { 
+    label: "In Progress", 
+    className: "border",
+    style: { background: 'hsl(217 91% 60% / 0.12)', color: 'hsl(var(--brand-primary))', borderColor: 'hsl(217 91% 60% / 0.3)' }
+  },
+  in_progress: { 
+    label: "In Progress", 
+    className: "border",
+    style: { background: 'hsl(217 91% 60% / 0.12)', color: 'hsl(var(--brand-primary))', borderColor: 'hsl(217 91% 60% / 0.3)' }
+  },
+  "on-track": { 
+    label: "On Track", 
+    className: "border",
+    style: { background: 'hsl(173 58% 39% / 0.12)', color: 'hsl(var(--success))', borderColor: 'hsl(173 58% 39% / 0.3)' }
+  },
+  on_track: { 
+    label: "On Track", 
+    className: "border",
+    style: { background: 'hsl(173 58% 39% / 0.12)', color: 'hsl(var(--success))', borderColor: 'hsl(173 58% 39% / 0.3)' }
+  },
+  "at-risk": { 
+    label: "At Risk", 
+    className: "border",
+    style: { background: 'hsl(38 92% 50% / 0.12)', color: 'hsl(var(--warning))', borderColor: 'hsl(38 92% 50% / 0.3)' }
+  },
+  at_risk: { 
+    label: "At Risk", 
+    className: "border",
+    style: { background: 'hsl(38 92% 50% / 0.12)', color: 'hsl(var(--warning))', borderColor: 'hsl(38 92% 50% / 0.3)' }
+  },
+  "off-track": { 
+    label: "Off Track", 
+    className: "border",
+    style: { background: 'hsl(var(--destructive) / 0.12)', color: 'hsl(var(--destructive))', borderColor: 'hsl(var(--destructive) / 0.3)' }
+  },
+  off_track: { 
+    label: "Off Track", 
+    className: "border",
+    style: { background: 'hsl(var(--destructive) / 0.12)', color: 'hsl(var(--destructive))', borderColor: 'hsl(var(--destructive) / 0.3)' }
+  },
   paused: { label: "Paused", className: "bg-muted text-muted-foreground" },
-  completed: { label: "Completed", className: "bg-success text-success-foreground" },
+  completed: { 
+    label: "Completed", 
+    className: "border",
+    style: { background: 'hsl(173 58% 39% / 0.12)', color: 'hsl(var(--success))', borderColor: 'hsl(173 58% 39% / 0.3)' }
+  },
   canceled: { label: "Canceled", className: "bg-muted text-muted-foreground line-through" },
-  missed: { label: "Missed", className: "bg-destructive/80 text-destructive-foreground" },
+  missed: { 
+    label: "Missed", 
+    className: "border",
+    style: { background: 'hsl(var(--destructive) / 0.12)', color: 'hsl(var(--destructive))', borderColor: 'hsl(var(--destructive) / 0.3)' }
+  },
 };
 
 interface ObjectiveStatusBadgeProps {
@@ -35,6 +75,7 @@ export function ObjectiveStatusBadge({ status, size = "default", className }: Ob
         size === "sm" && "text-xs px-2 py-0.5",
         className
       )}
+      style={config.style}
     >
       {config.label}
     </Badge>

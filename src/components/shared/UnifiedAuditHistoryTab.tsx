@@ -191,13 +191,12 @@ export function UnifiedAuditHistoryTab({ entityId, entityType, embedded = false 
                   'hover:bg-surface-1',
                 )}
               >
-                <div
-                  className={cn(
-                    'w-10 h-10 rounded-full flex items-center justify-center shrink-0',
-                    'text-[13px] font-bold text-brand-primary-foreground',
-                    'bg-gradient-to-br from-brand-primary to-brand-primary-hover',
-                    'shadow-brand',
-                  )}
+              <div
+                  className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 text-[13px] font-bold text-white"
+                  style={{
+                    background: 'linear-gradient(135deg, hsl(var(--brand-primary)) 0%, hsl(217 91% 50%) 100%)',
+                    boxShadow: '0 2px 8px hsl(var(--brand-primary) / 0.35)',
+                  }}
                 >
                   {getInitials(log.actor_name)}
                 </div>

@@ -1169,7 +1169,10 @@ export function CatalystThemeDrawer({ theme, isOpen, onClose }: CatalystThemeDra
             </TabsList>
 
             {/* TAB CONTENT */}
-            <div className="flex-1 min-h-0 overflow-y-auto bg-surface-1/30">
+            <div 
+              className="flex-1 min-h-0 overflow-y-auto"
+              style={{ background: 'hsl(var(--muted) / 0.3)' }}
+            >
               {/* OVERVIEW */}
               <TabsContent value="overview" className="mt-0 p-6 space-y-5 focus-visible:outline-none">
                 <div className="grid grid-cols-2 gap-4">
