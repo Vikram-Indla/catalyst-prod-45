@@ -14,7 +14,8 @@ export type WorkItemIconType =
   | 'demand'
   | 'dependency'
   | 'risk'
-  | 'theme';
+  | 'theme'
+  | 'snapshot';
 
 interface WorkItemIconProps {
   type: WorkItemIconType;
@@ -35,23 +36,25 @@ const SIZE_MAP = {
 function getTypeColor(type: WorkItemIconType): string {
   switch (type) {
     case 'objective':
-      return 'var(--brand-primary)';
+      return '#2563eb'; // Blue
     case 'keyresult':
       return 'var(--brand-gold)';
     case 'epic':
-      return 'var(--status-info)';
+      return '#8b5cf6'; // Purple
     case 'feature':
-      return 'var(--brand-primary)';
+      return '#22c55e'; // Green
     case 'story':
-      return 'var(--secondary-bronze)';
+      return '#2563eb'; // Blue
     case 'demand':
-      return 'var(--brand-gold)';
+      return '#2563eb'; // Blue
     case 'dependency':
-      return 'var(--secondary-bronze)';
+      return '#2563eb'; // Blue
     case 'risk':
-      return 'var(--status-danger)';
+      return '#f97316'; // Orange
     case 'theme':
-      return 'var(--secondary-champagne)';
+      return '#2563eb'; // Blue
+    case 'snapshot':
+      return '#2563eb'; // Blue
     default:
       return 'var(--text-muted)';
   }
@@ -151,16 +154,19 @@ function getIconPath(type: WorkItemIconType): React.ReactNode {
         />
       );
     case 'theme':
-      // Tag/label icon
+      // Filled circle icon
       return (
-        <path
-          d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82zM7 7h.01"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
+        <circle cx="12" cy="12" r="8" fill="currentColor" />
+      );
+    case 'snapshot':
+      // Calendar icon
+      return (
+        <>
+          <rect x="3" y="4" width="18" height="18" rx="2" ry="2" fill="none" stroke="currentColor" strokeWidth="2" />
+          <line x1="16" y1="2" x2="16" y2="6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+          <line x1="8" y1="2" x2="8" y2="6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+          <line x1="3" y1="10" x2="21" y2="10" stroke="currentColor" strokeWidth="2" />
+        </>
       );
     default:
       return null;
@@ -200,6 +206,7 @@ export function getWorkItemTypeLabel(type: WorkItemIconType): string {
     dependency: 'Dependency',
     risk: 'Risk',
     theme: 'Theme',
+    snapshot: 'Snapshot',
   };
   return labels[type] || type;
 }
