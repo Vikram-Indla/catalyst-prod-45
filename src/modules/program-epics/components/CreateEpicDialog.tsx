@@ -38,7 +38,7 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { Badge } from '@/components/ui/badge';
-import { Check, ChevronsUpDown, Upload, X, FileText } from 'lucide-react';
+import { Check, ChevronsUpDown, Upload, X, FileText, Box } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { 
   useCreateUploadSession, 
@@ -403,9 +403,38 @@ export function CreateEpicDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[600px] max-h-[85vh] flex flex-col !p-0 overflow-hidden">
-        <DialogHeader className="flex-shrink-0 px-6 pt-5">
-          <DialogTitle>Create Epic</DialogTitle>
+      <DialogContent className={cn(
+        "sm:max-w-[600px] max-h-[90vh] p-0 flex flex-col overflow-hidden",
+        "bg-white dark:bg-[#141414]",
+        "rounded-lg",
+        "shadow-xl",
+        "border border-gray-200 dark:border-[#333333]",
+        "[&>button]:hidden"
+      )}>
+        {/* Accent Bar */}
+        <div className="h-1 bg-gradient-to-r from-[#2563eb] via-[#8b5cf6] to-[#60a5fa] flex-shrink-0" />
+
+        {/* Header */}
+        <DialogHeader className="px-6 py-4 border-b border-gray-200 dark:border-[#333333] flex-shrink-0 bg-white dark:bg-[#141414]">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Box className="h-5 w-5 text-[#8b5cf6]" />
+              <DialogTitle className="text-lg font-semibold text-gray-900 dark:text-[#f5f5f5]">
+                Create Epic
+              </DialogTitle>
+            </div>
+            <button 
+              onClick={handleClose} 
+              className={cn(
+                "p-1.5 rounded-md",
+                "text-gray-400 hover:text-gray-600 dark:text-[#737373] dark:hover:text-[#a3a3a3]",
+                "hover:bg-gray-100 dark:hover:bg-[#1a1a1a]",
+                "transition-colors"
+              )}
+            >
+              <X className="h-5 w-5" />
+            </button>
+          </div>
         </DialogHeader>
         
         <div className="flex-1 min-h-0 overflow-y-auto px-6 scrollbar-catalyst">
@@ -768,32 +797,19 @@ export function CreateEpicDialog({
           </div>
         </div>
 
-        <DialogFooter className="flex-shrink-0 px-6 pb-5">
-          {/* Cancel Button - Secondary */}
+        {/* Footer */}
+        <div className="flex items-center justify-between px-6 py-4 border-t border-gray-200 dark:border-[#333333] bg-gray-50 dark:bg-[#1a1a1a]">
           <Button
-            variant="outline"
+            variant="ghost"
             onClick={handleClose}
-            className="px-5 py-2.5 transition-all"
-            style={{
-              backgroundColor: 'transparent',
-              borderColor: 'var(--dialog-input-border)',
-              color: 'var(--dialog-label-color)'
-            }}
+            className="text-gray-600 dark:text-[#a3a3a3] hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-[#262626]"
           >
             Cancel
           </Button>
-          
-          {/* Create Epic Button - Primary */}
           <Button 
             onClick={handleSubmit} 
             disabled={!isValid || createEpicMutation.isPending}
-            className="px-5 py-2.5 transition-all disabled:opacity-50"
-            style={{
-              backgroundColor: '#2563eb',
-              border: '1px solid rgba(255, 255, 255, 0.1)',
-              color: '#ffffff',
-              boxShadow: '0 1px 2px rgba(0, 0, 0, 0.2)'
-            }}
+            className="bg-[#2563eb] hover:bg-[#1d4ed8] text-white px-6"
             title={
               isProgramMissing 
                 ? 'Program context required' 
@@ -810,7 +826,7 @@ export function CreateEpicDialog({
           >
             {createEpicMutation.isPending ? 'Creating...' : 'Create Epic'}
           </Button>
-        </DialogFooter>
+        </div>
       </DialogContent>
     </Dialog>
   );
