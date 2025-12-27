@@ -69,10 +69,10 @@ const getStatusStyles = (colorType: ColorType) => {
       border: `rgba(139, 115, 85, 0.25)`,
     },
     gold: {
-      bg: `rgba(198, 156, 109, 0.12)`,
-      text: CATALYST_COLORS.gold,
-      dot: CATALYST_COLORS.gold,
-      border: `rgba(198, 156, 109, 0.25)`,
+      bg: `rgba(37, 99, 235, 0.12)`,
+      text: '#2563eb',
+      dot: '#2563eb',
+      border: `rgba(37, 99, 235, 0.25)`,
     },
     champagne: {
       bg: `rgba(212, 184, 150, 0.15)`,

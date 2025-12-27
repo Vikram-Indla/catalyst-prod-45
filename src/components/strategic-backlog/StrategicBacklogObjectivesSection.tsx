@@ -217,23 +217,23 @@ export function StrategicBacklogObjectivesSection({
       },
       in_progress: { 
         label: 'In Progress', 
-        className: 'bg-transparent text-[#5c7c5c] border-[#5c7c5c]' 
+        className: 'bg-transparent text-[#2563eb] border-[#2563eb]' 
       },
       on_track: { 
         label: 'On track', 
-        className: 'bg-[#5c7c5c] text-white border-[#5c7c5c]' 
+        className: 'bg-[#0d9488] text-white border-[#0d9488]' 
       },
       at_risk: { 
         label: 'At risk', 
-        className: 'bg-[#8b7355] text-white border-[#8b7355]' 
+        className: 'bg-[#f59e0b] text-white border-[#f59e0b]' 
       },
       off_track: { 
         label: 'Off track', 
-        className: 'bg-[#c75a4a] text-white border-[#c75a4a]' 
+        className: 'bg-[#ef4444] text-white border-[#ef4444]' 
       },
       completed: { 
         label: 'Completed', 
-        className: 'bg-[#5c7c5c] text-white border-[#5c7c5c]' 
+        className: 'bg-[#0d9488] text-white border-[#0d9488]' 
       },
       paused: { 
         label: 'Paused', 
@@ -268,12 +268,12 @@ export function StrategicBacklogObjectivesSection({
     switch (status) {
       case 'on_track':
       case 'completed':
-        dotColor = 'bg-[#5c7c5c]';
-        barColor = 'bg-[#5c7c5c]';
+        dotColor = 'bg-[#0d9488]';
+        barColor = 'bg-[#0d9488]';
         break;
       case 'in_progress':
-        dotColor = 'bg-[#5c7c5c]';
-        barColor = 'bg-[#5c7c5c]';
+        dotColor = 'bg-[#2563eb]';
+        barColor = 'bg-[#2563eb]';
         break;
       case 'at_risk':
         dotColor = 'bg-[#f59e0b]';

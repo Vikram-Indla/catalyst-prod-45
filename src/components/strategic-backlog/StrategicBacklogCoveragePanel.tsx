@@ -77,9 +77,9 @@ export function StrategicBacklogCoveragePanel({
           <div className="flex items-center gap-3">
             <div 
               className="w-8 h-8 rounded-lg flex items-center justify-center"
-              style={{ background: 'rgba(198, 156, 109, 0.1)' }}
+              style={{ background: 'rgba(37, 99, 235, 0.1)' }}
             >
-              <Target className="h-4 w-4" style={{ color: '#C69C6D' }} />
+              <Target className="h-4 w-4" style={{ color: '#2563eb' }} />
             </div>
             <div className="text-left">
               <div className="flex items-center gap-1.5">
@@ -89,7 +89,7 @@ export function StrategicBacklogCoveragePanel({
             </div>
           </div>
           {objectivesComplete ? (
-            <Check className="h-4 w-4" style={{ color: '#5C7C5C' }} />
+            <Check className="h-4 w-4" style={{ color: '#0d9488' }} />
           ) : null}
         </button>
 

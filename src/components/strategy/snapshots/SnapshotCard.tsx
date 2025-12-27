@@ -80,9 +80,9 @@ export function SnapshotCard({ snapshot, onViewDetails, onDelete }: SnapshotCard
           "bg-white dark:bg-[#161B22]",
           "border border-[#E1E4E8] dark:border-[#30363D]",
           "shadow-sm dark:shadow-none",
-          "hover:shadow-md hover:border-[rgba(198,156,109,0.3)] dark:hover:border-[#3D444D]",
+          "hover:shadow-md hover:border-[rgba(37,99,235,0.3)] dark:hover:border-[#3D444D]",
           isArchived && 'opacity-70',
-          isActive && 'border-l-[3px] border-l-[#5C7C5C]'
+          isActive && 'border-l-[3px] border-l-[#0d9488]'
         )}
         onClick={() => onViewDetails(snapshot)}
       >

@@ -277,7 +277,7 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
                 width: '32px',
                 height: '32px',
                 borderRadius: '6px',
-                background: 'linear-gradient(135deg, #5c7c5c 0%, #6d8d6d 100%)',
+                background: 'linear-gradient(135deg, #2563eb 0%, #3b82f6 100%)',
                 color: '#ffffff',
                 fontSize: '11px',
                 fontWeight: 700,
@@ -296,7 +296,7 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
                   width: '32px',
                   height: '32px',
                   borderRadius: '6px',
-                  background: 'linear-gradient(135deg, #5c7c5c 0%, #6d8d6d 100%)',
+                  background: 'linear-gradient(135deg, #2563eb 0%, #3b82f6 100%)',
                   color: '#ffffff',
                   fontSize: '11px',
                   fontWeight: 700,
@@ -435,11 +435,11 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
                     />
                   )}
                   {CustomIcon ? (
-                    <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', color: active ? '#5C7C5C' : 'var(--icon-default)', flexShrink: 0 }}>
+                    <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', color: active ? '#2563eb' : 'var(--icon-default)', flexShrink: 0 }}>
                       <CustomIcon className="w-5 h-5" />
                     </span>
                   ) : (
-                    <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', color: active ? '#5C7C5C' : 'var(--icon-default)', flexShrink: 0 }}>
+                    <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', color: active ? '#2563eb' : 'var(--icon-default)', flexShrink: 0 }}>
                       <LucideIcon style={{ width: '20px', height: '20px' }} />
                     </span>
                   )}

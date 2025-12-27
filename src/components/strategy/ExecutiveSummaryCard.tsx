@@ -43,10 +43,10 @@ function KPITile({
   progressValue = 0,
 }: KPITileProps) {
   const accentStyles: Record<string, string> = {
-    green: '#5C7C5C',
-    olive: '#5C7C5C',
-    bronze: '#8B7355',
-    red: '#B85C5C',
+    green: '#0d9488',
+    olive: '#0d9488',
+    bronze: '#f59e0b',
+    red: '#ef4444',
   };
 
   return (

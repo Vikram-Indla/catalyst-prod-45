@@ -47,7 +47,7 @@ function ThemeRow({ item, level, isExpanded, isSelected, onToggle, onSelect }: T
       className={cn(
         "group cursor-pointer transition-colors flex items-center",
         "hover:bg-[#F6F8FA] dark:hover:bg-[#21262D]",
-        isSelected && "bg-[rgba(198,156,109,0.05)] dark:bg-[rgba(198,156,109,0.08)]"
+        isSelected && "bg-[rgba(37,99,235,0.05)] dark:bg-[rgba(37,99,235,0.08)]"
       )}
     >
       <div className={cn("flex items-center gap-3 px-4 w-full", indentClass)}>

@@ -198,7 +198,7 @@ export function IdeaDetailPanel({
               variant="ghost"
               size="icon"
               onClick={onToggleSubscribe}
-              className="text-[#1a1a1a] hover:bg-[rgba(198,156,109,0.08)]"
+              className="text-[#1a1a1a] hover:bg-[rgba(37,99,235,0.08)]"
             >
               {isSubscribed ? (
                 <BellOff className="h-4 w-4" />
@@ -208,7 +208,7 @@ export function IdeaDetailPanel({
             </Button>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="text-[#1a1a1a] hover:bg-[rgba(198,156,109,0.08)]">
+                <Button variant="ghost" size="icon" className="text-[#1a1a1a] hover:bg-[rgba(37,99,235,0.08)]">
                   <MoreVertical className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>

@@ -28,7 +28,7 @@ const variantConfig: Record<CatalystToastType, {
   icon: React.ReactNode;
 }> = {
   success: {
-    bg: 'bg-[#5c7c5c]', // Olive
+    bg: 'bg-[#0d9488]', // Teal
     iconBg: 'bg-white/20',
     icon: <Check className="w-5 h-5 text-white" />,
   },
@@ -38,12 +38,12 @@ const variantConfig: Record<CatalystToastType, {
     icon: <X className="w-5 h-5 text-white" />,
   },
   warning: {
-    bg: 'bg-[#8b7355]', // Bronze
+    bg: 'bg-[#f59e0b]', // Amber
     iconBg: 'bg-white/20',
     icon: <AlertTriangle className="w-5 h-5 text-white" />,
   },
   info: {
-    bg: 'bg-[#c69c6d]', // Gold
+    bg: 'bg-[#2563eb]', // Blue
     iconBg: 'bg-white/20',
     icon: <Info className="w-5 h-5 text-white" />,
   },
