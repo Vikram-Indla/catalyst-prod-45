@@ -95,10 +95,9 @@ export function KeyResultsTabV2({ objectiveId, onMutation }: KeyResultsTabV2Prop
           Key Results ({keyResults?.length || 0})
         </h3>
         <Button 
-          variant="outline" 
           size="sm" 
           onClick={handleCreate} 
-          className="gap-1.5 bg-white dark:bg-[#161B22] border-[#E1E4E8] dark:border-[#30363D] text-[#24292F] dark:text-[#E6EDF3] hover:border-[rgba(37,99,235,0.3)]"
+          className="gap-1.5 bg-brand-primary hover:bg-brand-primary-hover text-white"
         >
           <Plus className="h-4 w-4" />
           Add Key Result

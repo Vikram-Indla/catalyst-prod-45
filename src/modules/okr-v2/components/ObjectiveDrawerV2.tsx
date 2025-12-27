@@ -9,6 +9,7 @@
 
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useObjectiveV2, useUpdateObjectiveV2, useDeleteObjectiveV2, useCreateObjectiveV2 } from '@/hooks/useObjectivesV2';
+import { supabase } from '@/integrations/supabase/client';
 import { useKeyResultsV2 } from '@/hooks/useKeyResultsV2';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
@@ -263,10 +264,107 @@ export function ObjectiveDrawerV2({ objectiveId, open, onClose, onDuplicated }: 
     }
   }, [open]);
 
-  // Handle form changes from Overview tab
+  // Real-time subscription for objective updates
+  useEffect(() => {
+    if (!objectiveId || !open) return;
+
+    const channel = supabase
+      .channel(`objective-drawer-${objectiveId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'objectives',
+          filter: `id=eq.${objectiveId}`
+        },
+        () => {
+          // Refetch objective data when it changes in the database
+          queryClient.invalidateQueries({ queryKey: ['objective-v2', objectiveId] });
+          queryClient.invalidateQueries({ queryKey: ['objectives-v2'] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [objectiveId, open, queryClient]);
+
+  // Autosave debounce ref
+  const autoSaveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const isSavingRef = useRef(false);
+
+  // Autosave function
+  const autoSave = useCallback(async (dataToSave: ObjectiveFormData) => {
+    if (!objectiveId || isSavingRef.current) return;
+    
+    const errors: string[] = [];
+    if (!dataToSave.name?.trim()) errors.push('Name is required');
+    if (!dataToSave.theme_id) errors.push('Theme is required');
+    if (errors.length > 0) return; // Don't autosave if validation fails
+
+    isSavingRef.current = true;
+    try {
+      const updatePayload = {
+        id: objectiveId,
+        name: dataToSave.name.trim(),
+        description: dataToSave.description || null,
+        notes: dataToSave.notes || null,
+        theme_id: dataToSave.theme_id || null,
+        status: dataToSave.status as any,
+        health: dataToSave.health as any,
+        start_date: dataToSave.start_date || null,
+        end_date: dataToSave.end_date || null,
+        owner_id: dataToSave.owner_id || null,
+      };
+
+      if (originalData) {
+        const changedFields = getChangedFields(originalData as any, dataToSave as any);
+        if (changedFields.length > 0) {
+          await logAuditEntry({
+            entityType: 'objective',
+            entityId: objectiveId,
+            action: 'updated',
+            beforeData: originalData,
+            afterData: dataToSave,
+          });
+        }
+      }
+
+      await updateObjective.mutateAsync(updatePayload);
+      setOriginalData(dataToSave);
+      setHasOverviewChanges(false);
+    } catch (error: any) {
+      console.error('Autosave failed:', error);
+    } finally {
+      isSavingRef.current = false;
+    }
+  }, [objectiveId, originalData, updateObjective, queryClient]);
+
+  // Handle form changes from Overview tab with autosave
   const handleFormChange = useCallback((newData: ObjectiveFormData) => {
     setFormData(newData);
     setHasOverviewChanges(true);
+    
+    // Clear existing timeout
+    if (autoSaveTimeoutRef.current) {
+      clearTimeout(autoSaveTimeoutRef.current);
+    }
+    
+    // Debounced autosave after 800ms of no changes
+    autoSaveTimeoutRef.current = setTimeout(() => {
+      autoSave(newData);
+    }, 800);
+  }, [autoSave]);
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (autoSaveTimeoutRef.current) {
+        clearTimeout(autoSaveTimeoutRef.current);
+      }
+    };
   }, []);
 
   // Validate required fields
@@ -579,30 +677,6 @@ export function ObjectiveDrawerV2({ objectiveId, open, onClose, onDuplicated }: 
 
               {/* Actions in header */}
               <div className="flex items-center gap-1">
-                {/* Save Button */}
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button
-                      size="sm"
-                      className="h-8 px-3 text-sm font-medium bg-brand-primary hover:bg-brand-primary-hover text-white rounded-lg"
-                      disabled={updateObjective.isPending}
-                    >
-                      {updateObjective.isPending ? 'Saving...' : 'Save'}
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent 
-                    align="end" 
-                    className="w-40 rounded-xl"
-                    style={{ 
-                      background: 'hsl(var(--background))',
-                      borderColor: 'hsl(var(--border))',
-                    }}
-                  >
-                    <DropdownMenuItem className="rounded-lg" onSelect={handleSave}>Save</DropdownMenuItem>
-                    <DropdownMenuItem className="rounded-lg" onSelect={handleSaveAndClose}>Save & Close</DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button 
@@ -625,10 +699,6 @@ export function ObjectiveDrawerV2({ objectiveId, open, onClose, onDuplicated }: 
                     <DropdownMenuItem className="rounded-lg" onSelect={handleDuplicate}>
                       <Copy className="h-4 w-4 mr-2" />
                       {isDuplicating ? 'Duplicating...' : 'Duplicate'}
-                    </DropdownMenuItem>
-                    <DropdownMenuItem className="rounded-lg" onSelect={handleExport}>
-                      <Download className="h-4 w-4 mr-2" />
-                      Export
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem className="rounded-lg text-destructive" onSelect={() => setShowDeleteDialog(true)}>
