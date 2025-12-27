@@ -10,11 +10,11 @@ import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/comp
 
 // Catalyst Blue + Teal Palette - uses CSS tokens for dark mode support
 const colors = {
-  olive: 'var(--secondary-green, #5c7c5c)',
-  bronze: 'var(--secondary-bronze, #8b7355)',
+  olive: 'var(--brand-primary, #2563eb)',       // Changed to blue
+  bronze: 'var(--secondary-grey, #6b7280)',     // Changed to gray
   primary: 'var(--brand-primary, #2563eb)',
   primaryHover: 'var(--brand-primary-hover, #1d4ed8)',
-  champagne: 'var(--secondary-champagne, #d4b896)',
+  champagne: 'var(--secondary-grey, #9ca3af)',  // Changed to light gray
   grey: 'var(--secondary-grey, #c8ccd0)',
   white: 'var(--surface-1, #ffffff)',
   border: 'var(--border-color, #e5e5e5)',

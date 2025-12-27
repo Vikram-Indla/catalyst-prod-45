@@ -522,7 +522,7 @@ export default function RequestAccess() {
     doc.setFontSize(28);
     doc.setTextColor(10, 10, 10); // #0a0a0a dark (Pure Onyx)
     doc.text('Cata', margin, 28);
-    doc.setTextColor(198, 156, 109); // #C69C6D gold
+    doc.setTextColor(37, 99, 235); // #2563eb blue
     doc.text('lyst', margin + 36, 28);
     
     // Tagline
@@ -531,7 +531,7 @@ export default function RequestAccess() {
     doc.text('ENTERPRISE DEMAND MANAGEMENT', margin, 38);
     
     // Document type badge on right
-    doc.setFillColor(198, 156, 109); // gold
+    doc.setFillColor(37, 99, 235); // blue
     doc.roundedRect(pageWidth - margin - 50, 18, 50, 18, 3, 3, 'F');
     doc.setFontSize(9);
     doc.setTextColor(26, 26, 26);
@@ -771,8 +771,8 @@ export default function RequestAccess() {
               className="font-semibold whitespace-nowrap"
               style={{ fontSize: '24px', lineHeight: '1', letterSpacing: '-0.02em' }}
             >
-              <span style={{ color: '#5C7C5C' }}>Cata</span>
-              <span style={{ color: '#C69C6D' }}>lyst</span>
+              <span style={{ color: '#24292F' }}>Cata</span>
+              <span style={{ color: '#2563eb' }}>lyst</span>
             </span>
           </div>
           

@@ -64,17 +64,17 @@ export const ObjectivesColumn = forwardRef<HTMLDivElement, ObjectivesColumnProps
     };
     
     // Status config per legend:
-    // On track: Filled, Green (secondary-green #5c7c5c)
-    // At risk: Filled, Bronze (secondary-bronze #8b7355)
+    // On track: Filled, Teal (brand-teal #0d9488)
+    // At risk: Filled, Amber (#f59e0b)
     // Off track: Filled, Red (destructive)
-    // In Progress: Outline, Gold (brand-primary #c69c6d)
+    // In Progress: Outline, Blue (brand-primary #2563eb)
     // Pending: Outline, Grey (muted)
     const getStatusConfig = (status: string) => {
       switch (status) {
-        case 'on-track': return { color: '#5c7c5c', variant: 'filled' as const };
-        case 'at-risk': return { color: '#8b7355', variant: 'filled' as const };
+        case 'on-track': return { color: '#0d9488', variant: 'filled' as const };
+        case 'at-risk': return { color: '#f59e0b', variant: 'filled' as const };
         case 'off-track': return { color: 'hsl(0, 84%, 60%)', variant: 'filled' as const }; // destructive
-        case 'in-progress': return { color: '#c69c6d', variant: 'outline' as const };
+        case 'in-progress': return { color: '#2563eb', variant: 'outline' as const };
         case 'pending': return { color: '#6b7280', variant: 'outline' as const };
         default: return { color: '#6b7280', variant: 'outline' as const };
       }
@@ -131,10 +131,10 @@ export const ObjectivesColumn = forwardRef<HTMLDivElement, ObjectivesColumnProps
                     </div>
                     <div className="flex items-center gap-0.5 flex-shrink-0">
                       {statusCounts['on-track'] && (
-                        <span className="w-1.5 h-1.5 rounded-full bg-secondary-green" />
+                        <span className="w-1.5 h-1.5 rounded-full bg-brand-teal" />
                       )}
                       {statusCounts['at-risk'] && (
-                        <span className="w-1.5 h-1.5 rounded-full bg-secondary-bronze" />
+                        <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
                       )}
                       {(statusCounts['off-track'] || statusCounts['delayed']) && (
                         <span className="w-1.5 h-1.5 rounded-full bg-destructive" />

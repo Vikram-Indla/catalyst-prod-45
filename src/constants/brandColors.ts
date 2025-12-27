@@ -8,9 +8,9 @@
 export const CATALYST_BRAND_COLORS = [
   { value: '#2563eb', label: 'Blue', token: 'brand-primary' },
   { value: '#0d9488', label: 'Teal', token: 'brand-teal' },
-  { value: '#5c7c5c', label: 'Olive Green', token: 'secondary-olive' },
-  { value: '#8b7355', label: 'Bronze', token: 'secondary-bronze' },
-  { value: '#c8ccd0', label: 'Grey', token: 'secondary-grey' },
+  { value: '#6b7280', label: 'Gray', token: 'secondary-grey' },
+  { value: '#f59e0b', label: 'Amber', token: 'secondary-amber' },
+  { value: '#c8ccd0', label: 'Light Grey', token: 'secondary-light-grey' },
 ] as const;
 
 export type CatalystBrandColor = typeof CATALYST_BRAND_COLORS[number]['value'];

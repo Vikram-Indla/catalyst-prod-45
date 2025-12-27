@@ -109,8 +109,8 @@ export function AssigneeCell({ name, requestId, onSave, disabled = false }: Assi
             <div className="flex items-center gap-2 min-w-0">
               <div className={cn(
                 "flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center",
-                "bg-[#c69c6d]/20 text-[#8b7355]",
-                "dark:bg-[#c69c6d]/30 dark:text-[#d4a855]"
+                "bg-[#2563eb]/20 text-[#1d4ed8]",
+                "dark:bg-[#2563eb]/30 dark:text-[#60a5fa]"
               )}>
                 <span className="text-[10px] font-semibold">{displayInitials}</span>
               </div>
@@ -140,8 +140,8 @@ export function AssigneeCell({ name, requestId, onSave, disabled = false }: Assi
             <>
               <div className={cn(
                 "flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center",
-                "bg-[#c69c6d]/20 text-[#8b7355]",
-                "dark:bg-[#c69c6d]/30 dark:text-[#d4a855]"
+                "bg-[#2563eb]/20 text-[#1d4ed8]",
+                "dark:bg-[#2563eb]/30 dark:text-[#60a5fa]"
               )}>
                 <span className="text-[10px] font-semibold">{displayInitials}</span>
               </div>
@@ -151,8 +151,8 @@ export function AssigneeCell({ name, requestId, onSave, disabled = false }: Assi
             <>
               <div className={cn(
                 "w-7 h-7 rounded-full border-2 border-dashed flex items-center justify-center transition-colors",
-                "border-gray-300 hover:border-[#c69c6d]",
-                "dark:border-gray-500 dark:hover:border-[#d4a855]"
+                "border-gray-300 hover:border-[#2563eb]",
+                "dark:border-gray-500 dark:hover:border-[#60a5fa]"
               )}>
                 <Plus className="h-3 w-3 text-gray-400 dark:text-gray-500" />
               </div>
@@ -236,8 +236,8 @@ export function AssigneeCell({ name, requestId, onSave, disabled = false }: Assi
                 >
                   <div className={cn(
                     "h-6 w-6 rounded-full flex items-center justify-center flex-shrink-0",
-                    "bg-[#c69c6d]/20 text-[#8b7355]",
-                    "dark:bg-[#c69c6d]/30 dark:text-[#d4a855]"
+                    "bg-[#2563eb]/20 text-[#1d4ed8]",
+                    "dark:bg-[#2563eb]/30 dark:text-[#60a5fa]"
                   )}>
                     <span className="text-[10px] font-medium">{initials}</span>
                   </div>
@@ -246,7 +246,7 @@ export function AssigneeCell({ name, requestId, onSave, disabled = false }: Assi
                     <div className="text-[10px] text-gray-500 dark:text-gray-400 truncate">{user.email}</div>
                   </div>
                   {isSelected && (
-                    <Check className="h-4 w-4 text-[#c69c6d] dark:text-[#d4a855] flex-shrink-0" />
+                    <Check className="h-4 w-4 text-[#2563eb] dark:text-[#60a5fa] flex-shrink-0" />
                   )}
                 </button>
               );

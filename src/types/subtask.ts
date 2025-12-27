@@ -43,8 +43,8 @@ export const SUBTASK_TYPE_CONFIG = {
   backend: {
     label: 'Backend',
     icon: 'Server',
-    color: '#5c7c5c',
-    bgColor: 'rgba(92, 124, 92, 0.15)',
+    color: '#0d9488',
+    bgColor: 'rgba(13, 148, 136, 0.15)',
   },
   integration: {
     label: 'Integration',
@@ -55,8 +55,8 @@ export const SUBTASK_TYPE_CONFIG = {
   technical: {
     label: 'Technical',
     icon: 'Cog',
-    color: '#8b7355',
-    bgColor: 'rgba(139, 115, 85, 0.15)',
+    color: '#6b7280',
+    bgColor: 'rgba(107, 114, 128, 0.15)',
   },
 } as const;
 

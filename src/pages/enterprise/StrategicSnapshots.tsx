@@ -96,9 +96,9 @@ function SnapshotTableRow({
     // Dark mode compliant status styles with proper contrast
     const statusStyles: Record<string, { bg: string; text: string; border: string; label: string }> = {
       ACTIVE: {
-        bg: 'bg-[rgba(92,124,92,0.15)] dark:bg-[rgba(92,124,92,0.2)]',
-        text: 'text-[#5c7c5c] dark:text-[#7a9a7a]',
-        border: 'border-[rgba(92,124,92,0.3)] dark:border-[rgba(92,124,92,0.4)]',
+        bg: 'bg-[rgba(13,148,136,0.15)] dark:bg-[rgba(13,148,136,0.2)]',
+        text: 'text-[#0d9488] dark:text-[#14b8a6]',
+        border: 'border-[rgba(13,148,136,0.3)] dark:border-[rgba(13,148,136,0.4)]',
         label: 'ACTIVE'
       },
       ARCHIVED: {
@@ -114,9 +114,9 @@ function SnapshotTableRow({
         label: 'DRAFT'
       },
       PROPOSED: {
-        bg: 'bg-[rgba(198,156,109,0.1)] dark:bg-[rgba(198,156,109,0.15)]',
-        text: 'text-[#c69c6d] dark:text-[#d4b896]',
-        border: 'border-[rgba(198,156,109,0.25)] dark:border-[rgba(198,156,109,0.3)]',
+        bg: 'bg-[rgba(37,99,235,0.1)] dark:bg-[rgba(37,99,235,0.15)]',
+        text: 'text-[#2563eb] dark:text-[#60a5fa]',
+        border: 'border-[rgba(37,99,235,0.25)] dark:border-[rgba(37,99,235,0.3)]',
         label: 'PROPOSED'
       }
     };
@@ -147,22 +147,22 @@ function SnapshotTableRow({
       className={cn(
         "cursor-pointer transition-all duration-150 group",
         "border-b border-[#E8E4DC] dark:border-[#242424]",
-        // Hover state - Catalyst champagne tint
-        "hover:bg-[rgba(198,156,109,0.06)] dark:hover:bg-[#1a1a1a]",
-        "hover:border-l-[3px] hover:border-l-[#c69c6d]",
-        // Active snapshot styling - olive accent
-        isActive && "border-l-[3px] border-l-[#5c7c5c] bg-[rgba(92,124,92,0.06)] dark:bg-[rgba(92,124,92,0.1)]",
+        // Hover state - Catalyst blue tint
+        "hover:bg-[rgba(37,99,235,0.06)] dark:hover:bg-[#1a1a1a]",
+        "hover:border-l-[3px] hover:border-l-[#2563eb]",
+        // Active snapshot styling - teal accent
+        isActive && "border-l-[3px] border-l-[#0d9488] bg-[rgba(13,148,136,0.06)] dark:bg-[rgba(13,148,136,0.1)]",
         // Selected state (when drawer open)
         isSelected && !isActive && [
-          "bg-[rgba(198,156,109,0.06)] dark:bg-[rgba(198,156,109,0.08)]",
-          "border-l-[3px] border-l-[#c69c6d]"
+          "bg-[rgba(37,99,235,0.06)] dark:bg-[rgba(37,99,235,0.08)]",
+          "border-l-[3px] border-l-[#2563eb]"
         ]
       )}
       onClick={() => onSelect(snapshot)}
     >
       {/* Snapshot Name - 14px medium */}
       <td className="py-4 px-4">
-        <span className="text-sm font-medium text-[#24292F] dark:text-[#f5f5f5] group-hover:text-[#5c7c5c] dark:group-hover:text-[#7a9a7a] transition-colors">
+        <span className="text-sm font-medium text-[#24292F] dark:text-[#f5f5f5] group-hover:text-[#2563eb] dark:group-hover:text-[#60a5fa] transition-colors">
           {snapshot.name}
         </span>
       </td>
@@ -182,11 +182,11 @@ function SnapshotTableRow({
         <span className={cn(
           "text-sm font-medium",
           quarterCount === 0 
-            ? "text-[#8b7355] dark:text-[#c69c6d]" 
+            ? "text-[#f59e0b] dark:text-[#fbbf24]" 
             : "text-[#24292F] dark:text-[#f5f5f5]"
         )}>
           {quarterCount}
-          {quarterCount === 0 && <AlertTriangle className="h-3.5 w-3.5 inline ml-1 text-[#8b7355] dark:text-[#c69c6d]" />}
+          {quarterCount === 0 && <AlertTriangle className="h-3.5 w-3.5 inline ml-1 text-[#f59e0b] dark:text-[#fbbf24]" />}
         </span>
       </td>
       
@@ -195,7 +195,7 @@ function SnapshotTableRow({
         <span className={cn(
           "text-sm font-medium",
           themeCount === 0 
-            ? "text-[#8b7355] dark:text-[#c69c6d]" 
+            ? "text-[#f59e0b] dark:text-[#fbbf24]" 
             : "text-[#24292F] dark:text-[#f5f5f5]"
         )}>
           {themeCount}

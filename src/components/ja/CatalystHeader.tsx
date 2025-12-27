@@ -169,7 +169,7 @@ export function CatalystHeader() {
             }}
           >
             <span className="text-foreground dark:text-white">Cata</span>
-            <span className="text-[#c69c6d] dark:text-[#d4b896]">lyst</span>
+            <span className="text-[#2563eb] dark:text-[#60a5fa]">lyst</span>
           </span>
         </a>
         
