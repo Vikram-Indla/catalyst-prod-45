@@ -772,7 +772,7 @@ export default function RequestAccess() {
               style={{ fontSize: '24px', lineHeight: '1', letterSpacing: '-0.02em' }}
             >
               <span style={{ color: '#24292F' }}>Cata</span>
-              <span style={{ color: '#2563eb' }}>lyst</span>
+              <span style={{ color: '#c69c6d' }}>lyst</span>
             </span>
           </div>
           
