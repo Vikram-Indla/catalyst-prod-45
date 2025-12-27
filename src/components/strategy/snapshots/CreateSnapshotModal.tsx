@@ -51,6 +51,15 @@ export function CreateSnapshotModal({ open, onClose }: CreateSnapshotModalProps)
     },
   });
 
+  // Auto-select all themes when entering step 2 if none selected yet
+  // This improves UX since most users want all themes included
+  const handleStepChange = (newStep: number) => {
+    if (newStep === 2 && selectedThemes.length === 0 && themes.length > 0) {
+      setSelectedThemes(themes.map(t => t.id));
+    }
+    setStep(newStep);
+  };
+
   // Products - empty for now as table may not exist
   const products: Array<{ id: string; name: string }> = [];
 
@@ -439,7 +448,7 @@ export function CreateSnapshotModal({ open, onClose }: CreateSnapshotModalProps)
         )}>
           <Button
             variant="ghost"
-            onClick={() => step > 1 ? setStep(step - 1) : handleClose()}
+            onClick={() => step > 1 ? handleStepChange(step - 1) : handleClose()}
             className="text-gray-600 dark:text-[#a3a3a3] hover:text-gray-900 dark:hover:text-[#f5f5f5] hover:bg-gray-100 dark:hover:bg-[#333333]"
           >
             {step > 1 ? (
@@ -453,7 +462,7 @@ export function CreateSnapshotModal({ open, onClose }: CreateSnapshotModalProps)
           <div className="flex items-center gap-3">
             {step < 3 ? (
               <Button
-                onClick={() => setStep(step + 1)}
+                onClick={() => handleStepChange(step + 1)}
                 disabled={(step === 1 && !canProceedStep1) || (step === 2 && !canProceedStep2)}
                 className="bg-[#2563eb] hover:bg-[#1d4ed8] text-white disabled:opacity-50"
               >
