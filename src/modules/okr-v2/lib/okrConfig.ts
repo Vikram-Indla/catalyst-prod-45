@@ -53,13 +53,13 @@ export const HEALTH_FROM_PROGRESS = {
 
 // Status colors for UI (aligned with Catalyst brand)
 export const STATUS_COLORS: Record<string, string> = {
-  'on-track': '#5c7c5c', // secondary-green
-  'completed': '#5c7c5c', // secondary-green
-  'in-progress': '#c69c6d', // brand-primary
+  'on-track': '#0d9488', // teal
+  'completed': '#0d9488', // teal
+  'in-progress': '#2563eb', // brand-primary blue
   'pending': '#c8ccd0', // secondary-grey
-  'at-risk': '#d4a574', // warm warning
-  'off-track': '#b85c38', // danger
-  'blocked': '#8b4513', // dark danger
+  'at-risk': '#f59e0b', // amber warning
+  'off-track': '#ef4444', // red danger
+  'blocked': '#dc2626', // dark danger
 } as const;
 
 // Status labels for display
@@ -75,11 +75,11 @@ export const STATUS_LABELS: Record<string, string> = {
 
 // Theme default colors (used when no color specified)
 export const DEFAULT_THEME_COLORS = [
-  '#5c7c5c', // secondary-green
-  '#8b7355', // secondary-bronze
-  '#c69c6d', // brand-primary
-  '#d4b896', // secondary-champagne
-  '#4a6741', // dark green
+  '#2563eb', // brand-primary blue
+  '#0d9488', // teal
+  '#60a5fa', // blue light
+  '#6b7280', // gray
+  '#1d4ed8', // dark blue
 ] as const;
 
 // Maximum progress for over-achievement display
