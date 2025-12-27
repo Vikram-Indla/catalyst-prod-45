@@ -34,13 +34,13 @@ interface ThemesSectionProps {
   onCreateTheme?: () => void;
 }
 
-// Status badge with extended states
+// Status badge with extended states - using foreground for dark mode visibility
 const statusStyles: Record<string, string> = {
-  draft: "bg-[hsl(var(--surface-2))] text-[hsl(var(--text-muted))] border border-[hsl(var(--border-default))]",
-  active: "bg-[hsl(var(--info)/0.1)] text-[hsl(var(--info))] border border-[hsl(var(--info)/0.3)]",
-  approved: "bg-[hsl(var(--success)/0.1)] text-[hsl(var(--success))] border border-[hsl(var(--success)/0.3)]",
-  on_hold: "bg-[hsl(var(--warning)/0.1)] text-[hsl(var(--warning))] border border-[hsl(var(--warning)/0.3)]",
-  archived: "bg-[hsl(var(--surface-2))] text-[hsl(var(--text-muted))] border border-[hsl(var(--border-subtle))]",
+  draft: "bg-[hsl(var(--surface-3))] text-[hsl(var(--foreground))] border border-[hsl(var(--border-default))]",
+  active: "bg-[hsl(var(--info)/0.15)] text-[hsl(var(--info))] border border-[hsl(var(--info)/0.3)]",
+  approved: "bg-[hsl(var(--success)/0.15)] text-[hsl(var(--success))] border border-[hsl(var(--success)/0.3)]",
+  on_hold: "bg-[hsl(var(--warning)/0.15)] text-[hsl(var(--warning))] border border-[hsl(var(--warning)/0.3)]",
+  archived: "bg-[hsl(var(--surface-3))] text-[hsl(var(--muted-foreground))] border border-[hsl(var(--border-subtle))]",
 };
 
 function StatusBadge({ status }: { status?: string }) {
@@ -77,14 +77,14 @@ function SortableHeader({
     <button
       onClick={() => onSort(column)}
       className={cn(
-        "group flex items-center gap-1.5 text-[hsl(var(--text-tertiary))] hover:text-[hsl(var(--text-primary))] transition-colors",
+        "group flex items-center gap-1.5 text-muted-foreground hover:text-foreground transition-colors",
         className
       )}
     >
       <span className="text-[11px] font-bold uppercase tracking-wider">{label}</span>
       <span className={cn(
         "flex flex-col -space-y-1",
-        isActive ? "text-[hsl(var(--brand-primary))]" : "text-[hsl(var(--text-muted))]"
+        isActive ? "text-primary" : "text-muted-foreground"
       )}>
         <ChevronUp className={cn("h-3 w-3", isActive && direction === 'asc' ? "opacity-100" : "opacity-40")} />
         <ChevronDown className={cn("h-3 w-3", isActive && direction === 'desc' ? "opacity-100" : "opacity-40")} />
@@ -171,13 +171,13 @@ export function StrategicBacklogThemesSection({
       {/* Search + Column Selector */}
       <div className="flex items-center justify-between gap-4">
         <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[hsl(var(--text-muted))]" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <input
             type="text"
             placeholder="Search themes..."
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 bg-[hsl(var(--surface-1))] border border-[hsl(var(--border-default))] rounded-lg text-sm text-[hsl(var(--text-primary))] placeholder:text-[hsl(var(--text-muted))] focus:outline-none focus:ring-2 focus:ring-[hsl(var(--border-focus))] focus:border-[hsl(var(--brand-primary))] transition-all"
+            className="w-full pl-10 pr-4 py-2.5 bg-background border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-primary transition-all"
           />
         </div>
         <ColumnSelector
@@ -286,15 +286,15 @@ export function StrategicBacklogThemesSection({
                   )}
                   {isColumnVisible('objectives') && (
                     <div className="flex items-center gap-2">
-                      <Target className="h-4 w-4 text-[hsl(var(--text-muted))]" />
-                      <span className="text-sm text-[hsl(var(--text-secondary))] tabular-nums">
+                      <Target className="h-4 w-4 text-muted-foreground" />
+                      <span className="text-sm text-foreground tabular-nums">
                         {objectiveCounts[theme.id] || 0}
                       </span>
                     </div>
                   )}
                   {isColumnVisible('updated') && (
                     <div className="flex items-center">
-                      <span className="text-sm text-[hsl(var(--text-muted))]">
+                      <span className="text-sm text-muted-foreground">
                         {theme.updated_at ? format(new Date(theme.updated_at), 'MMM d, yyyy') : '—'}
                       </span>
                     </div>
@@ -309,7 +309,7 @@ export function StrategicBacklogThemesSection({
       {/* Footer: Row Count */}
       {filteredThemes.length > 0 && (
         <div className="flex items-center justify-between px-1">
-          <p className="text-xs text-[hsl(var(--text-muted))]">
+          <p className="text-xs text-muted-foreground">
             Showing {filteredThemes.length} of {themes.length} themes
           </p>
         </div>
