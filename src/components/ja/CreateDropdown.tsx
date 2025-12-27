@@ -103,6 +103,12 @@ export function CreateDropdown() {
       return;
     }
     
+    // Handle snapshot creation - route to backlog with snapshots tab and create param
+    if (type === 'snapshot') {
+      navigate('/enterprise/backlog?tab=snapshots&create=true');
+      return;
+    }
+    
     // Handle incident creation - route to create page
     if (type === 'incident') {
       navigate('/release/incidents/create');
