@@ -319,24 +319,24 @@ function KPICard({
 }) {
   const variantStyles = {
     default: {
-      iconBg: 'hsl(var(--muted))',
-      iconColor: 'hsl(var(--muted-foreground))',
+      iconBg: 'hsl(0 0% 92%)',
+      iconColor: 'hsl(0 0% 45%)',
       valueColor: 'hsl(var(--foreground))',
     },
     warning: {
-      iconBg: 'hsl(38 92% 50% / 0.12)',
-      iconColor: 'hsl(var(--warning))',
-      valueColor: 'hsl(var(--warning))',
+      iconBg: 'hsl(38 92% 50% / 0.15)',
+      iconColor: 'hsl(38 92% 45%)',
+      valueColor: 'hsl(38 92% 45%)',
     },
     success: {
-      iconBg: 'hsl(173 58% 39% / 0.12)',
-      iconColor: 'hsl(var(--success))',
-      valueColor: 'hsl(var(--success))',
+      iconBg: 'hsl(173 58% 39% / 0.15)',
+      iconColor: 'hsl(173 58% 39%)',
+      valueColor: 'hsl(173 58% 39%)',
     },
     info: {
-      iconBg: 'hsl(217 91% 60% / 0.12)',
-      iconColor: 'hsl(var(--primary))',
-      valueColor: 'hsl(var(--primary))',
+      iconBg: 'hsl(217 91% 60% / 0.15)',
+      iconColor: 'hsl(217 91% 55%)',
+      valueColor: 'hsl(217 91% 55%)',
     },
   };
 
