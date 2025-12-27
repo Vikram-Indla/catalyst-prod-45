@@ -4,7 +4,7 @@
 
 import { useState, useCallback, useMemo } from 'react';
 import { format, startOfQuarter, addQuarters, endOfQuarter } from 'date-fns';
-import { ThemeDetailsDrawer } from '@/components/backlog/ThemeDetailsDrawer';
+import { CatalystThemeDrawer } from '@/components/backlog/CatalystThemeDrawer';
 import { ObjectiveAnalyticsDrawer } from '@/modules/okr-v2/components/ObjectiveAnalyticsDrawer';
 import { EpicDetailsPanel } from '@/components/items/epics/EpicDetailsPanel';
 import { useQuery } from '@tanstack/react-query';
@@ -498,7 +498,7 @@ export default function EnterpriseRoadmapsPage() {
 
       {/* Full Theme Details Drawer */}
       {selectedTheme && selectedItem?.type === 'theme' && (
-        <ThemeDetailsDrawer
+        <CatalystThemeDrawer
           theme={selectedTheme}
           isOpen={drawerOpen}
           onClose={closeDrawer}
