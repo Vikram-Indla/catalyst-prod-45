@@ -33,8 +33,7 @@ import {
   FileText,
   Ban,
   AlertCircle,
-  Settings,
-  Maximize2
+  Settings
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -339,9 +338,6 @@ export function FeatureDetailsPanel({ feature, open, onClose }: FeatureDetailsPa
                 <Button variant="outline" size="sm" onClick={() => setIsCreateStoryOpen(true)} className="hidden md:flex">
                   <Plus className="h-4 w-4 mr-1" />
                   Story
-                </Button>
-                <Button variant="ghost" size="icon" onClick={handleOpenFullPage} title="Open full page">
-                  <Maximize2 className="h-4 w-4" />
                 </Button>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
