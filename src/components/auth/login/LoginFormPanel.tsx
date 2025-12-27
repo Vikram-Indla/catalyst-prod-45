@@ -15,8 +15,8 @@ interface LoginFormPanelProps {
   authType: AuthType;
   onUserTypeChange: (type: UserType) => void;
   onAuthTypeChange: (type: AuthType) => void;
-  onSignIn: (email: string, password: string) => Promise<void>;
-  onSignUp: (email: string, password: string, fullName: string) => Promise<void>;
+  onSignIn: (email: string, password: string) => Promise<{ error?: Error | null }>;
+  onSignUp: (email: string, password: string, fullName: string) => Promise<{ error?: Error | null }>;
   onExternalSubmit: () => void;
   loading: boolean;
   error?: string | null;

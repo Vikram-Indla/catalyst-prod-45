@@ -6,7 +6,7 @@ import { LoginButton } from './LoginButton';
 import { loginColors } from './constants';
 
 interface LoginSignInFormProps {
-  onSubmit: (email: string, password: string) => Promise<void>;
+  onSubmit: (email: string, password: string) => Promise<{ error?: Error | null }>;
   loading: boolean;
   error?: string | null;
   delay?: number;

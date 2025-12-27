@@ -4,7 +4,7 @@ import { LoginInput } from './LoginInput';
 import { LoginButton } from './LoginButton';
 
 interface LoginSignUpFormProps {
-  onSubmit: (email: string, password: string, fullName: string) => Promise<void>;
+  onSubmit: (email: string, password: string, fullName: string) => Promise<{ error?: Error | null }>;
   loading: boolean;
   error?: string | null;
   delay?: number;
