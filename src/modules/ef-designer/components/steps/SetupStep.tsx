@@ -2,11 +2,15 @@ import React, { useState, useCallback } from 'react';
 import { EFDSession } from '../../types/efd.types';
 import { useUpdateEFDSession, useEFDDocuments } from '../../hooks/useEFDSession';
 import { useUploadDocument, useDeleteDocument } from '../../hooks/useEFDDocuments';
-import { Upload, FileText, X, CheckCircle, Loader2 } from 'lucide-react';
+import { Upload, FileText, X, CheckCircle, Loader2, LayoutTemplate, Link2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { useDropzone } from 'react-dropzone';
 import { toast } from 'sonner';
+import { TemplateSelector } from '../templates/TemplateSelector';
+import { JiraImportDialog } from '../jira/JiraImportDialog';
+import { EFDTemplate } from '../../data/efd-templates';
+import { supabase } from '@/integrations/supabase/client';
 
 interface SetupStepProps {
   session: EFDSession;
@@ -27,6 +31,9 @@ export const SetupStep: React.FC<SetupStepProps> = ({ session }) => {
   const uploadDocument = useUploadDocument();
   const deleteDocument = useDeleteDocument();
   const [textInput, setTextInput] = useState(session.text_input || '');
+  const [templateOpen, setTemplateOpen] = useState(false);
+  const [jiraOpen, setJiraOpen] = useState(false);
+  const [applyingTemplate, setApplyingTemplate] = useState(false);
 
   const wordCount = textInput.trim() ? textInput.trim().split(/\s+/).length : 0;
   const hasInput = documents.length > 0 || wordCount > 0;
@@ -85,11 +92,67 @@ export const SetupStep: React.FC<SetupStepProps> = ({ session }) => {
     return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
   };
 
+  const handleApplyTemplate = async (template: EFDTemplate) => {
+    setApplyingTemplate(true);
+    try {
+      // Insert epics
+      for (const [eIdx, epic] of template.epics.entries()) {
+        const { data: epicData } = await supabase
+          .from('efd_epics')
+          .insert({
+            session_id: session.id,
+            epic_key: `TPL-E${eIdx + 1}`,
+            name: epic.name,
+            description: epic.description,
+            lbc_hypothesis: epic.lbc_hypothesis,
+            state: 'Funnel',
+            is_selected_for_features: true,
+          })
+          .select()
+          .single();
+
+        if (epicData) {
+          // Insert features for this epic
+          for (const [fIdx, feature] of epic.features.entries()) {
+            await supabase.from('efd_features').insert({
+              session_id: session.id,
+              epic_id: epicData.id,
+              feature_key: `TPL-F${eIdx + 1}.${fIdx + 1}`,
+              name: feature.name,
+              description: feature.description,
+              benefit_hypothesis: feature.benefit_hypothesis,
+              acceptance_criteria: feature.acceptance_criteria.join('\n'),
+              state: 'Defined',
+            });
+          }
+        }
+      }
+      toast.success(`Applied template: ${template.name}`);
+      setTemplateOpen(false);
+    } catch (error) {
+      toast.error('Failed to apply template');
+    } finally {
+      setApplyingTemplate(false);
+    }
+  };
+
   return (
     <div className="max-w-4xl space-y-6">
-      <div>
-        <h2 className="text-xl font-semibold mb-2">Setup</h2>
-        <p className="text-muted-foreground">Upload documents or enter requirements text to get started.</p>
+      <div className="flex items-start justify-between">
+        <div>
+          <h2 className="text-xl font-semibold mb-2">Setup</h2>
+          <p className="text-muted-foreground">Upload documents or enter requirements text to get started.</p>
+        </div>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={() => setTemplateOpen(true)}>
+            <LayoutTemplate className="h-4 w-4 mr-2" />
+            Use Template
+          </Button>
+          <Button variant="outline" onClick={() => setJiraOpen(true)}>
+            <Link2 className="h-4 w-4 mr-2" />
+            Import from Jira
+          </Button>
+        </div>
       </div>
 
       <div className="grid md:grid-cols-2 gap-6">
@@ -175,6 +238,24 @@ export const SetupStep: React.FC<SetupStepProps> = ({ session }) => {
           <span className="text-green-600 text-sm">
             {documents.length} document(s), {wordCount} words entered
           </span>
+        </div>
+      )}
+
+      <TemplateSelector
+        open={templateOpen}
+        onOpenChange={setTemplateOpen}
+        onSelectTemplate={handleApplyTemplate}
+        isApplying={applyingTemplate}
+      />
+      
+      <JiraImportDialog
+        open={jiraOpen}
+        onOpenChange={setJiraOpen}
+        sessionId={session.id}
+      />
+    </div>
+  );
+};
         </div>
       )}
     </div>
