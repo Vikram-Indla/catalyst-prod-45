@@ -67,7 +67,7 @@ export function ObjectiveOverviewTabV2({ formData, onChange, objective }: Object
   };
 
   return (
-    <div className="p-6 space-y-6 bg-white dark:bg-[#161B22]">
+    <div className="p-6 space-y-6" style={{ background: 'hsl(var(--background))' }}>
       {/* Name (required) */}
       <div className="space-y-2">
         <Label htmlFor="name" className="text-sm font-medium text-[#24292F] dark:text-[#E6EDF3]">
