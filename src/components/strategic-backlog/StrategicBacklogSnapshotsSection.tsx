@@ -454,7 +454,7 @@ export function StrategicBacklogSnapshotsSection({
                   {isColumnVisible('name') && (
                     <div className="flex items-center gap-3 min-w-0">
                       <Calendar className="h-4 w-4 shrink-0 text-muted-foreground" />
-                      <span className="text-sm font-medium text-[hsl(var(--text-primary))] group-hover:text-[hsl(var(--brand-primary))] truncate transition-colors">
+                      <span className="text-sm text-muted-foreground group-hover:text-[hsl(var(--brand-primary))] truncate transition-colors">
                         {snapshot.name}
                       </span>
                     </div>
@@ -462,20 +462,19 @@ export function StrategicBacklogSnapshotsSection({
                   {isColumnVisible('themes') && (
                     <div className="flex items-center">
                       {themeNames.length > 0 ? (
-                        <div className="flex flex-wrap gap-1">
+                        <div className="flex flex-wrap gap-1.5">
                           {themeNames.slice(0, 2).map((name, idx) => (
-                            <Badge
+                            <span
                               key={idx}
-                              variant="outline"
-                              className="text-[10px] px-1.5 py-0.5 bg-[#2563eb]/5 text-[#2563eb] border-[#2563eb]/20"
+                              className="text-sm text-muted-foreground px-2 py-0.5 bg-muted/50 rounded"
                             >
                               {name}
-                            </Badge>
+                            </span>
                           ))}
                           {themeNames.length > 2 && (
-                            <Badge variant="outline" className="text-[10px] px-1.5 py-0.5">
+                            <span className="text-sm text-muted-foreground px-2 py-0.5 bg-muted/50 rounded">
                               +{themeNames.length - 2}
-                            </Badge>
+                            </span>
                           )}
                         </div>
                       ) : (
@@ -486,20 +485,19 @@ export function StrategicBacklogSnapshotsSection({
                   {isColumnVisible('quarters') && (
                     <div className="flex items-center">
                       {quarters.length > 0 ? (
-                        <div className="flex flex-wrap gap-1">
+                        <div className="flex flex-wrap gap-1.5">
                           {quarters.slice(0, 3).map((q, idx) => (
-                            <Badge
+                            <span
                               key={idx}
-                              variant="outline"
-                              className="text-[10px] px-1.5 py-0.5 bg-[#0d9488]/5 text-[#0d9488] border-[#0d9488]/20"
+                              className="text-sm text-muted-foreground px-2 py-0.5 bg-muted/50 rounded"
                             >
                               {q}
-                            </Badge>
+                            </span>
                           ))}
                           {quarters.length > 3 && (
-                            <Badge variant="outline" className="text-[10px] px-1.5 py-0.5">
+                            <span className="text-sm text-muted-foreground px-2 py-0.5 bg-muted/50 rounded">
                               +{quarters.length - 3}
-                            </Badge>
+                            </span>
                           )}
                         </div>
                       ) : (
