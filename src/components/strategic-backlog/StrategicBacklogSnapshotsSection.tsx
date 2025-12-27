@@ -453,8 +453,10 @@ export function StrategicBacklogSnapshotsSection({
                 >
                   {isColumnVisible('name') && (
                     <div className="flex items-center gap-3 min-w-0">
-                      <Calendar className="h-4 w-4 shrink-0 text-muted-foreground" />
-                      <span className="text-sm text-muted-foreground group-hover:text-[hsl(var(--brand-primary))] truncate transition-colors">
+                      <div className="w-9 h-9 rounded-full bg-brand-primary/10 flex items-center justify-center border border-brand-primary/20 shrink-0">
+                        <Calendar className="h-4 w-4 text-brand-primary" />
+                      </div>
+                      <span className="text-sm font-semibold text-foreground group-hover:text-brand-primary truncate transition-colors">
                         {snapshot.name}
                       </span>
                     </div>
