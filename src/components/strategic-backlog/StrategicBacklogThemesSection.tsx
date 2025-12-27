@@ -1,6 +1,7 @@
 /**
  * Strategic Backlog - Themes Section
  * Enhanced with grid layout, left border accent, alternating rows
+ * Uses dynamic theme statuses from database
  */
 import { useState, useMemo } from 'react';
 import { Search, Target, ChevronUp, ChevronDown, Plus, Layers } from 'lucide-react';
@@ -9,11 +10,13 @@ import type { StrategicTheme } from '@/types/strategicBacklog';
 import { cn } from '@/lib/utils';
 import { ColumnSelector, useColumnVisibility, ColumnDefinition } from './ColumnSelector';
 import { Button } from '@/components/ui/button';
+import { useActiveThemeStatuses } from '@/hooks/useThemeStatuses';
+import { getBrandColorHex } from '@/components/admin/BrandColorPicker';
 
 // Column definitions for Themes table
 const THEME_COLUMNS: ColumnDefinition[] = [
   { key: 'name', label: 'Theme', defaultVisible: true },
-  { key: 'status', label: 'State', defaultVisible: true, width: 'w-28' },
+  { key: 'status', label: 'Status', defaultVisible: true, width: 'w-28' },
   { key: 'objectives', label: 'Objectives', defaultVisible: true, width: 'w-28' },
   { key: 'updated', label: 'Updated', defaultVisible: true, width: 'w-36' },
 ];
@@ -34,24 +37,21 @@ interface ThemesSectionProps {
   onCreateTheme?: () => void;
 }
 
-// Status badge with extended states - using foreground for dark mode visibility
-const statusStyles: Record<string, string> = {
-  draft: "bg-[hsl(var(--surface-3))] text-[hsl(var(--foreground))] border border-[hsl(var(--border-default))]",
-  active: "bg-[hsl(var(--info)/0.15)] text-[hsl(var(--info))] border border-[hsl(var(--info)/0.3)]",
-  approved: "bg-[hsl(var(--success)/0.15)] text-[hsl(var(--success))] border border-[hsl(var(--success)/0.3)]",
-  on_hold: "bg-[hsl(var(--warning)/0.15)] text-[hsl(var(--warning))] border border-[hsl(var(--warning)/0.3)]",
-  archived: "bg-[hsl(var(--surface-3))] text-[hsl(var(--muted-foreground))] border border-[hsl(var(--border-subtle))]",
-};
-
-function StatusBadge({ status }: { status?: string }) {
+// Dynamic Status Badge that uses database-configured statuses
+function StatusBadge({ status, statuses }: { status?: string; statuses: Array<{ value: string; label: string; color: string | null }> }) {
   const normalizedStatus = status?.toLowerCase() || 'draft';
-  const style = statusStyles[normalizedStatus] || statusStyles.draft;
+  const statusConfig = statuses.find(s => s.value.toLowerCase() === normalizedStatus);
+  
+  const label = statusConfig?.label || (status || 'draft').replace('_', ' ');
+  const colorValue = statusConfig?.color || 'neutral';
+  const bgColor = getBrandColorHex(colorValue);
+  
   return (
-    <span className={cn(
-      "inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-semibold uppercase tracking-wider",
-      style
-    )}>
-      {(status || 'draft').replace('_', ' ').toUpperCase()}
+    <span 
+      className="inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-semibold uppercase tracking-wider text-white"
+      style={{ backgroundColor: bgColor }}
+    >
+      {label.toUpperCase()}
     </span>
   );
 }
@@ -107,6 +107,9 @@ export function StrategicBacklogThemesSection({
   const [sortColumn, setSortColumn] = useState<SortColumn>('name');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
   const [visibleColumns, setVisibleColumns] = useColumnVisibility(THEME_COLUMNS, STORAGE_KEY);
+  
+  // Fetch dynamic theme statuses from database
+  const { data: themeStatuses = [] } = useActiveThemeStatuses();
 
   const filteredThemes = useMemo(() => {
     let result = themes;
@@ -281,7 +284,7 @@ export function StrategicBacklogThemesSection({
                   )}
                   {isColumnVisible('status') && (
                     <div className="flex items-center">
-                      <StatusBadge status={theme.status} />
+                      <StatusBadge status={theme.status} statuses={themeStatuses} />
                     </div>
                   )}
                   {isColumnVisible('objectives') && (
