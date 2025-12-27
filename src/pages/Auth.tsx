@@ -378,7 +378,7 @@ export default function Auth() {
             }}
           >
             <span className="text-foreground dark:text-white">Cata</span>
-            <span className="text-[#2563eb] dark:text-[#60a5fa]">lyst</span>
+            <span className="text-[#c69c6d] dark:text-[#d4b896]">lyst</span>
             <sup style={{ color: 'var(--text-1)', fontWeight: 400 }} className="ml-0.5 text-[0.4em]">TM</sup>
           </h1>
         </div>
