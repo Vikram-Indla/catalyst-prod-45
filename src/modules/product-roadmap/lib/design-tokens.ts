@@ -46,16 +46,16 @@ export const catalystTokens = {
       bg: 'rgba(13, 148, 136, 0.15)',
     },
     olive: {
-      base: '#5c7c5c',
-      bg: 'rgba(92, 124, 92, 0.15)',
+      base: '#0d9488',
+      bg: 'rgba(13, 148, 136, 0.15)',
     },
     bronze: {
-      base: '#8b7355',
-      bg: 'rgba(139, 115, 85, 0.15)',
+      base: '#6b7280',
+      bg: 'rgba(107, 114, 128, 0.15)',
     },
     champagne: {
-      base: '#d4b896',
-      bg: 'rgba(212, 184, 150, 0.2)',
+      base: '#9ca3af',
+      bg: 'rgba(156, 163, 175, 0.2)',
     },
     grey: {
       base: '#c8ccd0',
@@ -108,7 +108,7 @@ export const catalystTokens = {
 export const PRODUCT_COLORS: Record<string, string> = {
   MINI: '#2563eb',
   SEN: '#0d9488',
-  ENT: '#8b7355',
+  ENT: '#6b7280',
   UNA: '#c8ccd0',
 };
 

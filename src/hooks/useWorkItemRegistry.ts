@@ -32,7 +32,7 @@ const ICON_COLORS: Record<string, string> = {
   objective: '#2563eb',  // Blue
   
   // Product
-  'business-request': '#8b7355', // Bronze
+  'business-request': '#2563eb', // Blue
   
   // Program
   epic: '#904EE2',       // Purple
@@ -56,7 +56,7 @@ const ICON_COLORS: Record<string, string> = {
 const ICON_BG_COLORS: Record<string, string> = {
   theme: 'rgba(13, 148, 136, 0.15)',
   objective: 'rgba(37, 99, 235, 0.15)',
-  'business-request': 'rgba(139, 115, 85, 0.15)',
+  'business-request': 'rgba(37, 99, 235, 0.15)',
   epic: 'rgba(144, 78, 226, 0.15)',
   feature: 'rgba(245, 158, 11, 0.15)',
   story: 'rgba(54, 179, 126, 0.15)',

@@ -12,13 +12,13 @@ interface OkrThemeDotProps {
   size?: 'sm' | 'md';
 }
 
-// Catalyst brand secondary color palette
+// Catalyst brand color palette - Blue + Teal
 const BRAND_THEME_COLORS = [
-  'hsl(var(--secondary-green))',      // #5c7c5c - Olive green
-  'hsl(var(--secondary-bronze))',     // #8b7355 - Bronze
-  'hsl(var(--brand-primary))',           // #c69c6d - Gold
-  'hsl(var(--secondary-champagne))',  // #d4b896 - Champagne
-  'hsl(var(--secondary-grey))',       // #c8ccd0 - Grey
+  '#2563eb',   // Blue (primary)
+  '#0d9488',   // Teal
+  '#6b7280',   // Gray
+  '#f59e0b',   // Amber
+  '#9ca3af',   // Light gray
 ];
 
 // Get a consistent color based on theme name hash
