@@ -1234,9 +1234,18 @@ export function CatalystThemeDrawer({ theme, isOpen, onClose }: CatalystThemeDra
                 </TabsContent>
 
                 {/* ACTIVITY TAB */}
-                <TabsContent value="activity" className="mt-0">
-                  <div className="h-[500px]">
-                    <UnifiedAuditHistoryTab entityType="theme" entityId={theme.id} />
+                <TabsContent value="activity" className="mt-0 p-5">
+                  <div 
+                    className="rounded-2xl border overflow-hidden"
+                    style={{ 
+                      background: 'var(--surface-bg)',
+                      borderColor: 'var(--border-default)',
+                      boxShadow: '0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06)'
+                    }}
+                  >
+                    <div className="h-[460px]">
+                      <UnifiedAuditHistoryTab entityType="theme" entityId={theme.id} />
+                    </div>
                   </div>
                 </TabsContent>
               </div>
