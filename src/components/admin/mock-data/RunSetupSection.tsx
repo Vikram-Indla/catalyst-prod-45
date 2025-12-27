@@ -64,16 +64,37 @@ export function RunSetupSection({ onCreateRun, isLoading }: RunSetupSectionProps
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Upload className="h-5 w-5 text-primary" />
-          Create Run
-        </CardTitle>
-        <CardDescription>
-          Configure a new mock data generation run
-        </CardDescription>
+        <div className="flex items-start justify-between gap-4">
+          <div className="space-y-1">
+            <CardTitle className="flex items-center gap-2">
+              <Upload className="h-5 w-5 text-primary" />
+              Create Run
+            </CardTitle>
+            <CardDescription>
+              Configure a new mock data generation run
+            </CardDescription>
+          </div>
+
+          {/* Always-visible submit button (some screens hide the bottom CTA) */}
+          <Button
+            type="submit"
+            form="create-run-form"
+            disabled={isLoading}
+            className="shrink-0"
+          >
+            {isLoading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Creating...
+              </>
+            ) : (
+              'Create Run'
+            )}
+          </Button>
+        </div>
       </CardHeader>
       <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form id="create-run-form" onSubmit={handleSubmit} className="space-y-6">
           {/* Source Type */}
           <div className="space-y-3">
             <Label className="text-sm font-medium">Source Type</Label>
