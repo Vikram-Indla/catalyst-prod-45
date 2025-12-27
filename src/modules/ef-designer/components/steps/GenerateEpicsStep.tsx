@@ -2,19 +2,21 @@ import React, { useState } from 'react';
 import { EFDSession } from '../../types/efd.types';
 import { useEFDAtoms, useEFDEpics } from '../../hooks/useEFDSession';
 import { useGenerateEpics } from '../../hooks/useEFDAI';
+import { useUpdateEpic, useToggleEpicSelection } from '../../hooks/useEFDMutations';
 import { Sparkles, Loader2, CheckCircle, Layers } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { EditableEpicCard } from '../epics/EditableEpicCard';
 
 export const GenerateEpicsStep: React.FC<{ session: EFDSession }> = ({ session }) => {
   const { data: atoms = [] } = useEFDAtoms(session.id);
   const { data: epics = [], refetch } = useEFDEpics(session.id);
   const generateEpics = useGenerateEpics();
+  const updateEpic = useUpdateEpic();
+  const toggleEpicSelection = useToggleEpicSelection();
   const [progress, setProgress] = useState(0);
 
-  const selectedAtoms = atoms.filter((a: any) => a.is_selected);
+  const selectedAtoms = atoms.filter((a: any) => a.is_selected !== false && a.status !== 'excluded');
 
   const handleGenerate = async () => {
     if (selectedAtoms.length === 0) return;
@@ -36,6 +38,14 @@ export const GenerateEpicsStep: React.FC<{ session: EFDSession }> = ({ session }
     } catch (error) {
       setProgress(0);
     }
+  };
+
+  const handleUpdateEpic = (epicId: string, updates: Record<string, any>) => {
+    updateEpic.mutate({ epicId, updates });
+  };
+
+  const handleToggleSelection = (epicId: string, selected: boolean) => {
+    toggleEpicSelection.mutate({ epicId, isSelected: selected });
   };
 
   const isGenerating = generateEpics.isPending;
@@ -100,42 +110,12 @@ export const GenerateEpicsStep: React.FC<{ session: EFDSession }> = ({ session }
 
           <div className="grid gap-4">
             {epics.map((epic: any) => (
-              <Card key={epic.id} className="hover:shadow-md transition-shadow">
-                <CardHeader className="pb-2">
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <span className="text-sm font-mono text-primary">{epic.epic_key}</span>
-                      <CardTitle className="text-lg mt-1">{epic.name}</CardTitle>
-                    </div>
-                    <div className="flex gap-2">
-                      {epic.size && (
-                        <Badge variant="outline">{epic.size}</Badge>
-                      )}
-                      <Badge variant={epic.is_selected_for_features ? 'default' : 'secondary'}>
-                        {epic.is_selected_for_features ? 'Selected' : 'Excluded'}
-                      </Badge>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  <p className="text-sm text-muted-foreground">{epic.description}</p>
-                  
-                  {epic.lbc_hypothesis && (
-                    <div className="p-3 bg-muted/50 rounded-lg">
-                      <p className="text-xs font-medium text-muted-foreground mb-1">Hypothesis</p>
-                      <p className="text-sm italic">{epic.lbc_hypothesis}</p>
-                    </div>
-                  )}
-
-                  {epic.mvp_definition && (
-                    <div>
-                      <p className="text-xs font-medium text-muted-foreground mb-1">MVP Definition</p>
-                      <p className="text-sm">{epic.mvp_definition}</p>
-                    </div>
-                  )}
-
-                </CardContent>
-              </Card>
+              <EditableEpicCard
+                key={epic.id}
+                epic={epic}
+                onUpdate={handleUpdateEpic}
+                onToggleSelection={handleToggleSelection}
+              />
             ))}
           </div>
         </div>

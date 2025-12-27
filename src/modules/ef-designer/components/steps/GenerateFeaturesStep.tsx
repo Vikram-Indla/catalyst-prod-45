@@ -2,17 +2,19 @@ import React, { useState } from 'react';
 import { EFDSession } from '../../types/efd.types';
 import { useEFDAtoms, useEFDEpics, useEFDFeatures } from '../../hooks/useEFDSession';
 import { useGenerateFeatures } from '../../hooks/useEFDAI';
+import { useUpdateFeature } from '../../hooks/useEFDMutations';
 import { Sparkles, Loader2, CheckCircle, GitBranch } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { EditableFeatureCard } from '../features/EditableFeatureCard';
 
 export const GenerateFeaturesStep: React.FC<{ session: EFDSession }> = ({ session }) => {
   const { data: atoms = [] } = useEFDAtoms(session.id);
   const { data: epics = [] } = useEFDEpics(session.id);
   const { data: features = [], refetch } = useEFDFeatures(session.id);
   const generateFeatures = useGenerateFeatures();
+  const updateFeature = useUpdateFeature();
   const [progress, setProgress] = useState(0);
 
   const selectedEpics = epics.filter((e: any) => e.is_selected_for_features);
@@ -43,11 +45,15 @@ export const GenerateFeaturesStep: React.FC<{ session: EFDSession }> = ({ sessio
     }
   };
 
+  const handleUpdateFeature = (featureId: string, updates: Record<string, any>) => {
+    updateFeature.mutate({ featureId, updates });
+  };
+
   const isGenerating = generateFeatures.isPending;
 
   // Group features by epic
   const featuresByEpic = features.reduce((acc: any, feature: any) => {
-    const key = feature.parent_epic_key || 'unassigned';
+    const key = feature.parent_epic_key || feature.epic_id || 'unassigned';
     if (!acc[key]) acc[key] = [];
     acc[key].push(feature);
     return acc;
@@ -112,11 +118,11 @@ export const GenerateFeaturesStep: React.FC<{ session: EFDSession }> = ({ sessio
           </div>
 
           {Object.entries(featuresByEpic).map(([epicKey, epicFeatures]: [string, any]) => {
-            const epic = epics.find((e: any) => e.epic_key === epicKey);
+            const epic = epics.find((e: any) => e.epic_key === epicKey || e.id === epicKey);
             return (
               <div key={epicKey} className="space-y-3">
                 <div className="flex items-center gap-2 px-1">
-                  <Badge variant="outline" className="font-mono">{epicKey}</Badge>
+                  <Badge variant="outline" className="font-mono">{epic?.epic_key || epicKey}</Badge>
                   <span className="font-medium">{epic?.name || 'Unknown Epic'}</span>
                   <span className="text-muted-foreground text-sm">
                     ({epicFeatures.length} features)
@@ -125,33 +131,11 @@ export const GenerateFeaturesStep: React.FC<{ session: EFDSession }> = ({ sessio
 
                 <div className="grid gap-3 pl-4 border-l-2 border-muted">
                   {epicFeatures.map((feature: any) => (
-                    <Card key={feature.id} className="hover:shadow-sm transition-shadow">
-                      <CardHeader className="py-3 pb-2">
-                        <div className="flex items-start justify-between">
-                          <div>
-                            <span className="text-xs font-mono text-emerald-600">{feature.feature_key}</span>
-                            <CardTitle className="text-base mt-0.5">{feature.title}</CardTitle>
-                          </div>
-                          <div className="flex gap-2">
-                            {feature.story_points && (
-                              <Badge variant="secondary">{feature.story_points} pts</Badge>
-                            )}
-                            {feature.is_enabler && (
-                              <Badge variant="outline">Enabler</Badge>
-                            )}
-                          </div>
-                        </div>
-                      </CardHeader>
-                      <CardContent className="py-2">
-                        <p className="text-sm text-muted-foreground">{feature.description}</p>
-                        
-                        {feature.benefit_hypothesis && (
-                          <p className="text-sm mt-2 p-2 bg-muted/50 rounded italic">
-                            {feature.benefit_hypothesis}
-                          </p>
-                        )}
-                      </CardContent>
-                    </Card>
+                    <EditableFeatureCard
+                      key={feature.id}
+                      feature={feature}
+                      onUpdate={handleUpdateFeature}
+                    />
                   ))}
                 </div>
               </div>
