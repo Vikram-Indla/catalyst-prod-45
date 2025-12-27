@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Upload, FileText, FileSpreadsheet, Code, Sparkles, Loader2 } from 'lucide-react';
+import { Upload, FileText, FileSpreadsheet, Code, Sparkles, Loader2, Sheet } from 'lucide-react';
 import { CreateRunData } from '@/hooks/useMockDataRuns';
 
 interface RunSetupSectionProps {
@@ -20,6 +20,7 @@ interface RunSetupSectionProps {
 const SOURCE_TYPES = [
   { value: 'pdf', label: 'PDF', icon: FileText, description: 'Upload PDF document' },
   { value: 'csv', label: 'CSV', icon: FileSpreadsheet, description: 'Upload CSV file' },
+  { value: 'excel', label: 'Excel', icon: Sheet, description: 'Upload Excel file' },
   { value: 'markdown', label: 'Markdown', icon: Code, description: 'Upload Markdown file' },
   { value: 'text', label: 'Plain Text', icon: FileText, description: 'Upload text file' },
   { value: 'synthetic', label: 'No Source', icon: Sparkles, description: 'Generate synthetic data' },
@@ -58,7 +59,7 @@ export function RunSetupSection({ onCreateRun, isLoading }: RunSetupSectionProps
             <RadioGroup
               value={sourceType}
               onValueChange={setSourceType}
-              className="grid grid-cols-2 md:grid-cols-5 gap-3"
+              className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3"
             >
               {SOURCE_TYPES.map((type) => (
                 <label
