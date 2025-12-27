@@ -53,7 +53,7 @@ export function SnapshotCard({ snapshot, onViewDetails, onDelete }: SnapshotCard
   const getStatusBadge = () => {
     if (isActive) {
       return (
-        <Badge className="bg-[rgba(92,124,92,0.1)] dark:bg-[rgba(92,124,92,0.15)] text-[#5C7C5C] dark:text-[#7DA37D] border border-[rgba(92,124,92,0.3)] text-[10px] font-semibold uppercase tracking-wider">
+        <Badge className="bg-[rgba(13,148,136,0.1)] dark:bg-[rgba(13,148,136,0.15)] text-[#0d9488] dark:text-[#14b8a6] border border-[rgba(13,148,136,0.3)] text-[10px] font-semibold uppercase tracking-wider">
           ACTIVE
         </Badge>
       );

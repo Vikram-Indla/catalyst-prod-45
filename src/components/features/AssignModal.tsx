@@ -26,7 +26,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 
 // Avatar color rotation for contributors (approved palette)
-const AVATAR_COLORS = ['#5c7c5c', '#8b7355', '#3b82f6', '#f59e0b'];
+const AVATAR_COLORS = ['#2563eb', '#0d9488', '#6b7280', '#f59e0b'];
 
 interface AssignModalProps {
   isOpen: boolean;

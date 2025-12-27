@@ -38,16 +38,16 @@ export const KR_STATUS_STYLES = {
     fillColor: '#ffffff',
   },
   
-  // Pending / Planned - Champagne outline
+  // Pending / Planned - Gray outline
   pending: {
     label: 'Pending',
-    color: '#d4b896',
+    color: '#9ca3af',
     filled: false,
     fillColor: '#ffffff',
   },
   planned: {
     label: 'Pending',
-    color: '#d4b896',
+    color: '#9ca3af',
     filled: false,
     fillColor: '#ffffff',
   },
@@ -55,7 +55,7 @@ export const KR_STATUS_STYLES = {
   // Not Started - Grey muted
   'not-started': {
     label: 'Pending',
-    color: '#d4b896',
+    color: '#9ca3af',
     filled: false,
     fillColor: '#ffffff',
   },
