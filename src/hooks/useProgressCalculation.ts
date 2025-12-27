@@ -185,11 +185,11 @@ async function calculateThemeProgress(themeId: string): Promise<ProgressData> {
   return {
     progress,
     breakdown: [
-      { label: 'Objectives (70%)', value: Math.round(avgObjectiveProgress), count: objectiveCount },
-      { label: 'Epics (30%)', value: Math.round(epicCompletion), count: epicCount },
+      { label: 'Objectives', value: Math.round(avgObjectiveProgress), count: objectiveCount },
+      { label: 'Epics', value: Math.round(epicCompletion), count: epicCount },
     ],
     calculationMethod: objectiveCount > 0 && epicCount > 0
-      ? '70% Objective progress + 30% Epic completion'
+      ? 'Weighted average of Objective and Epic progress'
       : objectiveCount > 0
         ? 'Based on Objective progress (no Epics linked)'
         : epicCount > 0
