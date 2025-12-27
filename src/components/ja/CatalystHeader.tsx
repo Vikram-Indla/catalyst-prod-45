@@ -587,7 +587,7 @@ export function CatalystHeader() {
               <DropdownMenuTrigger asChild>
                 <div 
                   className="w-8 h-8 rounded-full flex items-center justify-center text-white text-[13px] font-semibold cursor-pointer transition-transform hover:scale-105"
-                  style={{ background: 'linear-gradient(135deg, #c69c6d 0%, #8b7355 100%)' }}
+                  style={{ background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)' }}
                   title="Profile"
                 >
                   {user?.email?.charAt(0).toUpperCase() || 'U'}
