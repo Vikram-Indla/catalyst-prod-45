@@ -17196,6 +17196,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      check_theme_is_active: { Args: { p_theme_id: string }; Returns: boolean }
       clean_stale_presence: { Args: never; Returns: undefined }
       compute_home_analytics_daily: {
         Args: { target_date?: string }
