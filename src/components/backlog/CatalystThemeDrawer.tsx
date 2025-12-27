@@ -1235,23 +1235,9 @@ export function CatalystThemeDrawer({ theme, isOpen, onClose }: CatalystThemeDra
 
                 {/* ACTIVITY TAB */}
                 <TabsContent value="activity" className="mt-0">
-                  <section 
-                    className="rounded-lg p-4"
-                    style={{ 
-                      backgroundColor: 'var(--surface-bg)',
-                      border: '1px solid var(--border-default)',
-                    }}
-                  >
-                    <div className="flex items-center gap-2 mb-3">
-                      <History size={14} style={{ color: 'var(--text-muted)' }} />
-                      <span className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: 'var(--text-muted)' }}>
-                        Audit History
-                      </span>
-                    </div>
-                    <div className="h-[400px]">
-                      <UnifiedAuditHistoryTab entityType="theme" entityId={theme.id} />
-                    </div>
-                  </section>
+                  <div className="h-[500px]">
+                    <UnifiedAuditHistoryTab entityType="theme" entityId={theme.id} />
+                  </div>
                 </TabsContent>
               </div>
             </ScrollArea>
