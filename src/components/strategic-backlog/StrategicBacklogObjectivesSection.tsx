@@ -362,8 +362,98 @@ export function StrategicBacklogObjectivesSection({
         />
       </div>
 
-      {/* Table with horizontal scroll for mobile */}
-      <div className="bg-surface border border-border rounded-lg overflow-x-auto">
+      {/* Mobile list (cards) */}
+      <div className="md:hidden space-y-3">
+        {isLoading ? (
+          <div className="bg-surface border border-border rounded-lg px-4 py-10 text-center text-muted-foreground">
+            Loading objectives...
+          </div>
+        ) : filteredObjectives.length === 0 ? (
+          <div className="bg-surface border border-border rounded-lg px-4 py-12 text-center">
+            <div className="flex flex-col items-center gap-4">
+              <div className="w-12 h-12 rounded-full bg-[#F6F8FA] dark:bg-[#21262D] flex items-center justify-center">
+                <Target className="h-6 w-6 text-[#8B949E]" />
+              </div>
+              <div>
+                <p className="text-sm font-medium text-foreground">No objectives found</p>
+                <p className="text-sm mt-1 text-muted-foreground">Create objectives to define your measurable goals</p>
+              </div>
+              {onCreateObjective && (
+                <Button
+                  size="sm"
+                  onClick={onCreateObjective}
+                  className="bg-blue-600 hover:bg-blue-700 text-white gap-1.5"
+                >
+                  <Plus className="h-4 w-4" />
+                  Create Objective
+                </Button>
+              )}
+            </div>
+          </div>
+        ) : (
+          filteredObjectives.map((obj) => {
+            const isSelected = selectedItemId === obj.id;
+            const themeName = obj.theme_id ? themeLookup[obj.theme_id] || '—' : '—';
+
+            return (
+              <button
+                key={obj.id}
+                type="button"
+                onClick={() => onSelectItem(obj)}
+                className={cn(
+                  "w-full text-left bg-surface border border-border rounded-lg p-3 transition-colors",
+                  "hover:bg-muted/40",
+                  isSelected && "ring-2 ring-primary/20"
+                )}
+              >
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 rounded bg-brand-primary/10 flex items-center justify-center shrink-0">
+                    <Target className="h-4 w-4 text-brand-primary" />
+                  </div>
+
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0">
+                        <div className="text-sm font-medium text-foreground line-clamp-2">{obj.name}</div>
+                        <div className="mt-1 text-xs text-muted-foreground truncate">{themeName}</div>
+                      </div>
+                      <ChevronRight className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
+                    </div>
+
+                    <div className="mt-2 flex flex-wrap items-center gap-2">
+                      {getStatusBadge(obj.status)}
+
+                      <span
+                        className={cn(
+                          "inline-flex items-center justify-center rounded-full px-2 py-0.5 text-[10px] font-medium",
+                          (riskCounts[obj.id] || 0) > 0
+                            ? "bg-destructive/10 text-destructive"
+                            : "bg-muted text-muted-foreground"
+                        )}
+                      >
+                        Risks: {riskCounts[obj.id] || 0}
+                      </span>
+
+                      <span className="inline-flex items-center justify-center rounded-full px-2 py-0.5 text-[10px] font-medium bg-muted text-muted-foreground">
+                        Linked: {linkedCounts[obj.id] || 0}
+                      </span>
+
+                      <span className="inline-flex items-center justify-center rounded-full px-2 py-0.5 text-[10px] font-medium bg-muted text-muted-foreground">
+                        KRs: {krCounts[obj.id] || 0}
+                      </span>
+                    </div>
+
+                    <div className="mt-2">{getProgressBar(obj.overall_progress, obj.status)}</div>
+                  </div>
+                </div>
+              </button>
+            );
+          })
+        )}
+      </div>
+
+      {/* Table (desktop) */}
+      <div className="hidden md:block bg-surface border border-border rounded-lg overflow-x-auto">
         <table className="w-full min-w-[700px]">
           <thead className="border-b border-border">
             <tr className="bg-muted/30">
