@@ -177,7 +177,7 @@ export default function StrategicBacklog() {
     return Object.keys(objectiveCounts).filter(id => objectiveCounts[id] > 0).length;
   }, [objectiveCounts]);
 
-  // Real-time subscription for objectives, themes, and epics
+  // Real-time subscription for objectives, themes, epics, and snapshots
   useEffect(() => {
     const channel = supabase
       .channel('strategic-backlog-realtime')
@@ -200,6 +200,13 @@ export default function StrategicBacklog() {
         { event: '*', schema: 'public', table: 'epics' },
         () => {
           queryClient.invalidateQueries({ queryKey: ['strategic-backlog-all-epics'] });
+        }
+      )
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'strategy_snapshots' },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ['strategic-backlog-all-snapshots'] });
         }
       )
       .subscribe();
