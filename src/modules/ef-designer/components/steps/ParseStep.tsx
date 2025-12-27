@@ -2,19 +2,20 @@ import React, { useState } from 'react';
 import { EFDSession } from '../../types/efd.types';
 import { useEFDAtoms, useEFDDocuments } from '../../hooks/useEFDSession';
 import { useParseDocument } from '../../hooks/useEFDAI';
-import { Bot, Loader2, CheckCircle, FileText, Sparkles } from 'lucide-react';
+import { useUpdateAtom } from '../../hooks/useEFDMutations';
+import { Bot, Loader2, CheckCircle, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { Badge } from '@/components/ui/badge';
+import { EditableAtomRow } from '../atoms/EditableAtomRow';
 
 export const ParseStep: React.FC<{ session: EFDSession }> = ({ session }) => {
   const { data: atoms = [], isLoading: atomsLoading, refetch } = useEFDAtoms(session.id);
   const { data: documents = [] } = useEFDDocuments(session.id);
   const parseDocument = useParseDocument();
+  const updateAtom = useUpdateAtom();
   const [parseProgress, setParseProgress] = useState(0);
 
   const handleParse = async () => {
-    // Use text input if available, otherwise use placeholder
     const content = session.text_input || 'Sample requirements text for parsing';
     
     if (!content || content.trim().length === 0) {
@@ -34,6 +35,20 @@ export const ParseStep: React.FC<{ session: EFDSession }> = ({ session }) => {
     } catch (error) {
       setParseProgress(0);
     }
+  };
+
+  const handleUpdateAtom = (atomId: string, updates: Record<string, any>) => {
+    updateAtom.mutate({ atomId, updates });
+  };
+
+  const handleToggleSelection = (atomId: string, selected: boolean) => {
+    updateAtom.mutate({ 
+      atomId, 
+      updates: { 
+        is_selected: selected,
+        status: selected ? 'unmapped' : 'excluded' 
+      } 
+    });
   };
 
   const isParsing = parseDocument.isPending;
@@ -102,36 +117,17 @@ export const ParseStep: React.FC<{ session: EFDSession }> = ({ session }) => {
                   <th className="px-4 py-3 text-left text-sm font-medium">Requirement</th>
                   <th className="px-4 py-3 text-left text-sm font-medium w-32">Type</th>
                   <th className="px-4 py-3 text-left text-sm font-medium w-28">Priority</th>
-                  <th className="px-4 py-3 text-center text-sm font-medium w-20">Selected</th>
+                  <th className="px-4 py-3 text-center text-sm font-medium w-24">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y">
                 {atoms.map((atom: any) => (
-                  <tr key={atom.id} className="hover:bg-muted/30 transition-colors">
-                    <td className="px-4 py-3 text-sm font-mono text-primary">{atom.atom_key}</td>
-                    <td className="px-4 py-3 text-sm">{atom.text}</td>
-                    <td className="px-4 py-3">
-                      <Badge variant="secondary" className="capitalize">
-                        {atom.type?.replace('_', ' ')}
-                      </Badge>
-                    </td>
-                    <td className="px-4 py-3">
-                      <Badge 
-                        variant={atom.priority === 'high' ? 'destructive' : 'outline'}
-                        className="capitalize"
-                      >
-                        {atom.priority}
-                      </Badge>
-                    </td>
-                    <td className="px-4 py-3 text-center">
-                      <input 
-                        type="checkbox" 
-                        checked={atom.is_selected} 
-                        className="h-4 w-4 rounded border-muted"
-                        readOnly
-                      />
-                    </td>
-                  </tr>
+                  <EditableAtomRow
+                    key={atom.id}
+                    atom={atom}
+                    onUpdate={handleUpdateAtom}
+                    onToggleSelection={handleToggleSelection}
+                  />
                 ))}
               </tbody>
             </table>

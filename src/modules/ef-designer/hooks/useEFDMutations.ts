@@ -3,6 +3,25 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useAuth } from '@/lib/auth';
 
+// Update atom fields
+export function useUpdateAtom() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ atomId, updates }: { atomId: string; updates: Record<string, any> }) => {
+      const { error } = await supabase
+        .from('efd_atoms')
+        .update({ ...updates, updated_at: new Date().toISOString() })
+        .eq('id', atomId);
+      
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['efd-atoms'] });
+    },
+  });
+}
+
 // Toggle atom selection (using status field)
 export function useToggleAtomSelection() {
   const queryClient = useQueryClient();
@@ -171,16 +190,14 @@ export function useApproveSession() {
   });
 }
 
-// Push to Catalyst
+// Push to Catalyst - marks session as published (actual integration would sync to external system)
 export function usePushToCatalyst() {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async (sessionId: string) => {
-      // Simulate push to catalyst
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      const { error } = await supabase
+      // Update session status to published
+      const { error: sessionError } = await supabase
         .from('efd_wizard_sessions')
         .update({ 
           is_pushed_to_catalyst: true,
@@ -192,13 +209,14 @@ export function usePushToCatalyst() {
         })
         .eq('id', sessionId);
       
-      if (error) throw error;
+      if (sessionError) throw sessionError;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['efd-session'] });
       toast.success('Successfully pushed to Catalyst!');
     },
-    onError: () => {
+    onError: (error) => {
+      console.error('Push to Catalyst error:', error);
       toast.error('Failed to push to Catalyst');
     },
   });

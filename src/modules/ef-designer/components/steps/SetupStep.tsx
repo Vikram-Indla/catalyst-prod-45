@@ -1,21 +1,66 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { EFDSession } from '../../types/efd.types';
 import { useUpdateEFDSession, useEFDDocuments } from '../../hooks/useEFDSession';
-import { Upload, FileText, X, CheckCircle } from 'lucide-react';
+import { useUploadDocument, useDeleteDocument } from '../../hooks/useEFDDocuments';
+import { Upload, FileText, X, CheckCircle, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
+import { useDropzone } from 'react-dropzone';
+import { toast } from 'sonner';
 
 interface SetupStepProps {
   session: EFDSession;
 }
 
+const ACCEPTED_FILE_TYPES = {
+  'application/pdf': ['.pdf'],
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx'],
+  'text/plain': ['.txt'],
+};
+
+const MAX_FILES = 5;
+const MAX_FILE_SIZE = 20 * 1024 * 1024; // 20MB
+
 export const SetupStep: React.FC<SetupStepProps> = ({ session }) => {
   const updateSession = useUpdateEFDSession();
-  const { data: documents = [] } = useEFDDocuments(session.id);
+  const { data: documents = [], isLoading: docsLoading } = useEFDDocuments(session.id);
+  const uploadDocument = useUploadDocument();
+  const deleteDocument = useDeleteDocument();
   const [textInput, setTextInput] = useState(session.text_input || '');
 
   const wordCount = textInput.trim() ? textInput.trim().split(/\s+/).length : 0;
   const hasInput = documents.length > 0 || wordCount > 0;
+  const canUploadMore = documents.length < MAX_FILES;
+
+  const onDrop = useCallback(async (acceptedFiles: File[]) => {
+    if (documents.length + acceptedFiles.length > MAX_FILES) {
+      toast.error(`Maximum ${MAX_FILES} files allowed`);
+      return;
+    }
+
+    for (const file of acceptedFiles) {
+      if (file.size > MAX_FILE_SIZE) {
+        toast.error(`${file.name} exceeds 20MB limit`);
+        continue;
+      }
+
+      try {
+        await uploadDocument.mutateAsync({
+          sessionId: session.id,
+          file,
+        });
+      } catch (error) {
+        toast.error(`Failed to upload ${file.name}`);
+      }
+    }
+  }, [session.id, documents.length, uploadDocument]);
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop,
+    accept: ACCEPTED_FILE_TYPES,
+    maxFiles: MAX_FILES - documents.length,
+    disabled: !canUploadMore || uploadDocument.isPending,
+  });
 
   const handleTextChange = (value: string) => {
     setTextInput(value);
@@ -24,6 +69,20 @@ export const SetupStep: React.FC<SetupStepProps> = ({ session }) => {
       sessionId: session.id,
       updates: { text_input: value, text_word_count: words }
     });
+  };
+
+  const handleDeleteDocument = async (docId: string) => {
+    try {
+      await deleteDocument.mutateAsync({ documentId: docId, sessionId: session.id });
+    } catch (error) {
+      toast.error('Failed to delete document');
+    }
+  };
+
+  const formatFileSize = (bytes: number) => {
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
   };
 
   return (
@@ -40,25 +99,56 @@ export const SetupStep: React.FC<SetupStepProps> = ({ session }) => {
             <Upload className="h-5 w-5 text-primary" />
             <h3 className="font-semibold">Upload Documents</h3>
           </div>
-          <p className="text-sm text-muted-foreground mb-4">Max 5 files, 20MB each</p>
+          <p className="text-sm text-muted-foreground mb-4">Max {MAX_FILES} files, 20MB each</p>
           
-          <div className="border-2 border-dashed rounded-lg p-8 text-center hover:border-primary/50 transition-colors cursor-pointer">
-            <FileText className="h-10 w-10 mx-auto text-muted-foreground mb-2" />
-            <p className="font-medium">Drop files here or click to browse</p>
-            <p className="text-sm text-muted-foreground">PDF, DOCX, TXT • Max 5 files</p>
+          <div
+            {...getRootProps()}
+            className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors cursor-pointer
+              ${isDragActive ? 'border-primary bg-primary/5' : 'hover:border-primary/50'}
+              ${!canUploadMore ? 'opacity-50 cursor-not-allowed' : ''}
+              ${uploadDocument.isPending ? 'pointer-events-none' : ''}`}
+          >
+            <input {...getInputProps()} />
+            {uploadDocument.isPending ? (
+              <>
+                <Loader2 className="h-10 w-10 mx-auto text-primary mb-2 animate-spin" />
+                <p className="font-medium">Uploading...</p>
+              </>
+            ) : (
+              <>
+                <FileText className="h-10 w-10 mx-auto text-muted-foreground mb-2" />
+                <p className="font-medium">
+                  {isDragActive ? 'Drop files here' : 'Drop files here or click to browse'}
+                </p>
+                <p className="text-sm text-muted-foreground">PDF, DOCX, TXT • Max {MAX_FILES} files</p>
+              </>
+            )}
           </div>
 
           {documents.length > 0 && (
             <div className="mt-4 space-y-2">
               {documents.map((doc: any) => (
                 <div key={doc.id} className="flex items-center justify-between p-2 bg-muted rounded-lg">
-                  <span className="text-sm truncate">{doc.file_name}</span>
-                  <Button variant="ghost" size="sm"><X className="h-4 w-4" /></Button>
+                  <div className="flex items-center gap-2 flex-1 min-w-0">
+                    <FileText className="h-4 w-4 text-muted-foreground shrink-0" />
+                    <span className="text-sm truncate">{doc.file_name}</span>
+                    <span className="text-xs text-muted-foreground shrink-0">
+                      {formatFileSize(doc.file_size)}
+                    </span>
+                  </div>
+                  <Button 
+                    variant="ghost" 
+                    size="sm"
+                    onClick={() => handleDeleteDocument(doc.id)}
+                    disabled={deleteDocument.isPending}
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
                 </div>
               ))}
             </div>
           )}
-          <p className="text-sm text-muted-foreground mt-2">{documents.length}/5 files</p>
+          <p className="text-sm text-muted-foreground mt-2">{documents.length}/{MAX_FILES} files</p>
         </div>
 
         {/* Text Input Card */}
