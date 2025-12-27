@@ -26,7 +26,7 @@ import {
 } from '@/components/ui/table';
 import type { StrategicTheme } from '@/types/strategicBacklog';
 import { CatalystThemeDrawer } from '@/components/backlog/CatalystThemeDrawer';
-import { CreateThemeDialog } from './CreateThemeDialog';
+import { CatalystCreateTheme } from './CatalystCreateTheme';
 import { LinkExistingThemesDialog } from './LinkExistingThemesDialog';
 import { ThemeAlignmentView } from './ThemeAlignmentView';
 import { useThemesObjectiveCounts } from '@/hooks/useThemeObjectiveLinks';
@@ -379,7 +379,7 @@ export function ThemesTab({ themes, snapshotId, isArchived, onReorder }: ThemesT
       />
 
       {/* Create Dialog */}
-      <CreateThemeDialog
+      <CatalystCreateTheme
         open={createOpen}
         onOpenChange={setCreateOpen}
         snapshotId={snapshotId}
