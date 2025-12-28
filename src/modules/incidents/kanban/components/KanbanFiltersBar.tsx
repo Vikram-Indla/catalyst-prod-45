@@ -133,7 +133,15 @@ export const KanbanFiltersBar = memo(function KanbanFiltersBar({
   };
 
   return (
-    <div className="px-4 sm:px-6 py-3 border-b border-border bg-card">
+    <div 
+      className="px-4 sm:px-6 py-3"
+      style={{
+        borderBottomWidth: '1px',
+        borderBottomStyle: 'solid',
+        borderBottomColor: 'var(--border-color, #333333)',
+        backgroundColor: 'var(--surface-bg, #1a1a1a)',
+      }}
+    >
       <div className="flex flex-wrap items-center gap-3">
         {/* Toggle */}
         <div className="flex items-center gap-2">
@@ -153,8 +161,8 @@ export const KanbanFiltersBar = memo(function KanbanFiltersBar({
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" size="sm" className="h-8 gap-2">
-              <span className="text-muted-foreground">Severity:</span>
-              <span className="font-medium">{getSeverityLabel(selectedSeverity)}</span>
+              <span style={{ color: 'var(--text-4, #737373)' }}>Severity:</span>
+              <span className="font-medium" style={{ color: 'var(--text-2, #e5e5e5)' }}>{getSeverityLabel(selectedSeverity)}</span>
               <ChevronDown className="h-3 w-3" />
               {selectedSeverity && stats.severityCounts[selectedSeverity] > 0 && (
                 <Badge variant="secondary" className="ml-1 h-5 px-1.5 text-xs">
@@ -171,7 +179,7 @@ export const KanbanFiltersBar = memo(function KanbanFiltersBar({
             {(['SEV1', 'SEV2', 'SEV3', 'SEV4'] as SeverityLevel[]).map(sev => (
               <DropdownMenuItem key={sev} onClick={() => onSeverityChange(sev)}>
                 <div className="flex items-center justify-between w-full">
-                  <span className={sev === 'SEV1' ? 'text-destructive font-medium' : sev === 'SEV2' ? 'text-amber-600 dark:text-amber-400' : ''}>
+                  <span className={sev === 'SEV1' || sev === 'SEV2' ? 'font-medium' : ''} style={{ color: sev === 'SEV1' ? '#ef4444' : sev === 'SEV2' ? '#f59e0b' : undefined }}>
                     {sev}
                   </span>
                   <Badge variant="outline" className="ml-2">{stats.severityCounts[sev]}</Badge>
@@ -185,8 +193,8 @@ export const KanbanFiltersBar = memo(function KanbanFiltersBar({
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" size="sm" className="h-8 gap-2">
-              <span className="text-muted-foreground">Status:</span>
-              <span className="font-medium">{getStatusLabel(selectedStatus)}</span>
+              <span style={{ color: 'var(--text-4, #737373)' }}>Status:</span>
+              <span className="font-medium" style={{ color: 'var(--text-2, #e5e5e5)' }}>{getStatusLabel(selectedStatus)}</span>
               <ChevronDown className="h-3 w-3" />
             </Button>
           </DropdownMenuTrigger>
@@ -197,16 +205,16 @@ export const KanbanFiltersBar = memo(function KanbanFiltersBar({
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={() => onStatusChange('breached')}>
               <div className="flex items-center gap-2 w-full">
-                <div className="h-2 w-2 rounded-full bg-red-500" />
+                <div className="h-2 w-2 rounded-full" style={{ backgroundColor: '#ef4444' }} />
                 <span>Breached</span>
-                <Badge variant="destructive" className="ml-auto">{stats.breachedCount}</Badge>
+                <Badge className="ml-auto border-0" style={{ backgroundColor: 'rgba(239, 68, 68, 0.2)', color: '#f87171' }}>{stats.breachedCount}</Badge>
               </div>
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => onStatusChange('at_risk')}>
               <div className="flex items-center gap-2 w-full">
-                <div className="h-2 w-2 rounded-full bg-amber-500" />
+                <div className="h-2 w-2 rounded-full" style={{ backgroundColor: '#f59e0b' }} />
                 <span>At Risk</span>
-                <Badge variant="outline" className="ml-auto bg-amber-50 text-amber-700 dark:bg-amber-950/30 dark:text-amber-400">{stats.atRiskCount}</Badge>
+                <Badge className="ml-auto border-0" style={{ backgroundColor: 'rgba(245, 158, 11, 0.15)', color: '#fbbf24' }}>{stats.atRiskCount}</Badge>
               </div>
             </DropdownMenuItem>
           </DropdownMenuContent>
@@ -216,8 +224,8 @@ export const KanbanFiltersBar = memo(function KanbanFiltersBar({
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" size="sm" className="h-8 gap-2">
-              <span className="text-muted-foreground">Assignee:</span>
-              <span className="font-medium truncate max-w-[100px]">{getAssigneeLabel(selectedAssignee)}</span>
+            <span style={{ color: 'var(--text-4, #737373)' }}>Assignee:</span>
+            <span className="font-medium truncate max-w-[100px]" style={{ color: 'var(--text-2, #e5e5e5)' }}>{getAssigneeLabel(selectedAssignee)}</span>
               <ChevronDown className="h-3 w-3" />
             </Button>
           </DropdownMenuTrigger>
@@ -253,7 +261,7 @@ export const KanbanFiltersBar = memo(function KanbanFiltersBar({
         <div className="h-6 w-px bg-border" />
         
         <div className="flex items-center gap-2">
-          <Label className="text-sm text-muted-foreground">Group:</Label>
+          <Label className="text-sm" style={{ color: 'var(--text-4, #737373)' }}>Group:</Label>
           <Select value={groupBy} onValueChange={(v) => onGroupByChange(v as GroupByOption)}>
             <SelectTrigger className="w-[120px] h-8 text-sm">
               <SelectValue />
@@ -285,7 +293,7 @@ export const KanbanFiltersBar = memo(function KanbanFiltersBar({
         )}
         
         {/* Total count */}
-        <div className="ml-auto text-sm text-muted-foreground">
+        <div className="ml-auto text-sm" style={{ color: 'var(--text-4, #737373)' }}>
           {filteredCount} incident{filteredCount !== 1 ? 's' : ''}
         </div>
       </div>
