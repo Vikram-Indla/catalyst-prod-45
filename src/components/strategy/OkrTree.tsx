@@ -58,9 +58,9 @@ function getHealthStatus(progress: number, health?: string): { label: string; co
 
 function getProgressBarColor(progress: number): string {
   const safeProgress = safePercentage(progress);
-  if (safeProgress < 30) return 'var(--status-danger)';
-  if (safeProgress >= 70) return 'var(--status-success)';
-  return 'var(--brand-primary)';
+  if (safeProgress < 30) return 'hsl(var(--danger))';
+  if (safeProgress >= 70) return 'hsl(var(--success))';
+  return 'hsl(var(--brand-primary))';
 }
 
 // Type config - using centralized WorkItemIcon, no hardcoded Lucide icons
@@ -166,6 +166,7 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
 
     const typeStyle = typeStyles[item.type as keyof typeof typeStyles] || typeStyles.key_result;
     const status = isObjective ? getHealthStatus(item.progress, (item as any).health) : null;
+    const progressValue = safePercentage(item.progress);
 
     const handleActivate = () => {
       setSelectedId(item.id);
@@ -268,15 +269,15 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
 
           {/* Progress bar - secondary signal, percentage is primary */}
           <div className="flex items-center gap-1.5 px-2">
-            <div 
+            <div
               className="flex-1 h-[4px] rounded-full overflow-hidden"
               style={{ backgroundColor: 'var(--progress-track)' }}
             >
               <div
                 className="h-full rounded-full"
                 style={{
-                  width: `${Math.min(100, item.progress)}%`,
-                  backgroundColor: getProgressBarColor(item.progress),
+                  width: `${progressValue}%`,
+                  backgroundColor: getProgressBarColor(progressValue),
                   opacity: 0.85,
                 }}
               />
@@ -285,11 +286,11 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
 
           {/* Percentage - primary signal, anchors the eye */}
           <div className="text-right pr-2">
-            <span 
+            <span
               className={cn(TYPOGRAPHY.progressPercent, 'font-medium')}
-              style={{ color: item.progress > 0 ? 'var(--text-primary)' : 'var(--text-secondary)' }}
+              style={{ color: progressValue > 0 ? 'var(--text-primary)' : 'var(--text-secondary)' }}
             >
-              {item.progress > 0 ? `${Math.round(item.progress)}%` : '—'}
+              {progressValue > 0 ? `${Math.round(progressValue)}%` : '—'}
             </span>
           </div>
 
