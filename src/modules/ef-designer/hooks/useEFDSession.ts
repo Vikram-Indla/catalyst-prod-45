@@ -25,6 +25,30 @@ export function useEFDSession(sessionId: string | null) {
     enabled: !!sessionId,
   });
 }
+export function useEFDSessions() {
+  const { user } = useAuth();
+  
+  return useQuery({
+    queryKey: ['efd-sessions', user?.id],
+    queryFn: async () => {
+      if (!user?.id) return [];
+      const { data, error } = await supabase
+        .from('efd_wizard_sessions')
+        .select(`
+          *,
+          epics:efd_epics(count),
+          features:efd_features(count)
+        `)
+        .eq('created_by', user.id)
+        .order('updated_at', { ascending: false })
+        .limit(10);
+      
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!user?.id,
+  });
+}
 
 export function useCreateEFDSession() {
   const queryClient = useQueryClient();
