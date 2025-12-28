@@ -53,7 +53,7 @@ const DEFAULT_FILTERS: RiskGridFilters = {
   critical_path: null
 };
 
-const ITEMS_PER_PAGE = 15;
+const ITEMS_PER_PAGE = 30;
 
 // Drill-Down mode types
 type DrillDownMode = 
