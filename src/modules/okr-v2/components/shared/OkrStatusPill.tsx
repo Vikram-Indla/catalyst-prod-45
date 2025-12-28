@@ -5,7 +5,7 @@
 
 import { cn } from '@/lib/utils';
 
-// Status styles using ONLY valid Tailwind classes
+// Status styles using ONLY Catalyst design system semantic tokens
 const STATUS_STYLES: Record<string, { 
   bg: string; 
   text: string; 
@@ -18,28 +18,34 @@ const STATUS_STYLES: Record<string, {
     border: 'border-border',
     variant: 'filled'
   },
+  'backlog': { 
+    bg: 'bg-muted', 
+    text: 'text-muted-foreground', 
+    border: 'border-border',
+    variant: 'filled'
+  },
   'in-progress': { 
     bg: 'bg-transparent',
-    text: 'text-teal-600 dark:text-teal-400', 
-    border: 'border-teal-600 dark:border-teal-400',
+    text: 'text-brand-teal', 
+    border: 'border-brand-teal',
     variant: 'outline'
   },
   'on-track': { 
-    bg: 'bg-teal-600', 
-    text: 'text-white', 
-    border: 'border-teal-600',
+    bg: 'bg-success', 
+    text: 'text-success-foreground', 
+    border: 'border-success',
     variant: 'filled'
   },
   'at-risk': { 
-    bg: 'bg-bronze', 
-    text: 'text-white', 
-    border: 'border-bronze',
+    bg: 'bg-warning', 
+    text: 'text-warning-foreground', 
+    border: 'border-warning',
     variant: 'filled'
   },
   'off-track': { 
-    bg: 'bg-destructive', 
-    text: 'text-destructive-foreground', 
-    border: 'border-destructive',
+    bg: 'bg-danger', 
+    text: 'text-danger-foreground', 
+    border: 'border-danger',
     variant: 'filled'
   },
   'blocked': { 
@@ -49,9 +55,9 @@ const STATUS_STYLES: Record<string, {
     variant: 'filled'
   },
   'completed': { 
-    bg: 'bg-teal-600', 
-    text: 'text-white', 
-    border: 'border-teal-600',
+    bg: 'bg-success', 
+    text: 'text-success-foreground', 
+    border: 'border-success',
     variant: 'filled'
   },
 };
@@ -59,6 +65,7 @@ const STATUS_STYLES: Record<string, {
 // Display labels for statuses
 const STATUS_LABELS: Record<string, string> = {
   'pending': 'Pending',
+  'backlog': 'Backlog',
   'in-progress': 'In Progress',
   'on-track': 'On track',
   'at-risk': 'At risk',
