@@ -113,12 +113,12 @@ function ExecutivePosture({
 
   return (
     <section className="mb-10 print:mb-8">
-      <div className="border-l-4 border-[var(--brand-primary)] bg-card rounded-r-lg p-4 sm:p-6 lg:p-8 print:p-6">
-        <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6 lg:gap-8">
+      <div className="border-l-4 border-brand-primary bg-card rounded-r-lg p-4 sm:p-6 lg:p-8 print:p-6">
+        <div className="flex flex-col lg:flex-row lg:items-stretch lg:justify-between gap-6 lg:gap-8">
           {/* Left: Executive Summary Text */}
           <div className="flex-1 max-w-3xl">
             <div className="flex items-center gap-3 mb-4">
-              <FileText className="h-5 w-5 text-[var(--brand-primary)]" />
+              <FileText className="h-5 w-5 text-brand-primary" />
               <h2 className="text-lg font-bold uppercase tracking-wide text-foreground">
                 Executive Posture
               </h2>
@@ -137,17 +137,17 @@ function ExecutivePosture({
           </div>
           
           {/* Right: Change vs Period Mini-Metrics */}
-          <div className="flex-shrink-0 w-full lg:w-auto lg:min-w-[200px] border-t lg:border-t-0 lg:border-l border-border pt-4 lg:pt-0 lg:pl-8 print:pl-6">
-            <div className="text-xs sm:text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-3 lg:mb-4">
+          <div className="flex-shrink-0 lg:w-[220px] border-t lg:border-t-0 lg:border-l border-border pt-4 lg:pt-0 lg:pl-8 print:pl-6">
+            <div className="text-xs sm:text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4 text-center lg:text-right">
               Δ vs {comparisonLabel}
             </div>
-            <div className="grid grid-cols-4 lg:grid-cols-2 gap-x-4 sm:gap-x-6 gap-y-3">
+            <div className="grid grid-cols-4 lg:grid-cols-2 gap-4">
               {deltaMetrics.map(metric => (
-                <div key={metric.key} className="text-center lg:text-center">
+                <div key={metric.key} className="text-center">
                   <div className={cn(
                     "text-xl sm:text-2xl font-bold tabular-nums",
-                    metric.value > 0 && "text-[hsl(var(--warning))]",
-                    metric.value < 0 && "text-emerald-600 dark:text-emerald-400",
+                    metric.value > 0 && "text-warning",
+                    metric.value < 0 && "text-success",
                     metric.value === 0 && "text-muted-foreground"
                   )}>
                     {metric.prefix}{metric.value}
