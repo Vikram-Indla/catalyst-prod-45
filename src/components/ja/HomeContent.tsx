@@ -26,6 +26,7 @@ import {
   useUnifiedHomeItems,
   UnifiedWorkItem,
 } from '@/hooks/home/useUnifiedHomeData';
+import { useHomeOperationsSummary } from '@/hooks/home/useHomeOperationsData';
 import {
   useStarredItemIds,
   useStarredDeliveryItems,
@@ -445,6 +446,7 @@ export function HomeContent() {
 
   // Unified data hooks with real-time updates
   const summary = useUnifiedHomeSummary(mode);
+  const operationsSummary = useHomeOperationsSummary(); // For CriticalStrip counts
   const itemsQuery = useUnifiedHomeItems({
     mode,
     filters,
@@ -662,10 +664,10 @@ export function HomeContent() {
         {mode === 'operations' && (
           <div className="mt-3">
             <CriticalStrip
-              majorIncidents={{ open: 0, breached: 0, atRisk: 0 }}
-              slaAtRisk={0}
-              awaitingMe={0}
-              blocked={0}
+              majorIncidents={operationsSummary.data?.incidents.major || { open: 0, breached: 0, atRisk: 0 }}
+              slaAtRisk={operationsSummary.data?.incidents.slaAtRisk || 0}
+              awaitingMe={operationsSummary.data?.incidents.awaitingMe || 0}
+              blocked={operationsSummary.data?.incidents.blocked || 0}
               activeFilter="all"
               currentMode={mode}
               onFilterChange={() => {}}
