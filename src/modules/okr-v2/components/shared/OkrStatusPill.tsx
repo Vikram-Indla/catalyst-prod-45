@@ -5,7 +5,7 @@
 
 import { cn } from '@/lib/utils';
 
-// Status styles using ONLY semantic tokens - no hex values
+// Status styles using ONLY valid Tailwind classes
 const STATUS_STYLES: Record<string, { 
   bg: string; 
   text: string; 
@@ -20,20 +20,20 @@ const STATUS_STYLES: Record<string, {
   },
   'in-progress': { 
     bg: 'bg-transparent',
-    text: 'text-brand-primary', 
-    border: 'border-brand-primary',
+    text: 'text-teal-600 dark:text-teal-400', 
+    border: 'border-teal-600 dark:border-teal-400',
     variant: 'outline'
   },
   'on-track': { 
-    bg: 'bg-secondary-green', 
-    text: 'text-white dark:text-white', 
-    border: 'border-secondary-green',
+    bg: 'bg-teal-600', 
+    text: 'text-white', 
+    border: 'border-teal-600',
     variant: 'filled'
   },
   'at-risk': { 
-    bg: 'bg-secondary-bronze', 
-    text: 'text-white dark:text-white', 
-    border: 'border-secondary-bronze',
+    bg: 'bg-bronze', 
+    text: 'text-white', 
+    border: 'border-bronze',
     variant: 'filled'
   },
   'off-track': { 
@@ -49,9 +49,9 @@ const STATUS_STYLES: Record<string, {
     variant: 'filled'
   },
   'completed': { 
-    bg: 'bg-secondary-green', 
-    text: 'text-white dark:text-white', 
-    border: 'border-secondary-green',
+    bg: 'bg-teal-600', 
+    text: 'text-white', 
+    border: 'border-teal-600',
     variant: 'filled'
   },
 };
