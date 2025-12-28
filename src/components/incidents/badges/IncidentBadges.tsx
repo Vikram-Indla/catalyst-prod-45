@@ -4,60 +4,46 @@ import { CheckCircle, AlertTriangle } from 'lucide-react';
 import type { IncidentStatus, SeverityLevel, PriorityLevel, SupportLevel } from '@/types/incident';
 
 // ============================================
-// CATALYST BRAND PALETTE - Blue + Teal Professional
-// Blue #2563eb | Teal #0d9488 | Amber #f59e0b | Red #ef4444 | Gray #6b7280
+// CATALYST BRAND PALETTE - Using Design System Tokens
+// Subtle outline-style badges for reduced visual weight
 // ============================================
 
-// STATUS - Updated to Blue + Teal palette
-export const STATUS_CONFIG: Record<IncidentStatus, { label: string; bg: string; text: string; border: string; dotColor: string }> = {
+// STATUS - Subtle outline style with semantic token colors
+export const STATUS_CONFIG: Record<IncidentStatus, { label: string; variant: 'info' | 'warning' | 'muted' | 'success'; dotColor: string }> = {
   open: { 
     label: 'Open', 
-    bg: 'rgba(37, 99, 235, 0.1)', 
-    text: '#2563eb', 
-    border: '#2563eb',
-    dotColor: '#2563eb' 
+    variant: 'info',
+    dotColor: 'hsl(var(--info))' 
   },
   triage: { 
     label: 'Triaging', 
-    bg: 'rgba(245, 158, 11, 0.1)', 
-    text: '#b45309', 
-    border: 'transparent',
-    dotColor: '#f59e0b' 
+    variant: 'warning',
+    dotColor: 'hsl(var(--warning))' 
   },
   to_committee: { 
     label: 'Committee', 
-    bg: 'rgba(107, 114, 128, 0.1)', 
-    text: '#6b7280', 
-    border: 'transparent',
-    dotColor: '#6b7280' 
+    variant: 'muted',
+    dotColor: 'hsl(var(--muted-foreground))' 
   },
   in_progress: { 
     label: 'In Progress', 
-    bg: 'rgba(37, 99, 235, 0.1)', 
-    text: '#2563eb', 
-    border: 'transparent',
-    dotColor: '#2563eb' 
+    variant: 'info',
+    dotColor: 'hsl(var(--info))' 
   },
   resolved: { 
     label: 'Resolved', 
-    bg: 'rgba(13, 148, 136, 0.1)', 
-    text: '#0d9488', 
-    border: 'transparent',
-    dotColor: '#0d9488' 
+    variant: 'success',
+    dotColor: 'hsl(var(--success))' 
   },
   converted: { 
     label: 'Converted', 
-    bg: 'rgba(107, 114, 128, 0.1)', 
-    text: '#6b7280', 
-    border: 'transparent',
-    dotColor: '#6b7280' 
+    variant: 'muted',
+    dotColor: 'hsl(var(--muted-foreground))' 
   },
   closed: { 
     label: 'Closed', 
-    bg: 'rgba(13, 148, 136, 0.1)', 
-    text: '#0d9488', 
-    border: 'transparent',
-    dotColor: '#0d9488' 
+    variant: 'success',
+    dotColor: 'hsl(var(--success))' 
   },
 };
 
@@ -93,6 +79,14 @@ interface StatusBadgeProps {
   size?: 'xs' | 'sm';
 }
 
+// Variant to Tailwind classes mapping - exported for use in other components
+export const STATUS_VARIANT_CLASSES = {
+  info: 'border-info/30 text-info bg-transparent',
+  warning: 'border-warning/30 text-warning bg-transparent',
+  success: 'border-success/30 text-success bg-transparent',
+  muted: 'border-border text-muted-foreground bg-transparent',
+};
+
 export function StatusBadge({ status, size = 'xs' }: StatusBadgeProps) {
   const config = STATUS_CONFIG[status];
   if (!config) return <span className="text-muted-foreground text-xs">-</span>;
@@ -100,14 +94,10 @@ export function StatusBadge({ status, size = 'xs' }: StatusBadgeProps) {
   return (
     <span 
       className={cn(
-        'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full font-medium',
-        size === 'xs' ? 'text-[10px]' : 'text-xs'
+        'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full font-medium border',
+        size === 'xs' ? 'text-[10px]' : 'text-xs',
+        STATUS_VARIANT_CLASSES[config.variant]
       )}
-      style={{ 
-        backgroundColor: config.bg,
-        border: `1px solid ${config.border}`,
-        color: config.text
-      }}
     >
       <span 
         className="w-1.5 h-1.5 rounded-full flex-shrink-0"
@@ -214,25 +204,28 @@ interface SlaBadgeProps {
   size?: 'xs' | 'sm';
 }
 
-const SLA_CONFIG: Record<SlaStatus, { label: string; bg: string; text: string; Icon: typeof CheckCircle }> = {
+const SLA_CONFIG: Record<SlaStatus, { label: string; variant: 'success' | 'warning' | 'danger'; Icon: typeof CheckCircle }> = {
   on_track: { 
     label: 'On Track', 
-    bg: 'rgba(13, 148, 136, 0.1)',
-    text: '#0d9488',
+    variant: 'success',
     Icon: CheckCircle 
   },
   at_risk: { 
     label: 'At Risk', 
-    bg: 'rgba(245, 158, 11, 0.1)',
-    text: '#b45309',
+    variant: 'warning',
     Icon: AlertTriangle 
   },
   breached: { 
     label: 'Breached', 
-    bg: 'rgba(239, 68, 68, 0.1)',
-    text: '#ef4444',
+    variant: 'danger',
     Icon: AlertTriangle 
   },
+};
+
+const SLA_VARIANT_CLASSES = {
+  success: 'border-success/30 text-success bg-transparent',
+  warning: 'border-warning/30 text-warning bg-transparent',
+  danger: 'border-danger/30 text-danger bg-transparent',
 };
 
 export function SlaBadge({ status, size = 'xs' }: SlaBadgeProps) {
@@ -244,13 +237,10 @@ export function SlaBadge({ status, size = 'xs' }: SlaBadgeProps) {
   return (
     <span 
       className={cn(
-        'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full font-medium',
-        size === 'xs' ? 'text-[10px]' : 'text-xs'
+        'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full font-medium border',
+        size === 'xs' ? 'text-[10px]' : 'text-xs',
+        SLA_VARIANT_CLASSES[config.variant]
       )}
-      style={{ 
-        backgroundColor: config.bg,
-        color: config.text
-      }}
     >
       <Icon className="w-3.5 h-3.5" />
       {config.label}

@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { 
   STATUS_CONFIG, 
+  STATUS_VARIANT_CLASSES,
   SEVERITY_CONFIG, 
   PRIORITY_CONFIG 
 } from '@/components/incidents/badges/IncidentBadges';
@@ -84,12 +85,10 @@ export function IncidentDetailHeader({
           <div className="flex items-center gap-2 mt-2 flex-wrap">
             {/* Status Pill */}
             <span 
-              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium"
-              style={{ 
-                backgroundColor: statusConfig.bg,
-                border: `1px solid ${statusConfig.border}`,
-                color: statusConfig.text
-              }}
+              className={cn(
+                "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border",
+                STATUS_VARIANT_CLASSES[statusConfig.variant]
+              )}
             >
               <span 
                 className="w-1.5 h-1.5 rounded-full flex-shrink-0"
