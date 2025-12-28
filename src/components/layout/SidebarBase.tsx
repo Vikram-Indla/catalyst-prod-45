@@ -213,7 +213,7 @@ export function SidebarBase({
                   {CustomIcon && (
                     <CustomIcon 
                       className="h-[18px] w-[18px]" 
-                      style={{ color: active ? 'hsl(var(--brand-primary))' : 'hsl(var(--muted-foreground))' }}
+                      style={{ color: active ? 'hsl(var(--brand-primary))' : 'hsl(var(--foreground) / 0.7)' }}
                     />
                   )}
                 </span>
@@ -333,7 +333,7 @@ export function SidebarBase({
                     {CustomIcon && (
                       <CustomIcon 
                         className="h-[18px] w-[18px]" 
-                        style={{ color: active ? 'hsl(var(--brand-primary))' : 'hsl(var(--muted-foreground))' }}
+                        style={{ color: active ? 'hsl(var(--brand-primary))' : 'hsl(var(--foreground) / 0.7)' }}
                       />
                     )}
                   </span>
