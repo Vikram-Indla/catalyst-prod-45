@@ -639,8 +639,8 @@ export function IncidentListTable({
                 value={effectivePageSize.toString()} 
                 onValueChange={handlePageSizeChange}
               >
-                <SelectTrigger className="h-7 w-16 text-xs">
-                  <SelectValue />
+                <SelectTrigger className="h-7 w-16 text-xs text-foreground">
+                  <SelectValue placeholder={effectivePageSize.toString()} />
                 </SelectTrigger>
                 <SelectContent>
                   {PAGE_SIZE_OPTIONS.map(size => (
