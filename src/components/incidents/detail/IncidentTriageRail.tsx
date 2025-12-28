@@ -10,6 +10,7 @@ import { cn } from '@/lib/utils';
 import { getAllowedTransitions } from '@/utils/incidentLifecycle';
 import { 
   STATUS_CONFIG, 
+  STATUS_VARIANT_CLASSES,
   SEVERITY_CONFIG as SEVERITY_OPTIONS_CONFIG,
   PRIORITY_CONFIG 
 } from '@/components/incidents/badges/IncidentBadges';
@@ -155,12 +156,10 @@ export function IncidentTriageRail({
               disabled={isConverted || status === 'closed'}
             >
               <SelectTrigger 
-                className="h-9 text-sm font-medium"
-                style={{ 
-                  backgroundColor: STATUS_CONFIG[status].bg,
-                  color: STATUS_CONFIG[status].text,
-                  borderColor: STATUS_CONFIG[status].border
-                }}
+                className={cn(
+                  "h-9 text-sm font-medium border",
+                  STATUS_VARIANT_CLASSES[STATUS_CONFIG[status].variant]
+                )}
               >
                 <SelectValue />
               </SelectTrigger>
