@@ -84,24 +84,38 @@ function formatDueDate(dueDate: string): { text: string; isUrgent: boolean } {
   };
 }
 
-// Severity badge component
+// Severity badge component - Catalyst V5 token compliant
 function SeverityBadge({ severity }: { severity: string }) {
-  const getVariant = () => {
+  // Using exact Catalyst V5 rgba values
+  const getSeverityStyles = (): React.CSSProperties => {
     switch (severity) {
-      case 'SEV1': return 'destructive';
-      case 'SEV2': return 'outline';
-      default: return 'secondary';
+      case 'SEV1':
+        return {
+          backgroundColor: 'rgba(239, 68, 68, 0.2)',
+          color: '#f87171',
+          borderColor: 'transparent',
+        };
+      case 'SEV2':
+        return {
+          backgroundColor: 'rgba(245, 158, 11, 0.2)',
+          color: '#fbbf24',
+          borderColor: 'transparent',
+        };
+      case 'SEV3':
+      default:
+        return {
+          backgroundColor: 'var(--surface-hover, #262626)',
+          color: 'var(--text-4, #737373)',
+          borderColor: 'transparent',
+        };
     }
   };
   
   return (
     <Badge 
-      variant={getVariant()} 
-      className={cn(
-        "h-5 px-1.5 text-[10px] font-medium",
-        severity === 'SEV1' && "bg-red-100 text-red-700 border-red-200 dark:bg-red-950/50 dark:text-red-400 dark:border-red-800",
-        severity === 'SEV2' && "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/50 dark:text-amber-400 dark:border-amber-800"
-      )}
+      variant="outline"
+      className="h-5 px-1.5 text-[10px] font-bold uppercase border-0"
+      style={getSeverityStyles()}
     >
       {severity}
     </Badge>
@@ -150,11 +164,11 @@ export const KanbanCard = memo(function KanbanCard({
     onDragStart?.(e, incident);
   };
 
-  // Left accent color based on SLA
-  const getAccentClass = () => {
-    if (slaHealth === 'breached') return 'border-l-red-500';
-    if (slaHealth === 'at_risk') return 'border-l-amber-500';
-    return 'border-l-transparent';
+  // Left accent color based on SLA - using V5 token colors
+  const getAccentStyle = (): React.CSSProperties => {
+    if (slaHealth === 'breached') return { borderLeftColor: '#ef4444' };
+    if (slaHealth === 'at_risk') return { borderLeftColor: '#f59e0b' };
+    return { borderLeftColor: 'transparent' };
   };
 
   return (
@@ -164,25 +178,37 @@ export const KanbanCard = memo(function KanbanCard({
       onDragStart={handleDragStart}
       onDragEnd={onDragEnd}
       className={cn(
-        "p-3 bg-card rounded-lg border shadow-sm",
-        "border-l-2",
-        getAccentClass(),
-        "hover:shadow-md transition-shadow cursor-pointer group",
+        "p-3.5 rounded-[10px] border shadow-sm",
+        "border-l-[3px]",
+        "hover:shadow-md transition-all cursor-pointer group",
         isDragging && "opacity-50 shadow-lg"
       )}
+      style={{
+        backgroundColor: 'var(--surface-subtle, #1f1f1f)',
+        borderColor: 'var(--border-color, #262626)',
+        ...getAccentStyle(),
+      }}
     >
       {/* Row 1: ID + Badges */}
-      <div className="flex items-center justify-between mb-2">
+      <div className="flex items-center justify-between mb-1.5">
         <button
           onClick={handleKeyClick}
-          className="font-mono text-sm font-medium text-[#2563eb] dark:text-[#60a5fa] hover:underline"
+          className="font-mono text-sm font-semibold hover:underline"
+          style={{ color: 'var(--brand-primary-hex, #3b82f6)' }}
         >
           {incident.incident_key}
         </button>
         <div className="flex items-center gap-1.5">
           {incident.is_major_incident && (
-            <Badge variant="outline" className="h-5 px-1.5 text-[10px] border-amber-300 text-amber-600 bg-amber-50 dark:border-amber-700 dark:text-amber-400 dark:bg-amber-950/30">
-              <AlertTriangle className="h-3 w-3 mr-0.5" />
+            <Badge 
+              variant="outline" 
+              className="h-5 px-2 py-0.5 text-[11px] font-semibold border-0"
+              style={{
+                backgroundColor: 'rgba(245, 158, 11, 0.15)',
+                color: '#f59e0b',
+              }}
+            >
+              <AlertTriangle className="h-2.5 w-2.5 mr-0.5" />
               Major
             </Badge>
           )}
@@ -223,12 +249,12 @@ export const KanbanCard = memo(function KanbanCard({
       <div className="flex items-center justify-between text-xs">
         <div className="flex items-center gap-2">
           <SeverityBadge severity={incident.severity} />
-          <span className="text-muted-foreground">{age}</span>
+          <span className="text-xs" style={{ color: 'var(--text-4, #737373)' }}>{age}</span>
           {slaHealth === 'breached' && (
-            <span className="text-red-600 dark:text-red-400 font-medium">Breached</span>
+            <span className="text-xs font-semibold" style={{ color: '#ef4444' }}>Breached</span>
           )}
           {slaHealth === 'at_risk' && (
-            <span className="text-amber-600 dark:text-amber-400 font-medium">At Risk</span>
+            <span className="text-xs font-semibold" style={{ color: '#f59e0b' }}>At Risk</span>
           )}
         </div>
         
