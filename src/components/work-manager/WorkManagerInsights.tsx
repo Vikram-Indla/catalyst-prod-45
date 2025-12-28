@@ -237,10 +237,10 @@ export function WorkManagerInsights({ tasks }: WorkManagerInsightsProps) {
       {/* Header - Premium treatment */}
       <div className="flex items-center justify-between mb-8">
         <div className="flex items-center gap-3">
-          <div className="w-1 h-8 bg-gradient-to-b from-[#2563eb] to-[#0d9488] rounded-full" />
+          <div className="w-1 h-8 bg-gradient-to-b from-primary to-success rounded-full" />
           <div>
-            <h2 className="text-xl font-bold text-stone-900 tracking-tight">Weekly Insights</h2>
-            <p className="text-[13px] text-stone-500 mt-0.5">{formatDateRange()}</p>
+            <h2 className="text-xl font-bold text-foreground tracking-tight">Weekly Insights</h2>
+            <p className="text-[13px] text-muted-foreground mt-0.5">{formatDateRange()}</p>
           </div>
         </div>
         <div className="flex items-center gap-3">
@@ -251,8 +251,8 @@ export function WorkManagerInsights({ tasks }: WorkManagerInsightsProps) {
               className={cn(
                 'px-4 py-2 text-[12px] font-semibold transition-all duration-200',
                 viewMode === 'individual' 
-                  ? 'bg-[#2563eb] text-white shadow-brand' 
-                  : 'bg-card dark:bg-gray-800 text-muted-foreground hover:bg-muted dark:hover:bg-gray-700'
+                  ? 'bg-primary text-primary-foreground shadow-brand' 
+                  : 'bg-card text-muted-foreground hover:bg-muted'
               )}
             >
               Individual
@@ -262,8 +262,8 @@ export function WorkManagerInsights({ tasks }: WorkManagerInsightsProps) {
               className={cn(
                 'px-4 py-2 text-[12px] font-semibold transition-all duration-200',
                 viewMode === 'team' 
-                  ? 'bg-[#2563eb] text-white shadow-brand' 
-                  : 'bg-card dark:bg-gray-800 text-muted-foreground hover:bg-muted dark:hover:bg-gray-700'
+                  ? 'bg-primary text-primary-foreground shadow-brand' 
+                  : 'bg-card text-muted-foreground hover:bg-muted'
               )}
             >
               Team
@@ -292,8 +292,8 @@ export function WorkManagerInsights({ tasks }: WorkManagerInsightsProps) {
               </SelectTrigger>
               <SelectContent className="shadow-elevated">
                 {users.map((u, idx) => {
-                  // Distinct avatar colors cycling through brand palette
-                  const avatarColors = ['#0d9488', '#2563eb', '#6b7280', '#9ca3af', '#14b8a6'];
+                  // Distinct avatar colors cycling through brand palette (CSS variables)
+                  const avatarColors = ['hsl(var(--success))', 'hsl(var(--primary))', 'hsl(var(--muted-foreground))', 'hsl(var(--warning))', 'hsl(var(--brand-teal))'];
                   const avatarColor = avatarColors[idx % avatarColors.length];
                   return (
                     <SelectItem key={u.id} value={u.id}>
@@ -314,19 +314,19 @@ export function WorkManagerInsights({ tasks }: WorkManagerInsightsProps) {
 
             {/* Status Badge - Premium treatment */}
             {individualInsights.status === 'on_track' && (
-              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-green-50 to-emerald-50 text-green-600 border border-green-100 rounded-lg text-[12px] font-semibold shadow-xs">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-success/10 text-success border border-success/20 rounded-lg text-[12px] font-semibold shadow-xs">
                 <CheckCircle className="w-4 h-4" />
                 On Track
               </span>
             )}
             {individualInsights.status === 'needs_attention' && (
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 border border-amber-300 dark:border-amber-600 rounded-lg">
-                <AlertTriangle className="w-4 h-4 text-amber-600 dark:text-amber-500" />
-                <span className="text-amber-700 dark:text-amber-400 text-[13px] font-medium">Needs Attention</span>
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-warning/10 border border-warning/30 rounded-lg">
+                <AlertTriangle className="w-4 h-4 text-warning" />
+                <span className="text-warning text-[13px] font-medium">Needs Attention</span>
               </div>
             )}
             {individualInsights.status === 'at_risk' && (
-              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-red-50 to-rose-50 text-red-600 border border-red-100 rounded-lg text-[12px] font-semibold shadow-xs">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-danger/10 text-danger border border-danger/20 rounded-lg text-[12px] font-semibold shadow-xs">
                 <XCircle className="w-4 h-4" />
                 At Risk
               </span>
@@ -337,13 +337,13 @@ export function WorkManagerInsights({ tasks }: WorkManagerInsightsProps) {
           <div className="bg-surface-card border border-border-default rounded-xl p-6 shadow-card">
             <div className="grid grid-cols-4 gap-8">
               {[
-                { label: 'TOTAL TASKS', value: individualInsights.summary.total, textColor: 'text-stone-900 dark:text-stone-100' },
-                { label: 'COMPLETED', value: individualInsights.summary.completed, textColor: 'text-green-600' },
-                { label: 'OVERDUE', value: individualInsights.summary.overdue, textColor: 'text-red-600' },
-                { label: 'BLOCKED', value: individualInsights.summary.blocked, textColor: 'text-red-600' },
+                { label: 'TOTAL TASKS', value: individualInsights.summary.total, textColor: 'text-foreground' },
+                { label: 'COMPLETED', value: individualInsights.summary.completed, textColor: 'text-success' },
+                { label: 'OVERDUE', value: individualInsights.summary.overdue, textColor: 'text-danger' },
+                { label: 'BLOCKED', value: individualInsights.summary.blocked, textColor: 'text-warning' },
               ].map((stat) => (
                 <div key={stat.label}>
-                  <span className="text-[11px] font-semibold text-stone-500 dark:text-stone-400 uppercase tracking-wider">{stat.label}</span>
+                  <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">{stat.label}</span>
                   <div className={cn('text-3xl font-bold tracking-tight mt-1', stat.textColor)}>{stat.value}</div>
                 </div>
               ))}
@@ -355,7 +355,7 @@ export function WorkManagerInsights({ tasks }: WorkManagerInsightsProps) {
             {/* Achieved This Week */}
             <div className="bg-surface-card border border-border-default rounded-lg p-4">
               <h3 className="text-[12px] font-semibold text-foreground uppercase tracking-wide mb-3 flex items-center gap-2">
-                <CheckCircle className="w-4 h-4 text-green-700 dark:text-green-500" />
+                <CheckCircle className="w-4 h-4 text-success" />
                 Achieved This Week
               </h3>
               {individualInsights.achieved.length > 0 ? (
@@ -376,7 +376,7 @@ export function WorkManagerInsights({ tasks }: WorkManagerInsightsProps) {
             {/* In Progress */}
             <div className="bg-surface-card border border-border-default rounded-lg p-4">
               <h3 className="text-[12px] font-semibold text-foreground uppercase tracking-wide mb-3 flex items-center gap-2">
-                <Clock className="w-4 h-4 text-amber-700 dark:text-amber-500" />
+                <Clock className="w-4 h-4 text-warning" />
                 In Progress
               </h3>
               {individualInsights.inProgress.length > 0 ? (
@@ -397,7 +397,7 @@ export function WorkManagerInsights({ tasks }: WorkManagerInsightsProps) {
             {/* Not Achieved / Overdue */}
             <div className="bg-surface-card border border-border-default rounded-lg p-4">
               <h3 className="text-[12px] font-semibold text-foreground uppercase tracking-wide mb-3 flex items-center gap-2">
-                <XCircle className="w-4 h-4 text-red-700 dark:text-red-500" />
+                <XCircle className="w-4 h-4 text-danger" />
                 Not Achieved / Overdue
               </h3>
               {individualInsights.notAchieved.length > 0 ? (
@@ -407,7 +407,7 @@ export function WorkManagerInsights({ tasks }: WorkManagerInsightsProps) {
                       <span className="w-1.5 h-1.5 rounded-full bg-gray-500 shrink-0" />
                       {task.title}
                       <span className="font-mono text-[11px] text-muted-foreground">({task.key})</span>
-                      <span className="text-[11px] text-red-700 dark:text-red-400 font-medium">{task.daysOverdue}d overdue</span>
+                      <span className="text-[11px] text-danger font-medium">{task.daysOverdue}d overdue</span>
                     </li>
                   ))}
                 </ul>
@@ -419,7 +419,7 @@ export function WorkManagerInsights({ tasks }: WorkManagerInsightsProps) {
             {/* Blockers */}
             <div className="bg-surface-card border border-border-default rounded-lg p-4">
               <h3 className="text-[12px] font-semibold text-foreground uppercase tracking-wide mb-3 flex items-center gap-2">
-                <AlertTriangle className="w-4 h-4 text-amber-700 dark:text-amber-500" />
+                <AlertTriangle className="w-4 h-4 text-warning" />
                 Blockers
               </h3>
               {individualInsights.blockers.length > 0 ? (
@@ -434,7 +434,7 @@ export function WorkManagerInsights({ tasks }: WorkManagerInsightsProps) {
                       <p className="text-[12px] text-muted-foreground ml-4 mt-1 italic">
                         {reason}
                       </p>
-                      <p className="text-[11px] text-red-700 dark:text-red-400 font-medium ml-4">
+                      <p className="text-[11px] text-danger font-medium ml-4">
                         ({daysSinceBlocked} days blocked)
                       </p>
                     </li>
@@ -509,8 +509,8 @@ export function WorkManagerInsights({ tasks }: WorkManagerInsightsProps) {
               </thead>
               <tbody>
                 {teamInsights.memberStats.map((member, idx) => {
-                  // Distinct avatar colors cycling through brand palette
-                  const avatarColors = ['#0d9488', '#2563eb', '#6b7280', '#9ca3af', '#14b8a6'];
+                  // Distinct avatar colors cycling through brand palette (CSS variables)
+                  const avatarColors = ['hsl(var(--success))', 'hsl(var(--primary))', 'hsl(var(--muted-foreground))', 'hsl(var(--warning))', 'hsl(var(--brand-teal))'];
                   const avatarColor = avatarColors[idx % avatarColors.length];
                   return (
                     <tr key={member.userId} className="border-b border-border-subtle hover:bg-muted/50 transition-colors cursor-pointer">
@@ -527,8 +527,8 @@ export function WorkManagerInsights({ tasks }: WorkManagerInsightsProps) {
                       </td>
                       <td className="px-4 py-3 text-center text-[13px] text-foreground font-medium">{member.completed}</td>
                       <td className="px-4 py-3 text-center text-[13px] text-foreground font-medium">{member.inProgress}</td>
-                      <td className="px-4 py-3 text-center text-[13px] font-medium">{member.overdue > 0 ? <span className="text-red-700 dark:text-red-400">{member.overdue}</span> : <span className="text-muted-foreground">—</span>}</td>
-                      <td className="px-4 py-3 text-center text-[13px] font-medium">{member.blocked > 0 ? <span className="text-red-700 dark:text-red-400">{member.blocked}</span> : <span className="text-muted-foreground">—</span>}</td>
+                      <td className="px-4 py-3 text-center text-[13px] font-medium">{member.overdue > 0 ? <span className="text-danger">{member.overdue}</span> : <span className="text-muted-foreground">—</span>}</td>
+                      <td className="px-4 py-3 text-center text-[13px] font-medium">{member.blocked > 0 ? <span className="text-warning">{member.blocked}</span> : <span className="text-muted-foreground">—</span>}</td>
                     </tr>
                   );
                 })}
@@ -547,8 +547,8 @@ export function WorkManagerInsights({ tasks }: WorkManagerInsightsProps) {
                 {teamInsights.attentionRequired.map((member) => (
                   <li key={member.userId} className="text-[13px] text-foreground">
                     <span className="font-medium">{member.name}</span>: 
-                    {member.overdue > 0 && <span className="text-status-danger ml-2">{member.overdue} overdue</span>}
-                    {member.blocked > 0 && <span className="text-status-danger ml-2">{member.blocked} blocked</span>}
+                    {member.overdue > 0 && <span className="text-danger ml-2">{member.overdue} overdue</span>}
+                    {member.blocked > 0 && <span className="text-warning ml-2">{member.blocked} blocked</span>}
                   </li>
                 ))}
               </ul>
