@@ -314,6 +314,7 @@ export default {
         'secondary-olive': 'hsl(120 26% 42%)',
         'secondary-bronze': 'hsl(30 24% 44%)',
         'secondary-champagne': 'hsl(34 40% 71%)',
+        'secondary-green': 'hsl(var(--secondary-green))',
         
         /* Legacy surface tokens */
         'surface-bg': 'hsl(var(--surface-bg))',
