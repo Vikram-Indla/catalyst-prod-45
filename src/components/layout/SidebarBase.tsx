@@ -126,7 +126,7 @@ export function SidebarBase({
               width: '32px',
               height: '32px',
               borderRadius: '6px',
-              background: 'var(--brand-active)',
+              background: 'var(--brand-primary-hex, #2563eb)',
               color: 'var(--text-inverse, #ffffff)',
               fontSize: '11px',
               fontWeight: 700,
@@ -195,7 +195,7 @@ export function SidebarBase({
                       top: '6px',
                       bottom: '6px',
                       width: '3px',
-                      background: 'var(--brand-active)',
+                      background: 'var(--brand-primary-hex, #2563eb)',
                       borderRadius: '0 2px 2px 0',
                     }}
                   />
@@ -231,7 +231,7 @@ export function SidebarBase({
                       fontWeight: 600,
                       padding: '2px 6px',
                       borderRadius: '9999px',
-                      background: 'var(--brand-active)',
+                      background: 'var(--brand-primary-hex, #2563eb)',
                       color: 'var(--text-inverse, #ffffff)',
                       minWidth: '18px',
                       textAlign: 'center',
@@ -315,7 +315,7 @@ export function SidebarBase({
                         top: '6px',
                         bottom: '6px',
                         width: '3px',
-                        background: 'var(--brand-active)',
+                        background: 'var(--brand-primary-hex, #2563eb)',
                         borderRadius: '0 2px 2px 0',
                       }}
                     />
