@@ -290,12 +290,19 @@ export function WorkManagerInsights({ tasks }: WorkManagerInsightsProps) {
               <SelectTrigger className="w-[280px] shadow-xs">
                 {selectedUser ? (
                   <div className="flex items-center gap-2">
-                    <div 
-                      className="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold text-white"
-                      style={{ backgroundColor: 'hsl(var(--primary))' }}
-                    >
-                      {selectedUser.initials}
-                    </div>
+                    {(() => {
+                      const selectedIdx = users.findIndex(u => u.id === selectedUserId);
+                      const avatarColors = ['hsl(var(--success))', 'hsl(var(--primary))', 'hsl(var(--muted-foreground))', 'hsl(var(--warning))', 'hsl(var(--brand-teal))'];
+                      const avatarColor = avatarColors[selectedIdx % avatarColors.length];
+                      return (
+                        <div 
+                          className="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold text-white"
+                          style={{ backgroundColor: avatarColor }}
+                        >
+                          {selectedUser.initials}
+                        </div>
+                      );
+                    })()}
                     <span className="font-medium">{selectedUser.name}</span>
                   </div>
                 ) : (
