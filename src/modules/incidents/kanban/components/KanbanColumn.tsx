@@ -85,13 +85,11 @@ export const KanbanColumn = memo(function KanbanColumn({
       <div
         className={cn(
           "flex flex-col min-w-[48px] max-w-[48px] flex-shrink-0",
-          "rounded-xl cursor-pointer transition-colors"
+          "rounded-xl cursor-pointer transition-colors hover:opacity-90"
         )}
         style={{
-          backgroundColor: 'var(--surface-bg, #1a1a1a)',
-          borderWidth: '1px',
-          borderStyle: 'solid',
-          borderColor: 'var(--border-color, #333333)',
+          backgroundColor: '#f8f8f7',
+          border: '1px solid #e8e8e8',
         }}
         onClick={handleToggle}
         onDragOver={handleDragOver}
@@ -99,13 +97,12 @@ export const KanbanColumn = memo(function KanbanColumn({
       >
         {/* Collapsed Header */}
         <div 
-          className="flex flex-col items-center gap-1.5 px-1.5 py-2.5 border-b rounded-t-xl"
+          className="flex flex-col items-center gap-1.5 px-1.5 py-2.5 rounded-t-xl"
           style={{ 
-            borderColor: 'var(--divider, #262626)',
-            backgroundColor: 'var(--surface-muted, #2d2d2d)',
+            borderBottom: '1px solid #f0f0f0',
           }}
         >
-          <ChevronRight className="h-3.5 w-3.5" style={{ color: 'var(--text-4, #737373)' }} />
+          <ChevronRight className="h-3.5 w-3.5" style={{ color: '#737373' }} />
         </div>
         
         {/* Vertical Label + Stats */}
@@ -115,15 +112,15 @@ export const KanbanColumn = memo(function KanbanColumn({
             style={{ 
               writingMode: 'vertical-rl', 
               textOrientation: 'mixed',
-              color: 'var(--text-2, #e5e5e5)',
+              color: '#404040',
             }}
           >
             {config.label}
           </span>
-          <span className={cn(
-            "text-[11px] font-medium",
-            isOverWip && "text-amber-400"
-          )} style={{ color: isOverWip ? undefined : 'var(--text-3, #a3a3a3)' }}>
+          <span 
+            className="text-[11px] font-medium"
+            style={{ color: isOverWip ? '#d97706' : '#737373' }}
+          >
             {stats.total}
           </span>
           {stats.breached > 0 && (
@@ -141,21 +138,17 @@ export const KanbanColumn = memo(function KanbanColumn({
         "flex flex-col w-[320px] flex-shrink-0 rounded-xl min-h-[500px]"
       )}
       style={{
-        backgroundColor: 'var(--surface-bg, #1a1a1a)',
-        borderWidth: '1px',
-        borderStyle: 'solid',
-        borderColor: 'var(--border-color, #333333)',
+        backgroundColor: '#f8f8f7',
+        border: '1px solid #e8e8e8',
       }}
       onDragOver={handleDragOver}
       onDrop={handleDrop}
     >
-      {/* Column Header - Enhanced with WIP limits */}
+      {/* Column Header */}
       <div 
         className="px-4 py-3.5 rounded-t-xl"
         style={{
-          borderBottomWidth: '1px',
-          borderBottomStyle: 'solid',
-          borderBottomColor: 'var(--divider, #262626)',
+          borderBottom: '1px solid #f0f0f0',
         }}
       >
         <div className="flex items-center justify-between mb-1">
@@ -166,24 +159,22 @@ export const KanbanColumn = memo(function KanbanColumn({
             <ChevronDown className={cn(
               "h-3.5 w-3.5 transition-transform",
               isCollapsed && "-rotate-90"
-            )} style={{ color: 'var(--text-4, #737373)' }} />
-            <h3 
-              className="font-bold text-xs uppercase tracking-wide"
-              style={{ color: 'var(--text-2, #e5e5e5)' }}
+            )} style={{ color: '#737373' }} />
+            <span 
+              className="text-xs font-bold uppercase tracking-wide"
+              style={{ color: '#404040' }}
             >
               {config.label}
-            </h3>
+            </span>
           </button>
           
           {/* Count with WIP indicator */}
           <div className="flex items-center gap-2">
-            <span className={cn(
-              "text-sm font-semibold tabular-nums"
-            )} style={{ color: isOverWip ? '#f59e0b' : 'var(--text-3, #a3a3a3)' }}>
+            <span className="text-sm font-semibold tabular-nums" style={{ color: isOverWip ? '#d97706' : '#737373' }}>
               {stats.total}{wipLimit !== undefined && `/${wipLimit}`}
             </span>
             {isOverWip && (
-              <AlertCircle className="h-4 w-4" style={{ color: '#f59e0b' }} />
+              <AlertCircle className="h-4 w-4" style={{ color: '#d97706' }} />
             )}
           </div>
         </div>
@@ -192,16 +183,16 @@ export const KanbanColumn = memo(function KanbanColumn({
         <div className="flex items-center gap-3 text-xs">
           {/* Committee column: Due Soon metric */}
           {status === 'to_committee' && dueSoonCount > 0 && (
-            <span className="flex items-center gap-1" style={{ color: 'var(--text-4, #737373)' }}>
-              <Clock className="h-3 w-3" style={{ color: 'var(--status-success, #14b8a6)' }} />
-              Due Soon: <span className="font-medium" style={{ color: 'var(--text-1, #fafafa)' }}>{dueSoonCount}</span>
+            <span className="flex items-center gap-1" style={{ color: '#737373' }}>
+              <Clock className="h-3 w-3" style={{ color: '#0d9488' }} />
+              Due Soon: <span className="font-medium" style={{ color: '#0a0a0a' }}>{dueSoonCount}</span>
             </span>
           )}
           
           {/* At Risk count */}
           {status !== 'to_committee' && stats.atRisk > 0 && (
-            <span style={{ color: 'var(--text-4, #737373)' }}>
-              At Risk: <span className="font-medium" style={{ color: '#f59e0b' }}>{stats.atRisk}</span>
+            <span style={{ color: '#737373' }}>
+              At Risk: <span className="font-medium" style={{ color: '#d97706' }}>{stats.atRisk}</span>
             </span>
           )}
           

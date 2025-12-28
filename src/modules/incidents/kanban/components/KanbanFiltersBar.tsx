@@ -136,10 +136,8 @@ export const KanbanFiltersBar = memo(function KanbanFiltersBar({
     <div 
       className="px-4 sm:px-6 py-3"
       style={{
-        borderBottomWidth: '1px',
-        borderBottomStyle: 'solid',
-        borderBottomColor: 'var(--border-color, #333333)',
-        backgroundColor: 'var(--surface-bg, #1a1a1a)',
+        borderBottom: '1px solid #e8e8e8',
+        backgroundColor: '#ffffff',
       }}
     >
       <div className="flex flex-wrap items-center gap-3">
@@ -161,8 +159,8 @@ export const KanbanFiltersBar = memo(function KanbanFiltersBar({
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" size="sm" className="h-8 gap-2">
-              <span style={{ color: 'var(--text-4, #737373)' }}>Severity:</span>
-              <span className="font-medium" style={{ color: 'var(--text-2, #e5e5e5)' }}>{getSeverityLabel(selectedSeverity)}</span>
+            <span style={{ color: '#737373' }}>Severity:</span>
+            <span className="font-medium" style={{ color: '#171717' }}>{getSeverityLabel(selectedSeverity)}</span>
               <ChevronDown className="h-3 w-3" />
               {selectedSeverity && stats.severityCounts[selectedSeverity] > 0 && (
                 <Badge variant="secondary" className="ml-1 h-5 px-1.5 text-xs">
@@ -193,8 +191,8 @@ export const KanbanFiltersBar = memo(function KanbanFiltersBar({
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" size="sm" className="h-8 gap-2">
-              <span style={{ color: 'var(--text-4, #737373)' }}>Status:</span>
-              <span className="font-medium" style={{ color: 'var(--text-2, #e5e5e5)' }}>{getStatusLabel(selectedStatus)}</span>
+            <span style={{ color: '#737373' }}>Status:</span>
+            <span className="font-medium" style={{ color: '#171717' }}>{getStatusLabel(selectedStatus)}</span>
               <ChevronDown className="h-3 w-3" />
             </Button>
           </DropdownMenuTrigger>
@@ -224,8 +222,8 @@ export const KanbanFiltersBar = memo(function KanbanFiltersBar({
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" size="sm" className="h-8 gap-2">
-            <span style={{ color: 'var(--text-4, #737373)' }}>Assignee:</span>
-            <span className="font-medium truncate max-w-[100px]" style={{ color: 'var(--text-2, #e5e5e5)' }}>{getAssigneeLabel(selectedAssignee)}</span>
+            <span style={{ color: '#737373' }}>Assignee:</span>
+            <span className="font-medium truncate max-w-[100px]" style={{ color: '#171717' }}>{getAssigneeLabel(selectedAssignee)}</span>
               <ChevronDown className="h-3 w-3" />
             </Button>
           </DropdownMenuTrigger>
@@ -261,7 +259,7 @@ export const KanbanFiltersBar = memo(function KanbanFiltersBar({
         <div className="h-6 w-px bg-border" />
         
         <div className="flex items-center gap-2">
-          <Label className="text-sm" style={{ color: 'var(--text-4, #737373)' }}>Group:</Label>
+          <Label className="text-sm" style={{ color: '#737373' }}>Group:</Label>
           <Select value={groupBy} onValueChange={(v) => onGroupByChange(v as GroupByOption)}>
             <SelectTrigger className="w-[120px] h-8 text-sm">
               <SelectValue />
@@ -293,7 +291,7 @@ export const KanbanFiltersBar = memo(function KanbanFiltersBar({
         )}
         
         {/* Total count */}
-        <div className="ml-auto text-sm" style={{ color: 'var(--text-4, #737373)' }}>
+        <div className="ml-auto text-sm" style={{ color: '#737373' }}>
           {filteredCount} incident{filteredCount !== 1 ? 's' : ''}
         </div>
       </div>

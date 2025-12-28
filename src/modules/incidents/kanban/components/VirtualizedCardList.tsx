@@ -19,9 +19,9 @@ interface VirtualizedCardListProps {
   onEditCommittee?: (incident: Incident) => void;
 }
 
-// Estimated card height (compact card ~72px)
-const CARD_HEIGHT = 76;
-const CARD_GAP = 4;
+// Estimated card height - increased to account for proper spacing
+const CARD_HEIGHT = 120;
+const CARD_GAP = 10;
 
 export const VirtualizedCardList = memo(function VirtualizedCardList({
   incidents,
@@ -59,18 +59,19 @@ export const VirtualizedCardList = memo(function VirtualizedCardList({
     return (
       <div 
         ref={parentRef}
-        className="overflow-y-auto p-1.5 space-y-1"
+        className="overflow-y-auto p-3 flex flex-col gap-2.5"
         style={{ maxHeight }}
       >
         {incidents.map(incident => (
-          <KanbanCard
-            key={incident.id}
-            incident={incident}
-            isDragging={draggingId === incident.id}
-            onDragStart={handleDragStart}
-            onDragEnd={onDragEnd}
-            onEditCommittee={onEditCommittee}
-          />
+          <div key={incident.id} className="flex-shrink-0">
+            <KanbanCard
+              incident={incident}
+              isDragging={draggingId === incident.id}
+              onDragStart={handleDragStart}
+              onDragEnd={onDragEnd}
+              onEditCommittee={onEditCommittee}
+            />
+          </div>
         ))}
       </div>
     );
@@ -80,7 +81,7 @@ export const VirtualizedCardList = memo(function VirtualizedCardList({
   return (
     <div 
       ref={parentRef}
-      className="overflow-y-auto p-1.5"
+      className="overflow-y-auto p-3"
       style={{ maxHeight }}
     >
       <div

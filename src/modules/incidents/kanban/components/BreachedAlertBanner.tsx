@@ -18,21 +18,20 @@ export const BreachedAlertBanner = memo(function BreachedAlertBanner({
   if (breachedCount === 0) return null;
 
   return (
-    <div className="mx-4 sm:mx-6 mb-4 px-[18px] py-3.5 flex items-center justify-between rounded-[10px]"
+    <div 
+      className="mx-4 sm:mx-6 mb-4 px-4 py-3.5 flex items-center justify-between rounded-[10px]"
       style={{
-        backgroundColor: 'var(--status-danger-bg)',
-        borderWidth: '1px',
-        borderStyle: 'solid',
-        borderColor: 'var(--status-danger-border)',
+        backgroundColor: 'rgba(239, 68, 68, 0.06)',
+        border: '1px solid rgba(239, 68, 68, 0.15)',
       }}
     >
       <div className="flex items-center gap-3">
-        <AlertTriangle className="h-6 w-6" style={{ color: 'var(--status-danger)' }} />
+        <AlertTriangle className="h-5 w-5" style={{ color: '#ef4444' }} />
         <div className="flex items-center gap-2">
-          <span className="text-[15px] font-bold" style={{ color: 'var(--status-danger)' }}>
+          <span className="text-[15px] font-bold" style={{ color: '#ef4444' }}>
             {breachedCount} SLA {breachedCount === 1 ? 'Breach' : 'Breaches'}
           </span>
-          <span className="text-sm opacity-90" style={{ color: 'var(--status-danger)' }}>
+          <span className="text-sm" style={{ color: 'rgba(239, 68, 68, 0.8)' }}>
             Immediate attention required
           </span>
         </div>
@@ -40,12 +39,20 @@ export const BreachedAlertBanner = memo(function BreachedAlertBanner({
       <Button 
         variant="outline" 
         size="sm" 
-        className="font-semibold transition-colors"
+        className="font-semibold transition-colors hover:text-white"
         style={{
-          borderColor: 'var(--status-danger)',
-          color: 'var(--status-danger)',
+          borderColor: '#ef4444',
+          color: '#ef4444',
         }}
         onClick={onViewBreached}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.backgroundColor = '#ef4444';
+          e.currentTarget.style.color = '#ffffff';
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.backgroundColor = 'transparent';
+          e.currentTarget.style.color = '#ef4444';
+        }}
       >
         View Breached Only
       </Button>
