@@ -47,27 +47,27 @@ export const STATUS_CONFIG: Record<IncidentStatus, { label: string; variant: 'in
   },
 };
 
-// SEVERITY - Updated: Red (critical), Amber (high), Blue (medium), Gray (low)
-export const SEVERITY_CONFIG: Record<SeverityLevel, { label: string; dotColor: string; textColor: string }> = {
-  SEV1: { label: 'SEV1', dotColor: '#ef4444', textColor: '#1a1a1a' },  // Red - Critical
-  SEV2: { label: 'SEV2', dotColor: '#f59e0b', textColor: '#1a1a1a' },  // Amber - High
-  SEV3: { label: 'SEV3', dotColor: '#2563eb', textColor: '#1a1a1a' },  // Blue - Medium
-  SEV4: { label: 'SEV4', dotColor: '#6b7280', textColor: '#6b7280' },  // Gray - Low
+// SEVERITY - Using design system tokens
+export const SEVERITY_CONFIG: Record<SeverityLevel, { label: string; dotColor: string; textClass: string }> = {
+  SEV1: { label: 'SEV1', dotColor: 'hsl(var(--danger))', textClass: 'text-foreground' },  // Critical
+  SEV2: { label: 'SEV2', dotColor: 'hsl(var(--warning))', textClass: 'text-foreground' },  // High
+  SEV3: { label: 'SEV3', dotColor: 'hsl(var(--info))', textClass: 'text-foreground' },  // Medium
+  SEV4: { label: 'SEV4', dotColor: 'hsl(var(--muted-foreground))', textClass: 'text-muted-foreground' },  // Low
 };
 
-// PRIORITY - Updated to new palette
-export const PRIORITY_CONFIG: Record<PriorityLevel, { label: string; fullLabel: string; dotColor: string; textColor: string }> = {
-  P1: { label: 'P1', fullLabel: 'P1 — Critical', dotColor: '#ef4444', textColor: '#1a1a1a' },
-  P2: { label: 'P2', fullLabel: 'P2 — High', dotColor: '#f59e0b', textColor: '#1a1a1a' },
-  P3: { label: 'P3', fullLabel: 'P3 — Medium', dotColor: '#2563eb', textColor: '#1a1a1a' },
-  P4: { label: 'P4', fullLabel: 'P4 — Low', dotColor: '#6b7280', textColor: '#6b7280' },
+// PRIORITY - Using design system tokens
+export const PRIORITY_CONFIG: Record<PriorityLevel, { label: string; fullLabel: string; dotColor: string; textClass: string }> = {
+  P1: { label: 'P1', fullLabel: 'P1 — Critical', dotColor: 'hsl(var(--danger))', textClass: 'text-foreground' },
+  P2: { label: 'P2', fullLabel: 'P2 — High', dotColor: 'hsl(var(--warning))', textClass: 'text-foreground' },
+  P3: { label: 'P3', fullLabel: 'P3 — Medium', dotColor: 'hsl(var(--info))', textClass: 'text-foreground' },
+  P4: { label: 'P4', fullLabel: 'P4 — Low', dotColor: 'hsl(var(--muted-foreground))', textClass: 'text-muted-foreground' },
 };
 
-// SUPPORT LEVEL - Neutral grey tones
+// SUPPORT LEVEL - Using design system tokens
 export const SUPPORT_LEVEL_CONFIG: Record<SupportLevel, { label: string; className: string }> = {
-  L1: { label: 'L1', className: 'bg-gray-100 text-gray-700 border-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-700' },
-  L2: { label: 'L2', className: 'bg-gray-100 text-gray-700 border-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700' },
-  L3: { label: 'L3', className: 'bg-gray-100 text-gray-700 border-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700' },
+  L1: { label: 'L1', className: 'bg-muted text-muted-foreground border-border' },
+  L2: { label: 'L2', className: 'bg-muted text-muted-foreground border-border' },
+  L3: { label: 'L3', className: 'bg-muted text-muted-foreground border-border' },
 };
 
 // ============================================
@@ -127,10 +127,7 @@ export function SeverityBadge({ severity, size = 'xs' }: SeverityBadgeProps) {
         className="w-2 h-2 rounded-full flex-shrink-0" 
         style={{ backgroundColor: config.dotColor }}
       />
-      <span 
-        className="font-medium dark:text-gray-300"
-        style={{ color: config.textColor }}
-      >
+      <span className={cn('font-medium', config.textClass)}>
         {config.label}
       </span>
     </div>
@@ -158,10 +155,7 @@ export function PriorityBadge({ priority, size = 'xs' }: PriorityBadgeProps) {
         className="w-2 h-2 rounded-full flex-shrink-0" 
         style={{ backgroundColor: config.dotColor }}
       />
-      <span 
-        className="font-medium dark:text-gray-300"
-        style={{ color: config.textColor }}
-      >
+      <span className={cn('font-medium', config.textClass)}>
         {config.label}
       </span>
     </div>
