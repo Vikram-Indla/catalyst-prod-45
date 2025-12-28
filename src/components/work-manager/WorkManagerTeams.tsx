@@ -29,11 +29,11 @@ import { AddTeamMemberDialog } from '@/components/teams/AddTeamMemberDialog';
 import { useDeleteTeams } from '@/hooks/useTeams';
 import { toast } from 'sonner';
 
-// Team accent colors - Blue + Teal palette
+// Team accent colors - using CSS variables
 const teamColors: Record<string, string> = {
-  'investment': '#2563eb',
-  'portfolio': '#0d9488',
-  'compliance': '#f59e0b',
+  'investment': 'hsl(var(--brand-primary))',
+  'portfolio': 'hsl(var(--success))',
+  'compliance': 'hsl(var(--warning))',
 };
 
 interface WorkManagerTeamsProps {
@@ -97,7 +97,7 @@ export function WorkManagerTeams({ tasks, teams, users, onCreateTeam }: WorkMana
         </div>
         <Button
           onClick={() => setIsNewTeamDialogOpen(true)}
-          className="bg-[#2563eb] hover:bg-[#1d4ed8] text-white gap-2 shadow-sm hover:shadow-md transition-all duration-200"
+          className="bg-primary hover:bg-primary/90 text-primary-foreground gap-2 shadow-sm hover:shadow-md transition-all duration-200"
         >
           <Plus className="w-4 h-4" />
           New Team
@@ -108,7 +108,7 @@ export function WorkManagerTeams({ tasks, teams, users, onCreateTeam }: WorkMana
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {teams.map((team) => {
           const stats = getTeamStats(team.id);
-          const teamColor = teamColors[team.id] || '#2563eb';
+          const teamColor = teamColors[team.id] || 'hsl(var(--brand-primary))';
 
           return (
             <div
@@ -126,7 +126,7 @@ export function WorkManagerTeams({ tasks, teams, users, onCreateTeam }: WorkMana
                 {/* Header */}
                 <div className="flex items-start justify-between mb-1">
                   <div>
-                    <h3 className="font-semibold text-[15px] text-foreground group-hover:text-[#2563eb] transition-colors">
+                    <h3 className="font-semibold text-[15px] text-foreground group-hover:text-primary transition-colors">
                       {team.name}
                     </h3>
                     {team.description && (
@@ -211,13 +211,13 @@ export function WorkManagerTeams({ tasks, teams, users, onCreateTeam }: WorkMana
                     <div className="p-3 rounded-lg bg-muted text-center">
                       <div className={cn(
                         "text-xl font-bold",
-                        stats.overdue > 0 ? 'text-red-500 dark:text-red-400' : 'text-foreground'
+                        stats.overdue > 0 ? 'text-danger' : 'text-foreground'
                       )}>
                         {stats.overdue}
                       </div>
                       <div className={cn(
                         "text-[10px] uppercase tracking-wide mt-0.5",
-                        stats.overdue > 0 ? 'text-red-500 dark:text-red-400' : 'text-stone-500 dark:text-muted-foreground'
+                        stats.overdue > 0 ? 'text-danger' : 'text-muted-foreground'
                       )}>
                         Overdue
                       </div>
@@ -225,7 +225,7 @@ export function WorkManagerTeams({ tasks, teams, users, onCreateTeam }: WorkMana
                     
                     {/* Done - text color only */}
                     <div className="p-3 rounded-lg bg-muted text-center">
-                      <div className="text-xl font-bold text-[#0d9488] dark:text-[#14b8a6]">{stats.done}</div>
+                      <div className="text-xl font-bold text-success">{stats.done}</div>
                       <div className="text-[10px] uppercase tracking-wide text-muted-foreground mt-0.5">Done</div>
                     </div>
                   </div>
@@ -235,12 +235,12 @@ export function WorkManagerTeams({ tasks, teams, users, onCreateTeam }: WorkMana
                 {(stats.overdue > 0 || stats.blocked > 0) && (
                   <div className="mt-4 pt-4 border-t border-border flex flex-wrap gap-3">
                     {stats.overdue > 0 && (
-                      <span className="text-red-500 dark:text-red-400 text-[11px]">
+                      <span className="text-danger text-[11px]">
                         {stats.overdue} overdue
                       </span>
                     )}
                     {stats.blocked > 0 && (
-                      <span className="text-amber-600 dark:text-amber-400 text-[11px]">
+                      <span className="text-warning text-[11px]">
                         {stats.blocked} blocked
                       </span>
                     )}
@@ -348,7 +348,7 @@ export function WorkManagerTeams({ tasks, teams, users, onCreateTeam }: WorkMana
                     <div className="flex items-center justify-end gap-3">
                       <div className="flex items-center gap-2">
                         {userStats.overdue > 0 && (
-                          <span className="text-red-400 text-[11px] font-medium">
+                          <span className="text-danger text-[11px] font-medium">
                             {userStats.overdue} overdue
                           </span>
                         )}
