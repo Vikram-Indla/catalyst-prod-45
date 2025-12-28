@@ -196,7 +196,7 @@ function ChangeChip({ change, onClick }: ChangeChipProps) {
     >
       {/* Compliance Icon */}
       {isCompliant ? (
-        <Circle className="w-3 h-3 text-gray-400 dark:text-gray-500 flex-shrink-0" />
+        <span className="w-2 h-2 rounded-full bg-status-success flex-shrink-0" />
       ) : (
         <AlertTriangle className="w-3 h-3 text-status-warning flex-shrink-0" />
       )}
