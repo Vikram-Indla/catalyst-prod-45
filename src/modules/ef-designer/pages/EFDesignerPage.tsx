@@ -1,11 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useAuth } from '@/lib/auth';
 import { EFDWizard } from '../components/EFDWizard';
 import { EFDHeader } from '../components/EFDHeader';
 import { useEFDStore } from '../stores/useEFDStore';
-import { useCreateEFDSession, useEFDSession } from '../hooks/useEFDSession';
-import { Loader2 } from 'lucide-react';
+import { useCreateEFDSession, useEFDSession, useEFDSessions } from '../hooks/useEFDSession';
+import { Loader2, FileText, Clock, CheckCircle, AlertCircle, Layers, Box } from 'lucide-react';
+import { formatDistanceToNow } from 'date-fns';
 
 export const EFDesignerPage: React.FC = () => {
   const { user } = useAuth();
@@ -13,12 +14,12 @@ export const EFDesignerPage: React.FC = () => {
   const sessionIdParam = searchParams.get('sessionId');
   const { currentSessionId, setCurrentSessionId } = useEFDStore();
   const createSession = useCreateEFDSession();
+  const { data: recentSessions, isLoading: sessionsLoading } = useEFDSessions();
   
   const activeSessionId = sessionIdParam || currentSessionId;
   const { data: session, isLoading: sessionLoading } = useEFDSession(activeSessionId);
 
   useEffect(() => {
-    // If we have a session ID in URL, use it
     if (sessionIdParam && sessionIdParam !== currentSessionId) {
       setCurrentSessionId(sessionIdParam);
     }
@@ -27,6 +28,30 @@ export const EFDesignerPage: React.FC = () => {
   const handleNewSession = async () => {
     const newSession = await createSession.mutateAsync();
     setSearchParams({ sessionId: newSession.id });
+  };
+
+  const handleOpenSession = (sessionId: string) => {
+    setSearchParams({ sessionId });
+  };
+
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case 'completed':
+        return <CheckCircle className="h-4 w-4 text-green-500" />;
+      case 'in_progress':
+        return <Clock className="h-4 w-4 text-yellow-500" />;
+      default:
+        return <AlertCircle className="h-4 w-4 text-muted-foreground" />;
+    }
+  };
+
+  const getStatusLabel = (status: string) => {
+    switch (status) {
+      case 'completed': return 'Completed';
+      case 'in_progress': return 'In Progress';
+      case 'draft': return 'Draft';
+      default: return status;
+    }
   };
 
   if (!user) {
@@ -56,20 +81,72 @@ export const EFDesignerPage: React.FC = () => {
       {session ? (
         <EFDWizard session={session} />
       ) : (
-        <div className="flex-1 flex items-center justify-center">
-          <div className="text-center space-y-4">
-            <h2 className="text-xl font-semibold">Welcome to EF Designer</h2>
-            <p className="text-muted-foreground max-w-md">
-              Create SAFe-compliant Epics and Features from your requirements documents or text.
-            </p>
-            <button
-              onClick={handleNewSession}
-              disabled={createSession.isPending}
-              className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 disabled:opacity-50"
-            >
-              {createSession.isPending && <Loader2 className="h-4 w-4 animate-spin" />}
-              Start New Session
-            </button>
+        <div className="flex-1 flex items-center justify-center p-6">
+          <div className="w-full max-w-3xl space-y-8">
+            <div className="text-center space-y-4">
+              <h2 className="text-xl font-semibold">Welcome to EF Designer</h2>
+              <p className="text-muted-foreground max-w-md mx-auto">
+                Create SAFe-compliant Epics and Features from your requirements documents or text.
+              </p>
+              <button
+                onClick={handleNewSession}
+                disabled={createSession.isPending}
+                className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 disabled:opacity-50"
+              >
+                {createSession.isPending && <Loader2 className="h-4 w-4 animate-spin" />}
+                Start New Session
+              </button>
+            </div>
+
+            {/* Recent Sessions */}
+            {sessionsLoading ? (
+              <div className="flex justify-center py-8">
+                <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+              </div>
+            ) : recentSessions && recentSessions.length > 0 ? (
+              <div className="space-y-4">
+                <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">
+                  Recent Sessions
+                </h3>
+                <div className="grid gap-3">
+                  {recentSessions.map((s: any) => (
+                    <button
+                      key={s.id}
+                      onClick={() => handleOpenSession(s.id)}
+                      className="w-full text-left p-4 rounded-lg border bg-card hover:bg-accent/50 transition-colors"
+                    >
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 mb-1">
+                            <FileText className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                            <span className="font-medium truncate">
+                              {s.text_input ? s.text_input.slice(0, 60) + (s.text_input.length > 60 ? '...' : '') : 'Untitled Session'}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                            <span className="flex items-center gap-1">
+                              {getStatusIcon(s.status)}
+                              {getStatusLabel(s.status)}
+                            </span>
+                            <span className="flex items-center gap-1">
+                              <Layers className="h-3 w-3" />
+                              {s.epics?.[0]?.count || 0} epics
+                            </span>
+                            <span className="flex items-center gap-1">
+                              <Box className="h-3 w-3" />
+                              {s.features?.[0]?.count || 0} features
+                            </span>
+                          </div>
+                        </div>
+                        <span className="text-xs text-muted-foreground flex-shrink-0">
+                          {formatDistanceToNow(new Date(s.updated_at), { addSuffix: true })}
+                        </span>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ) : null}
           </div>
         </div>
       )}
