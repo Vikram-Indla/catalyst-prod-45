@@ -290,19 +290,9 @@ export function WorkManagerInsights({ tasks }: WorkManagerInsightsProps) {
               <SelectTrigger className="w-[280px] shadow-xs">
                 {selectedUser ? (
                   <div className="flex items-center gap-2">
-                    {(() => {
-                      const selectedIdx = users.findIndex(u => u.id === selectedUserId);
-                      const avatarColors = ['hsl(var(--success))', 'hsl(var(--primary))', 'hsl(var(--muted-foreground))', 'hsl(var(--warning))', 'hsl(var(--brand-teal))'];
-                      const avatarColor = avatarColors[selectedIdx % avatarColors.length];
-                      return (
-                        <div 
-                          className="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold text-white"
-                          style={{ backgroundColor: avatarColor }}
-                        >
-                          {selectedUser.initials}
-                        </div>
-                      );
-                    })()}
+                    <div className="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold text-white bg-primary">
+                      {selectedUser.initials}
+                    </div>
                     <span className="font-medium">{selectedUser.name}</span>
                   </div>
                 ) : (
@@ -310,24 +300,16 @@ export function WorkManagerInsights({ tasks }: WorkManagerInsightsProps) {
                 )}
               </SelectTrigger>
               <SelectContent className="shadow-elevated">
-                {users.map((u, idx) => {
-                  // Distinct avatar colors cycling through brand palette (CSS variables)
-                  const avatarColors = ['hsl(var(--success))', 'hsl(var(--primary))', 'hsl(var(--muted-foreground))', 'hsl(var(--warning))', 'hsl(var(--brand-teal))'];
-                  const avatarColor = avatarColors[idx % avatarColors.length];
-                  return (
-                    <SelectItem key={u.id} value={u.id} className="py-2">
-                      <div className="flex items-center gap-2">
-                        <div 
-                          className="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold text-white"
-                          style={{ backgroundColor: avatarColor }}
-                        >
-                          {u.initials}
-                        </div>
-                        <span className="font-medium">{u.name}</span>
+                {users.map((u) => (
+                  <SelectItem key={u.id} value={u.id} className="py-2">
+                    <div className="flex items-center gap-2">
+                      <div className="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold text-white bg-primary">
+                        {u.initials}
                       </div>
-                    </SelectItem>
-                  );
-                })}
+                      <span className="font-medium">{u.name}</span>
+                    </div>
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
 
