@@ -7,9 +7,9 @@ interface ProgressBarProps {
 }
 
 function getProgressClasses(value: number): string {
-  if (value >= 70) return 'bg-green-500';
-  if (value >= 40) return 'bg-yellow-500';
-  return 'bg-red-500';
+  if (value >= 70) return 'bg-success';
+  if (value >= 40) return 'bg-warning';
+  return 'bg-danger';
 }
 
 export function ProgressBar({ value, className, showLabel = false }: ProgressBarProps) {
@@ -19,11 +19,11 @@ export function ProgressBar({ value, className, showLabel = false }: ProgressBar
     <div className={cn("space-y-1.5", className)}>
       {showLabel && (
         <div className="flex justify-between text-[13px]">
-          <span className="text-gray-500 dark:text-gray-400">Progress</span>
-          <span className="font-semibold text-gray-900 dark:text-gray-100">{value}%</span>
+          <span className="text-muted-foreground">Progress</span>
+          <span className="font-semibold text-foreground">{value}%</span>
         </div>
       )}
-      <div className="h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+      <div className="h-1.5 bg-muted rounded-full overflow-hidden">
         <div 
           className={cn("h-full rounded-full transition-all duration-300", barClass)}
           style={{ width: `${value}%` }}
