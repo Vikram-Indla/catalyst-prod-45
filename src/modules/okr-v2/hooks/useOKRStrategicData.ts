@@ -370,7 +370,7 @@ export function useOKRStrategicData(snapshotId?: string) {
           description: dbObj.description || undefined,
           themeId: dbObj.theme_id || '',
           status: dbStatus,
-          progress: 0,
+          progress: dbObj.overall_progress ?? computeObjectiveProgress({ keyResults: krs } as Objective),
           ownRisks: objOwnRisks,           // Direct objective risks (empty)
           cascadedRisks: cascadedRisksFromKRs, // Sum of KR cascadedRisks
           risks: cascadedRisksFromKRs,     // For analytics compatibility
@@ -381,9 +381,6 @@ export function useOKRStrategicData(snapshotId?: string) {
           startDate: dbObj.start_date || undefined,
           endDate: dbObj.end_date || undefined,
         };
-
-        // Calculate progress (status is preserved from database)
-        // Status comes from database - not recalculated
 
         if (dbObj.theme_id) {
           const list = objectivesByTheme.get(dbObj.theme_id) || [];
