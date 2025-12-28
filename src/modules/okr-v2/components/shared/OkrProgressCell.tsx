@@ -13,8 +13,17 @@ interface OkrProgressCellProps {
   compact?: boolean;
 }
 
-// Progress bar is always primary - trend icon shows status
-function getProgressBarColor(): string {
+// Progress bar color based on trend status
+function getProgressBarColor(trend?: TrendCode): string {
+  if (trend === 'ahead' || trend === 'on-track') {
+    return 'bg-success';
+  }
+  if (trend === 'at-risk') {
+    return 'bg-warning';
+  }
+  if (trend === 'off-track') {
+    return 'bg-danger';
+  }
   return 'bg-brand-primary';
 }
 
@@ -27,28 +36,28 @@ function TrendArrow({ trend, variance }: { trend: TrendCode; variance?: number |
   // Ahead of plan - green up arrow
   if (trend === 'ahead') {
     return (
-      <TrendingUp className="h-3.5 w-3.5 text-secondary-green flex-shrink-0" />
+      <TrendingUp className="h-3.5 w-3.5 text-success flex-shrink-0" />
     );
   }
 
   // On track (within 10%) - green up arrow
   if (trend === 'on-track') {
     return (
-      <TrendingUp className="h-3.5 w-3.5 text-secondary-green flex-shrink-0" />
+      <TrendingUp className="h-3.5 w-3.5 text-success flex-shrink-0" />
     );
   }
 
-  // At risk (10-20% behind) - orange down arrow
+  // At risk (10-20% behind) - warning down arrow
   if (trend === 'at-risk') {
     return (
-      <TrendingDown className="h-3.5 w-3.5 text-[#e07830] flex-shrink-0" />
+      <TrendingDown className="h-3.5 w-3.5 text-warning flex-shrink-0" />
     );
   }
 
-  // Off track (>20% behind) - red down arrow
+  // Off track (>20% behind) - danger down arrow
   if (trend === 'off-track') {
     return (
-      <TrendingDown className="h-3.5 w-3.5 text-[#c44536] flex-shrink-0" />
+      <TrendingDown className="h-3.5 w-3.5 text-danger flex-shrink-0" />
     );
   }
 
@@ -63,7 +72,7 @@ export function OkrProgressCell({ baseline, status, compact = false }: OkrProgre
     return <span className="text-sm text-muted-foreground/60 text-right block">—</span>;
   }
 
-  const barColor = getProgressBarColor();
+  const barColor = getProgressBarColor(trend);
 
   return (
     <div className="flex items-center justify-start gap-3 w-full">
@@ -71,7 +80,7 @@ export function OkrProgressCell({ baseline, status, compact = false }: OkrProgre
       <div className={cn(
         "h-2 rounded-full overflow-hidden flex-shrink-0",
         compact ? 'w-20' : 'w-28',
-        'bg-[#f0ebe3]'
+        'bg-muted'
       )}>
         <div
           className={cn("h-full rounded-full transition-all duration-300", barColor)}
