@@ -173,7 +173,7 @@ export function SidebarBase({
                   marginBottom: '2px',
                   position: 'relative',
                   background: active ? 'var(--nav-active-bg)' : 'transparent',
-                  color: active ? '#2563eb' : 'var(--text-2)',
+                  color: active ? 'hsl(var(--brand-primary))' : 'hsl(var(--foreground))',
                   fontWeight: active ? 600 : 500,
                   fontSize: '13px',
                   fontFamily: 'inherit',
@@ -195,7 +195,7 @@ export function SidebarBase({
                       top: '6px',
                       bottom: '6px',
                       width: '3px',
-                      background: 'var(--brand-primary-hex, #2563eb)',
+                      background: 'hsl(var(--brand-primary))',
                       borderRadius: '0 2px 2px 0',
                     }}
                   />
@@ -213,7 +213,7 @@ export function SidebarBase({
                   {CustomIcon && (
                     <CustomIcon 
                       className="h-[18px] w-[18px]" 
-                      style={{ color: active ? '#2563eb' : 'var(--icon-default)' }}
+                      style={{ color: active ? 'hsl(var(--brand-primary))' : 'hsl(var(--muted-foreground))' }}
                     />
                   )}
                 </span>
@@ -294,7 +294,7 @@ export function SidebarBase({
                     transition: 'background 0.15s ease, color 0.15s ease',
                     position: 'relative',
                     background: active ? 'var(--nav-active-bg)' : 'transparent',
-                    color: active ? '#2563eb' : 'var(--text-2)',
+                    color: active ? 'hsl(var(--brand-primary))' : 'hsl(var(--foreground))',
                     fontWeight: active ? 600 : 500,
                     fontSize: '13px',
                     fontFamily: 'inherit',
@@ -315,7 +315,7 @@ export function SidebarBase({
                         top: '6px',
                         bottom: '6px',
                         width: '3px',
-                        background: 'var(--brand-primary-hex, #2563eb)',
+                        background: 'hsl(var(--brand-primary))',
                         borderRadius: '0 2px 2px 0',
                       }}
                     />
@@ -333,7 +333,7 @@ export function SidebarBase({
                     {CustomIcon && (
                       <CustomIcon 
                         className="h-[18px] w-[18px]" 
-                        style={{ color: active ? '#2563eb' : 'var(--icon-muted)' }}
+                        style={{ color: active ? 'hsl(var(--brand-primary))' : 'hsl(var(--muted-foreground))' }}
                       />
                     )}
                   </span>
