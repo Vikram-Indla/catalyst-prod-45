@@ -84,41 +84,37 @@ function formatDueDate(dueDate: string): { text: string; isUrgent: boolean } {
   };
 }
 
-// Severity badge component - Catalyst V5 token compliant
+// Severity badge component - Light mode compliant
 function SeverityBadge({ severity }: { severity: string }) {
-  // Using exact Catalyst V5 rgba values
   const getSeverityStyles = (): React.CSSProperties => {
     switch (severity) {
       case 'SEV1':
         return {
-          backgroundColor: 'rgba(239, 68, 68, 0.2)',
-          color: '#f87171',
-          borderColor: 'transparent',
+          backgroundColor: 'rgba(239, 68, 68, 0.08)',
+          color: '#ef4444',
         };
       case 'SEV2':
         return {
-          backgroundColor: 'rgba(245, 158, 11, 0.2)',
-          color: '#fbbf24',
-          borderColor: 'transparent',
+          backgroundColor: 'rgba(245, 158, 11, 0.08)',
+          color: '#d97706',
         };
       case 'SEV3':
+      case 'SEV4':
       default:
         return {
-          backgroundColor: 'var(--surface-hover, #262626)',
-          color: 'var(--text-4, #737373)',
-          borderColor: 'transparent',
+          backgroundColor: '#f3f3f3',
+          color: '#737373',
         };
     }
   };
   
   return (
-    <Badge 
-      variant="outline"
-      className="h-5 px-1.5 text-[10px] font-bold uppercase border-0"
+    <span 
+      className="px-1.5 py-0.5 rounded text-[10px] font-bold uppercase"
       style={getSeverityStyles()}
     >
       {severity}
-    </Badge>
+    </span>
   );
 }
 
@@ -164,12 +160,9 @@ export const KanbanCard = memo(function KanbanCard({
     onDragStart?.(e, incident);
   };
 
-  // Left accent color based on SLA - using V5 token colors
-  const getAccentStyle = (): React.CSSProperties => {
-    if (slaHealth === 'breached') return { borderLeftColor: '#ef4444' };
-    if (slaHealth === 'at_risk') return { borderLeftColor: '#f59e0b' };
-    return { borderLeftColor: 'transparent' };
-  };
+  // Build card styles - light mode compliant with straight left border
+  const isBreached = slaHealth === 'breached';
+  const isAtRisk = slaHealth === 'at_risk';
 
   return (
     <div
@@ -178,39 +171,53 @@ export const KanbanCard = memo(function KanbanCard({
       onDragStart={handleDragStart}
       onDragEnd={onDragEnd}
       className={cn(
-        "p-3.5 rounded-[10px] border shadow-sm",
-        "border-l-[3px]",
-        "hover:shadow-md transition-all cursor-pointer group",
-        isDragging && "opacity-50 shadow-lg"
+        "p-3.5 rounded-[10px] flex-shrink-0",
+        "cursor-pointer transition-all group",
+        isDragging && "opacity-50"
       )}
       style={{
-        backgroundColor: 'var(--surface-subtle, #1f1f1f)',
-        borderColor: 'var(--border-color, #262626)',
-        ...getAccentStyle(),
+        backgroundColor: '#ffffff',
+        border: '1px solid #e8e8e8',
+        borderLeft: isBreached ? '3px solid #ef4444' : isAtRisk ? '3px solid #f59e0b' : '1px solid #e8e8e8',
+        boxShadow: isDragging 
+          ? '0 4px 12px rgba(0,0,0,0.15)' 
+          : '0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.03)',
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.borderColor = '#d4d4d4';
+        e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04)';
+        if (isBreached) e.currentTarget.style.borderLeft = '3px solid #ef4444';
+        else if (isAtRisk) e.currentTarget.style.borderLeft = '3px solid #f59e0b';
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.borderColor = '#e8e8e8';
+        e.currentTarget.style.boxShadow = '0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.03)';
+        if (isBreached) e.currentTarget.style.borderLeft = '3px solid #ef4444';
+        else if (isAtRisk) e.currentTarget.style.borderLeft = '3px solid #f59e0b';
+        else e.currentTarget.style.borderLeft = '1px solid #e8e8e8';
       }}
     >
       {/* Row 1: ID + Badges */}
-      <div className="flex items-center justify-between mb-1.5">
+      <div className="flex items-start justify-between mb-1.5">
         <button
           onClick={handleKeyClick}
           className="font-mono text-sm font-semibold hover:underline"
-          style={{ color: 'var(--brand-primary-hex, #3b82f6)' }}
+          style={{ color: '#2563eb' }}
         >
           {incident.incident_key}
         </button>
         <div className="flex items-center gap-1.5">
           {incident.is_major_incident && (
-            <Badge 
-              variant="outline" 
-              className="h-5 px-2 py-0.5 text-[11px] font-semibold border-0"
+            <span 
+              className="flex items-center gap-1 px-2 py-1 rounded-md text-[11px] font-semibold"
               style={{
-                backgroundColor: 'rgba(245, 158, 11, 0.15)',
-                color: '#f59e0b',
+                backgroundColor: 'rgba(245, 158, 11, 0.08)',
+                color: '#d97706',
               }}
             >
-              <AlertTriangle className="h-2.5 w-2.5 mr-0.5" />
+              <AlertTriangle className="h-2.5 w-2.5" />
               Major
-            </Badge>
+            </span>
           )}
           {incident.requires_committee && incident.status !== 'to_committee' && (
             <Badge variant="outline" className="h-5 px-1.5 text-[10px]">
@@ -241,32 +248,33 @@ export const KanbanCard = memo(function KanbanCard({
       </div>
       
       {/* Row 2: Title */}
-      <p className="text-sm font-medium text-foreground line-clamp-2 mb-2">
+      <h4 className="text-sm font-medium leading-snug mb-2.5" style={{ color: '#0a0a0a' }}>
         {incident.title}
-      </p>
+      </h4>
       
       {/* Row 3: Meta */}
       <div className="flex items-center justify-between text-xs">
         <div className="flex items-center gap-2">
           <SeverityBadge severity={incident.severity} />
-          <span className="text-xs" style={{ color: 'var(--text-4, #737373)' }}>{age}</span>
-          {slaHealth === 'breached' && (
+          <span className="text-xs" style={{ color: '#737373' }}>{age}</span>
+          {isBreached && (
             <span className="text-xs font-semibold" style={{ color: '#ef4444' }}>Breached</span>
           )}
-          {slaHealth === 'at_risk' && (
+          {isAtRisk && (
             <span className="text-xs font-semibold" style={{ color: '#f59e0b' }}>At Risk</span>
           )}
         </div>
         
         {/* Assignee Avatar */}
         {incident.assignee ? (
-          <Avatar className="h-6 w-6">
-            <AvatarFallback className="text-[10px] bg-muted">
-              {incident.assignee.avatar_initials || incident.assignee.full_name.slice(0, 2).toUpperCase()}
-            </AvatarFallback>
-          </Avatar>
+          <div 
+            className="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-semibold"
+            style={{ backgroundColor: '#f3f3f3', color: '#737373' }}
+          >
+            {incident.assignee.avatar_initials || incident.assignee.full_name.slice(0, 2).toUpperCase()}
+          </div>
         ) : (
-          <span className="text-muted-foreground italic text-xs">Unassigned</span>
+          <span className="italic text-xs" style={{ color: '#737373' }}>Unassigned</span>
         )}
       </div>
       
