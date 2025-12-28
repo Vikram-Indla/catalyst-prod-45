@@ -268,27 +268,27 @@ export default {
           ring: "hsl(var(--sidebar-ring))",
         },
         
-        /* Legacy status colors */
+        /* Legacy status colors - using HEX vars directly (not HSL triplets) */
         status: {
           success: {
-            DEFAULT: "hsl(var(--status-success))",
-            bg: "hsl(var(--status-success-bg) / 0.08)",
-            border: "hsl(var(--status-success-border) / 0.20)",
+            DEFAULT: "var(--status-success)",
+            bg: "var(--status-success-bg)",
+            border: "var(--status-success-border)",
           },
           warning: {
-            DEFAULT: "hsl(var(--status-warning))",
-            bg: "hsl(var(--status-warning-bg) / 0.08)",
-            border: "hsl(var(--status-warning-border) / 0.20)",
+            DEFAULT: "var(--status-warning)",
+            bg: "var(--status-warning-bg)",
+            border: "var(--status-warning-border)",
           },
           danger: {
-            DEFAULT: "hsl(var(--status-danger))",
-            bg: "hsl(var(--status-danger-bg) / 0.08)",
-            border: "hsl(var(--status-danger-border) / 0.20)",
+            DEFAULT: "var(--status-danger)",
+            bg: "var(--status-danger-bg)",
+            border: "var(--status-danger-border)",
           },
           info: {
-            DEFAULT: "hsl(var(--status-info))",
-            bg: "hsl(var(--status-info-bg) / 0.08)",
-            border: "hsl(var(--status-info-border) / 0.20)",
+            DEFAULT: "var(--status-info)",
+            bg: "var(--status-info-bg)",
+            border: "var(--status-info-border)",
           },
         },
         
