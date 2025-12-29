@@ -25,6 +25,7 @@ import {
   HomeSort,
   HomeFiltersState 
 } from '@/hooks/home/useHomeWorkItems';
+import { useHomeOperationsSummary } from '@/hooks/home/useHomeOperationsData';
 import { useDebounce } from '@/hooks/useDebounce';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -427,6 +428,9 @@ export function HomeContentV2() {
     pageSize,
   });
 
+  // Operations summary for CriticalStrip
+  const { data: operationsSummary } = useHomeOperationsSummary(currentUserId);
+
   const workItems = data?.items || [];
   const counts = data?.counts || { workedOn: 0, assigned: 0, starred: 0, total: 0 };
   const totalItems = data?.pagination?.total || 0;
@@ -709,10 +713,10 @@ export function HomeContentV2() {
         {domain === 'operations' && (
           <div className="mb-3">
             <CriticalStrip
-              majorIncidents={{ open: 0, breached: 0, atRisk: 0 }}
-              slaAtRisk={0}
-              awaitingMe={0}
-              blocked={0}
+              majorIncidents={operationsSummary?.incidents.major || { open: 0, breached: 0, atRisk: 0 }}
+              slaAtRisk={operationsSummary?.incidents.slaAtRisk || 0}
+              awaitingMe={operationsSummary?.incidents.awaitingMe || 0}
+              blocked={operationsSummary?.incidents.blocked || 0}
               activeFilter={activeFilter}
               currentMode={domain}
               onFilterChange={handleFilterChange}
