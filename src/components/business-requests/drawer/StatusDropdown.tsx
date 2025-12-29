@@ -140,11 +140,7 @@ export function StatusDropdown({ currentStep, onChange, disabled = false, isLoad
 
       <DropdownMenuContent
         align="start"
-        className="w-48 z-[500]"
-        style={{
-          background: 'var(--surface-bg, hsl(var(--background)))',
-          borderColor: 'var(--border-default, hsl(var(--border)))',
-        }}
+        className="w-48 bg-popover border-border"
       >
         {DRAWER_PROCESS_STEPS.map((step) => {
           const stepStyles = getStatusStyles(step.colorType);
