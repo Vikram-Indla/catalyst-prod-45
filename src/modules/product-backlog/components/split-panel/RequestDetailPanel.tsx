@@ -76,22 +76,24 @@ interface RequestDetailPanelProps {
   showMobileBack?: boolean;
 }
 
-// Status color mapping based on process step value - Catalyst brand tokens from index.css
+// Status color mapping based on process step value - QA spec colors
 const STATUS_COLORS: Record<string, string> = {
-  new_request: 'bg-[var(--process-new-demand)]',
-  new_demand: 'bg-[var(--process-new-demand)]',
-  in_review: 'bg-[var(--process-in-review)]',
-  ea_review: 'bg-[var(--process-ea-review)]',
-  analyse: 'bg-[var(--process-analyse)]',
-  approved: 'bg-[var(--process-approved)]',
-  ready_to_implement: 'bg-[var(--process-ready-to-implement)]',
-  implement: 'bg-[var(--process-implement)]',
-  closed: 'bg-[var(--process-closed)]',
-  rejected: 'bg-[var(--process-rejected)]',
-  on_hold: 'bg-[var(--process-on-hold)]',
+  new_request: 'bg-[#2563eb]',      // Blue
+  new_demand: 'bg-[#2563eb]',       // Blue
+  draft: 'bg-[#737373]',            // Gray
+  in_review: 'bg-[#2563eb]',        // Blue
+  ea_review: 'bg-[#2563eb]',        // Blue
+  analyse: 'bg-[#2563eb]',          // Blue
+  approved: 'bg-[#0d9488]',         // Teal
+  ready_to_implement: 'bg-[#0d9488]', // Teal
+  implement: 'bg-[#2563eb]',        // Blue
+  closed: 'bg-[#0d9488]',           // Teal
+  completed: 'bg-[#0d9488]',        // Teal
+  rejected: 'bg-[#ef4444]',         // Red
+  on_hold: 'bg-[#d97706]',          // Orange
 };
 
-const getStatusColor = (value: string) => STATUS_COLORS[value] || 'bg-[hsl(0,0%,60%)]';
+const getStatusColor = (value: string) => STATUS_COLORS[value] || 'bg-[#737373]';
 
 // Quarter options (canonical storage format: "Q1-2026"; display: "Q1 2026")
 const QUARTER_OPTIONS = [
@@ -358,11 +360,12 @@ export function RequestDetailPanel({
     (request.processStep ? request.processStep.replace(/_/g, ' ').replace(/^\w/, c => c.toUpperCase()) : 'New Request');
   const statusColor = getStatusColor(statusKey);
   const priorityLabel = request.autoPriority?.charAt(0).toUpperCase() + request.autoPriority?.slice(1) || 'Unscored';
+  // Priority dot colors per QA spec
   const priorityColor = request.autoPriority?.toLowerCase() === 'high' || request.autoPriority?.toLowerCase() === 'critical' 
-    ? 'bg-green-500' 
+    ? 'bg-[#ef4444]'  // Red for high/critical
     : request.autoPriority?.toLowerCase() === 'medium' 
-      ? 'bg-amber-500' 
-      : 'bg-gray-400';
+      ? 'bg-[#d97706]'  // Orange for medium
+      : 'bg-[#737373]'; // Gray for low/unscored
 
   const formatDate = (dateStr: string | null) => {
     if (!dateStr) return '—';
@@ -533,8 +536,7 @@ export function RequestDetailPanel({
                       </span>
                     </div>
                     <button 
-                      className="text-xs font-medium"
-                      style={{ color: 'hsl(var(--secondary-bronze))' }}
+                      className="text-xs font-medium text-[#2563eb] hover:underline"
                       onClick={() => toast.info('Change reporter')}
                     >
                       Change
@@ -591,8 +593,7 @@ export function RequestDetailPanel({
                       </span>
                     </div>
                     <button 
-                      className="text-xs font-medium"
-                      style={{ color: 'hsl(var(--secondary-bronze))' }}
+                      className="text-xs font-medium text-[#2563eb] hover:underline"
                       onClick={() => toast.info('Change business owner')}
                     >
                       Change

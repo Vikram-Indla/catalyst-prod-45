@@ -48,19 +48,21 @@ interface RequestListPanelProps {
   isLoading?: boolean;
 }
 
-// Status dot colors - Catalyst brand tokens from index.css
+// Status dot colors - QA spec colors matching Catalyst V5
 const STATUS_DOT_COLORS: Record<string, string> = {
-  new_demand: 'bg-[var(--process-new-demand)]',
-  new_request: 'bg-[var(--process-new-demand)]',
-  in_review: 'bg-[var(--process-in-review)]',
-  ea_review: 'bg-[var(--process-ea-review)]',
-  analyse: 'bg-[var(--process-analyse)]',
-  approved: 'bg-[var(--process-approved)]',
-  ready_to_implement: 'bg-[var(--process-ready-to-implement)]',
-  implement: 'bg-[var(--process-implement)]',
-  closed: 'bg-[var(--process-closed)]',
-  rejected: 'bg-[var(--process-rejected)]',
-  on_hold: 'bg-[var(--process-on-hold)]',
+  new_demand: 'bg-[#2563eb]',      // Blue
+  new_request: 'bg-[#2563eb]',     // Blue
+  draft: 'bg-[#737373]',           // Gray
+  in_review: 'bg-[#2563eb]',       // Blue
+  ea_review: 'bg-[#2563eb]',       // Blue
+  analyse: 'bg-[#2563eb]',         // Blue
+  approved: 'bg-[#0d9488]',        // Teal
+  ready_to_implement: 'bg-[#0d9488]', // Teal
+  implement: 'bg-[#2563eb]',       // Blue
+  closed: 'bg-[#0d9488]',          // Teal
+  completed: 'bg-[#0d9488]',       // Teal
+  rejected: 'bg-[#ef4444]',        // Red
+  on_hold: 'bg-[#d97706]',         // Orange
 };
 
 // Format status for display
@@ -146,14 +148,13 @@ export function RequestListPanel({
                 key={request._dbId}
                 onClick={() => onSelectRequest(request)}
                 className={cn(
-                  'px-4 py-3 border-b cursor-pointer transition-colors border-l-2',
+                  'px-4 py-3 border-b cursor-pointer transition-colors border-l-[3px]',
                   isSelected
-                    ? 'border-l-[hsl(var(--brand-primary))]'
-                    : 'border-l-transparent hover:bg-muted/50'
+                    ? 'bg-[#fafafa] border-l-[#2563eb]'
+                    : 'border-l-transparent hover:bg-[#fafafa]'
                 )}
                 style={{
                   borderBottomColor: 'var(--divider)',
-                  backgroundColor: isSelected ? 'hsl(var(--brand-primary) / 0.05)' : undefined,
                 }}
               >
                 <div className="flex items-start gap-3">
@@ -182,14 +183,14 @@ export function RequestListPanel({
                       )}
 
                       {(request.autoPriority === 'High' || request.autoPriority === 'high') && (
-                        <Badge className="bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400 border-0 text-[10px] px-1.5 py-0">
+                        <span className="px-1.5 py-0.5 rounded text-[10px] font-bold uppercase bg-[rgba(239,68,68,0.08)] text-[#ef4444] border border-[rgba(239,68,68,0.2)]">
                           HIGH
-                        </Badge>
+                        </span>
                       )}
                       {(request.autoPriority === 'Critical' || request.autoPriority === 'critical') && (
-                        <Badge className="bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 border-0 text-[10px] px-1.5 py-0">
+                        <span className="px-1.5 py-0.5 rounded text-[10px] font-bold uppercase bg-[rgba(239,68,68,0.08)] text-[#ef4444] border border-[rgba(239,68,68,0.2)]">
                           CRITICAL
-                        </Badge>
+                        </span>
                       )}
 
                       {request.rank && (
