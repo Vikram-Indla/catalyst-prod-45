@@ -8,7 +8,7 @@
  * - Collapsible right rail with Details, Planning, Classification
  */
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
@@ -21,22 +21,15 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { 
   ChevronRight, 
-  ChevronDown,
   ChevronUp,
-  Share2, 
-  Link2, 
+  ChevronDown,
   MoreHorizontal, 
   UserPlus,
   Plus,
-  Eye,
-  Calendar,
   FileText,
   Ban,
-  AlertCircle,
-  Settings
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useFeatureProgress } from '@/hooks/useFeatureProgress';
 import { useProjects } from '@/hooks/useProjects';
 import { WorkItemPresence } from '@/components/work-items/WorkItemPresence';
@@ -57,6 +50,7 @@ import { FeatureOverviewTab } from '@/pages/project/feature-detail/FeatureOvervi
 import { FeatureDeliveryTab } from '@/pages/project/feature-detail/FeatureDeliveryTab';
 import { FeatureLinksTab } from '@/pages/project/feature-detail/FeatureLinksTab';
 import { FeatureActivityTab } from '@/pages/project/feature-detail/FeatureActivityTab';
+import { FeatureRightRail } from './FeatureRightRail';
 
 interface FeatureDetailsPanelProps {
   feature?: Feature;
@@ -152,7 +146,9 @@ export function FeatureDetailsPanel({ feature, open, onClose }: FeatureDetailsPa
         .select(`
           id, display_id, name, description, acceptance_criteria, status, health,
           blocked, blocked_reason, planned_start_date, planned_end_date,
-          owner_id, epic_id, project_id, progress_pct, updated_at, change_number_id
+          owner_id, epic_id, project_id, progress_pct, updated_at, change_number_id,
+          priority, release_id, assignee_id, program_id,
+          department_id, product_id, business_owner_id, risk, environment, labels, components
         `)
         .eq('id', feature.id)
         .single();
@@ -482,95 +478,13 @@ export function FeatureDetailsPanel({ feature, open, onClose }: FeatureDetailsPa
             </Tabs>
           </div>
 
-          {/* Right Rail */}
-          {showRightRail && (
-            <div className="w-[280px] lg:w-[300px] border-l bg-card flex flex-col hidden md:flex">
-              {/* Details Section */}
-              <CollapsibleSection title="Details">
-                <FieldRow label="Assignee">
-                  {featureData?.owner ? (
-                    <div className="flex items-center gap-2">
-                      <div className="w-6 h-6 rounded-full bg-brand-primary/10 text-brand-primary flex items-center justify-center text-xs font-medium">
-                        {getInitials(featureData.owner.full_name)}
-                      </div>
-                      <span>{featureData.owner.full_name}</span>
-                    </div>
-                  ) : (
-                    <span className="text-muted-foreground">Unassigned</span>
-                  )}
-                </FieldRow>
-
-                <FieldRow label="Project">
-                  <Select 
-                    value={featureData?.project_id || ''} 
-                    onValueChange={(val) => updateProjectMutation.mutate(val)}
-                    disabled={updateProjectMutation.isPending}
-                  >
-                    <SelectTrigger className="h-8 text-sm">
-                      <SelectValue placeholder="Select project" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {projects?.map((project) => (
-                        <SelectItem key={project.id} value={project.id}>
-                          {project.is_default ? `${project.name} (Default)` : project.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </FieldRow>
-
-                <FieldRow label="Parent Epic">
-                  {featureData?.epic ? (
-                    <span className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 cursor-pointer hover:underline transition-colors font-medium text-sm">
-                      {featureData.epic.epic_key} {featureData.epic.name}
-                    </span>
-                  ) : (
-                    <span className="text-muted-foreground">None</span>
-                  )}
-                </FieldRow>
-              </CollapsibleSection>
-
-              {/* Planning Section */}
-              <CollapsibleSection title="Planning">
-                <div className="grid grid-cols-2 gap-3">
-                  <FieldRow label="Start Date">
-                    <span>
-                      {featureData?.planned_start_date 
-                        ? format(new Date(featureData.planned_start_date), 'MMM d, yyyy')
-                        : 'Not set'
-                      }
-                    </span>
-                  </FieldRow>
-
-                  <FieldRow label="Target Date">
-                    <span>
-                      {featureData?.planned_end_date 
-                        ? format(new Date(featureData.planned_end_date), 'MMM d, yyyy')
-                        : 'Not set'
-                      }
-                    </span>
-                  </FieldRow>
-                </div>
-
-                <FieldRow label="Change Number">
-                  {featureData?.change_number ? (
-                    <span className="font-mono text-xs bg-muted px-2 py-1 rounded inline-block">
-                      {featureData.change_number.number}
-                    </span>
-                  ) : (
-                    <span className="text-muted-foreground">Not assigned</span>
-                  )}
-                </FieldRow>
-              </CollapsibleSection>
-
-              {/* Configure Fields Button */}
-              <div className="mt-auto p-4 border-t">
-                <Button variant="ghost" size="sm" className="w-full justify-center">
-                  <Settings className="h-4 w-4 mr-2" />
-                  Configure Fields
-                </Button>
-              </div>
-            </div>
+          {/* Right Rail - Fully Editable */}
+          {showRightRail && featureData && (
+            <FeatureRightRail 
+              featureId={feature.id}
+              featureData={featureData}
+              onRefresh={() => queryClient.invalidateQueries({ queryKey: ['feature-detail-panel', feature.id] })}
+            />
           )}
         </div>
 
