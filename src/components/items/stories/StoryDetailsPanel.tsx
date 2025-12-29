@@ -1,6 +1,7 @@
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
+import { WorkItemStarButton } from '@/components/shared/WorkItemStarButton';
 
 interface StoryDetailsPanelProps {
   story: any;
@@ -40,6 +41,9 @@ export function StoryDetailsPanel({ story, open, onClose }: StoryDetailsPanelPro
             <SheetDescription className="executive-drawer-subtitle mt-1">
               Story Details
             </SheetDescription>
+          </div>
+          <div className="flex items-center gap-2">
+            {story.id && <WorkItemStarButton itemId={story.id} itemType="story" size="md" />}
           </div>
         </SheetHeader>
 

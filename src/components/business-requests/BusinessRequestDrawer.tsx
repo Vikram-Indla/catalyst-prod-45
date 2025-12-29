@@ -60,6 +60,7 @@ import { ScoringReviewTab } from './drawer-tabs/ScoringReviewTab';
 import { PlanningViewTab } from './drawer-tabs/PlanningViewTab';
 import { cn } from '@/lib/utils';
 import { Loader2 } from 'lucide-react';
+import { WorkItemStarButton } from '@/components/shared/WorkItemStarButton';
 
 // Debounce delay for auto-save (ms)
 const AUTO_SAVE_DELAY = 800;
@@ -668,6 +669,15 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
                     ) : null}
                   </div>
                 </div>
+
+                {/* Star Button */}
+                {requestId && (
+                  <WorkItemStarButton
+                    itemId={requestId}
+                    itemType="business_request"
+                    size="md"
+                  />
+                )}
 
                 {/* More Options */}
                 <DropdownMenu>
