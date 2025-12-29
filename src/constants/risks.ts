@@ -28,10 +28,10 @@ export const RELATIONSHIP_TYPES: RelationshipType[] = [
 // Source: Screenshot-Risk1, Web-AtlassianDesign
 // NOTE: Using gold instead of blue per Catalyst theme requirements
 export const ROAM_BADGE_COLORS: Record<RoamStatus, { bg: string; text: string }> = {
-  Resolved: { bg: 'bg-neutral-200', text: 'text-neutral-700' },        // Gray (default)
-  Owned: { bg: 'bg-brand-primary-pale', text: 'text-brand-primary-hover' },  // Gold (Catalyst theme)
-  Accepted: { bg: 'bg-success/10', text: 'text-success-600' },         // Green (success)
-  Mitigated: { bg: 'bg-warning/10', text: 'text-warning-600' }         // Yellow (warning)
+  Resolved: { bg: 'bg-[rgba(163,163,163,0.1)]', text: 'text-[#737373]' },      // Gray (default)
+  Owned: { bg: 'bg-[rgba(37,99,235,0.08)]', text: 'text-[#2563eb]' },          // Blue (primary)
+  Accepted: { bg: 'bg-[rgba(13,148,136,0.08)]', text: 'text-[#0d9488]' },      // Teal (success)
+  Mitigated: { bg: 'bg-[rgba(217,119,6,0.08)]', text: 'text-[#d97706]' }       // Orange (warning)
 };
 
 // Chart colors using Catalyst Risk Colors
@@ -42,10 +42,10 @@ export const CHART_COLORS = {
     Closed: '#36B37E'     // Green
   },
   severity: {
-    Critical: '#922b21',  // Dark red - "Stop everything, fix immediately"
-    High: '#cb4335',      // Red - "Needs immediate attention"
-    Medium: '#f59e0b',    // Amber - "Monitor closely, plan mitigation"
-    Low: '#0d9488'        // Teal - "Manageable, track over time"
+    Critical: '#ef4444',  // Red - Critical
+    High: '#ef4444',      // Red - High
+    Medium: '#d97706',    // Orange - Medium
+    Low: '#0d9488'        // Teal - Low
   }
 };
 

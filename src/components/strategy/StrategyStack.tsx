@@ -128,21 +128,22 @@ function getStatusColor(status?: string): { bg: string; text: string; border: st
 
 function getCoverageStatus(coverage: number): { color: string; label: string; badgeClass: string } {
   // Use safePercentage to prevent NaN issues
+  // Catalyst V5 thresholds: ≥70% Healthy, 40-69% At Risk, <40% Critical
   const safeCoverage = safePercentage(coverage);
-  if (safeCoverage >= 80) return { 
-    color: 'hsl(var(--success))', 
+  if (safeCoverage >= 70) return { 
+    color: 'var(--progress-success)', 
     label: 'Healthy',
-    badgeClass: 'bg-success/10 text-success border border-success/20'
+    badgeClass: 'bg-[rgba(13,148,136,0.08)] text-[#0d9488] border border-[rgba(13,148,136,0.2)]'
   };
-  if (safeCoverage >= 50) return { 
-    color: 'hsl(var(--warning))', 
+  if (safeCoverage >= 40) return { 
+    color: 'var(--progress-warning)', 
     label: 'At Risk',
-    badgeClass: 'bg-warning/10 text-warning border border-warning/20'
+    badgeClass: 'bg-[rgba(217,119,6,0.08)] text-[#d97706] border border-[rgba(217,119,6,0.2)]'
   };
   return { 
-    color: 'hsl(var(--danger))', 
+    color: 'var(--progress-danger)', 
     label: 'Critical',
-    badgeClass: 'bg-danger/10 text-danger border border-danger/20'
+    badgeClass: 'bg-[rgba(239,68,68,0.08)] text-[#ef4444] border border-[rgba(239,68,68,0.2)]'
   };
 }
 
@@ -643,7 +644,7 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
                             <span className={cn(TYPOGRAPHY.tableCellSecondary)} style={{ color: 'var(--text-secondary-hex)' }}>—</span>
                           ) : data.count > 0 ? (
                             <>
-                              <div className="flex-1 h-[3px] rounded-full overflow-hidden bg-muted">
+                              <div className="flex-1 h-[3px] rounded-full overflow-hidden" style={{ backgroundColor: 'var(--progress-track)' }}>
                                 <div 
                                   className="h-full rounded-full transition-all"
                                   style={{ 
@@ -694,7 +695,7 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
                               className={cn(
                                 TYPOGRAPHY.countBadge, 
                                 'inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded',
-                                'bg-warning/10 text-warning border border-warning/20'
+                                'bg-[rgba(217,119,6,0.08)] text-[#d97706] border border-[rgba(217,119,6,0.2)]'
                               )}
                             >
                               <AlertTriangle size={10} />

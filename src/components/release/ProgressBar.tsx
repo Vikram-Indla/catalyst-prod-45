@@ -7,9 +7,10 @@ interface ProgressBarProps {
 }
 
 function getProgressClasses(value: number): string {
-  if (value >= 70) return 'bg-success';
-  if (value >= 40) return 'bg-warning';
-  return 'bg-danger';
+  // Catalyst V5: ≥70% teal, 40-69% orange, <40% red
+  if (value >= 70) return 'bg-[#0d9488]';
+  if (value >= 40) return 'bg-[#d97706]';
+  return 'bg-[#ef4444]';
 }
 
 export function ProgressBar({ value, className, showLabel = false }: ProgressBarProps) {
@@ -23,7 +24,7 @@ export function ProgressBar({ value, className, showLabel = false }: ProgressBar
           <span className="font-semibold text-foreground">{value}%</span>
         </div>
       )}
-      <div className="h-1.5 bg-muted rounded-full overflow-hidden">
+      <div className="h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: 'var(--progress-track)' }}>
         <div 
           className={cn("h-full rounded-full transition-all duration-300", barClass)}
           style={{ width: `${value}%` }}
