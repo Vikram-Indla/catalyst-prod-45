@@ -5,15 +5,14 @@
  * - Rich description
  * - Readiness snapshot (approvals, exceptions, dependencies)
  * - Acceptance criteria checklist
- * - Attachments
+ * - Attachments (real-time from database)
  */
 
-import { useState } from 'react';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useState, useEffect } from 'react';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { 
   CheckCircle2, 
-  Circle, 
   AlertTriangle, 
   Zap, 
   Clock, 
@@ -21,12 +20,17 @@ import {
   Upload,
   File,
   Image as ImageIcon,
-  FileSpreadsheet
+  FileSpreadsheet,
+  Download,
+  Trash2,
+  Loader2
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
-import { format } from 'date-fns';
+import { format, formatDistanceToNow } from 'date-fns';
+import { useAuth } from '@/lib/auth';
 
 interface FeatureOverviewTabProps {
   feature: {
@@ -36,6 +40,16 @@ interface FeatureOverviewTabProps {
     updated_at: string | null;
     owner?: { id: string; full_name: string } | null;
   };
+}
+
+interface Attachment {
+  id: string;
+  file_name: string;
+  file_path: string;
+  file_size: number;
+  mime_type: string;
+  uploaded_by: string;
+  created_at: string;
 }
 
 // Parse acceptance criteria from text (line-separated)
@@ -55,35 +69,176 @@ function parseAcceptanceCriteria(text: string | null): { id: string; text: strin
     });
 }
 
-// Mock attachments data (would come from attachments table)
-const MOCK_ATTACHMENTS = [
-  { id: '1', name: 'Compliance_Rules_Specification_v2.pdf', size: '2.4 MB', date: 'Dec 10, 2025', type: 'pdf' },
-  { id: '2', name: 'Dashboard_Wireframes.fig', size: '8.1 MB', date: 'Dec 8, 2025', type: 'fig' },
-  { id: '3', name: 'API_Integration_Guide.docx', size: '512 KB', date: 'Dec 5, 2025', type: 'docx' },
-];
-
-function getFileIcon(type: string) {
-  switch (type) {
-    case 'pdf':
-      return <FileText className="h-5 w-5 text-red-600 dark:text-red-400" />;
-    case 'fig':
-    case 'sketch':
-    case 'xd':
-      return <ImageIcon className="h-5 w-5 text-amber-600 dark:text-amber-400" />;
-    case 'docx':
-    case 'doc':
-      return <File className="h-5 w-5 text-blue-600 dark:text-blue-400" />;
-    case 'xlsx':
-    case 'xls':
-      return <FileSpreadsheet className="h-5 w-5 text-green-600 dark:text-green-400" />;
-    default:
-      return <File className="h-5 w-5 text-muted-foreground" />;
+function getFileIcon(mimeType: string, fileName: string) {
+  const ext = fileName.split('.').pop()?.toLowerCase();
+  
+  if (mimeType.startsWith('image/') || ['png', 'jpg', 'jpeg', 'gif', 'svg', 'webp'].includes(ext || '')) {
+    return <ImageIcon className="h-5 w-5 text-amber-600 dark:text-amber-400" />;
   }
+  if (mimeType.includes('pdf') || ext === 'pdf') {
+    return <FileText className="h-5 w-5 text-red-600 dark:text-red-400" />;
+  }
+  if (['fig', 'sketch', 'xd'].includes(ext || '')) {
+    return <ImageIcon className="h-5 w-5 text-amber-600 dark:text-amber-400" />;
+  }
+  if (['doc', 'docx'].includes(ext || '') || mimeType.includes('document')) {
+    return <File className="h-5 w-5 text-blue-600 dark:text-blue-400" />;
+  }
+  if (['xls', 'xlsx'].includes(ext || '') || mimeType.includes('spreadsheet')) {
+    return <FileSpreadsheet className="h-5 w-5 text-green-600 dark:text-green-400" />;
+  }
+  return <File className="h-5 w-5 text-muted-foreground" />;
+}
+
+function formatFileSize(bytes: number) {
+  if (bytes < 1024) return bytes + ' B';
+  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+  return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
 }
 
 export function FeatureOverviewTab({ feature }: FeatureOverviewTabProps) {
   const queryClient = useQueryClient();
+  const { user } = useAuth();
+  const [uploading, setUploading] = useState(false);
   const criteria = parseAcceptanceCriteria(feature.acceptance_criteria);
+
+  // Fetch attachments from database
+  const { data: attachments = [], isLoading: attachmentsLoading } = useQuery({
+    queryKey: ['feature-attachments', feature.id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('attachments')
+        .select('*')
+        .eq('entity_id', feature.id)
+        .eq('entity_type', 'features')
+        .order('created_at', { ascending: false });
+      
+      if (error) throw error;
+      return data as Attachment[];
+    },
+  });
+
+  // Real-time subscription for attachments
+  useEffect(() => {
+    const channel = supabase
+      .channel(`feature-attachments-${feature.id}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'attachments',
+          filter: `entity_id=eq.${feature.id}`,
+        },
+        (payload) => {
+          console.log('Attachment change:', payload);
+          queryClient.invalidateQueries({ queryKey: ['feature-attachments', feature.id] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [feature.id, queryClient]);
+
+  // Upload mutation
+  const uploadMutation = useMutation({
+    mutationFn: async (file: File) => {
+      const authUser = (await supabase.auth.getUser()).data.user;
+      if (!authUser) throw new Error('Not authenticated');
+
+      const fileExt = file.name.split('.').pop();
+      const filePath = `${authUser.id}/${feature.id}/${Date.now()}.${fileExt}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('attachments')
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      const { error: dbError } = await supabase
+        .from('attachments')
+        .insert({
+          entity_id: feature.id,
+          entity_type: 'features',
+          file_name: file.name,
+          file_path: filePath,
+          file_size: file.size,
+          mime_type: file.type || 'application/octet-stream',
+          uploaded_by: authUser.id,
+        });
+
+      if (dbError) throw dbError;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['feature-attachments', feature.id] });
+      toast.success('File uploaded successfully');
+    },
+    onError: (error: Error) => {
+      toast.error('Upload failed', { description: error.message });
+    },
+  });
+
+  // Delete mutation
+  const deleteMutation = useMutation({
+    mutationFn: async (attachment: Attachment) => {
+      const { error: storageError } = await supabase.storage
+        .from('attachments')
+        .remove([attachment.file_path]);
+
+      if (storageError) throw storageError;
+
+      const { error: dbError } = await supabase
+        .from('attachments')
+        .delete()
+        .eq('id', attachment.id);
+
+      if (dbError) throw dbError;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['feature-attachments', feature.id] });
+      toast.success('File deleted');
+    },
+    onError: (error: Error) => {
+      toast.error('Delete failed', { description: error.message });
+    },
+  });
+
+  const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (!files || files.length === 0) return;
+
+    setUploading(true);
+    try {
+      for (const file of Array.from(files)) {
+        await uploadMutation.mutateAsync(file);
+      }
+    } finally {
+      setUploading(false);
+      event.target.value = '';
+    }
+  };
+
+  const downloadFile = async (attachment: Attachment) => {
+    const { data, error } = await supabase.storage
+      .from('attachments')
+      .download(attachment.file_path);
+
+    if (error) {
+      toast.error('Download failed', { description: error.message });
+      return;
+    }
+
+    const url = URL.createObjectURL(data);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = attachment.file_name;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
 
   // Mock readiness data
   const readinessData = {
@@ -192,27 +347,83 @@ export function FeatureOverviewTab({ feature }: FeatureOverviewTabProps) {
 
       {/* Attachments */}
       <section>
-        <h3 className="text-sm font-semibold text-foreground uppercase tracking-wide mb-3">
-          Attachments
-        </h3>
-        <div className="space-y-2">
-          {MOCK_ATTACHMENTS.map((file) => (
-            <div 
-              key={file.id}
-              className="flex items-center gap-3 p-3 rounded-lg border bg-card hover:bg-muted/30 transition-colors cursor-pointer"
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="text-sm font-semibold text-foreground uppercase tracking-wide">
+            Attachments
+          </h3>
+          <div>
+            <input
+              type="file"
+              id="feature-file-upload"
+              className="hidden"
+              onChange={handleFileSelect}
+              multiple
+              disabled={uploading}
+            />
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => document.getElementById('feature-file-upload')?.click()}
+              disabled={uploading}
             >
-              {getFileIcon(file.type)}
-              <div className="flex-1 min-w-0">
-                <div className="font-medium text-sm text-foreground truncate">
-                  {file.name}
+              {uploading ? (
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+              ) : (
+                <Upload className="h-4 w-4 mr-2" />
+              )}
+              {uploading ? 'Uploading...' : 'Upload'}
+            </Button>
+          </div>
+        </div>
+
+        {attachmentsLoading ? (
+          <div className="flex items-center gap-2 text-sm text-muted-foreground py-4">
+            <Loader2 className="h-4 w-4 animate-spin" />
+            Loading attachments...
+          </div>
+        ) : attachments.length > 0 ? (
+          <div className="space-y-2">
+            {attachments.map((attachment) => (
+              <div 
+                key={attachment.id}
+                className="flex items-center gap-3 p-3 rounded-lg border bg-card hover:bg-muted/30 transition-colors group"
+              >
+                {getFileIcon(attachment.mime_type, attachment.file_name)}
+                <div className="flex-1 min-w-0">
+                  <div className="font-medium text-sm text-foreground truncate">
+                    {attachment.file_name}
+                  </div>
+                  <div className="text-xs text-muted-foreground">
+                    {formatFileSize(attachment.file_size)} · Uploaded {formatDistanceToNow(new Date(attachment.created_at), { addSuffix: true })}
+                  </div>
                 </div>
-                <div className="text-xs text-muted-foreground">
-                  {file.size} · Uploaded {file.date}
+                <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => downloadFile(attachment)}
+                  >
+                    <Download className="h-4 w-4" />
+                  </Button>
+                  {attachment.uploaded_by === user?.id && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => deleteMutation.mutate(attachment)}
+                      disabled={deleteMutation.isPending}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  )}
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-sm text-muted-foreground italic py-4 text-center border border-dashed rounded-lg">
+            No attachments yet. Upload files to get started.
+          </div>
+        )}
       </section>
     </div>
   );
