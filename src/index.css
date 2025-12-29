@@ -149,6 +149,13 @@
     /* Divider and border legacy (HEX) */
     --divider: #e5e5e5;
     --border-color: #e5e5e5;
+    --border-subtle-hex: #e8e8e8;
+    --border-default-hex: #e0e0e0;
+    
+    /* Text tokens HEX (for inline styles) */
+    --text-primary-hex: #0a0a0a;
+    --text-secondary-hex: #a3a3a3;
+    --text-muted-hex: #6b7280;
     
     /* Navigation tokens (HEX) */
     --nav-bg: #ffffff;
@@ -414,6 +421,13 @@
     /* Divider and border legacy (HEX) */
     --divider: #2a2a2a;
     --border-color: #2c2c2c;
+    --border-subtle-hex: #333333;
+    --border-default-hex: #404040;
+    
+    /* Text tokens HEX (for inline styles) */
+    --text-primary-hex: #f5f5f5;
+    --text-secondary-hex: #a3a3a3;
+    --text-muted-hex: #737373;
     
     /* Navigation tokens (HEX) */
     --nav-bg: #1f1f1f;
