@@ -193,12 +193,13 @@ function WorkItemsDataGrid({
       <div 
         className="hidden md:grid items-center py-3 px-4 text-[11px] font-semibold uppercase tracking-[0.08em] sticky top-0 z-10 bg-muted/50 dark:bg-muted/30"
         style={{ 
-          gridTemplateColumns: '100px 1fr 120px 110px 140px 80px',
+          gridTemplateColumns: '100px 1fr 70px 100px 100px 140px 80px',
           borderBottom: '1px solid var(--divider)',
         }}
       >
         <div className="text-muted-foreground">Key</div>
         <div className="text-muted-foreground">Summary</div>
+        <div className="text-muted-foreground">Mode</div>
         <div className="text-muted-foreground">Level</div>
         <div className="text-muted-foreground">Updated</div>
         <div className="text-muted-foreground">Assignee</div>
