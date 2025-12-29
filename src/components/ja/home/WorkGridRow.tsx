@@ -387,47 +387,51 @@ export function DeliveryGridRow({
         </div>
 
         {/* Quick actions - Delivery specific: Star + Kebab menu */}
-        <div className={cn("flex items-center justify-end gap-0.5 transition-opacity", isHovered ? "opacity-100" : "opacity-0")}>
-          {/* Star Button - always visible on hover */}
+        <div className="flex items-center justify-end gap-0.5">
+          {/* Star Button - always visible when starred, otherwise on hover */}
           <WorkItemStarButton
             itemId={item.id}
             itemType={item.type as StarredItemType}
             size="sm"
             showTooltip={false}
+            alwaysVisibleWhenStarred
+            isHovered={isHovered}
           />
           
           {/* Kebab menu with Assign to me */}
           {canAssign && (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button 
-                  type="button"
-                  className="w-5 h-5 rounded flex items-center justify-center hover:bg-[var(--nav-hover-bg)] text-[var(--icon-muted)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]"
+            <div className={cn("transition-opacity", isHovered ? "opacity-100" : "opacity-0")}>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button 
+                    type="button"
+                    className="w-5 h-5 rounded flex items-center justify-center hover:bg-[var(--nav-hover-bg)] text-[var(--icon-muted)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]"
+                    onClick={(e) => e.stopPropagation()}
+                    title="More actions"
+                  >
+                    <MoreHorizontal className="w-3 h-3" />
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent 
+                  align="end" 
                   onClick={(e) => e.stopPropagation()}
-                  title="More actions"
+                  onPointerDown={(e) => e.stopPropagation()}
+                  className="bg-white dark:bg-gray-800 border-[var(--border-color)] z-[300] shadow-lg"
                 >
-                  <MoreHorizontal className="w-3 h-3" />
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent 
-                align="end" 
-                onClick={(e) => e.stopPropagation()}
-                onPointerDown={(e) => e.stopPropagation()}
-                className="bg-white dark:bg-gray-800 border-[var(--border-color)] z-[300] shadow-lg"
-              >
-                <DropdownMenuItem 
-                  onClick={(e) => e.stopPropagation()}
-                  onSelect={(e) => {
-                    e.stopPropagation();
-                    onAssignToMe?.(item.id);
-                  }}
-                  className="text-[var(--text-1)] cursor-pointer"
-                >
-                  <UserPlus className="w-4 h-4 mr-2" />
-                  Assign to me
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+                  <DropdownMenuItem 
+                    onClick={(e) => e.stopPropagation()}
+                    onSelect={(e) => {
+                      e.stopPropagation();
+                      onAssignToMe?.(item.id);
+                    }}
+                    className="text-[var(--text-1)] cursor-pointer"
+                  >
+                    <UserPlus className="w-4 h-4 mr-2" />
+                    Assign to me
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
           )}
         </div>
       </div>
