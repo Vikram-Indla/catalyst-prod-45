@@ -251,22 +251,25 @@
     --industry-status-approved: #0d9488;
     --industry-status-blocked: #ef4444;
     
-    /* Process step colors (HEX) */
+    /* Process step colors (HEX) - QA spec colors */
     --process-new-demand: #2563eb;
-    --process-in-review: #3b82f6;
-    --process-ea-review: #6366f1;
-    --process-analyse: #3b82f6;
+    --process-draft: #737373;
+    --process-in-review: #2563eb;
+    --process-ea-review: #2563eb;
+    --process-analyse: #2563eb;
     --process-approved: #0d9488;
-    --process-ready-to-implement: #0f766e;
-    --process-implement: #1d4ed8;
+    --process-ready-to-implement: #0d9488;
+    --process-implement: #2563eb;
     --process-closed: #0d9488;
-    --process-rejected: #737373;
-    --process-on-hold: #f59e0b;
+    --process-completed: #0d9488;
+    --process-rejected: #ef4444;
+    --process-on-hold: #d97706;
     
-    /* Industry priority colors (HEX) */
-    --industry-priority-high: #1d4ed8;
-    --industry-priority-medium: #2563eb;
-    --industry-priority-low: #60a5fa;
+    /* Priority colors (HEX) - QA spec colors */
+    --priority-critical: #ef4444;
+    --priority-high: #ef4444;
+    --priority-medium: #d97706;
+    --priority-low: #737373;
     
     /* Dialog tokens (HEX) */
     --dialog-bg: #ffffff;
