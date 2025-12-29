@@ -276,25 +276,6 @@ export function FeatureRightRail({ featureId, featureData, onRefresh }: FeatureR
           </Select>
         </FieldRow>
 
-        <FieldRow label="Product">
-          <Select 
-            value={featureData?.product_id || '__none__'} 
-            onValueChange={(val) => handleUpdate('product_id', val === '__none__' ? null : val)}
-          >
-            <SelectTrigger className="h-8 text-sm">
-              <SelectValue placeholder="Select product" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="__none__">Not assigned</SelectItem>
-              {products?.map((p) => (
-                <SelectItem key={p.id} value={p.id}>
-                  {p.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </FieldRow>
-
       </CollapsibleSection>
 
       {/* Planning Section */}
