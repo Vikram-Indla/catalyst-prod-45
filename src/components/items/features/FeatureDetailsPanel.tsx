@@ -28,6 +28,7 @@ import {
   Plus,
   FileText,
   Ban,
+  X,
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { useFeatureProgress } from '@/hooks/useFeatureProgress';
@@ -281,7 +282,7 @@ export function FeatureDetailsPanel({ feature, open, onClose }: FeatureDetailsPa
 
   return (
     <Sheet open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
-      <SheetContent className="w-full sm:w-[90vw] md:w-[85vw] lg:w-[80vw] xl:w-[75vw] sm:max-w-[1200px] p-0 flex flex-col overflow-hidden bg-background">
+      <SheetContent className="w-full sm:w-[90vw] md:w-[85vw] lg:w-[80vw] xl:w-[75vw] sm:max-w-[1200px] p-0 flex flex-col overflow-hidden bg-background [&>button]:hidden">
         {/* Header */}
         <div className="flex-shrink-0 border-b bg-card">
           <div className="px-4 md:px-6 py-4">
@@ -339,6 +340,9 @@ export function FeatureDetailsPanel({ feature, open, onClose }: FeatureDetailsPa
                     <DropdownMenuItem className="text-destructive">Delete</DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
+                <Button variant="ghost" size="icon" onClick={onClose}>
+                  <X className="h-4 w-4" />
+                </Button>
               </div>
             </div>
 
