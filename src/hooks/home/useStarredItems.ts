@@ -3,7 +3,7 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { useEffect, useState } from 'react';
+import { useAuth } from '@/lib/auth';
 
 export type StarredItemType = 'epic' | 'feature' | 'story' | 'task' | 'incident' | 'defect' | 'business_request' | 'theme' | 'objective' | 'dependency' | 'risk';
 
@@ -14,19 +14,10 @@ export interface StarredItem {
   starred_at: string;
 }
 
-// Get current user ID
-async function getCurrentUserId(): Promise<string | null> {
-  const { data: { user } } = await supabase.auth.getUser();
-  return user?.id || null;
-}
-
 // Fetch all starred item IDs for current user
 export function useStarredItemIds() {
-  const [userId, setUserId] = useState<string | null>(null);
-
-  useEffect(() => {
-    getCurrentUserId().then(setUserId);
-  }, []);
+  const { user } = useAuth();
+  const userId = user?.id;
 
   return useQuery({
     queryKey: ['starred-item-ids', userId],
@@ -48,11 +39,8 @@ export function useStarredItemIds() {
 
 // Fetch starred items count
 export function useStarredItemsCount() {
-  const [userId, setUserId] = useState<string | null>(null);
-
-  useEffect(() => {
-    getCurrentUserId().then(setUserId);
-  }, []);
+  const { user } = useAuth();
+  const userId = user?.id;
 
   return useQuery({
     queryKey: ['starred-items-count', userId],
@@ -75,6 +63,7 @@ export function useStarredItemsCount() {
 // Toggle star mutation
 export function useToggleStar() {
   const queryClient = useQueryClient();
+  const { user } = useAuth();
 
   return useMutation({
     mutationFn: async ({ itemId, itemType, isCurrentlyStarred }: { 
@@ -82,7 +71,7 @@ export function useToggleStar() {
       itemType: StarredItemType;
       isCurrentlyStarred: boolean;
     }) => {
-      const userId = await getCurrentUserId();
+      const userId = user?.id;
       if (!userId) throw new Error('Not authenticated');
 
       if (isCurrentlyStarred) {
@@ -123,11 +112,8 @@ export function useToggleStar() {
 
 // Fetch full starred items with details for delivery mode
 export function useStarredDeliveryItems() {
-  const [userId, setUserId] = useState<string | null>(null);
-
-  useEffect(() => {
-    getCurrentUserId().then(setUserId);
-  }, []);
+  const { user } = useAuth();
+  const userId = user?.id;
 
   return useQuery({
     queryKey: ['starred-delivery-items', userId],
