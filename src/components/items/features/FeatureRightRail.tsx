@@ -10,18 +10,13 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
 import { 
   ChevronUp, 
   ChevronDown, 
   Settings, 
-  Calendar as CalendarIcon,
-  X,
-  Plus
+  Calendar as CalendarIcon
 } from 'lucide-react';
 import { format } from 'date-fns';
-import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 
 interface FeatureRightRailProps {
@@ -86,23 +81,8 @@ const PRIORITY_OPTIONS = [
   { value: 'low', label: 'Low', className: 'bg-gray-100 text-gray-600' },
 ];
 
-const RISK_OPTIONS = [
-  { value: 'critical', label: 'Critical', className: 'bg-red-100 text-red-700' },
-  { value: 'high', label: 'High', className: 'bg-amber-100 text-amber-700' },
-  { value: 'medium', label: 'Medium', className: 'bg-slate-100 text-slate-600' },
-  { value: 'low', label: 'Low', className: 'bg-emerald-100 text-emerald-700' },
-];
-
-const ENVIRONMENT_OPTIONS = [
-  { value: 'development', label: 'Development' },
-  { value: 'staging', label: 'Staging' },
-  { value: 'production', label: 'Production' },
-];
-
 export function FeatureRightRail({ featureId, featureData, onRefresh }: FeatureRightRailProps) {
   const queryClient = useQueryClient();
-  const [labelInput, setLabelInput] = useState('');
-  const [componentInput, setComponentInput] = useState('');
 
   // Fetch lookup data
   const { data: projects } = useQuery({
@@ -201,36 +181,9 @@ export function FeatureRightRail({ featureId, featureData, onRefresh }: FeatureR
     updateMutation.mutate({ [field]: value });
   };
 
-  const handleAddLabel = () => {
-    if (!labelInput.trim()) return;
-    const currentLabels = featureData?.labels || [];
-    if (!currentLabels.includes(labelInput.trim())) {
-      handleUpdate('labels', [...currentLabels, labelInput.trim()]);
-    }
-    setLabelInput('');
-  };
-
-  const handleRemoveLabel = (label: string) => {
-    const currentLabels = featureData?.labels || [];
-    handleUpdate('labels', currentLabels.filter((l: string) => l !== label));
-  };
-
-  const handleAddComponent = () => {
-    if (!componentInput.trim()) return;
-    const currentComponents = featureData?.components || [];
-    if (!currentComponents.includes(componentInput.trim())) {
-      handleUpdate('components', [...currentComponents, componentInput.trim()]);
-    }
-    setComponentInput('');
-  };
-
-  const handleRemoveComponent = (component: string) => {
-    const currentComponents = featureData?.components || [];
-    handleUpdate('components', currentComponents.filter((c: string) => c !== component));
-  };
 
   return (
-    <div className="w-[280px] lg:w-[300px] border-l bg-card flex flex-col hidden md:flex">
+    <div className="w-[280px] lg:w-[300px] border-l bg-card flex flex-col hidden md:flex overflow-y-auto">
       {/* Details Section */}
       <CollapsibleSection title="Details">
         <FieldRow label="Assignee">
@@ -242,7 +195,7 @@ export function FeatureRightRail({ featureId, featureData, onRefresh }: FeatureR
               <SelectValue placeholder="Select assignee">
                 {featureData?.owner ? (
                   <div className="flex items-center gap-2">
-                    <div className="w-5 h-5 rounded-full bg-brand-primary/10 text-brand-primary flex items-center justify-center text-[10px] font-medium">
+                    <div className="w-5 h-5 rounded-full bg-[#0d9488] text-white flex items-center justify-center text-[10px] font-medium">
                       {getInitials(featureData.owner.full_name)}
                     </div>
                     <span className="truncate">{featureData.owner.full_name}</span>
@@ -254,7 +207,12 @@ export function FeatureRightRail({ featureId, featureData, onRefresh }: FeatureR
               <SelectItem value="__none__">Unassigned</SelectItem>
               {profiles?.map((p) => (
                 <SelectItem key={p.id} value={p.id}>
-                  {p.full_name || p.email}
+                  <div className="flex items-center gap-2">
+                    <div className="w-5 h-5 rounded-full bg-[#0d9488] text-white flex items-center justify-center text-[10px] font-medium">
+                      {getInitials(p.full_name || p.email || '')}
+                    </div>
+                    <span>{p.full_name || p.email}</span>
+                  </div>
                 </SelectItem>
               ))}
             </SelectContent>
@@ -311,7 +269,7 @@ export function FeatureRightRail({ featureId, featureData, onRefresh }: FeatureR
               <SelectItem value="__none__">None</SelectItem>
               {epics?.map((e) => (
                 <SelectItem key={e.id} value={e.id}>
-                  {e.epic_key} - {e.name}
+                  {e.epic_key ? `${e.epic_key} - ${e.name}` : e.name}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -462,128 +420,26 @@ export function FeatureRightRail({ featureId, featureData, onRefresh }: FeatureR
           </Select>
         </FieldRow>
 
-        <div className="grid grid-cols-2 gap-3">
-          <FieldRow label="Priority">
-            <Select 
-              value={featureData?.priority || '__none__'} 
-              onValueChange={(val) => handleUpdate('priority', val === '__none__' ? null : val)}
-            >
-              <SelectTrigger className="h-8 text-sm">
-                <SelectValue placeholder="Set priority" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="__none__">None</SelectItem>
-                {PRIORITY_OPTIONS.map((p) => (
-                  <SelectItem key={p.value} value={p.value}>
-                    {p.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </FieldRow>
-
-          <FieldRow label="Risk">
-            <Select 
-              value={featureData?.risk || '__none__'} 
-              onValueChange={(val) => handleUpdate('risk', val === '__none__' ? null : val)}
-            >
-              <SelectTrigger className="h-8 text-sm">
-                <SelectValue placeholder="Set risk" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="__none__">None</SelectItem>
-                {RISK_OPTIONS.map((r) => (
-                  <SelectItem key={r.value} value={r.value}>
-                    {r.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </FieldRow>
-        </div>
-      </CollapsibleSection>
-
-      {/* Classification Section */}
-      <CollapsibleSection title="Classification">
-        <FieldRow label="Labels">
-          <div className="space-y-2">
-            <div className="flex flex-wrap gap-1">
-              {(featureData?.labels || []).map((label: string) => (
-                <Badge key={label} variant="secondary" className="text-xs">
-                  {label}
-                  <button onClick={() => handleRemoveLabel(label)} className="ml-1 hover:text-destructive">
-                    <X className="h-3 w-3" />
-                  </button>
-                </Badge>
-              ))}
-              {(!featureData?.labels || featureData.labels.length === 0) && (
-                <span className="text-muted-foreground text-xs">None</span>
-              )}
-            </div>
-            <div className="flex gap-1">
-              <Input
-                value={labelInput}
-                onChange={(e) => setLabelInput(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleAddLabel()}
-                placeholder="Add label..."
-                className="h-7 text-xs"
-              />
-              <Button size="icon" variant="ghost" className="h-7 w-7" onClick={handleAddLabel}>
-                <Plus className="h-3 w-3" />
-              </Button>
-            </div>
-          </div>
-        </FieldRow>
-
-        <FieldRow label="Components / Services">
-          <div className="space-y-2">
-            <div className="flex flex-wrap gap-1">
-              {(featureData?.components || []).map((comp: string) => (
-                <Badge key={comp} variant="outline" className="text-xs">
-                  {comp}
-                  <button onClick={() => handleRemoveComponent(comp)} className="ml-1 hover:text-destructive">
-                    <X className="h-3 w-3" />
-                  </button>
-                </Badge>
-              ))}
-              {(!featureData?.components || featureData.components.length === 0) && (
-                <span className="text-muted-foreground text-xs">None</span>
-              )}
-            </div>
-            <div className="flex gap-1">
-              <Input
-                value={componentInput}
-                onChange={(e) => setComponentInput(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleAddComponent()}
-                placeholder="Add component..."
-                className="h-7 text-xs"
-              />
-              <Button size="icon" variant="ghost" className="h-7 w-7" onClick={handleAddComponent}>
-                <Plus className="h-3 w-3" />
-              </Button>
-            </div>
-          </div>
-        </FieldRow>
-
-        <FieldRow label="Environment">
+        <FieldRow label="Priority">
           <Select 
-            value={featureData?.environment || '__none__'} 
-            onValueChange={(val) => handleUpdate('environment', val === '__none__' ? null : val)}
+            value={featureData?.priority || '__none__'} 
+            onValueChange={(val) => handleUpdate('priority', val === '__none__' ? null : val)}
           >
             <SelectTrigger className="h-8 text-sm">
-              <SelectValue placeholder="Select environment" />
+              <SelectValue placeholder="Set priority" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="__none__">Not set</SelectItem>
-              {ENVIRONMENT_OPTIONS.map((e) => (
-                <SelectItem key={e.value} value={e.value}>
-                  {e.label}
+              <SelectItem value="__none__">None</SelectItem>
+              {PRIORITY_OPTIONS.map((p) => (
+                <SelectItem key={p.value} value={p.value}>
+                  {p.label}
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
         </FieldRow>
       </CollapsibleSection>
+
 
       {/* Configure Fields Button */}
       <div className="mt-auto p-4 border-t">
