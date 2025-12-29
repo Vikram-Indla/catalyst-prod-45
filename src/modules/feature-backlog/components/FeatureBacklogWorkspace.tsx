@@ -4,7 +4,6 @@
  */
 import { useState, useCallback, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { FeatureBacklogHeader, FeatureViewMode } from './FeatureBacklogHeader';
 import { FeatureBacklogTable } from './FeatureBacklogTable';
@@ -34,7 +33,6 @@ interface FeatureBacklogWorkspaceProps {
 }
 
 export function FeatureBacklogWorkspace({ programId }: FeatureBacklogWorkspaceProps) {
-  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { preferences, updatePreferences } = useFeatureBacklogPreferences(programId);
 
@@ -134,16 +132,10 @@ export function FeatureBacklogWorkspace({ programId }: FeatureBacklogWorkspacePr
     };
   }, [programId, queryClient]);
 
-  // Handlers
   const handleFeatureClick = (featureId: string) => {
-    const feature = backlogData?.items.find(f => f.id === featureId);
-    if (feature?.project_id) {
-      // Navigate to full page view
-      navigate(`/projects/${feature.project_id}/features/${featureId}`);
-    } else {
-      // Open drawer for features without project
-      setSelectedFeatureId(featureId);
-    }
+    // Keep the backlog context visible: open the details drawer instead of navigating away.
+    // Users can still open the full page from within the drawer.
+    setSelectedFeatureId(featureId);
   };
 
   const handleSort = (field: string) => {
