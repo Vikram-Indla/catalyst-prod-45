@@ -322,7 +322,7 @@ export function WorkManager({ tab: initialTab }: WorkManagerProps) {
   return (
     <div className="flex flex-col h-full">
       {/* Page Header */}
-      <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900">
+      <div className="flex items-center justify-between px-6 py-4 border-b border-border bg-card">
         <div>
           <h1 className="text-[20px] font-semibold text-gray-900 dark:text-gray-100">Work Manager</h1>
           <p className="text-[13px] text-gray-500 dark:text-gray-400 mt-1">Personal task management and team coordination</p>
@@ -337,7 +337,7 @@ export function WorkManager({ tab: initialTab }: WorkManagerProps) {
       </div>
 
       {/* Tab Navigation */}
-      <div className="flex items-center gap-1 px-6 py-2 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900">
+      <div className="flex items-center gap-1 px-6 py-2 border-b border-border bg-card">
         {tabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
@@ -362,11 +362,11 @@ export function WorkManager({ tab: initialTab }: WorkManagerProps) {
 
       {/* Toolbar - Show for boards and tasks views */}
       {(activeTab === 'boards' || activeTab === 'tasks') && (
-        <div className="flex items-center justify-between px-6 py-3 bg-gray-50 dark:bg-gray-800/50 border-b border-gray-200 dark:border-gray-700">
+        <div className="flex items-center justify-between px-6 py-3 bg-muted border-b border-border">
           <div className="flex items-center gap-3">
             {/* Current Team Indicator */}
             {filters.teamId && (
-              <div className="flex items-center gap-2 px-3 py-1.5 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-md">
+                <div className="flex items-center gap-2 px-3 py-1.5 bg-card border border-border rounded-md">
                 <Users className="w-4 h-4 text-muted-foreground" />
                 <span className="text-[13px] font-medium text-foreground">
                   {teamsData.find(t => t.id === filters.teamId)?.name || 'Team'}
@@ -374,7 +374,7 @@ export function WorkManager({ tab: initialTab }: WorkManagerProps) {
               </div>
             )}
             {!filters.teamId && canViewAllTeams && (
-              <div className="flex items-center gap-2 px-3 py-1.5 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-md">
+              <div className="flex items-center gap-2 px-3 py-1.5 bg-card border border-border rounded-md">
                 <Users className="w-4 h-4 text-muted-foreground" />
                 <span className="text-[13px] font-medium text-foreground">All Teams</span>
               </div>
@@ -397,7 +397,7 @@ export function WorkManager({ tab: initialTab }: WorkManagerProps) {
             {/* Group By Dropdown - Only for boards view */}
             {activeTab === 'boards' && (
               <Select value={groupBy} onValueChange={(v) => setGroupBy(v as GroupByOption)}>
-                <SelectTrigger className="w-[140px] h-9 text-[13px] bg-white dark:bg-gray-900">
+                <SelectTrigger className="w-[140px] h-9 text-[13px] bg-card">
                   <div className="flex items-center gap-2">
                     <Layers className="w-4 h-4" />
                     <SelectValue placeholder="Group by" />
@@ -415,7 +415,7 @@ export function WorkManager({ tab: initialTab }: WorkManagerProps) {
             {/* Filter Popover */}
             <Popover>
               <PopoverTrigger asChild>
-                <Button variant="outline" size="sm" className="gap-2 text-[13px] bg-white dark:bg-gray-900">
+                <Button variant="outline" size="sm" className="gap-2 text-[13px] bg-card">
                   <Filter className="w-4 h-4" />
                   Filters
                   {activeFilterCount > 0 && (
