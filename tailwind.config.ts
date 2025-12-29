@@ -48,10 +48,11 @@ export default {
           3: "hsl(var(--surface-3))",
           elevated: "hsl(var(--surface-elevated))",
           overlay: "hsl(var(--surface-overlay))",
-          card: "hsl(var(--surface-card))",
-          muted: "hsl(var(--surface-muted))",
-          subtle: "hsl(var(--surface-subtle))",
-          hover: "hsl(var(--surface-hover))",
+          // Legacy HEX vars (used directly via var())
+          card: "var(--surface-card)",
+          muted: "var(--surface-muted)",
+          subtle: "var(--surface-subtle)",
+          hover: "var(--surface-hover)",
         },
         
         /* === SEMANTIC BORDER COLORS === */
@@ -317,8 +318,8 @@ export default {
         'secondary-green': 'hsl(var(--secondary-green))',
         
         /* Legacy surface tokens */
-        'surface-bg': 'hsl(var(--surface-bg))',
-        'surface-card': 'hsl(var(--surface-card))',
+        'surface-bg': 'var(--surface-bg)',
+        'surface-card': 'var(--surface-card)',
       },
       
       /* ═══════════════════════════════════════════════════════════════
