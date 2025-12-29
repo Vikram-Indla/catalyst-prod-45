@@ -2,7 +2,7 @@
  * FeatureBacklogTable — Data table for Features
  * Matches EpicBacklogListView structure exactly
  */
-import { useNavigate } from 'react-router-dom';
+
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
@@ -72,7 +72,6 @@ export function FeatureBacklogTable({
   onPageChange,
   onPageSizeChange,
 }: FeatureBacklogTableProps) {
-  const navigate = useNavigate();
   const allColumns = [...FEATURE_COLUMNS, ...OPTIONAL_COLUMNS];
   const displayColumns = allColumns.filter(col => 
     col.pinned || visibleColumns.includes(col.id)
@@ -137,6 +136,7 @@ export function FeatureBacklogTable({
               items.map(item => (
                 <TableRow
                   key={item.id}
+                  onClick={() => onItemClick(item.id)}
                   data-state={selectedItems.includes(item.id) ? 'selected' : undefined}
                   className="cursor-pointer group"
                 >
@@ -151,25 +151,13 @@ export function FeatureBacklogTable({
                   {displayColumns.map(col => (
                     <TableCell
                       key={col.id}
-                      onClick={() => {
-                        if (col.id === 'key') {
-                          // Navigate to feature detail page
-                          if (item.project_id) {
-                            navigate(`/projects/${item.project_id}/features/${item.id}`);
-                          } else {
-                            onItemClick(item.id);
-                          }
-                        } else if (col.id === 'summary') {
-                          onItemClick(item.id);
-                        }
-                      }}
                       className={cn(
                         col.id === 'key' && 'cursor-pointer',
                         col.id === 'summary' && 'font-medium hover:underline cursor-pointer',
                         'truncate'
                       )}
                     >
-                      {renderCell(item, col.id, navigate)}
+                      {renderCell(item, col.id)}
                     </TableCell>
                   ))}
                 </TableRow>
@@ -225,7 +213,7 @@ export function FeatureBacklogTable({
   );
 }
 
-function renderCell(item: FeatureBacklogItem, columnId: string, navigate: ReturnType<typeof useNavigate>) {
+function renderCell(item: FeatureBacklogItem, columnId: string) {
   switch (columnId) {
     case 'key':
       return (
