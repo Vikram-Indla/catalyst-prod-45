@@ -5086,13 +5086,17 @@ export type Database = {
           blocked: boolean | null
           blocked_reason: string | null
           budget: number | null
+          business_owner_id: string | null
           business_value: number | null
           capitalized: boolean | null
           change_number_id: string | null
+          components: string[] | null
           created_at: string | null
           deleted_at: string | null
+          department_id: string | null
           description: string | null
           display_id: string | null
+          environment: string | null
           epic_id: string
           estimate_points: number | null
           estimation_method: string | null
@@ -5104,6 +5108,7 @@ export type Database = {
           is_orphan_on_board: boolean | null
           iteration_id: string | null
           job_size: number | null
+          labels: string[] | null
           name: string
           notes: string | null
           original_minutes: number | null
@@ -5114,6 +5119,7 @@ export type Database = {
           planned_end_date: string | null
           planned_start_date: string | null
           priority: string | null
+          product_id: string | null
           program_epic_inherited: boolean | null
           program_id: string | null
           progress_pct: number | null
@@ -5121,6 +5127,7 @@ export type Database = {
           rank_within_epic: number | null
           release_id: string | null
           remaining_minutes: number | null
+          risk: string | null
           risk_reduction: number | null
           spent_minutes: number | null
           status: Database["public"]["Enums"]["feature_status"] | null
@@ -5140,13 +5147,17 @@ export type Database = {
           blocked?: boolean | null
           blocked_reason?: string | null
           budget?: number | null
+          business_owner_id?: string | null
           business_value?: number | null
           capitalized?: boolean | null
           change_number_id?: string | null
+          components?: string[] | null
           created_at?: string | null
           deleted_at?: string | null
+          department_id?: string | null
           description?: string | null
           display_id?: string | null
+          environment?: string | null
           epic_id: string
           estimate_points?: number | null
           estimation_method?: string | null
@@ -5158,6 +5169,7 @@ export type Database = {
           is_orphan_on_board?: boolean | null
           iteration_id?: string | null
           job_size?: number | null
+          labels?: string[] | null
           name: string
           notes?: string | null
           original_minutes?: number | null
@@ -5168,6 +5180,7 @@ export type Database = {
           planned_end_date?: string | null
           planned_start_date?: string | null
           priority?: string | null
+          product_id?: string | null
           program_epic_inherited?: boolean | null
           program_id?: string | null
           progress_pct?: number | null
@@ -5175,6 +5188,7 @@ export type Database = {
           rank_within_epic?: number | null
           release_id?: string | null
           remaining_minutes?: number | null
+          risk?: string | null
           risk_reduction?: number | null
           spent_minutes?: number | null
           status?: Database["public"]["Enums"]["feature_status"] | null
@@ -5194,13 +5208,17 @@ export type Database = {
           blocked?: boolean | null
           blocked_reason?: string | null
           budget?: number | null
+          business_owner_id?: string | null
           business_value?: number | null
           capitalized?: boolean | null
           change_number_id?: string | null
+          components?: string[] | null
           created_at?: string | null
           deleted_at?: string | null
+          department_id?: string | null
           description?: string | null
           display_id?: string | null
+          environment?: string | null
           epic_id?: string
           estimate_points?: number | null
           estimation_method?: string | null
@@ -5212,6 +5230,7 @@ export type Database = {
           is_orphan_on_board?: boolean | null
           iteration_id?: string | null
           job_size?: number | null
+          labels?: string[] | null
           name?: string
           notes?: string | null
           original_minutes?: number | null
@@ -5222,6 +5241,7 @@ export type Database = {
           planned_end_date?: string | null
           planned_start_date?: string | null
           priority?: string | null
+          product_id?: string | null
           program_epic_inherited?: boolean | null
           program_id?: string | null
           progress_pct?: number | null
@@ -5229,6 +5249,7 @@ export type Database = {
           rank_within_epic?: number | null
           release_id?: string | null
           remaining_minutes?: number | null
+          risk?: string | null
           risk_reduction?: number | null
           spent_minutes?: number | null
           status?: Database["public"]["Enums"]["feature_status"] | null
@@ -5249,10 +5270,24 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "features_business_owner_id_fkey"
+            columns: ["business_owner_id"]
+            isOneToOne: false
+            referencedRelation: "business_owners"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "features_change_number_id_fkey"
             columns: ["change_number_id"]
             isOneToOne: false
             referencedRelation: "change_numbers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "features_department_id_fkey"
+            columns: ["department_id"]
+            isOneToOne: false
+            referencedRelation: "departments"
             referencedColumns: ["id"]
           },
           {
@@ -5274,6 +5309,13 @@ export type Database = {
             columns: ["pi_id"]
             isOneToOne: false
             referencedRelation: "program_increments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "features_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
             referencedColumns: ["id"]
           },
           {
