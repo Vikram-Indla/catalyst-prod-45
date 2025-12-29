@@ -5,7 +5,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useEffect, useState } from 'react';
 
-export type StarredItemType = 'epic' | 'feature' | 'story' | 'task' | 'incident' | 'defect';
+export type StarredItemType = 'epic' | 'feature' | 'story' | 'task' | 'incident' | 'defect' | 'business_request' | 'theme' | 'objective' | 'dependency' | 'risk';
 
 export interface StarredItem {
   id: string;

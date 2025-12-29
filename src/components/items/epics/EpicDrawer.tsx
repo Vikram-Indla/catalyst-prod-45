@@ -43,6 +43,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { ProgressWithTooltip } from '@/components/shared/ProgressWithTooltip';
+import { WorkItemStarButton } from '@/components/shared/WorkItemStarButton';
 
 // Epic-specific tabs
 import { EpicDetailsViewTab } from './drawer-tabs/EpicDetailsViewTab';
@@ -494,6 +495,15 @@ export function EpicDrawer({ isOpen, onClose, epicId, onEpicChange }: EpicDrawer
                     ) : null}
                   </div>
                 </div>
+
+                {/* Star Button */}
+                {epicId && (
+                  <WorkItemStarButton
+                    itemId={epicId}
+                    itemType="epic"
+                    size="md"
+                  />
+                )}
 
                 {/* More Options */}
                 <DropdownMenu>

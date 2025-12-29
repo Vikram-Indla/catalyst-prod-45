@@ -1,8 +1,9 @@
 import { useEffect, useCallback, useState, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import { X, Eye, Share2, MoreHorizontal, Maximize2, Minimize2, Plus, Flag, Copy, Move, Archive, Trash2, Printer, FileSpreadsheet, FileText } from 'lucide-react';
+import { X, Eye, Share2, MoreHorizontal, Maximize2, Minimize2, Plus, Flag, Copy, Move, Archive, Trash2, Printer, FileSpreadsheet, FileText, Star } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { Incident } from '@/types/release';
+import { WorkItemStarButton } from '@/components/shared/WorkItemStarButton';
 import { IncidentModalMain } from './IncidentModalMain';
 import { IncidentModalSidebar } from './IncidentModalSidebar';
 import {
@@ -128,6 +129,15 @@ export default function IncidentDetailModal({ incident, isOpen, onClose, parentI
 
           {/* Header Actions */}
           <div className="flex items-center gap-1">
+            {/* Star Button */}
+            {incident.id && (
+              <WorkItemStarButton
+                itemId={incident.id}
+                itemType="incident"
+                size="md"
+                variant="ghost"
+              />
+            )}
             <button 
               className="w-8 h-8 flex items-center justify-center rounded hover:bg-[#F4F5F7] text-[#42526E] hover:text-[#172B4D]"
               title="Watch"

@@ -13,6 +13,8 @@ import type { WorkItemType } from '../icons/WorkItemTypeIcon';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
 import { getValidatedWorkItemRoute } from '@/lib/workItemRoutes';
+import { WorkItemStarButton } from '@/components/shared/WorkItemStarButton';
+import type { StarredItemType } from '@/hooks/home/useStarredItems';
 import { formatDistanceToNow } from 'date-fns';
 import {
   DropdownMenu,
@@ -384,9 +386,18 @@ export function DeliveryGridRow({
           )}
         </div>
 
-        {/* Quick actions - Delivery specific: Kebab menu with Assign to me */}
-        {canAssign && (
-          <div className={cn("flex items-center justify-end gap-0.5 transition-opacity", isHovered ? "opacity-100" : "opacity-0")}>
+        {/* Quick actions - Delivery specific: Star + Kebab menu */}
+        <div className={cn("flex items-center justify-end gap-0.5 transition-opacity", isHovered ? "opacity-100" : "opacity-0")}>
+          {/* Star Button - always visible on hover */}
+          <WorkItemStarButton
+            itemId={item.id}
+            itemType={item.type as StarredItemType}
+            size="sm"
+            showTooltip={false}
+          />
+          
+          {/* Kebab menu with Assign to me */}
+          {canAssign && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button 
@@ -417,8 +428,8 @@ export function DeliveryGridRow({
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-          </div>
-        )}
+          )}
+        </div>
       </div>
       
       {/* Mobile Row */}

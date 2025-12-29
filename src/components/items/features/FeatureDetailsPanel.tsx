@@ -50,6 +50,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
 import type { Feature, FeatureStatus } from '@/types/feature.types';
+import { WorkItemStarButton } from '@/components/shared/WorkItemStarButton';
 
 // Import sub-tabs from feature-detail
 import { FeatureOverviewTab } from '@/pages/project/feature-detail/FeatureOverviewTab';
@@ -303,6 +304,7 @@ export function FeatureDetailsPanel({ feature, open, onClose }: FeatureDetailsPa
 
               {/* Actions */}
               <div className="flex items-center gap-1 md:gap-2 flex-shrink-0">
+                {feature?.id && <WorkItemStarButton itemId={feature.id} itemType="feature" size="md" />}
                 {feature?.id && <WorkItemPresence workItemType="features" workItemId={feature.id} />}
                 {feature?.id && <WorkItemWatchers workItemType="feature" workItemId={feature.id} />}
                 
