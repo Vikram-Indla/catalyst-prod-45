@@ -130,19 +130,19 @@ function getCoverageStatus(coverage: number): { color: string; label: string; ba
   // Use safePercentage to prevent NaN issues
   const safeCoverage = safePercentage(coverage);
   if (safeCoverage >= 80) return { 
-    color: 'var(--status-success)', 
+    color: 'hsl(var(--success))', 
     label: 'Healthy',
-    badgeClass: 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400'
+    badgeClass: 'bg-success/10 text-success border border-success/20'
   };
   if (safeCoverage >= 50) return { 
-    color: 'var(--status-warning)', 
+    color: 'hsl(var(--warning))', 
     label: 'At Risk',
-    badgeClass: 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400'
+    badgeClass: 'bg-warning/10 text-warning border border-warning/20'
   };
   return { 
-    color: 'var(--status-danger)', 
+    color: 'hsl(var(--danger))', 
     label: 'Critical',
-    badgeClass: 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400'
+    badgeClass: 'bg-danger/10 text-danger border border-danger/20'
   };
 }
 
@@ -643,7 +643,7 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
                             <span className={cn(TYPOGRAPHY.tableCellSecondary)} style={{ color: 'var(--text-secondary-hex)' }}>—</span>
                           ) : data.count > 0 ? (
                             <>
-                              <div className="flex-1 h-[3px] rounded-full overflow-hidden bg-gray-200 dark:bg-gray-700">
+                              <div className="flex-1 h-[3px] rounded-full overflow-hidden bg-muted">
                                 <div 
                                   className="h-full rounded-full transition-all"
                                   style={{ 
@@ -694,8 +694,7 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
                               className={cn(
                                 TYPOGRAPHY.countBadge, 
                                 'inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded',
-                                'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400',
-                                'border border-amber-300 dark:border-amber-600/50'
+                                'bg-warning/10 text-warning border border-warning/20'
                               )}
                             >
                               <AlertTriangle size={10} />
