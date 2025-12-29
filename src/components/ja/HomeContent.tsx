@@ -303,7 +303,7 @@ function ProjectCard({
 // ============================================
 // UNIFIED DATA GRID COMPONENT
 // ============================================
-const GRID_COLS = '100px 1fr 160px 100px 80px 80px';
+const GRID_COLS = '100px 1fr 70px 100px 100px 140px 80px';
 
 function UnifiedDataGrid({ 
   items, 
@@ -345,7 +345,8 @@ function UnifiedDataGrid({
       >
         <div>Key</div>
         <div>Summary</div>
-        <div>Project</div>
+        <div>Mode</div>
+        <div>Level</div>
         <div>Updated</div>
         <div>Assignee</div>
         <div></div>

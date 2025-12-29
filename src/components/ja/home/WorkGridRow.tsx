@@ -32,12 +32,34 @@ import {
 import type { HomeRoleMode } from './HomeRoleModeSelector';
 import type { WorkItemNavigation, WorkItemContext } from '@/hooks/home/useUnifiedHomeData';
 import { LevelTag } from './LevelTag';
+import { ModeTag } from './ModeTag';
 
 // ============================================
 // SHARED TYPES
 // ============================================
 // Level hierarchy type
 export type HomeLevel = 'Enterprise' | 'Product' | 'Program' | 'Project' | 'Release' | 'Planner';
+
+// Work item mode type
+export type WorkItemMode = 'Operations' | 'Delivery' | 'Planner';
+
+// Utility: Determine mode from work item type
+export function getWorkItemMode(type: string): WorkItemMode {
+  const typeStr = type.toLowerCase();
+  
+  // Operations: Incidents, Defects, Release-related
+  if (['incident', 'defect', 'release', 'change'].includes(typeStr)) {
+    return 'Operations';
+  }
+  
+  // Planner: Planning artifacts
+  if (['theme', 'objective', 'dependency', 'risk', 'business-request', 'business_request'].includes(typeStr)) {
+    return 'Planner';
+  }
+  
+  // Delivery: Everything else (epics, features, stories, tasks)
+  return 'Delivery';
+}
 
 export interface BaseWorkItem {
   id: string;
@@ -59,7 +81,7 @@ export interface BaseWorkItem {
   context?: WorkItemContext;
 }
 
-export const GRID_COLS = '100px 1fr 120px 110px 140px 80px';
+export const GRID_COLS = '100px 1fr 70px 100px 100px 140px 80px';
 export const GRID_COLS_MOBILE = '80px 1fr 80px';
 
 // ============================================
@@ -167,6 +189,11 @@ export function OperationsGridRow({
           <div className="text-sm font-medium leading-5 text-[var(--text-1)] truncate group-hover:text-[#2563eb] dark:group-hover:text-[#60a5fa] transition-colors">
             {item.summary}
           </div>
+        </div>
+
+        {/* Mode - Operations/Delivery/Planner */}
+        <div className="min-w-0">
+          <ModeTag mode={getWorkItemMode(item.type)} />
         </div>
 
         {/* Level - styled tag */}
@@ -358,6 +385,11 @@ export function DeliveryGridRow({
           <div className="text-sm font-medium leading-5 text-[var(--text-1)] truncate group-hover:text-[#2563eb] dark:group-hover:text-[#60a5fa] transition-colors">
             {item.summary}
           </div>
+        </div>
+
+        {/* Mode - Operations/Delivery/Planner */}
+        <div className="min-w-0">
+          <ModeTag mode={getWorkItemMode(item.type)} />
         </div>
 
         {/* Level - styled tag */}
@@ -557,6 +589,11 @@ export function PlannerGridRow({
           <div className="text-sm font-medium leading-5 text-[var(--text-1)] truncate group-hover:text-[#2563eb] dark:group-hover:text-[#60a5fa] transition-colors">
             {item.summary}
           </div>
+        </div>
+
+        {/* Mode - Operations/Delivery/Planner */}
+        <div className="min-w-0">
+          <ModeTag mode={getWorkItemMode(item.type)} />
         </div>
 
         {/* Level - styled tag */}
