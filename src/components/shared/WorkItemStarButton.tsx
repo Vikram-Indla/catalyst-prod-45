@@ -16,6 +16,10 @@ interface WorkItemStarButtonProps {
   variant?: 'ghost' | 'outline';
   className?: string;
   showTooltip?: boolean;
+  /** When true, star is always visible if starred, otherwise follows hover state */
+  alwaysVisibleWhenStarred?: boolean;
+  /** Parent hover state - used with alwaysVisibleWhenStarred */
+  isHovered?: boolean;
 }
 
 export function WorkItemStarButton({
@@ -25,6 +29,8 @@ export function WorkItemStarButton({
   variant = 'ghost',
   className,
   showTooltip = true,
+  alwaysVisibleWhenStarred = false,
+  isHovered = true,
 }: WorkItemStarButtonProps) {
   const { data: starredIds, isLoading } = useStarredItemIds();
   const toggleStar = useToggleStar();
@@ -55,6 +61,9 @@ export function WorkItemStarButton({
     lg: 'h-5 w-5',
   };
 
+  // Determine visibility: always visible if starred (when alwaysVisibleWhenStarred), otherwise follow hover
+  const shouldBeVisible = alwaysVisibleWhenStarred ? (isStarred || isHovered) : true;
+
   const button = (
     <Button
       variant={variant}
@@ -65,6 +74,7 @@ export function WorkItemStarButton({
         isStarred && 'text-amber-500 hover:text-amber-600',
         !isStarred && 'text-muted-foreground hover:text-amber-500',
         isPending && 'opacity-50 cursor-wait',
+        !shouldBeVisible && 'opacity-0',
         className
       )}
       onClick={handleToggle}
