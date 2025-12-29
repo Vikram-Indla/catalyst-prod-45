@@ -213,22 +213,6 @@ export function FeatureRightRail({ feature, collapsed, onToggleCollapse, onUpdat
           <span>{PLACEHOLDER_FIELDS.product || <span className="text-muted-foreground">Not assigned</span>}</span>
         </FieldRow>
 
-        <FieldRow label="Department">
-          <span>{PLACEHOLDER_FIELDS.department || <span className="text-muted-foreground">Not assigned</span>}</span>
-        </FieldRow>
-
-        <FieldRow label="Business Owner">
-          {PLACEHOLDER_FIELDS.businessOwner ? (
-            <div className="flex items-center gap-2">
-              <div className="w-6 h-6 rounded-full bg-brand-primary/10 text-brand-primary flex items-center justify-center text-xs font-medium">
-                {PLACEHOLDER_FIELDS.businessOwner.initials}
-              </div>
-              <span>{PLACEHOLDER_FIELDS.businessOwner.name}</span>
-            </div>
-          ) : (
-            <span className="text-muted-foreground">Not assigned</span>
-          )}
-        </FieldRow>
       </CollapsibleSection>
 
       {/* Planning Section */}
@@ -331,13 +315,6 @@ export function FeatureRightRail({ feature, collapsed, onToggleCollapse, onUpdat
         </FieldRow>
       </CollapsibleSection>
 
-      {/* Configure Fields Button */}
-      <div className="mt-auto p-4 border-t">
-        <Button variant="ghost" size="sm" className="w-full justify-center">
-          <Settings className="h-4 w-4 mr-2" />
-          Configure Fields
-        </Button>
-      </div>
     </div>
   );
 }

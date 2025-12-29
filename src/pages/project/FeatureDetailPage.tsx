@@ -308,12 +308,14 @@ export default function FeatureDetailPage() {
 
           {/* Actions */}
           <div className="flex items-center gap-2 flex-shrink-0">
-            {/* Transition Dropdown */}
+            <Button variant="outline" size="sm" onClick={() => setIsCreateStoryOpen(true)}>
+              <Plus className="h-4 w-4 mr-1" />
+              Create Story
+            </Button>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button size="sm" className="bg-brand-primary hover:bg-brand-primary-hover text-white">
-                  <ChevronRight className="h-4 w-4 mr-1" />
-                  Transition
+                <Button variant="ghost" size="icon">
+                  <MoreHorizontal className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
@@ -326,38 +328,12 @@ export default function FeatureDetailPage() {
                 <DropdownMenuItem onClick={() => handleStatusChange('implementing')}>
                   Start Progress
                 </DropdownMenuItem>
-                <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={() => handleStatusChange('done')}>
                   Mark Done
                 </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-
-            <Button variant="outline" size="sm" onClick={() => setIsAssignModalOpen(true)}>
-              <UserPlus className="h-4 w-4 mr-1" />
-              Assign
-            </Button>
-            <Button variant="outline" size="sm">
-              <Link2 className="h-4 w-4 mr-1" />
-              Link
-            </Button>
-            <Button variant="outline" size="sm" onClick={() => setIsCreateStoryOpen(true)}>
-              <Plus className="h-4 w-4 mr-1" />
-              Create Story
-            </Button>
-            <Button variant="ghost" size="icon" onClick={handleCopyLink} title="Watch">
-              <Eye className="h-4 w-4" />
-            </Button>
-            <Button variant="ghost" size="icon" onClick={handleCopyLink} title="Share">
-              <Share2 className="h-4 w-4" />
-            </Button>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon">
-                  <MoreHorizontal className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => setIsAssignModalOpen(true)}>Assign</DropdownMenuItem>
+                <DropdownMenuItem onClick={handleCopyLink}>Copy Link</DropdownMenuItem>
                 <DropdownMenuItem>Edit</DropdownMenuItem>
                 <DropdownMenuItem>Clone</DropdownMenuItem>
                 <DropdownMenuSeparator />
