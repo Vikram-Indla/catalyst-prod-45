@@ -106,6 +106,16 @@ export function FeatureBacklogWorkspace({ programId }: FeatureBacklogWorkspacePr
     queryFn: () => fetchProgramEpics(programId),
   });
 
+  // Auto-select first item when data loads
+  useEffect(() => {
+    if (!isLoading && backlogData?.items?.length && !selectedFeatureId) {
+      const firstItem = backlogData.items[0];
+      if (firstItem?.id) {
+        setSelectedFeatureId(firstItem.id);
+      }
+    }
+  }, [isLoading, backlogData?.items, selectedFeatureId]);
+
   // Realtime subscription for features
   useEffect(() => {
     const channel = supabase
