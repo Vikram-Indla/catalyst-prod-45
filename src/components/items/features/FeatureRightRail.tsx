@@ -295,43 +295,6 @@ export function FeatureRightRail({ featureId, featureData, onRefresh }: FeatureR
           </Select>
         </FieldRow>
 
-        <FieldRow label="Department">
-          <Select 
-            value={featureData?.department_id || '__none__'} 
-            onValueChange={(val) => handleUpdate('department_id', val === '__none__' ? null : val)}
-          >
-            <SelectTrigger className="h-8 text-sm">
-              <SelectValue placeholder="Select department" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="__none__">Not assigned</SelectItem>
-              {departments?.map((d) => (
-                <SelectItem key={d.id} value={d.id}>
-                  {d.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </FieldRow>
-
-        <FieldRow label="Business Owner">
-          <Select 
-            value={featureData?.business_owner_id || '__none__'} 
-            onValueChange={(val) => handleUpdate('business_owner_id', val === '__none__' ? null : val)}
-          >
-            <SelectTrigger className="h-8 text-sm">
-              <SelectValue placeholder="Select business owner" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="__none__">Not assigned</SelectItem>
-              {businessOwners?.map((b) => (
-                <SelectItem key={b.id} value={b.id}>
-                  {b.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </FieldRow>
       </CollapsibleSection>
 
       {/* Planning Section */}
@@ -440,14 +403,6 @@ export function FeatureRightRail({ featureId, featureData, onRefresh }: FeatureR
         </FieldRow>
       </CollapsibleSection>
 
-
-      {/* Configure Fields Button */}
-      <div className="mt-auto p-4 border-t">
-        <Button variant="ghost" size="sm" className="w-full justify-center">
-          <Settings className="h-4 w-4 mr-2" />
-          Configure Fields
-        </Button>
-      </div>
     </div>
   );
 }

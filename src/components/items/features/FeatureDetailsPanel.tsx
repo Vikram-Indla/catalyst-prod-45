@@ -301,38 +301,7 @@ export function FeatureDetailsPanel({ feature, open, onClose }: FeatureDetailsPa
               {/* Actions */}
               <div className="flex items-center gap-1 md:gap-2 flex-shrink-0">
                 {feature?.id && <WorkItemStarButton itemId={feature.id} itemType="feature" size="md" />}
-                {feature?.id && <WorkItemPresence workItemType="features" workItemId={feature.id} />}
-                {feature?.id && <WorkItemWatchers workItemType="feature" workItemId={feature.id} />}
                 
-                {/* Transition Dropdown */}
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button size="sm" className="bg-brand-primary hover:bg-brand-primary-hover text-white hidden sm:flex">
-                      <ChevronRight className="h-4 w-4 mr-1" />
-                      Transition
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem onClick={() => handleStatusChange('analyzing')}>
-                      Move to Analysis
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => handleStatusChange('backlog')}>
-                      Move to Backlog
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => handleStatusChange('implementing')}>
-                      Start Progress
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={() => handleStatusChange('done')}>
-                      Mark Done
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-
-                <Button variant="outline" size="sm" onClick={() => setIsAssignModalOpen(true)} className="hidden md:flex">
-                  <UserPlus className="h-4 w-4 mr-1" />
-                  Assign
-                </Button>
                 <Button variant="outline" size="sm" onClick={() => setIsCreateStoryOpen(true)} className="hidden md:flex">
                   <Plus className="h-4 w-4 mr-1" />
                   Story
@@ -351,6 +320,19 @@ export function FeatureDetailsPanel({ feature, open, onClose }: FeatureDetailsPa
                       Create Story
                     </DropdownMenuItem>
                     <DropdownMenuSeparator className="md:hidden" />
+                    <DropdownMenuItem onClick={() => handleStatusChange('analyzing')}>
+                      Move to Analysis
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => handleStatusChange('backlog')}>
+                      Move to Backlog
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => handleStatusChange('implementing')}>
+                      Start Progress
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => handleStatusChange('done')}>
+                      Mark Done
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={handleCopyLink}>Copy Link</DropdownMenuItem>
                     <DropdownMenuItem onClick={handleOpenFullPage}>Open Full Page</DropdownMenuItem>
                     <DropdownMenuSeparator />
