@@ -235,8 +235,8 @@ export function FeatureRightRail({ featureId, featureData, onRefresh }: FeatureR
       <CollapsibleSection title="Details">
         <FieldRow label="Assignee">
           <Select 
-            value={featureData?.assignee_id || featureData?.owner_id || ''} 
-            onValueChange={(val) => handleUpdate('assignee_id', val || null)}
+            value={featureData?.assignee_id || featureData?.owner_id || '__none__'} 
+            onValueChange={(val) => handleUpdate('assignee_id', val === '__none__' ? null : val)}
           >
             <SelectTrigger className="h-8 text-sm">
               <SelectValue placeholder="Select assignee">
@@ -251,7 +251,7 @@ export function FeatureRightRail({ featureId, featureData, onRefresh }: FeatureR
               </SelectValue>
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">Unassigned</SelectItem>
+              <SelectItem value="__none__">Unassigned</SelectItem>
               {profiles?.map((p) => (
                 <SelectItem key={p.id} value={p.id}>
                   {p.full_name || p.email}
@@ -263,14 +263,14 @@ export function FeatureRightRail({ featureId, featureData, onRefresh }: FeatureR
 
         <FieldRow label="Project">
           <Select 
-            value={featureData?.project_id || ''} 
-            onValueChange={(val) => handleUpdate('project_id', val || null)}
+            value={featureData?.project_id || '__none__'} 
+            onValueChange={(val) => handleUpdate('project_id', val === '__none__' ? null : val)}
           >
             <SelectTrigger className="h-8 text-sm">
               <SelectValue placeholder="Select project" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">None</SelectItem>
+              <SelectItem value="__none__">None</SelectItem>
               {projects?.map((p) => (
                 <SelectItem key={p.id} value={p.id}>
                   {p.is_default ? `${p.name} (Default)` : p.name}
@@ -282,14 +282,14 @@ export function FeatureRightRail({ featureId, featureData, onRefresh }: FeatureR
 
         <FieldRow label="Program">
           <Select 
-            value={featureData?.program_id || ''} 
-            onValueChange={(val) => handleUpdate('program_id', val || null)}
+            value={featureData?.program_id || '__none__'} 
+            onValueChange={(val) => handleUpdate('program_id', val === '__none__' ? null : val)}
           >
             <SelectTrigger className="h-8 text-sm">
               <SelectValue placeholder="Select program" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">Not assigned</SelectItem>
+              <SelectItem value="__none__">Not assigned</SelectItem>
               {programs?.map((p) => (
                 <SelectItem key={p.id} value={p.id}>
                   {p.name}
@@ -301,14 +301,14 @@ export function FeatureRightRail({ featureId, featureData, onRefresh }: FeatureR
 
         <FieldRow label="Parent Epic">
           <Select 
-            value={featureData?.epic_id || ''} 
-            onValueChange={(val) => handleUpdate('epic_id', val || null)}
+            value={featureData?.epic_id || '__none__'} 
+            onValueChange={(val) => handleUpdate('epic_id', val === '__none__' ? null : val)}
           >
             <SelectTrigger className="h-8 text-sm">
               <SelectValue placeholder="Select epic" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">None</SelectItem>
+              <SelectItem value="__none__">None</SelectItem>
               {epics?.map((e) => (
                 <SelectItem key={e.id} value={e.id}>
                   {e.epic_key} - {e.name}
@@ -320,14 +320,14 @@ export function FeatureRightRail({ featureId, featureData, onRefresh }: FeatureR
 
         <FieldRow label="Product">
           <Select 
-            value={featureData?.product_id || ''} 
-            onValueChange={(val) => handleUpdate('product_id', val || null)}
+            value={featureData?.product_id || '__none__'} 
+            onValueChange={(val) => handleUpdate('product_id', val === '__none__' ? null : val)}
           >
             <SelectTrigger className="h-8 text-sm">
               <SelectValue placeholder="Select product" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">Not assigned</SelectItem>
+              <SelectItem value="__none__">Not assigned</SelectItem>
               {products?.map((p) => (
                 <SelectItem key={p.id} value={p.id}>
                   {p.name}
@@ -339,14 +339,14 @@ export function FeatureRightRail({ featureId, featureData, onRefresh }: FeatureR
 
         <FieldRow label="Department">
           <Select 
-            value={featureData?.department_id || ''} 
-            onValueChange={(val) => handleUpdate('department_id', val || null)}
+            value={featureData?.department_id || '__none__'} 
+            onValueChange={(val) => handleUpdate('department_id', val === '__none__' ? null : val)}
           >
             <SelectTrigger className="h-8 text-sm">
               <SelectValue placeholder="Select department" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">Not assigned</SelectItem>
+              <SelectItem value="__none__">Not assigned</SelectItem>
               {departments?.map((d) => (
                 <SelectItem key={d.id} value={d.id}>
                   {d.name}
@@ -358,14 +358,14 @@ export function FeatureRightRail({ featureId, featureData, onRefresh }: FeatureR
 
         <FieldRow label="Business Owner">
           <Select 
-            value={featureData?.business_owner_id || ''} 
-            onValueChange={(val) => handleUpdate('business_owner_id', val || null)}
+            value={featureData?.business_owner_id || '__none__'} 
+            onValueChange={(val) => handleUpdate('business_owner_id', val === '__none__' ? null : val)}
           >
             <SelectTrigger className="h-8 text-sm">
               <SelectValue placeholder="Select business owner" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">Not assigned</SelectItem>
+              <SelectItem value="__none__">Not assigned</SelectItem>
               {businessOwners?.map((b) => (
                 <SelectItem key={b.id} value={b.id}>
                   {b.name}
@@ -426,14 +426,14 @@ export function FeatureRightRail({ featureId, featureData, onRefresh }: FeatureR
 
         <FieldRow label="Release">
           <Select 
-            value={featureData?.release_id || ''} 
-            onValueChange={(val) => handleUpdate('release_id', val || null)}
+            value={featureData?.release_id || '__none__'} 
+            onValueChange={(val) => handleUpdate('release_id', val === '__none__' ? null : val)}
           >
             <SelectTrigger className="h-8 text-sm">
               <SelectValue placeholder="Select release" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">Not assigned</SelectItem>
+              <SelectItem value="__none__">Not assigned</SelectItem>
               {releases?.map((r) => (
                 <SelectItem key={r.id} value={r.id}>
                   {r.name}
@@ -445,14 +445,14 @@ export function FeatureRightRail({ featureId, featureData, onRefresh }: FeatureR
 
         <FieldRow label="Change Number">
           <Select 
-            value={featureData?.change_number_id || ''} 
-            onValueChange={(val) => handleUpdate('change_number_id', val || null)}
+            value={featureData?.change_number_id || '__none__'} 
+            onValueChange={(val) => handleUpdate('change_number_id', val === '__none__' ? null : val)}
           >
             <SelectTrigger className="h-8 text-sm">
               <SelectValue placeholder="Select change number" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">Not assigned</SelectItem>
+              <SelectItem value="__none__">Not assigned</SelectItem>
               {changeNumbers?.map((c) => (
                 <SelectItem key={c.id} value={c.id}>
                   {c.number} {c.description ? `- ${c.description}` : ''}
@@ -465,14 +465,14 @@ export function FeatureRightRail({ featureId, featureData, onRefresh }: FeatureR
         <div className="grid grid-cols-2 gap-3">
           <FieldRow label="Priority">
             <Select 
-              value={featureData?.priority || ''} 
-              onValueChange={(val) => handleUpdate('priority', val || null)}
+              value={featureData?.priority || '__none__'} 
+              onValueChange={(val) => handleUpdate('priority', val === '__none__' ? null : val)}
             >
               <SelectTrigger className="h-8 text-sm">
                 <SelectValue placeholder="Set priority" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">None</SelectItem>
+                <SelectItem value="__none__">None</SelectItem>
                 {PRIORITY_OPTIONS.map((p) => (
                   <SelectItem key={p.value} value={p.value}>
                     {p.label}
@@ -484,14 +484,14 @@ export function FeatureRightRail({ featureId, featureData, onRefresh }: FeatureR
 
           <FieldRow label="Risk">
             <Select 
-              value={featureData?.risk || ''} 
-              onValueChange={(val) => handleUpdate('risk', val || null)}
+              value={featureData?.risk || '__none__'} 
+              onValueChange={(val) => handleUpdate('risk', val === '__none__' ? null : val)}
             >
               <SelectTrigger className="h-8 text-sm">
                 <SelectValue placeholder="Set risk" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">None</SelectItem>
+                <SelectItem value="__none__">None</SelectItem>
                 {RISK_OPTIONS.map((r) => (
                   <SelectItem key={r.value} value={r.value}>
                     {r.label}
@@ -567,14 +567,14 @@ export function FeatureRightRail({ featureId, featureData, onRefresh }: FeatureR
 
         <FieldRow label="Environment">
           <Select 
-            value={featureData?.environment || ''} 
-            onValueChange={(val) => handleUpdate('environment', val || null)}
+            value={featureData?.environment || '__none__'} 
+            onValueChange={(val) => handleUpdate('environment', val === '__none__' ? null : val)}
           >
             <SelectTrigger className="h-8 text-sm">
               <SelectValue placeholder="Select environment" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">Not set</SelectItem>
+              <SelectItem value="__none__">Not set</SelectItem>
               {ENVIRONMENT_OPTIONS.map((e) => (
                 <SelectItem key={e.value} value={e.value}>
                   {e.label}
