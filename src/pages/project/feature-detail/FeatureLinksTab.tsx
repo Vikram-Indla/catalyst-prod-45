@@ -6,6 +6,7 @@ import { Zap, FileText, Link2, ArrowUp, ArrowDown, Ban, ExternalLink } from 'luc
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { toast } from 'sonner';
 
 interface FeatureLinksTabProps {
   feature: {
@@ -51,10 +52,14 @@ export function FeatureLinksTab({ feature }: FeatureLinksTabProps) {
             </div>
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2">
-                <span className="font-mono text-sm font-medium text-[#2563eb] hover:text-[#1d4ed8] transition-colors">
-                  {feature.epic.epic_key}
-                </span>
-                <span className="text-muted-foreground">·</span>
+                {feature.epic.epic_key && (
+                  <>
+                    <span className="font-mono text-sm font-medium text-[#2563eb] hover:text-[#1d4ed8] transition-colors">
+                      {feature.epic.epic_key}
+                    </span>
+                    <span className="text-muted-foreground">-</span>
+                  </>
+                )}
                 <span className="text-sm text-foreground truncate">{feature.epic.name}</span>
               </div>
             </div>
@@ -73,7 +78,11 @@ export function FeatureLinksTab({ feature }: FeatureLinksTabProps) {
           <h3 className="text-sm font-semibold text-foreground uppercase tracking-wide">
             Child Stories ({MOCK_STORIES.length})
           </h3>
-          <Button variant="outline" size="sm">
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={() => toast.info('Link Story functionality coming soon')}
+          >
             <Link2 className="h-4 w-4 mr-1" />
             Link Story
           </Button>
@@ -113,7 +122,11 @@ export function FeatureLinksTab({ feature }: FeatureLinksTabProps) {
           <h3 className="text-sm font-semibold text-foreground uppercase tracking-wide">
             Blocks / Blocked By
           </h3>
-          <Button variant="outline" size="sm">
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={() => toast.info('Add Dependency functionality coming soon')}
+          >
             <Link2 className="h-4 w-4 mr-1" />
             Add Dependency
           </Button>
@@ -163,7 +176,11 @@ export function FeatureLinksTab({ feature }: FeatureLinksTabProps) {
           <h3 className="text-sm font-semibold text-foreground uppercase tracking-wide">
             Change Requests
           </h3>
-          <Button variant="outline" size="sm">
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={() => toast.info('Link Change functionality coming soon')}
+          >
             <Link2 className="h-4 w-4 mr-1" />
             Link Change
           </Button>
