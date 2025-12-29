@@ -608,6 +608,13 @@ export default function IndustryPage() {
     setSortedRequests(withRanks);
   }, [requests, columnSort, filters]);
 
+  // Auto-select first item when landing on the page (only if no selection exists)
+  useEffect(() => {
+    if (sortedRequests.length > 0 && !selectedRequestId) {
+      setSelectedRequestId(sortedRequests[0].id);
+    }
+  }, [sortedRequests, selectedRequestId]);
+
   const totalPages = Math.ceil(sortedRequests.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const endIndex = startIndex + ITEMS_PER_PAGE;
