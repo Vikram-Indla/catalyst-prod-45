@@ -238,6 +238,25 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
     enabled: !!snapshotId,
     staleTime: 60 * 1000,
   });
+
+  // Fetch themes list for the panel drilldown
+  const { data: themesList = [] } = useQuery({
+    queryKey: ['themes-list-for-panel', snapshotId],
+    queryFn: async () => {
+      if (!snapshotId) return [];
+      
+      const { data: themes, error } = await supabase
+        .from('strategic_themes')
+        .select('id, name, description')
+        .eq('snapshot_id', snapshotId)
+        .order('sort_order', { ascending: true });
+      
+      if (error || !themes) return [];
+      return themes;
+    },
+    enabled: !!snapshotId,
+    staleTime: 60 * 1000,
+  });
   
   // Use safe fallbacks - never show undefined/NaN
   const displayCounts = counts ?? EMPTY_COVERAGE;
@@ -397,7 +416,12 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
         return {
           title: 'Themes',
           description: 'Strategic themes organizing objectives',
-          items: [],
+          items: themesList.map(theme => ({
+            name: theme.name,
+            status: undefined,
+            progress: undefined,
+            linked: theme.description || undefined,
+          })),
           gapItems: [],
         };
       case 'epics':
