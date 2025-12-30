@@ -202,22 +202,25 @@ export default function OKRTree() {
             )}
           </div>
 
-          {/* Objective Icon - Gold filled for parents, gold outlined for children */}
-          <div 
-            className={cn(
-              "w-7 h-7 rounded-md flex items-center justify-center flex-shrink-0",
-              indentLevel === 0 ? "" : "border"
-            )}
-            style={{
-              backgroundColor: indentLevel === 0 ? catalyst.gold : 'transparent',
-              borderColor: indentLevel > 0 ? catalyst.gold : undefined,
-            }}
-          >
-            <GitBranch 
-              className="h-3.5 w-3.5" 
-              style={{ color: indentLevel === 0 ? '#ffffff' : catalyst.gold }}
-            />
-          </div>
+          {/* Objective Icon - Gold filled square for parents, gold outlined circle for children */}
+          {indentLevel === 0 ? (
+            <div 
+              className="w-6 h-6 rounded flex items-center justify-center flex-shrink-0"
+              style={{ backgroundColor: catalyst.gold }}
+            >
+              <GitBranch className="h-3.5 w-3.5 text-white" />
+            </div>
+          ) : (
+            <span 
+              className="w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0"
+              style={{ borderColor: catalyst.gold }}
+            >
+              <span 
+                className="w-2 h-2 rounded-full"
+                style={{ backgroundColor: catalyst.gold }}
+              />
+            </span>
+          )}
 
           {/* Tier Badge + ID + Title */}
           <div className="flex-1 flex items-center gap-2 min-w-0">
@@ -237,10 +240,10 @@ export default function OKRTree() {
             </span>
             <span 
               className={cn(
-                "text-sm truncate",
+                "text-[14px] truncate",
                 indentLevel === 0 ? "font-semibold" : "font-normal"
               )}
-              style={{ color: catalyst.text1 }}
+              style={{ color: indentLevel === 0 ? catalyst.text1 : catalyst.text2 }}
             >
               {item.title}
             </span>
@@ -262,8 +265,11 @@ export default function OKRTree() {
                 />
               </div>
               <span 
-                className="text-xs font-medium w-8 text-right"
-                style={{ color: getScoreColor(item.score || 0) }}
+                className={cn(
+                  "text-[14px] w-10 text-right tabular-nums",
+                  indentLevel === 0 ? "font-semibold" : "font-medium"
+                )}
+                style={{ color: indentLevel === 0 ? catalyst.text1 : catalyst.text2 }}
               >
                 {Math.round(item.keyResultsProgress)}%
               </span>
@@ -484,34 +490,34 @@ export default function OKRTree() {
                 }}
               >
                 <div className="w-5 flex-shrink-0" />
-                <div className="w-7 flex-shrink-0" />
+                <div className="w-6 flex-shrink-0" />
                 <div 
-                  className="flex-1 text-[11px] font-bold uppercase tracking-wider"
-                  style={{ color: catalyst.text4 }}
+                  className="flex-1 text-[11px] font-semibold uppercase tracking-[0.05em]"
+                  style={{ color: catalyst.text3 }}
                 >
-                  Objective
+                  Item
                 </div>
                 <div 
-                  className="w-48 text-[11px] font-bold uppercase tracking-wider text-center flex-shrink-0"
-                  style={{ color: catalyst.text4 }}
+                  className="w-48 text-[11px] font-semibold uppercase tracking-[0.05em] flex-shrink-0"
+                  style={{ color: catalyst.text3 }}
                 >
                   Progress
                 </div>
                 <div 
-                  className="w-12 text-[11px] font-bold uppercase tracking-wider text-center flex-shrink-0"
-                  style={{ color: catalyst.text4 }}
+                  className="w-12 text-[11px] font-semibold uppercase tracking-[0.05em] text-center flex-shrink-0"
+                  style={{ color: catalyst.text3 }}
                 >
                   Status
                 </div>
                 <div 
-                  className="w-16 text-[11px] font-bold uppercase tracking-wider text-right flex-shrink-0"
-                  style={{ color: catalyst.text4 }}
+                  className="w-16 text-[11px] font-semibold uppercase tracking-[0.05em] text-right flex-shrink-0"
+                  style={{ color: catalyst.text3 }}
                 >
                   Score
                 </div>
                 <div 
-                  className="w-24 text-[11px] font-bold uppercase tracking-wider flex-shrink-0"
-                  style={{ color: catalyst.text4 }}
+                  className="w-24 text-[11px] font-semibold uppercase tracking-[0.05em] text-right flex-shrink-0"
+                  style={{ color: catalyst.text3 }}
                 >
                   Owner
                 </div>
