@@ -8,7 +8,8 @@ interface StatusBadgeProps {
   className?: string;
 }
 
-// Pure Onyx compliant status styles with dark mode support
+// Design System V2 compliant status styles
+// SUCCESS states use TEAL (not green) per spec
 const statusStyles: Record<string, { light: { bg: string; text: string }; dark: { bg: string; text: string }; label: string }> = {
   // Incident statuses
   'open': { 
@@ -26,14 +27,15 @@ const statusStyles: Record<string, { light: { bg: string; text: string }; dark: 
     dark: { bg: 'dark:bg-amber-900/30', text: 'dark:text-amber-400' },
     label: 'Pending' 
   },
+  // TEAL for success states per design spec v2
   'resolved': { 
-    light: { bg: 'bg-green-100', text: 'text-green-700' },
-    dark: { bg: 'dark:bg-green-900/30', text: 'dark:text-green-400' },
+    light: { bg: 'bg-[rgba(13,148,136,0.1)]', text: 'text-[#0d9488]' },
+    dark: { bg: 'dark:bg-[rgba(20,184,166,0.15)]', text: 'dark:text-[#14b8a6]' },
     label: 'Resolved' 
   },
   'closed': { 
-    light: { bg: 'bg-gray-100', text: 'text-gray-600' },
-    dark: { bg: 'dark:bg-gray-800', text: 'dark:text-gray-400' },
+    light: { bg: 'bg-muted', text: 'text-muted-foreground' },
+    dark: { bg: 'dark:bg-muted', text: 'dark:text-muted-foreground' },
     label: 'Closed' 
   },
   'implementing': { 
@@ -52,8 +54,8 @@ const statusStyles: Record<string, { light: { bg: string; text: string }; dark: 
     label: 'Reopened' 
   },
   'cancelled': { 
-    light: { bg: 'bg-gray-100', text: 'text-gray-600' },
-    dark: { bg: 'dark:bg-gray-800', text: 'dark:text-gray-400' },
+    light: { bg: 'bg-muted', text: 'text-muted-foreground' },
+    dark: { bg: 'dark:bg-muted', text: 'dark:text-muted-foreground' },
     label: 'Cancelled' 
   },
   // Release statuses
@@ -62,9 +64,10 @@ const statusStyles: Record<string, { light: { bg: string; text: string }; dark: 
     dark: { bg: 'dark:bg-blue-900/30', text: 'dark:text-blue-400' },
     label: 'Unreleased' 
   },
+  // TEAL for success states per design spec v2
   'released': { 
-    light: { bg: 'bg-green-100', text: 'text-green-700' },
-    dark: { bg: 'dark:bg-green-900/30', text: 'dark:text-green-400' },
+    light: { bg: 'bg-[rgba(13,148,136,0.1)]', text: 'text-[#0d9488]' },
+    dark: { bg: 'dark:bg-[rgba(20,184,166,0.15)]', text: 'dark:text-[#14b8a6]' },
     label: 'Released' 
   },
   'overdue': { 

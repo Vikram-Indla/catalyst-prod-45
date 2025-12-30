@@ -170,7 +170,8 @@ export default function ReleaseCalendar() {
 
   const getReleaseBarColor = (release: Release) => {
     if (release.status === 'overdue') return 'bg-red-500';
-    if (release.status === 'released') return 'bg-green-500';
+    // TEAL for released per design spec v2
+    if (release.status === 'released') return 'bg-[#0d9488] dark:bg-[#14b8a6]';
     if (release.progress >= 50) return 'bg-brand-primary';
     return 'bg-blue-500';
   };
@@ -453,9 +454,10 @@ export default function ReleaseCalendar() {
                         <td className="px-4 py-3 border-b border-border">
                           <span className={cn(
                             "px-2 py-0.5 rounded text-[10px] font-medium uppercase",
-                            item.status === 'done' && "bg-green-100 text-green-700",
-                            item.status === 'in-progress' && "bg-blue-100 text-blue-700",
-                            item.status === 'todo' && "bg-gray-100 text-gray-700"
+                            // TEAL for done per design spec v2
+                            item.status === 'done' && "bg-[rgba(13,148,136,0.1)] text-[#0d9488] dark:bg-[rgba(20,184,166,0.15)] dark:text-[#14b8a6]",
+                            item.status === 'in-progress' && "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
+                            item.status === 'todo' && "bg-muted text-muted-foreground"
                           )}>
                             {item.status || 'Unknown'}
                           </span>

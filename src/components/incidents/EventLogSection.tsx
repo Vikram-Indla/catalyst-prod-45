@@ -63,8 +63,9 @@ const EVENT_COLORS: Record<EventType, string> = {
   sla_start: 'text-gray-600 bg-gray-100',
   sla_breach_response: 'text-red-600 bg-red-100',
   sla_breach_resolution: 'text-red-600 bg-red-100',
-  sla_met_response: 'text-green-600 bg-green-100',
-  sla_met_resolution: 'text-green-600 bg-green-100',
+  // TEAL for success states per design spec v2
+  sla_met_response: 'text-[#0d9488] bg-[rgba(13,148,136,0.1)] dark:text-[#14b8a6] dark:bg-[rgba(20,184,166,0.15)]',
+  sla_met_resolution: 'text-[#0d9488] bg-[rgba(13,148,136,0.1)] dark:text-[#14b8a6] dark:bg-[rgba(20,184,166,0.15)]',
   converted: 'text-blue-600 bg-blue-100',
   approval_action: 'text-amber-600 bg-amber-100',
   field_update: 'text-gray-600 bg-gray-100',

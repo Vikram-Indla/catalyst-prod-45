@@ -29,23 +29,25 @@ interface WorkItemDetailPanelProps {
   onClose: () => void;
 }
 
+// Design System V2 compliant - Story uses teal (not green)
 const typeIcons: Record<string, { icon: React.ReactNode; color: string }> = {
   Feature: { icon: <Zap className="h-4 w-4" />, color: 'text-amber-500' },
-  Story: { icon: <Bookmark className="h-4 w-4" />, color: 'text-green-600' },
+  Story: { icon: <Bookmark className="h-4 w-4" />, color: 'text-[#0d9488] dark:text-[#14b8a6]' },
   Task: { icon: <CircleDot className="h-4 w-4" />, color: 'text-blue-500' },
   Defect: { icon: <Bug className="h-4 w-4" />, color: 'text-red-500' },
-  Subtask: { icon: <CircleDot className="h-4 w-4" />, color: 'text-gray-500' },
+  Subtask: { icon: <CircleDot className="h-4 w-4" />, color: 'text-muted-foreground' },
   Incident: { icon: <Settings2 className="h-4 w-4" />, color: 'text-amber-600' },
 };
 
+// Design System V2 compliant - Done uses teal (not green)
 const statusStyles: Record<string, { bg: string; text: string; label: string }> = {
-  'Backlog': { bg: 'bg-gray-100 dark:bg-gray-800', text: 'text-gray-700 dark:text-gray-300', label: 'BACKLOG' },
-  'To Do': { bg: 'bg-gray-100 dark:bg-gray-800', text: 'text-gray-700 dark:text-gray-300', label: 'TO DO' },
+  'Backlog': { bg: 'bg-muted', text: 'text-muted-foreground', label: 'BACKLOG' },
+  'To Do': { bg: 'bg-muted', text: 'text-muted-foreground', label: 'TO DO' },
   'In Progress': { bg: 'bg-blue-100 dark:bg-blue-900/30', text: 'text-blue-700 dark:text-blue-300', label: 'IN PROGRESS' },
   'In Requirement': { bg: 'bg-blue-100 dark:bg-blue-900/30', text: 'text-blue-700 dark:text-blue-300', label: 'IN REQUIREMENTS' },
   'In Production': { bg: 'bg-amber-100 dark:bg-amber-900/30', text: 'text-amber-700 dark:text-amber-300', label: 'IN PRODUCTION' },
-  'Done': { bg: 'bg-green-100 dark:bg-green-900/30', text: 'text-green-700 dark:text-green-300', label: 'DONE' },
-  'Closed': { bg: 'bg-gray-100 dark:bg-gray-800', text: 'text-gray-700 dark:text-gray-300', label: 'CLOSED' },
+  'Done': { bg: 'bg-[rgba(13,148,136,0.1)] dark:bg-[rgba(20,184,166,0.15)]', text: 'text-[#0d9488] dark:text-[#14b8a6]', label: 'DONE' },
+  'Closed': { bg: 'bg-muted', text: 'text-muted-foreground', label: 'CLOSED' },
   'Blocked': { bg: 'bg-red-100 dark:bg-red-900/30', text: 'text-red-700 dark:text-red-300', label: 'BLOCKED' },
 };
 
@@ -57,12 +59,13 @@ export function WorkItemDetailPanel({ item, onClose }: WorkItemDetailPanelProps)
 
   const getInitials = (name: string) => name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
   const getAvatarColor = (name: string) => {
-    const colors = ['bg-blue-600', 'bg-green-600', 'bg-gray-600', 'bg-amber-500', 'bg-red-500'];
+    // Using teal instead of green per design spec v2
+    const colors = ['bg-blue-600', 'bg-[#0d9488]', 'bg-gray-600', 'bg-amber-500', 'bg-red-500'];
     return colors[name.charCodeAt(0) % colors.length];
   };
 
   return (
-    <div className="w-[440px] border-l border-border bg-white dark:bg-gray-900 h-full flex flex-col" style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" }}>
+    <div className="w-[440px] border-l border-border bg-card h-full flex flex-col" style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" }}>
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-border">
         <div className="flex items-center gap-2">

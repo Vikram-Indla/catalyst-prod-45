@@ -311,7 +311,8 @@ export function ManagerFollowUpNotes({
                 </span>
               )}
               {completedCount > 0 && (
-                <span className="text-green-700 dark:text-green-500 flex items-center gap-1 font-medium">
+                // TEAL for success per design spec v2
+                <span className="text-[#0d9488] dark:text-[#14b8a6] flex items-center gap-1 font-medium">
                   <Check className="w-3 h-3" />
                   {completedCount} done
                 </span>
@@ -346,8 +347,9 @@ export function ManagerFollowUpNotes({
               key={followUp.id}
               className={cn(
                 'flex items-start gap-3 p-3 rounded-md border transition-colors',
+                // TEAL for completed per design spec v2
                 followUp.is_completed
-                  ? 'bg-green-500/5 border-green-500/20'
+                  ? 'bg-[rgba(13,148,136,0.05)] border-[#0d9488]/20 dark:bg-[rgba(20,184,166,0.05)] dark:border-[#14b8a6]/20'
                   : 'bg-surface-muted border-border-subtle'
               )}
             >
@@ -355,7 +357,8 @@ export function ManagerFollowUpNotes({
                 checked={followUp.is_completed}
                 onCheckedChange={() => toggleComplete(followUp.id)}
                 disabled={isSaving}
-                className="mt-0.5 border-gray-400 data-[state=checked]:bg-green-600 data-[state=checked]:border-green-600"
+                // TEAL for checked per design spec v2
+                className="mt-0.5 border-muted-foreground data-[state=checked]:bg-[#0d9488] data-[state=checked]:border-[#0d9488] dark:data-[state=checked]:bg-[#14b8a6] dark:data-[state=checked]:border-[#14b8a6]"
               />
               
               <div className="flex-1 min-w-0">
@@ -471,7 +474,8 @@ export function ManagerFollowUpNotes({
                 <div className="flex items-center gap-2">
                   <span className={cn(
                     'font-medium',
-                    entry.action === 'completed' && 'text-green-500',
+                    // TEAL for completed per design spec v2
+                    entry.action === 'completed' && 'text-[#0d9488] dark:text-[#14b8a6]',
                     entry.action === 'deleted' && 'text-red-400',
                     entry.action === 'created' && 'text-blue-400'
                   )}>

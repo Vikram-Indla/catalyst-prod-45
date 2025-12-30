@@ -304,7 +304,8 @@ function BoardColumn({
       case 'dueDate':
         return <Calendar className="w-4 h-4 text-muted-foreground" />;
       default:
-        return column.id === 'Done' ? <CheckCircle2 className="w-4 h-4 text-green-500/60" /> : null;
+        // TEAL for Done per design spec v2
+        return column.id === 'Done' ? <CheckCircle2 className="w-4 h-4 text-[#0d9488]/60 dark:text-[#14b8a6]/60" /> : null;
     }
   };
 
@@ -322,7 +323,8 @@ function BoardColumn({
           {getGroupIcon()}
           <span className={cn(
             "text-[13px] font-semibold tracking-tight",
-            column.id === 'Done' ? 'text-green-600/80 dark:text-green-400/70' : 'text-foreground'
+            // TEAL for Done per design spec v2
+            column.id === 'Done' ? 'text-[#0d9488]/80 dark:text-[#14b8a6]/70' : 'text-foreground'
           )}>{column.name}</span>
           <span className="px-2 py-0.5 bg-muted dark:bg-white/10 text-muted-foreground dark:text-gray-300 text-[11px] font-semibold rounded-full">
             {tasks.length}
