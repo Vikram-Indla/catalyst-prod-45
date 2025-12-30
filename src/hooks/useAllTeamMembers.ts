@@ -66,33 +66,39 @@ export function useAllTeamMembers() {
       if (error) throw error;
 
       // Filter to only include users with APPROVED status and transform to User[] format
-      const users: User[] = (data || [])
+      // Deduplicate by user_id to avoid showing the same user multiple times
+      const userMap = new Map<string, User>();
+      
+      (data || [])
         .filter((member) => {
           const profile = member.profiles as { approval_status: string | null } | null;
           return profile?.approval_status === 'APPROVED';
         })
-        .map((member) => {
-          const profile = member.profiles as { id: string; full_name: string | null; email: string | null; avatar_url: string | null } | null;
-          const name = profile?.full_name || profile?.email || 'Unknown';
-          const initials = name
-            .split(' ')
-            .map((n) => n[0])
-            .join('')
-            .toUpperCase()
-            .slice(0, 2);
+        .forEach((member) => {
+          // Only add if we haven't seen this user_id before
+          if (!userMap.has(member.user_id)) {
+            const profile = member.profiles as { id: string; full_name: string | null; email: string | null; avatar_url: string | null } | null;
+            const name = profile?.full_name || profile?.email || 'Unknown';
+            const initials = name
+              .split(' ')
+              .map((n) => n[0])
+              .join('')
+              .toUpperCase()
+              .slice(0, 2);
 
-          return {
-            id: member.user_id,
-            name,
-            initials,
-            email: profile?.email || '',
-            role: member.role || 'Member',
-            teamId: member.team_id,
-            teamName: (member.teams as { id: string; name: string } | null)?.name || '',
-          };
+            userMap.set(member.user_id, {
+              id: member.user_id,
+              name,
+              initials,
+              email: profile?.email || '',
+              role: member.role || 'Member',
+              teamId: member.team_id,
+              teamName: (member.teams as { id: string; name: string } | null)?.name || '',
+            });
+          }
         });
 
-      return users;
+      return Array.from(userMap.values());
     },
   });
 }
