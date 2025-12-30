@@ -1,7 +1,7 @@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { UserAvatar } from '@/components/release/UserAvatar';
+import { CatalystOwnerAvatar } from '@/components/ui/catalyst';
 import { PriorityBadge } from '@/components/release/PriorityBadge';
 import { X } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -154,7 +154,7 @@ export function IncidentDetailsPanel({
                   {USERS.map(user => (
                     <SelectItem key={user.id} value={user.id}>
                       <div className="flex items-center gap-2">
-                        <UserAvatar initials={user.initials} size="sm" />
+                        <CatalystOwnerAvatar name={user.name} initials={user.initials} size="sm" />
                         {user.name}
                       </div>
                     </SelectItem>
@@ -163,7 +163,7 @@ export function IncidentDetailsPanel({
               </Select>
             ) : (
               <div className="flex items-center gap-2">
-                <UserAvatar initials={currentAssignee.initials} size="sm" />
+                <CatalystOwnerAvatar name={currentAssignee.name} initials={currentAssignee.initials} size="sm" />
                 <span className="text-[13px] font-medium">{currentAssignee.name}</span>
               </div>
             )}
@@ -173,7 +173,7 @@ export function IncidentDetailsPanel({
           <div className="flex justify-between items-center py-2.5 border-b border-[#F0F0F0]">
             <span className="text-[11px] uppercase font-medium text-[#8C8C8C]">Reporter</span>
             <div className="flex items-center gap-2">
-              <UserAvatar initials={incident.reporter.initials} size="sm" />
+              <CatalystOwnerAvatar name={incident.reporter.name} initials={incident.reporter.initials} size="sm" />
               <span className="text-[13px] font-medium">{incident.reporter.name}</span>
             </div>
           </div>

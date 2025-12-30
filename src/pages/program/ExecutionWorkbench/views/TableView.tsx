@@ -11,6 +11,7 @@ import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { CatalystOwnerAvatar } from '@/components/ui/catalyst';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -50,18 +51,15 @@ function StatusBadge({ status }: { status: ItemStatus }) {
   );
 }
 
-// Owner avatar - compact
+// Owner avatar - uses canonical component
 function OwnerAvatar({ owner }: { owner: Owner | null | undefined }) {
   if (!owner) return <span className="text-foreground/40 text-[11px]">—</span>;
   
-  const initials = getOwnerInitials(owner);
   const firstName = owner.full_name?.split(' ')[0] || '';
   
   return (
     <div className="flex items-center gap-1.5">
-      <div className="h-5 w-5 rounded-full bg-gradient-to-br from-secondary-bronze to-brand-primary flex items-center justify-center text-[9px] font-semibold text-white flex-shrink-0">
-        {initials}
-      </div>
+      <CatalystOwnerAvatar name={owner.full_name} size="sm" showTooltip={false} />
       <span className="text-[11px] truncate max-w-[70px]">{firstName}</span>
     </div>
   );

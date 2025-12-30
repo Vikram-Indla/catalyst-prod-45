@@ -18,7 +18,7 @@ import {
   MoreHorizontal
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { UserAvatar } from '@/components/release/UserAvatar';
+import { CatalystOwnerAvatar } from '@/components/ui/catalyst';
 import { cn } from '@/lib/utils';
 import type { TimelineEvent, Comment } from '@/types/release';
 
@@ -123,7 +123,7 @@ export function IncidentTimeline({ timeline, comments, onAddComment }: IncidentT
 
       {/* Comment Editor - Jira style with rich toolbar */}
       <div className="flex gap-3 mb-6">
-        <UserAvatar initials="ME" size="sm" />
+        <CatalystOwnerAvatar initials="ME" size="sm" />
         <div className="flex-1">
           {/* Rich Text Toolbar */}
           <div className={cn(
@@ -309,7 +309,7 @@ export function IncidentTimeline({ timeline, comments, onAddComment }: IncidentT
                 <div className="flex-1 pb-4">
                   <div className="flex items-center gap-2 mb-1">
                     {'author' in item && item.author ? (
-                      <UserAvatar initials={item.author.initials} size="sm" />
+                      <CatalystOwnerAvatar name={item.author.name} initials={item.author.initials} size="sm" />
                     ) : null}
                     <span className="font-semibold text-sm text-foreground">
                       {item.user}
