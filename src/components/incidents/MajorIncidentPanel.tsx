@@ -1,7 +1,7 @@
 import { AlertTriangle } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { UserAvatar } from '@/components/release/UserAvatar';
+import { CatalystOwnerAvatar } from '@/components/ui/catalyst';
 import { cn } from '@/lib/utils';
 import type { Incident, Assignee } from '@/types/release';
 
@@ -101,7 +101,7 @@ export function MajorIncidentPanel({
                   {COMMANDERS.map(user => (
                     <SelectItem key={user.id} value={user.id}>
                       <div className="flex items-center gap-2">
-                        <UserAvatar initials={user.initials} size="sm" />
+                        <CatalystOwnerAvatar name={user.name} initials={user.initials} size="sm" />
                         {user.name}
                       </div>
                     </SelectItem>
@@ -110,7 +110,7 @@ export function MajorIncidentPanel({
               </Select>
             ) : commander ? (
               <div className="flex items-center gap-2">
-                <UserAvatar initials={commander.initials} size="sm" />
+                <CatalystOwnerAvatar name={commander.name} initials={commander.initials} size="sm" />
                 <span className="text-sm font-medium text-red-800">{commander.name}</span>
               </div>
             ) : (

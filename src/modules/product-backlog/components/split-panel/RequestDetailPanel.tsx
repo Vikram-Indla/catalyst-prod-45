@@ -11,6 +11,7 @@ import {
   Link2, Edit, Paperclip, Copy, Trash2, 
   FileText, Check, Lock, Star, Calendar, ArrowLeft
 } from 'lucide-react';
+import { CatalystOwnerAvatar } from '@/components/ui/catalyst';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
@@ -146,27 +147,14 @@ function CopyLinkButton({ requestId }: { requestId: string }) {
   );
 }
 
-// Avatar component
-function UserAvatar({ name, size = 'md' }: { name: string; size?: 'sm' | 'md' }) {
-  const initials = name
-    .split(' ')
-    .map(n => n[0])
-    .join('')
-    .slice(0, 2)
-    .toUpperCase();
-  
-  const sizeClasses = size === 'sm' ? 'w-6 h-6 text-[10px]' : 'w-8 h-8 text-xs';
-  
+// Avatar component - uses canonical CatalystOwnerAvatar
+function RequestUserAvatar({ name, size = 'md' }: { name: string; size?: 'sm' | 'md' }) {
   return (
-    <div 
-      className={cn(
-        "rounded-full flex items-center justify-center font-semibold text-white shrink-0",
-        sizeClasses
-      )}
-      style={{ backgroundColor: 'hsl(var(--secondary-bronze))' }}
-    >
-      {initials}
-    </div>
+    <CatalystOwnerAvatar 
+      name={name} 
+      size={size === 'sm' ? 'sm' : 'md'} 
+      showTooltip={false}
+    />
   );
 }
 
@@ -194,7 +182,7 @@ function AssigneeSelect({ value, onChange }: { value: string | null; onChange: (
         <SelectValue placeholder="Select assignee">
           {value ? (
             <div className="flex items-center gap-2">
-              <UserAvatar name={value} size="sm" />
+              <RequestUserAvatar name={value} size="sm" />
               <span>{value}</span>
             </div>
           ) : (
@@ -209,9 +197,7 @@ function AssigneeSelect({ value, onChange }: { value: string | null; onChange: (
         {profiles.map((p) => (
           <SelectItem key={p.id} value={p.full_name || p.email || p.id}>
             <div className="flex items-center gap-2">
-              <div className="w-6 h-6 rounded-full bg-[hsl(var(--secondary-bronze))] flex items-center justify-center text-white text-[10px] font-semibold">
-                {(p.full_name || p.email || '?').split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
-              </div>
+              <CatalystOwnerAvatar name={p.full_name || p.email || '?'} size="sm" showTooltip={false} />
               <span>{p.full_name || p.email}</span>
             </div>
           </SelectItem>
@@ -530,7 +516,7 @@ export function RequestDetailPanel({
                 {request.reporter ? (
                   <>
                     <div className="flex items-center gap-2">
-                      <UserAvatar name={request.reporter} size="sm" />
+                      <RequestUserAvatar name={request.reporter} size="sm" />
                       <span className="text-sm font-medium" style={{ color: 'var(--text-1)' }}>
                         {request.reporter}
                       </span>
@@ -587,7 +573,7 @@ export function RequestDetailPanel({
                 {request.businessOwner ? (
                   <>
                     <div className="flex items-center gap-2">
-                      <UserAvatar name={request.businessOwner} size="sm" />
+                      <RequestUserAvatar name={request.businessOwner} size="sm" />
                       <span className="text-sm font-medium" style={{ color: 'var(--text-1)' }}>
                         {request.businessOwner}
                       </span>

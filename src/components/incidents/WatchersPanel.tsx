@@ -1,6 +1,6 @@
 import { Eye, Plus, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { UserAvatar } from '@/components/release/UserAvatar';
+import { CatalystOwnerAvatar } from '@/components/ui/catalyst';
 import type { Assignee } from '@/types/release';
 
 interface WatchersPanelProps {
@@ -37,7 +37,7 @@ export function WatchersPanel({
               className="flex items-center justify-between p-2 rounded-md hover:bg-muted group"
             >
               <div className="flex items-center gap-2">
-                <UserAvatar initials={watcher.initials} size="sm" />
+                <CatalystOwnerAvatar name={watcher.name} initials={watcher.initials} size="sm" />
                 <span className="text-sm text-muted-foreground">{watcher.name}</span>
               </div>
               {isEditMode && onRemoveWatcher && (

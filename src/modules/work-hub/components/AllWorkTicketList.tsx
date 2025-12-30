@@ -1,6 +1,7 @@
 import React from 'react';
 import { ChevronRight, Zap, Bug, Bookmark, CircleDot, CheckSquare } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { CatalystOwnerAvatar } from '@/components/ui/catalyst';
 
 interface WorkItem {
   id: string;
@@ -124,11 +125,7 @@ export function AllWorkTicketList({
                 {/* Assignee */}
                 {item.assignee && (
                   <div className="flex items-center gap-1 mt-1">
-                    <div className="w-4 h-4 rounded-full bg-gray-500 dark:bg-gray-600 flex items-center justify-center">
-                      <span className="text-[8px] text-white font-medium">
-                        {item.assignee.split(' ').map(n => n[0]).join('').slice(0, 2)}
-                      </span>
-                    </div>
+                    <CatalystOwnerAvatar name={item.assignee} size="xs" showTooltip={false} />
                     <span className="text-[10px] text-muted-foreground">{item.assignee}</span>
                   </div>
                 )}
