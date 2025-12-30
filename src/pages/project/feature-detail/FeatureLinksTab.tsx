@@ -104,7 +104,7 @@ export function FeatureLinksTab({ feature }: FeatureLinksTabProps) {
                 variant="secondary" 
                 className={cn(
                   "text-xs",
-                  story.status === 'done' && "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400",
+                  story.status === 'done' && "bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-400",
                   story.status === 'in_progress' && "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
                   story.status === 'todo' && "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300"
                 )}
@@ -159,7 +159,7 @@ export function FeatureLinksTab({ feature }: FeatureLinksTabProps) {
                 className={cn(
                   "text-xs",
                   dep.status === 'resolved' 
-                    ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400" 
+                    ? "bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-400" 
                     : "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400"
                 )}
               >
@@ -198,7 +198,7 @@ export function FeatureLinksTab({ feature }: FeatureLinksTabProps) {
                 {change.key}
               </span>
               <span className="text-sm text-foreground flex-1 truncate">{change.name}</span>
-              <Badge variant="secondary" className="text-xs bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">
+              <Badge variant="secondary" className="text-xs bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-400">
                 Approved
               </Badge>
             </div>

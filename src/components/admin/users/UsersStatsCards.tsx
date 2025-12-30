@@ -26,8 +26,8 @@ export function UsersStatsCards({ users }: UsersStatsCardsProps) {
       label: 'Active Users',
       value: activeUsers,
       icon: UserCheck,
-      color: 'text-green-600',
-      bgColor: 'bg-green-100'
+      color: 'text-teal-600 dark:text-teal-400',
+      bgColor: 'bg-teal-100 dark:bg-teal-900/30'
     },
     {
       label: 'Pending Invites',

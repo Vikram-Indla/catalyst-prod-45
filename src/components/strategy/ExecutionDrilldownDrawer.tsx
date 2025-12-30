@@ -53,7 +53,7 @@ export function ExecutionDrilldownDrawer({
 
   const getStatusBadge = (status: string, isAccepted: boolean) => {
     if (isAccepted) {
-      return <Badge className="bg-green-100 text-green-700 text-xs">Accepted</Badge>;
+      return <Badge className="bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-400 text-xs">Accepted</Badge>;
     }
     return <Badge variant="outline" className="text-xs">{status}</Badge>;
   };
@@ -62,7 +62,7 @@ export function ExecutionDrilldownDrawer({
     const colors: Record<string, string> = {
       epic: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
       feature: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
-      story: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
+      story: 'bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-400',
     };
     return (
       <Badge className={`${colors[type] || 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300'} text-xs capitalize`}>
@@ -80,9 +80,9 @@ export function ExecutionDrilldownDrawer({
             <Badge 
               variant="outline" 
               className={`ml-2 ${
-                level?.color === 'green' ? 'text-green-700 border-green-300' :
-                level?.color === 'yellow' ? 'text-amber-700 border-amber-300' :
-                level?.color === 'red' ? 'text-red-700 border-red-300' :
+                level?.color === 'green' ? 'text-teal-700 border-teal-300 dark:text-teal-400 dark:border-teal-600' :
+                level?.color === 'yellow' ? 'text-amber-700 border-amber-300 dark:text-amber-400 dark:border-amber-600' :
+                level?.color === 'red' ? 'text-red-700 border-red-300 dark:text-red-400 dark:border-red-600' :
                 ''
               }`}
             >
@@ -152,7 +152,7 @@ export function ExecutionDrilldownDrawer({
           <TabsContent value="misaligned" className="flex-1 overflow-auto m-0 p-0">
             {filteredMisaligned.length === 0 ? (
               <div className="text-center py-12 text-sm text-muted-foreground">
-                <CheckCircle2 className="h-8 w-8 mx-auto mb-2 text-green-500/40" />
+                <CheckCircle2 className="h-8 w-8 mx-auto mb-2 text-teal-500/40" />
                 No misaligned items
               </div>
             ) : (

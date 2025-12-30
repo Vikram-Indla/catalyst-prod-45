@@ -26,7 +26,7 @@ interface SearchResult {
 const TYPE_CONFIG: Record<string, { icon: typeof FileText; label: string; color: string }> = {
   epic: { icon: Zap, label: 'Epic', color: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400' },
   feature: { icon: FileText, label: 'Feature', color: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' },
-  story: { icon: BookOpen, label: 'Story', color: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' },
+  story: { icon: BookOpen, label: 'Story', color: 'bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-400' },
   theme: { icon: Target, label: 'Theme', color: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400' },
   risk: { icon: AlertTriangle, label: 'Risk', color: 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400' },
   business_request: { icon: ClipboardList, label: 'Demand', color: 'bg-brand-primary/20 text-brand-primary' },

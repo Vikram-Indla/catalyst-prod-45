@@ -46,7 +46,7 @@ function getApprovalIcon(status: ApprovalStatus) {
 function getApprovalBadge(status: ApprovalStatus) {
   switch (status) {
     case 'approved':
-      return <Badge className="bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">Approved</Badge>;
+      return <Badge className="bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-400">Approved</Badge>;
     case 'pending':
       return <Badge className="bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400">Pending</Badge>;
     case 'not_started':
@@ -232,7 +232,7 @@ export function FeatureAuditTab({ featureId }: FeatureAuditTabProps) {
               key={approval.id}
               className={cn(
                 "p-4 rounded-lg border",
-                approval.status === 'approved' && "bg-green-500/5 border-green-500/20",
+                approval.status === 'approved' && "bg-teal-500/5 border-teal-500/20",
                 approval.status === 'pending' && "bg-orange-500/5 border-orange-500/20",
                 approval.status === 'not_started' && "bg-muted/50 border-border"
               )}

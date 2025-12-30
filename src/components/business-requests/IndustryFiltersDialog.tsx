@@ -92,7 +92,7 @@ export function IndustryFiltersDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg bg-white p-0 gap-0 max-h-[85vh] flex flex-col">
+      <DialogContent className="max-w-lg bg-background p-0 gap-0 max-h-[85vh] flex flex-col">
         <DialogHeader className="px-6 py-4 border-b border-border flex-shrink-0">
           <DialogTitle className="text-foreground text-lg font-semibold">Filters</DialogTitle>
         </DialogHeader>
@@ -111,7 +111,7 @@ export function IndustryFiltersDialog({
                   className={`px-4 py-2 rounded-full text-sm font-medium border transition-colors ${
                     filters.quickFilter === qf.id
                       ? 'bg-brand-primary text-white border-brand-primary'
-                      : 'bg-white text-foreground border-border hover:border-brand-primary/50'
+                      : 'bg-background text-foreground border-border hover:border-brand-primary/50'
                   }`}
                 >
                   {qf.label}
@@ -139,10 +139,10 @@ export function IndustryFiltersDialog({
                       value={filters.reporter || 'all'}
                       onValueChange={(value) => onFiltersChange({ ...filters, reporter: value === 'all' ? undefined : value })}
                     >
-                      <SelectTrigger className="bg-white border-border">
+                      <SelectTrigger className="bg-background border-border">
                         <SelectValue placeholder="Select reporters..." />
                       </SelectTrigger>
-                      <SelectContent className="bg-white">
+                      <SelectContent className="bg-popover">
                         <SelectItem value="all">Select reporters...</SelectItem>
                       </SelectContent>
                     </Select>
@@ -153,10 +153,10 @@ export function IndustryFiltersDialog({
                       value={filters.businessOwner || 'all'}
                       onValueChange={(value) => onFiltersChange({ ...filters, businessOwner: value === 'all' ? undefined : value })}
                     >
-                      <SelectTrigger className="bg-white border-border">
+                      <SelectTrigger className="bg-background border-border">
                         <SelectValue placeholder="Search business owners..." />
                       </SelectTrigger>
-                      <SelectContent className="bg-white">
+                      <SelectContent className="bg-popover">
                         <SelectItem value="all">Search business owners...</SelectItem>
                       </SelectContent>
                     </Select>
@@ -169,10 +169,10 @@ export function IndustryFiltersDialog({
                       value={filters.assignee || 'all'}
                       onValueChange={(value) => onFiltersChange({ ...filters, assignee: value === 'all' ? undefined : value })}
                     >
-                      <SelectTrigger className="bg-white border-border">
+                      <SelectTrigger className="bg-background border-border">
                         <SelectValue placeholder="Select assignees..." />
                       </SelectTrigger>
-                      <SelectContent className="bg-white">
+                      <SelectContent className="bg-popover">
                         <SelectItem value="all">Select assignees...</SelectItem>
                       </SelectContent>
                     </Select>
@@ -183,10 +183,10 @@ export function IndustryFiltersDialog({
                       value={filters.department || 'all'}
                       onValueChange={(value) => onFiltersChange({ ...filters, department: value === 'all' ? undefined : value })}
                     >
-                      <SelectTrigger className="bg-white border-border">
+                      <SelectTrigger className="bg-background border-border">
                         <SelectValue placeholder="Select..." />
                       </SelectTrigger>
-                      <SelectContent className="bg-white">
+                      <SelectContent className="bg-popover">
                         <SelectItem value="all">Select...</SelectItem>
                         {departmentOptions.map((dept) => (
                           <SelectItem key={dept.value} value={dept.value}>
@@ -220,10 +220,10 @@ export function IndustryFiltersDialog({
                       value={filters.processStep || 'all'}
                       onValueChange={(value) => onFiltersChange({ ...filters, processStep: value === 'all' ? undefined : value })}
                     >
-                      <SelectTrigger className="bg-white border-border">
+                      <SelectTrigger className="bg-background border-border">
                         <SelectValue placeholder="Select..." />
                       </SelectTrigger>
-                      <SelectContent className="bg-white">
+                      <SelectContent className="bg-popover">
                         <SelectItem value="all">Select...</SelectItem>
                         {processStepOptions.map((step) => (
                           <SelectItem key={step.value} value={step.value}>
@@ -239,10 +239,10 @@ export function IndustryFiltersDialog({
                       value={filters.ageing || 'all'}
                       onValueChange={(value) => onFiltersChange({ ...filters, ageing: value === 'all' ? undefined : value })}
                     >
-                      <SelectTrigger className="bg-white border-border">
+                      <SelectTrigger className="bg-background border-border">
                         <SelectValue placeholder="All" />
                       </SelectTrigger>
-                      <SelectContent className="bg-white">
+                      <SelectContent className="bg-popover">
                         {ageingOptions.map((opt) => (
                           <SelectItem key={opt.value} value={opt.value}>
                             {opt.label}
@@ -275,7 +275,7 @@ export function IndustryFiltersDialog({
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-4 border-t border-border flex items-center justify-between flex-shrink-0 bg-white">
+        <div className="px-6 py-4 border-t border-border flex items-center justify-between flex-shrink-0 bg-background">
           <span className="text-sm text-muted-foreground">
             <span className="text-brand-primary font-medium">{activeFilterCount}</span> filters applied
           </span>
