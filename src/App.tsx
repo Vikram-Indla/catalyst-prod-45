@@ -80,7 +80,6 @@ import RiskRoamReportPage from "./pages/risks/RiskRoamReportPage";
 import TeamRoom from "./pages/TeamRoom";
 import SprintBoard from "./pages/SprintBoard";
 import Backlog from "./pages/Backlog";
-import BacklogPage from "./pages/BacklogPage";
 import Sprints from "./pages/Sprints";
 import Stories from "./pages/Stories";
 import Subtasks from "./pages/Subtasks";
@@ -643,7 +642,7 @@ const App = () => (
               
               <Route path="/team-room" element={<TeamRoom />} />
               <Route path="/backlog" element={<Backlog />} />
-              <Route path="/backlog-phase2" element={<BacklogPage />} />
+              <Route path="/backlog-phase2" element={<Navigate to="/backlog" replace />} />
               <Route path="/sprints" element={<Sprints />} />
               <Route path="/sprint-board" element={<SprintBoard />} />
               <Route path="/stories" element={<Stories />} />
