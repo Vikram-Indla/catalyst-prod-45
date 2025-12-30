@@ -13,15 +13,19 @@ import { cn } from "@/lib/utils";
  * - Pressed state: active:scale-[0.98] + active:brightness-95
  */
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-300 dark:focus-visible:ring-gray-600 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-gray-900 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 active:scale-[0.98] active:brightness-95",
+  // Focus ring uses BLUE per design spec v2 (NOT gray/gold)
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3b82f6] dark:focus-visible:ring-[#60a5fa] focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 active:scale-[0.98] active:brightness-95",
   {
     variants: {
       variant: {
         default: "bg-brand-primary text-white hover:bg-brand-primary/90",
         destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90",
-        outline: "border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800",
-        secondary: "bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 hover:bg-gray-200 dark:hover:bg-gray-700",
-        ghost: "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800",
+        // Outline uses semantic tokens
+        outline: "border border-border bg-card text-foreground hover:bg-muted",
+        // Secondary uses semantic tokens
+        secondary: "bg-muted text-foreground hover:bg-muted/80",
+        // Ghost uses semantic tokens
+        ghost: "text-foreground hover:bg-muted",
         link: "text-brand-primary underline-offset-4 hover:underline",
         gold: "bg-brand-primary text-white hover:bg-brand-primary/90",
         primary: "bg-brand-primary text-white hover:bg-brand-primary/90",
