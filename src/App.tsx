@@ -16,7 +16,6 @@ import BrowsePage from "./pages/BrowsePage";
 import DependencyMapsPage from "./pages/reports/DependencyMapsPage";
 import SearchPage from "./pages/SearchPage";
 import Home from "./pages/jira-align/Home";
-import PortfolioRoomPageOld from "./pages/jira-align/PortfolioRoomPage";
 import PlaceholderPage from "./pages/jira-align/PlaceholderPage";
 import StrategyRoom from "./pages/StrategyRoom";
 import StrategyRoomPage from "./pages/enterprise/StrategyRoomPage";
@@ -319,7 +318,6 @@ const App = () => (
               <Route path="/starred" element={<StarredPage />} />
               
               <Route path="/search" element={<SearchPage />} />
-              <Route path="/portfolio-room" element={<PortfolioRoomPageOld />} />
               <Route path="/portfolio/:portfolioId/room" element={<PlaceholderPage />} />
               <Route path="/portfolio/:portfolioId/epics" element={<EpicsPage />} />
               <Route path="/portfolio/:portfolioId/backlog" element={<EpicBacklogWithSidebar />} />
