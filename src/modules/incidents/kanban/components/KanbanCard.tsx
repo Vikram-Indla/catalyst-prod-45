@@ -3,6 +3,7 @@
  * Left accent indicates SLA health (breached/at-risk only)
  * Special handling for Committee column: shows approvers, due date, edit action
  * Quick actions on hover for faster incident handling
+ * DARK MODE COMPLIANT per Design System V2
  */
 
 import { memo, useMemo } from 'react';
@@ -18,7 +19,6 @@ import {
   ArrowUp,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
@@ -84,35 +84,29 @@ function formatDueDate(dueDate: string): { text: string; isUrgent: boolean } {
   };
 }
 
-// Severity badge component - Light mode compliant
+// Severity badge component - Dark mode compliant
 function SeverityBadge({ severity }: { severity: string }) {
-  const getSeverityStyles = (): React.CSSProperties => {
+  const getSeverityClasses = () => {
     switch (severity) {
       case 'SEV1':
-        return {
-          backgroundColor: 'rgba(239, 68, 68, 0.08)',
-          color: '#ef4444',
-        };
+        // Dark red background, light red text for dark mode
+        return "bg-[rgba(239,68,68,0.08)] text-[#ef4444] dark:bg-[#7f1d1d] dark:text-[#fca5a5] dark:border dark:border-[#991b1b]";
       case 'SEV2':
-        return {
-          backgroundColor: 'rgba(245, 158, 11, 0.08)',
-          color: '#d97706',
-        };
+        // Amber variant for dark mode
+        return "bg-[rgba(245,158,11,0.08)] text-[#d97706] dark:bg-[#78350f] dark:text-[#fcd34d] dark:border dark:border-[#92400e]";
       case 'SEV3':
       case 'SEV4':
       default:
-        return {
-          backgroundColor: '#f3f3f3',
-          color: '#737373',
-        };
+        // Gray variant for dark mode
+        return "bg-[#f3f3f3] text-[#737373] dark:bg-[#262626] dark:text-[#a3a3a3] dark:border dark:border-[#404040]";
     }
   };
   
   return (
-    <span 
-      className="px-1.5 py-0.5 rounded text-[10px] font-bold uppercase"
-      style={getSeverityStyles()}
-    >
+    <span className={cn(
+      "px-1.5 py-0.5 rounded text-[10px] font-bold uppercase",
+      getSeverityClasses()
+    )}>
       {severity}
     </span>
   );
@@ -160,7 +154,7 @@ export const KanbanCard = memo(function KanbanCard({
     onDragStart?.(e, incident);
   };
 
-  // Build card styles - light mode compliant with straight left border
+  // Build card styles - dark mode compliant with straight left border
   const isBreached = slaHealth === 'breached';
   const isAtRisk = slaHealth === 'at_risk';
 
@@ -173,48 +167,36 @@ export const KanbanCard = memo(function KanbanCard({
       className={cn(
         "p-3.5 rounded-[10px] flex-shrink-0",
         "cursor-pointer transition-all group",
-        isDragging && "opacity-50"
+        isDragging && "opacity-50",
+        // Dark mode compliant backgrounds
+        "bg-white dark:bg-[#262626]",
+        "border border-[#e8e8e8] dark:border-[#333]",
+        // Hover state
+        "hover:border-[#d4d4d4] dark:hover:border-[#404040] dark:hover:bg-[#333]",
+        // Shadow
+        "shadow-[0_1px_3px_rgba(0,0,0,0.05),0_1px_2px_rgba(0,0,0,0.03)]",
+        "dark:shadow-none",
+        isDragging && "shadow-[0_4px_12px_rgba(0,0,0,0.15)]",
+        // Left border for severity
+        isBreached && "border-l-[3px] border-l-[#ef4444]",
+        isAtRisk && !isBreached && "border-l-[3px] border-l-[#f59e0b]"
       )}
-      style={{
-        backgroundColor: '#ffffff',
-        border: '1px solid #e8e8e8',
-        borderLeft: isBreached ? '3px solid #ef4444' : isAtRisk ? '3px solid #f59e0b' : '1px solid #e8e8e8',
-        boxShadow: isDragging 
-          ? '0 4px 12px rgba(0,0,0,0.15)' 
-          : '0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.03)',
-      }}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.borderColor = '#d4d4d4';
-        e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04)';
-        if (isBreached) e.currentTarget.style.borderLeft = '3px solid #ef4444';
-        else if (isAtRisk) e.currentTarget.style.borderLeft = '3px solid #f59e0b';
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.borderColor = '#e8e8e8';
-        e.currentTarget.style.boxShadow = '0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.03)';
-        if (isBreached) e.currentTarget.style.borderLeft = '3px solid #ef4444';
-        else if (isAtRisk) e.currentTarget.style.borderLeft = '3px solid #f59e0b';
-        else e.currentTarget.style.borderLeft = '1px solid #e8e8e8';
-      }}
     >
       {/* Row 1: ID + Badges */}
       <div className="flex items-start justify-between mb-1.5">
         <button
           onClick={handleKeyClick}
-          className="font-mono text-sm font-semibold hover:underline"
-          style={{ color: '#2563eb' }}
+          className="font-mono text-sm font-semibold hover:underline text-[#2563eb] dark:text-[#60a5fa]"
         >
           {incident.incident_key}
         </button>
         <div className="flex items-center gap-1.5">
           {incident.is_major_incident && (
-            <span 
-              className="flex items-center gap-1 px-2 py-1 rounded-md text-[11px] font-semibold"
-              style={{
-                backgroundColor: 'rgba(245, 158, 11, 0.08)',
-                color: '#d97706',
-              }}
-            >
+            <span className={cn(
+              "flex items-center gap-1 px-2 py-1 rounded-md text-[11px] font-semibold",
+              "bg-[rgba(245,158,11,0.08)] text-[#d97706]",
+              "dark:bg-[#431407] dark:text-[#fdba74] dark:border dark:border-[#7c2d12]"
+            )}>
               <AlertTriangle className="h-2.5 w-2.5" />
               Major
             </span>
@@ -248,7 +230,7 @@ export const KanbanCard = memo(function KanbanCard({
       </div>
       
       {/* Row 2: Title */}
-      <h4 className="text-sm font-medium leading-snug mb-2.5" style={{ color: '#0a0a0a' }}>
+      <h4 className="text-sm font-medium leading-snug mb-2.5 text-[#0a0a0a] dark:text-[#fafafa]">
         {incident.title}
       </h4>
       
@@ -256,25 +238,26 @@ export const KanbanCard = memo(function KanbanCard({
       <div className="flex items-center justify-between text-xs">
         <div className="flex items-center gap-2">
           <SeverityBadge severity={incident.severity} />
-          <span className="text-xs" style={{ color: '#737373' }}>{age}</span>
+          <span className="text-xs text-[#737373] dark:text-[#a3a3a3]">{age}</span>
           {isBreached && (
-            <span className="text-xs font-semibold" style={{ color: '#ef4444' }}>Breached</span>
+            <span className="text-xs font-semibold text-[#ef4444] dark:text-[#f87171]">Breached</span>
           )}
           {isAtRisk && (
-            <span className="text-xs font-semibold" style={{ color: '#f59e0b' }}>At Risk</span>
+            <span className="text-xs font-semibold text-[#f59e0b] dark:text-[#fbbf24]">At Risk</span>
           )}
         </div>
         
         {/* Assignee Avatar */}
         {incident.assignee ? (
-          <div 
-            className="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-semibold"
-            style={{ backgroundColor: '#f3f3f3', color: '#737373' }}
-          >
+          <div className={cn(
+            "w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-semibold",
+            "bg-[#f3f3f3] text-[#737373]",
+            "dark:bg-[#404040] dark:text-[#d4d4d4]"
+          )}>
             {incident.assignee.avatar_initials || incident.assignee.full_name.slice(0, 2).toUpperCase()}
           </div>
         ) : (
-          <span className="italic text-xs" style={{ color: '#737373' }}>Unassigned</span>
+          <span className="italic text-xs text-[#737373] dark:text-[#a3a3a3]">Unassigned</span>
         )}
       </div>
       
@@ -329,7 +312,6 @@ export const KanbanCard = memo(function KanbanCard({
           className="h-7 text-xs flex-1"
           onClick={(e) => {
             e.stopPropagation();
-            // TODO: Open assign modal
             navigate(`/release/incidents/${incident.id}?action=assign`);
           }}
         >
@@ -342,7 +324,6 @@ export const KanbanCard = memo(function KanbanCard({
           className="h-7 text-xs flex-1"
           onClick={(e) => {
             e.stopPropagation();
-            // TODO: Open escalate modal
             navigate(`/release/incidents/${incident.id}?action=escalate`);
           }}
         >
