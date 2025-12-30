@@ -64,7 +64,7 @@ const getEnterpriseMenuItems = (): MenuItem[] => [
 
 // Portfolio/Program/Team menu items
 const getMenuItems = (portfolioId?: string, programId?: string, tier?: string): MenuItem[] => [
-  { id: 'room', label: 'Portfolio Room', icon: LayoutDashboard, path: portfolioId ? `/portfolio/${portfolioId}/room` : '/portfolio-room', tiers: ['portfolio', 'program', 'team'] },
+  { id: 'room', label: 'Portfolio Room', icon: LayoutDashboard, path: portfolioId ? `/portfolio/${portfolioId}/room` : '/enterprise/strategy-room', tiers: ['portfolio', 'program', 'team'] },
   { id: 'initiatives', label: 'Initiatives', icon: Focus, path: '/initiatives', tiers: ['portfolio', 'program'] },
   { id: 'backlog', label: 'Backlog', icon: ListTree, path: '/items/epics', tiers: ['portfolio', 'program'] },
   { id: 'roadmaps', label: 'Roadmaps', icon: Map, path: '/roadmaps', tiers: ['portfolio', 'program'] },
