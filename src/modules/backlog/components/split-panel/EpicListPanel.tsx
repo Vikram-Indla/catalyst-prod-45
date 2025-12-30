@@ -41,7 +41,7 @@ const STATUS_DOT_COLORS: Record<string, string> = {
   analyzing: 'bg-blue-500',
   approved: 'bg-amber-500',
   in_progress: 'bg-amber-500',
-  done: 'bg-green-500',
+  done: 'bg-teal-500',
   cancelled: 'bg-gray-400',
 };
 
@@ -150,7 +150,7 @@ export function EpicListPanel({
                       </span>
 
                       {epic.mvp && (
-                        <Badge className="bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 border-0 text-[10px] px-1.5 py-0">
+                        <Badge className="bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-400 border-0 text-[10px] px-1.5 py-0">
                           MVP
                         </Badge>
                       )}
