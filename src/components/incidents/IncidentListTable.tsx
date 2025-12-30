@@ -453,10 +453,12 @@ export function IncidentListTable({
                           className={cn(
                             CELL_TEXT,
                             'font-medium font-mono',
-                            'text-[#2563eb] hover:text-[#1d4ed8] dark:text-[#60a5fa] dark:hover:text-[#93c5fd]',
                             'hover:underline truncate'
                           )}
+                          style={{ color: '#c69c6d' }}
                           onClick={(e) => e.stopPropagation()}
+                          onMouseEnter={(e) => (e.currentTarget.style.color = '#d4b896')}
+                          onMouseLeave={(e) => (e.currentTarget.style.color = '#c69c6d')}
                         >
                           {incident.incident_key}
                         </Link>
