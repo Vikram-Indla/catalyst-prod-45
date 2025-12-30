@@ -4,7 +4,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
-  Star, MoreHorizontal, ExternalLink, CheckCircle, 
+  Star, ExternalLink, CheckCircle, 
   UserPlus, Clock, MessageSquare, History, Eye, 
   FileText, HelpCircle, Calendar
 } from 'lucide-react';
@@ -233,7 +233,7 @@ export function OperationsGridRow({
                 onClick={(e) => e.stopPropagation()}
                 title="More actions"
               >
-                <MoreHorizontal className="w-3 h-3" />
+                <UserPlus className="w-3 h-3" />
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent 
@@ -441,7 +441,7 @@ export function DeliveryGridRow({
                     onClick={(e) => e.stopPropagation()}
                     title="More actions"
                   >
-                    <MoreHorizontal className="w-3 h-3" />
+                    <UserPlus className="w-3 h-3" />
                   </button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent 
@@ -633,7 +633,7 @@ export function PlannerGridRow({
                   onClick={(e) => e.stopPropagation()}
                   title="More actions"
                 >
-                  <MoreHorizontal className="w-3 h-3" />
+                  <UserPlus className="w-3 h-3" />
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent 
