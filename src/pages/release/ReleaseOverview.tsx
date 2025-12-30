@@ -52,8 +52,9 @@ export default function ReleaseOverview() {
       title: 'Releases',
       meta: `${releaseStats?.overdueCount ?? 0} overdue`,
       href: '/release/versions',
-      iconBg: 'bg-green-50',
-      iconColor: 'text-green-600',
+      // TEAL for releases per design spec v2
+      iconBg: 'bg-[rgba(13,148,136,0.1)] dark:bg-[rgba(20,184,166,0.1)]',
+      iconColor: 'text-[#0d9488] dark:text-[#14b8a6]',
     },
     {
       icon: BarChart3,

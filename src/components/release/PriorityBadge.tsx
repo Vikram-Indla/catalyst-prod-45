@@ -7,23 +7,25 @@ interface PriorityBadgeProps {
   className?: string;
 }
 
-// Pure Onyx compliant priority colors with dark mode support
+// Design System V2 compliant priority colors
+// Low priority uses TEAL (not green) per spec
 const priorityStyles: Record<Priority, { dot: string; text: string }> = {
   critical: { 
     dot: 'bg-red-500',
-    text: 'text-gray-900 dark:text-gray-100'
+    text: 'text-foreground'
   },
   high: { 
     dot: 'bg-orange-500',
-    text: 'text-gray-900 dark:text-gray-100'
+    text: 'text-foreground'
   },
   medium: { 
     dot: 'bg-yellow-500',
-    text: 'text-gray-900 dark:text-gray-100'
+    text: 'text-foreground'
   },
+  // TEAL for low priority per design spec v2
   low: { 
-    dot: 'bg-green-500',
-    text: 'text-gray-900 dark:text-gray-100'
+    dot: 'bg-[#0d9488] dark:bg-[#14b8a6]',
+    text: 'text-foreground'
   },
 };
 

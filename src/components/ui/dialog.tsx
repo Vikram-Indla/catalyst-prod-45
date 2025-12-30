@@ -84,8 +84,10 @@ const DialogContent = React.forwardRef<
         className={cn(
           "absolute right-4 top-4 rounded-lg p-2",
           "transition-colors",
-          "focus:outline-none focus:ring-2 focus:ring-offset-0",
-          "disabled:pointer-events-none"
+          // Focus ring uses BLUE per design spec v2
+          "focus:outline-none focus:ring-2 focus:ring-[#3b82f6] dark:focus:ring-[#60a5fa] focus:ring-offset-0",
+          "disabled:pointer-events-none",
+          "hover:bg-muted"
         )}
         style={{
           color: 'var(--dialog-close-color, #737373)',

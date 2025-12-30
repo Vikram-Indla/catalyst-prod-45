@@ -24,7 +24,8 @@ const VoteIcon = ({ vote, size = 'sm' }: { vote: VoteStatus; size?: 'sm' | 'md' 
   const sizeClass = size === 'md' ? 'h-5 w-5' : 'h-4 w-4';
   switch (vote) {
     case 'approved':
-      return <CheckCircle className={cn(sizeClass, 'text-green-600')} />;
+      // TEAL for success per design spec v2
+      return <CheckCircle className={cn(sizeClass, 'text-[#0d9488] dark:text-[#14b8a6]')} />;
     case 'rejected':
       return <XCircle className={cn(sizeClass, 'text-red-600')} />;
     case 'vetoed':
@@ -60,12 +61,14 @@ function ApprovalProgressBar({ committee }: { committee: IncidentCommittee }) {
         value={progressPercent} 
         className={cn(
           "h-2",
-          hasVeto ? "[&>div]:bg-orange-500" : isRejected ? "[&>div]:bg-red-500" : "[&>div]:bg-green-500"
+          // TEAL for success per design spec v2
+          hasVeto ? "[&>div]:bg-orange-500" : isRejected ? "[&>div]:bg-red-500" : "[&>div]:bg-[#0d9488] dark:[&>div]:bg-[#14b8a6]"
         )}
       />
       <div className="flex gap-4 text-xs">
         <span className="flex items-center gap-1">
-          <CheckCircle className="h-3 w-3 text-green-600" />
+          {/* TEAL for success per design spec v2 */}
+          <CheckCircle className="h-3 w-3 text-[#0d9488] dark:text-[#14b8a6]" />
           {approvedCount} approved
         </span>
         <span className="flex items-center gap-1">
@@ -219,17 +222,19 @@ export function CAPGovernanceSection({
         {/* Header Banner */}
         <div className={cn(
           "px-4 py-3 border-b",
-          committee.status === 'approved' ? "bg-green-50 border-green-200" :
-          committee.status === 'rejected' ? "bg-red-50 border-red-200" :
-          "bg-yellow-50 border-yellow-200"
+          // TEAL for approved per design spec v2
+          committee.status === 'approved' ? "bg-[rgba(13,148,136,0.1)] border-[#0d9488]/30 dark:bg-[rgba(20,184,166,0.1)] dark:border-[#14b8a6]/30" :
+          committee.status === 'rejected' ? "bg-red-50 border-red-200 dark:bg-red-900/20 dark:border-red-500/30" :
+          "bg-yellow-50 border-yellow-200 dark:bg-yellow-900/20 dark:border-yellow-500/30"
         )}>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <AlertTriangle className={cn(
                 "h-4 w-4",
-                committee.status === 'approved' ? "text-green-600" :
-                committee.status === 'rejected' ? "text-red-600" :
-                "text-yellow-600"
+                // TEAL for approved per design spec v2
+                committee.status === 'approved' ? "text-[#0d9488] dark:text-[#14b8a6]" :
+                committee.status === 'rejected' ? "text-red-600 dark:text-red-400" :
+                "text-yellow-600 dark:text-yellow-400"
               )} />
               <span className="text-sm font-medium">CAP Committee Review</span>
             </div>
