@@ -8,14 +8,22 @@ const badgeVariants = cva(
   {
     variants: {
       variant: {
-        default: "border-transparent bg-gray-900 text-gray-50 dark:bg-gray-50 dark:text-gray-900",
-        secondary: "border-gray-200 dark:border-gray-700 bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300",
-        destructive: "border-transparent bg-red-500 text-white",
-        outline: "border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300",
-        success: "border-transparent bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400",
-        warning: "border-transparent bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400",
-        error: "border-transparent bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400",
-        info: "border-transparent bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400",
+        // Default - uses semantic tokens
+        default: "border-transparent bg-foreground text-background",
+        // Secondary - subtle background
+        secondary: "border-border bg-muted text-muted-foreground",
+        // Destructive - red for errors/danger
+        destructive: "border-transparent bg-[#ef4444] text-white dark:bg-[#f87171]",
+        // Outline - bordered style
+        outline: "border-border bg-card text-foreground",
+        // Success - TEAL per design system v2 (NOT green)
+        success: "border-transparent bg-[rgba(13,148,136,0.1)] text-[#0d9488] dark:bg-[rgba(20,184,166,0.15)] dark:text-[#14b8a6]",
+        // Warning - Amber
+        warning: "border-transparent bg-[rgba(245,158,11,0.1)] text-[#b45309] dark:bg-[rgba(245,158,11,0.15)] dark:text-[#fbbf24]",
+        // Error - Red
+        error: "border-transparent bg-[rgba(239,68,68,0.1)] text-[#b91c1c] dark:bg-[rgba(239,68,68,0.15)] dark:text-[#f87171]",
+        // Info - Blue
+        info: "border-transparent bg-[rgba(59,130,246,0.1)] text-[#1d4ed8] dark:bg-[rgba(59,130,246,0.15)] dark:text-[#60a5fa]",
       },
     },
     defaultVariants: {
