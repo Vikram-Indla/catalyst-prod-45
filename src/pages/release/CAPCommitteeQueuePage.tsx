@@ -104,55 +104,56 @@ export default function CAPCommitteeQueuePage() {
   // This ensures the UI is always responsive
 
   return (
-    <div className="flex flex-col h-full bg-background">
+    <div className="flex flex-col h-full bg-[#0a0a0a] dark:bg-[#0a0a0a]">
       <GlobalPageHeader
         sectionLabel="RELEASE"
         pageTitle="Committee Queue"
         showDivider={false}
         rightActions={
           <div className="flex items-center gap-2">
-            <span className="text-xs font-medium text-foreground bg-muted px-2 py-1 rounded border border-border">
-              {showDecisionHistory ? `History: ${historyCount}` : `Open Approvals: ${openCount}`}
+            <span className="text-xs font-medium text-[#fafafa] bg-[#262626] dark:bg-[#262626] px-3 py-1.5 rounded-lg border border-[#404040] dark:border-[#404040]">
+              <span className="text-[#a3a3a3]">{showDecisionHistory ? 'History:' : 'Open Approvals:'}</span>
+              <span className="ml-1 font-semibold">{showDecisionHistory ? historyCount : openCount}</span>
             </span>
           </div>
         }
       />
 
       {/* MODE TOGGLE + FILTERS */}
-      <div className="px-4 py-3 border-b border-border bg-muted/20">
+      <div className="px-4 py-3 border-b border-[#333] dark:border-[#333] bg-[#0f0f0f] dark:bg-[#0f0f0f]">
         <div className="flex items-center justify-between gap-4">
           {/* Left: Mode toggle */}
           <Button
             variant="ghost"
             size="sm"
-            className="h-9 gap-2 text-sm px-3"
+            className="h-9 gap-2 text-sm px-3 text-[#a3a3a3] hover:text-[#fafafa] hover:bg-[#262626]"
             onClick={() => setShowDecisionHistory(!showDecisionHistory)}
           >
             {showDecisionHistory ? (
-              <ToggleRight className="h-4 w-4 text-primary" />
+              <ToggleRight className="h-4 w-4 text-[#0d9488]" />
             ) : (
-              <ToggleLeft className="h-4 w-4 text-muted-foreground" />
+              <ToggleLeft className="h-4 w-4 text-[#737373]" />
             )}
             Show decision history
           </Button>
 
           {/* Right: filters */}
           <div className="flex items-center gap-2">
-            <div className="relative w-48">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <div className="relative w-64">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#737373]" />
               <Input
                 placeholder="Search by key or summary..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-9 h-9 text-sm"
+                className="pl-9 h-9 text-sm bg-[#262626] dark:bg-[#262626] border-[#404040] dark:border-[#404040] text-[#fafafa] placeholder:text-[#737373] focus:border-[#2563eb] focus:ring-[#2563eb]"
               />
             </div>
 
             <Select value={severityFilter} onValueChange={(v) => setSeverityFilter(v as FilterSeverity)}>
-              <SelectTrigger className="w-24 h-9 text-sm">
+              <SelectTrigger className="w-24 h-9 text-sm bg-[#262626] dark:bg-[#262626] border-[#404040] dark:border-[#404040] text-[#d4d4d4]">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-popover">
                 <SelectItem value="all">All Sev</SelectItem>
                 <SelectItem value="SEV1">SEV1</SelectItem>
                 <SelectItem value="SEV2">SEV2</SelectItem>
@@ -162,10 +163,10 @@ export default function CAPCommitteeQueuePage() {
             </Select>
 
             <Select value={agingFilter} onValueChange={(v) => setAgingFilter(v as FilterAging)}>
-              <SelectTrigger className="w-24 h-9 text-sm">
+              <SelectTrigger className="w-24 h-9 text-sm bg-[#262626] dark:bg-[#262626] border-[#404040] dark:border-[#404040] text-[#d4d4d4]">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-popover">
                 <SelectItem value="all">All Ages</SelectItem>
                 <SelectItem value=">3d">&gt;3d</SelectItem>
                 <SelectItem value=">7d">&gt;7d</SelectItem>
