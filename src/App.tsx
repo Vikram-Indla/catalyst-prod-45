@@ -62,7 +62,6 @@ import ProgramRoom from "./pages/ProgramRoom";
 import ProgramEpicsPage from "./pages/ProgramEpicsPage";
 import ProgramBoardNew from "./pages/ProgramBoardNew";
 import ProgramBoardWithSidebar from "./pages/ProgramBoardWithSidebar";
-import ProgramBoardOld from "./pages/ProgramBoard";
 import ProgramBoardHistory from "./pages/ProgramBoardHistory";
 import QuartersPage from "./pages/program/QuartersPage";
 import CapacityWithSidebar from "./pages/program/CapacityWithSidebar";
