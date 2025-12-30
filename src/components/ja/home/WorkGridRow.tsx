@@ -15,7 +15,7 @@ import { cn } from '@/lib/utils';
 import { getValidatedWorkItemRoute } from '@/lib/workItemRoutes';
 import { WorkItemStarButton } from '@/components/shared/WorkItemStarButton';
 import type { StarredItemType } from '@/hooks/home/useStarredItems';
-import { formatDistanceToNow } from 'date-fns';
+import { formatTimeAbbreviated } from '@/lib/formatTimeAgo';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -109,7 +109,7 @@ export function OperationsGridRow({
   const navigate = useNavigate();
   const [isHovered, setIsHovered] = useState(false);
   const [actionsOpen, setActionsOpen] = useState(false);
-  const timeAgo = formatDistanceToNow(item.activityDate, { addSuffix: false });
+  const timeAgo = formatTimeAbbreviated(item.activityDate);
   
   const rowHeight = density === 'compact' ? 'py-1' : 'py-2';
   
@@ -201,9 +201,9 @@ export function OperationsGridRow({
           <LevelTag level={item.level || 'Release'} />
         </div>
 
-        {/* Updated */}
-        <div className="text-sm tabular-nums text-muted-foreground">
-          {timeAgo} ago
+        {/* Updated - abbreviated format */}
+        <div className="text-sm tabular-nums text-muted-foreground whitespace-nowrap">
+          {timeAgo}
         </div>
 
         {/* Assignee - show full name with avatar */}
@@ -285,7 +285,7 @@ export function OperationsGridRow({
             {item.summary}
           </div>
         </div>
-        <div className="text-xs tabular-nums text-gray-500 dark:text-gray-400 text-right">
+        <div className="text-xs tabular-nums text-gray-500 dark:text-gray-400 text-right whitespace-nowrap">
           {timeAgo}
         </div>
       </div>
@@ -321,7 +321,7 @@ export function DeliveryGridRow({
 }) {
   const navigate = useNavigate();
   const [isHovered, setIsHovered] = useState(false);
-  const timeAgo = formatDistanceToNow(item.activityDate, { addSuffix: false });
+  const timeAgo = formatTimeAbbreviated(item.activityDate);
   
   const rowHeight = density === 'compact' ? 'py-1' : 'py-2';
   
@@ -397,9 +397,9 @@ export function DeliveryGridRow({
           <LevelTag level={item.level || 'Project'} />
         </div>
 
-        {/* Updated */}
-        <div className="text-sm tabular-nums text-muted-foreground">
-          {timeAgo} ago
+        {/* Updated - abbreviated format */}
+        <div className="text-sm tabular-nums text-muted-foreground whitespace-nowrap">
+          {timeAgo}
         </div>
 
         {/* Assignee - show full name with avatar */}
@@ -489,7 +489,7 @@ export function DeliveryGridRow({
             {item.summary}
           </div>
         </div>
-        <div className="text-xs tabular-nums text-gray-500 dark:text-gray-400 text-right">
+        <div className="text-xs tabular-nums text-gray-500 dark:text-gray-400 text-right whitespace-nowrap">
           {timeAgo}
         </div>
       </div>
@@ -525,7 +525,7 @@ export function PlannerGridRow({
 }) {
   const navigate = useNavigate();
   const [isHovered, setIsHovered] = useState(false);
-  const timeAgo = formatDistanceToNow(item.activityDate, { addSuffix: false });
+  const timeAgo = formatTimeAbbreviated(item.activityDate);
   
   const rowHeight = density === 'compact' ? 'py-1' : 'py-2';
   
@@ -601,9 +601,9 @@ export function PlannerGridRow({
           <LevelTag level={item.level || 'Planner'} />
         </div>
 
-        {/* Updated */}
-        <div className="text-sm tabular-nums text-muted-foreground">
-          {timeAgo} ago
+        {/* Updated - abbreviated format */}
+        <div className="text-sm tabular-nums text-muted-foreground whitespace-nowrap">
+          {timeAgo}
         </div>
 
         {/* Assignee - show full name with avatar */}
@@ -680,7 +680,7 @@ export function PlannerGridRow({
             {item.summary}
           </div>
         </div>
-        <div className="text-xs tabular-nums text-gray-500 dark:text-gray-400 text-right">
+        <div className="text-xs tabular-nums text-gray-500 dark:text-gray-400 text-right whitespace-nowrap">
           {timeAgo}
         </div>
       </div>
