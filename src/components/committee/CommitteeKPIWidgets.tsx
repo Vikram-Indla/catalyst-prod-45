@@ -52,23 +52,30 @@ export function CommitteeKPIWidgets({
         const isActive = activeFilter === widget.id;
         const Icon = widget.icon;
 
+        const iconColorClass = {
+          pending: 'text-[#fcd34d]',
+          vetoed: 'text-[#fca5a5]',
+          aging: 'text-[#fcd34d]',
+          approved: 'text-[#5eead4]',
+        }[widget.id] || 'text-[#a3a3a3]';
+
         return (
           <button
             key={widget.id}
             onClick={() => onFilterClick(isActive ? null : widget.id)}
             className={cn(
               'flex items-center gap-1.5 px-2.5 py-1.5 rounded-md border transition-all text-xs',
-              'bg-card hover:bg-muted',
+              'bg-[#262626] dark:bg-[#262626] hover:bg-[#333] dark:hover:bg-[#333]',
               isActive
-                ? 'border-primary border-2 bg-primary/5'
-                : 'border-border'
+                ? 'border-[#0d9488] border-2 bg-[#0d9488]/10'
+                : 'border-[#404040] dark:border-[#404040]'
             )}
           >
-            <Icon className={cn("h-3 w-3", widget.iconColor)} />
-            <span className={cn("font-medium", isActive ? 'text-foreground' : 'text-muted-foreground')}>
+            <Icon className={cn("h-3 w-3", iconColorClass)} />
+            <span className={cn("font-medium", isActive ? 'text-[#fafafa]' : 'text-[#a3a3a3]')}>
               {widget.label}
             </span>
-            <span className="font-semibold tabular-nums min-w-[1rem] text-center text-foreground">
+            <span className="font-semibold tabular-nums min-w-[1rem] text-center text-[#fafafa]">
               {widget.value}
             </span>
           </button>

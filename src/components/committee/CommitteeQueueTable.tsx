@@ -154,14 +154,26 @@ interface CommitteeQueueTableProps {
 
 function StatusBadge({ status }: { status: CommitteeDecisionStatus }) {
   const config = {
-    pending: { label: 'Pending', className: 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20', icon: Clock },
-    approved: { label: 'Approved', className: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20', icon: CheckCircle },
-    vetoed: { label: 'Vetoed', className: 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20', icon: XCircle },
+    pending: { 
+      label: 'Pending', 
+      className: 'bg-[#78350f] text-[#fcd34d] border-[#92400e] dark:bg-[#78350f] dark:text-[#fcd34d] dark:border-[#92400e]', 
+      icon: Clock 
+    },
+    approved: { 
+      label: 'Approved', 
+      className: 'bg-teal-500/10 text-teal-600 dark:bg-[#134e4a] dark:text-[#5eead4] border-teal-500/20 dark:border-[#0d9488]', 
+      icon: CheckCircle 
+    },
+    vetoed: { 
+      label: 'Vetoed', 
+      className: 'bg-rose-500/10 text-rose-600 dark:bg-[#7f1d1d] dark:text-[#fca5a5] border-rose-500/20 dark:border-[#991b1b]', 
+      icon: XCircle 
+    },
   } as const;
 
   const { label, className, icon: Icon } = config[status];
   return (
-    <span className={cn("inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium whitespace-nowrap border", className)}>
+    <span className={cn("inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-semibold whitespace-nowrap border", className)}>
       <Icon className="h-3 w-3" />
       {label}
     </span>
@@ -169,18 +181,18 @@ function StatusBadge({ status }: { status: CommitteeDecisionStatus }) {
 }
 
 function SeverityBadge({ severity }: { severity: string }) {
-  const dotColors: Record<string, string> = {
-    SEV1: 'bg-rose-500',
-    SEV2: 'bg-amber-500',
-    SEV3: 'bg-sky-500',
-    SEV4: 'bg-slate-400',
+  const config: Record<string, { bg: string; text: string; dot: string }> = {
+    SEV1: { bg: 'dark:bg-[#7f1d1d] bg-rose-100', text: 'dark:text-[#fca5a5] text-rose-700', dot: 'bg-[#ef4444]' },
+    SEV2: { bg: 'dark:bg-[#78350f] bg-amber-100', text: 'dark:text-[#fcd34d] text-amber-700', dot: 'bg-[#d97706]' },
+    SEV3: { bg: 'dark:bg-[#1e3a5f] bg-sky-100', text: 'dark:text-[#7dd3fc] text-sky-700', dot: 'bg-[#0ea5e9]' },
+    SEV4: { bg: 'dark:bg-[#262626] bg-slate-100', text: 'dark:text-[#a3a3a3] text-slate-600', dot: 'bg-[#737373]' },
   };
 
-  const dotClass = dotColors[severity] || 'bg-slate-400';
+  const { bg, text, dot } = config[severity] || config.SEV4;
 
   return (
-    <span className="inline-flex items-center gap-1.5 px-1.5 py-0 h-5 rounded-full border border-border bg-muted text-[10px] font-medium text-muted-foreground">
-      <span className={cn("w-1.5 h-1.5 rounded-full", dotClass)} />
+    <span className={cn("inline-flex items-center gap-1.5 px-1.5 py-0.5 rounded text-[10px] font-bold uppercase", bg, text)}>
+      <span className={cn("w-1.5 h-1.5 rounded-full", dot)} />
       {severity}
     </span>
   );
@@ -192,16 +204,16 @@ function ProgressBar({ completed, total }: { completed: number; total: number })
   
   return (
     <div className="flex items-center gap-2 w-full">
-      <div className="flex-1 h-1.5 bg-muted rounded-full overflow-hidden">
+      <div className="flex-1 h-1.5 bg-[#333] dark:bg-[#333] rounded-full overflow-hidden">
         <div 
           className={cn(
             "h-full rounded-full transition-all",
-            isComplete ? "bg-emerald-500" : pct > 50 ? "bg-amber-500" : "bg-rose-500"
+            isComplete ? "bg-[#0d9488]" : "bg-[#0d9488]"
           )}
           style={{ width: `${pct}%` }}
         />
       </div>
-      <span className="text-[10px] font-medium text-muted-foreground tabular-nums whitespace-nowrap">
+      <span className="text-[11px] font-medium text-[#a3a3a3] tabular-nums whitespace-nowrap">
         {completed}/{total}
       </span>
     </div>
@@ -213,9 +225,9 @@ function ApproversAvatars({ approvers }: { approvers: CommitteeQueueItem['approv
   const remaining = approvers.length - 3;
 
   const decisionStyles: Record<CommitteeDecisionStatus, string> = {
-    pending: 'bg-muted text-muted-foreground',
-    approved: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400',
-    vetoed: 'bg-rose-500/10 text-rose-600 dark:text-rose-400',
+    pending: 'bg-[#404040] text-[#d4d4d4]',
+    approved: 'bg-[#134e4a] text-[#5eead4]',
+    vetoed: 'bg-[#7f1d1d] text-[#fca5a5]',
   };
 
   return (
@@ -225,11 +237,11 @@ function ApproversAvatars({ approvers }: { approvers: CommitteeQueueItem['approv
         return (
           <Tooltip key={a.id}>
             <TooltipTrigger asChild>
-              <div className={cn("w-5 h-5 rounded-full flex items-center justify-center text-[8px] font-medium border border-background", styleClass)}>
+              <div className={cn("w-5 h-5 rounded-full flex items-center justify-center text-[8px] font-semibold border-2 border-[#0f0f0f] dark:border-[#0f0f0f]", styleClass)}>
                 {a.userInitials || a.userName.charAt(0)}
               </div>
             </TooltipTrigger>
-            <TooltipContent side="top" className="text-xs">
+            <TooltipContent side="top" className="text-xs bg-popover">
               <div className="font-medium">{a.userName}</div>
               <div className="capitalize text-muted-foreground">{a.decision}</div>
               {a.hasVeto && <div className="text-amber-500">Veto power</div>}
@@ -238,7 +250,7 @@ function ApproversAvatars({ approvers }: { approvers: CommitteeQueueItem['approv
         );
       })}
       {remaining > 0 && (
-        <div className="w-5 h-5 rounded-full flex items-center justify-center text-[8px] font-medium border border-background bg-muted text-muted-foreground">
+        <div className="w-5 h-5 rounded-full flex items-center justify-center text-[8px] font-medium border-2 border-[#0f0f0f] dark:border-[#0f0f0f] bg-[#333] text-[#a3a3a3]">
           +{remaining}
         </div>
       )}
@@ -248,9 +260,9 @@ function ApproversAvatars({ approvers }: { approvers: CommitteeQueueItem['approv
 
 function LoadingSkeleton({ gridTemplate }: { gridTemplate: string }) {
   return (
-    <div className="rounded-md border border-border overflow-hidden bg-card flex-1">
+    <div className="rounded-md border border-[#333] dark:border-[#333] overflow-hidden bg-[#0f0f0f] dark:bg-[#0f0f0f] flex-1">
       <div
-        className="grid items-center h-8 bg-muted border-b border-border"
+        className="grid items-center h-8 bg-[#1a1a1a] dark:bg-[#1a1a1a] border-b border-[#333] dark:border-[#333]"
         style={{ gridTemplateColumns: gridTemplate }}
       >
         {COLUMN_ORDER.map((col) => (
@@ -262,7 +274,10 @@ function LoadingSkeleton({ gridTemplate }: { gridTemplate: string }) {
       {[...Array(12)].map((_, i) => (
         <div
           key={i}
-          className="grid items-center h-9 border-b border-border last:border-b-0"
+          className={cn(
+            "grid items-center h-9 border-b border-[#262626] dark:border-[#262626] last:border-b-0",
+            i % 2 === 0 ? "bg-[#0f0f0f] dark:bg-[#0f0f0f]" : "bg-[#141414] dark:bg-[#141414]"
+          )}
           style={{ gridTemplateColumns: gridTemplate }}
         >
           {COLUMN_ORDER.map((col) => (
@@ -389,12 +404,12 @@ export function CommitteeQueueTable({ items, isLoading, onRowClick, onLoadDemoDa
   return (
     <TooltipProvider delayDuration={200}>
       <div className="flex flex-col h-full">
-        <div ref={containerRef} className="rounded-md border border-border overflow-hidden bg-card flex-1 min-h-0">
+        <div ref={containerRef} className="rounded-lg border border-[#333] dark:border-[#333] overflow-hidden bg-[#0f0f0f] dark:bg-[#0f0f0f] flex-1 min-h-0">
           <div className="overflow-x-auto w-full h-full">
             <div style={{ minWidth: `${totalTableWidth}px`, width: '100%' }}>
               {/* Header row - 32px height */}
               <div
-                className="grid items-center h-8 sticky top-0 z-20 bg-muted border-b border-border"
+                className="grid items-center h-8 sticky top-0 z-20 bg-[#1a1a1a] dark:bg-[#1a1a1a] border-b border-[#333] dark:border-[#333]"
                 style={{ gridTemplateColumns: gridTemplate }}
               >
                 {COLUMN_ORDER.map((col, idx) => {
@@ -412,7 +427,7 @@ export function CommitteeQueueTable({ items, isLoading, onRowClick, onLoadDemoDa
                       centered={isCentered}
                       className={cn(GRID_CELL_BASE, isFirst ? "pl-3 pr-2" : "px-2")}
                     >
-                      <span className={HEADER_TEXT}>{COLUMN_LABELS[col]}</span>
+                      <span className="text-[11px] font-semibold text-[#737373] uppercase tracking-wide">{COLUMN_LABELS[col]}</span>
                     </ResizableHeader>
                   );
                 })}
@@ -422,12 +437,13 @@ export function CommitteeQueueTable({ items, isLoading, onRowClick, onLoadDemoDa
               {paginatedItems.length === 0 ? (
                 <EmptyState onLoadDemoData={onLoadDemoData} includeClosedDecisions={includeClosedDecisions} />
               ) : (
-                paginatedItems.map((item) => (
+                paginatedItems.map((item, index) => (
                   <div
                     key={item.incident.id}
                     className={cn(
-                      'grid items-center h-9 cursor-pointer border-b border-border last:border-b-0 transition-colors',
-                      hoveredId === item.incident.id && 'bg-muted/50'
+                      'grid items-center h-9 cursor-pointer border-b border-[#262626] dark:border-[#262626] last:border-b-0 transition-colors',
+                      index % 2 === 0 ? 'bg-[#0f0f0f] dark:bg-[#0f0f0f]' : 'bg-[#141414] dark:bg-[#141414]',
+                      hoveredId === item.incident.id && 'bg-[#1a1a1a] dark:bg-[#1a1a1a]'
                     )}
                     style={{ gridTemplateColumns: gridTemplate }}
                     onClick={(e) => handleRowClick(item, e)}
@@ -438,7 +454,7 @@ export function CommitteeQueueTable({ items, isLoading, onRowClick, onLoadDemoDa
                     <div className={cn(GRID_CELL_BASE, "pl-3 pr-2 flex items-center h-full")}>
                       <Link
                         to={`/release/incidents/${item.incident.id}`}
-                        className={cn(CELL_TEXT, 'font-medium text-primary hover:underline truncate')}
+                        className="font-medium text-[#60a5fa] hover:underline truncate text-[12px]"
                         onClick={(e) => e.stopPropagation()}
                       >
                         {item.incident.incident_key}
@@ -448,9 +464,9 @@ export function CommitteeQueueTable({ items, isLoading, onRowClick, onLoadDemoDa
                     <div className={cn(GRID_CELL_BASE, "px-2 flex items-center h-full")}>
                       <Tooltip>
                         <TooltipTrigger asChild>
-                          <span className={cn(CELL_TEXT, 'truncate')}>{item.incident.title}</span>
+                          <span className="text-[12px] text-[#fafafa] truncate">{item.incident.title}</span>
                         </TooltipTrigger>
-                        <TooltipContent side="top" className="max-w-sm text-xs">
+                        <TooltipContent side="top" className="max-w-sm text-xs bg-popover">
                           {item.incident.title}
                         </TooltipContent>
                       </Tooltip>
@@ -505,7 +521,7 @@ export function CommitteeQueueTable({ items, isLoading, onRowClick, onLoadDemoDa
                     </div>
                     {/* AGE */}
                     <div className={cn(GRID_CELL_BASE, "px-2 flex items-center justify-center h-full")}>
-                      <span className={cn('text-[11px] tabular-nums font-medium', item.agingDays >= 7 ? 'text-amber-500' : 'text-muted-foreground')}>
+                      <span className={cn('text-[11px] tabular-nums font-medium', item.agingDays >= 7 ? 'text-[#d97706]' : 'text-[#a3a3a3]')}>
                         {item.agingDays}d
                       </span>
                     </div>
