@@ -255,11 +255,7 @@ export function SidebarBase({
                   </TooltipTrigger>
                   <TooltipContent 
                     side="right" 
-                    style={{ 
-                      background: 'var(--surface-2)', 
-                      border: '1px solid var(--border)',
-                      color: 'var(--text-1)',
-                    }}
+                    className="z-[100] bg-popover text-popover-foreground border border-border shadow-md"
                   >
                     {item.title}
                   </TooltipContent>
@@ -355,11 +351,7 @@ export function SidebarBase({
                     </TooltipTrigger>
                     <TooltipContent 
                       side="right" 
-                      style={{ 
-                        background: 'var(--surface-2)', 
-                        border: '1px solid var(--border)',
-                        color: 'var(--text-1)',
-                      }}
+                      className="z-[100] bg-popover text-popover-foreground border border-border shadow-md"
                     >
                       {item.title}
                     </TooltipContent>
