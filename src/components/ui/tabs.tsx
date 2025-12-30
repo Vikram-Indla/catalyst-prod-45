@@ -13,7 +13,8 @@ const TabsList = React.forwardRef<
     ref={ref}
     className={cn(
       "inline-flex h-10 items-center justify-center rounded-md p-1",
-      "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300",
+      // Uses semantic tokens per design spec v2
+      "bg-muted text-muted-foreground",
       className,
     )}
     {...props}
@@ -29,12 +30,16 @@ const TabsTrigger = React.forwardRef<
     ref={ref}
     className={cn(
       "relative inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium transition-all",
-      "text-gray-600 dark:text-gray-400",
-      "hover:text-gray-900 dark:hover:text-gray-100",
-      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-300 dark:focus-visible:ring-gray-600 focus-visible:ring-offset-2",
+      // Inactive state - muted foreground
+      "text-muted-foreground",
+      // Hover state
+      "hover:text-foreground",
+      // Focus ring uses BLUE per design spec v2
+      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3b82f6] dark:focus-visible:ring-[#60a5fa] focus-visible:ring-offset-2",
       "disabled:pointer-events-none disabled:opacity-50",
-      "data-[state=active]:shadow-sm data-[state=active]:text-gray-900 dark:data-[state=active]:text-gray-100 data-[state=active]:font-semibold",
-      "data-[state=active]:bg-white dark:data-[state=active]:bg-gray-900",
+      // Active state - uses semantic tokens
+      "data-[state=active]:shadow-sm data-[state=active]:text-foreground data-[state=active]:font-semibold",
+      "data-[state=active]:bg-card",
       className,
     )}
     {...props}
@@ -49,8 +54,9 @@ const TabsContent = React.forwardRef<
   <TabsPrimitive.Content
     ref={ref}
     className={cn(
-      "mt-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2",
-      "text-gray-900 dark:text-gray-100",
+      "mt-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3b82f6] dark:focus-visible:ring-[#60a5fa] focus-visible:ring-offset-2",
+      // Uses semantic token
+      "text-foreground",
       className,
     )}
     {...props}

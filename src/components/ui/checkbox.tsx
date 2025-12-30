@@ -17,7 +17,8 @@ const Checkbox = React.forwardRef<
       "data-[state=unchecked]:bg-background",
       "data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground data-[state=checked]:border-primary",
       "data-[state=indeterminate]:bg-primary data-[state=indeterminate]:text-primary-foreground data-[state=indeterminate]:border-primary",
-      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+      // Focus ring uses BLUE per design spec v2
+      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3b82f6] dark:focus-visible:ring-[#60a5fa] focus-visible:ring-offset-2",
       "disabled:cursor-not-allowed disabled:opacity-50",
       className,
     )}

@@ -21,7 +21,8 @@ const SelectTrigger = React.forwardRef<
       "bg-background px-3 py-2 text-sm text-foreground",
       "placeholder:text-muted-foreground",
       "hover:bg-muted transition-colors",
-      "focus:outline-none focus:ring-1 focus:ring-ring",
+      // Focus ring uses BLUE per design spec v2
+      "focus:outline-none focus:ring-1 focus:ring-[#3b82f6] dark:focus:ring-[#60a5fa]",
       "disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1",
       className,
     )}
