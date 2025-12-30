@@ -1,6 +1,7 @@
 /**
  * Incident Kanban Swimlane - Optimized with virtualization
  * Clean, collapsible lanes with smooth scrolling
+ * DARK MODE COMPLIANT per Design System V2
  */
 
 import { memo, useState, useMemo, useCallback } from 'react';
@@ -78,22 +79,24 @@ export const KanbanSwimlane = memo(function KanbanSwimlane({
       <button
         onClick={handleToggle}
         className={cn(
-          "w-full flex items-center gap-2 px-4 sm:px-6 py-2 bg-muted/20",
-          "hover:bg-muted/30 transition-colors sticky top-0 z-10 text-left"
+          "w-full flex items-center gap-2 px-4 sm:px-6 py-2",
+          "bg-muted/20 dark:bg-[#1a1a1a]",
+          "hover:bg-muted/30 dark:hover:bg-[#262626]",
+          "transition-colors sticky top-0 z-10 text-left"
         )}
       >
-        {/* Collapse chevron - secondary (not muted) */}
+        {/* Collapse chevron */}
         {isExpanded ? (
-          <ChevronDown className="h-3.5 w-3.5 text-[var(--text-3)] flex-shrink-0" />
+          <ChevronDown className="h-3.5 w-3.5 text-[#737373] dark:text-[#a3a3a3] flex-shrink-0" />
         ) : (
-          <ChevronRight className="h-3.5 w-3.5 text-[var(--text-3)] flex-shrink-0" />
+          <ChevronRight className="h-3.5 w-3.5 text-[#737373] dark:text-[#a3a3a3] flex-shrink-0" />
         )}
         
         {/* Lane name - PRIMARY text */}
-        <span className="text-sm font-medium text-[var(--text-1)]">{group.label}</span>
+        <span className="text-sm font-medium text-foreground">{group.label}</span>
         
         {/* Total count - SECONDARY (readable) */}
-        <span className="text-xs text-[var(--text-2)]">
+        <span className="text-xs text-muted-foreground">
           ({group.incidents.length})
         </span>
 
@@ -101,15 +104,15 @@ export const KanbanSwimlane = memo(function KanbanSwimlane({
         <div className="flex-1" />
 
         {/* Muted SLA counters - only if > 0 */}
-        <div className="flex items-center gap-3 text-[11px] text-[var(--text-3)]">
+        <div className="flex items-center gap-3 text-[11px] text-[#737373] dark:text-[#a3a3a3]">
           {laneStats.atRisk > 0 && (
             <span>
-              At Risk: <span className="font-medium text-[var(--text-2)]">{laneStats.atRisk}</span>
+              At Risk: <span className="font-medium text-[#d97706] dark:text-[#fbbf24]">{laneStats.atRisk}</span>
             </span>
           )}
           {laneStats.breached > 0 && (
             <span>
-              Breached: <span className="font-medium text-[var(--text-2)]">{laneStats.breached}</span>
+              Breached: <span className="font-medium text-[#ef4444] dark:text-[#f87171]">{laneStats.breached}</span>
             </span>
           )}
         </div>
@@ -174,17 +177,22 @@ const SwimlaneColumn = memo(function SwimlaneColumn({
     <div
       className={cn(
         "flex flex-col min-w-[240px] max-w-[260px] flex-shrink-0",
-        "bg-muted/10 rounded border border-border/30"
+        "bg-muted/10 dark:bg-[#1a1a1a] rounded",
+        "border border-border/30 dark:border-[#333]"
       )}
       onDragOver={onDragOver}
       onDrop={onDrop}
     >
       {/* Mini Column Header - READABLE typography */}
-      <div className="flex items-center gap-1.5 px-2 py-1.5 border-b border-border/30 bg-muted/20">
-        <span className="text-xs font-medium text-[var(--text-2)] flex-1 truncate">
+      <div className={cn(
+        "flex items-center gap-1.5 px-2 py-1.5",
+        "border-b border-border/30 dark:border-[#333]",
+        "bg-muted/20 dark:bg-[#262626]"
+      )}>
+        <span className="text-xs font-medium text-muted-foreground flex-1 truncate">
           {config.label}
         </span>
-        <span className="text-[10px] text-[var(--text-3)]">
+        <span className="text-[10px] text-[#737373] dark:text-[#a3a3a3]">
           {columnStats.total}
         </span>
       </div>
