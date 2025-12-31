@@ -13,7 +13,7 @@ import {
   ChevronLeft, ChevronRight, Clock, Eye, Copy, Check, RotateCcw, Play, FolderKanban,
   Pencil, Trash2, Cloud, GitCompare
 } from 'lucide-react';
-import { useCapacityData, useAssignments, useAiRecommendations, useCapacityScenarios, exportCapacityToPdf } from '@/modules/capacity-planner';
+import { useCapacityData, useAssignments, useAiRecommendations, useCapacityScenarios, useCapacityDepartments, useResourceManagement, exportCapacityToPdf } from '@/modules/capacity-planner';
 import type { ViewType, ResourceMetric, CapacityProject, AiRecommendation } from '@/modules/capacity-planner';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
@@ -409,9 +409,9 @@ export default function CapacityPlannerPage() {
               if (!editingResource) return null;
               return (
                 <EditResourceForm 
-                  resource={editingResource} 
+                  resource={editingResource}
+                  projects={projects}
                   onSave={() => {
-                    toast.success('Resource updated');
                     setEditResourceId(null);
                   }}
                   onCancel={() => setEditResourceId(null)}
@@ -1984,20 +1984,56 @@ function ResourceDrawerContent({ resource, projects }: { resource: ResourceMetri
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Edit Resource Form
+// Edit Resource Form with Real-time Database Integration
 // ─────────────────────────────────────────────────────────────────────────────
 function EditResourceForm({ 
-  resource, 
+  resource,
+  projects,
   onSave, 
   onCancel 
 }: { 
   resource: ResourceMetric;
+  projects: { id: string; name: string }[];
   onSave: () => void;
   onCancel: () => void;
 }) {
+  const { departments } = useCapacityDepartments();
+  const { updateResource, updateResourceAllocation } = useResourceManagement();
+  
   const [name, setName] = useState(resource.name);
   const [role, setRole] = useState(resource.role || 'Frontend Developer');
-  const [division, setDivision] = useState(resource.division || 'Delivery');
+  const [departmentId, setDepartmentId] = useState(resource.department_id || '');
+  const [projectId, setProjectId] = useState(resource.assignments?.[0]?.project_id || '');
+  const [allocation, setAllocation] = useState(resource.allocation || 0);
+  const [isSaving, setIsSaving] = useState(false);
+
+  const handleSave = async () => {
+    setIsSaving(true);
+    try {
+      // Update resource profile
+      await updateResource.mutateAsync({
+        id: resource.id,
+        full_name: name,
+        role,
+        department_id: departmentId || null,
+      });
+      
+      // Update allocation if project selected
+      if (projectId && allocation > 0) {
+        await updateResourceAllocation.mutateAsync({
+          resourceId: resource.id,
+          projectId,
+          allocationPercentage: allocation,
+        });
+      }
+      
+      onSave();
+    } catch (error) {
+      console.error('Failed to save resource:', error);
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   return (
     <>
@@ -2029,22 +2065,50 @@ function EditResourceForm({
             </Select>
           </div>
           <div className="space-y-2">
-            <Label>Division</Label>
-            <Select value={division} onValueChange={setDivision}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
+            <Label>Department</Label>
+            <Select value={departmentId} onValueChange={setDepartmentId}>
+              <SelectTrigger><SelectValue placeholder="Select department..." /></SelectTrigger>
               <SelectContent>
-                <SelectItem value="Product">Product</SelectItem>
-                <SelectItem value="Delivery">Delivery</SelectItem>
-                <SelectItem value="Support">Support</SelectItem>
+                {departments.map(dept => (
+                  <SelectItem key={dept.id} value={dept.id}>{dept.name}</SelectItem>
+                ))}
               </SelectContent>
             </Select>
+          </div>
+        </div>
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label>Project</Label>
+            <Select value={projectId} onValueChange={setProjectId}>
+              <SelectTrigger><SelectValue placeholder="Select project..." /></SelectTrigger>
+              <SelectContent>
+                {projects.map(proj => (
+                  <SelectItem key={proj.id} value={proj.id}>{proj.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="space-y-2">
+            <Label>Allocation %</Label>
+            <Input 
+              type="number"
+              min={0}
+              max={100}
+              step={5}
+              value={allocation}
+              onChange={(e) => setAllocation(parseInt(e.target.value) || 0)}
+            />
           </div>
         </div>
       </div>
       <DialogFooter>
         <Button variant="outline" onClick={onCancel}>Cancel</Button>
-        <Button onClick={onSave} className="bg-[#2563eb] hover:bg-[#1d4ed8]">
-          Save
+        <Button 
+          onClick={handleSave} 
+          disabled={isSaving}
+          className="bg-[#2563eb] hover:bg-[#1d4ed8]"
+        >
+          {isSaving ? 'Saving...' : 'Save'}
         </Button>
       </DialogFooter>
     </>

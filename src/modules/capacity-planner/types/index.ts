@@ -9,6 +9,7 @@ export interface CapacityResource {
   email: string;
   role: string;
   department: string;
+  department_id?: string | null;
   division: 'Product' | 'Delivery' | 'Support' | string;
   avatar_url?: string;
   created_at: string;

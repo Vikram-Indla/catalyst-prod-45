@@ -12,15 +12,23 @@ export function useCapacityData() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('profiles')
-        .select('id, full_name, email, role, avatar_url, created_at, updated_at')
+        .select('id, full_name, email, role, avatar_url, created_at, updated_at, department_id')
         .order('full_name');
       if (error) throw error;
+      
+      // Fetch departments to map names
+      const { data: departments } = await supabase
+        .from('capacity_departments')
+        .select('id, name');
+      const deptMap = new Map(departments?.map(d => [d.id, d.name]) || []);
+      
       return (data || []).map(p => ({
         id: p.id,
         name: p.full_name || p.email || 'Unknown',
         email: p.email || '',
         role: p.role || 'Team Member',
-        department: 'Engineering',
+        department: p.department_id ? deptMap.get(p.department_id) || 'Unassigned' : 'Unassigned',
+        department_id: p.department_id,
         division: 'Delivery' as const,
         avatar_url: p.avatar_url,
         created_at: p.created_at,
