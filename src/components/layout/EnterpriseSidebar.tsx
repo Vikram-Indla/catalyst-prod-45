@@ -32,7 +32,7 @@ const enterpriseSidebarConfig: SidebarConfig = {
     { id: 'objective-tree', title: 'Objective Tree', path: '/enterprise/okr-hub', icon: Workflow, exact: false },
     { id: 'roadmaps', title: 'Enterprise Roadmap', path: '/enterprise/roadmaps', icon: Map, exact: false },
     { id: 'risks', title: 'Risks', path: '/enterprise/risks', icon: Blocks, exact: false },
-    { id: 'capacity', title: 'Capacity', path: '/enterprise/reports/demand-capacity', icon: UsersIcon, exact: false },
+    { id: 'capacity', title: 'Capacity Planner', path: '/enterprise/strategy-room/capacity', icon: UsersIcon, exact: false },
     { id: 'reports', title: 'Reports', path: '/reports-discovery', icon: TrendingUp, exact: false },
   ],
   footerItem: {
