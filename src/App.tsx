@@ -179,7 +179,7 @@ import { AdminGuard } from "./components/admin/AdminGuard";
 import OKRTree from "./pages/enterprise/OKRTree";
 import OKRHub from "./pages/enterprise/OKRHub";
 // OKR v2 is now the single source - no separate portfolio/program/team OKR hubs
-import EnterpriseRoadmapPage from "./pages/EnterpriseRoadmapPage";
+import CatalystEnterpriseRoadmap from "./pages/enterprise/CatalystEnterpriseRoadmap";
 import ProductRoadmapPage from "./pages/ProductRoadmapPage";
 import ProductRoadmapV2Page from "./pages/ProductRoadmapV2Page";
 import IndustryRoadmapPage from "./pages/industry/IndustryRoadmapPage";
@@ -354,7 +354,7 @@ const App = () => (
               {/* Execution Workbench now at /program/:programId/work-tree */}
               <Route path="/program/:programId/reports" element={<PlaceholderPage />} />
               <Route path="/team/:teamId/okr-hub" element={<OKRHub />} />
-              <Route path="/enterprise/roadmaps" element={<EnterpriseRoadmapPage />} />
+              <Route path="/enterprise/roadmaps" element={<CatalystEnterpriseRoadmap />} />
               <Route path="/work-tree" element={<WorkTreePage />} />
               <Route path="/enterprise/work-tree" element={<WorkTreePage />} />
               <Route path="/enterprise/kanban-boards" element={<EnterpriseComingSoon />} />
