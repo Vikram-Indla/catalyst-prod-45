@@ -4,7 +4,7 @@ import { X } from 'lucide-react';
 import { Resource360Header } from './Resource360Header';
 import { Resource360Tabs } from './Resource360Tabs';
 import { MetricsRow } from './MetricsRow';
-import { CatalystHierarchyLegend } from './CatalystHierarchyLegend';
+
 import { HierarchyTreeView } from './HierarchyTreeView';
 import { SunburstView } from './SunburstView';
 import { useResource360Data } from '@/hooks/capacity/useResource360Data';
@@ -115,14 +115,11 @@ export function Resource360Drawer({ resourceId, onClose }: Resource360DrawerProp
               )}
 
               {activeTab === 'sunburst' && (
-                <>
-                  <CatalystHierarchyLegend />
-                  <SunburstView
-                    data={sunburstData}
-                    metrics={sunburstMetrics}
-                    resourceName={resource.name}
-                  />
-                </>
+                <SunburstView
+                  data={sunburstData}
+                  metrics={sunburstMetrics}
+                  resourceName={resource.name}
+                />
               )}
             </div>
           </div>
