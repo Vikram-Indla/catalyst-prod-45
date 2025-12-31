@@ -17,6 +17,7 @@ import { useCapacityData, useAssignments, useAiRecommendations, exportCapacityTo
 import type { ViewType, ResourceMetric, CapacityProject, AiRecommendation } from '@/modules/capacity-planner';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
+import { Button360 } from '@/components/capacity/Button360';
 
 type PeriodType = 'weekly' | 'monthly' | 'quarterly';
 type GroupByType = 'none' | 'project' | 'division' | 'department';
@@ -534,7 +535,7 @@ function CardsView({ resources, groupedByProject, groupBy, projects, onResourceC
   );
 }
 
-// Resource Card - V5 Design
+// Resource Card - V5 Design with Button360
 function ResourceCard({ resource, projects, onClick }: { resource: ResourceMetric; projects: CapacityProject[]; onClick: () => void }) {
   const division = (resource.division || 'Delivery') as keyof typeof divisionColors;
   const divColor = divisionColors[division] || divisionColors.Delivery;
@@ -546,8 +547,7 @@ function ResourceCard({ resource, projects, onClick }: { resource: ResourceMetri
 
   return (
     <div 
-      onClick={onClick}
-      className="bg-card border border-border rounded-lg p-4 hover:border-border-strong hover:shadow-sm transition-all cursor-pointer"
+      className="bg-card border border-border rounded-lg p-4 hover:border-border-strong hover:shadow-sm transition-all"
     >
       <div className="flex items-center gap-3">
         {/* Avatar */}
@@ -559,12 +559,25 @@ function ResourceCard({ resource, projects, onClick }: { resource: ResourceMetri
         <div className="flex-1 min-w-0">
           <p className="text-sm font-semibold text-foreground truncate">{resource.name}</p>
           <p className="text-xs text-muted-foreground truncate">{resource.role}</p>
+          {/* Project Tags */}
+          <div className="flex gap-1.5 mt-1.5 flex-wrap">
+            {primaryProject ? (
+              <span 
+                className="text-[10px] font-semibold text-white px-2 py-0.5 rounded"
+                style={{ background: projectColors[0] }}
+              >
+                {primaryProject.code || primaryProject.name?.substring(0, 3).toUpperCase()}
+              </span>
+            ) : (
+              <span className="text-[10px] font-semibold text-white px-2 py-0.5 rounded bg-muted-foreground">
+                Unassigned
+              </span>
+            )}
+          </div>
         </div>
         
-        {/* 360° button */}
-        <button className="text-[10px] text-muted-foreground border border-border rounded px-1.5 py-0.5 hover:border-[#2563eb] hover:text-[#2563eb] transition-colors">
-          360°
-        </button>
+        {/* 360° button with orbital animation */}
+        <Button360 onClick={onClick} size="md" />
         
         {/* Allocation */}
         <div className="text-right">
@@ -577,22 +590,6 @@ function ResourceCard({ resource, projects, onClick }: { resource: ResourceMetri
           </p>
           <p className="text-[10px] text-muted-foreground">Allocated</p>
         </div>
-      </div>
-      
-      {/* Project Tags */}
-      <div className="flex gap-1.5 mt-3 flex-wrap">
-        {primaryProject ? (
-          <span 
-            className="text-[11px] font-semibold text-white px-2.5 py-1 rounded"
-            style={{ background: projectColors[0] }}
-          >
-            {primaryProject.code || primaryProject.name?.substring(0, 3).toUpperCase()}
-          </span>
-        ) : (
-          <span className="text-[11px] font-semibold text-white px-2.5 py-1 rounded bg-muted-foreground">
-            Unassigned
-          </span>
-        )}
       </div>
     </div>
   );
@@ -671,14 +668,11 @@ function TableView({ resources, projects, onResourceClick, onEditResource, onDel
                 <td className="px-4 py-3 text-center text-sm text-muted-foreground">{resource.assignments.length}</td>
                 <td className="px-4 py-3">
                   <div className="flex items-center justify-end gap-2">
-                    {/* 360° View Button */}
-                    <button 
-                      onClick={(e) => { e.stopPropagation(); onResourceClick(resource); }}
-                      className="text-[11px] font-medium text-muted-foreground border border-border rounded px-2 py-1 hover:border-[#2563eb] hover:text-[#2563eb] hover:bg-[#2563eb]/5 transition-colors"
-                      title="View 360° details"
-                    >
-                      360°
-                    </button>
+                    {/* 360° View Button with orbital animation */}
+                    <Button360 
+                      onClick={() => onResourceClick(resource)} 
+                      size="sm"
+                    />
                     {/* Edit Button */}
                     <button 
                       onClick={(e) => { e.stopPropagation(); onEditResource(resource.id); }}
