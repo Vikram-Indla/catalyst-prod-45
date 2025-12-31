@@ -87,6 +87,11 @@ export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableVi
   const [visibleColumns, setVisibleColumns] = useState<Set<string>>(() => {
     return new Set(DEFAULT_COLUMNS.filter(c => c.visible !== false).map(c => c.key));
   });
+  
+  // Column order state
+  const [columnOrder, setColumnOrder] = useState<string[]>(() => {
+    return DEFAULT_COLUMNS.map(c => c.key);
+  });
 
   const toggleColumnVisibility = useCallback((columnKey: string) => {
     setVisibleColumns(prev => {
@@ -106,6 +111,10 @@ export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableVi
 
   const hideAllColumns = useCallback(() => {
     setVisibleColumns(new Set(['checkbox']));
+  }, []);
+  
+  const handleReorderColumns = useCallback((newOrder: string[]) => {
+    setColumnOrder(newOrder);
   }, []);
 
   // Sort data
@@ -325,10 +334,14 @@ export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableVi
     };
   }, [queryClient]);
 
-  // Filter columns based on visibility
+  // Filter and order columns based on visibility and order
   const displayColumns = useMemo(() => {
-    return DEFAULT_COLUMNS.filter(c => visibleColumns.has(c.key));
-  }, [visibleColumns]);
+    const columnsMap = new Map(DEFAULT_COLUMNS.map(c => [c.key, c]));
+    return columnOrder
+      .filter(key => visibleColumns.has(key))
+      .map(key => columnsMap.get(key)!)
+      .filter(Boolean);
+  }, [visibleColumns, columnOrder]);
 
   const renderSortIcon = (column: TableColumn) => {
     if (!column.sortable) return null;
@@ -450,11 +463,12 @@ export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableVi
             </span>
           </div>
           <ColumnVisibilityDropdown
-            columns={DEFAULT_COLUMNS}
+            columns={columnOrder.map(key => DEFAULT_COLUMNS.find(c => c.key === key)!).filter(Boolean)}
             visibleColumns={visibleColumns}
             onToggleColumn={toggleColumnVisibility}
             onShowAll={showAllColumns}
             onHideAll={hideAllColumns}
+            onReorderColumns={handleReorderColumns}
           />
         </div>
 
