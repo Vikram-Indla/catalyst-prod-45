@@ -2,15 +2,16 @@
  * For You Page - Personalized work items with AI Assistant
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { MessageSquare, AlertCircle, FileText } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { useForYouData } from '@/hooks/useForYouData';
 import { ForYouHeader, ForYouSubTabs, ForYouToolbar, ForYouTable, ForYouTableSkeleton, ForYouPagination } from '@/components/for-you';
 import { BulkActionsBar } from '@/components/business-requests/table-view/BulkActionsBar';
 import { CatalystAIPanel } from '@/components/catalyst-ai';
 import { toast } from 'sonner';
-import type { AIPriorityItem, AINextItemData, AIStats, AISuggestionData } from '@/components/catalyst-ai/CatalystAIPanel';
+import type { AIPriorityItem, AINextItemData, AIStats, AISuggestionData, AIWorkItemType } from '@/components/catalyst-ai/CatalystAIPanel';
 
 export default function ForYouPage() {
   const {
@@ -88,11 +89,49 @@ export default function ForYouPage() {
     setSelectedIds(new Set());
   };
 
+  const navigate = useNavigate();
+
+  // Handle clicking on work item key - navigate to appropriate detail page/drawer
+  const handleKeyClick = useCallback((key: string, type: string) => {
+    // Close AI panel when navigating
+    setIsAIPanelOpen(false);
+    
+    // Navigate based on type - keys like INC-160, FTR-020, etc.
+    const prefix = key.split('-')[0];
+    
+    switch (type) {
+      case 'incident':
+        navigate(`/release/incidents?selected=${key}`);
+        break;
+      case 'feature':
+        navigate(`/program/features?selected=${key}`);
+        break;
+      case 'story':
+        navigate(`/project/stories?selected=${key}`);
+        break;
+      case 'defect':
+        navigate(`/project/defects?selected=${key}`);
+        break;
+      case 'epic':
+        navigate(`/program/epics?selected=${key}`);
+        break;
+      case 'task':
+        navigate(`/project/tasks?selected=${key}`);
+        break;
+      case 'business-request':
+        navigate(`/product/business-requests?selected=${key}`);
+        break;
+      default:
+        toast.info(`Opening ${type}: ${key}`);
+    }
+  }, [navigate, setIsAIPanelOpen]);
+
   // Transform AI data for the panel
   const priorityItem: AIPriorityItem | undefined = aiData.priorityItem ? {
     id: aiData.priorityItem.itemId,
     key: aiData.priorityItem.key,
     title: aiData.priorityItem.title,
+    type: aiData.priorityItem.type,
     aiReason: aiData.priorityItem.reason,
     timeLeft: aiData.priorityItem.timeLeft,
     updatedAt: '10m ago',
@@ -103,6 +142,7 @@ export default function ForYouPage() {
     id: item.itemId,
     key: item.key,
     title: item.title,
+    type: item.type,
     aiContext: item.context,
   }));
 
@@ -220,6 +260,7 @@ export default function ForYouPage() {
         suggestions={suggestions}
         onItemClick={handleRowClick}
         onStartTask={handleStartTask}
+        onKeyClick={handleKeyClick}
       />
     </div>
   );
