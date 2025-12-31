@@ -211,6 +211,8 @@ export default function CatalystEnterpriseRoadmap() {
             totalCount={computed.totalObjectives}
             onToggleCollapse={actions.toggleCollapse}
             onSelect={actions.select}
+            canReorderThemes={state.groupBy === 'theme'}
+            onReorderTheme={actions.reorderThemes}
             isMobileOpen={isMobilePanelOpen}
             onMobileClose={() => setIsMobilePanelOpen(false)}
           />
