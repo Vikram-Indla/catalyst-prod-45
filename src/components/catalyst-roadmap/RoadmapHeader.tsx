@@ -55,16 +55,16 @@ export function RoadmapHeader({
   onShowHelp,
 }: RoadmapHeaderProps) {
   return (
-    <header className="h-[52px] px-4 flex items-center gap-3 bg-surface-0 border-b border-border shrink-0">
-      {/* Logo */}
-      <div className="flex items-center gap-2.5">
-        <div className="w-7 h-7 bg-gradient-to-br from-brand-primary to-purple-600 rounded-[7px] flex items-center justify-center text-white font-bold text-sm">
-          C
-        </div>
-        <span className="text-[15px] font-semibold text-text-primary">Catalyst</span>
-        <span className="text-[9px] font-semibold text-brand-primary bg-brand-primary/10 px-1.5 py-0.5 rounded uppercase tracking-wide">
-          Strategic
+    <header className="h-[52px] px-6 flex items-center gap-3 bg-surface-0 border-b border-border shrink-0">
+      {/* Page Title - matches PageChrome pattern */}
+      <div className="flex items-center gap-2">
+        <span className="text-[11px] font-semibold uppercase tracking-wider text-text-muted">
+          Enterprise
         </span>
+        <span className="text-[14px] text-text-muted">/</span>
+        <h1 className="text-[18px] font-semibold text-text-primary">
+          Enterprise Roadmap
+        </h1>
       </div>
 
       <div className="flex-1" />
