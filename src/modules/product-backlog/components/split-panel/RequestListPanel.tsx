@@ -104,8 +104,8 @@ export function RequestListPanel({
                 className={cn(
                   'px-3 py-1 text-xs font-medium rounded-full transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-1',
                   isActive
-                    ? 'bg-[#2563eb] text-white hover:bg-[#1d4ed8] focus-visible:ring-[#2563eb]'
-                    : 'bg-[#f5f5f5] text-[#525252] hover:bg-[#e5e5e5] focus-visible:ring-ring'
+                    ? 'bg-brand-primary text-white hover:bg-brand-primary/90 focus-visible:ring-brand-primary'
+                    : 'bg-surface-3 text-text-secondary hover:bg-muted focus-visible:ring-ring'
                 )}
               >
                 {filter === 'all' && 'All'}
@@ -122,7 +122,7 @@ export function RequestListPanel({
       <div className="flex-1 overflow-y-auto">
         {isLoading ? (
           <div className="flex items-center justify-center h-32">
-            <div className="animate-spin rounded-full h-6 w-6 border-b-2" style={{ borderColor: '#2563eb' }} />
+            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-brand-primary" />
           </div>
         ) : requests.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-32 text-sm" style={{ color: 'var(--text-3)' }}>
@@ -130,8 +130,7 @@ export function RequestListPanel({
             {activeFilter !== 'all' && (
               <button 
                 onClick={() => onFilterChange('all')}
-                className="mt-2 text-xs underline"
-                style={{ color: '#2563eb' }}
+                className="mt-2 text-xs underline text-brand-primary"
               >
                 Clear filter
               </button>
@@ -150,8 +149,8 @@ export function RequestListPanel({
                 className={cn(
                   'px-4 py-3 border-b cursor-pointer transition-colors border-l-[3px]',
                   isSelected
-                    ? 'bg-[#fafafa] border-l-[#2563eb]'
-                    : 'border-l-transparent hover:bg-[#fafafa]'
+                    ? 'bg-surface-2 border-l-brand-primary'
+                    : 'border-l-transparent hover:bg-surface-2'
                 )}
                 style={{
                   borderBottomColor: 'var(--divider)',
