@@ -5,7 +5,7 @@
 import React from 'react';
 import { 
   Undo2, Redo2, ZoomIn, ZoomOut, Magnet, Filter, Moon, Sun, 
-  Presentation, FileText, HelpCircle, Calendar
+  Presentation, FileText, HelpCircle, Calendar, Menu
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { TimesliceMode } from '@/types/roadmap';
@@ -31,6 +31,9 @@ interface RoadmapHeaderProps {
   onScrollToToday: () => void;
   onExport: () => void;
   onShowHelp: () => void;
+  // Mobile responsive props
+  onToggleMobilePanel?: () => void;
+  isMobilePanelOpen?: boolean;
 }
 
 export function RoadmapHeader({
@@ -53,56 +56,76 @@ export function RoadmapHeader({
   onScrollToToday,
   onExport,
   onShowHelp,
+  onToggleMobilePanel,
+  isMobilePanelOpen,
 }: RoadmapHeaderProps) {
   return (
-    <header className="h-[52px] px-6 flex items-center gap-3 bg-surface-0 border-b border-border shrink-0">
+    <header className="h-[52px] px-4 lg:px-6 flex items-center gap-2 lg:gap-3 bg-surface-0 border-b border-border shrink-0">
+      {/* Mobile hamburger menu - only visible below 1024px */}
+      {onToggleMobilePanel && (
+        <button
+          onClick={onToggleMobilePanel}
+          className={cn(
+            "lg:hidden h-[30px] w-[30px] flex items-center justify-center",
+            "border border-border bg-surface-0 rounded-md",
+            "text-text-secondary hover:border-border-strong hover:text-text-primary hover:bg-surface-1",
+            "transition-all",
+            isMobilePanelOpen && "bg-brand-primary/10 border-brand-primary text-brand-primary"
+          )}
+          title="Toggle objectives panel"
+        >
+          <Menu className="w-4 h-4" />
+        </button>
+      )}
+
       {/* Page Title - matches PageChrome pattern */}
-      <div className="flex items-center gap-2">
-        <span className="text-[11px] font-semibold uppercase tracking-wider text-text-muted">
+      <div className="flex items-center gap-2 min-w-0">
+        <span className="text-[11px] font-semibold uppercase tracking-wider text-text-muted hidden sm:inline">
           Enterprise
         </span>
-        <span className="text-[14px] text-text-muted">/</span>
-        <h1 className="text-[18px] font-semibold text-text-primary">
+        <span className="text-[14px] text-text-muted hidden sm:inline">/</span>
+        <h1 className="text-[16px] lg:text-[18px] font-semibold text-text-primary truncate">
           Enterprise Roadmap
         </h1>
       </div>
 
       <div className="flex-1" />
 
-      {/* Toolbar */}
-      <div className="flex items-center gap-1.5">
-        {/* Undo/Redo */}
-        <ToolbarButton onClick={onUndo} disabled={!canUndo} title="Undo (⌘Z)">
-          <Undo2 className="w-3.5 h-3.5" />
-        </ToolbarButton>
-        <ToolbarButton onClick={onRedo} disabled={!canRedo} title="Redo (⌘Y)">
-          <Redo2 className="w-3.5 h-3.5" />
-        </ToolbarButton>
+      {/* Toolbar - hidden on very small screens, condensed on medium */}
+      <div className="flex items-center gap-1 lg:gap-1.5">
+        {/* Undo/Redo - hidden on small screens */}
+        <div className="hidden md:flex items-center gap-1">
+          <ToolbarButton onClick={onUndo} disabled={!canUndo} title="Undo (⌘Z)">
+            <Undo2 className="w-3.5 h-3.5" />
+          </ToolbarButton>
+          <ToolbarButton onClick={onRedo} disabled={!canRedo} title="Redo (⌘Y)">
+            <Redo2 className="w-3.5 h-3.5" />
+          </ToolbarButton>
+          <ToolbarDivider />
+        </div>
 
-        <ToolbarDivider />
-
-        {/* Timeslice Pills */}
-        <div className="flex bg-surface-2 rounded-md p-0.5">
+        {/* Timeslice Pills - condensed on small screens */}
+        <div className="hidden sm:flex bg-surface-2 rounded-md p-0.5">
           {(['weekly', 'monthly', 'quarterly'] as const).map((s) => (
             <button
               key={s}
               onClick={() => onSliceChange(s)}
               className={cn(
-                "px-2.5 py-1 text-[11px] font-medium rounded transition-all",
+                "px-2 lg:px-2.5 py-1 text-[10px] lg:text-[11px] font-medium rounded transition-all",
                 slice === s 
                   ? "bg-surface-0 text-text-primary shadow-sm" 
                   : "text-text-muted hover:text-text-secondary"
               )}
             >
-              {s.charAt(0).toUpperCase() + s.slice(1)}
+              {s.charAt(0).toUpperCase() + s.slice(1, 3)}
             </button>
           ))}
         </div>
 
-        <ToolbarDivider />
+        <ToolbarDivider className="hidden sm:block" />
 
-        {/* Zoom */}
-        <div className="flex items-center gap-0.5">
+        {/* Zoom - hidden on small screens */}
+        <div className="hidden lg:flex items-center gap-0.5">
           <ToolbarButton onClick={onZoomOut} title="Zoom out">
             <ZoomOut className="w-3.5 h-3.5" />
           </ToolbarButton>
@@ -112,10 +135,10 @@ export function RoadmapHeader({
           </ToolbarButton>
         </div>
 
-        <ToolbarDivider />
+        <ToolbarDivider className="hidden lg:block" />
 
-        {/* Snap Toggle */}
-        <div className="flex items-center gap-2">
+        {/* Snap Toggle - hidden on small screens */}
+        <div className="hidden xl:flex items-center gap-2">
           <span className="text-[11px] text-text-muted">Snap</span>
           <button
             onClick={onToggleSnap}
@@ -133,7 +156,7 @@ export function RoadmapHeader({
           </button>
         </div>
 
-        <ToolbarDivider />
+        <ToolbarDivider className="hidden xl:block" />
 
         {/* Filter */}
         <ToolbarButton onClick={onToggleFilter} title="Filters (F)" className="relative">
@@ -157,8 +180,8 @@ export function RoadmapHeader({
           {dark ? <Sun className="w-3.5 h-3.5" /> : <Moon className="w-3.5 h-3.5" />}
         </ToolbarButton>
 
-        {/* Presentation */}
-        <ToolbarButton onClick={onTogglePresentation} title="Presentation mode (P)">
+        {/* Presentation - hidden on small screens */}
+        <ToolbarButton onClick={onTogglePresentation} title="Presentation mode (P)" className="hidden md:flex">
           <Presentation className="w-3.5 h-3.5" />
         </ToolbarButton>
 
@@ -167,8 +190,8 @@ export function RoadmapHeader({
           <FileText className="w-3.5 h-3.5" />
         </ToolbarButton>
 
-        {/* Help */}
-        <ToolbarButton onClick={onShowHelp} title="Keyboard shortcuts (?)">
+        {/* Help - hidden on small screens */}
+        <ToolbarButton onClick={onShowHelp} title="Keyboard shortcuts (?)" className="hidden md:flex">
           <HelpCircle className="w-3.5 h-3.5" />
         </ToolbarButton>
       </div>
@@ -207,6 +230,6 @@ function ToolbarButton({
   );
 }
 
-function ToolbarDivider() {
-  return <div className="w-px h-5 bg-border mx-1.5" />;
+function ToolbarDivider({ className }: { className?: string }) {
+  return <div className={cn("w-px h-5 bg-border mx-1 lg:mx-1.5", className)} />;
 }

@@ -9,6 +9,7 @@ import type { RoadmapGroup, RoadmapDependency, TimesliceMode, TimelineConfig } f
 import { LAYOUT, MILESTONE_COLORS } from '@/types/roadmap';
 import { generateTimeUnits, generateQuarters, dateToPosition } from '@/lib/roadmap-utils';
 import { RoadmapBar } from './RoadmapBar';
+import { RoadmapDependencyLines } from './RoadmapDependencyLines';
 
 interface RoadmapTimelineProps {
   groups: RoadmapGroup[];
@@ -89,11 +90,6 @@ export const RoadmapTimeline = forwardRef<HTMLDivElement, RoadmapTimelineProps>(
               style={{ width: `${unit.width}%` }}
             >
               {unit.label}
-              {unit.isCurrent && (
-                <span className="absolute -bottom-2.5 left-1/2 -translate-x-1/2 bg-[#2563eb] text-white text-[8px] font-bold px-1.5 py-0.5 rounded-full uppercase tracking-wide z-50">
-                  TODAY
-                </span>
-              )}
             </div>
           ))}
         </div>
@@ -113,16 +109,33 @@ export const RoadmapTimeline = forwardRef<HTMLDivElement, RoadmapTimelineProps>(
             ))}
           </div>
 
-          {/* Today line */}
+          {/* Today line with badge inside timeline */}
           <div 
-            className="absolute top-0 bottom-0 w-0.5 bg-brand-primary opacity-40 z-40 pointer-events-none"
+            className="absolute top-0 bottom-0 z-40 pointer-events-none"
             style={{ left: `${todayPosition}%` }}
-          />
+          >
+            {/* Vertical line */}
+            <div className="w-0.5 h-full bg-brand-primary opacity-40" />
+            {/* TODAY badge - positioned just below the header */}
+            <span 
+              className="absolute bg-[#2563eb] text-white text-[8px] font-bold px-1.5 py-0.5 rounded-full uppercase tracking-wide whitespace-nowrap"
+              style={{
+                top: '4px',
+                left: '50%',
+                transform: 'translateX(-50%)',
+              }}
+            >
+              TODAY
+            </span>
+          </div>
 
-          {/* Dependency lines */}
-          <svg className="absolute inset-0 pointer-events-none z-10">
-            {/* TODO: Implement dependency curves */}
-          </svg>
+          {/* Dependency lines - SVG layer behind bars */}
+          <RoadmapDependencyLines
+            deps={deps}
+            groups={groups}
+            collapsed={collapsed}
+            timelineConfig={timelineConfig}
+          />
 
           {/* Swimlanes */}
           <div className="relative z-20">
@@ -144,7 +157,7 @@ export const RoadmapTimeline = forwardRef<HTMLDivElement, RoadmapTimelineProps>(
                       {group.name}
                     </span>
 
-                    {/* Milestone markers on theme header row */}
+                    {/* Milestone markers on theme header row - DIAMOND SHAPES */}
                     {group.ms?.map((ms) => (
                       <div
                         key={ms.id}
@@ -155,8 +168,9 @@ export const RoadmapTimeline = forwardRef<HTMLDivElement, RoadmapTimelineProps>(
                           transform: 'translate(-50%, -50%)',
                         }}
                       >
+                        {/* Diamond shape: 14x14 rotated 45deg */}
                         <div
-                          className="w-3.5 h-3.5 rotate-45 rounded-sm cursor-pointer shadow-md hover:scale-125 transition-transform"
+                          className="w-3.5 h-3.5 rotate-45 cursor-pointer shadow-md hover:scale-125 transition-transform"
                           style={{ 
                             backgroundColor: MILESTONE_COLORS[ms.type],
                             boxShadow: `0 2px 6px ${MILESTONE_COLORS[ms.type]}40`,

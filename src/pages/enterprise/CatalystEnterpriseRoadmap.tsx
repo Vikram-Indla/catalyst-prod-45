@@ -4,6 +4,7 @@
 
 import React, { useEffect, useCallback, useMemo, useState } from 'react';
 import { cn } from '@/lib/utils';
+import { Menu } from 'lucide-react';
 import { useRoadmapState } from '@/hooks/useRoadmapState';
 import {
   RoadmapHeader,
@@ -28,6 +29,9 @@ export default function CatalystEnterpriseRoadmap() {
     tooltip,
     timelineRef,
   } = useRoadmapState();
+
+  // Mobile panel state
+  const [isMobilePanelOpen, setIsMobilePanelOpen] = useState(false);
 
   // Viewport state for minimap
   const [viewport, setViewport] = useState({ scrollLeft: 0, scrollWidth: 1, clientWidth: 1 });
@@ -56,6 +60,17 @@ export default function CatalystEnterpriseRoadmap() {
       window.removeEventListener('resize', handleScroll);
     };
   }, [timelineRef]);
+
+  // Close mobile panel on resize to desktop
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 1024) {
+        setIsMobilePanelOpen(false);
+      }
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // Handle minimap viewport drag
   const handleViewportDrag = useCallback((scrollPercent: number) => {
@@ -101,6 +116,7 @@ export default function CatalystEnterpriseRoadmap() {
         actions.hideContextMenu();
         actions.hideHelp();
         actions.cancelEdit();
+        setIsMobilePanelOpen(false);
       } else if (isMeta && (e.key === '=' || e.key === '+')) {
         e.preventDefault();
         actions.zoomIn();
@@ -150,6 +166,9 @@ export default function CatalystEnterpriseRoadmap() {
           onScrollToToday={actions.scrollToToday}
           onExport={handleExport}
           onShowHelp={actions.showHelp}
+          // Mobile hamburger props
+          onToggleMobilePanel={() => setIsMobilePanelOpen(prev => !prev)}
+          isMobilePanelOpen={isMobilePanelOpen}
         />
       )}
 
@@ -182,7 +201,7 @@ export default function CatalystEnterpriseRoadmap() {
           />
         )}
 
-        {/* Objectives Panel */}
+        {/* Objectives Panel - responsive with mobile overlay */}
         {!state.presentation && (
           <RoadmapObjectivesPanel
             groups={computed.groups}
@@ -192,6 +211,8 @@ export default function CatalystEnterpriseRoadmap() {
             totalCount={computed.totalObjectives}
             onToggleCollapse={actions.toggleCollapse}
             onSelect={actions.select}
+            isMobileOpen={isMobilePanelOpen}
+            onMobileClose={() => setIsMobilePanelOpen(false)}
           />
         )}
 
