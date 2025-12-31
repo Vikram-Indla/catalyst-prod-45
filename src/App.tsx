@@ -180,6 +180,7 @@ import OKRTree from "./pages/enterprise/OKRTree";
 import OKRHub from "./pages/enterprise/OKRHub";
 // OKR v2 is now the single source - no separate portfolio/program/team OKR hubs
 import CatalystEnterpriseRoadmap from "./pages/enterprise/CatalystEnterpriseRoadmap";
+import ForYouPage from "./pages/ForYouPage";
 import ProductRoadmapPage from "./pages/ProductRoadmapPage";
 import ProductRoadmapV2Page from "./pages/ProductRoadmapV2Page";
 import IndustryRoadmapPage from "./pages/industry/IndustryRoadmapPage";
@@ -300,6 +301,7 @@ const App = () => (
               {/* All Routes - Catalyst Style */}
               <Route element={<ProtectedRoute><CatalystShell /></ProtectedRoute>}>
               <Route path="/home" element={<Home />} />
+              <Route path="/for-you" element={<ForYouPage />} />
               
               {/* Industry/Demand routes */}
               <Route path="/industry" element={<Navigate to="/industry/backlog" replace />} />

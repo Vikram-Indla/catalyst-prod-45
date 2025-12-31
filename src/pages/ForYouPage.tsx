@@ -1,0 +1,146 @@
+/**
+ * For You Page - Personalized work items with AI Assistant
+ */
+
+import React from 'react';
+import { MessageSquare, AlertCircle, FileText } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { useForYouData } from '@/hooks/useForYouData';
+import { ForYouHeader, ForYouSubTabs, ForYouToolbar, ForYouTable } from '@/components/for-you';
+import { CatalystAIPanel } from '@/components/catalyst-ai';
+import type { AIPriorityItem, AINextItemData, AIStats, AISuggestionData } from '@/components/catalyst-ai/CatalystAIPanel';
+
+export default function ForYouPage() {
+  const {
+    // State
+    activeMode,
+    setActiveMode,
+    activeTab,
+    setActiveTab,
+    searchQuery,
+    setSearchQuery,
+    isAIPanelOpen,
+    setIsAIPanelOpen,
+
+    // Data
+    user,
+    groupedItems,
+    tabCounts,
+    aiData,
+    performanceStats,
+
+    // Handlers
+    handleRowClick,
+    handleStartTask,
+    generateStatusUpdate,
+    generateImpactReport,
+    showDeprioritize,
+  } = useForYouData();
+
+  // Transform AI data for the panel
+  const priorityItem: AIPriorityItem | undefined = aiData.priorityItem ? {
+    id: aiData.priorityItem.itemId,
+    key: aiData.priorityItem.key,
+    title: aiData.priorityItem.title,
+    aiReason: aiData.priorityItem.reason,
+    timeLeft: aiData.priorityItem.timeLeft,
+    updatedAt: '10m ago',
+    status: 'danger',
+  } : undefined;
+
+  const nextItems: AINextItemData[] = aiData.nextItems.map(item => ({
+    id: item.itemId,
+    key: item.key,
+    title: item.title,
+    aiContext: item.context,
+  }));
+
+  const stats: AIStats = {
+    closed: performanceStats.closed,
+    percentChange: performanceStats.percentChange,
+    slaRate: performanceStats.slaRate,
+    personalBest: performanceStats.personalBest,
+    ops: performanceStats.ops,
+    del: performanceStats.del,
+    pln: performanceStats.pln,
+  };
+
+  const suggestions: AISuggestionData[] = [
+    {
+      id: 's1',
+      icon: <MessageSquare className="w-4 h-4" />,
+      label: 'Write my status update',
+      onClick: generateStatusUpdate,
+    },
+    {
+      id: 's2',
+      icon: <AlertCircle className="w-4 h-4" />,
+      label: 'What can I push back?',
+      onClick: showDeprioritize,
+    },
+    {
+      id: 's3',
+      icon: <FileText className="w-4 h-4" />,
+      label: 'Generate impact report',
+      onClick: generateImpactReport,
+    },
+  ];
+
+  return (
+    <div className="flex min-h-screen bg-surface-0">
+      {/* Main Content */}
+      <main 
+        className={cn(
+          "flex-1 px-8 lg:px-12 py-8 transition-[margin] duration-300",
+          isAIPanelOpen && "mr-[360px]"
+        )}
+      >
+        {/* Page Header */}
+        <ForYouHeader 
+          activeMode={activeMode} 
+          onModeChange={setActiveMode} 
+        />
+
+        {/* Work Section */}
+        <section className="bg-surface-0">
+          <h2 className="text-sm font-semibold text-text-primary mb-4">Your work</h2>
+
+          {/* Sub Tabs */}
+          <ForYouSubTabs
+            activeTab={activeTab}
+            counts={tabCounts}
+            onTabChange={setActiveTab}
+          />
+
+          {/* Toolbar */}
+          <ForYouToolbar
+            searchQuery={searchQuery}
+            onSearchChange={setSearchQuery}
+            isAIPanelOpen={isAIPanelOpen}
+            onToggleAIPanel={() => setIsAIPanelOpen(!isAIPanelOpen)}
+          />
+
+          {/* Data Table */}
+          <ForYouTable
+            groupedItems={groupedItems}
+            onRowClick={handleRowClick}
+          />
+        </section>
+      </main>
+
+      {/* AI Assistant Panel */}
+      <CatalystAIPanel
+        isOpen={isAIPanelOpen}
+        onClose={() => setIsAIPanelOpen(false)}
+        userName={user.firstName}
+        criticalCount={aiData.criticalCount}
+        priorityItem={priorityItem}
+        nextItems={nextItems}
+        stats={stats}
+        suggestions={suggestions}
+        onItemClick={handleRowClick}
+        onStartTask={handleStartTask}
+      />
+    </div>
+  );
+}
