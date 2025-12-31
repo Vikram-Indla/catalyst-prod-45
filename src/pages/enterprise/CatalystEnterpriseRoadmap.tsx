@@ -2,7 +2,7 @@
  * Catalyst Enterprise Roadmap Page
  */
 
-import React, { useEffect, useCallback, useMemo } from 'react';
+import React, { useEffect, useCallback, useMemo, useState } from 'react';
 import { cn } from '@/lib/utils';
 import { useRoadmapState } from '@/hooks/useRoadmapState';
 import {
@@ -28,6 +28,43 @@ export default function CatalystEnterpriseRoadmap() {
     tooltip,
     timelineRef,
   } = useRoadmapState();
+
+  // Viewport state for minimap
+  const [viewport, setViewport] = useState({ scrollLeft: 0, scrollWidth: 1, clientWidth: 1 });
+
+  // Update viewport on scroll
+  useEffect(() => {
+    const timeline = timelineRef.current;
+    if (!timeline) return;
+
+    const handleScroll = () => {
+      setViewport({
+        scrollLeft: timeline.scrollLeft,
+        scrollWidth: timeline.scrollWidth,
+        clientWidth: timeline.clientWidth,
+      });
+    };
+
+    // Initial measurement
+    handleScroll();
+
+    timeline.addEventListener('scroll', handleScroll);
+    window.addEventListener('resize', handleScroll);
+    
+    return () => {
+      timeline.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('resize', handleScroll);
+    };
+  }, [timelineRef]);
+
+  // Handle minimap viewport drag
+  const handleViewportDrag = useCallback((scrollPercent: number) => {
+    const timeline = timelineRef.current;
+    if (!timeline) return;
+    
+    const scrollLeft = (scrollPercent / 100) * timeline.scrollWidth;
+    timeline.scrollLeft = scrollLeft;
+  }, [timelineRef]);
 
   // Get the objective for tooltip
   const tooltipObjective = useMemo(() => {
@@ -184,6 +221,8 @@ export default function CatalystEnterpriseRoadmap() {
             groups={computed.groups}
             timelineConfig={computed.timelineConfig}
             todayPosition={computed.todayPosition}
+            viewport={viewport}
+            onViewportDrag={handleViewportDrag}
           />
         )}
       </div>
