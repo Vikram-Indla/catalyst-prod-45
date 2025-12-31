@@ -18,6 +18,7 @@ import type { ViewType, ResourceMetric, CapacityProject, AiRecommendation } from
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { Button360 } from '@/components/capacity/Button360';
+import { Resource360Drawer } from '@/components/capacity/resource360/Resource360Drawer';
 
 type PeriodType = 'weekly' | 'monthly' | 'quarterly';
 type GroupByType = 'none' | 'project' | 'division' | 'department';
@@ -61,6 +62,7 @@ export default function CapacityPlannerPage() {
   const [selectedResource, setSelectedResource] = useState<ResourceMetric | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [aiDrawerOpen, setAiDrawerOpen] = useState(false);
+  const [resource360Id, setResource360Id] = useState<string | null>(null);
 
   // Resource form state
   const [resourceForm, setResourceForm] = useState({
@@ -84,8 +86,7 @@ export default function CapacityPlannerPage() {
   };
 
   const openResourceDrawer = (resource: ResourceMetric) => {
-    setSelectedResource(resource);
-    setDrawerOpen(true);
+    setResource360Id(resource.id);
   };
 
   const filteredResources = metrics.resources.filter((r) =>
@@ -306,7 +307,13 @@ export default function CapacityPlannerPage() {
           )}
         </div>
 
-        {/* Resource 360° Drawer */}
+        {/* Resource 360° Drawer - New Implementation */}
+        <Resource360Drawer 
+          resourceId={resource360Id} 
+          onClose={() => setResource360Id(null)} 
+        />
+
+        {/* Legacy Resource 360° Sheet */}
         <Sheet open={drawerOpen} onOpenChange={setDrawerOpen}>
           <SheetContent className="w-[500px] sm:max-w-[500px]">
             <SheetHeader>
@@ -595,7 +602,10 @@ function ResourceCard({ resource, projects, onClick }: { resource: ResourceMetri
         </div>
         
         {/* 360° button with orbital animation */}
-        <Button360 onClick={onClick} size="md" />
+        <Button360 onClick={() => {
+          // This will be handled by parent - for now just trigger onClick
+          onClick();
+        }} size="md" />
         
         {/* Allocation */}
         <div className="text-right">
@@ -2114,3 +2124,6 @@ function EditResourceForm({
     </>
   );
 }
+
+// Export with Resource360Drawer wrapper
+export { Resource360Drawer };
