@@ -1,14 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import { X } from 'lucide-react';
 import { Resource360Header } from './Resource360Header';
-import { Resource360Tabs } from './Resource360Tabs';
 import { MetricsRow } from './MetricsRow';
-
 import { HierarchyTreeView } from './HierarchyTreeView';
-import { SunburstView } from './SunburstView';
 import { useResource360Data } from '@/hooks/capacity/useResource360Data';
-import type { DrawerTab } from '@/types/resource360';
 
 interface Resource360DrawerProps {
   resourceId: string | null;
@@ -16,7 +12,6 @@ interface Resource360DrawerProps {
 }
 
 export function Resource360Drawer({ resourceId, onClose }: Resource360DrawerProps) {
-  const [activeTab, setActiveTab] = useState<DrawerTab>('hierarchy');
   const isOpen = resourceId !== null;
 
   const {
@@ -24,17 +19,8 @@ export function Resource360Drawer({ resourceId, onClose }: Resource360DrawerProp
     workItems,
     currentItems,
     pastItems,
-    sunburstData,
-    sunburstMetrics,
     isLoading,
   } = useResource360Data(resourceId);
-
-  // Reset tab when drawer opens
-  useEffect(() => {
-    if (isOpen) {
-      setActiveTab('hierarchy');
-    }
-  }, [isOpen, resourceId]);
 
   // Close on Escape key
   useEffect(() => {
@@ -95,12 +81,6 @@ export function Resource360Drawer({ resourceId, onClose }: Resource360DrawerProp
             {/* Header */}
             <Resource360Header resource={resource} />
 
-            {/* Tabs */}
-            <Resource360Tabs
-              activeTab={activeTab}
-              onTabChange={setActiveTab}
-            />
-
             {/* Metrics Row */}
             <MetricsRow
               totalItems={totalItems}
@@ -111,17 +91,7 @@ export function Resource360Drawer({ resourceId, onClose }: Resource360DrawerProp
 
             {/* Content Area */}
             <div className="flex-1 overflow-hidden flex flex-col">
-              {activeTab === 'hierarchy' && (
-                <HierarchyTreeView workItems={workItems} />
-              )}
-
-              {activeTab === 'sunburst' && (
-                <SunburstView
-                  data={sunburstData}
-                  metrics={sunburstMetrics}
-                  resourceName={resource.name}
-                />
-              )}
+              <HierarchyTreeView workItems={workItems} />
             </div>
           </div>
         )}
