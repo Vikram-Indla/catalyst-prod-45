@@ -488,18 +488,14 @@ export function RequestDetailPanel({
 
             <div>
               <FieldLabel>EA Review Required?</FieldLabel>
-              <div 
-                className="h-10 px-3 rounded-md flex items-center justify-between"
-                style={{ backgroundColor: 'hsl(var(--secondary-olive) / 0.08)', border: '1px solid hsl(var(--secondary-olive) / 0.2)' }}
-              >
-                <span className="text-sm font-medium" style={{ color: 'var(--text-1)' }}>
+              <div className="h-10 px-3 rounded-md flex items-center justify-between bg-card border border-border">
+                <span className="text-sm font-medium text-foreground">
                   {request.ea_review_required ? 'Yes' : 'No'}
                 </span>
                 <Switch 
                   id="ea-review"
                   checked={request.ea_review_required ?? true}
                   onCheckedChange={(checked) => onUpdateField('ea_review_required', checked)}
-                  className="data-[state=checked]:bg-[hsl(var(--secondary-olive))]"
                 />
               </div>
             </div>
