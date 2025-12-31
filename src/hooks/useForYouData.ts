@@ -190,6 +190,9 @@ export function useForYouData() {
     order: 'desc' 
   });
   const [isAIPanelOpen, setIsAIPanelOpen] = useState(false);
+  const [starredItems, setStarredItems] = useState<Set<string>>(
+    new Set(MOCK_WORK_ITEMS.filter(i => i.starred).map(i => i.id))
+  );
 
   // Mock user
   const user = {
@@ -200,7 +203,10 @@ export function useForYouData() {
 
   // Filtered and grouped work items
   const filteredItems = useMemo(() => {
-    let items = [...MOCK_WORK_ITEMS];
+    let items = MOCK_WORK_ITEMS.map(item => ({
+      ...item,
+      starred: starredItems.has(item.id),
+    }));
 
     // Filter by mode
     if (activeMode !== 'all') {
@@ -222,7 +228,7 @@ export function useForYouData() {
     }
 
     return items;
-  }, [activeMode, activeTab, searchQuery]);
+  }, [activeMode, activeTab, searchQuery, starredItems]);
 
   // Group items
   const groupedItems = useMemo(() => {
@@ -243,8 +249,8 @@ export function useForYouData() {
   const tabCounts = useMemo(() => ({
     worked: MOCK_WORK_ITEMS.length,
     assigned: MOCK_WORK_ITEMS.filter(i => i.assignee.id === 'u1').length,
-    starred: MOCK_WORK_ITEMS.filter(i => i.starred).length,
-  }), []);
+    starred: starredItems.size,
+  }), [starredItems]);
 
   // AI Data
   const aiData = useMemo(() => {
@@ -280,6 +286,18 @@ export function useForYouData() {
     console.log('Show deprioritize options');
   };
 
+  const toggleStar = (itemId: string) => {
+    setStarredItems(prev => {
+      const next = new Set(prev);
+      if (next.has(itemId)) {
+        next.delete(itemId);
+      } else {
+        next.add(itemId);
+      }
+      return next;
+    });
+  };
+
   return {
     // State
     activeMode,
@@ -308,5 +326,6 @@ export function useForYouData() {
     generateStatusUpdate,
     generateImpactReport,
     showDeprioritize,
+    toggleStar,
   };
 }

@@ -2,12 +2,14 @@
  * For You Page - Personalized work items with AI Assistant
  */
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { MessageSquare, AlertCircle, FileText } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useForYouData } from '@/hooks/useForYouData';
-import { ForYouHeader, ForYouSubTabs, ForYouToolbar, ForYouTable } from '@/components/for-you';
+import { ForYouHeader, ForYouSubTabs, ForYouToolbar, ForYouTable, ForYouTableSkeleton, ForYouPagination } from '@/components/for-you';
+import { BulkActionsBar } from '@/components/business-requests/table-view/BulkActionsBar';
 import { CatalystAIPanel } from '@/components/catalyst-ai';
+import { toast } from 'sonner';
 import type { AIPriorityItem, AINextItemData, AIStats, AISuggestionData } from '@/components/catalyst-ai/CatalystAIPanel';
 
 export default function ForYouPage() {
@@ -28,6 +30,8 @@ export default function ForYouPage() {
     tabCounts,
     aiData,
     performanceStats,
+    isLoading,
+    workItems,
 
     // Handlers
     handleRowClick,
@@ -35,7 +39,54 @@ export default function ForYouPage() {
     generateStatusUpdate,
     generateImpactReport,
     showDeprioritize,
+    toggleStar,
   } = useForYouData();
+
+  // Selection state
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(25);
+  
+  // Initial load animation flag
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
+
+  // Clear initial load flag after animation
+  useEffect(() => {
+    if (!isLoading) {
+      const timer = setTimeout(() => setIsInitialLoad(false), 500);
+      return () => clearTimeout(timer);
+    }
+  }, [isLoading]);
+
+  // Reset page when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [activeMode, activeTab, searchQuery]);
+
+  // Calculate pagination
+  const totalItems = workItems.length;
+  const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
+
+  // Bulk action handlers
+  const handleBulkApprove = () => {
+    toast.success(`Approved ${selectedIds.size} items`);
+    setSelectedIds(new Set());
+  };
+
+  const handleBulkDelete = () => {
+    toast.success(`Deleted ${selectedIds.size} items`);
+    setSelectedIds(new Set());
+  };
+
+  const handleBulkAssign = () => {
+    toast.info('Assign owner dialog would open here');
+  };
+
+  const handleClearSelection = () => {
+    setSelectedIds(new Set());
+  };
 
   // Transform AI data for the panel
   const priorityItem: AIPriorityItem | undefined = aiData.priorityItem ? {
@@ -120,13 +171,42 @@ export default function ForYouPage() {
             onToggleAIPanel={() => setIsAIPanelOpen(!isAIPanelOpen)}
           />
 
-          {/* Data Table */}
-          <ForYouTable
-            groupedItems={groupedItems}
-            onRowClick={handleRowClick}
-          />
+          {/* Data Table or Skeleton */}
+          {isLoading ? (
+            <ForYouTableSkeleton rowCount={5} />
+          ) : (
+            <>
+              <ForYouTable
+                groupedItems={groupedItems}
+                onRowClick={handleRowClick}
+                selectedIds={selectedIds}
+                onSelectionChange={setSelectedIds}
+                onStarToggle={toggleStar}
+                isInitialLoad={isInitialLoad}
+              />
+
+              {/* Pagination */}
+              <ForYouPagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                totalItems={totalItems}
+                pageSize={pageSize}
+                onPageChange={setCurrentPage}
+                onPageSizeChange={setPageSize}
+              />
+            </>
+          )}
         </section>
       </main>
+
+      {/* Bulk Actions Bar */}
+      <BulkActionsBar
+        selectedCount={selectedIds.size}
+        onClear={handleClearSelection}
+        onAssignOwner={handleBulkAssign}
+        onApprove={handleBulkApprove}
+        onDelete={handleBulkDelete}
+      />
 
       {/* AI Assistant Panel */}
       <CatalystAIPanel
