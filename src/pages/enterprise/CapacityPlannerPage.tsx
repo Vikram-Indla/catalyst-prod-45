@@ -11,7 +11,7 @@ import {
   Users, CheckCircle2, BarChart3, AlertTriangle, TrendingUp, Download, Printer, Plus, 
   Search, LayoutGrid, Table2, CalendarDays, GanttChart, Sparkles, FileStack, Bot,
   ChevronLeft, ChevronRight, Clock, Eye, Copy, Check, RotateCcw, Play, FolderKanban,
-  ExternalLink, Trash2
+  Pencil, Trash2
 } from 'lucide-react';
 import { useCapacityData, useAssignments, useAiRecommendations, exportCapacityToPdf } from '@/modules/capacity-planner';
 import type { ViewType, ResourceMetric, CapacityProject, AiRecommendation } from '@/modules/capacity-planner';
@@ -402,7 +402,29 @@ export default function CapacityPlannerPage() {
           </DialogContent>
         </Dialog>
 
-        {/* AI Assistant FAB - Teal gradient with pulse */}
+        {/* Edit Resource Modal */}
+        <Dialog open={editResourceId !== null} onOpenChange={(open) => !open && setEditResourceId(null)}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>Edit Resource</DialogTitle>
+            </DialogHeader>
+            {(() => {
+              const editingResource = metrics.resources.find(r => r.id === editResourceId);
+              if (!editingResource) return null;
+              return (
+                <EditResourceForm 
+                  resource={editingResource} 
+                  onSave={() => {
+                    toast.success('Resource updated');
+                    setEditResourceId(null);
+                  }}
+                  onCancel={() => setEditResourceId(null)}
+                />
+              );
+            })()}
+          </DialogContent>
+        </Dialog>
+
         <div className="fixed bottom-6 right-6 z-50">
           <div className="absolute inset-[-4px] rounded-full bg-[#0d9488]/25 animate-ping" style={{ animationDuration: '2.5s' }} />
           <button
@@ -679,7 +701,7 @@ function TableView({ resources, projects, onResourceClick, onEditResource, onDel
                       className="w-7 h-7 rounded flex items-center justify-center text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
                       title="Edit resource"
                     >
-                      <ExternalLink className="h-4 w-4" />
+                      <Pencil className="h-4 w-4" />
                     </button>
                     {/* Delete Button */}
                     <button 
@@ -1272,5 +1294,73 @@ function ResourceDrawerContent({ resource, projects }: { resource: ResourceMetri
         </div>
       </div>
     </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Edit Resource Form
+// ─────────────────────────────────────────────────────────────────────────────
+function EditResourceForm({ 
+  resource, 
+  onSave, 
+  onCancel 
+}: { 
+  resource: ResourceMetric;
+  onSave: () => void;
+  onCancel: () => void;
+}) {
+  const [name, setName] = useState(resource.name);
+  const [role, setRole] = useState(resource.role || 'Frontend Developer');
+  const [division, setDivision] = useState(resource.division || 'Delivery');
+
+  return (
+    <>
+      <div className="space-y-4 py-4">
+        <div className="space-y-2">
+          <Label>Full Name</Label>
+          <Input 
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="Enter name"
+          />
+        </div>
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label>Role</Label>
+            <Select value={role} onValueChange={setRole}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Frontend Developer">Frontend Developer</SelectItem>
+                <SelectItem value="Backend Developer">Backend Developer</SelectItem>
+                <SelectItem value="Sr Frontend Developer">Sr Frontend Developer</SelectItem>
+                <SelectItem value="Sr Backend Developer">Sr Backend Developer</SelectItem>
+                <SelectItem value="DevOps Engineer">DevOps Engineer</SelectItem>
+                <SelectItem value="QA Analyst">QA Analyst</SelectItem>
+                <SelectItem value="Product Owner">Product Owner</SelectItem>
+                <SelectItem value="Delivery Manager">Delivery Manager</SelectItem>
+                <SelectItem value="Backend Architect">Backend Architect</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="space-y-2">
+            <Label>Division</Label>
+            <Select value={division} onValueChange={setDivision}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Product">Product</SelectItem>
+                <SelectItem value="Delivery">Delivery</SelectItem>
+                <SelectItem value="Support">Support</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+      </div>
+      <DialogFooter>
+        <Button variant="outline" onClick={onCancel}>Cancel</Button>
+        <Button onClick={onSave} className="bg-[#2563eb] hover:bg-[#1d4ed8]">
+          Save
+        </Button>
+      </DialogFooter>
+    </>
   );
 }
