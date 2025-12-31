@@ -399,6 +399,14 @@ export default {
           "0%": { opacity: "0", transform: "translateY(8px)" },
           "100%": { opacity: "1", transform: "translateY(0)" },
         },
+        "orbit": {
+          "0%": { transform: "rotate(0deg) translateX(var(--orbit-radius, 24px)) rotate(0deg)" },
+          "100%": { transform: "rotate(360deg) translateX(var(--orbit-radius, 24px)) rotate(-360deg)" },
+        },
+        "pulse-ring": {
+          "0%": { transform: "scale(1)", opacity: "0.6" },
+          "100%": { transform: "scale(1.3)", opacity: "0" },
+        },
       },
       
       animation: {
@@ -407,6 +415,8 @@ export default {
         "fade-in": "fade-in 0.3s ease-out",
         "scale-in": "scale-in 0.2s ease-out",
         "slide-up": "slide-up 0.3s ease-out",
+        "orbit": "orbit 1.5s linear infinite",
+        "pulse-ring": "pulse-ring 2s ease-out infinite",
       },
     },
   },
