@@ -72,16 +72,10 @@ export function EditableQuarterCell({ quarter, requestId, onSave, disabled = fal
   const quarterDisplay = quarter ? (
     <span 
       className={cn(
-        "inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium border cursor-pointer transition-opacity",
-        !disabled && "hover:opacity-80",
-        isCurrent 
-          ? cn(
-              "bg-brand-primary/10 text-brand-primary border-brand-primary/30",
-              "dark:bg-brand-primary/15 dark:border-brand-primary/40"
-            )
-          : cn(
-              "bg-muted text-muted-foreground border-border"
-            )
+        "inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium cursor-pointer transition-opacity",
+        "bg-brand-primary/15 text-brand-primary border border-brand-primary/30",
+        "dark:bg-brand-primary/20 dark:border-brand-primary/40",
+        !disabled && "hover:opacity-80"
       )}
     >
       {formatQuarter(quarter)}
