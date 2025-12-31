@@ -11,15 +11,15 @@ export function Resource360Header({ resource }: Resource360HeaderProps) {
   };
 
   return (
-    <div className="px-6 pt-6 pb-4 border-b border-[#e5e5e5]">
+    <div className="px-6 pt-6 pb-4 border-b border-border/40">
       <div className="flex items-center gap-4">
-        {/* Avatar */}
+        {/* Avatar with dashed border matching screenshot */}
         <div className="relative">
           <div 
             className={cn(
               "w-16 h-16 rounded-full flex items-center justify-center",
-              "bg-[#2563eb]/10 text-[#2563eb] text-xl font-semibold",
-              "border-2 border-dashed border-[#2563eb]/40"
+              "bg-primary/10 text-primary text-xl font-semibold",
+              "border-2 border-dashed border-primary/60"
             )}
           >
             {resource.avatar_url ? (
@@ -36,10 +36,10 @@ export function Resource360Header({ resource }: Resource360HeaderProps) {
 
         {/* Info */}
         <div className="flex-1">
-          <h2 className="text-xl font-semibold text-[#0a0a0a]">
+          <h2 className="text-xl font-semibold text-foreground tracking-tight">
             {resource.name}
           </h2>
-          <p className="text-sm text-[#737373]">
+          <p className="text-sm text-muted-foreground">
             {resource.role} · {resource.division}
           </p>
         </div>

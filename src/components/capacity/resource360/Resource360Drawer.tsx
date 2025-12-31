@@ -3,6 +3,8 @@ import { cn } from '@/lib/utils';
 import { X } from 'lucide-react';
 import { Resource360Header } from './Resource360Header';
 import { Resource360Tabs } from './Resource360Tabs';
+import { MetricsRow } from './MetricsRow';
+import { CatalystHierarchyLegend } from './CatalystHierarchyLegend';
 import { HierarchyTreeView } from './HierarchyTreeView';
 import { SunburstView } from './SunburstView';
 import { useResource360Data } from '@/hooks/capacity/useResource360Data';
@@ -22,7 +24,6 @@ export function Resource360Drawer({ resourceId, onClose }: Resource360DrawerProp
     workItems,
     currentItems,
     pastItems,
-    hierarchyData,
     sunburstData,
     sunburstMetrics,
     isLoading,
@@ -70,23 +71,23 @@ export function Resource360Drawer({ resourceId, onClose }: Resource360DrawerProp
       {/* Drawer Panel */}
       <div
         className={cn(
-          "fixed top-0 right-0 h-full w-full max-w-[640px] bg-white z-50",
+          "fixed top-0 right-0 h-full w-full max-w-[640px] bg-background z-50",
           "shadow-2xl transition-transform duration-300 ease-out",
-          "flex flex-col overflow-hidden",
+          "flex flex-col overflow-hidden border-l border-border",
           isOpen ? "translate-x-0" : "translate-x-full"
         )}
       >
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 z-10 p-2 rounded-lg hover:bg-[#f5f5f4] transition-colors"
+          className="absolute top-4 right-4 z-10 p-2 rounded-lg hover:bg-muted transition-colors"
         >
-          <X className="w-5 h-5 text-[#737373]" />
+          <X className="w-5 h-5 text-muted-foreground" />
         </button>
 
         {isLoading || !resource ? (
           <div className="flex-1 flex items-center justify-center">
-            <div className="w-8 h-8 border-2 border-[#2563eb] border-t-transparent rounded-full animate-spin" />
+            <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
           </div>
         ) : (
           <div className="flex flex-col h-full overflow-hidden">
@@ -99,92 +100,29 @@ export function Resource360Drawer({ resourceId, onClose }: Resource360DrawerProp
               onTabChange={setActiveTab}
             />
 
-            {/* Catalyst Work Item Hierarchy Legend */}
-            <div className="px-6 py-4 border-b border-[#e5e5e5]">
-              <div className="bg-[#fafafa] rounded-lg p-4">
-                <h4 className="text-xs font-semibold text-[#737373] text-center mb-4 uppercase tracking-wide">
-                  Catalyst Work Item Hierarchy
-                </h4>
-                <div className="flex justify-between items-start gap-2">
-                  {/* Enterprise */}
-                  <div className="flex-1 border-l-4 border-[#4d8b4d] pl-3">
-                    <p className="text-[10px] font-semibold text-[#737373] uppercase mb-1">Enterprise</p>
-                    <div className="flex flex-wrap gap-1">
-                      <span className="px-2 py-0.5 text-[10px] rounded border border-[#e5e5e5] bg-white text-[#4d8b4d]">Theme</span>
-                      <span className="px-2 py-0.5 text-[10px] rounded border border-[#e5e5e5] bg-white text-[#6b7280]">Objective</span>
-                      <span className="px-2 py-0.5 text-[10px] rounded border border-[#e5e5e5] bg-white text-[#d4b896]">Key Result</span>
-                    </div>
-                  </div>
-                  
-                  <span className="text-[#d4d4d4] mt-4">↓</span>
-                  
-                  {/* Program */}
-                  <div className="flex-1 border-l-4 border-[#2563eb] pl-3">
-                    <p className="text-[10px] font-semibold text-[#737373] uppercase mb-1">Program</p>
-                    <div className="flex flex-wrap gap-1">
-                      <span className="px-2 py-0.5 text-[10px] rounded border border-[#2563eb]/30 bg-[#2563eb]/5 text-[#2563eb]">Epic</span>
-                      <span className="px-2 py-0.5 text-[10px] rounded border border-[#0d9488]/30 bg-[#0d9488]/5 text-[#0d9488]">Feature</span>
-                    </div>
-                  </div>
-                  
-                  <span className="text-[#d4d4d4] mt-4">↓</span>
-                  
-                  {/* Project */}
-                  <div className="flex-1 border-l-4 border-[#0d9488] pl-3">
-                    <p className="text-[10px] font-semibold text-[#737373] uppercase mb-1">Project</p>
-                    <div className="flex flex-wrap gap-1">
-                      <span className="px-2 py-0.5 text-[10px] rounded border border-[#e5e5e5] bg-white text-[#8b7355]">Story</span>
-                      <span className="px-2 py-0.5 text-[10px] rounded border border-[#dc2626]/30 bg-[#dc2626]/5 text-[#dc2626]">Defect</span>
-                      <span className="px-2 py-0.5 text-[10px] rounded border border-[#d97706]/30 bg-[#d97706]/5 text-[#d97706]">Incident</span>
-                    </div>
-                  </div>
-                  
-                  {/* Product */}
-                  <div className="flex-1 border-l-4 border-[#d4d4d4] pl-3">
-                    <p className="text-[10px] font-semibold text-[#737373] uppercase mb-1">Product</p>
-                    <div className="flex flex-wrap gap-1">
-                      <span className="px-2 py-0.5 text-[10px] rounded border border-[#22c55e]/30 bg-[#22c55e]/5 text-[#22c55e]">Business Request</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Stats Cards */}
-            <div className="px-6 py-4 grid grid-cols-4 gap-3 border-b border-[#e5e5e5]">
-              <div className="text-center py-3 px-2 border border-[#e5e5e5] rounded-lg">
-                <p className="text-2xl font-bold text-[#0a0a0a]">{totalItems}</p>
-                <p className="text-xs text-[#737373]">Total Items</p>
-              </div>
-              <div className="text-center py-3 px-2 border border-[#e5e5e5] rounded-lg">
-                <p className="text-2xl font-bold text-[#0a0a0a]">{completedItems}</p>
-                <p className="text-xs text-[#737373]">Completed</p>
-              </div>
-              <div className="text-center py-3 px-2 border border-[#e5e5e5] rounded-lg">
-                <p className="text-2xl font-bold text-[#0a0a0a]">{inProgressItems}</p>
-                <p className="text-xs text-[#737373]">In Progress</p>
-              </div>
-              <div className="text-center py-3 px-2 border border-[#e5e5e5] rounded-lg">
-                <p className="text-2xl font-bold text-[#0a0a0a]">{upcomingItems}</p>
-                <p className="text-xs text-[#737373]">Upcoming</p>
-              </div>
-            </div>
+            {/* Metrics Row */}
+            <MetricsRow
+              totalItems={totalItems}
+              completed={completedItems}
+              inProgress={inProgressItems}
+              upcoming={upcomingItems}
+            />
 
             {/* Content Area */}
-            <div className="flex-1 overflow-hidden">
+            <div className="flex-1 overflow-hidden flex flex-col">
               {activeTab === 'hierarchy' && (
-                <HierarchyTreeView
-                  nodes={hierarchyData}
-                  workItems={workItems}
-                />
+                <HierarchyTreeView workItems={workItems} />
               )}
 
               {activeTab === 'sunburst' && (
-                <SunburstView
-                  data={sunburstData}
-                  metrics={sunburstMetrics}
-                  resourceName={resource.name}
-                />
+                <>
+                  <CatalystHierarchyLegend />
+                  <SunburstView
+                    data={sunburstData}
+                    metrics={sunburstMetrics}
+                    resourceName={resource.name}
+                  />
+                </>
               )}
             </div>
           </div>
