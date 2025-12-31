@@ -5,7 +5,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import { Columns3, GripVertical, Check } from 'lucide-react';
+import { Columns3 } from 'lucide-react';
 import { TableColumn } from './types';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 import { cn } from '@/lib/utils';
@@ -76,26 +76,17 @@ export function ColumnVisibilityDropdown({
                       <div
                         ref={provided.innerRef}
                         {...provided.draggableProps}
+                        {...provided.dragHandleProps}
                         className={cn(
-                          "flex items-center gap-2 px-2 py-1.5 text-sm cursor-pointer hover:bg-muted transition-colors",
+                          "flex items-center gap-2 px-3 py-1.5 text-sm cursor-pointer hover:bg-muted transition-colors",
                           snapshot.isDragging && "bg-muted shadow-md"
                         )}
                         onClick={() => onToggleColumn(column.key)}
                       >
-                        <div 
-                          {...provided.dragHandleProps}
-                          className="cursor-grab active:cursor-grabbing p-0.5"
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          <GripVertical className="h-3.5 w-3.5 text-muted-foreground" />
-                        </div>
-                        <div className={cn(
-                          "w-4 h-4 flex items-center justify-center",
-                          visibleColumns.has(column.key) ? "text-foreground" : "text-transparent"
-                        )}>
-                          <Check className="h-4 w-4" />
-                        </div>
-                        <span className="flex-1 text-foreground">{column.label}</span>
+                        <span className={cn(
+                          "flex-1",
+                          visibleColumns.has(column.key) ? "text-foreground" : "text-muted-foreground"
+                        )}>{column.label}</span>
                       </div>
                     )}
                   </Draggable>
