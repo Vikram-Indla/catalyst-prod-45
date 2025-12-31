@@ -90,8 +90,8 @@ export const RoadmapTimeline = forwardRef<HTMLDivElement, RoadmapTimelineProps>(
             >
               {unit.label}
               {unit.isCurrent && (
-                <span className="absolute -bottom-2.5 left-1/2 -translate-x-1/2 bg-brand-primary text-white text-[8px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wide z-50">
-                  Today
+                <span className="absolute -bottom-2.5 left-1/2 -translate-x-1/2 bg-[#2563eb] text-white text-[8px] font-bold px-1.5 py-0.5 rounded-full uppercase tracking-wide z-50">
+                  TODAY
                 </span>
               )}
             </div>
