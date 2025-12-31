@@ -1,9 +1,10 @@
 /**
  * BacklogTableView - Industry Backlog Table
  * Enhanced data table with drag-and-drop, bulk actions, and keyboard navigation
+ * Real-time updates for cross-view synchronization
  */
 
-import { useMemo, useCallback, useState } from 'react';
+import { useMemo, useCallback, useState, useEffect } from 'react';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 import { cn } from '@/lib/utils';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -12,12 +13,13 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import { 
   IdCell, 
-  StatusCell,
-  OwnerCell,
-  AssigneeCell,
   PriorityCell, 
-  QuarterCell, 
-  SummaryCell 
+  SummaryCell,
+  EditableStatusCell,
+  EditableOwnerCell,
+  EditableQuarterCell,
+  EditableDepartmentCell,
+  AssigneeCell
 } from './cells';
 import { useTableSelection } from './useTableSelection';
 import { useTableSort } from './useTableSort';
@@ -174,13 +176,107 @@ export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableVi
       
       if (error) throw error;
       
-      // Invalidate all business-requests queries (handles different search query keys)
       queryClient.invalidateQueries({ queryKey: ['business-requests'] });
       toast.success(assignee ? `Assigned to ${assignee}` : 'Unassigned');
     } catch (error) {
       console.error('Failed to update assignee:', error);
       toast.error('Failed to update assignee');
     }
+  }, [queryClient]);
+
+  // Handle status update
+  const handleStatusUpdate = useCallback(async (requestId: string, status: string) => {
+    try {
+      const { error } = await supabase
+        .from('business_requests')
+        .update({ process_step: status })
+        .eq('id', requestId);
+      
+      if (error) throw error;
+      
+      queryClient.invalidateQueries({ queryKey: ['business-requests'] });
+      toast.success('Status updated');
+    } catch (error) {
+      console.error('Failed to update status:', error);
+      toast.error('Failed to update status');
+    }
+  }, [queryClient]);
+
+  // Handle owner update (reporter or business owner)
+  const handleOwnerUpdate = useCallback(async (requestId: string, fieldName: string, value: string | null) => {
+    try {
+      const { error } = await supabase
+        .from('business_requests')
+        .update({ [fieldName]: value })
+        .eq('id', requestId);
+      
+      if (error) throw error;
+      
+      queryClient.invalidateQueries({ queryKey: ['business-requests'] });
+      toast.success(value ? `Updated ${fieldName.replace('_', ' ')}` : `Cleared ${fieldName.replace('_', ' ')}`);
+    } catch (error) {
+      console.error(`Failed to update ${fieldName}:`, error);
+      toast.error(`Failed to update ${fieldName.replace('_', ' ')}`);
+    }
+  }, [queryClient]);
+
+  // Handle quarter update
+  const handleQuarterUpdate = useCallback(async (requestId: string, quarter: string[] | null) => {
+    try {
+      const { error } = await supabase
+        .from('business_requests')
+        .update({ planned_quarter: quarter })
+        .eq('id', requestId);
+      
+      if (error) throw error;
+      
+      queryClient.invalidateQueries({ queryKey: ['business-requests'] });
+      toast.success(quarter ? 'Quarter updated' : 'Quarter cleared');
+    } catch (error) {
+      console.error('Failed to update quarter:', error);
+      toast.error('Failed to update quarter');
+    }
+  }, [queryClient]);
+
+  // Handle department update
+  const handleDepartmentUpdate = useCallback(async (requestId: string, department: string | null) => {
+    try {
+      const { error } = await supabase
+        .from('business_requests')
+        .update({ department })
+        .eq('id', requestId);
+      
+      if (error) throw error;
+      
+      queryClient.invalidateQueries({ queryKey: ['business-requests'] });
+      toast.success(department ? 'Department updated' : 'Department cleared');
+    } catch (error) {
+      console.error('Failed to update department:', error);
+      toast.error('Failed to update department');
+    }
+  }, [queryClient]);
+
+  // Real-time subscription for cross-view synchronization
+  useEffect(() => {
+    const channel = supabase
+      .channel('backlog-table-realtime')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'business_requests'
+        },
+        (payload) => {
+          console.log('Real-time update received:', payload.eventType);
+          queryClient.invalidateQueries({ queryKey: ['business-requests'] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [queryClient]);
 
   // Filter columns based on visibility
@@ -215,13 +311,26 @@ export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableVi
       case 'id':
         return <IdCell requestKey={row.request_key || row.id.slice(0, 8)} onClick={(e) => { e.stopPropagation(); onRowClick(row.id); }} />;
       case 'status':
-        return <StatusCell status={row.process_step || 'new'} />;
+        return (
+          <EditableStatusCell 
+            status={row.process_step || 'new_request'} 
+            requestId={row.id}
+            onSave={handleStatusUpdate}
+          />
+        );
       case 'title':
         return <SummaryCell title={row.title || ''} />;
       case 'priority':
         return <PriorityCell priority={row.priority_tier || null} />;
       case 'reporter':
-        return <OwnerCell name={row.requestor_name || row.requestor || null} />;
+        return (
+          <EditableOwnerCell 
+            name={row.requestor_name || row.requestor || null}
+            requestId={row.id}
+            fieldName="requestor"
+            onSave={handleOwnerUpdate}
+          />
+        );
       case 'assignee':
         return (
           <AssigneeCell 
@@ -231,11 +340,30 @@ export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableVi
           />
         );
       case 'business_owner':
-        return <OwnerCell name={row.business_owner || null} />;
+        return (
+          <EditableOwnerCell 
+            name={row.business_owner || null}
+            requestId={row.id}
+            fieldName="business_owner"
+            onSave={handleOwnerUpdate}
+          />
+        );
       case 'department':
-        return <span className="text-sm text-foreground truncate block max-w-full">{row.department || '—'}</span>;
+        return (
+          <EditableDepartmentCell 
+            department={row.department || null}
+            requestId={row.id}
+            onSave={handleDepartmentUpdate}
+          />
+        );
       case 'quarter':
-        return <QuarterCell quarter={row.planned_quarter?.[0] || null} />;
+        return (
+          <EditableQuarterCell 
+            quarter={row.planned_quarter?.[0] || null}
+            requestId={row.id}
+            onSave={handleQuarterUpdate}
+          />
+        );
       default:
         return null;
     }
@@ -243,24 +371,23 @@ export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableVi
 
   return (
     <div className="flex flex-col h-full">
-      {/* Table Container with Industry styling - Dark mode 9.5 grade */}
+      {/* Table Container */}
       <div 
         className={cn(
           "flex flex-col flex-1 rounded-[14px] border overflow-hidden",
-          "bg-[var(--industry-bg-card)] border-[var(--industry-border-default)]",
-          "dark:bg-[#171717] dark:border-[#404040]"
+          "bg-card border-border",
+          "shadow-sm"
         )}
-        style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}
       >
-        {/* Header Bar */}
+        {/* Header Bar - improved light mode visibility */}
         <div className={cn(
           "flex items-center justify-between px-4 py-2.5 border-b",
-          "border-[var(--industry-border-default)] bg-[var(--industry-bg-subtle)]",
-          "dark:border-[#404040] dark:bg-[#0f0f0f]"
+          "border-border bg-muted/50",
+          "dark:bg-[#0f0f0f]"
         )}>
           <div className="flex items-center gap-3">
-            <span className="text-sm text-[var(--industry-text-secondary)] dark:text-gray-300">
-              <strong className="font-semibold text-[var(--industry-text-primary)] dark:text-gray-100">{sortedData.length}</strong> {sortedData.length === 1 ? 'request' : 'requests'}
+            <span className="text-sm text-muted-foreground">
+              <strong className="font-semibold text-foreground">{sortedData.length}</strong> {sortedData.length === 1 ? 'request' : 'requests'}
             </span>
           </div>
           <ColumnVisibilityDropdown
@@ -285,12 +412,12 @@ export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableVi
               </colgroup>
               <thead className={cn(
                 "sticky top-0 z-10",
-                "bg-[var(--industry-bg-card)] dark:bg-[#0f0f0f]"
+                "bg-card dark:bg-[#0f0f0f]"
               )}>
                 <tr>
                   <th className={cn(
                     "w-8 px-2 py-3.5 text-left border-b",
-                    "border-[var(--industry-border-default)] dark:border-[#404040]"
+                    "border-border"
                   )} />
                   {displayColumns.map(column => {
                     const isActive = sortConfig.column === column.key;
@@ -300,11 +427,11 @@ export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableVi
                         className={cn(
                           "text-left border-b whitespace-nowrap px-4 py-3.5",
                           "text-[11px] uppercase font-semibold tracking-[0.5px]",
-                          "border-[var(--industry-border-default)] dark:border-[#404040]",
+                          "border-border",
                           isActive 
-                            ? "text-[var(--brand-gold)] dark:text-[#d4a855]" 
-                            : "text-[var(--industry-text-muted)] dark:text-gray-400",
-                          column.sortable && "cursor-pointer hover:text-[var(--industry-text-secondary)] dark:hover:text-gray-300"
+                            ? "text-brand-primary" 
+                            : "text-muted-foreground",
+                          column.sortable && "cursor-pointer hover:text-foreground"
                         )}
                         style={{ width: column.width, minWidth: column.minWidth }}
                         onClick={() => column.sortable && handleSort(column.key)}
@@ -332,7 +459,7 @@ export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableVi
                   {/* Actions column header */}
                   <th className={cn(
                     "w-[100px] text-right px-4 py-3.5 border-b",
-                    "border-[var(--industry-border-default)] dark:border-[#404040]"
+                    "border-border"
                   )} />
                 </tr>
               </thead>
@@ -341,7 +468,7 @@ export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableVi
                   <tbody 
                     ref={provided.innerRef} 
                     {...provided.droppableProps}
-                    className="divide-y divide-gray-100 dark:divide-[#404040]"
+                    className="divide-y divide-border"
                   >
                     {isLoading ? (
                       Array.from({ length: 6 }).map((_, i) => (
