@@ -158,52 +158,92 @@ function RequestUserAvatar({ name, size = 'md' }: { name: string; size?: 'sm' | 
   );
 }
 
-// Assignee Select component with profiles data (real-time sync with admin/users)
-function AssigneeSelect({ value, onChange }: { value: string | null; onChange: (name: string | null) => void }) {
-  // Fetch only active (approved) profiles with real-time sync
-  const { data: activeUsers = [] } = useActiveUsers();
-  
-  // Transform to expected format
-  const profiles = activeUsers.map(u => ({
-    id: u.id,
-    full_name: u.full_name,
-    email: u.email,
-  }));
-
+// User Select component - reusable for Assignee and Business Owner
+function UserSelect({ 
+  value, 
+  onChange, 
+  users, 
+  placeholder = "Select user" 
+}: { 
+  value: string | null; 
+  onChange: (name: string | null) => void;
+  users: { id: string; name: string }[];
+  placeholder?: string;
+}) {
   return (
     <Select value={value || 'unassigned'} onValueChange={(v) => onChange(v === 'unassigned' ? null : v)}>
-      <SelectTrigger 
-        className="w-full h-10"
-        style={{ 
-          backgroundColor: 'hsl(var(--secondary-bronze) / 0.08)', 
-          border: '1px solid hsl(var(--secondary-bronze) / 0.2)' 
-        }}
-      >
-        <SelectValue placeholder="Select assignee">
+      <SelectTrigger className="w-full h-10 bg-card border-border">
+        <SelectValue placeholder={placeholder}>
           {value ? (
             <div className="flex items-center gap-2">
               <RequestUserAvatar name={value} size="sm" />
               <span>{value}</span>
             </div>
           ) : (
-            'Not assigned'
+            <span className="text-muted-foreground">{placeholder}</span>
           )}
         </SelectValue>
       </SelectTrigger>
-      <SelectContent>
+      <SelectContent className="z-[500] bg-popover">
         <SelectItem value="unassigned">
           <span className="text-muted-foreground">Unassigned</span>
         </SelectItem>
-        {profiles.map((p) => (
-          <SelectItem key={p.id} value={p.full_name || p.email || p.id}>
+        {users.map((u) => (
+          <SelectItem key={u.id} value={u.name}>
             <div className="flex items-center gap-2">
-              <CatalystOwnerAvatar name={p.full_name || p.email || '?'} size="sm" showTooltip={false} />
-              <span>{p.full_name || p.email}</span>
+              <CatalystOwnerAvatar name={u.name} size="sm" showTooltip={false} />
+              <span>{u.name}</span>
             </div>
           </SelectItem>
         ))}
       </SelectContent>
     </Select>
+  );
+}
+
+// Assignee Select component with profiles data (real-time sync with admin/users)
+function AssigneeSelect({ value, onChange }: { value: string | null; onChange: (name: string | null) => void }) {
+  // Fetch only active (approved) profiles with real-time sync
+  const { data: activeUsers = [] } = useActiveUsers();
+  
+  // Transform to expected format
+  const users = activeUsers.map(u => ({
+    id: u.id,
+    name: u.full_name || u.email || u.id,
+  }));
+
+  return (
+    <UserSelect 
+      value={value} 
+      onChange={onChange} 
+      users={users} 
+      placeholder="Select assignee" 
+    />
+  );
+}
+
+// Business Owner Select component
+function BusinessOwnerSelect({ 
+  value, 
+  onChange,
+  businessOwners 
+}: { 
+  value: string | null; 
+  onChange: (name: string | null) => void;
+  businessOwners: { id: string; name: string }[];
+}) {
+  const users = businessOwners.map(o => ({
+    id: o.id,
+    name: o.name,
+  }));
+
+  return (
+    <UserSelect 
+      value={value} 
+      onChange={onChange} 
+      users={users} 
+      placeholder="Select business owner" 
+    />
   );
 }
 
@@ -490,7 +530,7 @@ export function RequestDetailPanel({
                 value={normalizeQuarterKey(request.quarter) || ''}
                 onValueChange={(value) => onUpdateField('quarter', normalizeQuarterKey(value))}
               >
-                <SelectTrigger className="w-full h-10">
+                <SelectTrigger className="w-full h-10 bg-card border-border">
                   <SelectValue placeholder="Select quarter..." />
                 </SelectTrigger>
                 <SelectContent className="z-[500] bg-popover">
@@ -550,10 +590,10 @@ export function RequestDetailPanel({
                 value={request.departmentId || request.department || ''} 
                 onValueChange={handleDepartmentChange}
               >
-                <SelectTrigger className="w-full h-10">
+                <SelectTrigger className="w-full h-10 bg-card border-border">
                   <SelectValue placeholder="Select department" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="z-[500] bg-popover">
                   {(departments.length > 0 ? departments : FALLBACK_DEPARTMENT_OPTIONS.map(name => ({ id: name, name }))).map((d) => (
                     <SelectItem key={typeof d === 'string' ? d : d.id} value={typeof d === 'string' ? d : d.id}>
                       {typeof d === 'string' ? d : d.name}
@@ -565,29 +605,17 @@ export function RequestDetailPanel({
 
             <div>
               <FieldLabel>Business Owner</FieldLabel>
-              <div 
-                className="h-10 px-3 rounded-md flex items-center justify-between"
-                style={{ backgroundColor: 'hsl(var(--secondary-bronze) / 0.08)', border: '1px solid hsl(var(--secondary-bronze) / 0.2)' }}
-              >
-                {request.businessOwner ? (
-                  <>
-                    <div className="flex items-center gap-2">
-                      <RequestUserAvatar name={request.businessOwner} size="sm" />
-                      <span className="text-sm font-medium" style={{ color: 'var(--text-1)' }}>
-                        {request.businessOwner}
-                      </span>
-                    </div>
-                    <button 
-                      className="text-xs font-medium text-[#2563eb] hover:underline"
-                      onClick={() => toast.info('Change business owner')}
-                    >
-                      Change
-                    </button>
-                  </>
-                ) : (
-                  <span className="text-sm" style={{ color: 'var(--text-3)' }}>Not assigned</span>
-                )}
-              </div>
+              <BusinessOwnerSelect
+                value={request.businessOwner || null}
+                onChange={(name) => {
+                  const owner = businessOwners.find(o => o.name === name);
+                  onUpdateField('_batch', {
+                    businessOwner: name,
+                    businessOwnerId: owner?.id || null,
+                  });
+                }}
+                businessOwners={businessOwners}
+              />
             </div>
           </div>
 
