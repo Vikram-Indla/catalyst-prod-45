@@ -1,23 +1,24 @@
-import { List, LayoutGrid } from 'lucide-react';
+import { List, LayoutGrid, Table2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-export type ViewMode = 'list' | 'kanban';
+export type ViewMode = 'list' | 'kanban' | 'table';
 
 interface ViewToggleProps {
   currentView: ViewMode;
   onViewChange: (view: ViewMode) => void;
+  showTable?: boolean;
 }
 
-export function ViewToggle({ currentView, onViewChange }: ViewToggleProps) {
+export function ViewToggle({ currentView, onViewChange, showTable = false }: ViewToggleProps) {
   return (
-    <div className="flex items-center gap-1 p-1 border border-border rounded-lg bg-muted/30">
+    <div className="inline-flex items-center p-1 bg-muted/40 rounded-xl border border-border/50">
       <button
         onClick={() => onViewChange('list')}
         className={cn(
-          'flex items-center gap-2 px-3 py-1.5 text-sm rounded-md transition-colors',
+          'flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200',
           currentView === 'list'
-            ? 'bg-card text-foreground shadow-sm'
-            : 'text-muted-foreground hover:text-foreground'
+            ? 'bg-card text-foreground shadow-md ring-1 ring-border/30'
+            : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
         )}
       >
         <List className="w-4 h-4" />
@@ -26,15 +27,29 @@ export function ViewToggle({ currentView, onViewChange }: ViewToggleProps) {
       <button
         onClick={() => onViewChange('kanban')}
         className={cn(
-          'flex items-center gap-2 px-3 py-1.5 text-sm rounded-md transition-colors',
+          'flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200',
           currentView === 'kanban'
-            ? 'bg-card text-foreground shadow-sm'
-            : 'text-muted-foreground hover:text-foreground'
+            ? 'bg-card text-foreground shadow-md ring-1 ring-border/30'
+            : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
         )}
       >
         <LayoutGrid className="w-4 h-4" />
-        Kanban
+        Board
       </button>
+      {showTable && (
+        <button
+          onClick={() => onViewChange('table')}
+          className={cn(
+            'flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200',
+            currentView === 'table'
+              ? 'bg-card text-foreground shadow-md ring-1 ring-border/30'
+              : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+          )}
+        >
+          <Table2 className="w-4 h-4" />
+          Table
+        </button>
+      )}
     </div>
   );
 }
