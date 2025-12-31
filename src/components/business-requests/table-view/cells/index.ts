@@ -9,6 +9,7 @@ export { QuarterCell } from './QuarterCell';
 export { DateCell } from './DateCell';
 export { TextCell } from './TextCell';
 export { SummaryCell } from './SummaryCell';
+export { TypeCell } from './TypeCell';
 
 // Editable cells
 export { EditableStatusCell } from './EditableStatusCell';
