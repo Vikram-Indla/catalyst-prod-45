@@ -4,7 +4,7 @@
 
 import React from 'react';
 import { 
-  Undo2, Redo2, ZoomIn, ZoomOut, Magnet, Filter, Moon, Sun, 
+  Undo2, Redo2, ZoomIn, ZoomOut, Filter, 
   Presentation, FileText, HelpCircle, Calendar, Menu
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -36,11 +36,16 @@ interface RoadmapHeaderProps {
   isMobilePanelOpen?: boolean;
 }
 
+const SLICE_LABELS: Record<TimesliceMode, string> = {
+  weekly: 'Week',
+  monthly: 'Month',
+  quarterly: 'Quarter',
+};
+
 export function RoadmapHeader({
   slice,
   zoom,
   snap,
-  dark,
   canUndo,
   canRedo,
   activeFiltersCount,
@@ -49,7 +54,6 @@ export function RoadmapHeader({
   onZoomOut,
   onToggleSnap,
   onToggleFilter,
-  onToggleDark,
   onTogglePresentation,
   onUndo,
   onRedo,
@@ -91,7 +95,7 @@ export function RoadmapHeader({
 
       <div className="flex-1" />
 
-      {/* Toolbar - hidden on very small screens, condensed on medium */}
+      {/* Toolbar */}
       <div className="flex items-center gap-1 lg:gap-1.5">
         {/* Undo/Redo - hidden on small screens */}
         <div className="hidden md:flex items-center gap-1">
@@ -104,40 +108,40 @@ export function RoadmapHeader({
           <ToolbarDivider />
         </div>
 
-        {/* Timeslice Pills - condensed on small screens */}
+        {/* Timeslice Pills - Full labels */}
         <div className="hidden sm:flex bg-surface-2 rounded-md p-0.5">
           {(['weekly', 'monthly', 'quarterly'] as const).map((s) => (
             <button
               key={s}
               onClick={() => onSliceChange(s)}
               className={cn(
-                "px-2 lg:px-2.5 py-1 text-[10px] lg:text-[11px] font-medium rounded transition-all",
+                "px-3 lg:px-3.5 py-1 text-[11px] lg:text-[12px] font-medium rounded transition-all",
                 slice === s 
                   ? "bg-surface-0 text-text-primary shadow-sm" 
                   : "text-text-muted hover:text-text-secondary"
               )}
             >
-              {s.charAt(0).toUpperCase() + s.slice(1, 3)}
+              {SLICE_LABELS[s]}
             </button>
           ))}
         </div>
 
         <ToolbarDivider className="hidden sm:block" />
 
-        {/* Zoom - hidden on small screens */}
+        {/* Zoom */}
         <div className="hidden lg:flex items-center gap-0.5">
-          <ToolbarButton onClick={onZoomOut} title="Zoom out">
+          <ToolbarButton onClick={onZoomOut} title="Zoom out (⌘-)">
             <ZoomOut className="w-3.5 h-3.5" />
           </ToolbarButton>
           <span className="text-[11px] text-text-muted min-w-[36px] text-center">{zoom}%</span>
-          <ToolbarButton onClick={onZoomIn} title="Zoom in">
+          <ToolbarButton onClick={onZoomIn} title="Zoom in (⌘+)">
             <ZoomIn className="w-3.5 h-3.5" />
           </ToolbarButton>
         </div>
 
         <ToolbarDivider className="hidden lg:block" />
 
-        {/* Snap Toggle - hidden on small screens */}
+        {/* Snap Toggle */}
         <div className="hidden xl:flex items-center gap-2">
           <span className="text-[11px] text-text-muted">Snap</span>
           <button
@@ -146,6 +150,7 @@ export function RoadmapHeader({
               "w-7 h-4 rounded-full relative transition-colors",
               snap ? "bg-brand-primary" : "bg-border-strong"
             )}
+            title="Toggle snap to grid"
           >
             <span 
               className={cn(
@@ -175,12 +180,7 @@ export function RoadmapHeader({
 
         <ToolbarDivider />
 
-        {/* Dark Mode */}
-        <ToolbarButton onClick={onToggleDark} title="Toggle dark mode (D)">
-          {dark ? <Sun className="w-3.5 h-3.5" /> : <Moon className="w-3.5 h-3.5" />}
-        </ToolbarButton>
-
-        {/* Presentation - hidden on small screens */}
+        {/* Presentation */}
         <ToolbarButton onClick={onTogglePresentation} title="Presentation mode (P)" className="hidden md:flex">
           <Presentation className="w-3.5 h-3.5" />
         </ToolbarButton>
@@ -190,7 +190,7 @@ export function RoadmapHeader({
           <FileText className="w-3.5 h-3.5" />
         </ToolbarButton>
 
-        {/* Help - hidden on small screens */}
+        {/* Help */}
         <ToolbarButton onClick={onShowHelp} title="Keyboard shortcuts (?)" className="hidden md:flex">
           <HelpCircle className="w-3.5 h-3.5" />
         </ToolbarButton>
