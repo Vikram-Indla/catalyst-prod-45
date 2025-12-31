@@ -3,6 +3,7 @@
  */
 
 import React, { useMemo, useRef, useCallback, useState, useEffect } from 'react';
+import { cn } from '@/lib/utils';
 import type { RoadmapGroup, TimelineConfig } from '@/types/roadmap';
 import { STATUS_COLORS } from '@/types/roadmap';
 import { dateToPosition } from '@/lib/roadmap-utils';
@@ -122,7 +123,15 @@ export function RoadmapMinimap({
   return (
     <div 
       ref={containerRef}
-      className="absolute bottom-4 right-4 w-40 h-14 bg-surface-0 border border-border rounded-lg shadow-lg overflow-hidden z-50 cursor-crosshair"
+      className={cn(
+        "absolute bottom-4 right-4 bg-surface-0 border border-border rounded-lg shadow-lg overflow-hidden z-50 cursor-crosshair",
+        // Hide on mobile (< 768px)
+        "hidden md:block",
+        // Tablet size (768px - 1024px): smaller
+        "md:w-[120px] md:h-10",
+        // Desktop (>= 1024px): full size
+        "lg:w-40 lg:h-14"
+      )}
       onClick={handleBackgroundClick}
     >
       {/* Bars representing objectives */}
