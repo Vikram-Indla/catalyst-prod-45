@@ -11,7 +11,7 @@ interface CommandPaletteProps {
 
 // Navigation shortcuts
 const navigationItems = [
-  { name: "Home", path: "/home", icon: Home },
+  { name: "Home", path: "/for-you", icon: Home },
   { name: "Enterprise", path: "/enterprise/strategy-room", icon: Building2 },
   { name: "Product", path: "/industry", icon: Package },
   { name: "Program", path: "/program", icon: Briefcase },

@@ -276,7 +276,7 @@ const App = () => (
             <TooltipProvider>
               <BrowserRouter>
               <Routes>
-<Route path="/" element={<Navigate to="/home" replace />} />
+<Route path="/" element={<Navigate to="/for-you" replace />} />
               <Route path="/auth" element={<CatalystLoginPage />} />
               {/* Jira test routes removed */}
               <Route path="/submit-request" element={<SubmitDemandRequest />} />
@@ -300,8 +300,8 @@ const App = () => (
               
               {/* All Routes - Catalyst Style */}
               <Route element={<ProtectedRoute><CatalystShell /></ProtectedRoute>}>
-              <Route path="/home" element={<Home />} />
               <Route path="/for-you" element={<ForYouPage />} />
+              <Route path="/home" element={<Navigate to="/for-you" replace />} />
               
               {/* Industry/Demand routes */}
               <Route path="/industry" element={<Navigate to="/industry/backlog" replace />} />
@@ -471,10 +471,10 @@ const App = () => (
               <Route path="/programs/:programId/capacity" element={<CapacityWithSidebar />} />
               <Route path="/programs/:programId/settings" element={<PlaceholderPage />} />
               <Route path="/programs/:programId/quarters" element={<QuartersPage />} />
-              <Route path="/program-room" element={<Navigate to="/home" replace />} />
+              <Route path="/program-room" element={<Navigate to="/for-you" replace />} />
               <Route path="/pis" element={<PlaceholderPage />} />
-              <Route path="/program-board" element={<Navigate to="/home" replace />} />
-              <Route path="/programs/program-board" element={<Navigate to="/home" replace />} />
+              <Route path="/program-board" element={<Navigate to="/for-you" replace />} />
+              <Route path="/programs/program-board" element={<Navigate to="/for-you" replace />} />
               <Route path="/programs/program-board/history" element={<ProgramBoardHistory />} />
               <Route path="/pi-objectives" element={<PIObjectives />} />
               <Route path="/capacity" element={<CapacityPlanning />} />

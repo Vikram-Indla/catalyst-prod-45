@@ -114,7 +114,7 @@ export function CatalystHeader() {
 
   // Define nav items with their module codes - each module has its own code
   const allNavItems = [
-    { label: "Home", path: "/home", moduleCode: null, visibleToProductOwner: true }, // Always visible
+    { label: "Home", path: "/for-you", moduleCode: null, visibleToProductOwner: true }, // Always visible
     { label: "Enterprise", path: "/enterprise/strategy-room", moduleCode: "ENTERPRISE", requiresEnterpriseAccess: true, visibleToProductOwner: true },
     { label: "Product", hasDropdown: true, moduleCode: "PRODUCT", visibleToProductOwner: true },
     { label: "Program", hasDropdown: true, moduleCode: "PORTFOLIO", visibleToProductOwner: false },
