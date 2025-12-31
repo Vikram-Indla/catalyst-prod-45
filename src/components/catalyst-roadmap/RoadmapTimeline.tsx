@@ -130,10 +130,10 @@ export const RoadmapTimeline = forwardRef<HTMLDivElement, RoadmapTimelineProps>(
               const isCollapsed = collapsed.has(group.id);
               
               return (
-                <div key={group.id}>
-                  {/* Theme header in timeline */}
+                <div key={group.id} className="relative">
+                  {/* Theme header in timeline - with milestone markers */}
                   <div 
-                    className="flex items-center gap-2 px-3 bg-surface-0 border-b border-border"
+                    className="relative flex items-center gap-2 px-3 bg-surface-0 border-b border-border"
                     style={{ height: LAYOUT.themeHeight }}
                   >
                     <div 
@@ -143,6 +143,34 @@ export const RoadmapTimeline = forwardRef<HTMLDivElement, RoadmapTimelineProps>(
                     <span className="text-[10px] font-semibold text-text-muted uppercase tracking-wide">
                       {group.name}
                     </span>
+
+                    {/* Milestone markers on theme header row */}
+                    {group.ms?.map((ms) => (
+                      <div
+                        key={ms.id}
+                        className="absolute z-30 group"
+                        style={{ 
+                          left: `${dateToPosition(ms.date, timelineConfig)}%`,
+                          top: '50%',
+                          transform: 'translate(-50%, -50%)',
+                        }}
+                      >
+                        <div
+                          className="w-3.5 h-3.5 rotate-45 rounded-sm cursor-pointer shadow-md hover:scale-125 transition-transform"
+                          style={{ 
+                            backgroundColor: MILESTONE_COLORS[ms.type],
+                            boxShadow: `0 2px 6px ${MILESTONE_COLORS[ms.type]}40`,
+                          }}
+                        />
+                        {/* Tooltip on hover */}
+                        <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50">
+                          <div className="bg-surface-0 border border-border rounded-md shadow-lg px-2.5 py-1.5 whitespace-nowrap">
+                            <div className="text-[11px] font-semibold text-text-primary">{ms.name}</div>
+                            <div className="text-[10px] text-text-muted">{format(new Date(ms.date), 'MMM d, yyyy')}</div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
                   </div>
 
                   {/* Objectives */}
@@ -178,20 +206,6 @@ export const RoadmapTimeline = forwardRef<HTMLDivElement, RoadmapTimelineProps>(
                       </div>
                     );
                   })}
-
-                  {/* Milestones */}
-                  {!isCollapsed && group.ms?.map((ms) => (
-                    <div
-                      key={ms.id}
-                      className="absolute w-3.5 h-3.5 rotate-45 rounded-sm cursor-pointer z-30 shadow-sm hover:scale-110 transition-transform"
-                      style={{ 
-                        left: `${dateToPosition(ms.date, timelineConfig)}%`,
-                        top: LAYOUT.themeHeight + 9,
-                        backgroundColor: MILESTONE_COLORS[ms.type],
-                      }}
-                      title={`${ms.name} - ${format(new Date(ms.date), 'MMM d, yyyy')}`}
-                    />
-                  ))}
                 </div>
               );
             })}
