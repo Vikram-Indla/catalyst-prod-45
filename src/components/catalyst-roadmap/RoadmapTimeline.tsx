@@ -187,8 +187,8 @@ export const RoadmapTimeline = forwardRef<HTMLDivElement, RoadmapTimelineProps>(
                     ))}
                   </div>
 
-                  {/* Objectives */}
-                  {!isCollapsed && group.objs.map((obj, objIndex) => {
+                  {/* Objectives - Only render when NOT collapsed */}
+                  {!isCollapsed && group.objs.length > 0 && group.objs.map((obj, objIndex) => {
                     rowIndex++;
                     return (
                       <div

@@ -88,8 +88,8 @@ export function RoadmapObjectivesPanel({
                 <GripVertical className="w-3 h-3 text-text-muted opacity-40 hover:opacity-100 cursor-grab" />
                 <ChevronDown 
                   className={cn(
-                    "w-3.5 h-3.5 text-text-muted transition-transform",
-                    collapsed.has(group.id) && "-rotate-90"
+                    "w-3.5 h-3.5 text-text-muted transition-transform duration-200",
+                    collapsed.has(group.id) ? "-rotate-90" : "rotate-0"
                   )}
                 />
                 <div 
