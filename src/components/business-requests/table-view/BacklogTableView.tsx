@@ -356,6 +356,12 @@ export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableVi
         );
       case 'type':
         return <TypeCell type="Business Request" />;
+      case 'rank':
+        return (
+          <span className="text-sm font-medium text-foreground">
+            {row.rank ?? '—'}
+          </span>
+        );
       case 'id':
         return <IdCell requestKey={row.request_key || row.id.slice(0, 8)} onClick={(e) => { e.stopPropagation(); onRowClick(row.id); }} />;
       case 'status':

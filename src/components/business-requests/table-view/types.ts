@@ -42,6 +42,7 @@ export interface BulkAction {
 export const DEFAULT_COLUMNS: TableColumn[] = [
   { key: 'checkbox', label: '', width: 52, sortable: false, visible: true },
   { key: 'type', label: 'Type', width: 160, sortable: false, visible: true },
+  { key: 'rank', label: 'Rank', width: 70, sortable: true, visible: true },
   { key: 'id', label: 'ID', width: 100, sortable: true, visible: true },
   { key: 'title', label: 'Summary', width: 220, sortable: true, visible: true },
   { key: 'status', label: 'Status', width: 130, sortable: true, visible: true },
