@@ -86,22 +86,22 @@ export function CatalystAIPanel({
       {/* Panel */}
       <aside
         className={cn(
-          "fixed top-0 right-0 w-[360px] h-screen bg-surface-0 border-l border-border z-[100]",
+          "fixed top-0 right-0 w-[360px] h-screen bg-card border-l border-border z-[100]",
           "flex flex-col transition-transform duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]",
           isOpen ? "translate-x-0" : "translate-x-full"
         )}
       >
         {/* Premium Dark Header */}
-        <header className="flex items-center justify-between px-5 py-4 bg-gradient-to-r from-[#0f172a] to-[#1e293b]">
+        <header className="flex items-center justify-between px-5 py-4 bg-primary">
           <div className="flex items-center gap-3">
             {/* AI Avatar */}
-            <div className="w-9 h-9 bg-gradient-to-br from-status-success to-brand-primary rounded-[10px] flex items-center justify-center shadow-[0_2px_8px_rgba(13,148,136,0.4)]">
-              <Zap className="w-[18px] h-[18px] text-white" />
+            <div className="w-9 h-9 bg-primary-foreground/20 rounded-[10px] flex items-center justify-center shadow-md">
+              <Zap className="w-[18px] h-[18px] text-primary-foreground" />
             </div>
             <div>
-              <h2 className="text-[14px] font-semibold text-white">Catalyst AI</h2>
-              <div className="flex items-center gap-1.5 text-[11px] text-white/60">
-                <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
+              <h2 className="text-[14px] font-semibold text-primary-foreground">Catalyst AI</h2>
+              <div className="flex items-center gap-1.5 text-[11px] text-primary-foreground/60">
+                <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse" />
                 Analyzing your work
               </div>
             </div>
@@ -109,21 +109,21 @@ export function CatalystAIPanel({
 
           <button 
             onClick={onClose}
-            className="w-7 h-7 bg-white/10 rounded-md flex items-center justify-center text-white/60 hover:bg-white/20 hover:text-white transition-colors"
+            className="w-7 h-7 bg-primary-foreground/10 rounded-md flex items-center justify-center text-primary-foreground/60 hover:bg-primary-foreground/20 hover:text-primary-foreground transition-colors"
           >
             <X className="w-4 h-4" />
           </button>
         </header>
 
         {/* Scrollable Body */}
-        <div className="flex-1 overflow-y-auto p-5 bg-gradient-to-b from-surface-1 to-surface-0">
+        <div className="flex-1 overflow-y-auto p-5 bg-muted/30">
           {/* Greeting */}
           <AIGreeting userName={userName} criticalCount={criticalCount} />
 
           {/* Priority Card - Start Here */}
           {priorityItem && (
             <section className="mb-6">
-              <h3 className="text-[11px] font-semibold text-text-muted uppercase tracking-wide mb-2.5">
+              <h3 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide mb-2.5">
                 Start here
               </h3>
               <AIPriorityCard
@@ -137,7 +137,7 @@ export function CatalystAIPanel({
           {/* Next Up Items */}
           {nextItems.length > 0 && (
             <section className="mb-6">
-              <h3 className="text-[11px] font-semibold text-text-muted uppercase tracking-wide mb-2.5">
+              <h3 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide mb-2.5">
                 Then
               </h3>
               {nextItems.map((item, index) => (
@@ -154,7 +154,7 @@ export function CatalystAIPanel({
           {/* Progress Card */}
           {stats && (
             <section className="mb-6">
-              <h3 className="text-[11px] font-semibold text-text-muted uppercase tracking-wide mb-2.5">
+              <h3 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide mb-2.5">
                 Your week
               </h3>
               <AIProgressCard stats={stats} />
@@ -164,7 +164,7 @@ export function CatalystAIPanel({
           {/* AI Suggestions */}
           {suggestions.length > 0 && (
             <section className="mb-6">
-              <h3 className="text-[11px] font-semibold text-text-muted uppercase tracking-wide mb-2.5">
+              <h3 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide mb-2.5">
                 I can help with
               </h3>
               {suggestions.map((suggestion) => (

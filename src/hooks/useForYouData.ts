@@ -2,7 +2,9 @@
  * For You Page Data Hook - Mock data and state management
  */
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
+import { useAuth } from '@/lib/auth';
+import { supabase } from '@/integrations/supabase/client';
 
 export type WorkMode = 'OPS' | 'DEL' | 'PLN';
 export type WorkGroup = 'YESTERDAY' | 'THIS_WEEK' | 'EARLIER';
@@ -194,11 +196,35 @@ export function useForYouData() {
     new Set(MOCK_WORK_ITEMS.filter(i => i.starred).map(i => i.id))
   );
 
-  // Mock user
+  // Fetch actual user profile
+  const { user: authUser } = useAuth();
+  const [userProfile, setUserProfile] = useState<{ firstName: string; lastName: string } | null>(null);
+
+  useEffect(() => {
+    async function fetchProfile() {
+      if (!authUser?.id) return;
+      
+      const { data } = await supabase
+        .from('profiles')
+        .select('full_name')
+        .eq('id', authUser.id)
+        .single();
+      
+      if (data?.full_name) {
+        const parts = data.full_name.split(' ');
+        setUserProfile({
+          firstName: parts[0] || 'there',
+          lastName: parts.slice(1).join(' ') || '',
+        });
+      }
+    }
+    fetchProfile();
+  }, [authUser?.id]);
+
   const user = {
-    id: 'current-user',
-    firstName: 'Ahmed',
-    lastName: 'Al-Rashid',
+    id: authUser?.id || 'current-user',
+    firstName: userProfile?.firstName || 'there',
+    lastName: userProfile?.lastName || '',
   };
 
   // Filtered and grouped work items

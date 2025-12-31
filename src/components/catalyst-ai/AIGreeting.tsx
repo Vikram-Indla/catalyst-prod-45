@@ -18,12 +18,12 @@ export function AIGreeting({ userName, criticalCount }: AIGreetingProps) {
   };
 
   return (
-    <div className="text-[14px] text-text-secondary leading-relaxed p-4 bg-surface-0 rounded-xl border border-border-subtle shadow-sm mb-6">
-      <strong className="text-text-primary">{getTimeOfDay()}, {userName}.</strong>{' '}
+    <div className="text-sm text-muted-foreground leading-relaxed p-4 bg-card rounded-xl border border-border shadow-sm mb-6">
+      <strong className="text-foreground">{getTimeOfDay()}, {userName}.</strong>{' '}
       {criticalCount > 0 ? (
         <>
           You have{' '}
-          <span className="text-status-danger font-semibold">
+          <span className="text-destructive font-semibold">
             {criticalCount} critical item{criticalCount > 1 ? 's' : ''}
           </span>{' '}
           that need{criticalCount === 1 ? 's' : ''} attention. Here's where to start:
