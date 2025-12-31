@@ -300,7 +300,7 @@ export default function CapacityPlannerPage() {
             <TimelineView resources={filteredResources} period={period} />
           )}
           {currentView === 'assignments' && (
-            <AssignmentsView resources={filteredResources} projects={projects} />
+            <AssignmentsView resources={filteredResources} projects={projects} createAssignment={createAssignment} />
           )}
           {currentView === 'leveling' && (
             <LevelingView resources={underAllocatedResources} recommendations={recommendations} />
@@ -800,10 +800,62 @@ function TimelineView({ resources, period }: { resources: ResourceMetric[]; peri
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Assignments View (Gantt)
+// Assignments View (Gantt) with Add Assignment Modal
 // ─────────────────────────────────────────────────────────────────────────────
-function AssignmentsView({ resources, projects }: { resources: ResourceMetric[]; projects: CapacityProject[] }) {
+interface AssignmentsViewProps {
+  resources: ResourceMetric[];
+  projects: CapacityProject[];
+  createAssignment: ReturnType<typeof useAssignments>['createAssignment'];
+}
+
+function AssignmentsView({ resources, projects, createAssignment }: AssignmentsViewProps) {
   const weeks = ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5'];
+  const [addModalOpen, setAddModalOpen] = useState(false);
+  
+  // Form state
+  const [selectedUserId, setSelectedUserId] = useState('');
+  const [assignmentName, setAssignmentName] = useState('');
+  const [workItemType, setWorkItemType] = useState<'project' | 'epic' | 'feature' | 'story'>('project');
+  const [selectedProjectId, setSelectedProjectId] = useState('');
+  const [startDate, setStartDate] = useState(new Date().toISOString().split('T')[0]);
+  const [endDate, setEndDate] = useState(
+    new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+  );
+  const [allocationPercent, setAllocationPercent] = useState(50);
+
+  const resetForm = () => {
+    setSelectedUserId('');
+    setAssignmentName('');
+    setWorkItemType('project');
+    setSelectedProjectId('');
+    setStartDate(new Date().toISOString().split('T')[0]);
+    setEndDate(new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]);
+    setAllocationPercent(50);
+  };
+
+  const handleAddAssignment = async () => {
+    if (!selectedUserId || !selectedProjectId) {
+      toast.error('Please select a resource and project');
+      return;
+    }
+
+    try {
+      await createAssignment.mutateAsync({
+        user_id: selectedUserId,
+        project_id: selectedProjectId,
+        allocation_percentage: allocationPercent,
+        start_date: startDate,
+        end_date: endDate,
+        status: 'active',
+        work_item_type: workItemType,
+        notes: assignmentName || undefined,
+      });
+      setAddModalOpen(false);
+      resetForm();
+    } catch (error) {
+      // Error handled by mutation
+    }
+  };
   
   return (
     <div className="space-y-3">
@@ -837,7 +889,11 @@ function AssignmentsView({ resources, projects }: { resources: ResourceMetric[];
           <span className="text-sm font-semibold text-foreground px-2 min-w-32 text-center">January 2025</span>
           <Button variant="outline" size="sm">Today</Button>
         </div>
-        <Button size="sm" className="gap-2 bg-[#2563eb] hover:bg-[#1d4ed8]">
+        <Button 
+          size="sm" 
+          className="gap-2 bg-[#2563eb] hover:bg-[#1d4ed8]"
+          onClick={() => setAddModalOpen(true)}
+        >
           <Plus className="h-3.5 w-3.5" />
           Add Assignment
         </Button>
@@ -905,15 +961,19 @@ function AssignmentsView({ resources, projects }: { resources: ResourceMetric[];
                 <div className="flex-1 flex relative">
                   {weeks.map((week, i) => (
                     <div key={week} className="min-w-36 flex-1 border-r border-border last:border-r-0 p-1.5">
-                      {/* Gantt bar */}
-                      {i < 4 && (
-                        <div 
-                          className="h-6 rounded text-[10px] font-medium text-white flex items-center px-2 cursor-grab hover:translate-y-[-1px] hover:shadow-md transition-all truncate"
-                          style={{ background: projectColors[i % projectColors.length] }}
-                        >
-                          Project {i + 1}
-                        </div>
-                      )}
+                      {/* Gantt bar from real assignments */}
+                      {resource.assignments.slice(i, i + 1).map((assignment, ai) => {
+                        const project = projects.find(p => p.id === assignment.project_id);
+                        return (
+                          <div 
+                            key={assignment.id}
+                            className="h-6 rounded text-[10px] font-medium text-white flex items-center px-2 cursor-grab hover:translate-y-[-1px] hover:shadow-md transition-all truncate"
+                            style={{ background: projectColors[ai % projectColors.length] }}
+                          >
+                            {project?.name || 'Project'}
+                          </div>
+                        );
+                      })}
                     </div>
                   ))}
                   {/* Capacity indicator */}
@@ -933,6 +993,111 @@ function AssignmentsView({ resources, projects }: { resources: ResourceMetric[];
           })}
         </div>
       </div>
+
+      {/* Add Assignment Modal */}
+      <Dialog open={addModalOpen} onOpenChange={setAddModalOpen}>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Add Assignment</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            {/* Resource */}
+            <div className="space-y-2">
+              <Label>Resource</Label>
+              <Select value={selectedUserId} onValueChange={setSelectedUserId}>
+                <SelectTrigger><SelectValue placeholder="Select resource..." /></SelectTrigger>
+                <SelectContent>
+                  {resources.map((r) => (
+                    <SelectItem key={r.id} value={r.id}>
+                      {r.name} ({100 - r.allocation}% available)
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Assignment Name */}
+            <div className="space-y-2">
+              <Label>Assignment Name</Label>
+              <Input 
+                value={assignmentName}
+                onChange={(e) => setAssignmentName(e.target.value)}
+                placeholder="e.g., EPIC-123: User Authentication"
+              />
+            </div>
+
+            {/* Type and Project */}
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Type</Label>
+                <Select value={workItemType} onValueChange={(v) => setWorkItemType(v as 'project' | 'epic' | 'feature' | 'story')}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="project">Project</SelectItem>
+                    <SelectItem value="epic">Epic</SelectItem>
+                    <SelectItem value="feature">Feature</SelectItem>
+                    <SelectItem value="story">Story</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label>Project</Label>
+                <Select value={selectedProjectId} onValueChange={setSelectedProjectId}>
+                  <SelectTrigger><SelectValue placeholder="Select project..." /></SelectTrigger>
+                  <SelectContent>
+                    {projects.map((p) => (
+                      <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            {/* Dates and Allocation */}
+            <div className="grid grid-cols-3 gap-4">
+              <div className="space-y-2">
+                <Label>Start Date</Label>
+                <Input 
+                  type="date"
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>End Date</Label>
+                <Input 
+                  type="date"
+                  value={endDate}
+                  onChange={(e) => setEndDate(e.target.value)}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Allocation %</Label>
+                <Input 
+                  type="number"
+                  min={5}
+                  max={100}
+                  step={5}
+                  value={allocationPercent}
+                  onChange={(e) => setAllocationPercent(parseInt(e.target.value) || 0)}
+                />
+              </div>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => { setAddModalOpen(false); resetForm(); }}>
+              Cancel
+            </Button>
+            <Button 
+              onClick={handleAddAssignment}
+              disabled={createAssignment.isPending}
+              className="bg-[#2563eb] hover:bg-[#1d4ed8]"
+            >
+              {createAssignment.isPending ? 'Adding...' : 'Add Assignment'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
