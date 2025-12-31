@@ -11,7 +11,7 @@ import {
   Users, CheckCircle2, BarChart3, AlertTriangle, TrendingUp, Download, Printer, Plus, 
   Search, LayoutGrid, Table2, CalendarDays, GanttChart, Sparkles, FileStack, Bot,
   ChevronLeft, ChevronRight, Clock, Eye, Copy, Check, RotateCcw, Play, FolderKanban,
-  Pencil, Trash2
+  Pencil, Trash2, Cloud
 } from 'lucide-react';
 import { useCapacityData, useAssignments, useAiRecommendations, exportCapacityToPdf } from '@/modules/capacity-planner';
 import type { ViewType, ResourceMetric, CapacityProject, AiRecommendation } from '@/modules/capacity-planner';
@@ -938,123 +938,307 @@ function AssignmentsView({ resources, projects }: { resources: ResourceMetric[];
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Leveling View with AI Banner
+// Leveling View with AI Banner and Two-Panel Layout
 // ─────────────────────────────────────────────────────────────────────────────
 function LevelingView({ resources, recommendations }: { resources: ResourceMetric[]; recommendations: AiRecommendation[] }) {
-  const [selectedResource, setSelectedResource] = useState<ResourceMetric | null>(null);
+  const [selectedResource, setSelectedResource] = useState<ResourceMetric | null>(resources[0] || null);
+  const [releaseVersion, setReleaseVersion] = useState('');
+  const [allocationFilter, setAllocationFilter] = useState('under80');
+  const [selectedWorkItems, setSelectedWorkItems] = useState<{ id: string; allocation: number }[]>([]);
+
+  // Mock work items for demonstration
+  const workItems = [
+    { id: '1', itemId: 'SEN-1003', title: 'Create chart component library', project: 'Senaei BAU', epic: 'Real-time Dashboard Analytics', allocation: 30 },
+    { id: '2', itemId: 'SEN-1004', title: 'Implement WebSocket real-time sync', project: 'Senaei BAU', epic: 'Real-time Dashboard Analytics', allocation: 30 },
+    { id: '3', itemId: 'SEN-1005', title: 'Dashboard layout responsive design', project: 'Senaei BAU', epic: 'Real-time Dashboard Analytics', allocation: 25 },
+  ];
+
+  const handleWorkItemToggle = (workItemId: string, defaultAllocation: number) => {
+    setSelectedWorkItems(prev => {
+      const exists = prev.find(w => w.id === workItemId);
+      if (exists) {
+        return prev.filter(w => w.id !== workItemId);
+      }
+      return [...prev, { id: workItemId, allocation: defaultAllocation }];
+    });
+  };
+
+  const handleAllocationChange = (workItemId: string, allocation: number) => {
+    setSelectedWorkItems(prev => 
+      prev.map(w => w.id === workItemId ? { ...w, allocation } : w)
+    );
+  };
+
+  const isSelected = (workItemId: string) => selectedWorkItems.some(w => w.id === workItemId);
+  const getAllocation = (workItemId: string, defaultVal: number) => 
+    selectedWorkItems.find(w => w.id === workItemId)?.allocation || defaultVal;
+
+  const totalPendingAllocation = selectedWorkItems.reduce((sum, w) => sum + w.allocation, 0);
+  const availableCapacity = selectedResource ? 100 - selectedResource.allocation : 0;
   
+  const handleSkip = () => {
+    const currentIdx = resources.findIndex(r => r.id === selectedResource?.id);
+    if (currentIdx < resources.length - 1) {
+      setSelectedResource(resources[currentIdx + 1]);
+      setSelectedWorkItems([]);
+    }
+  };
+
+  const handleAssign = () => {
+    if (selectedWorkItems.length > 0) {
+      toast.success(`Assigned ${selectedWorkItems.length} items to ${selectedResource?.name}`);
+      handleSkip();
+    }
+  };
+
   return (
     <div className="space-y-5">
-      {/* AI Banner */}
-      <div className="flex items-center gap-4 p-5 rounded-xl text-white" style={{ background: 'linear-gradient(135deg, #2563eb 0%, #1e40af 100%)' }}>
-        <div className="w-12 h-12 rounded-lg bg-white/15 flex items-center justify-center shrink-0">
-          <Sparkles className="h-6 w-6" />
+      {/* AI Banner - Blue Gradient */}
+      <div 
+        className="flex items-center gap-4 p-5 rounded-xl text-white"
+        style={{ background: 'linear-gradient(135deg, #2563eb 0%, #3b82f6 50%, #60a5fa 100%)' }}
+      >
+        <div className="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center shrink-0">
+          <Cloud className="h-6 w-6" />
         </div>
         <div className="flex-1">
-          <h3 className="text-base font-semibold mb-1">AI Resource Leveling</h3>
+          <h3 className="text-base font-semibold mb-0.5">AI Resource Leveling</h3>
           <p className="text-sm opacity-90">
             <strong>{resources.length} resources</strong> have available capacity this period. Start the wizard to optimally assign them to open work items.
           </p>
         </div>
-        <Button variant="secondary" size="sm" className="gap-2 bg-white text-[#2563eb] hover:bg-white/90">
+        <Button 
+          variant="secondary" 
+          size="sm" 
+          className="gap-2 bg-white text-[#2563eb] hover:bg-white/90 font-semibold"
+        >
           <Play className="h-4 w-4" />
           Start Wizard
         </Button>
       </div>
       
-      {/* Toolbar */}
-      <div className="bg-card border border-border rounded-lg p-4 flex items-center justify-between flex-wrap gap-3">
+      {/* Filters Row */}
+      <div className="flex items-center justify-between flex-wrap gap-4">
         <div className="flex items-center gap-3">
           <span className="text-sm text-muted-foreground font-medium">Release Version:</span>
-          <Select defaultValue="">
-            <SelectTrigger className="w-48 h-9">
+          <Select value={releaseVersion} onValueChange={setReleaseVersion}>
+            <SelectTrigger className="w-52 h-10 bg-card">
               <SelectValue placeholder="Select Release..." />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="r1">Release 2025.1</SelectItem>
-              <SelectItem value="r2">Release 2025.2</SelectItem>
+              <SelectItem value="r2025.1">Release 2025.1 - Q1</SelectItem>
+              <SelectItem value="r2025.2">Release 2025.2 - Q2</SelectItem>
+              <SelectItem value="r2025.3">Release 2025.3 - Q3</SelectItem>
             </SelectContent>
           </Select>
         </div>
-        <Select defaultValue="under80">
-          <SelectTrigger className="w-44 h-9">
+        <Select value={allocationFilter} onValueChange={setAllocationFilter}>
+          <SelectTrigger className="w-52 h-10 bg-card">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="under80">Under-allocated (&lt;80%)</SelectItem>
+            <SelectItem value="available">Available (&lt;50%)</SelectItem>
             <SelectItem value="all">All Resources</SelectItem>
           </SelectContent>
         </Select>
       </div>
       
       {/* Two-Column Layout */}
-      <div className="grid grid-cols-[320px_1fr] gap-5 min-h-[500px]">
-        {/* Queue Panel */}
+      <div className="grid grid-cols-[340px_1fr] gap-5 min-h-[520px]">
+        {/* Left Panel - Resources List */}
         <div className="bg-card border border-border rounded-xl overflow-hidden">
           <div className="px-5 py-4 border-b border-border flex items-center justify-between">
             <h3 className="text-sm font-semibold text-foreground">Resources to Level</h3>
-            <span className="text-xs text-muted-foreground bg-muted px-2.5 py-1 rounded-full">{resources.length} remaining</span>
+            <span className="text-xs text-muted-foreground">{resources.length} remaining</span>
           </div>
-          <div className="max-h-[450px] overflow-y-auto">
+          <div className="max-h-[470px] overflow-y-auto">
             {resources.map((resource) => {
               const division = (resource.division || 'Delivery') as keyof typeof divisionColors;
               const divColor = divisionColors[division] || divisionColors.Delivery;
               const initials = resource.name?.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'NA';
               const freeCapacity = 100 - resource.allocation;
+              const isCurrentSelected = selectedResource?.id === resource.id;
               
               return (
-                <div 
+                <button 
                   key={resource.id}
-                  onClick={() => setSelectedResource(resource)}
+                  onClick={() => { setSelectedResource(resource); setSelectedWorkItems([]); }}
                   className={cn(
-                    'flex items-center gap-3 px-5 py-3.5 border-b border-border cursor-pointer transition-colors',
-                    selectedResource?.id === resource.id 
-                      ? 'bg-[#2563eb]/5 border-l-[3px] border-l-[#2563eb]' 
-                      : 'hover:bg-muted/50'
+                    'w-full flex items-center gap-3 px-5 py-4 text-left transition-colors relative',
+                    isCurrentSelected 
+                      ? 'bg-[#f5f5f4]' 
+                      : 'hover:bg-muted/30'
                   )}
                 >
-                  <div className={cn('w-9 h-9 rounded-full flex items-center justify-center text-xs font-semibold shrink-0', divColor.bg, divColor.text)}>
+                  {/* Selection indicator */}
+                  {isCurrentSelected && (
+                    <div className="absolute left-0 top-0 bottom-0 w-1 bg-[#2563eb] rounded-r" />
+                  )}
+                  <div className={cn('w-10 h-10 rounded-full flex items-center justify-center text-xs font-semibold shrink-0', divColor.bg, divColor.text)}>
                     {initials}
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-foreground truncate">{resource.name}</p>
-                    <p className="text-[11px] text-muted-foreground truncate">{resource.role}</p>
+                    <p className="text-xs text-muted-foreground truncate">{resource.role}</p>
                   </div>
-                  <span className="text-xs font-semibold px-2 py-1 rounded-full bg-[#0d9488]/10 text-[#0d9488]">
+                  <span className={cn(
+                    'text-xs font-semibold',
+                    freeCapacity >= 40 ? 'text-[#0d9488]' : 
+                    freeCapacity >= 20 ? 'text-[#d97706]' : 'text-[#dc2626]'
+                  )}>
                     {freeCapacity}% free
                   </span>
-                </div>
+                </button>
               );
             })}
+            {resources.length === 0 && (
+              <div className="p-8 text-center text-muted-foreground text-sm">
+                No resources match the current filter
+              </div>
+            )}
           </div>
         </div>
         
-        {/* Detail Panel */}
-        <div className="bg-card border border-border rounded-xl overflow-hidden">
-          {!selectedResource ? (
-            <div className="flex flex-col items-center justify-center h-full min-h-[400px] text-muted-foreground gap-4">
-              <Clock className="h-12 w-12 opacity-50" />
-              <p className="text-sm">Select a resource from the queue to begin assignment</p>
-            </div>
-          ) : (
-            <div className="p-6">
-              <div className="bg-muted/50 rounded-lg p-5 flex items-center gap-4 mb-6">
-                <div className={cn('w-14 h-14 rounded-full flex items-center justify-center text-lg font-bold', 
+        {/* Right Panel - Work Items */}
+        <div className="bg-card border border-border rounded-xl overflow-hidden flex flex-col">
+          {selectedResource ? (
+            <>
+              {/* Resource Header */}
+              <div className="px-6 py-5 border-b border-border flex items-center gap-4">
+                <div className={cn(
+                  'w-14 h-14 rounded-full flex items-center justify-center text-lg font-bold',
                   divisionColors[(selectedResource.division || 'Delivery') as keyof typeof divisionColors]?.bg,
                   divisionColors[(selectedResource.division || 'Delivery') as keyof typeof divisionColors]?.text
                 )}>
                   {selectedResource.name?.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase()}
                 </div>
                 <div className="flex-1">
-                  <p className="text-base font-semibold text-foreground">{selectedResource.name}</p>
-                  <p className="text-sm text-muted-foreground">{selectedResource.role}</p>
+                  <p className="text-lg font-semibold text-foreground">{selectedResource.name}</p>
+                  <p className="text-sm text-muted-foreground">{selectedResource.role} · {selectedResource.division || 'Delivery'}</p>
                 </div>
-                <div className="text-center">
-                  <p className="text-2xl font-bold text-[#0d9488]">{100 - selectedResource.allocation}%</p>
-                  <p className="text-xs text-muted-foreground">Available</p>
+                <div className="flex gap-6 text-center">
+                  <div>
+                    <p className="text-2xl font-bold text-[#d97706]">{selectedResource.allocation}%</p>
+                    <p className="text-xs text-muted-foreground">Current</p>
+                  </div>
+                  <div>
+                    <p className="text-2xl font-bold text-[#0d9488]">{availableCapacity}%</p>
+                    <p className="text-xs text-muted-foreground">Available</p>
+                  </div>
                 </div>
               </div>
-              <p className="text-sm text-muted-foreground text-center">Select work items to assign to this resource</p>
+
+              {/* Work Items Header */}
+              <div className="px-6 py-4 border-b border-border">
+                <div className="flex items-center justify-between mb-3">
+                  <h4 className="text-sm font-semibold text-foreground">
+                    Available Work Items <span className="font-normal text-muted-foreground">({workItems.length} items)</span>
+                  </h4>
+                </div>
+                <div className="flex gap-2">
+                  <Select defaultValue="all">
+                    <SelectTrigger className="w-36 h-9 text-sm">
+                      <SelectValue placeholder="All Projects" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Projects</SelectItem>
+                      <SelectItem value="senaei">Senaei BAU</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <Select defaultValue="all">
+                    <SelectTrigger className="w-28 h-9 text-sm">
+                      <SelectValue placeholder="All Types" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Types</SelectItem>
+                      <SelectItem value="feature">Feature</SelectItem>
+                      <SelectItem value="story">Story</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              {/* Work Items List */}
+              <div className="flex-1 overflow-y-auto px-6 py-4">
+                <div className="space-y-3">
+                  {workItems.map((item) => {
+                    const selected = isSelected(item.id);
+                    const allocation = getAllocation(item.id, item.allocation);
+                    
+                    return (
+                      <div 
+                        key={item.id}
+                        className="flex items-center gap-4 p-4 border border-border rounded-lg hover:bg-muted/20 transition-colors"
+                      >
+                        {/* Checkbox */}
+                        <input 
+                          type="checkbox"
+                          checked={selected}
+                          onChange={() => handleWorkItemToggle(item.id, item.allocation)}
+                          className="w-5 h-5 rounded border-border text-[#2563eb] focus:ring-[#2563eb]"
+                        />
+                        
+                        {/* Icon */}
+                        <div className="w-10 h-10 rounded-lg bg-[#d4b896]/20 flex items-center justify-center shrink-0">
+                          <FileStack className="h-5 w-5 text-[#8b7355]" />
+                        </div>
+                        
+                        {/* Content */}
+                        <div className="flex-1 min-w-0">
+                          <p className="text-xs font-medium text-[#2563eb]">{item.itemId}</p>
+                          <p className="text-sm font-medium text-foreground truncate">{item.title}</p>
+                          <p className="text-xs text-muted-foreground truncate">{item.project} · {item.epic}</p>
+                        </div>
+                        
+                        {/* Allocation Input */}
+                        <div className="flex flex-col items-center gap-0.5">
+                          <Input 
+                            type="number"
+                            min={5}
+                            max={100}
+                            step={5}
+                            value={allocation}
+                            onChange={(e) => handleAllocationChange(item.id, parseInt(e.target.value) || 0)}
+                            disabled={!selected}
+                            className={cn(
+                              "w-16 h-9 text-center text-sm font-medium",
+                              !selected && "bg-muted text-muted-foreground"
+                            )}
+                          />
+                          <span className="text-[10px] text-muted-foreground">% alloc</span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Footer Actions */}
+              <div className="px-6 py-4 border-t border-border flex items-center justify-end gap-3">
+                <Button variant="outline" onClick={handleSkip}>
+                  Skip
+                </Button>
+                <Button 
+                  onClick={handleAssign}
+                  disabled={selectedWorkItems.length === 0}
+                  className="bg-[#2563eb] hover:bg-[#1d4ed8] gap-2"
+                >
+                  {selectedWorkItems.length > 0 ? (
+                    <>
+                      <Check className="h-4 w-4" />
+                      Assign {selectedWorkItems.length} items
+                    </>
+                  ) : (
+                    'Select items to assign'
+                  )}
+                </Button>
+              </div>
+            </>
+          ) : (
+            <div className="flex flex-col items-center justify-center h-full min-h-[400px] text-muted-foreground gap-4">
+              <Clock className="h-12 w-12 opacity-50" />
+              <p className="text-sm">Select a resource from the queue to begin assignment</p>
             </div>
           )}
         </div>
