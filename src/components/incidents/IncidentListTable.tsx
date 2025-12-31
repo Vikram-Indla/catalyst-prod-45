@@ -14,7 +14,6 @@ import { useState, useMemo, useRef, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { MoreHorizontal, Eye, Pencil, Trash2, AlertTriangle, Copy, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -28,13 +27,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { InlineEditCell } from './InlineEditCell';
 import { InlineUserPicker } from './InlineUserPicker';
 import { DeleteIncidentDialog } from './DeleteIncidentDialog';
@@ -70,10 +62,10 @@ interface IncidentListTableProps {
   density?: TableDensity;
 }
 
-// Enterprise typography - consistent across table
-const HEADER_TEXT = 'text-[10px] font-semibold text-muted-foreground uppercase tracking-wider';
-const CELL_TEXT = 'text-[12px] leading-4 text-foreground';
-const CELL_MUTED = 'text-[12px] leading-4 text-muted-foreground';
+// Enterprise typography - consistent across table (matches For-You table styling)
+const HEADER_TEXT = 'text-xs font-semibold text-text-muted uppercase tracking-wide';
+const CELL_TEXT = 'text-sm leading-5 text-text-primary';
+const CELL_MUTED = 'text-[13px] leading-5 text-text-muted';
 
 // Grid cell base styles - ensure consistent box model
 const GRID_CELL_BASE = 'min-w-0 overflow-hidden';
@@ -335,9 +327,9 @@ export function IncidentListTable({
           <div className="overflow-x-auto w-full h-full">
             {/* Grid table - min-width ensures it can grow for horizontal scroll */}
             <div style={{ minWidth: '100%', width: '100%' }}>
-              {/* Header row - exactly 32px height, CSS Grid layout */}
+              {/* Header row - matches For-You table styling */}
               <div 
-                className="grid items-center h-8 sticky top-0 z-20 bg-muted/60 border-b border-border"
+                className="grid items-center py-3 sticky top-0 z-20 bg-surface-1 border-b border-border"
                 style={{ gridTemplateColumns: gridTemplate }}
               >
                 {/* Key - left aligned */}
@@ -424,12 +416,12 @@ export function IncidentListTable({
                     <div 
                       key={incident.id} 
                       className={cn(
-                        // CSS Grid row - exactly 36px height
-                        'grid items-center h-9 transition-colors cursor-pointer border-b border-border last:border-b-0 hover:bg-muted/30',
-                        // Default rows
-                        !isCritical && !isBreached && 'bg-card',
+                        // CSS Grid row - matches For-You table row styling
+                        'grid items-center py-3 transition-colors cursor-pointer border-b border-border-subtle last:border-b-0',
+                        // Default rows with hover
+                        !isCritical && !isBreached && 'bg-surface-0 hover:bg-surface-hover',
                         // Hover override for non-highlighted rows
-                        isHovered && !isCritical && !isBreached && 'bg-muted/30'
+                        isHovered && !isCritical && !isBreached && 'bg-surface-hover'
                       )}
                       style={{
                         gridTemplateColumns: gridTemplate,
@@ -447,18 +439,11 @@ export function IncidentListTable({
                       }}
                     >
                       {/* Key - left aligned */}
-                      <div className={cn(GRID_CELL_BASE, "pl-3 pr-2 flex items-center h-full")}>
+                      <div className={cn(GRID_CELL_BASE, "pl-4 pr-2 flex items-center gap-2.5")}>
                         <Link 
                           to={`/release/incidents/${incident.id}`} 
-                          className={cn(
-                            CELL_TEXT,
-                            'font-medium font-mono',
-                            'hover:underline truncate'
-                          )}
-                          style={{ color: '#c69c6d' }}
+                          className="font-mono text-[13px] font-medium text-brand-primary hover:underline truncate"
                           onClick={(e) => e.stopPropagation()}
-                          onMouseEnter={(e) => (e.currentTarget.style.color = '#d4b896')}
-                          onMouseLeave={(e) => (e.currentTarget.style.color = '#c69c6d')}
                         >
                           {incident.incident_key}
                         </Link>
@@ -559,7 +544,7 @@ export function IncidentListTable({
                             <button 
                               className={cn(
                                 "w-6 h-6 rounded flex items-center justify-center transition-opacity",
-                                "hover:bg-muted text-muted-foreground",
+                                "hover:bg-surface-hover text-text-muted",
                                 "focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring",
                                 isHovered ? "opacity-100" : "opacity-0"
                               )}
@@ -624,61 +609,87 @@ export function IncidentListTable({
           </div>
         </div>
 
-        {/* Pagination Footer */}
+        {/* Pagination Footer - matches For-You table pagination styling */}
         {totalCount !== undefined && totalCount > 0 && (
-          <div className="flex items-center justify-between px-4 py-2.5 border-t border-border bg-card flex-shrink-0 mt-2 rounded-md">
-            {/* Left side: Range text */}
-            <div className="flex items-center gap-4">
-              <span className="text-xs text-muted-foreground">
-                Showing {startItem}–{endItem} of {totalCount} incident{totalCount !== 1 ? 's' : ''}
-              </span>
+          <div className="flex items-center justify-between px-4 py-3 mt-4 border border-border rounded-lg bg-surface-0">
+            {/* Left side: Item count */}
+            <div className="text-sm text-text-muted">
+              Showing <span className="font-medium text-text-secondary">{startItem}-{endItem}</span> of{' '}
+              <span className="font-medium text-text-secondary">{totalCount}</span> incident{totalCount !== 1 ? 's' : ''}
             </div>
 
-            {/* Center: Page size selector */}
-            <div className="flex items-center gap-2">
-              <span className="text-xs text-muted-foreground">Rows per page:</span>
-              <Select 
-                value={effectivePageSize.toString()} 
-                onValueChange={handlePageSizeChange}
+            {/* Center: Page navigation with numbered pages */}
+            <div className="flex items-center gap-1">
+              {/* Previous page */}
+              <button
+                onClick={() => onPageChange?.(page - 1)}
+                disabled={page <= 1}
+                className={cn(
+                  "p-1.5 rounded hover:bg-surface-hover transition-colors",
+                  "disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent"
+                )}
+                aria-label="Previous page"
               >
-                <SelectTrigger className="h-7 w-16 text-xs text-foreground">
-                  <SelectValue placeholder={effectivePageSize.toString()} />
-                </SelectTrigger>
-                <SelectContent>
-                  {PAGE_SIZE_OPTIONS.map(size => (
-                    <SelectItem key={size} value={size.toString()} className="text-xs">
-                      {size}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                <ChevronLeft className="w-4 h-4 text-text-muted" />
+              </button>
+
+              {/* Page numbers */}
+              <div className="flex items-center gap-1 mx-2">
+                {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                  let pageNum: number;
+                  if (totalPages <= 5) {
+                    pageNum = i + 1;
+                  } else if (page <= 3) {
+                    pageNum = i + 1;
+                  } else if (page >= totalPages - 2) {
+                    pageNum = totalPages - 4 + i;
+                  } else {
+                    pageNum = page - 2 + i;
+                  }
+
+                  return (
+                    <button
+                      key={pageNum}
+                      onClick={() => onPageChange?.(pageNum)}
+                      className={cn(
+                        "min-w-[32px] h-8 px-2 rounded text-sm font-medium transition-colors",
+                        page === pageNum
+                          ? "bg-brand-primary text-white"
+                          : "text-text-secondary hover:bg-surface-hover"
+                      )}
+                    >
+                      {pageNum}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Next page */}
+              <button
+                onClick={() => onPageChange?.(page + 1)}
+                disabled={page >= totalPages}
+                className={cn(
+                  "p-1.5 rounded hover:bg-surface-hover transition-colors",
+                  "disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent"
+                )}
+                aria-label="Next page"
+              >
+                <ChevronRight className="w-4 h-4 text-text-muted" />
+              </button>
             </div>
 
-            {/* Right side: Page navigation */}
+            {/* Right side: Page size selector */}
             <div className="flex items-center gap-2">
-              <span className="text-xs text-muted-foreground">
-                Page {page} of {totalPages}
-              </span>
-              <div className="flex items-center gap-1">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="h-7 w-7 p-0"
-                  disabled={page <= 1}
-                  onClick={() => onPageChange?.(page - 1)}
-                >
-                  <ChevronLeft className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="h-7 w-7 p-0"
-                  disabled={page >= totalPages}
-                  onClick={() => onPageChange?.(page + 1)}
-                >
-                  <ChevronRight className="h-4 w-4" />
-                </Button>
-              </div>
+              <span className="text-sm text-text-muted">Per page:</span>
+              <select
+                value={effectivePageSize}
+                onChange={(e) => handlePageSizeChange(e.target.value)}
+                className="px-2 py-1 text-sm border border-border rounded bg-surface-0 text-text-secondary focus:outline-none focus:ring-2 focus:ring-brand-primary"
+              >
+                {PAGE_SIZE_OPTIONS.map(size => (
+                  <option key={size} value={size}>{size}</option>
+                ))}
+              </select>
             </div>
           </div>
         )}
