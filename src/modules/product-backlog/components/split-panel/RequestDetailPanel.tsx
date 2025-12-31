@@ -465,7 +465,7 @@ export function RequestDetailPanel({
                 value={statusKey} 
                 onValueChange={(value) => onUpdateField('processStep', value)}
               >
-                <SelectTrigger className="w-full h-10">
+                <SelectTrigger className="w-full h-10 bg-card border-border">
                   <SelectValue>
                     <div className="flex items-center gap-2">
                       <div className={cn('w-2 h-2 rounded-full', statusColor)} />
@@ -473,7 +473,7 @@ export function RequestDetailPanel({
                     </div>
                   </SelectValue>
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="z-[500] bg-popover">
                   {processSteps.map((step) => (
                     <SelectItem key={step.value} value={step.value}>
                       <div className="flex items-center gap-2">
@@ -506,17 +506,16 @@ export function RequestDetailPanel({
             <div>
               <FieldLabel>Priority</FieldLabel>
               <div 
-                className="h-10 px-3 rounded-md flex items-center justify-between cursor-pointer"
-                style={{ backgroundColor: 'var(--surface-2)', border: '1px solid var(--divider)' }}
+                className="h-10 px-3 rounded-md flex items-center justify-between cursor-pointer bg-card border border-border"
                 onClick={() => toast.info('Priority is auto-calculated from the Scoring tab')}
               >
                 <div className="flex items-center gap-2">
                   <div className={cn('w-2 h-2 rounded-full', priorityColor)} />
-                  <span className="text-sm font-medium" style={{ color: 'var(--text-1)' }}>
+                  <span className="text-sm font-medium text-foreground">
                     {priorityLabel}
                   </span>
                 </div>
-                <Lock className="w-3.5 h-3.5" style={{ color: 'var(--text-3)' }} />
+                <Lock className="w-3.5 h-3.5 text-muted-foreground" />
               </div>
             </div>
 
@@ -544,27 +543,24 @@ export function RequestDetailPanel({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
             <div>
               <FieldLabel>Reporter</FieldLabel>
-              <div 
-                className="h-10 px-3 rounded-md flex items-center justify-between"
-                style={{ backgroundColor: 'var(--surface-2)', border: '1px solid var(--divider)' }}
-              >
+              <div className="h-10 px-3 rounded-md flex items-center justify-between bg-card border border-border">
                 {request.reporter ? (
                   <>
                     <div className="flex items-center gap-2">
                       <RequestUserAvatar name={request.reporter} size="sm" />
-                      <span className="text-sm font-medium" style={{ color: 'var(--text-1)' }}>
+                      <span className="text-sm font-medium text-foreground">
                         {request.reporter}
                       </span>
                     </div>
                     <button 
-                      className="text-xs font-medium text-[#2563eb] hover:underline"
+                      className="text-xs font-medium text-brand-primary hover:underline"
                       onClick={() => toast.info('Change reporter')}
                     >
                       Change
                     </button>
                   </>
                 ) : (
-                  <span className="text-sm" style={{ color: 'var(--text-3)' }}>Not assigned</span>
+                  <span className="text-sm text-muted-foreground">Not assigned</span>
                 )}
               </div>
             </div>
