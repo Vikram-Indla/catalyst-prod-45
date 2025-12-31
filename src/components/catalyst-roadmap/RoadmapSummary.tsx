@@ -27,6 +27,13 @@ export function RoadmapSummary({
   const radius = 18;
   const circumference = 2 * Math.PI * radius;
   const strokeDashoffset = circumference - (healthPercent / 100) * circumference;
+  
+  // Health ring color: teal >= 70%, amber 40-69%, red < 40%
+  const healthColor = healthPercent >= 70 
+    ? '#0d9488' 
+    : healthPercent >= 40 
+    ? '#d97706' 
+    : '#dc2626';
 
   return (
     <div className="h-[68px] px-5 flex items-center gap-8 bg-surface-0 border-b border-border shrink-0">
@@ -48,7 +55,7 @@ export function RoadmapSummary({
               cy="22"
               r={radius}
               fill="none"
-              stroke="#0d9488"
+              stroke={healthColor}
               strokeWidth="4"
               strokeLinecap="round"
               strokeDasharray={circumference}
