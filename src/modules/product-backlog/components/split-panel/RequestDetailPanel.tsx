@@ -389,8 +389,7 @@ export function RequestDetailPanel({
               {/* ID + Rank */}
               <div className="flex items-center gap-2 mb-1 flex-wrap">
                 <span 
-                  className="text-sm font-mono font-medium cursor-pointer hover:underline" 
-                  style={{ color: 'hsl(var(--secondary-bronze))' }}
+                  className="text-sm font-mono font-semibold cursor-pointer hover:underline text-brand-primary" 
                   onClick={onOpenDrawer}
                 >
                   {request.id}
