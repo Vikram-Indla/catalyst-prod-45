@@ -1262,6 +1262,39 @@ export type Database = {
           },
         ]
       }
+      capacity_departments: {
+        Row: {
+          color: string | null
+          created_at: string | null
+          description: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          sort_order: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          color?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          sort_order?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          color?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          sort_order?: number | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       capacity_plans: {
         Row: {
           available_capacity: number
@@ -10789,6 +10822,7 @@ export type Database = {
           approved_by: string | null
           avatar_url: string | null
           created_at: string | null
+          department_id: string | null
           email: string | null
           failed_login_count: number | null
           full_name: string | null
@@ -10815,6 +10849,7 @@ export type Database = {
           approved_by?: string | null
           avatar_url?: string | null
           created_at?: string | null
+          department_id?: string | null
           email?: string | null
           failed_login_count?: number | null
           full_name?: string | null
@@ -10841,6 +10876,7 @@ export type Database = {
           approved_by?: string | null
           avatar_url?: string | null
           created_at?: string | null
+          department_id?: string | null
           email?: string | null
           failed_login_count?: number | null
           full_name?: string | null
@@ -10859,7 +10895,15 @@ export type Database = {
           status?: string
           updated_at?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "profiles_department_id_fkey"
+            columns: ["department_id"]
+            isOneToOne: false
+            referencedRelation: "capacity_departments"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       program_increments: {
         Row: {
