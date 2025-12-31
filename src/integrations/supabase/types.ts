@@ -117,6 +117,53 @@ export type Database = {
         }
         Relationships: []
       }
+      ai_integration_settings: {
+        Row: {
+          api_key_encrypted: string | null
+          created_at: string | null
+          endpoint_url: string | null
+          id: string
+          is_active: boolean | null
+          model: string | null
+          provider: string
+          settings: Json | null
+          updated_at: string | null
+          updated_by: string | null
+        }
+        Insert: {
+          api_key_encrypted?: string | null
+          created_at?: string | null
+          endpoint_url?: string | null
+          id?: string
+          is_active?: boolean | null
+          model?: string | null
+          provider?: string
+          settings?: Json | null
+          updated_at?: string | null
+          updated_by?: string | null
+        }
+        Update: {
+          api_key_encrypted?: string | null
+          created_at?: string | null
+          endpoint_url?: string | null
+          id?: string
+          is_active?: boolean | null
+          model?: string | null
+          provider?: string
+          settings?: Json | null
+          updated_at?: string | null
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_integration_settings_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       anchor_sprints: {
         Row: {
           code: string
@@ -231,6 +278,103 @@ export type Database = {
           type?: string
         }
         Relationships: []
+      }
+      assignments: {
+        Row: {
+          allocation_percentage: number
+          created_at: string | null
+          created_by: string | null
+          end_date: string | null
+          epic_id: string | null
+          feature_id: string | null
+          id: string
+          notes: string | null
+          project_id: string
+          start_date: string
+          status: string
+          story_id: string | null
+          updated_at: string | null
+          user_id: string
+          work_item_type: string
+        }
+        Insert: {
+          allocation_percentage?: number
+          created_at?: string | null
+          created_by?: string | null
+          end_date?: string | null
+          epic_id?: string | null
+          feature_id?: string | null
+          id?: string
+          notes?: string | null
+          project_id: string
+          start_date: string
+          status?: string
+          story_id?: string | null
+          updated_at?: string | null
+          user_id: string
+          work_item_type?: string
+        }
+        Update: {
+          allocation_percentage?: number
+          created_at?: string | null
+          created_by?: string | null
+          end_date?: string | null
+          epic_id?: string | null
+          feature_id?: string | null
+          id?: string
+          notes?: string | null
+          project_id?: string
+          start_date?: string
+          status?: string
+          story_id?: string | null
+          updated_at?: string | null
+          user_id?: string
+          work_item_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "assignments_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "assignments_epic_id_fkey"
+            columns: ["epic_id"]
+            isOneToOne: false
+            referencedRelation: "epics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "assignments_feature_id_fkey"
+            columns: ["feature_id"]
+            isOneToOne: false
+            referencedRelation: "features"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "assignments_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "assignments_story_id_fkey"
+            columns: ["story_id"]
+            isOneToOne: false
+            referencedRelation: "stories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "assignments_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       attachments: {
         Row: {
@@ -1169,6 +1313,75 @@ export type Database = {
             columns: ["team_id"]
             isOneToOne: false
             referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      capacity_scenarios: {
+        Row: {
+          approved_at: string | null
+          approved_by: string | null
+          baseline_snapshot: Json | null
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          end_date: string
+          id: string
+          metrics: Json | null
+          modifications: Json | null
+          name: string
+          start_date: string
+          status: string
+          time_scope: string
+          updated_at: string | null
+        }
+        Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
+          baseline_snapshot?: Json | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          end_date: string
+          id?: string
+          metrics?: Json | null
+          modifications?: Json | null
+          name: string
+          start_date: string
+          status?: string
+          time_scope?: string
+          updated_at?: string | null
+        }
+        Update: {
+          approved_at?: string | null
+          approved_by?: string | null
+          baseline_snapshot?: Json | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          end_date?: string
+          id?: string
+          metrics?: Json | null
+          modifications?: Json | null
+          name?: string
+          start_date?: string
+          status?: string
+          time_scope?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "capacity_scenarios_approved_by_fkey"
+            columns: ["approved_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "capacity_scenarios_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
