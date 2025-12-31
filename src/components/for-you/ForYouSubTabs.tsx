@@ -26,7 +26,7 @@ export function ForYouSubTabs({ activeTab, counts, onTabChange }: ForYouSubTabsP
           "flex items-center gap-2 px-3.5 py-2 border-none bg-transparent text-sm font-medium cursor-pointer",
           "font-sans rounded-full transition-all",
           activeTab === 'worked'
-            ? "bg-foreground text-background"
+            ? "bg-primary text-primary-foreground"
             : "text-muted-foreground hover:bg-muted"
         )}
       >
@@ -34,7 +34,7 @@ export function ForYouSubTabs({ activeTab, counts, onTabChange }: ForYouSubTabsP
         <span className={cn(
           "px-2 py-0.5 rounded-[10px] text-xs font-semibold",
           activeTab === 'worked'
-            ? "bg-background text-foreground"
+            ? "bg-primary-foreground text-primary"
             : "bg-muted text-muted-foreground"
         )}>
           {counts.worked}
@@ -48,14 +48,14 @@ export function ForYouSubTabs({ activeTab, counts, onTabChange }: ForYouSubTabsP
           "flex items-center gap-2 px-3.5 py-2 border-none bg-transparent text-sm font-medium cursor-pointer",
           "font-sans rounded-full transition-all",
           activeTab === 'assigned'
-            ? "bg-foreground text-background"
+            ? "bg-primary text-primary-foreground"
             : "text-muted-foreground hover:bg-muted"
         )}
       >
         Assigned
         <span className={cn(
           "text-muted-foreground font-normal",
-          activeTab === 'assigned' && "text-background/70"
+          activeTab === 'assigned' && "text-primary-foreground/70"
         )}>
           {counts.assigned}
         </span>
@@ -68,14 +68,14 @@ export function ForYouSubTabs({ activeTab, counts, onTabChange }: ForYouSubTabsP
           "flex items-center gap-2 px-3.5 py-2 border-none bg-transparent text-sm font-medium cursor-pointer",
           "font-sans rounded-full transition-all",
           activeTab === 'starred'
-            ? "bg-foreground text-background"
+            ? "bg-primary text-primary-foreground"
             : "text-muted-foreground hover:bg-muted"
         )}
       >
         Starred
         <span className={cn(
           "text-muted-foreground font-normal",
-          activeTab === 'starred' && "text-background/70"
+          activeTab === 'starred' && "text-primary-foreground/70"
         )}>
           {counts.starred}
         </span>
