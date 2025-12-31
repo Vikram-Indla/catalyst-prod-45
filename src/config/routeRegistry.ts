@@ -54,11 +54,11 @@ export const ROUTE_REGISTRY: Record<string, RouteConfig> = {
   '/product/room': { section: 'PRODUCT', pageTitle: 'Product Room' },
   '/product/capacity': { section: 'PRODUCT', pageTitle: 'Capacity' },
   
-  // Industry routes (part of Product)
-  '/industry/backlog': { section: 'INDUSTRY', pageTitle: 'Industry Backlog' },
-  '/industry/kanban': { section: 'INDUSTRY', pageTitle: 'Industry Kanban' },
-  '/industry/table': { section: 'INDUSTRY', pageTitle: 'Demand Table' },
-  '/industry/roadmaps': { section: 'INDUSTRY', pageTitle: 'Industry Roadmaps' },
+  // Product routes (Industry paths)
+  '/industry/backlog': { section: 'PRODUCT', pageTitle: 'Product Backlog' },
+  '/industry/kanban': { section: 'PRODUCT', pageTitle: 'Product Kanban' },
+  '/industry/table': { section: 'PRODUCT', pageTitle: 'Demand Table' },
+  '/industry/roadmaps': { section: 'PRODUCT', pageTitle: 'Product Roadmap' },
   
   // Program routes
   '/program/:programId/room': { section: 'PROGRAM', pageTitle: 'Program Room' },
