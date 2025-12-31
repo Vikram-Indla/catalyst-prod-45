@@ -21,16 +21,13 @@ export function TypeCell({ type = 'Business Request' }: TypeCellProps) {
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger asChild>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center justify-center">
             <div className={cn(
               "flex items-center justify-center w-7 h-7 rounded-md",
               "bg-blue-500/15 dark:bg-blue-500/20"
             )}>
               <Box className="h-4 w-4 text-blue-600 dark:text-blue-400" />
             </div>
-            <span className="text-sm text-foreground truncate max-w-[120px]">
-              {type}
-            </span>
           </div>
         </TooltipTrigger>
         <TooltipContent side="top">
