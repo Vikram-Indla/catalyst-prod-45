@@ -85,7 +85,7 @@ export function CatalystOwnerAvatar({
       <AvatarFallback
         className={cn(
           'font-semibold',
-          type === 'human' && 'bg-muted text-foreground',
+          type === 'human' && 'bg-brand-primary text-white',
           type === 'ai' && 'bg-brand-gold/15 text-brand-gold border border-brand-gold/30',
           type === 'system' && 'bg-muted text-muted-foreground',
           type === 'placeholder' && 'bg-muted text-muted-foreground border border-dashed border-muted-foreground/30',
