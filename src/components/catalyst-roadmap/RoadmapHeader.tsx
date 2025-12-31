@@ -5,7 +5,7 @@
 import React from 'react';
 import { 
   Undo2, Redo2, ZoomIn, ZoomOut, Magnet, Filter, Moon, Sun, 
-  Presentation, Download, HelpCircle, Calendar
+  Presentation, FileText, HelpCircle, Calendar
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { TimesliceMode } from '@/types/roadmap';
@@ -164,7 +164,7 @@ export function RoadmapHeader({
 
         {/* Export */}
         <ToolbarButton onClick={onExport} title="Export PDF (E)">
-          <Download className="w-3.5 h-3.5" />
+          <FileText className="w-3.5 h-3.5" />
         </ToolbarButton>
 
         {/* Help */}
