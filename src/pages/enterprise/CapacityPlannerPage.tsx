@@ -1,27 +1,41 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { PageChrome } from '@/components/layout/PageChrome';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Input } from '@/components/ui/input';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Slider } from '@/components/ui/slider';
-import { Textarea } from '@/components/ui/textarea';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { 
-  Users, UserCheck, AlertTriangle, TrendingUp, Download, Plus, Bot, 
-  Search, LayoutGrid, Table, Calendar, GanttChart, Layers,
-  X, ChevronRight, Mail, Briefcase, MapPin
+  Users, CheckCircle2, BarChart3, AlertTriangle, TrendingUp, Download, Printer, Plus, 
+  Search, LayoutGrid, Table2, CalendarDays, GanttChart, Sparkles, FileStack, Bot,
+  ChevronLeft, ChevronRight, Clock, Eye, Copy, Check, RotateCcw, Play, FolderKanban
 } from 'lucide-react';
 import { useCapacityData, useAssignments, useAiRecommendations, exportCapacityToPdf } from '@/modules/capacity-planner';
 import type { ViewType, ResourceMetric, CapacityProject, AiRecommendation } from '@/modules/capacity-planner';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
+
+type PeriodType = 'weekly' | 'monthly' | 'quarterly';
+type GroupByType = 'none' | 'project' | 'division' | 'department';
+type ExtendedViewType = ViewType | 'scenarios';
+
+// Division colors - Catalyst V5 compliant
+const divisionColors = {
+  Product: { bg: 'bg-[#d4b896]', text: 'text-[#4a3f35]', badge: 'bg-[#d4b896]/15 text-[#c69c6d]' },
+  Delivery: { bg: 'bg-[#0d9488]', text: 'text-white', badge: 'bg-[#2563eb]/10 text-[#2563eb]' },
+  Support: { bg: 'bg-[#4d8b4d]', text: 'text-white', badge: 'bg-[#5c7c5c]/15 text-[#5c7c5c]' },
+};
+
+const projectColors = [
+  '#4d8b4d', // Olive
+  '#8b7355', // Bronze  
+  '#0d9488', // Teal
+  '#d4b896', // Champagne
+  '#2563eb', // Blue
+  '#22c55e', // Green
+];
 
 export default function CapacityPlannerPage() {
   const { metrics, projects, resources, isLoading } = useCapacityData();
@@ -32,22 +46,22 @@ export default function CapacityPlannerPage() {
   });
 
   // View state
-  const [currentView, setCurrentView] = useState<ViewType>('cards');
+  const [currentView, setCurrentView] = useState<ExtendedViewType>('cards');
+  const [period, setPeriod] = useState<PeriodType>('monthly');
+  const [groupBy, setGroupBy] = useState<GroupByType>('project');
   const [searchQuery, setSearchQuery] = useState('');
   
   // Modal state
-  const [assignmentModalOpen, setAssignmentModalOpen] = useState(false);
+  const [resourceModalOpen, setResourceModalOpen] = useState(false);
   const [selectedResource, setSelectedResource] = useState<ResourceMetric | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [aiDrawerOpen, setAiDrawerOpen] = useState(false);
-  
-  // Assignment form state
-  const [assignmentForm, setAssignmentForm] = useState({
-    user_id: '',
-    project_id: '',
-    allocation_percentage: 50,
-    start_date: new Date().toISOString().split('T')[0],
-    notes: '',
+
+  // Resource form state
+  const [resourceForm, setResourceForm] = useState({
+    name: '',
+    role: 'Frontend Developer',
+    division: 'Delivery',
   });
 
   const handleExport = () => {
@@ -60,28 +74,8 @@ export default function CapacityPlannerPage() {
     toast.success('PDF exported successfully');
   };
 
-  const handleCreateAssignment = () => {
-    if (!assignmentForm.user_id || !assignmentForm.project_id) {
-      toast.error('Please select a resource and project');
-      return;
-    }
-    createAssignment.mutate({
-      user_id: assignmentForm.user_id,
-      project_id: assignmentForm.project_id,
-      allocation_percentage: assignmentForm.allocation_percentage,
-      start_date: assignmentForm.start_date,
-      status: 'active',
-      work_item_type: 'project',
-      notes: assignmentForm.notes || undefined,
-    });
-    setAssignmentModalOpen(false);
-    setAssignmentForm({
-      user_id: '',
-      project_id: '',
-      allocation_percentage: 50,
-      start_date: new Date().toISOString().split('T')[0],
-      notes: '',
-    });
+  const handlePrint = () => {
+    window.print();
   };
 
   const openResourceDrawer = (resource: ResourceMetric) => {
@@ -93,6 +87,27 @@ export default function CapacityPlannerPage() {
     r.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     r.role?.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  // Group resources by project
+  const groupedByProject = useMemo(() => {
+    const groups: Record<string, ResourceMetric[]> = {};
+    filteredResources.forEach((r) => {
+      if (r.assignments.length > 0) {
+        const projectId = r.assignments[0].project_id;
+        const project = projects.find(p => p.id === projectId);
+        const key = project?.name || 'Unassigned';
+        if (!groups[key]) groups[key] = [];
+        groups[key].push(r);
+      } else {
+        if (!groups['Unassigned']) groups['Unassigned'] = [];
+        groups['Unassigned'].push(r);
+      }
+    });
+    return groups;
+  }, [filteredResources, projects]);
+
+  // Under-allocated resources for Leveling
+  const underAllocatedResources = filteredResources.filter(r => r.allocation < 80);
 
   if (isLoading) {
     return (
@@ -106,74 +121,175 @@ export default function CapacityPlannerPage() {
 
   return (
     <PageChrome>
-      <div className="flex flex-col h-full bg-background">
+      <div className="flex flex-col h-full bg-[hsl(var(--background))]">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b">
-          <div>
-            <h1 className="text-2xl font-semibold text-foreground">Capacity Planner</h1>
-            <p className="text-sm text-muted-foreground">Resource allocation and capacity management</p>
-          </div>
-          <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" onClick={handleExport}>
-              <Download className="h-4 w-4 mr-2" />
-              Export PDF
-            </Button>
-            <Button size="sm" onClick={() => setAssignmentModalOpen(true)}>
-              <Plus className="h-4 w-4 mr-2" />
-              Add Assignment
-            </Button>
-          </div>
-        </div>
-
-        {/* Summary Cards */}
-        <div className="grid grid-cols-5 gap-4 p-6">
-          <SummaryCard icon={Users} value={metrics.summary.total} label="Total Resources" color="blue" />
-          <SummaryCard icon={UserCheck} value={metrics.summary.available + metrics.summary.healthy} label="Available" color="teal" />
-          <SummaryCard icon={TrendingUp} value={metrics.summary.atCapacity} label="At Capacity" color="amber" />
-          <SummaryCard icon={AlertTriangle} value={metrics.summary.overAllocated} label="Over-allocated" color="red" />
-          <SummaryCard icon={TrendingUp} value={`${metrics.summary.avgUtilization}%`} label="Avg Utilization" color="blue" />
-        </div>
-
-        {/* Toolbar */}
-        <div className="flex items-center justify-between px-6 pb-4">
+        <div className="flex items-center justify-between px-5 py-4 flex-wrap gap-3">
           <div className="flex items-center gap-4">
-            <div className="relative">
+            {/* Period Toggle */}
+            <div className="flex bg-card border border-border rounded-lg p-1">
+              {(['weekly', 'monthly', 'quarterly'] as PeriodType[]).map((p) => (
+                <button
+                  key={p}
+                  onClick={() => setPeriod(p)}
+                  className={cn(
+                    'px-4 py-2 text-xs font-semibold rounded-md transition-all capitalize',
+                    period === p
+                      ? 'bg-foreground text-background'
+                      : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                  )}
+                >
+                  {p}
+                </button>
+              ))}
+            </div>
+            
+            {/* Search */}
+            <div className="relative ml-3">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input 
                 placeholder="Search resources..." 
-                className="pl-9 w-64"
+                className="pl-9 w-48 h-9 text-sm bg-card"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
             </div>
-            <Tabs value={currentView} onValueChange={(v) => setCurrentView(v as ViewType)}>
-              <TabsList>
-                <TabsTrigger value="cards"><LayoutGrid className="h-4 w-4 mr-1" />Cards</TabsTrigger>
-                <TabsTrigger value="table"><Table className="h-4 w-4 mr-1" />Table</TabsTrigger>
-                <TabsTrigger value="timeline"><Calendar className="h-4 w-4 mr-1" />Timeline</TabsTrigger>
-                <TabsTrigger value="assignments"><GanttChart className="h-4 w-4 mr-1" />Assignments</TabsTrigger>
-                <TabsTrigger value="leveling"><Layers className="h-4 w-4 mr-1" />Leveling</TabsTrigger>
-              </TabsList>
-            </Tabs>
+          </div>
+          
+          <div className="flex items-center gap-2">
+            <Button variant="outline" size="sm" onClick={handleExport} className="gap-2">
+              <Download className="h-4 w-4" />
+              Export
+            </Button>
+            <Button variant="outline" size="sm" onClick={handlePrint} className="gap-2">
+              <Printer className="h-4 w-4" />
+              Print
+            </Button>
+            <Button size="sm" onClick={() => setResourceModalOpen(true)} className="gap-2 bg-[#2563eb] hover:bg-[#1d4ed8]">
+              <Plus className="h-4 w-4" />
+              Add Resource
+            </Button>
+          </div>
+        </div>
+
+        {/* Summary Bar */}
+        <div className="flex gap-2 px-5 pb-4 flex-wrap">
+          <SummaryCard 
+            icon={Users} 
+            value={metrics.summary.total} 
+            label="Resources" 
+            iconBg="bg-[#2563eb]/10" 
+            iconColor="text-[#2563eb]" 
+          />
+          <SummaryCard 
+            icon={CheckCircle2} 
+            value={metrics.summary.available + metrics.summary.healthy} 
+            label="Available" 
+            iconBg="bg-[#0d9488]/10" 
+            iconColor="text-[#0d9488]" 
+          />
+          <SummaryCard 
+            icon={BarChart3} 
+            value={metrics.summary.atCapacity} 
+            label="At Capacity" 
+            iconBg="bg-[#d97706]/10" 
+            iconColor="text-[#d97706]" 
+          />
+          <SummaryCard 
+            icon={BarChart3} 
+            value={metrics.summary.overAllocated} 
+            label="Over-allocated" 
+            iconBg="bg-[#64748b]/10" 
+            iconColor="text-[#64748b]" 
+          />
+          
+          {/* Utilization Gauge */}
+          <div className="bg-card border border-border rounded-lg px-4 py-3 flex-1 min-w-40">
+            <div className="flex justify-between items-center mb-1.5">
+              <span className="text-[10px] font-semibold text-muted-foreground uppercase">Utilization</span>
+              <span className={cn(
+                'text-lg font-bold',
+                metrics.summary.avgUtilization >= 80 ? 'text-[#dc2626]' : 
+                metrics.summary.avgUtilization >= 60 ? 'text-[#d97706]' : 'text-[#0d9488]'
+              )}>
+                {metrics.summary.avgUtilization}%
+              </span>
+            </div>
+            <div className="h-1.5 bg-muted rounded-full overflow-hidden mb-1.5">
+              <div 
+                className={cn(
+                  'h-full rounded-full transition-all',
+                  metrics.summary.avgUtilization >= 80 ? 'bg-[#dc2626]' : 
+                  metrics.summary.avgUtilization >= 60 ? 'bg-[#d97706]' : 'bg-[#0d9488]'
+                )}
+                style={{ width: `${Math.min(metrics.summary.avgUtilization, 100)}%` }}
+              />
+            </div>
+            <div className="flex gap-2 flex-wrap">
+              <LegendDot color="bg-[#2563eb]" label={`0`} />
+              <LegendDot color="bg-[#0d9488]" label={`${metrics.summary.available + metrics.summary.healthy}`} />
+              <LegendDot color="bg-[#d97706]" label={`${metrics.summary.atCapacity}`} />
+              <LegendDot color="bg-[#dc2626]" label={`${metrics.summary.overAllocated}`} />
+            </div>
+          </div>
+        </div>
+
+        {/* Toolbar with View Tabs */}
+        <div className="flex items-center justify-between px-5 pb-4 gap-3 flex-wrap">
+          <div className="flex bg-muted p-1 rounded-lg border border-border">
+            <ViewTab icon={LayoutGrid} label="Cards" active={currentView === 'cards'} onClick={() => setCurrentView('cards')} />
+            <ViewTab icon={Table2} label="Table" active={currentView === 'table'} onClick={() => setCurrentView('table')} />
+            <ViewTab icon={CalendarDays} label="Timeline" active={currentView === 'timeline'} onClick={() => setCurrentView('timeline')} />
+            <ViewTab icon={GanttChart} label="Assignments" active={currentView === 'assignments'} onClick={() => setCurrentView('assignments')} />
+            <ViewTab 
+              icon={Sparkles} 
+              label="Leveling" 
+              active={currentView === 'leveling'} 
+              onClick={() => setCurrentView('leveling')} 
+              badge={underAllocatedResources.length}
+            />
+            <ViewTab icon={FileStack} label="Scenarios" active={currentView === 'scenarios'} onClick={() => setCurrentView('scenarios')} />
+          </div>
+          
+          <div className="flex items-center gap-2">
+            <Select value={groupBy} onValueChange={(v) => setGroupBy(v as GroupByType)}>
+              <SelectTrigger className="w-40 h-9 text-sm">
+                <SelectValue placeholder="Group by..." />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="none">No Grouping</SelectItem>
+                <SelectItem value="project">Group by Project</SelectItem>
+                <SelectItem value="division">Group by Division</SelectItem>
+                <SelectItem value="department">Group by Department</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </div>
 
         {/* Main Content */}
-        <div className="flex-1 overflow-auto p-6 pt-0">
+        <div className="flex-1 overflow-auto px-5 pb-5">
           {currentView === 'cards' && (
-            <CardsView resources={filteredResources} onResourceClick={openResourceDrawer} />
+            <CardsView 
+              resources={filteredResources} 
+              groupedByProject={groupedByProject}
+              groupBy={groupBy}
+              projects={projects}
+              onResourceClick={openResourceDrawer} 
+            />
           )}
           {currentView === 'table' && (
             <TableView resources={filteredResources} projects={projects} onResourceClick={openResourceDrawer} />
           )}
           {currentView === 'timeline' && (
-            <TimelineView resources={filteredResources} />
+            <TimelineView resources={filteredResources} period={period} />
           )}
           {currentView === 'assignments' && (
-            <AssignmentsView resources={filteredResources} />
+            <AssignmentsView resources={filteredResources} projects={projects} />
           )}
           {currentView === 'leveling' && (
-            <LevelingView resources={filteredResources} recommendations={recommendations} />
+            <LevelingView resources={underAllocatedResources} recommendations={recommendations} />
+          )}
+          {currentView === 'scenarios' && (
+            <ScenariosView />
           )}
         </div>
 
@@ -181,7 +297,7 @@ export default function CapacityPlannerPage() {
         <Sheet open={drawerOpen} onOpenChange={setDrawerOpen}>
           <SheetContent className="w-[500px] sm:max-w-[500px]">
             <SheetHeader>
-              <SheetTitle>Resource Details</SheetTitle>
+              <SheetTitle>Resource 360°</SheetTitle>
             </SheetHeader>
             {selectedResource && (
               <ResourceDrawerContent resource={selectedResource} projects={projects} />
@@ -191,15 +307,17 @@ export default function CapacityPlannerPage() {
 
         {/* AI Drawer */}
         <Sheet open={aiDrawerOpen} onOpenChange={setAiDrawerOpen}>
-          <SheetContent className="w-[400px] sm:max-w-[400px]">
+          <SheetContent className="w-[420px] sm:max-w-[420px]">
             <SheetHeader>
               <SheetTitle className="flex items-center gap-2">
-                <Bot className="h-5 w-5" />
-                AI Recommendations
+                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#0d9488] to-[#0f766e] flex items-center justify-center">
+                  <Bot className="h-4 w-4 text-white" />
+                </div>
+                AI Resource Assistant
               </SheetTitle>
             </SheetHeader>
-            <ScrollArea className="h-[calc(100vh-100px)] mt-4">
-              <div className="space-y-4 pr-4">
+            <ScrollArea className="h-[calc(100vh-120px)] mt-4">
+              <div className="space-y-3 pr-4">
                 {recommendations.length === 0 ? (
                   <p className="text-sm text-muted-foreground">No recommendations at this time.</p>
                 ) : (
@@ -212,387 +330,672 @@ export default function CapacityPlannerPage() {
           </SheetContent>
         </Sheet>
 
-        {/* Assignment Modal */}
-        <Dialog open={assignmentModalOpen} onOpenChange={setAssignmentModalOpen}>
-          <DialogContent>
+        {/* Add Resource Modal */}
+        <Dialog open={resourceModalOpen} onOpenChange={setResourceModalOpen}>
+          <DialogContent className="sm:max-w-md">
             <DialogHeader>
-              <DialogTitle>Create Assignment</DialogTitle>
+              <DialogTitle>Add Resource</DialogTitle>
             </DialogHeader>
             <div className="space-y-4 py-4">
               <div className="space-y-2">
-                <Label>Resource</Label>
-                <Select value={assignmentForm.user_id} onValueChange={(v) => setAssignmentForm(f => ({ ...f, user_id: v }))}>
-                  <SelectTrigger><SelectValue placeholder="Select resource" /></SelectTrigger>
-                  <SelectContent>
-                    {resources.map((r) => (
-                      <SelectItem key={r.id} value={r.id}>{r.name}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2">
-                <Label>Project</Label>
-                <Select value={assignmentForm.project_id} onValueChange={(v) => setAssignmentForm(f => ({ ...f, project_id: v }))}>
-                  <SelectTrigger><SelectValue placeholder="Select project" /></SelectTrigger>
-                  <SelectContent>
-                    {projects.map((p) => (
-                      <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2">
-                <Label>Allocation: {assignmentForm.allocation_percentage}%</Label>
-                <Slider 
-                  value={[assignmentForm.allocation_percentage]} 
-                  onValueChange={([v]) => setAssignmentForm(f => ({ ...f, allocation_percentage: v }))}
-                  max={100}
-                  step={5}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label>Start Date</Label>
+                <Label>Full Name</Label>
                 <Input 
-                  type="date" 
-                  value={assignmentForm.start_date}
-                  onChange={(e) => setAssignmentForm(f => ({ ...f, start_date: e.target.value }))}
+                  value={resourceForm.name}
+                  onChange={(e) => setResourceForm(f => ({ ...f, name: e.target.value }))}
+                  placeholder="Enter name"
                 />
               </div>
-              <div className="space-y-2">
-                <Label>Notes</Label>
-                <Textarea 
-                  value={assignmentForm.notes}
-                  onChange={(e) => setAssignmentForm(f => ({ ...f, notes: e.target.value }))}
-                  placeholder="Optional notes..."
-                />
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>Role</Label>
+                  <Select value={resourceForm.role} onValueChange={(v) => setResourceForm(f => ({ ...f, role: v }))}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Frontend Developer">Frontend Developer</SelectItem>
+                      <SelectItem value="Backend Developer">Backend Developer</SelectItem>
+                      <SelectItem value="Sr Frontend Developer">Sr Frontend Developer</SelectItem>
+                      <SelectItem value="Sr Backend Developer">Sr Backend Developer</SelectItem>
+                      <SelectItem value="DevOps Engineer">DevOps Engineer</SelectItem>
+                      <SelectItem value="QA Analyst">QA Analyst</SelectItem>
+                      <SelectItem value="Product Owner">Product Owner</SelectItem>
+                      <SelectItem value="Delivery Manager">Delivery Manager</SelectItem>
+                      <SelectItem value="Backend Architect">Backend Architect</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label>Division</Label>
+                  <Select value={resourceForm.division} onValueChange={(v) => setResourceForm(f => ({ ...f, division: v }))}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Product">Product</SelectItem>
+                      <SelectItem value="Delivery">Delivery</SelectItem>
+                      <SelectItem value="Support">Support</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
             </div>
             <DialogFooter>
-              <Button variant="outline" onClick={() => setAssignmentModalOpen(false)}>Cancel</Button>
-              <Button onClick={handleCreateAssignment} disabled={createAssignment.isPending}>
-                {createAssignment.isPending ? 'Creating...' : 'Create Assignment'}
+              <Button variant="outline" onClick={() => setResourceModalOpen(false)}>Cancel</Button>
+              <Button onClick={() => { toast.success('Resource added'); setResourceModalOpen(false); }} className="bg-[#2563eb] hover:bg-[#1d4ed8]">
+                Save
               </Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
 
-        {/* AI Assistant FAB */}
-        <Button
-          size="lg"
-          className="fixed bottom-6 right-6 rounded-full h-14 w-14 shadow-lg"
-          onClick={() => setAiDrawerOpen(true)}
-        >
-          <Bot className="h-6 w-6" />
-          {highPriorityCount > 0 && (
-            <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-red-500 text-white text-xs flex items-center justify-center">
-              {highPriorityCount}
-            </span>
-          )}
-        </Button>
+        {/* AI Assistant FAB - Teal gradient with pulse */}
+        <div className="fixed bottom-6 right-6 z-50">
+          <div className="absolute inset-[-4px] rounded-full bg-[#0d9488]/25 animate-ping" style={{ animationDuration: '2.5s' }} />
+          <button
+            onClick={() => setAiDrawerOpen(true)}
+            className="relative w-[52px] h-[52px] rounded-full bg-gradient-to-br from-[#0d9488] to-[#0f766e] flex items-center justify-center shadow-lg hover:scale-105 transition-transform cursor-pointer border-0"
+            style={{ boxShadow: '0 4px 16px rgba(13, 148, 136, 0.35)' }}
+          >
+            <Bot className="h-6 w-6 text-white" />
+            {highPriorityCount > 0 && (
+              <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-[#dc2626] text-white text-[11px] font-bold flex items-center justify-center border-2 border-white">
+                {highPriorityCount}
+              </span>
+            )}
+          </button>
+        </div>
       </div>
     </PageChrome>
   );
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
 // Summary Card Component
-function SummaryCard({ icon: Icon, value, label, color }: { icon: React.ElementType; value: number | string; label: string; color: string }) {
-  const colorClasses = {
-    blue: 'bg-blue-500/10 text-blue-500',
-    teal: 'bg-teal-500/10 text-teal-500',
-    amber: 'bg-amber-500/10 text-amber-500',
-    red: 'bg-red-500/10 text-red-500',
-  };
+// ─────────────────────────────────────────────────────────────────────────────
+function SummaryCard({ icon: Icon, value, label, iconBg, iconColor }: { 
+  icon: React.ElementType; 
+  value: number | string; 
+  label: string; 
+  iconBg: string;
+  iconColor: string;
+}) {
   return (
-    <Card>
-      <CardContent className="pt-4">
-        <div className="flex items-center gap-3">
-          <div className={cn('p-2 rounded-lg', colorClasses[color as keyof typeof colorClasses])}>
-            <Icon className="h-5 w-5" />
-          </div>
-          <div>
-            <p className="text-2xl font-bold">{value}</p>
-            <p className="text-xs text-muted-foreground">{label}</p>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
+    <div className="bg-card border border-border rounded-lg px-4 py-3 flex items-center gap-3 min-w-36 flex-1">
+      <div className={cn('w-8 h-8 rounded-md flex items-center justify-center', iconBg)}>
+        <Icon className={cn('h-4 w-4', iconColor)} />
+      </div>
+      <div>
+        <p className="text-xl font-bold text-foreground leading-tight">{value}</p>
+        <p className="text-[10px] text-muted-foreground mt-0.5">{label}</p>
+      </div>
+    </div>
   );
 }
 
-// Cards View
-function CardsView({ resources, onResourceClick }: { resources: ResourceMetric[]; onResourceClick: (r: ResourceMetric) => void }) {
+// Legend Dot
+function LegendDot({ color, label }: { color: string; label: string }) {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+    <div className="flex items-center gap-1 text-[10px] text-muted-foreground">
+      <div className={cn('w-1.5 h-1.5 rounded-full', color)} />
+      {label}
+    </div>
+  );
+}
+
+// View Tab
+function ViewTab({ icon: Icon, label, active, onClick, badge }: { 
+  icon: React.ElementType; 
+  label: string; 
+  active: boolean; 
+  onClick: () => void;
+  badge?: number;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className={cn(
+        'px-4 py-2.5 text-sm font-medium rounded-md flex items-center gap-2 transition-all',
+        active 
+          ? 'bg-card text-foreground shadow-sm' 
+          : 'text-muted-foreground hover:text-foreground'
+      )}
+    >
+      <Icon className={cn('h-4 w-4', active ? 'opacity-100' : 'opacity-60')} />
+      {label}
+      {badge !== undefined && badge > 0 && (
+        <span className={cn(
+          'text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[18px] text-center',
+          active ? 'bg-[#d97706] text-white' : 'bg-[#dc2626] text-white'
+        )}>
+          {badge}
+        </span>
+      )}
+    </button>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Cards View with Project Grouping
+// ─────────────────────────────────────────────────────────────────────────────
+function CardsView({ resources, groupedByProject, groupBy, projects, onResourceClick }: { 
+  resources: ResourceMetric[]; 
+  groupedByProject: Record<string, ResourceMetric[]>;
+  groupBy: GroupByType;
+  projects: CapacityProject[];
+  onResourceClick: (r: ResourceMetric) => void;
+}) {
+  if (groupBy === 'project') {
+    return (
+      <div className="space-y-6">
+        {Object.entries(groupedByProject).map(([projectName, projectResources]) => (
+          <div key={projectName} className="space-y-3">
+            {/* Group Header */}
+            <div className="flex items-center gap-3 p-3 bg-card border border-border rounded-lg">
+              <div className="w-8 h-8 rounded-md bg-muted-foreground/80 flex items-center justify-center">
+                <FolderKanban className="h-4 w-4 text-white" />
+              </div>
+              <span className="text-sm font-semibold text-foreground">{projectName}</span>
+              <span className="text-xs text-muted-foreground ml-auto bg-muted px-2.5 py-1 rounded-full">
+                {projectResources.length} resources
+              </span>
+            </div>
+            
+            {/* Cards Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+              {projectResources.map((resource) => (
+                <ResourceCard key={resource.id} resource={resource} projects={projects} onClick={() => onResourceClick(resource)} />
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
       {resources.map((resource) => (
-        <Card 
-          key={resource.id} 
-          className="hover:shadow-md transition-shadow cursor-pointer"
-          onClick={() => onResourceClick(resource)}
-        >
-          <CardHeader className="pb-2">
-            <div className="flex items-start justify-between">
-              <div className="flex items-center gap-3">
-                <Avatar className="h-10 w-10">
-                  <AvatarImage src={resource.avatar_url} />
-                  <AvatarFallback>{resource.name?.substring(0, 2).toUpperCase()}</AvatarFallback>
-                </Avatar>
-                <div>
-                  <CardTitle className="text-sm font-medium">{resource.name}</CardTitle>
-                  <p className="text-xs text-muted-foreground">{resource.role}</p>
-                </div>
-              </div>
-              <Badge
-                variant="outline"
-                className={cn(
-                  resource.status === 'available' && 'border-teal-500 text-teal-500',
-                  resource.status === 'healthy' && 'border-green-500 text-green-500',
-                  resource.status === 'at_capacity' && 'border-amber-500 text-amber-500',
-                  resource.status === 'over_allocated' && 'border-red-500 text-red-500'
-                )}
-              >
-                {resource.allocation}%
-              </Badge>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-2">
-              <div className="h-2 bg-muted rounded-full overflow-hidden">
-                <div
-                  className={cn(
-                    'h-full rounded-full transition-all',
-                    resource.allocation <= 80 && 'bg-teal-500',
-                    resource.allocation > 80 && resource.allocation <= 100 && 'bg-amber-500',
-                    resource.allocation > 100 && 'bg-red-500'
-                  )}
-                  style={{ width: `${Math.min(resource.allocation, 100)}%` }}
-                />
-              </div>
-              <p className="text-xs text-muted-foreground">
-                {resource.assignments.length} active assignment{resource.assignments.length !== 1 ? 's' : ''}
-              </p>
-            </div>
-          </CardContent>
-        </Card>
+        <ResourceCard key={resource.id} resource={resource} projects={projects} onClick={() => onResourceClick(resource)} />
       ))}
     </div>
   );
 }
 
-// Table View
+// Resource Card - V5 Design
+function ResourceCard({ resource, projects, onClick }: { resource: ResourceMetric; projects: CapacityProject[]; onClick: () => void }) {
+  const division = (resource.division || 'Delivery') as keyof typeof divisionColors;
+  const divColor = divisionColors[division] || divisionColors.Delivery;
+  const initials = resource.name?.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'NA';
+  
+  const primaryProject = resource.assignments[0]?.project_id 
+    ? projects.find(p => p.id === resource.assignments[0]?.project_id)
+    : null;
+
+  return (
+    <div 
+      onClick={onClick}
+      className="bg-card border border-border rounded-lg p-4 hover:border-border-strong hover:shadow-sm transition-all cursor-pointer"
+    >
+      <div className="flex items-center gap-3">
+        {/* Avatar */}
+        <div className={cn('w-10 h-10 rounded-full flex items-center justify-center text-sm font-semibold', divColor.bg, divColor.text)}>
+          {initials}
+        </div>
+        
+        {/* Info */}
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-semibold text-foreground truncate">{resource.name}</p>
+          <p className="text-xs text-muted-foreground truncate">{resource.role}</p>
+        </div>
+        
+        {/* 360° button */}
+        <button className="text-[10px] text-muted-foreground border border-border rounded px-1.5 py-0.5 hover:border-[#2563eb] hover:text-[#2563eb] transition-colors">
+          360°
+        </button>
+        
+        {/* Allocation */}
+        <div className="text-right">
+          <p className={cn(
+            'text-lg font-bold',
+            resource.allocation > 100 ? 'text-[#dc2626]' :
+            resource.allocation > 80 ? 'text-[#b45309]' : 'text-[#0d9488]'
+          )}>
+            {resource.allocation}%
+          </p>
+          <p className="text-[10px] text-muted-foreground">Allocated</p>
+        </div>
+      </div>
+      
+      {/* Project Tags */}
+      <div className="flex gap-1.5 mt-3 flex-wrap">
+        {primaryProject ? (
+          <span 
+            className="text-[11px] font-semibold text-white px-2.5 py-1 rounded"
+            style={{ background: projectColors[0] }}
+          >
+            {primaryProject.code || primaryProject.name?.substring(0, 3).toUpperCase()}
+          </span>
+        ) : (
+          <span className="text-[11px] font-semibold text-white px-2.5 py-1 rounded bg-muted-foreground">
+            Unassigned
+          </span>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Table View with Division Badges
+// ─────────────────────────────────────────────────────────────────────────────
 function TableView({ resources, projects, onResourceClick }: { resources: ResourceMetric[]; projects: CapacityProject[]; onResourceClick: (r: ResourceMetric) => void }) {
   const getProjectName = (projectId: string) => projects.find(p => p.id === projectId)?.name || 'Unknown';
   
   return (
-    <div className="border rounded-lg overflow-hidden">
+    <div className="bg-card border border-border rounded-lg overflow-hidden">
       <table className="w-full">
         <thead className="bg-muted/50">
           <tr>
-            <th className="text-left p-3 text-sm font-medium">Resource</th>
-            <th className="text-left p-3 text-sm font-medium">Role</th>
-            <th className="text-left p-3 text-sm font-medium">Division</th>
-            <th className="text-left p-3 text-sm font-medium">Projects</th>
-            <th className="text-center p-3 text-sm font-medium">Allocation</th>
-            <th className="text-center p-3 text-sm font-medium">Status</th>
+            <th className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Name</th>
+            <th className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Role</th>
+            <th className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Division</th>
+            <th className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Primary Project</th>
+            <th className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Allocation</th>
+            <th className="text-center px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Assignments</th>
+            <th className="text-center px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Actions</th>
           </tr>
         </thead>
         <tbody>
-          {resources.map((resource) => (
-            <tr 
-              key={resource.id} 
-              className="border-t hover:bg-muted/30 cursor-pointer"
-              onClick={() => onResourceClick(resource)}
-            >
-              <td className="p-3">
-                <div className="flex items-center gap-2">
-                  <Avatar className="h-8 w-8">
-                    <AvatarImage src={resource.avatar_url} />
-                    <AvatarFallback>{resource.name?.substring(0, 2).toUpperCase()}</AvatarFallback>
-                  </Avatar>
-                  <span className="font-medium text-sm">{resource.name}</span>
-                </div>
-              </td>
-              <td className="p-3 text-sm text-muted-foreground">{resource.role}</td>
-              <td className="p-3 text-sm text-muted-foreground">{resource.division}</td>
-              <td className="p-3 text-sm">
-                {resource.assignments.length > 0 
-                  ? resource.assignments.map(a => getProjectName(a.project_id)).join(', ')
-                  : <span className="text-muted-foreground">None</span>
-                }
-              </td>
-              <td className="p-3 text-center">
-                <Badge variant="outline" className={cn(
-                  resource.allocation <= 80 && 'border-teal-500 text-teal-500',
-                  resource.allocation > 80 && resource.allocation <= 100 && 'border-amber-500 text-amber-500',
-                  resource.allocation > 100 && 'border-red-500 text-red-500'
-                )}>
-                  {resource.allocation}%
-                </Badge>
-              </td>
-              <td className="p-3 text-center">
-                <Badge className={cn(
-                  'capitalize',
-                  resource.status === 'available' && 'bg-teal-500/10 text-teal-600 hover:bg-teal-500/20',
-                  resource.status === 'healthy' && 'bg-green-500/10 text-green-600 hover:bg-green-500/20',
-                  resource.status === 'at_capacity' && 'bg-amber-500/10 text-amber-600 hover:bg-amber-500/20',
-                  resource.status === 'over_allocated' && 'bg-red-500/10 text-red-600 hover:bg-red-500/20'
-                )}>
-                  {resource.status?.replace('_', ' ')}
-                </Badge>
-              </td>
-            </tr>
-          ))}
+          {resources.map((resource) => {
+            const division = (resource.division || 'Delivery') as keyof typeof divisionColors;
+            const divColor = divisionColors[division] || divisionColors.Delivery;
+            const initials = resource.name?.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'NA';
+            const primaryProject = resource.assignments[0]?.project_id ? getProjectName(resource.assignments[0]?.project_id) : '-';
+            
+            return (
+              <tr 
+                key={resource.id} 
+                className="border-t border-border hover:bg-muted/30 cursor-pointer"
+                onClick={() => onResourceClick(resource)}
+              >
+                <td className="px-4 py-3">
+                  <div className="flex items-center gap-3">
+                    <div className={cn('w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold', divColor.bg, divColor.text)}>
+                      {initials}
+                    </div>
+                    <span className="text-sm font-medium text-foreground">{resource.name}</span>
+                  </div>
+                </td>
+                <td className="px-4 py-3 text-sm text-muted-foreground">{resource.role}</td>
+                <td className="px-4 py-3">
+                  <span className={cn('text-[11px] font-semibold px-2 py-1 rounded uppercase', divColor.badge)}>
+                    {division}
+                  </span>
+                </td>
+                <td className="px-4 py-3 text-sm text-foreground">{primaryProject}</td>
+                <td className="px-4 py-3">
+                  <div className="flex items-center gap-2.5">
+                    <span className="text-sm font-semibold min-w-[40px]">{resource.allocation}%</span>
+                    <div className="w-20 h-1.5 bg-muted rounded-full overflow-hidden">
+                      <div 
+                        className={cn(
+                          'h-full rounded-full',
+                          resource.allocation > 100 ? 'bg-[#dc2626]' :
+                          resource.allocation > 80 ? 'bg-[#d97706]' : 'bg-[#0d9488]'
+                        )}
+                        style={{ width: `${Math.min(resource.allocation, 100)}%` }}
+                      />
+                    </div>
+                  </div>
+                </td>
+                <td className="px-4 py-3 text-center text-sm text-muted-foreground">{resource.assignments.length}</td>
+                <td className="px-4 py-3">
+                  <div className="flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100">
+                    <button className="w-7 h-7 rounded flex items-center justify-center text-muted-foreground hover:bg-muted hover:text-foreground">
+                      <Eye className="h-4 w-4" />
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </div>
   );
 }
 
-// Timeline View (Heatmap)
-function TimelineView({ resources }: { resources: ResourceMetric[] }) {
-  const weeks = ['W1', 'W2', 'W3', 'W4', 'W5', 'W6', 'W7', 'W8'];
+// ─────────────────────────────────────────────────────────────────────────────
+// Timeline View with Monthly Columns
+// ─────────────────────────────────────────────────────────────────────────────
+function TimelineView({ resources, period }: { resources: ResourceMetric[]; period: PeriodType }) {
+  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
   
   return (
-    <div className="border rounded-lg overflow-hidden">
-      <table className="w-full">
-        <thead className="bg-muted/50">
-          <tr>
-            <th className="text-left p-3 text-sm font-medium w-48">Resource</th>
-            {weeks.map(week => (
-              <th key={week} className="text-center p-3 text-sm font-medium">{week}</th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {resources.map((resource) => (
-            <tr key={resource.id} className="border-t">
-              <td className="p-3">
-                <div className="flex items-center gap-2">
-                  <Avatar className="h-6 w-6">
-                    <AvatarFallback className="text-xs">{resource.name?.substring(0, 2).toUpperCase()}</AvatarFallback>
-                  </Avatar>
-                  <span className="text-sm">{resource.name}</span>
-                </div>
-              </td>
-              {weeks.map((week, i) => {
-                const allocation = Math.min(100, resource.allocation + (Math.random() * 20 - 10));
-                return (
-                  <td key={week} className="p-1">
-                    <div 
-                      className={cn(
-                        'h-8 rounded flex items-center justify-center text-xs font-medium',
-                        allocation === 0 && 'bg-gray-100 text-gray-400',
-                        allocation > 0 && allocation <= 50 && 'bg-teal-100 text-teal-700',
-                        allocation > 50 && allocation <= 80 && 'bg-teal-200 text-teal-800',
-                        allocation > 80 && allocation <= 100 && 'bg-amber-200 text-amber-800',
-                        allocation > 100 && 'bg-red-200 text-red-800'
-                      )}
-                    >
-                      {Math.round(allocation)}%
-                    </div>
-                  </td>
-                );
-              })}
-            </tr>
+    <div className="bg-card border border-border rounded-lg overflow-hidden">
+      {/* Header */}
+      <div className="flex bg-muted/50 border-b border-border sticky top-0 z-10">
+        <div className="w-52 px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider border-r border-border shrink-0">
+          Resource
+        </div>
+        <div className="flex-1 flex">
+          {months.map((month, i) => (
+            <div 
+              key={month} 
+              className={cn(
+                'flex-1 px-2 py-3 text-center text-[11px] font-semibold text-muted-foreground border-r border-border last:border-r-0 min-w-20',
+                i === 0 && 'bg-[#2563eb]/5 text-[#2563eb]'
+              )}
+            >
+              {month}
+            </div>
           ))}
-        </tbody>
-      </table>
-    </div>
-  );
-}
-
-// Assignments View (Gantt-style)
-function AssignmentsView({ resources }: { resources: ResourceMetric[] }) {
-  return (
-    <div className="space-y-4">
-      {resources.filter(r => r.assignments.length > 0).map((resource) => (
-        <Card key={resource.id}>
-          <CardHeader className="py-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <Avatar className="h-8 w-8">
-                  <AvatarFallback>{resource.name?.substring(0, 2).toUpperCase()}</AvatarFallback>
-                </Avatar>
+        </div>
+      </div>
+      
+      {/* Body */}
+      <div className="max-h-[500px] overflow-y-auto">
+        {resources.map((resource) => {
+          const division = (resource.division || 'Delivery') as keyof typeof divisionColors;
+          const divColor = divisionColors[division] || divisionColors.Delivery;
+          const initials = resource.name?.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'NA';
+          
+          return (
+            <div key={resource.id} className="flex border-b border-border last:border-b-0 hover:bg-muted/20">
+              <div className="w-52 px-4 py-3 flex items-center gap-3 border-r border-border shrink-0">
+                <div className={cn('w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold', divColor.bg, divColor.text)}>
+                  {initials}
+                </div>
                 <div>
-                  <CardTitle className="text-sm">{resource.name}</CardTitle>
+                  <p className="text-sm font-medium text-foreground">{resource.name}</p>
                   <p className="text-xs text-muted-foreground">{resource.role}</p>
                 </div>
               </div>
-              <Badge variant="outline">{resource.allocation}%</Badge>
+              <div className="flex-1 flex">
+                {months.map((month, i) => {
+                  // Generate random allocation for demo
+                  const alloc = Math.floor(70 + Math.random() * 50);
+                  return (
+                    <div 
+                      key={month}
+                      className={cn(
+                        'flex-1 px-2 py-2.5 flex items-center justify-center border-r border-border last:border-r-0 min-w-20',
+                        i === 0 && 'bg-[#2563eb]/5'
+                      )}
+                    >
+                      <span className={cn(
+                        'text-[11px] font-semibold px-2.5 py-1 rounded',
+                        alloc > 100 ? 'bg-[#dc2626]/10 text-[#dc2626]' :
+                        alloc > 80 ? 'bg-[#d97706]/10 text-[#d97706]' : 'bg-[#0d9488]/10 text-[#0d9488]'
+                      )}>
+                        {alloc}%
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
-          </CardHeader>
-          <CardContent className="pt-0">
-            <div className="space-y-2">
-              {resource.assignments.map((assignment) => (
-                <div key={assignment.id} className="flex items-center gap-3">
-                  <div className="w-24 text-xs text-muted-foreground">
-                    {assignment.allocation_percentage}%
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Assignments View (Gantt)
+// ─────────────────────────────────────────────────────────────────────────────
+function AssignmentsView({ resources, projects }: { resources: ResourceMetric[]; projects: CapacityProject[] }) {
+  const weeks = ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5'];
+  
+  return (
+    <div className="space-y-3">
+      {/* Scenario Panel */}
+      <div className="bg-card border border-border rounded-lg p-4 flex items-center justify-between flex-wrap gap-3">
+        <div className="flex items-center gap-3">
+          <span className="text-[11px] font-semibold px-2.5 py-1 rounded bg-[#0d9488]/10 text-[#0d9488] uppercase">Active</span>
+          <span className="text-sm font-semibold text-foreground">Current Plan - Q1 2025</span>
+        </div>
+        <div className="flex gap-2">
+          <Button variant="outline" size="sm" className="gap-2">
+            <Plus className="h-3.5 w-3.5" />
+            New Scenario
+          </Button>
+          <Button variant="outline" size="sm" className="gap-2">
+            <Copy className="h-3.5 w-3.5" />
+            Compare
+          </Button>
+        </div>
+      </div>
+      
+      {/* Navigation */}
+      <div className="flex items-center justify-between flex-wrap gap-3">
+        <div className="flex items-center gap-2">
+          <button className="w-8 h-8 border border-border rounded-md bg-card text-muted-foreground hover:text-foreground flex items-center justify-center">
+            <ChevronLeft className="h-4 w-4" />
+          </button>
+          <button className="w-8 h-8 border border-border rounded-md bg-card text-muted-foreground hover:text-foreground flex items-center justify-center">
+            <ChevronRight className="h-4 w-4" />
+          </button>
+          <span className="text-sm font-semibold text-foreground px-2 min-w-32 text-center">January 2025</span>
+          <Button variant="outline" size="sm">Today</Button>
+        </div>
+        <Button size="sm" className="gap-2 bg-[#2563eb] hover:bg-[#1d4ed8]">
+          <Plus className="h-3.5 w-3.5" />
+          Add Assignment
+        </Button>
+      </div>
+      
+      {/* Gantt Chart */}
+      <div className="bg-card border border-border rounded-lg overflow-hidden">
+        {/* Header */}
+        <div className="flex bg-muted/50 border-b border-border sticky top-0 z-10">
+          <div className="w-56 px-4 py-2.5 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider border-r border-border shrink-0">
+            Resource
+          </div>
+          <div className="flex-1 flex overflow-x-auto">
+            {weeks.map((week, i) => (
+              <div key={week} className="min-w-36 flex-1 border-r border-border last:border-r-0">
+                <div className={cn(
+                  'px-2 py-2 text-center text-[11px] font-semibold text-muted-foreground border-b border-border',
+                  i === 0 && 'bg-[#2563eb]/5 text-[#2563eb]'
+                )}>
+                  {week}
+                </div>
+                <div className="flex border-b border-border">
+                  {[29, 30, 31, 1, 2, 3, 4].map((day, di) => (
+                    <div 
+                      key={di} 
+                      className={cn(
+                        'flex-1 px-0.5 py-1 text-[9px] text-center text-muted-foreground',
+                        (di === 5 || di === 6) && 'bg-muted/50'
+                      )}
+                    >
+                      {day}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+        
+        {/* Body */}
+        <div className="max-h-[480px] overflow-y-auto">
+          {resources.slice(0, 8).map((resource) => {
+            const division = (resource.division || 'Delivery') as keyof typeof divisionColors;
+            const divColor = divisionColors[division] || divisionColors.Delivery;
+            const initials = resource.name?.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'NA';
+            
+            return (
+              <div key={resource.id} className="flex border-b border-border last:border-b-0 min-h-[60px] hover:bg-muted/20">
+                <div className="w-56 px-4 py-2.5 flex items-start gap-3 border-r border-border shrink-0">
+                  <div className={cn('w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold shrink-0', divColor.bg, divColor.text)}>
+                    {initials}
                   </div>
-                  <div className="flex-1 h-6 bg-blue-500/20 rounded flex items-center px-2">
-                    <span className="text-xs font-medium text-blue-700">
-                      {assignment.projects?.name || 'Project'}
+                  <div>
+                    <p className="text-sm font-medium text-foreground">{resource.name}</p>
+                    <p className="text-[11px] text-muted-foreground">{resource.role}</p>
+                    <span className={cn(
+                      'text-[10px] font-semibold mt-1 inline-block',
+                      resource.allocation > 100 ? 'text-[#dc2626]' :
+                      resource.allocation > 80 ? 'text-[#d97706]' : 'text-[#0d9488]'
+                    )}>
+                      {resource.allocation}%
                     </span>
                   </div>
                 </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      ))}
-      {resources.filter(r => r.assignments.length > 0).length === 0 && (
-        <div className="text-center py-12 text-muted-foreground">
-          No assignments found
-        </div>
-      )}
-    </div>
-  );
-}
-
-// Leveling View
-function LevelingView({ resources, recommendations }: { resources: ResourceMetric[]; recommendations: AiRecommendation[] }) {
-  const overAllocated = resources.filter(r => r.status === 'over_allocated');
-  
-  return (
-    <div className="grid grid-cols-2 gap-6">
-      <div>
-        <h3 className="font-medium mb-4 flex items-center gap-2">
-          <AlertTriangle className="h-4 w-4 text-red-500" />
-          Over-allocated Resources ({overAllocated.length})
-        </h3>
-        <div className="space-y-3">
-          {overAllocated.map((resource) => (
-            <Card key={resource.id} className="border-red-200">
-              <CardContent className="py-3">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Avatar className="h-8 w-8">
-                      <AvatarFallback>{resource.name?.substring(0, 2).toUpperCase()}</AvatarFallback>
-                    </Avatar>
-                    <div>
-                      <p className="text-sm font-medium">{resource.name}</p>
-                      <p className="text-xs text-muted-foreground">{resource.role}</p>
+                <div className="flex-1 flex relative">
+                  {weeks.map((week, i) => (
+                    <div key={week} className="min-w-36 flex-1 border-r border-border last:border-r-0 p-1.5">
+                      {/* Gantt bar */}
+                      {i < 4 && (
+                        <div 
+                          className="h-6 rounded text-[10px] font-medium text-white flex items-center px-2 cursor-grab hover:translate-y-[-1px] hover:shadow-md transition-all truncate"
+                          style={{ background: projectColors[i % projectColors.length] }}
+                        >
+                          Project {i + 1}
+                        </div>
+                      )}
                     </div>
+                  ))}
+                  {/* Capacity indicator */}
+                  <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-muted">
+                    <div 
+                      className={cn(
+                        'h-full',
+                        resource.allocation > 100 ? 'bg-[#dc2626]' :
+                        resource.allocation > 80 ? 'bg-[#d97706]' : 'bg-[#0d9488]'
+                      )}
+                      style={{ width: `${Math.min(resource.allocation, 100)}%` }}
+                    />
                   </div>
-                  <Badge variant="destructive">{resource.allocation}%</Badge>
                 </div>
-              </CardContent>
-            </Card>
-          ))}
-          {overAllocated.length === 0 && (
-            <p className="text-sm text-muted-foreground">No over-allocated resources</p>
-          )}
+              </div>
+            );
+          })}
         </div>
       </div>
-      <div>
-        <h3 className="font-medium mb-4 flex items-center gap-2">
-          <Bot className="h-4 w-4 text-blue-500" />
-          AI Recommendations ({recommendations.length})
-        </h3>
-        <div className="space-y-3">
-          {recommendations.slice(0, 5).map((rec) => (
-            <RecommendationCard key={rec.id} recommendation={rec} />
-          ))}
-          {recommendations.length === 0 && (
-            <p className="text-sm text-muted-foreground">No recommendations at this time</p>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Leveling View with AI Banner
+// ─────────────────────────────────────────────────────────────────────────────
+function LevelingView({ resources, recommendations }: { resources: ResourceMetric[]; recommendations: AiRecommendation[] }) {
+  const [selectedResource, setSelectedResource] = useState<ResourceMetric | null>(null);
+  
+  return (
+    <div className="space-y-5">
+      {/* AI Banner */}
+      <div className="flex items-center gap-4 p-5 rounded-xl text-white" style={{ background: 'linear-gradient(135deg, #2563eb 0%, #1e40af 100%)' }}>
+        <div className="w-12 h-12 rounded-lg bg-white/15 flex items-center justify-center shrink-0">
+          <Sparkles className="h-6 w-6" />
+        </div>
+        <div className="flex-1">
+          <h3 className="text-base font-semibold mb-1">AI Resource Leveling</h3>
+          <p className="text-sm opacity-90">
+            <strong>{resources.length} resources</strong> have available capacity this period. Start the wizard to optimally assign them to open work items.
+          </p>
+        </div>
+        <Button variant="secondary" size="sm" className="gap-2 bg-white text-[#2563eb] hover:bg-white/90">
+          <Play className="h-4 w-4" />
+          Start Wizard
+        </Button>
+      </div>
+      
+      {/* Toolbar */}
+      <div className="bg-card border border-border rounded-lg p-4 flex items-center justify-between flex-wrap gap-3">
+        <div className="flex items-center gap-3">
+          <span className="text-sm text-muted-foreground font-medium">Release Version:</span>
+          <Select defaultValue="">
+            <SelectTrigger className="w-48 h-9">
+              <SelectValue placeholder="Select Release..." />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="r1">Release 2025.1</SelectItem>
+              <SelectItem value="r2">Release 2025.2</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <Select defaultValue="under80">
+          <SelectTrigger className="w-44 h-9">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="under80">Under-allocated (&lt;80%)</SelectItem>
+            <SelectItem value="all">All Resources</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+      
+      {/* Two-Column Layout */}
+      <div className="grid grid-cols-[320px_1fr] gap-5 min-h-[500px]">
+        {/* Queue Panel */}
+        <div className="bg-card border border-border rounded-xl overflow-hidden">
+          <div className="px-5 py-4 border-b border-border flex items-center justify-between">
+            <h3 className="text-sm font-semibold text-foreground">Resources to Level</h3>
+            <span className="text-xs text-muted-foreground bg-muted px-2.5 py-1 rounded-full">{resources.length} remaining</span>
+          </div>
+          <div className="max-h-[450px] overflow-y-auto">
+            {resources.map((resource) => {
+              const division = (resource.division || 'Delivery') as keyof typeof divisionColors;
+              const divColor = divisionColors[division] || divisionColors.Delivery;
+              const initials = resource.name?.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'NA';
+              const freeCapacity = 100 - resource.allocation;
+              
+              return (
+                <div 
+                  key={resource.id}
+                  onClick={() => setSelectedResource(resource)}
+                  className={cn(
+                    'flex items-center gap-3 px-5 py-3.5 border-b border-border cursor-pointer transition-colors',
+                    selectedResource?.id === resource.id 
+                      ? 'bg-[#2563eb]/5 border-l-[3px] border-l-[#2563eb]' 
+                      : 'hover:bg-muted/50'
+                  )}
+                >
+                  <div className={cn('w-9 h-9 rounded-full flex items-center justify-center text-xs font-semibold shrink-0', divColor.bg, divColor.text)}>
+                    {initials}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-foreground truncate">{resource.name}</p>
+                    <p className="text-[11px] text-muted-foreground truncate">{resource.role}</p>
+                  </div>
+                  <span className="text-xs font-semibold px-2 py-1 rounded-full bg-[#0d9488]/10 text-[#0d9488]">
+                    {freeCapacity}% free
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+        
+        {/* Detail Panel */}
+        <div className="bg-card border border-border rounded-xl overflow-hidden">
+          {!selectedResource ? (
+            <div className="flex flex-col items-center justify-center h-full min-h-[400px] text-muted-foreground gap-4">
+              <Clock className="h-12 w-12 opacity-50" />
+              <p className="text-sm">Select a resource from the queue to begin assignment</p>
+            </div>
+          ) : (
+            <div className="p-6">
+              <div className="bg-muted/50 rounded-lg p-5 flex items-center gap-4 mb-6">
+                <div className={cn('w-14 h-14 rounded-full flex items-center justify-center text-lg font-bold', 
+                  divisionColors[(selectedResource.division || 'Delivery') as keyof typeof divisionColors]?.bg,
+                  divisionColors[(selectedResource.division || 'Delivery') as keyof typeof divisionColors]?.text
+                )}>
+                  {selectedResource.name?.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase()}
+                </div>
+                <div className="flex-1">
+                  <p className="text-base font-semibold text-foreground">{selectedResource.name}</p>
+                  <p className="text-sm text-muted-foreground">{selectedResource.role}</p>
+                </div>
+                <div className="text-center">
+                  <p className="text-2xl font-bold text-[#0d9488]">{100 - selectedResource.allocation}%</p>
+                  <p className="text-xs text-muted-foreground">Available</p>
+                </div>
+              </div>
+              <p className="text-sm text-muted-foreground text-center">Select work items to assign to this resource</p>
+            </div>
           )}
         </div>
       </div>
@@ -600,113 +1003,236 @@ function LevelingView({ resources, recommendations }: { resources: ResourceMetri
   );
 }
 
-// Recommendation Card
-function RecommendationCard({ recommendation }: { recommendation: AiRecommendation }) {
+// ─────────────────────────────────────────────────────────────────────────────
+// Scenarios View
+// ─────────────────────────────────────────────────────────────────────────────
+function ScenariosView() {
+  const scenarios = [
+    { id: 'SCN-2025-001', name: 'Current Plan - Q1 2025', version: 'v1.0', status: 'ACTIVE', created: '2025-01-02', resources: 26 },
+    { id: 'SCN-2025-001-S1', name: '↳ Pre-reorg', version: 'v1.0-s1', status: 'SNAPSHOT', created: '2025-01-05', resources: null },
+    { id: 'SCN-2025-002', name: 'Q2 Hiring Plan', version: 'v1.0', status: 'DRAFT', created: '2025-01-10', resources: 30 },
+    { id: 'SCN-2025-003', name: 'Cost Reduction Model', version: 'v1.0', status: 'DRAFT', created: '2025-01-12', resources: 22 },
+  ];
+
   return (
-    <Card className={cn(
-      recommendation.priority === 'high' && 'border-red-200',
-      recommendation.priority === 'medium' && 'border-amber-200',
-      recommendation.priority === 'low' && 'border-blue-200'
-    )}>
-      <CardContent className="py-3">
-        <div className="flex items-start gap-3">
-          <div className={cn(
-            'p-1.5 rounded',
-            recommendation.priority === 'high' && 'bg-red-100 text-red-600',
-            recommendation.priority === 'medium' && 'bg-amber-100 text-amber-600',
-            recommendation.priority === 'low' && 'bg-blue-100 text-blue-600'
-          )}>
-            {recommendation.type === 'rebalance' && <TrendingUp className="h-4 w-4" />}
-            {recommendation.type === 'alert' && <AlertTriangle className="h-4 w-4" />}
-            {recommendation.type === 'hire' && <Users className="h-4 w-4" />}
-            {recommendation.type === 'reassign' && <ChevronRight className="h-4 w-4" />}
+    <div className="space-y-5">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <h2 className="text-xl font-semibold text-foreground">Scenario Management</h2>
+        <Button size="sm" className="gap-2 bg-[#2563eb] hover:bg-[#1d4ed8]">
+          <Plus className="h-4 w-4" />
+          Create Scenario
+        </Button>
+      </div>
+      
+      {/* Two-Column Layout */}
+      <div className="grid grid-cols-[340px_1fr] gap-5">
+        {/* Active Scenario Card */}
+        <div className="bg-card border border-border rounded-xl p-5">
+          <div className="flex items-center justify-between mb-4">
+            <span className="text-[11px] font-semibold px-2.5 py-1 rounded bg-[#0d9488]/10 text-[#0d9488] uppercase">Active</span>
+            <span className="text-xs text-muted-foreground">v1.0</span>
           </div>
-          <div className="flex-1">
-            <p className="text-sm font-medium">{recommendation.title}</p>
-            <p className="text-xs text-muted-foreground mt-1">{recommendation.description}</p>
+          <h3 className="text-base font-semibold text-foreground mb-1">Current Plan - Q1 2025</h3>
+          <p className="text-xs text-muted-foreground mb-4">ID: SCN-2025-001 &nbsp;&nbsp; Created: Jan 2, 2025</p>
+          
+          <div className="bg-muted/50 rounded-lg p-4 grid grid-cols-3 gap-4 mb-4">
+            <div className="text-center">
+              <p className="text-xl font-bold text-foreground">26</p>
+              <p className="text-[10px] text-muted-foreground">Resources</p>
+            </div>
+            <div className="text-center">
+              <p className="text-xl font-bold text-foreground">76%</p>
+              <p className="text-[10px] text-muted-foreground">Avg Util</p>
+            </div>
+            <div className="text-center">
+              <p className="text-xl font-bold text-foreground">42</p>
+              <p className="text-[10px] text-muted-foreground">Assignments</p>
+            </div>
+          </div>
+          
+          <div className="flex gap-2">
+            <Button variant="outline" size="sm" className="flex-1">View Details</Button>
+            <Button variant="outline" size="sm" className="flex-1">Create Snapshot</Button>
           </div>
         </div>
-      </CardContent>
-    </Card>
+        
+        {/* Scenarios Table */}
+        <div className="bg-card border border-border rounded-xl overflow-hidden">
+          <div className="px-5 py-4 border-b border-border flex items-center justify-between">
+            <h3 className="text-sm font-semibold text-foreground">Saved Scenarios & Snapshots</h3>
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input placeholder="Search scenarios..." className="pl-9 w-48 h-8 text-sm" />
+            </div>
+          </div>
+          
+          <table className="w-full">
+            <thead className="bg-muted/30">
+              <tr>
+                <th className="text-left px-5 py-3 text-[11px] font-semibold text-muted-foreground uppercase">ID</th>
+                <th className="text-left px-5 py-3 text-[11px] font-semibold text-muted-foreground uppercase">Name</th>
+                <th className="text-left px-5 py-3 text-[11px] font-semibold text-muted-foreground uppercase">Version</th>
+                <th className="text-left px-5 py-3 text-[11px] font-semibold text-muted-foreground uppercase">Status</th>
+                <th className="text-left px-5 py-3 text-[11px] font-semibold text-muted-foreground uppercase">Created</th>
+                <th className="text-center px-5 py-3 text-[11px] font-semibold text-muted-foreground uppercase">Resources</th>
+                <th className="text-center px-5 py-3 text-[11px] font-semibold text-muted-foreground uppercase">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {scenarios.map((scenario) => (
+                <tr key={scenario.id} className="border-t border-border hover:bg-muted/20">
+                  <td className="px-5 py-3 text-sm text-[#2563eb] font-medium">{scenario.id}</td>
+                  <td className="px-5 py-3 text-sm text-foreground">{scenario.name}</td>
+                  <td className="px-5 py-3 text-sm text-muted-foreground">{scenario.version}</td>
+                  <td className="px-5 py-3">
+                    <span className={cn(
+                      'text-[10px] font-semibold px-2 py-1 rounded uppercase',
+                      scenario.status === 'ACTIVE' && 'bg-[#0d9488]/10 text-[#0d9488]',
+                      scenario.status === 'DRAFT' && 'bg-[#d97706]/10 text-[#d97706]',
+                      scenario.status === 'SNAPSHOT' && 'bg-muted text-muted-foreground'
+                    )}>
+                      {scenario.status}
+                    </span>
+                  </td>
+                  <td className="px-5 py-3 text-sm text-muted-foreground">{scenario.created}</td>
+                  <td className="px-5 py-3 text-sm text-center text-foreground">{scenario.resources ?? '—'}</td>
+                  <td className="px-5 py-3">
+                    <div className="flex items-center justify-center gap-1">
+                      <button className="w-7 h-7 rounded flex items-center justify-center text-muted-foreground hover:bg-muted hover:text-foreground">
+                        <Eye className="h-4 w-4" />
+                      </button>
+                      {scenario.status === 'SNAPSHOT' && (
+                        <button className="w-7 h-7 rounded flex items-center justify-center text-muted-foreground hover:bg-muted hover:text-foreground">
+                          <RotateCcw className="h-4 w-4" />
+                        </button>
+                      )}
+                      {scenario.status === 'DRAFT' && (
+                        <button className="w-7 h-7 rounded flex items-center justify-center text-muted-foreground hover:bg-muted hover:text-foreground">
+                          <Check className="h-4 w-4" />
+                        </button>
+                      )}
+                      <button className="w-7 h-7 rounded flex items-center justify-center text-muted-foreground hover:bg-muted hover:text-foreground">
+                        <Copy className="h-4 w-4" />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
   );
 }
 
-// Resource Drawer Content
-function ResourceDrawerContent({ resource, projects }: { resource: ResourceMetric; projects: CapacityProject[] }) {
-  const getProjectName = (projectId: string) => projects.find(p => p.id === projectId)?.name || 'Unknown';
+// ─────────────────────────────────────────────────────────────────────────────
+// Recommendation Card
+// ─────────────────────────────────────────────────────────────────────────────
+function RecommendationCard({ recommendation }: { recommendation: AiRecommendation }) {
+  const priorityColors = {
+    high: 'border-l-[#dc2626]',
+    medium: 'border-l-[#d97706]',
+    low: 'border-l-[#0d9488]',
+  };
+  
+  const typeIcons = {
+    rebalance: TrendingUp,
+    hire: Users,
+    alert: AlertTriangle,
+    reassign: GanttChart,
+  };
+  
+  const Icon = typeIcons[recommendation.type] || AlertTriangle;
   
   return (
-    <ScrollArea className="h-[calc(100vh-100px)] mt-4">
-      <div className="space-y-6 pr-4">
-        {/* Profile Section */}
-        <div className="flex items-center gap-4">
-          <Avatar className="h-16 w-16">
-            <AvatarImage src={resource.avatar_url} />
-            <AvatarFallback className="text-lg">{resource.name?.substring(0, 2).toUpperCase()}</AvatarFallback>
-          </Avatar>
-          <div>
-            <h3 className="text-lg font-semibold">{resource.name}</h3>
-            <p className="text-sm text-muted-foreground">{resource.role}</p>
-            <Badge className="mt-1" variant="outline">{resource.division}</Badge>
-          </div>
+    <div className={cn('bg-muted/50 border border-border rounded-lg p-4 border-l-4', priorityColors[recommendation.priority])}>
+      <div className="flex items-start gap-3">
+        <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center shrink-0">
+          <Icon className="h-4 w-4 text-muted-foreground" />
         </div>
-
-        {/* Contact Info */}
-        <div className="space-y-2">
-          <div className="flex items-center gap-2 text-sm">
-            <Mail className="h-4 w-4 text-muted-foreground" />
-            <span>{resource.email}</span>
-          </div>
-          <div className="flex items-center gap-2 text-sm">
-            <Briefcase className="h-4 w-4 text-muted-foreground" />
-            <span>{resource.department}</span>
-          </div>
-          <div className="flex items-center gap-2 text-sm">
-            <MapPin className="h-4 w-4 text-muted-foreground" />
-            <span>Onsite</span>
-          </div>
-        </div>
-
-        {/* Utilization */}
-        <div>
-          <h4 className="font-medium mb-2">Current Utilization</h4>
-          <div className="flex items-center gap-4">
-            <div className="flex-1 h-3 bg-muted rounded-full overflow-hidden">
-              <div
-                className={cn(
-                  'h-full rounded-full',
-                  resource.allocation <= 80 && 'bg-teal-500',
-                  resource.allocation > 80 && resource.allocation <= 100 && 'bg-amber-500',
-                  resource.allocation > 100 && 'bg-red-500'
-                )}
-                style={{ width: `${Math.min(resource.allocation, 100)}%` }}
-              />
-            </div>
-            <span className="font-semibold">{resource.allocation}%</span>
-          </div>
-        </div>
-
-        {/* Assignments */}
-        <div>
-          <h4 className="font-medium mb-2">Active Assignments ({resource.assignments.length})</h4>
-          <div className="space-y-2">
-            {resource.assignments.map((assignment) => (
-              <div key={assignment.id} className="p-3 bg-muted/50 rounded-lg">
-                <div className="flex items-center justify-between">
-                  <span className="font-medium text-sm">{getProjectName(assignment.project_id)}</span>
-                  <Badge variant="outline">{assignment.allocation_percentage}%</Badge>
-                </div>
-                <p className="text-xs text-muted-foreground mt-1">
-                  Since {new Date(assignment.start_date).toLocaleDateString()}
-                </p>
-              </div>
-            ))}
-            {resource.assignments.length === 0 && (
-              <p className="text-sm text-muted-foreground">No active assignments</p>
-            )}
+        <div className="flex-1">
+          <h4 className="text-sm font-semibold text-foreground mb-1">{recommendation.title}</h4>
+          <p className="text-xs text-muted-foreground">{recommendation.description}</p>
+          <div className="flex gap-2 mt-3">
+            <Button size="sm" variant="outline" className="h-7 text-xs">Dismiss</Button>
+            <Button size="sm" className="h-7 text-xs bg-[#2563eb] hover:bg-[#1d4ed8]">Apply</Button>
           </div>
         </div>
       </div>
-    </ScrollArea>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Resource Drawer Content
+// ─────────────────────────────────────────────────────────────────────────────
+function ResourceDrawerContent({ resource, projects }: { resource: ResourceMetric; projects: CapacityProject[] }) {
+  const division = (resource.division || 'Delivery') as keyof typeof divisionColors;
+  const divColor = divisionColors[division] || divisionColors.Delivery;
+  const initials = resource.name?.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'NA';
+  
+  return (
+    <div className="mt-6 space-y-6">
+      {/* Header */}
+      <div className="flex items-center gap-4">
+        <div className={cn('w-16 h-16 rounded-full flex items-center justify-center text-xl font-bold', divColor.bg, divColor.text)}>
+          {initials}
+        </div>
+        <div className="flex-1">
+          <h3 className="text-lg font-semibold text-foreground">{resource.name}</h3>
+          <p className="text-sm text-muted-foreground">{resource.role}</p>
+          <span className={cn('text-[11px] font-semibold px-2 py-1 rounded uppercase mt-1 inline-block', divColor.badge)}>
+            {division}
+          </span>
+        </div>
+      </div>
+      
+      {/* Stats */}
+      <div className="grid grid-cols-3 gap-4 p-4 bg-muted/50 rounded-lg">
+        <div className="text-center">
+          <p className={cn(
+            'text-2xl font-bold',
+            resource.allocation > 100 ? 'text-[#dc2626]' :
+            resource.allocation > 80 ? 'text-[#d97706]' : 'text-[#0d9488]'
+          )}>
+            {resource.allocation}%
+          </p>
+          <p className="text-xs text-muted-foreground">Allocated</p>
+        </div>
+        <div className="text-center">
+          <p className="text-2xl font-bold text-foreground">{resource.assignments.length}</p>
+          <p className="text-xs text-muted-foreground">Projects</p>
+        </div>
+        <div className="text-center">
+          <p className="text-2xl font-bold text-[#0d9488]">{Math.max(0, 100 - resource.allocation)}%</p>
+          <p className="text-xs text-muted-foreground">Available</p>
+        </div>
+      </div>
+      
+      {/* Assignments */}
+      <div>
+        <h4 className="text-sm font-semibold text-foreground mb-3">Current Assignments</h4>
+        <div className="space-y-2">
+          {resource.assignments.map((assignment, i) => {
+            const project = projects.find(p => p.id === assignment.project_id);
+            return (
+              <div key={assignment.id} className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg">
+                <div className="w-1 h-8 rounded-full" style={{ background: projectColors[i % projectColors.length] }} />
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-foreground">{project?.name || 'Unknown Project'}</p>
+                  <p className="text-xs text-muted-foreground">{assignment.work_item_type}</p>
+                </div>
+                <span className="text-sm font-semibold text-foreground">{assignment.allocation_percentage}%</span>
+              </div>
+            );
+          })}
+          {resource.assignments.length === 0 && (
+            <p className="text-sm text-muted-foreground text-center py-4">No active assignments</p>
+          )}
+        </div>
+      </div>
+    </div>
   );
 }
