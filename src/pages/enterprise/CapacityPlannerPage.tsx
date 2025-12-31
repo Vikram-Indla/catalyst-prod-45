@@ -19,6 +19,7 @@ import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { Button360 } from '@/components/capacity/Button360';
 import { Resource360Drawer } from '@/components/capacity/resource360/Resource360Drawer';
+import { CapacityAIDrawer } from '@/components/capacity/CapacityAIDrawer';
 
 type PeriodType = 'weekly' | 'monthly' | 'quarterly';
 type GroupByType = 'none' | 'project' | 'division' | 'department';
@@ -325,30 +326,11 @@ export default function CapacityPlannerPage() {
           </SheetContent>
         </Sheet>
 
-        {/* AI Drawer */}
-        <Sheet open={aiDrawerOpen} onOpenChange={setAiDrawerOpen}>
-          <SheetContent className="w-[420px] sm:max-w-[420px]">
-            <SheetHeader>
-              <SheetTitle className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#0d9488] to-[#0f766e] flex items-center justify-center">
-                  <Bot className="h-4 w-4 text-white" />
-                </div>
-                AI Resource Assistant
-              </SheetTitle>
-            </SheetHeader>
-            <ScrollArea className="h-[calc(100vh-120px)] mt-4">
-              <div className="space-y-3 pr-4">
-                {recommendations.length === 0 ? (
-                  <p className="text-sm text-muted-foreground">No recommendations at this time.</p>
-                ) : (
-                  recommendations.map((rec) => (
-                    <RecommendationCard key={rec.id} recommendation={rec} />
-                  ))
-                )}
-              </div>
-            </ScrollArea>
-          </SheetContent>
-        </Sheet>
+        {/* AI Drawer - New Chat-based Interface */}
+        <CapacityAIDrawer 
+          isOpen={aiDrawerOpen} 
+          onClose={() => setAiDrawerOpen(false)} 
+        />
 
         {/* Add Resource Modal */}
         <Dialog open={resourceModalOpen} onOpenChange={setResourceModalOpen}>
@@ -432,7 +414,7 @@ export default function CapacityPlannerPage() {
           <div className="absolute inset-[-4px] rounded-full bg-[#0d9488]/25 animate-ping" style={{ animationDuration: '2.5s' }} />
           <button
             onClick={() => setAiDrawerOpen(true)}
-            className="relative w-[52px] h-[52px] rounded-full bg-gradient-to-br from-[#0d9488] to-[#0f766e] flex items-center justify-center shadow-lg hover:scale-105 transition-transform cursor-pointer border-0"
+            className="relative w-[52px] h-[52px] rounded-full bg-[#0d9488] flex items-center justify-center shadow-lg hover:scale-105 transition-transform cursor-pointer border-0"
             style={{ boxShadow: '0 4px 16px rgba(13, 148, 136, 0.35)' }}
           >
             <Bot className="h-6 w-6 text-white" />
