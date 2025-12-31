@@ -19,7 +19,8 @@ import {
   EditableOwnerCell,
   EditableQuarterCell,
   EditableDepartmentCell,
-  AssigneeCell
+  AssigneeCell,
+  TypeCell
 } from './cells';
 import { useTableSelection } from './useTableSelection';
 import { useTableSort } from './useTableSort';
@@ -353,6 +354,8 @@ export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableVi
             className="data-[state=checked]:bg-[var(--brand-gold)] data-[state=checked]:border-[var(--brand-gold)]"
           />
         );
+      case 'type':
+        return <TypeCell type="Business Request" />;
       case 'id':
         return <IdCell requestKey={row.request_key || row.id.slice(0, 8)} onClick={(e) => { e.stopPropagation(); onRowClick(row.id); }} />;
       case 'status':
