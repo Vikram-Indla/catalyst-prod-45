@@ -22,7 +22,7 @@ export const ROUTE_REGISTRY: Record<string, RouteConfig> = {
   '/enterprise/okr-hub': { section: 'ENTERPRISE', pageTitle: 'Objectives tree' },
   '/enterprise/okr-tree': { section: 'ENTERPRISE', pageTitle: 'Objective Tree' },
   '/enterprise/okr-heatmap': { section: 'ENTERPRISE', pageTitle: 'OKR Heatmap' },
-  '/enterprise/roadmaps': { section: 'ENTERPRISE', pageTitle: 'Roadmaps' },
+  '/enterprise/roadmaps': { section: 'ENTERPRISE', pageTitle: 'Enterprise Roadmap' },
   '/enterprise/risks': { section: 'ENTERPRISE', pageTitle: 'Risks' },
   '/enterprise/work-tree': { section: 'ENTERPRISE', pageTitle: 'Work Tree' },
   '/enterprise/kanban-boards': { section: 'ENTERPRISE', pageTitle: 'Kanban Boards' },

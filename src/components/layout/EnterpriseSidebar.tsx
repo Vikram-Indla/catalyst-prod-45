@@ -30,7 +30,7 @@ const enterpriseSidebarConfig: SidebarConfig = {
     { id: 'strategy-room', title: 'Strategy Room', path: '/enterprise/strategy-room', icon: Focus, exact: true },
     { id: 'strategic-backlog', title: 'Strategic Backlog', path: '/enterprise/backlog', icon: ListTree, exact: false },
     { id: 'objective-tree', title: 'Objective Tree', path: '/enterprise/okr-hub', icon: Workflow, exact: false },
-    { id: 'roadmaps', title: 'Roadmaps', path: '/enterprise/roadmaps', icon: Map, exact: false },
+    { id: 'roadmaps', title: 'Enterprise Roadmap', path: '/enterprise/roadmaps', icon: Map, exact: false },
     { id: 'risks', title: 'Risks', path: '/enterprise/risks', icon: Blocks, exact: false },
     { id: 'capacity', title: 'Capacity', path: '/enterprise/reports/demand-capacity', icon: UsersIcon, exact: false },
     { id: 'reports', title: 'Reports', path: '/reports-discovery', icon: TrendingUp, exact: false },
