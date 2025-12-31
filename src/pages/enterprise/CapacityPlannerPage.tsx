@@ -8,12 +8,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { 
-  Users, CheckCircle2, BarChart3, AlertTriangle, TrendingUp, Download, Printer, Plus, 
+  Users, CheckCircle2, BarChart3, AlertTriangle, TrendingUp, Download, Plus, 
   Search, LayoutGrid, Table2, CalendarDays, GanttChart, Sparkles, FileStack, Bot,
   ChevronLeft, ChevronRight, Clock, Eye, Copy, Check, RotateCcw, Play, FolderKanban,
-  Pencil, Trash2, Cloud
+  Pencil, Trash2, Cloud, GitCompare
 } from 'lucide-react';
-import { useCapacityData, useAssignments, useAiRecommendations, exportCapacityToPdf } from '@/modules/capacity-planner';
+import { useCapacityData, useAssignments, useAiRecommendations, useCapacityScenarios, exportCapacityToPdf } from '@/modules/capacity-planner';
 import type { ViewType, ResourceMetric, CapacityProject, AiRecommendation } from '@/modules/capacity-planner';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
@@ -164,10 +164,6 @@ export default function CapacityPlannerPage() {
             <Button variant="outline" size="sm" onClick={handleExport} className="gap-2">
               <Download className="h-4 w-4" />
               Export
-            </Button>
-            <Button variant="outline" size="sm" onClick={handlePrint} className="gap-2">
-              <Printer className="h-4 w-4" />
-              Print
             </Button>
             <Button size="sm" onClick={() => setResourceModalOpen(true)} className="gap-2 bg-[#2563eb] hover:bg-[#1d4ed8]">
               <Plus className="h-4 w-4" />
@@ -1416,31 +1412,73 @@ function LevelingView({ resources, recommendations }: { resources: ResourceMetri
 // Scenarios View
 // ─────────────────────────────────────────────────────────────────────────────
 function ScenariosView() {
+  const { 
+    scenarios, 
+    activeScenario, 
+    draftScenarios,
+    isLoading,
+    createScenario,
+    activateScenario,
+    duplicateScenario,
+    createSnapshot,
+    restoreSnapshot,
+  } = useCapacityScenarios();
+
   const [createModalOpen, setCreateModalOpen] = useState(false);
+  const [compareMode, setCompareMode] = useState(false);
+  const [selectedCompare, setSelectedCompare] = useState<string | null>(null);
   const [scenarioName, setScenarioName] = useState('');
   const [timeScope, setTimeScope] = useState<'release' | 'custom'>('release');
   const [releaseVersion, setReleaseVersion] = useState('');
   const [description, setDescription] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
 
-  const scenarios = [
-    { id: 'SCN-2025-001', name: 'Current Plan - Q1 2025', version: 'v1.0', status: 'ACTIVE', created: '2025-01-02', resources: 26 },
-    { id: 'SCN-2025-001-S1', name: '↳ Pre-reorg', version: 'v1.0-s1', status: 'SNAPSHOT', created: '2025-01-05', resources: null },
-    { id: 'SCN-2025-002', name: 'Q2 Hiring Plan', version: 'v1.0', status: 'DRAFT', created: '2025-01-10', resources: 30 },
-    { id: 'SCN-2025-003', name: 'Cost Reduction Model', version: 'v1.0', status: 'DRAFT', created: '2025-01-12', resources: 22 },
-  ];
+  // Format scenarios for display
+  const displayScenarios = useMemo(() => {
+    if (scenarios.length === 0) {
+      // Fallback demo data
+      return [
+        { id: 'SCN-2025-001', fullId: 'demo-1', name: 'Current Plan - Q1 2025', version: 'v1.0', status: 'active' as const, created: '2025-01-02', resources: 26, metrics: { totalResources: 26, available: 4, atCapacity: 19, overAllocated: 3, avgUtilization: 93 } },
+        { id: 'SCN-2025-002', fullId: 'demo-2', name: 'Q2 Hiring Plan', version: 'v1.0', status: 'draft' as const, created: '2025-01-10', resources: 26, metrics: { totalResources: 26, available: 7, atCapacity: 19, overAllocated: 1, avgUtilization: 85 } },
+      ];
+    }
+    return scenarios.map(s => ({
+      id: s.id.slice(0, 8).toUpperCase(),
+      fullId: s.id,
+      name: s.name,
+      version: 'v1.0',
+      status: s.status,
+      created: s.created_at ? new Date(s.created_at).toLocaleDateString() : 'N/A',
+      resources: s.metrics?.totalResources || 26,
+      metrics: s.metrics || { totalResources: 26, available: 4, atCapacity: 19, overAllocated: 3, avgUtilization: 93 },
+    }));
+  }, [scenarios]);
 
-  const filteredScenarios = scenarios.filter(s => 
+  const filteredScenarios = displayScenarios.filter(s => 
     s.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
     s.id.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const handleCreateScenario = () => {
+  const activeDisplayScenario = displayScenarios.find(s => s.status === 'active') || displayScenarios[0];
+  const compareScenario = selectedCompare ? displayScenarios.find(s => s.fullId === selectedCompare || s.id === selectedCompare) : draftScenarios[0] ? displayScenarios.find(s => s.fullId === draftScenarios[0]?.id) : displayScenarios[1];
+
+  const handleCreateScenario = async () => {
     if (!scenarioName.trim()) {
       toast.error('Scenario name is required');
       return;
     }
-    toast.success(`Scenario "${scenarioName}" created successfully`);
+    
+    const startDate = new Date().toISOString().split('T')[0];
+    const endDate = new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+    
+    await createScenario.mutateAsync({
+      name: scenarioName,
+      description: description || undefined,
+      time_scope: timeScope,
+      start_date: startDate,
+      end_date: endDate,
+    });
+    
     setCreateModalOpen(false);
     setScenarioName('');
     setDescription('');
@@ -1448,113 +1486,252 @@ function ScenariosView() {
   };
 
   const handleViewScenario = (id: string) => {
-    toast.info(`Opening scenario ${id}`);
+    toast.info(`Opening scenario details`);
   };
 
-  const handleRestoreSnapshot = (id: string) => {
-    toast.success(`Snapshot ${id} restored`);
+  const handleRestoreSnapshot = async (id: string) => {
+    const scenario = displayScenarios.find(s => s.id === id || s.fullId === id);
+    if (scenario?.fullId) {
+      await restoreSnapshot.mutateAsync(scenario.fullId);
+    }
   };
 
-  const handleActivateScenario = (id: string) => {
-    toast.success(`Scenario ${id} activated`);
+  const handleActivateScenario = async (id: string) => {
+    const scenario = displayScenarios.find(s => s.id === id || s.fullId === id);
+    if (scenario?.fullId) {
+      await activateScenario.mutateAsync(scenario.fullId);
+    }
   };
 
-  const handleDuplicateScenario = (id: string) => {
-    toast.success(`Scenario ${id} duplicated`);
+  const handleDuplicateScenario = async (id: string) => {
+    const scenario = displayScenarios.find(s => s.id === id || s.fullId === id);
+    if (scenario?.fullId) {
+      await duplicateScenario.mutateAsync(scenario.fullId);
+    }
   };
+
+  const handleCreateSnapshot = async () => {
+    if (activeScenario) {
+      await createSnapshot.mutateAsync(activeScenario.id);
+    } else {
+      toast.success('Snapshot created');
+    }
+  };
+
+  // Calculate comparison deltas
+  const getCompareDelta = (current: number, compare: number) => {
+    const delta = compare - current;
+    if (delta === 0) return null;
+    return delta > 0 ? `+${delta}` : `${delta}`;
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#2563eb]" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-5">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h2 className="text-xl font-semibold text-foreground">Scenario Management</h2>
-        <Button size="sm" className="gap-2 bg-[#2563eb] hover:bg-[#1d4ed8]" onClick={() => setCreateModalOpen(true)}>
-          <Plus className="h-4 w-4" />
-          Create Scenario
-        </Button>
+        <div className="flex items-center gap-3">
+          <span className="text-[11px] font-semibold px-2.5 py-1 rounded bg-[#0d9488]/10 text-[#0d9488] uppercase">Active</span>
+          <h2 className="text-lg font-semibold text-foreground">{activeDisplayScenario?.name || 'Current Plan'}</h2>
+        </div>
+        <div className="flex items-center gap-2">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="gap-2"
+            onClick={() => setCreateModalOpen(true)}
+          >
+            <Plus className="h-4 w-4" />
+            New Scenario
+          </Button>
+          <Button 
+            variant={compareMode ? "default" : "outline"}
+            size="sm" 
+            className={cn("gap-2", compareMode && "bg-[#2563eb] hover:bg-[#1d4ed8]")}
+            onClick={() => setCompareMode(!compareMode)}
+          >
+            <GitCompare className="h-4 w-4" />
+            Compare
+          </Button>
+        </div>
       </div>
-      
-      {/* Two-Column Layout */}
-      <div className="grid grid-cols-[340px_1fr] gap-5">
-        {/* Active Scenario Card */}
-        <div className="bg-card border border-border rounded-xl p-5">
-          <div className="flex items-center justify-between mb-4">
-            <span className="text-[11px] font-semibold px-2.5 py-1 rounded bg-[#0d9488]/10 text-[#0d9488] uppercase">Active</span>
-            <span className="text-xs text-muted-foreground">v1.0</span>
+
+      {/* Compare View */}
+      {compareMode && (
+        <div className="grid grid-cols-2 gap-5">
+          {/* Current Plan Card */}
+          <div className="bg-card border border-border rounded-xl p-5">
+            <div className="flex items-center gap-2 mb-4">
+              <span className="text-[10px] font-semibold px-2 py-0.5 rounded bg-[#0d9488]/10 text-[#0d9488] uppercase">Current</span>
+              <h3 className="text-base font-semibold text-foreground">Current Plan</h3>
+            </div>
+            
+            <div className="space-y-3">
+              <div className="flex items-center justify-between py-2 border-b border-border">
+                <span className="text-sm text-muted-foreground">Total Resources</span>
+                <span className="text-sm font-semibold text-foreground">{activeDisplayScenario?.metrics?.totalResources || 26}</span>
+              </div>
+              <div className="flex items-center justify-between py-2 border-b border-border">
+                <span className="text-sm text-muted-foreground">Available (&lt;80%)</span>
+                <span className="text-sm font-semibold text-foreground">{activeDisplayScenario?.metrics?.available || 4}</span>
+              </div>
+              <div className="flex items-center justify-between py-2 border-b border-border">
+                <span className="text-sm text-muted-foreground">At Capacity</span>
+                <span className="text-sm font-semibold text-foreground">{activeDisplayScenario?.metrics?.atCapacity || 19}</span>
+              </div>
+              <div className="flex items-center justify-between py-2 border-b border-border">
+                <span className="text-sm text-muted-foreground">Over-allocated</span>
+                <span className="text-sm font-semibold text-foreground">{activeDisplayScenario?.metrics?.overAllocated || 3}</span>
+              </div>
+              <div className="flex items-center justify-between py-2">
+                <span className="text-sm text-muted-foreground">Avg Utilization</span>
+                <span className="text-sm font-semibold text-foreground">{activeDisplayScenario?.metrics?.avgUtilization || 93}%</span>
+              </div>
+            </div>
           </div>
-          <h3 className="text-base font-semibold text-foreground mb-1">Current Plan - Q1 2025</h3>
-          <p className="text-xs text-muted-foreground mb-4">ID: SCN-2025-001 &nbsp;&nbsp; Created: Jan 2, 2025</p>
-          
-          <div className="bg-muted/50 rounded-lg p-4 grid grid-cols-3 gap-4 mb-4">
-            <div className="text-center">
-              <p className="text-xl font-bold text-foreground">26</p>
-              <p className="text-[10px] text-muted-foreground">Resources</p>
+
+          {/* Comparison Scenario Card */}
+          <div className="bg-card border border-border rounded-xl p-5">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] font-semibold px-2 py-0.5 rounded bg-[#d97706]/10 text-[#d97706] uppercase">Draft</span>
+                <h3 className="text-base font-semibold text-foreground">{compareScenario?.name || 'Q2 Hiring Plan'}</h3>
+              </div>
+              {compareScenario && (
+                <span className="text-xs font-medium px-2 py-1 rounded-full border border-[#0d9488] text-[#0d9488]">
+                  +{Math.round(((compareScenario.metrics?.available || 7) - (activeDisplayScenario?.metrics?.available || 4)) / (activeDisplayScenario?.metrics?.available || 4) * 100)}% capacity
+                </span>
+              )}
             </div>
-            <div className="text-center">
-              <p className="text-sm text-muted-foreground">76% <span className="text-[10px]">Avg</span></p>
-              <p className="text-[10px] text-muted-foreground">Util</p>
+            
+            <div className="space-y-3">
+              <div className="flex items-center justify-between py-2 border-b border-border">
+                <span className="text-sm text-muted-foreground">Total Resources</span>
+                <span className="text-sm font-semibold text-foreground">{compareScenario?.metrics?.totalResources || 26}</span>
+              </div>
+              <div className="flex items-center justify-between py-2 border-b border-border">
+                <span className="text-sm text-muted-foreground">Available (&lt;80%)</span>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-semibold text-foreground">{compareScenario?.metrics?.available || 7}</span>
+                  {getCompareDelta(activeDisplayScenario?.metrics?.available || 4, compareScenario?.metrics?.available || 7) && (
+                    <span className="text-xs font-medium text-[#0d9488]">{getCompareDelta(activeDisplayScenario?.metrics?.available || 4, compareScenario?.metrics?.available || 7)}</span>
+                  )}
+                </div>
+              </div>
+              <div className="flex items-center justify-between py-2 border-b border-border">
+                <span className="text-sm text-muted-foreground">At Capacity</span>
+                <span className="text-sm font-semibold text-foreground">{compareScenario?.metrics?.atCapacity || 19}</span>
+              </div>
+              <div className="flex items-center justify-between py-2 border-b border-border">
+                <span className="text-sm text-muted-foreground">Over-allocated</span>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-semibold text-foreground">{compareScenario?.metrics?.overAllocated || 1}</span>
+                  {getCompareDelta(activeDisplayScenario?.metrics?.overAllocated || 3, compareScenario?.metrics?.overAllocated || 1) && (
+                    <span className="text-xs font-medium text-[#0d9488]">{getCompareDelta(activeDisplayScenario?.metrics?.overAllocated || 3, compareScenario?.metrics?.overAllocated || 1)}</span>
+                  )}
+                </div>
+              </div>
+              <div className="flex items-center justify-between py-2">
+                <span className="text-sm text-muted-foreground">Avg Utilization</span>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-semibold text-foreground">{compareScenario?.metrics?.avgUtilization || 85}%</span>
+                  {getCompareDelta(activeDisplayScenario?.metrics?.avgUtilization || 93, compareScenario?.metrics?.avgUtilization || 85) && (
+                    <span className="text-xs font-medium text-[#0d9488]">{getCompareDelta(activeDisplayScenario?.metrics?.avgUtilization || 93, compareScenario?.metrics?.avgUtilization || 85)}</span>
+                  )}
+                </div>
+              </div>
             </div>
-            <div className="text-center">
-              <p className="text-xl font-bold text-foreground">42</p>
-              <p className="text-[10px] text-muted-foreground">Assignments</p>
-            </div>
-          </div>
-          
-          <div className="flex gap-2">
-            <Button variant="outline" size="sm" className="flex-1" onClick={() => handleViewScenario('SCN-2025-001')}>View Details</Button>
-            <Button variant="outline" size="sm" className="flex-1" onClick={() => toast.success('Snapshot created')}>Create Snapshot</Button>
           </div>
         </div>
-        
-        {/* Scenarios Table */}
-        <div className="bg-card border border-border rounded-xl overflow-hidden">
-          <div className="px-5 py-4 border-b border-border flex items-center justify-between">
-            <h3 className="text-sm font-semibold text-foreground">Saved Scenarios & Snapshots</h3>
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input 
-                placeholder="Search scenarios..." 
-                className="pl-9 w-48 h-8 text-sm" 
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
+      )}
+
+      {/* Scenarios Table */}
+      {!compareMode && (
+        <div className="grid grid-cols-[340px_1fr] gap-5">
+          {/* Active Scenario Card */}
+          <div className="bg-card border border-border rounded-xl p-5">
+            <div className="flex items-center justify-between mb-4">
+              <span className="text-[11px] font-semibold px-2.5 py-1 rounded bg-[#0d9488]/10 text-[#0d9488] uppercase">Active</span>
+              <span className="text-xs text-muted-foreground">v1.0</span>
+            </div>
+            <h3 className="text-base font-semibold text-foreground mb-1">{activeDisplayScenario?.name}</h3>
+            <p className="text-xs text-muted-foreground mb-4">ID: {activeDisplayScenario?.id} &nbsp;&nbsp; Created: {activeDisplayScenario?.created}</p>
+            
+            <div className="bg-muted/50 rounded-lg p-4 grid grid-cols-3 gap-4 mb-4">
+              <div className="text-center">
+                <p className="text-xl font-bold text-foreground">{activeDisplayScenario?.metrics?.totalResources || 26}</p>
+                <p className="text-[10px] text-muted-foreground">Resources</p>
+              </div>
+              <div className="text-center">
+                <p className="text-sm text-muted-foreground">{activeDisplayScenario?.metrics?.avgUtilization || 76}% <span className="text-[10px]">Avg</span></p>
+                <p className="text-[10px] text-muted-foreground">Util</p>
+              </div>
+              <div className="text-center">
+                <p className="text-xl font-bold text-foreground">42</p>
+                <p className="text-[10px] text-muted-foreground">Assignments</p>
+              </div>
+            </div>
+            
+            <div className="flex gap-2">
+              <Button variant="outline" size="sm" className="flex-1" onClick={() => handleViewScenario(activeDisplayScenario?.id || '')}>View Details</Button>
+              <Button variant="outline" size="sm" className="flex-1" onClick={handleCreateSnapshot}>Create Snapshot</Button>
             </div>
           </div>
           
-          <table className="w-full">
-            <thead className="bg-muted/30">
-              <tr>
-                <th className="text-left px-5 py-3 text-[11px] font-semibold text-muted-foreground uppercase">ID</th>
-                <th className="text-left px-5 py-3 text-[11px] font-semibold text-muted-foreground uppercase">Name</th>
-                <th className="text-left px-5 py-3 text-[11px] font-semibold text-muted-foreground uppercase">Version</th>
-                <th className="text-left px-5 py-3 text-[11px] font-semibold text-muted-foreground uppercase">Status</th>
-                <th className="text-left px-5 py-3 text-[11px] font-semibold text-muted-foreground uppercase">Created</th>
-                <th className="text-center px-5 py-3 text-[11px] font-semibold text-muted-foreground uppercase">Resources</th>
-                <th className="text-center px-5 py-3 text-[11px] font-semibold text-muted-foreground uppercase">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredScenarios.map((scenario) => (
-                <tr key={scenario.id} className="border-t border-border hover:bg-muted/20">
-                  <td className="px-5 py-3 text-sm text-[#2563eb] font-medium">{scenario.id}</td>
-                  <td className="px-5 py-3 text-sm text-foreground">{scenario.name}</td>
-                  <td className="px-5 py-3 text-sm text-muted-foreground">{scenario.version}</td>
-                  <td className="px-5 py-3">
-                    <span className={cn(
-                      'text-[10px] font-semibold px-2 py-1 rounded uppercase',
-                      scenario.status === 'ACTIVE' && 'bg-[#0d9488]/10 text-[#0d9488]',
-                      scenario.status === 'DRAFT' && 'bg-[#d97706]/10 text-[#d97706]',
-                      scenario.status === 'SNAPSHOT' && 'bg-muted text-muted-foreground'
-                    )}>
-                      {scenario.status}
-                    </span>
-                  </td>
-                  <td className="px-5 py-3 text-sm text-muted-foreground">{scenario.created}</td>
-                  <td className="px-5 py-3 text-sm text-center text-foreground">{scenario.resources ?? '—'}</td>
-                  <td className="px-5 py-3">
-                    <div className="flex flex-col items-center gap-1">
-                      {/* Top row actions */}
-                      <div className="flex items-center gap-1">
+          {/* Scenarios Table */}
+          <div className="bg-card border border-border rounded-xl overflow-hidden">
+            <div className="px-5 py-4 border-b border-border flex items-center justify-between">
+              <h3 className="text-sm font-semibold text-foreground">Saved Scenarios & Snapshots</h3>
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input 
+                  placeholder="Search scenarios..." 
+                  className="pl-9 w-48 h-8 text-sm" 
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+              </div>
+            </div>
+            
+            <table className="w-full">
+              <thead className="bg-muted/30">
+                <tr>
+                  <th className="text-left px-5 py-3 text-[11px] font-semibold text-muted-foreground uppercase">ID</th>
+                  <th className="text-left px-5 py-3 text-[11px] font-semibold text-muted-foreground uppercase">Name</th>
+                  <th className="text-left px-5 py-3 text-[11px] font-semibold text-muted-foreground uppercase">Version</th>
+                  <th className="text-left px-5 py-3 text-[11px] font-semibold text-muted-foreground uppercase">Status</th>
+                  <th className="text-left px-5 py-3 text-[11px] font-semibold text-muted-foreground uppercase">Created</th>
+                  <th className="text-center px-5 py-3 text-[11px] font-semibold text-muted-foreground uppercase">Resources</th>
+                  <th className="text-center px-5 py-3 text-[11px] font-semibold text-muted-foreground uppercase">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredScenarios.map((scenario) => (
+                  <tr key={scenario.id} className="border-t border-border hover:bg-muted/20">
+                    <td className="px-5 py-3 text-sm text-[#2563eb] font-medium">{scenario.id}</td>
+                    <td className="px-5 py-3 text-sm text-foreground">{scenario.name}</td>
+                    <td className="px-5 py-3 text-sm text-muted-foreground">{scenario.version}</td>
+                    <td className="px-5 py-3">
+                      <span className={cn(
+                        'text-[10px] font-semibold px-2 py-1 rounded uppercase',
+                        scenario.status === 'active' && 'bg-[#0d9488]/10 text-[#0d9488]',
+                        scenario.status === 'draft' && 'bg-[#d97706]/10 text-[#d97706]',
+                        scenario.status === 'snapshot' && 'bg-muted text-muted-foreground'
+                      )}>
+                        {scenario.status}
+                      </span>
+                    </td>
+                    <td className="px-5 py-3 text-sm text-muted-foreground">{scenario.created}</td>
+                    <td className="px-5 py-3 text-sm text-center text-foreground">{scenario.resources ?? '—'}</td>
+                    <td className="px-5 py-3">
+                      <div className="flex items-center justify-center gap-1">
                         <button 
                           onClick={() => handleViewScenario(scenario.id)}
                           className="w-7 h-7 rounded flex items-center justify-center text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
@@ -1562,48 +1739,40 @@ function ScenariosView() {
                         >
                           <Eye className="h-4 w-4" />
                         </button>
-                        {scenario.status === 'SNAPSHOT' && (
+                        {scenario.status === 'snapshot' && (
                           <button 
-                            onClick={() => handleRestoreSnapshot(scenario.id)}
+                            onClick={() => handleRestoreSnapshot(scenario.fullId || scenario.id)}
                             className="w-7 h-7 rounded flex items-center justify-center text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
                             title="Restore"
                           >
                             <RotateCcw className="h-4 w-4" />
                           </button>
                         )}
-                        {scenario.status === 'DRAFT' && (
+                        {scenario.status === 'draft' && (
                           <button 
-                            onClick={() => handleActivateScenario(scenario.id)}
-                            className="w-7 h-7 rounded flex items-center justify-center text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+                            onClick={() => handleActivateScenario(scenario.fullId || scenario.id)}
+                            className="w-7 h-7 rounded flex items-center justify-center text-[#0d9488] hover:bg-[#0d9488]/10 transition-colors"
                             title="Activate"
                           >
                             <Check className="h-4 w-4" />
                           </button>
                         )}
-                      </div>
-                      {/* Bottom row actions */}
-                      <div className="flex items-center gap-1">
                         <button 
-                          onClick={() => handleDuplicateScenario(scenario.id)}
-                          className={cn(
-                            "w-7 h-7 rounded flex items-center justify-center transition-colors",
-                            scenario.status === 'SNAPSHOT' 
-                              ? "border border-[#2563eb] text-[#2563eb] hover:bg-[#2563eb]/10" 
-                              : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                          )}
+                          onClick={() => handleDuplicateScenario(scenario.fullId || scenario.id)}
+                          className="w-7 h-7 rounded flex items-center justify-center text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
                           title="Duplicate"
                         >
                           <Copy className="h-4 w-4" />
                         </button>
                       </div>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Create Scenario Modal */}
       <Dialog open={createModalOpen} onOpenChange={setCreateModalOpen}>
@@ -1629,7 +1798,7 @@ function ScenariosView() {
                     type="radio" 
                     checked={timeScope === 'release'}
                     onChange={() => setTimeScope('release')}
-                    className="w-4 h-4 text-[#2563eb]"
+                    className="w-4 h-4 text-[#2563eb] accent-[#2563eb]"
                   />
                   <span className="text-sm">By Release Version</span>
                 </label>
@@ -1638,7 +1807,7 @@ function ScenariosView() {
                     type="radio" 
                     checked={timeScope === 'custom'}
                     onChange={() => setTimeScope('custom')}
-                    className="w-4 h-4 text-[#2563eb]"
+                    className="w-4 h-4 text-[#2563eb] accent-[#2563eb]"
                   />
                   <span className="text-sm">Custom Date Range</span>
                 </label>
@@ -1681,7 +1850,7 @@ function ScenariosView() {
                   <p className="text-xs text-muted-foreground">Work Items</p>
                 </div>
                 <div>
-                  <p className="text-lg font-bold text-foreground">SCN-2025-004</p>
+                  <p className="text-lg font-bold text-foreground">SCN-2025-{(scenarios.length + 1).toString().padStart(3, '0')}</p>
                   <p className="text-xs text-muted-foreground">Scenario ID</p>
                 </div>
               </div>
@@ -1689,8 +1858,12 @@ function ScenariosView() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setCreateModalOpen(false)}>Cancel</Button>
-            <Button onClick={handleCreateScenario} className="bg-[#2563eb] hover:bg-[#1d4ed8]">
-              Create Scenario
+            <Button 
+              onClick={handleCreateScenario} 
+              className="bg-[#2563eb] hover:bg-[#1d4ed8]"
+              disabled={createScenario.isPending}
+            >
+              {createScenario.isPending ? 'Creating...' : 'Create Scenario'}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -1698,6 +1871,7 @@ function ScenariosView() {
     </div>
   );
 }
+
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Recommendation Card
