@@ -8,7 +8,7 @@ import { useMemo, useCallback, useState, useEffect } from 'react';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 import { cn } from '@/lib/utils';
 import { Checkbox } from '@/components/ui/checkbox';
-import { ChevronUp, ChevronDown, GripVertical, Pencil, MoreVertical } from 'lucide-react';
+import { ChevronUp, ChevronDown, GripVertical, Pencil } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import { 
@@ -600,13 +600,6 @@ export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableVi
                                     onClick={(e) => { e.stopPropagation(); onRowClick(row.id); }}
                                   >
                                     <Pencil className="h-3.5 w-3.5 text-muted-foreground" />
-                                  </Button>
-                                  <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    className="h-7 w-7 rounded-md hover:bg-muted"
-                                  >
-                                    <MoreVertical className="h-3.5 w-3.5 text-muted-foreground" />
                                   </Button>
                                 </div>
                               </td>
