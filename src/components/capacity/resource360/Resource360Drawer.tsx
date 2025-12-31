@@ -57,25 +57,26 @@ export function Resource360Drawer({ resourceId, onClose }: Resource360DrawerProp
   const inProgressItems = currentItems.filter(i => i.status === 'current').length;
   const upcomingItems = currentItems.filter(i => i.status === 'future').length;
 
+  if (!isOpen) return null;
+
   return (
     <>
       {/* Backdrop Overlay */}
       <div
-        className={cn(
-          "fixed inset-0 bg-black/40 z-50 transition-opacity duration-300",
-          isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
-        )}
+        className="fixed inset-0 bg-black/50 z-[100] animate-in fade-in duration-200"
         onClick={onClose}
+        aria-hidden="true"
       />
 
       {/* Drawer Panel */}
       <div
         className={cn(
-          "fixed top-0 right-0 h-full w-full max-w-[640px] bg-background z-50",
-          "shadow-2xl transition-transform duration-300 ease-out",
-          "flex flex-col overflow-hidden border-l border-border",
-          isOpen ? "translate-x-0" : "translate-x-full"
+          "fixed top-0 right-0 h-full w-full max-w-[640px] bg-background z-[101]",
+          "shadow-2xl flex flex-col overflow-hidden border-l border-border",
+          "animate-in slide-in-from-right duration-300"
         )}
+        role="dialog"
+        aria-modal="true"
       >
         {/* Close Button */}
         <button
