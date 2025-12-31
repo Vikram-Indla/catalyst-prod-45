@@ -10,7 +10,8 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { 
   Users, CheckCircle2, BarChart3, AlertTriangle, TrendingUp, Download, Printer, Plus, 
   Search, LayoutGrid, Table2, CalendarDays, GanttChart, Sparkles, FileStack, Bot,
-  ChevronLeft, ChevronRight, Clock, Eye, Copy, Check, RotateCcw, Play, FolderKanban
+  ChevronLeft, ChevronRight, Clock, Eye, Copy, Check, RotateCcw, Play, FolderKanban,
+  ExternalLink, Trash2
 } from 'lucide-react';
 import { useCapacityData, useAssignments, useAiRecommendations, exportCapacityToPdf } from '@/modules/capacity-planner';
 import type { ViewType, ResourceMetric, CapacityProject, AiRecommendation } from '@/modules/capacity-planner';
@@ -39,11 +40,14 @@ const projectColors = [
 
 export default function CapacityPlannerPage() {
   const { metrics, projects, resources, isLoading } = useCapacityData();
-  const { createAssignment } = useAssignments();
+  const { createAssignment, deleteAssignment } = useAssignments();
   const { recommendations, highPriorityCount } = useAiRecommendations({ 
     resources: metrics.resources, 
     projects 
   });
+  
+  // Edit resource state
+  const [editResourceId, setEditResourceId] = useState<string | null>(null);
 
   // View state
   const [currentView, setCurrentView] = useState<ExtendedViewType>('cards');
@@ -277,7 +281,19 @@ export default function CapacityPlannerPage() {
             />
           )}
           {currentView === 'table' && (
-            <TableView resources={filteredResources} projects={projects} onResourceClick={openResourceDrawer} />
+            <TableView 
+              resources={filteredResources} 
+              projects={projects} 
+              onResourceClick={openResourceDrawer}
+              onEditResource={(id) => setEditResourceId(id)}
+              onDeleteResource={(resource) => {
+                if (window.confirm(`Are you sure you want to remove all assignments for ${resource.name}?`)) {
+                  resource.assignments.forEach((a) => {
+                    deleteAssignment.mutate(a.id);
+                  });
+                }
+              }}
+            />
           )}
           {currentView === 'timeline' && (
             <TimelineView resources={filteredResources} period={period} />
@@ -583,9 +599,17 @@ function ResourceCard({ resource, projects, onClick }: { resource: ResourceMetri
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Table View with Division Badges
+// Table View with Division Badges and Actions
 // ─────────────────────────────────────────────────────────────────────────────
-function TableView({ resources, projects, onResourceClick }: { resources: ResourceMetric[]; projects: CapacityProject[]; onResourceClick: (r: ResourceMetric) => void }) {
+interface TableViewProps {
+  resources: ResourceMetric[];
+  projects: CapacityProject[];
+  onResourceClick: (r: ResourceMetric) => void;
+  onEditResource: (id: string) => void;
+  onDeleteResource: (r: ResourceMetric) => void;
+}
+
+function TableView({ resources, projects, onResourceClick, onEditResource, onDeleteResource }: TableViewProps) {
   const getProjectName = (projectId: string) => projects.find(p => p.id === projectId)?.name || 'Unknown';
   
   return (
@@ -599,7 +623,7 @@ function TableView({ resources, projects, onResourceClick }: { resources: Resour
             <th className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Primary Project</th>
             <th className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Allocation</th>
             <th className="text-center px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Assignments</th>
-            <th className="text-center px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Actions</th>
+            <th className="text-right px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -612,8 +636,7 @@ function TableView({ resources, projects, onResourceClick }: { resources: Resour
             return (
               <tr 
                 key={resource.id} 
-                className="border-t border-border hover:bg-muted/30 cursor-pointer"
-                onClick={() => onResourceClick(resource)}
+                className="group border-t border-border hover:bg-muted/30"
               >
                 <td className="px-4 py-3">
                   <div className="flex items-center gap-3">
@@ -647,9 +670,30 @@ function TableView({ resources, projects, onResourceClick }: { resources: Resour
                 </td>
                 <td className="px-4 py-3 text-center text-sm text-muted-foreground">{resource.assignments.length}</td>
                 <td className="px-4 py-3">
-                  <div className="flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100">
-                    <button className="w-7 h-7 rounded flex items-center justify-center text-muted-foreground hover:bg-muted hover:text-foreground">
-                      <Eye className="h-4 w-4" />
+                  <div className="flex items-center justify-end gap-2">
+                    {/* 360° View Button */}
+                    <button 
+                      onClick={(e) => { e.stopPropagation(); onResourceClick(resource); }}
+                      className="text-[11px] font-medium text-muted-foreground border border-border rounded px-2 py-1 hover:border-[#2563eb] hover:text-[#2563eb] hover:bg-[#2563eb]/5 transition-colors"
+                      title="View 360° details"
+                    >
+                      360°
+                    </button>
+                    {/* Edit Button */}
+                    <button 
+                      onClick={(e) => { e.stopPropagation(); onEditResource(resource.id); }}
+                      className="w-7 h-7 rounded flex items-center justify-center text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+                      title="Edit resource"
+                    >
+                      <ExternalLink className="h-4 w-4" />
+                    </button>
+                    {/* Delete Button */}
+                    <button 
+                      onClick={(e) => { e.stopPropagation(); onDeleteResource(resource); }}
+                      className="w-7 h-7 rounded flex items-center justify-center text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors"
+                      title="Delete resource"
+                    >
+                      <Trash2 className="h-4 w-4" />
                     </button>
                   </div>
                 </td>
