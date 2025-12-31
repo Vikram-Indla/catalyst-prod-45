@@ -28,7 +28,7 @@ import { useKeyboardNavigation } from './useKeyboardNavigation';
 import { DEFAULT_COLUMNS, TableColumn } from './types';
 import { ColumnVisibilityDropdown } from './ColumnVisibilityDropdown';
 import { BulkActionsBar } from './BulkActionsBar';
-import { KeyboardHints } from './KeyboardHints';
+
 import { TablePagination } from './TablePagination';
 import { DeleteConfirmDialog } from './DeleteConfirmDialog';
 import { supabase } from '@/integrations/supabase/client';
@@ -671,8 +671,6 @@ export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableVi
         }}
       />
 
-      {/* Keyboard Hints */}
-      <KeyboardHints />
     </div>
   );
 }
