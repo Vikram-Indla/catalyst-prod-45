@@ -57,6 +57,11 @@ export interface SunburstMetrics {
   totalItems: number;
   totalStoryPoints: number;
   itemsByType: Record<string, number>;
+  itemsByStatus?: {
+    completed: number;
+    in_progress: number;
+    upcoming: number;
+  };
 }
 
 export type DrawerTab = 'hierarchy' | 'sunburst';

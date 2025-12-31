@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { cn } from '@/lib/utils';
-import { PieChart } from 'lucide-react';
+import { PieChart, Info, ChevronDown, ArrowDown } from 'lucide-react';
 import type { SunburstNode, SunburstMetrics } from '@/types/resource360';
 
 interface SunburstViewProps {
@@ -8,6 +8,27 @@ interface SunburstViewProps {
   metrics: SunburstMetrics;
   resourceName: string;
 }
+
+// Catalyst category colors
+const CategoryColors = {
+  enterprise: { bg: '#f0fdf4', border: '#4d8b4d', text: '#166534' },
+  program: { bg: '#eff6ff', border: '#2563eb', text: '#1d4ed8' },
+  project: { bg: '#fef3e3', border: '#8b7355', text: '#92400e' },
+  product: { bg: '#ffffff', border: '#d1d5db', text: '#374151' },
+};
+
+// Work item type colors
+const WorkItemColors: Record<string, { bg: string; text: string }> = {
+  theme: { bg: '#dcfce7', text: '#166534' },
+  objective: { bg: '#d1fae5', text: '#047857' },
+  key_result: { bg: '#fef3c7', text: '#92400e' },
+  epic: { bg: '#dbeafe', text: '#1d4ed8' },
+  feature: { bg: '#ccfbf1', text: '#0d9488' },
+  story: { bg: '#f5f5f4', text: '#57534e' },
+  defect: { bg: '#fee2e2', text: '#dc2626' },
+  incident: { bg: '#ffedd5', text: '#ea580c' },
+  business_request: { bg: '#f3f4f6', text: '#374151' },
+};
 
 export function SunburstView({ data, metrics, resourceName }: SunburstViewProps) {
   const [hoveredSegment, setHoveredSegment] = useState<string | null>(null);
@@ -69,6 +90,162 @@ export function SunburstView({ data, metrics, resourceName }: SunburstViewProps)
 
   return (
     <div className="flex-1 overflow-auto px-6 py-4">
+      {/* Catalyst Work Item Hierarchy - Always Visible */}
+      <div className="mb-6 border border-[#e5e5e5] rounded-lg bg-white">
+        <div className="px-4 py-3 text-center">
+          <h4 className="text-xs font-semibold text-[#737373] uppercase tracking-wider mb-4">
+            Catalyst Work Item Hierarchy
+          </h4>
+          
+          {/* Hierarchy Flow */}
+          <div className="flex items-start justify-center gap-2 overflow-x-auto pb-2">
+            {/* Enterprise */}
+            <div className="flex flex-col items-center min-w-[120px]">
+              <div 
+                className="px-3 py-2 rounded-lg border-l-4 w-full"
+                style={{ 
+                  backgroundColor: CategoryColors.enterprise.bg,
+                  borderLeftColor: CategoryColors.enterprise.border 
+                }}
+              >
+                <span className="text-xs font-semibold text-[#737373] uppercase">Enterprise</span>
+                <div className="flex flex-wrap gap-1 mt-2 justify-center">
+                  <span 
+                    className="px-2 py-0.5 text-xs rounded-full"
+                    style={{ backgroundColor: WorkItemColors.theme.bg, color: WorkItemColors.theme.text }}
+                  >
+                    Theme
+                  </span>
+                  <span 
+                    className="px-2 py-0.5 text-xs rounded-full"
+                    style={{ backgroundColor: WorkItemColors.objective.bg, color: WorkItemColors.objective.text }}
+                  >
+                    Objective
+                  </span>
+                  <span 
+                    className="px-2 py-0.5 text-xs rounded-full"
+                    style={{ backgroundColor: WorkItemColors.key_result.bg, color: WorkItemColors.key_result.text }}
+                  >
+                    Key Result
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Arrow */}
+            <div className="flex items-center pt-6 text-[#a3a3a3]">
+              <ArrowDown className="w-4 h-4 rotate-[-90deg]" />
+            </div>
+
+            {/* Program */}
+            <div className="flex flex-col items-center min-w-[100px]">
+              <div 
+                className="px-3 py-2 rounded-lg border-l-4 w-full"
+                style={{ 
+                  backgroundColor: CategoryColors.program.bg,
+                  borderLeftColor: CategoryColors.program.border 
+                }}
+              >
+                <span className="text-xs font-semibold text-[#737373] uppercase">Program</span>
+                <div className="flex flex-wrap gap-1 mt-2 justify-center">
+                  <span 
+                    className="px-2 py-0.5 text-xs rounded-full"
+                    style={{ backgroundColor: WorkItemColors.epic.bg, color: WorkItemColors.epic.text }}
+                  >
+                    Epic
+                  </span>
+                  <span 
+                    className="px-2 py-0.5 text-xs rounded-full"
+                    style={{ backgroundColor: WorkItemColors.feature.bg, color: WorkItemColors.feature.text }}
+                  >
+                    Feature
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Arrow */}
+            <div className="flex items-center pt-6 text-[#a3a3a3]">
+              <ArrowDown className="w-4 h-4 rotate-[-90deg]" />
+            </div>
+
+            {/* Project */}
+            <div className="flex flex-col items-center min-w-[100px]">
+              <div 
+                className="px-3 py-2 rounded-lg border-l-4 w-full"
+                style={{ 
+                  backgroundColor: CategoryColors.project.bg,
+                  borderLeftColor: CategoryColors.project.border 
+                }}
+              >
+                <span className="text-xs font-semibold text-[#737373] uppercase">Project</span>
+                <div className="flex flex-wrap gap-1 mt-2 justify-center">
+                  <span 
+                    className="px-2 py-0.5 text-xs rounded-full"
+                    style={{ backgroundColor: WorkItemColors.story.bg, color: WorkItemColors.story.text }}
+                  >
+                    Story
+                  </span>
+                  <span 
+                    className="px-2 py-0.5 text-xs rounded-full"
+                    style={{ backgroundColor: WorkItemColors.defect.bg, color: WorkItemColors.defect.text }}
+                  >
+                    Defect
+                  </span>
+                  <span 
+                    className="px-2 py-0.5 text-xs rounded-full"
+                    style={{ backgroundColor: WorkItemColors.incident.bg, color: WorkItemColors.incident.text }}
+                  >
+                    Incident
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Product */}
+            <div className="flex flex-col items-center min-w-[120px]">
+              <div 
+                className="px-3 py-2 rounded-lg border-l-4 border-dashed w-full"
+                style={{ 
+                  backgroundColor: CategoryColors.product.bg,
+                  borderLeftColor: CategoryColors.product.border 
+                }}
+              >
+                <span className="text-xs font-semibold text-[#737373] uppercase">Product</span>
+                <div className="flex flex-wrap gap-1 mt-2 justify-center">
+                  <span 
+                    className="px-2 py-0.5 text-xs rounded-full border border-[#d1d5db]"
+                    style={{ backgroundColor: WorkItemColors.business_request.bg, color: WorkItemColors.business_request.text }}
+                  >
+                    Business Request
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Metrics Row */}
+      <div className="grid grid-cols-4 gap-3 mb-6">
+        <div className="bg-white border border-[#e5e5e5] rounded-lg p-4 text-center">
+          <div className="text-2xl font-bold text-[#0a0a0a]">{metrics.totalItems}</div>
+          <div className="text-xs text-[#737373]">Total Items</div>
+        </div>
+        <div className="bg-white border border-[#0d9488] rounded-lg p-4 text-center">
+          <div className="text-2xl font-bold text-[#0a0a0a]">{metrics.itemsByStatus?.completed || 0}</div>
+          <div className="text-xs text-[#737373]">Completed</div>
+        </div>
+        <div className="bg-white border border-[#2563eb] rounded-lg p-4 text-center">
+          <div className="text-2xl font-bold text-[#0a0a0a]">{metrics.itemsByStatus?.in_progress || 0}</div>
+          <div className="text-xs text-[#737373]">In Progress</div>
+        </div>
+        <div className="bg-white border border-[#e5e5e5] rounded-lg p-4 text-center">
+          <div className="text-2xl font-bold text-[#0a0a0a]">{metrics.itemsByStatus?.upcoming || 0}</div>
+          <div className="text-xs text-[#737373]">Upcoming</div>
+        </div>
+      </div>
+
       {/* Sunburst Chart */}
       <div className="flex justify-center mb-6">
         <svg
