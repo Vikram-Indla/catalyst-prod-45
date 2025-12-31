@@ -19,6 +19,7 @@ import Home from "./pages/jira-align/Home";
 import PlaceholderPage from "./pages/jira-align/PlaceholderPage";
 import StrategyRoom from "./pages/StrategyRoom";
 import StrategyRoomPage from "./pages/enterprise/StrategyRoomPage";
+const CapacityPlannerPage = lazy(() => import("./pages/enterprise/CapacityPlannerPage"));
 import Themes from "./pages/Themes";
 import Initiatives from "./pages/Initiatives";
 import Epics from "./pages/Epics";
@@ -140,6 +141,7 @@ import AuditActivityPage from "./pages/admin/AuditActivityPage";
 import KanbanSettings from "./pages/admin/KanbanSettings";
 import ResourceInventory from "./pages/admin/ResourceInventory";
 import MockDataGenerator from "./pages/admin/MockDataGenerator";
+const AiIntegrationPage = lazy(() => import("./pages/admin/AiIntegrationPage"));
 import ProcessSteps from "./pages/admin/ProcessSteps";
 import CreateMenuConfig from "./pages/admin/CreateMenuConfig";
 import DeliveryPlatforms from "./pages/admin/DeliveryPlatforms";
@@ -330,6 +332,7 @@ const App = () => (
               <Route path="/portfolio/:portfolioId/programs" element={<PlaceholderPage />} />
               <Route path="/strategy-room" element={<StrategyRoom />} />
               <Route path="/enterprise/strategy-room" element={<StrategyRoomPage />} />
+              <Route path="/enterprise/strategy-room/capacity" element={<Suspense fallback={<div className="p-8">Loading...</div>}><CapacityPlannerPage /></Suspense>} />
               <Route path="/enterprise/snapshots" element={<StrategicSnapshots />} />
               <Route path="/enterprise/backlog" element={<StrategicBacklog />} />
               <Route path="/enterprise/okr-heatmap" element={<EnterpriseComingSoon />} />
@@ -773,6 +776,7 @@ const App = () => (
                 <Route path="incidents/audit" element={<IncidentAuditCompliance />} />
                 <Route path="incidents/owning-teams" element={<IncidentOwningTeams />} />
                 <Route path="mock-data" element={<MockDataGenerator />} />
+                <Route path="ai-integration" element={<Suspense fallback={<div className="p-8">Loading...</div>}><AiIntegrationPage /></Suspense>} />
               </Route>
 
               <Route path="/items/epics/:epicId/status-report" element={<EpicStatusReport />} />
