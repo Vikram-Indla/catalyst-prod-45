@@ -23,10 +23,12 @@ import {
 } from './cells';
 import { useTableSelection } from './useTableSelection';
 import { useTableSort } from './useTableSort';
+import { useKeyboardNavigation } from './useKeyboardNavigation';
 import { DEFAULT_COLUMNS, TableColumn } from './types';
 import { ColumnVisibilityDropdown } from './ColumnVisibilityDropdown';
 import { BulkActionsBar } from './BulkActionsBar';
 import { KeyboardHints } from './KeyboardHints';
+import { TablePagination } from './TablePagination';
 import { DeleteConfirmDialog } from './DeleteConfirmDialog';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
@@ -63,6 +65,11 @@ export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableVi
   const [hoveredRowId, setHoveredRowId] = useState<string | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [focusedIndex, setFocusedIndex] = useState(0);
+  
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(25);
   
   const { 
     selectedIds, 
@@ -125,6 +132,44 @@ export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableVi
     });
     return sorted;
   }, [data, sortConfig]);
+
+  // Pagination calculations
+  const totalItems = sortedData.length;
+  const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
+  
+  // Reset to page 1 if current page exceeds total pages
+  useEffect(() => {
+    if (currentPage > totalPages) {
+      setCurrentPage(1);
+    }
+  }, [currentPage, totalPages]);
+
+  // Paginated data
+  const paginatedData = useMemo(() => {
+    const startIndex = (currentPage - 1) * pageSize;
+    return sortedData.slice(startIndex, startIndex + pageSize);
+  }, [sortedData, currentPage, pageSize]);
+
+  // Get ID at index for keyboard navigation
+  const getIdAtIndex = useCallback((index: number) => {
+    return paginatedData[index]?.id;
+  }, [paginatedData]);
+
+  // Keyboard navigation
+  useKeyboardNavigation({
+    dataLength: paginatedData.length,
+    focusedIndex,
+    setFocusedIndex,
+    toggleSelection,
+    onRowClick,
+    getIdAtIndex,
+    isEnabled: !isLoading && paginatedData.length > 0,
+  });
+
+  // Reset focused index when page changes
+  useEffect(() => {
+    setFocusedIndex(0);
+  }, [currentPage]);
 
   // Handle drag end
   const handleDragEnd = useCallback(async (result: DropResult) => {
@@ -387,7 +432,12 @@ export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableVi
         )}>
           <div className="flex items-center gap-3">
             <span className="text-sm text-muted-foreground">
-              <strong className="font-semibold text-foreground">{sortedData.length}</strong> {sortedData.length === 1 ? 'request' : 'requests'}
+              <strong className="font-semibold text-foreground">{totalItems}</strong> {totalItems === 1 ? 'request' : 'requests'}
+              {totalItems > pageSize && (
+                <span className="ml-1">
+                  (showing {(currentPage - 1) * pageSize + 1}-{Math.min(currentPage * pageSize, totalItems)})
+                </span>
+              )}
             </span>
           </div>
           <ColumnVisibilityDropdown
@@ -482,27 +532,30 @@ export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableVi
                           <td className="px-4 py-3.5" />
                         </tr>
                       ))
-                    ) : sortedData.length === 0 ? (
+                    ) : paginatedData.length === 0 ? (
                       <tr>
-                        <td colSpan={displayColumns.length + 2} className="text-center py-20 text-[var(--industry-text-muted)] dark:text-gray-400">
+                        <td colSpan={displayColumns.length + 2} className="text-center py-20 text-muted-foreground">
                           No requests found
                         </td>
                       </tr>
                     ) : (
-                      sortedData.map((row, index) => (
+                      paginatedData.map((row, index) => (
                         <Draggable key={row.id} draggableId={row.id} index={index}>
                           {(provided, snapshot) => (
                             <tr
                               ref={provided.innerRef}
                               {...provided.draggableProps}
+                              data-row-index={index}
                               className={cn(
                                 "transition-colors cursor-pointer",
-                                "hover:bg-[var(--industry-bg-hover)] dark:hover:bg-[#262626]/50",
+                                "hover:bg-muted/50 dark:hover:bg-[#262626]/50",
                                 selectedIds.has(row.id) && "bg-brand-primary/[0.08] dark:bg-brand-primary/[0.15]",
+                                focusedIndex === index && "ring-2 ring-inset ring-brand-primary/50 bg-brand-primary/[0.04]",
                                 snapshot.isDragging && "bg-muted dark:bg-[#333333] shadow-lg"
                               )}
                               onMouseEnter={() => setHoveredRowId(row.id)}
                               onMouseLeave={() => setHoveredRowId(null)}
+                              onClick={() => setFocusedIndex(index)}
                             >
                               {/* Drag handle - visible on hover */}
                               <td
@@ -513,7 +566,7 @@ export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableVi
                                 <GripVertical 
                                   className={cn(
                                     "h-4 w-4 transition-opacity",
-                                    hoveredRowId === row.id ? "opacity-50 hover:opacity-100" : "opacity-0"
+                                    (hoveredRowId === row.id || focusedIndex === index) ? "opacity-50 hover:opacity-100" : "opacity-0"
                                   )} 
                                 />
                               </td>
@@ -528,14 +581,14 @@ export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableVi
                                 </td>
                               ))}
                               
-                              {/* Row actions - visible on hover */}
+                              {/* Row actions - visible on hover or focus */}
                               <td 
                                 className="px-4 py-3.5 text-right" 
                                 onClick={(e) => e.stopPropagation()}
                               >
                                 <div className={cn(
                                   "flex items-center justify-end gap-1 transition-opacity",
-                                  hoveredRowId === row.id ? "opacity-100" : "opacity-0"
+                                  (hoveredRowId === row.id || focusedIndex === index) ? "opacity-100" : "opacity-0"
                                 )}>
                                   <Button
                                     variant="ghost"
@@ -566,6 +619,19 @@ export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableVi
             </table>
           </DragDropContext>
         </div>
+        
+        {/* Pagination */}
+        <TablePagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          pageSize={pageSize}
+          totalItems={totalItems}
+          onPageChange={setCurrentPage}
+          onPageSizeChange={(size) => {
+            setPageSize(size);
+            setCurrentPage(1);
+          }}
+        />
       </div>
 
       {/* Bulk Actions Bar */}
