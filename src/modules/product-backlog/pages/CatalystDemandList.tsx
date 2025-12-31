@@ -279,6 +279,13 @@ export default function CatalystDemandList() {
     });
   }, [tableData, listSearchQuery, activeFilter, currentUserId]);
 
+  // Auto-select first item when page loads and no item is selected
+  useEffect(() => {
+    if (!selectedRequest && sortedRequests.length > 0 && !isLoading) {
+      setSelectedRequest(sortedRequests[0]);
+    }
+  }, [sortedRequests, selectedRequest, isLoading]);
+
   // Handle field update
   const handleFieldUpdate = async (field: string, value: any) => {
     if (!selectedRequest) return;
