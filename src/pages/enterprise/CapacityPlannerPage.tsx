@@ -1067,6 +1067,13 @@ function LevelingView({ resources, recommendations }: { resources: ResourceMetri
 // Scenarios View
 // ─────────────────────────────────────────────────────────────────────────────
 function ScenariosView() {
+  const [createModalOpen, setCreateModalOpen] = useState(false);
+  const [scenarioName, setScenarioName] = useState('');
+  const [timeScope, setTimeScope] = useState<'release' | 'custom'>('release');
+  const [releaseVersion, setReleaseVersion] = useState('');
+  const [description, setDescription] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
+
   const scenarios = [
     { id: 'SCN-2025-001', name: 'Current Plan - Q1 2025', version: 'v1.0', status: 'ACTIVE', created: '2025-01-02', resources: 26 },
     { id: 'SCN-2025-001-S1', name: '↳ Pre-reorg', version: 'v1.0-s1', status: 'SNAPSHOT', created: '2025-01-05', resources: null },
@@ -1074,12 +1081,45 @@ function ScenariosView() {
     { id: 'SCN-2025-003', name: 'Cost Reduction Model', version: 'v1.0', status: 'DRAFT', created: '2025-01-12', resources: 22 },
   ];
 
+  const filteredScenarios = scenarios.filter(s => 
+    s.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+    s.id.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const handleCreateScenario = () => {
+    if (!scenarioName.trim()) {
+      toast.error('Scenario name is required');
+      return;
+    }
+    toast.success(`Scenario "${scenarioName}" created successfully`);
+    setCreateModalOpen(false);
+    setScenarioName('');
+    setDescription('');
+    setReleaseVersion('');
+  };
+
+  const handleViewScenario = (id: string) => {
+    toast.info(`Opening scenario ${id}`);
+  };
+
+  const handleRestoreSnapshot = (id: string) => {
+    toast.success(`Snapshot ${id} restored`);
+  };
+
+  const handleActivateScenario = (id: string) => {
+    toast.success(`Scenario ${id} activated`);
+  };
+
+  const handleDuplicateScenario = (id: string) => {
+    toast.success(`Scenario ${id} duplicated`);
+  };
+
   return (
     <div className="space-y-5">
       {/* Header */}
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-semibold text-foreground">Scenario Management</h2>
-        <Button size="sm" className="gap-2 bg-[#2563eb] hover:bg-[#1d4ed8]">
+        <Button size="sm" className="gap-2 bg-[#2563eb] hover:bg-[#1d4ed8]" onClick={() => setCreateModalOpen(true)}>
           <Plus className="h-4 w-4" />
           Create Scenario
         </Button>
@@ -1102,8 +1142,8 @@ function ScenariosView() {
               <p className="text-[10px] text-muted-foreground">Resources</p>
             </div>
             <div className="text-center">
-              <p className="text-xl font-bold text-foreground">76%</p>
-              <p className="text-[10px] text-muted-foreground">Avg Util</p>
+              <p className="text-sm text-muted-foreground">76% <span className="text-[10px]">Avg</span></p>
+              <p className="text-[10px] text-muted-foreground">Util</p>
             </div>
             <div className="text-center">
               <p className="text-xl font-bold text-foreground">42</p>
@@ -1112,8 +1152,8 @@ function ScenariosView() {
           </div>
           
           <div className="flex gap-2">
-            <Button variant="outline" size="sm" className="flex-1">View Details</Button>
-            <Button variant="outline" size="sm" className="flex-1">Create Snapshot</Button>
+            <Button variant="outline" size="sm" className="flex-1" onClick={() => handleViewScenario('SCN-2025-001')}>View Details</Button>
+            <Button variant="outline" size="sm" className="flex-1" onClick={() => toast.success('Snapshot created')}>Create Snapshot</Button>
           </div>
         </div>
         
@@ -1123,7 +1163,12 @@ function ScenariosView() {
             <h3 className="text-sm font-semibold text-foreground">Saved Scenarios & Snapshots</h3>
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input placeholder="Search scenarios..." className="pl-9 w-48 h-8 text-sm" />
+              <Input 
+                placeholder="Search scenarios..." 
+                className="pl-9 w-48 h-8 text-sm" 
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
             </div>
           </div>
           
@@ -1140,7 +1185,7 @@ function ScenariosView() {
               </tr>
             </thead>
             <tbody>
-              {scenarios.map((scenario) => (
+              {filteredScenarios.map((scenario) => (
                 <tr key={scenario.id} className="border-t border-border hover:bg-muted/20">
                   <td className="px-5 py-3 text-sm text-[#2563eb] font-medium">{scenario.id}</td>
                   <td className="px-5 py-3 text-sm text-foreground">{scenario.name}</td>
@@ -1158,23 +1203,50 @@ function ScenariosView() {
                   <td className="px-5 py-3 text-sm text-muted-foreground">{scenario.created}</td>
                   <td className="px-5 py-3 text-sm text-center text-foreground">{scenario.resources ?? '—'}</td>
                   <td className="px-5 py-3">
-                    <div className="flex items-center justify-center gap-1">
-                      <button className="w-7 h-7 rounded flex items-center justify-center text-muted-foreground hover:bg-muted hover:text-foreground">
-                        <Eye className="h-4 w-4" />
-                      </button>
-                      {scenario.status === 'SNAPSHOT' && (
-                        <button className="w-7 h-7 rounded flex items-center justify-center text-muted-foreground hover:bg-muted hover:text-foreground">
-                          <RotateCcw className="h-4 w-4" />
+                    <div className="flex flex-col items-center gap-1">
+                      {/* Top row actions */}
+                      <div className="flex items-center gap-1">
+                        <button 
+                          onClick={() => handleViewScenario(scenario.id)}
+                          className="w-7 h-7 rounded flex items-center justify-center text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+                          title="View"
+                        >
+                          <Eye className="h-4 w-4" />
                         </button>
-                      )}
-                      {scenario.status === 'DRAFT' && (
-                        <button className="w-7 h-7 rounded flex items-center justify-center text-muted-foreground hover:bg-muted hover:text-foreground">
-                          <Check className="h-4 w-4" />
+                        {scenario.status === 'SNAPSHOT' && (
+                          <button 
+                            onClick={() => handleRestoreSnapshot(scenario.id)}
+                            className="w-7 h-7 rounded flex items-center justify-center text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+                            title="Restore"
+                          >
+                            <RotateCcw className="h-4 w-4" />
+                          </button>
+                        )}
+                        {scenario.status === 'DRAFT' && (
+                          <button 
+                            onClick={() => handleActivateScenario(scenario.id)}
+                            className="w-7 h-7 rounded flex items-center justify-center text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+                            title="Activate"
+                          >
+                            <Check className="h-4 w-4" />
+                          </button>
+                        )}
+                      </div>
+                      {/* Bottom row actions */}
+                      <div className="flex items-center gap-1">
+                        <button 
+                          onClick={() => handleDuplicateScenario(scenario.id)}
+                          className={cn(
+                            "w-7 h-7 rounded flex items-center justify-center transition-colors",
+                            scenario.status === 'SNAPSHOT' 
+                              ? "border border-[#2563eb] text-[#2563eb] hover:bg-[#2563eb]/10" 
+                              : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                          )}
+                          title="Duplicate"
+                        >
+                          <Copy className="h-4 w-4" />
                         </button>
-                      )}
-                      <button className="w-7 h-7 rounded flex items-center justify-center text-muted-foreground hover:bg-muted hover:text-foreground">
-                        <Copy className="h-4 w-4" />
-                      </button>
+                      </div>
                     </div>
                   </td>
                 </tr>
@@ -1183,6 +1255,97 @@ function ScenariosView() {
           </table>
         </div>
       </div>
+
+      {/* Create Scenario Modal */}
+      <Dialog open={createModalOpen} onOpenChange={setCreateModalOpen}>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Create New Scenario</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label>Scenario Name *</Label>
+              <Input 
+                value={scenarioName}
+                onChange={(e) => setScenarioName(e.target.value)}
+                placeholder="e.g., Q2 Hiring Plan"
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label>Time Scope</Label>
+              <div className="flex items-center gap-6">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input 
+                    type="radio" 
+                    checked={timeScope === 'release'}
+                    onChange={() => setTimeScope('release')}
+                    className="w-4 h-4 text-[#2563eb]"
+                  />
+                  <span className="text-sm">By Release Version</span>
+                </label>
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input 
+                    type="radio" 
+                    checked={timeScope === 'custom'}
+                    onChange={() => setTimeScope('custom')}
+                    className="w-4 h-4 text-[#2563eb]"
+                  />
+                  <span className="text-sm">Custom Date Range</span>
+                </label>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label>Release Version *</Label>
+              <Select value={releaseVersion} onValueChange={setReleaseVersion}>
+                <SelectTrigger><SelectValue placeholder="Select release..." /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="v2025.1">v2025.1 - Q1 2025</SelectItem>
+                  <SelectItem value="v2025.2">v2025.2 - Q2 2025</SelectItem>
+                  <SelectItem value="v2025.3">v2025.3 - Q3 2025</SelectItem>
+                  <SelectItem value="v2025.4">v2025.4 - Q4 2025</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label>Description (optional)</Label>
+              <textarea 
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="Brief description of scenario purpose..."
+                className="w-full min-h-[80px] px-3 py-2 text-sm border border-border rounded-md bg-background resize-y"
+              />
+            </div>
+
+            {/* Scenario Preview */}
+            <div className="border border-[#2563eb]/30 bg-[#2563eb]/5 rounded-lg p-4">
+              <p className="text-xs font-semibold text-[#2563eb] uppercase mb-3">Scenario Preview</p>
+              <div className="grid grid-cols-3 gap-4 text-center">
+                <div>
+                  <p className="text-xl font-bold text-foreground">26</p>
+                  <p className="text-xs text-muted-foreground">Resources</p>
+                </div>
+                <div>
+                  <p className="text-xl font-bold text-foreground">--</p>
+                  <p className="text-xs text-muted-foreground">Work Items</p>
+                </div>
+                <div>
+                  <p className="text-lg font-bold text-foreground">SCN-2025-004</p>
+                  <p className="text-xs text-muted-foreground">Scenario ID</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setCreateModalOpen(false)}>Cancel</Button>
+            <Button onClick={handleCreateScenario} className="bg-[#2563eb] hover:bg-[#1d4ed8]">
+              Create Scenario
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
