@@ -5,15 +5,17 @@
 import React from 'react';
 import { Clock, Play } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { WorkItemIcon } from '@/components/ja/icons/WorkItemIcon';
 import type { AIPriorityItem } from './CatalystAIPanel';
 
 interface AIPriorityCardProps {
   item: AIPriorityItem;
   onClick: () => void;
   onStartTask: () => void;
+  onKeyClick?: (key: string, type: string) => void;
 }
 
-export function AIPriorityCard({ item, onClick, onStartTask }: AIPriorityCardProps) {
+export function AIPriorityCard({ item, onClick, onStartTask, onKeyClick }: AIPriorityCardProps) {
   const borderColor = item.status === 'warning' 
     ? 'border-l-yellow-500' 
     : item.status === 'success' 
@@ -23,6 +25,11 @@ export function AIPriorityCard({ item, onClick, onStartTask }: AIPriorityCardPro
   const tagBg = item.status === 'warning'
     ? 'bg-yellow-500/10 text-yellow-600 dark:text-yellow-400'
     : 'bg-destructive/10 text-destructive';
+
+  const handleKeyClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onKeyClick?.(item.key, item.type);
+  };
 
   return (
     <div
@@ -34,9 +41,15 @@ export function AIPriorityCard({ item, onClick, onStartTask }: AIPriorityCardPro
         borderColor
       )}
     >
-      {/* Key */}
-      <div className="font-mono text-[13px] font-semibold text-primary mb-1">
-        {item.key}
+      {/* Key with Icon */}
+      <div className="flex items-center gap-2 mb-1">
+        <WorkItemIcon type={item.type} size={16} />
+        <button
+          onClick={handleKeyClick}
+          className="font-mono text-[13px] font-semibold text-primary hover:underline cursor-pointer"
+        >
+          {item.key}
+        </button>
       </div>
 
       {/* Title */}

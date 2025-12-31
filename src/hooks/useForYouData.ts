@@ -30,11 +30,14 @@ export interface WorkItem {
   starred?: boolean;
 }
 
+export type AIWorkItemType = 'feature' | 'epic' | 'story' | 'defect' | 'incident' | 'task' | 'business-request';
+
 export interface AISuggestion {
   id: string;
   itemId: string;
   key: string;
   title: string;
+  type: AIWorkItemType;
   reason: string;
   timeLeft: string;
   isPriority: boolean;
@@ -144,6 +147,7 @@ const MOCK_AI_SUGGESTIONS: AISuggestion[] = [
     itemId: '1',
     key: 'INC-160',
     title: 'Cache invalidation causing stale data',
+    type: 'incident',
     reason: 'This incident has been open for 18 hours and is blocking 3 dependent features. Customer escalation expected if not resolved today.',
     timeLeft: '6h left',
     isPriority: true,
@@ -154,6 +158,7 @@ const MOCK_AI_SUGGESTIONS: AISuggestion[] = [
     itemId: '3',
     key: 'FTR-020',
     title: 'Sustainability reporting module',
+    type: 'feature',
     reason: 'Sprint ends in 2 days',
     isPriority: false,
     context: 'Sprint deadline approaching',
@@ -164,6 +169,7 @@ const MOCK_AI_SUGGESTIONS: AISuggestion[] = [
     itemId: '4',
     key: 'FTR-019',
     title: 'Investor portal accessibility',
+    type: 'feature',
     reason: 'Compliance deadline next week',
     isPriority: false,
     context: 'Regulatory requirement',

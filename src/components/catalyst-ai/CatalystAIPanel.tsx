@@ -14,10 +14,13 @@ import { AIProgressCard } from './AIProgressCard';
 import { AISuggestion } from './AISuggestion';
 import { AIGreeting } from './AIGreeting';
 
+export type AIWorkItemType = 'feature' | 'epic' | 'story' | 'defect' | 'incident' | 'task' | 'business-request';
+
 export interface AIPriorityItem {
   id: string;
   key: string;
   title: string;
+  type: AIWorkItemType;
   aiReason: string;
   timeLeft: string;
   updatedAt: string;
@@ -28,6 +31,7 @@ export interface AINextItemData {
   id: string;
   key: string;
   title: string;
+  type: AIWorkItemType;
   aiContext: string;
 }
 
@@ -59,6 +63,7 @@ interface CatalystAIPanelProps {
   suggestions?: AISuggestionData[];
   onItemClick?: (id: string) => void;
   onStartTask?: (id: string) => void;
+  onKeyClick?: (key: string, type: string) => void;
 }
 
 export function CatalystAIPanel({
@@ -72,6 +77,7 @@ export function CatalystAIPanel({
   suggestions = [],
   onItemClick,
   onStartTask,
+  onKeyClick,
 }: CatalystAIPanelProps) {
   return (
     <>
@@ -130,6 +136,7 @@ export function CatalystAIPanel({
                 item={priorityItem}
                 onClick={() => onItemClick?.(priorityItem.id)}
                 onStartTask={() => onStartTask?.(priorityItem.id)}
+                onKeyClick={onKeyClick}
               />
             </section>
           )}
@@ -146,6 +153,7 @@ export function CatalystAIPanel({
                   item={item}
                   index={index + 2}
                   onClick={() => onItemClick?.(item.id)}
+                  onKeyClick={onKeyClick}
                 />
               ))}
             </section>
