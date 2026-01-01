@@ -81,7 +81,7 @@ export default function CapacityPlannerPage() {
   // View state
   const [currentView, setCurrentView] = useState<ViewType>('cards');
   const [period, setPeriod] = useState<PeriodType>('monthly');
-  const [groupBy, setGroupBy] = useState<GroupByType>('assignment');
+  const [groupBy, setGroupBy] = useState<GroupByType>('none');
   const [searchQuery, setSearchQuery] = useState('');
   const [departmentFilter, setDepartmentFilter] = useState<'all' | 'delivery' | 'product' | 'support'>('delivery'); // Default to Delivery Only
   const [activeFilter, setActiveFilter] = useState<'all' | 'available' | 'atCapacity' | 'over'>('all');
