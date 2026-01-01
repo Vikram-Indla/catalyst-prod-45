@@ -1229,26 +1229,15 @@ function TableView({ resources, projects, groupBy, groupedByAssignment, groupedB
       id: 'actions',
       header: 'Actions',
       accessor: 'id',
-      width: '140px',
+      width: '100px',
       sortable: false,
       render: (_: any, row: ResourceMetric) => {
-        const initials = row.name?.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'NA';
-        const avatarColor = getAssignmentColor(row.assignmentName);
         return (
         <div className="flex items-center gap-1">
-          {/* 360° Avatar Button */}
-          <button
-            onClick={(e) => { e.stopPropagation(); onResourceClick(row); }}
-            className="w-9 h-9 rounded-full flex items-center justify-center text-xs font-semibold text-white hover:opacity-90 transition-opacity"
-            style={{ backgroundColor: avatarColor }}
-            title="View 360°"
-          >
-            {initials}
-          </button>
-          {/* Edit */}
+          {/* Edit - NO duplicate avatar */}
           <button 
             onClick={(e) => { e.stopPropagation(); onEditResource(row.id); }}
-            className="w-9 h-9 rounded-lg flex items-center justify-center text-[#737373] hover:bg-[#f0f0f0] transition-colors"
+            className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-500 hover:bg-slate-100 transition-colors"
             title="Edit resource"
           >
             <Pencil className="w-4 h-4" />
@@ -1256,7 +1245,7 @@ function TableView({ resources, projects, groupBy, groupedByAssignment, groupedB
           {/* Delete */}
           <button 
             onClick={(e) => { e.stopPropagation(); onDeleteResource(row); }}
-            className="w-9 h-9 rounded-lg flex items-center justify-center text-[#737373] hover:bg-[#f0f0f0] transition-colors"
+            className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-500 hover:bg-slate-100 transition-colors"
             title="Remove from Capacity Planner"
           >
             <Trash2 className="w-4 h-4" />
@@ -1286,41 +1275,53 @@ function TableView({ resources, projects, groupBy, groupedByAssignment, groupedB
     }
   };
 
-  // Render grouped tables for assignment
-  const renderGroupedTable = (groupResources: ResourceMetric[], groupName: string) => (
-    <div key={groupName} className="space-y-2">
-      <div className="flex items-center gap-3 p-3 bg-card border border-border rounded-lg">
-        <div className="w-8 h-8 rounded-full bg-[#2563eb] flex items-center justify-center">
-          <Users className="h-4 w-4 text-white" />
+  // Render grouped tables for assignment - REDESIGNED with assignment colors
+  const renderGroupedTable = (groupResources: ResourceMetric[], groupName: string) => {
+    const theme = getAssignmentTheme(groupName);
+    return (
+      <div key={groupName} className="space-y-2">
+        <div 
+          className="flex items-center gap-3 p-3 bg-white border border-slate-200 rounded-lg"
+          style={{ borderLeftWidth: '4px', borderLeftColor: theme.accent }}
+        >
+          <div 
+            className="w-8 h-8 rounded-lg flex items-center justify-center"
+            style={{ backgroundColor: theme.accent }}
+          >
+            <Users className="h-4 w-4 text-white" />
+          </div>
+          <span className="text-sm font-semibold" style={{ color: theme.accent }}>{groupName}</span>
+          <span className="text-xs text-slate-500 ml-auto bg-slate-100 px-2.5 py-1 rounded-full">
+            {groupResources.length} resources
+          </span>
         </div>
-        <span className="text-sm font-semibold text-foreground">{groupName}</span>
-        <span className="text-xs text-muted-foreground ml-auto bg-muted px-2.5 py-1 rounded-full">
-          {groupResources.length} resources
-        </span>
+        <CatalystEnterpriseTable
+          data={groupResources}
+          columns={columns}
+          showCheckboxes={true}
+          showActionsColumn={false}
+          selectedRows={selectedIds}
+          onSelectionChange={handleSelectionChange}
+          onRowClick={(row) => onResourceClick(row)}
+        />
       </div>
-      <CatalystEnterpriseTable
-        data={groupResources}
-        columns={columns}
-        showCheckboxes={true}
-        showActionsColumn={false}
-        selectedRows={selectedIds}
-        onSelectionChange={handleSelectionChange}
-        onRowClick={(row) => onResourceClick(row)}
-      />
-    </div>
-  );
+    );
+  };
 
-  // Render grouped tables for department
+  // Render grouped tables for department - REDESIGNED with assignment colors
   const renderDepartmentGroupedTable = (groupResources: ResourceMetric[], deptName: string) => {
     const deptColor = departmentColors[deptName] || departmentColors.default;
     return (
       <div key={deptName} className="space-y-2">
-        <div className="flex items-center gap-3 p-3 bg-card border border-border rounded-lg">
-          <div className={cn("w-8 h-8 rounded-full flex items-center justify-center", deptColor.bg)}>
+        <div 
+          className="flex items-center gap-3 p-3 bg-white border border-slate-200 rounded-lg"
+          style={{ borderLeftWidth: '4px', borderLeftColor: CATALYST.blue.primary }}
+        >
+          <div className={cn("w-8 h-8 rounded-lg flex items-center justify-center", deptColor.bg)}>
             <Building2 className={cn("h-4 w-4", deptColor.text)} />
           </div>
-          <span className="text-sm font-semibold text-foreground">{deptName}</span>
-          <span className="text-xs text-muted-foreground ml-auto bg-muted px-2.5 py-1 rounded-full">
+          <span className="text-sm font-semibold text-slate-900">{deptName}</span>
+          <span className="text-xs text-slate-500 ml-auto bg-slate-100 px-2.5 py-1 rounded-full">
             {groupResources.length} resources
           </span>
         </div>
@@ -1403,8 +1404,22 @@ function TableView({ resources, projects, groupBy, groupedByAssignment, groupedB
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Timeline View with Monthly Columns and Grouping Support
+// Timeline View with GANTT-STYLE Project Blocks - CIO Grade
 // ─────────────────────────────────────────────────────────────────────────────
+
+// Catalyst-compliant project colors for Gantt bars (NO PURPLE/VIOLET)
+const GANTT_PROJECT_COLORS: Record<string, { bg: string; text: string; border: string }> = {
+  'Senaei BAU': { bg: '#dbeafe', text: '#1e40af', border: '#2563eb' },
+  'Innovation Platform': { bg: '#dbeafe', text: '#1e3a8a', border: '#1d4ed8' },
+  'Inspection Project': { bg: '#ccfbf1', text: '#115e59', border: '#0d9488' },
+  'International Relations': { bg: '#ccfbf1', text: '#134e4a', border: '#0f766e' },
+  'MIM Website': { bg: '#dcfce7', text: '#166534', border: '#4f8a4f' },
+  'Senaei OPS': { bg: '#dcfce7', text: '#14532d', border: '#3d6b3d' },
+  'Sectorial Services': { bg: '#f5f0e8', text: '#78716c', border: '#8b7355' },
+  'Tahommena': { bg: '#f5f0e8', text: '#57534e', border: '#6b5842' },
+  'Data Platform': { bg: '#dbeafe', text: '#1e40af', border: '#3b82f6' },
+};
+
 interface TimelineViewProps {
   resources: ResourceMetric[];
   period: PeriodType;
@@ -1414,48 +1429,164 @@ interface TimelineViewProps {
 }
 
 function TimelineView({ resources, period, groupBy, groupedByAssignment, groupedByDepartment }: TimelineViewProps) {
-  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
-  
-  const renderResourceRow = (resource: ResourceMetric) => {
-    const dept = resource.department || 'Unassigned';
-    const deptColor = departmentColors[dept] || departmentColors.default;
-    const initials = resource.name?.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'NA';
+  const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({});
+
+  const toggleGroup = (name: string) => {
+    setExpandedGroups(prev => ({ ...prev, [name]: !prev[name] }));
+  };
+
+  const isGroupExpanded = (name: string) => expandedGroups[name] === true;
+
+  // Generate periods based on selected period type
+  const periods = useMemo(() => {
+    if (period === 'monthly') {
+      return [
+        { label: 'Jan', key: '2026-01' },
+        { label: 'Feb', key: '2026-02' },
+        { label: 'Mar', key: '2026-03' },
+        { label: 'Apr', key: '2026-04' },
+        { label: 'May', key: '2026-05' },
+        { label: 'Jun', key: '2026-06' },
+      ];
+    }
+    if (period === 'quarterly') {
+      return [
+        { label: 'Q1', key: '2026-Q1' },
+        { label: 'Q2', key: '2026-Q2' },
+        { label: 'Q3', key: '2026-Q3' },
+        { label: 'Q4', key: '2026-Q4' },
+      ];
+    }
+    // Weekly
+    return [
+      { label: 'W1', key: '2026-W01' },
+      { label: 'W2', key: '2026-W02' },
+      { label: 'W3', key: '2026-W03' },
+      { label: 'W4', key: '2026-W04' },
+      { label: 'W5', key: '2026-W05' },
+      { label: 'W6', key: '2026-W06' },
+    ];
+  }, [period]);
+
+  // Generate mock project allocations for a resource
+  const generateProjectAllocations = (resource: ResourceMetric) => {
+    const projectNames = Object.keys(GANTT_PROJECT_COLORS);
+    const numProjects = Math.min(3, Math.floor(Math.random() * 3) + 1);
+    const selectedProjects = projectNames.sort(() => Math.random() - 0.5).slice(0, numProjects);
     
-    const avatarColor = getAssignmentColor(resource.assignmentName);
-    return (
-      <div key={resource.id} className="flex border-b border-border last:border-b-0 hover:bg-muted/20">
-        <div className="w-52 px-4 py-3 flex items-center gap-3 border-r border-border shrink-0">
+    let remaining = resource.allocation || 100;
+    return selectedProjects.map((project, i) => {
+      const isLast = i === selectedProjects.length - 1;
+      const percentage = isLast ? remaining : Math.floor(Math.random() * (remaining - 10)) + 10;
+      remaining -= percentage;
+      return { project, percentage: Math.max(percentage, 10) };
+    });
+  };
+
+  const renderTimelineHeader = () => (
+    <div className="flex bg-slate-50 border-b border-slate-200 sticky top-0 z-10">
+      <div className="w-56 px-4 py-3 text-[11px] font-semibold text-slate-500 uppercase tracking-wider border-r border-slate-200 shrink-0">
+        Resource
+      </div>
+      <div className="flex-1 flex">
+        {periods.map((p, i) => (
           <div 
-            className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold text-white"
-            style={{ backgroundColor: avatarColor }}
+            key={p.key} 
+            className={cn(
+              'flex-1 px-2 py-3 text-center text-[11px] font-semibold text-slate-500 border-r border-slate-200 last:border-r-0 min-w-24',
+              i === 0 && 'bg-blue-50/50 text-blue-600'
+            )}
+          >
+            {p.label}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+
+  const renderResourceRow = (resource: ResourceMetric, assignmentName: string, isEven: boolean) => {
+    const theme = getAssignmentTheme(assignmentName);
+    const initials = resource.name?.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'NA';
+    const allocations = generateProjectAllocations(resource);
+    const totalAlloc = resource.allocation || 0;
+    const isOver = totalAlloc > 100;
+    const allocTheme = getAllocationTheme(totalAlloc);
+
+    return (
+      <div 
+        key={resource.id} 
+        className={cn(
+          "flex border-b border-slate-100 last:border-b-0 hover:bg-slate-50/50",
+          isEven && "bg-slate-50/30"
+        )}
+        style={{ borderLeftWidth: '3px', borderLeftColor: allocTheme.bar }}
+      >
+        {/* Resource Info */}
+        <div className="w-56 px-4 py-3 flex items-center gap-3 border-r border-slate-200 shrink-0">
+          <div 
+            className="w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold text-white shrink-0"
+            style={{ backgroundColor: theme.accent }}
           >
             {initials}
           </div>
-          <div>
-            <p className="text-sm font-medium text-foreground">{resource.name}</p>
-            <p className="text-xs text-muted-foreground">{resource.role}</p>
+          <div className="min-w-0">
+            <p className="text-sm font-semibold text-slate-900 truncate">{resource.name}</p>
+            <p className="text-[11px] text-slate-500 truncate">{resource.role || 'Team Member'}</p>
           </div>
         </div>
+
+        {/* Period Cells with Gantt Bars */}
         <div className="flex-1 flex">
-          {months.map((month, i) => {
-            // Use actual allocation, vary slightly per month for visual
-            const baseAlloc = resource.allocation || 0;
-            const alloc = Math.max(0, Math.min(150, baseAlloc + Math.floor((Math.random() - 0.5) * 20)));
-            const colors = getTimelineCellColors(alloc);
+          {periods.map((p, colIdx) => {
+            const isCurrentPeriod = colIdx === 0;
+            
             return (
               <div 
-                key={month}
+                key={p.key}
                 className={cn(
-                  'flex-1 px-2 py-2.5 flex items-center justify-center border-r border-border last:border-r-0 min-w-20',
-                  i === 0 && 'bg-[#2563eb]/5'
+                  'flex-1 p-2 border-r border-slate-200 last:border-r-0 min-w-24 relative',
+                  isCurrentPeriod && 'bg-blue-50/30'
                 )}
               >
-                <span 
-                  className="text-[11px] font-semibold px-2.5 py-1 rounded"
-                  style={{ backgroundColor: colors.bg, color: colors.text }}
-                >
-                  {alloc}%
-                </span>
+                {/* Over-allocation warning */}
+                {isOver && (
+                  <div className="absolute top-1 right-1">
+                    <AlertTriangle className="w-3.5 h-3.5 text-amber-500" />
+                  </div>
+                )}
+
+                {/* Stacked Project Bars */}
+                <div className="space-y-1">
+                  {allocations.map((alloc, i) => {
+                    const projectColor = GANTT_PROJECT_COLORS[alloc.project] || GANTT_PROJECT_COLORS['Senaei BAU'];
+                    return (
+                      <div
+                        key={i}
+                        className="h-5 rounded text-[9px] font-medium flex items-center px-1.5 truncate"
+                        style={{
+                          backgroundColor: projectColor.bg,
+                          color: projectColor.text,
+                          borderLeft: `2px solid ${projectColor.border}`,
+                          width: `${Math.min(alloc.percentage, 100)}%`,
+                          minWidth: alloc.percentage >= 15 ? '100%' : '40px',
+                        }}
+                        title={`${alloc.project}: ${alloc.percentage}%`}
+                      >
+                        {alloc.percentage >= 20 && alloc.project.split(' ')[0]}
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* Total Badge */}
+                <div className="mt-1.5 flex justify-end">
+                  <span
+                    className="text-[10px] font-bold px-1.5 py-0.5 rounded"
+                    style={{ backgroundColor: allocTheme.labelBg, color: allocTheme.labelColor }}
+                  >
+                    {totalAlloc}%
+                  </span>
+                </div>
               </div>
             );
           })}
@@ -1464,93 +1595,92 @@ function TimelineView({ resources, period, groupBy, groupedByAssignment, grouped
     );
   };
 
-  const renderTimelineHeader = () => (
-    <div className="flex bg-muted/50 border-b border-border sticky top-0 z-10">
-      <div className="w-52 px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider border-r border-border shrink-0">
-        Resource
-      </div>
-      <div className="flex-1 flex">
-        {months.map((month, i) => (
-          <div 
-            key={month} 
-            className={cn(
-              'flex-1 px-2 py-3 text-center text-[11px] font-semibold text-muted-foreground border-r border-border last:border-r-0 min-w-20',
-              i === 0 && 'bg-[#2563eb]/5 text-[#2563eb]'
-            )}
-          >
-            {month}
+  const renderGroupedTimeline = (groupName: string, groupResources: ResourceMetric[]) => {
+    const theme = getAssignmentTheme(groupName);
+    const isExpanded = isGroupExpanded(groupName);
+
+    return (
+      <div key={groupName} className="space-y-2">
+        {/* Group Header */}
+        <button
+          onClick={() => toggleGroup(groupName)}
+          className="w-full flex items-center justify-between px-4 py-3 bg-white border border-slate-200 rounded-lg hover:shadow-sm transition-all"
+          style={{ borderLeftWidth: '4px', borderLeftColor: theme.accent }}
+        >
+          <div className="flex items-center gap-3">
+            <ChevronRight className={cn("w-4 h-4 text-slate-400 transition-transform", isExpanded && "rotate-90")} />
+            <div 
+              className="w-7 h-7 rounded-lg flex items-center justify-center"
+              style={{ backgroundColor: theme.accent }}
+            >
+              <Users className="w-3.5 h-3.5 text-white" />
+            </div>
+            <span className="text-sm font-semibold" style={{ color: theme.accent }}>
+              {groupName}
+            </span>
           </div>
-        ))}
+          <span className="text-xs text-slate-500 bg-slate-100 px-2.5 py-1 rounded-full">
+            {groupResources.length} resources
+          </span>
+        </button>
+
+        {/* Timeline Table */}
+        {isExpanded && (
+          <div className="bg-white border border-slate-200 rounded-lg overflow-hidden">
+            {renderTimelineHeader()}
+            <div className="max-h-[400px] overflow-y-auto">
+              {groupResources.map((r, i) => renderResourceRow(r, groupName, i % 2 === 0))}
+            </div>
+          </div>
+        )}
       </div>
-    </div>
-  );
+    );
+  };
 
   if (groupBy === 'assignment') {
     return (
-      <div className="space-y-6">
-        {Object.entries(groupedByAssignment).map(([assignmentName, assignmentResources]) => (
-          <div key={assignmentName} className="space-y-2">
-            {/* Group Header */}
-            <div className="flex items-center gap-3 p-3 bg-card border border-border rounded-lg">
-              <div className="w-8 h-8 rounded-md bg-[#2563eb] flex items-center justify-center">
-                <Users className="h-4 w-4 text-white" />
-              </div>
-              <span className="text-sm font-semibold text-foreground">{assignmentName}</span>
-              <span className="text-xs text-muted-foreground ml-auto bg-muted px-2.5 py-1 rounded-full">
-                {assignmentResources.length} resources
-              </span>
-            </div>
-            
-            {/* Timeline Table */}
-            <div className="bg-card border border-border rounded-lg overflow-hidden">
-              {renderTimelineHeader()}
-              <div className="max-h-[400px] overflow-y-auto">
-                {assignmentResources.map(renderResourceRow)}
-              </div>
-            </div>
-          </div>
-        ))}
+      <div className="space-y-4">
+        {/* Legend */}
+        <div className="flex items-center gap-4 text-xs text-slate-500">
+          <span className="flex items-center gap-1.5">
+            <span className="w-3 h-3 rounded bg-teal-100 border-l-2 border-teal-500" />
+            Available
+          </span>
+          <span className="flex items-center gap-1.5">
+            <span className="w-3 h-3 rounded bg-blue-100 border-l-2 border-blue-500" />
+            Optimal
+          </span>
+          <span className="flex items-center gap-1.5">
+            <span className="w-3 h-3 rounded bg-amber-100 border-l-2 border-amber-500" />
+            Over-allocated
+          </span>
+        </div>
+
+        {Object.entries(groupedByAssignment).map(([name, resources]) => 
+          renderGroupedTimeline(name, resources)
+        )}
       </div>
     );
   }
 
   if (groupBy === 'department') {
     return (
-      <div className="space-y-6">
-        {Object.entries(groupedByDepartment).map(([deptName, deptResources]) => {
-          const deptColor = departmentColors[deptName] || departmentColors.default;
-          return (
-            <div key={deptName} className="space-y-2">
-              {/* Group Header */}
-              <div className="flex items-center gap-3 p-3 bg-card border border-border rounded-lg">
-                <div className={cn("w-8 h-8 rounded-full flex items-center justify-center", deptColor.bg)}>
-                  <Building2 className={cn("h-4 w-4", deptColor.text)} />
-                </div>
-                <span className="text-sm font-semibold text-foreground">{deptName}</span>
-                <span className="text-xs text-muted-foreground ml-auto bg-muted px-2.5 py-1 rounded-full">
-                  {deptResources.length} resources
-                </span>
-              </div>
-              
-              {/* Timeline Table */}
-              <div className="bg-card border border-border rounded-lg overflow-hidden">
-                {renderTimelineHeader()}
-                <div className="max-h-[400px] overflow-y-auto">
-                  {deptResources.map(renderResourceRow)}
-                </div>
-              </div>
-            </div>
-          );
-        })}
+      <div className="space-y-4">
+        {Object.entries(groupedByDepartment).map(([name, resources]) => 
+          renderGroupedTimeline(name, resources)
+        )}
       </div>
     );
   }
   
+  // No grouping
   return (
-    <div className="bg-card border border-border rounded-lg overflow-hidden">
-      {renderTimelineHeader()}
-      <div className="max-h-[500px] overflow-y-auto">
-        {resources.map(renderResourceRow)}
+    <div className="space-y-4">
+      <div className="bg-white border border-slate-200 rounded-lg overflow-hidden">
+        {renderTimelineHeader()}
+        <div className="max-h-[500px] overflow-y-auto">
+          {resources.map((r, i) => renderResourceRow(r, r.assignmentName || 'Unassigned', i % 2 === 0))}
+        </div>
       </div>
     </div>
   );
