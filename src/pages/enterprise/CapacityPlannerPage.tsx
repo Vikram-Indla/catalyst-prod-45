@@ -414,9 +414,9 @@ export default function CapacityPlannerPage() {
         <AlertDialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
           <AlertDialogContent>
             <AlertDialogHeader>
-              <AlertDialogTitle>Remove Assignments</AlertDialogTitle>
+              <AlertDialogTitle>Remove from Capacity Planner</AlertDialogTitle>
               <AlertDialogDescription>
-                Are you sure you want to remove all assignments for <span className="font-semibold">{resourceToDelete?.name}</span>? This action cannot be undone.
+                Are you sure you want to remove <span className="font-semibold">{resourceToDelete?.name}</span> from the Capacity Planner? All their assignments will be deleted. This action cannot be undone.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
@@ -430,6 +430,7 @@ export default function CapacityPlannerPage() {
                     resourceToDelete.assignments.forEach((a) => {
                       deleteAssignment.mutate(a.id);
                     });
+                    toast.success(`${resourceToDelete.name} removed from Capacity Planner`);
                   }
                   setDeleteConfirmOpen(false);
                   setResourceToDelete(null);
