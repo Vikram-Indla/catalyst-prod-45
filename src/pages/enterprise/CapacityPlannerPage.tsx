@@ -68,6 +68,7 @@ export default function CapacityPlannerPage() {
   const [resource360Id, setResource360Id] = useState<string | null>(null);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [resourceToDelete, setResourceToDelete] = useState<ResourceMetric | null>(null);
+  const [resourcesToDelete, setResourcesToDelete] = useState<ResourceMetric[]>([]);
 
   // Resource form state
   const [resourceForm, setResourceForm] = useState({
@@ -290,6 +291,12 @@ export default function CapacityPlannerPage() {
               onEditResource={(id) => setEditResourceId(id)}
               onDeleteResource={(resource) => {
                 setResourceToDelete(resource);
+                setResourcesToDelete([]);
+                setDeleteConfirmOpen(true);
+              }}
+              onBulkDelete={(resources) => {
+                setResourcesToDelete(resources);
+                setResourceToDelete(null);
                 setDeleteConfirmOpen(true);
               }}
             />
@@ -416,24 +423,42 @@ export default function CapacityPlannerPage() {
             <AlertDialogHeader>
               <AlertDialogTitle>Remove from Capacity Planner</AlertDialogTitle>
               <AlertDialogDescription>
-                Are you sure you want to remove <span className="font-semibold">{resourceToDelete?.name}</span> from the Capacity Planner? All their assignments will be deleted. This action cannot be undone.
+                {resourcesToDelete.length > 0 ? (
+                  <>
+                    Are you sure you want to remove <span className="font-semibold">{resourcesToDelete.length} resource{resourcesToDelete.length > 1 ? 's' : ''}</span> from the Capacity Planner? All their assignments will be deleted. This action cannot be undone.
+                  </>
+                ) : (
+                  <>
+                    Are you sure you want to remove <span className="font-semibold">{resourceToDelete?.name}</span> from the Capacity Planner? All their assignments will be deleted. This action cannot be undone.
+                  </>
+                )}
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel onClick={() => setResourceToDelete(null)}>
+              <AlertDialogCancel onClick={() => { setResourceToDelete(null); setResourcesToDelete([]); }}>
                 Cancel
               </AlertDialogCancel>
               <AlertDialogAction
                 className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                 onClick={() => {
-                  if (resourceToDelete) {
+                  if (resourcesToDelete.length > 0) {
+                    // Bulk delete
+                    resourcesToDelete.forEach((resource) => {
+                      resource.assignments.forEach((a) => {
+                        deleteAssignment.mutate(a.id);
+                      });
+                    });
+                    toast.success(`${resourcesToDelete.length} resource${resourcesToDelete.length > 1 ? 's' : ''} removed from Capacity Planner`);
+                    setResourcesToDelete([]);
+                  } else if (resourceToDelete) {
+                    // Single delete
                     resourceToDelete.assignments.forEach((a) => {
                       deleteAssignment.mutate(a.id);
                     });
                     toast.success(`${resourceToDelete.name} removed from Capacity Planner`);
+                    setResourceToDelete(null);
                   }
                   setDeleteConfirmOpen(false);
-                  setResourceToDelete(null);
                 }}
               >
                 Remove
@@ -638,7 +663,7 @@ function ResourceCard({ resource, projects, onClick }: { resource: ResourceMetri
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Table View with Division Badges and Actions
+// Table View with Bulk Selection and Actions
 // ─────────────────────────────────────────────────────────────────────────────
 interface TableViewProps {
   resources: ResourceMetric[];
@@ -646,98 +671,180 @@ interface TableViewProps {
   onResourceClick: (r: ResourceMetric) => void;
   onEditResource: (id: string) => void;
   onDeleteResource: (r: ResourceMetric) => void;
+  onBulkDelete?: (resources: ResourceMetric[]) => void;
 }
 
-function TableView({ resources, projects, onResourceClick, onEditResource, onDeleteResource }: TableViewProps) {
+function TableView({ resources, projects, onResourceClick, onEditResource, onDeleteResource, onBulkDelete }: TableViewProps) {
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const getProjectName = (projectId: string) => projects.find(p => p.id === projectId)?.name || 'Unknown';
-  
+
+  const allSelected = resources.length > 0 && selectedIds.size === resources.length;
+  const someSelected = selectedIds.size > 0 && selectedIds.size < resources.length;
+
+  const toggleAll = () => {
+    if (allSelected) {
+      setSelectedIds(new Set());
+    } else {
+      setSelectedIds(new Set(resources.map(r => r.id)));
+    }
+  };
+
+  const toggleOne = (id: string) => {
+    const next = new Set(selectedIds);
+    if (next.has(id)) {
+      next.delete(id);
+    } else {
+      next.add(id);
+    }
+    setSelectedIds(next);
+  };
+
+  const handleBulkDelete = () => {
+    const selected = resources.filter(r => selectedIds.has(r.id));
+    if (onBulkDelete && selected.length > 0) {
+      onBulkDelete(selected);
+      setSelectedIds(new Set());
+    }
+  };
+
   return (
-    <div className="bg-card border border-border rounded-lg overflow-hidden">
-      <table className="w-full">
-        <thead className="bg-muted/50">
-          <tr>
-            <th className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Name</th>
-            <th className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Role</th>
-            <th className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Department</th>
-            <th className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Primary Project</th>
-            <th className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Allocation</th>
-            <th className="text-center px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Assignments</th>
-            <th className="text-right px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {resources.map((resource) => {
-            const dept = resource.department || 'Unassigned';
-            const deptColor = departmentColors[dept] || departmentColors.default;
-            const initials = resource.name?.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'NA';
-            const primaryProject = resource.assignments[0]?.project_id ? getProjectName(resource.assignments[0]?.project_id) : '-';
-            
-            return (
-              <tr 
-                key={resource.id} 
-                className="group border-t border-border hover:bg-muted/30"
-              >
-                <td className="px-4 py-3">
-                  <div className="flex items-center gap-3">
-                    <div className={cn('w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold', deptColor.bg, deptColor.text)}>
-                      {initials}
-                    </div>
-                    <span className="text-sm font-medium text-foreground">{resource.name}</span>
-                  </div>
-                </td>
-                <td className="px-4 py-3 text-sm text-muted-foreground">{resource.role}</td>
-                <td className="px-4 py-3">
-                  <span className={cn('text-[11px] font-semibold px-2 py-1 rounded uppercase', deptColor.badge)}>
-                    {dept}
-                  </span>
-                </td>
-                <td className="px-4 py-3 text-sm text-foreground">{primaryProject}</td>
-                <td className="px-4 py-3">
-                  <div className="flex items-center gap-2.5">
-                    <span className="text-sm font-semibold min-w-[40px]">{resource.allocation}%</span>
-                    <div className="w-20 h-1.5 bg-muted rounded-full overflow-hidden">
-                      <div 
-                        className={cn(
-                          'h-full rounded-full',
-                          resource.allocation > 100 ? 'bg-[#dc2626]' :
-                          resource.allocation > 80 ? 'bg-[#d97706]' : 'bg-[#0d9488]'
-                        )}
-                        style={{ width: `${Math.min(resource.allocation, 100)}%` }}
-                      />
-                    </div>
-                  </div>
-                </td>
-                <td className="px-4 py-3 text-center text-sm text-muted-foreground">{resource.assignments.length}</td>
-                <td className="px-4 py-3">
-                  <div className="flex items-center justify-end gap-2">
-                    {/* 360° View Button with orbital animation */}
-                    <Button360 
-                      onClick={() => onResourceClick(resource)} 
-                      size="sm"
+    <div className="space-y-3">
+      {/* Bulk Action Bar */}
+      {selectedIds.size > 0 && (
+        <div className="flex items-center justify-between px-4 py-3 bg-muted/50 border border-border rounded-lg">
+          <span className="text-sm font-medium text-foreground">
+            {selectedIds.size} resource{selectedIds.size > 1 ? 's' : ''} selected
+          </span>
+          <div className="flex items-center gap-2">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={() => setSelectedIds(new Set())}
+            >
+              Clear Selection
+            </Button>
+            <Button 
+              variant="destructive" 
+              size="sm" 
+              onClick={handleBulkDelete}
+              className="gap-1.5"
+            >
+              <Trash2 className="h-3.5 w-3.5" />
+              Remove Selected
+            </Button>
+          </div>
+        </div>
+      )}
+
+      <div className="bg-card border border-border rounded-lg overflow-hidden">
+        <table className="w-full">
+          <thead className="bg-muted/50">
+            <tr>
+              <th className="w-12 px-4 py-3">
+                <input
+                  type="checkbox"
+                  checked={allSelected}
+                  ref={(el) => { if (el) el.indeterminate = someSelected; }}
+                  onChange={toggleAll}
+                  className="h-4 w-4 rounded border-border text-primary focus:ring-primary/20 cursor-pointer"
+                />
+              </th>
+              <th className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Name</th>
+              <th className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Role</th>
+              <th className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Department</th>
+              <th className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Primary Project</th>
+              <th className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Allocation</th>
+              <th className="text-center px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Assignments</th>
+              <th className="text-right px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {resources.map((resource) => {
+              const dept = resource.department || 'Unassigned';
+              const deptColor = departmentColors[dept] || departmentColors.default;
+              const initials = resource.name?.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'NA';
+              const primaryProject = resource.assignments[0]?.project_id ? getProjectName(resource.assignments[0]?.project_id) : '-';
+              const isSelected = selectedIds.has(resource.id);
+              
+              return (
+                <tr 
+                  key={resource.id} 
+                  className={cn(
+                    "group border-t border-border hover:bg-muted/30",
+                    isSelected && "bg-primary/5"
+                  )}
+                >
+                  <td className="w-12 px-4 py-3">
+                    <input
+                      type="checkbox"
+                      checked={isSelected}
+                      onChange={() => toggleOne(resource.id)}
+                      onClick={(e) => e.stopPropagation()}
+                      className="h-4 w-4 rounded border-border text-primary focus:ring-primary/20 cursor-pointer"
                     />
-                    {/* Edit Button */}
-                    <button 
-                      onClick={(e) => { e.stopPropagation(); onEditResource(resource.id); }}
-                      className="w-7 h-7 rounded flex items-center justify-center text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
-                      title="Edit resource"
-                    >
-                      <Pencil className="h-4 w-4" />
-                    </button>
-                    {/* Delete Button */}
-                    <button 
-                      onClick={(e) => { e.stopPropagation(); onDeleteResource(resource); }}
-                      className="w-7 h-7 rounded flex items-center justify-center text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors"
-                      title="Delete resource"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
+                  </td>
+                  <td className="px-4 py-3">
+                    <div className="flex items-center gap-3">
+                      <div className={cn('w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold', deptColor.bg, deptColor.text)}>
+                        {initials}
+                      </div>
+                      <span className="text-sm font-medium text-foreground">{resource.name}</span>
+                    </div>
+                  </td>
+                  <td className="px-4 py-3 text-sm text-muted-foreground">{resource.role}</td>
+                  <td className="px-4 py-3">
+                    <span className={cn('text-[11px] font-semibold px-2 py-1 rounded uppercase', deptColor.badge)}>
+                      {dept}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3 text-sm text-foreground">{primaryProject}</td>
+                  <td className="px-4 py-3">
+                    <div className="flex items-center gap-2.5">
+                      <span className="text-sm font-semibold min-w-[40px]">{resource.allocation}%</span>
+                      <div className="w-20 h-1.5 bg-muted rounded-full overflow-hidden">
+                        <div 
+                          className={cn(
+                            'h-full rounded-full',
+                            resource.allocation > 100 ? 'bg-[#dc2626]' :
+                            resource.allocation > 80 ? 'bg-[#d97706]' : 'bg-[#0d9488]'
+                          )}
+                          style={{ width: `${Math.min(resource.allocation, 100)}%` }}
+                        />
+                      </div>
+                    </div>
+                  </td>
+                  <td className="px-4 py-3 text-center text-sm text-muted-foreground">{resource.assignments.length}</td>
+                  <td className="px-4 py-3">
+                    <div className="flex items-center justify-end gap-2">
+                      {/* 360° View Button with orbital animation */}
+                      <Button360 
+                        onClick={() => onResourceClick(resource)} 
+                        size="sm"
+                      />
+                      {/* Edit Button */}
+                      <button 
+                        onClick={(e) => { e.stopPropagation(); onEditResource(resource.id); }}
+                        className="w-7 h-7 rounded flex items-center justify-center text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+                        title="Edit resource"
+                      >
+                        <Pencil className="h-4 w-4" />
+                      </button>
+                      {/* Delete Button */}
+                      <button 
+                        onClick={(e) => { e.stopPropagation(); onDeleteResource(resource); }}
+                        className="w-7 h-7 rounded flex items-center justify-center text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors"
+                        title="Remove from Capacity Planner"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
