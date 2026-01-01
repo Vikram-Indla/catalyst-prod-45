@@ -63,38 +63,29 @@ export function KanbanAssignView({
 
   // Populate columns with resources
   // Logic:
-  // 1. Resources with no assignment go to Unassigned with 0% (truly unassigned)
-  // 2. Resources with an assignment appear in their assigned column
-  // 3. Resources with < 100% allocation ALSO appear as ghost cards in Unassigned with remaining capacity
+  // 1. Resources appear in their assigned column (if they have one)
+  // 2. Resources with < 100% allocation appear in Unassigned showing available capacity
+  // 3. Resources at 100% do NOT appear in Unassigned
   resources.forEach(r => {
-    const assignmentName = r.assignmentName || 'Unassigned';
+    const assignmentName = r.assignmentName || null;
     const totalAllocation = r.allocation || 0;
     const remainingCapacity = 100 - totalAllocation;
     
-    if (assignmentName === 'Unassigned') {
-      // Truly unassigned resource - show with 0% or their actual allocation
-      columns[0].resources.push({
-        ...r,
-        allocation: totalAllocation, // Should be 0 for truly unassigned
-      });
-    } else {
-      // Resource has an assignment - add to their assigned column
+    // Add to assigned column if resource has an assignment
+    if (assignmentName) {
       const column = columns.find(c => c.name === assignmentName);
       if (column) {
         column.resources.push(r);
-      } else {
-        // Fallback if column not found
-        columns[0].resources.push(r);
       }
-      
-      // If resource still has remaining capacity, also show ghost card in Unassigned
-      if (remainingCapacity > 0) {
-        columns[0].resources.push({
-          ...r,
-          isGhostCard: true,
-          availableCapacity: remainingCapacity,
-        });
-      }
+    }
+    
+    // Add to Unassigned column ONLY if allocation < 100% (has remaining capacity)
+    if (remainingCapacity > 0) {
+      columns[0].resources.push({
+        ...r,
+        isGhostCard: true,
+        availableCapacity: remainingCapacity,
+      });
     }
   });
 
