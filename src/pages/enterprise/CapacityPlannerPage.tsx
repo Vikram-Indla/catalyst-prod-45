@@ -13,7 +13,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { 
   Users, CheckCircle2, BarChart3, AlertTriangle, TrendingUp, Download, Plus, 
   Search, LayoutGrid, Table2, CalendarDays, GanttChart, FileStack, Bot,
-  ChevronLeft, ChevronRight, Clock, Eye, Copy, Check, RotateCcw, Play,
+  ChevronLeft, ChevronRight, ChevronUp, ChevronDown, Clock, Eye, Copy, Check, RotateCcw, Play,
   Pencil, Trash2, Cloud, Settings2, ArrowLeftRight, Building2
 } from 'lucide-react';
 import { useCapacityData, useAssignments, useAiRecommendations, useCapacityDepartments, useResourceManagement, useResourceAssignments, useResourceAllocations, exportCapacityToPdf } from '@/modules/capacity-planner';
@@ -82,6 +82,9 @@ export default function CapacityPlannerPage() {
   const [groupBy, setGroupBy] = useState<GroupByType>('assignment');
   const [searchQuery, setSearchQuery] = useState('');
   const [departmentFilter, setDepartmentFilter] = useState<string>('all');
+  const [activeFilter, setActiveFilter] = useState<'all' | 'available' | 'atCapacity' | 'over'>('all');
+  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [compactMode, setCompactMode] = useState(false);
   
   // Modal state
   const [resourceModalOpen, setResourceModalOpen] = useState(false);
@@ -162,12 +165,25 @@ export default function CapacityPlannerPage() {
     setResource360Id(resource.id);
   };
 
-  const filteredResources = metrics.resources.filter((r) => {
-    const matchesSearch = r.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      r.role?.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesDepartment = departmentFilter === 'all' || r.department === departmentFilter;
-    return matchesSearch && matchesDepartment;
-  });
+  const filteredResources = useMemo(() => {
+    return metrics.resources.filter((r) => {
+      const matchesSearch = r.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        r.role?.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesDepartment = departmentFilter === 'all' || r.department === departmentFilter;
+      
+      // Apply allocation filter
+      let matchesFilter = true;
+      if (activeFilter === 'available') {
+        matchesFilter = (r.allocation || 0) < 100;
+      } else if (activeFilter === 'atCapacity') {
+        matchesFilter = (r.allocation || 0) === 100;
+      } else if (activeFilter === 'over') {
+        matchesFilter = (r.allocation || 0) > 100;
+      }
+      
+      return matchesSearch && matchesDepartment && matchesFilter;
+    });
+  }, [metrics.resources, searchQuery, departmentFilter, activeFilter]);
 
   // Get unique departments for filter dropdown
   const uniqueDepartments = useMemo(() => {
@@ -279,7 +295,7 @@ export default function CapacityPlannerPage() {
   return (
     <PageChrome hideHeader>
       <div className="flex flex-col h-full bg-[hsl(var(--background))] relative">
-        {/* Header - 2 ROWS ONLY using new CapacityHeader component */}
+        {/* Header - Enterprise Grade */}
         <CapacityHeader
           summary={{
             total: metrics.summary.total,
@@ -292,6 +308,8 @@ export default function CapacityPlannerPage() {
           groupBy={groupBy}
           timelinePeriod={period}
           searchQuery={searchQuery}
+          activeFilter={activeFilter}
+          isCollapsed={isCollapsed}
           onViewModeChange={(mode) => setCurrentView(mode as ViewType)}
           onGroupByChange={(g) => setGroupBy(g as GroupByType)}
           onTimelinePeriodChange={(p) => setPeriod(p as PeriodType)}
@@ -299,10 +317,12 @@ export default function CapacityPlannerPage() {
           onAddResource={() => setResourceModalOpen(true)}
           onAssign={() => setAssignModeOpen(!assignModeOpen)}
           onExport={handleExport}
+          onFilterChange={setActiveFilter}
+          onToggleCollapse={() => setIsCollapsed(!isCollapsed)}
           assignModeActive={assignModeOpen}
         />
 
-        {/* Main Content - Spec background */}
+        {/* Main Content */}
         <div className="flex-1 overflow-auto px-6 py-6 bg-[#fafafa]">
           {currentView === 'cards' && (
             <CardsView 
@@ -310,6 +330,8 @@ export default function CapacityPlannerPage() {
               groupedByAssignment={groupedByAssignment}
               groupedByDepartment={groupedByDepartment}
               groupBy={groupBy}
+              isCollapsed={isCollapsed}
+              compactMode={compactMode}
               onResourceClick={openResourceDrawer}
               onEditResource={(id) => setEditResourceId(id)}
             />
@@ -824,23 +846,49 @@ function ViewTabSpec({ icon: Icon, label, active, onClick }: {
 // ─────────────────────────────────────────────────────────────────────────────
 // Cards View with Assignment Grouping
 // ─────────────────────────────────────────────────────────────────────────────
-function CardsView({ resources, groupedByAssignment, groupedByDepartment, groupBy, onResourceClick, onEditResource }: { 
+function CardsView({ 
+  resources, 
+  groupedByAssignment, 
+  groupedByDepartment, 
+  groupBy, 
+  isCollapsed = false,
+  compactMode = false,
+  onResourceClick, 
+  onEditResource 
+}: { 
   resources: ResourceMetric[]; 
   groupedByAssignment: Record<string, ResourceMetric[]>;
   groupedByDepartment: Record<string, ResourceMetric[]>;
   groupBy: GroupByType;
+  isCollapsed?: boolean;
+  compactMode?: boolean;
   onResourceClick: (r: ResourceMetric) => void;
   onEditResource: (id: string) => void;
 }) {
+  const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({});
+
+  const toggleGroup = (groupName: string) => {
+    setExpandedGroups(prev => ({
+      ...prev,
+      [groupName]: prev[groupName] === undefined ? false : !prev[groupName]
+    }));
+  };
+
+  const isGroupExpanded = (groupName: string) => {
+    if (isCollapsed) return false;
+    return expandedGroups[groupName] !== false;
+  };
+
   if (groupBy === 'assignment') {
     return (
-      <div className="space-y-6">
+      <div className="space-y-4">
         {Object.entries(groupedByAssignment).map(([assignmentName, assignmentResources]) => {
           const availableCount = assignmentResources.filter(r => (r.allocation || 0) < 100).length;
           const atCapacityCount = assignmentResources.filter(r => (r.allocation || 0) >= 100).length;
           const avgUtil = assignmentResources.length > 0 
             ? Math.round(assignmentResources.reduce((sum, r) => sum + (r.allocation || 0), 0) / assignmentResources.length)
             : 0;
+          const expanded = isGroupExpanded(assignmentName);
           return (
           <div key={assignmentName} className="space-y-3">
             {/* Group Header with capacity bar */}
@@ -850,22 +898,33 @@ function CardsView({ resources, groupedByAssignment, groupedByDepartment, groupB
               availableCount={availableCount}
               atCapacityCount={atCapacityCount}
               averageUtilization={avgUtil}
+              isExpanded={expanded}
+              onToggle={() => toggleGroup(assignmentName)}
             />
             
-            {/* Cards Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 pl-4">
-              {assignmentResources.map((resource) => (
-                <ResourceCardV2 
-                  key={resource.id} 
-                  name={resource.name}
-                  role={resource.role || 'Team Member'}
-                  assignmentName={resource.assignmentName}
-                  totalAllocation={resource.allocation || 0}
-                  onOpen360={() => onResourceClick(resource)}
-                  onEdit={() => onEditResource(resource.id)}
-                />
-              ))}
-            </div>
+            {/* Cards Grid - Collapsible */}
+            {expanded && (
+              <div className={cn(
+                "grid gap-3 pl-4",
+                compactMode 
+                  ? "grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5"
+                  : "grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
+              )}>
+                {assignmentResources.map((resource) => (
+                  <ResourceCardV2 
+                    key={resource.id} 
+                    name={resource.name}
+                    role={resource.role || 'Team Member'}
+                    department={resource.department}
+                    assignmentName={resource.assignmentName}
+                    totalAllocation={resource.allocation || 0}
+                    onOpen360={() => onResourceClick(resource)}
+                    onEdit={() => onEditResource(resource.id)}
+                    compact={compactMode}
+                  />
+                ))}
+              </div>
+            )}
           </div>
         )})}
       </div>
@@ -874,34 +933,101 @@ function CardsView({ resources, groupedByAssignment, groupedByDepartment, groupB
 
   if (groupBy === 'department') {
     return (
-      <div className="space-y-6">
+      <div className="space-y-4">
         {Object.entries(groupedByDepartment).map(([deptName, deptResources]) => {
           const deptColor = departmentColors[deptName] || departmentColors.default;
+          const expanded = isGroupExpanded(deptName);
+          const availableCount = deptResources.filter(r => (r.allocation || 0) < 100).length;
+          const atCapacityCount = deptResources.filter(r => (r.allocation || 0) >= 100).length;
+          const avgUtil = deptResources.length > 0 
+            ? Math.round(deptResources.reduce((sum, r) => sum + (r.allocation || 0), 0) / deptResources.length)
+            : 0;
           return (
             <div key={deptName} className="space-y-3">
-              {/* Group Header */}
-              <div className="flex items-center gap-3 p-3 bg-card border border-border rounded-lg">
-                <div className={cn("w-8 h-8 rounded-full flex items-center justify-center", deptColor.bg)}>
-                  <Building2 className={cn("h-4 w-4", deptColor.text)} />
+              {/* Group Header - Enterprise Style */}
+              <div 
+                className="flex items-center justify-between px-5 py-4 border border-[#e5e5e5] rounded-xl cursor-pointer hover:shadow-md transition-all"
+                style={{ 
+                  backgroundColor: `${CATALYST.blue.primary}08`,
+                  borderLeftWidth: '4px',
+                  borderLeftColor: CATALYST.blue.primary,
+                }}
+                onClick={() => toggleGroup(deptName)}
+              >
+                <div className="flex items-center gap-4">
+                  <div className={cn("w-12 h-12 rounded-xl flex items-center justify-center shadow-sm", deptColor.bg)}>
+                    <Building2 className={cn("w-6 h-6", deptColor.text)} />
+                  </div>
+                  <div>
+                    <span className="text-lg font-bold text-[#0a0a0a]">{deptName}</span>
+                    <div className="flex items-center gap-4 mt-1">
+                      {availableCount > 0 && (
+                        <span className="text-sm text-[#525252] flex items-center gap-1.5">
+                          <span className="w-2 h-2 rounded-full" style={{ backgroundColor: CATALYST.teal.primary }} />
+                          <span className="font-medium">{availableCount}</span> available
+                        </span>
+                      )}
+                      {atCapacityCount > 0 && (
+                        <span className="text-sm text-[#525252] flex items-center gap-1.5">
+                          <span className="w-2 h-2 rounded-full" style={{ backgroundColor: CATALYST.blue.primary }} />
+                          <span className="font-medium">{atCapacityCount}</span> at capacity
+                        </span>
+                      )}
+                    </div>
+                  </div>
                 </div>
-                <span className="text-sm font-semibold text-foreground">{deptName}</span>
-                <span className="text-xs text-muted-foreground ml-auto bg-muted px-2.5 py-1 rounded-full">
-                  {deptResources.length} resources
-                </span>
+                <div className="flex items-center gap-5">
+                  <div className="flex flex-col items-end gap-1">
+                    <span className="text-xs font-medium text-[#737373]">Avg: {avgUtil}%</span>
+                    <div className="w-32 h-2 bg-[#e5e5e5] rounded-full overflow-hidden">
+                      <div 
+                        className="h-full rounded-full"
+                        style={{ 
+                          width: `${Math.min(avgUtil, 100)}%`,
+                          backgroundColor: CATALYST.blue.primary
+                        }}
+                      />
+                    </div>
+                  </div>
+                  <div 
+                    className="flex items-center gap-2 px-3 py-1.5 rounded-lg"
+                    style={{ backgroundColor: CATALYST.blue.bg }}
+                  >
+                    <Users className="w-4 h-4" style={{ color: CATALYST.blue.primary }} />
+                    <span className="text-sm font-bold" style={{ color: CATALYST.blue.primary }}>
+                      {deptResources.length}
+                    </span>
+                  </div>
+                  {expanded 
+                    ? <ChevronUp className="w-5 h-5 text-[#737373]" />
+                    : <ChevronDown className="w-5 h-5 text-[#737373]" />
+                  }
+                </div>
               </div>
               
-              {/* Cards Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                {deptResources.map((resource) => (
-                  <ResourceCard 
-                    key={resource.id} 
-                    resource={resource} 
-                    groupBy={groupBy}
-                    on360Click={() => onResourceClick(resource)}
-                    onCardClick={() => onEditResource(resource.id)}
-                  />
-                ))}
-              </div>
+              {/* Cards Grid - Collapsible */}
+              {expanded && (
+                <div className={cn(
+                  "grid gap-3 pl-4",
+                  compactMode 
+                    ? "grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5"
+                    : "grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
+                )}>
+                  {deptResources.map((resource) => (
+                    <ResourceCardV2 
+                      key={resource.id} 
+                      name={resource.name}
+                      role={resource.role || 'Team Member'}
+                      department={resource.department}
+                      assignmentName={resource.assignmentName}
+                      totalAllocation={resource.allocation || 0}
+                      onOpen360={() => onResourceClick(resource)}
+                      onEdit={() => onEditResource(resource.id)}
+                      compact={compactMode}
+                    />
+                  ))}
+                </div>
+              )}
             </div>
           );
         })}
@@ -910,16 +1036,23 @@ function CardsView({ resources, groupedByAssignment, groupedByDepartment, groupB
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+    <div className={cn(
+      "grid gap-3",
+      compactMode 
+        ? "grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5"
+        : "grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+    )}>
       {resources.map((resource) => (
         <ResourceCardV2 
           key={resource.id} 
           name={resource.name}
           role={resource.role || 'Team Member'}
+          department={resource.department}
           assignmentName={resource.assignmentName}
           totalAllocation={resource.allocation || 0}
           onOpen360={() => onResourceClick(resource)}
           onEdit={() => onEditResource(resource.id)}
+          compact={compactMode}
         />
       ))}
     </div>
