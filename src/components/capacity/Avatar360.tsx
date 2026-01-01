@@ -27,7 +27,7 @@ export function Avatar360({
   };
 
   return (
-    <div className="relative inline-flex items-center justify-center">
+    <div className="relative inline-flex items-center justify-center z-10 group/avatar360">
       {/* Avatar Button */}
       <button
         onClick={(e) => {
@@ -93,13 +93,13 @@ export function Avatar360({
         />
       </div>
 
-      {/* Tooltip */}
+      {/* Tooltip - positioned above the avatar */}
       <div 
         className={cn(
-          "absolute -bottom-9 left-1/2 -translate-x-1/2 z-50",
+          "absolute -top-10 left-1/2 -translate-x-1/2 z-[100]",
           "px-2.5 py-1.5 rounded-md",
-          "bg-popover text-popover-foreground text-[11px] font-medium whitespace-nowrap",
-          "border border-border shadow-md",
+          "bg-[#1f2937] text-white text-[11px] font-medium whitespace-nowrap",
+          "shadow-lg",
           "transition-all duration-200",
           isHovered 
             ? "opacity-100 translate-y-0" 
@@ -109,8 +109,8 @@ export function Avatar360({
         View 360° Work Context
         {/* Tooltip Arrow */}
         <div 
-          className="absolute -top-1 left-1/2 -translate-x-1/2 
-                     w-2 h-2 bg-popover border-l border-t border-border rotate-45"
+          className="absolute -bottom-1 left-1/2 -translate-x-1/2 
+                     w-2 h-2 bg-[#1f2937] rotate-45"
         />
       </div>
     </div>
