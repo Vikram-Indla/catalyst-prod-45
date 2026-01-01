@@ -10,7 +10,7 @@
 import { useState } from 'react';
 import { Pencil } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { getAssignmentColor, getAllocationColors, getAllocationStatus, getInitials, CATALYST } from '@/lib/catalyst-colors';
+import { getAssignmentColor, getAllocationStatus, getInitials, CATALYST } from '@/lib/catalyst-colors';
 
 interface ResourceCardV2Props {
   name: string;
@@ -35,7 +35,6 @@ export function ResourceCardV2({
 }: ResourceCardV2Props) {
   const [hovered, setHovered] = useState(false);
   const avatarColor = getAssignmentColor(assignmentName);
-  const allocation = getAllocationColors(totalAllocation);
   const status = getAllocationStatus(totalAllocation);
   const initials = getInitials(name);
 
@@ -128,15 +127,15 @@ export function ResourceCardV2({
 
         {/* ALLOCATION SECTION - Badge + Progress Bar */}
         <div className="flex flex-col items-end gap-2 shrink-0 pt-0.5">
-          {/* Allocation Badge */}
+          {/* Allocation Badge - Uses status colors (Teal < 100, Blue = 100, Bronze > 100) */}
           <span
             className={cn(
               'px-3 py-1.5 rounded-lg font-bold',
               compact ? 'text-xs' : 'text-sm'
             )}
             style={{
-              backgroundColor: allocation.bg,
-              color: allocation.text,
+              backgroundColor: status.bg,
+              color: status.color,
             }}
           >
             {totalAllocation}%
@@ -148,7 +147,7 @@ export function ResourceCardV2({
               className="h-full rounded-full transition-all"
               style={{ 
                 width: `${Math.min(totalAllocation, 100)}%`,
-                backgroundColor: allocation.bar
+                backgroundColor: status.bar
               }}
             />
           </div>

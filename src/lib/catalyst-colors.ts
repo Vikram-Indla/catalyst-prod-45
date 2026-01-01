@@ -72,30 +72,35 @@ export function getAllocationStatus(percentage: number): {
   color: string;
   bg: string;
   border: string;
+  bar: string;
 } {
   if (percentage === 0) return { 
     status: 'available', 
     color: CATALYST.teal.primary, 
     bg: CATALYST.teal.bg, 
-    border: CATALYST.teal.primary 
+    border: CATALYST.teal.primary,
+    bar: CATALYST.teal.primary
   };
   if (percentage < 100) return { 
     status: 'partial', 
     color: CATALYST.teal.primary, 
     bg: CATALYST.teal.bg, 
-    border: CATALYST.teal.primary 
+    border: CATALYST.teal.primary,
+    bar: CATALYST.teal.primary
   };
   if (percentage === 100) return { 
     status: 'full', 
     color: CATALYST.blue.primary, 
     bg: CATALYST.blue.bg, 
-    border: CATALYST.blue.primary 
+    border: CATALYST.blue.primary,
+    bar: CATALYST.blue.primary
   };
   return { 
     status: 'over', 
     color: CATALYST.bronze.primary, 
     bg: CATALYST.bronze.bg, 
-    border: CATALYST.bronze.primary 
+    border: CATALYST.bronze.primary,
+    bar: CATALYST.bronze.primary
   };
 }
 

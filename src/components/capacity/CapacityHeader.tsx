@@ -143,8 +143,8 @@ export function CapacityHeader({
             icon={<AlertTriangle className="w-5 h-5" />}
             value={summary.over}
             label="Over"
-            color={CATALYST.bronze.primary}
-            bgColor={CATALYST.bronze.bg}
+            color={summary.over > 0 ? CATALYST.bronze.primary : CATALYST.grey[400]}
+            bgColor={summary.over > 0 ? CATALYST.bronze.bg : CATALYST.grey[100]}
             isActive={activeFilter === 'over'}
             onClick={() => onFilterChange?.('over')}
           />
