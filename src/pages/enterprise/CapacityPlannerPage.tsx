@@ -12,8 +12,8 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sh
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { 
   Users, CheckCircle2, BarChart3, AlertTriangle, TrendingUp, Download, Plus, 
-  Search, LayoutGrid, Table2, CalendarDays, GanttChart, Sparkles, FileStack, Bot,
-  ChevronLeft, ChevronRight, Clock, Eye, Copy, Check, RotateCcw, Play, FolderKanban,
+  Search, LayoutGrid, Table2, CalendarDays, GanttChart, FileStack, Bot,
+  ChevronLeft, ChevronRight, Clock, Eye, Copy, Check, RotateCcw, Play,
   Pencil, Trash2, Cloud, GitCompare, Settings2, ArrowLeftRight
 } from 'lucide-react';
 import { useCapacityData, useAssignments, useAiRecommendations, useCapacityScenarios, useCapacityDepartments, useResourceManagement, useResourceAssignments, exportCapacityToPdf } from '@/modules/capacity-planner';
@@ -200,10 +200,6 @@ export default function CapacityPlannerPage() {
       allocation 
     });
   };
-
-  // Under-allocated resources for Leveling
-  const underAllocatedResources = filteredResources.filter(r => r.allocation < 80);
-
   if (isLoading) {
     return (
       <PageChrome>
@@ -220,26 +216,28 @@ export default function CapacityPlannerPage() {
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 flex-wrap gap-3">
           <div className="flex items-center gap-4">
-            {/* Period Toggle */}
-            <div className="flex bg-card border border-border rounded-lg p-1">
-              {(['weekly', 'monthly', 'quarterly'] as PeriodType[]).map((p) => (
-                <button
-                  key={p}
-                  onClick={() => setPeriod(p)}
-                  className={cn(
-                    'px-4 py-2 text-xs font-semibold rounded-md transition-all capitalize',
-                    period === p
-                      ? 'bg-foreground text-background'
-                      : 'text-muted-foreground hover:bg-muted hover:text-foreground'
-                  )}
-                >
-                  {p}
-                </button>
-              ))}
-            </div>
+            {/* Period Toggle - Only show in Timeline view */}
+            {currentView === 'timeline' && (
+              <div className="flex bg-card border border-border rounded-lg p-1">
+                {(['weekly', 'monthly', 'quarterly'] as PeriodType[]).map((p) => (
+                  <button
+                    key={p}
+                    onClick={() => setPeriod(p)}
+                    className={cn(
+                      'px-4 py-2 text-xs font-semibold rounded-md transition-all capitalize',
+                      period === p
+                        ? 'bg-foreground text-background'
+                        : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                    )}
+                  >
+                    {p}
+                  </button>
+                ))}
+              </div>
+            )}
             
             {/* Search */}
-            <div className="relative ml-3">
+            <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input 
                 placeholder="Search resources..." 
@@ -251,15 +249,19 @@ export default function CapacityPlannerPage() {
           </div>
           
           <div className="flex items-center gap-2">
-            <Button 
-              variant="outline" 
-              size="sm" 
-              onClick={() => setAssignModeOpen(true)} 
-              className="gap-2 border-[#2563eb]/30 text-[#2563eb] hover:bg-[#2563eb]/10 hover:border-[#2563eb]"
+            {/* Enterprise Assign Mode Toggle */}
+            <button
+              onClick={() => setAssignModeOpen(!assignModeOpen)}
+              className={cn(
+                'flex items-center gap-2 px-4 py-2 rounded-lg border text-sm font-medium transition-all',
+                assignModeOpen
+                  ? 'bg-[#2563eb] border-[#2563eb] text-white'
+                  : 'bg-card border-border text-[#2563eb] hover:bg-[#2563eb]/5 hover:border-[#2563eb]/50'
+              )}
             >
               <ArrowLeftRight className="h-4 w-4" />
-              Assign Mode
-            </Button>
+              <span>Assign Mode</span>
+            </button>
             <Button variant="outline" size="sm" onClick={handleExport} className="gap-2">
               <Download className="h-4 w-4" />
               Export
@@ -339,14 +341,6 @@ export default function CapacityPlannerPage() {
             <ViewTab icon={LayoutGrid} label="Cards" active={currentView === 'cards'} onClick={() => setCurrentView('cards')} />
             <ViewTab icon={Table2} label="Table" active={currentView === 'table'} onClick={() => setCurrentView('table')} />
             <ViewTab icon={CalendarDays} label="Timeline" active={currentView === 'timeline'} onClick={() => setCurrentView('timeline')} />
-            <ViewTab icon={GanttChart} label="Assignments" active={currentView === 'assignments'} onClick={() => setCurrentView('assignments')} />
-            <ViewTab 
-              icon={Sparkles} 
-              label="Leveling" 
-              active={currentView === 'leveling'} 
-              onClick={() => setCurrentView('leveling')} 
-              badge={underAllocatedResources.length}
-            />
             <ViewTab icon={FileStack} label="Scenarios" active={currentView === 'scenarios'} onClick={() => setCurrentView('scenarios')} />
           </div>
           
@@ -406,12 +400,6 @@ export default function CapacityPlannerPage() {
               groupBy={groupBy}
               groupedByAssignment={groupedByAssignment}
             />
-          )}
-          {currentView === 'assignments' && (
-            <AssignmentsView resources={filteredResources} projects={projects} createAssignment={createAssignment} />
-          )}
-          {currentView === 'leveling' && (
-            <LevelingView resources={underAllocatedResources} recommendations={recommendations} />
           )}
           {currentView === 'scenarios' && (
             <ScenariosView />
