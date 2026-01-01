@@ -28,6 +28,7 @@ import { CatalystEnterpriseTable, CatalystColumn } from '@/components/industry/C
 import { BulkEditModal } from '@/components/capacity/BulkEditModal';
 import { DraggableCardsView } from '@/components/capacity/DraggableCardsView';
 import { KanbanAssignView } from '@/components/capacity/KanbanAssignView';
+import { Logo } from '@/components/brand/Logo';
 
 type PeriodType = 'weekly' | 'monthly' | 'quarterly';
 type GroupByType = 'none' | 'assignment' | 'department';
@@ -737,26 +738,21 @@ export default function CapacityPlannerPage() {
 
         {/* Presentation Mode Fullscreen Overlay */}
         {presentationMode && (
-          <div className="fixed inset-0 z-50 bg-white">
-            {/* Exit Button */}
-            <button
-              onClick={() => setPresentationMode(false)}
-              className="absolute top-4 right-4 z-50 flex items-center gap-2 px-4 py-2 bg-slate-900 text-white rounded-lg hover:bg-slate-800 transition-colors shadow-lg"
-            >
-              <X className="h-4 w-4" />
-              Exit Presentation
-            </button>
-
-            {/* Header with minimal info */}
-            <div className="px-8 py-6 border-b border-slate-200">
-              <h1 className="text-2xl font-bold text-slate-900">Capacity Overview</h1>
-              <p className="text-sm text-slate-500 mt-1">
-                {departmentFilter === 'all' ? 'All Departments' : `${departmentFilter.charAt(0).toUpperCase() + departmentFilter.slice(1)} Department`}
-              </p>
+          <div className="fixed inset-0 z-50 bg-[#fafafa] flex flex-col">
+            {/* Top Bar with Logo and Exit */}
+            <div className="flex items-center justify-between px-6 py-4 bg-white border-b border-slate-200">
+              <Logo variant="dark" size="lg" />
+              <button
+                onClick={() => setPresentationMode(false)}
+                className="flex items-center gap-2 px-4 py-2 bg-slate-900 text-white rounded-lg hover:bg-slate-800 transition-colors shadow-lg"
+              >
+                <X className="h-4 w-4" />
+                Exit Presentation
+              </button>
             </div>
 
-            {/* Full Content Area */}
-            <div className="h-[calc(100vh-100px)] overflow-auto px-8 py-6 bg-[#fafafa]">
+            {/* Full Content Area - No padding, no header, just content */}
+            <div className="flex-1 overflow-auto p-6">
               {currentView === 'cards' && (
                 <CardsView 
                   resources={filteredResources} 
