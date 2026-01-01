@@ -334,13 +334,36 @@ export function useDeleteUser() {
 
       return data;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['users-list'] });
-      toast.success('User removed from the system');
+    onMutate: async (userId: string) => {
+      // Optimistically remove from UI immediately
+      await queryClient.cancelQueries({ queryKey: ['users-list'] });
+
+      const previousUsers = queryClient.getQueryData<UserProfile[]>(['users-list']);
+
+      queryClient.setQueryData<UserProfile[]>(['users-list'], (old) =>
+        (old || []).filter((u) => u.id !== userId)
+      );
+
+      toast.loading('Removing user…', { id: `delete-user-${userId}` });
+
+      return { previousUsers };
     },
-    onError: (error) => {
-      toast.error((error as Error).message || 'Failed to remove user');
-    }
+    onSuccess: (_data, userId) => {
+      queryClient.invalidateQueries({ queryKey: ['users-list'] });
+      toast.success('User removed from the system', { id: `delete-user-${userId}` });
+    },
+    onError: (error, userId, context) => {
+      // Rollback optimistic update
+      if (context?.previousUsers) {
+        queryClient.setQueryData(['users-list'], context.previousUsers);
+      }
+      toast.error((error as Error).message || 'Failed to remove user', {
+        id: `delete-user-${userId}`,
+      });
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['users-list'] });
+    },
   });
 }
 
