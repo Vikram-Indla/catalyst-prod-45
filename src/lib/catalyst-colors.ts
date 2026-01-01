@@ -152,7 +152,7 @@ export function getAllocationTheme(percentage: number): {
     bg: '#eff6ff', 
     text: '#2563eb', 
     bar: '#2563eb', 
-    label: 'OPTIMAL',
+    label: 'AT CAPACITY',
     labelColor: '#2563eb',
     labelBg: '#eff6ff'
   };
