@@ -184,32 +184,24 @@ export function useResourceManagement() {
 
       if (existingResource) {
         // Update existing resource_inventory entry
+        const updateData: Record<string, any> = { 
+          assignment_id: assignmentId,
+          updated_at: new Date().toISOString() 
+        };
+        
+        // Include allocation if provided
+        if (allocation !== undefined) {
+          updateData.default_capacity_percent = allocation;
+        }
+        
         const { data, error } = await supabase
           .from('resource_inventory')
-          .update({ 
-            assignment_id: assignmentId,
-            updated_at: new Date().toISOString() 
-          })
+          .update(updateData)
           .eq('profile_id', resourceId)
           .select()
           .single();
 
         if (error) throw error;
-        
-        // Update allocation in assignments table if provided
-        if (allocation !== undefined) {
-          const { error: allocationError } = await supabase
-            .from('assignments')
-            .update({ 
-              allocation_percentage: allocation,
-              updated_at: new Date().toISOString() 
-            })
-            .eq('user_id', resourceId)
-            .eq('status', 'active');
-          
-          if (allocationError) console.error('Failed to update allocation:', allocationError);
-        }
-        
         return data;
       } else {
         // Create resource_inventory entry with profile_id
@@ -220,32 +212,22 @@ export function useResourceManagement() {
           .single();
 
         if (profile) {
+          const insertData = {
+            profile_id: resourceId,
+            name: profile.full_name || 'Unknown',
+            role_name: profile.role,
+            assignment_id: assignmentId,
+            is_active: true,
+            default_capacity_percent: allocation ?? 100,
+          };
+          
           const { data, error } = await supabase
             .from('resource_inventory')
-            .insert({
-              profile_id: resourceId,
-              name: profile.full_name || 'Unknown',
-              role_name: profile.role,
-              assignment_id: assignmentId,
-              is_active: true,
-            })
+            .insert(insertData)
             .select()
             .single();
 
           if (error) throw error;
-          
-          // Update allocation in assignments table if provided
-          if (allocation !== undefined) {
-            await supabase
-              .from('assignments')
-              .update({ 
-                allocation_percentage: allocation,
-                updated_at: new Date().toISOString() 
-              })
-              .eq('user_id', resourceId)
-              .eq('status', 'active');
-          }
-          
           return data;
         }
         throw new Error('Profile not found');
