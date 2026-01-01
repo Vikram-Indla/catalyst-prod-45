@@ -8,21 +8,22 @@ export const CATALYST = {
     primary: '#2563eb',
     dark: '#1d4ed8',
     light: '#3b82f6',
-    bg: 'rgba(37, 99, 235, 0.1)',
+    bg: 'rgba(37, 99, 235, 0.08)',
   },
   teal: {
     primary: '#0d9488',
     dark: '#0f766e',
-    bg: 'rgba(13, 148, 136, 0.1)',
+    bg: 'rgba(13, 148, 136, 0.08)',
   },
   olive: {
     primary: '#4f8a4f',
     dark: '#3d6b3d',
+    bg: 'rgba(79, 138, 79, 0.08)',
   },
   bronze: {
     primary: '#8b7355',
     dark: '#6b5842',
-    bg: 'rgba(139, 115, 85, 0.1)',
+    bg: 'rgba(139, 115, 85, 0.08)',
   },
   grey: {
     50: '#fafafa',
@@ -60,6 +61,42 @@ export const ASSIGNMENT_COLORS: Record<string, string> = {
 export function getAssignmentColor(name: string | null | undefined): string {
   if (!name) return CATALYST.grey[400];
   return ASSIGNMENT_COLORS[name] || CATALYST.blue.primary;
+}
+
+/**
+ * Get allocation status with colors and border
+ * Used for left border coloring on cards
+ */
+export function getAllocationStatus(percentage: number): { 
+  status: 'available' | 'partial' | 'full' | 'over';
+  color: string;
+  bg: string;
+  border: string;
+} {
+  if (percentage === 0) return { 
+    status: 'available', 
+    color: CATALYST.teal.primary, 
+    bg: CATALYST.teal.bg, 
+    border: CATALYST.teal.primary 
+  };
+  if (percentage < 100) return { 
+    status: 'partial', 
+    color: CATALYST.teal.primary, 
+    bg: CATALYST.teal.bg, 
+    border: CATALYST.teal.primary 
+  };
+  if (percentage === 100) return { 
+    status: 'full', 
+    color: CATALYST.blue.primary, 
+    bg: CATALYST.blue.bg, 
+    border: CATALYST.blue.primary 
+  };
+  return { 
+    status: 'over', 
+    color: CATALYST.bronze.primary, 
+    bg: CATALYST.bronze.bg, 
+    border: CATALYST.bronze.primary 
+  };
 }
 
 /**
