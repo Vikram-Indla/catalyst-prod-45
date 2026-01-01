@@ -21,7 +21,7 @@ import { useCapacityData, useAssignments, useAiRecommendations, useCapacityScena
 import type { ViewType, ResourceMetric, CapacityProject, AiRecommendation } from '@/modules/capacity-planner';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
-import { Button360 } from '@/components/capacity/Button360';
+import { Avatar360 } from '@/components/capacity/Avatar360';
 import { Resource360Drawer } from '@/components/capacity/resource360/Resource360Drawer';
 import { CapacityAIDrawer } from '@/components/capacity/CapacityAIDrawer';
 import { CatalystEnterpriseTable, CatalystColumn } from '@/components/industry/CatalystEnterpriseTable';
@@ -899,10 +899,14 @@ function ResourceCard({ resource, on360Click, onCardClick }: {
       onClick={onCardClick}
     >
       <div className="flex items-center gap-3">
-        {/* Avatar */}
-        <div className={cn('w-10 h-10 rounded-full flex items-center justify-center text-sm font-semibold', deptColor.bg, deptColor.text)}>
-          {initials}
-        </div>
+        {/* Avatar with 360° hover animation */}
+        <Avatar360 
+          initials={initials}
+          onClick={on360Click}
+          bgColor={deptColor.bg}
+          textColor={deptColor.text}
+          size="md"
+        />
         
         {/* Info */}
         <div className="flex-1 min-w-0">
@@ -919,11 +923,6 @@ function ResourceCard({ resource, on360Click, onCardClick }: {
               {assignmentName}
             </span>
           </div>
-        </div>
-        
-        {/* 360° button with orbital animation */}
-        <div onClick={(e) => e.stopPropagation()}>
-          <Button360 onClick={on360Click} size="md" />
         </div>
         
         {/* Allocation */}
@@ -1063,10 +1062,17 @@ function TableView({ resources, projects, groupBy, groupedByAssignment, onResour
       accessor: 'id',
       width: '140px',
       sortable: false,
-      render: (_: any, row: ResourceMetric) => (
+      render: (_: any, row: ResourceMetric) => {
+        const initials = row.name?.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'NA';
+        const dept = row.department || 'Unassigned';
+        const deptColor = departmentColors[dept] || departmentColors.default;
+        return (
         <div className="flex items-center justify-end gap-2">
-          <Button360 
+          <Avatar360 
+            initials={initials}
             onClick={() => onResourceClick(row)} 
+            bgColor={deptColor.bg}
+            textColor={deptColor.text}
             size="sm"
           />
           <button 
@@ -1084,7 +1090,8 @@ function TableView({ resources, projects, groupBy, groupedByAssignment, onResour
             <Trash2 className="h-4 w-4" />
           </button>
         </div>
-      ),
+        );
+      },
     },
   ], [projects, onResourceClick, onEditResource, onDeleteResource]);
 
