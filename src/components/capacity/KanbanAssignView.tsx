@@ -377,13 +377,13 @@ export function KanbanAssignView({
                         </span>
                       </div>
 
-                      {/* Column Content - Scrollable */}
+                      {/* Column Content - Scrollable droppable area */}
                       <div
                         ref={provided.innerRef}
                         {...provided.droppableProps}
                         className={cn(
-                          "flex-1 overflow-y-auto p-2 space-y-2 min-h-[200px] max-h-[calc(100vh-220px)]",
-                          snapshot.isDraggingOver && "bg-[#2563eb]/5"
+                          "flex-1 overflow-y-auto p-2 space-y-2 min-h-[300px] max-h-[calc(100vh-220px)]",
+                          snapshot.isDraggingOver && "bg-[#2563eb]/10 ring-2 ring-inset ring-[#2563eb]/30"
                         )}
                       >
                         {column.resources.map((resource, index) => {
@@ -396,6 +396,7 @@ export function KanbanAssignView({
                                   ref={draggableProvided.innerRef}
                                   {...draggableProvided.draggableProps}
                                   {...draggableProvided.dragHandleProps}
+                                  style={draggableProvided.draggableProps.style}
                                 >
                                   <CompactResourceCard 
                                     resource={resource} 
@@ -410,9 +411,14 @@ export function KanbanAssignView({
                         })}
                         {provided.placeholder}
 
-                        {/* Empty state */}
-                        {column.resources.length === 0 && !snapshot.isDraggingOver && (
-                          <div className="flex flex-col items-center justify-center py-8 text-center">
+                        {/* Empty state - show when no resources and not dragging over */}
+                        {column.resources.length === 0 && (
+                          <div 
+                            className={cn(
+                              "flex flex-col items-center justify-center py-12 text-center pointer-events-none",
+                              snapshot.isDraggingOver && "opacity-0"
+                            )}
+                          >
                             <div className="w-12 h-12 rounded-full bg-muted/50 flex items-center justify-center mb-2">
                               <Users className="h-5 w-5 text-muted-foreground/50" />
                             </div>
