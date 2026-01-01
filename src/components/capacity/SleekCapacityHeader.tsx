@@ -51,7 +51,7 @@ export function SleekCapacityHeader({
   const overPct = summary.total > 0 ? Math.round((summary.over / summary.total) * 100) : 0;
 
   return (
-    <div className="bg-white border-b border-slate-200" style={{ maxHeight: '120px' }}>
+    <div className="bg-white border-b border-slate-200">
       {/* ROW 1: Breadcrumb + Live Status + Actions — Height: 40px */}
       <div className="flex items-center justify-between px-4 py-2 border-b border-slate-100">
         <div className="flex items-center gap-3">
