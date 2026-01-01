@@ -745,7 +745,7 @@ export default function CapacityPlannerPage() {
               <Logo variant="dark" size="md" />
 
               {/* Center section: Tabs + Group By */}
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-3">
                 {/* View Tabs */}
                 <div className="flex items-center gap-1 bg-muted rounded-lg p-1">
                   <button
@@ -783,21 +783,53 @@ export default function CapacityPlannerPage() {
                   </button>
                 </div>
 
-                {/* Group By Select */}
-                <Select value={groupBy} onValueChange={(v) => setGroupBy(v as GroupByType)}>
-                  <SelectTrigger className="h-8 w-[140px] text-sm">
-                    <SelectValue placeholder="Group by" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="none">No Grouping</SelectItem>
-                    <SelectItem value="assignment">By Assignment</SelectItem>
-                    <SelectItem value="department">By Department</SelectItem>
-                  </SelectContent>
-                </Select>
+                {/* Group By Toggle Buttons */}
+                <div className="flex items-center gap-1 bg-muted rounded-lg p-1">
+                  <button
+                    onClick={() => setGroupBy('none')}
+                    className={cn(
+                      "p-1.5 rounded-md transition-colors",
+                      groupBy === 'none' 
+                        ? "bg-background text-foreground shadow-sm" 
+                        : "text-muted-foreground hover:text-foreground"
+                    )}
+                    title="No Grouping"
+                  >
+                    <LayoutGrid className="h-4 w-4" />
+                  </button>
+                  <button
+                    onClick={() => setGroupBy('assignment')}
+                    className={cn(
+                      "p-1.5 rounded-md transition-colors",
+                      groupBy === 'assignment' 
+                        ? "bg-background text-foreground shadow-sm" 
+                        : "text-muted-foreground hover:text-foreground"
+                    )}
+                    title="Group by Assignment"
+                  >
+                    <FileStack className="h-4 w-4" />
+                  </button>
+                  <button
+                    onClick={() => setGroupBy('department')}
+                    className={cn(
+                      "p-1.5 rounded-md transition-colors",
+                      groupBy === 'department' 
+                        ? "bg-background text-foreground shadow-sm" 
+                        : "text-muted-foreground hover:text-foreground"
+                    )}
+                    title="Group by Department"
+                  >
+                    <Building2 className="h-4 w-4" />
+                  </button>
+                </div>
               </div>
 
-              {/* Exit - Right */}
-              <Button size="sm" variant="outline" onClick={() => setPresentationMode(false)} className="gap-1.5 h-8 px-3">
+              {/* Exit - Right - Teal color */}
+              <Button 
+                size="sm" 
+                onClick={() => setPresentationMode(false)} 
+                className="gap-1.5 h-8 px-3 bg-[#0d9488] hover:bg-[#0f766e] text-white"
+              >
                 <X className="h-3.5 w-3.5" />
                 Exit
               </Button>
