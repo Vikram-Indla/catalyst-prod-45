@@ -14,7 +14,7 @@ import {
   Users, CheckCircle2, BarChart3, AlertTriangle, TrendingUp, Download, Plus, 
   Search, LayoutGrid, Table2, CalendarDays, GanttChart, FileStack, Bot,
   ChevronLeft, ChevronRight, Clock, Eye, Copy, Check, RotateCcw, Play,
-  Pencil, Trash2, Cloud, GitCompare, Settings2, ArrowLeftRight
+  Pencil, Trash2, Cloud, GitCompare, Settings2, ArrowLeftRight, Building2
 } from 'lucide-react';
 import { useCapacityData, useAssignments, useAiRecommendations, useCapacityScenarios, useCapacityDepartments, useResourceManagement, useResourceAssignments, exportCapacityToPdf } from '@/modules/capacity-planner';
 
@@ -180,6 +180,26 @@ export default function CapacityPlannerPage() {
     });
     return groups;
   }, [filteredResources, resourceAssignments]);
+
+  // Group resources by department
+  const groupedByDepartment = useMemo(() => {
+    const groups: Record<string, ResourceMetric[]> = {};
+    
+    // Initialize all departments as empty arrays (so all swim lanes show)
+    departments?.forEach((d) => {
+      if (d.name) groups[d.name] = [];
+    });
+    // Always have Unassigned lane
+    groups['Unassigned'] = [];
+    
+    // Populate with resources
+    filteredResources.forEach((r) => {
+      const deptName = r.department || 'Unassigned';
+      if (!groups[deptName]) groups[deptName] = [];
+      groups[deptName].push(r);
+    });
+    return groups;
+  }, [filteredResources, departments]);
 
   // Handle moving a resource to a different assignment via drag-and-drop
   const handleMoveResource = (resourceId: string, fromAssignment: string, toAssignment: string, allocation?: number) => {
@@ -387,6 +407,7 @@ export default function CapacityPlannerPage() {
             <CardsView 
               resources={filteredResources} 
               groupedByAssignment={groupedByAssignment}
+              groupedByDepartment={groupedByDepartment}
               groupBy={groupBy}
               onResourceClick={openResourceDrawer}
               onEditResource={(id) => setEditResourceId(id)}
@@ -398,6 +419,7 @@ export default function CapacityPlannerPage() {
               projects={projects}
               groupBy={groupBy}
               groupedByAssignment={groupedByAssignment}
+              groupedByDepartment={groupedByDepartment}
               onResourceClick={openResourceDrawer}
               onEditResource={(id) => setEditResourceId(id)}
               onDeleteResource={(resource) => {
@@ -422,6 +444,7 @@ export default function CapacityPlannerPage() {
               period={period}
               groupBy={groupBy}
               groupedByAssignment={groupedByAssignment}
+              groupedByDepartment={groupedByDepartment}
             />
           )}
           {currentView === 'scenarios' && (
@@ -854,9 +877,10 @@ function ViewTab({ icon: Icon, label, active, onClick, badge }: {
 // ─────────────────────────────────────────────────────────────────────────────
 // Cards View with Assignment Grouping
 // ─────────────────────────────────────────────────────────────────────────────
-function CardsView({ resources, groupedByAssignment, groupBy, onResourceClick, onEditResource }: { 
+function CardsView({ resources, groupedByAssignment, groupedByDepartment, groupBy, onResourceClick, onEditResource }: { 
   resources: ResourceMetric[]; 
   groupedByAssignment: Record<string, ResourceMetric[]>;
+  groupedByDepartment: Record<string, ResourceMetric[]>;
   groupBy: GroupByType;
   onResourceClick: (r: ResourceMetric) => void;
   onEditResource: (id: string) => void;
@@ -868,7 +892,7 @@ function CardsView({ resources, groupedByAssignment, groupBy, onResourceClick, o
           <div key={assignmentName} className="space-y-3">
             {/* Group Header */}
             <div className="flex items-center gap-3 p-3 bg-card border border-border rounded-lg">
-              <div className="w-8 h-8 rounded-md bg-[#2563eb] flex items-center justify-center">
+              <div className="w-8 h-8 rounded-full bg-[#2563eb] flex items-center justify-center">
                 <Users className="h-4 w-4 text-white" />
               </div>
               <span className="text-sm font-semibold text-foreground">{assignmentName}</span>
@@ -891,6 +915,43 @@ function CardsView({ resources, groupedByAssignment, groupBy, onResourceClick, o
             </div>
           </div>
         ))}
+      </div>
+    );
+  }
+
+  if (groupBy === 'department') {
+    return (
+      <div className="space-y-6">
+        {Object.entries(groupedByDepartment).map(([deptName, deptResources]) => {
+          const deptColor = departmentColors[deptName] || departmentColors.default;
+          return (
+            <div key={deptName} className="space-y-3">
+              {/* Group Header */}
+              <div className="flex items-center gap-3 p-3 bg-card border border-border rounded-lg">
+                <div className={cn("w-8 h-8 rounded-full flex items-center justify-center", deptColor.bg)}>
+                  <Building2 className={cn("h-4 w-4", deptColor.text)} />
+                </div>
+                <span className="text-sm font-semibold text-foreground">{deptName}</span>
+                <span className="text-xs text-muted-foreground ml-auto bg-muted px-2.5 py-1 rounded-full">
+                  {deptResources.length} resources
+                </span>
+              </div>
+              
+              {/* Cards Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                {deptResources.map((resource) => (
+                  <ResourceCard 
+                    key={resource.id} 
+                    resource={resource} 
+                    groupBy={groupBy}
+                    on360Click={() => onResourceClick(resource)}
+                    onCardClick={() => onEditResource(resource.id)}
+                  />
+                ))}
+              </div>
+            </div>
+          );
+        })}
       </div>
     );
   }
@@ -995,6 +1056,7 @@ interface TableViewProps {
   projects: CapacityProject[];
   groupBy: GroupByType;
   groupedByAssignment: Record<string, ResourceMetric[]>;
+  groupedByDepartment: Record<string, ResourceMetric[]>;
   onResourceClick: (r: ResourceMetric) => void;
   onEditResource: (id: string) => void;
   onDeleteResource: (r: ResourceMetric) => void;
@@ -1002,7 +1064,7 @@ interface TableViewProps {
   onBulkEdit?: (resources: ResourceMetric[]) => void;
 }
 
-function TableView({ resources, projects, groupBy, groupedByAssignment, onResourceClick, onEditResource, onDeleteResource, onBulkDelete, onBulkEdit }: TableViewProps) {
+function TableView({ resources, projects, groupBy, groupedByAssignment, groupedByDepartment, onResourceClick, onEditResource, onDeleteResource, onBulkDelete, onBulkEdit }: TableViewProps) {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const getProjectName = (projectId: string) => projects.find(p => p.id === projectId)?.name || 'Unknown';
 
@@ -1160,11 +1222,11 @@ function TableView({ resources, projects, groupBy, groupedByAssignment, onResour
     }
   };
 
-  // Render grouped tables
+  // Render grouped tables for assignment
   const renderGroupedTable = (groupResources: ResourceMetric[], groupName: string) => (
     <div key={groupName} className="space-y-2">
       <div className="flex items-center gap-3 p-3 bg-card border border-border rounded-lg">
-        <div className="w-8 h-8 rounded-md bg-[#2563eb] flex items-center justify-center">
+        <div className="w-8 h-8 rounded-full bg-[#2563eb] flex items-center justify-center">
           <Users className="h-4 w-4 text-white" />
         </div>
         <span className="text-sm font-semibold text-foreground">{groupName}</span>
@@ -1183,6 +1245,33 @@ function TableView({ resources, projects, groupBy, groupedByAssignment, onResour
       />
     </div>
   );
+
+  // Render grouped tables for department
+  const renderDepartmentGroupedTable = (groupResources: ResourceMetric[], deptName: string) => {
+    const deptColor = departmentColors[deptName] || departmentColors.default;
+    return (
+      <div key={deptName} className="space-y-2">
+        <div className="flex items-center gap-3 p-3 bg-card border border-border rounded-lg">
+          <div className={cn("w-8 h-8 rounded-full flex items-center justify-center", deptColor.bg)}>
+            <Building2 className={cn("h-4 w-4", deptColor.text)} />
+          </div>
+          <span className="text-sm font-semibold text-foreground">{deptName}</span>
+          <span className="text-xs text-muted-foreground ml-auto bg-muted px-2.5 py-1 rounded-full">
+            {groupResources.length} resources
+          </span>
+        </div>
+        <CatalystEnterpriseTable
+          data={groupResources}
+          columns={columns}
+          showCheckboxes={true}
+          showActionsColumn={false}
+          selectedRows={selectedIds}
+          onSelectionChange={handleSelectionChange}
+          onRowClick={(row) => onResourceClick(row)}
+        />
+      </div>
+    );
+  };
 
   return (
     <div className="space-y-3">
@@ -1228,6 +1317,12 @@ function TableView({ resources, projects, groupBy, groupedByAssignment, onResour
             renderGroupedTable(assignmentResources, assignmentName)
           )}
         </div>
+      ) : groupBy === 'department' ? (
+        <div className="space-y-6">
+          {Object.entries(groupedByDepartment).map(([deptName, deptResources]) => 
+            renderDepartmentGroupedTable(deptResources, deptName)
+          )}
+        </div>
       ) : (
         <CatalystEnterpriseTable
           data={resources}
@@ -1251,9 +1346,10 @@ interface TimelineViewProps {
   period: PeriodType;
   groupBy: GroupByType;
   groupedByAssignment: Record<string, ResourceMetric[]>;
+  groupedByDepartment: Record<string, ResourceMetric[]>;
 }
 
-function TimelineView({ resources, period, groupBy, groupedByAssignment }: TimelineViewProps) {
+function TimelineView({ resources, period, groupBy, groupedByAssignment, groupedByDepartment }: TimelineViewProps) {
   const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
   
   const renderResourceRow = (resource: ResourceMetric) => {
@@ -1346,6 +1442,38 @@ function TimelineView({ resources, period, groupBy, groupedByAssignment }: Timel
             </div>
           </div>
         ))}
+      </div>
+    );
+  }
+
+  if (groupBy === 'department') {
+    return (
+      <div className="space-y-6">
+        {Object.entries(groupedByDepartment).map(([deptName, deptResources]) => {
+          const deptColor = departmentColors[deptName] || departmentColors.default;
+          return (
+            <div key={deptName} className="space-y-2">
+              {/* Group Header */}
+              <div className="flex items-center gap-3 p-3 bg-card border border-border rounded-lg">
+                <div className={cn("w-8 h-8 rounded-full flex items-center justify-center", deptColor.bg)}>
+                  <Building2 className={cn("h-4 w-4", deptColor.text)} />
+                </div>
+                <span className="text-sm font-semibold text-foreground">{deptName}</span>
+                <span className="text-xs text-muted-foreground ml-auto bg-muted px-2.5 py-1 rounded-full">
+                  {deptResources.length} resources
+                </span>
+              </div>
+              
+              {/* Timeline Table */}
+              <div className="bg-card border border-border rounded-lg overflow-hidden">
+                {renderTimelineHeader()}
+                <div className="max-h-[400px] overflow-y-auto">
+                  {deptResources.map(renderResourceRow)}
+                </div>
+              </div>
+            </div>
+          );
+        })}
       </div>
     );
   }
