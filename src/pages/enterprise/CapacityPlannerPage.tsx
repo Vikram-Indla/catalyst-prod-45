@@ -249,19 +249,6 @@ export default function CapacityPlannerPage() {
           </div>
           
           <div className="flex items-center gap-2">
-            {/* Enterprise Assign Mode Toggle */}
-            <button
-              onClick={() => setAssignModeOpen(!assignModeOpen)}
-              className={cn(
-                'flex items-center gap-2 px-4 py-2 rounded-lg border text-sm font-medium transition-all',
-                assignModeOpen
-                  ? 'bg-[#2563eb] border-[#2563eb] text-white'
-                  : 'bg-card border-border text-[#2563eb] hover:bg-[#2563eb]/5 hover:border-[#2563eb]/50'
-              )}
-            >
-              <ArrowLeftRight className="h-4 w-4" />
-              <span>Assign Mode</span>
-            </button>
             <Button variant="outline" size="sm" onClick={handleExport} className="gap-2">
               <Download className="h-4 w-4" />
               Export
@@ -355,6 +342,20 @@ export default function CapacityPlannerPage() {
                 <SelectItem value="department">Group by Department</SelectItem>
               </SelectContent>
             </Select>
+            
+            {/* Assign Mode Toggle */}
+            <button
+              onClick={() => setAssignModeOpen(!assignModeOpen)}
+              className={cn(
+                'flex items-center gap-2 px-3 py-2 rounded-lg border text-sm font-medium transition-all h-9',
+                assignModeOpen
+                  ? 'bg-[#2563eb] border-[#2563eb] text-white'
+                  : 'bg-card border-border text-muted-foreground hover:text-[#2563eb] hover:border-[#2563eb]/50'
+              )}
+            >
+              <ArrowLeftRight className="h-4 w-4" />
+              <span>Assign</span>
+            </button>
           </div>
         </div>
 
