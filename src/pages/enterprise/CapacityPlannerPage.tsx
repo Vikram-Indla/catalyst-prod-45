@@ -739,30 +739,93 @@ export default function CapacityPlannerPage() {
         {/* Presentation Mode Fullscreen Overlay */}
         {presentationMode && (
           <div className="fixed inset-0 z-[9999] bg-background">
-            {/* Only the Catalyst logo + Exit CTA */}
-            <div className="absolute top-4 left-6 z-[10000]">
-              <Logo variant="dark" size="lg" />
-            </div>
+            {/* Top bar with Logo, Tabs, Exit */}
+            <div className="absolute top-0 left-0 right-0 z-[10000] flex items-center justify-between px-6 py-3 bg-background border-b">
+              {/* Logo - Left */}
+              <Logo variant="dark" size="md" />
 
-            <div className="absolute top-4 right-6 z-[10000]">
+              {/* View Tabs - Center */}
+              <div className="flex items-center gap-1 bg-muted rounded-lg p-1">
+                <button
+                  onClick={() => setCurrentView('cards')}
+                  className={cn(
+                    "px-3 py-1.5 text-sm font-medium rounded-md transition-colors",
+                    currentView === 'cards' 
+                      ? "bg-background text-foreground shadow-sm" 
+                      : "text-muted-foreground hover:text-foreground"
+                  )}
+                >
+                  Cards
+                </button>
+                <button
+                  onClick={() => setCurrentView('table')}
+                  className={cn(
+                    "px-3 py-1.5 text-sm font-medium rounded-md transition-colors",
+                    currentView === 'table' 
+                      ? "bg-background text-foreground shadow-sm" 
+                      : "text-muted-foreground hover:text-foreground"
+                  )}
+                >
+                  Table
+                </button>
+                <button
+                  onClick={() => setCurrentView('timeline')}
+                  className={cn(
+                    "px-3 py-1.5 text-sm font-medium rounded-md transition-colors",
+                    currentView === 'timeline' 
+                      ? "bg-background text-foreground shadow-sm" 
+                      : "text-muted-foreground hover:text-foreground"
+                  )}
+                >
+                  Timeline
+                </button>
+              </div>
+
+              {/* Exit - Right */}
               <Button size="sm" variant="outline" onClick={() => setPresentationMode(false)} className="gap-1.5 h-8 px-3">
                 <X className="h-3.5 w-3.5" />
                 Exit
               </Button>
             </div>
 
-            {/* Content cards should occupy the screen */}
+            {/* Content area */}
             <div className="h-full w-full overflow-auto pt-14 px-2 pb-2">
-              <CardsView
-                resources={filteredResources}
-                groupedByAssignment={groupedByAssignment}
-                groupedByDepartment={groupedByDepartment}
-                groupBy={groupBy}
-                isCollapsed={false}
-                compactMode={true}
-                onResourceClick={() => {}}
-                onEditResource={() => {}}
-              />
+              {currentView === 'cards' && (
+                <CardsView
+                  resources={filteredResources}
+                  groupedByAssignment={groupedByAssignment}
+                  groupedByDepartment={groupedByDepartment}
+                  groupBy={groupBy}
+                  isCollapsed={false}
+                  compactMode={true}
+                  onResourceClick={() => {}}
+                  onEditResource={() => {}}
+                />
+              )}
+              {currentView === 'table' && (
+                <TableView 
+                  resources={filteredResources} 
+                  projects={projects}
+                  groupBy={groupBy}
+                  groupedByAssignment={groupedByAssignment}
+                  groupedByDepartment={groupedByDepartment}
+                  onResourceClick={() => {}}
+                  onEditResource={() => {}}
+                  onDeleteResource={() => {}}
+                  onBulkDelete={() => {}}
+                  onBulkEdit={() => {}}
+                />
+              )}
+              {currentView === 'timeline' && (
+                <TimelineView 
+                  resources={filteredResources} 
+                  period={period}
+                  groupBy={groupBy}
+                  groupedByAssignment={groupedByAssignment}
+                  groupedByDepartment={groupedByDepartment}
+                  onEditResource={() => {}}
+                />
+              )}
             </div>
           </div>
         )}
