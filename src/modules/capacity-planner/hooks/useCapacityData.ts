@@ -22,11 +22,12 @@ export function useCapacityData() {
         .select('id, name');
       const deptMap = new Map(departments?.map(d => [d.id, d.name]) || []);
       
-      // Fetch assignment types to map names
-      const { data: assignmentTypes } = await supabase
-        .from('capacity_assignment_types')
-        .select('id, name');
-      const assignmentTypeMap = new Map(assignmentTypes?.map(a => [a.id, a.name]) || []);
+      // Fetch resource assignments to map names (matches resource_inventory.assignment_id FK)
+      const { data: resourceAssignments } = await supabase
+        .from('resource_assignments')
+        .select('id, name')
+        .eq('is_active', true);
+      const assignmentTypeMap = new Map(resourceAssignments?.map((a) => [a.id, a.name]) || []);
       
       // Fetch resource_inventory using profile_id for reliable matching
       const { data: resourceInventory } = await supabase
@@ -128,10 +129,12 @@ export function useCapacityData() {
       })
       .subscribe();
 
-    const assignmentTypesChannel = supabase
-      .channel('capacity-assignment-types-changes')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'capacity_assignment_types' }, () => {
-        queryClient.invalidateQueries({ queryKey: ['capacity-assignment-types'] });
+    const resourceAssignmentsChannel = supabase
+      .channel('capacity-resource-assignments-changes')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'resource_assignments' }, () => {
+        queryClient.invalidateQueries({ queryKey: ['capacity-planner-resources'] });
+        queryClient.invalidateQueries({ queryKey: ['resource-assignments'] });
+        queryClient.invalidateQueries({ queryKey: ['resource-assignments-all'] });
       })
       .subscribe();
 
@@ -146,7 +149,7 @@ export function useCapacityData() {
       supabase.removeChannel(assignmentsChannel);
       supabase.removeChannel(profilesChannel);
       supabase.removeChannel(resourceInventoryChannel);
-      supabase.removeChannel(assignmentTypesChannel);
+      supabase.removeChannel(resourceAssignmentsChannel);
       supabase.removeChannel(scenariosChannel);
     };
   }, [queryClient]);
