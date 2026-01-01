@@ -7,8 +7,9 @@ export function useCapacityData() {
   const queryClient = useQueryClient();
 
   // Fetch all resources from profiles table with assignment_id from resource_inventory
-  const { data: resources = [], isLoading: resourcesLoading } = useQuery({
+  const { data: resources = [], isLoading: resourcesLoading, isFetching: resourcesFetching } = useQuery({
     queryKey: ['capacity-planner-resources'],
+    staleTime: 30000, // Reduce unnecessary refetches during DnD
     queryFn: async () => {
       const { data, error } = await supabase
         .from('profiles')
@@ -211,5 +212,6 @@ export function useCapacityData() {
     scenarios,
     metrics: calculateMetrics(),
     isLoading: resourcesLoading || projectsLoading || assignmentsLoading || scenariosLoading,
+    isFetching: resourcesFetching,
   };
 }
