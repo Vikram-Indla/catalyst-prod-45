@@ -3,6 +3,7 @@ import { PageChrome } from '@/components/layout/PageChrome';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
@@ -65,6 +66,8 @@ export default function CapacityPlannerPage() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [aiDrawerOpen, setAiDrawerOpen] = useState(false);
   const [resource360Id, setResource360Id] = useState<string | null>(null);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [resourceToDelete, setResourceToDelete] = useState<ResourceMetric | null>(null);
 
   // Resource form state
   const [resourceForm, setResourceForm] = useState({
@@ -286,11 +289,8 @@ export default function CapacityPlannerPage() {
               onResourceClick={openResourceDrawer}
               onEditResource={(id) => setEditResourceId(id)}
               onDeleteResource={(resource) => {
-                if (window.confirm(`Are you sure you want to remove all assignments for ${resource.name}?`)) {
-                  resource.assignments.forEach((a) => {
-                    deleteAssignment.mutate(a.id);
-                  });
-                }
+                setResourceToDelete(resource);
+                setDeleteConfirmOpen(true);
               }}
             />
           )}
@@ -409,6 +409,37 @@ export default function CapacityPlannerPage() {
             })()}
           </DialogContent>
         </Dialog>
+
+        {/* Delete Confirmation Dialog - Catalyst Design System */}
+        <AlertDialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Remove Assignments</AlertDialogTitle>
+              <AlertDialogDescription>
+                Are you sure you want to remove all assignments for <span className="font-semibold">{resourceToDelete?.name}</span>? This action cannot be undone.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel onClick={() => setResourceToDelete(null)}>
+                Cancel
+              </AlertDialogCancel>
+              <AlertDialogAction
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                onClick={() => {
+                  if (resourceToDelete) {
+                    resourceToDelete.assignments.forEach((a) => {
+                      deleteAssignment.mutate(a.id);
+                    });
+                  }
+                  setDeleteConfirmOpen(false);
+                  setResourceToDelete(null);
+                }}
+              >
+                Remove
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
 
         <div className="fixed bottom-6 right-6 z-50">
           <div className="absolute inset-[-4px] rounded-full bg-[#0d9488]/25 animate-ping" style={{ animationDuration: '2.5s' }} />
