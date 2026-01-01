@@ -391,9 +391,9 @@ export function KanbanAssignView({
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Departments</SelectItem>
-              {uniqueDepartments.map((dept) => (
-                <SelectItem key={dept} value={dept}>{dept}</SelectItem>
-              ))}
+              <SelectItem value="delivery">Delivery</SelectItem>
+              <SelectItem value="product">Product</SelectItem>
+              <SelectItem value="support">Support</SelectItem>
             </SelectContent>
           </Select>
           <Button 
