@@ -22,6 +22,12 @@ export function useCapacityData() {
         .select('id, name');
       const deptMap = new Map(departments?.map(d => [d.id, d.name]) || []);
       
+      // Fetch assignment types to map names
+      const { data: assignmentTypes } = await supabase
+        .from('capacity_assignment_types')
+        .select('id, name');
+      const assignmentTypeMap = new Map(assignmentTypes?.map(a => [a.id, a.name]) || []);
+      
       // Fetch resource_inventory to get assignment_id by matching name
       const { data: resourceInventory } = await supabase
         .from('resource_inventory')
@@ -30,6 +36,8 @@ export function useCapacityData() {
       
       return (data || []).map(p => {
         const fullName = p.full_name || p.email || 'Unknown';
+        const assignmentId = assignmentIdMap.get(fullName.toLowerCase()) || null;
+        const assignmentName = assignmentId ? assignmentTypeMap.get(assignmentId) || null : null;
         return {
           id: p.id,
           name: fullName,
@@ -37,7 +45,8 @@ export function useCapacityData() {
           role: p.role || 'Team Member',
           department: p.department_id ? deptMap.get(p.department_id) || 'Unassigned' : 'Unassigned',
           department_id: p.department_id,
-          assignment_id: assignmentIdMap.get(fullName.toLowerCase()) || null,
+          assignment_id: assignmentId,
+          assignmentName: assignmentName,
           avatar_url: p.avatar_url,
           created_at: p.created_at,
           updated_at: p.updated_at,

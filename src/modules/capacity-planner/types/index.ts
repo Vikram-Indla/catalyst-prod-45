@@ -11,6 +11,7 @@ export interface CapacityResource {
   department: string;
   department_id?: string | null;
   assignment_id?: string | null;
+  assignmentName?: string | null;
   avatar_url?: string;
   created_at: string;
   updated_at: string;
