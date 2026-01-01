@@ -18,12 +18,12 @@ interface SleekCapacityHeaderProps {
     over: number; 
     utilizationPercentage: number;
   };
-  viewMode: 'cards' | 'table' | 'timeline' | 'scenarios';
+  viewMode: 'cards' | 'table' | 'timeline';
   groupBy: string;
   timelinePeriod: 'weekly' | 'monthly' | 'quarterly';
   searchQuery: string;
   activeFilter?: 'all' | 'available' | 'atCapacity' | 'over';
-  onViewModeChange: (mode: 'cards' | 'table' | 'timeline' | 'scenarios') => void;
+  onViewModeChange: (mode: 'cards' | 'table' | 'timeline') => void;
   onGroupByChange: (groupBy: string) => void;
   onTimelinePeriodChange: (period: 'weekly' | 'monthly' | 'quarterly') => void;
   onSearchChange: (query: string) => void;
@@ -142,9 +142,9 @@ export function SleekCapacityHeader({
             />
           </div>
 
-          {/* View Tabs - FIX #2: Visible tabs with proper contrast */}
+          {/* View Tabs - Scenarios removed */}
           <div className="flex items-center bg-slate-100 rounded-lg p-1 gap-0.5">
-            {(['cards', 'table', 'timeline', 'scenarios'] as const).map((mode) => (
+            {(['cards', 'table', 'timeline'] as const).map((mode) => (
               <button
                 key={mode}
                 onClick={() => onViewModeChange(mode)}

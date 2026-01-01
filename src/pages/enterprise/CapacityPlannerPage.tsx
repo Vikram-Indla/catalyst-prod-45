@@ -169,6 +169,10 @@ export default function CapacityPlannerPage() {
 
   const filteredResources = useMemo(() => {
     return metrics.resources.filter((r) => {
+      // Exclude management roles - they are overheads, not capacity planned
+      const isManagement = r.role?.toLowerCase().includes('management');
+      if (isManagement) return false;
+      
       const matchesSearch = r.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         r.role?.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesDepartment = departmentFilter === 'all' || r.department === departmentFilter;
@@ -306,7 +310,7 @@ export default function CapacityPlannerPage() {
             over: metrics.summary.overAllocated,
             utilizationPercentage: metrics.summary.avgUtilization,
           }}
-          viewMode={currentView as 'cards' | 'table' | 'timeline' | 'scenarios'}
+          viewMode={currentView as 'cards' | 'table' | 'timeline'}
           groupBy={groupBy}
           timelinePeriod={period}
           searchQuery={searchQuery}
@@ -863,18 +867,20 @@ function CardsView({
   onResourceClick: (r: ResourceMetric) => void;
   onEditResource: (id: string) => void;
 }) {
+  // Default to collapsed state - groups start collapsed
   const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({});
 
   const toggleGroup = (groupName: string) => {
     setExpandedGroups(prev => ({
       ...prev,
-      [groupName]: prev[groupName] === undefined ? false : !prev[groupName]
+      [groupName]: !prev[groupName]
     }));
   };
 
+  // Default collapsed: return false unless explicitly expanded
   const isGroupExpanded = (groupName: string) => {
     if (isCollapsed) return false;
-    return expandedGroups[groupName] !== false;
+    return expandedGroups[groupName] === true;
   };
 
   if (groupBy === 'assignment') {
