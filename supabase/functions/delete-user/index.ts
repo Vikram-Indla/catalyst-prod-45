@@ -106,35 +106,79 @@ serve(async (req) => {
       );
     }
 
-    // Delete user_product_roles first (due to foreign key)
-    const { error: rolesDeleteError } = await supabaseAdmin
-      .from("user_product_roles")
-      .delete()
-      .eq("user_id", userId);
+    // Delete all related records in order to handle foreign key constraints
+    // that don't have ON DELETE CASCADE
 
-    if (rolesDeleteError) {
-      console.error("Error deleting user product roles:", rolesDeleteError);
-      // Continue anyway, these might not exist
+    // 1. Delete user_product_roles
+    console.log("Deleting user_product_roles...");
+    await supabaseAdmin.from("user_product_roles").delete().eq("user_id", userId);
+
+    // 2. Delete user_roles
+    console.log("Deleting user_roles...");
+    await supabaseAdmin.from("user_roles").delete().eq("user_id", userId);
+
+    // 3. Clear references from profiles table that might reference this user
+    console.log("Clearing profile references...");
+    await supabaseAdmin
+      .from("profiles")
+      .update({ approved_by: null, rejected_by: null })
+      .eq("approved_by", userId);
+    await supabaseAdmin
+      .from("profiles")
+      .update({ rejected_by: null })
+      .eq("rejected_by", userId);
+
+    // 4. Clear references from other tables without cascade delete
+    console.log("Clearing other references...");
+    const tablesToClear = [
+      { table: "active_package", column: "updated_by" },
+      { table: "business_request_links", column: "uploaded_by" },
+      { table: "business_requests", column: "end_date_locked_by" },
+      { table: "efd_audit_log", column: "user_id" },
+      { table: "efd_epics", column: "assignee_id" },
+      { table: "efd_epics", column: "reporter_id" },
+      { table: "efd_features", column: "assignee_id" },
+      { table: "efd_trace_links", column: "created_by" },
+      { table: "efd_wizard_sessions", column: "approved_by" },
+      { table: "efd_wizard_sessions", column: "created_by" },
+      { table: "epic_labels", column: "created_by" },
+      { table: "epics", column: "assignee_id" },
+      { table: "epics", column: "reporter_id" },
+      { table: "feature_scheduling_history", column: "user_id" },
+      { table: "forecast_entries", column: "updated_by" },
+      { table: "incident_committees", column: "created_by" },
+      { table: "incident_teams", column: "created_by" },
+      { table: "incident_teams", column: "updated_by" },
+    ];
+
+    for (const { table, column } of tablesToClear) {
+      try {
+        await supabaseAdmin.from(table).update({ [column]: null }).eq(column, userId);
+      } catch (e) {
+        console.log(`Could not clear ${table}.${column}:`, e);
+      }
     }
 
-    // Delete user_roles
-    const { error: userRolesDeleteError } = await supabaseAdmin
-      .from("user_roles")
+    // 5. Delete the profile first (which will cascade to related tables)
+    console.log("Deleting profile...");
+    const { error: profileDeleteError } = await supabaseAdmin
+      .from("profiles")
       .delete()
-      .eq("user_id", userId);
+      .eq("id", userId);
 
-    if (userRolesDeleteError) {
-      console.error("Error deleting user roles:", userRolesDeleteError);
-      // Continue anyway
+    if (profileDeleteError) {
+      console.error("Error deleting profile:", profileDeleteError);
+      // Continue - the auth user deletion should cascade
     }
 
-    // Delete the auth user (this will cascade to profiles via trigger)
+    // 6. Delete the auth user
+    console.log("Deleting auth user...");
     const { error: authDeleteError } = await supabaseAdmin.auth.admin.deleteUser(userId);
 
     if (authDeleteError) {
       console.error("Error deleting auth user:", authDeleteError);
       return new Response(
-        JSON.stringify({ error: authDeleteError.message || "Failed to delete user" }),
+        JSON.stringify({ error: authDeleteError.message || "Failed to delete user. Some references may still exist." }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
