@@ -901,7 +901,10 @@ function ResourceCard({ resource, on360Click, onCardClick }: {
       <div className="flex items-center gap-3">
         {/* Avatar with 360° hover animation */}
         <Avatar360 
+          initials={initials}
           onClick={on360Click}
+          bgColor={deptColor.bg}
+          textColor={deptColor.text}
           size="md"
         />
         
@@ -1060,10 +1063,16 @@ function TableView({ resources, projects, groupBy, groupedByAssignment, onResour
       width: '140px',
       sortable: false,
       render: (_: any, row: ResourceMetric) => {
+        const initials = row.name?.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'NA';
+        const dept = row.department || 'Unassigned';
+        const deptColor = departmentColors[dept] || departmentColors.default;
         return (
         <div className="flex items-center justify-end gap-2">
           <Avatar360 
+            initials={initials}
             onClick={() => onResourceClick(row)} 
+            bgColor={deptColor.bg}
+            textColor={deptColor.text}
             size="sm"
           />
           <button 
