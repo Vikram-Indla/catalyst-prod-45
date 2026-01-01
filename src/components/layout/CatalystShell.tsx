@@ -159,15 +159,13 @@ function CatalystShellContent() {
         );
 
       case 'enterprise':
-        if (isModuleEnabled('ENTERPRISE')) {
-          return (
-            <EnterpriseSidebar
-              expanded={sidebarExpanded}
-              onToggle={() => setSidebarExpanded(!sidebarExpanded)}
-            />
-          );
-        }
-        return null;
+        // Always show enterprise sidebar for enterprise routes
+        return (
+          <EnterpriseSidebar
+            expanded={sidebarExpanded}
+            onToggle={() => setSidebarExpanded(!sidebarExpanded)}
+          />
+        );
 
       default:
         return null;
