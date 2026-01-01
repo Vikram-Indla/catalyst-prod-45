@@ -70,7 +70,6 @@ const adminPockets = [
       { label: 'Programs', path: '/admin/portfolios' },
       { label: 'Departments', path: '/admin/departments' },
       { label: 'Capacity Departments', path: '/admin/capacity-departments' },
-      { label: 'Assignment Types', path: '/admin/assignment-types' },
       { label: 'Resource Assignments', path: '/admin/resource-assignments' },
       { label: 'Business Owners', path: '/admin/business-owners' },
       { label: 'Business Processes', path: '/admin/business-processes' },

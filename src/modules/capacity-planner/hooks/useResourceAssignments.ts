@@ -19,7 +19,7 @@ export function useResourceAssignments() {
     queryKey: ['resource-assignments'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('capacity_assignment_types')
+        .from('resource_assignments')
         .select('*')
         .eq('is_active', true)
         .order('sort_order', { ascending: true });
@@ -33,7 +33,7 @@ export function useResourceAssignments() {
     queryKey: ['resource-assignments-all'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('capacity_assignment_types')
+        .from('resource_assignments')
         .select('*')
         .order('sort_order', { ascending: true });
 
@@ -46,7 +46,7 @@ export function useResourceAssignments() {
     mutationFn: async (input: { name: string; description?: string }) => {
       // Get max sort order
       const { data: maxData } = await supabase
-        .from('capacity_assignment_types')
+        .from('resource_assignments')
         .select('sort_order')
         .order('sort_order', { ascending: false })
         .limit(1)
@@ -55,7 +55,7 @@ export function useResourceAssignments() {
       const nextOrder = (maxData?.sort_order || 0) + 1;
 
       const { data, error } = await supabase
-        .from('capacity_assignment_types')
+        .from('resource_assignments')
         .insert({
           name: input.name,
           description: input.description || null,
@@ -80,7 +80,7 @@ export function useResourceAssignments() {
   const updateAssignment = useMutation({
     mutationFn: async ({ id, updates }: { id: string; updates: Partial<ResourceAssignment> }) => {
       const { data, error } = await supabase
-        .from('capacity_assignment_types')
+        .from('resource_assignments')
         .update({ ...updates, updated_at: new Date().toISOString() })
         .eq('id', id)
         .select()
@@ -103,7 +103,7 @@ export function useResourceAssignments() {
     mutationFn: async (id: string) => {
       // Soft delete by setting is_active to false
       const { error } = await supabase
-        .from('capacity_assignment_types')
+        .from('resource_assignments')
         .update({ is_active: false, updated_at: new Date().toISOString() })
         .eq('id', id);
 
