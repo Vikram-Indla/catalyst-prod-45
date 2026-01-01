@@ -1423,17 +1423,37 @@ function TableView({ resources, projects, groupBy, groupedByAssignment, groupedB
 // Timeline View with GANTT-STYLE Project Blocks - CIO Grade
 // ─────────────────────────────────────────────────────────────────────────────
 
-// Catalyst-compliant project colors for Gantt bars (NO PURPLE/VIOLET)
-const GANTT_PROJECT_COLORS: Record<string, { bg: string; text: string; border: string }> = {
-  'Senaei BAU': { bg: '#dbeafe', text: '#1e40af', border: '#2563eb' },
-  'Innovation Platform': { bg: '#dbeafe', text: '#1e3a8a', border: '#1d4ed8' },
-  'Inspection Project': { bg: '#ccfbf1', text: '#115e59', border: '#0d9488' },
-  'International Relations': { bg: '#ccfbf1', text: '#134e4a', border: '#0f766e' },
-  'MIM Website': { bg: '#dcfce7', text: '#166534', border: '#4f8a4f' },
-  'Senaei OPS': { bg: '#dcfce7', text: '#14532d', border: '#3d6b3d' },
-  'Sectorial Services': { bg: '#f5f0e8', text: '#78716c', border: '#8b7355' },
-  'Tahommena': { bg: '#f5f0e8', text: '#57534e', border: '#6b5842' },
-  'Data Platform': { bg: '#dbeafe', text: '#1e40af', border: '#3b82f6' },
+// FILLED project colors for Timeline bars — solid backgrounds with white text
+const TIMELINE_PROJECT_COLORS: Record<string, { bg: string; text: string }> = {
+  'Senaei BAU': { bg: '#2563eb', text: '#ffffff' },
+  'Senaei': { bg: '#2563eb', text: '#ffffff' },
+  'Innovation Platform': { bg: '#4f46e5', text: '#ffffff' },
+  'Innovation': { bg: '#4f46e5', text: '#ffffff' },
+  'Inspection Project': { bg: '#0d9488', text: '#ffffff' },
+  'Inspection': { bg: '#0d9488', text: '#ffffff' },
+  'International Relations': { bg: '#059669', text: '#ffffff' },
+  'International': { bg: '#059669', text: '#ffffff' },
+  'MIM Website': { bg: '#16a34a', text: '#ffffff' },
+  'MIM': { bg: '#16a34a', text: '#ffffff' },
+  'Senaei OPS': { bg: '#ca8a04', text: '#ffffff' },
+  'Sectorial Services': { bg: '#8b7355', text: '#ffffff' },
+  'Sectorial': { bg: '#8b7355', text: '#ffffff' },
+  'Tahommena': { bg: '#0891b2', text: '#ffffff' },
+  'Data Platform': { bg: '#0284c7', text: '#ffffff' },
+  'Data': { bg: '#0284c7', text: '#ffffff' },
+  'ICP': { bg: '#7c3aed', text: '#ffffff' },
+};
+
+// Get project color with fallback
+const getTimelineProjectColor = (name: string) => {
+  if (TIMELINE_PROJECT_COLORS[name]) return TIMELINE_PROJECT_COLORS[name];
+  
+  const key = Object.keys(TIMELINE_PROJECT_COLORS).find(k => 
+    name.toLowerCase().includes(k.toLowerCase()) || 
+    k.toLowerCase().includes(name.toLowerCase())
+  );
+  
+  return key ? TIMELINE_PROJECT_COLORS[key] : { bg: '#64748b', text: '#ffffff' };
 };
 
 // Short form names for project display in timeline cells
@@ -1452,7 +1472,6 @@ const PROJECT_SHORT_NAMES: Record<string, string> = {
 // Get short name for a project, with fallback to first word
 const getProjectShortName = (fullName: string): string => {
   if (PROJECT_SHORT_NAMES[fullName]) return PROJECT_SHORT_NAMES[fullName];
-  // Fallback: use first word or first 10 chars
   const firstWord = fullName.split(' ')[0];
   return firstWord.length > 10 ? firstWord.substring(0, 10) : firstWord;
 };
@@ -1544,6 +1563,9 @@ function TimelineView({ resources, period, groupBy, groupedByAssignment, grouped
     const isOver = totalAlloc > 100;
     const allocTheme = getAllocationTheme(totalAlloc);
 
+    const isUnassigned = assignmentName === 'Unassigned' || !assignmentName;
+    const isAvailable = isUnassigned || totalAlloc === 0;
+
     return (
       <div 
         key={resource.id} 
@@ -1567,7 +1589,7 @@ function TimelineView({ resources, period, groupBy, groupedByAssignment, grouped
           </div>
         </div>
 
-        {/* Period Cells with Gantt Bars */}
+        {/* Period Cells with FILLED Gantt Bars */}
         <div className="flex-1 flex">
           {periods.map((p, colIdx) => {
             const isCurrentPeriod = colIdx === 0;
@@ -1577,53 +1599,66 @@ function TimelineView({ resources, period, groupBy, groupedByAssignment, grouped
                 key={p.key}
                 className={cn(
                   'flex-1 p-2 border-r border-slate-200 last:border-r-0 min-w-24 relative',
-                  isCurrentPeriod && 'bg-blue-50/30'
+                  isCurrentPeriod && 'bg-blue-50/30',
+                  isOver && 'bg-amber-50/30'
                 )}
               >
                 {/* Over-allocation warning */}
                 {isOver && (
-                  <div className="absolute top-1 right-1">
+                  <div className="absolute top-1 right-1 z-10">
                     <AlertTriangle className="w-3.5 h-3.5 text-amber-500" />
                   </div>
                 )}
 
-                {/* Stacked Project Bars with Tooltips */}
-                <div className="space-y-1">
-                  {allocations.map((alloc, i) => {
-                    const projectColor = GANTT_PROJECT_COLORS[alloc.project] || GANTT_PROJECT_COLORS['Senaei BAU'];
-                    const shortName = getProjectShortName(alloc.project);
-                    const tooltipText = `${alloc.project}: ${alloc.percentage}%`;
-                    
-                    return (
-                      <div
-                        key={i}
-                        className="h-5 rounded text-[9px] font-medium flex items-center px-1.5 truncate cursor-default group relative"
-                        style={{
-                          backgroundColor: projectColor.bg,
-                          color: projectColor.text,
-                          borderLeft: `2px solid ${projectColor.border}`,
-                        }}
-                        title={tooltipText}
-                      >
-                        <span className="truncate">{shortName}</span>
-                        {/* Hover tooltip for full name */}
-                        <span className="absolute left-0 bottom-full mb-1 hidden group-hover:block z-50 px-2 py-1 text-[10px] bg-slate-900 text-white rounded shadow-lg whitespace-nowrap">
-                          {tooltipText}
-                        </span>
-                      </div>
-                    );
-                  })}
-                </div>
+                {/* Available State - No allocation */}
+                {isAvailable ? (
+                  <div className="h-full flex flex-col items-center justify-center text-slate-400 py-2">
+                    <CheckCircle2 className="w-4 h-4 mb-1 text-teal-500" />
+                    <span className="text-[10px] font-medium text-teal-600">Available</span>
+                  </div>
+                ) : (
+                  <>
+                    {/* FILLED Project Bars with Width = Percentage */}
+                    <div className="space-y-1">
+                      {allocations.map((alloc, i) => {
+                        const projectColor = getTimelineProjectColor(alloc.project);
+                        const shortName = getProjectShortName(alloc.project);
+                        const tooltipText = `${alloc.project}: ${alloc.percentage}%`;
+                        const barWidthPercent = Math.min(alloc.percentage, 100);
+                        
+                        return (
+                          <div
+                            key={i}
+                            className="h-6 rounded text-[10px] font-semibold flex items-center px-2 cursor-default group relative"
+                            style={{
+                              width: `${barWidthPercent}%`,
+                              minWidth: '50px',
+                              backgroundColor: projectColor.bg,
+                              color: projectColor.text,
+                            }}
+                            title={tooltipText}
+                          >
+                            <span className="truncate">{shortName} ({alloc.percentage}%)</span>
+                            {/* Hover tooltip for full name */}
+                            <span className="absolute left-0 bottom-full mb-1 hidden group-hover:block z-50 px-2 py-1 text-[10px] bg-slate-900 text-white rounded shadow-lg whitespace-nowrap">
+                              {tooltipText}
+                            </span>
+                          </div>
+                        );
+                      })}
+                    </div>
 
-                {/* Total Badge */}
-                <div className="mt-1.5 flex justify-end">
-                  <span
-                    className="text-[10px] font-bold px-1.5 py-0.5 rounded"
-                    style={{ backgroundColor: allocTheme.labelBg, color: allocTheme.labelColor }}
-                  >
-                    {totalAlloc}%
-                  </span>
-                </div>
+                    {/* Total Badge */}
+                    <div className="mt-1.5 flex justify-end">
+                      <span
+                        className="text-[10px] font-bold px-1.5 py-0.5 rounded"
+                        style={{ backgroundColor: allocTheme.labelBg, color: allocTheme.labelColor }}
+                      >
+                        {totalAlloc}%
+                      </span>
+                    </div>
+                  </>
+                )}
               </div>
             );
           })}
