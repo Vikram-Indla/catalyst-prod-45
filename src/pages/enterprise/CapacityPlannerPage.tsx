@@ -375,6 +375,7 @@ export default function CapacityPlannerPage() {
               groupBy={groupBy}
               groupedByAssignment={groupedByAssignment}
               groupedByDepartment={groupedByDepartment}
+              onEditResource={(id) => setEditResourceId(id)}
             />
           )}
         </div>
@@ -1487,9 +1488,10 @@ interface TimelineViewProps {
   groupBy: GroupByType;
   groupedByAssignment: Record<string, ResourceMetric[]>;
   groupedByDepartment: Record<string, ResourceMetric[]>;
+  onEditResource?: (id: string) => void;
 }
 
-function TimelineView({ resources, period, groupBy, groupedByAssignment, groupedByDepartment }: TimelineViewProps) {
+function TimelineView({ resources, period, groupBy, groupedByAssignment, groupedByDepartment, onEditResource }: TimelineViewProps) {
   const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({});
 
   const toggleGroup = (name: string) => {
@@ -1498,35 +1500,55 @@ function TimelineView({ resources, period, groupBy, groupedByAssignment, grouped
 
   const isGroupExpanded = (name: string) => expandedGroups[name] === true;
 
-  // Generate periods based on selected period type
+  // Generate periods based on selected period type - dynamic from current date
   const periods = useMemo(() => {
+    const now = new Date();
+    const currentMonth = now.getMonth();
+    const currentYear = now.getFullYear();
+    
     if (period === 'monthly') {
-      return [
-        { label: 'Jan', key: '2026-01' },
-        { label: 'Feb', key: '2026-02' },
-        { label: 'Mar', key: '2026-03' },
-        { label: 'Apr', key: '2026-04' },
-        { label: 'May', key: '2026-05' },
-        { label: 'Jun', key: '2026-06' },
-      ];
+      // 6 months from current month
+      const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      return Array.from({ length: 6 }, (_, i) => {
+        const monthIndex = (currentMonth + i) % 12;
+        const year = currentYear + Math.floor((currentMonth + i) / 12);
+        const shortYear = String(year).slice(-2);
+        return {
+          label: `${monthNames[monthIndex]} '${shortYear}`,
+          key: `${year}-${String(monthIndex + 1).padStart(2, '0')}`,
+        };
+      });
     }
     if (period === 'quarterly') {
-      return [
-        { label: 'Q1', key: '2026-Q1' },
-        { label: 'Q2', key: '2026-Q2' },
-        { label: 'Q3', key: '2026-Q3' },
-        { label: 'Q4', key: '2026-Q4' },
-      ];
+      // 4 quarters starting from current quarter
+      const currentQuarter = Math.floor(currentMonth / 3);
+      return Array.from({ length: 4 }, (_, i) => {
+        const quarterIndex = (currentQuarter + i) % 4;
+        const year = currentYear + Math.floor((currentQuarter + i) / 4);
+        const shortYear = String(year).slice(-2);
+        return {
+          label: `Q${quarterIndex + 1} '${shortYear}`,
+          key: `${year}-Q${quarterIndex + 1}`,
+        };
+      });
     }
-    // Weekly
-    return [
-      { label: 'W1', key: '2026-W01' },
-      { label: 'W2', key: '2026-W02' },
-      { label: 'W3', key: '2026-W03' },
-      { label: 'W4', key: '2026-W04' },
-      { label: 'W5', key: '2026-W05' },
-      { label: 'W6', key: '2026-W06' },
-    ];
+    // Weekly - 12 weeks (3 months from current week)
+    const weekLabels: { label: string; key: string }[] = [];
+    const startOfCurrentWeek = new Date(now);
+    startOfCurrentWeek.setDate(now.getDate() - now.getDay()); // Sunday start
+    
+    for (let i = 0; i < 12; i++) {
+      const weekDate = new Date(startOfCurrentWeek);
+      weekDate.setDate(startOfCurrentWeek.getDate() + (i * 7));
+      const weekMonth = weekDate.toLocaleString('en-US', { month: 'short' });
+      const weekDay = weekDate.getDate();
+      const weekYear = String(weekDate.getFullYear()).slice(-2);
+      weekLabels.push({
+        label: `${weekMonth} ${weekDay} '${weekYear}`,
+        key: `${weekDate.getFullYear()}-W${String(i + 1).padStart(2, '0')}`,
+      });
+    }
+    return weekLabels;
   }, [period]);
 
   // Get resource allocations - use the assignment group name (the resource's assigned project/assignment)
@@ -1615,12 +1637,15 @@ function TimelineView({ resources, period, groupBy, groupedByAssignment, grouped
                   </div>
                 )}
 
-                {/* Available State - No allocation */}
+                {/* Available State - Clickable to allocate */}
                 {isAvailable ? (
-                  <div className="h-full flex flex-col items-center justify-center text-slate-400 py-2">
-                    <CheckCircle2 className="w-4 h-4 mb-1 text-teal-500" />
-                    <span className="text-[10px] font-medium text-teal-600">Available</span>
-                  </div>
+                  <button
+                    onClick={() => onEditResource?.(resource.id)}
+                    className="h-full w-full flex flex-col items-center justify-center text-slate-400 py-2 hover:bg-teal-50 rounded transition-colors cursor-pointer group"
+                  >
+                    <CheckCircle2 className="w-4 h-4 mb-1 text-teal-500 group-hover:text-teal-600" />
+                    <span className="text-[10px] font-medium text-teal-600 group-hover:text-teal-700">Available</span>
+                  </button>
                 ) : (
                   <>
                     {/* FILLED Project Bars with Width = Percentage */}
