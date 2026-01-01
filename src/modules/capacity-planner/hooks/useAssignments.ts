@@ -21,6 +21,7 @@ export function useAssignments() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['capacity-planner-assignments'] });
+      queryClient.invalidateQueries({ queryKey: ['capacity-planner-resources'] });
       toast.success('Assignment created successfully');
     },
     onError: (error) => {
