@@ -45,7 +45,7 @@ const projectColors = [
 ];
 
 export default function CapacityPlannerPage() {
-  const { metrics, projects, resources, isLoading } = useCapacityData();
+  const { metrics, projects, resources, assignments, isLoading } = useCapacityData();
   const { createAssignment, deleteAssignment } = useAssignments();
   const { recommendations, highPriorityCount } = useAiRecommendations({ 
     resources: metrics.resources, 
@@ -71,12 +71,20 @@ export default function CapacityPlannerPage() {
   const [resourceToDelete, setResourceToDelete] = useState<ResourceMetric | null>(null);
   const [resourcesToDelete, setResourcesToDelete] = useState<ResourceMetric[]>([]);
 
-  // Resource form state
-  const [resourceForm, setResourceForm] = useState({
-    name: '',
-    role: 'Frontend Developer',
-    department: 'Delivery',
-  });
+  // Add resource form state
+  const [selectedUserId, setSelectedUserId] = useState<string>('');
+  const [selectedProjectId, setSelectedProjectId] = useState<string>('');
+  const [allocationPercentage, setAllocationPercentage] = useState<number>(100);
+
+  // Get users already assigned in capacity planner
+  const assignedUserIds = useMemo(() => {
+    return new Set(assignments.map(a => a.user_id));
+  }, [assignments]);
+
+  // Available users = all resources minus those already assigned
+  const availableUsers = useMemo(() => {
+    return resources.filter(r => !assignedUserIds.has(r.id));
+  }, [resources, assignedUserIds]);
 
   const handleExport = () => {
     exportCapacityToPdf({
@@ -341,55 +349,87 @@ export default function CapacityPlannerPage() {
         />
 
         {/* Add Resource Modal */}
-        <Dialog open={resourceModalOpen} onOpenChange={setResourceModalOpen}>
+        <Dialog open={resourceModalOpen} onOpenChange={(open) => {
+          setResourceModalOpen(open);
+          if (!open) {
+            setSelectedUserId('');
+            setSelectedProjectId('');
+            setAllocationPercentage(100);
+          }
+        }}>
           <DialogContent className="sm:max-w-md">
             <DialogHeader>
-              <DialogTitle>Add Resource</DialogTitle>
+              <DialogTitle>Add Resource to Capacity Planner</DialogTitle>
             </DialogHeader>
             <div className="space-y-4 py-4">
               <div className="space-y-2">
-                <Label>Full Name</Label>
-                <Input 
-                  value={resourceForm.name}
-                  onChange={(e) => setResourceForm(f => ({ ...f, name: e.target.value }))}
-                  placeholder="Enter name"
-                />
+                <Label>Select User</Label>
+                <Select value={selectedUserId} onValueChange={setSelectedUserId}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select a user from /admin/users..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {availableUsers.length === 0 ? (
+                      <div className="px-2 py-3 text-sm text-muted-foreground text-center">
+                        All users are already assigned
+                      </div>
+                    ) : (
+                      availableUsers.map((user) => (
+                        <SelectItem key={user.id} value={user.id}>
+                          {user.name} {user.role ? `(${user.role})` : ''}
+                        </SelectItem>
+                      ))
+                    )}
+                  </SelectContent>
+                </Select>
               </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label>Role</Label>
-                  <Select value={resourceForm.role} onValueChange={(v) => setResourceForm(f => ({ ...f, role: v }))}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Frontend Developer">Frontend Developer</SelectItem>
-                      <SelectItem value="Backend Developer">Backend Developer</SelectItem>
-                      <SelectItem value="Sr Frontend Developer">Sr Frontend Developer</SelectItem>
-                      <SelectItem value="Sr Backend Developer">Sr Backend Developer</SelectItem>
-                      <SelectItem value="DevOps Engineer">DevOps Engineer</SelectItem>
-                      <SelectItem value="QA Analyst">QA Analyst</SelectItem>
-                      <SelectItem value="Product Owner">Product Owner</SelectItem>
-                      <SelectItem value="Delivery Manager">Delivery Manager</SelectItem>
-                      <SelectItem value="Backend Architect">Backend Architect</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label>Department</Label>
-                  <Select value={resourceForm.department} onValueChange={(v) => setResourceForm(f => ({ ...f, department: v }))}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Product">Product</SelectItem>
-                      <SelectItem value="Delivery">Delivery</SelectItem>
-                      <SelectItem value="Support">Support</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+              <div className="space-y-2">
+                <Label>Assign to Project</Label>
+                <Select value={selectedProjectId} onValueChange={setSelectedProjectId}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select a project..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {projects.map((project) => (
+                      <SelectItem key={project.id} value={project.id}>
+                        {project.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label>Allocation Percentage</Label>
+                <Input 
+                  type="number"
+                  min={0}
+                  max={100}
+                  value={allocationPercentage}
+                  onChange={(e) => setAllocationPercentage(Number(e.target.value))}
+                />
               </div>
             </div>
             <DialogFooter>
               <Button variant="outline" onClick={() => setResourceModalOpen(false)}>Cancel</Button>
-              <Button onClick={() => { toast.success('Resource added'); setResourceModalOpen(false); }} className="bg-[#2563eb] hover:bg-[#1d4ed8]">
-                Save
+              <Button 
+                disabled={!selectedUserId || !selectedProjectId}
+                onClick={() => {
+                  createAssignment.mutate({
+                    user_id: selectedUserId,
+                    project_id: selectedProjectId,
+                    allocation_percentage: allocationPercentage,
+                    start_date: new Date().toISOString().split('T')[0],
+                    status: 'active',
+                    work_item_type: 'project',
+                  });
+                  setResourceModalOpen(false);
+                  setSelectedUserId('');
+                  setSelectedProjectId('');
+                  setAllocationPercentage(100);
+                }} 
+                className="bg-[#2563eb] hover:bg-[#1d4ed8]"
+              >
+                Add to Capacity Planner
               </Button>
             </DialogFooter>
           </DialogContent>
