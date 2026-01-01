@@ -266,44 +266,35 @@ export default function CapacityPlannerPage() {
   return (
     <PageChrome>
       <div className="flex flex-col h-full bg-[hsl(var(--background))] relative">
-        {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 flex-wrap gap-3">
-          <div className="flex items-center gap-4">
-            {/* Period Toggle - Only show in Timeline view */}
-            {currentView === 'timeline' && (
-              <div className="flex bg-card border border-border rounded-lg p-1">
-                {(['weekly', 'monthly', 'quarterly'] as PeriodType[]).map((p) => (
-                  <button
-                    key={p}
-                    onClick={() => setPeriod(p)}
-                    className={cn(
-                      'px-4 py-2 text-xs font-semibold rounded-md transition-all capitalize',
-                      period === p
-                        ? 'bg-foreground text-background'
-                        : 'text-muted-foreground hover:bg-muted hover:text-foreground'
-                    )}
-                  >
-                    {p}
-                  </button>
-                ))}
-              </div>
-            )}
-            
+        {/* Header Row - Compact Toolbar */}
+        <div className="flex items-center justify-between px-5 py-3 bg-card/50 border-b border-border flex-wrap gap-3">
+          <div className="flex items-center gap-3">
             {/* Search */}
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input 
                 placeholder="Search resources..." 
-                className="pl-9 w-48 h-9 text-sm bg-card"
+                className="pl-9 w-48 h-10 text-sm bg-card border-border rounded-lg"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
             </div>
             
-            {/* Department Filter */}
+            {/* Department Filter - Badge Style */}
             <Select value={departmentFilter} onValueChange={setDepartmentFilter}>
-              <SelectTrigger className="w-40 h-9 text-sm">
+              <SelectTrigger className={cn(
+                "h-10 text-sm border-0 gap-2 rounded-full px-4",
+                departmentFilter !== 'all' 
+                  ? "bg-[#2563eb] text-white hover:bg-[#1d4ed8]" 
+                  : "bg-card border border-border text-foreground"
+              )}>
+                <Building2 className="h-4 w-4" />
                 <SelectValue placeholder="Department" />
+                {departmentFilter !== 'all' && (
+                  <span className="bg-white/20 text-white text-xs font-bold px-1.5 py-0.5 rounded-full ml-1">
+                    {filteredResources.length}
+                  </span>
+                )}
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Departments</SelectItem>
@@ -312,64 +303,64 @@ export default function CapacityPlannerPage() {
                 ))}
               </SelectContent>
             </Select>
+
+            {/* All Divisions Filter */}
+            <Select defaultValue="all">
+              <SelectTrigger className="h-10 text-sm bg-card border border-border rounded-lg px-4 w-36">
+                <FileStack className="h-4 w-4 text-muted-foreground" />
+                <SelectValue placeholder="All Divisions" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Divisions</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
           
           <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" onClick={handleExport} className="gap-2">
+            <Button variant="ghost" size="icon" onClick={handleExport} className="h-10 w-10">
               <Download className="h-4 w-4" />
-              Export
             </Button>
-            <Button size="sm" onClick={() => setResourceModalOpen(true)} className="gap-2 bg-[#2563eb] hover:bg-[#1d4ed8]">
+            <Button variant="ghost" size="icon" className="h-10 w-10">
+              <Settings2 className="h-4 w-4" />
+            </Button>
+            <Button size="sm" onClick={() => setResourceModalOpen(true)} className="gap-2 bg-[#2563eb] hover:bg-[#1d4ed8] h-10 px-4 rounded-lg">
               <Plus className="h-4 w-4" />
               Add Resource
             </Button>
           </div>
         </div>
 
-        {/* Summary Bar */}
-        <div className="flex gap-2 px-5 pb-4 flex-wrap">
-          <SummaryCard 
+        {/* Summary Stats Bar - Compact Pill Style */}
+        <div className="flex items-center gap-3 px-5 py-3 flex-wrap">
+          <StatPill 
             icon={Users} 
             value={metrics.summary.total} 
-            label="Resources" 
-            iconBg="bg-[#2563eb]/10" 
-            iconColor="text-[#2563eb]" 
+            label="Total" 
+            variant="default"
           />
-          <SummaryCard 
+          <StatPill 
             icon={CheckCircle2} 
             value={metrics.summary.available + metrics.summary.healthy} 
             label="Available" 
-            iconBg="bg-[#0d9488]/10" 
-            iconColor="text-[#0d9488]" 
+            variant="success"
           />
-          <SummaryCard 
+          <StatPill 
             icon={BarChart3} 
             value={metrics.summary.atCapacity} 
             label="At Capacity" 
-            iconBg="bg-[#d97706]/10" 
-            iconColor="text-[#d97706]" 
+            variant="primary"
           />
-          <SummaryCard 
-            icon={BarChart3} 
+          <StatPill 
+            icon={Clock} 
             value={metrics.summary.overAllocated} 
-            label="Over-allocated" 
-            iconBg="bg-[#64748b]/10" 
-            iconColor="text-[#64748b]" 
+            label="Over" 
+            variant="default"
           />
           
-          {/* Utilization Gauge */}
-          <div className="bg-card border border-border rounded-lg px-4 py-3 flex-1 min-w-40">
-            <div className="flex justify-between items-center mb-1.5">
-              <span className="text-[10px] font-semibold text-muted-foreground uppercase">Utilization</span>
-              <span className={cn(
-                'text-lg font-bold',
-                metrics.summary.avgUtilization >= 80 ? 'text-[#dc2626]' : 
-                metrics.summary.avgUtilization >= 60 ? 'text-[#d97706]' : 'text-[#0d9488]'
-              )}>
-                {metrics.summary.avgUtilization}%
-              </span>
-            </div>
-            <div className="h-1.5 bg-muted rounded-full overflow-hidden mb-1.5">
+          {/* Utilization - Compact */}
+          <div className="flex items-center gap-3 ml-auto bg-card border border-border rounded-lg px-4 py-2">
+            <span className="text-xs font-semibold text-muted-foreground uppercase">Utilization</span>
+            <div className="w-32 h-2 bg-muted rounded-full overflow-hidden">
               <div 
                 className={cn(
                   'h-full rounded-full transition-all',
@@ -379,16 +370,17 @@ export default function CapacityPlannerPage() {
                 style={{ width: `${Math.min(metrics.summary.avgUtilization, 100)}%` }}
               />
             </div>
-            <div className="flex gap-2 flex-wrap">
-              <LegendDot color="bg-[#2563eb]" label={`0`} />
-              <LegendDot color="bg-[#0d9488]" label={`${metrics.summary.available + metrics.summary.healthy}`} />
-              <LegendDot color="bg-[#d97706]" label={`${metrics.summary.atCapacity}`} />
-              <LegendDot color="bg-[#dc2626]" label={`${metrics.summary.overAllocated}`} />
-            </div>
+            <span className={cn(
+              'text-lg font-bold',
+              metrics.summary.avgUtilization >= 80 ? 'text-[#dc2626]' : 
+              metrics.summary.avgUtilization >= 60 ? 'text-[#d97706]' : 'text-[#0d9488]'
+            )}>
+              {metrics.summary.avgUtilization}%
+            </span>
           </div>
         </div>
 
-        {/* Toolbar with View Tabs */}
+        {/* View Tabs Row */}
         <div className="flex items-center justify-between px-5 pb-4 gap-3 flex-wrap">
           <div className="flex bg-muted p-1 rounded-lg border border-border">
             <ViewTab icon={LayoutGrid} label="Cards" active={currentView === 'cards'} onClick={() => setCurrentView('cards')} />
@@ -396,10 +388,31 @@ export default function CapacityPlannerPage() {
             <ViewTab icon={CalendarDays} label="Timeline" active={currentView === 'timeline'} onClick={() => setCurrentView('timeline')} />
             <ViewTab icon={FileStack} label="Scenarios" active={currentView === 'scenarios'} onClick={() => setCurrentView('scenarios')} />
           </div>
+
+          {/* Period Toggle - Only show in Timeline view */}
+          {currentView === 'timeline' && (
+            <div className="flex bg-card border border-border rounded-lg p-1">
+              {(['weekly', 'monthly', 'quarterly'] as PeriodType[]).map((p) => (
+                <button
+                  key={p}
+                  onClick={() => setPeriod(p)}
+                  className={cn(
+                    'px-4 py-2 text-xs font-semibold rounded-md transition-all capitalize',
+                    period === p
+                      ? 'bg-foreground text-background'
+                      : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                  )}
+                >
+                  {p}
+                </button>
+              ))}
+            </div>
+          )}
           
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 ml-auto">
             <Select value={groupBy} onValueChange={(v) => setGroupBy(v as GroupByType)}>
-              <SelectTrigger className="w-44 h-9 text-sm">
+              <SelectTrigger className="w-48 h-10 text-sm bg-card border border-border rounded-lg">
+                <FileStack className="h-4 w-4 text-muted-foreground" />
                 <SelectValue placeholder="Group by..." />
               </SelectTrigger>
               <SelectContent>
@@ -413,13 +426,13 @@ export default function CapacityPlannerPage() {
             <button
               onClick={() => setAssignModeOpen(!assignModeOpen)}
               className={cn(
-                'flex items-center gap-2 px-3 py-2 rounded-lg border text-sm font-medium transition-all h-9',
+                'flex items-center gap-2 px-4 py-2.5 rounded-lg border text-sm font-medium transition-all h-10',
                 assignModeOpen
                   ? 'bg-[#2563eb] border-[#2563eb] text-white'
-                  : 'bg-card border-border text-muted-foreground hover:text-[#2563eb] hover:border-[#2563eb]/50'
+                  : 'bg-card border-border text-foreground hover:text-[#2563eb] hover:border-[#2563eb]/50'
               )}
             >
-              <ArrowLeftRight className="h-4 w-4" />
+              <Users className="h-4 w-4" />
               <span>Assign</span>
             </button>
           </div>
@@ -852,6 +865,32 @@ function SummaryCard({ icon: Icon, value, label, iconBg, iconColor }: {
         <p className="text-xl font-bold text-foreground leading-tight">{value}</p>
         <p className="text-[10px] text-muted-foreground mt-0.5">{label}</p>
       </div>
+    </div>
+  );
+}
+
+// Stat Pill - Compact inline stat
+function StatPill({ icon: Icon, value, label, variant = 'default' }: { 
+  icon: React.ElementType; 
+  value: number | string; 
+  label: string; 
+  variant?: 'default' | 'success' | 'primary' | 'warning';
+}) {
+  const variantStyles = {
+    default: { iconBg: 'bg-muted', iconColor: 'text-muted-foreground' },
+    success: { iconBg: 'bg-[#0d9488]/10', iconColor: 'text-[#0d9488]' },
+    primary: { iconBg: 'bg-[#2563eb]/10', iconColor: 'text-[#2563eb]' },
+    warning: { iconBg: 'bg-[#d97706]/10', iconColor: 'text-[#d97706]' },
+  };
+  const styles = variantStyles[variant];
+  
+  return (
+    <div className="flex items-center gap-2 bg-card border border-border rounded-full px-3 py-2">
+      <div className={cn('w-6 h-6 rounded-full flex items-center justify-center', styles.iconBg)}>
+        <Icon className={cn('h-3.5 w-3.5', styles.iconColor)} />
+      </div>
+      <span className="text-base font-bold text-foreground">{value}</span>
+      <span className="text-xs text-muted-foreground">{label}</span>
     </div>
   );
 }
