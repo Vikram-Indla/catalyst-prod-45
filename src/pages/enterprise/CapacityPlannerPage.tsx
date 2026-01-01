@@ -2513,14 +2513,26 @@ function EditResourceForm({
   return (
     <>
       <div className="space-y-4 py-4">
-        <div className="space-y-2">
-          <Label>Full Name</Label>
-          <Input 
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            onBlur={() => saveProfileField('full_name', name)}
-            placeholder="Enter name"
-          />
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label>Full Name</Label>
+            <Input 
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              onBlur={() => saveProfileField('full_name', name)}
+              placeholder="Enter name"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label>Email</Label>
+            <Input 
+              value={resource.email || ''}
+              readOnly
+              disabled
+              className="bg-muted cursor-not-allowed"
+              placeholder="No email set"
+            />
+          </div>
         </div>
           <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
