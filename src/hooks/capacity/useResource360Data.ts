@@ -30,7 +30,6 @@ export function useResource360Data(resourceId: string | null) {
         email: data.email || '',
         role: data.role || 'Team Member',
         department: (data.capacity_departments as any)?.name || 'Unassigned',
-        division: 'Delivery',
         avatar_url: data.avatar_url,
         currentAllocation: 0,
         availableCapacity: 100,

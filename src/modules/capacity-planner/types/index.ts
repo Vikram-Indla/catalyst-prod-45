@@ -11,7 +11,6 @@ export interface CapacityResource {
   department: string;
   department_id?: string | null;
   assignment_id?: string | null;
-  division: 'Product' | 'Delivery' | 'Support' | string;
   avatar_url?: string;
   created_at: string;
   updated_at: string;
@@ -106,7 +105,7 @@ export interface ResourceMetric extends CapacityResource {
 
 export type ViewType = 'cards' | 'table' | 'timeline' | 'assignments' | 'leveling';
 export type PeriodType = 'weekly' | 'monthly' | 'quarterly';
-export type GroupByType = 'none' | 'division' | 'project' | 'department';
+export type GroupByType = 'none' | 'project' | 'department';
 
 // Catalyst V5 Design System Colors
 export const CatalystColors = {
@@ -142,10 +141,11 @@ export const ProjectColors: Record<string, string> = {
   default: '#6b7280',
 };
 
-export const DivisionColors: Record<string, string> = {
-  Product: '#d4b896',
-  Delivery: '#0d9488',
-  Support: '#4d8b4d',
+export const DepartmentColors: Record<string, { bg: string; text: string; badge: string }> = {
+  Product: { bg: 'bg-[#d4b896]', text: 'text-[#4a3f35]', badge: 'bg-[#d4b896]/15 text-[#c69c6d]' },
+  Delivery: { bg: 'bg-[#0d9488]', text: 'text-white', badge: 'bg-[#2563eb]/10 text-[#2563eb]' },
+  Support: { bg: 'bg-[#4d8b4d]', text: 'text-white', badge: 'bg-[#5c7c5c]/15 text-[#5c7c5c]' },
+  default: { bg: 'bg-muted', text: 'text-muted-foreground', badge: 'bg-muted text-muted-foreground' },
 };
 
 export const getProjectColor = (projectName: string): string => {

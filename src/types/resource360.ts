@@ -9,7 +9,6 @@ export interface Resource360Data {
   email: string;
   role: string;
   department: string;
-  division: 'Product' | 'Delivery' | 'Support' | string;
   avatar_url?: string;
   currentAllocation: number;
   availableCapacity: number;

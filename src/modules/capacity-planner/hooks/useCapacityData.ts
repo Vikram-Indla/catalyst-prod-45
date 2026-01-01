@@ -29,7 +29,6 @@ export function useCapacityData() {
         role: p.role || 'Team Member',
         department: p.department_id ? deptMap.get(p.department_id) || 'Unassigned' : 'Unassigned',
         department_id: p.department_id,
-        division: 'Delivery' as const,
         avatar_url: p.avatar_url,
         created_at: p.created_at,
         updated_at: p.updated_at,
