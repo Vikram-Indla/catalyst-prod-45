@@ -188,7 +188,7 @@ export function KanbanAssignView({
     scrollStep();
   }, []);
 
-  // Track mouse position during drag for auto-scroll
+  // Track pointer position during drag for auto-scroll (mouse + touch)
   useEffect(() => {
     if (!isDragging) {
       if (autoScrollRef.current) {
@@ -202,9 +202,18 @@ export function KanbanAssignView({
       handleAutoScroll(e.clientX);
     };
 
+    const handleTouchMove = (e: TouchEvent) => {
+      const touch = e.touches?.[0];
+      if (!touch) return;
+      handleAutoScroll(touch.clientX);
+    };
+
     window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('touchmove', handleTouchMove, { passive: true });
+
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('touchmove', handleTouchMove);
       if (autoScrollRef.current) {
         cancelAnimationFrame(autoScrollRef.current);
       }
