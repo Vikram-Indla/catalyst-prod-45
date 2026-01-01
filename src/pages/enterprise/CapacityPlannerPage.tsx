@@ -1220,12 +1220,18 @@ function TableView({ resources, projects, groupBy, groupedByAssignment, groupedB
     {
       id: 'assignments',
       header: 'Assignments',
-      accessor: (row: ResourceMetric) => row.assignments.length,
-      width: '100px',
+      accessor: (row: ResourceMetric) => row.assignmentName || 'Unassigned',
+      width: '200px',
       sortable: true,
-      render: (value: number) => (
-        <span className="text-sm text-muted-foreground text-center block">{value}</span>
-      ),
+      render: (_: any, row: ResourceMetric) => {
+        // Show the assignment name (project title) - this is what the resource is assigned to
+        const assignmentName = row.assignmentName || 'Unassigned';
+        return (
+          <span className="text-sm text-slate-700 truncate block" title={assignmentName}>
+            {assignmentName}
+          </span>
+        );
+      },
     },
     {
       id: 'actions',
