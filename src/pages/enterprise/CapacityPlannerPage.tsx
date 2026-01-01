@@ -193,12 +193,6 @@ export default function CapacityPlannerPage() {
           // Create a copy with the specific allocation for this column
           groups[assignmentName].push({ ...r, allocation: percent, assignmentName });
         });
-        
-        // If total allocation < 100, also show in Unassigned with remaining capacity
-        const totalAllocation = resourceAllocations.reduce((sum, a) => sum + a.percent, 0);
-        if (totalAllocation < 100) {
-          groups['Unassigned'].push({ ...r, allocation: 100 - totalAllocation, assignmentName: 'Unassigned' });
-        }
       } else {
         // Fallback to legacy assignment from resource_inventory
         const assignmentName = r.assignmentName || 'Unassigned';
