@@ -3,7 +3,7 @@
  * Max height: 120px | Inline metrics | Live status
  */
 
-import { Search, Download, Settings, Plus, Filter, ChevronDown, Clock, LayoutGrid, Table2, CalendarDays, FileStack, AlertTriangle, Users, ArrowLeftRight } from 'lucide-react';
+import { Search, Download, Plus, Filter, ChevronDown, Clock, LayoutGrid, Table2, CalendarDays, FileStack, AlertTriangle, Users, ArrowLeftRight, Presentation } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
@@ -31,6 +31,7 @@ interface SleekCapacityHeaderProps {
   onAddResource: () => void;
   onAssignMode: () => void;
   onExport: () => void;
+  onPresentationMode?: () => void;
   onFilterChange?: (filter: 'all' | 'available' | 'atCapacity' | 'over') => void;
   onDepartmentFilterChange?: (filter: 'all' | 'delivery' | 'product' | 'support') => void;
 }
@@ -50,6 +51,7 @@ export function SleekCapacityHeader({
   onAddResource,
   onAssignMode,
   onExport,
+  onPresentationMode,
   onFilterChange,
   onDepartmentFilterChange,
 }: SleekCapacityHeaderProps) {
@@ -96,11 +98,14 @@ export function SleekCapacityHeader({
             Export
           </Button>
           <Button 
+            onClick={onPresentationMode}
             variant="ghost" 
-            size="icon"
-            className="h-7 w-7 text-slate-400"
+            size="sm"
+            className="h-7 px-3 text-xs text-slate-500 hover:text-slate-700 hover:bg-slate-100"
+            title="Presentation Mode"
           >
-            <Settings className="h-3.5 w-3.5" />
+            <Presentation className="h-3.5 w-3.5 mr-1" />
+            Present
           </Button>
           <Button 
             onClick={onAssignMode}
