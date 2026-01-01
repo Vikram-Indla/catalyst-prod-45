@@ -324,7 +324,9 @@ export default function CapacityPlannerPage() {
           {currentView === 'table' && (
             <TableView 
               resources={filteredResources} 
-              projects={projects} 
+              projects={projects}
+              groupBy={groupBy}
+              groupedByAssignment={groupedByAssignment}
               onResourceClick={openResourceDrawer}
               onEditResource={(id) => setEditResourceId(id)}
               onDeleteResource={(resource) => {
@@ -340,7 +342,12 @@ export default function CapacityPlannerPage() {
             />
           )}
           {currentView === 'timeline' && (
-            <TimelineView resources={filteredResources} period={period} />
+            <TimelineView 
+              resources={filteredResources} 
+              period={period}
+              groupBy={groupBy}
+              groupedByAssignment={groupedByAssignment}
+            />
           )}
           {currentView === 'assignments' && (
             <AssignmentsView resources={filteredResources} projects={projects} createAssignment={createAssignment} />
@@ -868,13 +875,15 @@ function ResourceCard({ resource, on360Click, onCardClick }: {
 interface TableViewProps {
   resources: ResourceMetric[];
   projects: CapacityProject[];
+  groupBy: GroupByType;
+  groupedByAssignment: Record<string, ResourceMetric[]>;
   onResourceClick: (r: ResourceMetric) => void;
   onEditResource: (id: string) => void;
   onDeleteResource: (r: ResourceMetric) => void;
   onBulkDelete?: (resources: ResourceMetric[]) => void;
 }
 
-function TableView({ resources, projects, onResourceClick, onEditResource, onDeleteResource, onBulkDelete }: TableViewProps) {
+function TableView({ resources, projects, groupBy, groupedByAssignment, onResourceClick, onEditResource, onDeleteResource, onBulkDelete }: TableViewProps) {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const getProjectName = (projectId: string) => projects.find(p => p.id === projectId)?.name || 'Unknown';
 
@@ -1008,6 +1017,30 @@ function TableView({ resources, projects, onResourceClick, onEditResource, onDel
     }
   };
 
+  // Render grouped tables
+  const renderGroupedTable = (groupResources: ResourceMetric[], groupName: string) => (
+    <div key={groupName} className="space-y-2">
+      <div className="flex items-center gap-3 p-3 bg-card border border-border rounded-lg">
+        <div className="w-8 h-8 rounded-md bg-[#2563eb] flex items-center justify-center">
+          <Users className="h-4 w-4 text-white" />
+        </div>
+        <span className="text-sm font-semibold text-foreground">{groupName}</span>
+        <span className="text-xs text-muted-foreground ml-auto bg-muted px-2.5 py-1 rounded-full">
+          {groupResources.length} resources
+        </span>
+      </div>
+      <CatalystEnterpriseTable
+        data={groupResources}
+        columns={columns}
+        showCheckboxes={true}
+        showActionsColumn={false}
+        selectedRows={selectedIds}
+        onSelectionChange={handleSelectionChange}
+        onRowClick={(row) => onResourceClick(row)}
+      />
+    </div>
+  );
+
   return (
     <div className="space-y-3">
       {/* Bulk Action Bar */}
@@ -1037,91 +1070,139 @@ function TableView({ resources, projects, onResourceClick, onEditResource, onDel
         </div>
       )}
 
-      <CatalystEnterpriseTable
-        data={resources}
-        columns={columns}
-        showCheckboxes={true}
-        showActionsColumn={false}
-        selectedRows={selectedIds}
-        onSelectionChange={handleSelectionChange}
-        onRowClick={(row) => onResourceClick(row)}
-      />
+      {groupBy === 'assignment' ? (
+        <div className="space-y-6">
+          {Object.entries(groupedByAssignment).map(([assignmentName, assignmentResources]) => 
+            renderGroupedTable(assignmentResources, assignmentName)
+          )}
+        </div>
+      ) : (
+        <CatalystEnterpriseTable
+          data={resources}
+          columns={columns}
+          showCheckboxes={true}
+          showActionsColumn={false}
+          selectedRows={selectedIds}
+          onSelectionChange={handleSelectionChange}
+          onRowClick={(row) => onResourceClick(row)}
+        />
+      )}
     </div>
   );
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Timeline View with Monthly Columns
+// Timeline View with Monthly Columns and Grouping Support
 // ─────────────────────────────────────────────────────────────────────────────
-function TimelineView({ resources, period }: { resources: ResourceMetric[]; period: PeriodType }) {
+interface TimelineViewProps {
+  resources: ResourceMetric[];
+  period: PeriodType;
+  groupBy: GroupByType;
+  groupedByAssignment: Record<string, ResourceMetric[]>;
+}
+
+function TimelineView({ resources, period, groupBy, groupedByAssignment }: TimelineViewProps) {
   const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
+  
+  const renderResourceRow = (resource: ResourceMetric) => {
+    const dept = resource.department || 'Unassigned';
+    const deptColor = departmentColors[dept] || departmentColors.default;
+    const initials = resource.name?.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'NA';
+    
+    return (
+      <div key={resource.id} className="flex border-b border-border last:border-b-0 hover:bg-muted/20">
+        <div className="w-52 px-4 py-3 flex items-center gap-3 border-r border-border shrink-0">
+          <div className={cn('w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold', deptColor.bg, deptColor.text)}>
+            {initials}
+          </div>
+          <div>
+            <p className="text-sm font-medium text-foreground">{resource.name}</p>
+            <p className="text-xs text-muted-foreground">{resource.role}</p>
+          </div>
+        </div>
+        <div className="flex-1 flex">
+          {months.map((month, i) => {
+            // Use actual allocation, vary slightly per month for visual
+            const baseAlloc = resource.allocation || 0;
+            const alloc = Math.max(0, Math.min(150, baseAlloc + Math.floor((Math.random() - 0.5) * 20)));
+            return (
+              <div 
+                key={month}
+                className={cn(
+                  'flex-1 px-2 py-2.5 flex items-center justify-center border-r border-border last:border-r-0 min-w-20',
+                  i === 0 && 'bg-[#2563eb]/5'
+                )}
+              >
+                <span className={cn(
+                  'text-[11px] font-semibold px-2.5 py-1 rounded',
+                  alloc > 100 ? 'bg-[#dc2626]/10 text-[#dc2626]' :
+                  alloc > 80 ? 'bg-[#d97706]/10 text-[#d97706]' : 'bg-[#0d9488]/10 text-[#0d9488]'
+                )}>
+                  {alloc}%
+                </span>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  };
+
+  const renderTimelineHeader = () => (
+    <div className="flex bg-muted/50 border-b border-border sticky top-0 z-10">
+      <div className="w-52 px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider border-r border-border shrink-0">
+        Resource
+      </div>
+      <div className="flex-1 flex">
+        {months.map((month, i) => (
+          <div 
+            key={month} 
+            className={cn(
+              'flex-1 px-2 py-3 text-center text-[11px] font-semibold text-muted-foreground border-r border-border last:border-r-0 min-w-20',
+              i === 0 && 'bg-[#2563eb]/5 text-[#2563eb]'
+            )}
+          >
+            {month}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+
+  if (groupBy === 'assignment') {
+    return (
+      <div className="space-y-6">
+        {Object.entries(groupedByAssignment).map(([assignmentName, assignmentResources]) => (
+          <div key={assignmentName} className="space-y-2">
+            {/* Group Header */}
+            <div className="flex items-center gap-3 p-3 bg-card border border-border rounded-lg">
+              <div className="w-8 h-8 rounded-md bg-[#2563eb] flex items-center justify-center">
+                <Users className="h-4 w-4 text-white" />
+              </div>
+              <span className="text-sm font-semibold text-foreground">{assignmentName}</span>
+              <span className="text-xs text-muted-foreground ml-auto bg-muted px-2.5 py-1 rounded-full">
+                {assignmentResources.length} resources
+              </span>
+            </div>
+            
+            {/* Timeline Table */}
+            <div className="bg-card border border-border rounded-lg overflow-hidden">
+              {renderTimelineHeader()}
+              <div className="max-h-[400px] overflow-y-auto">
+                {assignmentResources.map(renderResourceRow)}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  }
   
   return (
     <div className="bg-card border border-border rounded-lg overflow-hidden">
-      {/* Header */}
-      <div className="flex bg-muted/50 border-b border-border sticky top-0 z-10">
-        <div className="w-52 px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider border-r border-border shrink-0">
-          Resource
-        </div>
-        <div className="flex-1 flex">
-          {months.map((month, i) => (
-            <div 
-              key={month} 
-              className={cn(
-                'flex-1 px-2 py-3 text-center text-[11px] font-semibold text-muted-foreground border-r border-border last:border-r-0 min-w-20',
-                i === 0 && 'bg-[#2563eb]/5 text-[#2563eb]'
-              )}
-            >
-              {month}
-            </div>
-          ))}
-        </div>
-      </div>
-      
-      {/* Body */}
+      {renderTimelineHeader()}
       <div className="max-h-[500px] overflow-y-auto">
-        {resources.map((resource) => {
-          const dept = resource.department || 'Unassigned';
-          const deptColor = departmentColors[dept] || departmentColors.default;
-          const initials = resource.name?.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'NA';
-          
-          return (
-            <div key={resource.id} className="flex border-b border-border last:border-b-0 hover:bg-muted/20">
-              <div className="w-52 px-4 py-3 flex items-center gap-3 border-r border-border shrink-0">
-                <div className={cn('w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold', deptColor.bg, deptColor.text)}>
-                  {initials}
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-foreground">{resource.name}</p>
-                  <p className="text-xs text-muted-foreground">{resource.role}</p>
-                </div>
-              </div>
-              <div className="flex-1 flex">
-                {months.map((month, i) => {
-                  // Generate random allocation for demo
-                  const alloc = Math.floor(70 + Math.random() * 50);
-                  return (
-                    <div 
-                      key={month}
-                      className={cn(
-                        'flex-1 px-2 py-2.5 flex items-center justify-center border-r border-border last:border-r-0 min-w-20',
-                        i === 0 && 'bg-[#2563eb]/5'
-                      )}
-                    >
-                      <span className={cn(
-                        'text-[11px] font-semibold px-2.5 py-1 rounded',
-                        alloc > 100 ? 'bg-[#dc2626]/10 text-[#dc2626]' :
-                        alloc > 80 ? 'bg-[#d97706]/10 text-[#d97706]' : 'bg-[#0d9488]/10 text-[#0d9488]'
-                      )}>
-                        {alloc}%
-                      </span>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          );
-        })}
+        {resources.map(renderResourceRow)}
       </div>
     </div>
   );
@@ -2327,6 +2408,7 @@ function EditResourceForm({
   onSave: () => void;
   onCancel: () => void;
 }) {
+  const queryClient = useQueryClient();
   const { departments } = useCapacityDepartments();
   const { data: assignmentTypes = [] } = useActiveCapacityAssignmentTypes();
   const { updateResource } = useResourceManagement();
@@ -2359,6 +2441,49 @@ function EditResourceForm({
     }
   };
 
+  // Save allocation to assignments table
+  const saveAllocation = async (newAllocation: number) => {
+    setIsSaving(true);
+    try {
+      // Get the user's active assignments
+      const activeAssignments = resource.assignments?.filter(a => a.status === 'active') || [];
+      
+      if (activeAssignments.length > 0) {
+        // Update the first active assignment's allocation
+        const { error } = await supabase
+          .from('assignments')
+          .update({ 
+            allocation_percentage: newAllocation,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', activeAssignments[0].id);
+        
+        if (error) throw error;
+      } else {
+        // Create a new assignment if none exists
+        const { error } = await supabase
+          .from('assignments')
+          .insert({
+            user_id: resource.id,
+            allocation_percentage: newAllocation,
+            start_date: new Date().toISOString().split('T')[0],
+            status: 'active',
+            work_item_type: 'project',
+          });
+        
+        if (error) throw error;
+      }
+      
+      queryClient.invalidateQueries({ queryKey: ['capacity-planner-assignments'] });
+      setLastSaved(new Date());
+    } catch (error) {
+      console.error('Failed to save allocation:', error);
+      toast.error('Failed to save allocation');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   // Handler for role change
   const handleRoleChange = (value: string) => {
     setRole(value);
@@ -2377,9 +2502,11 @@ function EditResourceForm({
     saveProfileField('assignment_id', value);
   };
 
-  // Handler for allocation change
-  const handleAllocationChange = (value: number) => {
-    setAllocation(value);
+  // Handler for allocation change (save on blur)
+  const handleAllocationBlur = () => {
+    if (allocation !== resource.allocation) {
+      saveAllocation(allocation);
+    }
   };
 
   return (
@@ -2445,7 +2572,7 @@ function EditResourceForm({
               step={5}
               value={allocation}
               onChange={(e) => setAllocation(parseInt(e.target.value) || 0)}
-              onBlur={() => handleAllocationChange(allocation)}
+              onBlur={handleAllocationBlur}
             />
           </div>
         </div>

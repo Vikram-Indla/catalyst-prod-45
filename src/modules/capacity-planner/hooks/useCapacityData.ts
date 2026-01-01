@@ -28,15 +28,20 @@ export function useCapacityData() {
         .select('id, name');
       const assignmentTypeMap = new Map(assignmentTypes?.map(a => [a.id, a.name]) || []);
       
-      // Fetch resource_inventory to get assignment_id by matching name
+      // Fetch resource_inventory using profile_id for reliable matching
       const { data: resourceInventory } = await supabase
         .from('resource_inventory')
-        .select('id, name, assignment_id');
-      const assignmentIdMap = new Map(resourceInventory?.map(r => [r.name?.toLowerCase(), r.assignment_id]) || []);
+        .select('id, name, assignment_id, profile_id');
+      
+      // Create maps for both profile_id and name-based lookup (fallback)
+      const inventoryByProfileId = new Map(resourceInventory?.filter(r => r.profile_id).map(r => [r.profile_id, r]) || []);
+      const inventoryByName = new Map(resourceInventory?.map(r => [r.name?.toLowerCase(), r]) || []);
       
       return (data || []).map(p => {
         const fullName = p.full_name || p.email || 'Unknown';
-        const assignmentId = assignmentIdMap.get(fullName.toLowerCase()) || null;
+        // Try profile_id match first, then fall back to name match
+        const inventory = inventoryByProfileId.get(p.id) || inventoryByName.get(fullName.toLowerCase());
+        const assignmentId = inventory?.assignment_id || null;
         const assignmentName = assignmentId ? assignmentTypeMap.get(assignmentId) || null : null;
         return {
           id: p.id,
