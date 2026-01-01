@@ -25,7 +25,7 @@ import { CapacityAIDrawer } from '@/components/capacity/CapacityAIDrawer';
 import { CatalystEnterpriseTable, CatalystColumn } from '@/components/industry/CatalystEnterpriseTable';
 
 type PeriodType = 'weekly' | 'monthly' | 'quarterly';
-type GroupByType = 'none' | 'project' | 'department';
+type GroupByType = 'none' | 'assignment' | 'department';
 type ExtendedViewType = ViewType | 'scenarios';
 
 // Department colors - Catalyst V5 compliant
@@ -59,7 +59,7 @@ export default function CapacityPlannerPage() {
   // View state
   const [currentView, setCurrentView] = useState<ExtendedViewType>('cards');
   const [period, setPeriod] = useState<PeriodType>('monthly');
-  const [groupBy, setGroupBy] = useState<GroupByType>('project');
+  const [groupBy, setGroupBy] = useState<GroupByType>('assignment');
   const [searchQuery, setSearchQuery] = useState('');
   
   // Modal state
@@ -115,23 +115,16 @@ export default function CapacityPlannerPage() {
     r.role?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  // Group resources by project
-  const groupedByProject = useMemo(() => {
+  // Group resources by assignment type
+  const groupedByAssignment = useMemo(() => {
     const groups: Record<string, ResourceMetric[]> = {};
     filteredResources.forEach((r) => {
-      if (r.assignments.length > 0) {
-        const projectId = r.assignments[0].project_id;
-        const project = projects.find(p => p.id === projectId);
-        const key = project?.name || 'Unassigned';
-        if (!groups[key]) groups[key] = [];
-        groups[key].push(r);
-      } else {
-        if (!groups['Unassigned']) groups['Unassigned'] = [];
-        groups['Unassigned'].push(r);
-      }
+      const assignmentName = r.assignmentName || 'Unassigned';
+      if (!groups[assignmentName]) groups[assignmentName] = [];
+      groups[assignmentName].push(r);
     });
     return groups;
-  }, [filteredResources, projects]);
+  }, [filteredResources]);
 
   // Under-allocated resources for Leveling
   const underAllocatedResources = filteredResources.filter(r => r.allocation < 80);
@@ -275,12 +268,12 @@ export default function CapacityPlannerPage() {
           
           <div className="flex items-center gap-2">
             <Select value={groupBy} onValueChange={(v) => setGroupBy(v as GroupByType)}>
-              <SelectTrigger className="w-40 h-9 text-sm">
+              <SelectTrigger className="w-44 h-9 text-sm">
                 <SelectValue placeholder="Group by..." />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="none">No Grouping</SelectItem>
-                <SelectItem value="project">Group by Project</SelectItem>
+                <SelectItem value="assignment">Group by Assignment</SelectItem>
                 <SelectItem value="department">Group by Department</SelectItem>
               </SelectContent>
             </Select>
@@ -292,9 +285,8 @@ export default function CapacityPlannerPage() {
           {currentView === 'cards' && (
             <CardsView 
               resources={filteredResources} 
-              groupedByProject={groupedByProject}
+              groupedByAssignment={groupedByAssignment}
               groupBy={groupBy}
-              projects={projects}
               onResourceClick={openResourceDrawer} 
             />
           )}
@@ -666,34 +658,33 @@ function ViewTab({ icon: Icon, label, active, onClick, badge }: {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Cards View with Project Grouping
+// Cards View with Assignment Grouping
 // ─────────────────────────────────────────────────────────────────────────────
-function CardsView({ resources, groupedByProject, groupBy, projects, onResourceClick }: { 
+function CardsView({ resources, groupedByAssignment, groupBy, onResourceClick }: { 
   resources: ResourceMetric[]; 
-  groupedByProject: Record<string, ResourceMetric[]>;
+  groupedByAssignment: Record<string, ResourceMetric[]>;
   groupBy: GroupByType;
-  projects: CapacityProject[];
   onResourceClick: (r: ResourceMetric) => void;
 }) {
-  if (groupBy === 'project') {
+  if (groupBy === 'assignment') {
     return (
       <div className="space-y-6">
-        {Object.entries(groupedByProject).map(([projectName, projectResources]) => (
-          <div key={projectName} className="space-y-3">
+        {Object.entries(groupedByAssignment).map(([assignmentName, assignmentResources]) => (
+          <div key={assignmentName} className="space-y-3">
             {/* Group Header */}
             <div className="flex items-center gap-3 p-3 bg-card border border-border rounded-lg">
-              <div className="w-8 h-8 rounded-md bg-muted-foreground/80 flex items-center justify-center">
-                <FolderKanban className="h-4 w-4 text-white" />
+              <div className="w-8 h-8 rounded-md bg-[#2563eb] flex items-center justify-center">
+                <Users className="h-4 w-4 text-white" />
               </div>
-              <span className="text-sm font-semibold text-foreground">{projectName}</span>
+              <span className="text-sm font-semibold text-foreground">{assignmentName}</span>
               <span className="text-xs text-muted-foreground ml-auto bg-muted px-2.5 py-1 rounded-full">
-                {projectResources.length} resources
+                {assignmentResources.length} resources
               </span>
             </div>
             
             {/* Cards Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-              {projectResources.map((resource) => (
+              {assignmentResources.map((resource) => (
                 <ResourceCard key={resource.id} resource={resource} onClick={() => onResourceClick(resource)} />
               ))}
             </div>
@@ -717,6 +708,7 @@ function ResourceCard({ resource, onClick }: { resource: ResourceMetric; onClick
   const dept = resource.department || 'Unassigned';
   const deptColor = departmentColors[dept] || departmentColors.default;
   const initials = resource.name?.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'NA';
+  const assignmentName = resource.assignmentName || 'Unassigned';
 
   return (
     <div 
@@ -732,10 +724,10 @@ function ResourceCard({ resource, onClick }: { resource: ResourceMetric; onClick
         <div className="flex-1 min-w-0">
           <p className="text-sm font-semibold text-foreground truncate">{resource.name}</p>
           <p className="text-xs text-muted-foreground truncate">{resource.role}</p>
-          {/* Department Tag */}
+          {/* Assignment Tag */}
           <div className="flex gap-1.5 mt-1.5 flex-wrap">
-            <span className={cn('text-[10px] font-semibold px-2 py-0.5 rounded uppercase', deptColor.badge)}>
-              {dept}
+            <span className="text-[10px] font-semibold px-2 py-0.5 rounded uppercase bg-[#4d8b4d] text-white">
+              {assignmentName}
             </span>
           </div>
         </div>
