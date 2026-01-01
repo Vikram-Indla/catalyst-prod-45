@@ -14,7 +14,7 @@ import {
   Users, CheckCircle2, BarChart3, AlertTriangle, TrendingUp, Download, Plus, 
   Search, LayoutGrid, Table2, CalendarDays, GanttChart, Sparkles, FileStack, Bot,
   ChevronLeft, ChevronRight, Clock, Eye, Copy, Check, RotateCcw, Play, FolderKanban,
-  Pencil, Trash2, Cloud, GitCompare
+  Pencil, Trash2, Cloud, GitCompare, Settings2
 } from 'lucide-react';
 import { useCapacityData, useAssignments, useAiRecommendations, useCapacityScenarios, useCapacityDepartments, useResourceManagement, useResourceAssignments, exportCapacityToPdf } from '@/modules/capacity-planner';
 
@@ -25,6 +25,7 @@ import { Button360 } from '@/components/capacity/Button360';
 import { Resource360Drawer } from '@/components/capacity/resource360/Resource360Drawer';
 import { CapacityAIDrawer } from '@/components/capacity/CapacityAIDrawer';
 import { CatalystEnterpriseTable, CatalystColumn } from '@/components/industry/CatalystEnterpriseTable';
+import { BulkEditModal } from '@/components/capacity/BulkEditModal';
 
 type PeriodType = 'weekly' | 'monthly' | 'quarterly';
 type GroupByType = 'none' | 'assignment' | 'department';
@@ -75,6 +76,8 @@ export default function CapacityPlannerPage() {
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [resourceToDelete, setResourceToDelete] = useState<ResourceMetric | null>(null);
   const [resourcesToDelete, setResourcesToDelete] = useState<ResourceMetric[]>([]);
+  const [bulkEditOpen, setBulkEditOpen] = useState(false);
+  const [resourcesToBulkEdit, setResourcesToBulkEdit] = useState<ResourceMetric[]>([]);
 
   // Add resource form state
   const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
@@ -338,6 +341,10 @@ export default function CapacityPlannerPage() {
                 setResourcesToDelete(resources);
                 setResourceToDelete(null);
                 setDeleteConfirmOpen(true);
+              }}
+              onBulkEdit={(resources) => {
+                setResourcesToBulkEdit(resources);
+                setBulkEditOpen(true);
               }}
             />
           )}
@@ -668,6 +675,22 @@ export default function CapacityPlannerPage() {
           </AlertDialogContent>
         </AlertDialog>
 
+        {/* Bulk Edit Modal */}
+        <BulkEditModal 
+          isOpen={bulkEditOpen}
+          onClose={() => {
+            setBulkEditOpen(false);
+            setResourcesToBulkEdit([]);
+          }}
+          resources={resourcesToBulkEdit.map(r => ({
+            id: r.id,
+            name: r.name,
+            department: r.department,
+            department_id: r.department_id,
+            allocation: r.allocation,
+          }))}
+        />
+
         <div className="fixed bottom-6 right-6 z-50">
           <div className="absolute inset-[-4px] rounded-full bg-[#0d9488]/25 animate-ping" style={{ animationDuration: '2.5s' }} />
           <button
@@ -882,9 +905,10 @@ interface TableViewProps {
   onEditResource: (id: string) => void;
   onDeleteResource: (r: ResourceMetric) => void;
   onBulkDelete?: (resources: ResourceMetric[]) => void;
+  onBulkEdit?: (resources: ResourceMetric[]) => void;
 }
 
-function TableView({ resources, projects, groupBy, groupedByAssignment, onResourceClick, onEditResource, onDeleteResource, onBulkDelete }: TableViewProps) {
+function TableView({ resources, projects, groupBy, groupedByAssignment, onResourceClick, onEditResource, onDeleteResource, onBulkDelete, onBulkEdit }: TableViewProps) {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const getProjectName = (projectId: string) => projects.find(p => p.id === projectId)?.name || 'Unknown';
 
@@ -1018,6 +1042,13 @@ function TableView({ resources, projects, groupBy, groupedByAssignment, onResour
     }
   };
 
+  const handleBulkEdit = () => {
+    const selected = resources.filter(r => selectedIds.includes(r.id));
+    if (onBulkEdit && selected.length > 0) {
+      onBulkEdit(selected);
+    }
+  };
+
   // Render grouped tables
   const renderGroupedTable = (groupResources: ResourceMetric[], groupName: string) => (
     <div key={groupName} className="space-y-2">
@@ -1057,6 +1088,15 @@ function TableView({ resources, projects, groupBy, groupedByAssignment, onResour
               onClick={() => setSelectedIds([])}
             >
               Clear Selection
+            </Button>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={handleBulkEdit}
+              className="gap-1.5"
+            >
+              <Settings2 className="h-3.5 w-3.5" />
+              Bulk Edit
             </Button>
             <Button 
               variant="destructive" 
