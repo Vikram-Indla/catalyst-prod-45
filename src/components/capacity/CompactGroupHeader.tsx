@@ -1,6 +1,9 @@
 /**
  * Compact Group Header - CIO Executive Cockpit
  * Max height: 44px | Inline stats | Minimal chrome
+ * FIX #5: Group icons with assignment-based colors
+ * FIX #6: Group name text matching icon color
+ * FIX #8: Colored left bar for group distinction
  */
 
 import { ChevronRight, Users, AlertCircle } from 'lucide-react';
@@ -28,6 +31,7 @@ export function CompactGroupHeader({
   isExpanded = true, 
   onToggle 
 }: CompactGroupHeaderProps) {
+  // FIX #5 & #6: Get theme for consistent icon and text colors
   const theme = getAssignmentTheme(assignmentName);
   const utilTheme = getAllocationTheme(averageUtilization);
   const hasIssues = overCount > 0;
@@ -36,29 +40,34 @@ export function CompactGroupHeader({
     <div 
       className={cn(
         "flex items-center justify-between h-11 px-4 rounded-lg cursor-pointer transition-all hover:shadow-sm",
-        "border border-slate-200"
+        "border border-slate-200 bg-white"
       )}
-      style={{ backgroundColor: theme.bg }}
+      style={{ 
+        // FIX #8: Left color bar for group distinction
+        borderLeftWidth: '4px', 
+        borderLeftColor: theme.accent 
+      }}
       onClick={onToggle}
     >
       {/* Left: Icon + Name + Alert */}
       <div className="flex items-center gap-3">
         <ChevronRight 
           className={cn(
-            "w-4 h-4 transition-transform shrink-0",
+            "w-4 h-4 transition-transform shrink-0 text-slate-400",
             isExpanded && "rotate-90"
           )}
-          style={{ color: theme.text }}
         />
+        {/* FIX #5: Group icon with assignment-based color */}
         <div 
-          className="w-6 h-6 rounded flex items-center justify-center shrink-0"
+          className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0"
           style={{ backgroundColor: theme.accent }}
         >
-          <Users className="w-3 h-3 text-white" />
+          <Users className="w-3.5 h-3.5 text-white" />
         </div>
+        {/* FIX #6: Group name text matching icon color */}
         <span 
-          className="text-sm font-semibold truncate max-w-[180px]"
-          style={{ color: theme.text }}
+          className="text-sm font-semibold truncate max-w-[200px]"
+          style={{ color: theme.accent }}
         >
           {assignmentName}
         </span>
@@ -73,17 +82,17 @@ export function CompactGroupHeader({
 
       {/* Right: Stats + Utilization + Count */}
       <div className="flex items-center gap-4">
-        {/* Inline stats */}
-        <div className="hidden md:flex items-center gap-3 text-xs text-slate-500">
+        {/* Inline stats with colored dots */}
+        <div className="hidden md:flex items-center gap-3 text-xs text-slate-600">
           {availableCount > 0 && (
-            <span className="flex items-center gap-1">
+            <span className="flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-teal-500" />
-              {availableCount} avail
+              <span className="font-medium">{availableCount}</span> avail
             </span>
           )}
-          <span className="flex items-center gap-1">
+          <span className="flex items-center gap-1.5">
             <span className="w-1.5 h-1.5 rounded-full bg-blue-500" />
-            {atCapacityCount} optimal
+            <span className="font-medium">{atCapacityCount}</span> optimal
           </span>
         </div>
 
@@ -106,7 +115,7 @@ export function CompactGroupHeader({
           </span>
         </div>
 
-        {/* Resource count badge */}
+        {/* Resource count badge with assignment color */}
         <div 
           className="flex items-center gap-1.5 px-2 py-1 rounded text-xs font-semibold"
           style={{ backgroundColor: `${theme.accent}15`, color: theme.accent }}

@@ -879,6 +879,7 @@ function CardsView({
 
   if (groupBy === 'assignment') {
     return (
+      // FIX #12: Visual separation between groups with spacing and borders
       <div className="space-y-4">
         {Object.entries(groupedByAssignment).map(([assignmentName, assignmentResources]) => {
           const availableCount = assignmentResources.filter(r => (r.allocation || 0) === 0).length;
@@ -890,7 +891,8 @@ function CardsView({
             : 0;
           const expanded = isGroupExpanded(assignmentName);
           return (
-          <div key={assignmentName} className="space-y-3">
+          // FIX #12: Add bottom border for group separation
+          <div key={assignmentName} className="space-y-3 pb-4 border-b border-slate-100 last:border-b-0">
             {/* Group Header with capacity bar */}
             <CompactGroupHeader
               assignmentName={assignmentName}
@@ -903,9 +905,9 @@ function CardsView({
               onToggle={() => toggleGroup(assignmentName)}
             />
             
-            {/* Cards Grid - 5 columns dense */}
+            {/* Cards Grid - 5 columns dense with left indent */}
             {expanded && (
-              <div className="grid gap-2 pl-2 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+              <div className="grid gap-2 pl-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
                 {assignmentResources.map((resource) => (
                   <CompactResourceCard 
                     key={resource.id}
@@ -913,7 +915,7 @@ function CardsView({
                     name={resource.name}
                     role={resource.role || 'Team Member'}
                     department={resource.department}
-                    assignmentName={resource.assignmentName}
+                    assignmentName={assignmentName}
                     totalAllocation={resource.allocation || 0}
                     onOpen360={() => onResourceClick(resource)}
                     onEdit={() => onEditResource(resource.id)}
@@ -929,6 +931,7 @@ function CardsView({
 
   if (groupBy === 'department') {
     return (
+      // FIX #12: Visual separation between groups
       <div className="space-y-4">
         {Object.entries(groupedByDepartment).map(([deptName, deptResources]) => {
           const deptColor = departmentColors[deptName] || departmentColors.default;
@@ -939,7 +942,8 @@ function CardsView({
             ? Math.round(deptResources.reduce((sum, r) => sum + (r.allocation || 0), 0) / deptResources.length)
             : 0;
           return (
-            <div key={deptName} className="space-y-3">
+            // FIX #12: Add bottom border for group separation
+            <div key={deptName} className="space-y-3 pb-4 border-b border-slate-100 last:border-b-0">
               {/* Group Header - Enterprise Style */}
               <div 
                 className="flex items-center justify-between px-5 py-4 border border-[#e5e5e5] rounded-xl cursor-pointer hover:shadow-md transition-all"
