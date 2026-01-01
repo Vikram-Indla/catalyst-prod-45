@@ -138,7 +138,10 @@ export function KanbanAssignView({
       
       // Use legacy single assignment if no entries in allocations table
       const useLegacy = resourceAllocations.length === 0 && r.assignmentName;
-      const totalAllocation = useLegacy ? (r.allocation || 0) : totalFromAllocationsTable;
+      // Use allocation from resource if no allocations table entries (fallback to r.allocation)
+      const totalAllocation = resourceAllocations.length > 0 
+        ? totalFromAllocationsTable 
+        : (r.allocation || 0);
       const remainingCapacity = 100 - totalAllocation;
 
       // Add to each column where they have an allocation
