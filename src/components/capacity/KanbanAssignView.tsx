@@ -12,6 +12,55 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import type { ResourceMetric } from '@/modules/capacity-planner';
 import type { ResourceAssignment } from '@/modules/capacity-planner/hooks/useResourceAssignments';
 
+// Assignment Avatar Colors - Catalyst V5 compliant
+const assignmentColors: Record<string, { bg: string; text: string }> = {
+  'Senaei BAU': { bg: 'bg-[#2563eb]', text: 'text-white' },
+  'Innovation Platform': { bg: 'bg-[#1d4ed8]', text: 'text-white' },
+  'Inspection Program': { bg: 'bg-[#0d9488]', text: 'text-white' },
+  'International Operations': { bg: 'bg-[#0f766e]', text: 'text-white' },
+  'MIM Website': { bg: 'bg-[#4f8a4f]', text: 'text-white' },
+  'Senaei OPS': { bg: 'bg-[#3d6b3d]', text: 'text-white' },
+  'Sectorial Services': { bg: 'bg-[#8b7355]', text: 'text-white' },
+  'Tahommena': { bg: 'bg-[#6b5842]', text: 'text-white' },
+  'Data Platform': { bg: 'bg-[#3b82f6]', text: 'text-white' },
+  'Unassigned': { bg: 'bg-[#9ca3af]', text: 'text-white' },
+};
+
+// Color palette for dynamic assignment matching
+const colorPalette = [
+  { bg: '#2563eb', text: 'white', name: 'Blue' },
+  { bg: '#1d4ed8', text: 'white', name: 'Blue Dark' },
+  { bg: '#3b82f6', text: 'white', name: 'Blue Light' },
+  { bg: '#0d9488', text: 'white', name: 'Teal' },
+  { bg: '#0f766e', text: 'white', name: 'Teal Dark' },
+  { bg: '#4f8a4f', text: 'white', name: 'Olive' },
+  { bg: '#3d6b3d', text: 'white', name: 'Olive Dark' },
+  { bg: '#8b7355', text: 'white', name: 'Bronze' },
+  { bg: '#6b5842', text: 'white', name: 'Bronze Dark' },
+];
+
+// Get color for an assignment - uses hash for consistent color assignment
+const getAssignmentColor = (name: string): { bg: string; text: string } => {
+  if (name === 'Unassigned') {
+    return { bg: 'bg-[#9ca3af]', text: 'text-white' };
+  }
+  
+  // Check if we have a predefined color
+  if (assignmentColors[name]) {
+    return assignmentColors[name];
+  }
+  
+  // Generate consistent color based on name hash
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) {
+    hash = name.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  const index = Math.abs(hash) % colorPalette.length;
+  const color = colorPalette[index];
+  
+  return { bg: `bg-[${color.bg}]`, text: 'text-white' };
+};
+
 // Department colors - Catalyst V5 compliant
 const departmentColors: Record<string, { bg: string; text: string }> = {
   Product: { bg: 'bg-[#d4b896]', text: 'text-[#4a3f35]' },
@@ -264,7 +313,9 @@ export function KanbanAssignView({
             style={{ scrollBehavior: isDragging ? 'auto' : 'smooth' }}
           >
             <div className="flex gap-4 h-full pb-4 pr-4" style={{ minWidth: 'max-content' }}>
-              {columns.map((column) => (
+              {columns.map((column) => {
+                const columnColor = getAssignmentColor(column.name);
+                return (
                 <Droppable key={column.id} droppableId={column.id}>
                   {(provided, snapshot) => (
                     <div
@@ -283,12 +334,12 @@ export function KanbanAssignView({
                           : "bg-card border-border"
                       )}>
                         <div className={cn(
-                          "w-7 h-7 rounded-md flex items-center justify-center",
-                          column.id === 'Unassigned' ? 'bg-muted' : 'bg-[#2563eb]'
+                          "w-7 h-7 rounded-full flex items-center justify-center",
+                          columnColor.bg
                         )}>
                           <Users className={cn(
                             "h-3.5 w-3.5",
-                            column.id === 'Unassigned' ? 'text-muted-foreground' : 'text-white'
+                            columnColor.text
                           )} />
                         </div>
                         <span className="text-sm font-semibold text-foreground truncate flex-1">
@@ -352,7 +403,8 @@ export function KanbanAssignView({
                     </div>
                   )}
                 </Droppable>
-              ))}
+              );
+              })}
             </div>
           </div>
         </div>
