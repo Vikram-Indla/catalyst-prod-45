@@ -122,7 +122,7 @@ export function SleekCapacityHeader({
             className="h-7 px-3 text-xs bg-[#0d9488] hover:bg-[#0f766e] text-white"
           >
             <Plus className="h-3.5 w-3.5 mr-1" />
-            Add Resource
+            Book Resource
           </Button>
         </div>
       </div>
