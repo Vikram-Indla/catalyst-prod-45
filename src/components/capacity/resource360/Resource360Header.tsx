@@ -40,7 +40,7 @@ export function Resource360Header({ resource }: Resource360HeaderProps) {
             {resource.name}
           </h2>
           <p className="text-sm text-muted-foreground">
-            {resource.role} · {resource.division}
+            {resource.role} · {resource.department}
           </p>
         </div>
       </div>

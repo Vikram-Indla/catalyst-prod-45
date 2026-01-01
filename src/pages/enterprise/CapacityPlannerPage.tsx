@@ -22,14 +22,15 @@ import { Resource360Drawer } from '@/components/capacity/resource360/Resource360
 import { CapacityAIDrawer } from '@/components/capacity/CapacityAIDrawer';
 
 type PeriodType = 'weekly' | 'monthly' | 'quarterly';
-type GroupByType = 'none' | 'project' | 'division' | 'department';
+type GroupByType = 'none' | 'project' | 'department';
 type ExtendedViewType = ViewType | 'scenarios';
 
-// Division colors - Catalyst V5 compliant
-const divisionColors = {
+// Department colors - Catalyst V5 compliant
+const departmentColors: Record<string, { bg: string; text: string; badge: string }> = {
   Product: { bg: 'bg-[#d4b896]', text: 'text-[#4a3f35]', badge: 'bg-[#d4b896]/15 text-[#c69c6d]' },
   Delivery: { bg: 'bg-[#0d9488]', text: 'text-white', badge: 'bg-[#2563eb]/10 text-[#2563eb]' },
   Support: { bg: 'bg-[#4d8b4d]', text: 'text-white', badge: 'bg-[#5c7c5c]/15 text-[#5c7c5c]' },
+  default: { bg: 'bg-muted', text: 'text-muted-foreground', badge: 'bg-muted text-muted-foreground' },
 };
 
 const projectColors = [
@@ -69,7 +70,7 @@ export default function CapacityPlannerPage() {
   const [resourceForm, setResourceForm] = useState({
     name: '',
     role: 'Frontend Developer',
-    division: 'Delivery',
+    department: 'Delivery',
   });
 
   const handleExport = () => {
@@ -261,7 +262,6 @@ export default function CapacityPlannerPage() {
               <SelectContent>
                 <SelectItem value="none">No Grouping</SelectItem>
                 <SelectItem value="project">Group by Project</SelectItem>
-                <SelectItem value="division">Group by Division</SelectItem>
                 <SelectItem value="department">Group by Department</SelectItem>
               </SelectContent>
             </Select>
@@ -366,8 +366,8 @@ export default function CapacityPlannerPage() {
                   </Select>
                 </div>
                 <div className="space-y-2">
-                  <Label>Division</Label>
-                  <Select value={resourceForm.division} onValueChange={(v) => setResourceForm(f => ({ ...f, division: v }))}>
+                  <Label>Department</Label>
+                  <Select value={resourceForm.department} onValueChange={(v) => setResourceForm(f => ({ ...f, department: v }))}>
                     <SelectTrigger><SelectValue /></SelectTrigger>
                     <SelectContent>
                       <SelectItem value="Product">Product</SelectItem>
@@ -544,8 +544,8 @@ function CardsView({ resources, groupedByProject, groupBy, projects, onResourceC
 
 // Resource Card - V5 Design with Button360
 function ResourceCard({ resource, projects, onClick }: { resource: ResourceMetric; projects: CapacityProject[]; onClick: () => void }) {
-  const division = (resource.division || 'Delivery') as keyof typeof divisionColors;
-  const divColor = divisionColors[division] || divisionColors.Delivery;
+  const dept = resource.department || 'Unassigned';
+  const deptColor = departmentColors[dept] || departmentColors.default;
   const initials = resource.name?.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'NA';
   
   const primaryProject = resource.assignments[0]?.project_id 
@@ -558,7 +558,7 @@ function ResourceCard({ resource, projects, onClick }: { resource: ResourceMetri
     >
       <div className="flex items-center gap-3">
         {/* Avatar */}
-        <div className={cn('w-10 h-10 rounded-full flex items-center justify-center text-sm font-semibold', divColor.bg, divColor.text)}>
+        <div className={cn('w-10 h-10 rounded-full flex items-center justify-center text-sm font-semibold', deptColor.bg, deptColor.text)}>
           {initials}
         </div>
         
@@ -626,7 +626,7 @@ function TableView({ resources, projects, onResourceClick, onEditResource, onDel
           <tr>
             <th className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Name</th>
             <th className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Role</th>
-            <th className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Division</th>
+            <th className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Department</th>
             <th className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Primary Project</th>
             <th className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Allocation</th>
             <th className="text-center px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Assignments</th>
@@ -635,8 +635,8 @@ function TableView({ resources, projects, onResourceClick, onEditResource, onDel
         </thead>
         <tbody>
           {resources.map((resource) => {
-            const division = (resource.division || 'Delivery') as keyof typeof divisionColors;
-            const divColor = divisionColors[division] || divisionColors.Delivery;
+            const dept = resource.department || 'Unassigned';
+            const deptColor = departmentColors[dept] || departmentColors.default;
             const initials = resource.name?.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'NA';
             const primaryProject = resource.assignments[0]?.project_id ? getProjectName(resource.assignments[0]?.project_id) : '-';
             
@@ -647,7 +647,7 @@ function TableView({ resources, projects, onResourceClick, onEditResource, onDel
               >
                 <td className="px-4 py-3">
                   <div className="flex items-center gap-3">
-                    <div className={cn('w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold', divColor.bg, divColor.text)}>
+                    <div className={cn('w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold', deptColor.bg, deptColor.text)}>
                       {initials}
                     </div>
                     <span className="text-sm font-medium text-foreground">{resource.name}</span>
@@ -655,8 +655,8 @@ function TableView({ resources, projects, onResourceClick, onEditResource, onDel
                 </td>
                 <td className="px-4 py-3 text-sm text-muted-foreground">{resource.role}</td>
                 <td className="px-4 py-3">
-                  <span className={cn('text-[11px] font-semibold px-2 py-1 rounded uppercase', divColor.badge)}>
-                    {division}
+                  <span className={cn('text-[11px] font-semibold px-2 py-1 rounded uppercase', deptColor.badge)}>
+                    {dept}
                   </span>
                 </td>
                 <td className="px-4 py-3 text-sm text-foreground">{primaryProject}</td>
@@ -741,14 +741,14 @@ function TimelineView({ resources, period }: { resources: ResourceMetric[]; peri
       {/* Body */}
       <div className="max-h-[500px] overflow-y-auto">
         {resources.map((resource) => {
-          const division = (resource.division || 'Delivery') as keyof typeof divisionColors;
-          const divColor = divisionColors[division] || divisionColors.Delivery;
+          const dept = resource.department || 'Unassigned';
+          const deptColor = departmentColors[dept] || departmentColors.default;
           const initials = resource.name?.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'NA';
           
           return (
             <div key={resource.id} className="flex border-b border-border last:border-b-0 hover:bg-muted/20">
               <div className="w-52 px-4 py-3 flex items-center gap-3 border-r border-border shrink-0">
-                <div className={cn('w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold', divColor.bg, divColor.text)}>
+                <div className={cn('w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold', deptColor.bg, deptColor.text)}>
                   {initials}
                 </div>
                 <div>
@@ -924,14 +924,14 @@ function AssignmentsView({ resources, projects, createAssignment }: AssignmentsV
         {/* Body */}
         <div className="max-h-[480px] overflow-y-auto">
           {resources.slice(0, 8).map((resource) => {
-            const division = (resource.division || 'Delivery') as keyof typeof divisionColors;
-            const divColor = divisionColors[division] || divisionColors.Delivery;
+            const dept = resource.department || 'Unassigned';
+            const deptColor = departmentColors[dept] || departmentColors.default;
             const initials = resource.name?.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'NA';
             
             return (
               <div key={resource.id} className="flex border-b border-border last:border-b-0 min-h-[60px] hover:bg-muted/20">
                 <div className="w-56 px-4 py-2.5 flex items-start gap-3 border-r border-border shrink-0">
-                  <div className={cn('w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold shrink-0', divColor.bg, divColor.text)}>
+                  <div className={cn('w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold shrink-0', deptColor.bg, deptColor.text)}>
                     {initials}
                   </div>
                   <div>
@@ -1207,8 +1207,8 @@ function LevelingView({ resources, recommendations }: { resources: ResourceMetri
           </div>
           <div className="max-h-[470px] overflow-y-auto">
             {resources.map((resource) => {
-              const division = (resource.division || 'Delivery') as keyof typeof divisionColors;
-              const divColor = divisionColors[division] || divisionColors.Delivery;
+              const dept = resource.department || 'Unassigned';
+              const deptColor = departmentColors[dept] || departmentColors.default;
               const initials = resource.name?.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'NA';
               const freeCapacity = 100 - resource.allocation;
               const isCurrentSelected = selectedResource?.id === resource.id;
@@ -1228,7 +1228,7 @@ function LevelingView({ resources, recommendations }: { resources: ResourceMetri
                   {isCurrentSelected && (
                     <div className="absolute left-0 top-0 bottom-0 w-1 bg-[#2563eb] rounded-r" />
                   )}
-                  <div className={cn('w-10 h-10 rounded-full flex items-center justify-center text-xs font-semibold shrink-0', divColor.bg, divColor.text)}>
+                  <div className={cn('w-10 h-10 rounded-full flex items-center justify-center text-xs font-semibold shrink-0', deptColor.bg, deptColor.text)}>
                     {initials}
                   </div>
                   <div className="flex-1 min-w-0">
@@ -1261,14 +1261,14 @@ function LevelingView({ resources, recommendations }: { resources: ResourceMetri
               <div className="px-6 py-5 border-b border-border flex items-center gap-4">
                 <div className={cn(
                   'w-14 h-14 rounded-full flex items-center justify-center text-lg font-bold',
-                  divisionColors[(selectedResource.division || 'Delivery') as keyof typeof divisionColors]?.bg,
-                  divisionColors[(selectedResource.division || 'Delivery') as keyof typeof divisionColors]?.text
+                  departmentColors[selectedResource.department || 'Unassigned']?.bg || departmentColors.default.bg,
+                  departmentColors[selectedResource.department || 'Unassigned']?.text || departmentColors.default.text
                 )}>
                   {selectedResource.name?.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase()}
                 </div>
                 <div className="flex-1">
                   <p className="text-lg font-semibold text-foreground">{selectedResource.name}</p>
-                  <p className="text-sm text-muted-foreground">{selectedResource.role} · {selectedResource.division || 'Delivery'}</p>
+                  <p className="text-sm text-muted-foreground">{selectedResource.role} · {selectedResource.department || 'Unassigned'}</p>
                 </div>
                 <div className="flex gap-6 text-center">
                   <div>
@@ -1907,22 +1907,22 @@ function RecommendationCard({ recommendation }: { recommendation: AiRecommendati
 // Resource Drawer Content
 // ─────────────────────────────────────────────────────────────────────────────
 function ResourceDrawerContent({ resource, projects }: { resource: ResourceMetric; projects: CapacityProject[] }) {
-  const division = (resource.division || 'Delivery') as keyof typeof divisionColors;
-  const divColor = divisionColors[division] || divisionColors.Delivery;
+  const dept = resource.department || 'Unassigned';
+  const deptColor = departmentColors[dept] || departmentColors.default;
   const initials = resource.name?.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'NA';
   
   return (
     <div className="mt-6 space-y-6">
       {/* Header */}
       <div className="flex items-center gap-4">
-        <div className={cn('w-16 h-16 rounded-full flex items-center justify-center text-xl font-bold', divColor.bg, divColor.text)}>
+        <div className={cn('w-16 h-16 rounded-full flex items-center justify-center text-xl font-bold', deptColor.bg, deptColor.text)}>
           {initials}
         </div>
         <div className="flex-1">
           <h3 className="text-lg font-semibold text-foreground">{resource.name}</h3>
           <p className="text-sm text-muted-foreground">{resource.role}</p>
-          <span className={cn('text-[11px] font-semibold px-2 py-1 rounded uppercase mt-1 inline-block', divColor.badge)}>
-            {division}
+          <span className={cn('text-[11px] font-semibold px-2 py-1 rounded uppercase mt-1 inline-block', deptColor.badge)}>
+            {dept}
           </span>
         </div>
       </div>

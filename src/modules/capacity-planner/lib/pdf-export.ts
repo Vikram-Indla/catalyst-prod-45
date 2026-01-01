@@ -70,7 +70,7 @@ export async function exportCapacityToPdf(data: ExportData): Promise<void> {
   const tableData = data.resources.map((r) => [
     r.name,
     r.role || '-',
-    r.division || '-',
+    r.department || '-',
     r.assignments?.map((a) => a.projects?.name || 'Unknown').join(', ') || 'None',
     `${r.allocation}%`,
     r.allocation > 100 ? 'Over' : r.allocation > 80 ? 'At Capacity' : r.allocation > 0 ? 'Healthy' : 'Available',
