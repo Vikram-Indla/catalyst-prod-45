@@ -1129,6 +1129,18 @@ function TableView({ resources, projects, groupBy, groupedByAssignment, groupedB
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const getProjectName = (projectId: string) => projects.find(p => p.id === projectId)?.name || 'Unknown';
 
+  // Sort resources by assignment name by default
+  const sortedResources = useMemo(() => {
+    return [...resources].sort((a, b) => {
+      const aName = a.assignmentName || 'Unassigned';
+      const bName = b.assignmentName || 'Unassigned';
+      // Put 'Unassigned' at the end
+      if (aName === 'Unassigned' && bName !== 'Unassigned') return 1;
+      if (bName === 'Unassigned' && aName !== 'Unassigned') return -1;
+      return aName.localeCompare(bName);
+    });
+  }, [resources]);
+
   // If the table data changes (e.g., after edits, filtering, or refetch),
   // drop any selections that no longer exist in the current dataset.
   useEffect(() => {
@@ -1411,7 +1423,7 @@ function TableView({ resources, projects, groupBy, groupedByAssignment, groupedB
       ) : (
         <div className="flex-1 overflow-auto">
           <CatalystEnterpriseTable
-            data={resources}
+            data={sortedResources}
             columns={columns}
             showCheckboxes={true}
             showActionsColumn={false}
