@@ -1491,20 +1491,10 @@ function TimelineView({ resources, period, groupBy, groupedByAssignment, grouped
     ];
   }, [period]);
 
-  // Get REAL project allocations from resource's assignments - NOT random mock data
+  // Get resource allocations - use the assignment group name (the resource's assigned project/assignment)
   const getResourceAllocations = useCallback((resource: ResourceMetric, assignmentGroupName: string) => {
-    // Use the resource's actual assignments if available
-    const realAssignments = resource.assignments || [];
-    
-    if (realAssignments.length > 0) {
-      // Use real assignment data
-      return realAssignments.map((assignment) => ({
-        project: assignment.notes || assignment.project_id || assignmentGroupName,
-        percentage: assignment.allocation_percentage || Math.floor((resource.allocation || 100) / realAssignments.length),
-      }));
-    }
-    
-    // Fallback: use the assignment group name with full allocation
+    // Always use the assignment group name - this is the REAL assignment from the capacity planner
+    // The resource.assignmentName is what we're grouping by, and it's the correct human-readable name
     return [{
       project: assignmentGroupName,
       percentage: resource.allocation || 100,
