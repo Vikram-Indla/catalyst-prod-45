@@ -23,6 +23,7 @@ interface SleekCapacityHeaderProps {
   timelinePeriod: 'weekly' | 'monthly' | 'quarterly';
   searchQuery: string;
   activeFilter?: 'all' | 'available' | 'atCapacity' | 'over';
+  departmentFilter?: 'all' | 'delivery' | 'product' | 'support';
   onViewModeChange: (mode: 'cards' | 'table' | 'timeline') => void;
   onGroupByChange: (groupBy: string) => void;
   onTimelinePeriodChange: (period: 'weekly' | 'monthly' | 'quarterly') => void;
@@ -30,6 +31,7 @@ interface SleekCapacityHeaderProps {
   onAddResource: () => void;
   onExport: () => void;
   onFilterChange?: (filter: 'all' | 'available' | 'atCapacity' | 'over') => void;
+  onDepartmentFilterChange?: (filter: 'all' | 'delivery' | 'product' | 'support') => void;
 }
 
 export function SleekCapacityHeader({
@@ -39,6 +41,7 @@ export function SleekCapacityHeader({
   timelinePeriod,
   searchQuery,
   activeFilter = 'all',
+  departmentFilter = 'delivery',
   onViewModeChange,
   onGroupByChange,
   onTimelinePeriodChange,
@@ -46,6 +49,7 @@ export function SleekCapacityHeader({
   onAddResource,
   onExport,
   onFilterChange,
+  onDepartmentFilterChange,
 }: SleekCapacityHeaderProps) {
   const utilizationColor = getUtilizationColor(summary.utilizationPercentage);
   const overPct = summary.total > 0 ? Math.round((summary.over / summary.total) * 100) : 0;
@@ -55,11 +59,11 @@ export function SleekCapacityHeader({
       {/* ROW 1: Breadcrumb + Live Status + Actions — Height: 40px */}
       <div className="flex items-center justify-between px-4 py-2 border-b border-slate-100">
         <div className="flex items-center gap-3">
-          {/* Breadcrumb */}
-          <div className="flex items-center gap-1.5 text-xs">
-            <span className="text-slate-400 font-medium uppercase tracking-wider">Enterprise</span>
+          {/* Breadcrumb - Match Strategic Backlog typography */}
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-slate-500">Enterprise</span>
             <span className="text-slate-300">/</span>
-            <span className="font-semibold text-slate-900">Capacity</span>
+            <span className="text-sm font-semibold text-slate-900">Capacity</span>
           </div>
           
           {/* Separator */}
@@ -68,8 +72,8 @@ export function SleekCapacityHeader({
           {/* Live Status */}
           <div className="flex items-center gap-1.5 text-xs text-slate-500">
             <div className="relative flex items-center justify-center">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-              <span className="absolute w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping" />
+              <span className="w-1.5 h-1.5 rounded-full bg-teal-500" />
+              <span className="absolute w-1.5 h-1.5 rounded-full bg-teal-500 animate-ping" />
             </div>
             <span className="font-medium">Live</span>
             <span className="text-slate-300">•</span>
@@ -110,14 +114,14 @@ export function SleekCapacityHeader({
       {/* ROW 2: Inline Metrics + Utilization — Height: 44px */}
       <div className="flex items-center justify-between px-4 py-2 border-b border-slate-100">
         <div className="flex items-center gap-6">
-          {/* Inline Metrics */}
+          {/* Inline Metrics - Descriptive labels */}
           <InlineMetric value={summary.total} label="Total" color="slate" />
           <div className="w-px h-6 bg-slate-200" />
           <InlineMetric value={summary.available} label="Available" color="teal" />
-          <InlineMetric value={summary.atCapacity} label="Optimal" color="blue" />
+          <InlineMetric value={summary.atCapacity} label="At Capacity" color="blue" />
           <InlineMetric 
             value={summary.over} 
-            label="Over" 
+            label="Over-Allocated" 
             color="amber" 
             pct={overPct} 
             alert={summary.over > 0} 
@@ -192,18 +196,21 @@ export function SleekCapacityHeader({
 
         {/* Right Controls - FIX #3: Filters button fully visible */}
         <div className="flex items-center gap-2 flex-shrink-0">
+          {/* Department Filter */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" size="sm" className="h-7 px-3 text-xs text-slate-600 bg-white border-slate-200 whitespace-nowrap">
                 <Filter className="h-3.5 w-3.5 mr-1.5" />
-                Filters
+                {departmentFilter === 'all' ? 'All Depts' : 
+                 departmentFilter === 'delivery' ? 'Delivery Only' :
+                 departmentFilter === 'product' ? 'Product Only' : 'Support Only'}
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="bg-white">
-              <DropdownMenuItem onClick={() => onFilterChange?.('all')}>All Resources</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => onFilterChange?.('available')}>Available Only</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => onFilterChange?.('atCapacity')}>At Capacity</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => onFilterChange?.('over')}>Over Allocated</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => onDepartmentFilterChange?.('delivery')}>Delivery Only</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => onDepartmentFilterChange?.('product')}>Product Only</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => onDepartmentFilterChange?.('support')}>Support Only</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => onDepartmentFilterChange?.('all')}>All Departments</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
 

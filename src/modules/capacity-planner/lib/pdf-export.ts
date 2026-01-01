@@ -46,8 +46,8 @@ export async function exportCapacityToPdf(data: ExportData): Promise<void> {
   const summaryItems = [
     { label: 'Total Resources', value: data.summary.total, color: [37, 99, 235] },
     { label: 'Available', value: data.summary.available + data.summary.healthy, color: [13, 148, 136] },
-    { label: 'At Capacity', value: data.summary.atCapacity, color: [217, 119, 6] },
-    { label: 'Over-allocated', value: data.summary.overAllocated, color: [220, 38, 38] },
+    { label: 'At Capacity', value: data.summary.atCapacity, color: [37, 99, 235] },
+    { label: 'Over-Allocated', value: data.summary.overAllocated, color: [217, 119, 6] },
     { label: 'Avg Utilization', value: `${data.summary.avgUtilization}%`, color: [37, 99, 235] },
   ];
 
@@ -65,20 +65,41 @@ export async function exportCapacityToPdf(data: ExportData): Promise<void> {
     pdf.text(item.label, x + 5, summaryY + 17);
   });
 
-  // Resources table
-  const tableY = summaryY + 30;
-  const tableData = data.resources.map((r) => [
-    r.name,
-    r.role || '-',
-    r.department || '-',
-    r.assignments?.map((a) => a.projects?.name || 'Unknown').join(', ') || 'None',
-    `${r.allocation}%`,
-    r.allocation > 100 ? 'Over' : r.allocation > 80 ? 'At Capacity' : r.allocation > 0 ? 'Healthy' : 'Available',
-  ]);
+  // Group resources by assignment for export
+  const resourcesByAssignment: Record<string, ResourceMetric[]> = {};
+  data.resources.forEach((r) => {
+    const assignmentName = r.assignmentName || 'Unassigned';
+    if (!resourcesByAssignment[assignmentName]) {
+      resourcesByAssignment[assignmentName] = [];
+    }
+    resourcesByAssignment[assignmentName].push(r);
+  });
 
+  // Build table data - one row per assignment allocation
+  // If a resource has multiple assignments, show duplicate lines
+  const tableData: string[][] = [];
+  
+  Object.entries(resourcesByAssignment).forEach(([assignmentName, resources]) => {
+    resources.forEach((r) => {
+      // Add row for each resource in this assignment group
+      tableData.push([
+        r.name,
+        r.role || '-',
+        r.department || '-',
+        assignmentName,
+        r.email || '-',
+        `${r.allocation}%`,
+      ]);
+    });
+  });
+
+  // Resources table - Updated columns per requirements
+  // Name, Role, Department (not Division), Assignment (not Projects), Email, Allocation (no Status)
+  const tableY = summaryY + 30;
+  
   autoTable(pdf, {
     startY: tableY,
-    head: [['Name', 'Role', 'Division', 'Projects', 'Allocation', 'Status']],
+    head: [['Name', 'Role', 'Department', 'Assignment', 'Email', 'Allocation']],
     body: tableData,
     headStyles: {
       fillColor: [37, 99, 235],
@@ -95,10 +116,16 @@ export async function exportCapacityToPdf(data: ExportData): Promise<void> {
     },
     columnStyles: {
       0: { fontStyle: 'bold' },
-      4: { halign: 'center' },
       5: { halign: 'center' },
     },
     margin: { left: margin, right: margin },
+    // Group by assignment - add a grouping header row
+    didParseCell: function(data) {
+      // Style assignment column
+      if (data.column.index === 3 && data.section === 'body') {
+        data.cell.styles.fontStyle = 'italic';
+      }
+    },
   });
 
   // Footer

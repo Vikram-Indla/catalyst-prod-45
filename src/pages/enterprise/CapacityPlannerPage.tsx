@@ -83,7 +83,7 @@ export default function CapacityPlannerPage() {
   const [period, setPeriod] = useState<PeriodType>('monthly');
   const [groupBy, setGroupBy] = useState<GroupByType>('assignment');
   const [searchQuery, setSearchQuery] = useState('');
-  const [departmentFilter, setDepartmentFilter] = useState<string>('all');
+  const [departmentFilter, setDepartmentFilter] = useState<'all' | 'delivery' | 'product' | 'support'>('delivery'); // Default to Delivery Only
   const [activeFilter, setActiveFilter] = useState<'all' | 'available' | 'atCapacity' | 'over'>('all');
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [compactMode, setCompactMode] = useState(false);
@@ -175,7 +175,7 @@ export default function CapacityPlannerPage() {
       
       const matchesSearch = r.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         r.role?.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesDepartment = departmentFilter === 'all' || r.department === departmentFilter;
+      const matchesDepartment = departmentFilter === 'all' || r.department?.toLowerCase() === departmentFilter;
       
       // Apply allocation filter
       let matchesFilter = true;
@@ -315,6 +315,7 @@ export default function CapacityPlannerPage() {
           timelinePeriod={period}
           searchQuery={searchQuery}
           activeFilter={activeFilter}
+          departmentFilter={departmentFilter}
           onViewModeChange={(mode) => setCurrentView(mode as ViewType)}
           onGroupByChange={(g) => setGroupBy(g as GroupByType)}
           onTimelinePeriodChange={(p) => setPeriod(p as PeriodType)}
@@ -322,6 +323,7 @@ export default function CapacityPlannerPage() {
           onAddResource={() => setResourceModalOpen(true)}
           onExport={handleExport}
           onFilterChange={setActiveFilter}
+          onDepartmentFilterChange={setDepartmentFilter}
         />
 
         {/* Main Content */}
@@ -722,7 +724,7 @@ export default function CapacityPlannerPage() {
             onMoveResource={handleMoveResource}
             onClose={() => setAssignModeOpen(false)}
             departmentFilter={departmentFilter}
-            onDepartmentFilterChange={setDepartmentFilter}
+            onDepartmentFilterChange={(v: string) => setDepartmentFilter(v as 'all' | 'delivery' | 'product' | 'support')}
             uniqueDepartments={uniqueDepartments}
           />
         )}
