@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -50,6 +51,23 @@ export function useResourceAllocations() {
       })) as ResourceAllocation[];
     },
   });
+
+  useEffect(() => {
+    const channel = supabase
+      .channel('resource-allocations-changes')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'resource_allocations' },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ['resource-allocations'] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [queryClient]);
 
   const ensureInventoryId = async (resourceKey: string): Promise<string> => {
     // resourceKey is usually profile_id in the UI, but some places may pass resource_inventory.id
