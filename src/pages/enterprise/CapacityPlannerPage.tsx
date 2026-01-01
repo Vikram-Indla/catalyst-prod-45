@@ -16,7 +16,7 @@ import {
   ChevronLeft, ChevronRight, Clock, Eye, Copy, Check, RotateCcw, Play,
   Pencil, Trash2, Cloud, GitCompare, Settings2, ArrowLeftRight, Building2
 } from 'lucide-react';
-import { useCapacityData, useAssignments, useAiRecommendations, useCapacityScenarios, useCapacityDepartments, useResourceManagement, useResourceAssignments, exportCapacityToPdf } from '@/modules/capacity-planner';
+import { useCapacityData, useAssignments, useAiRecommendations, useCapacityScenarios, useCapacityDepartments, useResourceManagement, useResourceAssignments, useResourceAllocations, exportCapacityToPdf } from '@/modules/capacity-planner';
 
 import type { ViewType, ResourceMetric, CapacityProject, AiRecommendation } from '@/modules/capacity-planner';
 import { cn } from '@/lib/utils';
@@ -93,6 +93,7 @@ export default function CapacityPlannerPage() {
   // Fetch departments and assignments for the modal
   const { departments } = useCapacityDepartments();
   const { assignments: resourceAssignments = [] } = useResourceAssignments();
+  const { allocations } = useResourceAllocations();
   const { updateResourceAssignmentType } = useResourceManagement();
 
   useEffect(() => {
@@ -161,7 +162,7 @@ export default function CapacityPlannerPage() {
     return Array.from(depts).sort();
   }, [metrics.resources]);
 
-  // Group resources by assignment type
+  // Group resources by assignment type - using resource_allocations table for multi-assignment support
   const groupedByAssignment = useMemo(() => {
     const groups: Record<string, ResourceMetric[]> = {};
     
@@ -172,14 +173,41 @@ export default function CapacityPlannerPage() {
     // Always have Unassigned lane
     groups['Unassigned'] = [];
     
-    // Populate with resources
+    // Build a map of profile_id -> allocations from the allocations table
+    const allocationsByProfileId = new Map<string, { assignmentName: string; percent: number }[]>();
+    allocations.forEach((alloc) => {
+      if (!alloc.profile_id || !alloc.assignment_name) return;
+      const existing = allocationsByProfileId.get(alloc.profile_id) || [];
+      existing.push({ assignmentName: alloc.assignment_name, percent: alloc.allocation_percent });
+      allocationsByProfileId.set(alloc.profile_id, existing);
+    });
+    
+    // Populate with resources - a resource can appear in multiple groups if they have split allocations
     filteredResources.forEach((r) => {
-      const assignmentName = r.assignmentName || 'Unassigned';
-      if (!groups[assignmentName]) groups[assignmentName] = [];
-      groups[assignmentName].push(r);
+      const resourceAllocations = allocationsByProfileId.get(r.id) || [];
+      
+      if (resourceAllocations.length > 0) {
+        // Resource has entries in resource_allocations table - add to each assigned column
+        resourceAllocations.forEach(({ assignmentName, percent }) => {
+          if (!groups[assignmentName]) groups[assignmentName] = [];
+          // Create a copy with the specific allocation for this column
+          groups[assignmentName].push({ ...r, allocation: percent, assignmentName });
+        });
+        
+        // If total allocation < 100, also show in Unassigned with remaining capacity
+        const totalAllocation = resourceAllocations.reduce((sum, a) => sum + a.percent, 0);
+        if (totalAllocation < 100) {
+          groups['Unassigned'].push({ ...r, allocation: 100 - totalAllocation, assignmentName: 'Unassigned' });
+        }
+      } else {
+        // Fallback to legacy assignment from resource_inventory
+        const assignmentName = r.assignmentName || 'Unassigned';
+        if (!groups[assignmentName]) groups[assignmentName] = [];
+        groups[assignmentName].push(r);
+      }
     });
     return groups;
-  }, [filteredResources, resourceAssignments]);
+  }, [filteredResources, resourceAssignments, allocations]);
 
   // Group resources by department
   const groupedByDepartment = useMemo(() => {
