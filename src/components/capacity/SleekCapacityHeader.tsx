@@ -142,17 +142,17 @@ export function SleekCapacityHeader({
             />
           </div>
 
-          {/* View Tabs */}
-          <div className="flex items-center bg-slate-100 rounded-md p-0.5">
+          {/* View Tabs - FIX #2: Visible tabs with proper contrast */}
+          <div className="flex items-center bg-slate-100 rounded-lg p-1 gap-0.5">
             {(['cards', 'table', 'timeline', 'scenarios'] as const).map((mode) => (
               <button
                 key={mode}
                 onClick={() => onViewModeChange(mode)}
                 className={cn(
-                  'px-2.5 py-1 text-xs font-medium rounded transition-all flex items-center gap-1.5',
+                  'px-3 py-1.5 text-sm font-medium rounded-md transition-all flex items-center gap-1.5',
                   viewMode === mode 
-                    ? 'bg-slate-900 text-white shadow-sm' 
-                    : 'text-slate-500 hover:text-slate-700'
+                    ? 'bg-white text-slate-900 shadow-sm' 
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-white/50'
                 )}
               >
                 <ViewIcon mode={mode} />
@@ -190,12 +190,12 @@ export function SleekCapacityHeader({
           )}
         </div>
 
-        {/* Right Controls */}
-        <div className="flex items-center gap-2">
+        {/* Right Controls - FIX #3: Filters button fully visible */}
+        <div className="flex items-center gap-2 flex-shrink-0">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm" className="h-7 px-2 text-xs text-slate-600">
-                <Filter className="h-3 w-3 mr-1" />
+              <Button variant="outline" size="sm" className="h-7 px-3 text-xs text-slate-600 bg-white border-slate-200 whitespace-nowrap">
+                <Filter className="h-3.5 w-3.5 mr-1.5" />
                 Filters
               </Button>
             </DropdownMenuTrigger>
@@ -226,6 +226,7 @@ export function SleekCapacityHeader({
   );
 }
 
+// FIX #1: Stats with visual weight - bold numbers, colored dots
 function InlineMetric({ value, label, color, pct, alert }: { 
   value: number; 
   label: string; 
@@ -241,35 +242,37 @@ function InlineMetric({ value, label, color, pct, alert }: {
   };
   const c = colors[color];
   
+  // FIX #1: Grey out the number when value is 0 for "Over"
+  const numberColor = (color === 'amber' && value === 0) ? 'text-slate-400' : c.text;
+  
   return (
     <div className="flex items-center gap-1.5">
-      <span className={cn('w-1.5 h-1.5 rounded-full', c.dot, alert && 'animate-pulse')} />
-      <div className="flex items-baseline gap-1">
-        <span className={cn('text-lg font-bold tabular-nums', c.text)}>{value}</span>
-        {pct !== undefined && pct > 0 && (
-          <span className="text-xs text-amber-500">({pct}%)</span>
-        )}
-        <span className="text-xs text-slate-500">{label}</span>
-      </div>
+      <span className={cn('w-2 h-2 rounded-full', c.dot, alert && 'animate-pulse')} />
+      <span className={cn('text-lg font-bold tabular-nums', numberColor)}>{value}</span>
+      {pct !== undefined && pct > 0 && (
+        <span className="text-xs text-amber-500 font-medium">({pct}%)</span>
+      )}
+      <span className="text-xs text-slate-500">{label}</span>
     </div>
   );
 }
 
+// FIX #11: Utilization properly aligned with number prominent
 function UtilizationGauge({ value }: { value: number }) {
   const color = value > 100 ? CATALYST.bronze.primary : value > 90 ? CATALYST.blue.primary : CATALYST.teal.primary;
   
   return (
     <div className="flex items-center gap-3">
-      <div className="text-right">
+      <div className="flex flex-col items-end">
         <span 
-          className="text-xl font-bold tabular-nums"
+          className="text-2xl font-bold tabular-nums leading-tight"
           style={{ color }}
         >
           {value}%
         </span>
-        <p className="text-[10px] text-slate-400 uppercase tracking-wider">Utilization</p>
+        <span className="text-[10px] text-slate-500 uppercase tracking-wider">Utilization</span>
       </div>
-      <div className="w-24 h-2 bg-slate-100 rounded-full overflow-hidden">
+      <div className="w-20 h-2 bg-slate-100 rounded-full overflow-hidden">
         <div 
           className="h-full rounded-full transition-all"
           style={{ width: `${Math.min(value, 100)}%`, backgroundColor: color }}

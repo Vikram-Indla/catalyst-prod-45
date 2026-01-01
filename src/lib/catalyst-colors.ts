@@ -115,6 +115,7 @@ export function getAssignmentColor(name: string | null | undefined): string {
 
 /**
  * Allocation theme with 5 levels - refined for CIO visibility
+ * Includes labelColor and labelBg for status badges
  */
 export function getAllocationTheme(percentage: number): { 
   status: 'available' | 'partial' | 'optimal' | 'stretched' | 'critical';
@@ -122,41 +123,53 @@ export function getAllocationTheme(percentage: number): {
   text: string;
   bar: string;
   label: string;
+  labelColor: string;
+  labelBg: string;
 } {
   if (percentage === 0) return { 
     status: 'available', 
     bg: '#f0fdfa', 
     text: '#0d9488', 
     bar: '#0d9488', 
-    label: 'Available' 
+    label: 'AVAILABLE',
+    labelColor: '#0d9488',
+    labelBg: '#f0fdfa'
   };
-  if (percentage < 80) return { 
+  if (percentage < 100) return { 
     status: 'partial', 
     bg: '#f0fdfa', 
     text: '#0d9488', 
     bar: '#0d9488', 
-    label: 'Partial' 
+    label: 'PARTIAL',
+    labelColor: '#0d9488',
+    labelBg: '#f0fdfa'
   };
-  if (percentage <= 100) return { 
+  if (percentage === 100) return { 
     status: 'optimal', 
     bg: '#eff6ff', 
     text: '#2563eb', 
     bar: '#2563eb', 
-    label: 'Optimal' 
+    label: 'OPTIMAL',
+    labelColor: '#2563eb',
+    labelBg: '#eff6ff'
   };
   if (percentage <= 120) return { 
     status: 'stretched', 
     bg: '#fffbeb', 
     text: '#d97706', 
     bar: '#d97706', 
-    label: 'Stretched' 
+    label: 'STRETCHED',
+    labelColor: '#d97706',
+    labelBg: '#fffbeb'
   };
   return { 
     status: 'critical', 
     bg: '#faf8f5', 
     text: '#8b7355', 
     bar: '#8b7355', 
-    label: 'Critical' 
+    label: 'CRITICAL',
+    labelColor: '#8b7355',
+    labelBg: '#faf8f5'
   };
 }
 
