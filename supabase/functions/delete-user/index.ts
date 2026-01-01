@@ -128,7 +128,24 @@ serve(async (req) => {
       .update({ rejected_by: null })
       .eq("rejected_by", userId);
 
-    // 4. Clear references from other tables without cascade delete
+    // 4. Handle incident_user_profiles and its dependencies
+    console.log("Clearing incident-related references...");
+    // First clear committee_members that reference incident_user_profiles
+    await supabaseAdmin.from("committee_members").delete().eq("user_id", userId);
+    await supabaseAdmin.from("committee_votes").delete().eq("member_id", userId);
+    
+    // Clear incident references
+    await supabaseAdmin.from("incidents").update({ reporter_id: null }).eq("reporter_id", userId);
+    await supabaseAdmin.from("incidents").update({ assignee_id: null }).eq("assignee_id", userId);
+    await supabaseAdmin.from("incidents").update({ committee_set_by: null }).eq("committee_set_by", userId);
+    await supabaseAdmin.from("incident_comments").update({ author_id: null }).eq("author_id", userId);
+    await supabaseAdmin.from("incident_attachments").update({ uploaded_by: null }).eq("uploaded_by", userId);
+    await supabaseAdmin.from("incident_history").update({ changed_by: null }).eq("changed_by", userId);
+    
+    // Now delete incident_user_profiles
+    await supabaseAdmin.from("incident_user_profiles").delete().eq("id", userId);
+
+    // 5. Clear references from other tables without cascade delete
     console.log("Clearing other references...");
     const tablesToClear = [
       { table: "active_package", column: "updated_by" },
@@ -159,7 +176,7 @@ serve(async (req) => {
       }
     }
 
-    // 5. Delete the profile first (which will cascade to related tables)
+    // 6. Delete the profile first (which will cascade to related tables)
     console.log("Deleting profile...");
     const { error: profileDeleteError } = await supabaseAdmin
       .from("profiles")
