@@ -2721,40 +2721,45 @@ function EditResourceForm({
     }
   };
 
-  // Save allocation to assignments table
+  // Save allocation to resource_inventory table
   const saveAllocation = async (newAllocation: number) => {
     setIsSaving(true);
     try {
-      // Get the user's active assignments
-      const activeAssignments = resource.assignments?.filter(a => a.status === 'active') || [];
+      // Check if resource exists in resource_inventory by profile_id
+      const { data: existingResource } = await supabase
+        .from('resource_inventory')
+        .select('id')
+        .eq('profile_id', resource.id)
+        .maybeSingle();
       
-      if (activeAssignments.length > 0) {
-        // Update the first active assignment's allocation
+      if (existingResource) {
+        // Update existing resource_inventory entry
         const { error } = await supabase
-          .from('assignments')
+          .from('resource_inventory')
           .update({ 
-            allocation_percentage: newAllocation,
-            updated_at: new Date().toISOString()
+            default_capacity_percent: newAllocation,
+            updated_at: new Date().toISOString() 
           })
-          .eq('id', activeAssignments[0].id);
+          .eq('profile_id', resource.id);
         
         if (error) throw error;
       } else {
-        // Create a new assignment if none exists
+        // Create resource_inventory entry with profile_id
         const { error } = await supabase
-          .from('assignments')
+          .from('resource_inventory')
           .insert({
-            user_id: resource.id,
-            allocation_percentage: newAllocation,
-            start_date: new Date().toISOString().split('T')[0],
-            status: 'active',
-            work_item_type: 'project',
+            profile_id: resource.id,
+            name: resource.name || 'Unknown',
+            role_name: resource.role,
+            assignment_id: resource.assignment_id || null,
+            default_capacity_percent: newAllocation,
+            is_active: true,
           });
         
         if (error) throw error;
       }
       
-      queryClient.invalidateQueries({ queryKey: ['capacity-planner-assignments'] });
+      queryClient.invalidateQueries({ queryKey: ['capacity-planner-resources'] });
       setLastSaved(new Date());
     } catch (error) {
       console.error('Failed to save allocation:', error);

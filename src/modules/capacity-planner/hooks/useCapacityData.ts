@@ -32,7 +32,7 @@ export function useCapacityData() {
       // Fetch resource_inventory using profile_id for reliable matching
       const { data: resourceInventory } = await supabase
         .from('resource_inventory')
-        .select('id, name, assignment_id, profile_id');
+        .select('id, name, assignment_id, profile_id, default_capacity_percent');
       
       // Fetch user_product_roles with role names for synced role display
       const { data: userProductRoles } = await supabase
@@ -55,6 +55,7 @@ export function useCapacityData() {
         const inventory = inventoryByProfileId.get(p.id) || inventoryByName.get(fullName.toLowerCase());
         const assignmentId = inventory?.assignment_id || null;
         const assignmentName = assignmentId ? assignmentTypeMap.get(assignmentId) || null : null;
+        const defaultCapacity = inventory?.default_capacity_percent ?? 0;
         // Use product role if available, fallback to profiles.role
         const roleName = userRoleMap.get(p.id) || p.role || 'Team Member';
         return {
@@ -66,6 +67,7 @@ export function useCapacityData() {
           department_id: p.department_id,
           assignment_id: assignmentId,
           assignmentName: assignmentName,
+          defaultCapacity: defaultCapacity,
           avatar_url: p.avatar_url,
           created_at: p.created_at,
           updated_at: p.updated_at,
@@ -174,7 +176,10 @@ export function useCapacityData() {
       const resourceAssignments = assignments.filter(
         (a) => a.user_id === resource.id && a.status === 'active'
       );
-      const totalAllocation = resourceAssignments.reduce((sum, a) => sum + a.allocation_percentage, 0);
+      // Use defaultCapacity from resource_inventory as the primary source
+      // Fall back to sum of assignments if no defaultCapacity set
+      const totalAllocation = resource.defaultCapacity ?? 
+        resourceAssignments.reduce((sum, a) => sum + a.allocation_percentage, 0);
       
       let status: ResourceMetric['status'] = 'available';
       if (totalAllocation > 100) status = 'over_allocated';
