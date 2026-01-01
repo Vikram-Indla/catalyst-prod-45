@@ -1,6 +1,6 @@
-import { useState, useRef, useEffect, useCallback } from 'react';
-import { DragDropContext, Droppable, Draggable, DropResult, DragUpdate } from '@hello-pangea/dnd';
-import { Users, X, GripVertical, ArrowLeftRight, Percent } from 'lucide-react';
+import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
+import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
+import { Users, X, GripVertical, ArrowLeftRight, Percent, Plus } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '@/components/ui/dialog';
@@ -11,6 +11,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import type { ResourceMetric } from '@/modules/capacity-planner';
 import type { ResourceAssignment } from '@/modules/capacity-planner/hooks/useResourceAssignments';
+import { useResourceAllocations, type ResourceAllocation } from '@/modules/capacity-planner/hooks/useResourceAllocations';
 
 // Assignment Avatar Colors - Catalyst V5 compliant
 const assignmentColors: Record<string, { bg: string; text: string }> = {
@@ -69,10 +70,12 @@ const departmentColors: Record<string, { bg: string; text: string }> = {
   default: { bg: 'bg-muted', text: 'text-muted-foreground' },
 };
 
-// Extended resource type for ghost card support
-type ExtendedResourceMetric = ResourceMetric & { 
+// Extended resource type for card display in columns
+type ColumnResource = ResourceMetric & { 
   isGhostCard?: boolean; 
   availableCapacity?: number;
+  allocationInColumn?: number; // The allocation % for THIS column specifically
+  allocationId?: string; // ID of the resource_allocations row if exists
 };
 
 interface PendingMove {
@@ -83,6 +86,7 @@ interface PendingMove {
   currentAllocation: number;
   isGhostCard?: boolean;
   availableCapacity?: number;
+  isTransfer?: boolean; // true if moving between columns (not from Unassigned)
 }
 
 interface KanbanAssignViewProps {
@@ -110,46 +114,72 @@ export function KanbanAssignView({
   const [allocationValue, setAllocationValue] = useState(100);
   const autoScrollRef = useRef<number | null>(null);
 
+  // Use the new allocations hook
+  const { 
+    allocations, 
+    addAllocation, 
+    transferAllocation,
+    getTotalAllocation,
+    getAllocationsForResource,
+  } = useResourceAllocations();
 
-  // Build columns: all active assignments + Unassigned
-  const columns = [
-    { id: 'Unassigned', name: 'Unassigned', resources: [] as ExtendedResourceMetric[] },
-    ...assignments.map(a => ({ id: a.name, name: a.name, resources: [] as ExtendedResourceMetric[] })),
-  ];
+  // Build columns with multi-allocation support
+  const columns = useMemo(() => {
+    const cols: { id: string; name: string; assignmentId?: string; resources: ColumnResource[] }[] = [
+      { id: 'Unassigned', name: 'Unassigned', resources: [] },
+      ...assignments.map(a => ({ id: a.name, name: a.name, assignmentId: a.id, resources: [] as ColumnResource[] })),
+    ];
 
-  // Populate columns with resources
-  // Logic:
-  // 1. If assignmentName is null → treat as 0% allocation (unassigned)
-  // 2. Resources appear in their assigned column (if they have one)
-  // 3. Resources with < 100% allocation appear in Unassigned showing available capacity
-  // 4. Resources at 100% do NOT appear in Unassigned
-  resources.forEach(r => {
-    const assignmentName = r.assignmentName || null;
-    // If no assignment, allocation is 0% regardless of any data
-    const totalAllocation = assignmentName ? (r.allocation || 0) : 0;
-    const remainingCapacity = 100 - totalAllocation;
-    
-    // Add to assigned column if resource has an assignment
-    if (assignmentName) {
-      const column = columns.find(c => c.name === assignmentName);
-      if (column) {
-        column.resources.push({
-          ...r,
-          allocation: totalAllocation, // Use calculated allocation
+    // For each resource, determine where they should appear
+    resources.forEach(r => {
+      // Get all allocations for this resource from the new table
+      const resourceAllocations = getAllocationsForResource(r.id);
+      const totalFromAllocationsTable = resourceAllocations.reduce((sum, a) => sum + a.allocation_percent, 0);
+      
+      // Use legacy single assignment if no entries in allocations table
+      const useLegacy = resourceAllocations.length === 0 && r.assignmentName;
+      const totalAllocation = useLegacy ? (r.allocation || 0) : totalFromAllocationsTable;
+      const remainingCapacity = 100 - totalAllocation;
+
+      // Add to each column where they have an allocation
+      if (useLegacy && r.assignmentName) {
+        // Legacy: single assignment from resource_inventory
+        const column = cols.find(c => c.name === r.assignmentName);
+        if (column) {
+          column.resources.push({
+            ...r,
+            allocation: r.allocation || 0,
+            allocationInColumn: r.allocation || 0,
+          });
+        }
+      } else {
+        // New: multiple allocations from resource_allocations table
+        resourceAllocations.forEach(alloc => {
+          const column = cols.find(c => c.name === alloc.assignment_name);
+          if (column) {
+            column.resources.push({
+              ...r,
+              allocation: totalAllocation,
+              allocationInColumn: alloc.allocation_percent,
+              allocationId: alloc.id,
+            });
+          }
         });
       }
-    }
-    
-    // Add to Unassigned column ONLY if allocation < 100% (has remaining capacity)
-    if (remainingCapacity > 0) {
-      columns[0].resources.push({
-        ...r,
-        isGhostCard: true,
-        allocation: totalAllocation, // Use calculated allocation (0 if no assignment)
-        availableCapacity: remainingCapacity,
-      });
-    }
-  });
+      
+      // Add to Unassigned column if allocation < 100% (has remaining capacity)
+      if (remainingCapacity > 0) {
+        cols[0].resources.push({
+          ...r,
+          isGhostCard: true,
+          allocation: totalAllocation,
+          availableCapacity: remainingCapacity,
+        });
+      }
+    });
+
+    return cols;
+  }, [resources, assignments, allocations, getAllocationsForResource]);
 
   // Auto-scroll when dragging near edges
   const handleAutoScroll = useCallback((clientX: number) => {
@@ -240,8 +270,16 @@ export function KanbanAssignView({
       console.log('[DnD] No destination - drop cancelled');
       return;
     }
+    
+    // Allow drops to same column (different index) or different column
     if (source.droppableId === destination.droppableId && source.index === destination.index) {
       console.log('[DnD] Same position - no change');
+      return;
+    }
+    
+    // Don't allow dropping into Unassigned (that doesn't make sense)
+    if (destination.droppableId === 'Unassigned') {
+      console.log('[DnD] Cannot drop into Unassigned');
       return;
     }
 
@@ -258,8 +296,12 @@ export function KanbanAssignView({
 
     console.log('[DnD] Moving resource:', resource.name, 'from:', source.droppableId, 'to:', destination.droppableId);
 
-    // For ghost cards, calculate available capacity
-    const availableCapacity = isGhostCard ? 100 - (resource.allocation || 0) : undefined;
+    // Calculate available capacity
+    const totalAllocation = getTotalAllocation(actualResourceId);
+    const availableCapacity = 100 - totalAllocation;
+    
+    // Determine if this is a transfer (from another assignment column) or adding from Unassigned
+    const isTransfer = source.droppableId !== 'Unassigned';
 
     // Show allocation dialog
     setPendingMove({
@@ -267,18 +309,58 @@ export function KanbanAssignView({
       resourceName: resource.name,
       fromAssignment: source.droppableId,
       toAssignment: destination.droppableId,
-      currentAllocation: resource.allocation,
+      currentAllocation: totalAllocation,
       isGhostCard,
-      availableCapacity,
+      availableCapacity: isGhostCard ? availableCapacity : undefined,
+      isTransfer,
     });
     
-    // For ghost cards, default to the available capacity; otherwise use current allocation
-    setAllocationValue(isGhostCard ? (availableCapacity || 100) : (resource.allocation || 100));
+    // Default allocation: for ghost cards use available capacity, for transfers use reasonable default
+    if (isGhostCard) {
+      setAllocationValue(Math.min(availableCapacity, 50));
+    } else if (isTransfer) {
+      // Find allocation in source column
+      const sourceColumn = columns.find(c => c.id === source.droppableId);
+      const cardInSource = sourceColumn?.resources.find(r => r.id === actualResourceId && !r.isGhostCard);
+      setAllocationValue(cardInSource?.allocationInColumn || 50);
+    } else {
+      setAllocationValue(50);
+    }
   };
 
   const confirmMove = () => {
     if (!pendingMove) return;
-    onMoveResource(pendingMove.resourceId, pendingMove.fromAssignment, pendingMove.toAssignment, allocationValue);
+    
+    const targetColumn = columns.find(c => c.id === pendingMove.toAssignment);
+    const targetAssignmentId = targetColumn?.assignmentId;
+    
+    if (!targetAssignmentId) {
+      console.error('[DnD] Target assignment ID not found');
+      return;
+    }
+
+    if (pendingMove.isTransfer && pendingMove.fromAssignment !== 'Unassigned') {
+      // Transfer allocation between columns
+      const sourceColumn = columns.find(c => c.id === pendingMove.fromAssignment);
+      const sourceAssignmentId = sourceColumn?.assignmentId;
+      
+      if (sourceAssignmentId) {
+        transferAllocation.mutate({
+          resourceId: pendingMove.resourceId,
+          fromAssignmentId: sourceAssignmentId,
+          toAssignmentId: targetAssignmentId,
+          transferPercent: allocationValue,
+        });
+      }
+    } else {
+      // Add new allocation (from Unassigned)
+      addAllocation.mutate({
+        resourceId: pendingMove.resourceId,
+        assignmentId: targetAssignmentId,
+        allocationPercent: allocationValue,
+      });
+    }
+    
     setPendingMove(null);
   };
 
@@ -403,6 +485,7 @@ export function KanbanAssignView({
                                     isDragging={draggableSnapshot.isDragging}
                                     isGhostCard={resource.isGhostCard}
                                     availableCapacity={resource.availableCapacity}
+                                    allocationInColumn={resource.allocationInColumn}
                                   />
                                 </div>
                               )}
@@ -590,18 +673,20 @@ function CompactResourceCard({
   isDragging,
   isGhostCard,
   availableCapacity,
+  allocationInColumn,
 }: { 
-  resource: ResourceMetric; 
+  resource: ResourceMetric & { allocationInColumn?: number }; 
   isDragging: boolean;
   isGhostCard?: boolean;
   availableCapacity?: number;
+  allocationInColumn?: number;
 }) {
   const dept = resource.department || 'Unassigned';
   const deptColor = departmentColors[dept] || departmentColors.default;
   const initials = resource.name?.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'NA';
 
-  // For ghost cards, show available capacity instead of allocation
-  const displayValue = isGhostCard ? availableCapacity || 0 : resource.allocation;
+  // For ghost cards show available capacity, for regular cards show column-specific allocation
+  const displayValue = isGhostCard ? (availableCapacity || 0) : (allocationInColumn || resource.allocation || 0);
   const displayLabel = isGhostCard ? 'Available' : 'Allocated';
 
   return (
