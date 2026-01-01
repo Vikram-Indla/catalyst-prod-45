@@ -323,6 +323,7 @@ export default function CapacityPlannerPage() {
           onTimelinePeriodChange={(p) => setPeriod(p as PeriodType)}
           onSearchChange={setSearchQuery}
           onAddResource={() => setResourceModalOpen(true)}
+          onAssignMode={() => setAssignModeOpen(true)}
           onExport={handleExport}
           onFilterChange={setActiveFilter}
           onDepartmentFilterChange={setDepartmentFilter}
