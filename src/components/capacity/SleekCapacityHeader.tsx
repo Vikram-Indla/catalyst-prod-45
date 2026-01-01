@@ -1,0 +1,289 @@
+/**
+ * Sleek Capacity Header - CIO Executive Cockpit
+ * Max height: 120px | Inline metrics | Live status
+ */
+
+import { Search, Download, Settings, Plus, Filter, ChevronDown, Clock, LayoutGrid, Table2, CalendarDays, FileStack, AlertTriangle, Users } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { cn } from '@/lib/utils';
+import { CATALYST, getUtilizationColor } from '@/lib/catalyst-colors';
+
+interface SleekCapacityHeaderProps {
+  summary: { 
+    total: number; 
+    available: number; 
+    atCapacity: number; 
+    over: number; 
+    utilizationPercentage: number;
+  };
+  viewMode: 'cards' | 'table' | 'timeline' | 'scenarios';
+  groupBy: string;
+  timelinePeriod: 'weekly' | 'monthly' | 'quarterly';
+  searchQuery: string;
+  activeFilter?: 'all' | 'available' | 'atCapacity' | 'over';
+  onViewModeChange: (mode: 'cards' | 'table' | 'timeline' | 'scenarios') => void;
+  onGroupByChange: (groupBy: string) => void;
+  onTimelinePeriodChange: (period: 'weekly' | 'monthly' | 'quarterly') => void;
+  onSearchChange: (query: string) => void;
+  onAddResource: () => void;
+  onExport: () => void;
+  onFilterChange?: (filter: 'all' | 'available' | 'atCapacity' | 'over') => void;
+}
+
+export function SleekCapacityHeader({
+  summary,
+  viewMode,
+  groupBy,
+  timelinePeriod,
+  searchQuery,
+  activeFilter = 'all',
+  onViewModeChange,
+  onGroupByChange,
+  onTimelinePeriodChange,
+  onSearchChange,
+  onAddResource,
+  onExport,
+  onFilterChange,
+}: SleekCapacityHeaderProps) {
+  const utilizationColor = getUtilizationColor(summary.utilizationPercentage);
+  const overPct = summary.total > 0 ? Math.round((summary.over / summary.total) * 100) : 0;
+
+  return (
+    <div className="bg-white border-b border-slate-200" style={{ maxHeight: '120px' }}>
+      {/* ROW 1: Breadcrumb + Live Status + Actions — Height: 40px */}
+      <div className="flex items-center justify-between px-4 py-2 border-b border-slate-100">
+        <div className="flex items-center gap-3">
+          {/* Breadcrumb */}
+          <div className="flex items-center gap-1.5 text-xs">
+            <span className="text-slate-400 font-medium uppercase tracking-wider">Enterprise</span>
+            <span className="text-slate-300">/</span>
+            <span className="font-semibold text-slate-900">Capacity</span>
+          </div>
+          
+          {/* Separator */}
+          <div className="w-px h-4 bg-slate-200" />
+          
+          {/* Live Status */}
+          <div className="flex items-center gap-1.5 text-xs text-slate-500">
+            <div className="relative flex items-center justify-center">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+              <span className="absolute w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping" />
+            </div>
+            <span className="font-medium">Live</span>
+            <span className="text-slate-300">•</span>
+            <Clock className="w-3 h-3" />
+            <span>2m ago</span>
+          </div>
+        </div>
+
+        {/* Actions */}
+        <div className="flex items-center gap-2">
+          <Button 
+            variant="ghost" 
+            size="sm"
+            onClick={onExport}
+            className="h-7 px-2 text-xs text-slate-500 hover:text-slate-700"
+          >
+            <Download className="h-3.5 w-3.5 mr-1" />
+            Export
+          </Button>
+          <Button 
+            variant="ghost" 
+            size="icon"
+            className="h-7 w-7 text-slate-400"
+          >
+            <Settings className="h-3.5 w-3.5" />
+          </Button>
+          <Button 
+            onClick={onAddResource}
+            size="sm"
+            className="h-7 px-3 text-xs bg-slate-900 hover:bg-slate-800 text-white"
+          >
+            <Plus className="h-3.5 w-3.5 mr-1" />
+            Add Resource
+          </Button>
+        </div>
+      </div>
+
+      {/* ROW 2: Inline Metrics + Utilization — Height: 44px */}
+      <div className="flex items-center justify-between px-4 py-2 border-b border-slate-100">
+        <div className="flex items-center gap-6">
+          {/* Inline Metrics */}
+          <InlineMetric value={summary.total} label="Total" color="slate" />
+          <div className="w-px h-6 bg-slate-200" />
+          <InlineMetric value={summary.available} label="Available" color="teal" />
+          <InlineMetric value={summary.atCapacity} label="Optimal" color="blue" />
+          <InlineMetric 
+            value={summary.over} 
+            label="Over" 
+            color="amber" 
+            pct={overPct} 
+            alert={summary.over > 0} 
+          />
+        </div>
+
+        {/* Utilization Gauge */}
+        <UtilizationGauge value={summary.utilizationPercentage} />
+      </div>
+
+      {/* ROW 3: Search + Views + Filters — Height: 36px */}
+      <div className="flex items-center justify-between px-4 py-1.5">
+        <div className="flex items-center gap-3">
+          {/* Search */}
+          <div className="relative">
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400" />
+            <Input
+              value={searchQuery}
+              onChange={(e) => onSearchChange(e.target.value)}
+              placeholder="Search..."
+              className="w-44 h-7 pl-8 pr-3 text-xs bg-white border-slate-200 rounded-md focus:ring-1 focus:ring-blue-500/20 focus:border-blue-500"
+            />
+          </div>
+
+          {/* View Tabs */}
+          <div className="flex items-center bg-slate-100 rounded-md p-0.5">
+            {(['cards', 'table', 'timeline', 'scenarios'] as const).map((mode) => (
+              <button
+                key={mode}
+                onClick={() => onViewModeChange(mode)}
+                className={cn(
+                  'px-2.5 py-1 text-xs font-medium rounded transition-all flex items-center gap-1.5',
+                  viewMode === mode 
+                    ? 'bg-slate-900 text-white shadow-sm' 
+                    : 'text-slate-500 hover:text-slate-700'
+                )}
+              >
+                <ViewIcon mode={mode} />
+                {mode.charAt(0).toUpperCase() + mode.slice(1)}
+              </button>
+            ))}
+          </div>
+
+          {/* Timeline Period - Only in timeline view */}
+          {viewMode === 'timeline' && (
+            <div className="flex items-center bg-slate-100 rounded-md p-0.5">
+              {(['weekly', 'monthly', 'quarterly'] as const).map((p) => (
+                <button
+                  key={p}
+                  onClick={() => onTimelinePeriodChange(p)}
+                  className={cn(
+                    'px-2 py-1 text-xs font-medium rounded transition-all',
+                    timelinePeriod === p 
+                      ? 'bg-slate-900 text-white' 
+                      : 'text-slate-500 hover:text-slate-700'
+                  )}
+                >
+                  {p.charAt(0).toUpperCase() + p.slice(1)}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {/* Critical Alert Pill */}
+          {summary.over > 0 && (
+            <span className="flex items-center gap-1 px-2 py-1 text-xs font-semibold text-amber-700 bg-amber-50 rounded-full border border-amber-200">
+              <AlertTriangle className="w-3 h-3" />
+              Critical {summary.over}
+            </span>
+          )}
+        </div>
+
+        {/* Right Controls */}
+        <div className="flex items-center gap-2">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="sm" className="h-7 px-2 text-xs text-slate-600">
+                <Filter className="h-3 w-3 mr-1" />
+                Filters
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="bg-white">
+              <DropdownMenuItem onClick={() => onFilterChange?.('all')}>All Resources</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => onFilterChange?.('available')}>Available Only</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => onFilterChange?.('atCapacity')}>At Capacity</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => onFilterChange?.('over')}>Over Allocated</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="sm" className="h-7 px-2 text-xs text-slate-600">
+                Group: {groupBy === 'none' ? 'None' : groupBy.charAt(0).toUpperCase() + groupBy.slice(1)}
+                <ChevronDown className="h-3 w-3 ml-1" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="bg-white">
+              <DropdownMenuItem onClick={() => onGroupByChange('assignment')}>Assignment</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => onGroupByChange('department')}>Department</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => onGroupByChange('none')}>None</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function InlineMetric({ value, label, color, pct, alert }: { 
+  value: number; 
+  label: string; 
+  color: 'slate' | 'teal' | 'blue' | 'amber'; 
+  pct?: number; 
+  alert?: boolean 
+}) {
+  const colors = {
+    slate: { text: 'text-slate-900', dot: 'bg-slate-400' },
+    teal: { text: 'text-teal-600', dot: 'bg-teal-500' },
+    blue: { text: 'text-blue-600', dot: 'bg-blue-500' },
+    amber: { text: 'text-amber-600', dot: 'bg-amber-500' },
+  };
+  const c = colors[color];
+  
+  return (
+    <div className="flex items-center gap-1.5">
+      <span className={cn('w-1.5 h-1.5 rounded-full', c.dot, alert && 'animate-pulse')} />
+      <div className="flex items-baseline gap-1">
+        <span className={cn('text-lg font-bold tabular-nums', c.text)}>{value}</span>
+        {pct !== undefined && pct > 0 && (
+          <span className="text-xs text-amber-500">({pct}%)</span>
+        )}
+        <span className="text-xs text-slate-500">{label}</span>
+      </div>
+    </div>
+  );
+}
+
+function UtilizationGauge({ value }: { value: number }) {
+  const color = value > 100 ? CATALYST.bronze.primary : value > 90 ? CATALYST.blue.primary : CATALYST.teal.primary;
+  
+  return (
+    <div className="flex items-center gap-3">
+      <div className="text-right">
+        <span 
+          className="text-xl font-bold tabular-nums"
+          style={{ color }}
+        >
+          {value}%
+        </span>
+        <p className="text-[10px] text-slate-400 uppercase tracking-wider">Utilization</p>
+      </div>
+      <div className="w-24 h-2 bg-slate-100 rounded-full overflow-hidden">
+        <div 
+          className="h-full rounded-full transition-all"
+          style={{ width: `${Math.min(value, 100)}%`, backgroundColor: color }}
+        />
+      </div>
+    </div>
+  );
+}
+
+function ViewIcon({ mode }: { mode: string }) {
+  const cls = 'w-3 h-3';
+  if (mode === 'cards') return <LayoutGrid className={cls} />;
+  if (mode === 'table') return <Table2 className={cls} />;
+  if (mode === 'timeline') return <CalendarDays className={cls} />;
+  if (mode === 'scenarios') return <FileStack className={cls} />;
+  return null;
+}
