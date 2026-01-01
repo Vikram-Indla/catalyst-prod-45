@@ -744,41 +744,56 @@ export default function CapacityPlannerPage() {
               {/* Logo - Left */}
               <Logo variant="dark" size="md" />
 
-              {/* View Tabs - Center */}
-              <div className="flex items-center gap-1 bg-muted rounded-lg p-1">
-                <button
-                  onClick={() => setCurrentView('cards')}
-                  className={cn(
-                    "px-3 py-1.5 text-sm font-medium rounded-md transition-colors",
-                    currentView === 'cards' 
-                      ? "bg-background text-foreground shadow-sm" 
-                      : "text-muted-foreground hover:text-foreground"
-                  )}
-                >
-                  Cards
-                </button>
-                <button
-                  onClick={() => setCurrentView('table')}
-                  className={cn(
-                    "px-3 py-1.5 text-sm font-medium rounded-md transition-colors",
-                    currentView === 'table' 
-                      ? "bg-background text-foreground shadow-sm" 
-                      : "text-muted-foreground hover:text-foreground"
-                  )}
-                >
-                  Table
-                </button>
-                <button
-                  onClick={() => setCurrentView('timeline')}
-                  className={cn(
-                    "px-3 py-1.5 text-sm font-medium rounded-md transition-colors",
-                    currentView === 'timeline' 
-                      ? "bg-background text-foreground shadow-sm" 
-                      : "text-muted-foreground hover:text-foreground"
-                  )}
-                >
-                  Timeline
-                </button>
+              {/* Center section: Tabs + Group By */}
+              <div className="flex items-center gap-4">
+                {/* View Tabs */}
+                <div className="flex items-center gap-1 bg-muted rounded-lg p-1">
+                  <button
+                    onClick={() => setCurrentView('cards')}
+                    className={cn(
+                      "px-3 py-1.5 text-sm font-medium rounded-md transition-colors",
+                      currentView === 'cards' 
+                        ? "bg-background text-foreground shadow-sm" 
+                        : "text-muted-foreground hover:text-foreground"
+                    )}
+                  >
+                    Cards
+                  </button>
+                  <button
+                    onClick={() => setCurrentView('table')}
+                    className={cn(
+                      "px-3 py-1.5 text-sm font-medium rounded-md transition-colors",
+                      currentView === 'table' 
+                        ? "bg-background text-foreground shadow-sm" 
+                        : "text-muted-foreground hover:text-foreground"
+                    )}
+                  >
+                    Table
+                  </button>
+                  <button
+                    onClick={() => setCurrentView('timeline')}
+                    className={cn(
+                      "px-3 py-1.5 text-sm font-medium rounded-md transition-colors",
+                      currentView === 'timeline' 
+                        ? "bg-background text-foreground shadow-sm" 
+                        : "text-muted-foreground hover:text-foreground"
+                    )}
+                  >
+                    Timeline
+                  </button>
+                </div>
+
+                {/* Group By Select */}
+                <Select value={groupBy} onValueChange={(v) => setGroupBy(v as GroupByType)}>
+                  <SelectTrigger className="h-8 w-[140px] text-sm">
+                    <SelectValue placeholder="Group by" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">No Grouping</SelectItem>
+                    <SelectItem value="assignment">By Assignment</SelectItem>
+                    <SelectItem value="department">By Department</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
 
               {/* Exit - Right */}
