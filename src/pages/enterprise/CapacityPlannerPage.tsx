@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useCallback } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { PageChrome } from '@/components/layout/PageChrome';
@@ -1422,6 +1422,27 @@ const GANTT_PROJECT_COLORS: Record<string, { bg: string; text: string; border: s
   'Data Platform': { bg: '#dbeafe', text: '#1e40af', border: '#3b82f6' },
 };
 
+// Short form names for project display in timeline cells
+const PROJECT_SHORT_NAMES: Record<string, string> = {
+  'Senaei BAU': 'Senaei',
+  'Innovation Platform': 'Innovation',
+  'Inspection Project': 'Inspection',
+  'International Relations': 'International',
+  'MIM Website': 'MIM',
+  'Senaei OPS': 'Senaei OPS',
+  'Sectorial Services': 'Sectorial',
+  'Tahommena': 'Tahommena',
+  'Data Platform': 'Data',
+};
+
+// Get short name for a project, with fallback to first word
+const getProjectShortName = (fullName: string): string => {
+  if (PROJECT_SHORT_NAMES[fullName]) return PROJECT_SHORT_NAMES[fullName];
+  // Fallback: use first word or first 10 chars
+  const firstWord = fullName.split(' ')[0];
+  return firstWord.length > 10 ? firstWord.substring(0, 10) : firstWord;
+};
+
 interface TimelineViewProps {
   resources: ResourceMetric[];
   period: PeriodType;
@@ -1470,20 +1491,25 @@ function TimelineView({ resources, period, groupBy, groupedByAssignment, grouped
     ];
   }, [period]);
 
-  // Generate mock project allocations for a resource
-  const generateProjectAllocations = (resource: ResourceMetric) => {
-    const projectNames = Object.keys(GANTT_PROJECT_COLORS);
-    const numProjects = Math.min(3, Math.floor(Math.random() * 3) + 1);
-    const selectedProjects = projectNames.sort(() => Math.random() - 0.5).slice(0, numProjects);
+  // Get REAL project allocations from resource's assignments - NOT random mock data
+  const getResourceAllocations = useCallback((resource: ResourceMetric, assignmentGroupName: string) => {
+    // Use the resource's actual assignments if available
+    const realAssignments = resource.assignments || [];
     
-    let remaining = resource.allocation || 100;
-    return selectedProjects.map((project, i) => {
-      const isLast = i === selectedProjects.length - 1;
-      const percentage = isLast ? remaining : Math.floor(Math.random() * (remaining - 10)) + 10;
-      remaining -= percentage;
-      return { project, percentage: Math.max(percentage, 10) };
-    });
-  };
+    if (realAssignments.length > 0) {
+      // Use real assignment data
+      return realAssignments.map((assignment) => ({
+        project: assignment.notes || assignment.project_id || assignmentGroupName,
+        percentage: assignment.allocation_percentage || Math.floor((resource.allocation || 100) / realAssignments.length),
+      }));
+    }
+    
+    // Fallback: use the assignment group name with full allocation
+    return [{
+      project: assignmentGroupName,
+      percentage: resource.allocation || 100,
+    }];
+  }, []);
 
   const renderTimelineHeader = () => (
     <div className="flex bg-slate-50 border-b border-slate-200 sticky top-0 z-10">
@@ -1509,7 +1535,7 @@ function TimelineView({ resources, period, groupBy, groupedByAssignment, grouped
   const renderResourceRow = (resource: ResourceMetric, assignmentName: string, isEven: boolean) => {
     const theme = getAssignmentTheme(assignmentName);
     const initials = resource.name?.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'NA';
-    const allocations = generateProjectAllocations(resource);
+    const allocations = getResourceAllocations(resource, assignmentName);
     const totalAlloc = resource.allocation || 0;
     const isOver = totalAlloc > 100;
     const allocTheme = getAllocationTheme(totalAlloc);
@@ -1557,24 +1583,29 @@ function TimelineView({ resources, period, groupBy, groupedByAssignment, grouped
                   </div>
                 )}
 
-                {/* Stacked Project Bars */}
+                {/* Stacked Project Bars with Tooltips */}
                 <div className="space-y-1">
                   {allocations.map((alloc, i) => {
                     const projectColor = GANTT_PROJECT_COLORS[alloc.project] || GANTT_PROJECT_COLORS['Senaei BAU'];
+                    const shortName = getProjectShortName(alloc.project);
+                    const tooltipText = `${alloc.project}: ${alloc.percentage}%`;
+                    
                     return (
                       <div
                         key={i}
-                        className="h-5 rounded text-[9px] font-medium flex items-center px-1.5 truncate"
+                        className="h-5 rounded text-[9px] font-medium flex items-center px-1.5 truncate cursor-default group relative"
                         style={{
                           backgroundColor: projectColor.bg,
                           color: projectColor.text,
                           borderLeft: `2px solid ${projectColor.border}`,
-                          width: `${Math.min(alloc.percentage, 100)}%`,
-                          minWidth: alloc.percentage >= 15 ? '100%' : '40px',
                         }}
-                        title={`${alloc.project}: ${alloc.percentage}%`}
+                        title={tooltipText}
                       >
-                        {alloc.percentage >= 20 && alloc.project.split(' ')[0]}
+                        <span className="truncate">{shortName}</span>
+                        {/* Hover tooltip for full name */}
+                        <span className="absolute left-0 bottom-full mb-1 hidden group-hover:block z-50 px-2 py-1 text-[10px] bg-slate-900 text-white rounded shadow-lg whitespace-nowrap">
+                          {tooltipText}
+                        </span>
                       </div>
                     );
                   })}
