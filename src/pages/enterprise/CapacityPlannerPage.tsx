@@ -739,20 +739,22 @@ export default function CapacityPlannerPage() {
         {/* Presentation Mode Fullscreen Overlay */}
         {presentationMode && (
           <div className="fixed inset-0 z-50 bg-[#fafafa] flex flex-col">
-            {/* Top Bar with Logo and Exit */}
-            <div className="flex items-center justify-between px-6 py-4 bg-white border-b border-slate-200">
+            {/* Logo - Top Left */}
+            <div className="absolute top-4 left-6 z-50">
               <Logo variant="dark" size="lg" />
-              <button
-                onClick={() => setPresentationMode(false)}
-                className="flex items-center gap-2 px-4 py-2 bg-slate-900 text-white rounded-lg hover:bg-slate-800 transition-colors shadow-lg"
-              >
-                <X className="h-4 w-4" />
-                Exit Presentation
-              </button>
             </div>
 
-            {/* Full Content Area - No padding, no header, just content */}
-            <div className="flex-1 overflow-auto p-6">
+            {/* Exit Button - Top Right */}
+            <button
+              onClick={() => setPresentationMode(false)}
+              className="absolute top-4 right-6 z-50 flex items-center gap-2 px-4 py-2 bg-slate-900 text-white rounded-lg hover:bg-slate-800 transition-colors shadow-lg"
+            >
+              <X className="h-4 w-4" />
+              Exit Presentation
+            </button>
+
+            {/* Full Content Area - Minimal padding, max space for cards */}
+            <div className="flex-1 overflow-auto pt-16 px-4 pb-4">
               {currentView === 'cards' && (
                 <CardsView 
                   resources={filteredResources} 
