@@ -167,15 +167,10 @@ export function useCapacityData() {
     };
   }, [queryClient]);
 
-  // Calculate utilization metrics - only include resources with active assignments
+  // Calculate utilization metrics - include ALL resources
   const calculateMetrics = (): { resources: ResourceMetric[]; summary: CapacitySummary } => {
-    // First, get all user IDs that have assignments in this module
-    const assignedUserIds = new Set(assignments.map(a => a.user_id));
-    
-    // Only include resources that have at least one assignment
-    const assignedResources = resources.filter(r => assignedUserIds.has(r.id));
-    
-    const resourceMetrics: ResourceMetric[] = assignedResources.map((resource) => {
+    // Include ALL resources, not just those with assignments
+    const resourceMetrics: ResourceMetric[] = resources.map((resource) => {
       const resourceAssignments = assignments.filter(
         (a) => a.user_id === resource.id && a.status === 'active'
       );
@@ -185,6 +180,7 @@ export function useCapacityData() {
       if (totalAllocation > 100) status = 'over_allocated';
       else if (totalAllocation > 80) status = 'at_capacity';
       else if (totalAllocation > 0) status = 'healthy';
+      // Resources with 0 allocation are 'available'
 
       return { ...resource, allocation: totalAllocation, assignments: resourceAssignments, status };
     });
