@@ -26,6 +26,7 @@ import { Resource360Drawer } from '@/components/capacity/resource360/Resource360
 import { CapacityAIDrawer } from '@/components/capacity/CapacityAIDrawer';
 import { CatalystEnterpriseTable, CatalystColumn } from '@/components/industry/CatalystEnterpriseTable';
 import { BulkEditModal } from '@/components/capacity/BulkEditModal';
+import { DraggableCardsView } from '@/components/capacity/DraggableCardsView';
 
 type PeriodType = 'weekly' | 'monthly' | 'quarterly';
 type GroupByType = 'none' | 'assignment' | 'department';
@@ -89,6 +90,7 @@ export default function CapacityPlannerPage() {
   // Fetch departments and assignments for the modal
   const { departments } = useCapacityDepartments();
   const { assignments: resourceAssignments = [] } = useResourceAssignments();
+  const { updateResourceAssignmentType } = useResourceManagement();
 
   useEffect(() => {
     if (!resourceModalOpen) return;
@@ -151,13 +153,45 @@ export default function CapacityPlannerPage() {
   // Group resources by assignment type
   const groupedByAssignment = useMemo(() => {
     const groups: Record<string, ResourceMetric[]> = {};
+    
+    // Initialize all active assignment types as empty arrays (so all swim lanes show)
+    resourceAssignments.forEach((a) => {
+      if (a.name) groups[a.name] = [];
+    });
+    // Always have Unassigned lane
+    groups['Unassigned'] = [];
+    
+    // Populate with resources
     filteredResources.forEach((r) => {
       const assignmentName = r.assignmentName || 'Unassigned';
       if (!groups[assignmentName]) groups[assignmentName] = [];
       groups[assignmentName].push(r);
     });
     return groups;
-  }, [filteredResources]);
+  }, [filteredResources, resourceAssignments]);
+
+  // Handle moving a resource to a different assignment via drag-and-drop
+  const handleMoveResource = (resourceId: string, fromAssignment: string, toAssignment: string) => {
+    // Find the assignment ID for the target assignment name
+    const targetAssignment = resourceAssignments.find(a => a.name === toAssignment);
+    const newAssignmentId = toAssignment === 'Unassigned' ? null : targetAssignment?.id || null;
+
+    // Optimistic update for instant feedback
+    queryClient.setQueryData(['capacity-planner-resources'], (old: any) => {
+      if (!Array.isArray(old)) return old;
+      return old.map((r: any) => 
+        r.id === resourceId 
+          ? { ...r, assignment_id: newAssignmentId, assignmentName: toAssignment === 'Unassigned' ? null : toAssignment }
+          : r
+      );
+    });
+
+    // Persist to database
+    updateResourceAssignmentType.mutate({ 
+      resourceId, 
+      assignmentId: newAssignmentId 
+    });
+  };
 
   // Under-allocated resources for Leveling
   const underAllocatedResources = filteredResources.filter(r => r.allocation < 80);
@@ -316,13 +350,22 @@ export default function CapacityPlannerPage() {
         {/* Main Content */}
         <div className="flex-1 overflow-auto px-5 pb-5">
           {currentView === 'cards' && (
-            <CardsView 
-              resources={filteredResources} 
-              groupedByAssignment={groupedByAssignment}
-              groupBy={groupBy}
-              onResourceClick={openResourceDrawer}
-              onEditResource={(id) => setEditResourceId(id)}
-            />
+            groupBy === 'assignment' ? (
+              <DraggableCardsView 
+                groupedByAssignment={groupedByAssignment}
+                onResourceClick={openResourceDrawer}
+                onEditResource={(id) => setEditResourceId(id)}
+                onMoveResource={handleMoveResource}
+              />
+            ) : (
+              <CardsView 
+                resources={filteredResources} 
+                groupedByAssignment={groupedByAssignment}
+                groupBy={groupBy}
+                onResourceClick={openResourceDrawer}
+                onEditResource={(id) => setEditResourceId(id)}
+              />
+            )
           )}
           {currentView === 'table' && (
             <TableView 

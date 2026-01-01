@@ -161,8 +161,79 @@ export function useResourceManagement() {
     },
   });
 
+  /**
+   * Update a resource's assignment_id in resource_inventory
+   * Used for drag-and-drop between assignment swim lanes
+   */
+  const updateResourceAssignmentType = useMutation({
+    mutationFn: async ({ 
+      resourceId, 
+      assignmentId 
+    }: { 
+      resourceId: string; 
+      assignmentId: string | null;
+    }) => {
+      // Check if resource exists in resource_inventory by profile_id
+      const { data: existingResource } = await supabase
+        .from('resource_inventory')
+        .select('id')
+        .eq('profile_id', resourceId)
+        .maybeSingle();
+
+      if (existingResource) {
+        // Update existing resource_inventory entry
+        const { data, error } = await supabase
+          .from('resource_inventory')
+          .update({ 
+            assignment_id: assignmentId,
+            updated_at: new Date().toISOString() 
+          })
+          .eq('profile_id', resourceId)
+          .select()
+          .single();
+
+        if (error) throw error;
+        return data;
+      } else {
+        // Create resource_inventory entry with profile_id
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('full_name, role')
+          .eq('id', resourceId)
+          .single();
+
+        if (profile) {
+          const { data, error } = await supabase
+            .from('resource_inventory')
+            .insert({
+              profile_id: resourceId,
+              name: profile.full_name || 'Unknown',
+              role_name: profile.role,
+              assignment_id: assignmentId,
+              is_active: true,
+            })
+            .select()
+            .single();
+
+          if (error) throw error;
+          return data;
+        }
+        throw new Error('Profile not found');
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['capacity-planner-resources'] });
+      queryClient.invalidateQueries({ queryKey: ['resource-inventory'] });
+      toast.success('Assignment updated');
+    },
+    onError: (error) => {
+      toast.error(`Failed to update assignment: ${error.message}`);
+    },
+  });
+
   return {
     updateResource,
     updateResourceAllocation,
+    updateResourceAssignmentType,
   };
 }
