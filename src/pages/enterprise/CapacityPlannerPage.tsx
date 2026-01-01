@@ -35,15 +35,17 @@ type GroupByType = 'none' | 'assignment' | 'department';
 import { 
   CATALYST,
   getAssignmentColor,
+  getAssignmentTheme,
   getAllocationColors,
+  getAllocationTheme,
   getAllocationBarColor, 
   getTimelineCellColors, 
   getUtilizationColor,
   getInitials,
 } from '@/lib/catalyst-colors';
-import { CapacityHeader } from '@/components/capacity/CapacityHeader';
-import { AssignmentGroupHeader } from '@/components/capacity/AssignmentGroupHeader';
-import { ResourceCardV2 } from '@/components/capacity/ResourceCardV2';
+import { SleekCapacityHeader } from '@/components/capacity/SleekCapacityHeader';
+import { CompactGroupHeader } from '@/components/capacity/CompactGroupHeader';
+import { CompactResourceCard } from '@/components/capacity/CompactResourceCard';
 import { TimelineCellV2 } from '@/components/capacity/TimelineCellV2';
 
 // Department colors - Catalyst V5 compliant
@@ -296,7 +298,7 @@ export default function CapacityPlannerPage() {
     <PageChrome hideHeader>
       <div className="flex flex-col h-full bg-[hsl(var(--background))] relative">
         {/* Header - Enterprise Grade */}
-        <CapacityHeader
+        <SleekCapacityHeader
           summary={{
             total: metrics.summary.total,
             available: metrics.summary.available + metrics.summary.healthy,
@@ -309,17 +311,13 @@ export default function CapacityPlannerPage() {
           timelinePeriod={period}
           searchQuery={searchQuery}
           activeFilter={activeFilter}
-          isCollapsed={isCollapsed}
           onViewModeChange={(mode) => setCurrentView(mode as ViewType)}
           onGroupByChange={(g) => setGroupBy(g as GroupByType)}
           onTimelinePeriodChange={(p) => setPeriod(p as PeriodType)}
           onSearchChange={setSearchQuery}
           onAddResource={() => setResourceModalOpen(true)}
-          onAssign={() => setAssignModeOpen(!assignModeOpen)}
           onExport={handleExport}
           onFilterChange={setActiveFilter}
-          onToggleCollapse={() => setIsCollapsed(!isCollapsed)}
-          assignModeActive={assignModeOpen}
         />
 
         {/* Main Content */}
@@ -894,7 +892,7 @@ function CardsView({
           return (
           <div key={assignmentName} className="space-y-3">
             {/* Group Header with capacity bar */}
-            <AssignmentGroupHeader
+            <CompactGroupHeader
               assignmentName={assignmentName}
               resourceCount={assignmentResources.length}
               availableCount={availableCount + partialCount}
@@ -905,17 +903,13 @@ function CardsView({
               onToggle={() => toggleGroup(assignmentName)}
             />
             
-            {/* Cards Grid - Collapsible */}
+            {/* Cards Grid - 5 columns dense */}
             {expanded && (
-              <div className={cn(
-                "grid gap-3 pl-4",
-                compactMode 
-                  ? "grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5"
-                  : "grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
-              )}>
+              <div className="grid gap-2 pl-2 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
                 {assignmentResources.map((resource) => (
-                  <ResourceCardV2 
-                    key={resource.id} 
+                  <CompactResourceCard 
+                    key={resource.id}
+                    id={resource.id}
                     name={resource.name}
                     role={resource.role || 'Team Member'}
                     department={resource.department}
@@ -923,7 +917,6 @@ function CardsView({
                     totalAllocation={resource.allocation || 0}
                     onOpen360={() => onResourceClick(resource)}
                     onEdit={() => onEditResource(resource.id)}
-                    compact={compactMode}
                   />
                 ))}
               </div>
@@ -1010,15 +1003,11 @@ function CardsView({
               
               {/* Cards Grid - Collapsible */}
               {expanded && (
-                <div className={cn(
-                  "grid gap-3 pl-4",
-                  compactMode 
-                    ? "grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5"
-                    : "grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
-                )}>
+                <div className="grid gap-2 pl-2 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
                   {deptResources.map((resource) => (
-                    <ResourceCardV2 
-                      key={resource.id} 
+                    <CompactResourceCard 
+                      key={resource.id}
+                      id={resource.id}
                       name={resource.name}
                       role={resource.role || 'Team Member'}
                       department={resource.department}
@@ -1026,7 +1015,6 @@ function CardsView({
                       totalAllocation={resource.allocation || 0}
                       onOpen360={() => onResourceClick(resource)}
                       onEdit={() => onEditResource(resource.id)}
-                      compact={compactMode}
                     />
                   ))}
                 </div>
@@ -1039,15 +1027,11 @@ function CardsView({
   }
 
   return (
-    <div className={cn(
-      "grid gap-3",
-      compactMode 
-        ? "grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5"
-        : "grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
-    )}>
+    <div className="grid gap-2 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
       {resources.map((resource) => (
-        <ResourceCardV2 
-          key={resource.id} 
+        <CompactResourceCard 
+          key={resource.id}
+          id={resource.id}
           name={resource.name}
           role={resource.role || 'Team Member'}
           department={resource.department}
@@ -1055,7 +1039,6 @@ function CardsView({
           totalAllocation={resource.allocation || 0}
           onOpen360={() => onResourceClick(resource)}
           onEdit={() => onEditResource(resource.id)}
-          compact={compactMode}
         />
       ))}
     </div>

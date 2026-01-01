@@ -1,19 +1,33 @@
 /**
  * Catalyst V5 Color System for Capacity Planner
- * NO ORANGE (#f97316) - NO RED (#ef4444)
+ * CIO Executive Cockpit - Refined Colors
  */
 
 export const CATALYST = {
   blue: {
+    600: '#2563eb',
+    500: '#3b82f6',
+    100: '#dbeafe',
+    50: '#eff6ff',
     primary: '#2563eb',
     dark: '#1d4ed8',
     light: '#3b82f6',
     bg: 'rgba(37, 99, 235, 0.08)',
   },
   teal: {
+    600: '#0d9488',
+    500: '#14b8a6',
+    100: '#ccfbf1',
+    50: '#f0fdfa',
     primary: '#0d9488',
     dark: '#0f766e',
     bg: 'rgba(13, 148, 136, 0.08)',
+  },
+  amber: {
+    600: '#d97706',
+    500: '#f59e0b',
+    100: '#fef3c7',
+    50: '#fffbeb',
   },
   olive: {
     primary: '#4f8a4f',
@@ -21,9 +35,25 @@ export const CATALYST = {
     bg: 'rgba(79, 138, 79, 0.08)',
   },
   bronze: {
+    600: '#8b7355',
+    500: '#a68b5b',
+    100: '#f5f0e8',
+    50: '#faf8f5',
     primary: '#8b7355',
     dark: '#6b5842',
     bg: 'rgba(139, 115, 85, 0.08)',
+  },
+  slate: {
+    900: '#0f172a',
+    800: '#1e293b',
+    700: '#334155',
+    600: '#475569',
+    500: '#64748b',
+    400: '#94a3b8',
+    300: '#cbd5e1',
+    200: '#e2e8f0',
+    100: '#f1f5f9',
+    50: '#f8fafc',
   },
   grey: {
     50: '#fafafa',
@@ -39,33 +69,99 @@ export const CATALYST = {
 };
 
 /**
- * Assignment → Color mapping
- * Each assignment gets a unique brand shade
+ * Assignment themes — Distinct colors per group for visual distinction
  */
-export const ASSIGNMENT_COLORS: Record<string, string> = {
-  'Senaei BAU': '#2563eb',           // Blue
-  'Innovation Platform': '#1d4ed8',   // Blue Dark
-  'Inspection Project': '#0d9488',    // Teal
-  'International Relations': '#0f766e', // Teal Dark
-  'MIM Website': '#4f8a4f',           // Olive
-  'Senaei OPS': '#3d6b3d',            // Olive Dark
-  'Sectorial Services': '#8b7355',    // Bronze
-  'Tahommena': '#6b5842',             // Bronze Dark
-  'Data Platform': '#3b82f6',         // Blue Light
-  'Unassigned': '#a3a3a3',            // Grey
+export const ASSIGNMENT_THEMES: Record<string, { bg: string; text: string; accent: string }> = {
+  'Senaei BAU': { bg: '#eff6ff', text: '#1e40af', accent: '#2563eb' },
+  'Innovation Platform': { bg: '#eef2ff', text: '#3730a3', accent: '#4f46e5' },
+  'Inspection Project': { bg: '#f0fdfa', text: '#115e59', accent: '#0d9488' },
+  'International Relations': { bg: '#ecfdf5', text: '#065f46', accent: '#059669' },
+  'MIM Website': { bg: '#f0fdf4', text: '#166534', accent: '#16a34a' },
+  'Senaei OPS': { bg: '#fefce8', text: '#854d0e', accent: '#ca8a04' },
+  'Sectorial Services': { bg: '#faf8f5', text: '#78716c', accent: '#8b7355' },
+  'Tahommena': { bg: '#fdf4ff', text: '#86198f', accent: '#c026d3' },
+  'Data Platform': { bg: '#f5f3ff', text: '#5b21b6', accent: '#7c3aed' },
+  'Unassigned': { bg: '#f8fafc', text: '#64748b', accent: '#94a3b8' },
 };
 
 /**
- * Get assignment color by name
+ * Get assignment theme with bg, text, accent colors
  */
+export function getAssignmentTheme(name: string | null | undefined): { bg: string; text: string; accent: string } {
+  if (!name) return ASSIGNMENT_THEMES['Unassigned'];
+  return ASSIGNMENT_THEMES[name] || { bg: '#eff6ff', text: '#1e40af', accent: '#2563eb' };
+}
+
+/**
+ * Legacy assignment color function - returns accent color
+ */
+export const ASSIGNMENT_COLORS: Record<string, string> = {
+  'Senaei BAU': '#2563eb',
+  'Innovation Platform': '#4f46e5',
+  'Inspection Project': '#0d9488',
+  'International Relations': '#059669',
+  'MIM Website': '#16a34a',
+  'Senaei OPS': '#ca8a04',
+  'Sectorial Services': '#8b7355',
+  'Tahommena': '#c026d3',
+  'Data Platform': '#7c3aed',
+  'Unassigned': '#94a3b8',
+};
+
 export function getAssignmentColor(name: string | null | undefined): string {
   if (!name) return CATALYST.grey[400];
   return ASSIGNMENT_COLORS[name] || CATALYST.blue.primary;
 }
 
 /**
- * Get allocation status with colors and border
- * Used for left border coloring on cards
+ * Allocation theme with 5 levels - refined for CIO visibility
+ */
+export function getAllocationTheme(percentage: number): { 
+  status: 'available' | 'partial' | 'optimal' | 'stretched' | 'critical';
+  bg: string;
+  text: string;
+  bar: string;
+  label: string;
+} {
+  if (percentage === 0) return { 
+    status: 'available', 
+    bg: '#f0fdfa', 
+    text: '#0d9488', 
+    bar: '#0d9488', 
+    label: 'Available' 
+  };
+  if (percentage < 80) return { 
+    status: 'partial', 
+    bg: '#f0fdfa', 
+    text: '#0d9488', 
+    bar: '#0d9488', 
+    label: 'Partial' 
+  };
+  if (percentage <= 100) return { 
+    status: 'optimal', 
+    bg: '#eff6ff', 
+    text: '#2563eb', 
+    bar: '#2563eb', 
+    label: 'Optimal' 
+  };
+  if (percentage <= 120) return { 
+    status: 'stretched', 
+    bg: '#fffbeb', 
+    text: '#d97706', 
+    bar: '#d97706', 
+    label: 'Stretched' 
+  };
+  return { 
+    status: 'critical', 
+    bg: '#faf8f5', 
+    text: '#8b7355', 
+    bar: '#8b7355', 
+    label: 'Critical' 
+  };
+}
+
+/**
+ * Get allocation status with colors and border (legacy support)
  */
 export function getAllocationStatus(percentage: number): { 
   status: 'available' | 'partial' | 'full' | 'over';
@@ -105,56 +201,37 @@ export function getAllocationStatus(percentage: number): {
 }
 
 /**
- * Allocation status colors — NO ORANGE, NO RED
- * 0% = Grey, <100% = Teal, 100% = Blue, >100% = Bronze
+ * Allocation status colors (legacy)
  */
 export function getAllocationColors(percentage: number): { bg: string; text: string; bar: string } {
-  if (percentage === 0) return { 
-    bg: CATALYST.grey[100], 
-    text: CATALYST.grey[500], 
-    bar: CATALYST.grey[300] 
-  };
-  if (percentage < 100) return { 
-    bg: CATALYST.teal.bg, 
-    text: CATALYST.teal.primary, 
-    bar: CATALYST.teal.primary 
-  };
-  if (percentage === 100) return { 
-    bg: CATALYST.blue.bg, 
-    text: CATALYST.blue.primary, 
-    bar: CATALYST.blue.primary 
-  };
-  // Over 100% = Bronze (not red)
-  return { 
-    bg: CATALYST.bronze.bg, 
-    text: CATALYST.bronze.primary, 
-    bar: CATALYST.bronze.primary 
-  };
+  const theme = getAllocationTheme(percentage);
+  return { bg: theme.bg, text: theme.text, bar: theme.bar };
 }
 
 /**
  * Get allocation bar color only
  */
 export function getAllocationBarColor(percentage: number): string {
-  return getAllocationColors(percentage).bar;
+  return getAllocationTheme(percentage).bar;
 }
 
 /**
- * Timeline cell colors — NO ORANGE, NO RED
+ * Timeline cell colors
  */
 export function getTimelineCellColors(percentage: number): { bg: string; text: string } {
   if (percentage === 0) return { bg: CATALYST.grey[100], text: CATALYST.grey[500] };
-  if (percentage < 100) return { bg: 'rgba(13, 148, 136, 0.12)', text: CATALYST.teal.primary };
-  if (percentage === 100) return { bg: 'rgba(37, 99, 235, 0.12)', text: CATALYST.blue.primary };
-  // Over 100% = Bronze
+  if (percentage < 80) return { bg: 'rgba(13, 148, 136, 0.12)', text: CATALYST.teal.primary };
+  if (percentage <= 100) return { bg: 'rgba(37, 99, 235, 0.12)', text: CATALYST.blue.primary };
+  if (percentage <= 120) return { bg: 'rgba(217, 119, 6, 0.12)', text: CATALYST.amber[600] };
   return { bg: 'rgba(139, 115, 85, 0.12)', text: CATALYST.bronze.primary };
 }
 
 /**
- * Utilization bar color — Blue/Teal only
+ * Utilization bar color
  */
 export function getUtilizationColor(percentage: number): string {
-  if (percentage >= 100) return CATALYST.blue.primary;
+  if (percentage > 100) return CATALYST.bronze.primary;
+  if (percentage >= 90) return CATALYST.blue.primary;
   if (percentage >= 80) return CATALYST.blue.light;
   return CATALYST.teal.primary;
 }
