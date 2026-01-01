@@ -11639,6 +11639,7 @@ export type Database = {
           is_active: boolean | null
           name: string
           notes: string | null
+          profile_id: string | null
           role_code: string | null
           role_name: string | null
           updated_at: string | null
@@ -11651,6 +11652,7 @@ export type Database = {
           is_active?: boolean | null
           name: string
           notes?: string | null
+          profile_id?: string | null
           role_code?: string | null
           role_name?: string | null
           updated_at?: string | null
@@ -11663,6 +11665,7 @@ export type Database = {
           is_active?: boolean | null
           name?: string
           notes?: string | null
+          profile_id?: string | null
           role_code?: string | null
           role_name?: string | null
           updated_at?: string | null
