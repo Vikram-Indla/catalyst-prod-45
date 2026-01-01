@@ -169,9 +169,11 @@ export default function CapacityPlannerPage() {
 
   const filteredResources = useMemo(() => {
     return metrics.resources.filter((r) => {
-      // Exclude management roles - they are overheads, not capacity planned
-      const isManagement = r.role?.toLowerCase().includes('management');
-      if (isManagement) return false;
+      // Exclude management and admin roles - they are overheads, not capacity planned
+      const roleLower = r.role?.toLowerCase() || '';
+      const isManagement = roleLower.includes('management');
+      const isSuperAdmin = roleLower.includes('super admin') || roleLower.includes('superadmin') || roleLower === 'admin';
+      if (isManagement || isSuperAdmin) return false;
       
       const matchesSearch = r.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         r.role?.toLowerCase().includes(searchQuery.toLowerCase());
