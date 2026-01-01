@@ -852,6 +852,7 @@ function TableView({ resources, projects, onResourceClick, onEditResource, onDel
         data={resources}
         columns={columns}
         showCheckboxes={true}
+        showActionsColumn={false}
         selectedRows={selectedIds}
         onSelectionChange={handleSelectionChange}
         onRowClick={(row) => onResourceClick(row)}
