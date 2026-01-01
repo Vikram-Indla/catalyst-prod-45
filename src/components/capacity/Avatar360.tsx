@@ -2,28 +2,22 @@ import { useState } from 'react';
 import { cn } from '@/lib/utils';
 
 interface Avatar360Props {
-  initials: string;
   onClick: () => void;
-  bgColor?: string;
-  textColor?: string;
   size?: 'sm' | 'md' | 'lg';
   className?: string;
 }
 
 export function Avatar360({ 
-  initials, 
   onClick, 
-  bgColor = 'bg-muted', 
-  textColor = 'text-foreground',
   size = 'md',
   className 
 }: Avatar360Props) {
   const [isHovered, setIsHovered] = useState(false);
 
   const sizeStyles = {
-    sm: 'w-8 h-8 text-xs',
-    md: 'w-10 h-10 text-sm',
-    lg: 'w-12 h-12 text-base',
+    sm: 'w-8 h-8 text-[10px]',
+    md: 'w-10 h-10 text-xs',
+    lg: 'w-12 h-12 text-sm',
   };
 
   const orbitSizes = {
@@ -46,16 +40,15 @@ export function Avatar360({
           "relative rounded-full flex items-center justify-center font-semibold",
           "transition-all duration-200 ease-out",
           "focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary",
+          "bg-muted text-foreground",
           sizeStyles[size],
-          bgColor,
-          textColor,
           // Hover state
           isHovered && "ring-2 ring-primary/50 shadow-[0_4px_12px_rgba(13,148,136,0.3)]",
           className
         )}
         aria-label="View 360° Work Context"
       >
-        {initials}
+        360
       </button>
 
       {/* Orbital Ring - Only visible on hover */}

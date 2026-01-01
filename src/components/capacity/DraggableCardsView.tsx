@@ -162,10 +162,7 @@ function DraggableResourceCard({
 
         {/* Avatar with 360° hover animation */}
         <Avatar360 
-          initials={initials}
           onClick={on360Click}
-          bgColor={deptColor.bg}
-          textColor={deptColor.text}
           size="md"
         />
 
