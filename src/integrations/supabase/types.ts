@@ -11570,8 +11570,39 @@ export type Database = {
         }
         Relationships: []
       }
+      resource_assignments: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          sort_order: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          sort_order?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          sort_order?: number | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       resource_inventory: {
         Row: {
+          assignment_id: string | null
           created_at: string | null
           default_capacity_percent: number | null
           id: string
@@ -11583,6 +11614,7 @@ export type Database = {
           updated_at: string | null
         }
         Insert: {
+          assignment_id?: string | null
           created_at?: string | null
           default_capacity_percent?: number | null
           id?: string
@@ -11594,6 +11626,7 @@ export type Database = {
           updated_at?: string | null
         }
         Update: {
+          assignment_id?: string | null
           created_at?: string | null
           default_capacity_percent?: number | null
           id?: string
@@ -11604,7 +11637,15 @@ export type Database = {
           role_name?: string | null
           updated_at?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "resource_inventory_assignment_id_fkey"
+            columns: ["assignment_id"]
+            isOneToOne: false
+            referencedRelation: "resource_assignments"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       resource_roles: {
         Row: {
