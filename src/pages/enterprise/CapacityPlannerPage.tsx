@@ -72,7 +72,7 @@ export default function CapacityPlannerPage() {
   const [resourcesToDelete, setResourcesToDelete] = useState<ResourceMetric[]>([]);
 
   // Add resource form state
-  const [selectedUserId, setSelectedUserId] = useState<string>('');
+  const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
   const [selectedProjectId, setSelectedProjectId] = useState<string>('');
   const [allocationPercentage, setAllocationPercentage] = useState<number>(100);
 
@@ -352,84 +352,131 @@ export default function CapacityPlannerPage() {
         <Dialog open={resourceModalOpen} onOpenChange={(open) => {
           setResourceModalOpen(open);
           if (!open) {
-            setSelectedUserId('');
+            setSelectedUserIds([]);
             setSelectedProjectId('');
             setAllocationPercentage(100);
           }
         }}>
-          <DialogContent className="sm:max-w-md">
+          <DialogContent className="sm:max-w-lg">
             <DialogHeader>
-              <DialogTitle>Add Resource to Capacity Planner</DialogTitle>
+              <DialogTitle>Add Resources to Capacity Planner</DialogTitle>
             </DialogHeader>
             <div className="space-y-4 py-4">
               <div className="space-y-2">
-                <Label>Select User</Label>
-                <Select value={selectedUserId} onValueChange={setSelectedUserId}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select a user from /admin/users..." />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {availableUsers.length === 0 ? (
-                      <div className="px-2 py-3 text-sm text-muted-foreground text-center">
-                        All users are already assigned
-                      </div>
-                    ) : (
-                      availableUsers.map((user) => (
-                        <SelectItem key={user.id} value={user.id}>
-                          {user.name} {user.role ? `(${user.role})` : ''}
+                <div className="flex items-center justify-between">
+                  <Label>Select Users ({selectedUserIds.length} selected)</Label>
+                  {availableUsers.length > 0 && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (selectedUserIds.length === availableUsers.length) {
+                          setSelectedUserIds([]);
+                        } else {
+                          setSelectedUserIds(availableUsers.map(u => u.id));
+                        }
+                      }}
+                      className="text-xs text-[#2563eb] hover:underline"
+                    >
+                      {selectedUserIds.length === availableUsers.length ? 'Deselect all' : 'Select all'}
+                    </button>
+                  )}
+                </div>
+                <ScrollArea className="h-[280px] border border-border rounded-lg">
+                  {availableUsers.length === 0 ? (
+                    <div className="px-4 py-8 text-sm text-muted-foreground text-center">
+                      All users are already assigned to the Capacity Planner
+                    </div>
+                  ) : (
+                    <div className="divide-y divide-border">
+                      {availableUsers.map((user) => {
+                        const isSelected = selectedUserIds.includes(user.id);
+                        const initials = user.name?.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'NA';
+                        return (
+                          <label
+                            key={user.id}
+                            className={cn(
+                              'flex items-center gap-3 px-4 py-3 cursor-pointer transition-colors',
+                              isSelected ? 'bg-[#2563eb]/5' : 'hover:bg-muted/50'
+                            )}
+                          >
+                            <input
+                              type="checkbox"
+                              checked={isSelected}
+                              onChange={(e) => {
+                                if (e.target.checked) {
+                                  setSelectedUserIds([...selectedUserIds, user.id]);
+                                } else {
+                                  setSelectedUserIds(selectedUserIds.filter(id => id !== user.id));
+                                }
+                              }}
+                              className="h-4 w-4 rounded border-border text-[#2563eb] focus:ring-[#2563eb]"
+                            />
+                            <div className="w-8 h-8 rounded-full bg-[#d4b896] flex items-center justify-center text-xs font-semibold text-[#4a3f35]">
+                              {initials}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-medium text-foreground truncate">{user.name}</p>
+                              <p className="text-xs text-muted-foreground truncate">{user.role || 'No role'}</p>
+                            </div>
+                            <span className="text-xs text-muted-foreground">{user.department || 'Unassigned'}</span>
+                          </label>
+                        );
+                      })}
+                    </div>
+                  )}
+                </ScrollArea>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>Assign to Project</Label>
+                  <Select value={selectedProjectId} onValueChange={setSelectedProjectId}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a project..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {projects.map((project) => (
+                        <SelectItem key={project.id} value={project.id}>
+                          {project.name}
                         </SelectItem>
-                      ))
-                    )}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2">
-                <Label>Assign to Project</Label>
-                <Select value={selectedProjectId} onValueChange={setSelectedProjectId}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select a project..." />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {projects.map((project) => (
-                      <SelectItem key={project.id} value={project.id}>
-                        {project.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2">
-                <Label>Allocation Percentage</Label>
-                <Input 
-                  type="number"
-                  min={0}
-                  max={100}
-                  value={allocationPercentage}
-                  onChange={(e) => setAllocationPercentage(Number(e.target.value))}
-                />
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label>Allocation %</Label>
+                  <Input 
+                    type="number"
+                    min={0}
+                    max={100}
+                    value={allocationPercentage}
+                    onChange={(e) => setAllocationPercentage(Number(e.target.value))}
+                  />
+                </div>
               </div>
             </div>
             <DialogFooter>
               <Button variant="outline" onClick={() => setResourceModalOpen(false)}>Cancel</Button>
               <Button 
-                disabled={!selectedUserId || !selectedProjectId}
+                disabled={selectedUserIds.length === 0 || !selectedProjectId}
                 onClick={() => {
-                  createAssignment.mutate({
-                    user_id: selectedUserId,
-                    project_id: selectedProjectId,
-                    allocation_percentage: allocationPercentage,
-                    start_date: new Date().toISOString().split('T')[0],
-                    status: 'active',
-                    work_item_type: 'project',
+                  selectedUserIds.forEach(userId => {
+                    createAssignment.mutate({
+                      user_id: userId,
+                      project_id: selectedProjectId,
+                      allocation_percentage: allocationPercentage,
+                      start_date: new Date().toISOString().split('T')[0],
+                      status: 'active',
+                      work_item_type: 'project',
+                    });
                   });
                   setResourceModalOpen(false);
-                  setSelectedUserId('');
+                  setSelectedUserIds([]);
                   setSelectedProjectId('');
                   setAllocationPercentage(100);
                 }} 
                 className="bg-[#2563eb] hover:bg-[#1d4ed8]"
               >
-                Add to Capacity Planner
+                Add {selectedUserIds.length > 0 ? `${selectedUserIds.length} ` : ''}to Capacity Planner
               </Button>
             </DialogFooter>
           </DialogContent>
