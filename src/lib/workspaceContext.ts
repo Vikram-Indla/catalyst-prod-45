@@ -20,8 +20,8 @@ export interface WorkspaceContext {
  * This is the SINGLE SOURCE OF TRUTH for workspace type
  */
 export function deriveWorkspaceType(pathname: string): WorkspaceType {
-  // Home
-  if (pathname === '/' || pathname === '/home') {
+  // Home - includes /for-you which is the main home route
+  if (pathname === '/' || pathname === '/home' || pathname === '/for-you') {
     return 'home';
   }
   
