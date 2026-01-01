@@ -15,6 +15,7 @@ import {
   Pencil, Trash2, Cloud, GitCompare
 } from 'lucide-react';
 import { useCapacityData, useAssignments, useAiRecommendations, useCapacityScenarios, useCapacityDepartments, useResourceManagement, useResourceAssignments, exportCapacityToPdf } from '@/modules/capacity-planner';
+import { useActiveCapacityAssignmentTypes } from '@/hooks/useCapacityAssignmentTypes';
 import type { ViewType, ResourceMetric, CapacityProject, AiRecommendation } from '@/modules/capacity-planner';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
@@ -75,11 +76,12 @@ export default function CapacityPlannerPage() {
   const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
   const [selectedDepartmentId, setSelectedDepartmentId] = useState<string>('');
   const [selectedProjectId, setSelectedProjectId] = useState<string>('');
-  const [selectedAssignment, setSelectedAssignment] = useState<string>('ticket');
+  const [selectedAssignment, setSelectedAssignment] = useState<string>('');
   const [allocationPercentage, setAllocationPercentage] = useState<number>(100);
 
-  // Fetch departments for the modal
+  // Fetch departments and assignment types for the modal
   const { departments } = useCapacityDepartments();
+  const { data: assignmentTypes = [] } = useActiveCapacityAssignmentTypes();
 
   // Get users already assigned in capacity planner
   const assignedUserIds = useMemo(() => {
@@ -360,7 +362,7 @@ export default function CapacityPlannerPage() {
             setSelectedUserIds([]);
             setSelectedDepartmentId('');
             setSelectedProjectId('');
-            setSelectedAssignment('ticket');
+            setSelectedAssignment('');
             setAllocationPercentage(100);
           }
         }}>
@@ -443,9 +445,11 @@ export default function CapacityPlannerPage() {
                       <SelectValue placeholder="Select assignment..." />
                     </SelectTrigger>
                     <SelectContent className="bg-card border border-border shadow-lg z-50">
-                      <SelectItem value="ticket">Ticket</SelectItem>
-                      <SelectItem value="task">Task</SelectItem>
-                      <SelectItem value="leave">Leave</SelectItem>
+                      {assignmentTypes.map((type) => (
+                        <SelectItem key={type.id} value={type.id}>
+                          {type.name}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </div>

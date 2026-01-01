@@ -123,6 +123,7 @@ import ThemeGroups from "./pages/admin/ThemeGroups";
 import Programs from "./pages/admin/Programs";
 import Departments from "./pages/admin/Departments";
 const CapacityDepartmentsPage = lazy(() => import("./pages/admin/CapacityDepartments"));
+const CapacityAssignmentTypesPage = lazy(() => import("./pages/admin/CapacityAssignmentTypes"));
 const ResourceAssignmentsPage = lazy(() => import("./pages/admin/ResourceAssignments"));
 import BusinessOwnersAdmin from "./pages/admin/BusinessOwners";
 import BusinessProcesses from "./pages/admin/BusinessProcesses";
@@ -749,6 +750,7 @@ const App = () => (
                 <Route path="portfolios" element={<Portfolios />} />
                 <Route path="departments" element={<Departments />} />
                 <Route path="capacity-departments" element={<Suspense fallback={<div>Loading...</div>}><CapacityDepartmentsPage /></Suspense>} />
+                <Route path="assignment-types" element={<Suspense fallback={<div>Loading...</div>}><CapacityAssignmentTypesPage /></Suspense>} />
                 <Route path="resource-assignments" element={<Suspense fallback={<div>Loading...</div>}><ResourceAssignmentsPage /></Suspense>} />
                 <Route path="business-owners" element={<BusinessOwnersAdmin />} />
                 <Route path="business-processes" element={<BusinessProcesses />} />
