@@ -14,7 +14,7 @@ import {
   Users, CheckCircle2, BarChart3, AlertTriangle, TrendingUp, Download, Plus, 
   Search, LayoutGrid, Table2, CalendarDays, GanttChart, FileStack, Bot,
   ChevronLeft, ChevronRight, ChevronUp, ChevronDown, Clock, Eye, Copy, Check, RotateCcw, Play,
-  Pencil, Trash2, Cloud, Settings2, ArrowLeftRight, Building2
+  Pencil, Trash2, Cloud, Settings2, ArrowLeftRight, Building2, X
 } from 'lucide-react';
 import { useCapacityData, useAssignments, useAiRecommendations, useCapacityDepartments, useResourceManagement, useResourceAssignments, useResourceAllocations, exportCapacityToPdf } from '@/modules/capacity-planner';
 
@@ -100,6 +100,7 @@ export default function CapacityPlannerPage() {
   const [bulkEditOpen, setBulkEditOpen] = useState(false);
   const [resourcesToBulkEdit, setResourcesToBulkEdit] = useState<ResourceMetric[]>([]);
   const [assignModeOpen, setAssignModeOpen] = useState(false);
+  const [presentationMode, setPresentationMode] = useState(false);
 
   // Add resource form state
   const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
@@ -325,6 +326,7 @@ export default function CapacityPlannerPage() {
           onAddResource={() => setResourceModalOpen(true)}
           onAssignMode={() => setAssignModeOpen(true)}
           onExport={handleExport}
+          onPresentationMode={() => setPresentationMode(true)}
           onFilterChange={setActiveFilter}
           onDepartmentFilterChange={setDepartmentFilter}
         />
@@ -731,6 +733,68 @@ export default function CapacityPlannerPage() {
             onDepartmentFilterChange={(v: string) => setDepartmentFilter(v as 'all' | 'delivery' | 'product' | 'support')}
             uniqueDepartments={uniqueDepartments}
           />
+        )}
+
+        {/* Presentation Mode Fullscreen Overlay */}
+        {presentationMode && (
+          <div className="fixed inset-0 z-50 bg-white">
+            {/* Exit Button */}
+            <button
+              onClick={() => setPresentationMode(false)}
+              className="absolute top-4 right-4 z-50 flex items-center gap-2 px-4 py-2 bg-slate-900 text-white rounded-lg hover:bg-slate-800 transition-colors shadow-lg"
+            >
+              <X className="h-4 w-4" />
+              Exit Presentation
+            </button>
+
+            {/* Header with minimal info */}
+            <div className="px-8 py-6 border-b border-slate-200">
+              <h1 className="text-2xl font-bold text-slate-900">Capacity Overview</h1>
+              <p className="text-sm text-slate-500 mt-1">
+                {departmentFilter === 'all' ? 'All Departments' : `${departmentFilter.charAt(0).toUpperCase() + departmentFilter.slice(1)} Department`}
+              </p>
+            </div>
+
+            {/* Full Content Area */}
+            <div className="h-[calc(100vh-100px)] overflow-auto px-8 py-6 bg-[#fafafa]">
+              {currentView === 'cards' && (
+                <CardsView 
+                  resources={filteredResources} 
+                  groupedByAssignment={groupedByAssignment}
+                  groupedByDepartment={groupedByDepartment}
+                  groupBy={groupBy}
+                  isCollapsed={isCollapsed}
+                  compactMode={compactMode}
+                  onResourceClick={() => {}}
+                  onEditResource={() => {}}
+                />
+              )}
+              {currentView === 'table' && (
+                <TableView 
+                  resources={filteredResources} 
+                  projects={projects}
+                  groupBy={groupBy}
+                  groupedByAssignment={groupedByAssignment}
+                  groupedByDepartment={groupedByDepartment}
+                  onResourceClick={() => {}}
+                  onEditResource={() => {}}
+                  onDeleteResource={() => {}}
+                  onBulkDelete={() => {}}
+                  onBulkEdit={() => {}}
+                />
+              )}
+              {currentView === 'timeline' && (
+                <TimelineView 
+                  resources={filteredResources} 
+                  period={period}
+                  groupBy={groupBy}
+                  groupedByAssignment={groupedByAssignment}
+                  groupedByDepartment={groupedByDepartment}
+                  onEditResource={() => {}}
+                />
+              )}
+            </div>
+          </div>
         )}
       </div>
     </PageChrome>
