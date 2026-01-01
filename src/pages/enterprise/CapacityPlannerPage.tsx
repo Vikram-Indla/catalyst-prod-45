@@ -857,6 +857,7 @@ function CardsView({ resources, groupedByAssignment, groupBy, onResourceClick, o
                 <ResourceCard 
                   key={resource.id} 
                   resource={resource} 
+                  groupBy={groupBy}
                   on360Click={() => onResourceClick(resource)}
                   onCardClick={() => onEditResource(resource.id)}
                 />
@@ -874,6 +875,7 @@ function CardsView({ resources, groupedByAssignment, groupBy, onResourceClick, o
         <ResourceCard 
           key={resource.id} 
           resource={resource} 
+          groupBy={groupBy}
           on360Click={() => onResourceClick(resource)}
           onCardClick={() => onEditResource(resource.id)}
         />
@@ -883,8 +885,9 @@ function CardsView({ resources, groupedByAssignment, groupBy, onResourceClick, o
 }
 
 // Resource Card - V5 Design with Button360
-function ResourceCard({ resource, on360Click, onCardClick }: { 
+function ResourceCard({ resource, groupBy, on360Click, onCardClick }: { 
   resource: ResourceMetric; 
+  groupBy: GroupByType;
   on360Click: () => void;
   onCardClick: () => void;
 }) {
@@ -892,6 +895,13 @@ function ResourceCard({ resource, on360Click, onCardClick }: {
   const deptColor = departmentColors[dept] || departmentColors.default;
   const initials = resource.name?.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'NA';
   const assignmentName = resource.assignmentName || 'Unassigned';
+
+  // Determine which tags to show based on groupBy:
+  // - assignment: show department (assignment already in group header)
+  // - department: show assignment (department already in group header)
+  // - none: show both
+  const showAssignment = groupBy !== 'assignment';
+  const showDepartment = groupBy !== 'department';
 
   return (
     <div 
@@ -912,16 +922,26 @@ function ResourceCard({ resource, on360Click, onCardClick }: {
         <div className="flex-1 min-w-0">
           <p className="text-sm font-semibold text-foreground truncate">{resource.name}</p>
           <p className="text-xs text-muted-foreground truncate">{resource.role}</p>
-          {/* Assignment Tag */}
+          {/* Tags based on groupBy */}
           <div className="flex gap-1.5 mt-1.5 flex-wrap">
-            <span className={cn(
-              "text-[10px] font-semibold px-2 py-0.5 rounded uppercase",
-              assignmentName === 'Unassigned' 
-                ? "bg-muted text-muted-foreground" 
-                : "bg-[#4d8b4d] text-white"
-            )}>
-              {assignmentName}
-            </span>
+            {showDepartment && (
+              <span className={cn(
+                "text-[10px] font-semibold px-2 py-0.5 rounded uppercase",
+                deptColor.badge
+              )}>
+                {dept}
+              </span>
+            )}
+            {showAssignment && (
+              <span className={cn(
+                "text-[10px] font-semibold px-2 py-0.5 rounded uppercase",
+                assignmentName === 'Unassigned' 
+                  ? "bg-muted text-muted-foreground" 
+                  : "bg-[#4d8b4d] text-white"
+              )}>
+                {assignmentName}
+              </span>
+            )}
           </div>
         </div>
         
