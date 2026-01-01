@@ -1976,7 +1976,7 @@ function ResourceDrawerContent({ resource, projects }: { resource: ResourceMetri
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Edit Resource Form with Real-time Database Integration
+// Edit Resource Form with Real-time Auto-Save
 // ─────────────────────────────────────────────────────────────────────────────
 function EditResourceForm({ 
   resource,
@@ -2000,33 +2000,78 @@ function EditResourceForm({
   const [projectId, setProjectId] = useState(resource.assignments?.[0]?.project_id || '');
   const [allocation, setAllocation] = useState(resource.allocation || 0);
   const [isSaving, setIsSaving] = useState(false);
+  const [lastSaved, setLastSaved] = useState<Date | null>(null);
 
-  const handleSave = async () => {
+  // Auto-save function for profile fields
+  const saveProfileField = async (field: string, value: string | null) => {
     setIsSaving(true);
     try {
-      // Update resource profile and assignment
-      await updateResource.mutateAsync({
-        id: resource.id,
-        full_name: name,
-        role,
-        department_id: departmentId || null,
-        assignment_id: assignmentId || null,
-      });
+      const updatePayload: any = { id: resource.id };
       
-      // Update allocation if project selected
-      if (projectId && allocation > 0) {
-        await updateResourceAllocation.mutateAsync({
-          resourceId: resource.id,
-          projectId,
-          allocationPercentage: allocation,
-        });
-      }
+      if (field === 'role') updatePayload.role = value;
+      if (field === 'department_id') updatePayload.department_id = value || null;
+      if (field === 'assignment_id') updatePayload.assignment_id = value || null;
+      if (field === 'full_name') updatePayload.full_name = value;
       
-      onSave();
+      await updateResource.mutateAsync(updatePayload);
+      setLastSaved(new Date());
     } catch (error) {
-      console.error('Failed to save resource:', error);
+      console.error('Failed to save field:', error);
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  // Auto-save function for allocation
+  const saveAllocation = async (newProjectId: string, newAllocation: number) => {
+    if (!newProjectId || newAllocation <= 0) return;
+    
+    setIsSaving(true);
+    try {
+      await updateResourceAllocation.mutateAsync({
+        resourceId: resource.id,
+        projectId: newProjectId,
+        allocationPercentage: newAllocation,
+      });
+      setLastSaved(new Date());
+    } catch (error) {
+      console.error('Failed to save allocation:', error);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  // Handler for role change
+  const handleRoleChange = (value: string) => {
+    setRole(value);
+    saveProfileField('role', value);
+  };
+
+  // Handler for department change
+  const handleDepartmentChange = (value: string) => {
+    setDepartmentId(value);
+    saveProfileField('department_id', value);
+  };
+
+  // Handler for assignment change
+  const handleAssignmentChange = (value: string) => {
+    setAssignmentId(value);
+    saveProfileField('assignment_id', value);
+  };
+
+  // Handler for project change
+  const handleProjectChange = (value: string) => {
+    setProjectId(value);
+    if (allocation > 0) {
+      saveAllocation(value, allocation);
+    }
+  };
+
+  // Handler for allocation change
+  const handleAllocationChange = (value: number) => {
+    setAllocation(value);
+    if (projectId) {
+      saveAllocation(projectId, value);
     }
   };
 
@@ -2038,13 +2083,14 @@ function EditResourceForm({
           <Input 
             value={name}
             onChange={(e) => setName(e.target.value)}
+            onBlur={() => saveProfileField('full_name', name)}
             placeholder="Enter name"
           />
         </div>
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label>Role</Label>
-            <Select value={role} onValueChange={setRole}>
+            <Select value={role} onValueChange={handleRoleChange}>
               <SelectTrigger><SelectValue /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="Frontend Developer">Frontend Developer</SelectItem>
@@ -2061,7 +2107,7 @@ function EditResourceForm({
           </div>
           <div className="space-y-2">
             <Label>Department</Label>
-            <Select value={departmentId} onValueChange={setDepartmentId}>
+            <Select value={departmentId} onValueChange={handleDepartmentChange}>
               <SelectTrigger><SelectValue placeholder="Select department..." /></SelectTrigger>
               <SelectContent>
                 {departments.map(dept => (
@@ -2074,7 +2120,7 @@ function EditResourceForm({
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label>Assignment</Label>
-            <Select value={assignmentId} onValueChange={setAssignmentId}>
+            <Select value={assignmentId} onValueChange={handleAssignmentChange}>
               <SelectTrigger><SelectValue placeholder="Select assignment..." /></SelectTrigger>
               <SelectContent>
                 {resourceAssignments.map(assignment => (
@@ -2092,12 +2138,13 @@ function EditResourceForm({
               step={5}
               value={allocation}
               onChange={(e) => setAllocation(parseInt(e.target.value) || 0)}
+              onBlur={() => handleAllocationChange(allocation)}
             />
           </div>
         </div>
         <div className="space-y-2">
           <Label>Project</Label>
-          <Select value={projectId} onValueChange={setProjectId}>
+          <Select value={projectId} onValueChange={handleProjectChange}>
             <SelectTrigger><SelectValue placeholder="Select project..." /></SelectTrigger>
             <SelectContent>
               {projects.map(proj => (
@@ -2106,16 +2153,26 @@ function EditResourceForm({
             </SelectContent>
           </Select>
         </div>
+        
+        {/* Auto-save indicator */}
+        {(isSaving || lastSaved) && (
+          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+            {isSaving ? (
+              <>
+                <div className="w-2 h-2 rounded-full bg-[#d97706] animate-pulse" />
+                <span>Saving...</span>
+              </>
+            ) : lastSaved ? (
+              <>
+                <CheckCircle2 className="w-3 h-3 text-[#0d9488]" />
+                <span>Saved</span>
+              </>
+            ) : null}
+          </div>
+        )}
       </div>
       <DialogFooter>
-        <Button variant="outline" onClick={onCancel}>Cancel</Button>
-        <Button 
-          onClick={handleSave} 
-          disabled={isSaving}
-          className="bg-[#2563eb] hover:bg-[#1d4ed8]"
-        >
-          {isSaving ? 'Saving...' : 'Save'}
-        </Button>
+        <Button variant="outline" onClick={onCancel}>Close</Button>
       </DialogFooter>
     </>
   );
