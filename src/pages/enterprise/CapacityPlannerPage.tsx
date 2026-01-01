@@ -912,7 +912,16 @@ function TableView({ resources, projects, groupBy, groupedByAssignment, onResour
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const getProjectName = (projectId: string) => projects.find(p => p.id === projectId)?.name || 'Unknown';
 
-  // Define columns for CatalystEnterpriseTable
+  // If the table data changes (e.g., after edits, filtering, or refetch),
+  // drop any selections that no longer exist in the current dataset.
+  useEffect(() => {
+    const validIds = new Set(resources.map((r) => r.id));
+    setSelectedIds((prev) => {
+      const next = prev.filter((id) => validIds.has(id));
+      return next.length === prev.length ? prev : next;
+    });
+  }, [resources]);
+
   const columns: CatalystColumn<ResourceMetric>[] = useMemo(() => [
     {
       id: 'name',
