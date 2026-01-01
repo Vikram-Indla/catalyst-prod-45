@@ -417,6 +417,7 @@ export default {
         "slide-up": "slide-up 0.3s ease-out",
         "orbit": "orbit 1.5s linear infinite",
         "pulse-ring": "pulse-ring 2s ease-out infinite",
+        "spin-slow": "spin 8s linear infinite",
       },
     },
   },

@@ -33,14 +33,18 @@ type PeriodType = 'weekly' | 'monthly' | 'quarterly';
 type GroupByType = 'none' | 'assignment' | 'department';
 
 import { 
-  getInitials, 
+  CATALYST,
+  getAssignmentColor,
+  getAllocationColors,
   getAllocationBarColor, 
   getTimelineCellColors, 
   getUtilizationColor,
-  AVATAR_COLOR, 
-  DEPARTMENT_BADGE,
-  BRAND_COLORS 
-} from '@/lib/capacity/utils';
+  getInitials,
+} from '@/lib/catalyst-colors';
+import { CapacityHeader } from '@/components/capacity/CapacityHeader';
+import { AssignmentGroupHeader } from '@/components/capacity/AssignmentGroupHeader';
+import { ResourceCardV2 } from '@/components/capacity/ResourceCardV2';
+import { TimelineCellV2 } from '@/components/capacity/TimelineCellV2';
 
 // Department colors - Catalyst V5 compliant
 const departmentColors: Record<string, { bg: string; text: string; badge: string }> = {
@@ -275,212 +279,28 @@ export default function CapacityPlannerPage() {
   return (
     <PageChrome>
       <div className="flex flex-col h-full bg-[hsl(var(--background))] relative">
-        {/* Header Row - Spec Compliant Toolbar */}
-        <div className="bg-white border-b border-[#e5e5e5]">
-          {/* Breadcrumb */}
-          <div className="px-6 pt-4 pb-2">
-            <div className="flex items-center gap-2 text-sm">
-              <span className="text-[#737373]">ENTERPRISE</span>
-              <span className="text-[#737373]">/</span>
-              <span className="font-semibold text-[#0a0a0a]">Capacity</span>
-            </div>
-          </div>
-
-          {/* Row 1: Search + Filters + Actions */}
-          <div className="flex items-center justify-between px-6 py-3 flex-wrap gap-3">
-            <div className="flex items-center gap-3">
-              {/* Search */}
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#9ca3af]" />
-                <Input 
-                  placeholder="Search resources..." 
-                  className="pl-9 w-48 h-10 border-[#e5e5e5] rounded-lg bg-white"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                />
-              </div>
-              
-              {/* Department Filter */}
-              <Select value={departmentFilter} onValueChange={setDepartmentFilter}>
-                <SelectTrigger className="h-10 gap-2 border-[#e5e5e5] bg-white rounded-lg">
-                  <Building2 className="h-4 w-4" />
-                  <SelectValue placeholder="All Departments" />
-                </SelectTrigger>
-                <SelectContent className="bg-white border border-[#e5e5e5] shadow-lg z-50">
-                  <SelectItem value="all">All Departments</SelectItem>
-                  {uniqueDepartments.map((dept) => (
-                    <SelectItem key={dept} value={dept}>{dept}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-
-              {/* Division Filter */}
-              <Select defaultValue="all">
-                <SelectTrigger className="h-10 gap-2 border-[#e5e5e5] bg-white rounded-lg w-28">
-                  <FileStack className="h-4 w-4" />
-                  <SelectValue placeholder="All..." />
-                </SelectTrigger>
-                <SelectContent className="bg-white border border-[#e5e5e5] shadow-lg z-50">
-                  <SelectItem value="all">All Divisions</SelectItem>
-                  <SelectItem value="delivery">Delivery</SelectItem>
-                  <SelectItem value="operations">Operations</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            
-            {/* Actions */}
-            <div className="flex items-center gap-2">
-              <Button variant="ghost" size="icon" onClick={handleExport} className="h-10 w-10 text-[#525252] hover:bg-[#f5f5f4]">
-                <Download className="h-5 w-5" />
-              </Button>
-              <Button variant="ghost" size="icon" className="h-10 w-10 text-[#525252] hover:bg-[#f5f5f4]">
-                <Settings2 className="h-5 w-5" />
-              </Button>
-              <Button 
-                onClick={() => setResourceModalOpen(true)} 
-                className="gap-2 bg-[#2563eb] hover:bg-[#1d4ed8] h-10 px-4 rounded-lg text-white"
-              >
-                <Plus className="h-4 w-4" />
-                Add Resource
-              </Button>
-            </div>
-          </div>
-
-          {/* Row 2: Summary Stats - Pill Style */}
-          <div className="flex items-center justify-between px-6 py-3 flex-wrap gap-3">
-            <div className="flex items-center gap-2">
-              {/* Total */}
-              <div className="flex items-center gap-2 px-3 py-2 border border-[#e5e5e5] rounded-full bg-white">
-                <Users className="w-4 h-4 text-[#525252]" />
-                <span className="font-semibold text-[#0a0a0a]">{metrics.summary.total}</span>
-                <span className="text-sm text-[#737373]">Total</span>
-              </div>
-
-              {/* Available */}
-              <div className="flex items-center gap-2 px-3 py-2 border border-[#e5e5e5] rounded-full bg-white">
-                <div className="w-5 h-5 rounded-full bg-[#0d9488] flex items-center justify-center">
-                  <Check className="w-3 h-3 text-white" />
-                </div>
-                <span className="font-semibold text-[#0a0a0a]">{metrics.summary.available + metrics.summary.healthy}</span>
-                <span className="text-sm text-[#737373]">Available</span>
-              </div>
-
-              {/* At Capacity */}
-              <div className="flex items-center gap-2 px-3 py-2 border border-[#e5e5e5] rounded-full bg-white">
-                <div className="w-5 h-5 rounded-full bg-[#f97316] flex items-center justify-center">
-                  <BarChart3 className="w-3 h-3 text-white" />
-                </div>
-                <span className="font-semibold text-[#0a0a0a]">{metrics.summary.atCapacity}</span>
-                <span className="text-sm text-[#737373]">At Capacity</span>
-              </div>
-
-              {/* Over */}
-              <div className="flex items-center gap-2 px-3 py-2 border border-[#e5e5e5] rounded-full bg-white">
-                <div className="w-5 h-5 rounded-full bg-[#9ca3af] flex items-center justify-center">
-                  <Clock className="w-3 h-3 text-white" />
-                </div>
-                <span className="font-semibold text-[#0a0a0a]">{metrics.summary.overAllocated}</span>
-                <span className="text-sm text-[#737373]">Over</span>
-              </div>
-            </div>
-
-            {/* Utilization Bar */}
-            <div className="flex items-center gap-3 px-4 py-2 border border-[#e5e5e5] rounded-lg bg-white">
-              <span className="text-sm font-medium text-[#737373]">UTILIZATION</span>
-              <div className="w-32 h-2 bg-[#e5e5e5] rounded-full overflow-hidden">
-                <div
-                  className="h-full rounded-full transition-all"
-                  style={{ 
-                    width: `${Math.min(metrics.summary.avgUtilization, 100)}%`,
-                    backgroundColor: getUtilizationColor(metrics.summary.avgUtilization)
-                  }}
-                />
-              </div>
-              <span 
-                className="font-bold"
-                style={{ color: getUtilizationColor(metrics.summary.avgUtilization) }}
-              >
-                {metrics.summary.avgUtilization}%
-              </span>
-            </div>
-          </div>
-
-          {/* Row 3: View Tabs + Controls */}
-          <div className="flex items-center justify-between px-6 py-3 border-t border-[#f0f0f0] flex-wrap gap-3">
-            <div className="flex items-center gap-4">
-              {/* View Tabs */}
-              <div className="flex items-center gap-1 bg-[#f5f5f4] rounded-lg p-1">
-                <ViewTabSpec 
-                  icon={LayoutGrid} 
-                  label="Cards" 
-                  active={currentView === 'cards'} 
-                  onClick={() => setCurrentView('cards')} 
-                />
-                <ViewTabSpec 
-                  icon={Table2} 
-                  label="Table" 
-                  active={currentView === 'table'} 
-                  onClick={() => setCurrentView('table')} 
-                />
-                <ViewTabSpec 
-                  icon={CalendarDays} 
-                  label="Timeline" 
-                  active={currentView === 'timeline'} 
-                  onClick={() => setCurrentView('timeline')} 
-                />
-              </div>
-
-              {/* Period Toggle - Only show in Timeline view */}
-              {currentView === 'timeline' && (
-                <div className="flex items-center gap-1 bg-[#f5f5f4] rounded-lg p-1">
-                  {(['weekly', 'monthly', 'quarterly'] as PeriodType[]).map((p) => (
-                    <button
-                      key={p}
-                      onClick={() => setPeriod(p)}
-                      className={cn(
-                        'px-4 py-2 rounded-md text-sm font-medium transition-all capitalize',
-                        period === p
-                          ? 'bg-[#0a0a0a] text-white'
-                          : 'text-[#737373] hover:text-[#525252]'
-                      )}
-                    >
-                      {p}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-            
-            {/* Right Controls */}
-            <div className="flex items-center gap-2">
-              {/* Group By */}
-              <Select value={groupBy} onValueChange={(v) => setGroupBy(v as GroupByType)}>
-                <SelectTrigger className="gap-2 border-[#e5e5e5] bg-white rounded-lg h-10">
-                  <FileStack className="h-4 w-4" />
-                  <SelectValue placeholder="Group by..." />
-                </SelectTrigger>
-                <SelectContent className="bg-white border border-[#e5e5e5] shadow-lg z-50">
-                  <SelectItem value="none">No Grouping</SelectItem>
-                  <SelectItem value="assignment">Group by Assignment</SelectItem>
-                  <SelectItem value="department">Group by Department</SelectItem>
-                </SelectContent>
-              </Select>
-              
-              {/* Assign Button */}
-              <Button
-                variant="outline"
-                onClick={() => setAssignModeOpen(!assignModeOpen)}
-                className={cn(
-                  'gap-2 border-[#e5e5e5] h-10',
-                  assignModeOpen && 'bg-[#2563eb] border-[#2563eb] text-white hover:bg-[#1d4ed8]'
-                )}
-              >
-                <Users className="h-4 w-4" />
-                Assign
-              </Button>
-            </div>
-          </div>
-        </div>
+        {/* Header - 2 ROWS ONLY using new CapacityHeader component */}
+        <CapacityHeader
+          summary={{
+            total: metrics.summary.total,
+            available: metrics.summary.available + metrics.summary.healthy,
+            atCapacity: metrics.summary.atCapacity,
+            over: metrics.summary.overAllocated,
+            utilizationPercentage: metrics.summary.avgUtilization,
+          }}
+          viewMode={currentView as 'cards' | 'table' | 'timeline' | 'scenarios'}
+          groupBy={groupBy}
+          timelinePeriod={period}
+          searchQuery={searchQuery}
+          onViewModeChange={(mode) => setCurrentView(mode as ViewType)}
+          onGroupByChange={(g) => setGroupBy(g as GroupByType)}
+          onTimelinePeriodChange={(p) => setPeriod(p as PeriodType)}
+          onSearchChange={setSearchQuery}
+          onAddResource={() => setResourceModalOpen(true)}
+          onAssign={() => setAssignModeOpen(!assignModeOpen)}
+          onExport={handleExport}
+          assignModeActive={assignModeOpen}
+        />
 
         {/* Main Content - Spec background */}
         <div className="flex-1 overflow-auto px-6 py-6 bg-[#fafafa]">
@@ -1015,33 +835,39 @@ function CardsView({ resources, groupedByAssignment, groupedByDepartment, groupB
   if (groupBy === 'assignment') {
     return (
       <div className="space-y-6">
-        {Object.entries(groupedByAssignment).map(([assignmentName, assignmentResources]) => (
+        {Object.entries(groupedByAssignment).map(([assignmentName, assignmentResources]) => {
+          const availableCount = assignmentResources.filter(r => (r.allocation || 0) < 100).length;
+          const atCapacityCount = assignmentResources.filter(r => (r.allocation || 0) >= 100).length;
+          const avgUtil = assignmentResources.length > 0 
+            ? Math.round(assignmentResources.reduce((sum, r) => sum + (r.allocation || 0), 0) / assignmentResources.length)
+            : 0;
+          return (
           <div key={assignmentName} className="space-y-3">
-            {/* Group Header - Spec Styling */}
-            <div className="flex items-center justify-between px-4 py-3 bg-white border border-[#e5e5e5] rounded-xl cursor-pointer hover:bg-[#fafafa] transition-colors">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-[#2563eb] flex items-center justify-center">
-                  <Users className="w-5 h-5 text-white" />
-                </div>
-                <span className="font-semibold text-[#0a0a0a]">{assignmentName}</span>
-              </div>
-              <span className="text-sm text-[#737373]">{assignmentResources.length} resources</span>
-            </div>
+            {/* Group Header with capacity bar */}
+            <AssignmentGroupHeader
+              assignmentName={assignmentName}
+              resourceCount={assignmentResources.length}
+              availableCount={availableCount}
+              atCapacityCount={atCapacityCount}
+              averageUtilization={avgUtil}
+            />
             
             {/* Cards Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 pl-4">
               {assignmentResources.map((resource) => (
-                <ResourceCard 
+                <ResourceCardV2 
                   key={resource.id} 
-                  resource={resource} 
-                  groupBy={groupBy}
-                  on360Click={() => onResourceClick(resource)}
-                  onCardClick={() => onEditResource(resource.id)}
+                  name={resource.name}
+                  role={resource.role || 'Team Member'}
+                  assignmentName={resource.assignmentName}
+                  totalAllocation={resource.allocation || 0}
+                  onOpen360={() => onResourceClick(resource)}
+                  onEdit={() => onEditResource(resource.id)}
                 />
               ))}
             </div>
           </div>
-        ))}
+        )})}
       </div>
     );
   }
@@ -1086,12 +912,14 @@ function CardsView({ resources, groupedByAssignment, groupedByDepartment, groupB
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
       {resources.map((resource) => (
-        <ResourceCard 
+        <ResourceCardV2 
           key={resource.id} 
-          resource={resource} 
-          groupBy={groupBy}
-          on360Click={() => onResourceClick(resource)}
-          onCardClick={() => onEditResource(resource.id)}
+          name={resource.name}
+          role={resource.role || 'Team Member'}
+          assignmentName={resource.assignmentName}
+          totalAllocation={resource.allocation || 0}
+          onOpen360={() => onResourceClick(resource)}
+          onEdit={() => onEditResource(resource.id)}
         />
       ))}
     </div>
@@ -1114,14 +942,14 @@ function ResourceCard({ resource, groupBy, on360Click, onCardClick }: {
       className="flex items-center gap-3 p-4 bg-white border border-[#e5e5e5] rounded-xl cursor-pointer hover:border-[#d4d4d4] hover:shadow-sm transition-all"
       onClick={onCardClick}
     >
-      {/* Avatar - Always teal per spec */}
+      {/* Avatar - Assignment-based color */}
       <div
         onClick={(e) => {
           e.stopPropagation();
           on360Click();
         }}
         className="w-12 h-12 rounded-full flex items-center justify-center text-sm font-semibold text-white cursor-pointer hover:opacity-90 transition-opacity shrink-0"
-        style={{ backgroundColor: AVATAR_COLOR }}
+        style={{ backgroundColor: getAssignmentColor(resource.assignmentName) }}
       >
         {initials}
       </div>
@@ -1185,11 +1013,12 @@ function TableView({ resources, projects, groupBy, groupedByAssignment, groupedB
       sortable: true,
       render: (value: string, row: ResourceMetric) => {
         const initials = row.name?.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'NA';
+        const avatarColor = getAssignmentColor(row.assignmentName);
         return (
           <div className="flex items-center gap-3">
             <div 
               className="w-10 h-10 rounded-full flex items-center justify-center text-xs font-semibold text-white shrink-0"
-              style={{ backgroundColor: AVATAR_COLOR }}
+              style={{ backgroundColor: avatarColor }}
             >
               {initials}
             </div>
@@ -1226,7 +1055,7 @@ function TableView({ resources, projects, groupBy, groupedByAssignment, groupedB
         return (
           <span
             className="px-2.5 py-1 rounded text-xs font-semibold uppercase"
-            style={{ backgroundColor: DEPARTMENT_BADGE.bg, color: DEPARTMENT_BADGE.text }}
+            style={{ backgroundColor: CATALYST.blue.bg, color: CATALYST.blue.primary }}
           >
             {dept}
           </span>
@@ -1275,13 +1104,14 @@ function TableView({ resources, projects, groupBy, groupedByAssignment, groupedB
       sortable: false,
       render: (_: any, row: ResourceMetric) => {
         const initials = row.name?.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'NA';
+        const avatarColor = getAssignmentColor(row.assignmentName);
         return (
         <div className="flex items-center gap-1">
           {/* 360° Avatar Button */}
           <button
             onClick={(e) => { e.stopPropagation(); onResourceClick(row); }}
             className="w-9 h-9 rounded-full flex items-center justify-center text-xs font-semibold text-white hover:opacity-90 transition-opacity"
-            style={{ backgroundColor: AVATAR_COLOR }}
+            style={{ backgroundColor: avatarColor }}
             title="View 360°"
           >
             {initials}
