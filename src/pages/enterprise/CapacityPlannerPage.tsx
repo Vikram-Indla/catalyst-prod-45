@@ -73,6 +73,7 @@ export default function CapacityPlannerPage() {
 
   // Add resource form state
   const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
+  const [assignmentType, setAssignmentType] = useState<string>('project');
   const [selectedProjectId, setSelectedProjectId] = useState<string>('');
   const [allocationPercentage, setAllocationPercentage] = useState<number>(100);
 
@@ -353,6 +354,7 @@ export default function CapacityPlannerPage() {
           setResourceModalOpen(open);
           if (!open) {
             setSelectedUserIds([]);
+            setAssignmentType('project');
             setSelectedProjectId('');
             setAllocationPercentage(100);
           }
@@ -381,7 +383,7 @@ export default function CapacityPlannerPage() {
                     </button>
                   )}
                 </div>
-                <ScrollArea className="h-[280px] border border-border rounded-lg">
+                <ScrollArea className="h-[240px] border border-border rounded-lg">
                   {availableUsers.length === 0 ? (
                     <div className="px-4 py-8 text-sm text-muted-foreground text-center">
                       All users are already assigned to the Capacity Planner
@@ -426,23 +428,46 @@ export default function CapacityPlannerPage() {
                   )}
                 </ScrollArea>
               </div>
+              
+              {/* Assignment Type */}
+              <div className="space-y-2">
+                <Label>Assignment Type</Label>
+                <Select value={assignmentType} onValueChange={(v) => {
+                  setAssignmentType(v);
+                  if (v !== 'project') setSelectedProjectId('');
+                }}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="project">Project Assignment</SelectItem>
+                    <SelectItem value="planned">Planned Capacity</SelectItem>
+                    <SelectItem value="support">Support / BAU</SelectItem>
+                    <SelectItem value="bench">Bench / Available</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
               <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label>Assign to Project</Label>
-                  <Select value={selectedProjectId} onValueChange={setSelectedProjectId}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select a project..." />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {projects.map((project) => (
-                        <SelectItem key={project.id} value={project.id}>
-                          {project.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
+                {/* Project dropdown - only shown for project assignments */}
+                {assignmentType === 'project' && (
+                  <div className="space-y-2">
+                    <Label>Assign to Project</Label>
+                    <Select value={selectedProjectId} onValueChange={setSelectedProjectId}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a project..." />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {projects.map((project) => (
+                          <SelectItem key={project.id} value={project.id}>
+                            {project.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
+                <div className={cn("space-y-2", assignmentType !== 'project' && "col-span-2")}>
                   <Label>Allocation %</Label>
                   <Input 
                     type="number"
@@ -457,20 +482,26 @@ export default function CapacityPlannerPage() {
             <DialogFooter>
               <Button variant="outline" onClick={() => setResourceModalOpen(false)}>Cancel</Button>
               <Button 
-                disabled={selectedUserIds.length === 0 || !selectedProjectId}
+                disabled={selectedUserIds.length === 0 || (assignmentType === 'project' && !selectedProjectId)}
                 onClick={() => {
+                  // Use a default/placeholder project for non-project assignments
+                  const projectId = assignmentType === 'project' 
+                    ? selectedProjectId 
+                    : projects[0]?.id || selectedProjectId; // Use first project as fallback
+                  
                   selectedUserIds.forEach(userId => {
                     createAssignment.mutate({
                       user_id: userId,
-                      project_id: selectedProjectId,
+                      project_id: projectId,
                       allocation_percentage: allocationPercentage,
                       start_date: new Date().toISOString().split('T')[0],
                       status: 'active',
-                      work_item_type: 'project',
+                      work_item_type: assignmentType as 'project' | 'epic' | 'feature' | 'story' | 'planned' | 'support' | 'bench',
                     });
                   });
                   setResourceModalOpen(false);
                   setSelectedUserIds([]);
+                  setAssignmentType('project');
                   setSelectedProjectId('');
                   setAllocationPercentage(100);
                 }} 

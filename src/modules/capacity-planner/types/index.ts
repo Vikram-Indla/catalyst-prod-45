@@ -40,7 +40,7 @@ export interface CapacityAssignment {
   start_date: string;
   end_date?: string;
   status: 'active' | 'completed' | 'paused' | 'cancelled';
-  work_item_type: 'project' | 'epic' | 'feature' | 'story';
+  work_item_type: 'project' | 'epic' | 'feature' | 'story' | 'planned' | 'support' | 'bench';
   notes?: string;
   created_at: string;
   updated_at: string;
