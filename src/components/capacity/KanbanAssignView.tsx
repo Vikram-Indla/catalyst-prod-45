@@ -19,12 +19,20 @@ const departmentColors: Record<string, { bg: string; text: string }> = {
   default: { bg: 'bg-muted', text: 'text-muted-foreground' },
 };
 
+// Extended resource type for ghost card support
+type ExtendedResourceMetric = ResourceMetric & { 
+  isGhostCard?: boolean; 
+  availableCapacity?: number;
+};
+
 interface PendingMove {
   resourceId: string;
   resourceName: string;
   fromAssignment: string;
   toAssignment: string;
   currentAllocation: number;
+  isGhostCard?: boolean;
+  availableCapacity?: number;
 }
 
 interface KanbanAssignViewProps {
@@ -46,20 +54,33 @@ export function KanbanAssignView({
   const [allocationValue, setAllocationValue] = useState(100);
   const autoScrollRef = useRef<number | null>(null);
 
+
   // Build columns: all active assignments + Unassigned
   const columns = [
-    { id: 'Unassigned', name: 'Unassigned', resources: [] as ResourceMetric[] },
-    ...assignments.map(a => ({ id: a.name, name: a.name, resources: [] as ResourceMetric[] })),
+    { id: 'Unassigned', name: 'Unassigned', resources: [] as ExtendedResourceMetric[] },
+    ...assignments.map(a => ({ id: a.name, name: a.name, resources: [] as ExtendedResourceMetric[] })),
   ];
 
   // Populate columns with resources
+  // Also add "ghost" cards in Unassigned for resources with remaining capacity
   resources.forEach(r => {
     const assignmentName = r.assignmentName || 'Unassigned';
     const column = columns.find(c => c.name === assignmentName);
+    
     if (column) {
       column.resources.push(r);
     } else {
       columns[0].resources.push(r);
+    }
+    
+    // If resource has an assignment but is not at 100%, add a ghost card to Unassigned
+    const remainingCapacity = 100 - (r.allocation || 0);
+    if (assignmentName !== 'Unassigned' && remainingCapacity > 0) {
+      columns[0].resources.push({
+        ...r,
+        isGhostCard: true,
+        availableCapacity: remainingCapacity,
+      });
     }
   });
 
@@ -140,19 +161,30 @@ export function KanbanAssignView({
     if (!destination) return;
     if (source.droppableId === destination.droppableId && source.index === destination.index) return;
 
+    // Check if this is a ghost card (draggableId ends with "-ghost")
+    const isGhostCard = draggableId.endsWith('-ghost');
+    const actualResourceId = isGhostCard ? draggableId.replace('-ghost', '') : draggableId;
+    
     // Find the resource to get its name and current allocation
-    const resource = resources.find(r => r.id === draggableId);
+    const resource = resources.find(r => r.id === actualResourceId);
     if (!resource) return;
+
+    // For ghost cards, calculate available capacity
+    const availableCapacity = isGhostCard ? 100 - (resource.allocation || 0) : undefined;
 
     // Show allocation dialog
     setPendingMove({
-      resourceId: draggableId,
+      resourceId: actualResourceId,
       resourceName: resource.name,
       fromAssignment: source.droppableId,
       toAssignment: destination.droppableId,
       currentAllocation: resource.allocation,
+      isGhostCard,
+      availableCapacity,
     });
-    setAllocationValue(resource.allocation || 100);
+    
+    // For ghost cards, default to the available capacity; otherwise use current allocation
+    setAllocationValue(isGhostCard ? (availableCapacity || 100) : (resource.allocation || 100));
   };
 
   const confirmMove = () => {
@@ -249,22 +281,28 @@ export function KanbanAssignView({
                           snapshot.isDraggingOver && "bg-[#2563eb]/5"
                         )}
                       >
-                        {column.resources.map((resource, index) => (
-                          <Draggable key={resource.id} draggableId={resource.id} index={index}>
-                            {(draggableProvided, draggableSnapshot) => (
-                              <div
-                                ref={draggableProvided.innerRef}
-                                {...draggableProvided.draggableProps}
-                                {...draggableProvided.dragHandleProps}
-                              >
-                                <CompactResourceCard 
-                                  resource={resource} 
-                                  isDragging={draggableSnapshot.isDragging}
-                                />
-                              </div>
-                            )}
-                          </Draggable>
-                        ))}
+                        {column.resources.map((resource, index) => {
+                          // Use unique key for ghost cards
+                          const cardId = resource.isGhostCard ? `${resource.id}-ghost` : resource.id;
+                          return (
+                            <Draggable key={cardId} draggableId={cardId} index={index}>
+                              {(draggableProvided, draggableSnapshot) => (
+                                <div
+                                  ref={draggableProvided.innerRef}
+                                  {...draggableProvided.draggableProps}
+                                  {...draggableProvided.dragHandleProps}
+                                >
+                                  <CompactResourceCard 
+                                    resource={resource} 
+                                    isDragging={draggableSnapshot.isDragging}
+                                    isGhostCard={resource.isGhostCard}
+                                    availableCapacity={resource.availableCapacity}
+                                  />
+                                </div>
+                              )}
+                            </Draggable>
+                          );
+                        })}
                         {provided.placeholder}
 
                         {/* Empty state */}
@@ -308,15 +346,37 @@ export function KanbanAssignView({
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Percent className="h-5 w-5 text-[#2563eb]" />
-              Set Allocation
+              {pendingMove?.isGhostCard ? 'Assign Available Capacity' : 'Set Allocation'}
             </DialogTitle>
             <DialogDescription>
-              Moving <span className="font-medium text-foreground">{pendingMove?.resourceName}</span> to{' '}
-              <span className="font-medium text-[#2563eb]">{pendingMove?.toAssignment}</span>
+              {pendingMove?.isGhostCard ? (
+                <>
+                  Assigning remaining capacity of <span className="font-medium text-foreground">{pendingMove?.resourceName}</span>{' '}
+                  (<span className="text-[#2563eb]">{pendingMove?.availableCapacity}% available</span>) to{' '}
+                  <span className="font-medium text-[#2563eb]">{pendingMove?.toAssignment}</span>
+                </>
+              ) : (
+                <>
+                  Moving <span className="font-medium text-foreground">{pendingMove?.resourceName}</span> to{' '}
+                  <span className="font-medium text-[#2563eb]">{pendingMove?.toAssignment}</span>
+                </>
+              )}
             </DialogDescription>
           </DialogHeader>
           
           <div className="space-y-6 py-4">
+            {/* Ghost card info banner */}
+            {pendingMove?.isGhostCard && (
+              <div className="bg-[#2563eb]/10 border border-[#2563eb]/20 rounded-lg p-3">
+                <p className="text-sm text-[#2563eb]">
+                  This resource is currently assigned to <span className="font-medium">{pendingMove.fromAssignment}</span> at {pendingMove.currentAllocation}%.
+                </p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Maximum you can assign: {pendingMove.availableCapacity}%
+                </p>
+              </div>
+            )}
+            
             {/* Allocation Slider */}
             <div className="space-y-4">
               <div className="flex items-center justify-between">
@@ -325,9 +385,12 @@ export function KanbanAssignView({
                   <Input
                     type="number"
                     min={0}
-                    max={100}
+                    max={pendingMove?.isGhostCard ? pendingMove.availableCapacity : 100}
                     value={allocationValue}
-                    onChange={(e) => setAllocationValue(Math.min(100, Math.max(0, Number(e.target.value))))}
+                    onChange={(e) => {
+                      const max = pendingMove?.isGhostCard ? (pendingMove.availableCapacity || 100) : 100;
+                      setAllocationValue(Math.min(max, Math.max(0, Number(e.target.value))));
+                    }}
                     className="w-20 text-center"
                   />
                   <span className="text-sm text-muted-foreground">%</span>
@@ -338,14 +401,17 @@ export function KanbanAssignView({
                 value={[allocationValue]}
                 onValueChange={([value]) => setAllocationValue(value)}
                 min={0}
-                max={100}
+                max={pendingMove?.isGhostCard ? (pendingMove.availableCapacity || 100) : 100}
                 step={5}
                 className="w-full"
               />
               
-              {/* Quick preset buttons */}
+              {/* Quick preset buttons - adjusted for ghost cards */}
               <div className="flex gap-2">
-                {[25, 50, 75, 100].map((preset) => (
+                {(pendingMove?.isGhostCard 
+                  ? [25, 50, pendingMove.availableCapacity || 100].filter((v, i, arr) => arr.indexOf(v) === i).sort((a, b) => a - b)
+                  : [25, 50, 75, 100]
+                ).map((preset) => (
                   <Button
                     key={preset}
                     type="button"
@@ -405,17 +471,26 @@ export function KanbanAssignView({
   );
 }
 
+
 // Compact card for Kanban view - optimized for density
 function CompactResourceCard({ 
   resource, 
-  isDragging 
+  isDragging,
+  isGhostCard,
+  availableCapacity,
 }: { 
   resource: ResourceMetric; 
   isDragging: boolean;
+  isGhostCard?: boolean;
+  availableCapacity?: number;
 }) {
   const dept = resource.department || 'Unassigned';
   const deptColor = departmentColors[dept] || departmentColors.default;
   const initials = resource.name?.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'NA';
+
+  // For ghost cards, show available capacity instead of allocation
+  const displayValue = isGhostCard ? availableCapacity || 0 : resource.allocation;
+  const displayLabel = isGhostCard ? 'Available' : 'Allocated';
 
   return (
     <TooltipProvider>
@@ -426,32 +501,49 @@ function CompactResourceCard({
               "flex items-center gap-2.5 px-3 py-2.5 rounded-lg border transition-all cursor-grab active:cursor-grabbing",
               isDragging 
                 ? "bg-card border-[#2563eb] shadow-lg ring-2 ring-[#2563eb]/20 rotate-1 scale-105" 
-                : "bg-card/50 border-border hover:border-border-strong hover:bg-card"
+                : isGhostCard
+                  ? "bg-muted/30 border-dashed border-muted-foreground/30 hover:border-[#2563eb]/50 hover:bg-muted/50"
+                  : "bg-card/50 border-border hover:border-border-strong hover:bg-card"
             )}
           >
-            {/* Avatar */}
+            {/* Avatar - semi-transparent for ghost cards */}
             <div className={cn(
               'w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold shrink-0',
               deptColor.bg, 
-              deptColor.text
+              deptColor.text,
+              isGhostCard && 'opacity-60'
             )}>
               {initials}
             </div>
 
             {/* Info */}
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-foreground truncate">{resource.name}</p>
-              <p className="text-[11px] text-muted-foreground truncate">{resource.role || 'Team Member'}</p>
+              <p className={cn(
+                "text-sm font-medium truncate",
+                isGhostCard ? "text-muted-foreground" : "text-foreground"
+              )}>
+                {resource.name}
+              </p>
+              <p className="text-[11px] text-muted-foreground truncate">
+                {isGhostCard ? `Assigned: ${resource.assignmentName}` : (resource.role || 'Team Member')}
+              </p>
             </div>
 
-            {/* Allocation indicator */}
-            <div className={cn(
-              "text-xs font-semibold px-1.5 py-0.5 rounded",
-              resource.allocation > 100 ? 'text-[#dc2626] bg-[#dc2626]/10' :
-              resource.allocation > 80 ? 'text-[#d97706] bg-[#d97706]/10' : 
-              'text-[#0d9488] bg-[#0d9488]/10'
-            )}>
-              {resource.allocation}%
+            {/* Allocation/Availability indicator */}
+            <div className="text-right">
+              <div className={cn(
+                "text-xs font-semibold px-1.5 py-0.5 rounded",
+                isGhostCard 
+                  ? 'text-[#2563eb] bg-[#2563eb]/10'
+                  : resource.allocation > 100 ? 'text-[#dc2626] bg-[#dc2626]/10' :
+                    resource.allocation > 80 ? 'text-[#d97706] bg-[#d97706]/10' : 
+                    'text-[#0d9488] bg-[#0d9488]/10'
+              )}>
+                {displayValue}%
+              </div>
+              {isGhostCard && (
+                <p className="text-[9px] text-muted-foreground mt-0.5">{displayLabel}</p>
+              )}
             </div>
           </div>
         </TooltipTrigger>
@@ -460,7 +552,14 @@ function CompactResourceCard({
             <p className="font-medium">{resource.name}</p>
             <p className="text-xs text-muted-foreground">{resource.role || 'Team Member'}</p>
             <p className="text-xs">Department: {resource.department || 'Unassigned'}</p>
-            <p className="text-xs">Allocation: {resource.allocation}%</p>
+            {isGhostCard ? (
+              <>
+                <p className="text-xs text-[#2563eb]">Available: {availableCapacity}%</p>
+                <p className="text-xs text-muted-foreground">Currently at: {resource.assignmentName}</p>
+              </>
+            ) : (
+              <p className="text-xs">Allocation: {resource.allocation}%</p>
+            )}
           </div>
         </TooltipContent>
       </Tooltip>
