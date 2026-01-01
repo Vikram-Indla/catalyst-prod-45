@@ -745,9 +745,9 @@ export default function CapacityPlannerPage() {
             </div>
 
             <div className="absolute top-4 right-6 z-[10000]">
-              <Button size="sm" onClick={() => setPresentationMode(false)} className="gap-2">
-                <X className="h-4 w-4" />
-                Exit Presentation
+              <Button size="sm" variant="outline" onClick={() => setPresentationMode(false)} className="gap-1.5 h-8 px-3">
+                <X className="h-3.5 w-3.5" />
+                Exit
               </Button>
             </div>
 
