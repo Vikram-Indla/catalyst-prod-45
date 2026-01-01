@@ -111,9 +111,15 @@ export function useCapacityData() {
     };
   }, [queryClient]);
 
-  // Calculate utilization metrics
+  // Calculate utilization metrics - only include resources with active assignments
   const calculateMetrics = (): { resources: ResourceMetric[]; summary: CapacitySummary } => {
-    const resourceMetrics: ResourceMetric[] = resources.map((resource) => {
+    // First, get all user IDs that have assignments in this module
+    const assignedUserIds = new Set(assignments.map(a => a.user_id));
+    
+    // Only include resources that have at least one assignment
+    const assignedResources = resources.filter(r => assignedUserIds.has(r.id));
+    
+    const resourceMetrics: ResourceMetric[] = assignedResources.map((resource) => {
       const resourceAssignments = assignments.filter(
         (a) => a.user_id === resource.id && a.status === 'active'
       );
@@ -131,13 +137,13 @@ export function useCapacityData() {
     const healthy = resourceMetrics.filter((r) => r.status === 'healthy').length;
     const atCapacity = resourceMetrics.filter((r) => r.status === 'at_capacity').length;
     const overAllocated = resourceMetrics.filter((r) => r.status === 'over_allocated').length;
-    const avgUtilization = resources.length > 0
-      ? Math.round(resourceMetrics.reduce((sum, r) => sum + Math.min(r.allocation, 100), 0) / resources.length)
+    const avgUtilization = resourceMetrics.length > 0
+      ? Math.round(resourceMetrics.reduce((sum, r) => sum + Math.min(r.allocation, 100), 0) / resourceMetrics.length)
       : 0;
 
     return {
       resources: resourceMetrics,
-      summary: { total: resources.length, available, healthy, atCapacity, overAllocated, avgUtilization },
+      summary: { total: resourceMetrics.length, available, healthy, atCapacity, overAllocated, avgUtilization },
     };
   };
 
