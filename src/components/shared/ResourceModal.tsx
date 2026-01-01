@@ -463,6 +463,9 @@ export function ResourceModal({
                           </div>
                           <div className="flex-1 min-w-0">
                             <p className="text-sm font-medium text-foreground truncate">{availableUser.name}</p>
+                            {availableUser.email && (
+                              <p className="text-[11px] text-muted-foreground/70 truncate">{availableUser.email}</p>
+                            )}
                             <p className="text-xs text-muted-foreground truncate">{roleName}</p>
                           </div>
                           <span className="text-xs text-muted-foreground">{availableUser.department || 'Unassigned'}</span>
