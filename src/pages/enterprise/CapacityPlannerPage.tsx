@@ -17,7 +17,7 @@ import {
   Pencil, Trash2, Cloud, GitCompare
 } from 'lucide-react';
 import { useCapacityData, useAssignments, useAiRecommendations, useCapacityScenarios, useCapacityDepartments, useResourceManagement, useResourceAssignments, exportCapacityToPdf } from '@/modules/capacity-planner';
-import { useActiveCapacityAssignmentTypes } from '@/hooks/useCapacityAssignmentTypes';
+
 import type { ViewType, ResourceMetric, CapacityProject, AiRecommendation } from '@/modules/capacity-planner';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
@@ -83,9 +83,9 @@ export default function CapacityPlannerPage() {
   const [allocationPercentage, setAllocationPercentage] = useState<number>(100);
   const [isAddingResources, setIsAddingResources] = useState(false);
 
-  // Fetch departments and assignment types for the modal
+  // Fetch departments and assignments for the modal
   const { departments } = useCapacityDepartments();
-  const { data: assignmentTypes = [] } = useActiveCapacityAssignmentTypes();
+  const { assignments: resourceAssignments = [] } = useResourceAssignments();
 
   useEffect(() => {
     if (!resourceModalOpen) return;
@@ -95,19 +95,19 @@ export default function CapacityPlannerPage() {
       if (delivery) setSelectedDepartmentId(delivery.id);
     }
 
-    if (!selectedAssignment && assignmentTypes.length > 0) {
+    if (!selectedAssignment && resourceAssignments.length > 0) {
       const normalize = (s: string) => s.toLowerCase().replace(/\s+/g, ' ').trim();
       const target = ['senaei bau', 'senai bau'];
-      const defaultType =
-        assignmentTypes.find((t) => target.includes(normalize(t.name ?? ''))) ??
-        assignmentTypes.find((t) => normalize(t.name ?? '').includes('bau'));
+      const defaultAssignment =
+        resourceAssignments.find((t) => target.includes(normalize(t.name ?? ''))) ??
+        resourceAssignments.find((t) => normalize(t.name ?? '').includes('bau'));
 
-      if (defaultType) setSelectedAssignment(defaultType.id);
+      if (defaultAssignment) setSelectedAssignment(defaultAssignment.id);
     }
   }, [
     resourceModalOpen,
     departments,
-    assignmentTypes,
+    resourceAssignments,
     selectedDepartmentId,
     selectedAssignment,
   ]);
@@ -473,7 +473,7 @@ export default function CapacityPlannerPage() {
                       <SelectValue placeholder="Select assignment..." />
                     </SelectTrigger>
                     <SelectContent className="bg-card border border-border shadow-lg z-50">
-                      {assignmentTypes.map((type) => (
+                      {resourceAssignments.map((type) => (
                         <SelectItem key={type.id} value={type.id}>
                           {type.name}
                         </SelectItem>
@@ -553,14 +553,15 @@ export default function CapacityPlannerPage() {
 
                       const { data: updatedRows, error: updateError } = await supabase
                         .from('resource_inventory')
-                        .update({ assignment_id: selectedAssignment })
-                        .eq('name', name)
+                        .update({ assignment_id: selectedAssignment, updated_at: new Date().toISOString() })
+                        .eq('profile_id', userId)
                         .select('id');
 
                       if (updateError) throw updateError;
 
                       if (!updatedRows || updatedRows.length === 0) {
                         const { error: insertError } = await supabase.from('resource_inventory').insert({
+                          profile_id: userId,
                           name,
                           assignment_id: selectedAssignment,
                           is_active: true,
@@ -2410,7 +2411,7 @@ function EditResourceForm({
 }) {
   const queryClient = useQueryClient();
   const { departments } = useCapacityDepartments();
-  const { data: assignmentTypes = [] } = useActiveCapacityAssignmentTypes();
+  const { assignments: assignmentTypes = [] } = useResourceAssignments();
   const { updateResource } = useResourceManagement();
   
   const [name, setName] = useState(resource.name);
