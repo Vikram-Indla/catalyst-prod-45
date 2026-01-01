@@ -1219,15 +1219,23 @@ function TableView({ resources, projects, groupBy, groupedByAssignment, groupedB
     },
     {
       id: 'assignments',
-      header: 'Assignments',
+      header: 'Assignment',
       accessor: (row: ResourceMetric) => row.assignmentName || 'Unassigned',
       width: '200px',
       sortable: true,
       render: (_: any, row: ResourceMetric) => {
-        // Show the assignment name (project title) - this is what the resource is assigned to
         const assignmentName = row.assignmentName || 'Unassigned';
+        const theme = getAssignmentTheme(assignmentName);
         return (
-          <span className="text-sm text-slate-700 truncate block" title={assignmentName}>
+          <span 
+            className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-semibold truncate max-w-[180px]"
+            style={{ 
+              backgroundColor: `${theme.accent}15`, 
+              color: theme.accent,
+              borderLeft: `3px solid ${theme.accent}`
+            }}
+            title={assignmentName}
+          >
             {assignmentName}
           </span>
         );
