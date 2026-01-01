@@ -317,7 +317,8 @@ export default function CapacityPlannerPage() {
               resources={filteredResources} 
               groupedByAssignment={groupedByAssignment}
               groupBy={groupBy}
-              onResourceClick={openResourceDrawer} 
+              onResourceClick={openResourceDrawer}
+              onEditResource={(id) => setEditResourceId(id)}
             />
           )}
           {currentView === 'table' && (
@@ -747,11 +748,12 @@ function ViewTab({ icon: Icon, label, active, onClick, badge }: {
 // ─────────────────────────────────────────────────────────────────────────────
 // Cards View with Assignment Grouping
 // ─────────────────────────────────────────────────────────────────────────────
-function CardsView({ resources, groupedByAssignment, groupBy, onResourceClick }: { 
+function CardsView({ resources, groupedByAssignment, groupBy, onResourceClick, onEditResource }: { 
   resources: ResourceMetric[]; 
   groupedByAssignment: Record<string, ResourceMetric[]>;
   groupBy: GroupByType;
   onResourceClick: (r: ResourceMetric) => void;
+  onEditResource: (id: string) => void;
 }) {
   if (groupBy === 'assignment') {
     return (
@@ -772,7 +774,12 @@ function CardsView({ resources, groupedByAssignment, groupBy, onResourceClick }:
             {/* Cards Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
               {assignmentResources.map((resource) => (
-                <ResourceCard key={resource.id} resource={resource} onClick={() => onResourceClick(resource)} />
+                <ResourceCard 
+                  key={resource.id} 
+                  resource={resource} 
+                  on360Click={() => onResourceClick(resource)}
+                  onCardClick={() => onEditResource(resource.id)}
+                />
               ))}
             </div>
           </div>
@@ -784,14 +791,23 @@ function CardsView({ resources, groupedByAssignment, groupBy, onResourceClick }:
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
       {resources.map((resource) => (
-        <ResourceCard key={resource.id} resource={resource} onClick={() => onResourceClick(resource)} />
+        <ResourceCard 
+          key={resource.id} 
+          resource={resource} 
+          on360Click={() => onResourceClick(resource)}
+          onCardClick={() => onEditResource(resource.id)}
+        />
       ))}
     </div>
   );
 }
 
 // Resource Card - V5 Design with Button360
-function ResourceCard({ resource, onClick }: { resource: ResourceMetric; onClick: () => void }) {
+function ResourceCard({ resource, on360Click, onCardClick }: { 
+  resource: ResourceMetric; 
+  on360Click: () => void;
+  onCardClick: () => void;
+}) {
   const dept = resource.department || 'Unassigned';
   const deptColor = departmentColors[dept] || departmentColors.default;
   const initials = resource.name?.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'NA';
@@ -799,7 +815,8 @@ function ResourceCard({ resource, onClick }: { resource: ResourceMetric; onClick
 
   return (
     <div 
-      className="bg-card border border-border rounded-lg p-4 hover:border-border-strong hover:shadow-sm transition-all"
+      className="bg-card border border-border rounded-lg p-4 hover:border-border-strong hover:shadow-sm transition-all cursor-pointer"
+      onClick={onCardClick}
     >
       <div className="flex items-center gap-3">
         {/* Avatar */}
@@ -813,17 +830,21 @@ function ResourceCard({ resource, onClick }: { resource: ResourceMetric; onClick
           <p className="text-xs text-muted-foreground truncate">{resource.role}</p>
           {/* Assignment Tag */}
           <div className="flex gap-1.5 mt-1.5 flex-wrap">
-            <span className="text-[10px] font-semibold px-2 py-0.5 rounded uppercase bg-[#4d8b4d] text-white">
+            <span className={cn(
+              "text-[10px] font-semibold px-2 py-0.5 rounded uppercase",
+              assignmentName === 'Unassigned' 
+                ? "bg-muted text-muted-foreground" 
+                : "bg-[#4d8b4d] text-white"
+            )}>
               {assignmentName}
             </span>
           </div>
         </div>
         
         {/* 360° button with orbital animation */}
-        <Button360 onClick={() => {
-          // This will be handled by parent - for now just trigger onClick
-          onClick();
-        }} size="md" />
+        <div onClick={(e) => e.stopPropagation()}>
+          <Button360 onClick={on360Click} size="md" />
+        </div>
         
         {/* Allocation */}
         <div className="text-right">
