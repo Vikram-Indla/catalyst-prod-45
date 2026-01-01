@@ -73,9 +73,12 @@ export default function CapacityPlannerPage() {
 
   // Add resource form state
   const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
-  const [assignmentType, setAssignmentType] = useState<string>('project');
+  const [selectedDepartmentId, setSelectedDepartmentId] = useState<string>('');
   const [selectedProjectId, setSelectedProjectId] = useState<string>('');
   const [allocationPercentage, setAllocationPercentage] = useState<number>(100);
+
+  // Fetch departments for the modal
+  const { departments } = useCapacityDepartments();
 
   // Get users already assigned in capacity planner
   const assignedUserIds = useMemo(() => {
@@ -354,7 +357,7 @@ export default function CapacityPlannerPage() {
           setResourceModalOpen(open);
           if (!open) {
             setSelectedUserIds([]);
-            setAssignmentType('project');
+            setSelectedDepartmentId('');
             setSelectedProjectId('');
             setAllocationPercentage(100);
           }
@@ -383,7 +386,7 @@ export default function CapacityPlannerPage() {
                     </button>
                   )}
                 </div>
-                <ScrollArea className="h-[240px] border border-border rounded-lg">
+                <ScrollArea className="h-[200px] border border-border rounded-lg">
                   {availableUsers.length === 0 ? (
                     <div className="px-4 py-8 text-sm text-muted-foreground text-center">
                       All users are already assigned to the Capacity Planner
@@ -429,65 +432,60 @@ export default function CapacityPlannerPage() {
                 </ScrollArea>
               </div>
               
-              {/* Assignment Type */}
-              <div className="space-y-2">
-                <Label>Assignment Type</Label>
-                <Select value={assignmentType} onValueChange={(v) => {
-                  setAssignmentType(v);
-                  if (v !== 'project') setSelectedProjectId('');
-                }}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="project">Project Assignment</SelectItem>
-                    <SelectItem value="planned">Planned Capacity</SelectItem>
-                    <SelectItem value="support">Support / BAU</SelectItem>
-                    <SelectItem value="bench">Bench / Available</SelectItem>
-                  </SelectContent>
-                </Select>
+              {/* Department & Project */}
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>Department</Label>
+                  <Select value={selectedDepartmentId} onValueChange={setSelectedDepartmentId}>
+                    <SelectTrigger className="bg-card">
+                      <SelectValue placeholder="Select department..." />
+                    </SelectTrigger>
+                    <SelectContent className="bg-card border border-border shadow-lg z-50">
+                      {departments?.map((dept) => (
+                        <SelectItem key={dept.id} value={dept.id}>
+                          {dept.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label>Assign to Project <span className="text-muted-foreground text-xs">(optional)</span></Label>
+                  <Select value={selectedProjectId} onValueChange={setSelectedProjectId}>
+                    <SelectTrigger className="bg-card">
+                      <SelectValue placeholder="Select project..." />
+                    </SelectTrigger>
+                    <SelectContent className="bg-card border border-border shadow-lg z-50">
+                      <SelectItem value="none">No project</SelectItem>
+                      {projects.map((project) => (
+                        <SelectItem key={project.id} value={project.id}>
+                          {project.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                {/* Project dropdown - only shown for project assignments */}
-                {assignmentType === 'project' && (
-                  <div className="space-y-2">
-                    <Label>Assign to Project</Label>
-                    <Select value={selectedProjectId} onValueChange={setSelectedProjectId}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select a project..." />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {projects.map((project) => (
-                          <SelectItem key={project.id} value={project.id}>
-                            {project.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                )}
-                <div className={cn("space-y-2", assignmentType !== 'project' && "col-span-2")}>
-                  <Label>Allocation %</Label>
-                  <Input 
-                    type="number"
-                    min={0}
-                    max={100}
-                    value={allocationPercentage}
-                    onChange={(e) => setAllocationPercentage(Number(e.target.value))}
-                  />
-                </div>
+              <div className="space-y-2">
+                <Label>Allocation %</Label>
+                <Input 
+                  type="number"
+                  min={0}
+                  max={100}
+                  value={allocationPercentage}
+                  onChange={(e) => setAllocationPercentage(Number(e.target.value))}
+                />
               </div>
             </div>
             <DialogFooter>
               <Button variant="outline" onClick={() => setResourceModalOpen(false)}>Cancel</Button>
               <Button 
-                disabled={selectedUserIds.length === 0 || (assignmentType === 'project' && !selectedProjectId)}
+                disabled={selectedUserIds.length === 0}
                 onClick={() => {
-                  // Use a default/placeholder project for non-project assignments
-                  const projectId = assignmentType === 'project' 
+                  const projectId = selectedProjectId && selectedProjectId !== 'none' 
                     ? selectedProjectId 
-                    : projects[0]?.id || selectedProjectId; // Use first project as fallback
+                    : projects[0]?.id; // Use first project as fallback if none selected
                   
                   selectedUserIds.forEach(userId => {
                     createAssignment.mutate({
@@ -496,12 +494,12 @@ export default function CapacityPlannerPage() {
                       allocation_percentage: allocationPercentage,
                       start_date: new Date().toISOString().split('T')[0],
                       status: 'active',
-                      work_item_type: assignmentType as 'project' | 'epic' | 'feature' | 'story' | 'planned' | 'support' | 'bench',
+                      work_item_type: 'project',
                     });
                   });
                   setResourceModalOpen(false);
                   setSelectedUserIds([]);
-                  setAssignmentType('project');
+                  setSelectedDepartmentId('');
                   setSelectedProjectId('');
                   setAllocationPercentage(100);
                 }} 
