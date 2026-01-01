@@ -60,7 +60,7 @@ const projectColors = [
   '#0d9488', // Teal
   '#d4b896', // Champagne
   '#2563eb', // Blue
-  '#22c55e', // Green
+  '#0f766e', // Teal Dark (was green)
 ];
 
 export default function CapacityPlannerPage() {
@@ -277,7 +277,7 @@ export default function CapacityPlannerPage() {
   }
 
   return (
-    <PageChrome>
+    <PageChrome hideHeader>
       <div className="flex flex-col h-full bg-[hsl(var(--background))] relative">
         {/* Header - 2 ROWS ONLY using new CapacityHeader component */}
         <CapacityHeader
