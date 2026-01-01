@@ -783,44 +783,19 @@ export default function CapacityPlannerPage() {
                   </button>
                 </div>
 
-                {/* Group By Toggle Buttons */}
-                <div className="flex items-center gap-1 bg-muted rounded-lg p-1">
-                  <button
-                    onClick={() => setGroupBy('none')}
-                    className={cn(
-                      "p-1.5 rounded-md transition-colors",
-                      groupBy === 'none' 
-                        ? "bg-background text-foreground shadow-sm" 
-                        : "text-muted-foreground hover:text-foreground"
-                    )}
-                    title="No Grouping"
-                  >
-                    <LayoutGrid className="h-4 w-4" />
-                  </button>
-                  <button
-                    onClick={() => setGroupBy('assignment')}
-                    className={cn(
-                      "p-1.5 rounded-md transition-colors",
-                      groupBy === 'assignment' 
-                        ? "bg-background text-foreground shadow-sm" 
-                        : "text-muted-foreground hover:text-foreground"
-                    )}
-                    title="Group by Assignment"
-                  >
-                    <FileStack className="h-4 w-4" />
-                  </button>
-                  <button
-                    onClick={() => setGroupBy('department')}
-                    className={cn(
-                      "p-1.5 rounded-md transition-colors",
-                      groupBy === 'department' 
-                        ? "bg-background text-foreground shadow-sm" 
-                        : "text-muted-foreground hover:text-foreground"
-                    )}
-                    title="Group by Department"
-                  >
-                    <Building2 className="h-4 w-4" />
-                  </button>
+                {/* Group By Dropdown */}
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-muted-foreground">Group By</span>
+                  <Select value={groupBy} onValueChange={(v) => setGroupBy(v as GroupByType)}>
+                    <SelectTrigger className="h-8 w-[130px] text-sm bg-background">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="bg-background z-[10001]">
+                      <SelectItem value="none">None</SelectItem>
+                      <SelectItem value="assignment">Assignment</SelectItem>
+                      <SelectItem value="department">Department</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
 
