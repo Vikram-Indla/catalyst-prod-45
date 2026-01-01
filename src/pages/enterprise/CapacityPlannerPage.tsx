@@ -75,7 +75,6 @@ export default function CapacityPlannerPage() {
   // Add resource form state
   const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
   const [selectedDepartmentId, setSelectedDepartmentId] = useState<string>('');
-  const [selectedProjectId, setSelectedProjectId] = useState<string>('');
   const [selectedAssignment, setSelectedAssignment] = useState<string>('');
   const [allocationPercentage, setAllocationPercentage] = useState<number>(100);
 
@@ -361,7 +360,6 @@ export default function CapacityPlannerPage() {
           if (!open) {
             setSelectedUserIds([]);
             setSelectedDepartmentId('');
-            setSelectedProjectId('');
             setSelectedAssignment('');
             setAllocationPercentage(100);
           }
@@ -436,8 +434,8 @@ export default function CapacityPlannerPage() {
                 </ScrollArea>
               </div>
               
-              {/* Assignment, Department & Project */}
-              <div className="grid grid-cols-3 gap-4">
+              {/* Assignment & Department */}
+              <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label>Assignment</Label>
                   <Select value={selectedAssignment} onValueChange={setSelectedAssignment}>
@@ -468,22 +466,6 @@ export default function CapacityPlannerPage() {
                     </SelectContent>
                   </Select>
                 </div>
-                <div className="space-y-2">
-                  <Label>Project <span className="text-muted-foreground text-xs">(optional)</span></Label>
-                  <Select value={selectedProjectId} onValueChange={setSelectedProjectId}>
-                    <SelectTrigger className="bg-card">
-                      <SelectValue placeholder="Select project..." />
-                    </SelectTrigger>
-                    <SelectContent className="bg-card border border-border shadow-lg z-50">
-                      <SelectItem value="none">No project</SelectItem>
-                      {projects.map((project) => (
-                        <SelectItem key={project.id} value={project.id}>
-                          {project.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
               </div>
 
               <div className="space-y-2">
@@ -502,15 +484,10 @@ export default function CapacityPlannerPage() {
               <Button 
                 disabled={selectedUserIds.length === 0}
                 onClick={() => {
-                  // Only use project if explicitly selected, otherwise null
-                  const projectId = selectedProjectId && selectedProjectId !== 'none' 
-                    ? selectedProjectId 
-                    : null;
-                  
                   selectedUserIds.forEach(userId => {
                     createAssignment.mutate({
                       user_id: userId,
-                      project_id: projectId,
+                      project_id: null,
                       allocation_percentage: allocationPercentage,
                       start_date: new Date().toISOString().split('T')[0],
                       status: 'active',
@@ -520,7 +497,6 @@ export default function CapacityPlannerPage() {
                   setResourceModalOpen(false);
                   setSelectedUserIds([]);
                   setSelectedDepartmentId('');
-                  setSelectedProjectId('');
                   setSelectedAssignment('');
                   setAllocationPercentage(100);
                 }} 
@@ -544,7 +520,6 @@ export default function CapacityPlannerPage() {
               return (
                 <EditResourceForm 
                   resource={editingResource}
-                  projects={projects}
                   onSave={() => {
                     setEditResourceId(null);
                   }}
@@ -719,7 +694,7 @@ function CardsView({ resources, groupedByProject, groupBy, projects, onResourceC
             {/* Cards Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
               {projectResources.map((resource) => (
-                <ResourceCard key={resource.id} resource={resource} projects={projects} onClick={() => onResourceClick(resource)} />
+                <ResourceCard key={resource.id} resource={resource} onClick={() => onResourceClick(resource)} />
               ))}
             </div>
           </div>
@@ -731,21 +706,17 @@ function CardsView({ resources, groupedByProject, groupBy, projects, onResourceC
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
       {resources.map((resource) => (
-        <ResourceCard key={resource.id} resource={resource} projects={projects} onClick={() => onResourceClick(resource)} />
+        <ResourceCard key={resource.id} resource={resource} onClick={() => onResourceClick(resource)} />
       ))}
     </div>
   );
 }
 
 // Resource Card - V5 Design with Button360
-function ResourceCard({ resource, projects, onClick }: { resource: ResourceMetric; projects: CapacityProject[]; onClick: () => void }) {
+function ResourceCard({ resource, onClick }: { resource: ResourceMetric; onClick: () => void }) {
   const dept = resource.department || 'Unassigned';
   const deptColor = departmentColors[dept] || departmentColors.default;
   const initials = resource.name?.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'NA';
-  
-  const primaryProject = resource.assignments[0]?.project_id 
-    ? projects.find(p => p.id === resource.assignments[0]?.project_id)
-    : null;
 
   return (
     <div 
@@ -761,20 +732,11 @@ function ResourceCard({ resource, projects, onClick }: { resource: ResourceMetri
         <div className="flex-1 min-w-0">
           <p className="text-sm font-semibold text-foreground truncate">{resource.name}</p>
           <p className="text-xs text-muted-foreground truncate">{resource.role}</p>
-          {/* Project Tags */}
+          {/* Department Tag */}
           <div className="flex gap-1.5 mt-1.5 flex-wrap">
-            {primaryProject ? (
-              <span 
-                className="text-[10px] font-semibold text-white px-2 py-0.5 rounded"
-                style={{ background: projectColors[0] }}
-              >
-                {primaryProject.code || primaryProject.name?.substring(0, 3).toUpperCase()}
-              </span>
-            ) : (
-              <span className="text-[10px] font-semibold text-white px-2 py-0.5 rounded bg-muted-foreground">
-                Unassigned
-              </span>
-            )}
+            <span className={cn('text-[10px] font-semibold px-2 py-0.5 rounded uppercase', deptColor.badge)}>
+              {dept}
+            </span>
           </div>
         </div>
         
@@ -870,16 +832,6 @@ function TableView({ resources, projects, onResourceClick, onEditResource, onDel
           </span>
         );
       },
-    },
-    {
-      id: 'primaryProject',
-      header: 'Primary Project',
-      accessor: (row: ResourceMetric) => row.assignments[0]?.project_id ? getProjectName(row.assignments[0]?.project_id) : '-',
-      width: '160px',
-      sortable: true,
-      render: (value: string) => (
-        <span className="text-sm text-foreground">{value}</span>
-      ),
     },
     {
       id: 'allocation',
@@ -2268,24 +2220,21 @@ function ResourceDrawerContent({ resource, projects }: { resource: ResourceMetri
 // ─────────────────────────────────────────────────────────────────────────────
 function EditResourceForm({ 
   resource,
-  projects,
   onSave, 
   onCancel 
 }: { 
   resource: ResourceMetric;
-  projects: { id: string; name: string }[];
   onSave: () => void;
   onCancel: () => void;
 }) {
   const { departments } = useCapacityDepartments();
   const { data: assignmentTypes = [] } = useActiveCapacityAssignmentTypes();
-  const { updateResource, updateResourceAllocation } = useResourceManagement();
+  const { updateResource } = useResourceManagement();
   
   const [name, setName] = useState(resource.name);
   const [role, setRole] = useState(resource.role || 'Frontend Developer');
   const [departmentId, setDepartmentId] = useState(resource.department_id || '');
   const [assignmentId, setAssignmentId] = useState(resource.assignment_id || '');
-  const [projectId, setProjectId] = useState(resource.assignments?.[0]?.project_id || '');
   const [allocation, setAllocation] = useState(resource.allocation || 0);
   const [isSaving, setIsSaving] = useState(false);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
@@ -2310,25 +2259,6 @@ function EditResourceForm({
     }
   };
 
-  // Auto-save function for allocation
-  const saveAllocation = async (newProjectId: string, newAllocation: number) => {
-    if (!newProjectId || newAllocation <= 0) return;
-    
-    setIsSaving(true);
-    try {
-      await updateResourceAllocation.mutateAsync({
-        resourceId: resource.id,
-        projectId: newProjectId,
-        allocationPercentage: newAllocation,
-      });
-      setLastSaved(new Date());
-    } catch (error) {
-      console.error('Failed to save allocation:', error);
-    } finally {
-      setIsSaving(false);
-    }
-  };
-
   // Handler for role change
   const handleRoleChange = (value: string) => {
     setRole(value);
@@ -2347,20 +2277,9 @@ function EditResourceForm({
     saveProfileField('assignment_id', value);
   };
 
-  // Handler for project change
-  const handleProjectChange = (value: string) => {
-    setProjectId(value);
-    if (allocation > 0) {
-      saveAllocation(value, allocation);
-    }
-  };
-
   // Handler for allocation change
   const handleAllocationChange = (value: number) => {
     setAllocation(value);
-    if (projectId) {
-      saveAllocation(projectId, value);
-    }
   };
 
   return (
@@ -2429,17 +2348,6 @@ function EditResourceForm({
               onBlur={() => handleAllocationChange(allocation)}
             />
           </div>
-        </div>
-        <div className="space-y-2">
-          <Label>Project <span className="text-muted-foreground text-xs font-normal">(optional)</span></Label>
-          <Select value={projectId} onValueChange={handleProjectChange}>
-            <SelectTrigger><SelectValue placeholder="Select project..." /></SelectTrigger>
-            <SelectContent>
-              {projects.map(proj => (
-                <SelectItem key={proj.id} value={proj.id}>{proj.name}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
         </div>
         
         {/* Auto-save indicator */}
