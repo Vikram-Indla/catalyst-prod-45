@@ -14,7 +14,7 @@ import {
   Users, CheckCircle2, BarChart3, AlertTriangle, TrendingUp, Download, Plus, 
   Search, LayoutGrid, Table2, CalendarDays, GanttChart, Sparkles, FileStack, Bot,
   ChevronLeft, ChevronRight, Clock, Eye, Copy, Check, RotateCcw, Play, FolderKanban,
-  Pencil, Trash2, Cloud, GitCompare, Settings2
+  Pencil, Trash2, Cloud, GitCompare, Settings2, ArrowLeftRight
 } from 'lucide-react';
 import { useCapacityData, useAssignments, useAiRecommendations, useCapacityScenarios, useCapacityDepartments, useResourceManagement, useResourceAssignments, exportCapacityToPdf } from '@/modules/capacity-planner';
 
@@ -27,6 +27,7 @@ import { CapacityAIDrawer } from '@/components/capacity/CapacityAIDrawer';
 import { CatalystEnterpriseTable, CatalystColumn } from '@/components/industry/CatalystEnterpriseTable';
 import { BulkEditModal } from '@/components/capacity/BulkEditModal';
 import { DraggableCardsView } from '@/components/capacity/DraggableCardsView';
+import { KanbanAssignView } from '@/components/capacity/KanbanAssignView';
 
 type PeriodType = 'weekly' | 'monthly' | 'quarterly';
 type GroupByType = 'none' | 'assignment' | 'department';
@@ -79,6 +80,7 @@ export default function CapacityPlannerPage() {
   const [resourcesToDelete, setResourcesToDelete] = useState<ResourceMetric[]>([]);
   const [bulkEditOpen, setBulkEditOpen] = useState(false);
   const [resourcesToBulkEdit, setResourcesToBulkEdit] = useState<ResourceMetric[]>([]);
+  const [assignModeOpen, setAssignModeOpen] = useState(false);
 
   // Add resource form state
   const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
@@ -243,6 +245,15 @@ export default function CapacityPlannerPage() {
           </div>
           
           <div className="flex items-center gap-2">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={() => setAssignModeOpen(true)} 
+              className="gap-2 border-[#2563eb]/30 text-[#2563eb] hover:bg-[#2563eb]/10 hover:border-[#2563eb]"
+            >
+              <ArrowLeftRight className="h-4 w-4" />
+              Assign Mode
+            </Button>
             <Button variant="outline" size="sm" onClick={handleExport} className="gap-2">
               <Download className="h-4 w-4" />
               Export
@@ -350,22 +361,13 @@ export default function CapacityPlannerPage() {
         {/* Main Content */}
         <div className="flex-1 overflow-auto px-5 pb-5">
           {currentView === 'cards' && (
-            groupBy === 'assignment' ? (
-              <DraggableCardsView 
-                groupedByAssignment={groupedByAssignment}
-                onResourceClick={openResourceDrawer}
-                onEditResource={(id) => setEditResourceId(id)}
-                onMoveResource={handleMoveResource}
-              />
-            ) : (
-              <CardsView 
-                resources={filteredResources} 
-                groupedByAssignment={groupedByAssignment}
-                groupBy={groupBy}
-                onResourceClick={openResourceDrawer}
-                onEditResource={(id) => setEditResourceId(id)}
-              />
-            )
+            <CardsView 
+              resources={filteredResources} 
+              groupedByAssignment={groupedByAssignment}
+              groupBy={groupBy}
+              onResourceClick={openResourceDrawer}
+              onEditResource={(id) => setEditResourceId(id)}
+            />
           )}
           {currentView === 'table' && (
             <TableView 
@@ -749,6 +751,16 @@ export default function CapacityPlannerPage() {
             )}
           </button>
         </div>
+
+        {/* Assign Mode - Kanban View Overlay */}
+        {assignModeOpen && (
+          <KanbanAssignView 
+            resources={filteredResources}
+            assignments={resourceAssignments}
+            onMoveResource={handleMoveResource}
+            onClose={() => setAssignModeOpen(false)}
+          />
+        )}
       </div>
     </PageChrome>
   );
