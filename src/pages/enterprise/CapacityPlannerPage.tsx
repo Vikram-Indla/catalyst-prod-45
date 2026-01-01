@@ -212,7 +212,7 @@ export default function CapacityPlannerPage() {
 
   return (
     <PageChrome>
-      <div className="flex flex-col h-full bg-[hsl(var(--background))]">
+      <div className="flex flex-col h-full bg-[hsl(var(--background))] relative">
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 flex-wrap gap-3">
           <div className="flex items-center gap-4">
