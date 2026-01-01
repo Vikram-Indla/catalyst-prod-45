@@ -20,6 +20,8 @@ export interface ResourceInventoryItem {
   notes: string | null;
   created_at: string;
   updated_at: string;
+  department?: string | null;
+  department_id?: string | null;
 }
 
 export function useResourceRoles() {
@@ -48,7 +50,27 @@ export function useResourceInventory() {
         .order('name', { ascending: true });
 
       if (error) throw error;
-      return (data || []) as ResourceInventoryItem[];
+      
+      // Fetch departments and profiles to map department names
+      const { data: profiles } = await supabase
+        .from('profiles')
+        .select('id, department_id');
+      
+      const { data: departments } = await supabase
+        .from('capacity_departments')
+        .select('id, name');
+      
+      const deptMap = new Map(departments?.map(d => [d.id, d.name]) || []);
+      const profileDeptMap = new Map(profiles?.map(p => [p.id, p.department_id]) || []);
+      
+      return (data || []).map(item => {
+        const deptId = profileDeptMap.get(item.profile_id);
+        return {
+          ...item,
+          department_id: deptId || null,
+          department: deptId ? deptMap.get(deptId) || null : null,
+        };
+      }) as ResourceInventoryItem[];
     },
   });
 }
