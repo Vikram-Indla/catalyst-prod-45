@@ -68,6 +68,7 @@ export default function CapacityPlannerPage() {
   const [period, setPeriod] = useState<PeriodType>('monthly');
   const [groupBy, setGroupBy] = useState<GroupByType>('assignment');
   const [searchQuery, setSearchQuery] = useState('');
+  const [departmentFilter, setDepartmentFilter] = useState<string>('all');
   
   // Modal state
   const [resourceModalOpen, setResourceModalOpen] = useState(false);
@@ -147,10 +148,18 @@ export default function CapacityPlannerPage() {
     setResource360Id(resource.id);
   };
 
-  const filteredResources = metrics.resources.filter((r) =>
-    r.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    r.role?.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredResources = metrics.resources.filter((r) => {
+    const matchesSearch = r.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      r.role?.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesDepartment = departmentFilter === 'all' || r.department === departmentFilter;
+    return matchesSearch && matchesDepartment;
+  });
+
+  // Get unique departments for filter dropdown
+  const uniqueDepartments = useMemo(() => {
+    const depts = new Set(metrics.resources.map(r => r.department).filter(Boolean));
+    return Array.from(depts).sort();
+  }, [metrics.resources]);
 
   // Group resources by assignment type
   const groupedByAssignment = useMemo(() => {
@@ -246,6 +255,19 @@ export default function CapacityPlannerPage() {
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
             </div>
+            
+            {/* Department Filter */}
+            <Select value={departmentFilter} onValueChange={setDepartmentFilter}>
+              <SelectTrigger className="w-40 h-9 text-sm">
+                <SelectValue placeholder="Department" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Departments</SelectItem>
+                {uniqueDepartments.map((dept) => (
+                  <SelectItem key={dept} value={dept}>{dept}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
           
           <div className="flex items-center gap-2">
