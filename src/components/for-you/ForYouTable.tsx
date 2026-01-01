@@ -23,30 +23,38 @@ const GROUP_LABELS: Record<WorkGroup, string> = {
   EARLIER: 'Earlier',
 };
 
-// Catalyst V5 dark mode compliant - using semantic tokens
+// Catalyst V5 dark mode compliant - all badges use alpha background + border pattern
 const MODE_STYLES: Record<string, { bg: string; text: string; border: string }> = {
   OPS: { 
-    bg: 'bg-[var(--status-success-bg)]', 
-    text: 'text-[var(--status-success)]',
-    border: 'border border-[var(--status-success-border)]'
+    bg: 'bg-[rgba(20,184,166,0.15)]', 
+    text: 'text-[#14b8a6]',
+    border: 'border border-[rgba(20,184,166,0.4)]'
   },
   DEL: { 
-    bg: 'bg-[var(--status-info-bg)]', 
-    text: 'text-[var(--brand-primary-hex)]',
-    border: 'border border-[var(--status-info-border)]'
+    bg: 'bg-[rgba(59,130,246,0.15)]', 
+    text: 'text-[#60a5fa]',
+    border: 'border border-[rgba(59,130,246,0.4)]'
   },
   PLN: { 
-    bg: 'bg-[var(--status-muted-bg)]', 
-    text: 'text-[var(--text-3)]',
-    border: 'border border-[var(--status-muted-border)]'
+    bg: 'bg-[rgba(107,114,128,0.15)]', 
+    text: 'text-[#9ca3af]',
+    border: 'border border-[rgba(107,114,128,0.4)]'
   },
 };
 
-// Item type indicators using Catalyst V5 dark mode tokens
-const INDICATOR_STYLES: Record<string, string> = {
-  OPS: 'bg-[var(--status-success)]',      // Teal for operations
-  DEL: 'bg-[var(--brand-primary-hex)]',   // Blue for delivery
-  PLN: 'bg-[var(--status-muted)]',        // Gray for planning
+// Get semantic dot color based on item type prefix (INC, FTR, PLN, etc.)
+const getItemTypeDotColor = (key: string): string => {
+  const prefix = key?.split('-')[0]?.toUpperCase();
+  
+  switch (prefix) {
+    case 'INC': return 'bg-[#f87171]';    // Red - Incidents need attention
+    case 'FTR': return 'bg-[#3b82f6]';    // Blue - Features (standard work)
+    case 'PLN': return 'bg-[#14b8a6]';    // Teal - Plans
+    case 'CEA': return 'bg-[#6b7280]';    // Gray - Capabilities
+    case 'EPK': return 'bg-[#a78bfa]';    // Purple - Epics
+    case 'STY': return 'bg-[#60a5fa]';    // Light blue - Stories
+    default:    return 'bg-[#6b7280]';    // Gray fallback
+  }
 };
 
 // Generate consistent avatar color based on name (deterministic)
@@ -259,9 +267,9 @@ export function ForYouTable({
                   />
                 </div>
 
-                {/* Key with indicator - Catalyst V5 link colors */}
+                {/* Key with semantic indicator - color based on item type prefix */}
                 <div className="flex items-center gap-2.5">
-                  <span className={cn("w-2 h-2 rounded-full shrink-0", INDICATOR_STYLES[item.mode] || 'bg-[var(--status-muted)]')} />
+                  <span className={cn("w-2.5 h-2.5 rounded-full shrink-0", getItemTypeDotColor(item.key))} />
                   <a 
                     className="font-mono text-[13px] font-medium text-[hsl(var(--link-color))] hover:text-[hsl(var(--link-color-hover))] hover:underline cursor-pointer"
                     onClick={(e) => e.stopPropagation()}
