@@ -143,6 +143,11 @@ export function CapacityPlanning() {
   const filteredResources = useMemo(() => {
     let resources = viewResources;
 
+    // If filtering by departments, only show resources with those departments
+    if (filters.departments.length > 0) {
+      resources = resources.filter(r => r.department && filters.departments.includes(r.department));
+    }
+
     // If filtering by roles, only show resources with those roles
     if (filters.roles.length > 0) {
       resources = resources.filter(r => r.role_code && filters.roles.includes(r.role_code));

@@ -13,6 +13,7 @@ import { ResourceInventoryItem } from '@/hooks/useResourceInventory';
 export interface CapacityFilters {
   resources: string[];
   roles: string[];
+  departments: string[];
   types: string[];
   statuses: string[];
   priorities: string[];
@@ -24,6 +25,7 @@ export interface CapacityFilters {
 export const DEFAULT_FILTERS: CapacityFilters = {
   resources: [],
   roles: [],
+  departments: [],
   types: [],
   statuses: [],
   priorities: [],
@@ -54,10 +56,19 @@ export function CapacityFilter({ filters, onFiltersChange, resources, viewMode }
     return Array.from(roles).sort();
   }, [resources]);
 
+  const uniqueDepartments = useMemo(() => {
+    const departments = new Set<string>();
+    resources.forEach(r => {
+      if (r.department) departments.add(r.department);
+    });
+    return Array.from(departments).sort();
+  }, [resources]);
+
   const activeFilterCount = useMemo(() => {
     let count = 0;
     if (filters.resources.length > 0) count++;
     if (filters.roles.length > 0) count++;
+    if (filters.departments.length > 0) count++;
     if (filters.types.length > 0) count++;
     if (filters.statuses.length > 0) count++;
     if (filters.priorities.length > 0) count++;
@@ -68,6 +79,17 @@ export function CapacityFilter({ filters, onFiltersChange, resources, viewMode }
 
   const activeChips = useMemo(() => {
     const chips: { key: string; label: string; remove: () => void }[] = [];
+    
+    filters.departments.forEach(department => {
+      chips.push({
+        key: `department-${department}`,
+        label: `Dept: ${department}`,
+        remove: () => onFiltersChange({
+          ...filters,
+          departments: filters.departments.filter(d => d !== department)
+        })
+      });
+    });
     
     filters.roles.forEach(role => {
       chips.push({
@@ -177,6 +199,32 @@ export function CapacityFilter({ filters, onFiltersChange, resources, viewMode }
 
           <ScrollArea className="max-h-[400px]">
             <div className="p-4 space-y-5">
+              {/* Department Filter */}
+              {uniqueDepartments.length > 0 && (
+                <div className="space-y-2">
+                  <Label className="text-xs font-semibold text-muted-foreground uppercase">Department</Label>
+                  <div className="flex flex-wrap gap-2">
+                    {uniqueDepartments.map(department => (
+                      <button
+                        key={department}
+                        onClick={() => onFiltersChange({
+                          ...filters,
+                          departments: toggleArrayValue(filters.departments, department)
+                        })}
+                        className={cn(
+                          'px-2.5 py-1 text-xs rounded-md border transition-colors',
+                          filters.departments.includes(department)
+                            ? 'bg-secondary-green text-white border-secondary-green'
+                            : 'bg-background hover:bg-muted border-border'
+                        )}
+                      >
+                        {department}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {/* Role Filter */}
               <div className="space-y-2">
                 <Label className="text-xs font-semibold text-muted-foreground uppercase">Role</Label>
