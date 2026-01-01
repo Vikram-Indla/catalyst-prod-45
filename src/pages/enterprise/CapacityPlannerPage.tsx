@@ -776,6 +776,9 @@ export default function CapacityPlannerPage() {
             assignments={resourceAssignments}
             onMoveResource={handleMoveResource}
             onClose={() => setAssignModeOpen(false)}
+            departmentFilter={departmentFilter}
+            onDepartmentFilterChange={setDepartmentFilter}
+            uniqueDepartments={uniqueDepartments}
           />
         )}
       </div>

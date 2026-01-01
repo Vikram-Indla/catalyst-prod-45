@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Slider } from '@/components/ui/slider';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import type { ResourceMetric } from '@/modules/capacity-planner';
 import type { ResourceAssignment } from '@/modules/capacity-planner/hooks/useResourceAssignments';
 
@@ -40,6 +41,9 @@ interface KanbanAssignViewProps {
   assignments: ResourceAssignment[];
   onMoveResource: (resourceId: string, fromAssignment: string, toAssignment: string, allocation?: number) => void;
   onClose: () => void;
+  departmentFilter: string;
+  onDepartmentFilterChange: (value: string) => void;
+  uniqueDepartments: string[];
 }
 
 export function KanbanAssignView({ 
@@ -47,6 +51,9 @@ export function KanbanAssignView({
   assignments,
   onMoveResource,
   onClose,
+  departmentFilter,
+  onDepartmentFilterChange,
+  uniqueDepartments,
 }: KanbanAssignViewProps) {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
@@ -223,15 +230,29 @@ export function KanbanAssignView({
             </p>
           </div>
         </div>
-        <Button 
-          variant="outline" 
-          size="sm" 
-          onClick={onClose}
-          className="gap-2"
-        >
-          <X className="h-4 w-4" />
-          Exit Assign Mode
-        </Button>
+        <div className="flex items-center gap-3">
+          {/* Department Filter */}
+          <Select value={departmentFilter} onValueChange={onDepartmentFilterChange}>
+            <SelectTrigger className="w-40 h-9 text-sm">
+              <SelectValue placeholder="Department" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Departments</SelectItem>
+              {uniqueDepartments.map((dept) => (
+                <SelectItem key={dept} value={dept}>{dept}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={onClose}
+            className="gap-2"
+          >
+            <X className="h-4 w-4" />
+            Exit Assign Mode
+          </Button>
+        </div>
       </div>
 
       {/* Kanban Board with native scroll for auto-scroll support */}
