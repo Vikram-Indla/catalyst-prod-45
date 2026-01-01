@@ -1077,7 +1077,7 @@ function TableView({ resources, projects, groupBy, groupedByAssignment, onResour
     <div className="space-y-3">
       {/* Bulk Action Bar */}
       {selectedIds.length > 0 && (
-        <div className="flex items-center justify-between px-4 py-3 bg-muted/50 border border-border rounded-lg">
+        <div className="sticky top-0 z-20 flex items-center justify-between px-4 py-3 border border-border rounded-lg bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 shadow-sm">
           <span className="text-sm font-medium text-foreground">
             {selectedIds.length} resource{selectedIds.length > 1 ? 's' : ''} selected
           </span>
