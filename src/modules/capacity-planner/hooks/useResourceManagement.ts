@@ -108,33 +108,49 @@ export function useResourceManagement() {
         .maybeSingle();
 
       if (existing) {
-        // Update existing assignment
-        const { error } = await supabase
+        // Update existing assignment (and return the updated row for optimistic UI)
+        const { data, error } = await supabase
           .from('assignments')
           .update({ 
             allocation_percentage: allocationPercentage,
             updated_at: new Date().toISOString()
           })
-          .eq('id', existing.id);
-        
+          .eq('id', existing.id)
+          .select('*')
+          .single();
+
         if (error) throw error;
-      } else {
-        // Create new assignment
-        const { error } = await supabase
-          .from('assignments')
-          .insert({
-            user_id: resourceId,
-            project_id: projectId,
-            allocation_percentage: allocationPercentage,
-            status: 'active',
-            start_date: new Date().toISOString().split('T')[0],
-            work_item_type: 'project',
-          });
-        
-        if (error) throw error;
+        return data;
       }
+
+      // Create new assignment (and return inserted row for optimistic UI)
+      const { data, error } = await supabase
+        .from('assignments')
+        .insert({
+          user_id: resourceId,
+          project_id: projectId,
+          allocation_percentage: allocationPercentage,
+          status: 'active',
+          start_date: new Date().toISOString().split('T')[0],
+          work_item_type: 'project',
+        })
+        .select('*')
+        .single();
+
+      if (error) throw error;
+      return data;
     },
-    onSuccess: () => {
+    onSuccess: (savedAssignment) => {
+      // Make changes visible immediately across table + cards
+      if (savedAssignment) {
+        queryClient.setQueryData(['capacity-planner-assignments'], (old: any) => {
+          const prev = Array.isArray(old) ? old : [];
+          const next = prev.filter((a) => a?.id !== savedAssignment.id);
+          next.unshift(savedAssignment);
+          return next;
+        });
+      }
+
       queryClient.invalidateQueries({ queryKey: ['capacity-planner-assignments'] });
       queryClient.invalidateQueries({ queryKey: ['capacity-planner-resources'] });
       toast.success('Allocation updated');
