@@ -11600,6 +11600,51 @@ export type Database = {
         }
         Relationships: []
       }
+      resource_allocations: {
+        Row: {
+          allocation_percent: number
+          assignment_id: string
+          created_at: string
+          created_by: string | null
+          id: string
+          resource_id: string
+          updated_at: string
+        }
+        Insert: {
+          allocation_percent?: number
+          assignment_id: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          resource_id: string
+          updated_at?: string
+        }
+        Update: {
+          allocation_percent?: number
+          assignment_id?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          resource_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "resource_allocations_assignment_id_fkey"
+            columns: ["assignment_id"]
+            isOneToOne: false
+            referencedRelation: "resource_assignments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "resource_allocations_resource_id_fkey"
+            columns: ["resource_id"]
+            isOneToOne: false
+            referencedRelation: "resource_inventory"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       resource_assignments: {
         Row: {
           created_at: string | null

@@ -6,5 +6,6 @@ export { useCapacityScenarios } from './hooks/useCapacityScenarios';
 export { useCapacityDepartments } from './hooks/useCapacityDepartments';
 export { useResourceManagement } from './hooks/useResourceManagement';
 export { useResourceAssignments } from './hooks/useResourceAssignments';
+export { useResourceAllocations } from './hooks/useResourceAllocations';
 export { exportCapacityToPdf } from './lib/pdf-export';
 export * from './types';
