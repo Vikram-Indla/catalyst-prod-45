@@ -75,6 +75,7 @@ export default function CapacityPlannerPage() {
   const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
   const [selectedDepartmentId, setSelectedDepartmentId] = useState<string>('');
   const [selectedProjectId, setSelectedProjectId] = useState<string>('');
+  const [selectedAssignment, setSelectedAssignment] = useState<string>('ticket');
   const [allocationPercentage, setAllocationPercentage] = useState<number>(100);
 
   // Fetch departments for the modal
@@ -359,6 +360,7 @@ export default function CapacityPlannerPage() {
             setSelectedUserIds([]);
             setSelectedDepartmentId('');
             setSelectedProjectId('');
+            setSelectedAssignment('ticket');
             setAllocationPercentage(100);
           }
         }}>
@@ -432,8 +434,21 @@ export default function CapacityPlannerPage() {
                 </ScrollArea>
               </div>
               
-              {/* Department & Project */}
-              <div className="grid grid-cols-2 gap-4">
+              {/* Assignment, Department & Project */}
+              <div className="grid grid-cols-3 gap-4">
+                <div className="space-y-2">
+                  <Label>Assignment</Label>
+                  <Select value={selectedAssignment} onValueChange={setSelectedAssignment}>
+                    <SelectTrigger className="bg-card">
+                      <SelectValue placeholder="Select assignment..." />
+                    </SelectTrigger>
+                    <SelectContent className="bg-card border border-border shadow-lg z-50">
+                      <SelectItem value="ticket">Ticket</SelectItem>
+                      <SelectItem value="task">Task</SelectItem>
+                      <SelectItem value="leave">Leave</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
                 <div className="space-y-2">
                   <Label>Department</Label>
                   <Select value={selectedDepartmentId} onValueChange={setSelectedDepartmentId}>
@@ -450,7 +465,7 @@ export default function CapacityPlannerPage() {
                   </Select>
                 </div>
                 <div className="space-y-2">
-                  <Label>Assign to Project <span className="text-muted-foreground text-xs">(optional)</span></Label>
+                  <Label>Project <span className="text-muted-foreground text-xs">(optional)</span></Label>
                   <Select value={selectedProjectId} onValueChange={setSelectedProjectId}>
                     <SelectTrigger className="bg-card">
                       <SelectValue placeholder="Select project..." />
