@@ -2143,7 +2143,7 @@ function EditResourceForm({
           </div>
         </div>
         <div className="space-y-2">
-          <Label>Project</Label>
+          <Label>Project <span className="text-muted-foreground text-xs font-normal">(optional)</span></Label>
           <Select value={projectId} onValueChange={handleProjectChange}>
             <SelectTrigger><SelectValue placeholder="Select project..." /></SelectTrigger>
             <SelectContent>
@@ -2172,7 +2172,14 @@ function EditResourceForm({
         )}
       </div>
       <DialogFooter>
-        <Button variant="outline" onClick={onCancel}>Close</Button>
+        <Button variant="outline" onClick={onCancel}>Cancel</Button>
+        <Button 
+          onClick={onSave} 
+          disabled={isSaving}
+          className="bg-[#2563eb] hover:bg-[#1d4ed8]"
+        >
+          Save
+        </Button>
       </DialogFooter>
     </>
   );
