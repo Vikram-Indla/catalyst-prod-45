@@ -136,6 +136,7 @@ export function useResourceManagement() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['capacity-planner-assignments'] });
+      queryClient.invalidateQueries({ queryKey: ['capacity-planner-resources'] });
       toast.success('Allocation updated');
     },
     onError: (error) => {

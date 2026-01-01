@@ -32,12 +32,14 @@ export function Button360({ onClick, className, size = 'md' }: Button360Props) {
           "transition-all duration-200 ease-out",
           "focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#0d9488]",
           
-          // Default state - subtle
-          "bg-[#f5f5f4] border border-[#e5e5e5]",
+          // Default state - with teal ring for visibility
+          "bg-[#f5f5f4] border-2 border-[#0d9488]",
+          "ring-2 ring-[#0d9488]/30 ring-offset-1",
           
           // Hover state - teal filled
           "hover:bg-[#0d9488] hover:border-[#0d9488]",
           "hover:shadow-[0_4px_12px_rgba(13,148,136,0.3)]",
+          "hover:ring-[#0d9488]/50",
           
           sizeStyles[size],
           className
