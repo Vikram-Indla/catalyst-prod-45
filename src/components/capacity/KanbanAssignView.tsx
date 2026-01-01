@@ -63,19 +63,24 @@ export function KanbanAssignView({
 
   // Populate columns with resources
   // Logic:
-  // 1. Resources appear in their assigned column (if they have one)
-  // 2. Resources with < 100% allocation appear in Unassigned showing available capacity
-  // 3. Resources at 100% do NOT appear in Unassigned
+  // 1. If assignmentName is null → treat as 0% allocation (unassigned)
+  // 2. Resources appear in their assigned column (if they have one)
+  // 3. Resources with < 100% allocation appear in Unassigned showing available capacity
+  // 4. Resources at 100% do NOT appear in Unassigned
   resources.forEach(r => {
     const assignmentName = r.assignmentName || null;
-    const totalAllocation = r.allocation || 0;
+    // If no assignment, allocation is 0% regardless of any data
+    const totalAllocation = assignmentName ? (r.allocation || 0) : 0;
     const remainingCapacity = 100 - totalAllocation;
     
     // Add to assigned column if resource has an assignment
     if (assignmentName) {
       const column = columns.find(c => c.name === assignmentName);
       if (column) {
-        column.resources.push(r);
+        column.resources.push({
+          ...r,
+          allocation: totalAllocation, // Use calculated allocation
+        });
       }
     }
     
@@ -84,6 +89,7 @@ export function KanbanAssignView({
       columns[0].resources.push({
         ...r,
         isGhostCard: true,
+        allocation: totalAllocation, // Use calculated allocation (0 if no assignment)
         availableCapacity: remainingCapacity,
       });
     }
