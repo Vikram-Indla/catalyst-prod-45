@@ -47,7 +47,6 @@ import {
 import { SleekCapacityHeader } from '@/components/capacity/SleekCapacityHeader';
 import { CompactGroupHeader } from '@/components/capacity/CompactGroupHeader';
 import { CompactResourceCard } from '@/components/capacity/CompactResourceCard';
-import { TimelineCellV2 } from '@/components/capacity/TimelineCellV2';
 
 // Department colors - Catalyst V5 compliant
 const departmentColors: Record<string, { bg: string; text: string; badge: string }> = {
