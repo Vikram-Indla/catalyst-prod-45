@@ -499,18 +499,9 @@ function CompactResourceCard({
   const deptColor = departmentColors[dept] || departmentColors.default;
   const initials = resource.name?.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'NA';
 
-  const isTrulyUnassigned = !resource.assignmentName;
-
-  // Display rules:
-  // - Unassigned resources: always show Allocation = 0%
-  // - Ghost cards for partially allocated resources: show remaining capacity as "Available"
-  const displayValue = isGhostCard
-    ? (isTrulyUnassigned ? 0 : (availableCapacity || 0))
-    : (resource.allocation || 0);
-
-  const displayLabel = isGhostCard
-    ? (isTrulyUnassigned ? 'Unassigned' : 'Available')
-    : 'Allocated';
+  // For ghost cards, show available capacity instead of allocation
+  const displayValue = isGhostCard ? availableCapacity || 0 : resource.allocation;
+  const displayLabel = isGhostCard ? 'Available' : 'Allocated';
 
   return (
     <TooltipProvider>
@@ -545,9 +536,7 @@ function CompactResourceCard({
                 {resource.name}
               </p>
               <p className="text-[11px] text-muted-foreground truncate">
-                {isGhostCard
-                  ? (isTrulyUnassigned ? 'Not assigned yet' : `Assigned: ${resource.assignmentName}`)
-                  : (resource.role || 'Team Member')}
+                {isGhostCard ? `Assigned: ${resource.assignmentName}` : (resource.role || 'Team Member')}
               </p>
             </div>
 
@@ -555,8 +544,8 @@ function CompactResourceCard({
             <div className="text-right">
               <div className={cn(
                 "text-xs font-semibold px-1.5 py-0.5 rounded",
-                isGhostCard
-                  ? (isTrulyUnassigned ? 'text-muted-foreground bg-muted' : 'text-[#2563eb] bg-[#2563eb]/10')
+                isGhostCard 
+                  ? 'text-[#2563eb] bg-[#2563eb]/10'
                   : resource.allocation === 0 
                     ? 'text-muted-foreground bg-muted' // Truly unassigned - neutral
                     : resource.allocation > 100 ? 'text-[#dc2626] bg-[#dc2626]/10' 
@@ -579,17 +568,10 @@ function CompactResourceCard({
             <p className="text-xs text-muted-foreground">{resource.role || 'Team Member'}</p>
             <p className="text-xs">Department: {resource.department || 'Unassigned'}</p>
             {isGhostCard ? (
-              isTrulyUnassigned ? (
-                <>
-                  <p className="text-xs">Allocation: 0%</p>
-                  <p className="text-xs text-[#2563eb]">Available: {availableCapacity}%</p>
-                </>
-              ) : (
-                <>
-                  <p className="text-xs text-[#2563eb]">Available: {availableCapacity}%</p>
-                  <p className="text-xs text-muted-foreground">Currently at: {resource.assignmentName}</p>
-                </>
-              )
+              <>
+                <p className="text-xs text-[#2563eb]">Available: {availableCapacity}%</p>
+                <p className="text-xs text-muted-foreground">Currently at: {resource.assignmentName}</p>
+              </>
             ) : (
               <p className="text-xs">Allocation: {resource.allocation}%</p>
             )}
