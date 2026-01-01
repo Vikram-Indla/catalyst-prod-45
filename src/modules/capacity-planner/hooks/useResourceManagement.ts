@@ -7,6 +7,7 @@ export interface ResourceUpdateInput {
   full_name?: string;
   role?: string;
   department_id?: string | null;
+  assignment_id?: string | null;
 }
 
 export function useResourceManagement() {
@@ -14,27 +15,72 @@ export function useResourceManagement() {
 
   const updateResource = useMutation({
     mutationFn: async (input: ResourceUpdateInput) => {
-      const { id, ...updates } = input;
+      const { id, assignment_id, ...profileUpdates } = input;
       
-      // Update profiles table
-      const { data, error } = await supabase
-        .from('profiles')
-        .update({ 
-          ...updates, 
-          updated_at: new Date().toISOString() 
-        })
-        .eq('id', id)
-        .select()
-        .single();
+      // Update profiles table for profile-related fields
+      if (Object.keys(profileUpdates).length > 0) {
+        const { error: profileError } = await supabase
+          .from('profiles')
+          .update({ 
+            ...profileUpdates, 
+            updated_at: new Date().toISOString() 
+          })
+          .eq('id', id);
+        
+        if (profileError) throw profileError;
+      }
       
-      if (error) throw error;
-      return data;
+      // Update resource_inventory for assignment_id
+      if (assignment_id !== undefined) {
+        // Check if resource exists in resource_inventory
+        const { data: existingResource } = await supabase
+          .from('resource_inventory')
+          .select('id')
+          .eq('id', id)
+          .maybeSingle();
+        
+        if (existingResource) {
+          // Update existing resource_inventory entry
+          const { error: inventoryError } = await supabase
+            .from('resource_inventory')
+            .update({ 
+              assignment_id: assignment_id || null,
+              updated_at: new Date().toISOString() 
+            })
+            .eq('id', id);
+          
+          if (inventoryError) throw inventoryError;
+        } else {
+          // Create resource_inventory entry if it doesn't exist
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('full_name, role')
+            .eq('id', id)
+            .single();
+          
+          if (profile) {
+            const { error: insertError } = await supabase
+              .from('resource_inventory')
+              .insert({
+                id,
+                name: profile.full_name || 'Unknown',
+                role_name: profile.role,
+                assignment_id: assignment_id || null,
+              });
+            
+            if (insertError) throw insertError;
+          }
+        }
+      }
+      
+      return { id };
     },
     onSuccess: () => {
       // Invalidate all related queries
       queryClient.invalidateQueries({ queryKey: ['capacity-planner-resources'] });
       queryClient.invalidateQueries({ queryKey: ['admin-users'] });
       queryClient.invalidateQueries({ queryKey: ['users'] });
+      queryClient.invalidateQueries({ queryKey: ['resource-inventory'] });
       toast.success('Resource updated successfully');
     },
     onError: (error) => {

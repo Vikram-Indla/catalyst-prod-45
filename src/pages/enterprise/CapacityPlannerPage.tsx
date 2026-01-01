@@ -13,7 +13,7 @@ import {
   ChevronLeft, ChevronRight, Clock, Eye, Copy, Check, RotateCcw, Play, FolderKanban,
   Pencil, Trash2, Cloud, GitCompare
 } from 'lucide-react';
-import { useCapacityData, useAssignments, useAiRecommendations, useCapacityScenarios, useCapacityDepartments, useResourceManagement, exportCapacityToPdf } from '@/modules/capacity-planner';
+import { useCapacityData, useAssignments, useAiRecommendations, useCapacityScenarios, useCapacityDepartments, useResourceManagement, useResourceAssignments, exportCapacityToPdf } from '@/modules/capacity-planner';
 import type { ViewType, ResourceMetric, CapacityProject, AiRecommendation } from '@/modules/capacity-planner';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
@@ -1990,11 +1990,13 @@ function EditResourceForm({
   onCancel: () => void;
 }) {
   const { departments } = useCapacityDepartments();
+  const { assignments: resourceAssignments } = useResourceAssignments();
   const { updateResource, updateResourceAllocation } = useResourceManagement();
   
   const [name, setName] = useState(resource.name);
   const [role, setRole] = useState(resource.role || 'Frontend Developer');
   const [departmentId, setDepartmentId] = useState(resource.department_id || '');
+  const [assignmentId, setAssignmentId] = useState(resource.assignment_id || '');
   const [projectId, setProjectId] = useState(resource.assignments?.[0]?.project_id || '');
   const [allocation, setAllocation] = useState(resource.allocation || 0);
   const [isSaving, setIsSaving] = useState(false);
@@ -2002,12 +2004,13 @@ function EditResourceForm({
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      // Update resource profile
+      // Update resource profile and assignment
       await updateResource.mutateAsync({
         id: resource.id,
         full_name: name,
         role,
         department_id: departmentId || null,
+        assignment_id: assignmentId || null,
       });
       
       // Update allocation if project selected
@@ -2070,12 +2073,12 @@ function EditResourceForm({
         </div>
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label>Project</Label>
-            <Select value={projectId} onValueChange={setProjectId}>
-              <SelectTrigger><SelectValue placeholder="Select project..." /></SelectTrigger>
+            <Label>Assignment</Label>
+            <Select value={assignmentId} onValueChange={setAssignmentId}>
+              <SelectTrigger><SelectValue placeholder="Select assignment..." /></SelectTrigger>
               <SelectContent>
-                {projects.map(proj => (
-                  <SelectItem key={proj.id} value={proj.id}>{proj.name}</SelectItem>
+                {resourceAssignments.map(assignment => (
+                  <SelectItem key={assignment.id} value={assignment.id}>{assignment.name}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -2091,6 +2094,17 @@ function EditResourceForm({
               onChange={(e) => setAllocation(parseInt(e.target.value) || 0)}
             />
           </div>
+        </div>
+        <div className="space-y-2">
+          <Label>Project</Label>
+          <Select value={projectId} onValueChange={setProjectId}>
+            <SelectTrigger><SelectValue placeholder="Select project..." /></SelectTrigger>
+            <SelectContent>
+              {projects.map(proj => (
+                <SelectItem key={proj.id} value={proj.id}>{proj.name}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
       </div>
       <DialogFooter>
