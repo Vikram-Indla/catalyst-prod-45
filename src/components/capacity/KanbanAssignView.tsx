@@ -609,7 +609,7 @@ function CompactResourceCard({
                 {resource.name}
               </p>
               <p className="text-[11px] text-muted-foreground truncate">
-                {isGhostCard ? `Assigned: ${resource.assignmentName}` : (resource.role || 'Team Member')}
+                {resource.role || 'Team Member'}
               </p>
             </div>
 
