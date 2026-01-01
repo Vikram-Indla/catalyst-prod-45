@@ -17,7 +17,12 @@ const typeConfig: Record<ActivityType, { icon: React.ElementType; bgStyle: React
   demand: { icon: FileText, bgStyle: { backgroundColor: 'var(--surface-3)' }, iconStyle: { color: 'var(--text-2)' } },
 };
 
-const avatarColors = ["#2563eb", "#5243AA", "#00875A", "#0d9488", "#FF5630"];
+// Use neutral gray for avatars instead of random colors per Catalyst V5
+const avatarStyle = {
+  bg: 'var(--border-default-hex)',
+  text: 'var(--text-2)',
+  border: 'var(--border-subtle-hex)'
+};
 
 function getTimeGroup(date: Date): string {
   const now = new Date();
@@ -38,7 +43,6 @@ function getTimeGroup(date: Date): string {
 function FeedRow({ item }: { item: ActivityItem }) {
   const config = typeConfig[item.type] || typeConfig.demand;
   const Icon = config.icon;
-  const avatarColor = avatarColors[item.id.charCodeAt(0) % avatarColors.length];
 
   const handleClick = () => {
     catalystToast.info("Opened", `Opened ${item.key}`);
@@ -68,13 +72,17 @@ function FeedRow({ item }: { item: ActivityItem }) {
         <p className="feed-row-meta">{item.key} • {item.projectName}</p>
       </div>
 
-      {/* Right column - action + avatar */}
+      {/* Right column - action + avatar - Catalyst V5 neutral avatar */}
       <div className="feed-row-right">
         <span className="feed-row-action">{item.action}</span>
         <div className="avatar-cluster">
           <div 
             className="avatar" 
-            style={{ backgroundColor: avatarColor }}
+            style={{ 
+              backgroundColor: avatarStyle.bg,
+              color: avatarStyle.text,
+              border: `1px solid ${avatarStyle.border}`
+            }}
             title="User"
           >
             U
@@ -100,8 +108,10 @@ function SkeletonRow() {
 
 function GroupHeader({ label }: { label: string }) {
   return (
-    <div className="feed-group-header">
-      {label}
+    <div className="flex items-center px-2 py-2.5 bg-[var(--surface-muted)] border-l-[3px] border-[var(--brand-primary-hex)]">
+      <span className="text-[11px] font-semibold text-[var(--text-4)] uppercase tracking-[0.08em]">
+        {label}
+      </span>
     </div>
   );
 }

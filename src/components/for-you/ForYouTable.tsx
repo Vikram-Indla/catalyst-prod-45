@@ -23,16 +23,40 @@ const GROUP_LABELS: Record<WorkGroup, string> = {
   EARLIER: 'Earlier',
 };
 
-const MODE_STYLES: Record<string, { bg: string; text: string }> = {
-  OPS: { bg: 'bg-status-danger/10', text: 'text-status-danger' },
-  DEL: { bg: 'bg-status-warning/10', text: 'text-status-warning' },
-  PLN: { bg: 'bg-purple-500/10', text: 'text-purple-600' },
+// Catalyst V5 dark mode compliant - using semantic tokens
+const MODE_STYLES: Record<string, { bg: string; text: string; border: string }> = {
+  OPS: { 
+    bg: 'bg-[var(--status-success-bg)]', 
+    text: 'text-[var(--status-success)]',
+    border: 'border border-[var(--status-success-border)]'
+  },
+  DEL: { 
+    bg: 'bg-[var(--status-info-bg)]', 
+    text: 'text-[var(--brand-primary-hex)]',
+    border: 'border border-[var(--status-info-border)]'
+  },
+  PLN: { 
+    bg: 'bg-[var(--status-muted-bg)]', 
+    text: 'text-[var(--text-3)]',
+    border: 'border border-[var(--status-muted-border)]'
+  },
 };
 
+// Item type indicators using Catalyst V5 dark mode tokens
 const INDICATOR_STYLES: Record<string, string> = {
-  OPS: 'bg-status-danger',
-  DEL: 'bg-status-warning',
-  PLN: 'bg-purple-600',
+  OPS: 'bg-[var(--status-success)]',      // Teal for operations
+  DEL: 'bg-[var(--brand-primary-hex)]',   // Blue for delivery
+  PLN: 'bg-[var(--status-muted)]',        // Gray for planning
+};
+
+// Generate consistent avatar color based on name (deterministic)
+const getAvatarStyle = (name: string) => {
+  // Use neutral gray for dark mode consistency per Catalyst V5
+  return {
+    bg: 'var(--border-default-hex)',      // #404040 in dark mode
+    text: 'var(--text-2)',                // #d4d4d4 in dark mode
+    border: 'var(--border-subtle-hex)',   // #333333 in dark mode
+  };
 };
 
 export function ForYouTable({ 
@@ -160,8 +184,8 @@ export function ForYouTable({
         "focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2"
       )}
     >
-      {/* Table Header */}
-      <div className="grid grid-cols-[40px_100px_1fr_80px_90px_90px_160px] gap-4 px-4 py-3 bg-surface-1 border-b border-border">
+      {/* Table Header - Catalyst V5: using table header bg token */}
+      <div className="grid grid-cols-[40px_100px_1fr_80px_90px_90px_160px] gap-4 px-4 py-3 bg-[var(--table-header-bg)] border-b border-[var(--border-color)]">
         <div className="flex items-center">
           <Checkbox 
             checked={isAllSelected}
@@ -193,9 +217,11 @@ export function ForYouTable({
       {/* Table Body - Grouped */}
       {groups.map((group) => (
         <div key={group}>
-          {/* Group Header */}
-          <div className="px-4 py-2.5 text-xs font-bold text-brand-primary uppercase tracking-wide bg-surface-0 border-l-[3px] border-brand-primary">
-            {GROUP_LABELS[group]}
+          {/* Group Header - Catalyst V5 dark mode: muted text with blue accent bar */}
+          <div className="flex items-center px-4 py-2.5 bg-[var(--surface-muted)] border-l-[3px] border-[var(--brand-primary-hex)]">
+            <span className="text-[11px] font-semibold text-[var(--text-4)] uppercase tracking-[0.08em]">
+              {GROUP_LABELS[group]}
+            </span>
           </div>
 
           {/* Group Items */}
@@ -233,53 +259,58 @@ export function ForYouTable({
                   />
                 </div>
 
-                {/* Key with indicator */}
+                {/* Key with indicator - Catalyst V5 link colors */}
                 <div className="flex items-center gap-2.5">
-                  <span className={cn("w-2 h-2 rounded-full shrink-0", INDICATOR_STYLES[item.mode])} />
+                  <span className={cn("w-2 h-2 rounded-full shrink-0", INDICATOR_STYLES[item.mode] || 'bg-[var(--status-muted)]')} />
                   <a 
-                    className="font-mono text-[13px] font-medium text-brand-primary hover:underline"
+                    className="font-mono text-[13px] font-medium text-[hsl(var(--link-color))] hover:text-[hsl(var(--link-color-hover))] hover:underline cursor-pointer"
                     onClick={(e) => e.stopPropagation()}
                   >
                     {item.key}
                   </a>
                 </div>
 
-                {/* Summary */}
-                <div className="text-sm font-medium text-text-primary truncate">
+                {/* Summary - Catalyst V5 text token */}
+                <div className="text-sm font-medium text-[var(--text-1)] truncate">
                   {item.summary}
                 </div>
 
-                {/* Mode Badge */}
+                {/* Mode Badge - Catalyst V5 compliant */}
                 <div className="flex items-center">
                   <span className={cn(
-                    "inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold uppercase",
-                    MODE_STYLES[item.mode].bg,
-                    MODE_STYLES[item.mode].text
+                    "inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold uppercase",
+                    MODE_STYLES[item.mode]?.bg || 'bg-[var(--status-muted-bg)]',
+                    MODE_STYLES[item.mode]?.text || 'text-[var(--text-4)]',
+                    MODE_STYLES[item.mode]?.border || 'border border-[var(--status-muted-border)]'
                   )}>
                     {item.mode}
                   </span>
                 </div>
 
-                {/* Level */}
-                <div className="flex items-center text-sm font-medium text-brand-primary">
+                {/* Level - Using link color for dark mode */}
+                <a className="flex items-center text-[13px] font-medium text-[hsl(var(--link-color))] hover:text-[hsl(var(--link-color-hover))] hover:underline cursor-pointer">
                   {item.level}
-                </div>
+                </a>
 
                 {/* Updated */}
                 <div className="flex items-center text-[13px] text-text-muted">
                   {item.updatedAt}
                 </div>
 
-                {/* Assignee with actions */}
+                {/* Assignee with actions - Catalyst V5 neutral avatar */}
                 <div className="flex items-center justify-between gap-2">
                   <div className="flex items-center gap-2.5 min-w-0 flex-1">
                     <div 
-                      className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-semibold text-white shrink-0"
-                      style={{ backgroundColor: item.assignee.avatarColor }}
+                      className="w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-semibold shrink-0"
+                      style={{ 
+                        backgroundColor: getAvatarStyle(item.assignee.name).bg,
+                        color: getAvatarStyle(item.assignee.name).text,
+                        border: `1px solid ${getAvatarStyle(item.assignee.name).border}`
+                      }}
                     >
                       {item.assignee.initials}
                     </div>
-                    <span className="text-[13px] text-text-secondary truncate">
+                    <span className="text-[13px] text-[var(--text-2)] truncate">
                       {item.assignee.name}
                     </span>
                   </div>
