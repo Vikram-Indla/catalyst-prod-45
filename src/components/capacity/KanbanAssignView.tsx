@@ -408,115 +408,113 @@ export function KanbanAssignView({
         </div>
       </div>
 
-      {/* Kanban Board with native scroll for auto-scroll support */}
+      {/* Kanban Board - single scroll container to avoid nested scroll issues */}
       <DragDropContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
-        <div className="flex-1 overflow-hidden p-4">
-          <div 
-            ref={scrollContainerRef}
-            className="h-full overflow-x-auto overflow-y-hidden scroll-smooth"
-            style={{ scrollBehavior: isDragging ? 'auto' : 'smooth' }}
-          >
-            <div className="flex gap-4 h-full pb-4 pr-4" style={{ minWidth: 'max-content' }}>
-              {columns.map((column) => {
-                const columnColor = getAssignmentColor(column.name);
-                return (
-                <Droppable key={column.id} droppableId={column.id}>
-                  {(provided, snapshot) => (
-                    <div
-                      className={cn(
-                        "flex flex-col w-[280px] shrink-0 bg-card border rounded-xl transition-all",
+        <div 
+          ref={scrollContainerRef}
+          className="flex-1 overflow-auto p-4"
+          style={{ scrollBehavior: isDragging ? 'auto' : 'smooth' }}
+        >
+          <div className="flex gap-4 pb-4 pr-4" style={{ minWidth: 'max-content', minHeight: 'calc(100vh - 180px)' }}>
+            {columns.map((column) => {
+              const columnColor = getAssignmentColor(column.name);
+              return (
+              <Droppable key={column.id} droppableId={column.id}>
+                {(provided, snapshot) => (
+                  <div
+                    className={cn(
+                      "flex flex-col w-[280px] shrink-0 bg-card border rounded-xl transition-all h-fit",
+                      snapshot.isDraggingOver 
+                        ? "border-[#2563eb] ring-2 ring-[#2563eb]/20" 
+                        : "border-border"
+                    )}
+                  >
+                    {/* Column Header */}
+                    <div className={cn(
+                      "flex items-center gap-2 px-3 py-3 border-b rounded-t-xl",
+                      snapshot.isDraggingOver 
+                        ? "bg-[#2563eb]/5 border-[#2563eb]/20" 
+                        : "bg-card border-border"
+                    )}>
+                      <div className={cn(
+                        "w-7 h-7 rounded-full flex items-center justify-center",
+                        columnColor.bg
+                      )}>
+                        <Users className={cn(
+                          "h-3.5 w-3.5",
+                          columnColor.text
+                        )} />
+                      </div>
+                      <span className="text-sm font-semibold text-foreground truncate flex-1">
+                        {column.name}
+                      </span>
+                      <span className={cn(
+                        "text-xs font-medium px-2 py-0.5 rounded-full",
                         snapshot.isDraggingOver 
-                          ? "border-[#2563eb] ring-2 ring-[#2563eb]/20" 
-                          : "border-border"
+                          ? "bg-[#2563eb]/10 text-[#2563eb]" 
+                          : "bg-muted text-muted-foreground"
+                      )}>
+                        {column.resources.length}
+                      </span>
+                    </div>
+
+                    {/* Column Content - NO internal scroll, grows with content */}
+                    <div
+                      ref={provided.innerRef}
+                      {...provided.droppableProps}
+                      className={cn(
+                        "p-2 space-y-2 min-h-[200px]",
+                        snapshot.isDraggingOver && "bg-[#2563eb]/10"
                       )}
                     >
-                      {/* Column Header - Sticky */}
-                      <div className={cn(
-                        "sticky top-0 z-10 flex items-center gap-2 px-3 py-3 border-b rounded-t-xl",
-                        snapshot.isDraggingOver 
-                          ? "bg-[#2563eb]/5 border-[#2563eb]/20" 
-                          : "bg-card border-border"
-                      )}>
-                        <div className={cn(
-                          "w-7 h-7 rounded-full flex items-center justify-center",
-                          columnColor.bg
-                        )}>
-                          <Users className={cn(
-                            "h-3.5 w-3.5",
-                            columnColor.text
-                          )} />
-                        </div>
-                        <span className="text-sm font-semibold text-foreground truncate flex-1">
-                          {column.name}
-                        </span>
-                        <span className={cn(
-                          "text-xs font-medium px-2 py-0.5 rounded-full",
-                          snapshot.isDraggingOver 
-                            ? "bg-[#2563eb]/10 text-[#2563eb]" 
-                            : "bg-muted text-muted-foreground"
-                        )}>
-                          {column.resources.length}
-                        </span>
-                      </div>
-
-                      {/* Column Content - Scrollable droppable area */}
-                      <div
-                        ref={provided.innerRef}
-                        {...provided.droppableProps}
-                        className={cn(
-                          "flex-1 overflow-y-auto p-2 space-y-2 min-h-[300px] max-h-[calc(100vh-220px)]",
-                          snapshot.isDraggingOver && "bg-[#2563eb]/10 ring-2 ring-inset ring-[#2563eb]/30"
-                        )}
-                      >
-                        {column.resources.map((resource, index) => {
-                          // Use unique key for ghost cards
-                          const cardId = resource.isGhostCard ? `${resource.id}-ghost` : resource.id;
-                          return (
-                            <Draggable key={cardId} draggableId={cardId} index={index}>
-                              {(draggableProvided, draggableSnapshot) => (
-                                <div
-                                  ref={draggableProvided.innerRef}
-                                  {...draggableProvided.draggableProps}
-                                  {...draggableProvided.dragHandleProps}
-                                  style={draggableProvided.draggableProps.style}
-                                >
-                                  <CompactResourceCard 
-                                    resource={resource} 
-                                    isDragging={draggableSnapshot.isDragging}
-                                    isGhostCard={resource.isGhostCard}
-                                    availableCapacity={resource.availableCapacity}
-                                    allocationInColumn={resource.allocationInColumn}
-                                  />
-                                </div>
-                              )}
-                            </Draggable>
-                          );
-                        })}
-                        {provided.placeholder}
-
-                        {/* Empty state - show when no resources and not dragging over */}
-                        {column.resources.length === 0 && (
-                          <div 
-                            className={cn(
-                              "flex flex-col items-center justify-center py-12 text-center pointer-events-none",
-                              snapshot.isDraggingOver && "opacity-0"
+                      {column.resources.map((resource, index) => {
+                        // Use unique key for ghost cards
+                        const cardId = resource.isGhostCard ? `${resource.id}-ghost` : resource.id;
+                        return (
+                          <Draggable key={cardId} draggableId={cardId} index={index}>
+                            {(draggableProvided, draggableSnapshot) => (
+                              <div
+                                ref={draggableProvided.innerRef}
+                                {...draggableProvided.draggableProps}
+                                {...draggableProvided.dragHandleProps}
+                                style={draggableProvided.draggableProps.style}
+                              >
+                                <CompactResourceCard 
+                                  resource={resource} 
+                                  isDragging={draggableSnapshot.isDragging}
+                                  isGhostCard={resource.isGhostCard}
+                                  availableCapacity={resource.availableCapacity}
+                                  allocationInColumn={resource.allocationInColumn}
+                                />
+                              </div>
                             )}
-                          >
-                            <div className="w-12 h-12 rounded-full bg-muted/50 flex items-center justify-center mb-2">
-                              <Users className="h-5 w-5 text-muted-foreground/50" />
-                            </div>
-                            <p className="text-xs text-muted-foreground">
-                              Drop resources here
-                            </p>
+                          </Draggable>
+                        );
+                      })}
+                      {provided.placeholder}
+
+                      {/* Empty state - show when no resources and not dragging over */}
+                      {column.resources.length === 0 && (
+                        <div 
+                          className={cn(
+                            "flex flex-col items-center justify-center py-12 text-center pointer-events-none",
+                            snapshot.isDraggingOver && "opacity-0"
+                          )}
+                        >
+                          <div className="w-12 h-12 rounded-full bg-muted/50 flex items-center justify-center mb-2">
+                            <Users className="h-5 w-5 text-muted-foreground/50" />
                           </div>
-                        )}
-                      </div>
+                          <p className="text-xs text-muted-foreground">
+                            Drop resources here
+                          </p>
+                        </div>
+                      )}
                     </div>
-                  )}
-                </Droppable>
-              );
-              })}
-            </div>
+                  </div>
+                )}
+              </Droppable>
+            );
+            })}
           </div>
         </div>
       </DragDropContext>
