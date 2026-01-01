@@ -738,59 +738,31 @@ export default function CapacityPlannerPage() {
 
         {/* Presentation Mode Fullscreen Overlay */}
         {presentationMode && (
-          <div className="fixed inset-0 z-50 bg-[#fafafa] flex flex-col">
-            {/* Logo - Top Left */}
-            <div className="absolute top-4 left-6 z-50">
+          <div className="fixed inset-0 z-[9999] bg-background">
+            {/* Only the Catalyst logo + Exit CTA */}
+            <div className="absolute top-4 left-6 z-[10000]">
               <Logo variant="dark" size="lg" />
             </div>
 
-            {/* Exit Button - Top Right */}
-            <button
-              onClick={() => setPresentationMode(false)}
-              className="absolute top-4 right-6 z-50 flex items-center gap-2 px-4 py-2 bg-slate-900 text-white rounded-lg hover:bg-slate-800 transition-colors shadow-lg"
-            >
-              <X className="h-4 w-4" />
-              Exit Presentation
-            </button>
+            <div className="absolute top-4 right-6 z-[10000]">
+              <Button size="sm" onClick={() => setPresentationMode(false)} className="gap-2">
+                <X className="h-4 w-4" />
+                Exit Presentation
+              </Button>
+            </div>
 
-            {/* Full Content Area - Minimal padding, max space for cards */}
-            <div className="flex-1 overflow-auto pt-16 px-4 pb-4">
-              {currentView === 'cards' && (
-                <CardsView 
-                  resources={filteredResources} 
-                  groupedByAssignment={groupedByAssignment}
-                  groupedByDepartment={groupedByDepartment}
-                  groupBy={groupBy}
-                  isCollapsed={isCollapsed}
-                  compactMode={compactMode}
-                  onResourceClick={() => {}}
-                  onEditResource={() => {}}
-                />
-              )}
-              {currentView === 'table' && (
-                <TableView 
-                  resources={filteredResources} 
-                  projects={projects}
-                  groupBy={groupBy}
-                  groupedByAssignment={groupedByAssignment}
-                  groupedByDepartment={groupedByDepartment}
-                  onResourceClick={() => {}}
-                  onEditResource={() => {}}
-                  onDeleteResource={() => {}}
-                  onBulkDelete={() => {}}
-                  onBulkEdit={() => {}}
-                />
-              )}
-              {currentView === 'timeline' && (
-                <TimelineView 
-                  resources={filteredResources} 
-                  period={period}
-                  groupBy={groupBy}
-                  groupedByAssignment={groupedByAssignment}
-                  groupedByDepartment={groupedByDepartment}
-                  onEditResource={() => {}}
-                />
-              )}
+            {/* Content cards should occupy the screen */}
+            <div className="h-full w-full overflow-auto pt-14 px-2 pb-2">
+              <CardsView
+                resources={filteredResources}
+                groupedByAssignment={groupedByAssignment}
+                groupedByDepartment={groupedByDepartment}
+                groupBy={groupBy}
+                isCollapsed={false}
+                compactMode={true}
+                onResourceClick={() => {}}
+                onEditResource={() => {}}
+              />
             </div>
           </div>
         )}
