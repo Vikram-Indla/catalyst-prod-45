@@ -289,7 +289,7 @@ export type Database = {
           feature_id: string | null
           id: string
           notes: string | null
-          project_id: string
+          project_id: string | null
           start_date: string
           status: string
           story_id: string | null
@@ -306,7 +306,7 @@ export type Database = {
           feature_id?: string | null
           id?: string
           notes?: string | null
-          project_id: string
+          project_id?: string | null
           start_date: string
           status?: string
           story_id?: string | null
@@ -323,7 +323,7 @@ export type Database = {
           feature_id?: string | null
           id?: string
           notes?: string | null
-          project_id?: string
+          project_id?: string | null
           start_date?: string
           status?: string
           story_id?: string | null

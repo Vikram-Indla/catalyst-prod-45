@@ -1,6 +1,6 @@
-import { useState, useMemo } from 'react';
-import { PageChrome } from '@/components/layout/PageChrome';
-import { Input } from '@/components/ui/input';
+import { useEffect, useState, useMemo } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
@@ -46,6 +46,8 @@ const projectColors = [
 ];
 
 export default function CapacityPlannerPage() {
+  const queryClient = useQueryClient();
+
   const { metrics, projects, resources, assignments, isLoading } = useCapacityData();
   const { createAssignment, deleteAssignment } = useAssignments();
   const { recommendations, highPriorityCount } = useAiRecommendations({ 
@@ -77,10 +79,36 @@ export default function CapacityPlannerPage() {
   const [selectedDepartmentId, setSelectedDepartmentId] = useState<string>('');
   const [selectedAssignment, setSelectedAssignment] = useState<string>('');
   const [allocationPercentage, setAllocationPercentage] = useState<number>(100);
+  const [isAddingResources, setIsAddingResources] = useState(false);
 
   // Fetch departments and assignment types for the modal
   const { departments } = useCapacityDepartments();
   const { data: assignmentTypes = [] } = useActiveCapacityAssignmentTypes();
+
+  useEffect(() => {
+    if (!resourceModalOpen) return;
+
+    if (!selectedDepartmentId && (departments?.length ?? 0) > 0) {
+      const delivery = departments?.find((d) => d.name?.toLowerCase() === 'delivery');
+      if (delivery) setSelectedDepartmentId(delivery.id);
+    }
+
+    if (!selectedAssignment && assignmentTypes.length > 0) {
+      const normalize = (s: string) => s.toLowerCase().replace(/\s+/g, ' ').trim();
+      const target = ['senaei bau', 'senai bau'];
+      const defaultType =
+        assignmentTypes.find((t) => target.includes(normalize(t.name ?? ''))) ??
+        assignmentTypes.find((t) => normalize(t.name ?? '').includes('bau'));
+
+      if (defaultType) setSelectedAssignment(defaultType.id);
+    }
+  }, [
+    resourceModalOpen,
+    departments,
+    assignmentTypes,
+    selectedDepartmentId,
+    selectedAssignment,
+  ]);
 
   // Get users already assigned in capacity planner
   const assignedUserIds = useMemo(() => {
@@ -474,27 +502,84 @@ export default function CapacityPlannerPage() {
             <DialogFooter>
               <Button variant="outline" onClick={() => setResourceModalOpen(false)}>Cancel</Button>
               <Button 
-                disabled={selectedUserIds.length === 0}
-                onClick={() => {
-                  selectedUserIds.forEach(userId => {
-                    createAssignment.mutate({
-                      user_id: userId,
-                      project_id: null,
-                      allocation_percentage: allocationPercentage,
-                      start_date: new Date().toISOString().split('T')[0],
-                      status: 'active',
-                      work_item_type: 'project',
-                    });
-                  });
-                  setResourceModalOpen(false);
-                  setSelectedUserIds([]);
-                  setSelectedDepartmentId('');
-                  setSelectedAssignment('');
-                  setAllocationPercentage(100);
+                disabled={
+                  selectedUserIds.length === 0 ||
+                  isAddingResources ||
+                  !selectedAssignment ||
+                  !selectedDepartmentId
+                }
+                onClick={async () => {
+                  if (!selectedAssignment || !selectedDepartmentId) {
+                    toast.error('Please select an assignment and department');
+                    return;
+                  }
+
+                  setIsAddingResources(true);
+                  try {
+                    const startDate = new Date().toISOString().split('T')[0];
+                    const userById = new Map(resources.map((r) => [r.id, r]));
+
+                    const { error: assignmentError } = await supabase.from('assignments').insert(
+                      selectedUserIds.map((userId) => ({
+                        user_id: userId,
+                        project_id: null,
+                        allocation_percentage: allocationPercentage,
+                        start_date: startDate,
+                        status: 'active',
+                        work_item_type: 'project',
+                      }))
+                    );
+                    if (assignmentError) throw assignmentError;
+
+                    const { error: profileError } = await supabase
+                      .from('profiles')
+                      .update({ department_id: selectedDepartmentId })
+                      .in('id', selectedUserIds);
+                    if (profileError) throw profileError;
+
+                    for (const userId of selectedUserIds) {
+                      const name = userById.get(userId)?.name;
+                      if (!name) continue;
+
+                      const { data: updatedRows, error: updateError } = await supabase
+                        .from('resource_inventory')
+                        .update({ assignment_id: selectedAssignment })
+                        .eq('name', name)
+                        .select('id');
+
+                      if (updateError) throw updateError;
+
+                      if (!updatedRows || updatedRows.length === 0) {
+                        const { error: insertError } = await supabase.from('resource_inventory').insert({
+                          name,
+                          assignment_id: selectedAssignment,
+                          is_active: true,
+                        });
+                        if (insertError) throw insertError;
+                      }
+                    }
+
+                    queryClient.invalidateQueries({ queryKey: ['capacity-planner-assignments'] });
+                    queryClient.invalidateQueries({ queryKey: ['capacity-planner-resources'] });
+
+                    toast.success(
+                      `Added ${selectedUserIds.length} resource${selectedUserIds.length === 1 ? '' : 's'}`
+                    );
+
+                    setResourceModalOpen(false);
+                    setSelectedUserIds([]);
+                    setSelectedDepartmentId('');
+                    setSelectedAssignment('');
+                    setAllocationPercentage(100);
+                  } catch (error: any) {
+                    toast.error(`Failed to add resources: ${error?.message ?? 'Unknown error'}`);
+                  } finally {
+                    setIsAddingResources(false);
+                  }
                 }} 
                 className="bg-[#2563eb] hover:bg-[#1d4ed8]"
               >
-                Add {selectedUserIds.length > 0 ? `${selectedUserIds.length} ` : ''}to Capacity Planner
+                {isAddingResources ? 'Adding...' : `Add ${selectedUserIds.length > 0 ? `${selectedUserIds.length} ` : ''}to Capacity Planner`}
               </Button>
             </DialogFooter>
           </DialogContent>
