@@ -2522,23 +2522,16 @@ function EditResourceForm({
             placeholder="Enter name"
           />
         </div>
-        <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label>Role</Label>
-            <Select value={role} onValueChange={handleRoleChange}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="Frontend Developer">Frontend Developer</SelectItem>
-                <SelectItem value="Backend Developer">Backend Developer</SelectItem>
-                <SelectItem value="Sr Frontend Developer">Sr Frontend Developer</SelectItem>
-                <SelectItem value="Sr Backend Developer">Sr Backend Developer</SelectItem>
-                <SelectItem value="DevOps Engineer">DevOps Engineer</SelectItem>
-                <SelectItem value="QA Analyst">QA Analyst</SelectItem>
-                <SelectItem value="Product Owner">Product Owner</SelectItem>
-                <SelectItem value="Delivery Manager">Delivery Manager</SelectItem>
-                <SelectItem value="Backend Architect">Backend Architect</SelectItem>
-              </SelectContent>
-            </Select>
+            <Input 
+              value={role}
+              readOnly
+              disabled
+              className="bg-muted cursor-not-allowed"
+              placeholder="Managed via Admin > Users"
+            />
           </div>
           <div className="space-y-2">
             <Label>Department</Label>

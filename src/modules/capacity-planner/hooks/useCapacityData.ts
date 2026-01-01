@@ -34,6 +34,17 @@ export function useCapacityData() {
         .from('resource_inventory')
         .select('id, name, assignment_id, profile_id');
       
+      // Fetch user_product_roles with role names for synced role display
+      const { data: userProductRoles } = await supabase
+        .from('user_product_roles')
+        .select('user_id, role_id, product_roles(id, name)');
+      const userRoleMap = new Map<string, string>();
+      (userProductRoles || []).forEach((upr: any) => {
+        if (upr.product_roles?.name && !userRoleMap.has(upr.user_id)) {
+          userRoleMap.set(upr.user_id, upr.product_roles.name);
+        }
+      });
+      
       // Create maps for both profile_id and name-based lookup (fallback)
       const inventoryByProfileId = new Map(resourceInventory?.filter(r => r.profile_id).map(r => [r.profile_id, r]) || []);
       const inventoryByName = new Map(resourceInventory?.map(r => [r.name?.toLowerCase(), r]) || []);
@@ -44,11 +55,13 @@ export function useCapacityData() {
         const inventory = inventoryByProfileId.get(p.id) || inventoryByName.get(fullName.toLowerCase());
         const assignmentId = inventory?.assignment_id || null;
         const assignmentName = assignmentId ? assignmentTypeMap.get(assignmentId) || null : null;
+        // Use product role if available, fallback to profiles.role
+        const roleName = userRoleMap.get(p.id) || p.role || 'Team Member';
         return {
           id: p.id,
           name: fullName,
           email: p.email || '',
-          role: p.role || 'Team Member',
+          role: roleName,
           department: p.department_id ? deptMap.get(p.department_id) || 'Unassigned' : 'Unassigned',
           department_id: p.department_id,
           assignment_id: assignmentId,

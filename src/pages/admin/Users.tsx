@@ -5,12 +5,11 @@ import { Plus } from 'lucide-react';
 import { ResponsivePageContainer, ResponsivePageHeader } from '@/components/layout/ResponsivePageContainer';
 import { UsersTable } from '@/components/admin/users/UsersTable';
 import { UsersStatsCards } from '@/components/admin/users/UsersStatsCards';
-import { AddUserModal } from '@/components/admin/users/AddUserModal';
+import { ResourceModal } from '@/components/shared/ResourceModal';
 import { EditUserRolesModal } from '@/components/admin/users/EditUserRolesModal';
 import { UserOverridesModal } from '@/components/admin/roles-permissions/UserOverridesModal';
 import { useUsers } from '@/hooks/useUsers';
 import { useUserRole } from '@/hooks/useUserRole';
-
 /**
  * Users Management Page - Manage user profiles and system access
  * Source: Administration guide PDF, Page 20
@@ -80,9 +79,11 @@ export default function Users() {
         />
 
         {/* Add User Modal */}
-        <AddUserModal 
+        <ResourceModal 
           isOpen={isAddUserModalOpen} 
-          onClose={() => setIsAddUserModalOpen(false)} 
+          onClose={() => setIsAddUserModalOpen(false)}
+          mode="create"
+          context="admin"
         />
 
         {/* Edit User Roles Modal */}
