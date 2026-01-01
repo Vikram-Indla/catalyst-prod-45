@@ -32,6 +32,16 @@ import { KanbanAssignView } from '@/components/capacity/KanbanAssignView';
 type PeriodType = 'weekly' | 'monthly' | 'quarterly';
 type GroupByType = 'none' | 'assignment' | 'department';
 
+import { 
+  getInitials, 
+  getAllocationBarColor, 
+  getTimelineCellColors, 
+  getUtilizationColor,
+  AVATAR_COLOR, 
+  DEPARTMENT_BADGE,
+  BRAND_COLORS 
+} from '@/lib/capacity/utils';
+
 // Department colors - Catalyst V5 compliant
 const departmentColors: Record<string, { bg: string; text: string; badge: string }> = {
   Product: { bg: 'bg-[#d4b896]', text: 'text-[#4a3f35]', badge: 'bg-[#d4b896]/15 text-[#c69c6d]' },
@@ -265,179 +275,215 @@ export default function CapacityPlannerPage() {
   return (
     <PageChrome>
       <div className="flex flex-col h-full bg-[hsl(var(--background))] relative">
-        {/* Header Row - Compact Toolbar */}
-        <div className="flex items-center justify-between px-5 py-3 bg-card/50 border-b border-border flex-wrap gap-3">
-          <div className="flex items-center gap-3">
-            {/* Search */}
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input 
-                placeholder="Search resources..." 
-                className="pl-9 w-48 h-10 text-sm bg-card border-border rounded-lg"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
+        {/* Header Row - Spec Compliant Toolbar */}
+        <div className="bg-white border-b border-[#e5e5e5]">
+          {/* Breadcrumb */}
+          <div className="px-6 pt-4 pb-2">
+            <div className="flex items-center gap-2 text-sm">
+              <span className="text-[#737373]">ENTERPRISE</span>
+              <span className="text-[#737373]">/</span>
+              <span className="font-semibold text-[#0a0a0a]">Capacity</span>
+            </div>
+          </div>
+
+          {/* Row 1: Search + Filters + Actions */}
+          <div className="flex items-center justify-between px-6 py-3 flex-wrap gap-3">
+            <div className="flex items-center gap-3">
+              {/* Search */}
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#9ca3af]" />
+                <Input 
+                  placeholder="Search resources..." 
+                  className="pl-9 w-48 h-10 border-[#e5e5e5] rounded-lg bg-white"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+              </div>
+              
+              {/* Department Filter */}
+              <Select value={departmentFilter} onValueChange={setDepartmentFilter}>
+                <SelectTrigger className="h-10 gap-2 border-[#e5e5e5] bg-white rounded-lg">
+                  <Building2 className="h-4 w-4" />
+                  <SelectValue placeholder="All Departments" />
+                </SelectTrigger>
+                <SelectContent className="bg-white border border-[#e5e5e5] shadow-lg z-50">
+                  <SelectItem value="all">All Departments</SelectItem>
+                  {uniqueDepartments.map((dept) => (
+                    <SelectItem key={dept} value={dept}>{dept}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              {/* Division Filter */}
+              <Select defaultValue="all">
+                <SelectTrigger className="h-10 gap-2 border-[#e5e5e5] bg-white rounded-lg w-28">
+                  <FileStack className="h-4 w-4" />
+                  <SelectValue placeholder="All..." />
+                </SelectTrigger>
+                <SelectContent className="bg-white border border-[#e5e5e5] shadow-lg z-50">
+                  <SelectItem value="all">All Divisions</SelectItem>
+                  <SelectItem value="delivery">Delivery</SelectItem>
+                  <SelectItem value="operations">Operations</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
             
-            {/* Department Filter - Badge Style */}
-            <Select value={departmentFilter} onValueChange={setDepartmentFilter}>
-              <SelectTrigger className={cn(
-                "h-10 text-sm border-0 gap-2 rounded-full px-4",
-                departmentFilter !== 'all' 
-                  ? "bg-[#2563eb] text-white hover:bg-[#1d4ed8]" 
-                  : "bg-card border border-border text-foreground"
-              )}>
-                <Building2 className="h-4 w-4" />
-                <SelectValue placeholder="Department" />
-                {departmentFilter !== 'all' && (
-                  <span className="bg-white/20 text-white text-xs font-bold px-1.5 py-0.5 rounded-full ml-1">
-                    {filteredResources.length}
-                  </span>
-                )}
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Departments</SelectItem>
-                {uniqueDepartments.map((dept) => (
-                  <SelectItem key={dept} value={dept}>{dept}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-
-            {/* All Divisions Filter */}
-            <Select defaultValue="all">
-              <SelectTrigger className="h-10 text-sm bg-card border border-border rounded-lg px-4 w-36">
-                <FileStack className="h-4 w-4 text-muted-foreground" />
-                <SelectValue placeholder="All Divisions" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Divisions</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          
-          <div className="flex items-center gap-2">
-            <Button variant="ghost" size="icon" onClick={handleExport} className="h-10 w-10">
-              <Download className="h-4 w-4" />
-            </Button>
-            <Button variant="ghost" size="icon" className="h-10 w-10">
-              <Settings2 className="h-4 w-4" />
-            </Button>
-            <Button size="sm" onClick={() => setResourceModalOpen(true)} className="gap-2 bg-[#2563eb] hover:bg-[#1d4ed8] h-10 px-4 rounded-lg">
-              <Plus className="h-4 w-4" />
-              Add Resource
-            </Button>
-          </div>
-        </div>
-
-        {/* Summary Stats Bar - Compact Pill Style */}
-        <div className="flex items-center gap-3 px-5 py-3 flex-wrap">
-          <StatPill 
-            icon={Users} 
-            value={metrics.summary.total} 
-            label="Total" 
-            variant="default"
-          />
-          <StatPill 
-            icon={CheckCircle2} 
-            value={metrics.summary.available + metrics.summary.healthy} 
-            label="Available" 
-            variant="success"
-          />
-          <StatPill 
-            icon={BarChart3} 
-            value={metrics.summary.atCapacity} 
-            label="At Capacity" 
-            variant="primary"
-          />
-          <StatPill 
-            icon={Clock} 
-            value={metrics.summary.overAllocated} 
-            label="Over" 
-            variant="default"
-          />
-          
-          {/* Utilization - Compact */}
-          <div className="flex items-center gap-3 ml-auto bg-card border border-border rounded-lg px-4 py-2">
-            <span className="text-xs font-semibold text-muted-foreground uppercase">Utilization</span>
-            <div className="w-32 h-2 bg-muted rounded-full overflow-hidden">
-              <div 
-                className={cn(
-                  'h-full rounded-full transition-all',
-                  metrics.summary.avgUtilization >= 80 ? 'bg-[#dc2626]' : 
-                  metrics.summary.avgUtilization >= 60 ? 'bg-[#d97706]' : 'bg-[#0d9488]'
-                )}
-                style={{ width: `${Math.min(metrics.summary.avgUtilization, 100)}%` }}
-              />
+            {/* Actions */}
+            <div className="flex items-center gap-2">
+              <Button variant="ghost" size="icon" onClick={handleExport} className="h-10 w-10 text-[#525252] hover:bg-[#f5f5f4]">
+                <Download className="h-5 w-5" />
+              </Button>
+              <Button variant="ghost" size="icon" className="h-10 w-10 text-[#525252] hover:bg-[#f5f5f4]">
+                <Settings2 className="h-5 w-5" />
+              </Button>
+              <Button 
+                onClick={() => setResourceModalOpen(true)} 
+                className="gap-2 bg-[#2563eb] hover:bg-[#1d4ed8] h-10 px-4 rounded-lg text-white"
+              >
+                <Plus className="h-4 w-4" />
+                Add Resource
+              </Button>
             </div>
-            <span className={cn(
-              'text-lg font-bold',
-              metrics.summary.avgUtilization >= 80 ? 'text-[#dc2626]' : 
-              metrics.summary.avgUtilization >= 60 ? 'text-[#d97706]' : 'text-[#0d9488]'
-            )}>
-              {metrics.summary.avgUtilization}%
-            </span>
-          </div>
-        </div>
-
-        {/* View Tabs Row */}
-        <div className="flex items-center justify-between px-5 pb-4 gap-3 flex-wrap">
-          <div className="flex bg-muted p-1 rounded-lg border border-border">
-            <ViewTab icon={LayoutGrid} label="Cards" active={currentView === 'cards'} onClick={() => setCurrentView('cards')} />
-            <ViewTab icon={Table2} label="Table" active={currentView === 'table'} onClick={() => setCurrentView('table')} />
-            <ViewTab icon={CalendarDays} label="Timeline" active={currentView === 'timeline'} onClick={() => setCurrentView('timeline')} />
           </div>
 
-          {/* Period Toggle - Only show in Timeline view */}
-          {currentView === 'timeline' && (
-            <div className="flex bg-card border border-border rounded-lg p-1">
-              {(['weekly', 'monthly', 'quarterly'] as PeriodType[]).map((p) => (
-                <button
-                  key={p}
-                  onClick={() => setPeriod(p)}
-                  className={cn(
-                    'px-4 py-2 text-xs font-semibold rounded-md transition-all capitalize',
-                    period === p
-                      ? 'bg-foreground text-background'
-                      : 'text-muted-foreground hover:bg-muted hover:text-foreground'
-                  )}
-                >
-                  {p}
-                </button>
-              ))}
+          {/* Row 2: Summary Stats - Pill Style */}
+          <div className="flex items-center justify-between px-6 py-3 flex-wrap gap-3">
+            <div className="flex items-center gap-2">
+              {/* Total */}
+              <div className="flex items-center gap-2 px-3 py-2 border border-[#e5e5e5] rounded-full bg-white">
+                <Users className="w-4 h-4 text-[#525252]" />
+                <span className="font-semibold text-[#0a0a0a]">{metrics.summary.total}</span>
+                <span className="text-sm text-[#737373]">Total</span>
+              </div>
+
+              {/* Available */}
+              <div className="flex items-center gap-2 px-3 py-2 border border-[#e5e5e5] rounded-full bg-white">
+                <div className="w-5 h-5 rounded-full bg-[#0d9488] flex items-center justify-center">
+                  <Check className="w-3 h-3 text-white" />
+                </div>
+                <span className="font-semibold text-[#0a0a0a]">{metrics.summary.available + metrics.summary.healthy}</span>
+                <span className="text-sm text-[#737373]">Available</span>
+              </div>
+
+              {/* At Capacity */}
+              <div className="flex items-center gap-2 px-3 py-2 border border-[#e5e5e5] rounded-full bg-white">
+                <div className="w-5 h-5 rounded-full bg-[#f97316] flex items-center justify-center">
+                  <BarChart3 className="w-3 h-3 text-white" />
+                </div>
+                <span className="font-semibold text-[#0a0a0a]">{metrics.summary.atCapacity}</span>
+                <span className="text-sm text-[#737373]">At Capacity</span>
+              </div>
+
+              {/* Over */}
+              <div className="flex items-center gap-2 px-3 py-2 border border-[#e5e5e5] rounded-full bg-white">
+                <div className="w-5 h-5 rounded-full bg-[#9ca3af] flex items-center justify-center">
+                  <Clock className="w-3 h-3 text-white" />
+                </div>
+                <span className="font-semibold text-[#0a0a0a]">{metrics.summary.overAllocated}</span>
+                <span className="text-sm text-[#737373]">Over</span>
+              </div>
             </div>
-          )}
-          
-          <div className="flex items-center gap-2 ml-auto">
-            <Select value={groupBy} onValueChange={(v) => setGroupBy(v as GroupByType)}>
-              <SelectTrigger className="w-48 h-10 text-sm bg-card border border-border rounded-lg">
-                <FileStack className="h-4 w-4 text-muted-foreground" />
-                <SelectValue placeholder="Group by..." />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="none">No Grouping</SelectItem>
-                <SelectItem value="assignment">Group by Assignment</SelectItem>
-                <SelectItem value="department">Group by Department</SelectItem>
-              </SelectContent>
-            </Select>
-            
-            {/* Assign Mode Toggle */}
-            <button
-              onClick={() => setAssignModeOpen(!assignModeOpen)}
-              className={cn(
-                'flex items-center gap-2 px-4 py-2.5 rounded-lg border text-sm font-medium transition-all h-10',
-                assignModeOpen
-                  ? 'bg-[#2563eb] border-[#2563eb] text-white'
-                  : 'bg-card border-border text-foreground hover:text-[#2563eb] hover:border-[#2563eb]/50'
+
+            {/* Utilization Bar */}
+            <div className="flex items-center gap-3 px-4 py-2 border border-[#e5e5e5] rounded-lg bg-white">
+              <span className="text-sm font-medium text-[#737373]">UTILIZATION</span>
+              <div className="w-32 h-2 bg-[#e5e5e5] rounded-full overflow-hidden">
+                <div
+                  className="h-full rounded-full transition-all"
+                  style={{ 
+                    width: `${Math.min(metrics.summary.avgUtilization, 100)}%`,
+                    backgroundColor: getUtilizationColor(metrics.summary.avgUtilization)
+                  }}
+                />
+              </div>
+              <span 
+                className="font-bold"
+                style={{ color: getUtilizationColor(metrics.summary.avgUtilization) }}
+              >
+                {metrics.summary.avgUtilization}%
+              </span>
+            </div>
+          </div>
+
+          {/* Row 3: View Tabs + Controls */}
+          <div className="flex items-center justify-between px-6 py-3 border-t border-[#f0f0f0] flex-wrap gap-3">
+            <div className="flex items-center gap-4">
+              {/* View Tabs */}
+              <div className="flex items-center gap-1 bg-[#f5f5f4] rounded-lg p-1">
+                <ViewTabSpec 
+                  icon={LayoutGrid} 
+                  label="Cards" 
+                  active={currentView === 'cards'} 
+                  onClick={() => setCurrentView('cards')} 
+                />
+                <ViewTabSpec 
+                  icon={Table2} 
+                  label="Table" 
+                  active={currentView === 'table'} 
+                  onClick={() => setCurrentView('table')} 
+                />
+                <ViewTabSpec 
+                  icon={CalendarDays} 
+                  label="Timeline" 
+                  active={currentView === 'timeline'} 
+                  onClick={() => setCurrentView('timeline')} 
+                />
+              </div>
+
+              {/* Period Toggle - Only show in Timeline view */}
+              {currentView === 'timeline' && (
+                <div className="flex items-center gap-1 bg-[#f5f5f4] rounded-lg p-1">
+                  {(['weekly', 'monthly', 'quarterly'] as PeriodType[]).map((p) => (
+                    <button
+                      key={p}
+                      onClick={() => setPeriod(p)}
+                      className={cn(
+                        'px-4 py-2 rounded-md text-sm font-medium transition-all capitalize',
+                        period === p
+                          ? 'bg-[#0a0a0a] text-white'
+                          : 'text-[#737373] hover:text-[#525252]'
+                      )}
+                    >
+                      {p}
+                    </button>
+                  ))}
+                </div>
               )}
-            >
-              <Users className="h-4 w-4" />
-              <span>Assign</span>
-            </button>
+            </div>
+            
+            {/* Right Controls */}
+            <div className="flex items-center gap-2">
+              {/* Group By */}
+              <Select value={groupBy} onValueChange={(v) => setGroupBy(v as GroupByType)}>
+                <SelectTrigger className="gap-2 border-[#e5e5e5] bg-white rounded-lg h-10">
+                  <FileStack className="h-4 w-4" />
+                  <SelectValue placeholder="Group by..." />
+                </SelectTrigger>
+                <SelectContent className="bg-white border border-[#e5e5e5] shadow-lg z-50">
+                  <SelectItem value="none">No Grouping</SelectItem>
+                  <SelectItem value="assignment">Group by Assignment</SelectItem>
+                  <SelectItem value="department">Group by Department</SelectItem>
+                </SelectContent>
+              </Select>
+              
+              {/* Assign Button */}
+              <Button
+                variant="outline"
+                onClick={() => setAssignModeOpen(!assignModeOpen)}
+                className={cn(
+                  'gap-2 border-[#e5e5e5] h-10',
+                  assignModeOpen && 'bg-[#2563eb] border-[#2563eb] text-white hover:bg-[#1d4ed8]'
+                )}
+              >
+                <Users className="h-4 w-4" />
+                Assign
+              </Button>
+            </div>
           </div>
         </div>
 
-        {/* Main Content */}
-        <div className="flex-1 overflow-auto px-5 pb-5">
+        {/* Main Content - Spec background */}
+        <div className="flex-1 overflow-auto px-6 py-6 bg-[#fafafa]">
           {currentView === 'cards' && (
             <CardsView 
               resources={filteredResources} 
@@ -932,6 +978,29 @@ function ViewTab({ icon: Icon, label, active, onClick, badge }: {
   );
 }
 
+// View Tab - Spec compliant styling
+function ViewTabSpec({ icon: Icon, label, active, onClick }: { 
+  icon: React.ElementType; 
+  label: string; 
+  active: boolean; 
+  onClick: () => void;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className={cn(
+        'flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all',
+        active
+          ? 'bg-white text-[#0a0a0a] shadow-sm'
+          : 'text-[#737373] hover:text-[#525252]'
+      )}
+    >
+      <Icon className="w-4 h-4" />
+      {label}
+    </button>
+  );
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Cards View with Assignment Grouping
 // ─────────────────────────────────────────────────────────────────────────────
@@ -948,19 +1017,19 @@ function CardsView({ resources, groupedByAssignment, groupedByDepartment, groupB
       <div className="space-y-6">
         {Object.entries(groupedByAssignment).map(([assignmentName, assignmentResources]) => (
           <div key={assignmentName} className="space-y-3">
-            {/* Group Header */}
-            <div className="flex items-center gap-3 p-3 bg-card border border-border rounded-lg">
-              <div className="w-8 h-8 rounded-full bg-[#2563eb] flex items-center justify-center">
-                <Users className="h-4 w-4 text-white" />
+            {/* Group Header - Spec Styling */}
+            <div className="flex items-center justify-between px-4 py-3 bg-white border border-[#e5e5e5] rounded-xl cursor-pointer hover:bg-[#fafafa] transition-colors">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-[#2563eb] flex items-center justify-center">
+                  <Users className="w-5 h-5 text-white" />
+                </div>
+                <span className="font-semibold text-[#0a0a0a]">{assignmentName}</span>
               </div>
-              <span className="text-sm font-semibold text-foreground">{assignmentName}</span>
-              <span className="text-xs text-muted-foreground ml-auto bg-muted px-2.5 py-1 rounded-full">
-                {assignmentResources.length} resources
-              </span>
+              <span className="text-sm text-[#737373]">{assignmentResources.length} resources</span>
             </div>
             
             {/* Cards Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 pl-4">
               {assignmentResources.map((resource) => (
                 <ResourceCard 
                   key={resource.id} 
@@ -1029,47 +1098,50 @@ function CardsView({ resources, groupedByAssignment, groupedByDepartment, groupB
   );
 }
 
-// Resource Card - V5 Design with Button360 (simplified: avatar, name, role, %)
+// Resource Card - Spec Design
 function ResourceCard({ resource, groupBy, on360Click, onCardClick }: { 
   resource: ResourceMetric; 
   groupBy: GroupByType;
   on360Click: () => void;
   onCardClick: () => void;
 }) {
-  const dept = resource.department || 'Unassigned';
-  const deptColor = departmentColors[dept] || departmentColors.default;
   const initials = resource.name?.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'NA';
+  const allocation = resource.allocation || 0;
+  const barColor = getAllocationBarColor(allocation);
 
   return (
     <div 
-      className="bg-card border border-border rounded-lg p-4 hover:border-border-strong hover:shadow-sm transition-all cursor-pointer"
+      className="flex items-center gap-3 p-4 bg-white border border-[#e5e5e5] rounded-xl cursor-pointer hover:border-[#d4d4d4] hover:shadow-sm transition-all"
       onClick={onCardClick}
     >
-      <div className="flex items-center gap-3">
-        {/* Avatar with 360° hover animation */}
-        <Avatar360 
-          initials={initials}
-          onClick={on360Click}
-          bgColor={deptColor.bg}
-          textColor={deptColor.text}
-          size="md"
-        />
-        
-        {/* Info - Only name and role */}
-        <div className="flex-1 min-w-0">
-          <p className="text-sm font-semibold text-foreground truncate">{resource.name}</p>
-          <p className="text-xs text-muted-foreground truncate">{resource.role || 'Team Member'}</p>
-        </div>
-        
-        {/* Allocation % */}
-        <span className={cn(
-          'text-base font-semibold px-3 py-1 rounded-md',
-          resource.allocation > 100 ? 'bg-destructive/10 text-destructive' :
-          resource.allocation > 80 ? 'bg-warning/10 text-warning' : 'bg-success/10 text-success'
-        )}>
-          {resource.allocation}%
-        </span>
+      {/* Avatar - Always teal per spec */}
+      <div
+        onClick={(e) => {
+          e.stopPropagation();
+          on360Click();
+        }}
+        className="w-12 h-12 rounded-full flex items-center justify-center text-sm font-semibold text-white cursor-pointer hover:opacity-90 transition-opacity shrink-0"
+        style={{ backgroundColor: AVATAR_COLOR }}
+      >
+        {initials}
       </div>
+
+      {/* Info */}
+      <div className="flex-1 min-w-0">
+        <div className="font-semibold text-sm text-[#0a0a0a] truncate">{resource.name}</div>
+        <div className="text-xs text-[#737373]">{resource.role || 'Team Member'}</div>
+      </div>
+
+      {/* Allocation Badge */}
+      <span
+        className="px-3 py-1.5 rounded-lg text-sm font-semibold"
+        style={{
+          backgroundColor: `${barColor}15`,
+          color: barColor,
+        }}
+      >
+        {allocation}%
+      </span>
     </div>
   );
 }
@@ -1112,15 +1184,16 @@ function TableView({ resources, projects, groupBy, groupedByAssignment, groupedB
       width: '220px',
       sortable: true,
       render: (value: string, row: ResourceMetric) => {
-        const dept = row.department || 'Unassigned';
-        const deptColor = departmentColors[dept] || departmentColors.default;
         const initials = row.name?.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'NA';
         return (
           <div className="flex items-center gap-3">
-            <div className={cn('w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold shrink-0', deptColor.bg, deptColor.text)}>
+            <div 
+              className="w-10 h-10 rounded-full flex items-center justify-center text-xs font-semibold text-white shrink-0"
+              style={{ backgroundColor: AVATAR_COLOR }}
+            >
               {initials}
             </div>
-            <span className="text-sm font-medium text-foreground truncate">{value}</span>
+            <span className="font-medium text-sm text-[#0a0a0a]">{value}</span>
           </div>
         );
       },
@@ -1132,7 +1205,7 @@ function TableView({ resources, projects, groupBy, groupedByAssignment, groupedB
       width: '160px',
       sortable: true,
       render: (value: string) => (
-        <span className="text-sm text-muted-foreground">{value || '-'}</span>
+        <span className="text-sm text-[#404040]">{value || '-'}</span>
       ),
     },
     {
@@ -1150,9 +1223,11 @@ function TableView({ resources, projects, groupBy, groupedByAssignment, groupedB
       ],
       render: (value: string) => {
         const dept = value || 'Unassigned';
-        const deptColor = departmentColors[dept] || departmentColors.default;
         return (
-          <span className={cn('text-[11px] font-semibold px-2 py-1 rounded uppercase', deptColor.badge)}>
+          <span
+            className="px-2.5 py-1 rounded text-xs font-semibold uppercase"
+            style={{ backgroundColor: DEPARTMENT_BADGE.bg, color: DEPARTMENT_BADGE.text }}
+          >
             {dept}
           </span>
         );
@@ -1162,23 +1237,25 @@ function TableView({ resources, projects, groupBy, groupedByAssignment, groupedB
       id: 'allocation',
       header: 'Allocation',
       accessor: 'allocation',
-      width: '160px',
+      width: '180px',
       sortable: true,
-      render: (value: number) => (
-        <div className="flex items-center gap-2.5">
-          <span className="text-sm font-semibold min-w-[40px]">{value}%</span>
-          <div className="w-20 h-1.5 bg-muted rounded-full overflow-hidden">
-            <div 
-              className={cn(
-                'h-full rounded-full',
-                value > 100 ? 'bg-[#dc2626]' :
-                value > 80 ? 'bg-[#d97706]' : 'bg-[#0d9488]'
-              )}
-              style={{ width: `${Math.min(value, 100)}%` }}
-            />
+      render: (value: number) => {
+        const barColor = getAllocationBarColor(value);
+        return (
+          <div className="flex items-center gap-3">
+            <span className="text-sm font-semibold text-[#0a0a0a] w-12">{value}%</span>
+            <div className="flex-1 h-2 bg-[#e5e5e5] rounded-full overflow-hidden">
+              <div 
+                className="h-full rounded-full transition-all"
+                style={{ 
+                  width: `${Math.min(value, 100)}%`,
+                  backgroundColor: barColor 
+                }}
+              />
+            </div>
           </div>
-        </div>
-      ),
+        );
+      },
     },
     {
       id: 'assignments',
@@ -1198,30 +1275,32 @@ function TableView({ resources, projects, groupBy, groupedByAssignment, groupedB
       sortable: false,
       render: (_: any, row: ResourceMetric) => {
         const initials = row.name?.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'NA';
-        const dept = row.department || 'Unassigned';
-        const deptColor = departmentColors[dept] || departmentColors.default;
         return (
-        <div className="flex items-center justify-end gap-2">
-          <Avatar360 
-            initials={initials}
-            onClick={() => onResourceClick(row)} 
-            bgColor={deptColor.bg}
-            textColor={deptColor.text}
-            size="sm"
-          />
+        <div className="flex items-center gap-1">
+          {/* 360° Avatar Button */}
+          <button
+            onClick={(e) => { e.stopPropagation(); onResourceClick(row); }}
+            className="w-9 h-9 rounded-full flex items-center justify-center text-xs font-semibold text-white hover:opacity-90 transition-opacity"
+            style={{ backgroundColor: AVATAR_COLOR }}
+            title="View 360°"
+          >
+            {initials}
+          </button>
+          {/* Edit */}
           <button 
             onClick={(e) => { e.stopPropagation(); onEditResource(row.id); }}
-            className="w-7 h-7 rounded flex items-center justify-center text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+            className="w-9 h-9 rounded-lg flex items-center justify-center text-[#737373] hover:bg-[#f0f0f0] transition-colors"
             title="Edit resource"
           >
-            <Pencil className="h-4 w-4" />
+            <Pencil className="w-4 h-4" />
           </button>
+          {/* Delete */}
           <button 
             onClick={(e) => { e.stopPropagation(); onDeleteResource(row); }}
-            className="w-7 h-7 rounded flex items-center justify-center text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors"
+            className="w-9 h-9 rounded-lg flex items-center justify-center text-[#737373] hover:bg-[#f0f0f0] transition-colors"
             title="Remove from Capacity Planner"
           >
-            <Trash2 className="h-4 w-4" />
+            <Trash2 className="w-4 h-4" />
           </button>
         </div>
         );
