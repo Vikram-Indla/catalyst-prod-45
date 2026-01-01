@@ -30,13 +30,13 @@ export function useResourceManagement() {
         if (profileError) throw profileError;
       }
       
-      // Update resource_inventory for assignment_id
+      // Update resource_inventory for assignment_id using profile_id
       if (assignment_id !== undefined) {
-        // Check if resource exists in resource_inventory
+        // Check if resource exists in resource_inventory by profile_id
         const { data: existingResource } = await supabase
           .from('resource_inventory')
           .select('id')
-          .eq('id', id)
+          .eq('profile_id', id)
           .maybeSingle();
         
         if (existingResource) {
@@ -47,11 +47,11 @@ export function useResourceManagement() {
               assignment_id: assignment_id || null,
               updated_at: new Date().toISOString() 
             })
-            .eq('id', id);
+            .eq('profile_id', id);
           
           if (inventoryError) throw inventoryError;
         } else {
-          // Create resource_inventory entry if it doesn't exist
+          // Create resource_inventory entry with profile_id
           const { data: profile } = await supabase
             .from('profiles')
             .select('full_name, role')
@@ -62,10 +62,11 @@ export function useResourceManagement() {
             const { error: insertError } = await supabase
               .from('resource_inventory')
               .insert({
-                id,
+                profile_id: id,
                 name: profile.full_name || 'Unknown',
                 role_name: profile.role,
                 assignment_id: assignment_id || null,
+                is_active: true,
               });
             
             if (insertError) throw insertError;
