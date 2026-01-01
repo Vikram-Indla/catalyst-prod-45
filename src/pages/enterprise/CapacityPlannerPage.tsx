@@ -53,7 +53,7 @@ const projectColors = [
 export default function CapacityPlannerPage() {
   const queryClient = useQueryClient();
 
-  const { metrics, projects, resources, assignments, isLoading } = useCapacityData();
+  const { metrics, projects, resources, assignments, isLoading, isFetching } = useCapacityData();
   const { createAssignment, deleteAssignment } = useAssignments();
   const { recommendations, highPriorityCount } = useAiRecommendations({ 
     resources: metrics.resources, 
@@ -229,7 +229,9 @@ export default function CapacityPlannerPage() {
       allocation 
     });
   };
-  if (isLoading) {
+  // Only show loading state on initial load, not during background refetches (e.g., after DnD)
+  const hasData = resources.length > 0 || metrics.resources.length > 0;
+  if (isLoading && !hasData) {
     return (
       <PageChrome>
         <div className="flex items-center justify-center h-full">
