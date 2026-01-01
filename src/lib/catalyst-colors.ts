@@ -70,18 +70,20 @@ export const CATALYST = {
 
 /**
  * Assignment themes — Distinct colors per group for visual distinction
+ * CATALYST COMPLIANT: Only Blue, Teal, Olive, Bronze, Amber, Slate
+ * NO PURPLE/VIOLET/INDIGO/FUCHSIA
  */
 export const ASSIGNMENT_THEMES: Record<string, { bg: string; text: string; accent: string }> = {
-  'Senaei BAU': { bg: '#eff6ff', text: '#1e40af', accent: '#2563eb' },
-  'Innovation Platform': { bg: '#eef2ff', text: '#3730a3', accent: '#4f46e5' },
-  'Inspection Project': { bg: '#f0fdfa', text: '#115e59', accent: '#0d9488' },
-  'International Relations': { bg: '#ecfdf5', text: '#065f46', accent: '#059669' },
-  'MIM Website': { bg: '#f0fdf4', text: '#166534', accent: '#16a34a' },
-  'Senaei OPS': { bg: '#fefce8', text: '#854d0e', accent: '#ca8a04' },
-  'Sectorial Services': { bg: '#faf8f5', text: '#78716c', accent: '#8b7355' },
-  'Tahommena': { bg: '#fdf4ff', text: '#86198f', accent: '#c026d3' },
-  'Data Platform': { bg: '#f5f3ff', text: '#5b21b6', accent: '#7c3aed' },
-  'Unassigned': { bg: '#f8fafc', text: '#64748b', accent: '#94a3b8' },
+  'Senaei BAU': { bg: '#eff6ff', text: '#1e40af', accent: '#2563eb' },           // Blue
+  'Innovation Platform': { bg: '#eff6ff', text: '#1e3a8a', accent: '#1d4ed8' },  // Blue Dark (was indigo)
+  'Inspection Project': { bg: '#f0fdfa', text: '#115e59', accent: '#0d9488' },   // Teal
+  'International Relations': { bg: '#f0fdfa', text: '#134e4a', accent: '#0f766e' }, // Teal Dark
+  'MIM Website': { bg: '#f0fdf4', text: '#166534', accent: '#4f8a4f' },          // Olive
+  'Senaei OPS': { bg: '#f0fdf4', text: '#14532d', accent: '#3d6b3d' },           // Olive Dark
+  'Sectorial Services': { bg: '#faf8f5', text: '#78716c', accent: '#8b7355' },   // Bronze
+  'Tahommena': { bg: '#faf8f5', text: '#57534e', accent: '#6b5842' },            // Bronze Dark (was fuchsia)
+  'Data Platform': { bg: '#dbeafe', text: '#1e40af', accent: '#3b82f6' },        // Blue Light (was violet)
+  'Unassigned': { bg: '#f8fafc', text: '#64748b', accent: '#94a3b8' },           // Slate
 };
 
 /**
@@ -94,18 +96,19 @@ export function getAssignmentTheme(name: string | null | undefined): { bg: strin
 
 /**
  * Legacy assignment color function - returns accent color
+ * CATALYST COMPLIANT: NO PURPLE/VIOLET/INDIGO/FUCHSIA
  */
 export const ASSIGNMENT_COLORS: Record<string, string> = {
-  'Senaei BAU': '#2563eb',
-  'Innovation Platform': '#4f46e5',
-  'Inspection Project': '#0d9488',
-  'International Relations': '#059669',
-  'MIM Website': '#16a34a',
-  'Senaei OPS': '#ca8a04',
-  'Sectorial Services': '#8b7355',
-  'Tahommena': '#c026d3',
-  'Data Platform': '#7c3aed',
-  'Unassigned': '#94a3b8',
+  'Senaei BAU': '#2563eb',           // Blue
+  'Innovation Platform': '#1d4ed8',  // Blue Dark (was indigo #4f46e5)
+  'Inspection Project': '#0d9488',   // Teal
+  'International Relations': '#0f766e', // Teal Dark
+  'MIM Website': '#4f8a4f',          // Olive
+  'Senaei OPS': '#3d6b3d',           // Olive Dark
+  'Sectorial Services': '#8b7355',   // Bronze
+  'Tahommena': '#6b5842',            // Bronze Dark (was fuchsia #c026d3)
+  'Data Platform': '#3b82f6',        // Blue Light (was violet #7c3aed)
+  'Unassigned': '#94a3b8',           // Slate
 };
 
 export function getAssignmentColor(name: string | null | undefined): string {
