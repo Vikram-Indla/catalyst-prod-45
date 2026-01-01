@@ -971,7 +971,7 @@ function CardsView({ resources, groupedByAssignment, groupedByDepartment, groupB
   );
 }
 
-// Resource Card - V5 Design with Button360
+// Resource Card - V5 Design with Button360 (simplified: avatar, name, role, %)
 function ResourceCard({ resource, groupBy, on360Click, onCardClick }: { 
   resource: ResourceMetric; 
   groupBy: GroupByType;
@@ -981,14 +981,6 @@ function ResourceCard({ resource, groupBy, on360Click, onCardClick }: {
   const dept = resource.department || 'Unassigned';
   const deptColor = departmentColors[dept] || departmentColors.default;
   const initials = resource.name?.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'NA';
-  const assignmentName = resource.assignmentName || 'Unassigned';
-
-  // Determine which tags to show based on groupBy:
-  // - assignment: show department (assignment already in group header)
-  // - department: show assignment (department already in group header)
-  // - none: show both
-  const showAssignment = groupBy !== 'assignment';
-  const showDepartment = groupBy !== 'department';
 
   return (
     <div 
@@ -1005,44 +997,20 @@ function ResourceCard({ resource, groupBy, on360Click, onCardClick }: {
           size="md"
         />
         
-        {/* Info */}
+        {/* Info - Only name and role */}
         <div className="flex-1 min-w-0">
           <p className="text-sm font-semibold text-foreground truncate">{resource.name}</p>
-          <p className="text-xs text-muted-foreground truncate">{resource.role}</p>
-          {/* Tags based on groupBy */}
-          <div className="flex gap-1.5 mt-1.5 flex-wrap">
-            {showDepartment && (
-              <span className={cn(
-                "text-[10px] font-semibold px-2 py-0.5 rounded uppercase",
-                deptColor.badge
-              )}>
-                {dept}
-              </span>
-            )}
-            {showAssignment && (
-              <span className={cn(
-                "text-[10px] font-semibold px-2 py-0.5 rounded uppercase",
-                assignmentName === 'Unassigned' 
-                  ? "bg-muted text-muted-foreground" 
-                  : "bg-[#4d8b4d] text-white"
-              )}>
-                {assignmentName}
-              </span>
-            )}
-          </div>
+          <p className="text-xs text-muted-foreground truncate">{resource.role || 'Team Member'}</p>
         </div>
         
-        {/* Allocation */}
-        <div className="text-right">
-          <p className={cn(
-            'text-lg font-bold',
-            resource.allocation > 100 ? 'text-[#dc2626]' :
-            resource.allocation > 80 ? 'text-[#b45309]' : 'text-[#0d9488]'
-          )}>
-            {resource.allocation}%
-          </p>
-          <p className="text-[10px] text-muted-foreground">Allocated</p>
-        </div>
+        {/* Allocation % */}
+        <span className={cn(
+          'text-base font-semibold px-3 py-1 rounded-md',
+          resource.allocation > 100 ? 'bg-destructive/10 text-destructive' :
+          resource.allocation > 80 ? 'bg-warning/10 text-warning' : 'bg-success/10 text-success'
+        )}>
+          {resource.allocation}%
+        </span>
       </div>
     </div>
   );
