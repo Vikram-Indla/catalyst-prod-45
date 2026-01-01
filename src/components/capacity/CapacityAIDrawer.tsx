@@ -5,7 +5,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { cn } from '@/lib/utils';
-import { X, Send, Bot } from 'lucide-react';
+import { X, Send, Bot, RotateCcw } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 
 interface Message {
@@ -60,15 +60,20 @@ const getMockResponse = (query: string): string => {
   return `I can help you with capacity planning. Here are some things I can do:\n\n• **Executive Summary** - Get a high-level view of team capacity\n• **Find Available Resources** - Identify team members with bandwidth\n• **Risk Analysis** - Spot potential capacity issues\n• **Optimization** - Get recommendations to improve utilization\n• **Forecasting** - Project future capacity needs\n\n*What would you like to explore?*`;
 };
 
+const INITIAL_MESSAGE: Message = {
+  id: '1',
+  role: 'assistant',
+  content: 'I can help you analyze capacity, find resources, and optimize workloads.\n\nTry: "Executive summary" or "Optimize team"',
+  timestamp: new Date(),
+};
+
 export function CapacityAIDrawer({ isOpen, onClose }: CapacityAIDrawerProps) {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: '1',
-      role: 'assistant',
-      content: 'I can help you analyze capacity, find resources, and optimize workloads.\n\nTry: "Executive summary" or "Optimize team"',
-      timestamp: new Date(),
-    },
-  ]);
+  const [messages, setMessages] = useState<Message[]>([INITIAL_MESSAGE]);
+
+  const handleClearChat = () => {
+    setMessages([{ ...INITIAL_MESSAGE, id: Date.now().toString(), timestamp: new Date() }]);
+    setInputValue('');
+  };
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -171,12 +176,21 @@ export function CapacityAIDrawer({ isOpen, onClose }: CapacityAIDrawerProps) {
             </div>
           </div>
 
-          <button
-            onClick={onClose}
-            className="w-8 h-8 bg-white/10 rounded-lg flex items-center justify-center text-white/70 hover:bg-white/20 hover:text-white transition-colors"
-          >
-            <X className="w-4 h-4" />
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={handleClearChat}
+              title="Clear conversation"
+              className="w-8 h-8 bg-white/10 rounded-lg flex items-center justify-center text-white/70 hover:bg-white/20 hover:text-white transition-colors"
+            >
+              <RotateCcw className="w-4 h-4" />
+            </button>
+            <button
+              onClick={onClose}
+              className="w-8 h-8 bg-white/10 rounded-lg flex items-center justify-center text-white/70 hover:bg-white/20 hover:text-white transition-colors"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
         </header>
 
         {/* Messages Area */}
