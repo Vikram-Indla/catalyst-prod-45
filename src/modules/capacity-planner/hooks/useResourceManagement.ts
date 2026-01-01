@@ -162,16 +162,18 @@ export function useResourceManagement() {
   });
 
   /**
-   * Update a resource's assignment_id in resource_inventory
+   * Update a resource's assignment_id in resource_inventory and optionally update allocation
    * Used for drag-and-drop between assignment swim lanes
    */
   const updateResourceAssignmentType = useMutation({
     mutationFn: async ({ 
       resourceId, 
-      assignmentId 
+      assignmentId,
+      allocation 
     }: { 
       resourceId: string; 
       assignmentId: string | null;
+      allocation?: number;
     }) => {
       // Check if resource exists in resource_inventory by profile_id
       const { data: existingResource } = await supabase
@@ -193,6 +195,21 @@ export function useResourceManagement() {
           .single();
 
         if (error) throw error;
+        
+        // Update allocation in assignments table if provided
+        if (allocation !== undefined) {
+          const { error: allocationError } = await supabase
+            .from('assignments')
+            .update({ 
+              allocation_percentage: allocation,
+              updated_at: new Date().toISOString() 
+            })
+            .eq('user_id', resourceId)
+            .eq('status', 'active');
+          
+          if (allocationError) console.error('Failed to update allocation:', allocationError);
+        }
+        
         return data;
       } else {
         // Create resource_inventory entry with profile_id
@@ -216,6 +233,19 @@ export function useResourceManagement() {
             .single();
 
           if (error) throw error;
+          
+          // Update allocation in assignments table if provided
+          if (allocation !== undefined) {
+            await supabase
+              .from('assignments')
+              .update({ 
+                allocation_percentage: allocation,
+                updated_at: new Date().toISOString() 
+              })
+              .eq('user_id', resourceId)
+              .eq('status', 'active');
+          }
+          
           return data;
         }
         throw new Error('Profile not found');
@@ -223,6 +253,7 @@ export function useResourceManagement() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['capacity-planner-resources'] });
+      queryClient.invalidateQueries({ queryKey: ['capacity-planner-assignments'] });
       queryClient.invalidateQueries({ queryKey: ['resource-inventory'] });
       toast.success('Assignment updated');
     },

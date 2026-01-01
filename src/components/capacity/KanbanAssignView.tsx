@@ -1,8 +1,12 @@
-import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
-import { Users, X, GripVertical, ArrowLeftRight } from 'lucide-react';
+import { useState, useRef, useEffect, useCallback } from 'react';
+import { DragDropContext, Droppable, Draggable, DropResult, DragUpdate } from '@hello-pangea/dnd';
+import { Users, X, GripVertical, ArrowLeftRight, Percent } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
+import { Slider } from '@/components/ui/slider';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import type { ResourceMetric } from '@/modules/capacity-planner';
 import type { ResourceAssignment } from '@/modules/capacity-planner/hooks/useResourceAssignments';
@@ -15,10 +19,18 @@ const departmentColors: Record<string, { bg: string; text: string }> = {
   default: { bg: 'bg-muted', text: 'text-muted-foreground' },
 };
 
+interface PendingMove {
+  resourceId: string;
+  resourceName: string;
+  fromAssignment: string;
+  toAssignment: string;
+  currentAllocation: number;
+}
+
 interface KanbanAssignViewProps {
   resources: ResourceMetric[];
   assignments: ResourceAssignment[];
-  onMoveResource: (resourceId: string, fromAssignment: string, toAssignment: string) => void;
+  onMoveResource: (resourceId: string, fromAssignment: string, toAssignment: string, allocation?: number) => void;
   onClose: () => void;
 }
 
@@ -28,6 +40,12 @@ export function KanbanAssignView({
   onMoveResource,
   onClose,
 }: KanbanAssignViewProps) {
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [pendingMove, setPendingMove] = useState<PendingMove | null>(null);
+  const [allocationValue, setAllocationValue] = useState(100);
+  const autoScrollRef = useRef<number | null>(null);
+
   // Build columns: all active assignments + Unassigned
   const columns = [
     { id: 'Unassigned', name: 'Unassigned', resources: [] as ResourceMetric[] },
@@ -41,18 +59,110 @@ export function KanbanAssignView({
     if (column) {
       column.resources.push(r);
     } else {
-      // If assignment not found, add to Unassigned
       columns[0].resources.push(r);
     }
   });
 
+  // Auto-scroll when dragging near edges
+  const handleAutoScroll = useCallback((clientX: number) => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+
+    const rect = container.getBoundingClientRect();
+    const edgeThreshold = 120; // pixels from edge to trigger scroll
+    const scrollSpeed = 15;
+
+    // Clear any existing auto-scroll
+    if (autoScrollRef.current) {
+      cancelAnimationFrame(autoScrollRef.current);
+      autoScrollRef.current = null;
+    }
+
+    const scrollStep = () => {
+      if (!scrollContainerRef.current) return;
+      
+      const distanceFromLeft = clientX - rect.left;
+      const distanceFromRight = rect.right - clientX;
+
+      if (distanceFromLeft < edgeThreshold) {
+        // Scroll left
+        const intensity = 1 - (distanceFromLeft / edgeThreshold);
+        scrollContainerRef.current.scrollLeft -= scrollSpeed * intensity;
+        autoScrollRef.current = requestAnimationFrame(scrollStep);
+      } else if (distanceFromRight < edgeThreshold) {
+        // Scroll right
+        const intensity = 1 - (distanceFromRight / edgeThreshold);
+        scrollContainerRef.current.scrollLeft += scrollSpeed * intensity;
+        autoScrollRef.current = requestAnimationFrame(scrollStep);
+      }
+    };
+
+    scrollStep();
+  }, []);
+
+  // Track mouse position during drag for auto-scroll
+  useEffect(() => {
+    if (!isDragging) {
+      if (autoScrollRef.current) {
+        cancelAnimationFrame(autoScrollRef.current);
+        autoScrollRef.current = null;
+      }
+      return;
+    }
+
+    const handleMouseMove = (e: MouseEvent) => {
+      handleAutoScroll(e.clientX);
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      if (autoScrollRef.current) {
+        cancelAnimationFrame(autoScrollRef.current);
+      }
+    };
+  }, [isDragging, handleAutoScroll]);
+
+  const handleDragStart = () => {
+    setIsDragging(true);
+  };
+
   const handleDragEnd = (result: DropResult) => {
+    setIsDragging(false);
+    
+    if (autoScrollRef.current) {
+      cancelAnimationFrame(autoScrollRef.current);
+      autoScrollRef.current = null;
+    }
+
     const { source, destination, draggableId } = result;
 
     if (!destination) return;
     if (source.droppableId === destination.droppableId && source.index === destination.index) return;
 
-    onMoveResource(draggableId, source.droppableId, destination.droppableId);
+    // Find the resource to get its name and current allocation
+    const resource = resources.find(r => r.id === draggableId);
+    if (!resource) return;
+
+    // Show allocation dialog
+    setPendingMove({
+      resourceId: draggableId,
+      resourceName: resource.name,
+      fromAssignment: source.droppableId,
+      toAssignment: destination.droppableId,
+      currentAllocation: resource.allocation,
+    });
+    setAllocationValue(resource.allocation || 100);
+  };
+
+  const confirmMove = () => {
+    if (!pendingMove) return;
+    onMoveResource(pendingMove.resourceId, pendingMove.fromAssignment, pendingMove.toAssignment, allocationValue);
+    setPendingMove(null);
+  };
+
+  const cancelMove = () => {
+    setPendingMove(null);
   };
 
   return (
@@ -81,11 +191,15 @@ export function KanbanAssignView({
         </Button>
       </div>
 
-      {/* Kanban Board */}
-      <DragDropContext onDragEnd={handleDragEnd}>
+      {/* Kanban Board with native scroll for auto-scroll support */}
+      <DragDropContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
         <div className="flex-1 overflow-hidden p-4">
-          <ScrollArea className="h-full w-full">
-            <div className="flex gap-4 h-full pb-4" style={{ minWidth: 'max-content' }}>
+          <div 
+            ref={scrollContainerRef}
+            className="h-full overflow-x-auto overflow-y-hidden scroll-smooth"
+            style={{ scrollBehavior: isDragging ? 'auto' : 'smooth' }}
+          >
+            <div className="flex gap-4 h-full pb-4 pr-4" style={{ minWidth: 'max-content' }}>
               {columns.map((column) => (
                 <Droppable key={column.id} droppableId={column.id}>
                   {(provided, snapshot) => (
@@ -170,8 +284,7 @@ export function KanbanAssignView({
                 </Droppable>
               ))}
             </div>
-            <ScrollBar orientation="horizontal" />
-          </ScrollArea>
+          </div>
         </div>
       </DragDropContext>
 
@@ -183,11 +296,111 @@ export function KanbanAssignView({
             Drag to reassign
           </span>
           <span>•</span>
-          <span>Scroll horizontally to see all assignments</span>
+          <span>Drag to edges to scroll horizontally</span>
           <span>•</span>
-          <span>Changes save automatically</span>
+          <span>Set allocation % on drop</span>
         </div>
       </div>
+
+      {/* Allocation Dialog */}
+      <Dialog open={pendingMove !== null} onOpenChange={(open) => !open && cancelMove()}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Percent className="h-5 w-5 text-[#2563eb]" />
+              Set Allocation
+            </DialogTitle>
+            <DialogDescription>
+              Moving <span className="font-medium text-foreground">{pendingMove?.resourceName}</span> to{' '}
+              <span className="font-medium text-[#2563eb]">{pendingMove?.toAssignment}</span>
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-6 py-4">
+            {/* Allocation Slider */}
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <Label>Allocation Percentage</Label>
+                <div className="flex items-center gap-2">
+                  <Input
+                    type="number"
+                    min={0}
+                    max={100}
+                    value={allocationValue}
+                    onChange={(e) => setAllocationValue(Math.min(100, Math.max(0, Number(e.target.value))))}
+                    className="w-20 text-center"
+                  />
+                  <span className="text-sm text-muted-foreground">%</span>
+                </div>
+              </div>
+              
+              <Slider
+                value={[allocationValue]}
+                onValueChange={([value]) => setAllocationValue(value)}
+                min={0}
+                max={100}
+                step={5}
+                className="w-full"
+              />
+              
+              {/* Quick preset buttons */}
+              <div className="flex gap-2">
+                {[25, 50, 75, 100].map((preset) => (
+                  <Button
+                    key={preset}
+                    type="button"
+                    variant={allocationValue === preset ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setAllocationValue(preset)}
+                    className={cn(
+                      "flex-1",
+                      allocationValue === preset && "bg-[#2563eb] hover:bg-[#1d4ed8]"
+                    )}
+                  >
+                    {preset}%
+                  </Button>
+                ))}
+              </div>
+            </div>
+
+            {/* Visual indicator */}
+            <div className="bg-muted/50 rounded-lg p-4">
+              <div className="flex items-center justify-between text-sm mb-2">
+                <span className="text-muted-foreground">Allocation</span>
+                <span className={cn(
+                  "font-semibold",
+                  allocationValue > 100 ? 'text-[#dc2626]' :
+                  allocationValue > 80 ? 'text-[#d97706]' : 'text-[#0d9488]'
+                )}>
+                  {allocationValue}%
+                </span>
+              </div>
+              <div className="h-2 bg-muted rounded-full overflow-hidden">
+                <div 
+                  className={cn(
+                    "h-full rounded-full transition-all",
+                    allocationValue > 100 ? 'bg-[#dc2626]' :
+                    allocationValue > 80 ? 'bg-[#d97706]' : 'bg-[#0d9488]'
+                  )}
+                  style={{ width: `${Math.min(allocationValue, 100)}%` }}
+                />
+              </div>
+            </div>
+          </div>
+
+          <DialogFooter className="gap-2 sm:gap-0">
+            <Button variant="outline" onClick={cancelMove}>
+              Cancel
+            </Button>
+            <Button 
+              onClick={confirmMove}
+              className="bg-[#2563eb] hover:bg-[#1d4ed8]"
+            >
+              Confirm Assignment
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

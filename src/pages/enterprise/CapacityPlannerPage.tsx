@@ -173,7 +173,7 @@ export default function CapacityPlannerPage() {
   }, [filteredResources, resourceAssignments]);
 
   // Handle moving a resource to a different assignment via drag-and-drop
-  const handleMoveResource = (resourceId: string, fromAssignment: string, toAssignment: string) => {
+  const handleMoveResource = (resourceId: string, fromAssignment: string, toAssignment: string, allocation?: number) => {
     // Find the assignment ID for the target assignment name
     const targetAssignment = resourceAssignments.find(a => a.name === toAssignment);
     const newAssignmentId = toAssignment === 'Unassigned' ? null : targetAssignment?.id || null;
@@ -183,15 +183,21 @@ export default function CapacityPlannerPage() {
       if (!Array.isArray(old)) return old;
       return old.map((r: any) => 
         r.id === resourceId 
-          ? { ...r, assignment_id: newAssignmentId, assignmentName: toAssignment === 'Unassigned' ? null : toAssignment }
+          ? { 
+              ...r, 
+              assignment_id: newAssignmentId, 
+              assignmentName: toAssignment === 'Unassigned' ? null : toAssignment,
+              allocation: allocation !== undefined ? allocation : r.allocation 
+            }
           : r
       );
     });
 
-    // Persist to database
+    // Persist assignment to database
     updateResourceAssignmentType.mutate({ 
       resourceId, 
-      assignmentId: newAssignmentId 
+      assignmentId: newAssignmentId,
+      allocation 
     });
   };
 
