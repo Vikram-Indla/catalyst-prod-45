@@ -502,9 +502,10 @@ export default function CapacityPlannerPage() {
               <Button 
                 disabled={selectedUserIds.length === 0}
                 onClick={() => {
+                  // Only use project if explicitly selected, otherwise null
                   const projectId = selectedProjectId && selectedProjectId !== 'none' 
                     ? selectedProjectId 
-                    : projects[0]?.id; // Use first project as fallback if none selected
+                    : null;
                   
                   selectedUserIds.forEach(userId => {
                     createAssignment.mutate({
@@ -520,6 +521,7 @@ export default function CapacityPlannerPage() {
                   setSelectedUserIds([]);
                   setSelectedDepartmentId('');
                   setSelectedProjectId('');
+                  setSelectedAssignment('');
                   setAllocationPercentage(100);
                 }} 
                 className="bg-[#2563eb] hover:bg-[#1d4ed8]"
@@ -2276,7 +2278,7 @@ function EditResourceForm({
   onCancel: () => void;
 }) {
   const { departments } = useCapacityDepartments();
-  const { assignments: resourceAssignments } = useResourceAssignments();
+  const { data: assignmentTypes = [] } = useActiveCapacityAssignmentTypes();
   const { updateResource, updateResourceAllocation } = useResourceManagement();
   
   const [name, setName] = useState(resource.name);
@@ -2409,8 +2411,8 @@ function EditResourceForm({
             <Select value={assignmentId} onValueChange={handleAssignmentChange}>
               <SelectTrigger><SelectValue placeholder="Select assignment..." /></SelectTrigger>
               <SelectContent>
-                {resourceAssignments.map(assignment => (
-                  <SelectItem key={assignment.id} value={assignment.id}>{assignment.name}</SelectItem>
+                {assignmentTypes.map(type => (
+                  <SelectItem key={type.id} value={type.id}>{type.name}</SelectItem>
                 ))}
               </SelectContent>
             </Select>

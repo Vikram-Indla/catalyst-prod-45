@@ -6,7 +6,7 @@ import type { CapacityResource, CapacityAssignment, CapacityProject, CapacitySce
 export function useCapacityData() {
   const queryClient = useQueryClient();
 
-  // Fetch all resources from profiles table
+  // Fetch all resources from profiles table with assignment_id from resource_inventory
   const { data: resources = [], isLoading: resourcesLoading } = useQuery({
     queryKey: ['capacity-planner-resources'],
     queryFn: async () => {
@@ -22,17 +22,27 @@ export function useCapacityData() {
         .select('id, name');
       const deptMap = new Map(departments?.map(d => [d.id, d.name]) || []);
       
-      return (data || []).map(p => ({
-        id: p.id,
-        name: p.full_name || p.email || 'Unknown',
-        email: p.email || '',
-        role: p.role || 'Team Member',
-        department: p.department_id ? deptMap.get(p.department_id) || 'Unassigned' : 'Unassigned',
-        department_id: p.department_id,
-        avatar_url: p.avatar_url,
-        created_at: p.created_at,
-        updated_at: p.updated_at,
-      })) as CapacityResource[];
+      // Fetch resource_inventory to get assignment_id by matching name
+      const { data: resourceInventory } = await supabase
+        .from('resource_inventory')
+        .select('id, name, assignment_id');
+      const assignmentIdMap = new Map(resourceInventory?.map(r => [r.name?.toLowerCase(), r.assignment_id]) || []);
+      
+      return (data || []).map(p => {
+        const fullName = p.full_name || p.email || 'Unknown';
+        return {
+          id: p.id,
+          name: fullName,
+          email: p.email || '',
+          role: p.role || 'Team Member',
+          department: p.department_id ? deptMap.get(p.department_id) || 'Unassigned' : 'Unassigned',
+          department_id: p.department_id,
+          assignment_id: assignmentIdMap.get(fullName.toLowerCase()) || null,
+          avatar_url: p.avatar_url,
+          created_at: p.created_at,
+          updated_at: p.updated_at,
+        };
+      }) as CapacityResource[];
     },
   });
 
@@ -97,6 +107,20 @@ export function useCapacityData() {
       })
       .subscribe();
 
+    const resourceInventoryChannel = supabase
+      .channel('capacity-resource-inventory-changes')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'resource_inventory' }, () => {
+        queryClient.invalidateQueries({ queryKey: ['capacity-planner-resources'] });
+      })
+      .subscribe();
+
+    const assignmentTypesChannel = supabase
+      .channel('capacity-assignment-types-changes')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'capacity_assignment_types' }, () => {
+        queryClient.invalidateQueries({ queryKey: ['capacity-assignment-types'] });
+      })
+      .subscribe();
+
     const scenariosChannel = supabase
       .channel('capacity-scenarios-changes')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'capacity_scenarios' }, () => {
@@ -107,6 +131,8 @@ export function useCapacityData() {
     return () => {
       supabase.removeChannel(assignmentsChannel);
       supabase.removeChannel(profilesChannel);
+      supabase.removeChannel(resourceInventoryChannel);
+      supabase.removeChannel(assignmentTypesChannel);
       supabase.removeChannel(scenariosChannel);
     };
   }, [queryClient]);
