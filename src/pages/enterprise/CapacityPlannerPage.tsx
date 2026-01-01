@@ -330,7 +330,7 @@ export default function CapacityPlannerPage() {
         />
 
         {/* Main Content */}
-        <div className="flex-1 overflow-auto px-6 py-6 bg-[#fafafa]">
+        <div className="flex-1 flex flex-col min-h-0 px-6 py-6 bg-[#fafafa]">
           {currentView === 'cards' && (
             <CardsView 
               resources={filteredResources} 
@@ -1358,7 +1358,7 @@ function TableView({ resources, projects, groupBy, groupedByAssignment, groupedB
   };
 
   return (
-    <div className="space-y-3">
+    <div className="flex flex-col h-full min-h-0">
       {/* Bulk Action Bar */}
       {selectedIds.length > 0 && (
         <div className="sticky top-0 z-20 flex items-center justify-between px-4 py-3 border border-border rounded-lg bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 shadow-sm">
@@ -1396,27 +1396,29 @@ function TableView({ resources, projects, groupBy, groupedByAssignment, groupedB
       )}
 
       {groupBy === 'assignment' ? (
-        <div className="space-y-6">
+        <div className="flex-1 overflow-auto space-y-6">
           {Object.entries(groupedByAssignment).map(([assignmentName, assignmentResources]) => 
             renderGroupedTable(assignmentResources, assignmentName)
           )}
         </div>
       ) : groupBy === 'department' ? (
-        <div className="space-y-6">
+        <div className="flex-1 overflow-auto space-y-6">
           {Object.entries(groupedByDepartment).map(([deptName, deptResources]) => 
             renderDepartmentGroupedTable(deptResources, deptName)
           )}
         </div>
       ) : (
-        <CatalystEnterpriseTable
-          data={resources}
-          columns={columns}
-          showCheckboxes={true}
-          showActionsColumn={false}
-          selectedRows={selectedIds}
-          onSelectionChange={handleSelectionChange}
-          onRowClick={(row) => onResourceClick(row)}
-        />
+        <div className="flex-1 overflow-auto">
+          <CatalystEnterpriseTable
+            data={resources}
+            columns={columns}
+            showCheckboxes={true}
+            showActionsColumn={false}
+            selectedRows={selectedIds}
+            onSelectionChange={handleSelectionChange}
+            onRowClick={(row) => onResourceClick(row)}
+          />
+        </div>
       )}
     </div>
   );
