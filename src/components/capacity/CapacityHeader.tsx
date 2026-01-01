@@ -1,9 +1,9 @@
 /**
- * Capacity Header Component - 2 Rows Only
- * Consolidated header per Catalyst V5 spec
+ * Capacity Header Component - Enterprise Grade
+ * Large clickable stat chips, prominent utilization, visible tabs
  */
 
-import { Search, Download, Settings, Plus, ChevronDown, LayoutGrid, Table2, CalendarDays, FileStack, Users } from 'lucide-react';
+import { Search, Download, Settings, Plus, ChevronDown, LayoutGrid, Table2, CalendarDays, FileStack, Users, ChevronUp, ChevronDownIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
@@ -22,6 +22,8 @@ interface CapacityHeaderProps {
   groupBy: string;
   timelinePeriod: 'weekly' | 'monthly' | 'quarterly';
   searchQuery: string;
+  activeFilter?: 'all' | 'available' | 'atCapacity' | 'over';
+  isCollapsed?: boolean;
   onViewModeChange: (mode: 'cards' | 'table' | 'timeline' | 'scenarios') => void;
   onGroupByChange: (groupBy: string) => void;
   onTimelinePeriodChange: (period: 'weekly' | 'monthly' | 'quarterly') => void;
@@ -29,6 +31,8 @@ interface CapacityHeaderProps {
   onAddResource: () => void;
   onAssign: () => void;
   onExport: () => void;
+  onFilterChange?: (filter: 'all' | 'available' | 'atCapacity' | 'over') => void;
+  onToggleCollapse?: () => void;
   assignModeActive?: boolean;
 }
 
@@ -38,6 +42,8 @@ export function CapacityHeader({
   groupBy,
   timelinePeriod,
   searchQuery,
+  activeFilter = 'all',
+  isCollapsed = false,
   onViewModeChange,
   onGroupByChange,
   onTimelinePeriodChange,
@@ -45,6 +51,8 @@ export function CapacityHeader({
   onAddResource,
   onAssign,
   onExport,
+  onFilterChange,
+  onToggleCollapse,
   assignModeActive = false,
 }: CapacityHeaderProps) {
   const utilizationColor = getUtilizationColor(summary.utilizationPercentage);
@@ -52,29 +60,57 @@ export function CapacityHeader({
   return (
     <div className="bg-white border-b border-[#e5e5e5]">
       {/* ══════════════════════════════════════════════════════════
-          ROW 1: Breadcrumb + Stats + Utilization + Actions
+          ROW 1: Breadcrumb + Stats Chips (Clickable) + Utilization + Actions
       ══════════════════════════════════════════════════════════ */}
-      <div className="flex items-center justify-between px-6 py-3 flex-wrap gap-3">
+      <div className="flex items-center justify-between px-6 py-4 flex-wrap gap-4">
         <div className="flex items-center gap-6">
-          {/* SINGLE BREADCRUMB — NO DUPLICATE */}
+          {/* BREADCRUMB */}
           <div className="flex items-center gap-2 text-sm">
             <span className="text-[#737373] font-medium">ENTERPRISE</span>
             <span className="text-[#d4d4d4]">/</span>
             <span className="font-semibold text-[#0a0a0a]">Capacity</span>
           </div>
 
-          {/* COMPACT STATS — Unified chips */}
+          {/* LARGE CLICKABLE STAT CHIPS */}
           <div className="flex items-center gap-2">
-            <StatChip value={summary.total} color={CATALYST.grey[500]} label="Total" />
-            <StatChip value={summary.available} color={CATALYST.teal.primary} label="Available" />
-            <StatChip value={summary.atCapacity} color={CATALYST.blue.primary} label="At Capacity" />
-            <StatChip value={summary.over} color={CATALYST.bronze.primary} label="Over" />
+            <StatChip 
+              value={summary.total} 
+              label="Total" 
+              color={CATALYST.grey[600]}
+              bgColor={CATALYST.grey[100]}
+              isActive={activeFilter === 'all'}
+              onClick={() => onFilterChange?.('all')}
+            />
+            <StatChip 
+              value={summary.available} 
+              label="Available" 
+              color={CATALYST.teal.primary}
+              bgColor={CATALYST.teal.bg}
+              isActive={activeFilter === 'available'}
+              onClick={() => onFilterChange?.('available')}
+            />
+            <StatChip 
+              value={summary.atCapacity} 
+              label="At Capacity" 
+              color={CATALYST.blue.primary}
+              bgColor={CATALYST.blue.bg}
+              isActive={activeFilter === 'atCapacity'}
+              onClick={() => onFilterChange?.('atCapacity')}
+            />
+            <StatChip 
+              value={summary.over} 
+              label="Over" 
+              color={CATALYST.bronze.primary}
+              bgColor={CATALYST.bronze.bg}
+              isActive={activeFilter === 'over'}
+              onClick={() => onFilterChange?.('over')}
+            />
           </div>
 
-          {/* UTILIZATION — Blue/Teal, NOT orange */}
-          <div className="flex items-center gap-2 px-3 py-1.5 bg-[#fafafa] rounded-lg border border-[#e5e5e5]">
-            <span className="text-[10px] font-semibold text-[#737373] uppercase tracking-wider">UTILIZATION</span>
-            <div className="w-20 h-1.5 bg-[#e5e5e5] rounded-full overflow-hidden">
+          {/* PROMINENT UTILIZATION BAR */}
+          <div className="flex items-center gap-3 px-4 py-2.5 bg-[#fafafa] rounded-xl border border-[#e5e5e5]">
+            <span className="text-xs font-bold text-[#525252] uppercase tracking-wider">Utilization</span>
+            <div className="w-28 h-2.5 bg-[#e5e5e5] rounded-full overflow-hidden">
               <div 
                 className="h-full rounded-full transition-all"
                 style={{ 
@@ -84,7 +120,7 @@ export function CapacityHeader({
               />
             </div>
             <span 
-              className="text-sm font-bold min-w-[36px]"
+              className="text-lg font-bold min-w-[48px]"
               style={{ color: utilizationColor }}
             >
               {summary.utilizationPercentage}%
@@ -94,6 +130,17 @@ export function CapacityHeader({
 
         {/* ACTIONS */}
         <div className="flex items-center gap-2">
+          {onToggleCollapse && (
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={onToggleCollapse}
+              className="gap-1.5 h-9 border-[#e5e5e5] text-[#525252] text-xs"
+            >
+              {isCollapsed ? <ChevronDownIcon className="h-3.5 w-3.5" /> : <ChevronUp className="h-3.5 w-3.5" />}
+              {isCollapsed ? 'Expand All' : 'Collapse All'}
+            </Button>
+          )}
           <Button 
             variant="ghost" 
             size="icon" 
@@ -111,7 +158,7 @@ export function CapacityHeader({
           </Button>
           <Button 
             onClick={onAddResource}
-            className="gap-2 bg-[#2563eb] hover:bg-[#1d4ed8] h-9 px-4 rounded-lg text-white text-sm"
+            className="gap-2 bg-[#2563eb] hover:bg-[#1d4ed8] h-9 px-4 rounded-lg text-white text-sm font-medium"
           >
             <Plus className="h-4 w-4" />
             Add Resource
@@ -120,9 +167,9 @@ export function CapacityHeader({
       </div>
 
       {/* ══════════════════════════════════════════════════════════
-          ROW 2: Search + View Tabs + Period Toggle + Group + Assign
+          ROW 2: Search + View Tabs (VISIBLE) + Period Toggle + Group + Assign
       ══════════════════════════════════════════════════════════ */}
-      <div className="flex items-center justify-between px-6 py-2.5 border-t border-[#f0f0f0] flex-wrap gap-3">
+      <div className="flex items-center justify-between px-6 py-3 border-t border-[#f0f0f0] flex-wrap gap-3">
         <div className="flex items-center gap-4">
           {/* SEARCH */}
           <div className="relative">
@@ -131,41 +178,45 @@ export function CapacityHeader({
               value={searchQuery}
               onChange={(e) => onSearchChange(e.target.value)}
               placeholder="Search resources..."
-              className="w-44 pl-9 h-9 border-[#e5e5e5] rounded-lg text-sm"
+              className="w-48 pl-9 h-10 border-[#e5e5e5] rounded-lg text-sm"
             />
           </div>
 
-          {/* VIEW TABS — 4 tabs including Scenarios */}
-          <div className="flex items-center gap-1 bg-[#f5f5f4] rounded-lg p-1">
+          {/* VIEW TABS — VISIBLE with solid active state + bottom border */}
+          <div className="flex items-center border border-[#e5e5e5] rounded-lg overflow-hidden">
             {(['cards', 'table', 'timeline', 'scenarios'] as const).map((mode) => (
               <button
                 key={mode}
                 onClick={() => onViewModeChange(mode)}
                 className={cn(
-                  'flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-md transition-all',
+                  'relative flex items-center gap-2 px-4 py-2.5 text-sm font-medium transition-all border-r border-[#e5e5e5] last:border-r-0',
                   viewMode === mode 
-                    ? 'bg-white text-[#0a0a0a] shadow-sm' 
-                    : 'text-[#737373] hover:text-[#525252]'
+                    ? 'bg-[#2563eb] text-white' 
+                    : 'bg-white text-[#525252] hover:bg-[#f5f5f4]'
                 )}
               >
                 <ViewIcon mode={mode} />
                 {mode.charAt(0).toUpperCase() + mode.slice(1)}
+                {/* Bottom border indicator */}
+                {viewMode === mode && (
+                  <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#1d4ed8]" />
+                )}
               </button>
             ))}
           </div>
 
           {/* TIMELINE PERIOD — Only visible in Timeline view */}
           {viewMode === 'timeline' && (
-            <div className="flex items-center gap-1 bg-[#f5f5f4] rounded-lg p-1">
+            <div className="flex items-center border border-[#e5e5e5] rounded-lg overflow-hidden">
               {(['weekly', 'monthly', 'quarterly'] as const).map((period) => (
                 <button
                   key={period}
                   onClick={() => onTimelinePeriodChange(period)}
                   className={cn(
-                    'px-3 py-1.5 text-sm font-medium rounded-md transition-all',
+                    'px-4 py-2.5 text-sm font-medium transition-all border-r border-[#e5e5e5] last:border-r-0',
                     timelinePeriod === period 
                       ? 'bg-[#0a0a0a] text-white' 
-                      : 'text-[#737373]'
+                      : 'bg-white text-[#525252] hover:bg-[#f5f5f4]'
                   )}
                 >
                   {period.charAt(0).toUpperCase() + period.slice(1)}
@@ -179,9 +230,9 @@ export function CapacityHeader({
         <div className="flex items-center gap-2">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="gap-2 h-9 border-[#e5e5e5] text-sm">
+              <Button variant="outline" className="gap-2 h-10 border-[#e5e5e5] text-sm font-medium">
                 <FileStack className="h-4 w-4" />
-                Group by {groupBy === 'none' ? 'None' : groupBy === 'assignment' ? 'Assignment' : 'Department'}
+                Group: {groupBy === 'none' ? 'None' : groupBy === 'assignment' ? 'Assignment' : 'Department'}
                 <ChevronDown className="h-3.5 w-3.5 opacity-50" />
               </Button>
             </DropdownMenuTrigger>
@@ -196,7 +247,7 @@ export function CapacityHeader({
             variant="outline" 
             onClick={onAssign}
             className={cn(
-              'gap-2 h-9 border-[#e5e5e5] text-sm',
+              'gap-2 h-10 border-[#e5e5e5] text-sm font-medium',
               assignModeActive && 'bg-[#2563eb] border-[#2563eb] text-white hover:bg-[#1d4ed8]'
             )}
           >
@@ -209,16 +260,48 @@ export function CapacityHeader({
   );
 }
 
-function StatChip({ value, color, label }: { value: number; color: string; label: string }) {
+/* LARGE CLICKABLE STAT CHIP */
+function StatChip({ 
+  value, 
+  label, 
+  color, 
+  bgColor, 
+  isActive, 
+  onClick 
+}: { 
+  value: number; 
+  label: string; 
+  color: string; 
+  bgColor: string;
+  isActive?: boolean;
+  onClick?: () => void;
+}) {
   return (
-    <div className="flex items-center gap-1.5">
+    <button
+      onClick={onClick}
+      className={cn(
+        'flex items-center gap-2 px-3.5 py-2 rounded-xl transition-all border-2',
+        isActive 
+          ? 'border-current shadow-sm' 
+          : 'border-transparent hover:border-[#e5e5e5]'
+      )}
+      style={{ 
+        backgroundColor: bgColor,
+        borderColor: isActive ? color : undefined,
+      }}
+    >
       <div 
-        className="w-2 h-2 rounded-full"
+        className="w-3 h-3 rounded-full"
         style={{ backgroundColor: color }}
       />
-      <span className="text-sm font-bold text-[#0a0a0a]">{value}</span>
-      <span className="text-xs text-[#737373]">{label}</span>
-    </div>
+      <span 
+        className="text-lg font-bold"
+        style={{ color }}
+      >
+        {value}
+      </span>
+      <span className="text-xs font-medium text-[#525252]">{label}</span>
+    </button>
   );
 }
 
