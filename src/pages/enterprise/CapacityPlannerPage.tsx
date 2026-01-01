@@ -883,8 +883,10 @@ function CardsView({
     return (
       <div className="space-y-4">
         {Object.entries(groupedByAssignment).map(([assignmentName, assignmentResources]) => {
-          const availableCount = assignmentResources.filter(r => (r.allocation || 0) < 100).length;
-          const atCapacityCount = assignmentResources.filter(r => (r.allocation || 0) >= 100).length;
+          const availableCount = assignmentResources.filter(r => (r.allocation || 0) === 0).length;
+          const partialCount = assignmentResources.filter(r => (r.allocation || 0) > 0 && (r.allocation || 0) < 100).length;
+          const atCapacityCount = assignmentResources.filter(r => (r.allocation || 0) === 100).length;
+          const overCount = assignmentResources.filter(r => (r.allocation || 0) > 100).length;
           const avgUtil = assignmentResources.length > 0 
             ? Math.round(assignmentResources.reduce((sum, r) => sum + (r.allocation || 0), 0) / assignmentResources.length)
             : 0;
@@ -895,8 +897,9 @@ function CardsView({
             <AssignmentGroupHeader
               assignmentName={assignmentName}
               resourceCount={assignmentResources.length}
-              availableCount={availableCount}
+              availableCount={availableCount + partialCount}
               atCapacityCount={atCapacityCount}
+              overCount={overCount}
               averageUtilization={avgUtil}
               isExpanded={expanded}
               onToggle={() => toggleGroup(assignmentName)}
@@ -1425,10 +1428,14 @@ function TimelineView({ resources, period, groupBy, groupedByAssignment, grouped
     const deptColor = departmentColors[dept] || departmentColors.default;
     const initials = resource.name?.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'NA';
     
+    const avatarColor = getAssignmentColor(resource.assignmentName);
     return (
       <div key={resource.id} className="flex border-b border-border last:border-b-0 hover:bg-muted/20">
         <div className="w-52 px-4 py-3 flex items-center gap-3 border-r border-border shrink-0">
-          <div className={cn('w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold', deptColor.bg, deptColor.text)}>
+          <div 
+            className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold text-white"
+            style={{ backgroundColor: avatarColor }}
+          >
             {initials}
           </div>
           <div>
@@ -1441,6 +1448,7 @@ function TimelineView({ resources, period, groupBy, groupedByAssignment, grouped
             // Use actual allocation, vary slightly per month for visual
             const baseAlloc = resource.allocation || 0;
             const alloc = Math.max(0, Math.min(150, baseAlloc + Math.floor((Math.random() - 0.5) * 20)));
+            const colors = getTimelineCellColors(alloc);
             return (
               <div 
                 key={month}
@@ -1449,11 +1457,10 @@ function TimelineView({ resources, period, groupBy, groupedByAssignment, grouped
                   i === 0 && 'bg-[#2563eb]/5'
                 )}
               >
-                <span className={cn(
-                  'text-[11px] font-semibold px-2.5 py-1 rounded',
-                  alloc > 100 ? 'bg-[#dc2626]/10 text-[#dc2626]' :
-                  alloc > 80 ? 'bg-[#d97706]/10 text-[#d97706]' : 'bg-[#0d9488]/10 text-[#0d9488]'
-                )}>
+                <span 
+                  className="text-[11px] font-semibold px-2.5 py-1 rounded"
+                  style={{ backgroundColor: colors.bg, color: colors.text }}
+                >
                   {alloc}%
                 </span>
               </div>
