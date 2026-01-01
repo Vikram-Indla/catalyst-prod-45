@@ -62,25 +62,39 @@ export function KanbanAssignView({
   ];
 
   // Populate columns with resources
-  // Also add "ghost" cards in Unassigned for resources with remaining capacity
+  // Logic:
+  // 1. Resources with no assignment go to Unassigned with 0% (truly unassigned)
+  // 2. Resources with an assignment appear in their assigned column
+  // 3. Resources with < 100% allocation ALSO appear as ghost cards in Unassigned with remaining capacity
   resources.forEach(r => {
     const assignmentName = r.assignmentName || 'Unassigned';
-    const column = columns.find(c => c.name === assignmentName);
+    const totalAllocation = r.allocation || 0;
+    const remainingCapacity = 100 - totalAllocation;
     
-    if (column) {
-      column.resources.push(r);
-    } else {
-      columns[0].resources.push(r);
-    }
-    
-    // If resource has an assignment but is not at 100%, add a ghost card to Unassigned
-    const remainingCapacity = 100 - (r.allocation || 0);
-    if (assignmentName !== 'Unassigned' && remainingCapacity > 0) {
+    if (assignmentName === 'Unassigned') {
+      // Truly unassigned resource - show with 0% or their actual allocation
       columns[0].resources.push({
         ...r,
-        isGhostCard: true,
-        availableCapacity: remainingCapacity,
+        allocation: totalAllocation, // Should be 0 for truly unassigned
       });
+    } else {
+      // Resource has an assignment - add to their assigned column
+      const column = columns.find(c => c.name === assignmentName);
+      if (column) {
+        column.resources.push(r);
+      } else {
+        // Fallback if column not found
+        columns[0].resources.push(r);
+      }
+      
+      // If resource still has remaining capacity, also show ghost card in Unassigned
+      if (remainingCapacity > 0) {
+        columns[0].resources.push({
+          ...r,
+          isGhostCard: true,
+          availableCapacity: remainingCapacity,
+        });
+      }
     }
   });
 
@@ -535,15 +549,19 @@ function CompactResourceCard({
                 "text-xs font-semibold px-1.5 py-0.5 rounded",
                 isGhostCard 
                   ? 'text-[#2563eb] bg-[#2563eb]/10'
-                  : resource.allocation > 100 ? 'text-[#dc2626] bg-[#dc2626]/10' :
-                    resource.allocation > 80 ? 'text-[#d97706] bg-[#d97706]/10' : 
-                    'text-[#0d9488] bg-[#0d9488]/10'
+                  : resource.allocation === 0 
+                    ? 'text-muted-foreground bg-muted' // Truly unassigned - neutral
+                    : resource.allocation > 100 ? 'text-[#dc2626] bg-[#dc2626]/10' 
+                    : resource.allocation > 80 ? 'text-[#d97706] bg-[#d97706]/10' 
+                    : 'text-[#0d9488] bg-[#0d9488]/10'
               )}>
                 {displayValue}%
               </div>
-              {isGhostCard && (
+              {isGhostCard ? (
                 <p className="text-[9px] text-muted-foreground mt-0.5">{displayLabel}</p>
-              )}
+              ) : resource.allocation === 0 ? (
+                <p className="text-[9px] text-muted-foreground mt-0.5">Unassigned</p>
+              ) : null}
             </div>
           </div>
         </TooltipTrigger>
