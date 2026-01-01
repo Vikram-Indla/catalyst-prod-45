@@ -25,15 +25,17 @@ export function useResourceAllocations() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('resource_allocations')
-        .select(`
+        .select(
+          `
           *,
           resource_inventory!inner(id, name, profile_id),
           resource_assignments!inner(id, name)
-        `)
+        `
+        )
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      
+
       return (data || []).map((row: any) => ({
         id: row.id,
         resource_id: row.resource_id,
@@ -49,38 +51,75 @@ export function useResourceAllocations() {
     },
   });
 
+  const ensureInventoryId = async (resourceKey: string): Promise<string> => {
+    // resourceKey is usually profile_id in the UI, but some places may pass resource_inventory.id
+    const { data: byId } = await supabase
+      .from('resource_inventory')
+      .select('id')
+      .eq('id', resourceKey)
+      .maybeSingle();
+
+    if (byId?.id) return byId.id;
+
+    const { data: byProfile } = await supabase
+      .from('resource_inventory')
+      .select('id')
+      .eq('profile_id', resourceKey)
+      .maybeSingle();
+
+    if (byProfile?.id) return byProfile.id;
+
+    // Create a resource_inventory row on-the-fly if missing
+    const { data: profile, error: profileError } = await supabase
+      .from('profiles')
+      .select('id, full_name')
+      .eq('id', resourceKey)
+      .maybeSingle();
+
+    if (profileError) throw profileError;
+    if (!profile) throw new Error('Resource not found in profiles');
+
+    const { data: created, error: createError } = await supabase
+      .from('resource_inventory')
+      .insert({
+        name: profile.full_name ?? 'Unnamed',
+        profile_id: profile.id,
+        default_capacity_percent: 100,
+        is_active: true,
+      })
+      .select('id')
+      .single();
+
+    if (createError) throw createError;
+    return created.id;
+  };
+
   // Add a new allocation for a resource to an assignment
   const addAllocation = useMutation({
-    mutationFn: async ({ 
-      resourceId, 
-      assignmentId, 
-      allocationPercent 
-    }: { 
-      resourceId: string; 
-      assignmentId: string; 
+    mutationFn: async ({
+      resourceId,
+      assignmentId,
+      allocationPercent,
+    }: {
+      resourceId: string;
+      assignmentId: string;
       allocationPercent: number;
     }) => {
-      // First get the resource_inventory id from profile_id
-      const { data: inventory } = await supabase
-        .from('resource_inventory')
-        .select('id')
-        .eq('profile_id', resourceId)
-        .maybeSingle();
-
-      if (!inventory) {
-        throw new Error('Resource not found in inventory');
-      }
+      const inventoryId = await ensureInventoryId(resourceId);
 
       const { data, error } = await supabase
         .from('resource_allocations')
-        .upsert({
-          resource_id: inventory.id,
-          assignment_id: assignmentId,
-          allocation_percent: allocationPercent,
-          updated_at: new Date().toISOString(),
-        }, {
-          onConflict: 'resource_id,assignment_id',
-        })
+        .upsert(
+          {
+            resource_id: inventoryId,
+            assignment_id: assignmentId,
+            allocation_percent: allocationPercent,
+            updated_at: new Date().toISOString(),
+          },
+          {
+            onConflict: 'resource_id,assignment_id',
+          }
+        )
         .select()
         .single();
 
@@ -99,11 +138,11 @@ export function useResourceAllocations() {
 
   // Update an existing allocation
   const updateAllocation = useMutation({
-    mutationFn: async ({ 
-      allocationId, 
-      allocationPercent 
-    }: { 
-      allocationId: string; 
+    mutationFn: async ({
+      allocationId,
+      allocationPercent,
+    }: {
+      allocationId: string;
       allocationPercent: number;
     }) => {
       const { data, error } = await supabase
@@ -132,10 +171,7 @@ export function useResourceAllocations() {
   // Remove an allocation
   const removeAllocation = useMutation({
     mutationFn: async (allocationId: string) => {
-      const { error } = await supabase
-        .from('resource_allocations')
-        .delete()
-        .eq('id', allocationId);
+      const { error } = await supabase.from('resource_allocations').delete().eq('id', allocationId);
 
       if (error) throw error;
     },
@@ -151,33 +187,24 @@ export function useResourceAllocations() {
 
   // Transfer allocation between assignments
   const transferAllocation = useMutation({
-    mutationFn: async ({ 
+    mutationFn: async ({
       resourceId,
       fromAssignmentId,
-      toAssignmentId, 
-      transferPercent 
-    }: { 
+      toAssignmentId,
+      transferPercent,
+    }: {
       resourceId: string;
       fromAssignmentId: string;
       toAssignmentId: string;
       transferPercent: number;
     }) => {
-      // Get resource_inventory id
-      const { data: inventory } = await supabase
-        .from('resource_inventory')
-        .select('id')
-        .eq('profile_id', resourceId)
-        .maybeSingle();
-
-      if (!inventory) {
-        throw new Error('Resource not found in inventory');
-      }
+      const inventoryId = await ensureInventoryId(resourceId);
 
       // Get current allocation in source assignment
       const { data: sourceAlloc } = await supabase
         .from('resource_allocations')
         .select('id, allocation_percent')
-        .eq('resource_id', inventory.id)
+        .eq('resource_id', inventoryId)
         .eq('assignment_id', fromAssignmentId)
         .maybeSingle();
 
@@ -189,46 +216,43 @@ export function useResourceAllocations() {
 
       // Update or delete source allocation
       if (newSourcePercent <= 0) {
-        await supabase
-          .from('resource_allocations')
-          .delete()
-          .eq('id', sourceAlloc.id);
+        const { error } = await supabase.from('resource_allocations').delete().eq('id', sourceAlloc.id);
+        if (error) throw error;
       } else {
-        await supabase
+        const { error } = await supabase
           .from('resource_allocations')
-          .update({ 
+          .update({
             allocation_percent: newSourcePercent,
             updated_at: new Date().toISOString(),
           })
           .eq('id', sourceAlloc.id);
+        if (error) throw error;
       }
 
       // Add or update target allocation
       const { data: targetAlloc } = await supabase
         .from('resource_allocations')
         .select('id, allocation_percent')
-        .eq('resource_id', inventory.id)
+        .eq('resource_id', inventoryId)
         .eq('assignment_id', toAssignmentId)
         .maybeSingle();
 
       if (targetAlloc) {
-        // Update existing
-        await supabase
+        const { error } = await supabase
           .from('resource_allocations')
-          .update({ 
+          .update({
             allocation_percent: targetAlloc.allocation_percent + transferPercent,
             updated_at: new Date().toISOString(),
           })
           .eq('id', targetAlloc.id);
+        if (error) throw error;
       } else {
-        // Create new
-        await supabase
-          .from('resource_allocations')
-          .insert({
-            resource_id: inventory.id,
-            assignment_id: toAssignmentId,
-            allocation_percent: transferPercent,
-          });
+        const { error } = await supabase.from('resource_allocations').insert({
+          resource_id: inventoryId,
+          assignment_id: toAssignmentId,
+          allocation_percent: transferPercent,
+        });
+        if (error) throw error;
       }
 
       return { success: true };
@@ -245,13 +269,13 @@ export function useResourceAllocations() {
 
   // Get allocations for a specific resource (by profile_id)
   const getAllocationsForResource = (profileId: string): ResourceAllocation[] => {
-    return allocations.filter(a => a.profile_id === profileId);
+    return allocations.filter((a) => a.profile_id === profileId);
   };
 
   // Get total allocation for a resource
   const getTotalAllocation = (profileId: string): number => {
     return allocations
-      .filter(a => a.profile_id === profileId)
+      .filter((a) => a.profile_id === profileId)
       .reduce((sum, a) => sum + a.allocation_percent, 0);
   };
 
