@@ -224,9 +224,17 @@ export function KanbanAssignView({
     }
 
     const { source, destination, draggableId } = result;
+    
+    console.log('[DnD] handleDragEnd:', { source, destination, draggableId });
 
-    if (!destination) return;
-    if (source.droppableId === destination.droppableId && source.index === destination.index) return;
+    if (!destination) {
+      console.log('[DnD] No destination - drop cancelled');
+      return;
+    }
+    if (source.droppableId === destination.droppableId && source.index === destination.index) {
+      console.log('[DnD] Same position - no change');
+      return;
+    }
 
     // Check if this is a ghost card (draggableId ends with "-ghost")
     const isGhostCard = draggableId.endsWith('-ghost');
@@ -234,7 +242,12 @@ export function KanbanAssignView({
     
     // Find the resource to get its name and current allocation
     const resource = resources.find(r => r.id === actualResourceId);
-    if (!resource) return;
+    if (!resource) {
+      console.log('[DnD] Resource not found:', actualResourceId);
+      return;
+    }
+
+    console.log('[DnD] Moving resource:', resource.name, 'from:', source.droppableId, 'to:', destination.droppableId);
 
     // For ghost cards, calculate available capacity
     const availableCapacity = isGhostCard ? 100 - (resource.allocation || 0) : undefined;
