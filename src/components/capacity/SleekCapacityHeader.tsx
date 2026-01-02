@@ -3,12 +3,14 @@
  * Max height: 120px | Inline metrics | Live status
  */
 
+import { useState, useEffect } from 'react';
 import { Search, Download, Plus, Filter, ChevronDown, Clock, LayoutGrid, Table2, CalendarDays, FileStack, AlertTriangle, Users, Presentation } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { cn } from '@/lib/utils';
 import { CATALYST, getUtilizationColor } from '@/lib/catalyst-colors';
+import { formatDistanceToNow } from 'date-fns';
 
 interface SleekCapacityHeaderProps {
   summary: { 
@@ -55,6 +57,19 @@ export function SleekCapacityHeader({
 }: SleekCapacityHeaderProps) {
   const utilizationColor = getUtilizationColor(summary.utilizationPercentage);
   const overPct = summary.total > 0 ? Math.round((summary.over / summary.total) * 100) : 0;
+  
+  // Track last refresh time for dynamic "X ago" display
+  const [lastRefresh] = useState(() => new Date());
+  const [timeAgo, setTimeAgo] = useState('just now');
+  
+  useEffect(() => {
+    const updateTimeAgo = () => {
+      setTimeAgo(formatDistanceToNow(lastRefresh, { addSuffix: false }));
+    };
+    updateTimeAgo();
+    const interval = setInterval(updateTimeAgo, 30000); // Update every 30s
+    return () => clearInterval(interval);
+  }, [lastRefresh]);
 
   return (
     <div className="bg-white border-b border-slate-200">
@@ -80,7 +95,7 @@ export function SleekCapacityHeader({
             <span className="font-medium">Live</span>
             <span className="text-slate-300">•</span>
             <Clock className="w-3 h-3" />
-            <span>2m ago</span>
+            <span>{timeAgo} ago</span>
           </div>
         </div>
 
