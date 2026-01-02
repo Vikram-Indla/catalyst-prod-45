@@ -125,6 +125,7 @@ export default function CapacityPlannerPage() {
     startDate: new Date().toISOString().split('T')[0],
     endDate: (() => { const d = new Date(); d.setMonth(d.getMonth() + 3); return d.toISOString().split('T')[0]; })()
   }]);
+  const [resourceSearchQuery, setResourceSearchQuery] = useState('');
 
   // Fetch departments and assignments for the modal
   const { departments } = useCapacityDepartments();
@@ -476,14 +477,33 @@ export default function CapacityPlannerPage() {
                     </button>
                   )}
                 </div>
+                {/* Search Input */}
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    type="text"
+                    placeholder="Search by name..."
+                    value={resourceSearchQuery}
+                    onChange={(e) => setResourceSearchQuery(e.target.value)}
+                    className="pl-9"
+                  />
+                </div>
                 <ScrollArea className="h-[200px] border border-border rounded-lg">
-                  {availableUsers.length === 0 ? (
-                    <div className="px-4 py-8 text-sm text-muted-foreground text-center">
-                      All users are already in Capacity Planner
-                    </div>
-                  ) : (
+                  {(() => {
+                    const filteredUsers = availableUsers.filter(u => 
+                      u.name?.toLowerCase().includes(resourceSearchQuery.toLowerCase()) ||
+                      u.role?.toLowerCase().includes(resourceSearchQuery.toLowerCase())
+                    );
+                    if (filteredUsers.length === 0) {
+                      return (
+                        <div className="px-4 py-8 text-sm text-muted-foreground text-center">
+                          {availableUsers.length === 0 ? 'All users are already in Capacity Planner' : 'No users match your search'}
+                        </div>
+                      );
+                    }
+                    return (
                     <div className="divide-y divide-border">
-                      {availableUsers.map((user) => {
+                      {filteredUsers.map((user) => {
                         const isSelected = selectedUserIds.includes(user.id);
                         const initials = user.name?.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'NA';
                         return (
@@ -521,7 +541,8 @@ export default function CapacityPlannerPage() {
                         );
                       })}
                     </div>
-                  )}
+                    );
+                  })()}
                 </ScrollArea>
               </div>
               
