@@ -3,7 +3,7 @@
  * Layout wrapper with Link-driven tab navigation
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Outlet, NavLink, useParams, useSearchParams } from 'react-router-dom';
 import { 
   FlaskConical, 
@@ -11,7 +11,6 @@ import {
   ListChecks, 
   RefreshCcw, 
   Play,
-  FileText,
   BarChart3,
   Plus,
   RefreshCw,
@@ -19,8 +18,9 @@ import {
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useProjectContext } from '@/hooks/useProjectContext';
-import { useProjectTestSummary } from '@/hooks/useProjectTestMetrics';
+import { useProjectTestSummary, useProjectTestCases } from '@/hooks/useProjectTestMetrics';
 import { Skeleton } from '@/components/ui/skeleton';
+import { CreateTestCaseModal } from '@/modules/in-jira/components/tests/CreateTestCaseModal';
 
 interface Tab {
   id: string;
@@ -40,12 +40,20 @@ const TABS: Tab[] = [
 export function ProjectTestsLayout() {
   const { projectId } = useParams<{ projectId: string }>();
   const [searchParams] = useSearchParams();
-  const { projectName, isLoading: contextLoading } = useProjectContext();
+  const { projectName, programId, isLoading: contextLoading } = useProjectContext();
   const { data: summary, isLoading: summaryLoading, refetch } = useProjectTestSummary(projectId || null);
+  const { createTestCase, isCreating } = useProjectTestCases(projectId || null);
+  
+  const [createModalOpen, setCreateModalOpen] = useState(false);
 
   // Preserve query params for navigation
   const queryString = searchParams.toString();
   const suffix = queryString ? `?${queryString}` : '';
+
+  const handleCreateTestCase = async (data: any) => {
+    await createTestCase(data);
+    setCreateModalOpen(false);
+  };
 
   return (
     <div className="h-full flex flex-col bg-surface-1">
@@ -89,7 +97,11 @@ export function ProjectTestsLayout() {
               <RefreshCw className="w-4 h-4 mr-2" />
               Refresh
             </Button>
-            <Button size="sm" className="bg-accent-primary text-white hover:bg-accent-primary/90">
+            <Button 
+              size="sm" 
+              className="bg-accent-primary text-white hover:bg-accent-primary/90"
+              onClick={() => setCreateModalOpen(true)}
+            >
               <Plus className="w-4 h-4 mr-2" />
               New Test Case
             </Button>
@@ -123,6 +135,16 @@ export function ProjectTestsLayout() {
       <div className="flex-1 overflow-auto p-6">
         <Outlet />
       </div>
+
+      {/* Create Test Case Modal */}
+      <CreateTestCaseModal
+        open={createModalOpen}
+        onOpenChange={setCreateModalOpen}
+        projectId={projectId || ''}
+        programId={programId || ''}
+        onSubmit={handleCreateTestCase}
+        isSubmitting={isCreating}
+      />
     </div>
   );
 }
