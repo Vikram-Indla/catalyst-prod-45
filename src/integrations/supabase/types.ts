@@ -18381,14 +18381,18 @@ export type Database = {
         Row: {
           created_at: string | null
           created_by: string | null
+          description: string | null
           folder_id: string | null
           id: string
+          is_smart_set: boolean | null
+          is_versioned: boolean | null
           key: string
           name: string
           objective: string | null
           owner_id: string | null
           parent_version_id: string | null
           program_id: string
+          smart_set_criteria: Json | null
           status: string | null
           updated_at: string | null
           version: number | null
@@ -18396,14 +18400,18 @@ export type Database = {
         Insert: {
           created_at?: string | null
           created_by?: string | null
+          description?: string | null
           folder_id?: string | null
           id?: string
+          is_smart_set?: boolean | null
+          is_versioned?: boolean | null
           key: string
           name: string
           objective?: string | null
           owner_id?: string | null
           parent_version_id?: string | null
           program_id: string
+          smart_set_criteria?: Json | null
           status?: string | null
           updated_at?: string | null
           version?: number | null
@@ -18411,14 +18419,18 @@ export type Database = {
         Update: {
           created_at?: string | null
           created_by?: string | null
+          description?: string | null
           folder_id?: string | null
           id?: string
+          is_smart_set?: boolean | null
+          is_versioned?: boolean | null
           key?: string
           name?: string
           objective?: string | null
           owner_id?: string | null
           parent_version_id?: string | null
           program_id?: string
+          smart_set_criteria?: Json | null
           status?: string | null
           updated_at?: string | null
           version?: number | null
