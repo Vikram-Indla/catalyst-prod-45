@@ -189,15 +189,20 @@ export function IssueDrawer() {
             <span className="text-sm font-medium text-accent-primary hover:underline cursor-pointer">
               {issue.key}
             </span>
-            <StatusPill status={issue.status} statusCategory={issue.statusCategory} />
+            <StatusPill 
+              statusId={issue.status} 
+              statusName={issue.status.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+              category={issue.statusCategory === 'to-do' ? 'todo' : issue.statusCategory === 'in-progress' ? 'in_progress' : 'done'}
+            />
           </div>
           
           <div className="flex items-center gap-1">
             {/* Transition Controls */}
             <TransitionControls 
-              currentStatus={issue.status}
-              statusCategory={issue.statusCategory}
-              onTransition={handleTransition}
+              issue={issue as unknown as Record<string, unknown>}
+              currentStatusId={issue.status}
+              onTransitionComplete={(newStatusId) => handleTransition(newStatusId, newStatusId)}
+              variant="compact"
             />
             
             <Separator orientation="vertical" className="h-6 mx-2" />
