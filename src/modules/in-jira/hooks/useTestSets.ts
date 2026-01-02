@@ -10,10 +10,20 @@ import { usePermission } from '@/hooks/usePermission';
 import { logAuditEntry } from '@/lib/auditLogger';
 import { toast } from 'sonner';
 
+export interface SmartSetCriteria {
+  status?: string[];
+  priority?: string[];
+  labels?: string[];
+  component?: string[];
+  folder_id?: string[];
+  linked_story_id?: string[];
+}
+
 export interface TestSet {
   id: string;
   key: string;
   name: string;
+  description: string | null;
   objective: string | null;
   folder_id: string | null;
   program_id: string;
@@ -21,6 +31,9 @@ export interface TestSet {
   status: string | null;
   version: number | null;
   parent_version_id: string | null;
+  is_smart_set: boolean;
+  smart_set_criteria: SmartSetCriteria | null;
+  is_versioned: boolean;
   created_at: string;
   created_by: string | null;
   updated_at: string;
@@ -33,19 +46,27 @@ export interface TestSetWithCount extends TestSet {
 
 export interface CreateTestSetInput {
   name: string;
+  description?: string;
   objective?: string;
   folder_id?: string;
   program_id: string;
   status?: string;
+  is_smart_set?: boolean;
+  smart_set_criteria?: SmartSetCriteria;
+  is_versioned?: boolean;
 }
 
 export interface UpdateTestSetInput {
   id: string;
   name?: string;
+  description?: string;
   objective?: string;
   folder_id?: string;
   status?: string;
   owner_id?: string;
+  is_smart_set?: boolean;
+  smart_set_criteria?: SmartSetCriteria;
+  is_versioned?: boolean;
 }
 
 async function logTestActivity(
@@ -129,13 +150,17 @@ export function useTestSets(programId: string | null) {
         .insert({
           key,
           name: input.name,
+          description: input.description || null,
           objective: input.objective || null,
           folder_id: input.folder_id || null,
           program_id: input.program_id,
           status: input.status || 'active',
+          is_smart_set: input.is_smart_set || false,
+          smart_set_criteria: input.smart_set_criteria as any || null,
+          is_versioned: input.is_versioned || false,
           created_by: user.id,
           version: 1,
-        })
+        } as any)
         .select()
         .single();
 
@@ -184,10 +209,14 @@ export function useTestSets(programId: string | null) {
 
       const updateData: Record<string, unknown> = {};
       if (input.name !== undefined) updateData.name = input.name;
+      if (input.description !== undefined) updateData.description = input.description;
       if (input.objective !== undefined) updateData.objective = input.objective;
       if (input.folder_id !== undefined) updateData.folder_id = input.folder_id;
       if (input.status !== undefined) updateData.status = input.status;
       if (input.owner_id !== undefined) updateData.owner_id = input.owner_id;
+      if (input.is_smart_set !== undefined) updateData.is_smart_set = input.is_smart_set;
+      if (input.smart_set_criteria !== undefined) updateData.smart_set_criteria = input.smart_set_criteria;
+      if (input.is_versioned !== undefined) updateData.is_versioned = input.is_versioned;
 
       const { data, error } = await supabase
         .from('test_sets')
