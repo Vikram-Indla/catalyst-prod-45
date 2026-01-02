@@ -10,6 +10,7 @@ export * from './useTestSets';
 export * from './useTestCycles';
 export * from './useTestMetrics';
 export * from './useTestSteps';
+export * from './useTestFolders';
 export * from './useTestCaseVersions';
 export * from './useTestCaseLinks';
 export * from './useTestCaseBulkOperations';
