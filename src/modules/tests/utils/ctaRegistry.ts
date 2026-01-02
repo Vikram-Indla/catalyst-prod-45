@@ -18,16 +18,80 @@ export interface CTADefinition {
  * Each CTA has been manually verified to have proper wiring
  */
 export const TESTS_CTA_REGISTRY: CTADefinition[] = [
-  // === OVERVIEW PAGE ===
+  // === LAYOUT (ProjectTestsLayout) ===
   {
-    id: 'overview-create-test-case',
-    page: 'TestsOverviewPage',
-    label: 'Create Test Case',
+    id: 'layout-new-test-case',
+    page: 'ProjectTestsLayout',
+    label: 'New Test Case',
     type: 'modal',
     target: 'CreateTestCaseModal',
     validated: true,
-    notes: 'Opens CreateTestCaseModal, writes to test_cases table',
+    notes: 'Opens CreateTestCaseModal from header',
   },
+  {
+    id: 'layout-refresh',
+    page: 'ProjectTestsLayout',
+    label: 'Refresh',
+    type: 'action',
+    validated: true,
+    notes: 'Refetches summary data',
+  },
+  {
+    id: 'layout-tab-overview',
+    page: 'ProjectTestsLayout',
+    label: 'Overview Tab',
+    type: 'navigation',
+    target: '/tests/overview',
+    validated: true,
+    notes: 'NavLink to overview route',
+  },
+  {
+    id: 'layout-tab-cases',
+    page: 'ProjectTestsLayout',
+    label: 'Test Cases Tab',
+    type: 'navigation',
+    target: '/tests/cases',
+    validated: true,
+    notes: 'NavLink to cases route',
+  },
+  {
+    id: 'layout-tab-sets',
+    page: 'ProjectTestsLayout',
+    label: 'Test Sets Tab',
+    type: 'navigation',
+    target: '/tests/sets',
+    validated: true,
+    notes: 'NavLink to sets route',
+  },
+  {
+    id: 'layout-tab-cycles',
+    page: 'ProjectTestsLayout',
+    label: 'Test Cycles Tab',
+    type: 'navigation',
+    target: '/tests/cycles',
+    validated: true,
+    notes: 'NavLink to cycles route',
+  },
+  {
+    id: 'layout-tab-executions',
+    page: 'ProjectTestsLayout',
+    label: 'Executions Tab',
+    type: 'navigation',
+    target: '/tests/executions',
+    validated: true,
+    notes: 'NavLink to executions route',
+  },
+  {
+    id: 'layout-tab-reports',
+    page: 'ProjectTestsLayout',
+    label: 'Reports Tab',
+    type: 'navigation',
+    target: '/tests/reports',
+    validated: true,
+    notes: 'NavLink to reports route',
+  },
+
+  // === OVERVIEW PAGE ===
   {
     id: 'overview-run-tests',
     page: 'TestsOverviewPage',
@@ -40,68 +104,9 @@ export const TESTS_CTA_REGISTRY: CTADefinition[] = [
   {
     id: 'overview-view-reports',
     page: 'TestsOverviewPage',
-    label: 'View Reports',
+    label: 'Reports',
     type: 'navigation',
     target: '/tests/reports',
-    validated: true,
-  },
-  {
-    id: 'overview-kpi-total',
-    page: 'TestsOverviewPage',
-    label: 'Total Test Cases KPI',
-    type: 'navigation',
-    target: '/tests/cases',
-    validated: true,
-  },
-  {
-    id: 'overview-kpi-failed',
-    page: 'TestsOverviewPage',
-    label: 'Failed KPI',
-    type: 'navigation',
-    target: '/tests/executions?status=failed',
-    validated: true,
-  },
-  {
-    id: 'overview-kpi-blocked',
-    page: 'TestsOverviewPage',
-    label: 'Blocked KPI',
-    type: 'navigation',
-    target: '/tests/executions?status=blocked',
-    validated: true,
-  },
-  {
-    id: 'overview-kpi-not-run',
-    page: 'TestsOverviewPage',
-    label: 'Not Run KPI',
-    type: 'navigation',
-    target: '/tests/executions?status=not_run',
-    validated: true,
-  },
-  {
-    id: 'overview-recent-failure-item',
-    page: 'TestsOverviewPage',
-    label: 'Recent Failure Item',
-    type: 'navigation',
-    target: '/tests/executions?status=failed',
-    validated: true,
-  },
-
-  // === CASES PAGE ===
-  {
-    id: 'cases-create',
-    page: 'TestsCasesPage',
-    label: 'Create Test Case',
-    type: 'modal',
-    target: 'CreateTestCaseModal',
-    validated: true,
-    notes: 'Opens modal, writes to test_cases + test_activity_log',
-  },
-  {
-    id: 'cases-row-click',
-    page: 'TestsCasesPage',
-    label: 'Test Case Row Click',
-    type: 'drawer',
-    target: 'TestCaseDrawer',
     validated: true,
   },
   {
@@ -119,6 +124,33 @@ export const TESTS_CTA_REGISTRY: CTADefinition[] = [
     type: 'action',
     validated: true,
     notes: 'Sets deleted_at on selected items',
+  },
+
+  // === SETS PAGE ===
+  {
+    id: 'sets-create',
+    page: 'TestsSetsPage',
+    label: 'Create Test Set',
+    type: 'modal',
+    validated: true,
+    notes: 'Opens inline dialog, creates test_sets record',
+  },
+  {
+    id: 'sets-view-cases',
+    page: 'TestsSetsPage',
+    label: 'View Cases',
+    type: 'navigation',
+    target: '/tests/cases?setId=...',
+    validated: true,
+    notes: 'Link navigates to cases filtered by set',
+  },
+  {
+    id: 'sets-archive',
+    page: 'TestsSetsPage',
+    label: 'Archive Set',
+    type: 'action',
+    validated: true,
+    notes: 'Updates status to archived',
   },
 
   // === CYCLES PAGE ===
@@ -162,8 +194,40 @@ export const TESTS_CTA_REGISTRY: CTADefinition[] = [
     type: 'action',
     validated: true,
   },
+  {
+    id: 'cycles-run-tests',
+    page: 'TestsCyclesPage',
+    label: 'Run Tests (dropdown)',
+    type: 'navigation',
+    target: '/tests/cycles/:cycleId/execution',
+    validated: true,
+    notes: 'Navigates to cycle execution page',
+  },
 
-  // === EXECUTIONS PAGE ===
+  // === CYCLE EXECUTION PAGE ===
+  {
+    id: 'cycle-exec-back',
+    page: 'CycleExecutionPage',
+    label: 'Back to Cycles',
+    type: 'navigation',
+    target: '/tests/cycles',
+    validated: true,
+  },
+  {
+    id: 'cycle-exec-execute-row',
+    page: 'CycleExecutionPage',
+    label: 'Execute (row click)',
+    type: 'drawer',
+    target: 'ExecutionDrawer',
+    validated: true,
+  },
+  {
+    id: 'cycle-exec-filter',
+    page: 'CycleExecutionPage',
+    label: 'Status Filter',
+    type: 'action',
+    validated: true,
+  },
   {
     id: 'executions-run-tests',
     page: 'TestsExecutionsPage',

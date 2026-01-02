@@ -14,6 +14,7 @@ import {
   BarChart3,
   Plus,
   RefreshCw,
+  Package,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -32,6 +33,7 @@ interface Tab {
 const TABS: Tab[] = [
   { id: 'overview', label: 'Overview', icon: <LayoutDashboard className="h-4 w-4" />, path: 'overview' },
   { id: 'cases', label: 'Test Cases', icon: <ListChecks className="h-4 w-4" />, path: 'cases' },
+  { id: 'sets', label: 'Test Sets', icon: <Package className="h-4 w-4" />, path: 'sets' },
   { id: 'cycles', label: 'Test Cycles', icon: <RefreshCcw className="h-4 w-4" />, path: 'cycles' },
   { id: 'executions', label: 'Executions', icon: <Play className="h-4 w-4" />, path: 'executions' },
   { id: 'reports', label: 'Reports', icon: <BarChart3 className="h-4 w-4" />, path: 'reports' },

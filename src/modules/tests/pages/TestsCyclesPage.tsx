@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useMemo } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { 
   Plus, 
   Search, 
@@ -15,6 +15,7 @@ import {
   Lock,
   MoreHorizontal,
   Archive,
+  Play,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -48,6 +49,7 @@ import { toast } from 'sonner';
 
 export function TestsCyclesPage() {
   const { projectId } = useParams<{ projectId: string }>();
+  const navigate = useNavigate();
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [searchQuery, setSearchQuery] = useState('');
@@ -263,6 +265,15 @@ export function TestsCyclesPage() {
                       <DropdownMenuContent align="end" className="bg-surface-1 border-border-default">
                         <DropdownMenuItem onClick={(e) => { e.stopPropagation(); handleCycleClick(cycle.id); }}>
                           View Details
+                        </DropdownMenuItem>
+                        <DropdownMenuItem 
+                          onClick={(e) => { 
+                            e.stopPropagation(); 
+                            navigate(`/projects/${projectId}/tests/cycles/${cycle.id}/execution`); 
+                          }}
+                        >
+                          <Play className="h-4 w-4 mr-2" />
+                          Run Tests
                         </DropdownMenuItem>
                         <DropdownMenuItem 
                           className="text-status-error"
