@@ -1,10 +1,12 @@
 /**
  * Kanban Board Page
- * Full Kanban board with columns, search, quick filters, and drag-drop placeholders
+ * Full Kanban board with real data, drag-drop, WIP limits, and virtualization
  */
 
-import React, { useState } from 'react';
-import { 
+import React, { useState, useMemo, useCallback } from 'react';
+import { useParams } from 'react-router-dom';
+import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
+import {
   Search, 
   Filter, 
   MoreHorizontal, 
@@ -12,16 +14,22 @@ import {
   User,
   Flag,
   Layers,
-  ChevronDown
+  ChevronDown,
+  RefreshCw,
+  AlertTriangle
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
+import { toast } from 'sonner';
 import { useInJira } from '../context/InJiraContext';
-import { DEFAULT_KANBAN_COLUMNS, Issue, IssuePriority, IssueType } from '../types';
+import { useBoardData, useBoardColumns, type BoardIssue, type DBBoardColumn } from '../hooks/useBoardData';
+import { compareRanks } from '../utils/lexorank';
+import { IssuePriority, IssueType } from '../types';
 
 // Quick filter options
 const QUICK_FILTERS = [
@@ -30,34 +38,6 @@ const QUICK_FILTERS = [
   { id: 'no-assignee', label: 'No Assignee' },
   { id: 'bugs-only', label: 'Bugs Only' },
 ];
-
-// Mock issues per column
-const MOCK_ISSUES: Record<string, Issue[]> = {
-  'backlog': [
-    { id: '1', key: 'PROJ-101', summary: 'Implement user profile page', type: 'story', status: 'Backlog', statusCategory: 'to-do', priority: 'medium', createdAt: '2024-01-01', updatedAt: '2024-01-10', storyPoints: 5 },
-    { id: '2', key: 'PROJ-102', summary: 'Add dark mode support', type: 'feature', status: 'Backlog', statusCategory: 'to-do', priority: 'low', createdAt: '2024-01-02', updatedAt: '2024-01-11', storyPoints: 8 },
-    { id: '3', key: 'PROJ-103', summary: 'Fix login button alignment', type: 'defect', status: 'Backlog', statusCategory: 'to-do', priority: 'high', createdAt: '2024-01-03', updatedAt: '2024-01-12' },
-  ],
-  'in-review': [
-    { id: '4', key: 'PROJ-104', summary: 'API endpoint for notifications', type: 'story', status: 'In Review', statusCategory: 'in-progress', priority: 'high', createdAt: '2024-01-04', updatedAt: '2024-01-13', storyPoints: 3, assigneeId: 'user1' },
-  ],
-  'ready-for-analysis': [
-    { id: '5', key: 'PROJ-105', summary: 'Database schema optimization', type: 'story', status: 'Ready for Analysis', statusCategory: 'in-progress', priority: 'medium', createdAt: '2024-01-05', updatedAt: '2024-01-14', storyPoints: 5, assigneeId: 'user2' },
-    { id: '6', key: 'PROJ-106', summary: 'Add export to CSV feature', type: 'feature', status: 'Ready for Analysis', statusCategory: 'in-progress', priority: 'low', createdAt: '2024-01-06', updatedAt: '2024-01-15', storyPoints: 3 },
-  ],
-  'implementation-review': [
-    { id: '7', key: 'PROJ-107', summary: 'Refactor authentication flow', type: 'story', status: 'Implementation Review', statusCategory: 'in-progress', priority: 'highest', createdAt: '2024-01-07', updatedAt: '2024-01-16', storyPoints: 8, assigneeId: 'user1' },
-  ],
-  'under-implementation': [
-    { id: '8', key: 'PROJ-108', summary: 'Implement search functionality', type: 'story', status: 'Under Implementation', statusCategory: 'in-progress', priority: 'high', createdAt: '2024-01-08', updatedAt: '2024-01-17', storyPoints: 5, assigneeId: 'user3' },
-    { id: '9', key: 'PROJ-109', summary: 'Fix memory leak in dashboard', type: 'defect', status: 'Under Implementation', statusCategory: 'in-progress', priority: 'highest', createdAt: '2024-01-09', updatedAt: '2024-01-18', assigneeId: 'user2' },
-  ],
-  'done': [
-    { id: '10', key: 'PROJ-110', summary: 'Setup CI/CD pipeline', type: 'story', status: 'Done', statusCategory: 'done', priority: 'medium', createdAt: '2024-01-10', updatedAt: '2024-01-19', storyPoints: 3, assigneeId: 'user1' },
-    { id: '11', key: 'PROJ-111', summary: 'Add unit tests for auth module', type: 'story', status: 'Done', statusCategory: 'done', priority: 'medium', createdAt: '2024-01-11', updatedAt: '2024-01-20', storyPoints: 5, assigneeId: 'user2' },
-    { id: '12', key: 'PROJ-112', summary: 'Documentation update', type: 'subtask', status: 'Done', statusCategory: 'done', priority: 'low', createdAt: '2024-01-12', updatedAt: '2024-01-21', assigneeId: 'user3' },
-  ],
-};
 
 // Priority colors
 const PRIORITY_COLORS: Record<IssuePriority, string> = {
@@ -77,17 +57,172 @@ const TYPE_COLORS: Record<IssueType, string> = {
   incident: 'bg-orange-500',
 };
 
-export function KanbanBoardPage() {
-  const { openIssueDrawer, openCreateModal, searchQuery, setSearchQuery, activeFilters, toggleFilter } = useInJira();
-  const [showFilters, setShowFilters] = useState(false);
+// Default columns for fallback
+const DEFAULT_COLUMNS: DBBoardColumn[] = [
+  { id: 'backlog', boardId: '', name: 'Backlog', sortOrder: 0, statusIds: ['backlog'], maxLimit: null, minLimit: null },
+  { id: 'in-progress', boardId: '', name: 'In Progress', sortOrder: 1, statusIds: ['in-progress'], maxLimit: 5, minLimit: null },
+  { id: 'in-review', boardId: '', name: 'In Review', sortOrder: 2, statusIds: ['in-review'], maxLimit: 3, minLimit: null },
+  { id: 'done', boardId: '', name: 'Done', sortOrder: 3, statusIds: ['done'], maxLimit: null, minLimit: null },
+];
 
-  const handleIssueClick = (issue: Issue) => {
-    openIssueDrawer(issue);
+export function KanbanBoardPage() {
+  const { projectKey } = useParams<{ projectKey: string }>();
+  const { 
+    openIssueDrawer, 
+    openCreateModal, 
+    searchQuery, 
+    setSearchQuery, 
+    activeFilters, 
+    toggleFilter,
+  } = useInJira();
+  
+  // Use projectKey as fallback IDs for demo mode
+  const boardId = projectKey || 'demo-board';
+  const projectId = projectKey || 'demo-project';
+  
+  const {
+    board,
+    issues,
+    isLoading,
+    error,
+    moveIssue,
+    isMoving,
+    rankIssue,
+    refetch,
+  } = useBoardData(boardId, projectId);
+
+  const { columns: dbColumns, updateWipLimit } = useBoardColumns(boardId);
+  
+  // Use DB columns if available, otherwise use defaults
+  const columns = dbColumns.length > 0 ? dbColumns : DEFAULT_COLUMNS;
+
+  // Filter issues by search query and active filters
+  const filteredIssues = useMemo(() => {
+    let result = issues;
+    
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      result = result.filter(
+        (issue) =>
+          issue.key.toLowerCase().includes(query) ||
+          issue.summary.toLowerCase().includes(query)
+      );
+    }
+    
+    // Apply quick filters
+    if (activeFilters.includes('bugs-only')) {
+      result = result.filter(i => i.type === 'defect');
+    }
+    if (activeFilters.includes('no-assignee')) {
+      result = result.filter(i => !i.assigneeId);
+    }
+    
+    return result;
+  }, [issues, searchQuery, activeFilters]);
+
+  // Group issues by status (column)
+  const issuesByColumn = useMemo(() => {
+    const grouped: Record<string, BoardIssue[]> = {};
+    
+    columns.forEach((col) => {
+      grouped[col.id] = [];
+    });
+
+    filteredIssues.forEach((issue) => {
+      const column = columns.find((col) =>
+        col.statusIds.includes(issue.status)
+      );
+      if (column) {
+        grouped[column.id] = grouped[column.id] || [];
+        grouped[column.id].push(issue);
+      } else {
+        // Default to first column if no match
+        const firstColId = columns[0]?.id;
+        if (firstColId) {
+          grouped[firstColId] = grouped[firstColId] || [];
+          grouped[firstColId].push(issue);
+        }
+      }
+    });
+
+    // Sort issues within each column by rank
+    Object.keys(grouped).forEach((colId) => {
+      grouped[colId].sort((a, b) => compareRanks(a.rankLexo, b.rankLexo));
+    });
+
+    return grouped;
+  }, [filteredIssues, columns]);
+
+  // Handle drag end
+  const handleDragEnd = useCallback(
+    (result: DropResult) => {
+      const { source, destination, draggableId } = result;
+
+      if (!destination) return;
+      if (source.droppableId === destination.droppableId && source.index === destination.index) return;
+
+      const sourceColumn = columns.find((c) => c.id === source.droppableId);
+      const destColumn = columns.find((c) => c.id === destination.droppableId);
+
+      if (!sourceColumn || !destColumn) return;
+
+      // Check WIP limit
+      if (source.droppableId !== destination.droppableId) {
+        const destIssues = issuesByColumn[destColumn.id] || [];
+        if (destColumn.maxLimit !== null && destIssues.length >= destColumn.maxLimit) {
+          toast.error(`Column "${destColumn.name}" has reached its WIP limit of ${destColumn.maxLimit}`);
+          return;
+        }
+      }
+
+      // Calculate new rank
+      const destIssues = (issuesByColumn[destColumn.id] || []).filter(
+        (i) => i.id !== draggableId
+      );
+      const newRank = rankIssue(draggableId, destination.index, destIssues);
+
+      // Determine new status
+      const newStatusId = source.droppableId !== destination.droppableId
+        ? destColumn.statusIds[0]
+        : undefined;
+
+      moveIssue({
+        issueId: draggableId,
+        targetStatusId: newStatusId,
+        newRank,
+      });
+    },
+    [columns, issuesByColumn, moveIssue, rankIssue]
+  );
+
+  const handleIssueClick = (issue: BoardIssue) => {
+    openIssueDrawer({
+      id: issue.id,
+      key: issue.key,
+      summary: issue.summary,
+      type: issue.type,
+      status: issue.status,
+      statusCategory: issue.statusCategory,
+      priority: issue.priority,
+      createdAt: issue.createdAt,
+      updatedAt: issue.updatedAt,
+      assigneeId: issue.assigneeId,
+      reporterId: issue.reporterId,
+      storyPoints: issue.storyPoints,
+    });
   };
 
   const handleCreateInColumn = (columnId: string) => {
-    openCreateModal({ projectKey: 'PROJ' });
+    openCreateModal({ projectKey: projectKey || 'PROJ' });
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <RefreshCw className="w-6 h-6 animate-spin text-text-tertiary" />
+      </div>
+    );
+  }
 
   return (
     <div className="h-full flex flex-col">
@@ -122,6 +257,15 @@ export function KanbanBoardPage() {
         </div>
 
         <div className="flex items-center gap-2">
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="h-8 w-8"
+            onClick={refetch}
+            disabled={isMoving}
+          >
+            <RefreshCw className={cn("h-4 w-4", isMoving && "animate-spin")} />
+          </Button>
           <Button variant="ghost" size="sm" className="gap-1.5">
             <User className="h-4 w-4" />
             Assignee
@@ -140,99 +284,146 @@ export function KanbanBoardPage() {
 
       {/* Board */}
       <ScrollArea className="flex-1">
-        <div className="flex gap-3 p-4 min-w-max">
-          {DEFAULT_KANBAN_COLUMNS.map((column) => {
-            const issues = MOCK_ISSUES[column.id] || [];
-            
-            return (
-              <div 
-                key={column.id}
-                className="w-72 flex-shrink-0 bg-surface-2 rounded-lg border border-border-default"
-              >
-                {/* Column Header */}
-                <div className="flex items-center justify-between px-3 py-2 border-b border-border-default">
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium text-text-primary">
-                      {column.name}
-                    </span>
-                    <Badge variant="secondary" className="text-xs h-5 px-1.5">
-                      {issues.length}
-                    </Badge>
-                  </div>
-                  <Button 
-                    variant="ghost" 
-                    size="icon" 
-                    className="h-6 w-6"
-                    onClick={() => handleCreateInColumn(column.id)}
-                  >
-                    <Plus className="h-4 w-4" />
-                  </Button>
-                </div>
-
-                {/* Cards */}
-                <div className="p-2 space-y-2 min-h-[200px]">
-                  {issues.length === 0 ? (
-                    <div 
-                      className="h-24 border-2 border-dashed border-border-default rounded-lg flex items-center justify-center text-text-tertiary text-sm cursor-pointer hover:border-accent-primary hover:text-accent-primary transition-colors"
+        <DragDropContext onDragEnd={handleDragEnd}>
+          <div className="flex gap-3 p-4 min-w-max">
+            {columns.map((column) => {
+              const columnIssues = issuesByColumn[column.id] || [];
+              const isOverLimit = column.maxLimit !== null && columnIssues.length > column.maxLimit;
+              const isAtLimit = column.maxLimit !== null && columnIssues.length === column.maxLimit;
+              
+              return (
+                <div 
+                  key={column.id}
+                  className={cn(
+                    "w-72 flex-shrink-0 bg-surface-2 rounded-lg border",
+                    isOverLimit ? "border-red-500" : "border-border-default"
+                  )}
+                >
+                  {/* Column Header */}
+                  <div className="flex items-center justify-between px-3 py-2 border-b border-border-default">
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-medium text-text-primary">
+                        {column.name}
+                      </span>
+                      <Badge 
+                        variant={isOverLimit ? "destructive" : isAtLimit ? "secondary" : "secondary"} 
+                        className={cn(
+                          "text-xs h-5 px-1.5",
+                          isAtLimit && "bg-yellow-500/20 text-yellow-600"
+                        )}
+                      >
+                        {columnIssues.length}
+                        {column.maxLimit !== null && `/${column.maxLimit}`}
+                      </Badge>
+                      {isOverLimit && (
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger>
+                              <AlertTriangle className="h-4 w-4 text-red-500" />
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              WIP limit exceeded
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      )}
+                    </div>
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      className="h-6 w-6"
                       onClick={() => handleCreateInColumn(column.id)}
                     >
-                      Drop issues here
-                    </div>
-                  ) : (
-                    issues.map((issue) => (
-                      <div
-                        key={issue.id}
-                        className="bg-surface-1 rounded-md border border-border-default p-3 cursor-pointer hover:border-accent-primary hover:shadow-sm transition-all group"
-                        onClick={() => handleIssueClick(issue)}
+                      <Plus className="h-4 w-4" />
+                    </Button>
+                  </div>
+
+                  {/* Droppable Cards Area */}
+                  <Droppable droppableId={column.id}>
+                    {(provided, snapshot) => (
+                      <div 
+                        ref={provided.innerRef}
+                        {...provided.droppableProps}
+                        className={cn(
+                          "p-2 space-y-2 min-h-[200px] transition-colors",
+                          snapshot.isDraggingOver && "bg-accent-primary/5"
+                        )}
                       >
-                        {/* Issue Key + Type */}
-                        <div className="flex items-center gap-2 mb-2">
-                          <div className={cn(
-                            "w-4 h-4 rounded-sm flex items-center justify-center",
-                            TYPE_COLORS[issue.type]
-                          )}>
-                            <Layers className="h-2.5 w-2.5 text-white" />
+                        {columnIssues.length === 0 ? (
+                          <div 
+                            className="h-24 border-2 border-dashed border-border-default rounded-lg flex items-center justify-center text-text-tertiary text-sm cursor-pointer hover:border-accent-primary hover:text-accent-primary transition-colors"
+                            onClick={() => handleCreateInColumn(column.id)}
+                          >
+                            Drop issues here
                           </div>
-                          <span className="text-xs font-medium text-accent-primary">
-                            {issue.key}
-                          </span>
-                        </div>
+                        ) : (
+                          columnIssues.map((issue, index) => (
+                            <Draggable key={issue.id} draggableId={issue.id} index={index}>
+                              {(dragProvided, dragSnapshot) => (
+                                <div
+                                  ref={dragProvided.innerRef}
+                                  {...dragProvided.draggableProps}
+                                  {...dragProvided.dragHandleProps}
+                                  className={cn(
+                                    "bg-surface-1 rounded-md border border-border-default p-3 cursor-pointer hover:border-accent-primary hover:shadow-sm transition-all group",
+                                    dragSnapshot.isDragging && "shadow-lg rotate-2"
+                                  )}
+                                  onClick={() => handleIssueClick(issue)}
+                                >
+                                  {/* Issue Key + Type */}
+                                  <div className="flex items-center gap-2 mb-2">
+                                    <div className={cn(
+                                      "w-4 h-4 rounded-sm flex items-center justify-center",
+                                      TYPE_COLORS[issue.type] || 'bg-gray-500'
+                                    )}>
+                                      <Layers className="h-2.5 w-2.5 text-white" />
+                                    </div>
+                                    <span className="text-xs font-medium text-accent-primary">
+                                      {issue.key}
+                                    </span>
+                                  </div>
 
-                        {/* Summary */}
-                        <p className="text-sm text-text-primary line-clamp-2 mb-3">
-                          {issue.summary}
-                        </p>
+                                  {/* Summary */}
+                                  <p className="text-sm text-text-primary line-clamp-2 mb-3">
+                                    {issue.summary}
+                                  </p>
 
-                        {/* Footer */}
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2">
-                            <Flag className={cn("h-3.5 w-3.5", PRIORITY_COLORS[issue.priority])} />
-                            {issue.storyPoints && (
-                              <Badge variant="outline" className="text-xs h-5 px-1.5">
-                                {issue.storyPoints}
-                              </Badge>
-                            )}
-                          </div>
-                          {issue.assigneeId ? (
-                            <Avatar className="h-6 w-6">
-                              <AvatarFallback className="text-xs bg-accent-primary text-white">
-                                {issue.assigneeId.slice(0, 2).toUpperCase()}
-                              </AvatarFallback>
-                            </Avatar>
-                          ) : (
-                            <div className="h-6 w-6 rounded-full border-2 border-dashed border-border-default flex items-center justify-center">
-                              <User className="h-3 w-3 text-text-tertiary" />
-                            </div>
-                          )}
-                        </div>
+                                  {/* Footer */}
+                                  <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-2">
+                                      <Flag className={cn("h-3.5 w-3.5", PRIORITY_COLORS[issue.priority] || 'text-gray-400')} />
+                                      {issue.storyPoints && (
+                                        <Badge variant="outline" className="text-xs h-5 px-1.5">
+                                          {issue.storyPoints}
+                                        </Badge>
+                                      )}
+                                    </div>
+                                    {issue.assigneeId ? (
+                                      <Avatar className="h-6 w-6">
+                                        <AvatarFallback className="text-xs bg-accent-primary text-white">
+                                          {issue.assigneeId.slice(0, 2).toUpperCase()}
+                                        </AvatarFallback>
+                                      </Avatar>
+                                    ) : (
+                                      <div className="h-6 w-6 rounded-full border-2 border-dashed border-border-default flex items-center justify-center">
+                                        <User className="h-3 w-3 text-text-tertiary" />
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
+                              )}
+                            </Draggable>
+                          ))
+                        )}
+                        {provided.placeholder}
                       </div>
-                    ))
-                  )}
+                    )}
+                  </Droppable>
                 </div>
-              </div>
-            );
-          })}
-        </div>
+              );
+            })}
+          </div>
+        </DragDropContext>
         <ScrollBar orientation="horizontal" />
       </ScrollArea>
     </div>

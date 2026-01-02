@@ -13,5 +13,14 @@ export { AllWorkPage } from './pages/AllWorkPage';
 export { ReleasesPage } from './pages/ReleasesPage';
 export { ReleaseManagementPage } from './pages/ReleaseManagementPage';
 
+// Board Components
+export { KanbanBoard, ScrumBoard, IssueCard, BoardColumn } from './components/board';
+
+// Hooks
+export { useBoardData, useBoardColumns, useSprintManagement } from './hooks';
+
+// Utils
+export { generateRankBetween, compareRanks } from './utils';
+
 // Types
 export * from './types';
