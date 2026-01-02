@@ -29,7 +29,7 @@ import { cn } from '@/lib/utils';
 import { useTestAIGeneration } from '../../hooks/useTestAIGeneration';
 import { useTestAISettings } from '../../hooks/useTestAISettings';
 
-interface GeneratedTestCase {
+interface GeneratedTestCaseLocal {
   title: string;
   description: string;
   steps: { action: string; expectedResult: string }[];
@@ -55,7 +55,7 @@ export function AITestGeneratorPanel({
   const { projectKey } = useParams<{ projectKey: string }>();
   
   const [additionalContext, setAdditionalContext] = useState('');
-  const [generatedTests, setGeneratedTests] = useState<GeneratedTestCase[]>([]);
+  const [generatedTests, setGeneratedTests] = useState<GeneratedTestCaseLocal[]>([]);
   const [selectedTests, setSelectedTests] = useState<Set<number>>(new Set());
   const [expandedTests, setExpandedTests] = useState<Set<number>>(new Set());
   const [showPreview, setShowPreview] = useState(false);
@@ -101,7 +101,7 @@ export function AITestGeneratorPanel({
     }
 
     try {
-      await saveGeneratedTestCases({ storyId: storyId!, testCases: selectedTestCases });
+      await saveGeneratedTestCases({ storyId: storyId!, testCases: selectedTestCases as any });
       onTestsGenerated?.();
       setShowPreview(false);
       setGeneratedTests([]);
@@ -132,7 +132,7 @@ export function AITestGeneratorPanel({
     });
   };
 
-  if (!settings?.is_active) {
+  if (!settings?.is_enabled) {
     return (
       <div className="p-6 text-center">
         <AlertTriangle className="h-10 w-10 mx-auto mb-3 text-status-warning" />

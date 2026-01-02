@@ -78,8 +78,8 @@ function getStatusColor(status: string) {
   }
 }
 
-// Steps Tab Component - Uses the new StepsEditor
 import { StepsEditor } from './StepsEditor';
+import { AITestGeneratorPanel } from './AITestGeneratorPanel';
 
 function StepsTab({ testCaseId }: { testCaseId: string }) {
   return (
@@ -497,11 +497,15 @@ export function TestCaseDrawer({
               </TabsContent>
 
               <TabsContent value="ai" className="mt-0">
-                <div className="text-center py-12 text-text-tertiary">
-                  <Sparkles className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                  <p className="text-sm">AI Assistant</p>
-                  <p className="text-xs mt-1">Generate steps, suggest improvements</p>
-                </div>
+                <AITestGeneratorPanel
+                  storyId={testCase.linked_work_item_id || undefined}
+                  storyTitle={testCase.title}
+                  storyDescription={testCase.description || undefined}
+                  programId={testCase.program_id || undefined}
+                  onTestsGenerated={() => {
+                    toast.success('Test cases generated from AI');
+                  }}
+                />
               </TabsContent>
 
               <TabsContent value="history" className="mt-0">
