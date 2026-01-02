@@ -3,7 +3,7 @@
  * Max height: 120px | Inline metrics | Live status
  */
 
-import { Search, Download, Plus, Filter, ChevronDown, Clock, LayoutGrid, Table2, CalendarDays, FileStack, AlertTriangle, Users, ArrowLeftRight, Presentation } from 'lucide-react';
+import { Search, Download, Plus, Filter, ChevronDown, Clock, LayoutGrid, Table2, CalendarDays, FileStack, AlertTriangle, Users, Presentation } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
@@ -29,7 +29,6 @@ interface SleekCapacityHeaderProps {
   onTimelinePeriodChange: (period: 'weekly' | 'monthly' | 'quarterly') => void;
   onSearchChange: (query: string) => void;
   onAddResource: () => void;
-  onAssignMode: () => void;
   onExport: () => void;
   onPresentationMode?: () => void;
   onFilterChange?: (filter: 'all' | 'available' | 'atCapacity' | 'over') => void;
@@ -49,7 +48,6 @@ export function SleekCapacityHeader({
   onTimelinePeriodChange,
   onSearchChange,
   onAddResource,
-  onAssignMode,
   onExport,
   onPresentationMode,
   onFilterChange,
@@ -107,16 +105,7 @@ export function SleekCapacityHeader({
             <Presentation className="h-3.5 w-3.5 mr-1" />
             Present
           </Button>
-          <Button 
-            onClick={onAssignMode}
-            variant="outline"
-            size="sm"
-            className="h-7 px-3 text-xs border-[#0d9488] text-[#0d9488] hover:bg-[#0d9488]/10"
-          >
-            <ArrowLeftRight className="h-3.5 w-3.5 mr-1" />
-            Assign
-          </Button>
-          <Button 
+          <Button
             onClick={onAddResource}
             size="sm"
             className="h-7 px-3 text-xs bg-[#0d9488] hover:bg-[#0f766e] text-white"
