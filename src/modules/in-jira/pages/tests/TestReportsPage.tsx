@@ -1,6 +1,6 @@
 /**
  * Test Reports Page
- * Command-center reporting with daily/weekly views, exports, and sharing
+ * Command-center reporting with daily/weekly views, AI narratives, exports
  */
 
 import React, { useState } from 'react';
@@ -15,7 +15,8 @@ import {
   Link2,
   Copy,
   Check,
-  Loader2
+  Loader2,
+  Sparkles
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -40,6 +41,7 @@ import { format } from 'date-fns';
 
 import { DailyCommandReport } from '../../components/tests/DailyCommandReport';
 import { WeeklyRunwayReport } from '../../components/tests/WeeklyRunwayReport';
+import { NarrativeReportPanel } from '../../components/tests/NarrativeReportPanel';
 import { useTestReportMetrics } from '../../hooks/useTestReportMetrics';
 import { useReportSharing } from '../../hooks/useReportSharing';
 
@@ -104,22 +106,18 @@ export function TestReportsPage() {
 
   const handleRiskClick = (risk: any) => {
     toast.info(`Opening ${risk.entityType}: ${risk.entityId}`);
-    // Navigate to filtered view based on risk type
   };
 
   const handleActionClick = (action: any) => {
     toast.info(`Executing action: ${action.actionType}`);
-    // Execute action based on type
   };
 
   const handleGapClick = (gap: any) => {
     toast.info(`Opening feature: ${gap.featureName}`);
-    // Navigate to feature coverage view
   };
 
   const handleBlockerClick = (blocker: any) => {
     toast.info(`Opening blocker: ${blocker.title}`);
-    // Navigate to blocker detail
   };
 
   return (
@@ -141,7 +139,6 @@ export function TestReportsPage() {
             </p>
           </div>
           <div className="flex items-center gap-2">
-            {/* Share Button */}
             <Button 
               variant="outline" 
               size="sm" 
@@ -156,7 +153,6 @@ export function TestReportsPage() {
               Share
             </Button>
 
-            {/* Export Dropdown */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" size="sm">
@@ -183,7 +179,6 @@ export function TestReportsPage() {
           </div>
         </div>
 
-        {/* Export Progress */}
         {exportProgress > 0 && exportProgress < 100 && (
           <div className="mt-3">
             <Progress value={exportProgress} className="h-1" />
@@ -203,6 +198,10 @@ export function TestReportsPage() {
             <TabsTrigger value="weekly" className="gap-1.5 data-[state=active]:bg-accent-primary data-[state=active]:text-white">
               <BarChart3 className="h-4 w-4" />
               Weekly Runway
+            </TabsTrigger>
+            <TabsTrigger value="narrative" className="gap-1.5 data-[state=active]:bg-accent-primary data-[state=active]:text-white">
+              <Sparkles className="h-4 w-4" />
+              AI Narratives
             </TabsTrigger>
           </TabsList>
 
@@ -229,6 +228,10 @@ export function TestReportsPage() {
               onGapClick={handleGapClick}
               onBlockerClick={handleBlockerClick}
             />
+          </TabsContent>
+
+          <TabsContent value="narrative" className="h-[calc(100vh-280px)]">
+            <NarrativeReportPanel programId={programId || undefined} />
           </TabsContent>
         </Tabs>
       </div>

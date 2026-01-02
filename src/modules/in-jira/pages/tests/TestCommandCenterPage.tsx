@@ -1,10 +1,10 @@
 /**
  * Test Command Center Page
- * Main dashboard for Test Management module
+ * Main dashboard for Test Management module with AI Recommendations
  */
 
 import React from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router-dom';
 import { 
   FlaskConical, 
   CheckCircle2, 
@@ -18,6 +18,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
+import { AIRecommendationsPanel } from '../../components/tests/AIRecommendationsPanel';
 
 interface MetricCardProps {
   title: string;
@@ -52,6 +53,8 @@ function MetricCard({ title, value, icon, trend, trendUp }: MetricCardProps) {
 
 export function TestCommandCenterPage() {
   const { projectKey } = useParams<{ projectKey: string }>();
+  const [searchParams] = useSearchParams();
+  const programId = searchParams.get('programId');
 
   // Mock data - will be replaced with real data
   const metrics = {
@@ -113,6 +116,50 @@ export function TestCommandCenterPage() {
         />
       </div>
 
+      {/* Two Column Layout: Progress + AI Recommendations */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+        {/* Progress Overview */}
+        <div className="lg:col-span-2">
+          <Card className="bg-surface-2 border-border-default h-full">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-base font-medium text-text-primary">
+                Current Cycle Progress
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div>
+                  <div className="flex items-center justify-between text-sm mb-2">
+                    <span className="text-text-secondary">Sprint 24 - Regression</span>
+                    <span className="text-text-tertiary">72% complete</span>
+                  </div>
+                  <Progress value={72} className="h-2" />
+                </div>
+                <div>
+                  <div className="flex items-center justify-between text-sm mb-2">
+                    <span className="text-text-secondary">Sprint 24 - New Features</span>
+                    <span className="text-text-tertiary">45% complete</span>
+                  </div>
+                  <Progress value={45} className="h-2" />
+                </div>
+                <div>
+                  <div className="flex items-center justify-between text-sm mb-2">
+                    <span className="text-text-secondary">Integration Tests</span>
+                    <span className="text-text-tertiary">88% complete</span>
+                  </div>
+                  <Progress value={88} className="h-2" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* AI Recommendations (Compact) */}
+        <div className="lg:col-span-1">
+          <AIRecommendationsPanel programId={programId || undefined} compact />
+        </div>
+      </div>
+
       {/* Secondary Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         <MetricCard
@@ -131,40 +178,6 @@ export function TestCommandCenterPage() {
           icon={<BarChart3 className="h-5 w-5 text-accent-primary" />}
         />
       </div>
-
-      {/* Progress Overview */}
-      <Card className="bg-surface-2 border-border-default mb-6">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-base font-medium text-text-primary">
-            Current Cycle Progress
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            <div>
-              <div className="flex items-center justify-between text-sm mb-2">
-                <span className="text-text-secondary">Sprint 24 - Regression</span>
-                <span className="text-text-tertiary">72% complete</span>
-              </div>
-              <Progress value={72} className="h-2" />
-            </div>
-            <div>
-              <div className="flex items-center justify-between text-sm mb-2">
-                <span className="text-text-secondary">Sprint 24 - New Features</span>
-                <span className="text-text-tertiary">45% complete</span>
-              </div>
-              <Progress value={45} className="h-2" />
-            </div>
-            <div>
-              <div className="flex items-center justify-between text-sm mb-2">
-                <span className="text-text-secondary">Integration Tests</span>
-                <span className="text-text-tertiary">88% complete</span>
-              </div>
-              <Progress value={88} className="h-2" />
-            </div>
-          </div>
-        </CardContent>
-      </Card>
 
       {/* Quick Actions */}
       <Card className="bg-surface-2 border-border-default">

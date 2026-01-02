@@ -110,7 +110,7 @@ export function AIDefectDraftDialog({
           <DialogDescription>Auto-generated defect from failed test. Review and approve.</DialogDescription>
         </DialogHeader>
 
-        {!settings?.is_active ? (
+        {!settings?.is_enabled ? (
           <div className="py-8 text-center">
             <AlertTriangle className="h-10 w-10 mx-auto mb-3 text-status-warning" />
             <p className="text-text-primary font-medium">AI Not Configured</p>

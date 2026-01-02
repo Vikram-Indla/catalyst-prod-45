@@ -24,6 +24,7 @@ import {
   X,
   Loader2,
   Link2,
+  Sparkles,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -57,7 +58,14 @@ import { CatalystTable, CatalystColumnDef } from '@/components/ui/catalyst-table
 import { useTestCases, TestCase, TestCasePriority, TestCaseStatus } from '../../hooks/useTestCases';
 import { CreateTestCaseModal } from '../../components/tests/CreateTestCaseModal';
 import { TestCaseDrawer } from '../../components/tests/TestCaseDrawer';
+import { AITestGeneratorPanel } from '../../components/tests/AITestGeneratorPanel';
 import { usePermission } from '@/hooks/usePermission';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 
 // ═══════════════════════════════════════════════════════════════════
 // FILTER TYPES
@@ -330,6 +338,7 @@ export function TestCasesPage() {
   const [filters, setFilters] = useState<Filters>(INITIAL_FILTERS);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [createModalOpen, setCreateModalOpen] = useState(false);
+  const [aiGeneratorOpen, setAiGeneratorOpen] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [selectedTestCase, setSelectedTestCase] = useState<TestCase | null>(null);
 
@@ -661,10 +670,16 @@ export function TestCasesPage() {
               Export
             </Button>
             {canCreate && (
-              <Button size="sm" onClick={() => setCreateModalOpen(true)}>
-                <Plus className="h-4 w-4 mr-1.5" />
-                Create Test Case
-              </Button>
+              <>
+                <Button variant="outline" size="sm" onClick={() => setAiGeneratorOpen(true)}>
+                  <Sparkles className="h-4 w-4 mr-1.5" />
+                  AI Generate
+                </Button>
+                <Button size="sm" onClick={() => setCreateModalOpen(true)}>
+                  <Plus className="h-4 w-4 mr-1.5" />
+                  Create Test Case
+                </Button>
+              </>
             )}
           </div>
         </div>
@@ -755,6 +770,22 @@ export function TestCasesPage() {
         onDelete={async (id) => { await deleteTestCase(id); }}
         isUpdating={isUpdating}
       />
+
+      {/* AI Generator Dialog */}
+      <Dialog open={aiGeneratorOpen} onOpenChange={setAiGeneratorOpen}>
+        <DialogContent className="max-w-lg p-0">
+          <DialogHeader className="p-4 border-b border-border-default">
+            <DialogTitle className="flex items-center gap-2">
+              <Sparkles className="h-5 w-5 text-accent-primary" />
+              AI Test Generator
+            </DialogTitle>
+          </DialogHeader>
+          <AITestGeneratorPanel
+            programId={programId || undefined}
+            onTestsGenerated={() => setAiGeneratorOpen(false)}
+          />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
