@@ -106,11 +106,9 @@ export default function CapacityPlannerPage() {
   const [allocationModalOpen, setAllocationModalOpen] = useState(false);
   const [allocationModalResource, setAllocationModalResource] = useState<ResourceMetric | null>(null);
 
-  // Add resource form state
+  // Add resource form state (simplified - no longer need assignment/allocation, configured via booking modal)
   const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
   const [selectedDepartmentId, setSelectedDepartmentId] = useState<string>('');
-  const [selectedAssignment, setSelectedAssignment] = useState<string>('');
-  const [allocationPercentage, setAllocationPercentage] = useState<number>(100);
   const [isAddingResources, setIsAddingResources] = useState(false);
 
   // Fetch departments and assignments for the modal
@@ -119,6 +117,7 @@ export default function CapacityPlannerPage() {
   const { allocations, saveAllocations, getAllocationsForResource } = useResourceAllocations();
   const { updateResourceAssignmentType } = useResourceManagement();
 
+  // Auto-select default department when modal opens
   useEffect(() => {
     if (!resourceModalOpen) return;
 
@@ -126,23 +125,7 @@ export default function CapacityPlannerPage() {
       const delivery = departments?.find((d) => d.name?.toLowerCase() === 'delivery');
       if (delivery) setSelectedDepartmentId(delivery.id);
     }
-
-    if (!selectedAssignment && resourceAssignments.length > 0) {
-      const normalize = (s: string) => s.toLowerCase().replace(/\s+/g, ' ').trim();
-      const target = ['senaei bau', 'senai bau'];
-      const defaultAssignment =
-        resourceAssignments.find((t) => target.includes(normalize(t.name ?? ''))) ??
-        resourceAssignments.find((t) => normalize(t.name ?? '').includes('bau'));
-
-      if (defaultAssignment) setSelectedAssignment(defaultAssignment.id);
-    }
-  }, [
-    resourceModalOpen,
-    departments,
-    resourceAssignments,
-    selectedDepartmentId,
-    selectedAssignment,
-  ]);
+  }, [resourceModalOpen, departments, selectedDepartmentId]);
 
   // Get users already assigned in capacity planner
   const assignedUserIds = useMemo(() => {
@@ -433,14 +416,12 @@ export default function CapacityPlannerPage() {
           onClose={() => setAiDrawerOpen(false)} 
         />
 
-        {/* Add Resource Modal */}
+        {/* Add Resource Modal - Simplified */}
         <Dialog open={resourceModalOpen} onOpenChange={(open) => {
           setResourceModalOpen(open);
           if (!open) {
             setSelectedUserIds([]);
             setSelectedDepartmentId('');
-            setSelectedAssignment('');
-            setAllocationPercentage(100);
           }
         }}>
           <DialogContent className="sm:max-w-lg">
@@ -467,10 +448,10 @@ export default function CapacityPlannerPage() {
                     </button>
                   )}
                 </div>
-                <ScrollArea className="h-[200px] border border-border rounded-lg">
+                <ScrollArea className="h-[280px] border border-border rounded-lg">
                   {availableUsers.length === 0 ? (
                     <div className="px-4 py-8 text-sm text-muted-foreground text-center">
-                      All users are already assigned to the Capacity Planner
+                      All users are already in Capacity Planner
                     </div>
                   ) : (
                     <div className="divide-y divide-border">
@@ -497,7 +478,10 @@ export default function CapacityPlannerPage() {
                               }}
                               className="h-4 w-4 rounded border-border text-[#2563eb] focus:ring-[#2563eb]"
                             />
-                            <div className="w-8 h-8 rounded-full bg-[#d4b896] flex items-center justify-center text-xs font-semibold text-[#4a3f35]">
+                            <div 
+                              className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold text-white"
+                              style={{ backgroundColor: '#2563eb' }}
+                            >
                               {initials}
                             </div>
                             <div className="flex-1 min-w-0">
@@ -513,63 +497,34 @@ export default function CapacityPlannerPage() {
                 </ScrollArea>
               </div>
               
-              {/* Assignment & Department */}
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label>Assignment</Label>
-                  <Select value={selectedAssignment} onValueChange={setSelectedAssignment}>
-                    <SelectTrigger className="bg-card">
-                      <SelectValue placeholder="Select assignment..." />
-                    </SelectTrigger>
-                    <SelectContent className="bg-card border border-border shadow-lg z-50">
-                      {resourceAssignments.map((type) => (
-                        <SelectItem key={type.id} value={type.id}>
-                          {type.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label>Department</Label>
-                  <Select value={selectedDepartmentId} onValueChange={setSelectedDepartmentId}>
-                    <SelectTrigger className="bg-card">
-                      <SelectValue placeholder="Select department..." />
-                    </SelectTrigger>
-                    <SelectContent className="bg-card border border-border shadow-lg z-50">
-                      {departments?.map((dept) => (
-                        <SelectItem key={dept.id} value={dept.id}>
-                          {dept.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+              {/* Department - Required */}
+              <div className="space-y-2">
+                <Label>Department</Label>
+                <Select value={selectedDepartmentId} onValueChange={setSelectedDepartmentId}>
+                  <SelectTrigger className="bg-card">
+                    <SelectValue placeholder="Select department..." />
+                  </SelectTrigger>
+                  <SelectContent className="bg-card border border-border shadow-lg z-50">
+                    {departments?.map((dept) => (
+                      <SelectItem key={dept.id} value={dept.id}>
+                        {dept.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
 
-              <div className="space-y-2">
-                <Label>Allocation %</Label>
-                <Input 
-                  type="number"
-                  min={0}
-                  max={100}
-                  value={allocationPercentage}
-                  onChange={(e) => setAllocationPercentage(Number(e.target.value))}
-                />
-              </div>
+              <p className="text-xs text-muted-foreground">
+                After adding, click on each resource card to configure their project allocations with date ranges.
+              </p>
             </div>
             <DialogFooter>
               <Button variant="outline" onClick={() => setResourceModalOpen(false)}>Cancel</Button>
               <Button 
-                disabled={
-                  selectedUserIds.length === 0 ||
-                  isAddingResources ||
-                  !selectedAssignment ||
-                  !selectedDepartmentId
-                }
+                disabled={selectedUserIds.length === 0 || isAddingResources || !selectedDepartmentId}
                 onClick={async () => {
-                  if (!selectedAssignment || !selectedDepartmentId) {
-                    toast.error('Please select an assignment and department');
+                  if (!selectedDepartmentId) {
+                    toast.error('Please select a department');
                     return;
                   }
 
@@ -578,11 +533,12 @@ export default function CapacityPlannerPage() {
                     const startDate = new Date().toISOString().split('T')[0];
                     const userById = new Map(resources.map((r) => [r.id, r]));
 
+                    // Create assignments for the users
                     const { error: assignmentError } = await supabase.from('assignments').insert(
                       selectedUserIds.map((userId) => ({
                         user_id: userId,
                         project_id: null,
-                        allocation_percentage: allocationPercentage,
+                        allocation_percentage: 0, // Start at 0, user will configure via booking modal
                         start_date: startDate,
                         status: 'active',
                         work_item_type: 'project',
@@ -590,32 +546,30 @@ export default function CapacityPlannerPage() {
                     );
                     if (assignmentError) throw assignmentError;
 
+                    // Update department
                     const { error: profileError } = await supabase
                       .from('profiles')
                       .update({ department_id: selectedDepartmentId })
                       .in('id', selectedUserIds);
                     if (profileError) throw profileError;
 
+                    // Create resource_inventory entries
                     for (const userId of selectedUserIds) {
                       const name = userById.get(userId)?.name;
                       if (!name) continue;
 
-                      const { data: updatedRows, error: updateError } = await supabase
+                      const { data: existing } = await supabase
                         .from('resource_inventory')
-                        .update({ assignment_id: selectedAssignment, updated_at: new Date().toISOString() })
+                        .select('id')
                         .eq('profile_id', userId)
-                        .select('id');
+                        .maybeSingle();
 
-                      if (updateError) throw updateError;
-
-                      if (!updatedRows || updatedRows.length === 0) {
-                        const { error: insertError } = await supabase.from('resource_inventory').insert({
+                      if (!existing) {
+                        await supabase.from('resource_inventory').insert({
                           profile_id: userId,
                           name,
-                          assignment_id: selectedAssignment,
                           is_active: true,
                         });
-                        if (insertError) throw insertError;
                       }
                     }
 
@@ -623,14 +577,12 @@ export default function CapacityPlannerPage() {
                     queryClient.invalidateQueries({ queryKey: ['capacity-planner-resources'] });
 
                     toast.success(
-                      `Added ${selectedUserIds.length} resource${selectedUserIds.length === 1 ? '' : 's'}`
+                      `Added ${selectedUserIds.length} resource${selectedUserIds.length === 1 ? '' : 's'}. Click on cards to configure allocations.`
                     );
 
                     setResourceModalOpen(false);
                     setSelectedUserIds([]);
                     setSelectedDepartmentId('');
-                    setSelectedAssignment('');
-                    setAllocationPercentage(100);
                   } catch (error: any) {
                     toast.error(`Failed to add resources: ${error?.message ?? 'Unknown error'}`);
                   } finally {
@@ -639,7 +591,7 @@ export default function CapacityPlannerPage() {
                 }} 
                 className="bg-[#2563eb] hover:bg-[#1d4ed8]"
               >
-                {isAddingResources ? 'Adding...' : `Add ${selectedUserIds.length > 0 ? `${selectedUserIds.length} ` : ''}to Capacity Planner`}
+                {isAddingResources ? 'Adding...' : `Add ${selectedUserIds.length > 0 ? `${selectedUserIds.length} ` : ''}to Planner`}
               </Button>
             </DialogFooter>
           </DialogContent>
@@ -1734,15 +1686,39 @@ function TimelineView({ resources, period, groupBy, groupedByAssignment, grouped
     return weekLabels;
   }, [period]);
 
-  // Get resource allocations - use the assignment group name (the resource's assigned project/assignment)
-  const getResourceAllocations = useCallback((resource: ResourceMetric, assignmentGroupName: string) => {
-    // Always use the assignment group name - this is the REAL assignment from the capacity planner
-    // The resource.assignmentName is what we're grouping by, and it's the correct human-readable name
-    return [{
-      project: assignmentGroupName,
-      percentage: resource.allocation || 100,
-    }];
-  }, []);
+  // Build a map of resourceId -> allocations from the time-boxed allocations
+  const allocationsByResource = useMemo(() => {
+    const map = new Map<string, ResourceAllocation[]>();
+    allocations.forEach((a) => {
+      const key = a.profile_id || a.resource_id;
+      if (!key) return;
+      if (!map.has(key)) {
+        map.set(key, []);
+      }
+      map.get(key)!.push(a);
+    });
+    return map;
+  }, [allocations]);
+
+  // Get allocations for a resource that overlap with a specific period
+  const getResourceAllocationsForPeriod = useCallback((resourceId: string, periodStart: Date, periodEnd: Date) => {
+    const resourceAllocations = allocationsByResource.get(resourceId) || [];
+    return resourceAllocations.filter((a) => {
+      const allocStart = new Date(a.start_date);
+      const allocEnd = new Date(a.end_date);
+      // Check overlap
+      return allocStart <= periodEnd && allocEnd >= periodStart;
+    });
+  }, [allocationsByResource]);
+
+  // Calculate total allocation for a period
+  const getTotalAllocationForPeriod = useCallback((resourceId: string, periodStart: Date, periodEnd: Date) => {
+    const periodAllocations = getResourceAllocationsForPeriod(resourceId, periodStart, periodEnd);
+    return periodAllocations.reduce((sum, a) => sum + a.allocation_percent, 0);
+  }, [getResourceAllocationsForPeriod]);
+
+  // Check if resource has any time-boxed allocations
+  const hasTimeBoxedAllocations = allocations.length > 0;
 
   const renderTimelineHeader = () => (
     <div className="flex bg-slate-50 border-b border-slate-200 sticky top-0 z-10">
@@ -1768,13 +1744,11 @@ function TimelineView({ resources, period, groupBy, groupedByAssignment, grouped
   const renderResourceRow = (resource: ResourceMetric, assignmentName: string, isEven: boolean) => {
     const theme = getAssignmentTheme(assignmentName);
     const initials = resource.name?.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'NA';
-    const allocations = getResourceAllocations(resource, assignmentName);
-    const totalAlloc = resource.allocation || 0;
-    const isOver = totalAlloc > 100;
-    const allocTheme = getAllocationTheme(totalAlloc);
+    // Use legacy total from resource if no time-boxed allocations
+    const legacyTotal = resource.allocation || 0;
+    const allocTheme = getAllocationTheme(legacyTotal);
 
     const isUnassigned = assignmentName === 'Unassigned' || !assignmentName;
-    const isAvailable = isUnassigned || totalAlloc === 0;
 
     return (
       <div 
@@ -1799,29 +1773,64 @@ function TimelineView({ resources, period, groupBy, groupedByAssignment, grouped
           </div>
         </div>
 
-        {/* Period Cells with FILLED Gantt Bars */}
+        {/* Period Cells with Time-Boxed Allocation Bars */}
         <div className="flex-1 flex">
           {periods.map((p, colIdx) => {
             const isCurrentPeriod = colIdx === 0;
             
+            // Calculate period date range
+            const now = new Date();
+            let periodStart: Date;
+            let periodEnd: Date;
+            
+            if (period === 'monthly') {
+              const monthIndex = (now.getMonth() + colIdx) % 12;
+              const year = now.getFullYear() + Math.floor((now.getMonth() + colIdx) / 12);
+              periodStart = new Date(year, monthIndex, 1);
+              periodEnd = new Date(year, monthIndex + 1, 0); // Last day of month
+            } else if (period === 'quarterly') {
+              const currentQuarter = Math.floor(now.getMonth() / 3);
+              const quarterIndex = (currentQuarter + colIdx) % 4;
+              const year = now.getFullYear() + Math.floor((currentQuarter + colIdx) / 4);
+              periodStart = new Date(year, quarterIndex * 3, 1);
+              periodEnd = new Date(year, (quarterIndex + 1) * 3, 0);
+            } else {
+              // Weekly
+              const startOfCurrentWeek = new Date(now);
+              startOfCurrentWeek.setDate(now.getDate() - now.getDay());
+              periodStart = new Date(startOfCurrentWeek);
+              periodStart.setDate(startOfCurrentWeek.getDate() + (colIdx * 7));
+              periodEnd = new Date(periodStart);
+              periodEnd.setDate(periodStart.getDate() + 6);
+            }
+
+            // Get allocations for this period
+            const periodAllocations = getResourceAllocationsForPeriod(resource.id, periodStart, periodEnd);
+            const totalForPeriod = periodAllocations.reduce((sum, a) => sum + a.allocation_percent, 0);
+            const isOver = totalForPeriod > 100;
+            const periodAllocTheme = getAllocationTheme(totalForPeriod);
+            
+            // Check if available for this period
+            const isAvailableForPeriod = (isUnassigned && periodAllocations.length === 0) || totalForPeriod === 0;
+
             return (
               <div 
                 key={p.key}
                 className={cn(
                   'flex-1 p-2 border-r border-slate-200 last:border-r-0 min-w-24 relative',
                   isCurrentPeriod && 'bg-blue-50/30',
-                  isOver && 'bg-amber-50/30'
+                  isOver && 'bg-orange-50/30'
                 )}
               >
-                {/* Over-allocation warning */}
+                {/* Over-allocation warning - Catalyst V5 Orange */}
                 {isOver && (
                   <div className="absolute top-1 right-1 z-10">
-                    <AlertTriangle className="w-3.5 h-3.5 text-amber-500" />
+                    <AlertTriangle className="w-3.5 h-3.5 text-orange-500" />
                   </div>
                 )}
 
                 {/* Available State - Clickable to allocate */}
-                {isAvailable ? (
+                {isAvailableForPeriod ? (
                   <button
                     onClick={() => onEditResource?.(resource.id)}
                     className="h-full w-full flex flex-col items-center justify-center text-slate-400 py-2 hover:bg-teal-50 rounded transition-colors cursor-pointer group"
@@ -1831,18 +1840,19 @@ function TimelineView({ resources, period, groupBy, groupedByAssignment, grouped
                   </button>
                 ) : (
                   <>
-                    {/* FILLED Project Bars with Width = Percentage */}
+                    {/* Time-boxed allocation bars */}
                     <div className="space-y-1">
-                      {allocations.map((alloc, i) => {
-                        const projectColor = getTimelineProjectColor(alloc.project);
-                        const shortName = getProjectShortName(alloc.project);
-                        const tooltipText = `${alloc.project}: ${alloc.percentage}%`;
-                        const barWidthPercent = Math.min(alloc.percentage, 100);
+                      {periodAllocations.map((alloc, i) => {
+                        const projectName = alloc.assignment_name || 'Allocation';
+                        const projectColor = getTimelineProjectColor(projectName);
+                        const shortName = getProjectShortName(projectName);
+                        const tooltipText = `${projectName}: ${alloc.allocation_percent}%`;
+                        const barWidthPercent = Math.min(alloc.allocation_percent, 100);
                         
                         return (
                           <div
-                            key={i}
-                            className="h-6 rounded text-[10px] font-semibold flex items-center px-2 cursor-default group relative"
+                            key={alloc.id || i}
+                            className="h-6 rounded text-[10px] font-semibold flex items-center px-2 cursor-pointer group relative hover:opacity-90"
                             style={{
                               width: `${barWidthPercent}%`,
                               minWidth: '50px',
@@ -1850,8 +1860,9 @@ function TimelineView({ resources, period, groupBy, groupedByAssignment, grouped
                               color: projectColor.text,
                             }}
                             title={tooltipText}
+                            onClick={() => onEditResource?.(resource.id)}
                           >
-                            <span className="truncate">{shortName} ({alloc.percentage}%)</span>
+                            <span className="truncate">{shortName} ({alloc.allocation_percent}%)</span>
                             {/* Hover tooltip for full name */}
                             <span className="absolute left-0 bottom-full mb-1 hidden group-hover:block z-50 px-2 py-1 text-[10px] bg-slate-900 text-white rounded shadow-lg whitespace-nowrap">
                               {tooltipText}
@@ -1862,14 +1873,16 @@ function TimelineView({ resources, period, groupBy, groupedByAssignment, grouped
                     </div>
 
                     {/* Total Badge */}
-                    <div className="mt-1.5 flex justify-end">
-                      <span
-                        className="text-[10px] font-bold px-1.5 py-0.5 rounded"
-                        style={{ backgroundColor: allocTheme.labelBg, color: allocTheme.labelColor }}
-                      >
-                        {totalAlloc}%
-                      </span>
-                    </div>
+                    {periodAllocations.length > 0 && (
+                      <div className="mt-1.5 flex justify-end">
+                        <span
+                          className="text-[10px] font-bold px-1.5 py-0.5 rounded"
+                          style={{ backgroundColor: periodAllocTheme.labelBg, color: periodAllocTheme.labelColor }}
+                        >
+                          {totalForPeriod}%
+                        </span>
+                      </div>
+                    )}
                   </>
                 )}
               </div>
