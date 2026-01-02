@@ -10,6 +10,7 @@ import { RouteObject } from 'react-router-dom';
 const ProjectWorkspace = lazy(() => import('@/pages/project/ProjectWorkspace'));
 const BoardView = lazy(() => import('@/pages/project/BoardView'));
 const TimelineView = lazy(() => import('@/pages/project/TimelineView'));
+const ProjectTestsView = lazy(() => import('@/pages/project/ProjectTestsView'));
 
 // Loading component
 function ViewLoader() {
@@ -58,6 +59,14 @@ export const projectRoutes: RouteObject[] = [
             <div className="h-full flex items-center justify-center text-gray-500">
               Feature Map View - Coming Soon
             </div>
+          </Suspense>
+        ),
+      },
+      {
+        path: 'tests',
+        element: (
+          <Suspense fallback={<ViewLoader />}>
+            <ProjectTestsView />
           </Suspense>
         ),
       },

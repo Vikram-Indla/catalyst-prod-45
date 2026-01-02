@@ -5,14 +5,14 @@
 
 import React from 'react';
 import { useNavigate, useLocation, useSearchParams } from 'react-router-dom';
-import { Map, Kanban, Calendar } from 'lucide-react';
+import { Map, Kanban, Calendar, FlaskConical } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface ViewSelectorProps {
   projectId: string;
 }
 
-type ViewType = 'feature-map' | 'board' | 'timeline';
+type ViewType = 'feature-map' | 'board' | 'timeline' | 'tests';
 
 const VIEWS: Array<{
   id: ViewType;
@@ -23,6 +23,7 @@ const VIEWS: Array<{
   { id: 'feature-map', label: 'Map', icon: <Map className="w-4 h-4" />, path: 'feature-map' },
   { id: 'board', label: 'Board', icon: <Kanban className="w-4 h-4" />, path: 'board' },
   { id: 'timeline', label: 'Timeline', icon: <Calendar className="w-4 h-4" />, path: 'timeline' },
+  { id: 'tests', label: 'Tests', icon: <FlaskConical className="w-4 h-4" />, path: 'tests' },
 ];
 
 export function ViewSelector({ projectId }: ViewSelectorProps) {
@@ -36,6 +37,7 @@ export function ViewSelector({ projectId }: ViewSelectorProps) {
     if (path.includes('/board')) return 'board';
     if (path.includes('/timeline')) return 'timeline';
     if (path.includes('/feature-map')) return 'feature-map';
+    if (path.includes('/tests')) return 'tests';
     return 'board'; // Default
   };
 
