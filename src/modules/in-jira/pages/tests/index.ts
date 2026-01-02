@@ -7,3 +7,4 @@ export { TestExecutionsPage } from './TestExecutionsPage';
 export { TraceabilityPage } from './TraceabilityPage';
 export { TestReportsPage } from './TestReportsPage';
 export { TestAdminPage } from './TestAdminPage';
+export { StepLibraryPage } from './StepLibraryPage';

@@ -193,6 +193,7 @@ import {
   TraceabilityPage,
   TestReportsPage,
   TestAdminPage,
+  StepLibraryPage,
 } from "./modules/in-jira/pages/tests";
 import ProjectSummaryPage from "./pages/projects/ProjectSummaryPage";
 import ProjectComingSoonPage from "./pages/projects/ProjectComingSoonPage";
@@ -550,6 +551,7 @@ const App = () => (
                 <Route path="tests/traceability" element={<TraceabilityPage />} />
                 <Route path="tests/reports" element={<TestReportsPage />} />
                 <Route path="tests/admin" element={<TestAdminPage />} />
+                <Route path="tests/step-library" element={<StepLibraryPage />} />
               </Route>
               <Route path="/teams" element={<TeamComingSoon />} />
               <Route path="/teams/:teamId/room" element={<TeamComingSoon />} />

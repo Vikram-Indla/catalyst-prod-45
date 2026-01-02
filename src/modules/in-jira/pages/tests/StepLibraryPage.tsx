@@ -75,10 +75,13 @@ export function StepLibraryPage() {
     isUpdating,
   } = useSharedSteps();
 
-  const { hasPermission } = usePermission();
-  const canCreate = hasPermission('test_cases', 'create', 'program', programId || undefined);
-  const canEdit = hasPermission('test_cases', 'edit', 'program', programId || undefined);
-  const canDelete = hasPermission('test_cases', 'delete', 'program', programId || undefined);
+  const { hasPermission: canCreatePerm } = usePermission('test_cases', 'create', 'program', programId || undefined);
+  const { hasPermission: canEditPerm } = usePermission('test_cases', 'edit', 'program', programId || undefined);
+  const { hasPermission: canDeletePerm } = usePermission('test_cases', 'delete', 'program', programId || undefined);
+  
+  const canCreate = canCreatePerm;
+  const canEdit = canEditPerm;
+  const canDelete = canDeletePerm;
 
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
@@ -226,126 +229,7 @@ export function StepLibraryPage() {
     toast.success('Exported to CSV');
   };
 
-  // Columns
-  const columns: CatalystColumn[] = [
-    {
-      key: 'select',
-      header: () => (
-        <Checkbox
-          checked={selectedIds.size === filteredSteps.length && filteredSteps.length > 0}
-          onCheckedChange={toggleSelectAll}
-        />
-      ),
-      width: 40,
-      render: (row: SharedStep) => (
-        <Checkbox
-          checked={selectedIds.has(row.id)}
-          onCheckedChange={() => toggleSelect(row.id)}
-          onClick={e => e.stopPropagation()}
-        />
-      ),
-    },
-    {
-      key: 'title',
-      header: 'Title',
-      sortable: true,
-      width: 250,
-      render: (row: SharedStep) => (
-        <div className="flex items-center gap-2">
-          <Library className="h-4 w-4 text-accent-primary shrink-0" />
-          <span className="font-medium text-text-primary truncate">{row.title}</span>
-        </div>
-      ),
-    },
-    {
-      key: 'description',
-      header: 'Description',
-      width: 400,
-      render: (row: SharedStep) => (
-        <p className="text-sm text-text-secondary truncate">{row.description}</p>
-      ),
-    },
-    {
-      key: 'expected_result',
-      header: 'Expected Result',
-      width: 250,
-      render: (row: SharedStep) => (
-        <p className="text-sm text-text-tertiary truncate">
-          {row.expected_result || '-'}
-        </p>
-      ),
-    },
-    {
-      key: 'usage_count',
-      header: 'Usage',
-      sortable: true,
-      width: 100,
-      render: (row: SharedStep) => (
-        <Badge variant="outline" className="text-xs">
-          <Link2 className="h-3 w-3 mr-1" />
-          {row.usage_count || 0}
-        </Badge>
-      ),
-    },
-    {
-      key: 'created_at',
-      header: 'Created',
-      sortable: true,
-      width: 120,
-      render: (row: SharedStep) => (
-        <span className="text-xs text-text-quaternary">
-          {row.created_at ? format(new Date(row.created_at), 'MMM d, yyyy') : '-'}
-        </span>
-      ),
-    },
-    {
-      key: 'actions',
-      header: '',
-      width: 50,
-      render: (row: SharedStep) => (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild onClick={e => e.stopPropagation()}>
-            <Button variant="ghost" size="icon" className="h-7 w-7">
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={() => openDrawer(row)}>
-              <Library className="h-4 w-4 mr-2" />
-              View Details
-            </DropdownMenuItem>
-            {canEdit && (
-              <DropdownMenuItem onClick={() => openEditModal(row)}>
-                <Edit2 className="h-4 w-4 mr-2" />
-                Edit
-              </DropdownMenuItem>
-            )}
-            <DropdownMenuItem
-              onClick={() => {
-                navigator.clipboard.writeText(row.description);
-                toast.success('Description copied');
-              }}
-            >
-              <Copy className="h-4 w-4 mr-2" />
-              Copy Description
-            </DropdownMenuItem>
-            {canDelete && (
-              <>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  onClick={() => handleDelete(row.id)}
-                  className="text-status-error"
-                >
-                  <Trash2 className="h-4 w-4 mr-2" />
-                  Delete
-                </DropdownMenuItem>
-              </>
-            )}
-          </DropdownMenuContent>
-        </DropdownMenu>
-      ),
-    },
-  ];
+  // Note: Table rendered directly below, no columns variable needed
 
   return (
     <div className="flex flex-col h-full">
