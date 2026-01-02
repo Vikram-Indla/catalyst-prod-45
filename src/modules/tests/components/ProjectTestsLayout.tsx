@@ -15,6 +15,7 @@ import {
   Plus,
   RefreshCw,
   Package,
+  GitBranch,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -36,6 +37,7 @@ const TABS: Tab[] = [
   { id: 'sets', label: 'Test Sets', icon: <Package className="h-4 w-4" />, path: 'sets' },
   { id: 'cycles', label: 'Test Cycles', icon: <RefreshCcw className="h-4 w-4" />, path: 'cycles' },
   { id: 'executions', label: 'Executions', icon: <Play className="h-4 w-4" />, path: 'executions' },
+  { id: 'traceability', label: 'Traceability', icon: <GitBranch className="h-4 w-4" />, path: 'traceability' },
   { id: 'reports', label: 'Reports', icon: <BarChart3 className="h-4 w-4" />, path: 'reports' },
 ];
 

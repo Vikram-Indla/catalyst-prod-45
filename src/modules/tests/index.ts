@@ -19,8 +19,12 @@ export { TestsSetsPage } from './pages/TestsSetsPage';
 export { TestsCyclesPage } from './pages/TestsCyclesPage';
 export { TestsExecutionsPage } from './pages/TestsExecutionsPage';
 export { TestsReportsPage } from './pages/TestsReportsPage';
+export { TestsTraceabilityPage } from './pages/TestsTraceabilityPage';
 export { CTAValidationPage } from './pages/CTAValidationPage';
 export { CycleExecutionPage } from './pages/CycleExecutionPage';
+
+// Traceability Components
+export { TraceabilityMatrix, TraceabilityDetailPanel } from './components/traceability';
 
 // Utils
 export * from './utils/ctaRegistry';
