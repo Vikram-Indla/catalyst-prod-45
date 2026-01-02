@@ -17178,6 +17178,7 @@ export type Database = {
           preconditions: string | null
           priority: Database["public"]["Enums"]["test_priority"]
           program_id: string | null
+          project_id: string | null
           release: string | null
           status: Database["public"]["Enums"]["test_case_status"]
           test_type: Database["public"]["Enums"]["test_type"]
@@ -17211,6 +17212,7 @@ export type Database = {
           preconditions?: string | null
           priority?: Database["public"]["Enums"]["test_priority"]
           program_id?: string | null
+          project_id?: string | null
           release?: string | null
           status?: Database["public"]["Enums"]["test_case_status"]
           test_type?: Database["public"]["Enums"]["test_type"]
@@ -17244,6 +17246,7 @@ export type Database = {
           preconditions?: string | null
           priority?: Database["public"]["Enums"]["test_priority"]
           program_id?: string | null
+          project_id?: string | null
           release?: string | null
           status?: Database["public"]["Enums"]["test_case_status"]
           test_type?: Database["public"]["Enums"]["test_type"]
@@ -17262,6 +17265,13 @@ export type Database = {
           {
             foreignKeyName: "test_cases_program_id_fkey"
             columns: ["program_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_cases_project_id_fkey"
+            columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "projects"
             referencedColumns: ["id"]
@@ -17507,6 +17517,7 @@ export type Database = {
           objective: string | null
           owner_id: string | null
           program_id: string | null
+          project_id: string | null
           scope_locked: boolean | null
           scope_locked_at: string | null
           scope_locked_by: string | null
@@ -17538,6 +17549,7 @@ export type Database = {
           objective?: string | null
           owner_id?: string | null
           program_id?: string | null
+          project_id?: string | null
           scope_locked?: boolean | null
           scope_locked_at?: string | null
           scope_locked_by?: string | null
@@ -17569,6 +17581,7 @@ export type Database = {
           objective?: string | null
           owner_id?: string | null
           program_id?: string | null
+          project_id?: string | null
           scope_locked?: boolean | null
           scope_locked_at?: string | null
           scope_locked_by?: string | null
@@ -17585,6 +17598,13 @@ export type Database = {
             columns: ["folder_id"]
             isOneToOne: false
             referencedRelation: "test_folders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_cycles_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
             referencedColumns: ["id"]
           },
           {
@@ -18765,6 +18785,7 @@ export type Database = {
           owner_id: string | null
           parent_version_id: string | null
           program_id: string
+          project_id: string | null
           smart_set_criteria: Json | null
           status: string | null
           updated_at: string | null
@@ -18784,6 +18805,7 @@ export type Database = {
           owner_id?: string | null
           parent_version_id?: string | null
           program_id: string
+          project_id?: string | null
           smart_set_criteria?: Json | null
           status?: string | null
           updated_at?: string | null
@@ -18803,6 +18825,7 @@ export type Database = {
           owner_id?: string | null
           parent_version_id?: string | null
           program_id?: string
+          project_id?: string | null
           smart_set_criteria?: Json | null
           status?: string | null
           updated_at?: string | null
@@ -18821,6 +18844,13 @@ export type Database = {
             columns: ["parent_version_id"]
             isOneToOne: false
             referencedRelation: "test_sets"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_sets_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
             referencedColumns: ["id"]
           },
         ]
