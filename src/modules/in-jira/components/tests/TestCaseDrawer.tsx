@@ -78,72 +78,12 @@ function getStatusColor(status: string) {
   }
 }
 
-// Steps Tab Component
+// Steps Tab Component - Uses the new StepsEditor
+import { StepsEditor } from './StepsEditor';
+
 function StepsTab({ testCaseId }: { testCaseId: string }) {
-  const { data: steps, isLoading } = useQuery({
-    queryKey: ['test-case-steps', testCaseId],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('test_case_steps')
-        .select('*')
-        .eq('case_id', testCaseId)
-        .order('step_number', { ascending: true });
-      if (error) throw error;
-      return data;
-    },
-  });
-
-  if (isLoading) {
-    return (
-      <div className="space-y-2">
-        {[1, 2, 3].map(i => (
-          <Skeleton key={i} className="h-16 w-full" />
-        ))}
-      </div>
-    );
-  }
-
   return (
-    <div className="space-y-3">
-      <div className="flex items-center justify-between">
-        <span className="text-sm text-text-secondary">{steps?.length || 0} steps</span>
-        <Button size="sm" variant="outline">
-          <Plus className="h-3.5 w-3.5 mr-1" />
-          Add Step
-        </Button>
-      </div>
-      {steps?.length === 0 ? (
-        <div className="text-center py-8 text-text-tertiary">
-          <ListOrdered className="h-8 w-8 mx-auto mb-2 opacity-50" />
-          <p className="text-sm">No steps defined yet</p>
-        </div>
-      ) : (
-        steps?.map((step, idx) => (
-          <div
-            key={step.id}
-            className="flex gap-3 p-3 bg-surface-2 rounded-lg border border-border-default"
-          >
-            <div className="flex items-center gap-2">
-              <GripVertical className="h-4 w-4 text-text-quaternary cursor-grab" />
-              <div className="w-6 h-6 rounded-full bg-surface-3 flex items-center justify-center text-xs font-medium text-text-secondary">
-                {idx + 1}
-              </div>
-            </div>
-            <div className="flex-1 space-y-1">
-              <p className="text-sm text-text-primary">{step.description}</p>
-              {step.expected_result && (
-                <p className="text-xs text-text-tertiary">
-                  <span className="font-medium">Expected:</span> {step.expected_result}
-                </p>
-              )}
-            </div>
-            <Button variant="ghost" size="icon" className="h-7 w-7">
-              <Trash2 className="h-3.5 w-3.5 text-text-quaternary" />
-            </Button>
-          </div>
-        ))
-      )}
-    </div>
+    <StepsEditor testCaseId={testCaseId} />
   );
 }
 
