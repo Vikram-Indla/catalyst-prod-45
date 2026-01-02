@@ -13,3 +13,5 @@ export { useTestDashboards, useReportSchedule } from './useTestDashboards';
 export type { GadgetType, GadgetPosition, GadgetConfig, DashboardGadget, Dashboard, CreateDashboardInput, CreateGadgetInput, UpdateGadgetInput } from './useTestDashboards';
 export { useTraceabilityMatrix } from './useTraceabilityMatrix';
 export type { TraceabilityMatrixData, TraceabilityChain, CoverageGap, TraceabilityRequirement, TraceabilityTestCase, TraceabilityExecution, TraceabilityDefect } from './useTraceabilityMatrix';
+export { useTestAdminConfig } from './useTestAdminConfig';
+export type { TestCaseType, TestCaseStatus, TestCasePriority, TestRunStatus, TestFieldConfig, TestAdminSetting } from './useTestAdminConfig';
