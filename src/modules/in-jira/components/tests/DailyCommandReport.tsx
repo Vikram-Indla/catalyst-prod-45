@@ -27,7 +27,7 @@ import type {
   DailyMetrics, 
   RiskItem, 
   RecommendedAction 
-} from '../hooks/useTestReportMetrics';
+} from '../../hooks/useTestReportMetrics';
 
 interface DailyCommandReportProps {
   metrics: DailyMetrics | null;

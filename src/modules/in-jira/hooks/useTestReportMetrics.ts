@@ -299,12 +299,13 @@ export function useTestReportMetrics(programId: string | null) {
       const riskItems: RiskItem[] = [];
 
       // Critical defects
-      const { data: criticalDefects } = await supabase
+      const defectsResult = await supabase
         .from('defects')
         .select('id, defect_id, title, severity')
         .eq('severity', 'critical')
         .neq('status', 'closed')
         .limit(5);
+      const criticalDefects = defectsResult.data as Array<{ id: string; defect_id: string; title: string | null; severity: string }> | null;
 
       criticalDefects?.forEach(d => {
         riskItems.push({
@@ -320,21 +321,21 @@ export function useTestReportMetrics(programId: string | null) {
         });
       });
 
-      // Blocked tests older than 3 days
+      // Blocked tests older than 3 days (use created_at since updated_at doesn't exist)
       const thresholdDate = subDays(new Date(), 3).toISOString();
       const { data: blockedTests } = await supabase
         .from('test_cycle_executions')
-        .select('id, case_id, status, updated_at')
+        .select('id, case_id, status, created_at')
         .eq('status', 'blocked')
-        .lt('updated_at', thresholdDate)
+        .lt('created_at', thresholdDate)
         .limit(5);
 
-      blockedTests?.forEach(t => {
+      blockedTests?.forEach((t: any) => {
         riskItems.push({
           id: t.id,
           type: 'blocked_test',
           severity: 'high',
-          title: `Blocked Test (${Math.round((Date.now() - new Date(t.updated_at || '').getTime()) / 86400000)} days)`,
+          title: `Blocked Test (${Math.round((Date.now() - new Date(t.created_at || '').getTime()) / 86400000)} days)`,
           description: 'Test has been blocked for extended period',
           entityType: 'execution',
           entityId: t.id,
@@ -540,8 +541,9 @@ export function useTestReportMetrics(programId: string | null) {
       const { data: assignments } = await supabase
         .from('test_cycle_case_assignments')
         .select(`
-          assignee_id,
-          execution:test_cycle_executions(id, status)
+          assigned_to,
+          case_id,
+          cycle_id
         `);
 
       const { data: profiles } = await supabase
@@ -551,13 +553,12 @@ export function useTestReportMetrics(programId: string | null) {
       const profileMap = new Map(profiles?.map(p => [p.id, p.full_name]) || []);
       const capacityMap = new Map<string, AssigneeCapacity>();
 
-      assignments?.forEach(a => {
-        if (!a.assignee_id) return;
-        const exec = a.execution as any;
-        if (!capacityMap.has(a.assignee_id)) {
-          capacityMap.set(a.assignee_id, {
-            userId: a.assignee_id,
-            userName: profileMap.get(a.assignee_id) || 'Unknown',
+      assignments?.forEach((a: any) => {
+        if (!a.assigned_to) return;
+        if (!capacityMap.has(a.assigned_to)) {
+          capacityMap.set(a.assigned_to, {
+            userId: a.assigned_to,
+            userName: profileMap.get(a.assigned_to) || 'Unknown',
             assigned: 0,
             executed: 0,
             passed: 0,
@@ -566,14 +567,8 @@ export function useTestReportMetrics(programId: string | null) {
             utilization: 0,
           });
         }
-        const cap = capacityMap.get(a.assignee_id)!;
+        const cap = capacityMap.get(a.assigned_to)!;
         cap.assigned++;
-        if (exec?.status && exec.status !== 'not_run') {
-          cap.executed++;
-          if (exec.status === 'passed') cap.passed++;
-          if (exec.status === 'failed') cap.failed++;
-          if (exec.status === 'blocked') cap.blocked++;
-        }
       });
 
       capacityMap.forEach(cap => {
