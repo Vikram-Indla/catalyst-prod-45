@@ -154,6 +154,13 @@ export function useCapacityData() {
       })
       .subscribe();
 
+    const userProductRolesChannel = supabase
+      .channel('capacity-user-product-roles-changes')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'user_product_roles' }, () => {
+        queryClient.invalidateQueries({ queryKey: ['capacity-planner-resources'] });
+      })
+      .subscribe();
+
     const scenariosChannel = supabase
       .channel('capacity-scenarios-changes')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'capacity_scenarios' }, () => {
@@ -166,6 +173,7 @@ export function useCapacityData() {
       supabase.removeChannel(profilesChannel);
       supabase.removeChannel(resourceInventoryChannel);
       supabase.removeChannel(resourceAssignmentsChannel);
+      supabase.removeChannel(userProductRolesChannel);
       supabase.removeChannel(scenariosChannel);
     };
   }, [queryClient]);
