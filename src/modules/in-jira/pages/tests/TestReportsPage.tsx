@@ -1,88 +1,131 @@
 /**
  * Test Reports Page
- * Daily and weekly test execution reports
+ * Command-center reporting with daily/weekly views, exports, and sharing
  */
 
 import React, { useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router-dom';
 import { 
   Download,
   Calendar,
-  TrendingUp,
-  TrendingDown,
   BarChart3,
-  PieChart,
-  FileText
+  Share2,
+  FileText,
+  FileSpreadsheet,
+  Link2,
+  Copy,
+  Check,
+  Loader2
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
 import { Progress } from '@/components/ui/progress';
 import { toast } from 'sonner';
+import { format } from 'date-fns';
 
-interface ReportMetric {
-  label: string;
-  value: number;
-  change: number;
-  trend: 'up' | 'down' | 'neutral';
-}
-
-const dailyMetrics: ReportMetric[] = [
-  { label: 'Tests Executed', value: 156, change: 12, trend: 'up' },
-  { label: 'Pass Rate', value: 87, change: 3, trend: 'up' },
-  { label: 'New Defects', value: 4, change: -2, trend: 'down' },
-  { label: 'Blocked', value: 8, change: 1, trend: 'neutral' },
-];
-
-const weeklyMetrics: ReportMetric[] = [
-  { label: 'Total Executed', value: 892, change: 156, trend: 'up' },
-  { label: 'Avg Pass Rate', value: 85, change: 2, trend: 'up' },
-  { label: 'Total Defects', value: 23, change: -5, trend: 'down' },
-  { label: 'Coverage', value: 78, change: 4, trend: 'up' },
-];
-
-function MetricCard({ metric }: { metric: ReportMetric }) {
-  return (
-    <Card className="bg-surface-2 border-border-default">
-      <CardContent className="p-4">
-        <p className="text-sm text-text-tertiary">{metric.label}</p>
-        <div className="flex items-end justify-between mt-2">
-          <p className="text-2xl font-semibold text-text-primary">
-            {metric.label.includes('Rate') || metric.label.includes('Coverage') 
-              ? `${metric.value}%` 
-              : metric.value}
-          </p>
-          <div className={`flex items-center gap-1 text-sm ${
-            metric.trend === 'up' ? 'text-status-success' : 
-            metric.trend === 'down' ? 'text-status-error' : 
-            'text-text-tertiary'
-          }`}>
-            {metric.trend === 'up' ? (
-              <TrendingUp className="h-4 w-4" />
-            ) : metric.trend === 'down' ? (
-              <TrendingDown className="h-4 w-4" />
-            ) : null}
-            <span>{metric.change >= 0 ? '+' : ''}{metric.change}</span>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
-  );
-}
+import { DailyCommandReport } from '../../components/tests/DailyCommandReport';
+import { WeeklyRunwayReport } from '../../components/tests/WeeklyRunwayReport';
+import { useTestReportMetrics } from '../../hooks/useTestReportMetrics';
+import { useReportSharing } from '../../hooks/useReportSharing';
 
 export function TestReportsPage() {
   const { projectKey } = useParams<{ projectKey: string }>();
+  const [searchParams] = useSearchParams();
+  const programId = searchParams.get('programId');
   const [activeTab, setActiveTab] = useState('daily');
+  const [shareDialogOpen, setShareDialogOpen] = useState(false);
+  const [shareUrl, setShareUrl] = useState('');
+  const [copied, setCopied] = useState(false);
 
-  const handleExportReport = (type: string) => {
-    toast.success(`Exporting ${type} report...`);
+  const {
+    dailyMetrics,
+    weeklyMetrics,
+    risks,
+    recommendedActions,
+    releaseBlockers,
+    coverageGaps,
+    assigneeCapacity,
+    defectTrend,
+    releaseReadiness,
+    isLoading,
+  } = useTestReportMetrics(programId);
+
+  const {
+    createShareLink,
+    isCreatingShare,
+    exportToPDF,
+    exportToCSV,
+    exportProgress,
+  } = useReportSharing(programId);
+
+  const handleExportPDF = async () => {
+    const reportType = activeTab as 'daily' | 'weekly';
+    await exportToPDF(
+      reportType,
+      { dailyMetrics, weeklyMetrics },
+      risks,
+      recommendedActions
+    );
+  };
+
+  const handleExportCSV = () => {
+    const reportType = activeTab as 'daily' | 'weekly';
+    exportToCSV(reportType, { dailyMetrics, weeklyMetrics, risks });
+  };
+
+  const handleCreateShareLink = async () => {
+    const reportType = activeTab as 'daily' | 'weekly';
+    const result = await createShareLink(reportType);
+    setShareUrl(result.url);
+    setShareDialogOpen(true);
+  };
+
+  const handleCopyLink = async () => {
+    await navigator.clipboard.writeText(shareUrl);
+    setCopied(true);
+    toast.success('Link copied to clipboard');
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleRiskClick = (risk: any) => {
+    toast.info(`Opening ${risk.entityType}: ${risk.entityId}`);
+    // Navigate to filtered view based on risk type
+  };
+
+  const handleActionClick = (action: any) => {
+    toast.info(`Executing action: ${action.actionType}`);
+    // Execute action based on type
+  };
+
+  const handleGapClick = (gap: any) => {
+    toast.info(`Opening feature: ${gap.featureName}`);
+    // Navigate to feature coverage view
+  };
+
+  const handleBlockerClick = (blocker: any) => {
+    toast.info(`Opening blocker: ${blocker.title}`);
+    // Navigate to blocker detail
   };
 
   return (
     <div className="h-full flex flex-col bg-surface-1">
       {/* Page Header */}
-      <div className="px-6 py-4 border-b border-border-default">
+      <div className="px-6 py-4 border-b border-border-default bg-surface-2">
         <div className="flex items-center gap-2 text-sm text-text-tertiary mb-2">
           <span>{projectKey}</span>
           <span>/</span>
@@ -91,195 +134,130 @@ export function TestReportsPage() {
           <span className="text-text-primary font-medium">Reports</span>
         </div>
         <div className="flex items-center justify-between">
-          <h1 className="text-xl font-semibold text-text-primary">Test Reports</h1>
-          <Button variant="outline" size="sm" onClick={() => handleExportReport(activeTab)}>
-            <Download className="h-4 w-4 mr-1.5" />
-            Export Report
-          </Button>
+          <div>
+            <h1 className="text-xl font-semibold text-text-primary">Test Reports</h1>
+            <p className="text-sm text-text-tertiary mt-0.5">
+              {format(new Date(), 'EEEE, MMMM d, yyyy')}
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            {/* Share Button */}
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={handleCreateShareLink}
+              disabled={isCreatingShare}
+            >
+              {isCreatingShare ? (
+                <Loader2 className="h-4 w-4 mr-1.5 animate-spin" />
+              ) : (
+                <Share2 className="h-4 w-4 mr-1.5" />
+              )}
+              Share
+            </Button>
+
+            {/* Export Dropdown */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm">
+                  <Download className="h-4 w-4 mr-1.5" />
+                  Export
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-48">
+                <DropdownMenuItem onClick={handleExportPDF}>
+                  <FileText className="h-4 w-4 mr-2" />
+                  Export as PDF
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={handleExportCSV}>
+                  <FileSpreadsheet className="h-4 w-4 mr-2" />
+                  Export as CSV
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={handleCreateShareLink}>
+                  <Link2 className="h-4 w-4 mr-2" />
+                  Create Share Link
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
+
+        {/* Export Progress */}
+        {exportProgress > 0 && exportProgress < 100 && (
+          <div className="mt-3">
+            <Progress value={exportProgress} className="h-1" />
+            <p className="text-xs text-text-tertiary mt-1">Generating report... {exportProgress}%</p>
+          </div>
+        )}
       </div>
 
       {/* Content */}
       <div className="flex-1 overflow-auto p-6">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="bg-surface-2 border border-border-default mb-6">
-            <TabsTrigger value="daily" className="gap-1.5">
+            <TabsTrigger value="daily" className="gap-1.5 data-[state=active]:bg-accent-primary data-[state=active]:text-white">
               <Calendar className="h-4 w-4" />
-              Daily Report
+              Daily Command Center
             </TabsTrigger>
-            <TabsTrigger value="weekly" className="gap-1.5">
+            <TabsTrigger value="weekly" className="gap-1.5 data-[state=active]:bg-accent-primary data-[state=active]:text-white">
               <BarChart3 className="h-4 w-4" />
               Weekly Runway
             </TabsTrigger>
           </TabsList>
 
           <TabsContent value="daily">
-            {/* Metrics Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-              {dailyMetrics.map((metric, index) => (
-                <MetricCard key={index} metric={metric} />
-              ))}
-            </div>
-
-            {/* Charts Row */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-              <Card className="bg-surface-2 border-border-default">
-                <CardHeader>
-                  <CardTitle className="text-base font-medium text-text-primary flex items-center gap-2">
-                    <BarChart3 className="h-4 w-4 text-accent-primary" />
-                    Execution by Status
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div>
-                      <div className="flex justify-between text-sm mb-1">
-                        <span className="text-text-secondary">Passed</span>
-                        <span className="text-status-success">136 (87%)</span>
-                      </div>
-                      <Progress value={87} className="h-2" />
-                    </div>
-                    <div>
-                      <div className="flex justify-between text-sm mb-1">
-                        <span className="text-text-secondary">Failed</span>
-                        <span className="text-status-error">12 (8%)</span>
-                      </div>
-                      <Progress value={8} className="h-2" />
-                    </div>
-                    <div>
-                      <div className="flex justify-between text-sm mb-1">
-                        <span className="text-text-secondary">Blocked</span>
-                        <span className="text-status-warning">8 (5%)</span>
-                      </div>
-                      <Progress value={5} className="h-2" />
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="bg-surface-2 border-border-default">
-                <CardHeader>
-                  <CardTitle className="text-base font-medium text-text-primary flex items-center gap-2">
-                    <PieChart className="h-4 w-4 text-accent-primary" />
-                    Execution by Type
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div>
-                      <div className="flex justify-between text-sm mb-1">
-                        <span className="text-text-secondary">Automated</span>
-                        <span className="text-accent-primary">98 (63%)</span>
-                      </div>
-                      <Progress value={63} className="h-2" />
-                    </div>
-                    <div>
-                      <div className="flex justify-between text-sm mb-1">
-                        <span className="text-text-secondary">Manual</span>
-                        <span className="text-text-tertiary">58 (37%)</span>
-                      </div>
-                      <Progress value={37} className="h-2" />
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-
-            {/* Recent Activity */}
-            <Card className="bg-surface-2 border-border-default">
-              <CardHeader>
-                <CardTitle className="text-base font-medium text-text-primary flex items-center gap-2">
-                  <FileText className="h-4 w-4 text-accent-primary" />
-                  Today's Activity
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {[
-                    { time: '10:30', action: 'John Doe executed 24 test cases', result: 'passed' },
-                    { time: '09:15', action: 'Jane Smith found 2 new defects', result: 'failed' },
-                    { time: '08:45', action: 'Automated suite completed', result: 'passed' },
-                    { time: '08:00', action: 'Sprint 24 cycle started', result: 'neutral' },
-                  ].map((activity, index) => (
-                    <div key={index} className="flex items-center gap-4 p-3 bg-surface-1 rounded-lg">
-                      <span className="text-xs text-text-quaternary font-mono">{activity.time}</span>
-                      <span className="text-sm text-text-primary flex-1">{activity.action}</span>
-                      <Badge className={
-                        activity.result === 'passed' ? 'text-status-success bg-status-success/10' :
-                        activity.result === 'failed' ? 'text-status-error bg-status-error/10' :
-                        'text-text-tertiary bg-surface-3'
-                      }>
-                        {activity.result === 'passed' ? 'Success' : 
-                         activity.result === 'failed' ? 'Issues' : 
-                         'Info'}
-                      </Badge>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+            <DailyCommandReport
+              metrics={dailyMetrics}
+              risks={risks}
+              recommendedActions={recommendedActions}
+              isLoading={isLoading}
+              onRiskClick={handleRiskClick}
+              onActionClick={handleActionClick}
+            />
           </TabsContent>
 
           <TabsContent value="weekly">
-            {/* Metrics Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-              {weeklyMetrics.map((metric, index) => (
-                <MetricCard key={index} metric={metric} />
-              ))}
-            </div>
-
-            {/* Weekly Summary */}
-            <Card className="bg-surface-2 border-border-default">
-              <CardHeader>
-                <CardTitle className="text-base font-medium text-text-primary">
-                  Weekly Summary - Release Runway
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-6">
-                  <div>
-                    <h4 className="text-sm font-medium text-text-primary mb-3">Key Highlights</h4>
-                    <ul className="space-y-2 text-sm text-text-secondary">
-                      <li className="flex items-center gap-2">
-                        <div className="w-2 h-2 rounded-full bg-status-success" />
-                        Pass rate improved by 2% compared to last week
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <div className="w-2 h-2 rounded-full bg-status-success" />
-                        Test coverage increased to 78% (+4%)
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <div className="w-2 h-2 rounded-full bg-status-error" />
-                        3 critical defects still open
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <div className="w-2 h-2 rounded-full bg-status-warning" />
-                        Authentication module needs additional testing
-                      </li>
-                    </ul>
-                  </div>
-
-                  <div>
-                    <h4 className="text-sm font-medium text-text-primary mb-3">Release Readiness</h4>
-                    <div className="flex items-center gap-4">
-                      <div className="flex-1">
-                        <div className="flex justify-between text-sm mb-1">
-                          <span className="text-text-secondary">Overall Readiness</span>
-                          <span className="text-accent-primary">72%</span>
-                        </div>
-                        <Progress value={72} className="h-3" />
-                      </div>
-                      <Badge className="text-status-warning bg-status-warning/10">
-                        At Risk
-                      </Badge>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            <WeeklyRunwayReport
+              metrics={weeklyMetrics}
+              releaseBlockers={releaseBlockers}
+              coverageGaps={coverageGaps}
+              assigneeCapacity={assigneeCapacity}
+              defectTrend={defectTrend}
+              releaseReadiness={releaseReadiness}
+              isLoading={isLoading}
+              onGapClick={handleGapClick}
+              onBlockerClick={handleBlockerClick}
+            />
           </TabsContent>
         </Tabs>
       </div>
+
+      {/* Share Dialog */}
+      <Dialog open={shareDialogOpen} onOpenChange={setShareDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Share Report</DialogTitle>
+            <DialogDescription>
+              Anyone with this link can view the {activeTab} report (read-only). Link expires in 7 days.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex items-center space-x-2 mt-4">
+            <Input
+              value={shareUrl}
+              readOnly
+              className="flex-1 font-mono text-sm"
+            />
+            <Button size="sm" onClick={handleCopyLink}>
+              {copied ? (
+                <Check className="h-4 w-4" />
+              ) : (
+                <Copy className="h-4 w-4" />
+              )}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
