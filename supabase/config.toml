@@ -44,3 +44,18 @@ verify_jwt = false
 
 [functions.injira-import]
 verify_jwt = false
+
+[functions.generate-test-cases]
+verify_jwt = false
+
+[functions.ai-traceability-gaps]
+verify_jwt = false
+
+[functions.ai-fail-to-defect]
+verify_jwt = false
+
+[functions.ai-test-recommendations]
+verify_jwt = false
+
+[functions.ai-narrative-report]
+verify_jwt = false
