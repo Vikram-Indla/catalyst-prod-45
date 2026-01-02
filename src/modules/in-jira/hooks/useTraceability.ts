@@ -157,19 +157,14 @@ export function useTraceability(programId: string | null, blockedThresholdDays: 
   const { data: stories, isLoading: storiesLoading } = useQuery({
     queryKey: ['traceability-stories', programId],
     queryFn: async () => {
-      const { data, error } = await supabase
+      let query = supabase
         .from('stories')
         .select(`
           id, story_key, title, name, status, priority, feature_id,
           feature:features(id, name, epic_id, epic:epics(id, name))
         `)
-        .order('story_key', { ascending: true })
-        .limit(500);
-
-      if (error) throw error;
-      return data as TraceabilityStory[];
-        }
-      }
+        .is('deleted_at', null)
+        .order('story_key', { ascending: true });
 
       const { data, error } = await query.limit(500);
       if (error) throw error;
