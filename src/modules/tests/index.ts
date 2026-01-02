@@ -1,0 +1,11 @@
+// =====================================================
+// PROJECT TESTS MODULE
+// Test management for project scope
+// =====================================================
+
+export { ProjectTestsLayout } from './components/ProjectTestsLayout';
+export { TestsOverviewPage } from './pages/TestsOverviewPage';
+export { TestsCasesPage } from './pages/TestsCasesPage';
+export { TestsCyclesPage } from './pages/TestsCyclesPage';
+export { TestsExecutionsPage } from './pages/TestsExecutionsPage';
+export { TestsReportsPage } from './pages/TestsReportsPage';
