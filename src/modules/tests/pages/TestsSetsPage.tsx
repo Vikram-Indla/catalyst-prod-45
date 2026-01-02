@@ -189,7 +189,7 @@ export function TestsSetsPage() {
             />
           </div>
         </div>
-        <Button onClick={() => setCreateModalOpen(true)}>
+        <Button onClick={() => setCreateModalOpen(true)} data-cta="create-set">
           <Plus className="h-4 w-4 mr-1.5" />
           Create Test Set
         </Button>

@@ -186,6 +186,7 @@ export function UserActivityReport() {
                     variant="outline"
                     role="combobox"
                     className="w-full justify-between bg-surface-1 border-border-default text-text-primary hover:bg-surface-hover"
+                    data-cta="select-users"
                   >
                     {state.userIds.length > 0
                       ? `${state.userIds.length} user${state.userIds.length > 1 ? 's' : ''} selected`
@@ -392,6 +393,8 @@ export function UserActivityReport() {
               onClick={generate}
               disabled={!isValid || isLoading}
               className="bg-accent-primary hover:bg-accent-primary/90"
+              data-cta="generate-report"
+              data-disabled-reason={!isValid ? 'Please select users and start date' : undefined}
             >
               {isLoading ? (
                 <Loader2 className="h-4 w-4 mr-2 animate-spin" />
