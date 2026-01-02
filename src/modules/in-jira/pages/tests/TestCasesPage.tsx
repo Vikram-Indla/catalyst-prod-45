@@ -59,6 +59,7 @@ import { useTestCases, TestCase, TestCasePriority, TestCaseStatus } from '../../
 import { CreateTestCaseModal } from '../../components/tests/CreateTestCaseModal';
 import { TestCaseDrawer } from '../../components/tests/TestCaseDrawer';
 import { AITestGeneratorPanel } from '../../components/tests/AITestGeneratorPanel';
+import { FolderTree } from '../../components/tests/FolderTree';
 import { usePermission } from '@/hooks/usePermission';
 import {
   Dialog,
@@ -66,6 +67,11 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from '@/components/ui/resizable';
 
 // ═══════════════════════════════════════════════════════════════════
 // FILTER TYPES
@@ -337,6 +343,7 @@ export function TestCasesPage() {
   const deferredSearchQuery = useDeferredValue(searchQuery); // Debounced for performance
   const [filters, setFilters] = useState<Filters>(INITIAL_FILTERS);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [selectedFolderId, setSelectedFolderId] = useState<string | null>(null);
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [aiGeneratorOpen, setAiGeneratorOpen] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -361,6 +368,11 @@ export function TestCasesPage() {
   // Filter + search logic
   const filteredData = useMemo(() => {
     let result = testCases;
+
+    // Folder filter
+    if (selectedFolderId) {
+      result = result.filter(tc => tc.folder_id === selectedFolderId);
+    }
 
     // Text search (using deferred value for performance)
     if (deferredSearchQuery) {
@@ -395,7 +407,7 @@ export function TestCasesPage() {
     }
 
     return result;
-  }, [testCases, searchQuery, filters]);
+  }, [testCases, selectedFolderId, deferredSearchQuery, filters]);
 
   // Active filter count
   const activeFilterCount = 
@@ -737,19 +749,42 @@ export function TestCasesPage() {
         />
       )}
 
-      {/* Table */}
-      <div className="flex-1 overflow-auto px-6 py-4">
-        <CatalystTable
-          data={filteredData}
-          columns={columns}
-          getRowId={(tc) => tc.id}
-          onRowClick={handleRowClick}
-          isLoading={isLoading}
-          emptyMessage="No test cases found. Create your first test case to get started."
-          pageSize={40}
-          loadMoreIncrement={40}
-        />
-      </div>
+      {/* Main Content with Folder Sidebar */}
+      <ResizablePanelGroup direction="horizontal" className="flex-1">
+        {/* Folder Tree Sidebar */}
+        <ResizablePanel defaultSize={20} minSize={15} maxSize={35}>
+          <div className="h-full border-r border-border-default bg-surface-2">
+            <FolderTree
+              programId={programId}
+              entityType="test_case"
+              selectedFolderId={selectedFolderId}
+              onSelectFolder={setSelectedFolderId}
+              className="h-full"
+            />
+          </div>
+        </ResizablePanel>
+        
+        <ResizableHandle withHandle />
+        
+        {/* Table Panel */}
+        <ResizablePanel defaultSize={80}>
+          <div className="h-full overflow-auto px-4 py-4">
+            <CatalystTable
+              data={filteredData}
+              columns={columns}
+              getRowId={(tc) => tc.id}
+              onRowClick={handleRowClick}
+              isLoading={isLoading}
+              emptyMessage={selectedFolderId 
+                ? "No test cases in this folder."
+                : "No test cases found. Create your first test case to get started."
+              }
+              pageSize={40}
+              loadMoreIncrement={40}
+            />
+          </div>
+        </ResizablePanel>
+      </ResizablePanelGroup>
 
       {/* Create Modal */}
       <CreateTestCaseModal
