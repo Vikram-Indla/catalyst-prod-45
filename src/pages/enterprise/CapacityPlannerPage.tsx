@@ -107,7 +107,7 @@ export default function CapacityPlannerPage() {
   const [allocationModalResource, setAllocationModalResource] = useState<ResourceMetric | null>(null);
 
   // Add resource form state (simplified - no longer need assignment/allocation, configured via booking modal)
-  const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [selectedDepartmentId, setSelectedDepartmentId] = useState<string>('');
   const [isAddingResources, setIsAddingResources] = useState(false);
   
@@ -444,9 +444,10 @@ export default function CapacityPlannerPage() {
         <Dialog open={resourceModalOpen} onOpenChange={(open) => {
           setResourceModalOpen(open);
           if (!open) {
-            setSelectedUserIds([]);
+            setSelectedUserId(null);
             setSelectedDepartmentId('');
             setBookingAllocations([{ id: `alloc-${Date.now()}`, assignmentId: '', percent: 50, startDate: new Date().toISOString().split('T')[0], endDate: (() => { const d = new Date(); d.setMonth(d.getMonth() + 3); return d.toISOString().split('T')[0]; })() }]);
+            setResourceSearchQuery('');
           }
         }}>
           <DialogContent className="sm:max-w-2xl max-h-[90vh] flex flex-col overflow-hidden">
@@ -457,32 +458,15 @@ export default function CapacityPlannerPage() {
               </p>
             </DialogHeader>
             <div className="space-y-6 py-4 overflow-y-auto flex-1 -mx-6 px-6">
-              {/* Step 1: Select Users */}
+              {/* Step 1: Select User */}
               <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <Label className="text-sm font-semibold">Select Users ({selectedUserIds.length} selected)</Label>
-                  {availableUsers.length > 0 && (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        if (selectedUserIds.length === availableUsers.length) {
-                          setSelectedUserIds([]);
-                        } else {
-                          setSelectedUserIds(availableUsers.map(u => u.id));
-                        }
-                      }}
-                      className="text-xs text-[#2563eb] hover:underline"
-                    >
-                      {selectedUserIds.length === availableUsers.length ? 'Deselect all' : 'Select all'}
-                    </button>
-                  )}
-                </div>
+                <Label className="text-sm font-semibold">Select User</Label>
                 {/* Search Input */}
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
                     type="text"
-                    placeholder="Search by name..."
+                    placeholder="Search by name or role..."
                     value={resourceSearchQuery}
                     onChange={(e) => setResourceSearchQuery(e.target.value)}
                     className="pl-9"
@@ -504,31 +488,23 @@ export default function CapacityPlannerPage() {
                     return (
                     <div className="divide-y divide-border">
                       {filteredUsers.map((user) => {
-                        const isSelected = selectedUserIds.includes(user.id);
+                        const isSelected = selectedUserId === user.id;
                         const initials = user.name?.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'NA';
                         return (
-                          <label
+                          <button
                             key={user.id}
+                            type="button"
+                            onClick={() => setSelectedUserId(isSelected ? null : user.id)}
                             className={cn(
-                              'flex items-center gap-3 px-4 py-3 cursor-pointer transition-colors',
-                              isSelected ? 'bg-[#2563eb]/5' : 'hover:bg-muted/50'
+                              'w-full flex items-center gap-3 px-4 py-3 text-left transition-colors',
+                              isSelected ? 'bg-[#2563eb]/10 border-l-2 border-l-[#2563eb]' : 'hover:bg-muted/50'
                             )}
                           >
-                            <input
-                              type="checkbox"
-                              checked={isSelected}
-                              onChange={(e) => {
-                                if (e.target.checked) {
-                                  setSelectedUserIds([...selectedUserIds, user.id]);
-                                } else {
-                                  setSelectedUserIds(selectedUserIds.filter(id => id !== user.id));
-                                }
-                              }}
-                              className="h-4 w-4 rounded border-border text-[#2563eb] focus:ring-[#2563eb]"
-                            />
                             <div 
-                              className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold text-white"
-                              style={{ backgroundColor: '#2563eb' }}
+                              className={cn(
+                                "w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold",
+                                isSelected ? "bg-[#2563eb] text-white" : "bg-muted text-muted-foreground"
+                              )}
                             >
                               {initials}
                             </div>
@@ -537,7 +513,12 @@ export default function CapacityPlannerPage() {
                               <p className="text-xs text-muted-foreground truncate">{user.role || 'No role'}</p>
                             </div>
                             <span className="text-xs text-muted-foreground">{user.department || 'Unassigned'}</span>
-                          </label>
+                            {isSelected && (
+                              <div className="w-5 h-5 rounded-full bg-[#2563eb] flex items-center justify-center">
+                                <Check className="h-3 w-3 text-white" />
+                              </div>
+                            )}
+                          </button>
                         );
                       })}
                     </div>
@@ -776,10 +757,14 @@ export default function CapacityPlannerPage() {
             <DialogFooter>
               <Button variant="outline" onClick={() => setResourceModalOpen(false)}>Cancel</Button>
               <Button 
-                disabled={selectedUserIds.length === 0 || isAddingResources || !selectedDepartmentId}
+                disabled={!selectedUserId || isAddingResources || !selectedDepartmentId}
                 onClick={async () => {
                   if (!selectedDepartmentId) {
                     toast.error('Please select a department');
+                    return;
+                  }
+                  if (!selectedUserId) {
+                    toast.error('Please select a user');
                     return;
                   }
 
@@ -787,32 +772,29 @@ export default function CapacityPlannerPage() {
                   try {
                     const startDate = new Date().toISOString().split('T')[0];
                     const userById = new Map(resources.map((r) => [r.id, r]));
+                    const userId = selectedUserId;
 
-                    // Create assignments for the users
-                    const { error: assignmentError } = await supabase.from('assignments').insert(
-                      selectedUserIds.map((userId) => ({
-                        user_id: userId,
-                        project_id: null,
-                        allocation_percentage: 0,
-                        start_date: startDate,
-                        status: 'active',
-                        work_item_type: 'project',
-                      }))
-                    );
+                    // Create assignment for the user
+                    const { error: assignmentError } = await supabase.from('assignments').insert({
+                      user_id: userId,
+                      project_id: null,
+                      allocation_percentage: 0,
+                      start_date: startDate,
+                      status: 'active',
+                      work_item_type: 'project',
+                    });
                     if (assignmentError) throw assignmentError;
 
                     // Update department
                     const { error: profileError } = await supabase
                       .from('profiles')
                       .update({ department_id: selectedDepartmentId })
-                      .in('id', selectedUserIds);
+                      .eq('id', userId);
                     if (profileError) throw profileError;
 
-                    // Create resource_inventory entries and allocations
-                    for (const userId of selectedUserIds) {
-                      const name = userById.get(userId)?.name;
-                      if (!name) continue;
-
+                    // Create resource_inventory entry and allocations
+                    const name = userById.get(userId)?.name;
+                    if (name) {
                       // Check/create resource_inventory entry
                       let { data: existing } = await supabase
                         .from('resource_inventory')
@@ -851,23 +833,25 @@ export default function CapacityPlannerPage() {
                     queryClient.invalidateQueries({ queryKey: ['capacity-planner-resources'] });
                     queryClient.invalidateQueries({ queryKey: ['resource-allocations'] });
 
+                    const selectedUser = userById.get(userId);
                     toast.success(
-                      `Added ${selectedUserIds.length} resource${selectedUserIds.length === 1 ? '' : 's'} with allocations configured.`
+                      `Added ${selectedUser?.name || 'resource'} with allocations configured.`
                     );
 
                     setResourceModalOpen(false);
-                    setSelectedUserIds([]);
+                    setSelectedUserId(null);
                     setSelectedDepartmentId('');
+                    setResourceSearchQuery('');
                     setBookingAllocations([{ id: `alloc-${Date.now()}`, assignmentId: '', percent: 50, startDate: new Date().toISOString().split('T')[0], endDate: (() => { const d = new Date(); d.setMonth(d.getMonth() + 3); return d.toISOString().split('T')[0]; })() }]);
                   } catch (error: any) {
-                    toast.error(`Failed to add resources: ${error?.message ?? 'Unknown error'}`);
+                    toast.error(`Failed to add resource: ${error?.message ?? 'Unknown error'}`);
                   } finally {
                     setIsAddingResources(false);
                   }
                 }} 
                 className="bg-[#2563eb] hover:bg-[#1d4ed8]"
               >
-                {isAddingResources ? 'Booking...' : `Book ${selectedUserIds.length > 0 ? `${selectedUserIds.length} ` : ''}Resource${selectedUserIds.length !== 1 ? 's' : ''}`}
+                {isAddingResources ? 'Booking...' : 'Book Resource'}
               </Button>
             </DialogFooter>
           </DialogContent>
