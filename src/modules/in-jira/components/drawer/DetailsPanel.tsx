@@ -15,7 +15,8 @@ import {
   Target,
   Clock,
   Folder,
-  Link2
+  Link2,
+  Package
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -241,6 +242,30 @@ export function DetailsPanel({ issue, users, onFieldChange }: DetailsPanelProps)
             </div>
           </FieldRow>
         )}
+
+        {/* Fix Version */}
+        <FieldRow label="Fix Version" icon={<Package className="h-4 w-4" />}>
+          <div className="flex flex-wrap gap-1">
+            {issue.fixVersions && issue.fixVersions.length > 0 ? (
+              issue.fixVersions.map((version) => (
+                <Badge key={version} variant="outline" className="text-xs">
+                  {version}
+                </Badge>
+              ))
+            ) : (
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="h-6 text-xs text-muted-foreground"
+                onClick={() => {
+                  // TODO: Open version picker
+                }}
+              >
+                + Add version
+              </Button>
+            )}
+          </div>
+        </FieldRow>
 
         <Separator />
 
