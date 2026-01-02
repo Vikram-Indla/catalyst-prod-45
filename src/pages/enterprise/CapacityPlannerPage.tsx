@@ -547,7 +547,6 @@ export default function CapacityPlannerPage() {
                   <Label className="text-sm font-semibold">Assignments</Label>
                   <Button
                     type="button"
-                    variant="outline"
                     size="sm"
                     onClick={() => {
                       setBookingAllocations([...bookingAllocations, {
@@ -558,7 +557,7 @@ export default function CapacityPlannerPage() {
                         endDate: (() => { const d = new Date(); d.setMonth(d.getMonth() + 3); return d.toISOString().split('T')[0]; })()
                       }]);
                     }}
-                    className="gap-1 h-8 text-xs"
+                    className="gap-1 h-8 text-xs bg-[#2563eb] hover:bg-[#1d4ed8] text-white"
                   >
                     <Plus className="h-3 w-3" />
                     Add Assignment
