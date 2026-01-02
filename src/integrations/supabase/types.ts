@@ -17459,6 +17459,52 @@ export type Database = {
           },
         ]
       }
+      test_cycle_sets: {
+        Row: {
+          added_at: string | null
+          added_by: string | null
+          cycle_id: string
+          id: string
+          set_id: string
+        }
+        Insert: {
+          added_at?: string | null
+          added_by?: string | null
+          cycle_id: string
+          id?: string
+          set_id: string
+        }
+        Update: {
+          added_at?: string | null
+          added_by?: string | null
+          cycle_id?: string
+          id?: string
+          set_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "test_cycle_sets_added_by_fkey"
+            columns: ["added_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_cycle_sets_cycle_id_fkey"
+            columns: ["cycle_id"]
+            isOneToOne: false
+            referencedRelation: "test_cycles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_cycle_sets_set_id_fkey"
+            columns: ["set_id"]
+            isOneToOne: false
+            referencedRelation: "test_sets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       test_cycle_templates: {
         Row: {
           config: Json
