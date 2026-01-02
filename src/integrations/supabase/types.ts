@@ -7908,6 +7908,190 @@ export type Database = {
           },
         ]
       }
+      injira_issue_type_scheme_mappings: {
+        Row: {
+          created_at: string | null
+          id: string
+          issue_type_id: string
+          scheme_id: string
+          sort_order: number | null
+          tenant_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          issue_type_id: string
+          scheme_id: string
+          sort_order?: number | null
+          tenant_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          issue_type_id?: string
+          scheme_id?: string
+          sort_order?: number | null
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "injira_issue_type_scheme_mappings_issue_type_id_fkey"
+            columns: ["issue_type_id"]
+            isOneToOne: false
+            referencedRelation: "injira_issue_types"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "injira_issue_type_scheme_mappings_scheme_id_fkey"
+            columns: ["scheme_id"]
+            isOneToOne: false
+            referencedRelation: "injira_issue_type_schemes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "injira_issue_type_scheme_mappings_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "injira_tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      injira_issue_type_schemes: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          is_default: boolean | null
+          name: string
+          tenant_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_default?: boolean | null
+          name: string
+          tenant_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_default?: boolean | null
+          name?: string
+          tenant_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "injira_issue_type_schemes_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "injira_tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      injira_issue_type_screen_scheme_mappings: {
+        Row: {
+          created_at: string | null
+          id: string
+          is_default: boolean | null
+          issue_type_id: string | null
+          scheme_id: string
+          screen_scheme_id: string
+          tenant_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          is_default?: boolean | null
+          issue_type_id?: string | null
+          scheme_id: string
+          screen_scheme_id: string
+          tenant_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          is_default?: boolean | null
+          issue_type_id?: string | null
+          scheme_id?: string
+          screen_scheme_id?: string
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "injira_issue_type_screen_scheme_mappings_issue_type_id_fkey"
+            columns: ["issue_type_id"]
+            isOneToOne: false
+            referencedRelation: "injira_issue_types"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "injira_issue_type_screen_scheme_mappings_scheme_id_fkey"
+            columns: ["scheme_id"]
+            isOneToOne: false
+            referencedRelation: "injira_issue_type_screen_schemes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "injira_issue_type_screen_scheme_mappings_screen_scheme_id_fkey"
+            columns: ["screen_scheme_id"]
+            isOneToOne: false
+            referencedRelation: "injira_screen_schemes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "injira_issue_type_screen_scheme_mappings_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "injira_tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      injira_issue_type_screen_schemes: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          is_default: boolean | null
+          name: string
+          tenant_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_default?: boolean | null
+          name: string
+          tenant_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_default?: boolean | null
+          name?: string
+          tenant_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "injira_issue_type_screen_schemes_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "injira_tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       injira_issue_types: {
         Row: {
           category: Database["public"]["Enums"]["injira_issue_type_category"]
@@ -8342,6 +8526,8 @@ export type Database = {
           description: string | null
           id: string
           is_archived: boolean | null
+          issue_type_scheme_id: string | null
+          issue_type_screen_scheme_id: string | null
           key: string
           lead_user_id: string | null
           name: string
@@ -8349,6 +8535,7 @@ export type Database = {
           settings: Json | null
           tenant_id: string
           updated_at: string | null
+          workflow_scheme_id: string | null
         }
         Insert: {
           avatar_url?: string | null
@@ -8359,6 +8546,8 @@ export type Database = {
           description?: string | null
           id?: string
           is_archived?: boolean | null
+          issue_type_scheme_id?: string | null
+          issue_type_screen_scheme_id?: string | null
           key: string
           lead_user_id?: string | null
           name: string
@@ -8366,6 +8555,7 @@ export type Database = {
           settings?: Json | null
           tenant_id: string
           updated_at?: string | null
+          workflow_scheme_id?: string | null
         }
         Update: {
           avatar_url?: string | null
@@ -8376,6 +8566,8 @@ export type Database = {
           description?: string | null
           id?: string
           is_archived?: boolean | null
+          issue_type_scheme_id?: string | null
+          issue_type_screen_scheme_id?: string | null
           key?: string
           lead_user_id?: string | null
           name?: string
@@ -8383,6 +8575,7 @@ export type Database = {
           settings?: Json | null
           tenant_id?: string
           updated_at?: string | null
+          workflow_scheme_id?: string | null
         }
         Relationships: [
           {
@@ -8400,6 +8593,20 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "injira_projects_issue_type_scheme_id_fkey"
+            columns: ["issue_type_scheme_id"]
+            isOneToOne: false
+            referencedRelation: "injira_issue_type_schemes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "injira_projects_issue_type_screen_scheme_id_fkey"
+            columns: ["issue_type_screen_scheme_id"]
+            isOneToOne: false
+            referencedRelation: "injira_issue_type_screen_schemes"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "injira_projects_lead_user_id_fkey"
             columns: ["lead_user_id"]
             isOneToOne: false
@@ -8411,6 +8618,13 @@ export type Database = {
             columns: ["tenant_id"]
             isOneToOne: false
             referencedRelation: "injira_tenants"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "injira_projects_workflow_scheme_id_fkey"
+            columns: ["workflow_scheme_id"]
+            isOneToOne: false
+            referencedRelation: "injira_workflow_schemes"
             referencedColumns: ["id"]
           },
         ]
@@ -8550,6 +8764,218 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "injira_roles_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "injira_tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      injira_screen_scheme_mappings: {
+        Row: {
+          created_at: string | null
+          id: string
+          operation: string
+          scheme_id: string
+          screen_id: string
+          tenant_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          operation: string
+          scheme_id: string
+          screen_id: string
+          tenant_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          operation?: string
+          scheme_id?: string
+          screen_id?: string
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "injira_screen_scheme_mappings_scheme_id_fkey"
+            columns: ["scheme_id"]
+            isOneToOne: false
+            referencedRelation: "injira_screen_schemes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "injira_screen_scheme_mappings_screen_id_fkey"
+            columns: ["screen_id"]
+            isOneToOne: false
+            referencedRelation: "injira_screens"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "injira_screen_scheme_mappings_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "injira_tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      injira_screen_schemes: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          is_default: boolean | null
+          name: string
+          tenant_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_default?: boolean | null
+          name: string
+          tenant_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_default?: boolean | null
+          name?: string
+          tenant_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "injira_screen_schemes_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "injira_tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      injira_screen_tab_fields: {
+        Row: {
+          created_at: string | null
+          field_id: string
+          id: string
+          is_required: boolean | null
+          sort_order: number | null
+          tab_id: string
+          tenant_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          field_id: string
+          id?: string
+          is_required?: boolean | null
+          sort_order?: number | null
+          tab_id: string
+          tenant_id: string
+        }
+        Update: {
+          created_at?: string | null
+          field_id?: string
+          id?: string
+          is_required?: boolean | null
+          sort_order?: number | null
+          tab_id?: string
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "injira_screen_tab_fields_tab_id_fkey"
+            columns: ["tab_id"]
+            isOneToOne: false
+            referencedRelation: "injira_screen_tabs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "injira_screen_tab_fields_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "injira_tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      injira_screen_tabs: {
+        Row: {
+          created_at: string | null
+          id: string
+          name: string
+          screen_id: string
+          sort_order: number | null
+          tenant_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          name: string
+          screen_id: string
+          sort_order?: number | null
+          tenant_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          name?: string
+          screen_id?: string
+          sort_order?: number | null
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "injira_screen_tabs_screen_id_fkey"
+            columns: ["screen_id"]
+            isOneToOne: false
+            referencedRelation: "injira_screens"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "injira_screen_tabs_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "injira_tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      injira_screens: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          is_default: boolean | null
+          name: string
+          tenant_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_default?: boolean | null
+          name: string
+          tenant_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_default?: boolean | null
+          name?: string
+          tenant_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "injira_screens_tenant_id_fkey"
             columns: ["tenant_id"]
             isOneToOne: false
             referencedRelation: "injira_tenants"
@@ -8713,6 +9139,156 @@ export type Database = {
         }
         Relationships: []
       }
+      injira_transition_conditions: {
+        Row: {
+          condition_type: Database["public"]["Enums"]["injira_condition_type"]
+          config_json: Json | null
+          created_at: string | null
+          group_id: string | null
+          group_operator: string | null
+          id: string
+          negate: boolean | null
+          sort_order: number | null
+          tenant_id: string
+          transition_id: string
+        }
+        Insert: {
+          condition_type: Database["public"]["Enums"]["injira_condition_type"]
+          config_json?: Json | null
+          created_at?: string | null
+          group_id?: string | null
+          group_operator?: string | null
+          id?: string
+          negate?: boolean | null
+          sort_order?: number | null
+          tenant_id: string
+          transition_id: string
+        }
+        Update: {
+          condition_type?: Database["public"]["Enums"]["injira_condition_type"]
+          config_json?: Json | null
+          created_at?: string | null
+          group_id?: string | null
+          group_operator?: string | null
+          id?: string
+          negate?: boolean | null
+          sort_order?: number | null
+          tenant_id?: string
+          transition_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "injira_transition_conditions_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "injira_tenants"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "injira_transition_conditions_transition_id_fkey"
+            columns: ["transition_id"]
+            isOneToOne: false
+            referencedRelation: "injira_workflow_transitions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      injira_transition_postfunctions: {
+        Row: {
+          config_json: Json | null
+          created_at: string | null
+          function_type: Database["public"]["Enums"]["injira_postfunction_type"]
+          id: string
+          run_as_system: boolean | null
+          sort_order: number | null
+          tenant_id: string
+          transition_id: string
+        }
+        Insert: {
+          config_json?: Json | null
+          created_at?: string | null
+          function_type: Database["public"]["Enums"]["injira_postfunction_type"]
+          id?: string
+          run_as_system?: boolean | null
+          sort_order?: number | null
+          tenant_id: string
+          transition_id: string
+        }
+        Update: {
+          config_json?: Json | null
+          created_at?: string | null
+          function_type?: Database["public"]["Enums"]["injira_postfunction_type"]
+          id?: string
+          run_as_system?: boolean | null
+          sort_order?: number | null
+          tenant_id?: string
+          transition_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "injira_transition_postfunctions_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "injira_tenants"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "injira_transition_postfunctions_transition_id_fkey"
+            columns: ["transition_id"]
+            isOneToOne: false
+            referencedRelation: "injira_workflow_transitions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      injira_transition_validators: {
+        Row: {
+          config_json: Json | null
+          created_at: string | null
+          error_message: string | null
+          id: string
+          sort_order: number | null
+          tenant_id: string
+          transition_id: string
+          validator_type: Database["public"]["Enums"]["injira_validator_type"]
+        }
+        Insert: {
+          config_json?: Json | null
+          created_at?: string | null
+          error_message?: string | null
+          id?: string
+          sort_order?: number | null
+          tenant_id: string
+          transition_id: string
+          validator_type: Database["public"]["Enums"]["injira_validator_type"]
+        }
+        Update: {
+          config_json?: Json | null
+          created_at?: string | null
+          error_message?: string | null
+          id?: string
+          sort_order?: number | null
+          tenant_id?: string
+          transition_id?: string
+          validator_type?: Database["public"]["Enums"]["injira_validator_type"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "injira_transition_validators_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "injira_tenants"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "injira_transition_validators_transition_id_fkey"
+            columns: ["transition_id"]
+            isOneToOne: false
+            referencedRelation: "injira_workflow_transitions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       injira_versions: {
         Row: {
           archived: boolean | null
@@ -8849,6 +9425,331 @@ export type Database = {
           },
           {
             foreignKeyName: "injira_webhooks_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "injira_tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      injira_workflow_scheme_mappings: {
+        Row: {
+          created_at: string | null
+          id: string
+          is_default: boolean | null
+          issue_type_id: string | null
+          scheme_id: string
+          tenant_id: string
+          workflow_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          is_default?: boolean | null
+          issue_type_id?: string | null
+          scheme_id: string
+          tenant_id: string
+          workflow_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          is_default?: boolean | null
+          issue_type_id?: string | null
+          scheme_id?: string
+          tenant_id?: string
+          workflow_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "injira_workflow_scheme_mappings_issue_type_id_fkey"
+            columns: ["issue_type_id"]
+            isOneToOne: false
+            referencedRelation: "injira_issue_types"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "injira_workflow_scheme_mappings_scheme_id_fkey"
+            columns: ["scheme_id"]
+            isOneToOne: false
+            referencedRelation: "injira_workflow_schemes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "injira_workflow_scheme_mappings_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "injira_tenants"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "injira_workflow_scheme_mappings_workflow_id_fkey"
+            columns: ["workflow_id"]
+            isOneToOne: false
+            referencedRelation: "injira_workflows"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      injira_workflow_schemes: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          is_active: boolean | null
+          is_default: boolean | null
+          name: string
+          tenant_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          is_default?: boolean | null
+          name: string
+          tenant_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          is_default?: boolean | null
+          name?: string
+          tenant_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "injira_workflow_schemes_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "injira_tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      injira_workflow_transition_logs: {
+        Row: {
+          actor_id: string
+          created_at: string | null
+          duration_seconds: number | null
+          from_status_id: string | null
+          id: string
+          issue_id: string
+          metadata_json: Json | null
+          tenant_id: string
+          to_status_id: string
+          transition_id: string | null
+          transition_name: string | null
+        }
+        Insert: {
+          actor_id: string
+          created_at?: string | null
+          duration_seconds?: number | null
+          from_status_id?: string | null
+          id?: string
+          issue_id: string
+          metadata_json?: Json | null
+          tenant_id: string
+          to_status_id: string
+          transition_id?: string | null
+          transition_name?: string | null
+        }
+        Update: {
+          actor_id?: string
+          created_at?: string | null
+          duration_seconds?: number | null
+          from_status_id?: string | null
+          id?: string
+          issue_id?: string
+          metadata_json?: Json | null
+          tenant_id?: string
+          to_status_id?: string
+          transition_id?: string | null
+          transition_name?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "injira_workflow_transition_logs_from_status_id_fkey"
+            columns: ["from_status_id"]
+            isOneToOne: false
+            referencedRelation: "injira_statuses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "injira_workflow_transition_logs_issue_id_fkey"
+            columns: ["issue_id"]
+            isOneToOne: false
+            referencedRelation: "injira_issues"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "injira_workflow_transition_logs_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "injira_tenants"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "injira_workflow_transition_logs_to_status_id_fkey"
+            columns: ["to_status_id"]
+            isOneToOne: false
+            referencedRelation: "injira_statuses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "injira_workflow_transition_logs_transition_id_fkey"
+            columns: ["transition_id"]
+            isOneToOne: false
+            referencedRelation: "injira_workflow_transitions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      injira_workflow_transitions: {
+        Row: {
+          button_text: string | null
+          created_at: string | null
+          description: string | null
+          from_status_id: string | null
+          icon: string | null
+          id: string
+          is_global: boolean | null
+          is_initial: boolean | null
+          name: string
+          screen_id: string | null
+          sort_order: number | null
+          tenant_id: string
+          to_status_id: string
+          updated_at: string | null
+          workflow_id: string
+        }
+        Insert: {
+          button_text?: string | null
+          created_at?: string | null
+          description?: string | null
+          from_status_id?: string | null
+          icon?: string | null
+          id?: string
+          is_global?: boolean | null
+          is_initial?: boolean | null
+          name: string
+          screen_id?: string | null
+          sort_order?: number | null
+          tenant_id: string
+          to_status_id: string
+          updated_at?: string | null
+          workflow_id: string
+        }
+        Update: {
+          button_text?: string | null
+          created_at?: string | null
+          description?: string | null
+          from_status_id?: string | null
+          icon?: string | null
+          id?: string
+          is_global?: boolean | null
+          is_initial?: boolean | null
+          name?: string
+          screen_id?: string | null
+          sort_order?: number | null
+          tenant_id?: string
+          to_status_id?: string
+          updated_at?: string | null
+          workflow_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fk_transition_screen"
+            columns: ["screen_id"]
+            isOneToOne: false
+            referencedRelation: "injira_screens"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "injira_workflow_transitions_from_status_id_fkey"
+            columns: ["from_status_id"]
+            isOneToOne: false
+            referencedRelation: "injira_statuses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "injira_workflow_transitions_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "injira_tenants"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "injira_workflow_transitions_to_status_id_fkey"
+            columns: ["to_status_id"]
+            isOneToOne: false
+            referencedRelation: "injira_statuses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "injira_workflow_transitions_workflow_id_fkey"
+            columns: ["workflow_id"]
+            isOneToOne: false
+            referencedRelation: "injira_workflows"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      injira_workflows: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          id: string
+          initial_status_id: string | null
+          is_active: boolean | null
+          is_default: boolean | null
+          name: string
+          tenant_id: string
+          updated_at: string | null
+          updated_by: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          initial_status_id?: string | null
+          is_active?: boolean | null
+          is_default?: boolean | null
+          name: string
+          tenant_id: string
+          updated_at?: string | null
+          updated_by?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          initial_status_id?: string | null
+          is_active?: boolean | null
+          is_default?: boolean | null
+          name?: string
+          tenant_id?: string
+          updated_at?: string | null
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "injira_workflows_initial_status_id_fkey"
+            columns: ["initial_status_id"]
+            isOneToOne: false
+            referencedRelation: "injira_statuses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "injira_workflows_tenant_id_fkey"
             columns: ["tenant_id"]
             isOneToOne: false
             referencedRelation: "injira_tenants"
@@ -19555,6 +20456,19 @@ export type Database = {
         | "closed"
       initiative_status: "proposed" | "active" | "done" | "cancelled"
       injira_board_type: "kanban" | "scrum"
+      injira_condition_type:
+        | "user_in_group"
+        | "user_in_role"
+        | "user_is_assignee"
+        | "user_is_reporter"
+        | "field_required"
+        | "field_value_equals"
+        | "field_value_not_empty"
+        | "previous_status"
+        | "sub_tasks_resolved"
+        | "parent_status"
+        | "permission_check"
+        | "custom_script"
       injira_import_status:
         | "pending"
         | "in_progress"
@@ -19577,8 +20491,33 @@ export type Database = {
         | "comment"
         | "attach"
         | "manage"
+      injira_postfunction_type:
+        | "set_field_value"
+        | "copy_field_value"
+        | "clear_field_value"
+        | "assign_to_user"
+        | "assign_to_reporter"
+        | "assign_to_lead"
+        | "add_comment"
+        | "add_label"
+        | "remove_label"
+        | "update_parent"
+        | "fire_event"
+        | "send_notification"
+        | "trigger_webhook"
+        | "custom_script"
       injira_sprint_state: "future" | "active" | "closed"
       injira_status_category: "to_do" | "in_progress" | "done"
+      injira_validator_type:
+        | "field_required"
+        | "field_has_value"
+        | "field_regex"
+        | "field_min_length"
+        | "field_max_length"
+        | "field_number_range"
+        | "date_compare"
+        | "user_permission"
+        | "custom_script"
       injira_webhook_event:
         | "issue_created"
         | "issue_updated"
@@ -19936,6 +20875,20 @@ export const Constants = {
       ],
       initiative_status: ["proposed", "active", "done", "cancelled"],
       injira_board_type: ["kanban", "scrum"],
+      injira_condition_type: [
+        "user_in_group",
+        "user_in_role",
+        "user_is_assignee",
+        "user_is_reporter",
+        "field_required",
+        "field_value_equals",
+        "field_value_not_empty",
+        "previous_status",
+        "sub_tasks_resolved",
+        "parent_status",
+        "permission_check",
+        "custom_script",
+      ],
       injira_import_status: [
         "pending",
         "in_progress",
@@ -19961,8 +20914,35 @@ export const Constants = {
         "attach",
         "manage",
       ],
+      injira_postfunction_type: [
+        "set_field_value",
+        "copy_field_value",
+        "clear_field_value",
+        "assign_to_user",
+        "assign_to_reporter",
+        "assign_to_lead",
+        "add_comment",
+        "add_label",
+        "remove_label",
+        "update_parent",
+        "fire_event",
+        "send_notification",
+        "trigger_webhook",
+        "custom_script",
+      ],
       injira_sprint_state: ["future", "active", "closed"],
       injira_status_category: ["to_do", "in_progress", "done"],
+      injira_validator_type: [
+        "field_required",
+        "field_has_value",
+        "field_regex",
+        "field_min_length",
+        "field_max_length",
+        "field_number_range",
+        "date_compare",
+        "user_permission",
+        "custom_script",
+      ],
       injira_webhook_event: [
         "issue_created",
         "issue_updated",
