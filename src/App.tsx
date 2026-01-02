@@ -498,6 +498,17 @@ const App = () => (
               <Route path="/programs/:programId/capacity" element={<CapacityWithSidebar />} />
               <Route path="/programs/:programId/settings" element={<PlaceholderPage />} />
               <Route path="/programs/:programId/quarters" element={<QuartersPage />} />
+              {/* Program-level Test Management Routes */}
+              <Route path="/programs/:programId/tests" element={<TestCommandCenterPage />} />
+              <Route path="/programs/:programId/tests/overview" element={<TestCommandCenterPage />} />
+              <Route path="/programs/:programId/tests/cases" element={<TestCasesPage />} />
+              <Route path="/programs/:programId/tests/sets" element={<TestSetsPage />} />
+              <Route path="/programs/:programId/tests/cycles" element={<TestCyclesPage />} />
+              <Route path="/programs/:programId/tests/library" element={<StepLibraryPage />} />
+              <Route path="/programs/:programId/tests/reports" element={<TestReportsPage />} />
+              <Route path="/programs/:programId/tests/traceability" element={<TraceabilityPage />} />
+              <Route path="/programs/:programId/tests/executions" element={<TestExecutionsPage />} />
+              <Route path="/programs/:programId/tests/admin" element={<TestAdminPage />} />
               <Route path="/program-room" element={<Navigate to="/for-you" replace />} />
               <Route path="/pis" element={<PlaceholderPage />} />
               <Route path="/program-board" element={<Navigate to="/for-you" replace />} />
