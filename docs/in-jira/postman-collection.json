@@ -1,0 +1,523 @@
+{
+  "info": {
+    "_postman_id": "catalyst-jira-api",
+    "name": "Catalyst In-Jira API",
+    "description": "Jira-compatible REST API facade over Catalyst services.\n\nAll endpoints require Bearer token authentication.\n\n## Setup\n1. Get a valid auth token from your Supabase project\n2. Set the `auth_token` collection variable\n3. Set the `base_url` to your function endpoint",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "https://stcpycushiccfvrqwipw.supabase.co/functions/v1/jira-api",
+      "type": "string"
+    },
+    {
+      "key": "auth_token",
+      "value": "YOUR_SUPABASE_AUTH_TOKEN",
+      "type": "string"
+    },
+    {
+      "key": "tenant_id",
+      "value": "default-tenant",
+      "type": "string"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{auth_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "item": [
+    {
+      "name": "Issues",
+      "description": "Issue management endpoints",
+      "item": [
+        {
+          "name": "Create Issue",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fields\": {\n    \"project\": {\n      \"key\": \"PROJ\"\n    },\n    \"summary\": \"Test issue summary\",\n    \"description\": {\n      \"type\": \"doc\",\n      \"version\": 1,\n      \"content\": [\n        {\n          \"type\": \"paragraph\",\n          \"content\": [\n            {\n              \"type\": \"text\",\n              \"text\": \"Description text\"\n            }\n          ]\n        }\n      ]\n    },\n    \"issuetype\": {\n      \"name\": \"Story\"\n    },\n    \"priority\": {\n      \"name\": \"Medium\"\n    },\n    \"labels\": [\"test\", \"api\"]\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/rest/api/3/issue?tenantId={{tenant_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["rest", "api", "3", "issue"],
+              "query": [
+                {
+                  "key": "tenantId",
+                  "value": "{{tenant_id}}"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Issue",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/rest/api/3/issue/PROJ-1?tenantId={{tenant_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["rest", "api", "3", "issue", "PROJ-1"],
+              "query": [
+                {
+                  "key": "tenantId",
+                  "value": "{{tenant_id}}"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Issue",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fields\": {\n    \"summary\": \"Updated summary\",\n    \"priority\": {\n      \"name\": \"High\"\n    },\n    \"labels\": [\"updated\", \"urgent\"]\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/rest/api/3/issue/PROJ-1?tenantId={{tenant_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["rest", "api", "3", "issue", "PROJ-1"],
+              "query": [
+                {
+                  "key": "tenantId",
+                  "value": "{{tenant_id}}"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Assignee",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"accountId\": \"user-uuid-here\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/rest/api/3/issue/PROJ-1/assignee?tenantId={{tenant_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["rest", "api", "3", "issue", "PROJ-1", "assignee"],
+              "query": [
+                {
+                  "key": "tenantId",
+                  "value": "{{tenant_id}}"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Search",
+      "description": "Search endpoints",
+      "item": [
+        {
+          "name": "Search Issues (Basic)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"jql\": \"project = PROJ ORDER BY created DESC\",\n  \"startAt\": 0,\n  \"maxResults\": 50\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/rest/api/3/search?tenantId={{tenant_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["rest", "api", "3", "search"],
+              "query": [
+                {
+                  "key": "tenantId",
+                  "value": "{{tenant_id}}"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Search Issues (With Filters)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"jql\": \"project = PROJ AND status = \\\"In Progress\\\" ORDER BY priority DESC\",\n  \"startAt\": 0,\n  \"maxResults\": 25\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/rest/api/3/search?tenantId={{tenant_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["rest", "api", "3", "search"],
+              "query": [
+                {
+                  "key": "tenantId",
+                  "value": "{{tenant_id}}"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Comments",
+      "description": "Comment management",
+      "item": [
+        {
+          "name": "Add Comment",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"body\": {\n    \"type\": \"doc\",\n    \"version\": 1,\n    \"content\": [\n      {\n        \"type\": \"paragraph\",\n        \"content\": [\n          {\n            \"type\": \"text\",\n            \"text\": \"This is a comment added via API\"\n          }\n        ]\n      }\n    ]\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/rest/api/3/issue/PROJ-1/comment?tenantId={{tenant_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["rest", "api", "3", "issue", "PROJ-1", "comment"],
+              "query": [
+                {
+                  "key": "tenantId",
+                  "value": "{{tenant_id}}"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Boards",
+      "description": "Agile board endpoints",
+      "item": [
+        {
+          "name": "Get All Boards",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/rest/agile/1.0/board?tenantId={{tenant_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["rest", "agile", "1.0", "board"],
+              "query": [
+                {
+                  "key": "tenantId",
+                  "value": "{{tenant_id}}"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Board Issues",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/rest/agile/1.0/board/:boardId/issue?tenantId={{tenant_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["rest", "agile", "1.0", "board", ":boardId", "issue"],
+              "variable": [
+                {
+                  "key": "boardId",
+                  "value": "board-uuid-here"
+                }
+              ],
+              "query": [
+                {
+                  "key": "tenantId",
+                  "value": "{{tenant_id}}"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Board Configuration",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/rest/agile/1.0/board/:boardId/configuration?tenantId={{tenant_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["rest", "agile", "1.0", "board", ":boardId", "configuration"],
+              "variable": [
+                {
+                  "key": "boardId",
+                  "value": "board-uuid-here"
+                }
+              ],
+              "query": [
+                {
+                  "key": "tenantId",
+                  "value": "{{tenant_id}}"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Board Sprints",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/rest/agile/1.0/board/:boardId/sprint?tenantId={{tenant_id}}&state=active",
+              "host": ["{{base_url}}"],
+              "path": ["rest", "agile", "1.0", "board", ":boardId", "sprint"],
+              "variable": [
+                {
+                  "key": "boardId",
+                  "value": "board-uuid-here"
+                }
+              ],
+              "query": [
+                {
+                  "key": "tenantId",
+                  "value": "{{tenant_id}}"
+                },
+                {
+                  "key": "state",
+                  "value": "active"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Sprints",
+      "description": "Sprint management",
+      "item": [
+        {
+          "name": "Create Sprint",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Sprint 1\",\n  \"originBoardId\": \"board-uuid-here\",\n  \"goal\": \"Complete initial feature set\",\n  \"startDate\": \"2026-01-06T00:00:00.000Z\",\n  \"endDate\": \"2026-01-20T00:00:00.000Z\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/rest/agile/1.0/sprint?tenantId={{tenant_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["rest", "agile", "1.0", "sprint"],
+              "query": [
+                {
+                  "key": "tenantId",
+                  "value": "{{tenant_id}}"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Sprint",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Sprint 1 - Extended\",\n  \"goal\": \"Updated goal\",\n  \"state\": \"active\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/rest/agile/1.0/sprint/:sprintId?tenantId={{tenant_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["rest", "agile", "1.0", "sprint", ":sprintId"],
+              "variable": [
+                {
+                  "key": "sprintId",
+                  "value": "sprint-uuid-here"
+                }
+              ],
+              "query": [
+                {
+                  "key": "tenantId",
+                  "value": "{{tenant_id}}"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Close Sprint",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"state\": \"closed\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/rest/agile/1.0/sprint/:sprintId?tenantId={{tenant_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["rest", "agile", "1.0", "sprint", ":sprintId"],
+              "variable": [
+                {
+                  "key": "sprintId",
+                  "value": "sprint-uuid-here"
+                }
+              ],
+              "query": [
+                {
+                  "key": "tenantId",
+                  "value": "{{tenant_id}}"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Versions",
+      "description": "Version/Release management",
+      "item": [
+        {
+          "name": "Get Project Versions",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/rest/api/3/project/PROJ/versions?tenantId={{tenant_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["rest", "api", "3", "project", "PROJ", "versions"],
+              "query": [
+                {
+                  "key": "tenantId",
+                  "value": "{{tenant_id}}"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Version",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"v1.0.0\",\n  \"projectId\": \"project-uuid-here\",\n  \"description\": \"Initial release\",\n  \"startDate\": \"2026-01-01\",\n  \"releaseDate\": \"2026-03-01\",\n  \"archived\": false,\n  \"released\": false\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/rest/api/3/version?tenantId={{tenant_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["rest", "api", "3", "version"],
+              "query": [
+                {
+                  "key": "tenantId",
+                  "value": "{{tenant_id}}"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Add any pre-request logic here",
+          "console.log('Requesting:', pm.request.url.toString());"
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Common test assertions",
+          "pm.test('Response time is less than 2000ms', function () {",
+          "    pm.expect(pm.response.responseTime).to.be.below(2000);",
+          "});",
+          "",
+          "pm.test('Response is JSON', function () {",
+          "    pm.response.to.be.json;",
+          "});"
+        ]
+      }
+    }
+  ]
+}

@@ -32,3 +32,6 @@ verify_jwt = false
 
 [functions.efd-extract-text]
 verify_jwt = false
+
+[functions.jira-api]
+verify_jwt = false

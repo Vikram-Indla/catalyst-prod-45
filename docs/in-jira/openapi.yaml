@@ -1,0 +1,1039 @@
+openapi: 3.0.3
+info:
+  title: Catalyst In-Jira API
+  description: |
+    Jira-compatible REST API facade over Catalyst services.
+    
+    This API provides a Jira-compatible interface for managing issues, boards, sprints, and versions.
+    All endpoints require authentication via Bearer token.
+    
+    ## Pagination
+    All list endpoints support cursor-based pagination using the `cursor` query parameter.
+    The response includes a `nextCursor` field when more results are available.
+    
+    ## Error Handling
+    Errors are returned in Jira-compatible format:
+    ```json
+    {
+      "errorMessages": ["Error message"],
+      "errors": {}
+    }
+    ```
+  version: 1.0.0
+  contact:
+    name: Catalyst Team
+  license:
+    name: Proprietary
+
+servers:
+  - url: https://stcpycushiccfvrqwipw.supabase.co/functions/v1/jira-api
+    description: Production
+
+security:
+  - bearerAuth: []
+
+tags:
+  - name: Issue
+    description: Issue management endpoints
+  - name: Search
+    description: Search endpoints
+  - name: Comment
+    description: Comment management
+  - name: Board
+    description: Agile board endpoints
+  - name: Sprint
+    description: Sprint management
+  - name: Version
+    description: Version/Release management
+
+paths:
+  /rest/api/3/issue/{issueKey}:
+    get:
+      tags: [Issue]
+      summary: Get issue by key
+      description: Returns a single issue by its key (e.g., PROJ-123)
+      operationId: getIssue
+      parameters:
+        - $ref: '#/components/parameters/IssueKeyPath'
+        - $ref: '#/components/parameters/TenantId'
+      responses:
+        '200':
+          description: Issue found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Issue'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    
+    put:
+      tags: [Issue]
+      summary: Update issue
+      description: Updates an existing issue. Uses optimistic locking.
+      operationId: updateIssue
+      parameters:
+        - $ref: '#/components/parameters/IssueKeyPath'
+        - $ref: '#/components/parameters/TenantId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateIssueRequest'
+      responses:
+        '204':
+          description: Issue updated successfully
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          description: Conflict - issue was modified by another user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /rest/api/3/issue:
+    post:
+      tags: [Issue]
+      summary: Create issue
+      description: Creates a new issue
+      operationId: createIssue
+      parameters:
+        - $ref: '#/components/parameters/TenantId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateIssueRequest'
+      responses:
+        '201':
+          description: Issue created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Issue'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /rest/api/3/search:
+    post:
+      tags: [Search]
+      summary: Search issues
+      description: |
+        Search for issues using JQL (Jira Query Language).
+        
+        Supported JQL operators:
+        - `project = KEY`
+        - `status = "Status Name"`
+        - `assignee = accountId`
+        - `ORDER BY field ASC|DESC`
+      operationId: searchIssues
+      parameters:
+        - $ref: '#/components/parameters/TenantId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SearchRequest'
+      responses:
+        '200':
+          description: Search results
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SearchResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /rest/api/3/issue/{issueKey}/comment:
+    post:
+      tags: [Comment]
+      summary: Add comment to issue
+      description: Adds a comment to an issue
+      operationId: addComment
+      parameters:
+        - $ref: '#/components/parameters/IssueKeyPath'
+        - $ref: '#/components/parameters/TenantId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCommentRequest'
+      responses:
+        '201':
+          description: Comment added
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Comment'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /rest/api/3/issue/{issueKey}/assignee:
+    put:
+      tags: [Issue]
+      summary: Update issue assignee
+      description: Updates the assignee of an issue
+      operationId: updateAssignee
+      parameters:
+        - $ref: '#/components/parameters/IssueKeyPath'
+        - $ref: '#/components/parameters/TenantId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateAssigneeRequest'
+      responses:
+        '204':
+          description: Assignee updated
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /rest/agile/1.0/board:
+    get:
+      tags: [Board]
+      summary: Get all boards
+      description: Returns all boards for the tenant
+      operationId: getBoards
+      parameters:
+        - $ref: '#/components/parameters/TenantId'
+        - $ref: '#/components/parameters/Cursor'
+      responses:
+        '200':
+          description: List of boards
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BoardsResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /rest/agile/1.0/board/{boardId}/issue:
+    get:
+      tags: [Board]
+      summary: Get board issues
+      description: Returns all issues on a board, ordered by rank
+      operationId: getBoardIssues
+      parameters:
+        - $ref: '#/components/parameters/BoardIdPath'
+        - $ref: '#/components/parameters/TenantId'
+        - $ref: '#/components/parameters/Cursor'
+      responses:
+        '200':
+          description: List of issues
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BoardIssuesResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /rest/agile/1.0/board/{boardId}/configuration:
+    get:
+      tags: [Board]
+      summary: Get board configuration
+      description: Returns the configuration of a board including columns
+      operationId: getBoardConfiguration
+      parameters:
+        - $ref: '#/components/parameters/BoardIdPath'
+        - $ref: '#/components/parameters/TenantId'
+      responses:
+        '200':
+          description: Board configuration
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BoardConfiguration'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /rest/agile/1.0/board/{boardId}/sprint:
+    get:
+      tags: [Sprint]
+      summary: Get board sprints
+      description: Returns all sprints for a board
+      operationId: getBoardSprints
+      parameters:
+        - $ref: '#/components/parameters/BoardIdPath'
+        - $ref: '#/components/parameters/TenantId'
+        - $ref: '#/components/parameters/Cursor'
+        - name: state
+          in: query
+          description: Filter by sprint state
+          schema:
+            type: string
+            enum: [future, active, closed]
+      responses:
+        '200':
+          description: List of sprints
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SprintsResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /rest/agile/1.0/sprint:
+    post:
+      tags: [Sprint]
+      summary: Create sprint
+      description: Creates a new sprint
+      operationId: createSprint
+      parameters:
+        - $ref: '#/components/parameters/TenantId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateSprintRequest'
+      responses:
+        '201':
+          description: Sprint created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Sprint'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /rest/agile/1.0/sprint/{sprintId}:
+    put:
+      tags: [Sprint]
+      summary: Update sprint
+      description: Updates an existing sprint
+      operationId: updateSprint
+      parameters:
+        - $ref: '#/components/parameters/SprintIdPath'
+        - $ref: '#/components/parameters/TenantId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateSprintRequest'
+      responses:
+        '200':
+          description: Sprint updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Sprint'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /rest/api/3/project/{projectKey}/versions:
+    get:
+      tags: [Version]
+      summary: Get project versions
+      description: Returns all versions for a project
+      operationId: getProjectVersions
+      parameters:
+        - $ref: '#/components/parameters/ProjectKeyPath'
+        - $ref: '#/components/parameters/TenantId'
+        - $ref: '#/components/parameters/Cursor'
+      responses:
+        '200':
+          description: List of versions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Version'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /rest/api/3/version:
+    post:
+      tags: [Version]
+      summary: Create version
+      description: Creates a new version
+      operationId: createVersion
+      parameters:
+        - $ref: '#/components/parameters/TenantId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateVersionRequest'
+      responses:
+        '201':
+          description: Version created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Version'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Supabase auth token
+
+  parameters:
+    TenantId:
+      name: tenantId
+      in: query
+      required: false
+      description: Tenant ID for multi-tenant isolation
+      schema:
+        type: string
+        default: default-tenant
+
+    Cursor:
+      name: cursor
+      in: query
+      required: false
+      description: Pagination cursor from previous response
+      schema:
+        type: string
+
+    IssueKeyPath:
+      name: issueKey
+      in: path
+      required: true
+      description: Issue key (e.g., PROJ-123)
+      schema:
+        type: string
+        pattern: '^[A-Z]+-\d+$'
+
+    BoardIdPath:
+      name: boardId
+      in: path
+      required: true
+      description: Board UUID
+      schema:
+        type: string
+        format: uuid
+
+    SprintIdPath:
+      name: sprintId
+      in: path
+      required: true
+      description: Sprint UUID
+      schema:
+        type: string
+        format: uuid
+
+    ProjectKeyPath:
+      name: projectKey
+      in: path
+      required: true
+      description: Project key (e.g., PROJ)
+      schema:
+        type: string
+        pattern: '^[A-Z]+$'
+
+  schemas:
+    Issue:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        key:
+          type: string
+          example: PROJ-123
+        self:
+          type: string
+          format: uri
+        fields:
+          type: object
+          properties:
+            summary:
+              type: string
+            description:
+              type: object
+              description: Atlassian Document Format (ADF)
+            issuetype:
+              $ref: '#/components/schemas/IssueType'
+            status:
+              $ref: '#/components/schemas/Status'
+            project:
+              $ref: '#/components/schemas/ProjectRef'
+            priority:
+              $ref: '#/components/schemas/Priority'
+            assignee:
+              $ref: '#/components/schemas/UserRef'
+            reporter:
+              $ref: '#/components/schemas/UserRef'
+            created:
+              type: string
+              format: date-time
+            updated:
+              type: string
+              format: date-time
+            duedate:
+              type: string
+              format: date
+            labels:
+              type: array
+              items:
+                type: string
+            parent:
+              type: object
+              properties:
+                id:
+                  type: string
+            customfield_epic:
+              type: string
+              format: uuid
+              description: Parent feature ID
+            customfield_program_epic:
+              type: string
+              format: uuid
+              description: Program Epic ID
+            story_points:
+              type: number
+        changelog:
+          type: object
+          properties:
+            histories:
+              type: array
+              items:
+                type: object
+
+    IssueType:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        iconUrl:
+          type: string
+        subtask:
+          type: boolean
+
+    Status:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        statusCategory:
+          type: object
+          properties:
+            id:
+              type: string
+            key:
+              type: string
+            name:
+              type: string
+
+    ProjectRef:
+      type: object
+      properties:
+        id:
+          type: string
+        key:
+          type: string
+        name:
+          type: string
+        self:
+          type: string
+          format: uri
+
+    Priority:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+
+    UserRef:
+      type: object
+      properties:
+        accountId:
+          type: string
+          format: uuid
+
+    CreateIssueRequest:
+      type: object
+      required:
+        - fields
+      properties:
+        fields:
+          type: object
+          required:
+            - project
+            - summary
+            - issuetype
+          properties:
+            project:
+              type: object
+              properties:
+                id:
+                  type: string
+                key:
+                  type: string
+            summary:
+              type: string
+            description:
+              type: object
+            issuetype:
+              type: object
+              properties:
+                id:
+                  type: string
+                name:
+                  type: string
+            priority:
+              type: object
+              properties:
+                name:
+                  type: string
+            assignee:
+              type: object
+              properties:
+                accountId:
+                  type: string
+            labels:
+              type: array
+              items:
+                type: string
+            parent:
+              type: object
+              properties:
+                id:
+                  type: string
+            customfield_epic:
+              type: string
+            customfield_program_epic:
+              type: string
+            duedate:
+              type: string
+              format: date
+            story_points:
+              type: number
+
+    UpdateIssueRequest:
+      type: object
+      required:
+        - fields
+      properties:
+        fields:
+          type: object
+          properties:
+            summary:
+              type: string
+            description:
+              type: object
+            priority:
+              type: object
+              properties:
+                name:
+                  type: string
+            assignee:
+              type: object
+              properties:
+                accountId:
+                  type: string
+            labels:
+              type: array
+              items:
+                type: string
+            duedate:
+              type: string
+              format: date
+            story_points:
+              type: number
+
+    SearchRequest:
+      type: object
+      properties:
+        jql:
+          type: string
+          description: JQL query string
+          example: 'project = PROJ AND status = "In Progress" ORDER BY created DESC'
+        startAt:
+          type: integer
+          default: 0
+        maxResults:
+          type: integer
+          default: 50
+          maximum: 100
+        fields:
+          type: array
+          items:
+            type: string
+          default: ['*all']
+
+    SearchResponse:
+      type: object
+      properties:
+        expand:
+          type: string
+        startAt:
+          type: integer
+        maxResults:
+          type: integer
+        total:
+          type: integer
+        issues:
+          type: array
+          items:
+            $ref: '#/components/schemas/Issue'
+
+    Comment:
+      type: object
+      properties:
+        id:
+          type: string
+        self:
+          type: string
+          format: uri
+        author:
+          $ref: '#/components/schemas/UserRef'
+        body:
+          type: object
+          description: ADF format
+        created:
+          type: string
+          format: date-time
+        updated:
+          type: string
+          format: date-time
+
+    CreateCommentRequest:
+      type: object
+      required:
+        - body
+      properties:
+        body:
+          type: object
+          description: Comment body in ADF format
+        visibility:
+          type: object
+          properties:
+            type:
+              type: string
+              enum: [group, role]
+            value:
+              type: string
+
+    UpdateAssigneeRequest:
+      type: object
+      properties:
+        accountId:
+          type: string
+          format: uuid
+          description: User ID to assign, or null to unassign
+
+    Board:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        self:
+          type: string
+          format: uri
+        name:
+          type: string
+        type:
+          type: string
+          enum: [kanban, scrum]
+        location:
+          type: object
+          properties:
+            projectId:
+              type: string
+            projectKey:
+              type: string
+            projectName:
+              type: string
+
+    BoardsResponse:
+      type: object
+      properties:
+        maxResults:
+          type: integer
+        startAt:
+          type: integer
+        total:
+          type: integer
+        isLast:
+          type: boolean
+        values:
+          type: array
+          items:
+            $ref: '#/components/schemas/Board'
+        nextCursor:
+          type: string
+
+    BoardIssuesResponse:
+      type: object
+      properties:
+        maxResults:
+          type: integer
+        startAt:
+          type: integer
+        total:
+          type: integer
+        issues:
+          type: array
+          items:
+            $ref: '#/components/schemas/Issue'
+        nextCursor:
+          type: string
+
+    BoardConfiguration:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        type:
+          type: string
+        self:
+          type: string
+          format: uri
+        columnConfig:
+          type: object
+          properties:
+            columns:
+              type: array
+              items:
+                type: object
+                properties:
+                  name:
+                    type: string
+                  statuses:
+                    type: array
+                    items:
+                      type: string
+                  min:
+                    type: integer
+                  max:
+                    type: integer
+        filter:
+          type: object
+          nullable: true
+          properties:
+            id:
+              type: string
+            self:
+              type: string
+            query:
+              type: string
+        ranking:
+          type: object
+          properties:
+            rankCustomFieldId:
+              type: string
+
+    Sprint:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        self:
+          type: string
+          format: uri
+        state:
+          type: string
+          enum: [future, active, closed]
+        name:
+          type: string
+        startDate:
+          type: string
+          format: date-time
+        endDate:
+          type: string
+          format: date-time
+        completeDate:
+          type: string
+          format: date-time
+        originBoardId:
+          type: string
+          format: uuid
+        goal:
+          type: string
+
+    SprintsResponse:
+      type: object
+      properties:
+        maxResults:
+          type: integer
+        startAt:
+          type: integer
+        total:
+          type: integer
+        isLast:
+          type: boolean
+        values:
+          type: array
+          items:
+            $ref: '#/components/schemas/Sprint'
+        nextCursor:
+          type: string
+
+    CreateSprintRequest:
+      type: object
+      required:
+        - name
+        - originBoardId
+      properties:
+        name:
+          type: string
+        originBoardId:
+          type: string
+          format: uuid
+        goal:
+          type: string
+        startDate:
+          type: string
+          format: date-time
+        endDate:
+          type: string
+          format: date-time
+
+    UpdateSprintRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        goal:
+          type: string
+        startDate:
+          type: string
+          format: date-time
+        endDate:
+          type: string
+          format: date-time
+        state:
+          type: string
+          enum: [future, active, closed]
+
+    Version:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        self:
+          type: string
+          format: uri
+        name:
+          type: string
+        description:
+          type: string
+        archived:
+          type: boolean
+        released:
+          type: boolean
+        startDate:
+          type: string
+          format: date
+        releaseDate:
+          type: string
+          format: date
+        projectId:
+          type: string
+          format: uuid
+
+    CreateVersionRequest:
+      type: object
+      required:
+        - name
+        - projectId
+      properties:
+        name:
+          type: string
+        projectId:
+          type: string
+          format: uuid
+        description:
+          type: string
+        startDate:
+          type: string
+          format: date
+        releaseDate:
+          type: string
+          format: date
+        archived:
+          type: boolean
+          default: false
+        released:
+          type: boolean
+          default: false
+
+    ErrorResponse:
+      type: object
+      properties:
+        errorMessages:
+          type: array
+          items:
+            type: string
+        errors:
+          type: object
+        errorCode:
+          type: string
+
+  responses:
+    BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    Unauthorized:
+      description: Authentication required
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
