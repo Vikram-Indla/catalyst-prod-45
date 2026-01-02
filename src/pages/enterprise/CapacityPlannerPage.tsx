@@ -448,14 +448,14 @@ export default function CapacityPlannerPage() {
             setBookingAllocations([{ id: `alloc-${Date.now()}`, assignmentId: '', percent: 50, startDate: new Date().toISOString().split('T')[0], endDate: (() => { const d = new Date(); d.setMonth(d.getMonth() + 3); return d.toISOString().split('T')[0]; })() }]);
           }
         }}>
-          <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
-            <DialogHeader>
+          <DialogContent className="sm:max-w-2xl max-h-[90vh] flex flex-col overflow-hidden">
+            <DialogHeader className="sticky top-0 bg-background z-10 pb-4 border-b border-border -mx-6 px-6 pt-0">
               <DialogTitle>Book Resource Allocation</DialogTitle>
               <p className="text-sm text-muted-foreground mt-1">
                 Select team members and configure their project allocations with date ranges
               </p>
             </DialogHeader>
-            <div className="space-y-6 py-4">
+            <div className="space-y-6 py-4 overflow-y-auto flex-1 -mx-6 px-6">
               {/* Step 1: Select Users */}
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
