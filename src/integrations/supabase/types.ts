@@ -20436,7 +20436,11 @@ export type Database = {
       app_role: "admin" | "program_manager" | "team_lead" | "user"
       auth_method: "token" | "oauth"
       board_scope_type: "portfolio" | "program" | "team"
-      board_type: "portfolio_kanban" | "program_board" | "sprint_board"
+      board_type:
+        | "portfolio_kanban"
+        | "program_board"
+        | "sprint_board"
+        | "test_cycle_board"
       br_status:
         | "proposed"
         | "analyzing"
@@ -20844,7 +20848,12 @@ export const Constants = {
       app_role: ["admin", "program_manager", "team_lead", "user"],
       auth_method: ["token", "oauth"],
       board_scope_type: ["portfolio", "program", "team"],
-      board_type: ["portfolio_kanban", "program_board", "sprint_board"],
+      board_type: [
+        "portfolio_kanban",
+        "program_board",
+        "sprint_board",
+        "test_cycle_board",
+      ],
       br_status: [
         "proposed",
         "analyzing",
