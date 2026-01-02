@@ -16,9 +16,9 @@ import {
   ChevronLeft, ChevronRight, ChevronUp, ChevronDown, Clock, Eye, Copy, Check, RotateCcw, Play,
   Pencil, Trash2, Cloud, Settings2, ArrowLeftRight, Building2, X
 } from 'lucide-react';
-import { useCapacityData, useAssignments, useAiRecommendations, useCapacityDepartments, useResourceManagement, useResourceAssignments, useResourceAllocations, exportCapacityToPdf } from '@/modules/capacity-planner';
+import { useCapacityData, useAssignments, useAiRecommendations, useCapacityDepartments, useResourceManagement, useResourceAssignments, useResourceAllocations, exportCapacityToPdf, AllocationBookingModal } from '@/modules/capacity-planner';
 
-import type { ViewType, ResourceMetric, CapacityProject, AiRecommendation } from '@/modules/capacity-planner';
+import type { ViewType, ResourceMetric, CapacityProject, AiRecommendation, ResourceAllocation, AllocationBookingInput } from '@/modules/capacity-planner';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { Avatar360 } from '@/components/capacity/Avatar360';
@@ -101,6 +101,10 @@ export default function CapacityPlannerPage() {
   const [resourcesToBulkEdit, setResourcesToBulkEdit] = useState<ResourceMetric[]>([]);
   const [assignModeOpen, setAssignModeOpen] = useState(false);
   const [presentationMode, setPresentationMode] = useState(false);
+  
+  // Allocation booking modal state
+  const [allocationModalOpen, setAllocationModalOpen] = useState(false);
+  const [allocationModalResource, setAllocationModalResource] = useState<ResourceMetric | null>(null);
 
   // Add resource form state
   const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
@@ -112,7 +116,7 @@ export default function CapacityPlannerPage() {
   // Fetch departments and assignments for the modal
   const { departments } = useCapacityDepartments();
   const { assignments: resourceAssignments = [] } = useResourceAssignments();
-  const { allocations } = useResourceAllocations();
+  const { allocations, saveAllocations, getAllocationsForResource } = useResourceAllocations();
   const { updateResourceAssignmentType } = useResourceManagement();
 
   useEffect(() => {
@@ -289,6 +293,26 @@ export default function CapacityPlannerPage() {
       allocation 
     });
   };
+  
+  // Handler to open allocation booking modal
+  const handleOpenAllocationModal = useCallback((resourceId: string) => {
+    const resource = metrics.resources.find(r => r.id === resourceId);
+    if (resource) {
+      setAllocationModalResource(resource);
+      setAllocationModalOpen(true);
+    }
+  }, [metrics.resources]);
+
+  // Handler to save allocations from modal
+  const handleSaveAllocations = useCallback(async (resourceId: string, allocationInputs: AllocationBookingInput[]) => {
+    await saveAllocations.mutateAsync({ resourceId, allocations: allocationInputs });
+  }, [saveAllocations]);
+
+  // Get allocations for a specific resource
+  const getResourceAllocations = useCallback((resourceId: string): ResourceAllocation[] => {
+    return allocations.filter(a => a.profile_id === resourceId);
+  }, [allocations]);
+
   // Only show loading state on initial load, not during background refetches (e.g., after DnD)
   const hasData = resources.length > 0 || metrics.resources.length > 0;
   if (isLoading && !hasData) {
@@ -341,8 +365,9 @@ export default function CapacityPlannerPage() {
               groupBy={groupBy}
               isCollapsed={isCollapsed}
               compactMode={compactMode}
+              allocations={allocations}
               onResourceClick={openResourceDrawer}
-              onEditResource={(id) => setEditResourceId(id)}
+              onEditResource={handleOpenAllocationModal}
             />
           )}
           {currentView === 'table' && (
@@ -706,6 +731,20 @@ export default function CapacityPlannerPage() {
           }))}
         />
 
+        {/* Allocation Booking Modal */}
+        <AllocationBookingModal
+          isOpen={allocationModalOpen}
+          onClose={() => {
+            setAllocationModalOpen(false);
+            setAllocationModalResource(null);
+          }}
+          resource={allocationModalResource}
+          existingAllocations={allocationModalResource ? getResourceAllocations(allocationModalResource.id) : []}
+          resourceAssignments={resourceAssignments.map(a => ({ id: a.id, name: a.name || '' }))}
+          onSave={handleSaveAllocations}
+          mode={allocationModalResource && getResourceAllocations(allocationModalResource.id).length > 0 ? 'edit' : 'add'}
+        />
+
         <div className="fixed bottom-6 right-6 z-50">
           <div className="absolute inset-[-4px] rounded-full bg-[#0d9488]/25 animate-ping" style={{ animationDuration: '2.5s' }} />
           <button
@@ -979,6 +1018,7 @@ function CardsView({
   groupBy, 
   isCollapsed = false,
   compactMode = false,
+  allocations = [],
   onResourceClick, 
   onEditResource 
 }: { 
@@ -988,9 +1028,14 @@ function CardsView({
   groupBy: GroupByType;
   isCollapsed?: boolean;
   compactMode?: boolean;
+  allocations?: ResourceAllocation[];
   onResourceClick: (r: ResourceMetric) => void;
   onEditResource: (id: string) => void;
 }) {
+  // Helper to get allocations for a specific resource
+  const getResourceAllocations = (resourceId: string) => {
+    return allocations.filter(a => a.profile_id === resourceId);
+  };
   // Default to collapsed state - groups start collapsed
   const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({});
 
@@ -1047,6 +1092,7 @@ function CardsView({
                     department={resource.department}
                     assignmentName={assignmentName}
                     totalAllocation={resource.allocation || 0}
+                    allocations={getResourceAllocations(resource.id)}
                     onOpen360={() => onResourceClick(resource)}
                     onEdit={() => onEditResource(resource.id)}
                   />
@@ -1147,6 +1193,7 @@ function CardsView({
                       department={resource.department}
                       assignmentName={resource.assignmentName}
                       totalAllocation={resource.allocation || 0}
+                      allocations={getResourceAllocations(resource.id)}
                       onOpen360={() => onResourceClick(resource)}
                       onEdit={() => onEditResource(resource.id)}
                     />
@@ -1171,6 +1218,7 @@ function CardsView({
           department={resource.department}
           assignmentName={resource.assignmentName}
           totalAllocation={resource.allocation || 0}
+          allocations={getResourceAllocations(resource.id)}
           onOpen360={() => onResourceClick(resource)}
           onEdit={() => onEditResource(resource.id)}
         />
