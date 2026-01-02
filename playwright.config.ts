@@ -18,6 +18,7 @@ export default defineConfig({
   },
 
   projects: [
+    // Parity tests
     {
       name: 'parity-api',
       testMatch: '**/parity/api-contract.spec.ts',
@@ -37,6 +38,17 @@ export default defineConfig({
     {
       name: 'parity-ui',
       testMatch: '**/parity/ui-regression.spec.ts',
+      use: { ...devices['Desktop Chrome'] },
+    },
+    // Test Management Module tests
+    {
+      name: 'test-management-smoke',
+      testMatch: '**/test-management/smoke.spec.ts',
+      use: { ...devices['Desktop Chrome'] },
+    },
+    {
+      name: 'test-management-golden-path',
+      testMatch: '**/test-management/golden-path.spec.ts',
       use: { ...devices['Desktop Chrome'] },
     },
   ],

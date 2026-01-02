@@ -483,7 +483,7 @@ export function TestsCasesPage() {
         
         {/* Create Button */}
         {canCreate && (
-          <Button onClick={() => setCreateModalOpen(true)} size="sm" className="h-9">
+          <Button onClick={() => setCreateModalOpen(true)} size="sm" className="h-9" data-cta="create-case">
             <Plus className="h-4 w-4 mr-1.5" />
             Create Test Case
           </Button>

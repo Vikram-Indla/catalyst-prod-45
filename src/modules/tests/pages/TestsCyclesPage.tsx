@@ -193,7 +193,7 @@ export function TestsCyclesPage() {
             </SelectContent>
           </Select>
         </div>
-        <Button onClick={() => setCreateModalOpen(true)}>
+        <Button onClick={() => setCreateModalOpen(true)} data-cta="create-cycle">
           <Plus className="h-4 w-4 mr-1.5" />
           Create Test Cycle
         </Button>
@@ -214,7 +214,7 @@ export function TestsCyclesPage() {
               : 'Create your first test cycle to organize your test runs.'}
           </p>
           {!searchQuery && statusFilter === 'all' && (
-            <Button onClick={() => setCreateModalOpen(true)}>
+            <Button onClick={() => setCreateModalOpen(true)} data-cta="create-cycle-empty">
               <Plus className="h-4 w-4 mr-1.5" />
               Create Test Cycle
             </Button>
