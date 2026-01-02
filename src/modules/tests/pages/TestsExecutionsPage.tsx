@@ -380,7 +380,17 @@ export function TestsExecutionsPage() {
                         <DropdownMenuItem onClick={() => handleRowClick(exec.id)}>
                           Execute
                         </DropdownMenuItem>
-                        <DropdownMenuItem>View Test Case</DropdownMenuItem>
+                        <DropdownMenuItem 
+                          onClick={() => {
+                            if (exec.test_case?.id) {
+                              // Open test case in a new tab or navigate
+                              window.open(`/projects/${projectId}/tests/cases?caseId=${exec.test_case.id}`, '_blank');
+                            }
+                          }}
+                          disabled={!exec.test_case?.id}
+                        >
+                          View Test Case
+                        </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </td>

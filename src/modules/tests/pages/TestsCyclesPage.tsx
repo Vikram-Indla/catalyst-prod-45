@@ -41,9 +41,15 @@ import { cn } from '@/lib/utils';
 import { useProjectTestCycles } from '@/hooks/useProjectTestMetrics';
 import { CreateCycleModal } from '../components/CreateCycleModal';
 import { CycleDrawer } from '../components/CycleDrawer';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/lib/auth';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
 
 export function TestsCyclesPage() {
   const { projectId } = useParams<{ projectId: string }>();
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [createModalOpen, setCreateModalOpen] = useState(false);
@@ -55,6 +61,44 @@ export function TestsCyclesPage() {
     isLoading,
     error,
   } = useProjectTestCycles(projectId || '');
+
+  // Archive mutation for dropdown menu
+  const archiveMutation = useMutation({
+    mutationFn: async (cycleId: string) => {
+      if (!user) throw new Error('Not authenticated');
+
+      const { error } = await supabase
+        .from('test_cycles')
+        .update({
+          archived: true,
+          archived_at: new Date().toISOString(),
+          archived_by: user.id,
+        })
+        .eq('id', cycleId);
+
+      if (error) throw error;
+
+      await supabase.from('test_activity_log').insert({
+        user_id: user.id,
+        activity_type: 'archived',
+        entity_type: 'test_cycle',
+        entity_id: cycleId,
+        description: 'Archived test cycle from list',
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['project-test-cycles', projectId] });
+      toast.success('Cycle archived');
+    },
+    onError: (error: Error) => toast.error(error.message),
+  });
+
+  const handleArchive = (e: React.MouseEvent, cycleId: string) => {
+    e.stopPropagation();
+    if (confirm('Are you sure you want to archive this cycle?')) {
+      archiveMutation.mutate(cycleId);
+    }
+  };
 
   const filteredCycles = useMemo(() => {
     let result = testCycles;
@@ -220,7 +264,11 @@ export function TestsCyclesPage() {
                         <DropdownMenuItem onClick={(e) => { e.stopPropagation(); handleCycleClick(cycle.id); }}>
                           View Details
                         </DropdownMenuItem>
-                        <DropdownMenuItem className="text-status-error">
+                        <DropdownMenuItem 
+                          className="text-status-error"
+                          onClick={(e) => handleArchive(e, cycle.id)}
+                          disabled={archiveMutation.isPending}
+                        >
                           <Archive className="h-4 w-4 mr-2" />
                           Archive
                         </DropdownMenuItem>
