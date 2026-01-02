@@ -564,7 +564,7 @@ export default function CapacityPlannerPage() {
                     className="gap-1 h-8 text-xs"
                   >
                     <Plus className="h-3 w-3" />
-                    Add Project
+                    Add Assignment
                   </Button>
                 </div>
 
