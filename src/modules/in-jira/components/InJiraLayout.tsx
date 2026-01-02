@@ -118,7 +118,12 @@ function InJiraLayoutContent() {
               <Plus className="h-4 w-4" />
               Create
             </Button>
-            <Button variant="ghost" size="icon" className="h-8 w-8">
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="h-8 w-8"
+              onClick={() => navigate(`/project/${projectKey}/settings`)}
+            >
               <Settings className="h-4 w-4 text-text-tertiary" />
             </Button>
           </div>

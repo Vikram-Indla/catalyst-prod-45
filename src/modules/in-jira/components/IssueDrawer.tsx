@@ -28,8 +28,10 @@ import { IssueActionsMenu } from './drawer/IssueActionsMenu';
 import { ActivityTabs } from './drawer/ActivityTabs';
 import { DetailsPanel } from './drawer/DetailsPanel';
 import { useIssueAudit } from '../hooks/useIssueAudit';
+import { useAISuggestions } from '../hooks/useAISuggestions';
 import { StatusPill } from './StatusPill';
 import { TransitionControls } from './TransitionControls';
+import { AISuggestionBanner } from './import/AISuggestionBanner';
 import { Issue } from '../types';
 
 // Status category colors
@@ -87,6 +89,9 @@ export function IssueDrawer() {
 
   // Use audit hook
   const { history, logFieldChange, logAction } = useIssueAudit(issue?.id || '');
+  
+  // Use AI suggestions hook
+  const { suggestions: aiSuggestions, refetch: refetchSuggestions } = useAISuggestions(issue?.id || null);
 
   // Keyboard shortcut to close
   React.useEffect(() => {
@@ -267,6 +272,18 @@ export function IssueDrawer() {
           <div className="flex-1 min-w-0 border-r border-border-default">
             <ScrollArea className="h-full">
               <div className="p-6">
+                {/* AI Suggestions Banner */}
+                {aiSuggestions.length > 0 && (
+                  <div className="mb-4">
+                    <AISuggestionBanner
+                      suggestions={aiSuggestions}
+                      issueId={issue.id}
+                      onAccept={() => refetchSuggestions()}
+                      onReject={() => refetchSuggestions()}
+                    />
+                  </div>
+                )}
+                
                 {/* Summary/Title - Inline Editable */}
                 <InlineEdit
                   value={issue.summary}
