@@ -16639,6 +16639,68 @@ export type Database = {
           },
         ]
       }
+      test_activity_timeline: {
+        Row: {
+          action: string
+          action_category: string | null
+          actor_id: string | null
+          actor_name: string | null
+          created_at: string | null
+          entity_id: string
+          entity_key: string | null
+          entity_type: string
+          id: string
+          ip_address: unknown
+          new_values: Json | null
+          old_values: Json | null
+          program_id: string | null
+          session_id: string | null
+          user_agent: string | null
+        }
+        Insert: {
+          action: string
+          action_category?: string | null
+          actor_id?: string | null
+          actor_name?: string | null
+          created_at?: string | null
+          entity_id: string
+          entity_key?: string | null
+          entity_type: string
+          id?: string
+          ip_address?: unknown
+          new_values?: Json | null
+          old_values?: Json | null
+          program_id?: string | null
+          session_id?: string | null
+          user_agent?: string | null
+        }
+        Update: {
+          action?: string
+          action_category?: string | null
+          actor_id?: string | null
+          actor_name?: string | null
+          created_at?: string | null
+          entity_id?: string
+          entity_key?: string | null
+          entity_type?: string
+          id?: string
+          ip_address?: unknown
+          new_values?: Json | null
+          old_values?: Json | null
+          program_id?: string | null
+          session_id?: string | null
+          user_agent?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "test_activity_timeline_program_id_fkey"
+            columns: ["program_id"]
+            isOneToOne: false
+            referencedRelation: "programs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       test_admin_settings: {
         Row: {
           created_at: string
@@ -16741,6 +16803,146 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "test_ai_actions_program_id_fkey"
+            columns: ["program_id"]
+            isOneToOne: false
+            referencedRelation: "programs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      test_ai_audit_log: {
+        Row: {
+          acceptance_notes: string | null
+          accepted_at: string | null
+          action_subtype: string | null
+          action_type: string
+          created_at: string | null
+          error_message: string | null
+          generated_entities: Json | null
+          id: string
+          input_data: Json
+          model_used: string | null
+          output_data: Json | null
+          program_id: string | null
+          response_time_ms: number | null
+          source_entity_id: string | null
+          source_entity_type: string | null
+          status: string | null
+          tokens_used: number | null
+          user_accepted: boolean | null
+          user_id: string
+        }
+        Insert: {
+          acceptance_notes?: string | null
+          accepted_at?: string | null
+          action_subtype?: string | null
+          action_type: string
+          created_at?: string | null
+          error_message?: string | null
+          generated_entities?: Json | null
+          id?: string
+          input_data: Json
+          model_used?: string | null
+          output_data?: Json | null
+          program_id?: string | null
+          response_time_ms?: number | null
+          source_entity_id?: string | null
+          source_entity_type?: string | null
+          status?: string | null
+          tokens_used?: number | null
+          user_accepted?: boolean | null
+          user_id: string
+        }
+        Update: {
+          acceptance_notes?: string | null
+          accepted_at?: string | null
+          action_subtype?: string | null
+          action_type?: string
+          created_at?: string | null
+          error_message?: string | null
+          generated_entities?: Json | null
+          id?: string
+          input_data?: Json
+          model_used?: string | null
+          output_data?: Json | null
+          program_id?: string | null
+          response_time_ms?: number | null
+          source_entity_id?: string | null
+          source_entity_type?: string | null
+          status?: string | null
+          tokens_used?: number | null
+          user_accepted?: boolean | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "test_ai_audit_log_program_id_fkey"
+            columns: ["program_id"]
+            isOneToOne: false
+            referencedRelation: "programs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      test_ai_drafts: {
+        Row: {
+          audit_log_id: string | null
+          created_at: string | null
+          draft_data: Json
+          draft_type: string
+          id: string
+          modifications: Json | null
+          program_id: string | null
+          review_notes: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string | null
+          target_entity_id: string | null
+          target_entity_type: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          audit_log_id?: string | null
+          created_at?: string | null
+          draft_data: Json
+          draft_type: string
+          id?: string
+          modifications?: Json | null
+          program_id?: string | null
+          review_notes?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string | null
+          target_entity_id?: string | null
+          target_entity_type?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          audit_log_id?: string | null
+          created_at?: string | null
+          draft_data?: Json
+          draft_type?: string
+          id?: string
+          modifications?: Json | null
+          program_id?: string | null
+          review_notes?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string | null
+          target_entity_id?: string | null
+          target_entity_type?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "test_ai_drafts_audit_log_id_fkey"
+            columns: ["audit_log_id"]
+            isOneToOne: false
+            referencedRelation: "test_ai_audit_log"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_ai_drafts_program_id_fkey"
             columns: ["program_id"]
             isOneToOne: false
             referencedRelation: "programs"
@@ -17652,6 +17854,72 @@ export type Database = {
           },
         ]
       }
+      test_cycle_risk_predictions: {
+        Row: {
+          confidence_score: number | null
+          created_at: string | null
+          cycle_id: string | null
+          id: string
+          model_used: string | null
+          overall_risk_score: number | null
+          predicted_blocker_count: number | null
+          predicted_completion_date: string | null
+          predicted_pass_rate: number | null
+          program_id: string | null
+          recommendations: Json | null
+          risk_factors: Json | null
+          risk_level: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          confidence_score?: number | null
+          created_at?: string | null
+          cycle_id?: string | null
+          id?: string
+          model_used?: string | null
+          overall_risk_score?: number | null
+          predicted_blocker_count?: number | null
+          predicted_completion_date?: string | null
+          predicted_pass_rate?: number | null
+          program_id?: string | null
+          recommendations?: Json | null
+          risk_factors?: Json | null
+          risk_level?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          confidence_score?: number | null
+          created_at?: string | null
+          cycle_id?: string | null
+          id?: string
+          model_used?: string | null
+          overall_risk_score?: number | null
+          predicted_blocker_count?: number | null
+          predicted_completion_date?: string | null
+          predicted_pass_rate?: number | null
+          program_id?: string | null
+          recommendations?: Json | null
+          risk_factors?: Json | null
+          risk_level?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "test_cycle_risk_predictions_cycle_id_fkey"
+            columns: ["cycle_id"]
+            isOneToOne: false
+            referencedRelation: "test_cycles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_cycle_risk_predictions_program_id_fkey"
+            columns: ["program_id"]
+            isOneToOne: false
+            referencedRelation: "programs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       test_cycle_sets: {
         Row: {
           added_at: string | null
@@ -18419,6 +18687,84 @@ export type Database = {
           },
         ]
       }
+      test_failure_clusters: {
+        Row: {
+          acknowledged_at: string | null
+          acknowledged_by: string | null
+          ai_generated: boolean | null
+          cluster_name: string
+          confidence_score: number | null
+          created_at: string | null
+          cycle_id: string | null
+          execution_ids: string[] | null
+          failure_count: number | null
+          id: string
+          impact_score: number | null
+          is_acknowledged: boolean | null
+          model_used: string | null
+          pattern_description: string | null
+          program_id: string | null
+          resolution_notes: string | null
+          root_cause_hypothesis: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          acknowledged_at?: string | null
+          acknowledged_by?: string | null
+          ai_generated?: boolean | null
+          cluster_name: string
+          confidence_score?: number | null
+          created_at?: string | null
+          cycle_id?: string | null
+          execution_ids?: string[] | null
+          failure_count?: number | null
+          id?: string
+          impact_score?: number | null
+          is_acknowledged?: boolean | null
+          model_used?: string | null
+          pattern_description?: string | null
+          program_id?: string | null
+          resolution_notes?: string | null
+          root_cause_hypothesis?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          acknowledged_at?: string | null
+          acknowledged_by?: string | null
+          ai_generated?: boolean | null
+          cluster_name?: string
+          confidence_score?: number | null
+          created_at?: string | null
+          cycle_id?: string | null
+          execution_ids?: string[] | null
+          failure_count?: number | null
+          id?: string
+          impact_score?: number | null
+          is_acknowledged?: boolean | null
+          model_used?: string | null
+          pattern_description?: string | null
+          program_id?: string | null
+          resolution_notes?: string | null
+          root_cause_hypothesis?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "test_failure_clusters_cycle_id_fkey"
+            columns: ["cycle_id"]
+            isOneToOne: false
+            referencedRelation: "test_cycles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_failure_clusters_program_id_fkey"
+            columns: ["program_id"]
+            isOneToOne: false
+            referencedRelation: "programs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       test_field_configurations: {
         Row: {
           created_at: string | null
@@ -18681,6 +19027,45 @@ export type Database = {
           },
         ]
       }
+      test_notification_email_queue: {
+        Row: {
+          batch_type: string | null
+          created_at: string | null
+          error_message: string | null
+          id: string
+          notification_ids: string[]
+          scheduled_at: string | null
+          sent_at: string | null
+          status: string | null
+          user_email: string
+          user_id: string
+        }
+        Insert: {
+          batch_type?: string | null
+          created_at?: string | null
+          error_message?: string | null
+          id?: string
+          notification_ids: string[]
+          scheduled_at?: string | null
+          sent_at?: string | null
+          status?: string | null
+          user_email: string
+          user_id: string
+        }
+        Update: {
+          batch_type?: string | null
+          created_at?: string | null
+          error_message?: string | null
+          id?: string
+          notification_ids?: string[]
+          scheduled_at?: string | null
+          sent_at?: string | null
+          status?: string | null
+          user_email?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       test_notification_preferences: {
         Row: {
           created_at: string | null
@@ -18732,6 +19117,116 @@ export type Database = {
           updated_at?: string | null
           user_id?: string
           weekly_test_report?: boolean | null
+        }
+        Relationships: []
+      }
+      test_notifications: {
+        Row: {
+          actor_id: string | null
+          actor_name: string | null
+          created_at: string | null
+          email_sent: boolean | null
+          email_sent_at: string | null
+          entity_id: string | null
+          entity_key: string | null
+          entity_type: string | null
+          event_type: string
+          id: string
+          is_read: boolean | null
+          message: string
+          metadata: Json | null
+          program_id: string | null
+          read_at: string | null
+          title: string
+          user_id: string
+        }
+        Insert: {
+          actor_id?: string | null
+          actor_name?: string | null
+          created_at?: string | null
+          email_sent?: boolean | null
+          email_sent_at?: string | null
+          entity_id?: string | null
+          entity_key?: string | null
+          entity_type?: string | null
+          event_type: string
+          id?: string
+          is_read?: boolean | null
+          message: string
+          metadata?: Json | null
+          program_id?: string | null
+          read_at?: string | null
+          title: string
+          user_id: string
+        }
+        Update: {
+          actor_id?: string | null
+          actor_name?: string | null
+          created_at?: string | null
+          email_sent?: boolean | null
+          email_sent_at?: string | null
+          entity_id?: string | null
+          entity_key?: string | null
+          entity_type?: string | null
+          event_type?: string
+          id?: string
+          is_read?: boolean | null
+          message?: string
+          metadata?: Json | null
+          program_id?: string | null
+          read_at?: string | null
+          title?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "test_notifications_program_id_fkey"
+            columns: ["program_id"]
+            isOneToOne: false
+            referencedRelation: "programs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      test_permission_denials: {
+        Row: {
+          attempted_action: string
+          created_at: string | null
+          denial_reason: string | null
+          id: string
+          program_id: string | null
+          request_method: string | null
+          request_path: string | null
+          required_permission: string | null
+          resource_id: string | null
+          resource_type: string
+          user_id: string
+        }
+        Insert: {
+          attempted_action: string
+          created_at?: string | null
+          denial_reason?: string | null
+          id?: string
+          program_id?: string | null
+          request_method?: string | null
+          request_path?: string | null
+          required_permission?: string | null
+          resource_id?: string | null
+          resource_type: string
+          user_id: string
+        }
+        Update: {
+          attempted_action?: string
+          created_at?: string | null
+          denial_reason?: string | null
+          id?: string
+          program_id?: string | null
+          request_method?: string | null
+          request_path?: string | null
+          required_permission?: string | null
+          resource_id?: string | null
+          resource_type?: string
+          user_id?: string
         }
         Relationships: []
       }
