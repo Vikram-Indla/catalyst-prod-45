@@ -104,10 +104,14 @@ export function AllocationBookingModal({
     updateAllocation(index, 'end_date', end.toISOString().split('T')[0]);
   }
 
-  // Calculate total allocation (simplified - for current period)
-  const totalAllocation = useMemo(() => {
-    return allocations.reduce((sum, a) => sum + (a.allocation_percent || 0), 0);
+  // BUG FIX #1: Only count allocations with a selected assignment_id
+  const validAllocations = useMemo(() => {
+    return allocations.filter(a => a.assignment_id);
   }, [allocations]);
+
+  const totalAllocation = useMemo(() => {
+    return validAllocations.reduce((sum, a) => sum + (a.allocation_percent || 0), 0);
+  }, [validAllocations]);
 
   const hasConflict = totalAllocation > 100;
   const status = getAllocationStatusTheme(totalAllocation);
@@ -133,41 +137,47 @@ export function AllocationBookingModal({
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-3xl max-h-[90vh] overflow-hidden flex flex-col p-0">
-        {/* Header */}
-        <DialogHeader className="px-6 py-4 border-b border-slate-200">
-          <DialogTitle className="text-lg font-semibold text-slate-900">
+        {/* Header - with dark mode support */}
+        <DialogHeader className="px-6 py-4 border-b border-slate-200 dark:border-slate-700">
+          <DialogTitle className="text-lg font-semibold text-slate-900 dark:text-white">
             {mode === 'add' ? 'Book Resource Allocation' : 'Edit Resource Allocations'}
           </DialogTitle>
-          <DialogDescription className="text-sm text-slate-500 mt-1">
+          <DialogDescription className="text-sm text-slate-500 dark:text-slate-400 mt-1">
             Assign {resource.name} to projects for specific time periods (2 weeks to 3 months)
           </DialogDescription>
         </DialogHeader>
 
         {/* Body - Scrollable */}
         <div className="flex-1 overflow-y-auto px-6 py-4 space-y-6">
-          {/* Resource Info */}
-          <div className="flex items-center gap-4 p-4 bg-slate-50 rounded-xl">
+          {/* Resource Info - BUG FIX #3: Use Catalyst V5 blue for avatar */}
+          <div className="flex items-center gap-4 p-4 bg-slate-50 dark:bg-slate-800 rounded-xl">
             <div 
               className="w-12 h-12 rounded-full flex items-center justify-center text-white text-sm font-bold"
-              style={{ backgroundColor: getAssignmentTheme(allocations[0]?.assignment_name || 'Unassigned').accent }}
+              style={{ backgroundColor: validAllocations[0]?.assignment_name 
+                ? getAssignmentTheme(validAllocations[0].assignment_name).accent 
+                : '#2563eb' // Catalyst V5 primary blue
+              }}
             >
               {initials}
             </div>
             <div>
-              <div className="font-semibold text-slate-900">{resource.name}</div>
-              <div className="text-sm text-slate-500">{resource.role} • {resource.department}</div>
+              <div className="font-semibold text-slate-900 dark:text-white">{resource.name}</div>
+              <div className="text-sm text-slate-500 dark:text-slate-400">{resource.role} • {resource.department}</div>
             </div>
           </div>
 
-          {/* Allocation Summary Bar */}
-          <div className="p-4 rounded-xl" style={{ backgroundColor: status.bg }}>
+          {/* Allocation Summary Bar - with dark mode */}
+          <div 
+            className="p-4 rounded-xl" 
+            style={{ backgroundColor: `hsl(${status.bg.replace(/[^0-9,.\s]/g, '')})` }}
+          >
             <div className="flex items-center justify-between mb-3">
-              <span className="text-sm font-medium text-slate-700">Current Allocation Summary</span>
+              <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Current Allocation Summary</span>
               <span className="text-sm font-bold" style={{ color: status.text }}>
                 {totalAllocation}% allocated
               </span>
             </div>
-            <div className="h-3 bg-white rounded-full overflow-hidden">
+            <div className="h-3 bg-white dark:bg-slate-700 rounded-full overflow-hidden">
               <div 
                 className="h-full rounded-full transition-all duration-300"
                 style={{ 
@@ -176,7 +186,7 @@ export function AllocationBookingModal({
                 }}
               />
             </div>
-            <div className="flex justify-between mt-2 text-xs text-slate-500">
+            <div className="flex justify-between mt-2 text-xs text-slate-500 dark:text-slate-400">
               <span>{Math.max(0, 100 - totalAllocation)}% available for new bookings</span>
               <span>Target: 100%</span>
             </div>
@@ -201,7 +211,7 @@ export function AllocationBookingModal({
                 <h4 className="text-sm font-semibold" style={{ color: CATALYST_V5.overAllocated.hex }}>
                   Over-allocation Warning
                 </h4>
-                <p className="text-sm text-slate-600 mt-1">
+                <p className="text-sm text-slate-600 dark:text-slate-300 mt-1">
                   Total allocation is {totalAllocation}%. Consider adjusting dates or percentages.
                 </p>
               </div>
@@ -211,7 +221,7 @@ export function AllocationBookingModal({
           {/* Allocation Blocks */}
           <div>
             <div className="flex items-center justify-between mb-3">
-              <Label className="text-sm font-medium text-slate-700">Project Allocations</Label>
+              <Label className="text-sm font-medium text-slate-700 dark:text-slate-300">Project Allocations</Label>
               <Button
                 type="button"
                 variant="outline"
@@ -231,19 +241,19 @@ export function AllocationBookingModal({
                 return (
                   <div 
                     key={index}
-                    className="p-4 border border-slate-200 rounded-xl bg-white"
+                    className="p-4 border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-800"
                   >
                     <div className="flex items-start gap-4">
                       {/* Assignment Selector */}
                       <div className="flex-1">
-                        <Label className="text-xs font-medium text-slate-500 mb-1.5 block">
+                        <Label className="text-xs font-medium text-slate-500 dark:text-slate-400 mb-1.5 block">
                           Assignment Type
                         </Label>
                         <Select 
                           value={allocation.assignment_id}
                           onValueChange={(v) => updateAllocation(index, 'assignment_id', v)}
                         >
-                          <SelectTrigger className="w-full">
+                          <SelectTrigger className="w-full bg-white dark:bg-slate-800 dark:text-white dark:border-slate-600">
                             <SelectValue placeholder="Select assignment..." />
                           </SelectTrigger>
                           <SelectContent>
@@ -267,7 +277,7 @@ export function AllocationBookingModal({
 
                       {/* Percentage */}
                       <div className="w-28">
-                        <Label className="text-xs font-medium text-slate-500 mb-1.5 block">
+                        <Label className="text-xs font-medium text-slate-500 dark:text-slate-400 mb-1.5 block">
                           Allocation
                         </Label>
                         <div className="relative">
@@ -278,7 +288,7 @@ export function AllocationBookingModal({
                             step={5}
                             value={allocation.allocation_percent}
                             onChange={(e) => updateAllocation(index, 'allocation_percent', parseInt(e.target.value) || 0)}
-                            className="text-center pr-8"
+                            className="text-center pr-8 bg-white dark:bg-slate-800 dark:text-white dark:border-slate-600"
                           />
                           <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-slate-400">%</span>
                         </div>
@@ -291,7 +301,7 @@ export function AllocationBookingModal({
                           variant="ghost"
                           size="icon"
                           onClick={() => removeAllocation(index)}
-                          className="mt-6 text-slate-400 hover:text-red-500 hover:bg-red-50"
+                          className="mt-6 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950"
                         >
                           <Trash2 className="w-4 h-4" />
                         </Button>
@@ -301,30 +311,32 @@ export function AllocationBookingModal({
                     {/* Date Range */}
                     <div className="grid grid-cols-2 gap-4 mt-4">
                       <div>
-                        <Label className="text-xs font-medium text-slate-500 mb-1.5 block">
+                        <Label className="text-xs font-medium text-slate-500 dark:text-slate-400 mb-1.5 block">
                           Start Date
                         </Label>
                         <Input
                           type="date"
                           value={allocation.start_date}
                           onChange={(e) => updateAllocation(index, 'start_date', e.target.value)}
+                          className="bg-white dark:bg-slate-800 dark:text-white dark:border-slate-600"
                         />
                       </div>
                       <div>
-                        <Label className="text-xs font-medium text-slate-500 mb-1.5 block">
+                        <Label className="text-xs font-medium text-slate-500 dark:text-slate-400 mb-1.5 block">
                           End Date
                         </Label>
                         <Input
                           type="date"
                           value={allocation.end_date}
                           onChange={(e) => updateAllocation(index, 'end_date', e.target.value)}
+                          className="bg-white dark:bg-slate-800 dark:text-white dark:border-slate-600"
                         />
                       </div>
                     </div>
 
-                    {/* Quick Duration Buttons */}
+                    {/* Quick Duration Buttons - with dark mode */}
                     <div className="flex items-center gap-2 mt-3">
-                      <span className="text-xs text-slate-500">Quick:</span>
+                      <span className="text-xs text-slate-500 dark:text-slate-400">Quick:</span>
                       {[
                         { label: '2 weeks', weeks: 2 },
                         { label: '1 month', weeks: 4 },
@@ -337,7 +349,7 @@ export function AllocationBookingModal({
                           onClick={() => setQuickDuration(index, weeks)}
                           className={cn(
                             'px-2 py-1 text-xs font-medium rounded transition-colors',
-                            'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                            'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-600'
                           )}
                         >
                           {label}
@@ -345,12 +357,12 @@ export function AllocationBookingModal({
                       ))}
                     </div>
 
-                    {/* Visual Preview */}
-                    {allocation.assignment_name && (
-                      <div className="mt-4 p-3 bg-slate-50 rounded-lg">
+                    {/* BUG FIX #4: Visual Preview inside allocation block - only show when assignment selected */}
+                    {allocation.assignment_id && allocation.assignment_name && (
+                      <div className="mt-4 p-3 bg-slate-50 dark:bg-slate-900 rounded-lg">
                         <div className="flex items-center justify-between mb-2">
-                          <span className="text-xs font-medium text-slate-500">Preview</span>
-                          <span className="text-xs text-slate-500">
+                          <span className="text-xs font-medium text-slate-500 dark:text-slate-400">Preview</span>
+                          <span className="text-xs text-slate-500 dark:text-slate-400">
                             {new Date(allocation.start_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} — {new Date(allocation.end_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                           </span>
                         </div>
@@ -373,7 +385,7 @@ export function AllocationBookingModal({
             </div>
           </div>
 
-          {/* Combined Timeline Preview */}
+          {/* Combined Timeline Preview - BUG FIX #5: Only show bars for valid allocations */}
           <div className="p-4 bg-slate-900 rounded-xl">
             <div className="flex items-center justify-between mb-4">
               <span className="text-sm font-medium text-white">Combined Timeline Preview</span>
@@ -385,24 +397,30 @@ export function AllocationBookingModal({
               </span>
             </div>
             
-            <div className="space-y-1.5">
-              {allocations.filter(a => a.assignment_name).map((allocation, idx) => {
-                const theme = getAssignmentTheme(allocation.assignment_name);
-                return (
-                  <div 
-                    key={idx}
-                    className="h-6 rounded flex items-center px-2 text-[10px] font-semibold text-white"
-                    style={{ 
-                      width: `${allocation.allocation_percent}%`,
-                      minWidth: '60px',
-                      backgroundColor: theme.accent,
-                    }}
-                  >
-                    {allocation.assignment_name} {allocation.allocation_percent}%
-                  </div>
-                );
-              })}
-            </div>
+            {validAllocations.length === 0 ? (
+              <div className="text-sm text-slate-400 text-center py-4">
+                Select an assignment to see preview
+              </div>
+            ) : (
+              <div className="space-y-1.5">
+                {validAllocations.map((allocation, idx) => {
+                  const theme = getAssignmentTheme(allocation.assignment_name);
+                  return (
+                    <div 
+                      key={idx}
+                      className="h-6 rounded flex items-center px-2 text-[10px] font-semibold text-white"
+                      style={{ 
+                        width: `${allocation.allocation_percent}%`,
+                        minWidth: '60px',
+                        backgroundColor: theme.accent,
+                      }}
+                    >
+                      {allocation.assignment_name} {allocation.allocation_percent}%
+                    </div>
+                  );
+                })}
+              </div>
+            )}
             
             <div className="mt-4 pt-4 border-t border-slate-700 flex items-center justify-between text-xs">
               <span className="text-slate-400">Remaining availability:</span>
@@ -416,8 +434,8 @@ export function AllocationBookingModal({
           </div>
         </div>
 
-        {/* Footer */}
-        <DialogFooter className="px-6 py-4 border-t border-slate-200 bg-slate-50">
+        {/* Footer - with dark mode */}
+        <DialogFooter className="px-6 py-4 border-t border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800">
           <div className="flex items-center justify-between w-full">
             <Button variant="ghost" onClick={onClose} disabled={isSaving}>
               Cancel
@@ -426,7 +444,11 @@ export function AllocationBookingModal({
               <Button 
                 onClick={handleSave}
                 disabled={isSaving || allocations.every(a => !a.assignment_id)}
-                className="bg-[#2563eb] hover:bg-[#1d4ed8]"
+                className="min-w-[140px]"
+                style={{ 
+                  backgroundColor: '#2563eb', // Catalyst V5 primary blue
+                  color: 'white'
+                }}
               >
                 {isSaving ? 'Saving...' : 'Confirm Booking'}
               </Button>
