@@ -9,3 +9,5 @@ export { useCycleExecution } from './useCycleExecution';
 export { useTestReports, useTestReport } from './useTestReports';
 export { useUserActivityReport, useActivityDrillDown, useLogTestActivity } from './useUserActivity';
 export type { UserActivityReportState, ActivityAggregate, ActivityItem, ActivityType, TimeGrouping } from './useUserActivity';
+export { useTestDashboards, useReportSchedule } from './useTestDashboards';
+export type { GadgetType, GadgetPosition, GadgetConfig, DashboardGadget, Dashboard, CreateDashboardInput, CreateGadgetInput, UpdateGadgetInput } from './useTestDashboards';
