@@ -18080,6 +18080,59 @@ export type Database = {
           },
         ]
       }
+      test_findings: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          description: string | null
+          entities_json: Json | null
+          id: string
+          program_id: string | null
+          resolved_at: string | null
+          resolved_by: string | null
+          severity: string
+          status: string
+          title: string
+          type: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          entities_json?: Json | null
+          id?: string
+          program_id?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          severity?: string
+          status?: string
+          title: string
+          type: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          entities_json?: Json | null
+          id?: string
+          program_id?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          severity?: string
+          status?: string
+          title?: string
+          type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "test_findings_program_id_fkey"
+            columns: ["program_id"]
+            isOneToOne: false
+            referencedRelation: "programs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       test_folders: {
         Row: {
           created_at: string | null
