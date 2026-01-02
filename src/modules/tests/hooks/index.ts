@@ -7,3 +7,5 @@ export { useExecutions, useExecution, useCycleExecutionStats } from './useExecut
 export { useTestSets, useTestSet } from './useTestSets';
 export { useCycleExecution } from './useCycleExecution';
 export { useTestReports, useTestReport } from './useTestReports';
+export { useUserActivityReport, useActivityDrillDown, useLogTestActivity } from './useUserActivity';
+export type { UserActivityReportState, ActivityAggregate, ActivityItem, ActivityType, TimeGrouping } from './useUserActivity';
