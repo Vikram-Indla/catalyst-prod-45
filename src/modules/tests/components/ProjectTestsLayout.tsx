@@ -74,13 +74,13 @@ export function ProjectTestsLayout() {
             </div>
             <div>
               <h1 className="text-xl font-semibold text-text-primary">Test Management</h1>
-              <p className="text-sm text-text-tertiary">
+              <div className="text-sm text-text-tertiary">
                 {summaryLoading ? (
-                  <Skeleton className="h-4 w-40 inline-block" />
+                  <Skeleton className="h-4 w-40" />
                 ) : (
-                  <>{summary?.totalCases || 0} test cases • {summary?.passRate || 0}% pass rate</>
+                  <span>{summary?.totalCases || 0} test cases • {summary?.passRate || 0}% pass rate</span>
                 )}
-              </p>
+              </div>
             </div>
           </div>
 
