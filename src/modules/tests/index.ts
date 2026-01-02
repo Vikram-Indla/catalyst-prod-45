@@ -26,6 +26,15 @@ export { CycleExecutionPage } from './pages/CycleExecutionPage';
 // Traceability Components
 export { TraceabilityMatrix, TraceabilityDetailPanel } from './components/traceability';
 
+// Notifications Components
+export { NotificationCenter, NotificationPreferencesPanel } from './components/notifications';
+
+// AI Components
+export { AITestGenerator, AIInsightsPanel } from './components/ai';
+
+// Governance Components
+export { ActivityTimeline, GovernanceDashboard } from './components/governance';
+
 // Utils
 export * from './utils/ctaRegistry';
 export * from './utils/smokeTests';

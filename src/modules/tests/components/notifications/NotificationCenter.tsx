@@ -1,67 +1,39 @@
 import React from 'react';
-import { Bell, Check, CheckCheck, Settings, Trash2 } from 'lucide-react';
+import { Bell, CheckCheck, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
 import { useTestNotifications, TestNotification } from '../../hooks/useTestNotifications';
 import { formatDistanceToNow } from 'date-fns';
 
 interface NotificationCenterProps {
-  programId?: string;
   onSettingsClick?: () => void;
 }
 
-export function NotificationCenter({ programId, onSettingsClick }: NotificationCenterProps) {
-  const {
-    notifications,
-    unreadCount,
-    isLoading,
-    markAsRead,
-    markAllAsRead,
-  } = useTestNotifications(programId);
+export function NotificationCenter({ onSettingsClick }: NotificationCenterProps) {
+  const { notifications, unreadCount, isLoading, markAsRead, markAllAsRead } = useTestNotifications();
   
   const getEventIcon = (eventType: string) => {
     switch (eventType) {
-      case 'assignment':
-        return '👤';
-      case 'mention':
-        return '@';
-      case 'execution_update':
-        return '▶️';
-      case 'automation_ownership':
-        return '🤖';
-      case 'cycle_complete':
-        return '✅';
-      case 'defect_linked':
-        return '🐛';
-      default:
-        return '📢';
+      case 'assignment': return '👤';
+      case 'mention': return '@';
+      case 'execution_update': return '▶️';
+      case 'cycle_complete': return '✅';
+      case 'defect_linked': return '🐛';
+      default: return '📢';
     }
   };
   
   const getEventColor = (eventType: string) => {
     switch (eventType) {
-      case 'assignment':
-        return 'bg-blue-500/10 text-blue-500';
-      case 'mention':
-        return 'bg-purple-500/10 text-purple-500';
-      case 'execution_update':
-        return 'bg-green-500/10 text-green-500';
-      case 'automation_ownership':
-        return 'bg-orange-500/10 text-orange-500';
-      case 'cycle_complete':
-        return 'bg-emerald-500/10 text-emerald-500';
-      case 'defect_linked':
-        return 'bg-red-500/10 text-red-500';
-      default:
-        return 'bg-muted text-muted-foreground';
+      case 'assignment': return 'bg-blue-500/10 text-blue-500';
+      case 'mention': return 'bg-purple-500/10 text-purple-500';
+      case 'execution_update': return 'bg-green-500/10 text-green-500';
+      case 'cycle_complete': return 'bg-emerald-500/10 text-emerald-500';
+      case 'defect_linked': return 'bg-red-500/10 text-red-500';
+      default: return 'bg-muted text-muted-foreground';
     }
   };
   
@@ -71,10 +43,7 @@ export function NotificationCenter({ programId, onSettingsClick }: NotificationC
         <Button variant="ghost" size="icon" className="relative h-8 w-8">
           <Bell className="h-4 w-4" />
           {unreadCount > 0 && (
-            <Badge 
-              variant="destructive" 
-              className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center text-xs"
-            >
+            <Badge variant="destructive" className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center text-xs">
               {unreadCount > 9 ? '9+' : unreadCount}
             </Badge>
           )}
@@ -84,20 +53,12 @@ export function NotificationCenter({ programId, onSettingsClick }: NotificationC
         <div className="flex items-center justify-between p-4 border-b">
           <div>
             <h3 className="font-semibold text-sm">Notifications</h3>
-            <p className="text-xs text-muted-foreground">
-              {unreadCount} unread
-            </p>
+            <p className="text-xs text-muted-foreground">{unreadCount} unread</p>
           </div>
           <div className="flex gap-1">
             {unreadCount > 0 && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => markAllAsRead()}
-                className="text-xs"
-              >
-                <CheckCheck className="h-3 w-3 mr-1" />
-                Mark all read
+              <Button variant="ghost" size="sm" onClick={() => markAllAsRead()} className="text-xs">
+                <CheckCheck className="h-3 w-3 mr-1" />Mark all read
               </Button>
             )}
             {onSettingsClick && (
@@ -121,80 +82,50 @@ export function NotificationCenter({ programId, onSettingsClick }: NotificationC
           ) : (
             <div className="divide-y">
               {notifications.map((notification) => (
-                <NotificationItem
+                <div
                   key={notification.id}
-                  notification={notification}
-                  onMarkAsRead={() => markAsRead(notification.id)}
-                  getEventIcon={getEventIcon}
-                  getEventColor={getEventColor}
-                />
+                  className={cn(
+                    'p-3 hover:bg-muted/50 cursor-pointer transition-colors',
+                    !notification.is_read && 'bg-primary/5'
+                  )}
+                  onClick={() => markAsRead(notification.id)}
+                >
+                  <div className="flex gap-3">
+                    <div className={cn(
+                      'h-8 w-8 rounded-full flex items-center justify-center flex-shrink-0',
+                      getEventColor(notification.event_type)
+                    )}>
+                      <span className="text-sm">{getEventIcon(notification.event_type)}</span>
+                    </div>
+                    
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-start justify-between gap-2">
+                        <p className={cn('text-sm line-clamp-1', !notification.is_read && 'font-medium')}>
+                          {notification.title}
+                        </p>
+                        {!notification.is_read && (
+                          <div className="h-2 w-2 rounded-full bg-primary flex-shrink-0 mt-1.5" />
+                        )}
+                      </div>
+                      
+                      <p className="text-xs text-muted-foreground line-clamp-2 mt-0.5">{notification.message}</p>
+                      
+                      <div className="flex items-center gap-2 mt-1.5">
+                        {notification.entity_key && (
+                          <Badge variant="outline" className="text-xs h-5">{notification.entity_key}</Badge>
+                        )}
+                        <span className="text-xs text-muted-foreground">
+                          {notification.created_at && formatDistanceToNow(new Date(notification.created_at), { addSuffix: true })}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               ))}
             </div>
           )}
         </ScrollArea>
       </PopoverContent>
     </Popover>
-  );
-}
-
-interface NotificationItemProps {
-  notification: TestNotification;
-  onMarkAsRead: () => void;
-  getEventIcon: (type: string) => string;
-  getEventColor: (type: string) => string;
-}
-
-function NotificationItem({ 
-  notification, 
-  onMarkAsRead, 
-  getEventIcon, 
-  getEventColor 
-}: NotificationItemProps) {
-  return (
-    <div
-      className={cn(
-        'p-3 hover:bg-muted/50 cursor-pointer transition-colors',
-        !notification.is_read && 'bg-primary/5'
-      )}
-      onClick={onMarkAsRead}
-    >
-      <div className="flex gap-3">
-        <div className={cn(
-          'h-8 w-8 rounded-full flex items-center justify-center flex-shrink-0',
-          getEventColor(notification.event_type)
-        )}>
-          <span className="text-sm">{getEventIcon(notification.event_type)}</span>
-        </div>
-        
-        <div className="flex-1 min-w-0">
-          <div className="flex items-start justify-between gap-2">
-            <p className={cn(
-              'text-sm line-clamp-1',
-              !notification.is_read && 'font-medium'
-            )}>
-              {notification.title}
-            </p>
-            {!notification.is_read && (
-              <div className="h-2 w-2 rounded-full bg-primary flex-shrink-0 mt-1.5" />
-            )}
-          </div>
-          
-          <p className="text-xs text-muted-foreground line-clamp-2 mt-0.5">
-            {notification.message}
-          </p>
-          
-          <div className="flex items-center gap-2 mt-1.5">
-            {notification.entity_key && (
-              <Badge variant="outline" className="text-xs h-5">
-                {notification.entity_key}
-              </Badge>
-            )}
-            <span className="text-xs text-muted-foreground">
-              {formatDistanceToNow(new Date(notification.created_at), { addSuffix: true })}
-            </span>
-          </div>
-        </div>
-      </div>
-    </div>
   );
 }

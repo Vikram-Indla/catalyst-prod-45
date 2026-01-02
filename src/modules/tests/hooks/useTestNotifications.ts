@@ -3,28 +3,25 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
-// Types matching DB schema
-export interface NotificationPreferences {
-  id: string;
-  user_id: string;
-  email_notifications_enabled: boolean;
-  in_app_enabled: boolean;
-  digest_mode: string;
-}
-
+// Types matching actual DB schema
 export interface TestNotification {
   id: string;
   user_id: string;
+  program_id: string | null;
   event_type: string;
   title: string;
   message: string;
   entity_type: string | null;
   entity_id: string | null;
-  is_read: boolean;
-  created_at: string;
+  entity_key: string | null;
+  actor_id: string | null;
+  actor_name: string | null;
+  is_read: boolean | null;
+  read_at: string | null;
+  email_sent: boolean | null;
+  metadata: Record<string, unknown> | null;
+  created_at: string | null;
 }
-
-export type NotificationEventType = 'assignment' | 'mention' | 'execution_update' | 'cycle_complete';
 
 export function useNotificationPreferences() {
   const queryClient = useQueryClient();
@@ -84,7 +81,7 @@ export function useTestNotifications() {
         .limit(50);
       
       if (error) throw error;
-      return data as TestNotification[];
+      return (data || []) as TestNotification[];
     },
   });
   
@@ -94,7 +91,7 @@ export function useTestNotifications() {
   
   const markAsRead = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase.from('test_notifications').update({ is_read: true }).eq('id', id);
+      const { error } = await supabase.from('test_notifications').update({ is_read: true, read_at: new Date().toISOString() }).eq('id', id);
       if (error) throw error;
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['test-notifications'] }),
@@ -104,7 +101,7 @@ export function useTestNotifications() {
     mutationFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
-      await supabase.from('test_notifications').update({ is_read: true }).eq('user_id', user.id).eq('is_read', false);
+      await supabase.from('test_notifications').update({ is_read: true, read_at: new Date().toISOString() }).eq('user_id', user.id).eq('is_read', false);
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['test-notifications'] }),
   });
@@ -114,12 +111,17 @@ export function useTestNotifications() {
 
 export function useCreateNotification() {
   return useMutation({
-    mutationFn: async (params: { userId: string; eventType: string; title: string; message: string }) => {
+    mutationFn: async (params: { userId: string; eventType: string; title: string; message: string; entityType?: string; entityId?: string }) => {
+      const { data: { user } } = await supabase.auth.getUser();
       const { error } = await supabase.from('test_notifications').insert({
         user_id: params.userId,
         event_type: params.eventType,
         title: params.title,
         message: params.message,
+        entity_type: params.entityType,
+        entity_id: params.entityId,
+        actor_id: user?.id,
+        actor_name: user?.email,
       });
       if (error) throw error;
     },
