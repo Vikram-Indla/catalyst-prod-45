@@ -3,8 +3,9 @@
 // Test management for project scope
 // =====================================================
 
-// Layout
+// Layout & Components
 export { ProjectTestsLayout } from './components/ProjectTestsLayout';
+export { RunTestsModal } from './components/RunTestsModal';
 
 // Pages
 export { TestsOverviewPage } from './pages/TestsOverviewPage';
