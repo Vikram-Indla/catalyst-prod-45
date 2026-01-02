@@ -175,7 +175,6 @@ import ProjectSettingsPage from "./pages/ProjectSettingsPage";
 import { ProjectWorkHubPage } from "./modules/project-work-hub/ProjectWorkHubPage";
 import {
   InJiraLayout,
-  InJiraProvider,
   SummaryPage as InJiraSummaryPage,
   KanbanBoardPage,
   ScrumBoardPage,
@@ -521,7 +520,7 @@ const App = () => (
               <Route path="/project/:projectId/work" element={<ProjectWorkHubPage />} />
               
               {/* In-Jira Module Routes - Jira-class Project Execution */}
-              <Route path="/project/:projectKey" element={<InJiraProvider><InJiraLayout /></InJiraProvider>}>
+              <Route path="/project/:projectKey" element={<InJiraLayout />}>
                 <Route index element={<Navigate to="summary" replace />} />
                 <Route path="summary" element={<InJiraSummaryPage />} />
                 <Route path="list" element={<InJiraListPage />} />
