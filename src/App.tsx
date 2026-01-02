@@ -203,6 +203,7 @@ import {
   TestsCyclesPage as ProjectTestsCyclesPage,
   TestsExecutionsPage,
   TestsReportsPage,
+  CTAValidationPage,
 } from "./modules/tests";
 import ProjectSummaryPage from "./pages/projects/ProjectSummaryPage";
 import ProjectComingSoonPage from "./pages/projects/ProjectComingSoonPage";
@@ -556,6 +557,7 @@ const App = () => (
                 <Route path="cycles" element={<ProjectTestsCyclesPage />} />
                 <Route path="executions" element={<TestsExecutionsPage />} />
                 <Route path="reports" element={<TestsReportsPage />} />
+                <Route path="cta-validation" element={<CTAValidationPage />} />
               </Route>
               <Route path="/projects/:projectId/reports" element={<ProjectComingSoonPage pageTitle="Reports" />} />
               <Route path="/project/:projectId/work" element={<ProjectWorkHubPage />} />
