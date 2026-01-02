@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import { useParams, useNavigate, useLocation, Outlet } from 'react-router-dom';
+import { useParams, useNavigate, useLocation, Outlet, Link, NavLink } from 'react-router-dom';
 import { 
   LayoutDashboard, 
   List, 
@@ -15,19 +15,12 @@ import {
   Settings,
   Plus,
   FlaskConical,
-  ChevronDown
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { InJiraProvider, useInJira } from '../context/InJiraContext';
 import { IssueDrawer } from './IssueDrawer';
 import { CreateIssueModal } from './CreateIssueModal';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 import { usePermission } from '@/hooks/usePermission';
 
 interface Tab {
@@ -44,17 +37,18 @@ const TABS: Tab[] = [
   { id: 'kanban', label: 'Kanban', icon: <Kanban className="h-4 w-4" />, path: 'boards/kanban' },
   { id: 'scrum', label: 'Scrum', icon: <GitBranch className="h-4 w-4" />, path: 'boards/scrum' },
   { id: 'releases', label: 'Releases', icon: <Package className="h-4 w-4" />, path: 'releases' },
+  { id: 'tests', label: 'Tests', icon: <FlaskConical className="h-4 w-4" />, path: 'tests' },
 ];
 
-interface TestTab {
+interface TestSubTab {
   id: string;
   label: string;
   path: string;
   requiresAdmin?: boolean;
 }
 
-const TEST_TABS: TestTab[] = [
-  { id: 'tests', label: 'Command Center', path: 'tests' },
+const TEST_SUB_TABS: TestSubTab[] = [
+  { id: 'overview', label: 'Overview', path: 'tests' },
   { id: 'cases', label: 'Test Cases', path: 'tests/cases' },
   { id: 'sets', label: 'Test Sets', path: 'tests/sets' },
   { id: 'cycles', label: 'Test Cycles', path: 'tests/cycles' },
@@ -70,6 +64,9 @@ function InJiraLayoutContent() {
   const location = useLocation();
   const { openCreateModal } = useInJira();
   const { hasPermission } = usePermission('test_cases', 'configure', 'program', projectKey);
+
+  // Determine if we are on a tests route
+  const isOnTestsRoute = location.pathname.includes('/tests');
 
   const getActiveTab = (): string => {
     const pathParts = location.pathname.split('/');
@@ -89,24 +86,23 @@ function InJiraLayoutContent() {
     return tab?.id || 'summary';
   };
 
-  const getActiveTestTab = (): string | null => {
+  const getActiveTestSubTab = (): string => {
     const pathParts = location.pathname.split('/');
     const projectIndex = pathParts.findIndex(p => p === 'project');
-    if (projectIndex === -1) return null;
+    if (projectIndex === -1) return 'overview';
     
     const subPath = pathParts.slice(projectIndex + 2).join('/');
-    if (!subPath.startsWith('tests')) return null;
     
-    const testTab = TEST_TABS.find(t => subPath === t.path || subPath.startsWith(t.path + '/'));
-    return testTab?.id || 'tests';
+    // Find exact or prefix match
+    const testTab = TEST_SUB_TABS.find(t => subPath === t.path);
+    if (testTab) return testTab.id;
+    
+    // Fallback to overview for base /tests
+    return 'overview';
   };
 
   const activeTab = getActiveTab();
-  const activeTestTab = getActiveTestTab();
-
-  const handleTabClick = (path: string) => {
-    navigate(`/project/${projectKey}/${path}`);
-  };
+  const activeTestSubTab = getActiveTestSubTab();
 
   // Keyboard shortcut handler
   React.useEffect(() => {
@@ -131,12 +127,12 @@ function InJiraLayoutContent() {
       <div className="px-6 py-4 border-b border-border-default bg-surface-1">
         {/* Breadcrumb */}
         <nav className="text-sm text-text-tertiary mb-2 flex items-center gap-1.5">
-          <span 
-            className="hover:text-text-primary cursor-pointer transition-colors"
-            onClick={() => navigate('/projects')}
+          <Link 
+            to="/projects"
+            className="hover:text-text-primary transition-colors"
           >
             Projects
-          </span>
+          </Link>
           <span className="text-text-quaternary">/</span>
           <span className="text-text-secondary font-medium">{projectKey}</span>
           <span className="text-text-quaternary">/</span>
@@ -172,55 +168,24 @@ function InJiraLayoutContent() {
         </div>
       </div>
 
-      {/* Tab Navigation */}
+      {/* Primary Tab Navigation */}
       <div className="border-b border-border-default bg-surface-1">
         <div className="flex items-center px-4">
           {TABS.map((tab) => (
-            <button
+            <NavLink
               key={tab.id}
-              onClick={() => handleTabClick(tab.path)}
-              className={cn(
+              to={`/project/${projectKey}/${tab.path}`}
+              className={({ isActive }) => cn(
                 "flex items-center gap-1.5 px-3 py-3 text-sm font-medium border-b-2 transition-colors",
-                activeTab === tab.id
+                (activeTab === tab.id)
                   ? "border-accent-primary text-accent-primary"
                   : "border-transparent text-text-tertiary hover:text-text-primary hover:border-border-hover"
               )}
             >
               {tab.icon}
               {tab.label}
-            </button>
+            </NavLink>
           ))}
-          
-          {/* Tests Dropdown */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button
-                className={cn(
-                  "flex items-center gap-1.5 px-3 py-3 text-sm font-medium border-b-2 transition-colors",
-                  activeTab === 'tests'
-                    ? "border-accent-primary text-accent-primary"
-                    : "border-transparent text-text-tertiary hover:text-text-primary hover:border-border-hover"
-                )}
-              >
-                <FlaskConical className="h-4 w-4" />
-                Tests
-                <ChevronDown className="h-3 w-3 ml-0.5" />
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="w-48">
-              {TEST_TABS.filter(tab => !tab.requiresAdmin || hasPermission).map((tab) => (
-                <DropdownMenuItem
-                  key={tab.id}
-                  onClick={() => handleTabClick(tab.path)}
-                  className={cn(
-                    activeTestTab === tab.id && "bg-accent-subtle text-accent-primary"
-                  )}
-                >
-                  {tab.label}
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
           
           <button
             className="flex items-center justify-center w-8 h-8 ml-1 text-text-tertiary hover:text-text-primary hover:bg-surface-hover rounded transition-colors"
@@ -230,6 +195,29 @@ function InJiraLayoutContent() {
           </button>
         </div>
       </div>
+
+      {/* Tests Sub-Navigation (shown only when on tests routes) */}
+      {isOnTestsRoute && (
+        <div className="border-b border-border-default bg-surface-2">
+          <div className="flex items-center px-4 gap-1">
+            {TEST_SUB_TABS.filter(tab => !tab.requiresAdmin || hasPermission).map((tab) => (
+              <NavLink
+                key={tab.id}
+                to={`/project/${projectKey}/${tab.path}`}
+                end={tab.id === 'overview'}
+                className={cn(
+                  "px-3 py-2 text-sm font-medium rounded-t-md transition-colors",
+                  activeTestSubTab === tab.id
+                    ? "bg-surface-1 text-accent-primary border-x border-t border-border-default -mb-px"
+                    : "text-text-tertiary hover:text-text-primary hover:bg-surface-hover"
+                )}
+              >
+                {tab.label}
+              </NavLink>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Content */}
       <div className="flex-1 overflow-hidden">
