@@ -196,6 +196,14 @@ import {
   TestAdminPage,
   StepLibraryPage,
 } from "./modules/in-jira/pages/tests";
+import {
+  ProjectTestsLayout,
+  TestsOverviewPage,
+  TestsCasesPage,
+  TestsCyclesPage as ProjectTestsCyclesPage,
+  TestsExecutionsPage,
+  TestsReportsPage,
+} from "./modules/tests";
 import ProjectSummaryPage from "./pages/projects/ProjectSummaryPage";
 import ProjectComingSoonPage from "./pages/projects/ProjectComingSoonPage";
 import ProjectBacklogPage from "./pages/projects/ProjectBacklogPage";
@@ -540,8 +548,14 @@ const App = () => (
               <Route path="/projects/:projectId/backlog" element={<ProjectBacklogPage />} />
               <Route path="/projects/:projectId/roadmap" element={<ProjectComingSoonPage pageTitle="Roadmap" />} />
               <Route path="/projects/:projectId/dependencies" element={<ProjectComingSoonPage pageTitle="Dependencies" />} />
-              <Route path="/projects/:projectId/tests" element={<Suspense fallback={<div className="p-8">Loading...</div>}><ProjectTestsView /></Suspense>} />
-              <Route path="/projects/:projectId/tests/*" element={<Suspense fallback={<div className="p-8">Loading...</div>}><ProjectTestsView /></Suspense>} />
+              {/* Project Tests Module with nested routes */}
+              <Route path="/projects/:projectId/tests" element={<Suspense fallback={<div className="p-8">Loading...</div>}><ProjectTestsLayout /></Suspense>}>
+                <Route index element={<TestsOverviewPage />} />
+                <Route path="cases" element={<TestsCasesPage />} />
+                <Route path="cycles" element={<ProjectTestsCyclesPage />} />
+                <Route path="executions" element={<TestsExecutionsPage />} />
+                <Route path="reports" element={<TestsReportsPage />} />
+              </Route>
               <Route path="/projects/:projectId/reports" element={<ProjectComingSoonPage pageTitle="Reports" />} />
               <Route path="/project/:projectId/work" element={<ProjectWorkHubPage />} />
               

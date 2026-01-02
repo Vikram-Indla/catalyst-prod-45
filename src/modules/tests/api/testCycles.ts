@@ -157,11 +157,6 @@ export async function createTestCycle(
 
   if (error) throw new Error(`Failed to create test cycle: ${error.message}`);
 
-  // Add test cases from test sets if provided
-  if (input.test_set_ids?.length) {
-    await addTestCasesFromSets(data.id, input.test_set_ids, userId);
-  }
-
   await logAuditEntry({
     entityType: 'test_cycles',
     entityId: data.id,
@@ -170,29 +165,6 @@ export async function createTestCycle(
   });
 
   return data;
-}
-
-/**
- * Add test cases to cycle from test sets
- */
-async function addTestCasesFromSets(cycleId: string, testSetIds: string[], userId: string) {
-  // Get test cases from sets
-  const { data: setCases } = await supabase
-    .from('test_set_cases')
-    .select('test_case_id')
-    .in('test_set_id', testSetIds);
-
-  if (!setCases?.length) return;
-
-  // Create execution records for each test case
-  const executions = setCases.map(sc => ({
-    cycle_id: cycleId,
-    case_id: sc.test_case_id,
-    status: 'not_run',
-    created_by: userId,
-  }));
-
-  await supabase.from('test_cycle_executions').insert(executions);
 }
 
 /**
@@ -262,7 +234,7 @@ export async function archiveTestCycle(id: string, userId: string, reason?: stri
   await logAuditEntry({
     entityType: 'test_cycles',
     entityId: id,
-    action: 'archived',
+    action: 'deleted',
     beforeData: before,
   });
 
