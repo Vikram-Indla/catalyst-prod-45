@@ -1991,13 +1991,111 @@ function TimelineView({ resources, period, groupBy, groupedByAssignment, grouped
     </div>
   );
 
+  // Calculate period date ranges once for all resources
+  const periodDateRanges = useMemo(() => {
+    const now = new Date();
+    return periods.map((p, colIdx) => {
+      let periodStart: Date;
+      let periodEnd: Date;
+      
+      if (period === 'monthly') {
+        const monthIndex = (now.getMonth() + colIdx) % 12;
+        const year = now.getFullYear() + Math.floor((now.getMonth() + colIdx) / 12);
+        periodStart = new Date(year, monthIndex, 1);
+        periodEnd = new Date(year, monthIndex + 1, 0);
+      } else if (period === 'quarterly') {
+        const currentQuarter = Math.floor(now.getMonth() / 3);
+        const quarterIndex = (currentQuarter + colIdx) % 4;
+        const year = now.getFullYear() + Math.floor((currentQuarter + colIdx) / 4);
+        periodStart = new Date(year, quarterIndex * 3, 1);
+        periodEnd = new Date(year, (quarterIndex + 1) * 3, 0);
+      } else {
+        const startOfCurrentWeek = new Date(now);
+        startOfCurrentWeek.setDate(now.getDate() - now.getDay());
+        periodStart = new Date(startOfCurrentWeek);
+        periodStart.setDate(startOfCurrentWeek.getDate() + (colIdx * 7));
+        periodEnd = new Date(periodStart);
+        periodEnd.setDate(periodStart.getDate() + 6);
+      }
+      
+      return { ...p, start: periodStart, end: periodEnd };
+    });
+  }, [periods, period]);
+
+  // Calculate Gantt bar position for an allocation
+  const calculateGanttBar = useCallback((alloc: ResourceAllocation) => {
+    const allocStart = new Date(alloc.start_date);
+    const allocEnd = new Date(alloc.end_date);
+    
+    // Find start column index
+    let startColIndex = periodDateRanges.findIndex(p => 
+      allocStart >= p.start && allocStart <= p.end
+    );
+    if (startColIndex === -1 && allocStart < periodDateRanges[0].start) {
+      startColIndex = 0; // Starts before visible range
+    }
+    if (startColIndex === -1) {
+      // Allocation starts after visible range
+      return null;
+    }
+    
+    // Find end column index
+    let endColIndex = periodDateRanges.findIndex(p => 
+      allocEnd >= p.start && allocEnd <= p.end
+    );
+    if (endColIndex === -1 && allocEnd > periodDateRanges[periodDateRanges.length - 1].end) {
+      endColIndex = periodDateRanges.length - 1; // Ends after visible range
+    }
+    if (endColIndex === -1) {
+      // Allocation ends before visible range
+      return null;
+    }
+    
+    // Ensure startColIndex <= endColIndex
+    if (startColIndex > endColIndex) {
+      return null;
+    }
+    
+    const span = endColIndex - startColIndex + 1;
+    return { startColIndex, endColIndex, span };
+  }, [periodDateRanges]);
+
   const renderResourceRow = (resource: ResourceMetric, assignmentName: string, isEven: boolean) => {
     const theme = getAssignmentTheme(assignmentName);
     const initials = resource.name?.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'NA';
-    // Use legacy total from resource if no time-boxed allocations
+    
+    // Get all allocations for this resource
+    const resourceAllocations = allocationsByResource.get(resource.id) || [];
+    
+    // Calculate Gantt bars for each allocation
+    const ganttBars = resourceAllocations
+      .map(alloc => {
+        const position = calculateGanttBar(alloc);
+        if (!position) return null;
+        return { alloc, ...position };
+      })
+      .filter((bar): bar is NonNullable<typeof bar> => bar !== null);
+
+    // Determine which columns are covered by allocations
+    const coveredColumns = new Set<number>();
+    ganttBars.forEach(bar => {
+      for (let i = bar.startColIndex; i <= bar.endColIndex; i++) {
+        coveredColumns.add(i);
+      }
+    });
+
+    // Calculate total allocation per period for warning display
+    const periodTotals = periodDateRanges.map((pdr, idx) => {
+      const periodAllocs = resourceAllocations.filter(a => {
+        const allocStart = new Date(a.start_date);
+        const allocEnd = new Date(a.end_date);
+        return allocStart <= pdr.end && allocEnd >= pdr.start;
+      });
+      return periodAllocs.reduce((sum, a) => sum + a.allocation_percent, 0);
+    });
+
     const legacyTotal = resource.allocation || 0;
     const allocTheme = getAllocationTheme(legacyTotal);
-
     const isUnassigned = assignmentName === 'Unassigned' || !assignmentName;
 
     return (
@@ -2023,121 +2121,111 @@ function TimelineView({ resources, period, groupBy, groupedByAssignment, grouped
           </div>
         </div>
 
-        {/* Period Cells with Time-Boxed Allocation Bars */}
-        <div className="flex-1 flex">
-          {periods.map((p, colIdx) => {
-            const isCurrentPeriod = colIdx === 0;
-            
-            // Calculate period date range
-            const now = new Date();
-            let periodStart: Date;
-            let periodEnd: Date;
-            
-            if (period === 'monthly') {
-              const monthIndex = (now.getMonth() + colIdx) % 12;
-              const year = now.getFullYear() + Math.floor((now.getMonth() + colIdx) / 12);
-              periodStart = new Date(year, monthIndex, 1);
-              periodEnd = new Date(year, monthIndex + 1, 0); // Last day of month
-            } else if (period === 'quarterly') {
-              const currentQuarter = Math.floor(now.getMonth() / 3);
-              const quarterIndex = (currentQuarter + colIdx) % 4;
-              const year = now.getFullYear() + Math.floor((currentQuarter + colIdx) / 4);
-              periodStart = new Date(year, quarterIndex * 3, 1);
-              periodEnd = new Date(year, (quarterIndex + 1) * 3, 0);
-            } else {
-              // Weekly
-              const startOfCurrentWeek = new Date(now);
-              startOfCurrentWeek.setDate(now.getDate() - now.getDay());
-              periodStart = new Date(startOfCurrentWeek);
-              periodStart.setDate(startOfCurrentWeek.getDate() + (colIdx * 7));
-              periodEnd = new Date(periodStart);
-              periodEnd.setDate(periodStart.getDate() + 6);
-            }
-
-            // Get allocations for this period
-            const periodAllocations = getResourceAllocationsForPeriod(resource.id, periodStart, periodEnd);
-            const totalForPeriod = periodAllocations.reduce((sum, a) => sum + a.allocation_percent, 0);
-            const isOver = totalForPeriod > 100;
-            const periodAllocTheme = getAllocationTheme(totalForPeriod);
-            
-            // Check if available for this period
-            const isAvailableForPeriod = (isUnassigned && periodAllocations.length === 0) || totalForPeriod === 0;
-
-            return (
-              <div 
-                key={p.key}
-                className={cn(
-                  'flex-1 p-2 border-r border-slate-200 last:border-r-0 min-w-24 relative',
-                  isCurrentPeriod && 'bg-blue-50/30',
-                  isOver && 'bg-orange-50/30'
-                )}
-              >
-                {/* Over-allocation warning - Catalyst V5 Orange */}
-                {isOver && (
-                  <div className="absolute top-1 right-1 z-10">
-                    <AlertTriangle className="w-3.5 h-3.5 text-orange-500" />
-                  </div>
-                )}
-
-                {/* Available State - Clickable to allocate */}
-                {isAvailableForPeriod ? (
-                  <button
-                    onClick={() => onEditResource?.(resource.id)}
-                    className="h-full w-full flex flex-col items-center justify-center text-slate-400 py-2 hover:bg-teal-50 rounded transition-colors cursor-pointer group"
-                  >
-                    <CheckCircle2 className="w-4 h-4 mb-1 text-teal-500 group-hover:text-teal-600" />
-                    <span className="text-[10px] font-medium text-teal-600 group-hover:text-teal-700">Available</span>
-                  </button>
-                ) : (
-                  <>
-                    {/* Time-boxed allocation bars */}
-                    <div className="space-y-1">
-                      {periodAllocations.map((alloc, i) => {
-                        const projectName = alloc.assignment_name || 'Allocation';
-                        const projectColor = getTimelineProjectColor(projectName);
-                        const shortName = getProjectShortName(projectName);
-                        const tooltipText = `${projectName}: ${alloc.allocation_percent}%`;
-                        const barWidthPercent = Math.min(alloc.allocation_percent, 100);
-                        
-                        return (
-                          <div
-                            key={alloc.id || i}
-                            className="h-6 rounded text-[10px] font-semibold flex items-center px-2 cursor-pointer group relative hover:opacity-90"
-                            style={{
-                              width: `${barWidthPercent}%`,
-                              minWidth: '50px',
-                              backgroundColor: projectColor.bg,
-                              color: projectColor.text,
-                            }}
-                            title={tooltipText}
-                            onClick={() => onEditResource?.(resource.id)}
-                          >
-                            <span className="truncate">{shortName} ({alloc.allocation_percent}%)</span>
-                            {/* Hover tooltip for full name */}
-                            <span className="absolute left-0 bottom-full mb-1 hidden group-hover:block z-50 px-2 py-1 text-[10px] bg-slate-900 text-white rounded shadow-lg whitespace-nowrap">
-                              {tooltipText}
-                            </span>
-                          </div>
-                        );
-                      })}
+        {/* Timeline Area with Gantt Bars */}
+        <div className="flex-1 relative">
+          {/* Grid columns for period boundaries */}
+          <div 
+            className="absolute inset-0 grid"
+            style={{ gridTemplateColumns: `repeat(${periods.length}, 1fr)` }}
+          >
+            {periods.map((p, colIdx) => {
+              const isCurrentPeriod = colIdx === 0;
+              const isOver = periodTotals[colIdx] > 100;
+              return (
+                <div 
+                  key={p.key}
+                  className={cn(
+                    'border-r border-slate-200 last:border-r-0 h-full',
+                    isCurrentPeriod && 'bg-blue-50/30',
+                    isOver && 'bg-orange-50/30'
+                  )}
+                >
+                  {isOver && (
+                    <div className="absolute top-1 right-1 z-10">
+                      <AlertTriangle className="w-3.5 h-3.5 text-orange-500" />
                     </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
 
-                    {/* Total Badge */}
-                    {periodAllocations.length > 0 && (
-                      <div className="mt-1.5 flex justify-end">
-                        <span
-                          className="text-[10px] font-bold px-1.5 py-0.5 rounded"
-                          style={{ backgroundColor: periodAllocTheme.labelBg, color: periodAllocTheme.labelColor }}
-                        >
-                          {totalForPeriod}%
-                        </span>
-                      </div>
-                    )}
-                  </>
-                )}
+          {/* Gantt Bars Layer */}
+          <div 
+            className="relative grid min-h-[60px] py-2 px-1"
+            style={{ gridTemplateColumns: `repeat(${periods.length}, 1fr)` }}
+          >
+            {ganttBars.length > 0 ? (
+              <>
+                {ganttBars.map((bar, idx) => {
+                  const projectName = bar.alloc.assignment_name || 'Allocation';
+                  const projectColor = getTimelineProjectColor(projectName);
+                  const tooltipText = `${projectName}: ${bar.alloc.allocation_percent}% (${new Date(bar.alloc.start_date).toLocaleDateString()} – ${new Date(bar.alloc.end_date).toLocaleDateString()})`;
+                  
+                  return (
+                    <div
+                      key={bar.alloc.id || idx}
+                      className="h-7 rounded flex items-center px-3 text-[11px] font-semibold cursor-pointer hover:opacity-90 transition-opacity shadow-sm"
+                      style={{
+                        gridColumn: `${bar.startColIndex + 1} / span ${bar.span}`,
+                        gridRow: idx + 1,
+                        backgroundColor: projectColor.bg,
+                        color: projectColor.text,
+                        margin: '2px 4px',
+                      }}
+                      title={tooltipText}
+                      onClick={() => onEditResource?.(resource.id)}
+                    >
+                      <span className="truncate">
+                        {projectName} ({bar.alloc.allocation_percent}%)
+                      </span>
+                    </div>
+                  );
+                })}
+              </>
+            ) : (
+              /* No allocations - show Available across all periods */
+              <div 
+                className="flex items-center justify-center"
+                style={{ gridColumn: `1 / span ${periods.length}` }}
+              >
+                <button
+                  onClick={() => onEditResource?.(resource.id)}
+                  className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-teal-50 transition-colors cursor-pointer group"
+                >
+                  <CheckCircle2 className="w-4 h-4 text-teal-500 group-hover:text-teal-600" />
+                  <span className="text-xs font-medium text-teal-600 group-hover:text-teal-700">Available</span>
+                </button>
               </div>
-            );
-          })}
+            )}
+          </div>
+
+          {/* Available indicators for uncovered periods (when partial allocation exists) */}
+          {ganttBars.length > 0 && coveredColumns.size < periods.length && (
+            <div 
+              className="absolute inset-0 grid pointer-events-none"
+              style={{ gridTemplateColumns: `repeat(${periods.length}, 1fr)` }}
+            >
+              {periods.map((_, colIdx) => {
+                if (coveredColumns.has(colIdx)) return null;
+                return (
+                  <div 
+                    key={colIdx}
+                    className="flex flex-col items-center justify-center pointer-events-auto"
+                    style={{ gridColumn: colIdx + 1 }}
+                  >
+                    <button
+                      onClick={() => onEditResource?.(resource.id)}
+                      className="flex flex-col items-center py-2 hover:bg-teal-50 rounded transition-colors cursor-pointer group"
+                    >
+                      <CheckCircle2 className="w-4 h-4 text-teal-500 group-hover:text-teal-600" />
+                      <span className="text-[10px] font-medium text-teal-600 group-hover:text-teal-700">Available</span>
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
       </div>
     );
