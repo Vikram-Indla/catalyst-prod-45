@@ -8,7 +8,8 @@ import { Label } from '@/components/ui/label';
 import { 
   getAssignmentTheme, 
   getAllocationStatusTheme, 
-  CATALYST_GOLDEN_HOUR 
+  CATALYST_V5,
+  ALLOCATION_SEGMENT_COLORS,
 } from '@/lib/catalyst-colors';
 import { cn } from '@/lib/utils';
 import type { 
@@ -181,23 +182,23 @@ export function AllocationBookingModal({
             </div>
           </div>
 
-          {/* Over-allocation Warning */}
+          {/* Over-allocation Warning - Catalyst V5 Orange */}
           {hasConflict && (
             <div 
               className="p-4 rounded-xl flex items-start gap-3 border"
               style={{ 
-                backgroundColor: '#faf8f5', 
-                borderColor: `${CATALYST_GOLDEN_HOUR.bronze}40` 
+                backgroundColor: CATALYST_V5.overAllocated.bgSolid, 
+                borderColor: `${CATALYST_V5.overAllocated.hex}40` 
               }}
             >
               <div 
                 className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
-                style={{ backgroundColor: `${CATALYST_GOLDEN_HOUR.bronze}20` }}
+                style={{ backgroundColor: `${CATALYST_V5.overAllocated.hex}20` }}
               >
-                <AlertTriangle className="w-5 h-5" style={{ color: CATALYST_GOLDEN_HOUR.bronze }} />
+                <AlertTriangle className="w-5 h-5" style={{ color: CATALYST_V5.overAllocated.hex }} />
               </div>
               <div>
-                <h4 className="text-sm font-semibold" style={{ color: CATALYST_GOLDEN_HOUR.bronze }}>
+                <h4 className="text-sm font-semibold" style={{ color: CATALYST_V5.overAllocated.hex }}>
                   Over-allocation Warning
                 </h4>
                 <p className="text-sm text-slate-600 mt-1">
@@ -378,7 +379,7 @@ export function AllocationBookingModal({
               <span className="text-sm font-medium text-white">Combined Timeline Preview</span>
               <span 
                 className="text-sm font-bold"
-                style={{ color: hasConflict ? CATALYST_GOLDEN_HOUR.gold : '#0d9488' }}
+                style={{ color: hasConflict ? CATALYST_V5.overAllocated.hex : CATALYST_V5.available.hex }}
               >
                 Total: {totalAllocation}%
               </span>
@@ -407,7 +408,7 @@ export function AllocationBookingModal({
               <span className="text-slate-400">Remaining availability:</span>
               <span 
                 className="font-medium"
-                style={{ color: hasConflict ? CATALYST_GOLDEN_HOUR.gold : '#0d9488' }}
+                style={{ color: hasConflict ? CATALYST_V5.overAllocated.hex : CATALYST_V5.available.hex }}
               >
                 {hasConflict ? 'Over-allocated!' : `${100 - totalAllocation}% available`}
               </span>

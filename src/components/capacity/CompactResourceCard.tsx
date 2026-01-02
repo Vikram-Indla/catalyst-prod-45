@@ -2,13 +2,20 @@
  * Compact Resource Card - CIO Executive Cockpit
  * Max height: 72px | Dense information | Risk indicators
  * Updated for Time-Boxed Allocations with stacked allocation bars
+ * 
+ * CATALYST V5 COLORS:
+ * - Available: Teal #0d9488
+ * - Optimal: Blue #2563eb
+ * - Over-allocated: Orange #d97706
+ * - Error: Red #ef4444
  */
 
 import { cn } from '@/lib/utils';
 import { 
   getAssignmentTheme, 
   getAllocationTheme,
-  CATALYST_GOLDEN_HOUR 
+  ALLOCATION_SEGMENT_COLORS,
+  CATALYST_V5,
 } from '@/lib/catalyst-colors';
 import type { ResourceAllocation } from '@/modules/capacity-planner/types';
 import {
@@ -30,15 +37,6 @@ interface CompactResourceCardProps {
   onEdit: () => void;
 }
 
-// Golden Hour colors for allocation segments
-const ALLOCATION_SEGMENT_COLORS = [
-  CATALYST_GOLDEN_HOUR.olive,
-  CATALYST_GOLDEN_HOUR.bronze,
-  CATALYST_GOLDEN_HOUR.gold,
-  CATALYST_GOLDEN_HOUR.champagne,
-  CATALYST_GOLDEN_HOUR.grey,
-];
-
 export function CompactResourceCard({ 
   id,
   name, 
@@ -50,13 +48,14 @@ export function CompactResourceCard({
   onOpen360, 
   onEdit 
 }: CompactResourceCardProps) {
-  // FIX #4: Avatar color from assignment theme
+  // Avatar color from assignment theme
   const theme = getAssignmentTheme(assignmentName);
-  // FIX #9 & #10: Status-based colors for border and progress bar
+  // Status-based colors for border and progress bar
   const alloc = getAllocationTheme(totalAllocation);
   const initials = name.split(' ').map((n: string) => n[0]).join('').slice(0, 2).toUpperCase();
   const isRisk = totalAllocation > 100;
   const isStretched = totalAllocation > 100 && totalAllocation <= 120;
+  const isCritical = totalAllocation > 120;
 
   // Prepare stacked segments - only show multi-allocation bar when multiple exist
   const hasMultipleAllocations = allocations.length > 1;
@@ -74,26 +73,25 @@ export function CompactResourceCard({
       <div 
         className={cn(
           "relative bg-white border rounded-lg p-3 cursor-pointer transition-all hover:shadow-md group",
-          isRisk ? "border-amber-200" : "border-slate-200 hover:border-slate-300"
+          isRisk ? "border-orange-200" : "border-slate-200 hover:border-slate-300"
         )}
         style={{ 
-          // FIX #9: Card left border by STATUS (not assignment)
           borderLeftWidth: '3px', 
           borderLeftColor: alloc.bar,
           maxHeight: '80px',
         }}
         onClick={onEdit}
       >
-        {/* Risk indicator dot */}
+        {/* Risk indicator dot - Catalyst V5 colors */}
         {isRisk && (
           <div 
             className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full animate-pulse"
-            style={{ backgroundColor: isStretched ? '#d97706' : '#8b7355' }}
+            style={{ backgroundColor: isCritical ? CATALYST_V5.error.hex : CATALYST_V5.overAllocated.hex }}
           />
         )}
 
         <div className="flex items-center gap-2.5">
-          {/* FIX #4: Avatar with assignment-based color */}
+          {/* Avatar with assignment-based color */}
           <div 
             onClick={(e) => { e.stopPropagation(); onOpen360(); }}
             className="w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold text-white cursor-pointer hover:ring-2 hover:ring-blue-500 hover:ring-offset-1 shrink-0 transition-all"
@@ -170,7 +168,7 @@ export function CompactResourceCard({
             </div>
           )}
           
-          {/* FIX #7: Status label with proper color (NOT grey) */}
+          {/* Status label with proper color */}
           <span 
             className="text-[9px] font-semibold uppercase tracking-wide px-1.5 py-0.5 rounded"
             style={{ 
