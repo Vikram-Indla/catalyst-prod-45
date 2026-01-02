@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { SuperAdminGuard } from '@/components/admin/SuperAdminGuard';
 import { Button } from '@/components/ui/button';
-import { Plus } from 'lucide-react';
+import { Plus, RefreshCw } from 'lucide-react';
 import { ResponsivePageContainer, ResponsivePageHeader } from '@/components/layout/ResponsivePageContainer';
 import { UsersTable } from '@/components/admin/users/UsersTable';
 import { UsersStatsCards } from '@/components/admin/users/UsersStatsCards';
@@ -20,7 +20,7 @@ export default function Users() {
   const [isRolesModalOpen, setIsRolesModalOpen] = useState(false);
   const [isOverridesModalOpen, setIsOverridesModalOpen] = useState(false);
 
-  const { data: users, isLoading } = useUsers();
+  const { data: users, isLoading, refetch, isFetching } = useUsers();
   const { isAdmin } = useUserRole();
 
   const handleEditRoles = (userId: string) => {
@@ -44,8 +44,8 @@ export default function Users() {
   };
 
   // Get the selected user's info for modals
-  const selectedUser = users?.find(u => u.id === selectedUserId);
-  const selectedUserRoleIds = selectedUser?.roles.map(r => r.role_id) || [];
+  const selectedUser = users?.find((u) => u.id === selectedUserId);
+  const selectedUserRoleIds = selectedUser?.roles.map((r) => r.role_id) || [];
   const selectedUserRoleId = selectedUser?.roles[0]?.role_id || null;
 
   return (
@@ -55,13 +55,23 @@ export default function Users() {
           title="Users"
           description="Manage user profiles, roles, and system access"
           actions={
-            <Button 
-              className="bg-brand-primary hover:bg-brand-primary-hover"
-              onClick={() => setIsAddUserModalOpen(true)}
-            >
-              <Plus className="h-4 w-4 mr-2" />
-              Add User
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                onClick={() => refetch()}
+                disabled={isFetching}
+              >
+                <RefreshCw className="h-4 w-4 mr-2" />
+                Refresh
+              </Button>
+              <Button
+                className="bg-brand-primary hover:bg-brand-primary-hover"
+                onClick={() => setIsAddUserModalOpen(true)}
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Add User
+              </Button>
+            </div>
           }
         />
 

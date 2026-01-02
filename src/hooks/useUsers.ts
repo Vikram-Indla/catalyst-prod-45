@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -53,7 +54,9 @@ export interface CreateUserInput {
 }
 
 export function useUsers() {
-  return useQuery({
+  const queryClient = useQueryClient();
+
+  const query = useQuery({
     queryKey: ['users-list'],
     queryFn: async () => {
       // Fetch all profiles with approval fields
@@ -95,24 +98,90 @@ export function useUsers() {
             role_id: ur.role_id,
             role_name: roleInfo.name,
             role_code: roleInfo.code,
-            business_lines: ur.business_lines || []
+            business_lines: ur.business_lines || [],
           });
         }
         return acc;
       }, {} as Record<string, UserRoleInfo[]>);
 
-      return (profiles || []).map(profile => {
+      return (profiles || []).map((profile) => {
         const roles = userRolesMap[profile.id] || [];
-        const allBusinessLines = roles.flatMap(r => r.business_lines);
+        const allBusinessLines = roles.flatMap((r) => r.business_lines);
         return {
           ...profile,
           roles,
-          business_lines: [...new Set(allBusinessLines)]
+          business_lines: [...new Set(allBusinessLines)],
         } as UserProfile;
       });
-    }
+    },
+  });
+
+  // Keep users list fresh when profiles / roles change (admin screen expects realtime-ish sync)
+  useEffect(() => {
+    const channel = supabase
+      .channel('admin-users-sync')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'profiles' },
+        () => queryClient.invalidateQueries({ queryKey: ['users-list'] })
+      )
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'user_product_roles' },
+        () => queryClient.invalidateQueries({ queryKey: ['users-list'] })
+      )
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'product_roles' },
+        () => queryClient.invalidateQueries({ queryKey: ['users-list'] })
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [queryClient]);
+
+  return query;
+}
+
+export function useCreateUser() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (input: CreateUserInput) => {
+      // Call the edge function to create the user
+      const { data, error } = await supabase.functions.invoke('create-user', {
+        body: {
+          firstName: input.firstName,
+          lastName: input.lastName,
+          email: input.email.toLowerCase(),
+          roleIds: input.roleIds,
+        },
+      });
+
+      if (error) {
+        throw new Error(error.message || 'Failed to create user');
+      }
+
+      if (data?.error) {
+        throw new Error(data.error);
+      }
+
+      return data.user;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['users-list'] });
+      queryClient.invalidateQueries({ queryKey: ['product-roles'] });
+      toast.success('User created successfully');
+    },
+    onError: (error) => {
+      // Don't show toast here, let the component handle the specific error message
+      console.error('Failed to create user:', error);
+    },
   });
 }
+
 
 export function useCreateUser() {
   const queryClient = useQueryClient();
