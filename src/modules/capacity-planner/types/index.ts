@@ -1,6 +1,7 @@
 /**
  * Capacity Planner Types
  * Enterprise Strategy Room - Capacity Planning Module
+ * Updated for Time-Boxed Allocation Booking System
  */
 
 export interface CapacityResource {
@@ -53,6 +54,57 @@ export interface CapacityAssignment {
   profiles?: { name: string; avatar_url?: string };
   projects?: { name: string; code?: string };
 }
+
+// ============= TIME-BOXED ALLOCATION TYPES =============
+
+/**
+ * Resource allocation with date range for time-boxed booking
+ */
+export interface ResourceAllocation {
+  id: string;
+  resource_id: string;
+  assignment_id: string;
+  allocation_percent: number;
+  start_date: string;           // ISO date string (YYYY-MM-DD)
+  end_date: string;             // ISO date string (YYYY-MM-DD)
+  created_at: string;
+  updated_at: string;
+  created_by: string | null;
+  // Joined fields
+  assignment_name?: string;
+  resource_name?: string;
+  profile_id?: string;
+}
+
+/**
+ * Input for creating/editing allocation bookings
+ */
+export interface AllocationBookingInput {
+  id?: string;                  // undefined for new, string for edit
+  assignment_id: string;
+  assignment_name: string;
+  allocation_percent: number;
+  start_date: string;
+  end_date: string;
+}
+
+/**
+ * Extended resource with time-boxed allocations
+ */
+export interface ResourceWithAllocations extends CapacityResource {
+  allocations: ResourceAllocation[];
+}
+
+/**
+ * Period for timeline view
+ */
+export interface TimelinePeriod {
+  label: string;
+  start: Date;
+  end: Date;
+}
+
+// ============= EXISTING TYPES =============
 
 export interface CapacityScenario {
   id: string;
@@ -107,7 +159,7 @@ export interface ResourceMetric extends CapacityResource {
 
 export type ViewType = 'cards' | 'table' | 'timeline' | 'assignments' | 'leveling';
 export type PeriodType = 'weekly' | 'monthly' | 'quarterly';
-export type GroupByType = 'none' | 'project' | 'department';
+export type GroupByType = 'none' | 'project' | 'department' | 'assignment';
 
 // Catalyst V5 Design System Colors
 export const CatalystColors = {

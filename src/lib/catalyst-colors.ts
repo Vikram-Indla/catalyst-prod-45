@@ -1,7 +1,19 @@
 /**
  * Catalyst V5 Color System for Capacity Planner
  * CIO Executive Cockpit - Refined Colors
+ * Updated with Golden Hour Palette for Time-Boxed Allocations
  */
+
+import type { ResourceAllocation } from '@/modules/capacity-planner/types';
+
+// Catalyst Golden Hour palette for projects
+export const CATALYST_GOLDEN_HOUR = {
+  olive: '#5c7c5c',
+  bronze: '#8b7355',
+  gold: '#c69c6d',
+  champagne: '#d4b896',
+  grey: '#c8ccd0',
+};
 
 export const CATALYST = {
   blue: {
@@ -30,9 +42,9 @@ export const CATALYST = {
     50: '#fffbeb',
   },
   olive: {
-    primary: '#4f8a4f',
+    primary: '#5c7c5c',
     dark: '#3d6b3d',
-    bg: 'rgba(79, 138, 79, 0.08)',
+    bg: 'rgba(92, 124, 92, 0.08)',
   },
   bronze: {
     600: '#8b7355',
@@ -262,4 +274,92 @@ export function getInitials(name: string): string {
     .join('')
     .toUpperCase()
     .slice(0, 2);
+}
+
+// ============= TIME-BOXED ALLOCATION HELPERS =============
+
+/**
+ * Get allocation status theme for time-boxed bookings
+ * Uses Golden Hour palette for over-allocation
+ */
+export function getAllocationStatusTheme(percentage: number): {
+  status: 'available' | 'partial' | 'optimal' | 'over';
+  label: string;
+  bg: string;
+  text: string;
+  bar: string;
+  border: string;
+} {
+  if (percentage === 0) {
+    return {
+      status: 'available',
+      label: 'Available',
+      bg: '#f0fdfa',
+      text: '#0d9488',
+      bar: '#0d9488',
+      border: '#0d9488',
+    };
+  }
+  if (percentage < 100) {
+    return {
+      status: 'partial',
+      label: `${100 - percentage}% Available`,
+      bg: '#f0fdfa',
+      text: '#0d9488',
+      bar: '#0d9488',
+      border: '#0d9488',
+    };
+  }
+  if (percentage === 100) {
+    return {
+      status: 'optimal',
+      label: 'Optimal',
+      bg: '#eff6ff',
+      text: '#2563eb',
+      bar: '#2563eb',
+      border: '#2563eb',
+    };
+  }
+  // Over-allocated - use Bronze from Golden Hour
+  return {
+    status: 'over',
+    label: 'Over-allocated',
+    bg: '#faf8f5',
+    text: '#8b7355',
+    bar: '#8b7355',
+    border: '#8b7355',
+  };
+}
+
+/**
+ * Calculate total allocation for a specific period
+ */
+export function calculatePeriodAllocation(
+  allocations: ResourceAllocation[],
+  periodStart: Date,
+  periodEnd: Date
+): number {
+  return allocations
+    .filter((a) => {
+      const allocStart = new Date(a.start_date);
+      const allocEnd = new Date(a.end_date);
+      // Check if allocation overlaps with period
+      return allocStart <= periodEnd && allocEnd >= periodStart;
+    })
+    .reduce((sum, a) => sum + a.allocation_percent, 0);
+}
+
+/**
+ * Get allocations that overlap with a specific period
+ */
+export function getAllocationsForPeriod(
+  allocations: ResourceAllocation[],
+  periodStart: Date,
+  periodEnd: Date
+): ResourceAllocation[] {
+  return allocations.filter((a) => {
+    const allocStart = new Date(a.start_date);
+    const allocEnd = new Date(a.end_date);
+    return allocStart <= periodEnd && allocEnd >= periodStart;
+  });
 }

@@ -11606,8 +11606,10 @@ export type Database = {
           assignment_id: string
           created_at: string
           created_by: string | null
+          end_date: string
           id: string
           resource_id: string
+          start_date: string
           updated_at: string
         }
         Insert: {
@@ -11615,8 +11617,10 @@ export type Database = {
           assignment_id: string
           created_at?: string
           created_by?: string | null
+          end_date?: string
           id?: string
           resource_id: string
+          start_date?: string
           updated_at?: string
         }
         Update: {
@@ -11624,8 +11628,10 @@ export type Database = {
           assignment_id?: string
           created_at?: string
           created_by?: string | null
+          end_date?: string
           id?: string
           resource_id?: string
+          start_date?: string
           updated_at?: string
         }
         Relationships: [

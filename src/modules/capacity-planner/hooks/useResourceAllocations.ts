@@ -1,39 +1,42 @@
+/**
+ * useResourceAllocations Hook
+ * Manages time-boxed resource allocations with date ranges
+ */
+
 import { useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import type { ResourceAllocation, AllocationBookingInput } from '../types';
 
-export interface ResourceAllocation {
-  id: string;
-  resource_id: string;
-  assignment_id: string;
-  allocation_percent: number;
-  created_at: string;
-  updated_at: string;
-  created_by: string | null;
-  // Joined fields
-  assignment_name?: string;
-  resource_name?: string;
-  profile_id?: string;
-}
+// Re-export type for backward compatibility
+export type { ResourceAllocation };
 
 export function useResourceAllocations() {
   const queryClient = useQueryClient();
 
-  // Fetch all resource allocations with joined assignment names
-  const { data: allocations = [], isLoading } = useQuery({
+  // Fetch all resource allocations with joined assignment names and dates
+  const { data: allocations = [], isLoading, refetch } = useQuery({
     queryKey: ['resource-allocations'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('resource_allocations')
         .select(
           `
-          *,
+          id,
+          resource_id,
+          assignment_id,
+          allocation_percent,
+          start_date,
+          end_date,
+          created_at,
+          updated_at,
+          created_by,
           resource_inventory!inner(id, name, profile_id),
           resource_assignments!inner(id, name)
         `
         )
-        .order('created_at', { ascending: false });
+        .order('start_date', { ascending: true });
 
       if (error) throw error;
 
@@ -42,6 +45,8 @@ export function useResourceAllocations() {
         resource_id: row.resource_id,
         assignment_id: row.assignment_id,
         allocation_percent: row.allocation_percent,
+        start_date: row.start_date,
+        end_date: row.end_date,
         created_at: row.created_at,
         updated_at: row.updated_at,
         created_by: row.created_by,
@@ -112,32 +117,125 @@ export function useResourceAllocations() {
     return created.id;
   };
 
-  // Add a new allocation for a resource to an assignment
+  // Get allocations for a specific resource (by profile_id or resource_id)
+  function getAllocationsForResource(resourceId: string): ResourceAllocation[] {
+    return allocations.filter(
+      (a) => a.profile_id === resourceId || a.resource_id === resourceId
+    );
+  }
+
+  // Get allocations overlapping a specific period
+  function getAllocationsForPeriod(
+    resourceId: string,
+    periodStart: Date,
+    periodEnd: Date
+  ): ResourceAllocation[] {
+    return allocations.filter((a) => {
+      if (a.resource_id !== resourceId && a.profile_id !== resourceId) return false;
+      const allocStart = new Date(a.start_date);
+      const allocEnd = new Date(a.end_date);
+      return allocStart <= periodEnd && allocEnd >= periodStart;
+    });
+  }
+
+  // Get total allocation for a resource (current)
+  function getTotalAllocation(profileId: string): number {
+    return allocations
+      .filter((a) => a.profile_id === profileId)
+      .reduce((sum, a) => sum + a.allocation_percent, 0);
+  }
+
+  // Calculate total allocation for a resource in a specific period
+  function getTotalAllocationForPeriod(
+    resourceId: string,
+    periodStart: Date,
+    periodEnd: Date
+  ): number {
+    const periodAllocations = getAllocationsForPeriod(resourceId, periodStart, periodEnd);
+    return periodAllocations.reduce((sum, a) => sum + a.allocation_percent, 0);
+  }
+
+  // Save multiple allocations (upsert) - NEW for time-boxed booking
+  const saveAllocations = useMutation({
+    mutationFn: async ({
+      resourceId,
+      allocations: newAllocations,
+    }: {
+      resourceId: string;
+      allocations: AllocationBookingInput[];
+    }) => {
+      const inventoryId = await ensureInventoryId(resourceId);
+
+      // Process each allocation
+      for (const alloc of newAllocations) {
+        if (alloc.id) {
+          // Update existing
+          const { error } = await supabase
+            .from('resource_allocations')
+            .update({
+              assignment_id: alloc.assignment_id,
+              allocation_percent: alloc.allocation_percent,
+              start_date: alloc.start_date,
+              end_date: alloc.end_date,
+              updated_at: new Date().toISOString(),
+            })
+            .eq('id', alloc.id);
+
+          if (error) throw error;
+        } else {
+          // Insert new
+          const { error } = await supabase.from('resource_allocations').insert({
+            resource_id: inventoryId,
+            assignment_id: alloc.assignment_id,
+            allocation_percent: alloc.allocation_percent,
+            start_date: alloc.start_date,
+            end_date: alloc.end_date,
+          });
+
+          if (error) throw error;
+        }
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['resource-allocations'] });
+      queryClient.invalidateQueries({ queryKey: ['capacity-planner-resources'] });
+      toast.success('Allocations saved');
+    },
+    onError: (error) => {
+      toast.error(`Failed to save allocations: ${error.message}`);
+    },
+  });
+
+  // Add a new allocation for a resource to an assignment (legacy support)
   const addAllocation = useMutation({
     mutationFn: async ({
       resourceId,
       assignmentId,
       allocationPercent,
+      startDate,
+      endDate,
     }: {
       resourceId: string;
       assignmentId: string;
       allocationPercent: number;
+      startDate?: string;
+      endDate?: string;
     }) => {
       const inventoryId = await ensureInventoryId(resourceId);
 
+      const today = new Date().toISOString().split('T')[0];
+      const threeMonths = new Date();
+      threeMonths.setMonth(threeMonths.getMonth() + 3);
+
       const { data, error } = await supabase
         .from('resource_allocations')
-        .upsert(
-          {
-            resource_id: inventoryId,
-            assignment_id: assignmentId,
-            allocation_percent: allocationPercent,
-            updated_at: new Date().toISOString(),
-          },
-          {
-            onConflict: 'resource_id,assignment_id',
-          }
-        )
+        .insert({
+          resource_id: inventoryId,
+          assignment_id: assignmentId,
+          allocation_percent: allocationPercent,
+          start_date: startDate || today,
+          end_date: endDate || threeMonths.toISOString().split('T')[0],
+        })
         .select()
         .single();
 
@@ -147,10 +245,10 @@ export function useResourceAllocations() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['resource-allocations'] });
       queryClient.invalidateQueries({ queryKey: ['capacity-planner-resources'] });
-      toast.success('Allocation updated');
+      toast.success('Allocation added');
     },
     onError: (error) => {
-      toast.error(`Failed to update allocation: ${error.message}`);
+      toast.error(`Failed to add allocation: ${error.message}`);
     },
   });
 
@@ -159,16 +257,24 @@ export function useResourceAllocations() {
     mutationFn: async ({
       allocationId,
       allocationPercent,
+      startDate,
+      endDate,
     }: {
       allocationId: string;
       allocationPercent: number;
+      startDate?: string;
+      endDate?: string;
     }) => {
+      const updateData: Record<string, unknown> = {
+        allocation_percent: allocationPercent,
+        updated_at: new Date().toISOString(),
+      };
+      if (startDate) updateData.start_date = startDate;
+      if (endDate) updateData.end_date = endDate;
+
       const { data, error } = await supabase
         .from('resource_allocations')
-        .update({
-          allocation_percent: allocationPercent,
-          updated_at: new Date().toISOString(),
-        })
+        .update(updateData)
         .eq('id', allocationId)
         .select()
         .single();
@@ -255,6 +361,10 @@ export function useResourceAllocations() {
         .eq('assignment_id', toAssignmentId)
         .maybeSingle();
 
+      const today = new Date().toISOString().split('T')[0];
+      const threeMonths = new Date();
+      threeMonths.setMonth(threeMonths.getMonth() + 3);
+
       if (targetAlloc) {
         const { error } = await supabase
           .from('resource_allocations')
@@ -269,6 +379,8 @@ export function useResourceAllocations() {
           resource_id: inventoryId,
           assignment_id: toAssignmentId,
           allocation_percent: transferPercent,
+          start_date: today,
+          end_date: threeMonths.toISOString().split('T')[0],
         });
         if (error) throw error;
       }
@@ -285,26 +397,36 @@ export function useResourceAllocations() {
     },
   });
 
-  // Get allocations for a specific resource (by profile_id)
-  const getAllocationsForResource = (profileId: string): ResourceAllocation[] => {
-    return allocations.filter((a) => a.profile_id === profileId);
-  };
+  // Delete all allocations for a resource
+  const deleteResourceAllocations = useMutation({
+    mutationFn: async (resourceId: string) => {
+      const inventoryId = await ensureInventoryId(resourceId);
 
-  // Get total allocation for a resource
-  const getTotalAllocation = (profileId: string): number => {
-    return allocations
-      .filter((a) => a.profile_id === profileId)
-      .reduce((sum, a) => sum + a.allocation_percent, 0);
-  };
+      const { error } = await supabase
+        .from('resource_allocations')
+        .delete()
+        .eq('resource_id', inventoryId);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['resource-allocations'] });
+    },
+  });
 
   return {
     allocations,
     isLoading,
+    refetch,
     addAllocation,
     updateAllocation,
     removeAllocation,
     transferAllocation,
+    saveAllocations,
+    deleteResourceAllocations,
     getAllocationsForResource,
+    getAllocationsForPeriod,
     getTotalAllocation,
+    getTotalAllocationForPeriod,
   };
 }
