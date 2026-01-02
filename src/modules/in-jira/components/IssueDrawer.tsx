@@ -1,43 +1,36 @@
 /**
  * Issue Drawer Component
- * Right-side slide-out panel for viewing/editing issue details
- * Two-panel layout: content (left) + details (right)
+ * Full Jira-style drawer with two-column layout, inline editing, and activity tabs
  */
 
-import React from 'react';
+import React, { useState, useCallback } from 'react';
+import { useParams } from 'react-router-dom';
 import { 
   X, 
-  ExternalLink, 
-  MoreHorizontal, 
-  MessageSquare,
-  Paperclip,
-  Link2,
-  GitBranch,
-  Clock,
-  User,
-  Tag,
-  Calendar,
-  Flag,
-  Layers
+  ExternalLink,
+  ChevronLeft,
+  ChevronRight,
+  Maximize2,
+  Minimize2,
+  Share2
 } from 'lucide-react';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { toast } from 'sonner';
 import { useInJira } from '../context/InJiraContext';
 import { cn } from '@/lib/utils';
-
-// Priority icon colors
-const PRIORITY_COLORS: Record<string, string> = {
-  highest: 'text-red-600',
-  high: 'text-orange-500',
-  medium: 'text-yellow-500',
-  low: 'text-green-500',
-  lowest: 'text-blue-400',
-};
+import { InlineEdit } from './drawer/InlineEdit';
+import { IssueActionsMenu } from './drawer/IssueActionsMenu';
+import { ActivityTabs } from './drawer/ActivityTabs';
+import { DetailsPanel } from './drawer/DetailsPanel';
+import { useIssueAudit } from '../hooks/useIssueAudit';
+import { StatusPill } from './StatusPill';
+import { TransitionControls } from './TransitionControls';
+import { Issue } from '../types';
 
 // Status category colors
 const STATUS_COLORS: Record<string, string> = {
@@ -46,8 +39,54 @@ const STATUS_COLORS: Record<string, string> = {
   'done': 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300',
 };
 
+// Mock users for demo
+const MOCK_USERS = [
+  { id: 'user1', name: 'John Doe', email: 'john@example.com' },
+  { id: 'user2', name: 'Jane Smith', email: 'jane@example.com' },
+  { id: 'user3', name: 'Bob Wilson', email: 'bob@example.com' },
+];
+
+// Mock comments for demo
+const MOCK_COMMENTS = [
+  {
+    id: 'c1',
+    content: 'Looking into this issue now. Will update once I have more information.',
+    authorId: 'user1',
+    authorName: 'John Doe',
+    createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+  },
+  {
+    id: 'c2',
+    content: 'Found the root cause. Working on a fix.',
+    authorId: 'user2',
+    authorName: 'Jane Smith',
+    createdAt: new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString(),
+    isInternal: true,
+  },
+];
+
+// Mock SLA statuses
+const MOCK_SLA = [
+  { name: 'Time to First Response', status: 'ontrack' as const, timeRemaining: '2h 30m' },
+  { name: 'Time to Resolution', status: 'ontrack' as const, timeRemaining: '6h 15m' },
+];
+
 export function IssueDrawer() {
+  const { projectKey } = useParams<{ projectKey: string }>();
   const { isDrawerOpen, selectedIssue, closeIssueDrawer } = useInJira();
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [issue, setIssue] = useState<Issue | null>(null);
+  const [comments, setComments] = useState(MOCK_COMMENTS);
+
+  // Sync local issue state with selected issue
+  React.useEffect(() => {
+    if (selectedIssue) {
+      setIssue(selectedIssue);
+    }
+  }, [selectedIssue]);
+
+  // Use audit hook
+  const { history, logFieldChange, logAction } = useIssueAudit(issue?.id || '');
 
   // Keyboard shortcut to close
   React.useEffect(() => {
@@ -61,7 +100,66 @@ export function IssueDrawer() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isDrawerOpen, closeIssueDrawer]);
 
-  if (!selectedIssue) {
+  // Handle field changes with audit logging
+  const handleFieldChange = useCallback((field: string, value: unknown) => {
+    if (!issue) return;
+    
+    const oldValue = (issue as any)[field];
+    setIssue(prev => prev ? { ...prev, [field]: value } : null);
+    logFieldChange(field, oldValue, value);
+    toast.success(`${field} updated`);
+  }, [issue, logFieldChange]);
+
+  // Handle actions with audit logging
+  const handleAction = useCallback((action: string, data?: Record<string, unknown>) => {
+    logAction(action, data);
+    
+    switch (action) {
+      case 'clone':
+        toast.success('Issue cloned');
+        break;
+      case 'move':
+        toast.info('Move dialog coming soon');
+        break;
+      case 'archive':
+        toast.success('Issue archived');
+        closeIssueDrawer();
+        break;
+      case 'delete':
+        toast.success('Issue deleted');
+        closeIssueDrawer();
+        break;
+      case 'export':
+        toast.success(`Exporting as ${(data?.format as string)?.toUpperCase()}`);
+        break;
+    }
+  }, [logAction, closeIssueDrawer]);
+
+  // Handle add comment
+  const handleAddComment = useCallback((content: string, isInternal?: boolean) => {
+    const newComment = {
+      id: `c${Date.now()}`,
+      content,
+      authorId: 'current-user',
+      authorName: 'You',
+      createdAt: new Date().toISOString(),
+      isInternal,
+    };
+    setComments(prev => [...prev, newComment]);
+    logAction('comment_added', { isInternal });
+    toast.success('Comment added');
+  }, [logAction]);
+
+  // Handle transition
+  const handleTransition = useCallback((transitionId: string, toStatus: string) => {
+    if (!issue) return;
+    const oldStatus = issue.status;
+    setIssue(prev => prev ? { ...prev, status: toStatus } : null);
+    logAction('status_transition', { from: oldStatus, to: toStatus, transitionId });
+    toast.success(`Transitioned to ${toStatus}`);
+  }, [issue, logAction]);
+
+  if (!issue) {
     return (
       <Sheet open={isDrawerOpen} onOpenChange={() => closeIssueDrawer()}>
         <SheetContent side="right" className="w-full sm:max-w-4xl p-0">
@@ -75,30 +173,83 @@ export function IssueDrawer() {
 
   return (
     <Sheet open={isDrawerOpen} onOpenChange={() => closeIssueDrawer()}>
-      <SheetContent side="right" className="w-full sm:max-w-4xl p-0 flex flex-col">
+      <SheetContent 
+        side="right" 
+        className={cn(
+          "p-0 flex flex-col transition-all duration-200",
+          isExpanded ? "w-full sm:max-w-6xl" : "w-full sm:max-w-4xl"
+        )}
+      >
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-3 border-b border-border-default bg-surface-1">
           <div className="flex items-center gap-3">
-            <span className="text-sm font-medium text-accent-primary">
-              {selectedIssue.key}
+            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={closeIssueDrawer}>
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+            <span className="text-sm font-medium text-accent-primary hover:underline cursor-pointer">
+              {issue.key}
             </span>
-            <Badge 
-              variant="secondary" 
-              className={cn(
-                "text-xs font-medium",
-                STATUS_COLORS[selectedIssue.statusCategory]
-              )}
-            >
-              {selectedIssue.status}
-            </Badge>
+            <StatusPill status={issue.status} statusCategory={issue.statusCategory} />
           </div>
+          
           <div className="flex items-center gap-1">
-            <Button variant="ghost" size="icon" className="h-8 w-8">
-              <ExternalLink className="h-4 w-4" />
-            </Button>
-            <Button variant="ghost" size="icon" className="h-8 w-8">
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
+            {/* Transition Controls */}
+            <TransitionControls 
+              currentStatus={issue.status}
+              statusCategory={issue.statusCategory}
+              onTransition={handleTransition}
+            />
+            
+            <Separator orientation="vertical" className="h-6 mx-2" />
+            
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button variant="ghost" size="icon" className="h-8 w-8">
+                    <Share2 className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Share</TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+            
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button variant="ghost" size="icon" className="h-8 w-8">
+                    <ExternalLink className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Open in new tab</TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+            
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    className="h-8 w-8"
+                    onClick={() => setIsExpanded(!isExpanded)}
+                  >
+                    {isExpanded ? (
+                      <Minimize2 className="h-4 w-4" />
+                    ) : (
+                      <Maximize2 className="h-4 w-4" />
+                    )}
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>{isExpanded ? 'Collapse' : 'Expand'}</TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+            
+            <IssueActionsMenu 
+              issueId={issue.id} 
+              issueKey={issue.key}
+              onAction={handleAction}
+            />
+            
             <Button variant="ghost" size="icon" className="h-8 w-8" onClick={closeIssueDrawer}>
               <X className="h-4 w-4" />
             </Button>
@@ -111,232 +262,70 @@ export function IssueDrawer() {
           <div className="flex-1 min-w-0 border-r border-border-default">
             <ScrollArea className="h-full">
               <div className="p-6">
-                {/* Summary/Title */}
-                <h2 className="text-lg font-semibold text-text-primary mb-4">
-                  {selectedIssue.summary}
-                </h2>
+                {/* Summary/Title - Inline Editable */}
+                <InlineEdit
+                  value={issue.summary}
+                  onSave={(val) => handleFieldChange('summary', val)}
+                  placeholder="Enter summary..."
+                  displayClassName="text-xl font-semibold text-text-primary"
+                  inputClassName="text-xl font-semibold"
+                  className="mb-4"
+                />
 
-                {/* Description */}
+                {/* Description - Inline Editable */}
                 <div className="mb-6">
                   <h3 className="text-sm font-medium text-text-secondary mb-2">Description</h3>
-                  <div className="text-sm text-text-secondary prose prose-sm max-w-none">
-                    {selectedIssue.description || (
-                      <span className="text-text-tertiary italic">No description provided</span>
-                    )}
-                  </div>
+                  <InlineEdit
+                    value={issue.description || ''}
+                    onSave={(val) => handleFieldChange('description', val)}
+                    placeholder="Add a description..."
+                    multiline
+                    displayClassName="text-sm text-text-secondary prose prose-sm max-w-none"
+                  />
                 </div>
 
                 <Separator className="my-6" />
 
-                {/* Tabs for Activity, Comments, etc */}
-                <Tabs defaultValue="comments" className="w-full">
-                  <TabsList className="w-full justify-start h-10 bg-transparent border-b border-border-default rounded-none p-0">
-                    <TabsTrigger 
-                      value="comments" 
-                      className="flex items-center gap-1.5 px-3 py-2 data-[state=active]:border-b-2 data-[state=active]:border-accent-primary rounded-none"
-                    >
-                      <MessageSquare className="h-4 w-4" />
-                      Comments
-                    </TabsTrigger>
-                    <TabsTrigger 
-                      value="history" 
-                      className="flex items-center gap-1.5 px-3 py-2 data-[state=active]:border-b-2 data-[state=active]:border-accent-primary rounded-none"
-                    >
-                      <Clock className="h-4 w-4" />
-                      History
-                    </TabsTrigger>
-                    <TabsTrigger 
-                      value="links" 
-                      className="flex items-center gap-1.5 px-3 py-2 data-[state=active]:border-b-2 data-[state=active]:border-accent-primary rounded-none"
-                    >
-                      <Link2 className="h-4 w-4" />
-                      Links
-                    </TabsTrigger>
-                    <TabsTrigger 
-                      value="attachments" 
-                      className="flex items-center gap-1.5 px-3 py-2 data-[state=active]:border-b-2 data-[state=active]:border-accent-primary rounded-none"
-                    >
-                      <Paperclip className="h-4 w-4" />
-                      Attachments
-                    </TabsTrigger>
-                  </TabsList>
-
-                  <TabsContent value="comments" className="mt-4">
-                    <div className="text-sm text-text-tertiary text-center py-8">
-                      No comments yet. Be the first to comment.
-                    </div>
-                  </TabsContent>
-
-                  <TabsContent value="history" className="mt-4">
-                    <div className="text-sm text-text-tertiary text-center py-8">
-                      No activity recorded yet.
-                    </div>
-                  </TabsContent>
-
-                  <TabsContent value="links" className="mt-4">
-                    <div className="text-sm text-text-tertiary text-center py-8">
-                      No linked issues.
-                    </div>
-                  </TabsContent>
-
-                  <TabsContent value="attachments" className="mt-4">
-                    <div className="text-sm text-text-tertiary text-center py-8">
-                      No attachments.
-                    </div>
-                  </TabsContent>
-                </Tabs>
+                {/* Activity Tabs */}
+                <ActivityTabs
+                  issueId={issue.id}
+                  comments={comments}
+                  history={history.map(h => ({
+                    id: h.id,
+                    field: h.field || h.action,
+                    fromValue: h.fromValue,
+                    toValue: h.toValue,
+                    actorId: h.actorId,
+                    actorName: h.actorName,
+                    actorAvatar: h.actorAvatar,
+                    changedAt: h.createdAt,
+                  }))}
+                  workLog={[]}
+                  slaStatuses={MOCK_SLA}
+                  onAddComment={handleAddComment}
+                  onEditComment={(id, content) => {
+                    setComments(prev => prev.map(c => c.id === id ? { ...c, content, updatedAt: new Date().toISOString() } : c));
+                    logAction('comment_edited', { commentId: id });
+                  }}
+                  onDeleteComment={(id) => {
+                    setComments(prev => prev.filter(c => c.id !== id));
+                    logAction('comment_deleted', { commentId: id });
+                  }}
+                />
               </div>
             </ScrollArea>
           </div>
 
           {/* Right panel - Details */}
-          <div className="w-72 flex-shrink-0 bg-surface-2">
-            <ScrollArea className="h-full">
-              <div className="p-4 space-y-4">
-                {/* Type */}
-                <div>
-                  <label className="text-xs font-medium text-text-tertiary uppercase tracking-wide">
-                    Type
-                  </label>
-                  <div className="mt-1 flex items-center gap-2">
-                    <Layers className="h-4 w-4 text-text-secondary" />
-                    <span className="text-sm text-text-primary capitalize">
-                      {selectedIssue.type}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Priority */}
-                <div>
-                  <label className="text-xs font-medium text-text-tertiary uppercase tracking-wide">
-                    Priority
-                  </label>
-                  <div className="mt-1 flex items-center gap-2">
-                    <Flag className={cn("h-4 w-4", PRIORITY_COLORS[selectedIssue.priority])} />
-                    <span className="text-sm text-text-primary capitalize">
-                      {selectedIssue.priority}
-                    </span>
-                  </div>
-                </div>
-
-                <Separator />
-
-                {/* Assignee */}
-                <div>
-                  <label className="text-xs font-medium text-text-tertiary uppercase tracking-wide">
-                    Assignee
-                  </label>
-                  <div className="mt-1 flex items-center gap-2">
-                    {selectedIssue.assigneeId ? (
-                      <>
-                        <Avatar className="h-6 w-6">
-                          <AvatarFallback className="text-xs">UN</AvatarFallback>
-                        </Avatar>
-                        <span className="text-sm text-text-primary">Unassigned</span>
-                      </>
-                    ) : (
-                      <>
-                        <User className="h-4 w-4 text-text-tertiary" />
-                        <span className="text-sm text-text-tertiary">Unassigned</span>
-                      </>
-                    )}
-                  </div>
-                </div>
-
-                {/* Reporter */}
-                <div>
-                  <label className="text-xs font-medium text-text-tertiary uppercase tracking-wide">
-                    Reporter
-                  </label>
-                  <div className="mt-1 flex items-center gap-2">
-                    <User className="h-4 w-4 text-text-tertiary" />
-                    <span className="text-sm text-text-tertiary">Unknown</span>
-                  </div>
-                </div>
-
-                <Separator />
-
-                {/* Labels */}
-                <div>
-                  <label className="text-xs font-medium text-text-tertiary uppercase tracking-wide">
-                    Labels
-                  </label>
-                  <div className="mt-1">
-                    {selectedIssue.labels && selectedIssue.labels.length > 0 ? (
-                      <div className="flex flex-wrap gap-1">
-                        {selectedIssue.labels.map(label => (
-                          <Badge key={label} variant="outline" className="text-xs">
-                            {label}
-                          </Badge>
-                        ))}
-                      </div>
-                    ) : (
-                      <span className="text-sm text-text-tertiary">None</span>
-                    )}
-                  </div>
-                </div>
-
-                {/* Story Points */}
-                {selectedIssue.storyPoints !== undefined && (
-                  <div>
-                    <label className="text-xs font-medium text-text-tertiary uppercase tracking-wide">
-                      Story Points
-                    </label>
-                    <div className="mt-1 text-sm text-text-primary">
-                      {selectedIssue.storyPoints}
-                    </div>
-                  </div>
-                )}
-
-                {/* Sprint */}
-                {selectedIssue.sprintId && (
-                  <div>
-                    <label className="text-xs font-medium text-text-tertiary uppercase tracking-wide">
-                      Sprint
-                    </label>
-                    <div className="mt-1 flex items-center gap-2">
-                      <GitBranch className="h-4 w-4 text-text-secondary" />
-                      <span className="text-sm text-text-primary">Sprint {selectedIssue.sprintId}</span>
-                    </div>
-                  </div>
-                )}
-
-                <Separator />
-
-                {/* Due Date */}
-                <div>
-                  <label className="text-xs font-medium text-text-tertiary uppercase tracking-wide">
-                    Due Date
-                  </label>
-                  <div className="mt-1 flex items-center gap-2">
-                    <Calendar className="h-4 w-4 text-text-tertiary" />
-                    <span className="text-sm text-text-tertiary">
-                      {selectedIssue.dueDate || 'None'}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Created */}
-                <div>
-                  <label className="text-xs font-medium text-text-tertiary uppercase tracking-wide">
-                    Created
-                  </label>
-                  <div className="mt-1 text-sm text-text-secondary">
-                    {new Date(selectedIssue.createdAt).toLocaleDateString()}
-                  </div>
-                </div>
-
-                {/* Updated */}
-                <div>
-                  <label className="text-xs font-medium text-text-tertiary uppercase tracking-wide">
-                    Updated
-                  </label>
-                  <div className="mt-1 text-sm text-text-secondary">
-                    {new Date(selectedIssue.updatedAt).toLocaleDateString()}
-                  </div>
-                </div>
-              </div>
-            </ScrollArea>
+          <div className={cn(
+            "flex-shrink-0 bg-surface-2 transition-all",
+            isExpanded ? "w-80" : "w-72"
+          )}>
+            <DetailsPanel
+              issue={issue}
+              users={MOCK_USERS}
+              onFieldChange={handleFieldChange}
+            />
           </div>
         </div>
       </SheetContent>
