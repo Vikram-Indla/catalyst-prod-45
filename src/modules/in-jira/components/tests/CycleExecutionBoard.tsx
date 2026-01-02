@@ -1,9 +1,10 @@
 /**
  * Cycle Execution Board
  * Kanban-style board for test cycle execution status management
+ * Uses configurable columns from board_configs
  */
 
-import React, { useState, useMemo } from 'react';
+import React from 'react';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -29,9 +30,11 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { CycleExecution, ExecutionStatus, ExecutionsByStatus } from '../../hooks/useCycleExecutions';
+import { BoardColumn } from '../../hooks/useCycleBoardConfig';
 
 interface CycleExecutionBoardProps {
   executionsByStatus: ExecutionsByStatus;
+  columns: BoardColumn[];
   onStatusChange: (executionId: string, status: ExecutionStatus) => void;
   onAssign: (executionId: string, userId: string | null) => void;
   onViewExecution?: (execution: CycleExecution) => void;
@@ -41,21 +44,15 @@ interface CycleExecutionBoardProps {
   isScopeLocked: boolean;
 }
 
-interface ColumnConfig {
-  id: ExecutionStatus;
-  title: string;
-  icon: React.ReactNode;
-  color: string;
-  bgColor: string;
+function getColumnIcon(iconName: string) {
+  switch (iconName) {
+    case 'check-circle': return <CheckCircle2 className="h-4 w-4" />;
+    case 'x-circle': return <XCircle className="h-4 w-4" />;
+    case 'alert-triangle': return <AlertTriangle className="h-4 w-4" />;
+    case 'skip-forward': return <SkipForward className="h-4 w-4" />;
+    default: return <Circle className="h-4 w-4" />;
+  }
 }
-
-const COLUMNS: ColumnConfig[] = [
-  { id: 'not_run', title: 'Not Run', icon: <Circle className="h-4 w-4" />, color: 'text-text-tertiary', bgColor: 'bg-surface-3' },
-  { id: 'passed', title: 'Passed', icon: <CheckCircle2 className="h-4 w-4" />, color: 'text-status-success', bgColor: 'bg-status-success/10' },
-  { id: 'failed', title: 'Failed', icon: <XCircle className="h-4 w-4" />, color: 'text-status-error', bgColor: 'bg-status-error/10' },
-  { id: 'blocked', title: 'Blocked', icon: <AlertTriangle className="h-4 w-4" />, color: 'text-status-warning', bgColor: 'bg-status-warning/10' },
-  { id: 'skipped', title: 'Skipped', icon: <SkipForward className="h-4 w-4" />, color: 'text-text-quaternary', bgColor: 'bg-surface-2' },
-];
 
 function getPriorityColor(priority: string) {
   switch (priority) {
@@ -69,6 +66,7 @@ function getPriorityColor(priority: string) {
 
 export function CycleExecutionBoard({
   executionsByStatus,
+  columns,
   onStatusChange,
   onAssign,
   onViewExecution,
@@ -98,17 +96,22 @@ export function CycleExecutionBoard({
   };
 
   const selectAllInColumn = (status: ExecutionStatus) => {
-    const ids = executionsByStatus[status].map(e => e.id);
+    const ids = executionsByStatus[status]?.map(e => e.id) || [];
     const next = new Set(selectedIds);
     ids.forEach(id => next.add(id));
     onSelectionChange(next);
   };
 
+  // Sort columns by order
+  const sortedColumns = [...columns].sort((a, b) => a.order - b.order);
+
   return (
     <DragDropContext onDragEnd={handleDragEnd}>
       <div className="flex gap-4 h-full overflow-x-auto pb-4">
-        {COLUMNS.map(column => {
-          const items = executionsByStatus[column.id];
+        {sortedColumns.map(column => {
+          const statusKey = column.statusKey as ExecutionStatus;
+          const items = executionsByStatus[statusKey] || [];
+          
           return (
             <div
               key={column.id}
@@ -117,7 +120,7 @@ export function CycleExecutionBoard({
               {/* Column Header */}
               <div className={cn('px-3 py-2.5 border-b border-border-default flex items-center justify-between', column.bgColor)}>
                 <div className="flex items-center gap-2">
-                  <span className={column.color}>{column.icon}</span>
+                  <span className={column.color}>{getColumnIcon(column.icon || 'circle')}</span>
                   <span className="font-medium text-sm text-text-primary">{column.title}</span>
                   <Badge variant="secondary" className="text-xs">{items.length}</Badge>
                 </div>
@@ -126,7 +129,7 @@ export function CycleExecutionBoard({
                     variant="ghost"
                     size="sm"
                     className="h-6 text-xs"
-                    onClick={() => selectAllInColumn(column.id)}
+                    onClick={() => selectAllInColumn(statusKey)}
                   >
                     Select All
                   </Button>
@@ -134,7 +137,7 @@ export function CycleExecutionBoard({
               </div>
 
               {/* Column Content */}
-              <Droppable droppableId={column.id} isDropDisabled={!canEdit}>
+              <Droppable droppableId={statusKey} isDropDisabled={!canEdit}>
                 {(provided, snapshot) => (
                   <ScrollArea className="flex-1">
                     <div
