@@ -18324,6 +18324,104 @@ export type Database = {
           },
         ]
       }
+      test_narrative_reports: {
+        Row: {
+          ai_action_id: string | null
+          created_at: string
+          created_by: string | null
+          executive_summary: string | null
+          export_formats: string[] | null
+          highlights: Json | null
+          id: string
+          metrics_snapshot: Json | null
+          narrative_sections: Json | null
+          period_end: string
+          period_start: string
+          program_id: string | null
+          published_at: string | null
+          published_by: string | null
+          recommendations: Json | null
+          report_type: string
+          risks_and_blockers: Json | null
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          ai_action_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          executive_summary?: string | null
+          export_formats?: string[] | null
+          highlights?: Json | null
+          id?: string
+          metrics_snapshot?: Json | null
+          narrative_sections?: Json | null
+          period_end: string
+          period_start: string
+          program_id?: string | null
+          published_at?: string | null
+          published_by?: string | null
+          recommendations?: Json | null
+          report_type?: string
+          risks_and_blockers?: Json | null
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          ai_action_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          executive_summary?: string | null
+          export_formats?: string[] | null
+          highlights?: Json | null
+          id?: string
+          metrics_snapshot?: Json | null
+          narrative_sections?: Json | null
+          period_end?: string
+          period_start?: string
+          program_id?: string | null
+          published_at?: string | null
+          published_by?: string | null
+          recommendations?: Json | null
+          report_type?: string
+          risks_and_blockers?: Json | null
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "test_narrative_reports_ai_action_id_fkey"
+            columns: ["ai_action_id"]
+            isOneToOne: false
+            referencedRelation: "test_ai_actions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_narrative_reports_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_narrative_reports_program_id_fkey"
+            columns: ["program_id"]
+            isOneToOne: false
+            referencedRelation: "programs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_narrative_reports_published_by_fkey"
+            columns: ["published_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       test_notification_preferences: {
         Row: {
           created_at: string | null
@@ -18377,6 +18475,101 @@ export type Database = {
           weekly_test_report?: boolean | null
         }
         Relationships: []
+      }
+      test_recommendations: {
+        Row: {
+          action_data: Json | null
+          ai_action_id: string | null
+          confidence_score: number | null
+          created_at: string
+          created_by: string | null
+          description: string | null
+          id: string
+          priority: string
+          program_id: string | null
+          recommendation_type: string
+          resolution_notes: string | null
+          resolved_at: string | null
+          resolved_by: string | null
+          source_metrics: Json | null
+          status: string
+          target_entity_id: string | null
+          target_entity_type: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          action_data?: Json | null
+          ai_action_id?: string | null
+          confidence_score?: number | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          priority?: string
+          program_id?: string | null
+          recommendation_type: string
+          resolution_notes?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          source_metrics?: Json | null
+          status?: string
+          target_entity_id?: string | null
+          target_entity_type?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          action_data?: Json | null
+          ai_action_id?: string | null
+          confidence_score?: number | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          priority?: string
+          program_id?: string | null
+          recommendation_type?: string
+          resolution_notes?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          source_metrics?: Json | null
+          status?: string
+          target_entity_id?: string | null
+          target_entity_type?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "test_recommendations_ai_action_id_fkey"
+            columns: ["ai_action_id"]
+            isOneToOne: false
+            referencedRelation: "test_ai_actions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_recommendations_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_recommendations_program_id_fkey"
+            columns: ["program_id"]
+            isOneToOne: false
+            referencedRelation: "programs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_recommendations_resolved_by_fkey"
+            columns: ["resolved_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       test_report_schedules: {
         Row: {
@@ -18805,6 +18998,124 @@ export type Database = {
           value?: string
         }
         Relationships: []
+      }
+      traceability_findings: {
+        Row: {
+          affected_items: Json | null
+          ai_action_id: string | null
+          created_at: string
+          created_by: string | null
+          description: string | null
+          due_date: string | null
+          finding_type: string
+          id: string
+          linked_defect_id: string | null
+          linked_task_id: string | null
+          owner_id: string | null
+          program_id: string | null
+          recommended_action: string | null
+          resolution_notes: string | null
+          resolved_at: string | null
+          resolved_by: string | null
+          severity: string
+          source_entity_id: string | null
+          source_entity_type: string | null
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          affected_items?: Json | null
+          ai_action_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          due_date?: string | null
+          finding_type: string
+          id?: string
+          linked_defect_id?: string | null
+          linked_task_id?: string | null
+          owner_id?: string | null
+          program_id?: string | null
+          recommended_action?: string | null
+          resolution_notes?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          severity?: string
+          source_entity_id?: string | null
+          source_entity_type?: string | null
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          affected_items?: Json | null
+          ai_action_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          due_date?: string | null
+          finding_type?: string
+          id?: string
+          linked_defect_id?: string | null
+          linked_task_id?: string | null
+          owner_id?: string | null
+          program_id?: string | null
+          recommended_action?: string | null
+          resolution_notes?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          severity?: string
+          source_entity_id?: string | null
+          source_entity_type?: string | null
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "traceability_findings_ai_action_id_fkey"
+            columns: ["ai_action_id"]
+            isOneToOne: false
+            referencedRelation: "test_ai_actions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "traceability_findings_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "traceability_findings_linked_defect_id_fkey"
+            columns: ["linked_defect_id"]
+            isOneToOne: false
+            referencedRelation: "defects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "traceability_findings_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "traceability_findings_program_id_fkey"
+            columns: ["program_id"]
+            isOneToOne: false
+            referencedRelation: "programs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "traceability_findings_resolved_by_fkey"
+            columns: ["resolved_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       transition_approval_configs: {
         Row: {
