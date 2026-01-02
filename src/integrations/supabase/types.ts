@@ -3952,6 +3952,98 @@ export type Database = {
           },
         ]
       }
+      enterprise_grid_user_state: {
+        Row: {
+          active_view_id: string | null
+          created_at: string
+          grid_id: string
+          id: string
+          quick_filters: Json | null
+          search_query: string | null
+          selected_row_ids: string[] | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          active_view_id?: string | null
+          created_at?: string
+          grid_id: string
+          id?: string
+          quick_filters?: Json | null
+          search_query?: string | null
+          selected_row_ids?: string[] | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          active_view_id?: string | null
+          created_at?: string
+          grid_id?: string
+          id?: string
+          quick_filters?: Json | null
+          search_query?: string | null
+          selected_row_ids?: string[] | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "enterprise_grid_user_state_active_view_id_fkey"
+            columns: ["active_view_id"]
+            isOneToOne: false
+            referencedRelation: "enterprise_grid_views"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      enterprise_grid_views: {
+        Row: {
+          columns_config: Json
+          created_at: string
+          filter_config: Json | null
+          grid_id: string
+          group_by: string | null
+          id: string
+          is_default: boolean | null
+          is_shared: boolean | null
+          name: string
+          row_height: string | null
+          sort_config: Json | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          columns_config?: Json
+          created_at?: string
+          filter_config?: Json | null
+          grid_id: string
+          group_by?: string | null
+          id?: string
+          is_default?: boolean | null
+          is_shared?: boolean | null
+          name: string
+          row_height?: string | null
+          sort_config?: Json | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          columns_config?: Json
+          created_at?: string
+          filter_config?: Json | null
+          grid_id?: string
+          group_by?: string | null
+          id?: string
+          is_default?: boolean | null
+          is_shared?: boolean | null
+          name?: string
+          row_height?: string | null
+          sort_config?: Json | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       epic_acceptance_criteria: {
         Row: {
           created_at: string
