@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { X, Plus, Trash2, AlertTriangle, Calendar } from 'lucide-react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -137,9 +137,9 @@ export function AllocationBookingModal({
           <DialogTitle className="text-lg font-semibold text-slate-900">
             {mode === 'add' ? 'Book Resource Allocation' : 'Edit Resource Allocations'}
           </DialogTitle>
-          <p className="text-sm text-slate-500 mt-1">
+          <DialogDescription className="text-sm text-slate-500 mt-1">
             Assign {resource.name} to projects for specific time periods (2 weeks to 3 months)
-          </p>
+          </DialogDescription>
         </DialogHeader>
 
         {/* Body - Scrollable */}
