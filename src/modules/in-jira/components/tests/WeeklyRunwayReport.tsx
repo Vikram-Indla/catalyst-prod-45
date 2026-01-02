@@ -42,7 +42,7 @@ import type {
   AssigneeCapacity,
   DefectTrend,
   ReleaseReadiness
-} from '../hooks/useTestReportMetrics';
+} from '../../hooks/useTestReportMetrics';
 
 interface WeeklyRunwayReportProps {
   metrics: WeeklyMetrics | null;

@@ -16531,6 +16531,133 @@ export type Database = {
           },
         ]
       }
+      test_ai_actions: {
+        Row: {
+          action_type: string
+          approved: boolean | null
+          approved_at: string | null
+          approved_by: string | null
+          confidence: number | null
+          created_at: string | null
+          created_by: string | null
+          entity_id: string
+          entity_type: string
+          error_message: string | null
+          id: string
+          input_sources: Json | null
+          latency_ms: number | null
+          model: string
+          output_summary_json: Json | null
+          program_id: string | null
+          prompt_hash: string | null
+          provider: string
+          tokens_used: number | null
+        }
+        Insert: {
+          action_type: string
+          approved?: boolean | null
+          approved_at?: string | null
+          approved_by?: string | null
+          confidence?: number | null
+          created_at?: string | null
+          created_by?: string | null
+          entity_id: string
+          entity_type: string
+          error_message?: string | null
+          id?: string
+          input_sources?: Json | null
+          latency_ms?: number | null
+          model: string
+          output_summary_json?: Json | null
+          program_id?: string | null
+          prompt_hash?: string | null
+          provider: string
+          tokens_used?: number | null
+        }
+        Update: {
+          action_type?: string
+          approved?: boolean | null
+          approved_at?: string | null
+          approved_by?: string | null
+          confidence?: number | null
+          created_at?: string | null
+          created_by?: string | null
+          entity_id?: string
+          entity_type?: string
+          error_message?: string | null
+          id?: string
+          input_sources?: Json | null
+          latency_ms?: number | null
+          model?: string
+          output_summary_json?: Json | null
+          program_id?: string | null
+          prompt_hash?: string | null
+          provider?: string
+          tokens_used?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "test_ai_actions_program_id_fkey"
+            columns: ["program_id"]
+            isOneToOne: false
+            referencedRelation: "programs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      test_ai_settings: {
+        Row: {
+          api_key_ref: string | null
+          auto_approve: boolean | null
+          confidence_threshold: number | null
+          created_at: string | null
+          id: string
+          is_enabled: boolean | null
+          model: string
+          program_id: string | null
+          prompt_templates_json: Json | null
+          provider: string
+          updated_at: string | null
+          updated_by: string | null
+        }
+        Insert: {
+          api_key_ref?: string | null
+          auto_approve?: boolean | null
+          confidence_threshold?: number | null
+          created_at?: string | null
+          id?: string
+          is_enabled?: boolean | null
+          model?: string
+          program_id?: string | null
+          prompt_templates_json?: Json | null
+          provider?: string
+          updated_at?: string | null
+          updated_by?: string | null
+        }
+        Update: {
+          api_key_ref?: string | null
+          auto_approve?: boolean | null
+          confidence_threshold?: number | null
+          created_at?: string | null
+          id?: string
+          is_enabled?: boolean | null
+          model?: string
+          program_id?: string | null
+          prompt_templates_json?: Json | null
+          provider?: string
+          updated_at?: string | null
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "test_ai_settings_program_id_fkey"
+            columns: ["program_id"]
+            isOneToOne: true
+            referencedRelation: "programs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       test_case_bulk_operations: {
         Row: {
           case_ids: string[]
