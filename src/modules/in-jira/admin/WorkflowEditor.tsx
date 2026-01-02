@@ -65,11 +65,11 @@ const initialWorkflow: WorkflowData = {
   description: 'Standard workflow for development teams',
   isActive: true,
   statuses: [
-    { id: 's-1', name: 'Backlog', category: 'todo', color: '#DFE1E6' },
-    { id: 's-2', name: 'To Do', category: 'todo', color: '#DFE1E6' },
-    { id: 's-3', name: 'In Progress', category: 'in_progress', color: '#0052CC' },
-    { id: 's-4', name: 'In Review', category: 'in_progress', color: '#FF991F' },
-    { id: 's-5', name: 'Done', category: 'done', color: '#36B37E' },
+    { id: 's-1', name: 'Backlog', category: 'todo', color: 'hsl(var(--muted))' },
+    { id: 's-2', name: 'To Do', category: 'todo', color: 'hsl(var(--muted))' },
+    { id: 's-3', name: 'In Progress', category: 'in_progress', color: 'hsl(var(--accent-primary))' },
+    { id: 's-4', name: 'In Review', category: 'in_progress', color: 'hsl(var(--status-warning))' },
+    { id: 's-5', name: 'Done', category: 'done', color: 'hsl(var(--status-success))' },
   ],
   transitions: [
     { id: 't-1', name: 'Start Progress', fromStatusId: 's-1', toStatusId: 's-3', isGlobal: false, buttonText: 'Start' },
@@ -102,7 +102,7 @@ export function WorkflowEditor() {
 
   const handleAddStatus = () => {
     setEditingStatus(null);
-    setStatusForm({ category: 'todo', color: '#DFE1E6' });
+    setStatusForm({ category: 'todo', color: 'hsl(var(--muted))' });
     setIsStatusDialogOpen(true);
   };
 
@@ -130,7 +130,7 @@ export function WorkflowEditor() {
         id: `s-${Date.now()}`,
         name: statusForm.name!,
         category: statusForm.category || 'todo',
-        color: statusForm.color || '#DFE1E6',
+        color: statusForm.color || 'hsl(var(--muted))',
       };
       setWorkflow(prev => ({
         ...prev,

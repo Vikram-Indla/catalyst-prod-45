@@ -122,8 +122,9 @@ export function useTestAIGeneration(programId: string | null) {
           }]);
         }
 
-        // Link to story via traceability
-        await (supabase.from('test_case_traceability') as any).insert([{
+        // Link to story via traceability - use raw query to avoid type issues
+        const client = supabase as unknown as { from: (table: string) => { insert: (data: unknown[]) => Promise<unknown> } };
+        await client.from('test_case_traceability').insert([{
           case_id: testCase.id,
           work_item_id: input.storyId,
           work_item_type: 'story',

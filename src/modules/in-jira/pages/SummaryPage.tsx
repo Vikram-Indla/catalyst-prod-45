@@ -155,7 +155,7 @@ export function SummaryPage() {
                     <circle
                       cx="50" cy="50" r="40"
                       fill="none"
-                      stroke="rgb(34 197 94)"
+                      className="stroke-status-success"
                       strokeWidth="20"
                       strokeDasharray="144.51 251.33"
                       strokeDashoffset="0"
@@ -164,7 +164,7 @@ export function SummaryPage() {
                     <circle
                       cx="50" cy="50" r="40"
                       fill="none"
-                      stroke="rgb(59 130 246)"
+                      className="stroke-accent-primary"
                       strokeWidth="20"
                       strokeDasharray="57.02 251.33"
                       strokeDashoffset="-144.51"
@@ -173,7 +173,7 @@ export function SummaryPage() {
                     <circle
                       cx="50" cy="50" r="40"
                       fill="none"
-                      stroke="rgb(148 163 184)"
+                      className="stroke-text-quaternary"
                       strokeWidth="20"
                       strokeDasharray="49.80 251.33"
                       strokeDashoffset="-201.53"

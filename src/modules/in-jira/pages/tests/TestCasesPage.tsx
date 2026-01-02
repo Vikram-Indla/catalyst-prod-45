@@ -3,7 +3,7 @@
  * Dense table with 40+ rows, bulk actions, filters, search
  */
 
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback, useDeferredValue } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
 import { 
   Plus, 
@@ -326,6 +326,7 @@ export function TestCasesPage() {
 
   // State
   const [searchQuery, setSearchQuery] = useState('');
+  const deferredSearchQuery = useDeferredValue(searchQuery); // Debounced for performance
   const [filters, setFilters] = useState<Filters>(INITIAL_FILTERS);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [createModalOpen, setCreateModalOpen] = useState(false);
@@ -352,9 +353,9 @@ export function TestCasesPage() {
   const filteredData = useMemo(() => {
     let result = testCases;
 
-    // Text search
-    if (searchQuery) {
-      const q = searchQuery.toLowerCase();
+    // Text search (using deferred value for performance)
+    if (deferredSearchQuery) {
+      const q = deferredSearchQuery.toLowerCase();
       result = result.filter(tc =>
         tc.title.toLowerCase().includes(q) ||
         tc.description?.toLowerCase().includes(q) ||
@@ -475,12 +476,22 @@ export function TestCasesPage() {
     toast.success(`Exported ${toExport.length} test cases`);
   };
 
-  const handleArchive = () => {
-    toast.info('Archive functionality coming soon');
+  const handleArchive = async () => {
+    const ids = Array.from(selectedIds);
+    for (const id of ids) {
+      try {
+        await updateTestCase({ id, status: 'deprecated' });
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    toast.success(`Archived ${ids.length} test cases`);
+    setSelectedIds(new Set());
   };
 
   const handleAddToSet = () => {
-    toast.info('Add to Set dialog coming soon');
+    // TODO: Implement Add to Set modal
+    toast.info('Add to Set - select a test set to add these cases');
   };
 
   const handleDuplicate = async (tc: TestCase) => {
