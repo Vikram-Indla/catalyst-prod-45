@@ -1,12 +1,12 @@
 /**
  * TEST REPORTS PAGE
- * Command Center dashboard with trend analysis, failure hotspots, risk tracking,
- * and daily/weekly report generation with export functionality
+ * Executive reporting hub with configurable dashboards, 
+ * trend analysis, and scheduled report generation
  */
 
 import React, { useState, useRef } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { Users } from 'lucide-react';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
+import { Users, LayoutDashboard } from 'lucide-react';
 import {
   BarChart3,
   TrendingUp,
@@ -59,9 +59,22 @@ import { toast } from 'sonner';
 import { exportToCSV } from '@/lib/exportUtils';
 import { jsPDF } from 'jspdf';
 import { UserActivityReport } from '../components/UserActivityReport';
+import { DashboardBuilder } from '../components/reports/DashboardBuilder';
+import {
+  ExecutionOverviewGadget,
+  DefectSummaryGadget,
+  TraceabilitySummaryGadget,
+  ExecutionDistributionGadget,
+  BurnupGadget,
+  UserActivityGadget,
+  ProjectActivityGadget,
+  TraceabilityDetailGadget,
+} from '../components/reports/ReportGadgets';
 
 export function TestsReportsPage() {
   const { projectId } = useParams<{ projectId: string }>();
+  const [searchParams] = useSearchParams();
+  const programId = searchParams.get('programId') || projectId || '';
   const navigate = useNavigate();
   const { user } = useAuth();
   const queryClient = useQueryClient();
@@ -466,6 +479,10 @@ export function TestsReportsPage() {
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="bg-surface-2 border border-border-default">
           <TabsTrigger value="dashboard">Command Center</TabsTrigger>
+          <TabsTrigger value="custom-dashboards" className="flex items-center gap-1">
+            <LayoutDashboard className="h-4 w-4" />
+            Custom Dashboards
+          </TabsTrigger>
           <TabsTrigger value="user-activity" className="flex items-center gap-1">
             <Users className="h-4 w-4" />
             User Activity
@@ -892,6 +909,11 @@ export function TestsReportsPage() {
               </div>
             </CardContent>
           </Card>
+        </TabsContent>
+
+        {/* Custom Dashboards Tab */}
+        <TabsContent value="custom-dashboards" className="mt-6">
+          <DashboardBuilder projectId={projectId || ''} programId={programId} />
         </TabsContent>
 
         {/* User Activity Tab */}
