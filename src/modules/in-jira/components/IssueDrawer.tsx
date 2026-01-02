@@ -311,6 +311,10 @@ export function IssueDrawer() {
                 {/* Activity Tabs */}
                 <ActivityTabs
                   issueId={issue.id}
+                  issueKey={issue.key}
+                  issueTitle={issue.summary}
+                  issueType={issue.type === 'subtask' ? 'story' : issue.type as 'story' | 'feature' | 'defect'}
+                  programId={projectKey}
                   comments={comments}
                   history={history.map(h => ({
                     id: h.id,

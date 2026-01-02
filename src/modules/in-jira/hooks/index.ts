@@ -28,3 +28,5 @@ export type { ExecutionStatus as CycleExecutionStatus } from './useCycleExecutio
 export { useCycleBoardConfig, type BoardColumn, type BoardConfig } from './useCycleBoardConfig';
 export { useTestExecution, useBulkExecution, useDatasetExecution } from './useTestExecution';
 export type { StepResult, StepEvidence, ExecutionDefect, TestExecution as FullTestExecution, BulkExecutionQueue, DatasetRow } from './useTestExecution';
+export { useIssueTestCases, useAddCaseToCollection } from './useIssueTestCases';
+export type { LinkedTestCase, TestCaseForLinking, CreateCaseFromIssueInput, WorkItemType as IssueWorkItemType } from './useIssueTestCases';
