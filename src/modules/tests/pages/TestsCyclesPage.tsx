@@ -1,6 +1,6 @@
 /**
  * TEST CYCLES PAGE
- * Full CRUD table for test cycles
+ * Full CRUD table for test cycles with create modal and drawer
  */
 
 import React, { useState, useMemo } from 'react';
@@ -12,6 +12,9 @@ import {
   RefreshCcw,
   AlertCircle,
   Calendar,
+  Lock,
+  MoreHorizontal,
+  Archive,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -20,35 +23,62 @@ import { Card } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Progress } from '@/components/ui/progress';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { useProjectTestCycles } from '@/hooks/useProjectTestMetrics';
+import { CreateCycleModal } from '../components/CreateCycleModal';
+import { CycleDrawer } from '../components/CycleDrawer';
 
 export function TestsCyclesPage() {
   const { projectId } = useParams<{ projectId: string }>();
   const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [createModalOpen, setCreateModalOpen] = useState(false);
+  const [selectedCycleId, setSelectedCycleId] = useState<string | null>(null);
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
   const {
     cycles: testCycles,
     isLoading,
     error,
-    createCycle: createTestCycle,
-    isCreating,
   } = useProjectTestCycles(projectId || '');
 
   const filteredCycles = useMemo(() => {
-    if (!searchQuery) return testCycles;
-    const q = searchQuery.toLowerCase();
-    return testCycles.filter((cycle: any) =>
-      cycle.name?.toLowerCase().includes(q)
-    );
-  }, [testCycles, searchQuery]);
+    let result = testCycles;
+    
+    if (searchQuery) {
+      const q = searchQuery.toLowerCase();
+      result = result.filter((cycle: any) =>
+        cycle.name?.toLowerCase().includes(q) ||
+        cycle.key?.toLowerCase().includes(q)
+      );
+    }
+    
+    if (statusFilter !== 'all') {
+      result = result.filter((cycle: any) => cycle.status === statusFilter);
+    }
+    
+    return result;
+  }, [testCycles, searchQuery, statusFilter]);
 
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'active': return 'text-status-success bg-status-success/10';
       case 'completed': return 'text-accent-primary bg-accent-subtle';
-      case 'draft': return 'text-text-tertiary bg-surface-3';
+      case 'not_started': return 'text-text-tertiary bg-surface-3';
       case 'blocked': return 'text-status-error bg-status-error/10';
       default: return 'text-text-tertiary bg-surface-3';
     }
@@ -57,7 +87,7 @@ export function TestsCyclesPage() {
   const calculateProgress = (cycle: any) => {
     const execs = cycle.test_cycle_executions || [];
     const total = execs.length;
-    const executed = execs.filter((e: any) => e.status && e.status !== 'not_run').length;
+    const executed = execs.filter((e: any) => e.status && e.status !== 'not_executed').length;
     if (total === 0) return 0;
     return Math.round((executed / total) * 100);
   };
@@ -68,9 +98,14 @@ export function TestsCyclesPage() {
       passed: execs.filter((e: any) => e.status === 'passed').length,
       failed: execs.filter((e: any) => e.status === 'failed').length,
       blocked: execs.filter((e: any) => e.status === 'blocked').length,
-      notRun: execs.filter((e: any) => e.status === 'not_run' || !e.status).length,
+      notRun: execs.filter((e: any) => e.status === 'not_executed' || !e.status).length,
       total: execs.length,
     };
+  };
+
+  const handleCycleClick = (cycleId: string) => {
+    setSelectedCycleId(cycleId);
+    setDrawerOpen(true);
   };
 
   if (error) {
@@ -88,7 +123,7 @@ export function TestsCyclesPage() {
     <div className="space-y-4 max-w-7xl mx-auto">
       {/* Toolbar */}
       <div className="flex items-center justify-between gap-4">
-        <div className="flex items-center gap-2 flex-1 max-w-md">
+        <div className="flex items-center gap-2 flex-1 max-w-lg">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-tertiary" />
             <Input
@@ -98,11 +133,21 @@ export function TestsCyclesPage() {
               className="pl-9 bg-surface-2 border-border-default"
             />
           </div>
-          <Button variant="outline" size="icon">
-            <Filter className="h-4 w-4" />
-          </Button>
+          <Select value={statusFilter} onValueChange={setStatusFilter}>
+            <SelectTrigger className="w-[140px] bg-surface-2 border-border-default">
+              <Filter className="h-4 w-4 mr-2" />
+              <SelectValue placeholder="Status" />
+            </SelectTrigger>
+            <SelectContent className="bg-surface-1 border-border-default">
+              <SelectItem value="all">All Status</SelectItem>
+              <SelectItem value="not_started">Not Started</SelectItem>
+              <SelectItem value="active">Active</SelectItem>
+              <SelectItem value="completed">Completed</SelectItem>
+              <SelectItem value="blocked">Blocked</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
-        <Button onClick={() => {/* TODO: Open create modal */}}>
+        <Button onClick={() => setCreateModalOpen(true)}>
           <Plus className="h-4 w-4 mr-1.5" />
           Create Test Cycle
         </Button>
@@ -111,24 +156,26 @@ export function TestsCyclesPage() {
       {/* Content */}
       {isLoading ? (
         <div className="space-y-2">
-          {[1, 2, 3, 4].map(i => <Skeleton key={i} className="h-20 w-full" />)}
+          {[1, 2, 3, 4].map(i => <Skeleton key={i} className="h-24 w-full" />)}
         </div>
       ) : filteredCycles.length === 0 ? (
         <Card className="bg-surface-2 border-border-default p-8 text-center">
           <RefreshCcw className="h-12 w-12 mx-auto text-text-tertiary mb-4" />
           <h3 className="text-lg font-medium text-text-primary mb-2">No Test Cycles</h3>
           <p className="text-text-secondary mb-4">
-            {searchQuery ? 'No test cycles match your search.' : 'Create your first test cycle to organize your test runs.'}
+            {searchQuery || statusFilter !== 'all' 
+              ? 'No test cycles match your filters.' 
+              : 'Create your first test cycle to organize your test runs.'}
           </p>
-          {!searchQuery && (
-            <Button onClick={() => {/* TODO: Open create modal */}}>
+          {!searchQuery && statusFilter === 'all' && (
+            <Button onClick={() => setCreateModalOpen(true)}>
               <Plus className="h-4 w-4 mr-1.5" />
               Create Test Cycle
             </Button>
           )}
         </Card>
       ) : (
-        <div className="grid gap-4">
+        <div className="grid gap-3">
           {filteredCycles.map((cycle: any) => {
             const progress = calculateProgress(cycle);
             const counts = getExecutionCounts(cycle);
@@ -137,6 +184,7 @@ export function TestsCyclesPage() {
               <Card 
                 key={cycle.id} 
                 className="bg-surface-2 border-border-default p-4 hover:bg-surface-hover cursor-pointer transition-colors"
+                onClick={() => handleCycleClick(cycle.id)}
               >
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex items-center gap-3">
@@ -144,13 +192,41 @@ export function TestsCyclesPage() {
                       <RefreshCcw className="h-5 w-5 text-accent-primary" />
                     </div>
                     <div>
-                      <h3 className="font-medium text-text-primary">{cycle.name}</h3>
-                      <p className="text-sm text-text-tertiary">{cycle.notes || 'No description'}</p>
+                      <div className="flex items-center gap-2">
+                        <Badge variant="outline" className="text-xs">
+                          {cycle.key}
+                        </Badge>
+                        <h3 className="font-medium text-text-primary">{cycle.name}</h3>
+                        {cycle.scope_locked && (
+                          <Lock className="h-3.5 w-3.5 text-status-warning" />
+                        )}
+                      </div>
+                      <p className="text-sm text-text-tertiary">
+                        {cycle.environment || 'No environment'} • {cycle.build_version || 'No build'}
+                      </p>
                     </div>
                   </div>
-                  <Badge className={cn('text-xs', getStatusColor(cycle.status))}>
-                    {cycle.status}
-                  </Badge>
+                  <div className="flex items-center gap-2">
+                    <Badge className={cn('text-xs', getStatusColor(cycle.status))}>
+                      {cycle.status?.replace('_', ' ')}
+                    </Badge>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
+                        <Button variant="ghost" size="icon" className="h-8 w-8">
+                          <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="bg-surface-1 border-border-default">
+                        <DropdownMenuItem onClick={(e) => { e.stopPropagation(); handleCycleClick(cycle.id); }}>
+                          View Details
+                        </DropdownMenuItem>
+                        <DropdownMenuItem className="text-status-error">
+                          <Archive className="h-4 w-4 mr-2" />
+                          Archive
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
                 </div>
 
                 <div className="mb-3">
@@ -171,7 +247,9 @@ export function TestsCyclesPage() {
                   {cycle.start_date && (
                     <div className="flex items-center gap-1 text-text-tertiary">
                       <Calendar className="h-3.5 w-3.5" />
-                      <span>{format(new Date(cycle.start_date), 'MMM d')} - {cycle.end_date ? format(new Date(cycle.end_date), 'MMM d, yyyy') : 'Ongoing'}</span>
+                      <span>
+                        {format(new Date(cycle.start_date), 'MMM d')} - {cycle.end_date ? format(new Date(cycle.end_date), 'MMM d, yyyy') : 'Ongoing'}
+                      </span>
                     </div>
                   )}
                 </div>
@@ -180,6 +258,21 @@ export function TestsCyclesPage() {
           })}
         </div>
       )}
+
+      {/* Create Modal */}
+      <CreateCycleModal
+        open={createModalOpen}
+        onOpenChange={setCreateModalOpen}
+        projectId={projectId || ''}
+      />
+
+      {/* Cycle Drawer */}
+      <CycleDrawer
+        open={drawerOpen}
+        onOpenChange={setDrawerOpen}
+        cycleId={selectedCycleId}
+        projectId={projectId || ''}
+      />
     </div>
   );
 }
