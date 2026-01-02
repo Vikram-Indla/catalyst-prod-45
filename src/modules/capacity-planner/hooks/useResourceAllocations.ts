@@ -32,8 +32,8 @@ export function useResourceAllocations() {
           created_at,
           updated_at,
           created_by,
-          resource_inventory!inner(id, name, profile_id),
-          resource_assignments!inner(id, name)
+          resource_inventory(id, name, profile_id),
+          resource_assignments(id, name)
         `
         )
         .order('start_date', { ascending: true });
