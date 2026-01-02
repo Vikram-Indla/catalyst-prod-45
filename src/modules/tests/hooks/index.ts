@@ -15,3 +15,6 @@ export { useTraceabilityMatrix } from './useTraceabilityMatrix';
 export type { TraceabilityMatrixData, TraceabilityChain, CoverageGap, TraceabilityRequirement, TraceabilityTestCase, TraceabilityExecution, TraceabilityDefect } from './useTraceabilityMatrix';
 export { useTestAdminConfig } from './useTestAdminConfig';
 export type { TestCaseType, TestCaseStatus, TestCasePriority, TestRunStatus, TestFieldConfig, TestAdminSetting } from './useTestAdminConfig';
+export { useNotificationPreferences, useTestNotifications, useCreateNotification } from './useTestNotifications';
+export { useGenerateTestCases, useAnalyzeCoverageGaps, useFailureClusters, useCycleRiskPrediction, useAIDrafts, useAIAuditLog } from './useTestAI';
+export { useLogActivity, useEntityActivityTimeline, useProgramActivityTimeline, useGovernanceStats } from './useTestGovernance';
