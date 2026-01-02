@@ -13,13 +13,22 @@ import {
   GitBranch, 
   Package,
   Settings,
-  Plus
+  Plus,
+  FlaskConical,
+  ChevronDown
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { InJiraProvider, useInJira } from '../context/InJiraContext';
 import { IssueDrawer } from './IssueDrawer';
 import { CreateIssueModal } from './CreateIssueModal';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { usePermission } from '@/hooks/usePermission';
 
 interface Tab {
   id: string;
@@ -37,11 +46,30 @@ const TABS: Tab[] = [
   { id: 'releases', label: 'Releases', icon: <Package className="h-4 w-4" />, path: 'releases' },
 ];
 
+interface TestTab {
+  id: string;
+  label: string;
+  path: string;
+  requiresAdmin?: boolean;
+}
+
+const TEST_TABS: TestTab[] = [
+  { id: 'tests', label: 'Command Center', path: 'tests' },
+  { id: 'cases', label: 'Test Cases', path: 'tests/cases' },
+  { id: 'sets', label: 'Test Sets', path: 'tests/sets' },
+  { id: 'cycles', label: 'Test Cycles', path: 'tests/cycles' },
+  { id: 'executions', label: 'Executions', path: 'tests/executions' },
+  { id: 'traceability', label: 'Traceability', path: 'tests/traceability' },
+  { id: 'reports', label: 'Reports', path: 'tests/reports' },
+  { id: 'admin', label: 'Admin', path: 'tests/admin', requiresAdmin: true },
+];
+
 function InJiraLayoutContent() {
   const { projectKey } = useParams<{ projectKey: string }>();
   const navigate = useNavigate();
   const location = useLocation();
   const { openCreateModal } = useInJira();
+  const { hasPermission } = usePermission('test_cases', 'configure', 'program', projectKey);
 
   const getActiveTab = (): string => {
     const pathParts = location.pathname.split('/');
@@ -52,6 +80,7 @@ function InJiraLayoutContent() {
     // Get the path after project/:projectKey
     const subPath = pathParts.slice(projectIndex + 2).join('/');
     
+    if (subPath.startsWith('tests')) return 'tests';
     if (subPath.startsWith('boards/kanban')) return 'kanban';
     if (subPath.startsWith('boards/scrum')) return 'scrum';
     if (subPath === 'release-management') return 'releases';
@@ -60,7 +89,20 @@ function InJiraLayoutContent() {
     return tab?.id || 'summary';
   };
 
+  const getActiveTestTab = (): string | null => {
+    const pathParts = location.pathname.split('/');
+    const projectIndex = pathParts.findIndex(p => p === 'project');
+    if (projectIndex === -1) return null;
+    
+    const subPath = pathParts.slice(projectIndex + 2).join('/');
+    if (!subPath.startsWith('tests')) return null;
+    
+    const testTab = TEST_TABS.find(t => subPath === t.path || subPath.startsWith(t.path + '/'));
+    return testTab?.id || 'tests';
+  };
+
   const activeTab = getActiveTab();
+  const activeTestTab = getActiveTestTab();
 
   const handleTabClick = (path: string) => {
     navigate(`/project/${projectKey}/${path}`);
@@ -148,6 +190,38 @@ function InJiraLayoutContent() {
               {tab.label}
             </button>
           ))}
+          
+          {/* Tests Dropdown */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button
+                className={cn(
+                  "flex items-center gap-1.5 px-3 py-3 text-sm font-medium border-b-2 transition-colors",
+                  activeTab === 'tests'
+                    ? "border-accent-primary text-accent-primary"
+                    : "border-transparent text-text-tertiary hover:text-text-primary hover:border-border-hover"
+                )}
+              >
+                <FlaskConical className="h-4 w-4" />
+                Tests
+                <ChevronDown className="h-3 w-3 ml-0.5" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" className="w-48">
+              {TEST_TABS.filter(tab => !tab.requiresAdmin || hasPermission).map((tab) => (
+                <DropdownMenuItem
+                  key={tab.id}
+                  onClick={() => handleTabClick(tab.path)}
+                  className={cn(
+                    activeTestTab === tab.id && "bg-accent-subtle text-accent-primary"
+                  )}
+                >
+                  {tab.label}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+          
           <button
             className="flex items-center justify-center w-8 h-8 ml-1 text-text-tertiary hover:text-text-primary hover:bg-surface-hover rounded transition-colors"
             title="Add tab"
