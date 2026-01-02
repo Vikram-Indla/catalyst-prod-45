@@ -377,8 +377,9 @@ export default function CapacityPlannerPage() {
               groupBy={groupBy}
               groupedByAssignment={groupedByAssignment}
               groupedByDepartment={groupedByDepartment}
+              allocations={allocations}
               onResourceClick={openResourceDrawer}
-              onEditResource={(id) => setEditResourceId(id)}
+              onEditResource={handleOpenAllocationModal}
               onDeleteResource={(resource) => {
                 setResourceToDelete(resource);
                 setResourcesToDelete([]);
@@ -402,7 +403,8 @@ export default function CapacityPlannerPage() {
               groupBy={groupBy}
               groupedByAssignment={groupedByAssignment}
               groupedByDepartment={groupedByDepartment}
-              onEditResource={(id) => setEditResourceId(id)}
+              allocations={allocations}
+              onEditResource={handleOpenAllocationModal}
             />
           )}
         </div>
@@ -1284,6 +1286,7 @@ interface TableViewProps {
   groupBy: GroupByType;
   groupedByAssignment: Record<string, ResourceMetric[]>;
   groupedByDepartment: Record<string, ResourceMetric[]>;
+  allocations?: ResourceAllocation[];
   onResourceClick: (r: ResourceMetric) => void;
   onEditResource: (id: string) => void;
   onDeleteResource: (r: ResourceMetric) => void;
@@ -1291,7 +1294,7 @@ interface TableViewProps {
   onBulkEdit?: (resources: ResourceMetric[]) => void;
 }
 
-function TableView({ resources, projects, groupBy, groupedByAssignment, groupedByDepartment, onResourceClick, onEditResource, onDeleteResource, onBulkDelete, onBulkEdit }: TableViewProps) {
+function TableView({ resources, projects, groupBy, groupedByAssignment, groupedByDepartment, allocations = [], onResourceClick, onEditResource, onDeleteResource, onBulkDelete, onBulkEdit }: TableViewProps) {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const getProjectName = (projectId: string) => projects.find(p => p.id === projectId)?.name || 'Unknown';
 
@@ -1666,10 +1669,11 @@ interface TimelineViewProps {
   groupBy: GroupByType;
   groupedByAssignment: Record<string, ResourceMetric[]>;
   groupedByDepartment: Record<string, ResourceMetric[]>;
+  allocations?: ResourceAllocation[];
   onEditResource?: (id: string) => void;
 }
 
-function TimelineView({ resources, period, groupBy, groupedByAssignment, groupedByDepartment, onEditResource }: TimelineViewProps) {
+function TimelineView({ resources, period, groupBy, groupedByAssignment, groupedByDepartment, allocations = [], onEditResource }: TimelineViewProps) {
   const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({});
 
   const toggleGroup = (name: string) => {
