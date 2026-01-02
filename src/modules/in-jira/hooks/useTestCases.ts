@@ -11,8 +11,8 @@ import { logAuditEntry } from '@/lib/auditLogger';
 import { toast } from 'sonner';
 
 export type TestCasePriority = 'critical' | 'high' | 'medium' | 'low';
-export type TestCaseStatus = 'draft' | 'ready' | 'deprecated';
-export type TestCaseType = 'manual' | 'automated' | 'gherkin';
+export type TestCaseStatus = 'draft' | 'under_review' | 'approved' | 'published' | 'deprecated';
+export type TestCaseType = 'manual' | 'automated' | 'bdd';
 
 export interface TestCase {
   id: string;
@@ -166,9 +166,9 @@ export function useTestCases(programId: string | null) {
           description: input.description || null,
           preconditions: input.preconditions || null,
           expected_result: input.expected_result || null,
-          test_type: input.test_type || 'manual',
-          priority: input.priority || 'medium',
-          status: input.status || 'draft',
+          test_type: (input.test_type || 'manual') as 'manual' | 'automated' | 'bdd',
+          priority: (input.priority || 'medium') as 'critical' | 'high' | 'medium' | 'low',
+          status: (input.status || 'draft') as 'draft' | 'under_review' | 'approved' | 'published' | 'deprecated',
           folder_id: input.folder_id || null,
           linked_work_item_type: 'story',
           linked_work_item_id: input.linked_work_item_id,
