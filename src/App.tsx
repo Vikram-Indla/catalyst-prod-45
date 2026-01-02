@@ -550,7 +550,8 @@ const App = () => (
               <Route path="/projects/:projectId/dependencies" element={<ProjectComingSoonPage pageTitle="Dependencies" />} />
               {/* Project Tests Module with nested routes */}
               <Route path="/projects/:projectId/tests" element={<Suspense fallback={<div className="p-8">Loading...</div>}><ProjectTestsLayout /></Suspense>}>
-                <Route index element={<TestsOverviewPage />} />
+                <Route index element={<Navigate to="overview" replace />} />
+                <Route path="overview" element={<TestsOverviewPage />} />
                 <Route path="cases" element={<TestsCasesPage />} />
                 <Route path="cycles" element={<ProjectTestsCyclesPage />} />
                 <Route path="executions" element={<TestsExecutionsPage />} />

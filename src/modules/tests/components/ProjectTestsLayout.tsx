@@ -30,7 +30,7 @@ interface Tab {
 }
 
 const TABS: Tab[] = [
-  { id: 'overview', label: 'Overview', icon: <LayoutDashboard className="h-4 w-4" />, path: '' },
+  { id: 'overview', label: 'Overview', icon: <LayoutDashboard className="h-4 w-4" />, path: 'overview' },
   { id: 'cases', label: 'Test Cases', icon: <ListChecks className="h-4 w-4" />, path: 'cases' },
   { id: 'cycles', label: 'Test Cycles', icon: <RefreshCcw className="h-4 w-4" />, path: 'cycles' },
   { id: 'executions', label: 'Executions', icon: <Play className="h-4 w-4" />, path: 'executions' },
@@ -102,7 +102,6 @@ export function ProjectTestsLayout() {
             <NavLink
               key={tab.id}
               to={`/projects/${projectId}/tests/${tab.path}${suffix}`}
-              end={tab.path === ''}
               className={({ isActive }) =>
                 cn(
                   'flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-t-md transition-colors',
