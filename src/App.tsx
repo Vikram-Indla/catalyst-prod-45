@@ -200,10 +200,12 @@ import {
   ProjectTestsLayout,
   TestsOverviewPage,
   TestsCasesPage,
+  TestsSetsPage,
   TestsCyclesPage as ProjectTestsCyclesPage,
   TestsExecutionsPage,
   TestsReportsPage,
   CTAValidationPage,
+  CycleExecutionPage,
 } from "./modules/tests";
 import ProjectSummaryPage from "./pages/projects/ProjectSummaryPage";
 import ProjectComingSoonPage from "./pages/projects/ProjectComingSoonPage";
@@ -554,7 +556,9 @@ const App = () => (
                 <Route index element={<Navigate to="overview" replace />} />
                 <Route path="overview" element={<TestsOverviewPage />} />
                 <Route path="cases" element={<TestsCasesPage />} />
+                <Route path="sets" element={<TestsSetsPage />} />
                 <Route path="cycles" element={<ProjectTestsCyclesPage />} />
+                <Route path="cycles/:cycleId/execution" element={<CycleExecutionPage />} />
                 <Route path="executions" element={<TestsExecutionsPage />} />
                 <Route path="reports" element={<TestsReportsPage />} />
                 <Route path="cta-validation" element={<CTAValidationPage />} />
