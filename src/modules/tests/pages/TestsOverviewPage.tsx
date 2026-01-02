@@ -434,11 +434,6 @@ export function TestsOverviewPage() {
         open={runTestsOpen} 
         onOpenChange={setRunTestsOpen}
         projectId={projectId || ''}
-        cycles={cycles}
-        onLaunch={(cycleId) => {
-          setRunTestsOpen(false);
-          navigate(preserveParams('/executions', `cycleId=${cycleId}`));
-        }}
       />
     </div>
   );
