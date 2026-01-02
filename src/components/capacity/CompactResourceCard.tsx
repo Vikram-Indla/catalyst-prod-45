@@ -58,9 +58,9 @@ export function CompactResourceCard({
   const isRisk = totalAllocation > 100;
   const isStretched = totalAllocation > 100 && totalAllocation <= 120;
 
-  // Prepare stacked segments
-  const hasAllocations = allocations.length > 0;
-  const segments = hasAllocations 
+  // Prepare stacked segments - only show multi-allocation bar when multiple exist
+  const hasMultipleAllocations = allocations.length > 1;
+  const segments = hasMultipleAllocations 
     ? allocations.map((a, i) => ({
         id: a.id,
         name: a.assignment_name || 'Unknown',
@@ -117,9 +117,26 @@ export function CompactResourceCard({
           </span>
         </div>
 
+        {/* Split Allocation Indicator */}
+        {hasMultipleAllocations && (
+          <div className="absolute top-1 right-6 flex items-center gap-0.5">
+            {segments.slice(0, 3).map((seg, i) => (
+              <div 
+                key={seg.id} 
+                className="w-2 h-2 rounded-full ring-1 ring-white"
+                style={{ backgroundColor: seg.color, marginLeft: i > 0 ? '-4px' : 0 }}
+                title={`${seg.name}: ${seg.percent}%`}
+              />
+            ))}
+            {segments.length > 3 && (
+              <span className="text-[8px] text-slate-500 ml-0.5">+{segments.length - 3}</span>
+            )}
+          </div>
+        )}
+
         {/* Stacked Progress Bar OR Single Bar */}
         <div className="mt-2 flex items-center gap-2">
-          {hasAllocations ? (
+          {hasMultipleAllocations ? (
             // Stacked allocation bars with tooltips
             <div className="flex-1 h-1.5 bg-slate-100 rounded-full overflow-hidden flex">
               {segments.map((seg) => (
