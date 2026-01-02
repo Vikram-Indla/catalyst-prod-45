@@ -4,6 +4,7 @@
  */
 
 import React, { useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import {
@@ -80,6 +81,9 @@ function getStatusColor(status: string) {
 
 import { StepsEditor } from './StepsEditor';
 import { AITestGeneratorPanel } from './AITestGeneratorPanel';
+import { VersionHistoryDrawer } from './VersionHistoryDrawer';
+import { WorkItemLinksManager } from './WorkItemLinksManager';
+import { useTestCaseVersions } from '../../hooks/useTestCaseVersions';
 
 function StepsTab({ testCaseId }: { testCaseId: string }) {
   return (
@@ -249,9 +253,18 @@ export function TestCaseDrawer({
   onDelete,
   isUpdating = false,
 }: TestCaseDrawerProps) {
+  const [searchParams] = useSearchParams();
+  const projectId = searchParams.get('projectId');
+  
   const [activeTab, setActiveTab] = useState('overview');
   const [editMode, setEditMode] = useState(false);
   const [formData, setFormData] = useState<Partial<TestCase>>({});
+  const [versionDrawerOpen, setVersionDrawerOpen] = useState(false);
+  const [changeSummary, setChangeSummary] = useState('');
+  const [showChangeSummaryDialog, setShowChangeSummaryDialog] = useState(false);
+  
+  // Version management
+  const { createVersion, isCreatingVersion, currentVersion } = useTestCaseVersions(testCase?.id || null);
 
   React.useEffect(() => {
     if (testCase) {
@@ -271,12 +284,28 @@ export function TestCaseDrawer({
   if (!testCase) return null;
 
   const handleSave = async () => {
+    // Show change summary dialog for versioned saves
+    setShowChangeSummaryDialog(true);
+  };
+
+  const handleConfirmSave = async () => {
     try {
+      // Create version snapshot before updating
+      if (changeSummary.trim()) {
+        await createVersion({
+          caseId: testCase.id,
+          changeSummary: changeSummary.trim(),
+        });
+      }
+      
       await onUpdate({
         id: testCase.id,
         ...formData,
       } as UpdateTestCaseInput);
+      
       setEditMode(false);
+      setShowChangeSummaryDialog(false);
+      setChangeSummary('');
     } catch (error) {
       console.error('Failed to save:', error);
     }
@@ -290,6 +319,7 @@ export function TestCaseDrawer({
   };
 
   return (
+    <>
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent className="w-[600px] sm:max-w-[600px] p-0 bg-surface-1 border-border-default">
         <SheetHeader className="px-6 py-4 border-b border-border-default">
@@ -320,6 +350,13 @@ export function TestCaseDrawer({
                     {testCase.component}
                   </span>
                 )}
+                <button
+                  onClick={() => setVersionDrawerOpen(true)}
+                  className="flex items-center gap-1 hover:text-accent-primary transition-colors"
+                >
+                  <History className="h-3 w-3" />
+                  v{currentVersion || testCase.version || 1}
+                </button>
               </div>
             </div>
             <div className="flex items-center gap-2">
@@ -489,11 +526,11 @@ export function TestCaseDrawer({
               </TabsContent>
 
               <TabsContent value="traceability" className="mt-0">
-                <div className="text-center py-12 text-text-tertiary">
-                  <GitBranch className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                  <p className="text-sm">Traceability view coming soon</p>
-                  <p className="text-xs mt-1">Linked requirements, coverage matrix</p>
-                </div>
+                <WorkItemLinksManager
+                  caseId={testCase.id}
+                  projectId={projectId}
+                  readOnly={false}
+                />
               </TabsContent>
 
               <TabsContent value="ai" className="mt-0">
@@ -514,8 +551,78 @@ export function TestCaseDrawer({
             </div>
           </ScrollArea>
         </Tabs>
+
+        {/* Change Summary Dialog */}
+        {showChangeSummaryDialog && (
+          <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
+            <div className="bg-surface-1 border border-border-default rounded-lg p-6 w-[400px] max-w-[90vw]">
+              <h3 className="text-lg font-medium text-text-primary mb-4">
+                Save Changes
+              </h3>
+              <p className="text-sm text-text-secondary mb-4">
+                Describe what changed in this version (creates a snapshot for history).
+              </p>
+              <Textarea
+                value={changeSummary}
+                onChange={(e) => setChangeSummary(e.target.value)}
+                placeholder="e.g., Updated preconditions and expected results..."
+                className="mb-4"
+                rows={3}
+              />
+              <div className="flex justify-end gap-2">
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setShowChangeSummaryDialog(false);
+                    setChangeSummary('');
+                  }}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={async () => {
+                    // Save without version snapshot
+                    try {
+                      await onUpdate({
+                        id: testCase.id,
+                        ...formData,
+                      } as UpdateTestCaseInput);
+                      setEditMode(false);
+                      setShowChangeSummaryDialog(false);
+                      setChangeSummary('');
+                    } catch (error) {
+                      console.error('Failed to save:', error);
+                    }
+                  }}
+                  disabled={isUpdating}
+                >
+                  Save without version
+                </Button>
+                <Button
+                  onClick={handleConfirmSave}
+                  disabled={isUpdating || isCreatingVersion || !changeSummary.trim()}
+                >
+                  {(isUpdating || isCreatingVersion) && (
+                    <Loader2 className="h-3.5 w-3.5 mr-1 animate-spin" />
+                  )}
+                  Save & Create Version
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
       </SheetContent>
     </Sheet>
+
+    {/* Version History Drawer */}
+    <VersionHistoryDrawer
+      open={versionDrawerOpen}
+      onOpenChange={setVersionDrawerOpen}
+      caseId={testCase.id}
+      caseTitle={testCase.title}
+    />
+  </>
   );
 }
 
