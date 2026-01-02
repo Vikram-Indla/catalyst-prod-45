@@ -7634,6 +7634,53 @@ export type Database = {
           },
         ]
       }
+      injira_import_audit_log: {
+        Row: {
+          action: string
+          entity_id: string | null
+          entity_type: string | null
+          id: string
+          import_job_id: string | null
+          new_value: Json | null
+          old_value: Json | null
+          performed_at: string
+          performed_by: string | null
+          tenant_id: string
+        }
+        Insert: {
+          action: string
+          entity_id?: string | null
+          entity_type?: string | null
+          id?: string
+          import_job_id?: string | null
+          new_value?: Json | null
+          old_value?: Json | null
+          performed_at?: string
+          performed_by?: string | null
+          tenant_id?: string
+        }
+        Update: {
+          action?: string
+          entity_id?: string | null
+          entity_type?: string | null
+          id?: string
+          import_job_id?: string | null
+          new_value?: Json | null
+          old_value?: Json | null
+          performed_at?: string
+          performed_by?: string | null
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "injira_import_audit_log_import_job_id_fkey"
+            columns: ["import_job_id"]
+            isOneToOne: false
+            referencedRelation: "injira_import_jobs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       injira_import_diff_reports: {
         Row: {
           created_at: string | null
@@ -8209,6 +8256,7 @@ export type Database = {
       }
       injira_issues: {
         Row: {
+          ai_suggestions_pending: boolean | null
           assignee_id: string | null
           components: string[] | null
           created_at: string | null
@@ -8218,7 +8266,10 @@ export type Database = {
           description: Json | null
           due_date: string | null
           environment: string | null
+          external_id: string | null
+          external_source: string | null
           id: string
+          import_job_id: string | null
           issue_number: number
           issue_type_id: string
           key: string
@@ -8247,6 +8298,7 @@ export type Database = {
           updated_by: string | null
         }
         Insert: {
+          ai_suggestions_pending?: boolean | null
           assignee_id?: string | null
           components?: string[] | null
           created_at?: string | null
@@ -8256,7 +8308,10 @@ export type Database = {
           description?: Json | null
           due_date?: string | null
           environment?: string | null
+          external_id?: string | null
+          external_source?: string | null
           id?: string
+          import_job_id?: string | null
           issue_number: number
           issue_type_id: string
           key: string
@@ -8285,6 +8340,7 @@ export type Database = {
           updated_by?: string | null
         }
         Update: {
+          ai_suggestions_pending?: boolean | null
           assignee_id?: string | null
           components?: string[] | null
           created_at?: string | null
@@ -8294,7 +8350,10 @@ export type Database = {
           description?: Json | null
           due_date?: string | null
           environment?: string | null
+          external_id?: string | null
+          external_source?: string | null
           id?: string
+          import_job_id?: string | null
           issue_number?: number
           issue_type_id?: string
           key?: string
@@ -8335,6 +8394,13 @@ export type Database = {
             columns: ["created_by"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "injira_issues_import_job_id_fkey"
+            columns: ["import_job_id"]
+            isOneToOne: false
+            referencedRelation: "injira_import_jobs"
             referencedColumns: ["id"]
           },
           {
