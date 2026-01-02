@@ -24,6 +24,7 @@ import {
   Home,
   Layers,
   LayoutList,
+  FlaskConical,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -56,6 +57,7 @@ const menuConfigs: Record<WorkspaceType, Array<{ id: string; label: string; icon
     { id: 'backlog', label: 'Backlog', icon: Square, pathTemplate: '/projects/:id/backlog' },
     { id: 'roadmap', label: 'Roadmap', icon: Map, pathTemplate: '/projects/:id/roadmap' },
     { id: 'dependencies', label: 'Dependencies', icon: GitBranch, pathTemplate: '/projects/:id/dependencies' },
+    { id: 'tests', label: 'Tests', icon: FlaskConical, pathTemplate: '/projects/:id/tests' },
     { id: 'reports', label: 'Reports', icon: FileText, pathTemplate: '/projects/:id/reports' },
   ],
 };

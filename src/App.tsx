@@ -44,6 +44,7 @@ const FeatureBacklogPage = lazy(() => import("./modules/feature-backlog/pages/Fe
 const ProjectWorkspace = lazy(() => import("./pages/project/ProjectWorkspace"));
 const BoardView = lazy(() => import("./pages/project/BoardView"));
 const TimelineView = lazy(() => import("./pages/project/TimelineView"));
+const ProjectTestsView = lazy(() => import("./pages/project/ProjectTestsView"));
 import { EpicBalancingPage } from "./modules/epic-balancing";
 
 import Defects from "./pages/Defects";
@@ -539,6 +540,8 @@ const App = () => (
               <Route path="/projects/:projectId/backlog" element={<ProjectBacklogPage />} />
               <Route path="/projects/:projectId/roadmap" element={<ProjectComingSoonPage pageTitle="Roadmap" />} />
               <Route path="/projects/:projectId/dependencies" element={<ProjectComingSoonPage pageTitle="Dependencies" />} />
+              <Route path="/projects/:projectId/tests" element={<Suspense fallback={<div className="p-8">Loading...</div>}><ProjectTestsView /></Suspense>} />
+              <Route path="/projects/:projectId/tests/*" element={<Suspense fallback={<div className="p-8">Loading...</div>}><ProjectTestsView /></Suspense>} />
               <Route path="/projects/:projectId/reports" element={<ProjectComingSoonPage pageTitle="Reports" />} />
               <Route path="/project/:projectId/work" element={<ProjectWorkHubPage />} />
               
