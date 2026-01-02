@@ -105,22 +105,22 @@ export function useGenerateTestCases() {
         
         // Log AI action
         const { data: { user } } = await supabase.auth.getUser();
-        const { data: auditLog } = await supabase
-          .from('test_ai_audit_log')
-          .insert({
-            program_id: params.programId,
-            user_id: user?.id || '',
-            action_type: 'generate_test_cases',
-            input_data: { story_id: params.storyId, story_title: params.storyTitle },
-            output_data: { test_cases: generatedTestCases },
-            status: 'completed',
-            response_time_ms: responseTime,
-            model_used: 'google/gemini-2.5-flash',
-          })
-          .select()
-          .single();
+        if (user) {
+          await supabase
+            .from('test_ai_audit_log')
+            .insert([{
+              program_id: params.programId,
+              user_id: user.id,
+              action_type: 'generate_test_cases',
+              input_data: JSON.parse(JSON.stringify({ story_id: params.storyId, story_title: params.storyTitle })),
+              output_data: JSON.parse(JSON.stringify({ test_cases: generatedTestCases })),
+              status: 'completed',
+              response_time_ms: responseTime,
+              model_used: 'google/gemini-2.5-flash',
+            }]);
+        }
         
-        return { testCases: generatedTestCases, auditLogId: auditLog?.id };
+        return { testCases: generatedTestCases, auditLogId: null };
       } finally {
         setIsGenerating(false);
       }
