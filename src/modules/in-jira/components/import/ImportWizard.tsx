@@ -14,11 +14,12 @@ interface ImportWizardProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   projectId: string;
+  tenantId: string;
 }
 
 type ImportStep = 'upload' | 'mapping' | 'analyze' | 'import' | 'complete';
 
-export function ImportWizard({ open, onOpenChange, projectId }: ImportWizardProps) {
+export function ImportWizard({ open, onOpenChange, projectId, tenantId }: ImportWizardProps) {
   const [step, setStep] = useState<ImportStep>('upload');
   const [importJobId, setImportJobId] = useState<string | null>(null);
   const [manifest, setManifest] = useState<any>(null);
@@ -40,6 +41,7 @@ export function ImportWizard({ open, onOpenChange, projectId }: ImportWizardProp
       const { data: job, error } = await supabase
         .from('injira_import_jobs')
         .insert({
+          tenant_id: tenantId,
           project_id: projectId,
           source_type: 'jira_cloud',
           status: 'pending',

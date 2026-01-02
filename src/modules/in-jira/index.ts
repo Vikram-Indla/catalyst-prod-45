@@ -12,12 +12,16 @@ export { ListPage } from './pages/ListPage';
 export { AllWorkPage } from './pages/AllWorkPage';
 export { ReleasesPage } from './pages/ReleasesPage';
 export { ReleaseManagementPage } from './pages/ReleaseManagementPage';
+export { SettingsPage as InJiraSettingsPage } from './pages/SettingsPage';
 
 // Board Components
 export { KanbanBoard, ScrumBoard, IssueCard, BoardColumn } from './components/board';
 
+// Import Components
+export { ImportWizard, AISuggestionBanner } from './components/import';
+
 // Hooks
-export { useBoardData, useBoardColumns, useSprintManagement } from './hooks';
+export { useBoardData, useBoardColumns, useSprintManagement, useAISuggestions } from './hooks';
 
 // Utils
 export { generateRankBetween, compareRanks } from './utils';

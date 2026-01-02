@@ -182,6 +182,7 @@ import {
   AllWorkPage as InJiraAllWorkPage,
   ReleasesPage as InJiraReleasesPage,
   ReleaseManagementPage,
+  InJiraSettingsPage,
 } from "./modules/in-jira";
 import ProjectSummaryPage from "./pages/projects/ProjectSummaryPage";
 import ProjectComingSoonPage from "./pages/projects/ProjectComingSoonPage";
@@ -529,6 +530,7 @@ const App = () => (
                 <Route path="boards/scrum" element={<ScrumBoardPage />} />
                 <Route path="releases" element={<InJiraReleasesPage />} />
                 <Route path="release-management" element={<ReleaseManagementPage />} />
+                <Route path="settings" element={<InJiraSettingsPage />} />
               </Route>
               <Route path="/teams" element={<TeamComingSoon />} />
               <Route path="/teams/:teamId/room" element={<TeamComingSoon />} />

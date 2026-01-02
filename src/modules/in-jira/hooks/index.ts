@@ -2,3 +2,4 @@
 export * from './useBoardData';
 export * from './useVersions';
 export * from './useIssueAudit';
+export * from './useAISuggestions';
