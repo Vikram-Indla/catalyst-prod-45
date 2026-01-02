@@ -184,6 +184,16 @@ import {
   ReleaseManagementPage,
   InJiraSettingsPage,
 } from "./modules/in-jira";
+import {
+  TestCommandCenterPage,
+  TestCasesPage,
+  TestSetsPage,
+  TestCyclesPage,
+  TestExecutionsPage,
+  TraceabilityPage,
+  TestReportsPage,
+  TestAdminPage,
+} from "./modules/in-jira/pages/tests";
 import ProjectSummaryPage from "./pages/projects/ProjectSummaryPage";
 import ProjectComingSoonPage from "./pages/projects/ProjectComingSoonPage";
 import ProjectBacklogPage from "./pages/projects/ProjectBacklogPage";
@@ -531,6 +541,15 @@ const App = () => (
                 <Route path="releases" element={<InJiraReleasesPage />} />
                 <Route path="release-management" element={<ReleaseManagementPage />} />
                 <Route path="settings" element={<InJiraSettingsPage />} />
+                {/* Test Management Routes */}
+                <Route path="tests" element={<TestCommandCenterPage />} />
+                <Route path="tests/cases" element={<TestCasesPage />} />
+                <Route path="tests/sets" element={<TestSetsPage />} />
+                <Route path="tests/cycles" element={<TestCyclesPage />} />
+                <Route path="tests/executions" element={<TestExecutionsPage />} />
+                <Route path="tests/traceability" element={<TraceabilityPage />} />
+                <Route path="tests/reports" element={<TestReportsPage />} />
+                <Route path="tests/admin" element={<TestAdminPage />} />
               </Route>
               <Route path="/teams" element={<TeamComingSoon />} />
               <Route path="/teams/:teamId/room" element={<TeamComingSoon />} />
