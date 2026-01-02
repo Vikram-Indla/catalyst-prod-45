@@ -1,18 +1,49 @@
 /**
  * Catalyst V5 Color System for Capacity Planner
  * CIO Executive Cockpit - Refined Colors
- * Updated with Golden Hour Palette for Time-Boxed Allocations
+ * 
+ * STATUS COLORS (Catalyst V5):
+ * - Available: Teal #0d9488
+ * - Optimal: Blue #2563eb
+ * - Over-allocated: Orange #d97706
+ * - Error: Red #ef4444
+ * 
+ * DEPRECATED: olive, bronze, gold, champagne, grey (Golden Hour palette)
  */
 
 import type { ResourceAllocation } from '@/modules/capacity-planner/types';
 
-// Catalyst Golden Hour palette for projects
+// ============= CATALYST V5 PRIMARY COLORS =============
+export const CATALYST_V5 = {
+  available: {
+    hex: '#0d9488',
+    bg: 'rgba(13, 148, 136, 0.08)',
+    bgSolid: '#f0fdfa',
+  },
+  optimal: {
+    hex: '#2563eb',
+    bg: 'rgba(37, 99, 235, 0.08)',
+    bgSolid: '#eff6ff',
+  },
+  overAllocated: {
+    hex: '#d97706',
+    bg: 'rgba(217, 119, 6, 0.08)',
+    bgSolid: '#fffbeb',
+  },
+  error: {
+    hex: '#ef4444',
+    bg: 'rgba(239, 68, 68, 0.08)',
+    bgSolid: '#fef2f2',
+  },
+};
+
+// Legacy export for backwards compatibility - DEPRECATED
 export const CATALYST_GOLDEN_HOUR = {
-  olive: '#5c7c5c',
-  bronze: '#8b7355',
-  gold: '#c69c6d',
-  champagne: '#d4b896',
-  grey: '#c8ccd0',
+  olive: '#0d9488',    // Mapped to Teal
+  bronze: '#d97706',   // Mapped to Orange
+  gold: '#2563eb',     // Mapped to Blue
+  champagne: '#64748b', // Mapped to Slate
+  grey: '#94a3b8',     // Mapped to Slate light
 };
 
 export const CATALYST = {
@@ -35,25 +66,45 @@ export const CATALYST = {
     dark: '#0f766e',
     bg: 'rgba(13, 148, 136, 0.08)',
   },
+  orange: {
+    600: '#d97706',
+    500: '#f59e0b',
+    100: '#fef3c7',
+    50: '#fffbeb',
+    primary: '#d97706',
+    dark: '#b45309',
+    bg: 'rgba(217, 119, 6, 0.08)',
+  },
+  red: {
+    600: '#ef4444',
+    500: '#f87171',
+    100: '#fee2e2',
+    50: '#fef2f2',
+    primary: '#ef4444',
+    dark: '#dc2626',
+    bg: 'rgba(239, 68, 68, 0.08)',
+  },
+  // Keep amber as alias to orange for backwards compat
   amber: {
     600: '#d97706',
     500: '#f59e0b',
     100: '#fef3c7',
     50: '#fffbeb',
   },
+  // DEPRECATED - mapped to new colors
   olive: {
-    primary: '#5c7c5c',
-    dark: '#3d6b3d',
-    bg: 'rgba(92, 124, 92, 0.08)',
+    primary: '#0d9488', // Now Teal
+    dark: '#0f766e',
+    bg: 'rgba(13, 148, 136, 0.08)',
   },
   bronze: {
-    600: '#8b7355',
-    500: '#a68b5b',
-    100: '#f5f0e8',
-    50: '#faf8f5',
-    primary: '#8b7355',
-    dark: '#6b5842',
-    bg: 'rgba(139, 115, 85, 0.08)',
+    600: '#d97706', // Now Orange
+    500: '#f59e0b',
+    100: '#fef3c7',
+    50: '#fffbeb',
+    primary: '#d97706',
+    dark: '#b45309',
+    bg: 'rgba(217, 119, 6, 0.08)',
   },
   slate: {
     900: '#0f172a',
@@ -81,20 +132,19 @@ export const CATALYST = {
 };
 
 /**
- * Assignment themes — Distinct colors per group for visual distinction
- * CATALYST COMPLIANT: Only Blue, Teal, Olive, Bronze, Amber, Slate
- * NO PURPLE/VIOLET/INDIGO/FUCHSIA
+ * Assignment themes — Catalyst V5 compliant
+ * Using only: Blue, Teal, Orange, Slate
  */
 export const ASSIGNMENT_THEMES: Record<string, { bg: string; text: string; accent: string }> = {
   'Senaei BAU': { bg: '#eff6ff', text: '#1e40af', accent: '#2563eb' },           // Blue
-  'Innovation Platform': { bg: '#eff6ff', text: '#1e3a8a', accent: '#1d4ed8' },  // Blue Dark (was indigo)
+  'Innovation Platform': { bg: '#eff6ff', text: '#1e3a8a', accent: '#1d4ed8' },  // Blue Dark
   'Inspection Project': { bg: '#f0fdfa', text: '#115e59', accent: '#0d9488' },   // Teal
   'International Relations': { bg: '#f0fdfa', text: '#134e4a', accent: '#0f766e' }, // Teal Dark
-  'MIM Website': { bg: '#f0fdf4', text: '#166534', accent: '#4f8a4f' },          // Olive
-  'Senaei OPS': { bg: '#f0fdf4', text: '#14532d', accent: '#3d6b3d' },           // Olive Dark
-  'Sectorial Services': { bg: '#faf8f5', text: '#78716c', accent: '#8b7355' },   // Bronze
-  'Tahommena': { bg: '#faf8f5', text: '#57534e', accent: '#6b5842' },            // Bronze Dark (was fuchsia)
-  'Data Platform': { bg: '#dbeafe', text: '#1e40af', accent: '#3b82f6' },        // Blue Light (was violet)
+  'MIM Website': { bg: '#f0fdfa', text: '#115e59', accent: '#14b8a6' },          // Teal Light
+  'Senaei OPS': { bg: '#eff6ff', text: '#1e40af', accent: '#3b82f6' },           // Blue Light
+  'Sectorial Services': { bg: '#f8fafc', text: '#475569', accent: '#64748b' },   // Slate
+  'Tahommena': { bg: '#f0fdfa', text: '#0f766e', accent: '#0d9488' },            // Teal
+  'Data Platform': { bg: '#dbeafe', text: '#1e40af', accent: '#3b82f6' },        // Blue Light
   'Unassigned': { bg: '#f8fafc', text: '#64748b', accent: '#94a3b8' },           // Slate
 };
 
@@ -107,30 +157,32 @@ export function getAssignmentTheme(name: string | null | undefined): { bg: strin
 }
 
 /**
- * Legacy assignment color function - returns accent color
- * CATALYST COMPLIANT: NO PURPLE/VIOLET/INDIGO/FUCHSIA
+ * Assignment colors - Catalyst V5 compliant
  */
 export const ASSIGNMENT_COLORS: Record<string, string> = {
   'Senaei BAU': '#2563eb',           // Blue
-  'Innovation Platform': '#1d4ed8',  // Blue Dark (was indigo #4f46e5)
+  'Innovation Platform': '#1d4ed8',  // Blue Dark
   'Inspection Project': '#0d9488',   // Teal
   'International Relations': '#0f766e', // Teal Dark
-  'MIM Website': '#4f8a4f',          // Olive
-  'Senaei OPS': '#3d6b3d',           // Olive Dark
-  'Sectorial Services': '#8b7355',   // Bronze
-  'Tahommena': '#6b5842',            // Bronze Dark (was fuchsia #c026d3)
-  'Data Platform': '#3b82f6',        // Blue Light (was violet #7c3aed)
+  'MIM Website': '#14b8a6',          // Teal Light
+  'Senaei OPS': '#3b82f6',           // Blue Light
+  'Sectorial Services': '#64748b',   // Slate
+  'Tahommena': '#0d9488',            // Teal
+  'Data Platform': '#3b82f6',        // Blue Light
   'Unassigned': '#94a3b8',           // Slate
 };
 
 export function getAssignmentColor(name: string | null | undefined): string {
-  if (!name) return CATALYST.grey[400];
+  if (!name) return CATALYST.slate[400];
   return ASSIGNMENT_COLORS[name] || CATALYST.blue.primary;
 }
 
 /**
- * Allocation theme with 5 levels - refined for CIO visibility
- * Includes labelColor and labelBg for status badges
+ * Allocation theme with status levels - Catalyst V5
+ * Available -> Teal
+ * Optimal -> Blue
+ * Over-allocated -> Orange
+ * Critical -> Red
  */
 export function getAllocationTheme(percentage: number): { 
   status: 'available' | 'partial' | 'optimal' | 'stretched' | 'critical';
@@ -143,53 +195,53 @@ export function getAllocationTheme(percentage: number): {
 } {
   if (percentage === 0) return { 
     status: 'available', 
-    bg: '#f0fdfa', 
-    text: '#0d9488', 
-    bar: '#0d9488', 
+    bg: CATALYST_V5.available.bgSolid, 
+    text: CATALYST_V5.available.hex, 
+    bar: CATALYST_V5.available.hex, 
     label: 'AVAILABLE',
-    labelColor: '#0d9488',
-    labelBg: '#f0fdfa'
+    labelColor: CATALYST_V5.available.hex,
+    labelBg: CATALYST_V5.available.bgSolid
   };
   if (percentage < 100) return { 
     status: 'partial', 
-    bg: '#f0fdfa', 
-    text: '#0d9488', 
-    bar: '#0d9488', 
+    bg: CATALYST_V5.available.bgSolid, 
+    text: CATALYST_V5.available.hex, 
+    bar: CATALYST_V5.available.hex, 
     label: 'PARTIAL',
-    labelColor: '#0d9488',
-    labelBg: '#f0fdfa'
+    labelColor: CATALYST_V5.available.hex,
+    labelBg: CATALYST_V5.available.bgSolid
   };
   if (percentage === 100) return { 
     status: 'optimal', 
-    bg: '#eff6ff', 
-    text: '#2563eb', 
-    bar: '#2563eb', 
+    bg: CATALYST_V5.optimal.bgSolid, 
+    text: CATALYST_V5.optimal.hex, 
+    bar: CATALYST_V5.optimal.hex, 
     label: 'AT CAPACITY',
-    labelColor: '#2563eb',
-    labelBg: '#eff6ff'
+    labelColor: CATALYST_V5.optimal.hex,
+    labelBg: CATALYST_V5.optimal.bgSolid
   };
   if (percentage <= 120) return { 
     status: 'stretched', 
-    bg: '#fffbeb', 
-    text: '#d97706', 
-    bar: '#d97706', 
+    bg: CATALYST_V5.overAllocated.bgSolid, 
+    text: CATALYST_V5.overAllocated.hex, 
+    bar: CATALYST_V5.overAllocated.hex, 
     label: 'STRETCHED',
-    labelColor: '#d97706',
-    labelBg: '#fffbeb'
+    labelColor: CATALYST_V5.overAllocated.hex,
+    labelBg: CATALYST_V5.overAllocated.bgSolid
   };
   return { 
     status: 'critical', 
-    bg: '#faf8f5', 
-    text: '#8b7355', 
-    bar: '#8b7355', 
+    bg: CATALYST_V5.error.bgSolid, 
+    text: CATALYST_V5.error.hex, 
+    bar: CATALYST_V5.error.hex, 
     label: 'CRITICAL',
-    labelColor: '#8b7355',
-    labelBg: '#faf8f5'
+    labelColor: CATALYST_V5.error.hex,
+    labelBg: CATALYST_V5.error.bgSolid
   };
 }
 
 /**
- * Get allocation status with colors and border (legacy support)
+ * Get allocation status with colors and border - Catalyst V5
  */
 export function getAllocationStatus(percentage: number): { 
   status: 'available' | 'partial' | 'full' | 'over';
@@ -200,36 +252,36 @@ export function getAllocationStatus(percentage: number): {
 } {
   if (percentage === 0) return { 
     status: 'available', 
-    color: CATALYST.teal.primary, 
-    bg: CATALYST.teal.bg, 
-    border: CATALYST.teal.primary,
-    bar: CATALYST.teal.primary
+    color: CATALYST_V5.available.hex, 
+    bg: CATALYST_V5.available.bg, 
+    border: CATALYST_V5.available.hex,
+    bar: CATALYST_V5.available.hex
   };
   if (percentage < 100) return { 
     status: 'partial', 
-    color: CATALYST.teal.primary, 
-    bg: CATALYST.teal.bg, 
-    border: CATALYST.teal.primary,
-    bar: CATALYST.teal.primary
+    color: CATALYST_V5.available.hex, 
+    bg: CATALYST_V5.available.bg, 
+    border: CATALYST_V5.available.hex,
+    bar: CATALYST_V5.available.hex
   };
   if (percentage === 100) return { 
     status: 'full', 
-    color: CATALYST.blue.primary, 
-    bg: CATALYST.blue.bg, 
-    border: CATALYST.blue.primary,
-    bar: CATALYST.blue.primary
+    color: CATALYST_V5.optimal.hex, 
+    bg: CATALYST_V5.optimal.bg, 
+    border: CATALYST_V5.optimal.hex,
+    bar: CATALYST_V5.optimal.hex
   };
   return { 
     status: 'over', 
-    color: CATALYST.bronze.primary, 
-    bg: CATALYST.bronze.bg, 
-    border: CATALYST.bronze.primary,
-    bar: CATALYST.bronze.primary
+    color: CATALYST_V5.overAllocated.hex, 
+    bg: CATALYST_V5.overAllocated.bg, 
+    border: CATALYST_V5.overAllocated.hex,
+    bar: CATALYST_V5.overAllocated.hex
   };
 }
 
 /**
- * Allocation status colors (legacy)
+ * Allocation colors (legacy)
  */
 export function getAllocationColors(percentage: number): { bg: string; text: string; bar: string } {
   const theme = getAllocationTheme(percentage);
@@ -244,24 +296,24 @@ export function getAllocationBarColor(percentage: number): string {
 }
 
 /**
- * Timeline cell colors
+ * Timeline cell colors - Catalyst V5
  */
 export function getTimelineCellColors(percentage: number): { bg: string; text: string } {
   if (percentage === 0) return { bg: CATALYST.grey[100], text: CATALYST.grey[500] };
-  if (percentage < 80) return { bg: 'rgba(13, 148, 136, 0.12)', text: CATALYST.teal.primary };
-  if (percentage <= 100) return { bg: 'rgba(37, 99, 235, 0.12)', text: CATALYST.blue.primary };
-  if (percentage <= 120) return { bg: 'rgba(217, 119, 6, 0.12)', text: CATALYST.amber[600] };
-  return { bg: 'rgba(139, 115, 85, 0.12)', text: CATALYST.bronze.primary };
+  if (percentage < 80) return { bg: CATALYST_V5.available.bg, text: CATALYST_V5.available.hex };
+  if (percentage <= 100) return { bg: CATALYST_V5.optimal.bg, text: CATALYST_V5.optimal.hex };
+  if (percentage <= 120) return { bg: CATALYST_V5.overAllocated.bg, text: CATALYST_V5.overAllocated.hex };
+  return { bg: CATALYST_V5.error.bg, text: CATALYST_V5.error.hex };
 }
 
 /**
- * Utilization bar color
+ * Utilization bar color - Catalyst V5
  */
 export function getUtilizationColor(percentage: number): string {
-  if (percentage > 100) return CATALYST.bronze.primary;
-  if (percentage >= 90) return CATALYST.blue.primary;
+  if (percentage > 100) return CATALYST_V5.overAllocated.hex;
+  if (percentage >= 90) return CATALYST_V5.optimal.hex;
   if (percentage >= 80) return CATALYST.blue.light;
-  return CATALYST.teal.primary;
+  return CATALYST_V5.available.hex;
 }
 
 /**
@@ -279,8 +331,7 @@ export function getInitials(name: string): string {
 // ============= TIME-BOXED ALLOCATION HELPERS =============
 
 /**
- * Get allocation status theme for time-boxed bookings
- * Uses Golden Hour palette for over-allocation
+ * Get allocation status theme for time-boxed bookings - Catalyst V5
  */
 export function getAllocationStatusTheme(percentage: number): {
   status: 'available' | 'partial' | 'optimal' | 'over';
@@ -294,40 +345,40 @@ export function getAllocationStatusTheme(percentage: number): {
     return {
       status: 'available',
       label: 'Available',
-      bg: '#f0fdfa',
-      text: '#0d9488',
-      bar: '#0d9488',
-      border: '#0d9488',
+      bg: CATALYST_V5.available.bgSolid,
+      text: CATALYST_V5.available.hex,
+      bar: CATALYST_V5.available.hex,
+      border: CATALYST_V5.available.hex,
     };
   }
   if (percentage < 100) {
     return {
       status: 'partial',
       label: `${100 - percentage}% Available`,
-      bg: '#f0fdfa',
-      text: '#0d9488',
-      bar: '#0d9488',
-      border: '#0d9488',
+      bg: CATALYST_V5.available.bgSolid,
+      text: CATALYST_V5.available.hex,
+      bar: CATALYST_V5.available.hex,
+      border: CATALYST_V5.available.hex,
     };
   }
   if (percentage === 100) {
     return {
       status: 'optimal',
       label: 'Optimal',
-      bg: '#eff6ff',
-      text: '#2563eb',
-      bar: '#2563eb',
-      border: '#2563eb',
+      bg: CATALYST_V5.optimal.bgSolid,
+      text: CATALYST_V5.optimal.hex,
+      bar: CATALYST_V5.optimal.hex,
+      border: CATALYST_V5.optimal.hex,
     };
   }
-  // Over-allocated - use Bronze from Golden Hour
+  // Over-allocated - Orange
   return {
     status: 'over',
     label: 'Over-allocated',
-    bg: '#faf8f5',
-    text: '#8b7355',
-    bar: '#8b7355',
-    border: '#8b7355',
+    bg: CATALYST_V5.overAllocated.bgSolid,
+    text: CATALYST_V5.overAllocated.hex,
+    bar: CATALYST_V5.overAllocated.hex,
+    border: CATALYST_V5.overAllocated.hex,
   };
 }
 
@@ -343,7 +394,6 @@ export function calculatePeriodAllocation(
     .filter((a) => {
       const allocStart = new Date(a.start_date);
       const allocEnd = new Date(a.end_date);
-      // Check if allocation overlaps with period
       return allocStart <= periodEnd && allocEnd >= periodStart;
     })
     .reduce((sum, a) => sum + a.allocation_percent, 0);
@@ -363,3 +413,12 @@ export function getAllocationsForPeriod(
     return allocStart <= periodEnd && allocEnd >= periodStart;
   });
 }
+
+// ============= STACKED BAR SEGMENT COLORS - Catalyst V5 =============
+export const ALLOCATION_SEGMENT_COLORS = [
+  '#2563eb', // Blue
+  '#0d9488', // Teal
+  '#3b82f6', // Blue Light
+  '#14b8a6', // Teal Light
+  '#64748b', // Slate
+];

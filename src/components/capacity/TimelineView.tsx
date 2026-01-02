@@ -15,7 +15,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { CATALYST_GOLDEN_HOUR, getAllocationStatusTheme } from '@/lib/catalyst-colors';
+import { CATALYST_V5, ALLOCATION_SEGMENT_COLORS, getAllocationStatusTheme } from '@/lib/catalyst-colors';
 import type { ResourceAllocation, TimelinePeriod } from '@/modules/capacity-planner/types';
 
 interface TimelineViewProps {
@@ -29,14 +29,8 @@ interface TimelineViewProps {
   onCellClick?: (resourceId: string, period: TimelinePeriod) => void;
 }
 
-// Golden Hour colors for allocation bars
-const BAR_COLORS = [
-  CATALYST_GOLDEN_HOUR.olive,
-  CATALYST_GOLDEN_HOUR.bronze,
-  CATALYST_GOLDEN_HOUR.gold,
-  CATALYST_GOLDEN_HOUR.champagne,
-  CATALYST_GOLDEN_HOUR.grey,
-];
+// Catalyst V5 colors for allocation bars
+const BAR_COLORS = ALLOCATION_SEGMENT_COLORS;
 
 export function TimelineView({ 
   resources, 

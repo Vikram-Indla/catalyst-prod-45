@@ -1608,27 +1608,28 @@ function TableView({ resources, projects, groupBy, groupedByAssignment, groupedB
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Timeline View with GANTT-STYLE Project Blocks - CIO Grade
+// Catalyst V5 Colors: Teal, Blue, Orange, Red (NO olive/bronze/gold/champagne)
 // ─────────────────────────────────────────────────────────────────────────────
 
-// FILLED project colors for Timeline bars — solid backgrounds with white text
+// FILLED project colors for Timeline bars — Catalyst V5 compliant
 const TIMELINE_PROJECT_COLORS: Record<string, { bg: string; text: string }> = {
-  'Senaei BAU': { bg: '#2563eb', text: '#ffffff' },
-  'Senaei': { bg: '#2563eb', text: '#ffffff' },
-  'Innovation Platform': { bg: '#4f46e5', text: '#ffffff' },
-  'Innovation': { bg: '#4f46e5', text: '#ffffff' },
-  'Inspection Project': { bg: '#0d9488', text: '#ffffff' },
-  'Inspection': { bg: '#0d9488', text: '#ffffff' },
-  'International Relations': { bg: '#059669', text: '#ffffff' },
-  'International': { bg: '#059669', text: '#ffffff' },
-  'MIM Website': { bg: '#16a34a', text: '#ffffff' },
-  'MIM': { bg: '#16a34a', text: '#ffffff' },
-  'Senaei OPS': { bg: '#ca8a04', text: '#ffffff' },
-  'Sectorial Services': { bg: '#8b7355', text: '#ffffff' },
-  'Sectorial': { bg: '#8b7355', text: '#ffffff' },
-  'Tahommena': { bg: '#0891b2', text: '#ffffff' },
-  'Data Platform': { bg: '#0284c7', text: '#ffffff' },
-  'Data': { bg: '#0284c7', text: '#ffffff' },
-  'ICP': { bg: '#7c3aed', text: '#ffffff' },
+  'Senaei BAU': { bg: '#2563eb', text: '#ffffff' },       // Blue
+  'Senaei': { bg: '#2563eb', text: '#ffffff' },           // Blue
+  'Innovation Platform': { bg: '#1d4ed8', text: '#ffffff' }, // Blue Dark
+  'Innovation': { bg: '#1d4ed8', text: '#ffffff' },       // Blue Dark
+  'Inspection Project': { bg: '#0d9488', text: '#ffffff' }, // Teal
+  'Inspection': { bg: '#0d9488', text: '#ffffff' },       // Teal
+  'International Relations': { bg: '#0f766e', text: '#ffffff' }, // Teal Dark
+  'International': { bg: '#0f766e', text: '#ffffff' },    // Teal Dark
+  'MIM Website': { bg: '#14b8a6', text: '#ffffff' },      // Teal Light
+  'MIM': { bg: '#14b8a6', text: '#ffffff' },              // Teal Light
+  'Senaei OPS': { bg: '#3b82f6', text: '#ffffff' },       // Blue Light
+  'Sectorial Services': { bg: '#64748b', text: '#ffffff' }, // Slate
+  'Sectorial': { bg: '#64748b', text: '#ffffff' },        // Slate
+  'Tahommena': { bg: '#0d9488', text: '#ffffff' },        // Teal
+  'Data Platform': { bg: '#3b82f6', text: '#ffffff' },    // Blue Light
+  'Data': { bg: '#3b82f6', text: '#ffffff' },             // Blue Light
+  'ICP': { bg: '#2563eb', text: '#ffffff' },              // Blue
 };
 
 // Get project color with fallback
