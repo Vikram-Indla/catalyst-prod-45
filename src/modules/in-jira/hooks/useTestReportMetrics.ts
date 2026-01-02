@@ -298,14 +298,14 @@ export function useTestReportMetrics(programId: string | null) {
     queryFn: async () => {
       const riskItems: RiskItem[] = [];
 
-      // Critical defects
-      const defectsResult = await supabase
-        .from('defects')
+      // Critical defects - use any to avoid deep type instantiation issue
+      type DefectRow = { id: string; defect_id: string; title: string | null; severity: string };
+      const { data: defectData } = await (supabase.from('defects') as any)
         .select('id, defect_id, title, severity')
         .eq('severity', 'critical')
         .neq('status', 'closed')
         .limit(5);
-      const criticalDefects = defectsResult.data as Array<{ id: string; defect_id: string; title: string | null; severity: string }> | null;
+      const criticalDefects = (defectData || []) as DefectRow[];
 
       criticalDefects?.forEach(d => {
         riskItems.push({
@@ -419,13 +419,12 @@ export function useTestReportMetrics(programId: string | null) {
         });
       }
 
-      // Check for open critical defects
-      const { data: criticalDefects } = await supabase
-        .from('defects')
+      // Check for open critical defects - use any to avoid deep type instantiation
+      const { data: criticalDefects } = await (supabase.from('defects') as any)
         .select('id, defect_id')
         .eq('severity', 'critical')
         .neq('status', 'closed')
-        .limit(5);
+        .limit(5) as { data: Array<{ id: string; defect_id: string }> | null };
 
       if (criticalDefects && criticalDefects.length > 0) {
         actions.push({
@@ -465,12 +464,11 @@ export function useTestReportMetrics(programId: string | null) {
     queryFn: async () => {
       const blockers: ReleaseBlocker[] = [];
 
-      // Critical defects
-      const { data: criticalDefects } = await supabase
-        .from('defects')
+      // Critical defects - use any to avoid deep type instantiation
+      const { data: criticalDefects } = await (supabase.from('defects') as any)
         .select('id, defect_id, title')
         .eq('severity', 'critical')
-        .neq('status', 'closed');
+        .neq('status', 'closed') as { data: Array<{ id: string; defect_id: string; title: string | null }> | null };
 
       criticalDefects?.forEach(d => {
         blockers.push({
@@ -592,14 +590,12 @@ export function useTestReportMetrics(programId: string | null) {
         const dayStart = startOfDay(day).toISOString();
         const dayEnd = endOfDay(day).toISOString();
 
-        const { data: opened } = await supabase
-          .from('defects')
+        const { data: opened } = await (supabase.from('defects') as any)
           .select('id', { count: 'exact', head: true })
           .gte('created_at', dayStart)
           .lte('created_at', dayEnd);
 
-        const { data: closed } = await supabase
-          .from('defects')
+        const { data: closed } = await (supabase.from('defects') as any)
           .select('id', { count: 'exact', head: true })
           .eq('status', 'closed')
           .gte('updated_at', dayStart)
