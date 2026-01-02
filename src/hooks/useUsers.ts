@@ -182,41 +182,27 @@ export function useCreateUser() {
   });
 }
 
-
-export function useCreateUser() {
+export function useUpdateUserEmail() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (input: CreateUserInput) => {
-      // Call the edge function to create the user
-      const { data, error } = await supabase.functions.invoke('create-user', {
-        body: {
-          firstName: input.firstName,
-          lastName: input.lastName,
-          email: input.email.toLowerCase(),
-          roleIds: input.roleIds,
-        },
-      });
+    mutationFn: async ({ userId, email }: { userId: string; email: string }) => {
+      const { error } = await supabase
+        .from('profiles')
+        .update({ email: email.toLowerCase().trim(), updated_at: new Date().toISOString() })
+        .eq('id', userId);
 
-      if (error) {
-        throw new Error(error.message || 'Failed to create user');
-      }
-
-      if (data?.error) {
-        throw new Error(data.error);
-      }
-
-      return data.user;
+      if (error) throw error;
+      return { userId, email };
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['users-list'] });
-      queryClient.invalidateQueries({ queryKey: ['product-roles'] });
-      toast.success('User created successfully');
+      toast.success('Email updated successfully');
     },
     onError: (error) => {
-      // Don't show toast here, let the component handle the specific error message
-      console.error('Failed to create user:', error);
-    }
+      console.error('Failed to update email:', error);
+      toast.error('Failed to update email');
+    },
   });
 }
 
