@@ -16485,39 +16485,55 @@ export type Database = {
           activity_type: string
           created_at: string | null
           description: string | null
+          effort_hours: number | null
           entity_id: string
           entity_title: string | null
           entity_type: string
           id: string
+          metadata: Json | null
           program_id: string | null
+          project_id: string | null
           user_id: string | null
         }
         Insert: {
           activity_type: string
           created_at?: string | null
           description?: string | null
+          effort_hours?: number | null
           entity_id: string
           entity_title?: string | null
           entity_type: string
           id?: string
+          metadata?: Json | null
           program_id?: string | null
+          project_id?: string | null
           user_id?: string | null
         }
         Update: {
           activity_type?: string
           created_at?: string | null
           description?: string | null
+          effort_hours?: number | null
           entity_id?: string
           entity_title?: string | null
           entity_type?: string
           id?: string
+          metadata?: Json | null
           program_id?: string | null
+          project_id?: string | null
           user_id?: string | null
         }
         Relationships: [
           {
             foreignKeyName: "test_activity_log_program_id_fkey"
             columns: ["program_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_activity_log_project_id_fkey"
+            columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "projects"
             referencedColumns: ["id"]

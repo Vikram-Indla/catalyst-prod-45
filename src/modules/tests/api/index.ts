@@ -6,3 +6,4 @@ export * from './kpis';
 export * from './testSets';
 export * from './cycleExecution';
 export * from './testReports';
+export * from './userActivity';

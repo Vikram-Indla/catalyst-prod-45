@@ -6,7 +6,8 @@
 
 import React, { useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { 
+import { Users } from 'lucide-react';
+import {
   BarChart3,
   TrendingUp,
   PieChart,
@@ -57,6 +58,7 @@ import { useAuth } from '@/lib/auth';
 import { toast } from 'sonner';
 import { exportToCSV } from '@/lib/exportUtils';
 import { jsPDF } from 'jspdf';
+import { UserActivityReport } from '../components/UserActivityReport';
 
 export function TestsReportsPage() {
   const { projectId } = useParams<{ projectId: string }>();
@@ -464,6 +466,10 @@ export function TestsReportsPage() {
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="bg-surface-2 border border-border-default">
           <TabsTrigger value="dashboard">Command Center</TabsTrigger>
+          <TabsTrigger value="user-activity" className="flex items-center gap-1">
+            <Users className="h-4 w-4" />
+            User Activity
+          </TabsTrigger>
           <TabsTrigger value="daily">Daily Report</TabsTrigger>
           <TabsTrigger value="weekly">Weekly Report</TabsTrigger>
         </TabsList>
@@ -886,6 +892,11 @@ export function TestsReportsPage() {
               </div>
             </CardContent>
           </Card>
+        </TabsContent>
+
+        {/* User Activity Tab */}
+        <TabsContent value="user-activity" className="mt-6">
+          <UserActivityReport />
         </TabsContent>
       </Tabs>
     </div>
