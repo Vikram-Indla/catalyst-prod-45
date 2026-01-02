@@ -21,6 +21,8 @@ export type { TestSetVersion, VersionDiff as TestSetVersionDiff } from './useTes
 export { useTestSetBulkOperations } from './useTestSetBulkOperations';
 export type { BulkOperationType as TestSetBulkOpType, BulkOperationResult as TestSetBulkOpResult } from './useTestSetBulkOperations';
 export { useSmartSetEvaluation, useSyncSmartSetCases } from './useSmartSetEvaluation';
+export { useTestCycleBulkOperations } from './useTestCycleBulkOperations';
+export type { CycleBulkOperationType, CycleBulkOperationResult } from './useTestCycleBulkOperations';
 export { useCycleExecutions, type CycleExecution, type ExecutionsByStatus, type WorkloadByUser } from './useCycleExecutions';
 export type { ExecutionStatus as CycleExecutionStatus } from './useCycleExecutions';
 export { useCycleBoardConfig, type BoardColumn, type BoardConfig } from './useCycleBoardConfig';
