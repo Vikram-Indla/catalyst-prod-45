@@ -147,9 +147,17 @@ export default function CapacityPlannerPage() {
     return new Set(assignments.map(a => a.user_id));
   }, [assignments]);
 
-  // Available users = all resources minus those already assigned
+  // Available users = all resources minus those already assigned, excluding management roles
   const availableUsers = useMemo(() => {
-    return resources.filter(r => !assignedUserIds.has(r.id));
+    return resources.filter(r => {
+      if (assignedUserIds.has(r.id)) return false;
+      // Exclude management and admin roles - they are overheads, not capacity planned
+      const roleLower = r.role?.toLowerCase() || '';
+      const isManagement = roleLower.includes('management');
+      const isSuperAdmin = roleLower.includes('super admin') || roleLower.includes('superadmin') || roleLower === 'admin';
+      if (isManagement || isSuperAdmin) return false;
+      return true;
+    });
   }, [resources, assignedUserIds]);
 
   const handleExport = () => {
