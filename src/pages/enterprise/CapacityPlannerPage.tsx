@@ -715,10 +715,20 @@ export default function CapacityPlannerPage() {
 
                 {/* Total Allocation Summary */}
                 {(() => {
-                  const total = bookingAllocations.reduce((sum, a) => sum + (a.percent || 0), 0);
+                  const hasSelectedUser = !!selectedUserId;
+                  // Only count allocations where an assignment is selected
+                  const total = bookingAllocations.reduce((sum, a) => sum + (a.assignmentId ? (a.percent || 0) : 0), 0);
                   const isOver = total > 100;
                   const statusColor = isOver ? '#d97706' : total === 100 ? '#2563eb' : '#0d9488';
                   const statusBg = isOver ? 'rgba(217,119,6,0.08)' : total === 100 ? 'rgba(37,99,235,0.08)' : 'rgba(13,148,136,0.08)';
+                  
+                  if (!hasSelectedUser) {
+                    return (
+                      <div className="mt-4 p-4 rounded-lg bg-muted/50 text-center">
+                        <span className="text-sm text-muted-foreground">Select a user to configure allocation</span>
+                      </div>
+                    );
+                  }
                   
                   return (
                     <div className="mt-4 p-3 rounded-lg" style={{ backgroundColor: statusBg }}>
