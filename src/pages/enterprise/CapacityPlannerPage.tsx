@@ -27,7 +27,6 @@ import { CapacityAIDrawer } from '@/components/capacity/CapacityAIDrawer';
 import { CatalystEnterpriseTable, CatalystColumn } from '@/components/industry/CatalystEnterpriseTable';
 import { BulkEditModal } from '@/components/capacity/BulkEditModal';
 import { DraggableCardsView } from '@/components/capacity/DraggableCardsView';
-import { KanbanAssignView } from '@/components/capacity/KanbanAssignView';
 import { Logo } from '@/components/brand/Logo';
 
 type PeriodType = 'weekly' | 'monthly' | 'quarterly';
@@ -99,7 +98,6 @@ export default function CapacityPlannerPage() {
   const [resourcesToDelete, setResourcesToDelete] = useState<ResourceMetric[]>([]);
   const [bulkEditOpen, setBulkEditOpen] = useState(false);
   const [resourcesToBulkEdit, setResourcesToBulkEdit] = useState<ResourceMetric[]>([]);
-  const [assignModeOpen, setAssignModeOpen] = useState(false);
   const [presentationMode, setPresentationMode] = useState(false);
   
   // Allocation booking modal state
@@ -355,7 +353,6 @@ export default function CapacityPlannerPage() {
           onTimelinePeriodChange={(p) => setPeriod(p as PeriodType)}
           onSearchChange={setSearchQuery}
           onAddResource={() => setResourceModalOpen(true)}
-          onAssignMode={() => setAssignModeOpen(true)}
           onExport={handleExport}
           onPresentationMode={() => setPresentationMode(true)}
           onFilterChange={setActiveFilter}
@@ -980,19 +977,6 @@ export default function CapacityPlannerPage() {
             )}
           </button>
         </div>
-
-        {/* Assign Mode - Kanban View Overlay */}
-        {assignModeOpen && (
-          <KanbanAssignView 
-            resources={filteredResources}
-            assignments={resourceAssignments}
-            onMoveResource={handleMoveResource}
-            onClose={() => setAssignModeOpen(false)}
-            departmentFilter={departmentFilter}
-            onDepartmentFilterChange={(v: string) => setDepartmentFilter(v as 'all' | 'delivery' | 'product' | 'support')}
-            uniqueDepartments={uniqueDepartments}
-          />
-        )}
 
         {/* Presentation Mode Fullscreen Overlay */}
         {presentationMode && (
