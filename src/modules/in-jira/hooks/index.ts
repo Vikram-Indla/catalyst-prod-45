@@ -8,6 +8,7 @@ export * from './useAISuggestions';
 export * from './useTestCases';
 export * from './useTestSets';
 export * from './useTestCycles';
-export * from './useTestExecutions';
 export * from './useTestMetrics';
 export * from './useTestSteps';
+export { useCycleExecutions, type CycleExecution, type ExecutionsByStatus, type WorkloadByUser } from './useCycleExecutions';
+export type { ExecutionStatus as CycleExecutionStatus } from './useCycleExecutions';
