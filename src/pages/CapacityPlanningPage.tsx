@@ -1,10 +1,6 @@
-import { CapacityPlanning } from '@/modules/capacity-planning';
 import { PageChrome } from '@/components/layout/PageChrome';
+import CapacityPlannerPage from './enterprise/CapacityPlannerPage';
 
 export default function CapacityPlanningPage() {
-  return (
-    <PageChrome>
-      <CapacityPlanning />
-    </PageChrome>
-  );
+  return <CapacityPlannerPage />;
 }

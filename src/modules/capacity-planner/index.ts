@@ -9,8 +9,5 @@ export { useResourceAllocations } from './hooks/useResourceAllocations';
 export { exportCapacityToPdf } from './lib/pdf-export';
 export * from './types';
 
-// Re-export from capacity-planning module
-export { CapacityPlanning, useCapacityBookings, useCreateBooking, useUpdateBooking, useDeleteBooking } from '@/modules/capacity-planning';
-
 // Re-export allocation modal
 export { AllocationBookingModal } from '@/components/capacity/AllocationBookingModal';
