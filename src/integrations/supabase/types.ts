@@ -7153,6 +7153,1709 @@ export type Database = {
           },
         ]
       }
+      injira_ai_suggestions: {
+        Row: {
+          accepted_at: string | null
+          accepted_by: string | null
+          confidence_score: number | null
+          created_at: string | null
+          id: string
+          is_accepted: boolean | null
+          issue_id: string | null
+          model_version: string | null
+          suggestion_data: Json
+          suggestion_type: string
+          tenant_id: string
+        }
+        Insert: {
+          accepted_at?: string | null
+          accepted_by?: string | null
+          confidence_score?: number | null
+          created_at?: string | null
+          id?: string
+          is_accepted?: boolean | null
+          issue_id?: string | null
+          model_version?: string | null
+          suggestion_data: Json
+          suggestion_type: string
+          tenant_id: string
+        }
+        Update: {
+          accepted_at?: string | null
+          accepted_by?: string | null
+          confidence_score?: number | null
+          created_at?: string | null
+          id?: string
+          is_accepted?: boolean | null
+          issue_id?: string | null
+          model_version?: string | null
+          suggestion_data?: Json
+          suggestion_type?: string
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "injira_ai_suggestions_accepted_by_fkey"
+            columns: ["accepted_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "injira_ai_suggestions_issue_id_fkey"
+            columns: ["issue_id"]
+            isOneToOne: false
+            referencedRelation: "injira_issues"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "injira_ai_suggestions_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "injira_tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      injira_attachments: {
+        Row: {
+          author_id: string | null
+          created_at: string | null
+          file_size: number
+          filename: string
+          id: string
+          issue_id: string
+          mime_type: string
+          storage_path: string
+          tenant_id: string
+          thumbnail_path: string | null
+        }
+        Insert: {
+          author_id?: string | null
+          created_at?: string | null
+          file_size: number
+          filename: string
+          id?: string
+          issue_id: string
+          mime_type: string
+          storage_path: string
+          tenant_id: string
+          thumbnail_path?: string | null
+        }
+        Update: {
+          author_id?: string | null
+          created_at?: string | null
+          file_size?: number
+          filename?: string
+          id?: string
+          issue_id?: string
+          mime_type?: string
+          storage_path?: string
+          tenant_id?: string
+          thumbnail_path?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "injira_attachments_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "injira_attachments_issue_id_fkey"
+            columns: ["issue_id"]
+            isOneToOne: false
+            referencedRelation: "injira_issues"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "injira_attachments_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "injira_tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      injira_automation_rules: {
+        Row: {
+          actions_config: Json
+          conditions_config: Json | null
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          execution_count: number | null
+          id: string
+          is_enabled: boolean | null
+          last_executed_at: string | null
+          name: string
+          project_id: string | null
+          tenant_id: string
+          trigger_config: Json
+          updated_at: string | null
+        }
+        Insert: {
+          actions_config: Json
+          conditions_config?: Json | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          execution_count?: number | null
+          id?: string
+          is_enabled?: boolean | null
+          last_executed_at?: string | null
+          name: string
+          project_id?: string | null
+          tenant_id: string
+          trigger_config: Json
+          updated_at?: string | null
+        }
+        Update: {
+          actions_config?: Json
+          conditions_config?: Json | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          execution_count?: number | null
+          id?: string
+          is_enabled?: boolean | null
+          last_executed_at?: string | null
+          name?: string
+          project_id?: string | null
+          tenant_id?: string
+          trigger_config?: Json
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "injira_automation_rules_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "injira_automation_rules_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "injira_projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "injira_automation_rules_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "injira_tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      injira_board_columns: {
+        Row: {
+          board_id: string
+          created_at: string | null
+          id: string
+          max_limit: number | null
+          min_limit: number | null
+          name: string
+          sort_order: number
+          status_ids: string[]
+          tenant_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          board_id: string
+          created_at?: string | null
+          id?: string
+          max_limit?: number | null
+          min_limit?: number | null
+          name: string
+          sort_order?: number
+          status_ids?: string[]
+          tenant_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          board_id?: string
+          created_at?: string | null
+          id?: string
+          max_limit?: number | null
+          min_limit?: number | null
+          name?: string
+          sort_order?: number
+          status_ids?: string[]
+          tenant_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "injira_board_columns_board_id_fkey"
+            columns: ["board_id"]
+            isOneToOne: false
+            referencedRelation: "injira_boards"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "injira_board_columns_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "injira_tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      injira_boards: {
+        Row: {
+          board_type: Database["public"]["Enums"]["injira_board_type"]
+          created_at: string | null
+          created_by: string | null
+          filter_jql: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          project_id: string
+          settings: Json | null
+          tenant_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          board_type: Database["public"]["Enums"]["injira_board_type"]
+          created_at?: string | null
+          created_by?: string | null
+          filter_jql?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          project_id: string
+          settings?: Json | null
+          tenant_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          board_type?: Database["public"]["Enums"]["injira_board_type"]
+          created_at?: string | null
+          created_by?: string | null
+          filter_jql?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          project_id?: string
+          settings?: Json | null
+          tenant_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "injira_boards_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "injira_boards_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "injira_projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "injira_boards_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "injira_tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      injira_changelog_groups: {
+        Row: {
+          author_id: string | null
+          created_at: string | null
+          id: string
+          issue_id: string
+          tenant_id: string
+        }
+        Insert: {
+          author_id?: string | null
+          created_at?: string | null
+          id?: string
+          issue_id: string
+          tenant_id: string
+        }
+        Update: {
+          author_id?: string | null
+          created_at?: string | null
+          id?: string
+          issue_id?: string
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "injira_changelog_groups_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "injira_changelog_groups_issue_id_fkey"
+            columns: ["issue_id"]
+            isOneToOne: false
+            referencedRelation: "injira_issues"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "injira_changelog_groups_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "injira_tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      injira_changelog_items: {
+        Row: {
+          changelog_group_id: string
+          created_at: string | null
+          field_name: string
+          field_type: string
+          from_display: string | null
+          from_value: string | null
+          id: string
+          tenant_id: string
+          to_display: string | null
+          to_value: string | null
+        }
+        Insert: {
+          changelog_group_id: string
+          created_at?: string | null
+          field_name: string
+          field_type?: string
+          from_display?: string | null
+          from_value?: string | null
+          id?: string
+          tenant_id: string
+          to_display?: string | null
+          to_value?: string | null
+        }
+        Update: {
+          changelog_group_id?: string
+          created_at?: string | null
+          field_name?: string
+          field_type?: string
+          from_display?: string | null
+          from_value?: string | null
+          id?: string
+          tenant_id?: string
+          to_display?: string | null
+          to_value?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "injira_changelog_items_changelog_group_id_fkey"
+            columns: ["changelog_group_id"]
+            isOneToOne: false
+            referencedRelation: "injira_changelog_groups"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "injira_changelog_items_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "injira_tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      injira_comments: {
+        Row: {
+          author_id: string | null
+          body: Json
+          created_at: string | null
+          edited_by: string | null
+          id: string
+          is_internal: boolean | null
+          issue_id: string
+          tenant_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          author_id?: string | null
+          body: Json
+          created_at?: string | null
+          edited_by?: string | null
+          id?: string
+          is_internal?: boolean | null
+          issue_id: string
+          tenant_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          author_id?: string | null
+          body?: Json
+          created_at?: string | null
+          edited_by?: string | null
+          id?: string
+          is_internal?: boolean | null
+          issue_id?: string
+          tenant_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "injira_comments_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "injira_comments_edited_by_fkey"
+            columns: ["edited_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "injira_comments_issue_id_fkey"
+            columns: ["issue_id"]
+            isOneToOne: false
+            referencedRelation: "injira_issues"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "injira_comments_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "injira_tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      injira_import_diff_reports: {
+        Row: {
+          created_at: string | null
+          diff_details: Json | null
+          diff_type: string
+          entity_type: string
+          id: string
+          import_job_id: string
+          source_data: Json | null
+          source_id: string
+          target_data: Json | null
+          tenant_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          diff_details?: Json | null
+          diff_type: string
+          entity_type: string
+          id?: string
+          import_job_id: string
+          source_data?: Json | null
+          source_id: string
+          target_data?: Json | null
+          tenant_id: string
+        }
+        Update: {
+          created_at?: string | null
+          diff_details?: Json | null
+          diff_type?: string
+          entity_type?: string
+          id?: string
+          import_job_id?: string
+          source_data?: Json | null
+          source_id?: string
+          target_data?: Json | null
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "injira_import_diff_reports_import_job_id_fkey"
+            columns: ["import_job_id"]
+            isOneToOne: false
+            referencedRelation: "injira_import_jobs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "injira_import_diff_reports_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "injira_tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      injira_import_jobs: {
+        Row: {
+          completed_at: string | null
+          config: Json | null
+          created_at: string | null
+          created_by: string | null
+          error_log: Json | null
+          failed_items: number | null
+          id: string
+          imported_items: number | null
+          progress_percent: number | null
+          project_id: string | null
+          source_project_key: string | null
+          source_type: string
+          started_at: string | null
+          status: Database["public"]["Enums"]["injira_import_status"]
+          tenant_id: string
+          total_items: number | null
+        }
+        Insert: {
+          completed_at?: string | null
+          config?: Json | null
+          created_at?: string | null
+          created_by?: string | null
+          error_log?: Json | null
+          failed_items?: number | null
+          id?: string
+          imported_items?: number | null
+          progress_percent?: number | null
+          project_id?: string | null
+          source_project_key?: string | null
+          source_type?: string
+          started_at?: string | null
+          status?: Database["public"]["Enums"]["injira_import_status"]
+          tenant_id: string
+          total_items?: number | null
+        }
+        Update: {
+          completed_at?: string | null
+          config?: Json | null
+          created_at?: string | null
+          created_by?: string | null
+          error_log?: Json | null
+          failed_items?: number | null
+          id?: string
+          imported_items?: number | null
+          progress_percent?: number | null
+          project_id?: string | null
+          source_project_key?: string | null
+          source_type?: string
+          started_at?: string | null
+          status?: Database["public"]["Enums"]["injira_import_status"]
+          tenant_id?: string
+          total_items?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "injira_import_jobs_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "injira_import_jobs_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "injira_projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "injira_import_jobs_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "injira_tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      injira_import_manifests: {
+        Row: {
+          created_at: string | null
+          id: string
+          import_job_id: string
+          is_valid: boolean | null
+          manifest_json: Json
+          tenant_id: string
+          validation_errors: Json | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          import_job_id: string
+          is_valid?: boolean | null
+          manifest_json: Json
+          tenant_id: string
+          validation_errors?: Json | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          import_job_id?: string
+          is_valid?: boolean | null
+          manifest_json?: Json
+          tenant_id?: string
+          validation_errors?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "injira_import_manifests_import_job_id_fkey"
+            columns: ["import_job_id"]
+            isOneToOne: false
+            referencedRelation: "injira_import_jobs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "injira_import_manifests_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "injira_tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      injira_import_mappings: {
+        Row: {
+          created_at: string | null
+          entity_type: string
+          id: string
+          import_job_id: string
+          metadata: Json | null
+          source_id: string
+          source_key: string | null
+          target_id: string
+          tenant_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          entity_type: string
+          id?: string
+          import_job_id: string
+          metadata?: Json | null
+          source_id: string
+          source_key?: string | null
+          target_id: string
+          tenant_id: string
+        }
+        Update: {
+          created_at?: string | null
+          entity_type?: string
+          id?: string
+          import_job_id?: string
+          metadata?: Json | null
+          source_id?: string
+          source_key?: string | null
+          target_id?: string
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "injira_import_mappings_import_job_id_fkey"
+            columns: ["import_job_id"]
+            isOneToOne: false
+            referencedRelation: "injira_import_jobs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "injira_import_mappings_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "injira_tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      injira_issue_security_levels: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          name: string
+          project_id: string
+          sort_order: number | null
+          tenant_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name: string
+          project_id: string
+          sort_order?: number | null
+          tenant_id: string
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name?: string
+          project_id?: string
+          sort_order?: number | null
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "injira_issue_security_levels_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "injira_projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "injira_issue_security_levels_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "injira_tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      injira_issue_types: {
+        Row: {
+          category: Database["public"]["Enums"]["injira_issue_type_category"]
+          color: string | null
+          created_at: string | null
+          description: string | null
+          hierarchy_level: number | null
+          icon_url: string | null
+          id: string
+          is_active: boolean | null
+          is_subtask: boolean | null
+          name: string
+          sort_order: number | null
+          tenant_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          category: Database["public"]["Enums"]["injira_issue_type_category"]
+          color?: string | null
+          created_at?: string | null
+          description?: string | null
+          hierarchy_level?: number | null
+          icon_url?: string | null
+          id?: string
+          is_active?: boolean | null
+          is_subtask?: boolean | null
+          name: string
+          sort_order?: number | null
+          tenant_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          category?: Database["public"]["Enums"]["injira_issue_type_category"]
+          color?: string | null
+          created_at?: string | null
+          description?: string | null
+          hierarchy_level?: number | null
+          icon_url?: string | null
+          id?: string
+          is_active?: boolean | null
+          is_subtask?: boolean | null
+          name?: string
+          sort_order?: number | null
+          tenant_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "injira_issue_types_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "injira_tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      injira_issue_versions: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          id: string
+          issue_id: string
+          relation_type: string
+          tenant_id: string
+          version_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          issue_id: string
+          relation_type?: string
+          tenant_id: string
+          version_id: string
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          issue_id?: string
+          relation_type?: string
+          tenant_id?: string
+          version_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "injira_issue_versions_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "injira_issue_versions_issue_id_fkey"
+            columns: ["issue_id"]
+            isOneToOne: false
+            referencedRelation: "injira_issues"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "injira_issue_versions_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "injira_tenants"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "injira_issue_versions_version_id_fkey"
+            columns: ["version_id"]
+            isOneToOne: false
+            referencedRelation: "injira_versions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      injira_issues: {
+        Row: {
+          assignee_id: string | null
+          components: string[] | null
+          created_at: string | null
+          created_by: string | null
+          custom_fields: Json | null
+          deleted_at: string | null
+          description: Json | null
+          due_date: string | null
+          environment: string | null
+          id: string
+          issue_number: number
+          issue_type_id: string
+          key: string
+          labels: string[] | null
+          optimistic_lock_version: number | null
+          original_estimate_seconds: number | null
+          parent_feature_id: string | null
+          parent_id: string | null
+          priority: string | null
+          program_epic_id: string | null
+          project_id: string
+          rank_lexo: string | null
+          remaining_estimate_seconds: number | null
+          reporter_id: string | null
+          resolution_id: string | null
+          resolved_at: string | null
+          security_level_id: string | null
+          sprint_id: string | null
+          start_date: string | null
+          status_id: string
+          story_points: number | null
+          summary: string
+          tenant_id: string
+          time_spent_seconds: number | null
+          updated_at: string | null
+          updated_by: string | null
+        }
+        Insert: {
+          assignee_id?: string | null
+          components?: string[] | null
+          created_at?: string | null
+          created_by?: string | null
+          custom_fields?: Json | null
+          deleted_at?: string | null
+          description?: Json | null
+          due_date?: string | null
+          environment?: string | null
+          id?: string
+          issue_number: number
+          issue_type_id: string
+          key: string
+          labels?: string[] | null
+          optimistic_lock_version?: number | null
+          original_estimate_seconds?: number | null
+          parent_feature_id?: string | null
+          parent_id?: string | null
+          priority?: string | null
+          program_epic_id?: string | null
+          project_id: string
+          rank_lexo?: string | null
+          remaining_estimate_seconds?: number | null
+          reporter_id?: string | null
+          resolution_id?: string | null
+          resolved_at?: string | null
+          security_level_id?: string | null
+          sprint_id?: string | null
+          start_date?: string | null
+          status_id: string
+          story_points?: number | null
+          summary: string
+          tenant_id: string
+          time_spent_seconds?: number | null
+          updated_at?: string | null
+          updated_by?: string | null
+        }
+        Update: {
+          assignee_id?: string | null
+          components?: string[] | null
+          created_at?: string | null
+          created_by?: string | null
+          custom_fields?: Json | null
+          deleted_at?: string | null
+          description?: Json | null
+          due_date?: string | null
+          environment?: string | null
+          id?: string
+          issue_number?: number
+          issue_type_id?: string
+          key?: string
+          labels?: string[] | null
+          optimistic_lock_version?: number | null
+          original_estimate_seconds?: number | null
+          parent_feature_id?: string | null
+          parent_id?: string | null
+          priority?: string | null
+          program_epic_id?: string | null
+          project_id?: string
+          rank_lexo?: string | null
+          remaining_estimate_seconds?: number | null
+          reporter_id?: string | null
+          resolution_id?: string | null
+          resolved_at?: string | null
+          security_level_id?: string | null
+          sprint_id?: string | null
+          start_date?: string | null
+          status_id?: string
+          story_points?: number | null
+          summary?: string
+          tenant_id?: string
+          time_spent_seconds?: number | null
+          updated_at?: string | null
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "injira_issues_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "injira_issues_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "injira_issues_issue_type_id_fkey"
+            columns: ["issue_type_id"]
+            isOneToOne: false
+            referencedRelation: "injira_issue_types"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "injira_issues_parent_feature_id_fkey"
+            columns: ["parent_feature_id"]
+            isOneToOne: false
+            referencedRelation: "features"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "injira_issues_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "injira_issues"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "injira_issues_program_epic_id_fkey"
+            columns: ["program_epic_id"]
+            isOneToOne: false
+            referencedRelation: "epics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "injira_issues_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "injira_projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "injira_issues_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "injira_issues_resolution_id_fkey"
+            columns: ["resolution_id"]
+            isOneToOne: false
+            referencedRelation: "injira_resolutions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "injira_issues_security_level_fk"
+            columns: ["security_level_id"]
+            isOneToOne: false
+            referencedRelation: "injira_issue_security_levels"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "injira_issues_sprint_fk"
+            columns: ["sprint_id"]
+            isOneToOne: false
+            referencedRelation: "injira_sprints"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "injira_issues_status_id_fkey"
+            columns: ["status_id"]
+            isOneToOne: false
+            referencedRelation: "injira_statuses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "injira_issues_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "injira_tenants"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "injira_issues_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      injira_permission_grants: {
+        Row: {
+          anyone: boolean | null
+          created_at: string | null
+          group_name: string | null
+          id: string
+          permission: Database["public"]["Enums"]["injira_permission_type"]
+          role_id: string | null
+          scheme_id: string
+          tenant_id: string
+        }
+        Insert: {
+          anyone?: boolean | null
+          created_at?: string | null
+          group_name?: string | null
+          id?: string
+          permission: Database["public"]["Enums"]["injira_permission_type"]
+          role_id?: string | null
+          scheme_id: string
+          tenant_id: string
+        }
+        Update: {
+          anyone?: boolean | null
+          created_at?: string | null
+          group_name?: string | null
+          id?: string
+          permission?: Database["public"]["Enums"]["injira_permission_type"]
+          role_id?: string | null
+          scheme_id?: string
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "injira_permission_grants_role_id_fkey"
+            columns: ["role_id"]
+            isOneToOne: false
+            referencedRelation: "injira_roles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "injira_permission_grants_scheme_id_fkey"
+            columns: ["scheme_id"]
+            isOneToOne: false
+            referencedRelation: "injira_permission_schemes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "injira_permission_grants_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "injira_tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      injira_permission_schemes: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          is_default: boolean | null
+          name: string
+          tenant_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_default?: boolean | null
+          name: string
+          tenant_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_default?: boolean | null
+          name?: string
+          tenant_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "injira_permission_schemes_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "injira_tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      injira_projects: {
+        Row: {
+          avatar_url: string | null
+          category: string | null
+          created_at: string | null
+          created_by: string | null
+          default_assignee_id: string | null
+          description: string | null
+          id: string
+          is_archived: boolean | null
+          key: string
+          lead_user_id: string | null
+          name: string
+          project_type: string | null
+          settings: Json | null
+          tenant_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          category?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          default_assignee_id?: string | null
+          description?: string | null
+          id?: string
+          is_archived?: boolean | null
+          key: string
+          lead_user_id?: string | null
+          name: string
+          project_type?: string | null
+          settings?: Json | null
+          tenant_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          category?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          default_assignee_id?: string | null
+          description?: string | null
+          id?: string
+          is_archived?: boolean | null
+          key?: string
+          lead_user_id?: string | null
+          name?: string
+          project_type?: string | null
+          settings?: Json | null
+          tenant_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "injira_projects_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "injira_projects_default_assignee_id_fkey"
+            columns: ["default_assignee_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "injira_projects_lead_user_id_fkey"
+            columns: ["lead_user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "injira_projects_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "injira_tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      injira_resolutions: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          is_default: boolean | null
+          name: string
+          sort_order: number | null
+          tenant_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_default?: boolean | null
+          name: string
+          sort_order?: number | null
+          tenant_id: string
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_default?: boolean | null
+          name?: string
+          sort_order?: number | null
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "injira_resolutions_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "injira_tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      injira_role_assignments: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          group_name: string | null
+          id: string
+          project_id: string
+          role_id: string
+          tenant_id: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          group_name?: string | null
+          id?: string
+          project_id: string
+          role_id: string
+          tenant_id: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          group_name?: string | null
+          id?: string
+          project_id?: string
+          role_id?: string
+          tenant_id?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "injira_role_assignments_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "injira_role_assignments_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "injira_projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "injira_role_assignments_role_id_fkey"
+            columns: ["role_id"]
+            isOneToOne: false
+            referencedRelation: "injira_roles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "injira_role_assignments_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "injira_tenants"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "injira_role_assignments_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      injira_roles: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          is_system: boolean | null
+          name: string
+          tenant_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_system?: boolean | null
+          name: string
+          tenant_id: string
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_system?: boolean | null
+          name?: string
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "injira_roles_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "injira_tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      injira_sprints: {
+        Row: {
+          board_id: string
+          complete_date: string | null
+          created_at: string | null
+          created_by: string | null
+          end_date: string | null
+          goal: string | null
+          id: string
+          name: string
+          settings: Json | null
+          start_date: string | null
+          state: Database["public"]["Enums"]["injira_sprint_state"]
+          tenant_id: string
+          updated_at: string | null
+          velocity: number | null
+        }
+        Insert: {
+          board_id: string
+          complete_date?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          end_date?: string | null
+          goal?: string | null
+          id?: string
+          name: string
+          settings?: Json | null
+          start_date?: string | null
+          state?: Database["public"]["Enums"]["injira_sprint_state"]
+          tenant_id: string
+          updated_at?: string | null
+          velocity?: number | null
+        }
+        Update: {
+          board_id?: string
+          complete_date?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          end_date?: string | null
+          goal?: string | null
+          id?: string
+          name?: string
+          settings?: Json | null
+          start_date?: string | null
+          state?: Database["public"]["Enums"]["injira_sprint_state"]
+          tenant_id?: string
+          updated_at?: string | null
+          velocity?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "injira_sprints_board_id_fkey"
+            columns: ["board_id"]
+            isOneToOne: false
+            referencedRelation: "injira_boards"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "injira_sprints_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "injira_sprints_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "injira_tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      injira_statuses: {
+        Row: {
+          category: Database["public"]["Enums"]["injira_status_category"]
+          color: string | null
+          created_at: string | null
+          description: string | null
+          icon: string | null
+          id: string
+          is_final: boolean | null
+          is_initial: boolean | null
+          name: string
+          sort_order: number | null
+          tenant_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          category: Database["public"]["Enums"]["injira_status_category"]
+          color?: string | null
+          created_at?: string | null
+          description?: string | null
+          icon?: string | null
+          id?: string
+          is_final?: boolean | null
+          is_initial?: boolean | null
+          name: string
+          sort_order?: number | null
+          tenant_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          category?: Database["public"]["Enums"]["injira_status_category"]
+          color?: string | null
+          created_at?: string | null
+          description?: string | null
+          icon?: string | null
+          id?: string
+          is_final?: boolean | null
+          is_initial?: boolean | null
+          name?: string
+          sort_order?: number | null
+          tenant_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "injira_statuses_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "injira_tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      injira_tenants: {
+        Row: {
+          created_at: string | null
+          id: string
+          is_active: boolean | null
+          key: string
+          name: string
+          settings: Json | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          key: string
+          name: string
+          settings?: Json | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          key?: string
+          name?: string
+          settings?: Json | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      injira_versions: {
+        Row: {
+          archived: boolean | null
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          id: string
+          name: string
+          project_id: string
+          release_date: string | null
+          released: boolean | null
+          released_at: string | null
+          sort_order: number | null
+          start_date: string | null
+          tenant_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          archived?: boolean | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          name: string
+          project_id: string
+          release_date?: string | null
+          released?: boolean | null
+          released_at?: string | null
+          sort_order?: number | null
+          start_date?: string | null
+          tenant_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          archived?: boolean | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          name?: string
+          project_id?: string
+          release_date?: string | null
+          released?: boolean | null
+          released_at?: string | null
+          sort_order?: number | null
+          start_date?: string | null
+          tenant_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "injira_versions_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "injira_versions_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "injira_projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "injira_versions_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "injira_tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      injira_webhooks: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          events: Database["public"]["Enums"]["injira_webhook_event"][]
+          failure_count: number | null
+          id: string
+          is_enabled: boolean | null
+          last_triggered_at: string | null
+          name: string
+          project_id: string | null
+          secret: string | null
+          tenant_id: string
+          updated_at: string | null
+          url: string
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          events: Database["public"]["Enums"]["injira_webhook_event"][]
+          failure_count?: number | null
+          id?: string
+          is_enabled?: boolean | null
+          last_triggered_at?: string | null
+          name: string
+          project_id?: string | null
+          secret?: string | null
+          tenant_id: string
+          updated_at?: string | null
+          url: string
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          events?: Database["public"]["Enums"]["injira_webhook_event"][]
+          failure_count?: number | null
+          id?: string
+          is_enabled?: boolean | null
+          last_triggered_at?: string | null
+          name?: string
+          project_id?: string | null
+          secret?: string | null
+          tenant_id?: string
+          updated_at?: string | null
+          url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "injira_webhooks_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "injira_webhooks_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "injira_projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "injira_webhooks_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "injira_tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       intake_fields: {
         Row: {
           created_at: string | null
@@ -17851,6 +19554,38 @@ export type Database = {
         | "converted"
         | "closed"
       initiative_status: "proposed" | "active" | "done" | "cancelled"
+      injira_board_type: "kanban" | "scrum"
+      injira_import_status:
+        | "pending"
+        | "in_progress"
+        | "completed"
+        | "failed"
+        | "cancelled"
+      injira_issue_type_category:
+        | "feature"
+        | "story"
+        | "subtask"
+        | "defect"
+        | "incident"
+      injira_permission_type:
+        | "browse"
+        | "create"
+        | "edit"
+        | "delete"
+        | "assign"
+        | "transition"
+        | "comment"
+        | "attach"
+        | "manage"
+      injira_sprint_state: "future" | "active" | "closed"
+      injira_status_category: "to_do" | "in_progress" | "done"
+      injira_webhook_event:
+        | "issue_created"
+        | "issue_updated"
+        | "issue_deleted"
+        | "sprint_started"
+        | "sprint_closed"
+        | "version_released"
       integration_type:
         | "slack"
         | "github"
@@ -18200,6 +19935,42 @@ export const Constants = {
         "closed",
       ],
       initiative_status: ["proposed", "active", "done", "cancelled"],
+      injira_board_type: ["kanban", "scrum"],
+      injira_import_status: [
+        "pending",
+        "in_progress",
+        "completed",
+        "failed",
+        "cancelled",
+      ],
+      injira_issue_type_category: [
+        "feature",
+        "story",
+        "subtask",
+        "defect",
+        "incident",
+      ],
+      injira_permission_type: [
+        "browse",
+        "create",
+        "edit",
+        "delete",
+        "assign",
+        "transition",
+        "comment",
+        "attach",
+        "manage",
+      ],
+      injira_sprint_state: ["future", "active", "closed"],
+      injira_status_category: ["to_do", "in_progress", "done"],
+      injira_webhook_event: [
+        "issue_created",
+        "issue_updated",
+        "issue_deleted",
+        "sprint_started",
+        "sprint_closed",
+        "version_released",
+      ],
       integration_type: [
         "slack",
         "github",
