@@ -173,6 +173,17 @@ import ProgramDirectory from "./pages/ProgramDirectory";
 import ProjectDirectory from "./pages/ProjectDirectory";
 import ProjectSettingsPage from "./pages/ProjectSettingsPage";
 import { ProjectWorkHubPage } from "./modules/project-work-hub/ProjectWorkHubPage";
+import {
+  InJiraLayout,
+  InJiraProvider,
+  SummaryPage as InJiraSummaryPage,
+  KanbanBoardPage,
+  ScrumBoardPage,
+  ListPage as InJiraListPage,
+  AllWorkPage as InJiraAllWorkPage,
+  ReleasesPage as InJiraReleasesPage,
+  ReleaseManagementPage,
+} from "./modules/in-jira";
 import ProjectSummaryPage from "./pages/projects/ProjectSummaryPage";
 import ProjectComingSoonPage from "./pages/projects/ProjectComingSoonPage";
 import ProjectBacklogPage from "./pages/projects/ProjectBacklogPage";
@@ -508,6 +519,18 @@ const App = () => (
               <Route path="/projects/:projectId/dependencies" element={<ProjectComingSoonPage pageTitle="Dependencies" />} />
               <Route path="/projects/:projectId/reports" element={<ProjectComingSoonPage pageTitle="Reports" />} />
               <Route path="/project/:projectId/work" element={<ProjectWorkHubPage />} />
+              
+              {/* In-Jira Module Routes - Jira-class Project Execution */}
+              <Route path="/project/:projectKey" element={<InJiraProvider><InJiraLayout /></InJiraProvider>}>
+                <Route index element={<Navigate to="summary" replace />} />
+                <Route path="summary" element={<InJiraSummaryPage />} />
+                <Route path="list" element={<InJiraListPage />} />
+                <Route path="all-work" element={<InJiraAllWorkPage />} />
+                <Route path="boards/kanban" element={<KanbanBoardPage />} />
+                <Route path="boards/scrum" element={<ScrumBoardPage />} />
+                <Route path="releases" element={<InJiraReleasesPage />} />
+                <Route path="release-management" element={<ReleaseManagementPage />} />
+              </Route>
               <Route path="/teams" element={<TeamComingSoon />} />
               <Route path="/teams/:teamId/room" element={<TeamComingSoon />} />
               <Route path="/teams/:teamId/work-tree" element={<WorkTreePage />} />
