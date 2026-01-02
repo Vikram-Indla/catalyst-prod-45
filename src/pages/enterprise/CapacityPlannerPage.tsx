@@ -501,10 +501,7 @@ export default function CapacityPlannerPage() {
                             )}
                           >
                             <div 
-                              className={cn(
-                                "w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold",
-                                isSelected ? "bg-[#2563eb] text-white" : "bg-muted text-muted-foreground"
-                              )}
+                              className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold bg-[#2563eb] text-white"
                             >
                               {initials}
                             </div>
@@ -547,7 +544,7 @@ export default function CapacityPlannerPage() {
               {/* Divider */}
               <div className="border-t border-border pt-4">
                 <div className="flex items-center justify-between mb-3">
-                  <Label className="text-sm font-semibold">Project Allocations</Label>
+                  <Label className="text-sm font-semibold">Assignments</Label>
                   <Button
                     type="button"
                     variant="outline"
