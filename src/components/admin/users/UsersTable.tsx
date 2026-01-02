@@ -27,12 +27,13 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { Search, MoreHorizontal, UserCog, Power, PowerOff, ShieldCheck, Trash2, KeyRound, CheckCircle, XCircle, Clock } from 'lucide-react';
+import { Search, MoreHorizontal, UserCog, Power, PowerOff, ShieldCheck, Trash2, KeyRound, CheckCircle, XCircle, Clock, Mail } from 'lucide-react';
 import { UserProfile, useDeleteUser, useApproveUser, useRejectUser, useDisableUser, ApprovalStatus, getDisplayStatus } from '@/hooks/useUsers';
 import { format, formatDistanceToNow, isToday, isYesterday } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { ResponsiveTableWrapper } from '@/components/layout/ResponsivePageContainer';
 import { ResetPasswordDialog } from './ResetPasswordDialog';
+import { EditEmailDialog } from './EditEmailDialog';
 import { useIsSuperAdmin } from '@/hooks/useUsers';
 
 interface UsersTableProps {
@@ -49,6 +50,7 @@ export function UsersTable({ users, isLoading, onEditRoles, onEditPermissions }:
   const [userToDelete, setUserToDelete] = useState<UserProfile | null>(null);
   const [userToReject, setUserToReject] = useState<UserProfile | null>(null);
   const [resetPasswordUser, setResetPasswordUser] = useState<UserProfile | null>(null);
+  const [editEmailUser, setEditEmailUser] = useState<UserProfile | null>(null);
   
   const deleteUser = useDeleteUser();
   const approveUser = useApproveUser();
@@ -297,6 +299,10 @@ export function UsersTable({ users, isLoading, onEditRoles, onEditPermissions }:
                               Edit Permissions
                             </DropdownMenuItem>
                           )}
+                          <DropdownMenuItem onClick={() => setEditEmailUser(user)}>
+                            <Mail className="h-4 w-4 mr-2" />
+                            Edit Email
+                          </DropdownMenuItem>
                           {/* Reset Password - only for Approved users, only for admins */}
                           {user.approval_status === 'APPROVED' && isSuperAdmin && (
                             <>
@@ -413,6 +419,15 @@ export function UsersTable({ users, isLoading, onEditRoles, onEditPermissions }:
         onClose={() => setResetPasswordUser(null)}
         userId={resetPasswordUser?.id || null}
         userName={resetPasswordUser?.full_name || resetPasswordUser?.email || null}
+      />
+
+      {/* Edit Email Dialog */}
+      <EditEmailDialog
+        isOpen={!!editEmailUser}
+        onClose={() => setEditEmailUser(null)}
+        userId={editEmailUser?.id || null}
+        userName={editEmailUser?.full_name || null}
+        currentEmail={editEmailUser?.email || null}
       />
     </Card>
   );
