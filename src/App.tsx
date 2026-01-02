@@ -204,6 +204,7 @@ import {
   TestsCyclesPage as ProjectTestsCyclesPage,
   TestsExecutionsPage,
   TestsReportsPage,
+  TestsTraceabilityPage,
   CTAValidationPage,
   CycleExecutionPage,
 } from "./modules/tests";
@@ -560,6 +561,7 @@ const App = () => (
                 <Route path="cycles" element={<ProjectTestsCyclesPage />} />
                 <Route path="cycles/:cycleId/execution" element={<CycleExecutionPage />} />
                 <Route path="executions" element={<TestsExecutionsPage />} />
+                <Route path="traceability" element={<TestsTraceabilityPage />} />
                 <Route path="reports" element={<TestsReportsPage />} />
                 <Route path="cta-validation" element={<CTAValidationPage />} />
               </Route>

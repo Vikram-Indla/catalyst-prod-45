@@ -11,3 +11,5 @@ export { useUserActivityReport, useActivityDrillDown, useLogTestActivity } from 
 export type { UserActivityReportState, ActivityAggregate, ActivityItem, ActivityType, TimeGrouping } from './useUserActivity';
 export { useTestDashboards, useReportSchedule } from './useTestDashboards';
 export type { GadgetType, GadgetPosition, GadgetConfig, DashboardGadget, Dashboard, CreateDashboardInput, CreateGadgetInput, UpdateGadgetInput } from './useTestDashboards';
+export { useTraceabilityMatrix } from './useTraceabilityMatrix';
+export type { TraceabilityMatrixData, TraceabilityChain, CoverageGap, TraceabilityRequirement, TraceabilityTestCase, TraceabilityExecution, TraceabilityDefect } from './useTraceabilityMatrix';
