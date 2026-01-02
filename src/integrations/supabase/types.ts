@@ -18787,6 +18787,59 @@ export type Database = {
           },
         ]
       }
+      test_set_bulk_operations: {
+        Row: {
+          completed_at: string | null
+          created_at: string | null
+          created_by: string | null
+          error_message: string | null
+          id: string
+          operation_type: string
+          parameters: Json | null
+          result: Json | null
+          set_ids: string[]
+          status: string | null
+          target_cycle_id: string | null
+          target_folder_id: string | null
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          error_message?: string | null
+          id?: string
+          operation_type: string
+          parameters?: Json | null
+          result?: Json | null
+          set_ids: string[]
+          status?: string | null
+          target_cycle_id?: string | null
+          target_folder_id?: string | null
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          error_message?: string | null
+          id?: string
+          operation_type?: string
+          parameters?: Json | null
+          result?: Json | null
+          set_ids?: string[]
+          status?: string | null
+          target_cycle_id?: string | null
+          target_folder_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "test_set_bulk_operations_target_folder_id_fkey"
+            columns: ["target_folder_id"]
+            isOneToOne: false
+            referencedRelation: "test_folders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       test_set_cases: {
         Row: {
           added_at: string | null
@@ -18825,6 +18878,59 @@ export type Database = {
           },
           {
             foreignKeyName: "test_set_cases_set_id_fkey"
+            columns: ["set_id"]
+            isOneToOne: false
+            referencedRelation: "test_sets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      test_set_versions: {
+        Row: {
+          change_summary: string | null
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          id: string
+          is_smart_set: boolean | null
+          name: string
+          objective: string | null
+          set_id: string
+          smart_set_criteria: Json | null
+          snapshot_cases: Json | null
+          version: number
+        }
+        Insert: {
+          change_summary?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_smart_set?: boolean | null
+          name: string
+          objective?: string | null
+          set_id: string
+          smart_set_criteria?: Json | null
+          snapshot_cases?: Json | null
+          version: number
+        }
+        Update: {
+          change_summary?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_smart_set?: boolean | null
+          name?: string
+          objective?: string | null
+          set_id?: string
+          smart_set_criteria?: Json | null
+          snapshot_cases?: Json | null
+          version?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "test_set_versions_set_id_fkey"
             columns: ["set_id"]
             isOneToOne: false
             referencedRelation: "test_sets"
