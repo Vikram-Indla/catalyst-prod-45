@@ -577,7 +577,7 @@ export default function CapacityPlannerPage() {
                         {/* Row 1: Assignment + Percentage + Delete */}
                         <div className="flex gap-3 items-end">
                           <div className="flex-1">
-                            <Label className="text-xs text-muted-foreground">Assignment Type</Label>
+                            <Label className="text-xs text-muted-foreground">Assignment</Label>
                             <Select 
                               value={alloc.assignmentId} 
                               onValueChange={(v) => {
