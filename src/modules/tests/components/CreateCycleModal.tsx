@@ -39,7 +39,8 @@ import { toast } from 'sonner';
 interface CreateCycleModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  projectId: string;
+  projectId?: string;
+  programId?: string;
 }
 
 interface TestSet {
@@ -49,7 +50,7 @@ interface TestSet {
   case_count?: number;
 }
 
-export function CreateCycleModal({ open, onOpenChange, projectId }: CreateCycleModalProps) {
+export function CreateCycleModal({ open, onOpenChange, projectId, programId }: CreateCycleModalProps) {
   const { user } = useAuth();
   const queryClient = useQueryClient();
 
@@ -75,17 +76,22 @@ export function CreateCycleModal({ open, onOpenChange, projectId }: CreateCycleM
     }
   }, [open]);
 
-  // Fetch available test sets for this project
+  const scopeId = projectId || programId;
+  const scopeColumn = projectId ? 'project_id' : 'program_id';
+
+  // Fetch available test sets for this scope
   const { data: testSets, isLoading: setsLoading } = useQuery({
-    queryKey: ['project-test-sets', projectId],
+    queryKey: ['scope-test-sets', scopeId],
     queryFn: async () => {
+      if (!scopeId) return [];
+      
       const { data, error } = await supabase
         .from('test_sets')
         .select(`
           id, key, name,
           test_set_cases(id)
         `)
-        .eq('project_id', projectId)
+        .eq(scopeColumn, scopeId)
         .eq('status', 'active')
         .order('name');
       
@@ -98,7 +104,7 @@ export function CreateCycleModal({ open, onOpenChange, projectId }: CreateCycleM
         case_count: set.test_set_cases?.length || 0,
       })) as TestSet[];
     },
-    enabled: open && !!projectId,
+    enabled: open && !!scopeId,
   });
 
   // Create cycle mutation with execution generation
@@ -111,7 +117,6 @@ export function CreateCycleModal({ open, onOpenChange, projectId }: CreateCycleM
       const { data: existing } = await supabase
         .from('test_cycles')
         .select('key')
-        .eq('project_id', projectId)
         .order('created_at', { ascending: false })
         .limit(1);
 
@@ -130,8 +135,9 @@ export function CreateCycleModal({ open, onOpenChange, projectId }: CreateCycleM
           end_date: endDate ? format(endDate, 'yyyy-MM-dd') : null,
           environment: environment.trim() || null,
           build_version: buildVersion.trim() || null,
-          project_id: projectId,
-          status: 'not_started',
+          project_id: projectId || null,
+          program_id: programId || null,
+          status: 'planned',
           created_by: user.id,
         })
         .select()
