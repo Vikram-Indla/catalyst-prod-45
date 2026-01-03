@@ -603,7 +603,8 @@ export function GlobalTestsOverviewPage() {
       <RunTestsModal 
         open={runTestsOpen} 
         onOpenChange={setRunTestsOpen}
-        projectId={scopeType === 'project' ? scopeId || '' : ''}
+        scopeType={scopeType}
+        scopeId={scopeId}
       />
     </div>
   );
