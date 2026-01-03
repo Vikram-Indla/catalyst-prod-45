@@ -5,7 +5,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase as supabaseClient } from '@/integrations/supabase/client';
 import {
   Dialog,
   DialogContent,
@@ -36,6 +36,8 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useTestSetBulkOperations } from '../../hooks/useTestSetBulkOperations';
+
+const supabase = supabaseClient as any;
 
 interface AddSetsToCycleModalProps {
   open: boolean;

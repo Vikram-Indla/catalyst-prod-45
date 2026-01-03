@@ -6,10 +6,12 @@
  */
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase as supabaseClient } from '@/integrations/supabase/client';
 import { useAuth } from '@/lib/auth';
 import { toast } from 'sonner';
 import { useTestAISettings } from './useTestAISettings';
+
+const supabase = supabaseClient as any;
 
 interface GeneratedTestCase {
   title: string;
