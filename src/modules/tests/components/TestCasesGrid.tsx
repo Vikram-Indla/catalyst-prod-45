@@ -497,12 +497,10 @@ export function TestCasesGrid({
                   </tr>
                 ))
               ) : cases.length === 0 ? (
+                // Enterprise pattern: inline text in table row, left-aligned
                 <tr>
-                  <td colSpan={visibleColumns.length + 2} className="text-center py-12 text-text-tertiary">
-                    <p className="text-sm">No test cases found</p>
-                    <Button variant="link" size="sm" onClick={onCreateNew} className="mt-1 text-xs">
-                      Create your first test case
-                    </Button>
+                  <td colSpan={visibleColumns.length + 2} className="px-3 py-4 text-sm text-text-tertiary">
+                    No test cases yet
                   </td>
                 </tr>
               ) : (

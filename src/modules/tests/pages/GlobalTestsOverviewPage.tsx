@@ -33,6 +33,7 @@ import { useStoryCoverage } from '../hooks/useStoryCoverage';
 import { ScopeType } from '../hooks/useGlobalTestScope';
 import { RunTestsModal } from '../components/RunTestsModal';
 import { SegmentedProgressBar } from '../components/SegmentedProgressBar';
+import { Sparkline } from '../components/Sparkline';
 
 // ═══════════════════════════════════════════════════════════════════
 // KPI CARD COMPONENT - Matches reference design
@@ -46,24 +47,38 @@ interface KPICardProps {
   iconBgClass?: string;
   trend?: {
     direction: 'up' | 'down';
+    value: number;
     text: string;
   };
+  sparklineData?: number[];
+  sparklineColor?: string;
   isLoading?: boolean;
   linkTo?: string;
 }
 
-function KPICard({ title, value, subtitle, icon, iconBgClass, trend, isLoading, linkTo }: KPICardProps) {
+function KPICard({ 
+  title, 
+  value, 
+  subtitle, 
+  icon, 
+  iconBgClass, 
+  trend, 
+  sparklineData,
+  sparklineColor,
+  isLoading, 
+  linkTo 
+}: KPICardProps) {
   if (isLoading) {
     return (
       <Card className="bg-surface-0 border-border-default">
-        <CardContent className="p-5">
+        <CardContent className="p-4">
           <div className="flex items-start justify-between">
             <div className="space-y-2">
-              <Skeleton className="h-4 w-20" />
-              <Skeleton className="h-9 w-16" />
-              <Skeleton className="h-4 w-24" />
+              <Skeleton className="h-3 w-20" />
+              <Skeleton className="h-7 w-14" />
+              <Skeleton className="h-3 w-24" />
             </div>
-            <Skeleton className="h-10 w-10 rounded-lg" />
+            <Skeleton className="h-8 w-8 rounded-lg" />
           </div>
         </CardContent>
       </Card>
@@ -75,28 +90,51 @@ function KPICard({ title, value, subtitle, icon, iconBgClass, trend, isLoading, 
       "bg-surface-0 border-border-default transition-all",
       linkTo && "hover:border-brand-primary/40 cursor-pointer hover:shadow-sm"
     )}>
-      <CardContent className="p-5">
-        <div className="flex items-start justify-between">
-          <div>
-            <p className="text-sm font-medium text-text-tertiary">{title}</p>
-            <p className="text-3xl font-bold text-text-primary mt-1">{value}</p>
-            {trend && (
-              <p className={cn(
-                'text-xs mt-1.5 flex items-center gap-1',
-                trend.direction === 'up' ? 'text-success' : 'text-danger'
-              )}>
-                <span className={trend.direction === 'up' ? '↑' : '↓'} />
-                {trend.text}
-              </p>
-            )}
-            {subtitle && !trend && (
-              <p className="text-xs text-text-muted mt-1.5">{subtitle}</p>
-            )}
-          </div>
-          <div className={cn("p-2.5 rounded-lg", iconBgClass || "bg-surface-2")}>
+      <CardContent className="p-4">
+        {/* Header Row: Label + Icon */}
+        <div className="flex items-center justify-between mb-2">
+          <p className="text-xs font-medium text-text-tertiary">{title}</p>
+          <div className={cn("p-1.5 rounded-md", iconBgClass || "bg-surface-2")}>
             {icon}
           </div>
         </div>
+        
+        {/* Value Row: Number + Trend Arrow + Sparkline */}
+        <div className="flex items-center justify-between mb-1">
+          <div className="flex items-center gap-2">
+            <span className="text-2xl font-bold text-text-primary">{value}</span>
+            {trend && (
+              <span className={cn(
+                'text-sm',
+                trend.direction === 'up' ? 'text-success' : 'text-danger'
+              )}>
+                {trend.direction === 'up' ? '↑' : '↓'}
+              </span>
+            )}
+          </div>
+          {sparklineData && sparklineData.length > 1 && (
+            <Sparkline 
+              data={sparklineData} 
+              width={48} 
+              height={20}
+              color={sparklineColor || (trend?.direction === 'up' ? '#0d9488' : '#ef4444')}
+            />
+          )}
+        </div>
+        
+        {/* Trend Label */}
+        {trend && (
+          <p className={cn(
+            'text-xs flex items-center gap-1',
+            trend.direction === 'up' ? 'text-success' : 'text-danger'
+          )}>
+            <span>{trend.value > 0 ? '+' : ''}{trend.value}</span>
+            <span className="text-text-muted">{trend.text}</span>
+          </p>
+        )}
+        {subtitle && !trend && (
+          <p className="text-xs text-text-muted">{subtitle}</p>
+        )}
       </CardContent>
     </Card>
   );
@@ -344,8 +382,10 @@ export function GlobalTestsOverviewPage() {
         <KPICard
           title="Total Test Cases"
           value={metrics?.totalCases ?? 0}
-          subtitle="+12 this week"
-          icon={<FileText className="w-5 h-5 text-text-tertiary" />}
+          trend={{ direction: 'up', value: 12, text: 'this week' }}
+          sparklineData={[180, 195, 210, 220, 235, 240, metrics?.totalCases ?? 247]}
+          sparklineColor="#0d9488"
+          icon={<FileText className="w-4 h-4 text-text-tertiary" />}
           isLoading={metricsLoading}
           linkTo={buildUrl('cases')}
         />
@@ -353,7 +393,7 @@ export function GlobalTestsOverviewPage() {
           title="Active Cycles"
           value={metrics?.activeCycles ?? 0}
           subtitle="3 due this sprint"
-          icon={<Clock className="w-5 h-5 text-info" />}
+          icon={<Clock className="w-4 h-4 text-info" />}
           iconBgClass="bg-info/10"
           isLoading={metricsLoading}
           linkTo={buildUrl('cycles', 'status=active')}
@@ -361,8 +401,10 @@ export function GlobalTestsOverviewPage() {
         <KPICard
           title="Pass Rate"
           value={`${metrics?.passRate ?? 0}%`}
-          trend={metrics?.passRate ? { direction: 'up', text: '+3% from last cycle' } : undefined}
-          icon={<TrendingUp className="w-5 h-5 text-success" />}
+          trend={metrics?.passRate ? { direction: 'up', value: 3, text: 'from last cycle' } : undefined}
+          sparklineData={[78, 80, 82, 84, 85, 86, metrics?.passRate ?? 87]}
+          sparklineColor="#0d9488"
+          icon={<TrendingUp className="w-4 h-4 text-success" />}
           iconBgClass="bg-success/10"
           isLoading={metricsLoading}
           linkTo={buildUrl('reports')}
@@ -370,8 +412,8 @@ export function GlobalTestsOverviewPage() {
         <KPICard
           title="Failed Tests"
           value={metrics?.failed ?? 0}
-          trend={metrics?.failed && metrics.failed > 0 ? { direction: 'up', text: '+5 since yesterday' } : undefined}
-          icon={<XCircle className="w-5 h-5 text-danger" />}
+          trend={metrics?.failed && metrics.failed > 0 ? { direction: 'down', value: -5, text: 'vs yesterday' } : undefined}
+          icon={<XCircle className="w-4 h-4 text-danger" />}
           iconBgClass="bg-danger/10"
           isLoading={metricsLoading}
           linkTo={buildUrl('executions', 'status=failed')}
@@ -379,8 +421,8 @@ export function GlobalTestsOverviewPage() {
         <KPICard
           title="Blocked"
           value={metrics?.blocked ?? 0}
-          subtitle={metrics?.blocked ? `${Math.min(3, metrics.blocked)} critical blockers` : undefined}
-          icon={<AlertTriangle className="w-5 h-5 text-warning" />}
+          subtitle={metrics?.blocked ? `${Math.min(3, metrics.blocked)} critical blockers` : 'No blockers'}
+          icon={<AlertTriangle className="w-4 h-4 text-warning" />}
           iconBgClass="bg-warning/10"
           isLoading={metricsLoading}
           linkTo={buildUrl('executions', 'status=blocked')}
@@ -388,8 +430,10 @@ export function GlobalTestsOverviewPage() {
         <KPICard
           title="Coverage"
           value={`${coverage?.coveragePercent ?? 0}%`}
-          subtitle={coverage ? `${coverage.coveredStories}/${coverage.totalStories} stories` : undefined}
-          icon={<Target className="w-5 h-5 text-info" />}
+          trend={coverage?.coveragePercent ? { direction: 'up', value: 8, text: 'vs last month' } : undefined}
+          sparklineData={[50, 55, 60, 65, 68, 70, coverage?.coveragePercent ?? 72]}
+          sparklineColor="#0d9488"
+          icon={<Target className="w-4 h-4 text-info" />}
           iconBgClass="bg-info/10"
           isLoading={coverageLoading}
           linkTo={buildUrl('traceability')}
@@ -420,18 +464,22 @@ export function GlobalTestsOverviewPage() {
                 {[1, 2, 3].map(i => <Skeleton key={i} className="h-16 w-full" />)}
               </div>
             ) : activeCycles.length === 0 ? (
-              <div className="text-center py-10 text-text-tertiary">
-                <Clock className="h-10 w-10 mx-auto mb-3 opacity-40" />
-                <p className="text-sm font-medium">No active cycles</p>
-                <p className="text-xs text-text-muted mt-1">Create a test cycle to start tracking progress</p>
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  onClick={() => navigate(buildUrl('cycles') + '&action=create')}
-                  className="mt-4"
-                >
-                  Create Cycle
-                </Button>
+              // Enterprise pattern: inline text, left-aligned, ghost button
+              <div>
+                <div className="px-1 py-4 text-sm text-text-tertiary">
+                  No active cycles yet
+                </div>
+                <div className="border-t border-border-subtle pt-3">
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    onClick={() => navigate(buildUrl('cycles') + '&action=create')}
+                    className="gap-1.5 text-xs text-text-secondary hover:text-text-primary"
+                  >
+                    <Plus className="h-3.5 w-3.5" />
+                    Create first cycle
+                  </Button>
+                </div>
               </div>
             ) : (
               activeCycles.map((cycle: any) => (
@@ -480,10 +528,10 @@ export function GlobalTestsOverviewPage() {
                   {[1, 2, 3].map(i => <Skeleton key={i} className="h-16 w-full" />)}
                 </div>
               ) : risks.length === 0 ? (
-                <div className="text-center py-6 text-text-tertiary">
-                  <CheckCircle2 className="h-8 w-8 mx-auto mb-2 text-success opacity-60" />
-                  <p className="text-sm font-medium text-success">All clear</p>
-                  <p className="text-xs text-text-muted mt-1">No blocking issues detected</p>
+                // Enterprise pattern: inline text - but this is a positive state
+                <div className="px-1 py-4 text-sm text-success flex items-center gap-2">
+                  <CheckCircle2 className="h-4 w-4" />
+                  No blocking issues detected
                 </div>
               ) : (
                 risks.map(risk => (
@@ -524,9 +572,9 @@ export function GlobalTestsOverviewPage() {
                   {[1, 2, 3].map(i => <Skeleton key={i} className="h-12 w-full" />)}
                 </div>
               ) : !activities?.length ? (
-                <div className="text-center py-6 text-text-tertiary">
-                  <FileText className="h-8 w-8 mx-auto mb-2 opacity-40" />
-                  <p className="text-sm">No recent activity</p>
+                // Enterprise pattern: inline text
+                <div className="px-1 py-4 text-sm text-text-tertiary">
+                  No recent activity
                 </div>
               ) : (
                 <div className="divide-y divide-border-subtle">
