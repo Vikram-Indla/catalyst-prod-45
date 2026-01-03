@@ -1,12 +1,11 @@
 /**
  * useTestCycles Hook
- * CRUD operations for test cycles with permission gating
+ * CRUD operations for test cycles using action pipeline
  */
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@/lib/auth';
 import { usePermission } from '@/hooks/usePermission';
-import { toast } from 'sonner';
 import {
   listTestCycles,
   getTestCycleById,
@@ -18,6 +17,7 @@ import {
   TestCycleInput,
   TestCyclePatch,
 } from '../api/testCycles';
+import { createPipelineContext } from '../lib/actionPipeline';
 
 export interface CycleQueryState {
   filters: TestCycleFilters;
@@ -31,7 +31,8 @@ const defaultCycleQueryState: CycleQueryState = {
  * Hook for listing test cycles with CRUD operations
  */
 export function useTestCycles(
-  projectId: string | null,
+  scopeType: 'program' | 'project',
+  scopeId: string | null,
   queryState: Partial<CycleQueryState> = {}
 ) {
   const { user } = useAuth();
@@ -40,10 +41,10 @@ export function useTestCycles(
   const state = { ...defaultCycleQueryState, ...queryState };
 
   // Permission checks
-  const { hasPermission: canView } = usePermission('test_cycles', 'view', 'program', projectId || undefined);
-  const { hasPermission: canCreate } = usePermission('test_cycles', 'create', 'program', projectId || undefined);
-  const { hasPermission: canEdit } = usePermission('test_cycles', 'edit', 'program', projectId || undefined);
-  const { hasPermission: canDelete } = usePermission('test_cycles', 'delete', 'program', projectId || undefined);
+  const { hasPermission: canView } = usePermission('test_cycles', 'view', 'program', scopeId || undefined);
+  const { hasPermission: canCreate } = usePermission('test_cycles', 'create', 'program', scopeId || undefined);
+  const { hasPermission: canEdit } = usePermission('test_cycles', 'edit', 'program', scopeId || undefined);
+  const { hasPermission: canDelete } = usePermission('test_cycles', 'delete', 'program', scopeId || undefined);
 
   // List query
   const {
@@ -52,71 +53,66 @@ export function useTestCycles(
     error,
     refetch,
   } = useQuery({
-    queryKey: ['test-cycles', projectId, state.filters],
+    queryKey: ['test-cycles', scopeId, state.filters],
     queryFn: async () => {
-      if (!projectId) return [];
-      return await listTestCycles(projectId, state.filters);
+      if (!scopeId) return [];
+      return await listTestCycles(scopeType, scopeId, state.filters);
     },
-    enabled: !!user && !!projectId && canView,
+    enabled: !!user && !!scopeId && canView,
     staleTime: 15000,
   });
 
   // Environments for filter
   const { data: environments } = useQuery({
-    queryKey: ['test-cycle-environments', projectId],
+    queryKey: ['test-cycle-environments', scopeId],
     queryFn: async () => {
-      if (!projectId) return [];
-      return await getTestCycleEnvironments(projectId);
+      if (!scopeId) return [];
+      return await getTestCycleEnvironments(scopeType, scopeId);
     },
-    enabled: !!user && !!projectId,
+    enabled: !!user && !!scopeId,
     staleTime: 60000,
   });
+
+  // Create context helper
+  const getContext = () => {
+    if (!user || !scopeId) throw new Error('Not authorized');
+    return createPipelineContext(
+      user.id,
+      scopeType,
+      scopeId,
+      scopeType === 'program' ? scopeId : null,
+      scopeType === 'project' ? scopeId : null
+    );
+  };
 
   // Create mutation
   const createMutation = useMutation({
     mutationFn: async (input: TestCycleInput) => {
-      if (!projectId || !user) throw new Error('Not authorized');
-      return await createTestCycle(projectId, user.id, input);
+      const context = getContext();
+      const result = await createTestCycle({ input, context, queryClient });
+      return result.data;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['test-cycles', projectId] });
-      queryClient.invalidateQueries({ queryKey: ['test-kpis', projectId] });
-      toast.success('Test cycle created');
-    },
-    onError: (error: Error) => {
-      toast.error(error.message);
-    },
+    onError: () => {}, // Error toast handled by pipeline
   });
 
   // Update mutation
   const updateMutation = useMutation({
     mutationFn: async (patch: TestCyclePatch) => {
-      if (!user) throw new Error('Not authorized');
-      return await updateTestCycle(user.id, patch);
+      const context = getContext();
+      const result = await updateTestCycle({ patch, context, queryClient });
+      return result.data;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['test-cycles', projectId] });
-      toast.success('Test cycle updated');
-    },
-    onError: (error: Error) => {
-      toast.error(error.message);
-    },
+    onError: () => {}, // Error toast handled by pipeline
   });
 
   // Archive mutation
   const archiveMutation = useMutation({
     mutationFn: async ({ id, reason }: { id: string; reason?: string }) => {
-      if (!user) throw new Error('Not authorized');
-      return await archiveTestCycle(id, user.id, reason);
+      const context = getContext();
+      const result = await archiveTestCycle({ id, reason, context, queryClient });
+      return result.data;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['test-cycles', projectId] });
-      queryClient.invalidateQueries({ queryKey: ['test-kpis', projectId] });
-      toast.success('Test cycle archived');
-    },
-    onError: (error: Error) => {
-      toast.error(error.message);
-    },
+    onError: () => {}, // Error toast handled by pipeline
   });
 
   return {

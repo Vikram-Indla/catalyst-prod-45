@@ -1,12 +1,11 @@
 /**
  * useTestSets Hook
- * CRUD operations for test sets with permission gating
+ * CRUD operations for test sets using action pipeline
  */
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@/lib/auth';
 import { usePermission } from '@/hooks/usePermission';
-import { toast } from 'sonner';
 import {
   listTestSets,
   getTestSetById,
@@ -19,6 +18,7 @@ import {
   TestSetInput,
   TestSetPatch,
 } from '../api/testSets';
+import { createPipelineContext } from '../lib/actionPipeline';
 
 export interface SetQueryState {
   filters: TestSetFilters;
@@ -32,8 +32,8 @@ const defaultSetQueryState: SetQueryState = {
  * Hook for listing test sets with CRUD operations
  */
 export function useTestSets(
-  projectId: string | null,
-  programId: string | null,
+  scopeType: 'program' | 'project',
+  scopeId: string | null,
   queryState: Partial<SetQueryState> = {}
 ) {
   const { user } = useAuth();
@@ -42,10 +42,10 @@ export function useTestSets(
   const state = { ...defaultSetQueryState, ...queryState };
 
   // Permission checks
-  const { hasPermission: canView } = usePermission('test_sets', 'view', 'program', projectId || undefined);
-  const { hasPermission: canCreate } = usePermission('test_sets', 'create', 'program', projectId || undefined);
-  const { hasPermission: canEdit } = usePermission('test_sets', 'edit', 'program', projectId || undefined);
-  const { hasPermission: canDelete } = usePermission('test_sets', 'delete', 'program', projectId || undefined);
+  const { hasPermission: canView } = usePermission('test_sets', 'view', 'program', scopeId || undefined);
+  const { hasPermission: canCreate } = usePermission('test_sets', 'create', 'program', scopeId || undefined);
+  const { hasPermission: canEdit } = usePermission('test_sets', 'edit', 'program', scopeId || undefined);
+  const { hasPermission: canDelete } = usePermission('test_sets', 'delete', 'program', scopeId || undefined);
 
   // List query
   const {
@@ -54,89 +54,75 @@ export function useTestSets(
     error,
     refetch,
   } = useQuery({
-    queryKey: ['test-sets', projectId, state.filters],
+    queryKey: ['test-sets', scopeId, state.filters],
     queryFn: async () => {
-      if (!projectId) return [];
-      return await listTestSets(projectId, state.filters);
+      if (!scopeId) return [];
+      return await listTestSets(scopeType, scopeId, state.filters);
     },
-    enabled: !!user && !!projectId && canView,
+    enabled: !!user && !!scopeId && canView,
     staleTime: 15000,
   });
+
+  // Create context helper
+  const getContext = () => {
+    if (!user || !scopeId) throw new Error('Not authorized');
+    return createPipelineContext(
+      user.id,
+      scopeType,
+      scopeId,
+      scopeType === 'program' ? scopeId : null,
+      scopeType === 'project' ? scopeId : null
+    );
+  };
 
   // Create mutation
   const createMutation = useMutation({
     mutationFn: async (input: TestSetInput) => {
-      if (!projectId || !programId || !user) throw new Error('Not authorized');
-      return await createTestSet(projectId, programId, user.id, input);
+      const context = getContext();
+      const result = await createTestSet({ input, context, queryClient });
+      return result.data;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['test-sets', projectId] });
-      toast.success('Test set created');
-    },
-    onError: (error: Error) => {
-      toast.error(error.message);
-    },
+    onError: () => {}, // Error toast handled by pipeline
   });
 
   // Update mutation
   const updateMutation = useMutation({
     mutationFn: async (patch: TestSetPatch) => {
-      if (!user) throw new Error('Not authorized');
-      return await updateTestSet(user.id, patch);
+      const context = getContext();
+      const result = await updateTestSet({ patch, context, queryClient });
+      return result.data;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['test-sets', projectId] });
-      toast.success('Test set updated');
-    },
-    onError: (error: Error) => {
-      toast.error(error.message);
-    },
+    onError: () => {}, // Error toast handled by pipeline
   });
 
   // Archive mutation
   const archiveMutation = useMutation({
     mutationFn: async (id: string) => {
-      if (!user) throw new Error('Not authorized');
-      return await archiveTestSet(id, user.id);
+      const context = getContext();
+      const result = await archiveTestSet({ id, context, queryClient });
+      return result.data;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['test-sets', projectId] });
-      toast.success('Test set archived');
-    },
-    onError: (error: Error) => {
-      toast.error(error.message);
-    },
+    onError: () => {}, // Error toast handled by pipeline
   });
 
   // Add cases mutation
   const addCasesMutation = useMutation({
     mutationFn: async ({ setId, caseIds }: { setId: string; caseIds: string[] }) => {
-      if (!user) throw new Error('Not authorized');
-      return await addCasesToSet(setId, caseIds, user.id);
+      const context = getContext();
+      const result = await addCasesToSet({ setId, caseIds, context, queryClient });
+      return result.data;
     },
-    onSuccess: (result) => {
-      queryClient.invalidateQueries({ queryKey: ['test-sets', projectId] });
-      queryClient.invalidateQueries({ queryKey: ['test-set'] });
-      toast.success(`Added ${result.count} case(s) to set`);
-    },
-    onError: (error: Error) => {
-      toast.error(error.message);
-    },
+    onError: () => {}, // Error toast handled by pipeline
   });
 
   // Remove cases mutation
   const removeCasesMutation = useMutation({
     mutationFn: async ({ setId, caseIds }: { setId: string; caseIds: string[] }) => {
-      return await removeCasesFromSet(setId, caseIds);
+      const context = getContext();
+      const result = await removeCasesFromSet({ setId, caseIds, context, queryClient });
+      return result.data;
     },
-    onSuccess: (result) => {
-      queryClient.invalidateQueries({ queryKey: ['test-sets', projectId] });
-      queryClient.invalidateQueries({ queryKey: ['test-set'] });
-      toast.success(`Removed ${result.count} case(s) from set`);
-    },
-    onError: (error: Error) => {
-      toast.error(error.message);
-    },
+    onError: () => {}, // Error toast handled by pipeline
   });
 
   return {
