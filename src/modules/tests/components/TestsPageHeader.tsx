@@ -71,33 +71,11 @@ export function TestsPageHeader({ activePage, onCreate }: TestsPageHeaderProps) 
   // Test Cases are project-level only
 
   return (
-    <div className="flex items-center justify-between gap-4 flex-wrap">
-      <div className="flex items-center gap-3">
-        <h1 className="text-lg font-semibold text-text-primary">{titles[activePage] || 'Tests'}</h1>
-        <div className="flex items-center gap-2 pl-3 border-l border-border-default">
-          {/* Project scope only - no program selector */}
-          <div className="flex items-center gap-1.5 px-3 h-8 text-xs bg-surface-2 border border-border-default rounded-md">
-            <Folder className="h-3 w-3 text-text-secondary" />
-            <span className="text-text-secondary font-medium">Project</span>
-          </div>
-          <Select value={scopeId || ''} onValueChange={setScopeId}>
-            <SelectTrigger className="h-8 w-[200px] text-xs bg-surface-2"><SelectValue placeholder="Select project" /></SelectTrigger>
-            <SelectContent className="bg-surface-1 max-h-[300px]">
-              {projects.map((opt: any) => (
-                <SelectItem key={opt.id} value={opt.id}>
-                  <div className="flex items-center gap-2">
-                    <Badge variant="outline" className="text-[10px] px-1">{opt.key}</Badge>
-                    <span className="truncate">{opt.name}</span>
-                  </div>
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
+    <div className="flex items-center justify-between gap-4">
+      <h1 className="text-lg font-semibold text-text-primary">{titles[activePage] || 'Tests'}</h1>
       {onCreate && (
         <Button size="sm" className="h-8 text-xs gap-1.5 font-semibold" onClick={onCreate}>
-          <Plus className="h-4 w-4" /> + Create Test Case
+          <Plus className="h-4 w-4" /> Create Test Case
           <kbd className="ml-1 px-1 py-0.5 text-[9px] rounded bg-surface-3 text-text-secondary hidden sm:inline">C</kbd>
         </Button>
       )}
