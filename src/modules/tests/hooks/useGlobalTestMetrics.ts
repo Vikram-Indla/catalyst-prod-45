@@ -172,7 +172,7 @@ export function useGlobalTestCycles(scopeType: ScopeType, scopeId: string | null
       let query = supabase
         .from('test_cycles')
         .select(`
-          id, name, key, description, status, 
+          id, name, key, objective, status, 
           start_date, end_date,
           created_at, updated_at, created_by,
           program_id, project_id,
