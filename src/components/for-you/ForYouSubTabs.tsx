@@ -26,7 +26,7 @@ export function ForYouSubTabs({ activeTab, counts, onTabChange }: ForYouSubTabsP
   return (
     <div 
       className={cn(
-        "inline-flex items-center p-1 gap-1 rounded-[10px] mb-4",
+        "inline-flex items-center p-1 gap-1 rounded-[10px]",
         "bg-[var(--surface-muted)] border border-[var(--border-subtle-hex)]"
       )}
       role="tablist"

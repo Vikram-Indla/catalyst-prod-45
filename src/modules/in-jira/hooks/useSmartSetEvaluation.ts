@@ -5,9 +5,11 @@
 
 import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase as supabaseClient } from '@/integrations/supabase/client';
 import { SmartSetCriteria, TestSetWithCount } from './useTestSets';
 import { TestCase } from './useTestCases';
+
+const supabase = supabaseClient as any;
 
 export interface SmartSetMatch {
   caseId: string;
@@ -103,14 +105,14 @@ export function useSyncSmartSetCases() {
         .select('case_id')
         .eq('set_id', setId);
 
-      const currentIds = new Set((currentCases || []).map(c => c.case_id));
-      const newIds = new Set(matchingCaseIds);
+      const currentIds = new Set<string>((currentCases || []).map((c: any) => String(c.case_id)));
+      const newIds = new Set<string>(matchingCaseIds);
 
       // Cases to add
-      const toAdd = matchingCaseIds.filter(id => !currentIds.has(id));
-      
+      const toAdd = matchingCaseIds.filter((id) => !currentIds.has(id));
+
       // Cases to remove
-      const toRemove = Array.from(currentIds).filter(id => !newIds.has(id));
+      const toRemove = Array.from(currentIds).filter((id) => !newIds.has(id));
 
       // Add new matches
       if (toAdd.length > 0) {

@@ -196,20 +196,21 @@ export default function ForYouPage() {
         <section className="bg-surface-0">
           <h2 className="text-sm font-semibold text-text-primary mb-4">Your work</h2>
 
-          {/* Sub Tabs */}
-          <ForYouSubTabs
-            activeTab={activeTab}
-            counts={tabCounts}
-            onTabChange={setActiveTab}
-          />
+          {/* Controls Row */}
+          <div className="flex items-center gap-4 mb-4">
+            <ForYouSubTabs
+              activeTab={activeTab}
+              counts={tabCounts}
+              onTabChange={setActiveTab}
+            />
 
-          {/* Toolbar */}
-          <ForYouToolbar
-            searchQuery={searchQuery}
-            onSearchChange={setSearchQuery}
-            isAIPanelOpen={isAIPanelOpen}
-            onToggleAIPanel={() => setIsAIPanelOpen(!isAIPanelOpen)}
-          />
+            <ForYouToolbar
+              searchQuery={searchQuery}
+              onSearchChange={setSearchQuery}
+              isAIPanelOpen={isAIPanelOpen}
+              onToggleAIPanel={() => setIsAIPanelOpen(!isAIPanelOpen)}
+            />
+          </div>
 
           {/* Data Table or Skeleton */}
           {isLoading ? (

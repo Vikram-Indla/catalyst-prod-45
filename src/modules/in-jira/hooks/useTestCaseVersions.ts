@@ -4,10 +4,12 @@
  */
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase as supabaseClient } from '@/integrations/supabase/client';
 import { useAuth } from '@/lib/auth';
 import { logAuditEntry } from '@/lib/auditLogger';
 import { toast } from 'sonner';
+
+const supabase = supabaseClient as any;
 
 export interface TestCaseVersion {
   id: string;
