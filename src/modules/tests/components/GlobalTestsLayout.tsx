@@ -278,20 +278,6 @@ export function GlobalTestsLayout() {
               isLoading={scopeLoading}
             />
 
-            {/* Global Search */}
-            <div className="relative w-48">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-tertiary" />
-              <Input
-                placeholder="Search..."
-                value={globalSearch}
-                onChange={(e) => setGlobalSearch(e.target.value)}
-                className="pl-9 h-9 bg-surface-2 border-border-default"
-              />
-            </div>
-
-            <Button variant="outline" size="icon" className="h-9 w-9" onClick={() => refetchMetrics()}>
-              <RefreshCw className="w-4 h-4" />
-            </Button>
 
             {renderPrimaryCTA()}
           </div>
