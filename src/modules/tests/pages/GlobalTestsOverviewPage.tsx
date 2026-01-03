@@ -1,7 +1,7 @@
 /**
- * GLOBAL TESTS OVERVIEW PAGE - RELEASE RISK COMMAND CENTER
- * Enterprise-grade decision-enforcing system for CIOs, QA Heads, and Release Managers
- * Declares BLOCKED / AT RISK / READY in under 3 seconds
+ * GLOBAL TESTS OVERVIEW - RELEASE AUTHORITY CONTROL SURFACE
+ * Executive-grade decision enforcement system
+ * 9.5/10 intimidation score target
  */
 
 import React, { useState } from 'react';
@@ -16,14 +16,14 @@ import {
   Target,
   Clock,
   User,
-  ExternalLink,
   Ban,
   ShieldAlert,
   Shield,
   Activity,
-  Zap,
   ArrowRight,
-  Bug,
+  Octagon,
+  AlertOctagon,
+  Skull,
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -53,7 +53,7 @@ interface BlockerCause {
 }
 
 // ═══════════════════════════════════════════════════════════════════
-// RELEASE STATUS BANNER - THE VERDICT
+// RELEASE STATUS BANNER - SYSTEM STATE (40% taller, full pressure)
 // ═══════════════════════════════════════════════════════════════════
 
 function ReleaseStatusBanner({ 
@@ -69,71 +69,102 @@ function ReleaseStatusBanner({
 }) {
   if (isLoading) {
     return (
-      <div className="w-full bg-surface-2 border-b border-border-default p-6">
-        <Skeleton className="h-12 w-64 mx-auto" />
+      <div className="w-full bg-surface-2 border-b border-border-default py-10">
+        <Skeleton className="h-16 w-96 mx-auto" />
       </div>
     );
   }
 
-  const configs = {
-    BLOCKED: {
-      bg: 'bg-danger/10 dark:bg-danger/20',
-      border: 'border-danger/30',
-      icon: <Ban className="h-8 w-8 text-danger" />,
-      label: 'RELEASE BLOCKED',
-      sublabel: `${blockerCount + failedCount} critical issues must be resolved`,
-      textColor: 'text-danger',
-      pulse: true,
-    },
-    AT_RISK: {
-      bg: 'bg-warning/10 dark:bg-warning/20',
-      border: 'border-warning/30',
-      icon: <ShieldAlert className="h-8 w-8 text-warning" />,
-      label: 'AT RISK',
-      sublabel: 'Issues detected that may impact release timeline',
-      textColor: 'text-warning',
-      pulse: false,
-    },
-    READY: {
-      bg: 'bg-success/10 dark:bg-success/20',
-      border: 'border-success/30',
-      icon: <Shield className="h-8 w-8 text-success" />,
-      label: 'READY FOR RELEASE',
-      sublabel: 'All checks passed, no blocking issues',
-      textColor: 'text-success',
-      pulse: false,
-    },
-  };
-
-  const config = configs[status];
-
-  return (
-    <div className={cn(
-      'w-full border-b py-4 px-6',
-      config.bg,
-      config.border,
-    )}>
-      <div className="flex items-center justify-between max-w-7xl mx-auto">
-        <div className="flex items-center gap-4">
-          <div className={cn(config.pulse && 'animate-pulse')}>
-            {config.icon}
-          </div>
-          <div>
-            <h1 className={cn(
-              'text-2xl font-bold tracking-tight',
-              config.textColor
-            )}>
-              {config.label}
-            </h1>
-            <p className="text-sm text-text-secondary mt-0.5">
-              {config.sublabel}
-            </p>
+  if (status === 'BLOCKED') {
+    return (
+      <div className="w-full bg-gradient-to-b from-[hsl(0,84%,8%)] via-[hsl(0,72%,12%)] to-[hsl(0,60%,15%)] dark:from-[hsl(0,84%,6%)] dark:via-[hsl(0,72%,9%)] dark:to-[hsl(0,60%,12%)] border-b-2 border-danger">
+        <div className="max-w-7xl mx-auto px-6 py-8">
+          <div className="flex items-start gap-5">
+            <div className="flex-shrink-0 animate-pulse">
+              <Octagon className="h-14 w-14 text-danger fill-danger/20" strokeWidth={2.5} />
+            </div>
+            <div className="flex-1">
+              <div className="flex items-center gap-3 mb-1">
+                <h1 className="text-3xl font-black tracking-tight text-danger uppercase">
+                  RELEASE CANNOT PROCEED
+                </h1>
+                <Badge className="bg-danger text-danger-foreground text-xs font-bold px-2 py-0.5 animate-pulse">
+                  BLOCKED
+                </Badge>
+              </div>
+              <p className="text-base text-danger/80 font-medium">
+                Executive action required. Shipment is blocked by unresolved risk.
+              </p>
+              <div className="flex items-center gap-4 mt-3 text-sm text-danger/60">
+                <span className="font-mono">{failedCount} failed executions</span>
+                <span>•</span>
+                <span className="font-mono">{blockerCount} blocked tests</span>
+                <span>•</span>
+                <span className="font-mono">Updated {format(new Date(), 'HH:mm:ss')}</span>
+              </div>
+            </div>
+            <div className="flex-shrink-0">
+              <Button
+                variant="destructive"
+                size="lg"
+                className="font-bold uppercase tracking-wide"
+              >
+                Escalate Now
+              </Button>
+            </div>
           </div>
         </div>
-        <div className="flex items-center gap-3">
-          <span className="text-xs text-text-muted font-mono">
-            Last updated: {format(new Date(), 'HH:mm:ss')}
-          </span>
+      </div>
+    );
+  }
+
+  if (status === 'AT_RISK') {
+    return (
+      <div className="w-full bg-gradient-to-b from-[hsl(32,95%,8%)] via-[hsl(32,80%,12%)] to-[hsl(32,60%,15%)] dark:from-[hsl(32,95%,5%)] dark:via-[hsl(32,80%,8%)] dark:to-[hsl(32,60%,10%)] border-b-2 border-warning">
+        <div className="max-w-7xl mx-auto px-6 py-7">
+          <div className="flex items-start gap-5">
+            <div className="flex-shrink-0">
+              <ShieldAlert className="h-12 w-12 text-warning" strokeWidth={2} />
+            </div>
+            <div className="flex-1">
+              <div className="flex items-center gap-3 mb-1">
+                <h1 className="text-2xl font-bold tracking-tight text-warning uppercase">
+                  RELEASE AT RISK
+                </h1>
+                <Badge className="bg-warning/20 text-warning border border-warning/40 text-xs font-semibold px-2 py-0.5">
+                  CAUTION
+                </Badge>
+              </div>
+              <p className="text-sm text-warning/70 font-medium">
+                Issues detected that may impact release timeline. Review required before proceeding.
+              </p>
+            </div>
+            <div className="text-xs text-warning/50 font-mono">
+              {format(new Date(), 'HH:mm:ss')}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // READY state
+  return (
+    <div className="w-full bg-gradient-to-b from-[hsl(173,58%,8%)] to-[hsl(173,40%,12%)] dark:from-[hsl(173,58%,5%)] dark:to-[hsl(173,40%,8%)] border-b border-success/30">
+      <div className="max-w-7xl mx-auto px-6 py-6">
+        <div className="flex items-center gap-4">
+          <Shield className="h-10 w-10 text-success" strokeWidth={2} />
+          <div className="flex-1">
+            <h1 className="text-xl font-bold tracking-tight text-success uppercase">
+              READY FOR RELEASE
+            </h1>
+            <p className="text-sm text-success/60">
+              All checks passed. No blocking issues detected.
+            </p>
+          </div>
+          <div className="text-xs text-success/40 font-mono">
+            {format(new Date(), 'HH:mm:ss')}
+          </div>
         </div>
       </div>
     </div>
@@ -141,71 +172,107 @@ function ReleaseStatusBanner({
 }
 
 // ═══════════════════════════════════════════════════════════════════
-// BLOCKER CAUSE STACK - WHAT'S STOPPING US
+// THREAT CARDS - BLOCKING CAUSES (Thicker borders, dominant typography)
 // ═══════════════════════════════════════════════════════════════════
 
-function BlockerCauseStack({ 
+function ThreatCards({ 
   causes, 
   isLoading,
+  releaseStatus,
   onNavigate 
 }: { 
   causes: BlockerCause[];
   isLoading: boolean;
+  releaseStatus: ReleaseStatus;
   onNavigate: (path: string) => void;
 }) {
   if (isLoading) {
     return (
-      <div className="space-y-2 px-6 py-4 bg-surface-0 border-b border-border-default">
-        {[1, 2].map(i => <Skeleton key={i} className="h-12 w-full" />)}
+      <div className="px-6 py-3 bg-surface-0">
+        {[1, 2].map(i => <Skeleton key={i} className="h-20 w-full mb-2" />)}
       </div>
     );
   }
 
   if (causes.length === 0) return null;
 
-  const severityStyles = {
-    critical: 'bg-danger/5 border-l-danger hover:bg-danger/10',
-    high: 'bg-warning/5 border-l-warning hover:bg-warning/10',
-    medium: 'bg-info/5 border-l-info hover:bg-info/10',
-  };
-
-  const severityIcons = {
-    critical: <XCircle className="h-4 w-4 text-danger" />,
-    high: <AlertTriangle className="h-4 w-4 text-warning" />,
-    medium: <Target className="h-4 w-4 text-info" />,
-  };
+  const riskTint = releaseStatus === 'BLOCKED' ? 'bg-danger/[0.03]' : releaseStatus === 'AT_RISK' ? 'bg-warning/[0.02]' : '';
 
   return (
-    <div className="bg-surface-0 border-b border-border-default">
+    <div className={cn('border-b', releaseStatus === 'BLOCKED' ? 'border-danger/20' : 'border-border-default', riskTint)}>
       <div className="max-w-7xl mx-auto px-6 py-3">
-        <div className="text-xs font-semibold text-text-muted uppercase tracking-wider mb-2">
-          Blocking Causes ({causes.length})
+        <div className="flex items-center gap-2 mb-2">
+          <AlertOctagon className={cn(
+            'h-4 w-4',
+            releaseStatus === 'BLOCKED' ? 'text-danger' : 'text-warning'
+          )} />
+          <span className={cn(
+            'text-xs font-bold uppercase tracking-wider',
+            releaseStatus === 'BLOCKED' ? 'text-danger' : 'text-warning'
+          )}>
+            {causes.length} Blocking {causes.length === 1 ? 'Issue' : 'Issues'}
+          </span>
         </div>
-        <div className="space-y-1.5">
+        <div className="grid gap-2">
           {causes.map(cause => (
             <button
               key={cause.id}
               onClick={() => onNavigate(cause.navigateTo)}
               className={cn(
-                'w-full flex items-center gap-3 p-3 rounded border-l-4 transition-all text-left',
-                severityStyles[cause.severity]
+                'w-full flex items-center gap-4 p-4 rounded-md text-left transition-all',
+                'border-l-[6px]',
+                cause.severity === 'critical' && 'bg-danger/10 border-l-danger hover:bg-danger/15 dark:bg-danger/[0.08]',
+                cause.severity === 'high' && 'bg-warning/10 border-l-warning hover:bg-warning/15 dark:bg-warning/[0.08]',
+                cause.severity === 'medium' && 'bg-info/10 border-l-info hover:bg-info/15 dark:bg-info/[0.08]',
               )}
             >
-              {severityIcons[cause.severity]}
+              <div className={cn(
+                'flex-shrink-0 p-2 rounded',
+                cause.severity === 'critical' && 'bg-danger/20',
+                cause.severity === 'high' && 'bg-warning/20',
+                cause.severity === 'medium' && 'bg-info/20',
+              )}>
+                {cause.severity === 'critical' ? (
+                  <XCircle className="h-6 w-6 text-danger" strokeWidth={2.5} />
+                ) : cause.severity === 'high' ? (
+                  <AlertTriangle className="h-6 w-6 text-warning" strokeWidth={2.5} />
+                ) : (
+                  <Target className="h-6 w-6 text-info" strokeWidth={2} />
+                )}
+              </div>
               <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2">
-                  <span className="font-semibold text-sm text-text-primary">
+                <div className="flex items-baseline gap-2">
+                  <span className={cn(
+                    'text-2xl font-black tabular-nums',
+                    cause.severity === 'critical' && 'text-danger',
+                    cause.severity === 'high' && 'text-warning',
+                    cause.severity === 'medium' && 'text-info',
+                  )}>
                     {cause.count}
                   </span>
-                  <span className="text-sm text-text-primary">
+                  <span className={cn(
+                    'text-base font-bold',
+                    cause.severity === 'critical' && 'text-danger',
+                    cause.severity === 'high' && 'text-warning',
+                    cause.severity === 'medium' && 'text-text-primary',
+                  )}>
                     {cause.title}
+                    {cause.severity === 'critical' && ' — Blocking Release'}
                   </span>
                 </div>
-                <p className="text-xs text-text-muted truncate">
+                <p className="text-xs text-text-muted mt-0.5 truncate">
                   {cause.description}
                 </p>
               </div>
-              <ChevronRight className="h-4 w-4 text-text-muted flex-shrink-0" />
+              <div className={cn(
+                'flex-shrink-0 flex items-center gap-1 px-3 py-1.5 rounded text-xs font-bold uppercase',
+                cause.severity === 'critical' && 'bg-danger text-danger-foreground',
+                cause.severity === 'high' && 'bg-warning text-warning-foreground',
+                cause.severity === 'medium' && 'bg-info/20 text-info',
+              )}>
+                Resolve
+                <ChevronRight className="h-3.5 w-3.5" />
+              </div>
             </button>
           ))}
         </div>
@@ -215,12 +282,13 @@ function BlockerCauseStack({
 }
 
 // ═══════════════════════════════════════════════════════════════════
-// EXECUTION PRESSURE STRIP - THE NUMBERS
+// METRICS STRIP - FAILURE-DOMINANT HIERARCHY
 // ═══════════════════════════════════════════════════════════════════
 
-function ExecutionPressureStrip({
+function MetricsStrip({
   metrics,
   coverage,
+  releaseStatus,
   isLoading,
   onNavigate,
 }: {
@@ -233,20 +301,24 @@ function ExecutionPressureStrip({
     passRate: number;
   } | null;
   coverage: { uncoveredCount: number; coveragePercent: number } | null;
+  releaseStatus: ReleaseStatus;
   isLoading: boolean;
   onNavigate: (path: string) => void;
 }) {
   if (isLoading) {
     return (
       <div className="bg-surface-1 border-b border-border-default">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex gap-8">
+        <div className="max-w-7xl mx-auto px-6 py-3 flex gap-4">
           {[1, 2, 3, 4, 5, 6].map(i => (
-            <Skeleton key={i} className="h-12 w-24" />
+            <Skeleton key={i} className="h-14 flex-1" />
           ))}
         </div>
       </div>
     );
   }
+
+  const riskTint = releaseStatus === 'BLOCKED' ? 'bg-danger/[0.02]' : releaseStatus === 'AT_RISK' ? 'bg-warning/[0.01]' : '';
+  const borderColor = releaseStatus === 'BLOCKED' ? 'border-danger/10' : releaseStatus === 'AT_RISK' ? 'border-warning/10' : 'border-border-default';
 
   const totalExecuted = (metrics?.passed || 0) + (metrics?.failed || 0) + (metrics?.blocked || 0);
   const totalPending = metrics?.notRun || 0;
@@ -254,74 +326,103 @@ function ExecutionPressureStrip({
     ? Math.round((totalExecuted / (totalExecuted + totalPending)) * 100) 
     : 0;
 
+  // FAILURE-DOMINANT ORDER: Failed → Blocked → Uncovered → Passed → Executed → Coverage
   const strips = [
-    {
-      label: 'EXECUTED',
-      value: `${executionRate}%`,
-      sublabel: `${totalExecuted} of ${totalExecuted + totalPending}`,
-      color: executionRate >= 80 ? 'text-success' : executionRate >= 50 ? 'text-warning' : 'text-danger',
-      path: 'executions',
-    },
-    {
-      label: 'PASSED',
-      value: metrics?.passed || 0,
-      sublabel: `${metrics?.passRate || 0}% pass rate`,
-      color: 'text-success',
-      path: 'executions?status=passed',
-    },
     {
       label: 'FAILED',
       value: metrics?.failed || 0,
-      sublabel: 'require attention',
-      color: (metrics?.failed || 0) > 0 ? 'text-danger font-bold' : 'text-text-muted',
+      sublabel: 'blocking release',
+      isDanger: (metrics?.failed || 0) > 0,
+      isWarning: false,
+      isDominant: (metrics?.failed || 0) > 0,
       path: 'executions?status=failed',
-      critical: (metrics?.failed || 0) > 0,
     },
     {
       label: 'BLOCKED',
       value: metrics?.blocked || 0,
       sublabel: 'awaiting deps',
-      color: (metrics?.blocked || 0) > 0 ? 'text-warning font-bold' : 'text-text-muted',
+      isDanger: (metrics?.blocked || 0) > 3,
+      isWarning: (metrics?.blocked || 0) > 0 && (metrics?.blocked || 0) <= 3,
+      isDominant: (metrics?.blocked || 0) > 0,
       path: 'executions?status=blocked',
-      critical: (metrics?.blocked || 0) > 0,
     },
     {
       label: 'UNCOVERED',
       value: coverage?.uncoveredCount || 0,
       sublabel: 'stories at risk',
-      color: (coverage?.uncoveredCount || 0) > 0 ? 'text-warning' : 'text-text-muted',
+      isDanger: false,
+      isWarning: (coverage?.uncoveredCount || 0) > 5,
+      isDominant: false,
       path: 'traceability',
+    },
+    {
+      label: 'PASSED',
+      value: metrics?.passed || 0,
+      sublabel: `${metrics?.passRate || 0}% rate`,
+      isDanger: false,
+      isWarning: false,
+      isDominant: false,
+      isSecondary: releaseStatus !== 'READY', // De-emphasize when not ready
+      path: 'executions?status=passed',
+    },
+    {
+      label: 'EXECUTED',
+      value: `${executionRate}%`,
+      sublabel: `${totalExecuted}/${totalExecuted + totalPending}`,
+      isDanger: false,
+      isWarning: false,
+      isDominant: false,
+      isTertiary: true,
+      path: 'executions',
     },
     {
       label: 'COVERAGE',
       value: `${coverage?.coveragePercent || 0}%`,
-      sublabel: 'requirements mapped',
-      color: (coverage?.coveragePercent || 0) >= 80 ? 'text-success' : (coverage?.coveragePercent || 0) >= 50 ? 'text-warning' : 'text-danger',
+      sublabel: 'requirements',
+      isDanger: false,
+      isWarning: (coverage?.coveragePercent || 0) < 50,
+      isDominant: false,
+      isTertiary: releaseStatus !== 'READY',
       path: 'traceability',
     },
   ];
 
   return (
-    <div className="bg-surface-1 border-b border-border-default overflow-x-auto">
-      <div className="max-w-7xl mx-auto px-6 py-3">
-        <div className="flex items-stretch gap-1 min-w-max">
+    <div className={cn('border-b overflow-x-auto', borderColor, riskTint)}>
+      <div className="max-w-7xl mx-auto px-6 py-2">
+        <div className="flex items-stretch gap-0.5 min-w-max">
           {strips.map((strip, idx) => (
             <button
               key={idx}
               onClick={() => onNavigate(strip.path)}
               className={cn(
-                'flex-1 min-w-[100px] px-4 py-2 text-left rounded transition-colors',
+                'flex-1 min-w-[90px] px-3 py-2 text-left rounded transition-all',
                 'hover:bg-surface-2 focus:outline-none focus:ring-1 focus:ring-border-focus',
-                strip.critical && 'bg-surface-2'
+                strip.isDominant && strip.isDanger && 'bg-danger/10 hover:bg-danger/15',
+                strip.isDominant && strip.isWarning && 'bg-warning/10 hover:bg-warning/15',
               )}
             >
-              <div className="text-[10px] font-semibold text-text-muted uppercase tracking-wider">
+              <div className={cn(
+                'text-[9px] font-bold uppercase tracking-wider',
+                strip.isDanger ? 'text-danger' : strip.isWarning ? 'text-warning' : 'text-text-muted',
+                strip.isTertiary && 'opacity-60',
+              )}>
                 {strip.label}
               </div>
-              <div className={cn('text-xl font-bold tabular-nums', strip.color)}>
+              <div className={cn(
+                'tabular-nums',
+                strip.isDominant ? 'text-2xl font-black' : 'text-lg font-bold',
+                strip.isDanger ? 'text-danger' : strip.isWarning ? 'text-warning' : 'text-text-primary',
+                strip.isSecondary && 'text-text-secondary opacity-70',
+                strip.isTertiary && 'text-text-muted opacity-50 text-base',
+              )}>
                 {strip.value}
               </div>
-              <div className="text-[10px] text-text-muted truncate">
+              <div className={cn(
+                'text-[9px] truncate',
+                strip.isDanger ? 'text-danger/70' : strip.isWarning ? 'text-warning/70' : 'text-text-muted',
+                (strip.isSecondary || strip.isTertiary) && 'opacity-50',
+              )}>
                 {strip.sublabel}
               </div>
             </button>
@@ -333,7 +434,7 @@ function ExecutionPressureStrip({
 }
 
 // ═══════════════════════════════════════════════════════════════════
-// EXECUTION ROW - FAILING/RUNNING EXECUTIONS
+// EXECUTION ROW - FAILURE INTERRUPTION STYLING
 // ═══════════════════════════════════════════════════════════════════
 
 function ExecutionRow({ 
@@ -351,23 +452,24 @@ function ExecutionRow({
   const pending = total - passed - failed - blocked;
   const progress = total > 0 ? Math.round(((passed + failed + blocked) / total) * 100) : 0;
 
-  const getStatusBadge = () => {
-    if (failed > 0) return <Badge variant="destructive" className="text-[10px] px-1.5">FAILING</Badge>;
-    if (blocked > 0) return <Badge className="bg-warning/20 text-warning border-warning/30 text-[10px] px-1.5">BLOCKED</Badge>;
-    if (pending > 0) return <Badge variant="secondary" className="text-[10px] px-1.5">IN PROGRESS</Badge>;
-    return <Badge className="bg-success/20 text-success border-success/30 text-[10px] px-1.5">COMPLETE</Badge>;
-  };
+  const isFailing = failed > 0;
+  const isBlocked = blocked > 0 && !isFailing;
 
   return (
     <button
       onClick={() => onNavigate(`cycles/${cycle.id}/execution`)}
-      className="w-full flex items-center gap-3 p-3 hover:bg-surface-2 transition-colors border-b border-border-subtle text-left"
+      className={cn(
+        'w-full flex items-center gap-3 px-4 py-3 text-left transition-all border-b',
+        isFailing && 'bg-danger/[0.06] border-l-4 border-l-danger border-b-danger/20 hover:bg-danger/10',
+        isBlocked && 'bg-warning/[0.04] border-l-4 border-l-warning border-b-warning/20 hover:bg-warning/[0.08]',
+        !isFailing && !isBlocked && 'border-border-subtle hover:bg-surface-2',
+      )}
     >
       <div className="flex-shrink-0">
-        {failed > 0 ? (
-          <XCircle className="h-5 w-5 text-danger" />
-        ) : blocked > 0 ? (
-          <AlertTriangle className="h-5 w-5 text-warning" />
+        {isFailing ? (
+          <XCircle className="h-5 w-5 text-danger" strokeWidth={2.5} />
+        ) : isBlocked ? (
+          <AlertTriangle className="h-5 w-5 text-warning" strokeWidth={2} />
         ) : pending > 0 ? (
           <Clock className="h-5 w-5 text-info" />
         ) : (
@@ -376,37 +478,61 @@ function ExecutionRow({
       </div>
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
-          <span className="font-medium text-sm text-text-primary truncate">
+          <span className={cn(
+            'font-semibold text-sm truncate',
+            isFailing ? 'text-danger' : 'text-text-primary'
+          )}>
             {cycle.name}
           </span>
-          {getStatusBadge()}
+          {isFailing && (
+            <Badge className="bg-danger text-danger-foreground text-[9px] font-black px-1.5 py-0 uppercase animate-pulse">
+              FAILING
+            </Badge>
+          )}
+          {isBlocked && (
+            <Badge className="bg-warning/20 text-warning border border-warning/30 text-[9px] font-bold px-1.5 py-0 uppercase">
+              BLOCKED
+            </Badge>
+          )}
         </div>
-        <div className="flex items-center gap-3 mt-1 text-xs text-text-muted">
+        <div className="flex items-center gap-2 mt-0.5 text-[10px]">
+          {isFailing && (
+            <span className="text-danger font-bold">{failed} failed</span>
+          )}
+          {isBlocked && (
+            <span className="text-warning font-semibold">{blocked} blocked</span>
+          )}
           <span className="text-success">{passed} passed</span>
-          {failed > 0 && <span className="text-danger font-semibold">{failed} failed</span>}
-          {blocked > 0 && <span className="text-warning">{blocked} blocked</span>}
-          <span>{pending} pending</span>
+          <span className="text-text-muted">{pending} pending</span>
         </div>
       </div>
-      <div className="flex-shrink-0 w-20 text-right">
-        <div className="text-sm font-bold text-text-primary">{progress}%</div>
+      <div className="flex-shrink-0 w-16 text-right">
+        <div className={cn(
+          'text-sm font-bold tabular-nums',
+          isFailing ? 'text-danger' : isBlocked ? 'text-warning' : 'text-text-primary'
+        )}>
+          {progress}%
+        </div>
         <div className="w-full h-1.5 bg-surface-3 rounded-full mt-1 overflow-hidden">
           <div 
             className={cn(
               'h-full transition-all',
-              failed > 0 ? 'bg-danger' : blocked > 0 ? 'bg-warning' : 'bg-success'
+              isFailing ? 'bg-danger' : isBlocked ? 'bg-warning' : 'bg-success'
             )}
             style={{ width: `${progress}%` }}
           />
         </div>
       </div>
-      <ChevronRight className="h-4 w-4 text-text-muted flex-shrink-0" />
+      <ChevronRight className={cn(
+        'h-4 w-4 flex-shrink-0',
+        isFailing ? 'text-danger' : 'text-text-muted'
+      )} />
     </button>
   );
 }
 
 // ═══════════════════════════════════════════════════════════════════
-// ACCOUNTABILITY ITEM - WHO IS RESPONSIBLE
+// ACCOUNTABILITY ITEM - FAILURE ELEVATION
 // ═══════════════════════════════════════════════════════════════════
 
 function AccountabilityItem({ 
@@ -416,14 +542,14 @@ function AccountabilityItem({
   activity: any;
   onNavigate: (path: string) => void;
 }) {
+  const isFailed = activity.activity_type === 'execution_failed';
+  
   const getIcon = () => {
     switch (activity.activity_type) {
       case 'execution_failed':
-        return <XCircle className="h-4 w-4 text-danger" />;
+        return <XCircle className="h-4 w-4 text-danger" strokeWidth={2.5} />;
       case 'execution_completed':
         return <CheckCircle2 className="h-4 w-4 text-success" />;
-      case 'test_case_created':
-        return <Zap className="h-4 w-4 text-info" />;
       default:
         return <Activity className="h-4 w-4 text-text-muted" />;
     }
@@ -431,11 +557,8 @@ function AccountabilityItem({
 
   const getAction = () => {
     switch (activity.activity_type) {
-      case 'execution_failed': return 'failed';
+      case 'execution_failed': return 'FAILED';
       case 'execution_completed': return 'completed';
-      case 'test_case_created': return 'created';
-      case 'test_case_updated': return 'updated';
-      case 'cycle_created': return 'started cycle';
       default: return 'modified';
     }
   };
@@ -449,18 +572,36 @@ function AccountabilityItem({
           onNavigate(`cycles?cycleId=${activity.entity_id}`);
         }
       }}
-      className="w-full flex items-start gap-3 p-3 hover:bg-surface-2 transition-colors border-b border-border-subtle text-left"
+      className={cn(
+        'w-full flex items-start gap-3 px-4 py-2.5 text-left transition-all border-b',
+        isFailed && 'bg-danger/[0.04] border-l-4 border-l-danger hover:bg-danger/[0.08]',
+        !isFailed && 'border-border-subtle hover:bg-surface-2',
+      )}
     >
       <div className="flex-shrink-0 mt-0.5">
         {getIcon()}
       </div>
       <div className="flex-1 min-w-0">
-        <p className="text-sm text-text-primary">
-          <span className="font-medium">{activity.user_name}</span>
-          <span className="text-text-muted"> {getAction()} </span>
-          <span className="font-medium">{activity.entity_title}</span>
+        <p className={cn('text-sm', isFailed && 'font-semibold')}>
+          <span className={cn(
+            'font-bold',
+            isFailed ? 'text-danger' : 'text-text-primary'
+          )}>
+            {activity.user_name}
+          </span>
+          <span className={cn(
+            'mx-1',
+            isFailed ? 'text-danger font-bold' : 'text-text-muted'
+          )}>
+            {getAction()}
+          </span>
+          <span className={cn(
+            isFailed ? 'text-danger' : 'text-text-primary'
+          )}>
+            {activity.entity_title}
+          </span>
         </p>
-        <p className="text-xs text-text-muted mt-0.5">
+        <p className="text-[10px] text-text-muted mt-0.5">
           {formatDistanceToNow(new Date(activity.created_at), { addSuffix: true })}
         </p>
       </div>
@@ -477,11 +618,9 @@ export function GlobalTestsOverviewPage() {
   const [searchParams] = useSearchParams();
   const [runTestsOpen, setRunTestsOpen] = useState(false);
 
-  // Get scope from URL
   const scopeType = (searchParams.get('scopeType') as ScopeType) || 'global';
   const scopeId = searchParams.get('scopeId');
 
-  // Build base URL with scope params
   const buildUrl = (path: string, additionalParams?: string) => {
     const base = `/tests/${path}`;
     const params = new URLSearchParams();
@@ -503,25 +642,19 @@ export function GlobalTestsOverviewPage() {
   // Fetch data
   const { metrics, isLoading: metricsLoading, refetch } = useGlobalTestMetrics(scopeType, scopeId);
   const { data: cycles, isLoading: cyclesLoading } = useGlobalTestCycles(scopeType, scopeId);
-  const { data: activities, isLoading: activitiesLoading } = useRecentTestActivity(scopeType, scopeId, 10);
+  const { data: activities, isLoading: activitiesLoading } = useRecentTestActivity(scopeType, scopeId, 15);
   const { data: coverage, isLoading: coverageLoading } = useStoryCoverage(scopeType, scopeId);
 
   const isLoading = metricsLoading || cyclesLoading || coverageLoading;
 
-  // Determine release status
+  // Determine release status (aggressive thresholds)
   const determineReleaseStatus = (): ReleaseStatus => {
     if (!metrics) return 'READY';
-    
-    // BLOCKED: Any failed tests or critical blockers
     if ((metrics.failed || 0) > 0) return 'BLOCKED';
-    if ((metrics.blocked || 0) > 3) return 'BLOCKED';
-    
-    // AT RISK: Low coverage, some blockers, or low pass rate
+    if ((metrics.blocked || 0) > 2) return 'BLOCKED';
     if ((metrics.blocked || 0) > 0) return 'AT_RISK';
-    if ((coverage?.coveragePercent || 0) < 50) return 'AT_RISK';
-    if ((metrics.passRate || 0) < 80) return 'AT_RISK';
-    if ((coverage?.uncoveredCount || 0) > 10) return 'AT_RISK';
-    
+    if ((coverage?.coveragePercent || 0) < 40) return 'AT_RISK';
+    if ((metrics.passRate || 0) < 70) return 'AT_RISK';
     return 'READY';
   };
 
@@ -534,11 +667,11 @@ export function GlobalTestsOverviewPage() {
     blockerCauses.push({
       id: 'failed',
       type: 'failed',
-      title: 'Failed Test Executions',
+      title: 'Test Executions Failed',
       count: metrics?.failed || 0,
       severity: 'critical',
       navigateTo: 'executions?status=failed',
-      description: 'Tests that failed during execution and require immediate attention',
+      description: 'Critical failures require immediate resolution before release',
     });
   }
   
@@ -546,27 +679,27 @@ export function GlobalTestsOverviewPage() {
     blockerCauses.push({
       id: 'blocked',
       type: 'blocked',
-      title: 'Blocked Test Executions',
+      title: 'Test Executions Blocked',
       count: metrics?.blocked || 0,
-      severity: (metrics?.blocked || 0) > 3 ? 'critical' : 'high',
+      severity: (metrics?.blocked || 0) > 2 ? 'critical' : 'high',
       navigateTo: 'executions?status=blocked',
       description: 'Tests blocked by dependencies or environment issues',
     });
   }
   
-  if ((coverage?.uncoveredCount || 0) > 0) {
+  if ((coverage?.uncoveredCount || 0) > 5) {
     blockerCauses.push({
       id: 'coverage',
       type: 'coverage',
-      title: 'Stories Without Test Coverage',
+      title: 'Stories Without Coverage',
       count: coverage?.uncoveredCount || 0,
-      severity: (coverage?.uncoveredCount || 0) > 10 ? 'high' : 'medium',
+      severity: (coverage?.uncoveredCount || 0) > 15 ? 'high' : 'medium',
       navigateTo: 'traceability',
-      description: 'User stories that have no linked test cases',
+      description: 'Requirements with no linked test cases',
     });
   }
 
-  // Process cycles - prioritize failing/blocked ones
+  // Sort cycles by failure severity
   const sortedCycles = (cycles || [])
     .filter((c: any) => ['active', 'in_progress'].includes(c.status))
     .map((cycle: any) => {
@@ -576,15 +709,23 @@ export function GlobalTestsOverviewPage() {
       return { ...cycle, _failed: failed, _blocked: blocked };
     })
     .sort((a: any, b: any) => {
-      // Sort by failed first, then blocked
       if (a._failed !== b._failed) return b._failed - a._failed;
       return b._blocked - a._blocked;
     })
-    .slice(0, 8);
+    .slice(0, 10);
+
+  // Sort activities - failures first
+  const sortedActivities = [...(activities || [])].sort((a: any, b: any) => {
+    if (a.activity_type === 'execution_failed' && b.activity_type !== 'execution_failed') return -1;
+    if (a.activity_type !== 'execution_failed' && b.activity_type === 'execution_failed') return 1;
+    return 0;
+  });
+
+  const riskBorderClass = releaseStatus === 'BLOCKED' ? 'divide-danger/10' : releaseStatus === 'AT_RISK' ? 'divide-warning/10' : 'divide-border-default';
 
   return (
     <div className="flex flex-col h-full -m-6">
-      {/* DOMINANT RELEASE STATUS BANNER */}
+      {/* SYSTEM STATE BANNER */}
       <ReleaseStatusBanner 
         status={releaseStatus}
         blockerCount={metrics?.blocked || 0}
@@ -592,99 +733,109 @@ export function GlobalTestsOverviewPage() {
         isLoading={isLoading}
       />
 
-      {/* BLOCKER CAUSE STACK */}
-      <BlockerCauseStack 
+      {/* THREAT CARDS */}
+      <ThreatCards 
         causes={blockerCauses}
         isLoading={isLoading}
+        releaseStatus={releaseStatus}
         onNavigate={handleNavigate}
       />
 
-      {/* EXECUTION PRESSURE STRIP */}
-      <ExecutionPressureStrip
+      {/* METRICS STRIP - FAILURE DOMINANT */}
+      <MetricsStrip
         metrics={metrics}
         coverage={coverage || null}
+        releaseStatus={releaseStatus}
         isLoading={isLoading}
         onNavigate={handleNavigate}
       />
 
-      {/* ACTION BAR */}
-      <div className="bg-surface-0 border-b border-border-default">
-        <div className="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-2 text-sm text-text-muted">
-            <span className="font-medium text-text-primary">
+      {/* CONTEXT BAR */}
+      <div className={cn(
+        'border-b',
+        releaseStatus === 'BLOCKED' ? 'bg-danger/[0.02] border-danger/10' : releaseStatus === 'AT_RISK' ? 'bg-warning/[0.01] border-warning/10' : 'bg-surface-0 border-border-default'
+      )}>
+        <div className="max-w-7xl mx-auto px-6 py-2 flex items-center justify-between">
+          <div className="flex items-center gap-2 text-xs text-text-muted">
+            <span className="font-semibold text-text-primary">
               {scopeType === 'global' ? 'All Projects' : scopeType === 'program' ? 'Program' : 'Project'}
             </span>
-            <span>•</span>
-            <span>{metrics?.totalCases ?? 0} test cases</span>
-            <span>•</span>
-            <span>{metrics?.activeCycles ?? 0} active cycles</span>
+            <span className="opacity-50">|</span>
+            <span>{metrics?.totalCases ?? 0} cases</span>
+            <span className="opacity-50">|</span>
+            <span>{metrics?.activeCycles ?? 0} active</span>
           </div>
           <div className="flex items-center gap-2">
             <Button
               variant="ghost"
               size="sm"
               onClick={() => refetch()}
-              className="gap-1.5 text-xs"
+              className="h-7 gap-1 text-[10px] px-2"
             >
-              <RefreshCw className="h-3.5 w-3.5" />
+              <RefreshCw className="h-3 w-3" />
               Refresh
             </Button>
             <Button
               size="sm"
               onClick={() => setRunTestsOpen(true)}
-              className="gap-1.5 bg-brand-primary hover:bg-brand-primary-hover text-brand-primary-foreground"
+              className="h-7 gap-1 text-[10px] px-3 bg-brand-primary hover:bg-brand-primary-hover text-brand-primary-foreground"
             >
-              <Play className="h-3.5 w-3.5" />
-              Run Tests
+              <Play className="h-3 w-3" />
+              Run
             </Button>
           </div>
         </div>
       </div>
 
-      {/* ACCOUNTABILITY SPLIT VIEW */}
+      {/* ACCOUNTABILITY SPLIT VIEW - REDUCED PADDING */}
       <div className="flex-1 overflow-hidden bg-surface-1">
         <div className="max-w-7xl mx-auto h-full">
-          <div className="grid grid-cols-1 lg:grid-cols-2 h-full divide-x divide-border-default">
+          <div className={cn('grid grid-cols-1 lg:grid-cols-2 h-full divide-x', riskBorderClass)}>
             
-            {/* LEFT: Failing / Running Executions */}
+            {/* LEFT: Active Executions */}
             <div className="flex flex-col h-full overflow-hidden">
-              <div className="px-6 py-3 bg-surface-0 border-b border-border-default flex items-center justify-between">
+              <div className={cn(
+                'px-4 py-2 border-b flex items-center justify-between',
+                releaseStatus === 'BLOCKED' ? 'bg-danger/[0.03] border-danger/10' : releaseStatus === 'AT_RISK' ? 'bg-warning/[0.02] border-warning/10' : 'bg-surface-0 border-border-default'
+              )}>
                 <div className="flex items-center gap-2">
-                  <Activity className="h-4 w-4 text-text-muted" />
-                  <h2 className="text-sm font-semibold text-text-primary">
+                  <Activity className={cn(
+                    'h-4 w-4',
+                    releaseStatus === 'BLOCKED' ? 'text-danger' : 'text-text-muted'
+                  )} />
+                  <h2 className="text-xs font-bold text-text-primary uppercase tracking-wider">
                     Active Executions
                   </h2>
-                  {sortedCycles.length > 0 && (
-                    <Badge variant="secondary" className="text-[10px]">
-                      {sortedCycles.length}
+                  {sortedCycles.filter((c: any) => c._failed > 0).length > 0 && (
+                    <Badge variant="destructive" className="text-[9px] px-1 py-0">
+                      {sortedCycles.filter((c: any) => c._failed > 0).length} failing
                     </Badge>
                   )}
                 </div>
                 <Link
                   to={buildUrl('cycles')}
-                  className="text-xs text-brand-primary hover:underline flex items-center gap-1"
+                  className="text-[10px] text-brand-primary hover:underline flex items-center gap-0.5"
                 >
-                  All cycles
+                  All
                   <ArrowRight className="h-3 w-3" />
                 </Link>
               </div>
               <div className="flex-1 overflow-y-auto bg-surface-0">
                 {cyclesLoading ? (
-                  <div className="p-6 space-y-3">
-                    {[1, 2, 3, 4].map(i => <Skeleton key={i} className="h-16 w-full" />)}
+                  <div className="p-4 space-y-2">
+                    {[1, 2, 3, 4, 5].map(i => <Skeleton key={i} className="h-14 w-full" />)}
                   </div>
                 ) : sortedCycles.length === 0 ? (
-                  <div className="p-6 text-center">
-                    <div className="text-text-muted text-sm mb-3">
+                  <div className="p-4">
+                    <div className="text-text-muted text-xs mb-2">
                       No active test cycles
                     </div>
                     <Button
                       variant="outline"
                       size="sm"
                       onClick={() => handleNavigate('cycles')}
-                      className="gap-1.5"
+                      className="h-7 text-[10px]"
                     >
-                      <Play className="h-3.5 w-3.5" />
                       Create Cycle
                     </Button>
                   </div>
@@ -700,36 +851,40 @@ export function GlobalTestsOverviewPage() {
               </div>
             </div>
 
-            {/* RIGHT: Human Activity & Responsibility */}
+            {/* RIGHT: Team Activity */}
             <div className="flex flex-col h-full overflow-hidden">
-              <div className="px-6 py-3 bg-surface-0 border-b border-border-default flex items-center justify-between">
+              <div className={cn(
+                'px-4 py-2 border-b flex items-center justify-between',
+                releaseStatus === 'BLOCKED' ? 'bg-danger/[0.03] border-danger/10' : releaseStatus === 'AT_RISK' ? 'bg-warning/[0.02] border-warning/10' : 'bg-surface-0 border-border-default'
+              )}>
                 <div className="flex items-center gap-2">
-                  <User className="h-4 w-4 text-text-muted" />
-                  <h2 className="text-sm font-semibold text-text-primary">
-                    Team Activity
+                  <User className={cn(
+                    'h-4 w-4',
+                    releaseStatus === 'BLOCKED' ? 'text-danger' : 'text-text-muted'
+                  )} />
+                  <h2 className="text-xs font-bold text-text-primary uppercase tracking-wider">
+                    Accountability
                   </h2>
                 </div>
                 <Link
                   to={buildUrl('reports')}
-                  className="text-xs text-brand-primary hover:underline flex items-center gap-1"
+                  className="text-[10px] text-brand-primary hover:underline flex items-center gap-0.5"
                 >
-                  Full report
+                  Report
                   <ArrowRight className="h-3 w-3" />
                 </Link>
               </div>
               <div className="flex-1 overflow-y-auto bg-surface-0">
                 {activitiesLoading ? (
-                  <div className="p-6 space-y-3">
-                    {[1, 2, 3, 4, 5].map(i => <Skeleton key={i} className="h-12 w-full" />)}
+                  <div className="p-4 space-y-2">
+                    {[1, 2, 3, 4, 5, 6].map(i => <Skeleton key={i} className="h-10 w-full" />)}
                   </div>
-                ) : !activities?.length ? (
-                  <div className="p-6 text-center">
-                    <div className="text-text-muted text-sm">
-                      No recent activity
-                    </div>
+                ) : !sortedActivities?.length ? (
+                  <div className="p-4 text-text-muted text-xs">
+                    No recent activity
                   </div>
                 ) : (
-                  activities.map((activity: any) => (
+                  sortedActivities.map((activity: any) => (
                     <AccountabilityItem
                       key={activity.id}
                       activity={activity}
@@ -743,7 +898,6 @@ export function GlobalTestsOverviewPage() {
         </div>
       </div>
 
-      {/* Run Tests Modal */}
       <RunTestsModal 
         open={runTestsOpen} 
         onOpenChange={setRunTestsOpen}
