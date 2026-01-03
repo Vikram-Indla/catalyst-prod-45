@@ -266,9 +266,11 @@ export function GlobalTestsOverviewPage() {
       const passed = execs.filter((e: any) => e.status === 'passed').length;
       const failed = execs.filter((e: any) => e.status === 'failed').length;
       const blocked = execs.filter((e: any) => e.status === 'blocked').length;
-      const pending = total - passed - failed - blocked;
+      const inProgress = execs.filter((e: any) => e.status === 'in_progress').length;
+      const pending = total - passed - failed - blocked - inProgress;
       const progress = total > 0 ? Math.round(((passed + failed + blocked) / total) * 100) : 0;
-      return { ...cycle, total, passed, failed, blocked, pending, progress };
+      const hasInProgress = inProgress > 0 || (pending < total && pending > 0);
+      return { ...cycle, total, passed, failed, blocked, pending, progress, hasInProgress };
     });
 
   // Calculate risks based on real data
@@ -483,18 +485,33 @@ export function GlobalTestsOverviewPage() {
               </div>
             ) : (
               activeCycles.map((cycle: any) => (
-                <Link 
-                  key={cycle.id} 
-                  to={buildUrl('cycles', `cycleId=${cycle.id}`)}
-                  className="block group"
-                >
+                <div key={cycle.id} className="group">
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm font-medium text-text-primary group-hover:text-brand-primary transition-colors">
+                    <Link 
+                      to={buildUrl('cycles', `cycleId=${cycle.id}`)}
+                      className="text-sm font-medium text-text-primary group-hover:text-brand-primary transition-colors"
+                    >
                       {cycle.name}
-                    </span>
-                    <span className="text-sm text-text-secondary">
-                      {cycle.passed + cycle.failed + cycle.blocked}/{cycle.total} ({cycle.progress}%)
-                    </span>
+                    </Link>
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm text-text-secondary">
+                        {cycle.passed + cycle.failed + cycle.blocked}/{cycle.total} ({cycle.progress}%)
+                      </span>
+                      {cycle.hasInProgress && cycle.pending > 0 && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="h-6 text-[10px] gap-1 border-brand-primary text-brand-primary hover:bg-brand-primary/10"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            navigate(`/tests/cycles/${cycle.id}/execution?scopeType=${scopeType}${scopeId ? `&scopeId=${scopeId}` : ''}`);
+                          }}
+                        >
+                          <Play className="h-3 w-3" />
+                          Resume
+                        </Button>
+                      )}
+                    </div>
                   </div>
                   <SegmentedProgressBar
                     segments={[
@@ -506,7 +523,7 @@ export function GlobalTestsOverviewPage() {
                     total={cycle.total}
                     height="h-2.5"
                   />
-                </Link>
+                </div>
               ))
             )}
           </CardContent>

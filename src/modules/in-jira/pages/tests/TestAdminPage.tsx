@@ -26,6 +26,7 @@ import {
   ToggleLeft,
   Save,
   RefreshCw,
+  Loader2,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -63,6 +64,7 @@ import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { usePermission } from '@/hooks/usePermission';
 import { useTestAdminConfig } from '@/modules/tests/hooks/useTestAdminConfig';
+import { supabase } from '@/integrations/supabase/client';
 
 // Color options for configuration
 const COLOR_OPTIONS = [
@@ -391,6 +393,85 @@ function FieldConfigSection({ entityType, label, fields, onUpdate }: FieldConfig
   );
 }
 
+// ==================== NOTIFICATION PREFERENCES SECTION ====================
+
+function NotificationPreferencesSection() {
+  const [preferences, setPreferences] = useState<Record<string, boolean>>({
+    execution_completed: true,
+    execution_failed: true,
+    cycle_completed: true,
+    defect_linked: true,
+    coverage_gap_detected: true,
+    daily_digest: false,
+    weekly_report: true,
+  });
+  const [isSaving, setIsSaving] = useState(false);
+
+  const handleToggle = async (key: string, checked: boolean) => {
+    setPreferences(prev => ({ ...prev, [key]: checked }));
+  };
+
+  const handleSave = async () => {
+    setIsSaving(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+      
+      await supabase.from('test_notification_preferences').upsert({
+        user_id: user.id,
+        preferences: preferences,
+      });
+      toast.success('Notification preferences saved');
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to save preferences');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const notifications = [
+    { key: 'execution_completed', label: 'Execution Completed', description: 'Notify when a test execution is completed' },
+    { key: 'execution_failed', label: 'Execution Failed', description: 'Notify when a test execution fails' },
+    { key: 'cycle_completed', label: 'Cycle Completed', description: 'Notify when a test cycle is completed' },
+    { key: 'defect_linked', label: 'Defect Linked', description: 'Notify when a defect is linked to a test' },
+    { key: 'coverage_gap_detected', label: 'Coverage Gap Detected', description: 'Notify when a coverage gap is identified' },
+    { key: 'daily_digest', label: 'Daily Digest', description: 'Receive a daily summary of test activity' },
+    { key: 'weekly_report', label: 'Weekly Report', description: 'Receive a weekly test metrics report' },
+  ];
+
+  return (
+    <Card className="bg-surface-2 border-border-default">
+      <CardHeader className="flex flex-row items-center justify-between pb-2">
+        <div>
+          <CardTitle className="text-base font-medium text-text-primary flex items-center gap-2">
+            <Bell className="h-4 w-4 text-accent-primary" />
+            Notification Preferences
+          </CardTitle>
+          <CardDescription>Configure which test events trigger notifications</CardDescription>
+        </div>
+        <Button size="sm" onClick={handleSave} disabled={isSaving}>
+          {isSaving ? <Loader2 className="h-4 w-4 mr-1.5 animate-spin" /> : <Save className="h-4 w-4 mr-1.5" />}
+          Save
+        </Button>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        {notifications.map(n => (
+          <div key={n.key} className="flex items-center justify-between py-2 border-b border-border-default last:border-0">
+            <div>
+              <Label className="text-text-primary">{n.label}</Label>
+              <p className="text-sm text-text-tertiary">{n.description}</p>
+            </div>
+            <Switch
+              checked={preferences[n.key] ?? false}
+              onCheckedChange={(checked) => handleToggle(n.key, checked)}
+            />
+          </div>
+        ))}
+      </CardContent>
+    </Card>
+  );
+}
+
 // ==================== MAIN PAGE ====================
 
 export function TestAdminPage() {
@@ -476,6 +557,10 @@ export function TestAdminPage() {
             <TabsTrigger value="fields" className="gap-1.5">
               <ToggleLeft className="h-4 w-4" />
               Field Config
+            </TabsTrigger>
+            <TabsTrigger value="notifications" className="gap-1.5">
+              <Bell className="h-4 w-4" />
+              Notifications
             </TabsTrigger>
             <TabsTrigger value="settings" className="gap-1.5">
               <Settings className="h-4 w-4" />
@@ -588,6 +673,11 @@ export function TestAdminPage() {
                 />
               </CardContent>
             </Card>
+          </TabsContent>
+
+          {/* Notifications Tab */}
+          <TabsContent value="notifications">
+            <NotificationPreferencesSection />
           </TabsContent>
 
           {/* Settings Tab */}

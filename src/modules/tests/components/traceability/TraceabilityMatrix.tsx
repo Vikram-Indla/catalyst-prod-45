@@ -4,6 +4,7 @@
  */
 
 import React, { useState, useMemo, useDeferredValue } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Search,
   Filter,
@@ -24,6 +25,8 @@ import {
   RefreshCw,
   Eye,
   Lightbulb,
+  Plus,
+  FileCode2,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -50,7 +53,17 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from '@/components/ui/collapsible';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+  DialogDescription,
+} from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 import {
   useTraceabilityMatrix,
@@ -58,6 +71,10 @@ import {
   CoverageGap,
 } from '../../hooks/useTraceabilityMatrix';
 import { TraceabilityDetailPanel } from './TraceabilityDetailPanel';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/lib/auth';
+import { toast } from 'sonner';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 interface TraceabilityMatrixProps {
   programId: string | null;
@@ -132,6 +149,9 @@ function CoverageBar({ passRate, failRate, blockedRate }: {
 
 export function TraceabilityMatrix({ programId, projectId }: TraceabilityMatrixProps) {
   const { matrixData, isLoading, refetch } = useTraceabilityMatrix(programId);
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
   
   const [searchQuery, setSearchQuery] = useState('');
   const deferredSearch = useDeferredValue(searchQuery);
@@ -139,6 +159,80 @@ export function TraceabilityMatrix({ programId, projectId }: TraceabilityMatrixP
   const [showGapsPanel, setShowGapsPanel] = useState(false);
   const [riskFilter, setRiskFilter] = useState<string | null>(null);
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
+  
+  // Create test from gap dialog state
+  const [createFromGapOpen, setCreateFromGapOpen] = useState(false);
+  const [selectedGap, setSelectedGap] = useState<CoverageGap | null>(null);
+  const [newTestTitle, setNewTestTitle] = useState('');
+  const [newTestDescription, setNewTestDescription] = useState('');
+  
+  // Create test case mutation
+  const createTestCaseMutation = useMutation({
+    mutationFn: async () => {
+      if (!user || !selectedGap || !newTestTitle.trim()) {
+        throw new Error('Missing required fields');
+      }
+      
+      const { data, error } = await supabase
+        .from('test_cases')
+        .insert({
+          title: newTestTitle.trim(),
+          description: newTestDescription.trim() || `Auto-generated test case from coverage gap for ${selectedGap.entityKey}`,
+          program_id: programId,
+          project_id: projectId || null,
+          created_by: user.id,
+          status: 'draft',
+          priority: selectedGap.severity === 'critical' ? 'critical' : selectedGap.severity === 'high' ? 'high' : 'medium',
+          test_type: 'manual',
+        })
+        .select()
+        .single();
+      
+      if (error) throw error;
+      
+      // Link to the requirement if the gap is for a requirement
+      if (selectedGap.entityType === 'requirement') {
+        await supabase.from('test_case_work_item_links').insert({
+          case_id: data.id,
+          work_item_id: selectedGap.entityId,
+          work_item_type: 'story',
+          link_type: 'validates',
+        });
+      }
+      
+      // Log activity
+      await supabase.from('test_activity_log').insert({
+        user_id: user.id,
+        activity_type: 'test_case_created',
+        entity_type: 'test_cases',
+        entity_id: data.id,
+        entity_title: data.title,
+        program_id: programId,
+        description: `Created test case from coverage gap: ${selectedGap.title}`,
+      });
+      
+      return data;
+    },
+    onSuccess: (data) => {
+      toast.success(`Test case "${data.title}" created`);
+      setCreateFromGapOpen(false);
+      setSelectedGap(null);
+      setNewTestTitle('');
+      setNewTestDescription('');
+      refetch();
+      queryClient.invalidateQueries({ queryKey: ['test-cases'] });
+    },
+    onError: (err: Error) => {
+      toast.error(err.message);
+    },
+  });
+  
+  const handleCreateFromGap = (gap: CoverageGap) => {
+    setSelectedGap(gap);
+    setNewTestTitle(`Test for ${gap.entityKey}`);
+    setNewTestDescription(`This test case validates the requirements for ${gap.entityKey}.\n\n${gap.description}`);
+    setCreateFromGapOpen(true);
+  };
 
   // Filter chains
   const filteredChains = useMemo(() => {
@@ -622,13 +716,25 @@ export function TraceabilityMatrix({ programId, projectId }: TraceabilityMatrixP
                   {gaps.map(gap => (
                     <Card key={gap.id} className="bg-surface-2 border-border-default">
                       <CardContent className="p-3">
-                        <div className="flex items-start gap-2 mb-2">
-                          <Badge className={cn('text-xs shrink-0', GAP_SEVERITY_COLORS[gap.severity])}>
-                            {gap.severity}
-                          </Badge>
-                          <Badge variant="outline" className="text-xs">
-                            {gap.type.replace(/_/g, ' ')}
-                          </Badge>
+                        <div className="flex items-start justify-between gap-2 mb-2">
+                          <div className="flex items-start gap-2">
+                            <Badge className={cn('text-xs shrink-0', GAP_SEVERITY_COLORS[gap.severity])}>
+                              {gap.severity}
+                            </Badge>
+                            <Badge variant="outline" className="text-xs">
+                              {gap.type.replace(/_/g, ' ')}
+                            </Badge>
+                          </div>
+                          {gap.type === 'no_tests' && (
+                            <Button
+                              size="sm"
+                              className="h-6 text-[10px] gap-1 bg-accent-primary hover:bg-accent-primary/90"
+                              onClick={() => handleCreateFromGap(gap)}
+                            >
+                              <Plus className="h-3 w-3" />
+                              Create Test
+                            </Button>
+                          )}
                         </div>
                         <p className="text-sm font-medium text-text-primary mb-1">
                           {gap.title}
@@ -648,6 +754,68 @@ export function TraceabilityMatrix({ programId, projectId }: TraceabilityMatrixP
             </div>
           </div>
         )}
+        
+        {/* Create Test from Gap Dialog */}
+        <Dialog open={createFromGapOpen} onOpenChange={setCreateFromGapOpen}>
+          <DialogContent className="sm:max-w-[500px] bg-surface-1 border-border-default">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2 text-text-primary">
+                <FileCode2 className="h-5 w-5 text-accent-primary" />
+                Create Test from Gap
+              </DialogTitle>
+              <DialogDescription className="text-text-tertiary">
+                Create a new test case to address the coverage gap for{' '}
+                <span className="font-medium text-accent-primary">{selectedGap?.entityKey}</span>
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              <div className="space-y-2">
+                <Label className="text-text-secondary">Test Case Title</Label>
+                <Input
+                  value={newTestTitle}
+                  onChange={(e) => setNewTestTitle(e.target.value)}
+                  placeholder="Enter test case title"
+                  className="bg-surface-2 border-border-default"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label className="text-text-secondary">Description</Label>
+                <Textarea
+                  value={newTestDescription}
+                  onChange={(e) => setNewTestDescription(e.target.value)}
+                  placeholder="Describe what this test case validates"
+                  className="bg-surface-2 border-border-default min-h-[100px]"
+                />
+              </div>
+              {selectedGap && (
+                <div className="p-3 bg-surface-3 rounded-lg border border-border-default">
+                  <p className="text-xs text-text-tertiary mb-1">Linked Requirement</p>
+                  <div className="flex items-center gap-2">
+                    <Badge variant="outline" className="text-xs">{selectedGap.entityKey}</Badge>
+                    <span className="text-sm text-text-primary truncate">{selectedGap.title}</span>
+                  </div>
+                </div>
+              )}
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setCreateFromGapOpen(false)}>
+                Cancel
+              </Button>
+              <Button
+                onClick={() => createTestCaseMutation.mutate()}
+                disabled={!newTestTitle.trim() || createTestCaseMutation.isPending}
+                className="bg-accent-primary hover:bg-accent-primary/90"
+              >
+                {createTestCaseMutation.isPending ? (
+                  <Loader2 className="h-4 w-4 mr-1.5 animate-spin" />
+                ) : (
+                  <Plus className="h-4 w-4 mr-1.5" />
+                )}
+                Create Test Case
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </TooltipProvider>
   );
