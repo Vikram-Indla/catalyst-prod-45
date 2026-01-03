@@ -1,28 +1,24 @@
 /**
  * GLOBAL TESTS LAYOUT
  * Top-level layout for /tests/* routes
- * Includes scope switcher, sub-nav tabs, and context-aware CTAs
+ * Header with scope switcher and global search - sidebar handles navigation
  */
 
-import React, { useState, useMemo, useCallback, useEffect } from 'react';
-import { Outlet, NavLink, useLocation, useSearchParams, useNavigate } from 'react-router-dom';
+import React, { useState, useCallback } from 'react';
+import { Outlet, useLocation, useSearchParams, useNavigate } from 'react-router-dom';
 import { 
   FlaskConical, 
-  LayoutDashboard, 
-  ListChecks, 
-  Package,
-  RefreshCcw, 
-  Play,
-  BarChart3,
   Plus,
   RefreshCw,
-  Settings,
   ChevronDown,
   Building2,
   Briefcase,
   FolderKanban,
   Search,
-  GitBranch,
+  ListChecks,
+  RefreshCcw,
+  Package,
+  Play,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -47,28 +43,6 @@ import { CreateTestCaseModal } from '@/modules/in-jira/components/tests/CreateTe
 import { CreateCycleModal } from './CreateCycleModal';
 
 // ═══════════════════════════════════════════════════════════════════
-// TAB CONFIGURATION
-// ═══════════════════════════════════════════════════════════════════
-
-interface Tab {
-  id: string;
-  label: string;
-  icon: React.ReactNode;
-  path: string;
-}
-
-const TABS: Tab[] = [
-  { id: 'overview', label: 'Overview', icon: <LayoutDashboard className="h-4 w-4" />, path: '' },
-  { id: 'cases', label: 'Cases', icon: <ListChecks className="h-4 w-4" />, path: 'cases' },
-  { id: 'sets', label: 'Sets', icon: <Package className="h-4 w-4" />, path: 'sets' },
-  { id: 'cycles', label: 'Cycles', icon: <RefreshCcw className="h-4 w-4" />, path: 'cycles' },
-  { id: 'executions', label: 'Executions', icon: <Play className="h-4 w-4" />, path: 'executions' },
-  { id: 'traceability', label: 'Traceability', icon: <GitBranch className="h-4 w-4" />, path: 'traceability' },
-  { id: 'reports', label: 'Reports', icon: <BarChart3 className="h-4 w-4" />, path: 'reports' },
-  { id: 'admin', label: 'Admin', icon: <Settings className="h-4 w-4" />, path: 'admin' },
-];
-
-// ═══════════════════════════════════════════════════════════════════
 // SCOPE SWITCHER COMPONENT
 // ═══════════════════════════════════════════════════════════════════
 
@@ -86,19 +60,6 @@ function ScopeSwitcher({ scopeType, scopeId, onScopeChange, programs, projects, 
     global: <Building2 className="h-4 w-4" />,
     program: <Briefcase className="h-4 w-4" />,
     project: <FolderKanban className="h-4 w-4" />,
-  };
-
-  const getScopeName = () => {
-    if (scopeType === 'global') return 'All Programs';
-    if (scopeType === 'program') {
-      const program = programs.find(p => p.id === scopeId);
-      return program?.name || 'Select Program';
-    }
-    if (scopeType === 'project') {
-      const project = projects.find(p => p.id === scopeId);
-      return project?.name || 'Select Project';
-    }
-    return 'Select Scope';
   };
 
   if (isLoading) {
@@ -191,9 +152,21 @@ export function GlobalTestsLayout() {
   const [createCycleModalOpen, setCreateCycleModalOpen] = useState(false);
   const [globalSearch, setGlobalSearch] = useState('');
 
-  // Determine current tab from path
+  // Determine current page from path
   const currentPath = location.pathname.replace('/tests', '').replace(/^\//, '');
-  const currentTab = TABS.find(t => t.path === currentPath) || TABS[0];
+  const getPageTitle = () => {
+    switch (currentPath) {
+      case '': return 'Overview';
+      case 'cases': return 'Test Cases';
+      case 'sets': return 'Test Sets';
+      case 'cycles': return 'Test Cycles';
+      case 'executions': return 'Executions';
+      case 'traceability': return 'Traceability';
+      case 'reports': return 'Reports';
+      case 'admin': return 'Administration';
+      default: return 'Tests';
+    }
+  };
 
   // Handle scope change
   const handleScopeChange = useCallback((type: ScopeType, id: string | null) => {
@@ -211,18 +184,9 @@ export function GlobalTestsLayout() {
     setSearchParams(newParams);
   }, [setScopeType, setScopeId, searchParams, setSearchParams]);
 
-  // Build URL with scope params
-  const buildTabUrl = useCallback((path: string) => {
-    const base = path ? `/tests/${path}` : '/tests';
-    const params = new URLSearchParams();
-    params.set('scopeType', scopeType);
-    if (scopeId) params.set('scopeId', scopeId);
-    return `${base}?${params.toString()}`;
-  }, [scopeType, scopeId]);
-
   // Context-aware CTA
   const renderPrimaryCTA = () => {
-    switch (currentTab.id) {
+    switch (currentPath) {
       case 'cases':
         return (
           <Button 
@@ -296,25 +260,22 @@ export function GlobalTestsLayout() {
 
   return (
     <div className="h-full flex flex-col bg-surface-1">
-      {/* Header */}
-      <div className="border-b border-border-default bg-surface-1 px-6 py-4">
-        {/* Title Row */}
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-accent-subtle rounded-lg">
-              <FlaskConical className="h-6 w-6 text-accent-primary" />
+      {/* Compact Header */}
+      <div className="border-b border-border-default bg-surface-1 px-6 py-3">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
+              <FlaskConical className="h-5 w-5 text-accent-primary" />
+              <h1 className="text-lg font-semibold text-text-primary">{getPageTitle()}</h1>
             </div>
-            <div>
-              <h1 className="text-xl font-semibold text-text-primary">Test Management</h1>
-              <div className="text-sm text-text-tertiary">
-                {metricsLoading ? (
-                  <Skeleton className="h-4 w-40" />
-                ) : (
-                  <span>
-                    {metrics?.totalCases || 0} cases • {metrics?.passRate || 0}% pass rate
-                  </span>
-                )}
-              </div>
+            <div className="text-sm text-text-tertiary">
+              {metricsLoading ? (
+                <Skeleton className="h-4 w-32" />
+              ) : (
+                <span>
+                  {metrics?.totalCases || 0} cases • {metrics?.passRate || 0}% pass rate
+                </span>
+              )}
             </div>
           </div>
 
@@ -330,46 +291,23 @@ export function GlobalTestsLayout() {
             />
 
             {/* Global Search */}
-            <div className="relative w-64">
+            <div className="relative w-48">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-tertiary" />
               <Input
-                placeholder="Search tests..."
+                placeholder="Search..."
                 value={globalSearch}
                 onChange={(e) => setGlobalSearch(e.target.value)}
                 className="pl-9 h-9 bg-surface-2 border-border-default"
               />
             </div>
 
-            <Button variant="outline" size="sm" onClick={() => refetchMetrics()}>
+            <Button variant="outline" size="icon" className="h-9 w-9" onClick={() => refetchMetrics()}>
               <RefreshCw className="w-4 h-4" />
             </Button>
 
             {renderPrimaryCTA()}
           </div>
         </div>
-
-        {/* Tab Navigation */}
-        <nav className="flex items-center gap-1 -mb-4">
-          {TABS.map((tab) => {
-            const isActive = currentTab.id === tab.id;
-            return (
-              <NavLink
-                key={tab.id}
-                to={buildTabUrl(tab.path)}
-                className={cn(
-                  'flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-t-md transition-colors',
-                  'border-b-2',
-                  isActive
-                    ? 'text-accent-primary border-accent-primary bg-accent-subtle/30'
-                    : 'text-text-secondary border-transparent hover:text-text-primary hover:bg-surface-hover'
-                )}
-              >
-                {tab.icon}
-                {tab.label}
-              </NavLink>
-            );
-          })}
-        </nav>
       </div>
 
       {/* Content */}

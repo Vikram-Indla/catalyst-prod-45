@@ -5,6 +5,7 @@ import { UnifiedSidebar } from './UnifiedSidebar';
 import { EnterpriseSidebar } from './EnterpriseSidebar';
 import { ProductRoomSidebar } from './ProductRoomSidebar';
 import { ReleaseRoomSidebar } from './ReleaseRoomSidebar';
+import { TestsSidebar } from './TestsSidebar';
 import { CatalystContextProvider, useCatalystContext } from '@/contexts/CatalystContext';
 import { AnnouncementBanner } from '@/components/notifications/AnnouncementBanner';
 import { useTrackLastRoute } from '@/hooks/useSessionPersistence';
@@ -46,6 +47,9 @@ function CatalystShellContent() {
   
   // Check if on release route
   const isReleaseRoute = location.pathname.startsWith('/release');
+
+  // Check if on tests route
+  const isTestsRoute = location.pathname.startsWith('/tests');
 
   // Prevent full document reloads caused by accidental <a href="/..."> navigation.
   // IMPORTANT: In Preview, the URL contains special query params (e.g. __lovable_token).
@@ -90,6 +94,16 @@ function CatalystShellContent() {
     // No sidebar for Home or Admin routes
     if (location.pathname === '/for-you' || location.pathname.startsWith('/admin')) {
       return null;
+    }
+
+    // Tests route sidebar
+    if (isTestsRoute) {
+      return (
+        <TestsSidebar
+          expanded={sidebarExpanded}
+          onToggle={() => setSidebarExpanded(!sidebarExpanded)}
+        />
+      );
     }
 
     // Release route sidebar
