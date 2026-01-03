@@ -314,123 +314,111 @@ export function GlobalTestsSetsPage() {
         </div>
       )}
 
-      {/* Grid */}
+      {/* Grid - Always show table structure */}
       {isLoading ? (
-        <div className="space-y-2">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <Skeleton key={i} className="h-16 w-full" />
-          ))}
+        <div className="border border-border-default rounded-lg overflow-hidden">
+          <div className="bg-surface-3 border-b border-border-default">
+            <div className="grid grid-cols-[40px_1fr_80px_100px_100px_80px_48px] gap-1 px-3 py-2 text-[10px] font-black tracking-widest text-text-muted uppercase">
+              <span></span><span>Set Name</span><span>Cases</span><span>Coverage</span><span>Last Exec</span><span>Status</span><span></span>
+            </div>
+          </div>
+          <div className="divide-y divide-border-subtle">
+            {Array.from({ length: 8 }).map((_, i) => (
+              <Skeleton key={i} className="h-10 w-full" />
+            ))}
+          </div>
         </div>
       ) : filteredSets.length === 0 ? (
-        <div className="text-center py-16 text-text-tertiary">
-          <Package className="h-12 w-12 mx-auto mb-4 opacity-50" />
-          <h3 className="text-lg font-medium text-text-primary mb-2">No test sets found</h3>
-          <p className="text-sm mb-4">Create test sets to organize your test cases</p>
-          <Button onClick={() => setCreateModalOpen(true)}>
-            <Plus className="w-4 h-4 mr-2" />
-            Create Set
-          </Button>
+        <div className="border border-border-default rounded-lg overflow-hidden">
+          <div className="bg-surface-3 border-b border-border-default">
+            <div className="grid grid-cols-[40px_1fr_80px_100px_100px_80px_48px] gap-1 px-3 py-2 text-[10px] font-black tracking-widest text-text-muted uppercase">
+              <span></span><span>Set Name</span><span>Cases</span><span>Coverage</span><span>Last Exec</span><span>Status</span><span></span>
+            </div>
+          </div>
+          <div className="py-8 text-center">
+            <p className="text-sm font-semibold text-text-muted">No test sets found</p>
+            <Button size="sm" variant="ghost" onClick={() => setCreateModalOpen(true)} className="mt-2 text-xs">
+              <Plus className="w-3 h-3 mr-1" /> Create Set
+            </Button>
+          </div>
         </div>
       ) : (
-        <div className="border border-border-default rounded-lg overflow-hidden">
+        <div className="border border-border-default rounded-lg overflow-hidden text-xs">
           <table className="w-full">
-            <thead className="bg-surface-2 border-b border-border-default">
-              <tr className="text-left text-xs text-text-tertiary uppercase tracking-wide">
-                <th className="px-4 py-3 w-10">
+            <thead className="bg-surface-3 border-b border-border-default sticky top-0 z-10">
+              <tr className="text-[10px] font-black tracking-widest text-text-muted uppercase">
+                <th className="px-3 py-2 w-10 text-left">
                   <Checkbox
                     checked={selectedIds.size === filteredSets.length && filteredSets.length > 0}
                     onCheckedChange={toggleSelectAll}
                   />
                 </th>
-                <th className="px-4 py-3 font-medium">Set</th>
-                <th className="px-4 py-3 font-medium w-24">Cases</th>
-                <th className="px-4 py-3 font-medium w-32">Created</th>
-                <th className="px-4 py-3 font-medium w-12"></th>
+                <th className="px-3 py-2 text-left">Set Name</th>
+                <th className="px-3 py-2 w-20 text-right">Cases</th>
+                <th className="px-3 py-2 w-24 text-left">Status</th>
+                <th className="px-3 py-2 w-28 text-left">Created</th>
+                <th className="px-3 py-2 w-10"></th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-border-default">
+            <tbody className="divide-y divide-border-subtle">
               {filteredSets.map((set: any) => (
                 <tr
                   key={set.id}
                   className={cn(
-                    'hover:bg-surface-hover cursor-pointer transition-colors',
-                    selectedIds.has(set.id) && 'bg-accent-subtle/30'
+                    'hover:bg-surface-2 cursor-pointer transition-colors',
+                    selectedIds.has(set.id) && 'bg-accent-subtle/20'
                   )}
                   onClick={() => handleRowClick(set.id)}
                 >
-                  <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
+                  <td className="px-3 py-1.5" onClick={(e) => e.stopPropagation()}>
                     <Checkbox
                       checked={selectedIds.has(set.id)}
                       onCheckedChange={() => toggleSelect(set.id)}
                     />
                   </td>
-                  <td className="px-4 py-3">
-                    <div className="flex items-center gap-3">
-                      <div className="p-2 bg-surface-3 rounded">
-                        <Package className="h-4 w-4 text-accent-primary" />
-                      </div>
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <span className="font-medium text-text-primary">{set.name}</span>
-                          {set.is_smart_set && (
-                            <Badge variant="outline" className="text-xs">Smart</Badge>
-                          )}
-                        </div>
-                        {set.description && (
-                          <p className="text-sm text-text-tertiary truncate max-w-md">
-                            {set.description}
-                          </p>
-                        )}
-                      </div>
+                  <td className="px-3 py-1.5">
+                    <div className="flex items-center gap-2">
+                      <Package className="h-3.5 w-3.5 text-brand-primary flex-shrink-0" />
+                      <span className="font-bold text-text-primary truncate">{set.name}</span>
+                      {set.is_smart_set && (
+                        <Badge variant="outline" className="text-[10px] h-4 px-1">Smart</Badge>
+                      )}
                     </div>
                   </td>
-                  <td className="px-4 py-3">
-                    <Badge variant="secondary" className="text-xs">
-                      {set.test_set_cases?.length || 0}
-                    </Badge>
+                  <td className="px-3 py-1.5 text-right">
+                    <span className="font-bold tabular-nums text-text-primary">{set.test_set_cases?.length || 0}</span>
                   </td>
-                  <td className="px-4 py-3 text-sm text-text-tertiary">
-                    {format(new Date(set.created_at), 'MMM d, yyyy')}
+                  <td className="px-3 py-1.5">
+                    <Badge variant="outline" className="text-[10px] h-4 px-1.5">Active</Badge>
                   </td>
-                  <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
+                  <td className="px-3 py-1.5 text-text-muted tabular-nums">
+                    {format(new Date(set.created_at), 'MMM d, yy')}
+                  </td>
+                  <td className="px-3 py-1.5" onClick={(e) => e.stopPropagation()}>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" className="h-8 w-8">
-                          <MoreHorizontal className="h-4 w-4" />
+                        <Button variant="ghost" size="icon" className="h-6 w-6">
+                          <MoreHorizontal className="h-3.5 w-3.5" />
                         </Button>
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className="bg-surface-1 border-border-default">
-                        <DropdownMenuItem onClick={() => handleRowClick(set.id)}>
-                          <Eye className="h-4 w-4 mr-2" />
-                          View Details
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => {
-                          setSelectedSetId(set.id);
-                          setDrawerOpen(true);
-                        }}>
-                          <Edit className="h-4 w-4 mr-2" />
-                          Edit
+                      <DropdownMenuContent align="end" className="bg-surface-elevated border-border-default">
+                        <DropdownMenuItem onClick={() => handleRowClick(set.id)} className="text-xs">
+                          <Eye className="h-3.5 w-3.5 mr-2" />
+                          View
                         </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => {
                           setSelectedIds(new Set([set.id]));
                           setAddToCycleOpen(true);
-                        }}>
-                          <RefreshCcw className="h-4 w-4 mr-2" />
+                        }} className="text-xs">
+                          <RefreshCcw className="h-3.5 w-3.5 mr-2" />
                           Add to Cycle
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => {
-                          setSelectedIds(new Set([set.id]));
-                          setMoveToFolderOpen(true);
-                        }}>
-                          <FolderOutput className="h-4 w-4 mr-2" />
-                          Move to Folder
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator className="bg-border-default" />
+                        <DropdownMenuSeparator className="bg-border-subtle" />
                         <DropdownMenuItem
-                          className="text-status-error"
+                          className="text-xs text-danger"
                           onClick={() => archiveMutation.mutate([set.id])}
                         >
-                          <Archive className="h-4 w-4 mr-2" />
+                          <Archive className="h-3.5 w-3.5 mr-2" />
                           Archive
                         </DropdownMenuItem>
                       </DropdownMenuContent>

@@ -300,111 +300,73 @@ export function TraceabilityMatrix({ programId, projectId }: TraceabilityMatrixP
 
   return (
     <TooltipProvider>
-      <div className="h-full flex flex-col bg-surface-1">
-        {/* Header */}
-        <div className="px-6 py-4 border-b border-border-default">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-xl font-semibold text-text-primary">Traceability Matrix</h1>
-              <p className="text-sm text-text-tertiary mt-0.5">
-                End-to-end requirements coverage with forward & backward traceability
-              </p>
-            </div>
-            <div className="flex items-center gap-2">
-              {gaps.length > 0 && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setShowGapsPanel(true)}
-                  className="text-status-warning border-status-warning/50"
-                >
-                  <AlertTriangle className="h-4 w-4 mr-1.5" />
-                  {gaps.length} Coverage Gaps
-                </Button>
-              )}
-              <Button variant="outline" size="sm" onClick={refetch}>
-                <RefreshCw className="h-4 w-4 mr-1.5" />
-                Refresh
+      <div className="h-full flex flex-col bg-surface-1 -m-6">
+        {/* Compact Header */}
+        <div className="px-4 py-2 border-b-2 border-border-default bg-surface-0 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <GitBranch className="h-4 w-4 text-brand-primary" />
+            <h1 className="text-sm font-black tracking-tight text-text-primary uppercase">Traceability Matrix</h1>
+          </div>
+          <div className="flex items-center gap-2">
+            {gaps.length > 0 && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowGapsPanel(true)}
+                className="h-7 text-xs font-bold text-warning"
+              >
+                <AlertTriangle className="h-3.5 w-3.5 mr-1" />
+                {gaps.length} Gaps
               </Button>
-              <Button variant="outline" size="sm">
-                <Download className="h-4 w-4 mr-1.5" />
-                Export
-              </Button>
-            </div>
+            )}
+            <Button variant="ghost" size="sm" onClick={refetch} className="h-7">
+              <RefreshCw className="h-3.5 w-3.5" />
+            </Button>
+            <Button variant="ghost" size="sm" className="h-7">
+              <Download className="h-3.5 w-3.5" />
+            </Button>
           </div>
         </div>
 
-        {/* Summary Cards */}
-        <div className="px-6 py-4 border-b border-border-default">
-          <div className="grid grid-cols-6 gap-3">
-            <Card className="bg-surface-2 border-border-default">
-              <CardContent className="p-3">
-                <div className="text-xs text-text-tertiary">Requirements</div>
-                <div className="text-xl font-bold text-text-primary mt-1">
-                  {summary?.totalRequirements || 0}
-                </div>
-                <div className="text-xs text-text-quaternary mt-1">
-                  {summary?.coveragePercentage || 0}% covered
-                </div>
-              </CardContent>
-            </Card>
-            <Card className="bg-surface-2 border-border-default">
-              <CardContent className="p-3">
-                <div className="text-xs text-text-tertiary">Test Cases</div>
-                <div className="text-xl font-bold text-text-primary mt-1">
-                  {summary?.totalTestCases || 0}
-                </div>
-                <div className="text-xs text-text-quaternary mt-1">
-                  {summary?.executedTestCases || 0} executed
-                </div>
-              </CardContent>
-            </Card>
-            <Card className="bg-surface-2 border-border-default">
-              <CardContent className="p-3">
-                <div className="text-xs text-status-success">Passed</div>
-                <div className="text-xl font-bold text-status-success mt-1">
-                  {summary?.passedTestCases || 0}
-                </div>
-              </CardContent>
-            </Card>
-            <Card className="bg-surface-2 border-border-default">
-              <CardContent className="p-3">
-                <div className="text-xs text-status-error">Failed</div>
-                <div className="text-xl font-bold text-status-error mt-1">
-                  {summary?.failedTestCases || 0}
-                </div>
-              </CardContent>
-            </Card>
-            <Card className="bg-surface-2 border-border-default">
-              <CardContent className="p-3">
-                <div className="text-xs text-text-tertiary">Defects</div>
-                <div className="text-xl font-bold text-text-primary mt-1">
-                  {summary?.totalDefects || 0}
-                </div>
-                <div className="text-xs text-status-error mt-1">
-                  {summary?.openDefects || 0} open
-                </div>
-              </CardContent>
-            </Card>
-            <Card className="bg-surface-2 border-border-default">
-              <CardContent className="p-3">
-                <div className="text-xs text-text-tertiary">Risk Score</div>
-                <div className={cn(
-                  'text-xl font-bold mt-1',
-                  summary?.avgRisk && summary.avgRisk >= 60 ? 'text-status-error' :
-                  summary?.avgRisk && summary.avgRisk >= 40 ? 'text-status-warning' :
-                  'text-status-success'
-                )}>
-                  {summary?.avgRisk || 0}
-                </div>
-                <div className="text-xs text-status-error mt-1">
-                  {summary?.criticalRiskCount || 0} critical
-                </div>
-              </CardContent>
-            </Card>
+        {/* KPI Rail - Single horizontal row */}
+        <div className="border-b border-border-default bg-surface-0 flex items-stretch divide-x divide-border-subtle">
+          <div className="flex items-center gap-2 px-4 py-2">
+            <span className="text-[10px] font-semibold text-text-muted uppercase tracking-wide">Reqs</span>
+            <span className="text-lg font-black tabular-nums text-text-primary">{summary?.totalRequirements || 0}</span>
+          </div>
+          <div className="flex items-center gap-2 px-4 py-2">
+            <span className="text-[10px] font-semibold text-text-muted uppercase tracking-wide">Coverage</span>
+            <span className={cn(
+              'text-lg font-black tabular-nums',
+              (summary?.coveragePercentage || 0) >= 80 ? 'text-success' : (summary?.coveragePercentage || 0) >= 50 ? 'text-warning' : 'text-danger'
+            )}>{summary?.coveragePercentage || 0}%</span>
+          </div>
+          <div className="flex items-center gap-2 px-4 py-2">
+            <span className="text-[10px] font-semibold text-text-muted uppercase tracking-wide">Cases</span>
+            <span className="text-lg font-black tabular-nums text-text-primary">{summary?.totalTestCases || 0}</span>
+          </div>
+          <div className="flex items-center gap-2 px-4 py-2">
+            <span className="text-[10px] font-semibold text-success uppercase tracking-wide">Passed</span>
+            <span className="text-lg font-black tabular-nums text-success">{summary?.passedTestCases || 0}</span>
+          </div>
+          <div className="flex items-center gap-2 px-4 py-2">
+            <span className="text-[10px] font-semibold text-danger uppercase tracking-wide">Failed</span>
+            <span className="text-lg font-black tabular-nums text-danger">{summary?.failedTestCases || 0}</span>
+          </div>
+          <div className="flex items-center gap-2 px-4 py-2">
+            <span className="text-[10px] font-semibold text-text-muted uppercase tracking-wide">Defects</span>
+            <span className="text-lg font-black tabular-nums text-text-primary">{summary?.totalDefects || 0}</span>
+            <span className="text-[10px] text-danger font-bold">({summary?.openDefects || 0} open)</span>
+          </div>
+          <div className="flex-1" />
+          <div className="flex items-center gap-2 px-4 py-2">
+            <span className="text-[10px] font-semibold text-text-muted uppercase tracking-wide">Risk</span>
+            <span className={cn(
+              'text-lg font-black tabular-nums',
+              (summary?.avgRisk || 0) >= 60 ? 'text-danger' : (summary?.avgRisk || 0) >= 40 ? 'text-warning' : 'text-success'
+            )}>{summary?.avgRisk || 0}</span>
           </div>
         </div>
-
         {/* Toolbar */}
         <div className="px-6 py-3 border-b border-border-default flex items-center gap-3">
           <div className="relative flex-1 max-w-md">

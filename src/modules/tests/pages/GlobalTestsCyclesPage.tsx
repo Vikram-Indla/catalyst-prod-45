@@ -433,149 +433,135 @@ export function GlobalTestsCyclesPage() {
         </div>
       )}
 
-      {/* Cycles Grid */}
-      {isLoading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <Card key={i} className="bg-surface-2 border-border-default">
-              <CardContent className="p-4">
-                <Skeleton className="h-5 w-32 mb-2" />
-                <Skeleton className="h-4 w-48 mb-4" />
-                <Skeleton className="h-2 w-full mb-3" />
-                <Skeleton className="h-4 w-24" />
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      ) : processedCycles.length === 0 ? (
-        <div className="text-center py-16 text-text-tertiary">
-          <RefreshCcw className="h-12 w-12 mx-auto mb-4 opacity-50" />
-          <h3 className="text-lg font-medium text-text-primary mb-2">No test cycles found</h3>
-          <p className="text-sm mb-4">Create your first test cycle to start organizing test executions</p>
-          <Button onClick={() => setCreateModalOpen(true)}>
-            <Plus className="w-4 h-4 mr-2" />
-            Create Cycle
-          </Button>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {processedCycles.map((cycle: any) => (
-            <Card 
-              key={cycle.id} 
-              className={cn(
-                'bg-surface-2 border-border-default hover:border-accent-primary/30 transition-colors',
-                selectedIds.has(cycle.id) && 'border-accent-primary bg-accent-subtle/20'
-              )}
-            >
-              <CardContent className="p-4">
-                <div className="flex items-start justify-between mb-3">
-                  <div className="flex items-center gap-2">
-                    <Checkbox
-                      checked={selectedIds.has(cycle.id)}
-                      onCheckedChange={() => toggleSelect(cycle.id)}
-                    />
-                    <div className="flex-1 min-w-0 cursor-pointer" onClick={() => handleViewDetails(cycle.id)}>
-                      <div className="flex items-center gap-2 mb-1">
-                        <Badge variant="outline" className="text-xs">{cycle.key}</Badge>
-                        <Badge variant="outline" className={cn('text-xs', getStatusColor(cycle.status))}>
-                          {cycle.status}
-                        </Badge>
+      {/* Cycles Table - Enterprise Dense */}
+      <div className="border border-border-default rounded-lg overflow-hidden text-xs">
+        <table className="w-full">
+          <thead className="bg-surface-3 border-b border-border-default sticky top-0 z-10">
+            <tr className="text-[10px] font-black tracking-widest text-text-muted uppercase">
+              <th className="px-3 py-2 w-10 text-left">
+                <Checkbox
+                  checked={selectedIds.size === processedCycles.length && processedCycles.length > 0}
+                  onCheckedChange={toggleSelectAll}
+                />
+              </th>
+              <th className="px-3 py-2 w-20 text-left">ID</th>
+              <th className="px-3 py-2 text-left">Cycle Name</th>
+              <th className="px-3 py-2 w-20 text-left">Status</th>
+              <th className="px-3 py-2 w-28 text-left">Dates</th>
+              <th className="px-3 py-2 w-24 text-right">P/F/B</th>
+              <th className="px-3 py-2 w-16 text-right">Prog</th>
+              <th className="px-3 py-2 w-24 text-left">Owner</th>
+              <th className="px-3 py-2 w-20 text-center">Execute</th>
+              <th className="px-3 py-2 w-10"></th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-border-subtle">
+            {isLoading ? (
+              Array.from({ length: 8 }).map((_, i) => (
+                <tr key={i}><td colSpan={10}><Skeleton className="h-9 w-full" /></td></tr>
+              ))
+            ) : processedCycles.length === 0 ? (
+              <tr>
+                <td colSpan={10} className="py-8 text-center">
+                  <p className="text-sm font-semibold text-text-muted">No test cycles found</p>
+                  <Button size="sm" variant="ghost" onClick={() => setCreateModalOpen(true)} className="mt-2 text-xs">
+                    <Plus className="w-3 h-3 mr-1" /> Create Cycle
+                  </Button>
+                </td>
+              </tr>
+            ) : (
+              processedCycles.map((cycle: any) => {
+                const isFailing = cycle.failed > 0;
+                const isBlocked = cycle.blocked > 0 && !isFailing;
+                return (
+                  <tr
+                    key={cycle.id}
+                    className={cn(
+                      'hover:bg-surface-2 cursor-pointer transition-colors',
+                      isFailing && 'bg-danger/[0.02] border-l-4 border-l-danger',
+                      isBlocked && !isFailing && 'border-l-4 border-l-warning',
+                      !isFailing && !isBlocked && 'border-l-4 border-l-transparent',
+                      selectedIds.has(cycle.id) && 'bg-accent-subtle/20'
+                    )}
+                    onClick={() => handleViewDetails(cycle.id)}
+                  >
+                    <td className="px-3 py-1.5" onClick={(e) => e.stopPropagation()}>
+                      <Checkbox
+                        checked={selectedIds.has(cycle.id)}
+                        onCheckedChange={() => toggleSelect(cycle.id)}
+                      />
+                    </td>
+                    <td className="px-3 py-1.5">
+                      <span className="font-mono text-text-muted">{cycle.key}</span>
+                    </td>
+                    <td className="px-3 py-1.5">
+                      <span className="font-bold text-text-primary truncate block max-w-[200px]">{cycle.name}</span>
+                    </td>
+                    <td className="px-3 py-1.5">
+                      <Badge variant="outline" className={cn('text-[10px] h-4 px-1.5', getStatusColor(cycle.status))}>
+                        {cycle.status}
+                      </Badge>
+                    </td>
+                    <td className="px-3 py-1.5 text-text-muted tabular-nums">
+                      {cycle.start_date ? format(new Date(cycle.start_date), 'MMM d') : '—'}
+                      {cycle.end_date && ` – ${format(new Date(cycle.end_date), 'MMM d')}`}
+                    </td>
+                    <td className="px-3 py-1.5 text-right">
+                      <div className="flex items-center justify-end gap-1 font-bold tabular-nums">
+                        <span className={cn(cycle.passed > 0 ? 'text-success' : 'text-text-muted')}>{cycle.passed}</span>
+                        <span className="text-text-muted">/</span>
+                        <span className={cn(cycle.failed > 0 ? 'text-danger' : 'text-text-muted')}>{cycle.failed}</span>
+                        <span className="text-text-muted">/</span>
+                        <span className={cn(cycle.blocked > 0 ? 'text-warning' : 'text-text-muted')}>{cycle.blocked}</span>
                       </div>
-                      <h3 className="font-medium text-text-primary truncate">{cycle.name}</h3>
-                    </div>
-                  </div>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon" className="h-6 w-6">
-                        <MoreHorizontal className="h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="bg-surface-1 border-border-default">
-                      <DropdownMenuItem onClick={() => handleViewDetails(cycle.id)}>
-                        <Eye className="h-4 w-4 mr-2" />
-                        View Details
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => handleViewDetails(cycle.id)}>
-                        <Edit className="h-4 w-4 mr-2" />
-                        Edit
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => cloneMutation.mutate(cycle.id)}>
-                        <Copy className="h-4 w-4 mr-2" />
-                        Clone
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => handleViewDetails(cycle.id)}>
-                        <Layers className="h-4 w-4 mr-2" />
-                        Add Cases
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator className="bg-border-default" />
-                      <DropdownMenuItem 
-                        className="text-status-error"
-                        onClick={() => archiveMutation.mutate([cycle.id])}
-                      >
-                        <Archive className="h-4 w-4 mr-2" />
-                        Archive
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </div>
-
-                {cycle.description && (
-                  <p className="text-sm text-text-tertiary mb-3 line-clamp-2">
-                    {cycle.description}
-                  </p>
-                )}
-
-                <div className="mb-3">
-                  <div className="flex justify-between text-xs mb-1">
-                    <span className="text-text-tertiary">Progress</span>
-                    <span className="text-text-primary font-medium">{cycle.progress}%</span>
-                  </div>
-                  <Progress value={cycle.progress} className="h-1.5" />
-                </div>
-
-                <div className="grid grid-cols-4 gap-2 text-center text-xs mb-3">
-                  <div>
-                    <p className="text-status-success font-medium">{cycle.passed}</p>
-                    <p className="text-text-quaternary">Pass</p>
-                  </div>
-                  <div>
-                    <p className="text-status-error font-medium">{cycle.failed}</p>
-                    <p className="text-text-quaternary">Fail</p>
-                  </div>
-                  <div>
-                    <p className="text-status-warning font-medium">{cycle.blocked}</p>
-                    <p className="text-text-quaternary">Block</p>
-                  </div>
-                  <div>
-                    <p className="text-text-tertiary font-medium">{cycle.notRun}</p>
-                    <p className="text-text-quaternary">Pend</p>
-                  </div>
-                </div>
-
-                {(cycle.start_date || cycle.end_date) && (
-                  <div className="flex items-center gap-2 text-xs text-text-tertiary mb-3">
-                    <Calendar className="h-3 w-3" />
-                    <span>
-                      {cycle.start_date && format(new Date(cycle.start_date), 'MMM d')}
-                      {cycle.start_date && cycle.end_date && ' - '}
-                      {cycle.end_date && format(new Date(cycle.end_date), 'MMM d, yyyy')}
-                    </span>
-                  </div>
-                )}
-
-                <div className="flex items-center gap-2">
-                  <Link to={buildExecuteUrl(cycle.id)} className="flex-1">
-                    <Button variant="outline" size="sm" className="w-full gap-2">
-                      <Play className="h-3 w-3" />
-                      Execute
-                    </Button>
-                  </Link>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      )}
+                    </td>
+                    <td className="px-3 py-1.5 text-right">
+                      <span className="font-bold tabular-nums text-text-primary">{cycle.progress}%</span>
+                      <div className="w-full h-1 bg-surface-3 rounded-sm mt-0.5 overflow-hidden">
+                        <div 
+                          className={cn('h-full', isFailing ? 'bg-danger' : isBlocked ? 'bg-warning' : 'bg-success')}
+                          style={{ width: `${cycle.progress}%` }}
+                        />
+                      </div>
+                    </td>
+                    <td className="px-3 py-1.5 text-text-muted truncate max-w-[80px]">
+                      {cycle.owner_name || '—'}
+                    </td>
+                    <td className="px-3 py-1.5 text-center" onClick={(e) => e.stopPropagation()}>
+                      <Link to={buildExecuteUrl(cycle.id)}>
+                        <Button variant="ghost" size="sm" className="h-6 px-2 text-[10px] font-bold text-brand-primary">
+                          <Play className="h-3 w-3 mr-1" /> Run
+                        </Button>
+                      </Link>
+                    </td>
+                    <td className="px-3 py-1.5" onClick={(e) => e.stopPropagation()}>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="icon" className="h-6 w-6">
+                            <MoreHorizontal className="h-3.5 w-3.5" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="bg-surface-elevated border-border-default">
+                          <DropdownMenuItem onClick={() => handleViewDetails(cycle.id)} className="text-xs">
+                            <Eye className="h-3.5 w-3.5 mr-2" /> View
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => cloneMutation.mutate(cycle.id)} className="text-xs">
+                            <Copy className="h-3.5 w-3.5 mr-2" /> Clone
+                          </DropdownMenuItem>
+                          <DropdownMenuSeparator className="bg-border-subtle" />
+                          <DropdownMenuItem className="text-xs text-danger" onClick={() => archiveMutation.mutate([cycle.id])}>
+                            <Archive className="h-3.5 w-3.5 mr-2" /> Archive
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </td>
+                  </tr>
+                );
+              })
+            )}
+          </tbody>
+        </table>
+      </div>
 
       {/* Modals & Drawers */}
       <CreateCycleModal

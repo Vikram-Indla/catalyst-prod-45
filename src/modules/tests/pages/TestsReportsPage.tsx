@@ -437,139 +437,87 @@ export function TestsReportsPage() {
   const isLoading = trendLoading || hotspotsLoading || risksLoading || summaryLoading;
 
   return (
-    <div className="space-y-6 max-w-7xl mx-auto" ref={reportRef}>
-      {/* Header */}
-      <div className="flex items-center justify-between flex-wrap gap-4">
-        <div>
-          <h2 className="text-lg font-semibold text-text-primary">Test Reports</h2>
-          <p className="text-sm text-text-tertiary">Command Center & Analytics</p>
+    <div className="space-y-4 -m-6" ref={reportRef}>
+      {/* Dense Header */}
+      <div className="px-4 py-2 bg-surface-0 border-b-2 border-border-default flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <BarChart3 className="h-4 w-4 text-brand-primary" />
+          <h2 className="text-sm font-black tracking-tight text-text-primary uppercase">Test Reports</h2>
         </div>
         <div className="flex items-center gap-2">
           <Select value={dateRange} onValueChange={(v) => setDateRange(v as '7' | '14' | '30')}>
-            <SelectTrigger className="w-[140px] bg-surface-2 border-border-default">
-              <Calendar className="h-4 w-4 mr-2" />
+            <SelectTrigger className="h-7 w-[120px] text-xs bg-surface-2 border-border-default">
+              <Calendar className="h-3.5 w-3.5 mr-1" />
               <SelectValue />
             </SelectTrigger>
-            <SelectContent className="bg-surface-1 border-border-default">
-              <SelectItem value="7">Last 7 Days</SelectItem>
-              <SelectItem value="14">Last 14 Days</SelectItem>
-              <SelectItem value="30">Last 30 Days</SelectItem>
+            <SelectContent className="bg-surface-elevated border-border-default">
+              <SelectItem value="7" className="text-xs">7 Days</SelectItem>
+              <SelectItem value="14" className="text-xs">14 Days</SelectItem>
+              <SelectItem value="30" className="text-xs">30 Days</SelectItem>
             </SelectContent>
           </Select>
-          <Button variant="outline" size="sm" onClick={handleExportCSV}>
-            <Download className="h-4 w-4 mr-2" />
+          <Button variant="ghost" size="sm" onClick={handleExportCSV} className="h-7 text-xs">
+            <Download className="h-3.5 w-3.5 mr-1" />
             CSV
           </Button>
-          <Button 
-            variant="outline" 
-            size="sm" 
-            onClick={handleExportPDF}
-            disabled={isExporting}
-          >
-            {isExporting ? (
-              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-            ) : (
-              <FileText className="h-4 w-4 mr-2" />
-            )}
+          <Button variant="ghost" size="sm" onClick={handleExportPDF} disabled={isExporting} className="h-7 text-xs">
+            {isExporting ? <Loader2 className="h-3.5 w-3.5 mr-1 animate-spin" /> : <FileText className="h-3.5 w-3.5 mr-1" />}
             PDF
           </Button>
         </div>
       </div>
 
+      {/* KPI Rail - Horizontal, dense */}
+      <div className="px-4">
+        <div className="bg-surface-0 border border-border-default rounded-lg flex items-stretch divide-x divide-border-subtle overflow-hidden">
+          <button onClick={() => navigateToExecutions()} className="flex items-center gap-2 px-4 py-2 hover:bg-surface-2 transition-colors">
+            <span className="text-[10px] font-semibold text-text-muted uppercase tracking-wide">Total</span>
+            <span className="text-lg font-black tabular-nums text-text-primary">{summary?.total || 0}</span>
+          </button>
+          <button onClick={() => navigateToExecutions('passed')} className="flex items-center gap-2 px-4 py-2 hover:bg-success/5 transition-colors">
+            <span className="text-[10px] font-semibold text-success uppercase tracking-wide">Pass Rate</span>
+            <span className={cn('text-lg font-black tabular-nums', (summary?.passRate || 0) >= 80 ? 'text-success' : (summary?.passRate || 0) >= 50 ? 'text-warning' : 'text-danger')}>{summary?.passRate || 0}%</span>
+          </button>
+          <button onClick={() => navigateToExecutions('failed')} className="flex items-center gap-2 px-4 py-2 hover:bg-danger/5 transition-colors">
+            <span className="text-[10px] font-semibold text-danger uppercase tracking-wide">Failed</span>
+            <span className="text-lg font-black tabular-nums text-danger">{summary?.failed || 0}</span>
+          </button>
+          <button onClick={() => navigateToExecutions('blocked')} className="flex items-center gap-2 px-4 py-2 hover:bg-warning/5 transition-colors">
+            <span className="text-[10px] font-semibold text-warning uppercase tracking-wide">Blocked</span>
+            <span className="text-lg font-black tabular-nums text-warning">{summary?.blocked || 0}</span>
+          </button>
+          <div className="flex-1" />
+          <div className="flex items-center gap-2 px-4 py-2">
+            <span className="text-[10px] font-semibold text-text-muted uppercase tracking-wide">Critical</span>
+            <span className="text-lg font-black tabular-nums text-danger">{riskData?.criticalFailures || 0}</span>
+          </div>
+          <div className="flex items-center gap-2 px-4 py-2">
+            <span className="text-[10px] font-semibold text-text-muted uppercase tracking-wide">Open Defects</span>
+            <span className="text-lg font-black tabular-nums text-text-primary">{riskData?.defectDensity || 0}</span>
+          </div>
+        </div>
+      </div>
+
+      <div className="px-4">
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="bg-surface-2 border border-border-default">
-          <TabsTrigger value="dashboard">Command Center</TabsTrigger>
-          <TabsTrigger value="custom-dashboards" className="flex items-center gap-1">
-            <LayoutDashboard className="h-4 w-4" />
-            Custom Dashboards
+        <TabsList className="bg-surface-2 border border-border-default h-8">
+          <TabsTrigger value="dashboard" className="text-xs h-6">Command Center</TabsTrigger>
+          <TabsTrigger value="custom-dashboards" className="text-xs h-6 flex items-center gap-1">
+            <LayoutDashboard className="h-3 w-3" />
+            Dashboards
           </TabsTrigger>
-          <TabsTrigger value="user-activity" className="flex items-center gap-1">
-            <Users className="h-4 w-4" />
-            User Activity
+          <TabsTrigger value="user-activity" className="text-xs h-6 flex items-center gap-1">
+            <Users className="h-3 w-3" />
+            Activity
           </TabsTrigger>
-          <TabsTrigger value="daily">Daily Report</TabsTrigger>
-          <TabsTrigger value="weekly">Weekly Report</TabsTrigger>
+          <TabsTrigger value="daily" className="text-xs h-6">Daily</TabsTrigger>
+          <TabsTrigger value="weekly" className="text-xs h-6">Weekly</TabsTrigger>
         </TabsList>
 
         {/* Command Center Tab */}
-        <TabsContent value="dashboard" className="space-y-6 mt-6">
-          {/* KPI Row */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <Card 
-              className="bg-surface-2 border-border-default cursor-pointer hover:bg-surface-hover transition-colors"
-              onClick={() => navigateToExecutions()}
-            >
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-text-tertiary">Total Executions</p>
-                    <p className="text-2xl font-bold text-text-primary mt-1">
-                      {summaryLoading ? <Skeleton className="h-8 w-16" /> : summary?.total || 0}
-                    </p>
-                  </div>
-                  <Target className="h-8 w-8 text-accent-primary/50" />
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card 
-              className="bg-surface-2 border-border-default cursor-pointer hover:bg-surface-hover transition-colors"
-              onClick={() => navigateToExecutions('passed')}
-            >
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-text-tertiary">Pass Rate</p>
-                    <p className={cn(
-                      'text-2xl font-bold mt-1',
-                      (summary?.passRate || 0) >= 80 ? 'text-status-success' :
-                      (summary?.passRate || 0) >= 50 ? 'text-status-warning' : 'text-status-error'
-                    )}>
-                      {summaryLoading ? <Skeleton className="h-8 w-16" /> : `${summary?.passRate || 0}%`}
-                    </p>
-                  </div>
-                  <TrendingUp className="h-8 w-8 text-status-success/50" />
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card 
-              className="bg-surface-2 border-border-default cursor-pointer hover:bg-surface-hover transition-colors"
-              onClick={() => navigateToExecutions('failed')}
-            >
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-text-tertiary">Failed</p>
-                    <p className="text-2xl font-bold text-status-error mt-1">
-                      {summaryLoading ? <Skeleton className="h-8 w-16" /> : summary?.failed || 0}
-                    </p>
-                  </div>
-                  <XCircle className="h-8 w-8 text-status-error/50" />
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card 
-              className="bg-surface-2 border-border-default cursor-pointer hover:bg-surface-hover transition-colors"
-              onClick={() => navigateToExecutions('blocked')}
-            >
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-text-tertiary">Blocked</p>
-                    <p className="text-2xl font-bold text-status-warning mt-1">
-                      {summaryLoading ? <Skeleton className="h-8 w-16" /> : summary?.blocked || 0}
-                    </p>
-                  </div>
-                  <AlertTriangle className="h-8 w-8 text-status-warning/50" />
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Charts Row */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <TabsContent value="dashboard" className="space-y-4 mt-4">
+          {/* Charts Row - no duplicate KPI cards needed, they're in the rail above */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             {/* Pass Rate Trend */}
             <Card className="bg-surface-2 border-border-default">
               <CardHeader className="pb-2">
@@ -921,6 +869,7 @@ export function TestsReportsPage() {
           <UserActivityReport />
         </TabsContent>
       </Tabs>
+      </div>
     </div>
   );
 }
