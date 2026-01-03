@@ -3,7 +3,7 @@
  * Enterprise-grade test case management with folder tree
  */
 
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { AlertCircle, PanelLeftClose, PanelLeft } from 'lucide-react';
@@ -238,6 +238,20 @@ export function GlobalTestsCasesPage() {
 
   const handleCreateNew = useCallback(() => {
     setCreateModalOpen(true);
+  }, []);
+
+  // Keyboard shortcut: C to create
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Don't trigger if typing in input/textarea
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+      if (e.key === 'c' || e.key === 'C') {
+        e.preventDefault();
+        setCreateModalOpen(true);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
   const handleCaseCreated = useCallback((id: string) => {
