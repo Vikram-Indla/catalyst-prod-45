@@ -1,7 +1,7 @@
 /**
- * GLOBAL TESTS OVERVIEW - ENTERPRISE CONTROL SURFACE
- * Enterprise-grade density, WCAG contrast, Jira/ServiceNow class
- * Two-column fixed grid, single-row control rail, table-based executions
+ * GLOBAL TESTS OVERVIEW - ENTERPRISE COMMAND CONSOLE
+ * Bloomberg / Jira Align class - Mission-critical release authority
+ * Dense, intimidating, audit-grade, WCAG AA+ dark mode
  */
 
 import React, { useState } from 'react';
@@ -13,10 +13,7 @@ import {
   Play,
   ChevronRight,
   RefreshCw,
-  Shield,
-  Activity,
   MoreHorizontal,
-  Clock,
   ExternalLink,
 } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -36,17 +33,13 @@ import { useStoryCoverage } from '../hooks/useStoryCoverage';
 import { ScopeType } from '../hooks/useGlobalTestScope';
 import { RunTestsModal } from '../components/RunTestsModal';
 
-// ═══════════════════════════════════════════════════════════════════
-// TYPES
-// ═══════════════════════════════════════════════════════════════════
-
 type ReleaseStatus = 'BLOCKED' | 'AT_RISK' | 'READY';
 
 // ═══════════════════════════════════════════════════════════════════
-// 1. CONTROL RAIL - Single row: Status | Severity | Metrics | CTA
+// COMMAND RAIL - Heavy, dominant, single-row authority bar
 // ═══════════════════════════════════════════════════════════════════
 
-function ControlRail({ 
+function CommandRail({ 
   status, 
   failedCount,
   blockedCount,
@@ -73,111 +66,124 @@ function ControlRail({
 }) {
   if (isLoading) {
     return (
-      <div className="h-11 bg-surface-0 border-b border-border-default flex items-center px-4">
-        <Skeleton className="h-6 w-full max-w-2xl" />
+      <div className="h-12 bg-surface-3 border-b-2 border-border-strong flex items-center px-4">
+        <Skeleton className="h-7 w-full max-w-3xl" />
       </div>
     );
   }
 
-  const statusConfig = {
-    BLOCKED: { 
-      accent: 'bg-danger', 
-      text: 'text-danger', 
-      label: 'RELEASE BLOCKED',
-      icon: XCircle,
-    },
-    AT_RISK: { 
-      accent: 'bg-warning', 
-      text: 'text-warning', 
-      label: 'RELEASE AT RISK',
-      icon: AlertTriangle,
-    },
-    READY: { 
-      accent: 'bg-success', 
-      text: 'text-success', 
-      label: 'READY',
-      icon: Shield,
-    },
-  };
-
-  const config = statusConfig[status];
-  const StatusIcon = config.icon;
+  const isBlocked = status === 'BLOCKED';
+  const isAtRisk = status === 'AT_RISK';
 
   return (
-    <div className="h-11 bg-surface-0 border-b-2 border-border-default flex items-stretch">
-      {/* Left accent bar - thick for visibility */}
-      <div className={cn('w-1.5 flex-shrink-0', config.accent)} />
+    <div className={cn(
+      "h-12 flex items-stretch border-b-2",
+      isBlocked ? "bg-danger/5 border-danger" : isAtRisk ? "bg-warning/5 border-warning" : "bg-success/5 border-success"
+    )}>
+      {/* 6px left accent bar - ABSOLUTE BLOCK */}
+      <div className={cn(
+        'w-1.5 flex-shrink-0',
+        isBlocked ? 'bg-danger' : isAtRisk ? 'bg-warning' : 'bg-success'
+      )} />
       
-      {/* Status */}
-      <div className="flex items-center gap-2 px-4 border-r border-border-default">
-        <StatusIcon className={cn('h-4 w-4', config.text)} strokeWidth={2.5} />
-        <span className={cn('text-sm font-extrabold tracking-tight uppercase', config.text)}>
-          {config.label}
+      {/* Status label - DOMINANT */}
+      <div className={cn(
+        "flex items-center gap-2 px-4 border-r-2",
+        isBlocked ? "border-danger/30" : isAtRisk ? "border-warning/30" : "border-success/30"
+      )}>
+        {isBlocked ? (
+          <XCircle className="h-5 w-5 text-danger" strokeWidth={3} />
+        ) : isAtRisk ? (
+          <AlertTriangle className="h-5 w-5 text-warning" strokeWidth={3} />
+        ) : (
+          <CheckCircle2 className="h-5 w-5 text-success" strokeWidth={3} />
+        )}
+        <span className={cn(
+          "text-sm font-black tracking-tight uppercase",
+          isBlocked ? "text-danger" : isAtRisk ? "text-warning" : "text-success"
+        )}>
+          {isBlocked ? '⛔ RELEASE BLOCKED' : isAtRisk ? '⚠ RELEASE AT RISK' : '✓ READY'}
         </span>
       </div>
       
-      {/* Severity Stack - horizontal */}
-      <div className="flex items-stretch divide-x divide-border-subtle">
-        {/* S1: Failed */}
-        {failedCount > 0 && (
-          <button
-            onClick={() => onNavigate('executions?status=failed')}
-            className="flex items-center gap-1.5 px-3 hover:bg-danger/5 transition-colors"
-          >
-            <span className="text-[10px] font-black tracking-widest text-danger">S1</span>
-            <span className="text-lg font-black tabular-nums text-danger leading-none">{failedCount}</span>
-            <span className="text-[10px] font-semibold text-text-muted uppercase">Failed</span>
-          </button>
-        )}
+      {/* Severity metrics - NUMBERS OVERPOWER LABELS */}
+      <div className="flex items-stretch">
+        {/* S1 Failed - Always show */}
+        <button
+          onClick={() => failedCount > 0 && onNavigate('executions?status=failed')}
+          className={cn(
+            "flex items-center gap-2 px-4 border-r border-border-strong transition-colors",
+            failedCount > 0 ? "hover:bg-danger/10 cursor-pointer" : "cursor-default"
+          )}
+        >
+          <span className="text-xs font-black tracking-widest text-text-muted">S1 FAIL:</span>
+          <span className={cn(
+            "text-xl font-black tabular-nums leading-none",
+            failedCount > 0 ? "text-danger" : "text-text-muted"
+          )}>
+            {failedCount}
+          </span>
+        </button>
         
-        {/* S2: Blocked */}
-        {blockedCount > 0 && (
-          <button
-            onClick={() => onNavigate('executions?status=blocked')}
-            className="flex items-center gap-1.5 px-3 hover:bg-warning/5 transition-colors"
-          >
-            <span className="text-[10px] font-bold tracking-widest text-warning">S2</span>
-            <span className="text-base font-bold tabular-nums text-warning leading-none">{blockedCount}</span>
-            <span className="text-[10px] font-medium text-text-muted uppercase">Blocked</span>
-          </button>
-        )}
+        {/* S2 Blocked */}
+        <button
+          onClick={() => blockedCount > 0 && onNavigate('executions?status=blocked')}
+          className={cn(
+            "flex items-center gap-2 px-4 border-r border-border-strong transition-colors",
+            blockedCount > 0 ? "hover:bg-warning/10 cursor-pointer" : "cursor-default"
+          )}
+        >
+          <span className="text-xs font-black tracking-widest text-text-muted">S2 BLOCK:</span>
+          <span className={cn(
+            "text-xl font-black tabular-nums leading-none",
+            blockedCount > 0 ? "text-warning" : "text-text-muted"
+          )}>
+            {blockedCount}
+          </span>
+        </button>
         
-        {/* S3: Uncovered */}
-        {uncoveredCount > 0 && (
-          <button
-            onClick={() => onNavigate('traceability')}
-            className="flex items-center gap-1.5 px-3 hover:bg-surface-2 transition-colors"
-          >
-            <span className="text-[10px] font-medium tracking-widest text-text-muted">S3</span>
-            <span className="text-sm font-semibold tabular-nums text-text-secondary leading-none">{uncoveredCount}</span>
-            <span className="text-[10px] text-text-muted uppercase">Uncovered</span>
-          </button>
-        )}
+        {/* S3 Uncovered */}
+        <button
+          onClick={() => uncoveredCount > 0 && onNavigate('traceability')}
+          className={cn(
+            "flex items-center gap-2 px-4 border-r border-border-strong transition-colors",
+            uncoveredCount > 0 ? "hover:bg-surface-3 cursor-pointer" : "cursor-default"
+          )}
+        >
+          <span className="text-xs font-bold tracking-widest text-text-muted">S3 UNCOVERED:</span>
+          <span className="text-lg font-bold tabular-nums leading-none text-text-secondary">
+            {uncoveredCount}
+          </span>
+        </button>
       </div>
       
       {/* Spacer */}
       <div className="flex-1" />
       
-      {/* Metrics - right section */}
-      <div className="flex items-stretch divide-x divide-border-subtle border-l border-border-default">
+      {/* Right metrics - PASS / TOTAL / RATE */}
+      <div className="flex items-stretch border-l-2 border-border-strong">
         <button
           onClick={() => onNavigate('executions?status=passed')}
-          className="flex items-center gap-1.5 px-3 hover:bg-success/5 transition-colors"
+          className="flex items-center gap-2 px-4 border-r border-border-default hover:bg-success/10 transition-colors"
         >
-          <span className="text-[10px] font-semibold text-text-muted uppercase tracking-wide">Passed</span>
-          <span className="text-lg font-black tabular-nums text-success leading-none">{passedCount}</span>
+          <span className="text-xs font-bold tracking-wide text-text-muted uppercase">PASS:</span>
+          <span className="text-xl font-black tabular-nums leading-none text-success">
+            {passedCount}
+          </span>
         </button>
         
-        <div className="flex items-center gap-1.5 px-3">
-          <span className="text-[10px] font-semibold text-text-muted uppercase tracking-wide">Total</span>
-          <span className="text-lg font-bold tabular-nums text-text-primary leading-none">{totalCases}</span>
+        <div className="flex items-center gap-2 px-4 border-r border-border-default">
+          <span className="text-xs font-bold tracking-wide text-text-muted uppercase">TOTAL:</span>
+          <span className="text-xl font-black tabular-nums leading-none text-text-primary">
+            {totalCases}
+          </span>
         </div>
         
-        <div className="flex items-center gap-1.5 px-3">
-          <span className="text-[10px] font-semibold text-text-muted uppercase tracking-wide">Rate</span>
+        <div className="flex items-center gap-2 px-4 border-r border-border-default">
+          <span className="text-xs font-bold tracking-wide text-text-muted uppercase">RATE:</span>
           <span className={cn(
-            'text-lg font-black tabular-nums leading-none',
-            passRate >= 80 ? 'text-success' : passRate >= 60 ? 'text-warning' : 'text-danger'
+            "text-xl font-black tabular-nums leading-none",
+            passRate >= 80 ? "text-success" : passRate >= 60 ? "text-warning" : "text-danger"
           )}>
             {passRate}%
           </span>
@@ -185,32 +191,32 @@ function ControlRail({
       </div>
       
       {/* Actions */}
-      <div className="flex items-center gap-1 px-2 border-l border-border-default">
+      <div className="flex items-center gap-1 px-3">
         {status !== 'READY' && (
           <Button
             size="sm"
             onClick={onResolve}
-            className="h-7 px-3 text-xs font-bold bg-brand-primary hover:bg-brand-primary-hover text-white"
+            className="h-8 px-4 text-xs font-black uppercase tracking-wide bg-danger hover:bg-danger/90 text-white"
           >
-            Resolve Blocking Failures
+            Resolve Failures
           </Button>
         )}
         
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="sm" className="h-7 w-7 p-0">
-              <MoreHorizontal className="h-4 w-4" />
+            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+              <MoreHorizontal className="h-5 w-5" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="bg-surface-elevated border-border-default">
-            <DropdownMenuItem onClick={onRefresh} className="text-xs font-medium">
-              <RefreshCw className="h-3.5 w-3.5 mr-2" />
+          <DropdownMenuContent align="end" className="bg-surface-elevated border-border-strong">
+            <DropdownMenuItem onClick={onRefresh} className="text-xs font-bold">
+              <RefreshCw className="h-4 w-4 mr-2" />
               Refresh
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => onNavigate('reports')} className="text-xs font-medium">
-              Report
+            <DropdownMenuItem onClick={() => onNavigate('reports')} className="text-xs font-bold">
+              Export Report
             </DropdownMenuItem>
-            <DropdownMenuItem className="text-xs font-medium text-text-muted">
+            <DropdownMenuItem className="text-xs font-bold text-danger">
               Escalate
             </DropdownMenuItem>
           </DropdownMenuContent>
@@ -221,7 +227,7 @@ function ControlRail({
 }
 
 // ═══════════════════════════════════════════════════════════════════
-// 2. EXECUTION TABLE - Dense grid, no cards
+// EXECUTION TABLE - Dense grid, ≤40px rows, no cards, no whitespace
 // ═══════════════════════════════════════════════════════════════════
 
 function ExecutionTable({ 
@@ -237,41 +243,50 @@ function ExecutionTable({
 }) {
   if (isLoading) {
     return (
-      <div className="p-2 space-y-0.5">
-        {[1, 2, 3, 4, 5, 6].map(i => <Skeleton key={i} className="h-8" />)}
+      <div className="divide-y divide-border-default">
+        {[1,2,3,4,5,6,7,8,9,10].map(i => (
+          <div key={i} className="h-10 px-3 flex items-center">
+            <Skeleton className="h-5 w-full" />
+          </div>
+        ))}
       </div>
     );
   }
 
   if (cycles.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-12 text-center">
-        <Activity className="h-5 w-5 text-text-muted mb-2" strokeWidth={1.5} />
-        <p className="text-xs font-semibold text-text-muted">No active executions</p>
+      <div className="h-full flex items-center justify-center bg-surface-2">
+        <div className="text-center py-8">
+          <span className="text-sm font-black text-text-muted uppercase tracking-widest">
+            NO ACTIVE EXECUTIONS
+          </span>
+          <p className="text-xs text-text-muted mt-1">Create a test cycle to begin</p>
+        </div>
       </div>
     );
   }
 
   return (
     <div className="text-xs">
-      {/* Table header - dark, dense */}
-      <div className="grid grid-cols-[1fr_90px_80px_50px_50px] gap-1 px-3 py-1.5 bg-surface-3 border-b border-border-default text-[10px] font-black tracking-widest text-text-muted uppercase sticky top-0">
-        <span>Cycle</span>
-        <span>Owner</span>
-        <span className="text-right">F / B / P</span>
-        <span className="text-right">Prog</span>
-        <span></span>
+      {/* Table header - HEAVY, dark */}
+      <div className="grid grid-cols-[1fr_100px_100px_70px_60px] gap-0 bg-surface-3 border-b-2 border-border-strong sticky top-0 z-10">
+        <div className="px-3 py-2 text-[11px] font-black tracking-widest text-text-primary uppercase">CYCLE</div>
+        <div className="px-3 py-2 text-[11px] font-black tracking-widest text-text-primary uppercase">OWNER</div>
+        <div className="px-3 py-2 text-[11px] font-black tracking-widest text-text-primary uppercase text-right">FAIL / BLOCK / PASS</div>
+        <div className="px-3 py-2 text-[11px] font-black tracking-widest text-text-primary uppercase text-right">PROG</div>
+        <div className="px-3 py-2 text-[11px] font-black tracking-widest text-text-primary uppercase text-right">ACTION</div>
       </div>
       
-      {/* Rows - tight, no card styling */}
-      <div className="divide-y divide-border-subtle">
+      {/* Rows - TIGHT, no card styling, strong borders */}
+      <div className="divide-y divide-border-default">
         {cycles.map((cycle: any) => {
           const execs = cycle.test_cycle_executions || [];
           const total = execs.length;
           const passed = execs.filter((e: any) => e.status === 'passed').length;
           const failed = execs.filter((e: any) => e.status === 'failed').length;
           const blocked = execs.filter((e: any) => e.status === 'blocked').length;
-          const progress = total > 0 ? Math.round(((passed + failed + blocked) / total) * 100) : 0;
+          const executed = passed + failed + blocked;
+          const progress = total > 0 ? Math.round((executed / total) * 100) : 0;
           
           const isFailing = failed > 0;
           const isBlocked = blocked > 0 && !isFailing;
@@ -281,70 +296,80 @@ function ExecutionTable({
             <div
               key={cycle.id}
               className={cn(
-                'grid grid-cols-[1fr_90px_80px_50px_50px] gap-1 px-3 py-1.5 items-center hover:bg-surface-2 transition-colors',
-                isFailing && 'bg-danger/[0.03] border-l-4 border-l-danger',
-                isBlocked && !isFailing && 'border-l-4 border-l-warning',
+                'grid grid-cols-[1fr_100px_100px_70px_60px] gap-0 items-center h-10 hover:bg-surface-2 transition-colors',
+                isFailing && 'bg-danger/[0.04] border-l-4 border-l-danger',
+                isBlocked && !isFailing && 'bg-warning/[0.03] border-l-4 border-l-warning',
                 !isFailing && !isBlocked && 'border-l-4 border-l-transparent',
               )}
             >
-              {/* Cycle name + icon */}
+              {/* Cycle name */}
               <button
                 onClick={() => onNavigate(`cycles/${cycle.id}/execution`)}
-                className="flex items-center gap-1.5 text-left truncate group"
+                className="flex items-center gap-2 px-3 text-left truncate group h-full"
               >
                 {isFailing ? (
-                  <XCircle className="h-3.5 w-3.5 text-danger flex-shrink-0" strokeWidth={2.5} />
+                  <XCircle className="h-4 w-4 text-danger flex-shrink-0" strokeWidth={2.5} />
                 ) : isBlocked ? (
-                  <AlertTriangle className="h-3.5 w-3.5 text-warning flex-shrink-0" strokeWidth={2.5} />
+                  <AlertTriangle className="h-4 w-4 text-warning flex-shrink-0" strokeWidth={2.5} />
                 ) : (
-                  <CheckCircle2 className="h-3.5 w-3.5 text-success flex-shrink-0" strokeWidth={2.5} />
+                  <CheckCircle2 className="h-4 w-4 text-success flex-shrink-0" strokeWidth={2.5} />
                 )}
-                <span className="font-bold text-text-primary truncate group-hover:underline">
+                <span className="font-black text-text-primary truncate group-hover:underline">
                   {cycle.name}
                 </span>
               </button>
               
-              {/* Owner - danger if none */}
+              {/* Owner - SEVERE if unassigned */}
               <div className={cn(
-                'truncate font-medium',
-                hasOwner ? 'text-text-secondary' : 'text-danger'
+                'px-3 truncate font-bold',
+                hasOwner ? 'text-text-secondary' : 'text-danger font-black'
               )}>
-                {hasOwner ? cycle.owner_name : 'Unassigned'}
+                {hasOwner ? cycle.owner_name : '⚠ UNASSIGNED'}
               </div>
               
-              {/* Status counts - tabular */}
-              <div className="flex items-center justify-end gap-1 font-bold tabular-nums">
-                <span className={cn(failed > 0 ? 'text-danger' : 'text-text-muted')}>{failed}</span>
-                <span className="text-text-muted">/</span>
-                <span className={cn(blocked > 0 ? 'text-warning' : 'text-text-muted')}>{blocked}</span>
-                <span className="text-text-muted">/</span>
-                <span className={cn(passed > 0 ? 'text-success' : 'text-text-muted')}>{passed}</span>
+              {/* Status counts - tabular, numbers dominant */}
+              <div className="px-3 flex items-center justify-end gap-1 font-black tabular-nums">
+                <span className={cn(
+                  "text-sm",
+                  failed > 0 ? 'text-danger' : 'text-text-muted'
+                )}>{failed}</span>
+                <span className="text-text-muted text-xs">/</span>
+                <span className={cn(
+                  "text-sm",
+                  blocked > 0 ? 'text-warning' : 'text-text-muted'
+                )}>{blocked}</span>
+                <span className="text-text-muted text-xs">/</span>
+                <span className={cn(
+                  "text-sm",
+                  passed > 0 ? 'text-success' : 'text-text-muted'
+                )}>{passed}</span>
               </div>
               
               {/* Progress */}
-              <div className="text-right">
-                <div className="flex items-center gap-1 justify-end">
-                  <span className="font-bold tabular-nums text-text-primary">{progress}%</span>
-                </div>
-                <div className="w-full h-1 bg-surface-3 rounded-sm mt-0.5 overflow-hidden">
-                  <div 
-                    className={cn(
-                      'h-full',
-                      isFailing ? 'bg-danger' : isBlocked ? 'bg-warning' : 'bg-success'
-                    )}
-                    style={{ width: `${progress}%` }}
-                  />
-                </div>
+              <div className="px-3 text-right">
+                <span className={cn(
+                  "text-sm font-black tabular-nums",
+                  progress === 100 ? "text-success" : "text-text-primary"
+                )}>
+                  {progress}%
+                </span>
               </div>
               
-              {/* Jump CTA */}
-              <div className="text-right">
-                {isFailing && (
+              {/* Action */}
+              <div className="px-3 text-right">
+                {isFailing ? (
                   <button
                     onClick={() => onJumpToFailing(cycle.id)}
-                    className="text-[10px] font-bold text-brand-primary hover:underline whitespace-nowrap"
+                    className="text-[11px] font-black text-danger hover:underline uppercase tracking-wide"
                   >
-                    Jump →
+                    FIX →
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => onNavigate(`cycles/${cycle.id}/execution`)}
+                    className="text-[11px] font-bold text-brand-primary hover:underline uppercase tracking-wide"
+                  >
+                    VIEW
                   </button>
                 )}
               </div>
@@ -357,7 +382,7 @@ function ExecutionTable({
 }
 
 // ═══════════════════════════════════════════════════════════════════
-// 3. ACCOUNTABILITY LOG - Audit-grade, dense, no color emphasis
+// ACCOUNTABILITY LOG - Forensic audit trail, monospace, no decoration
 // ═══════════════════════════════════════════════════════════════════
 
 function AccountabilityLog({ 
@@ -371,33 +396,47 @@ function AccountabilityLog({
 }) {
   if (isLoading) {
     return (
-      <div className="p-2 space-y-0.5">
-        {[1, 2, 3, 4, 5, 6].map(i => <Skeleton key={i} className="h-7" />)}
+      <div className="divide-y divide-border-strong">
+        {[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15].map(i => (
+          <div key={i} className="h-8 px-3 flex items-center">
+            <Skeleton className="h-4 w-full" />
+          </div>
+        ))}
       </div>
     );
   }
 
   if (!activities || activities.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-12 text-center">
-        <Clock className="h-5 w-5 text-text-muted mb-2" strokeWidth={1.5} />
-        <p className="text-xs font-semibold text-text-muted">No activity recorded</p>
+      <div className="h-full flex items-center justify-center bg-surface-2">
+        <span className="text-sm font-black text-text-muted uppercase tracking-widest">
+          NO ACTIVITY
+        </span>
       </div>
     );
   }
 
   const getAction = (type: string) => {
     switch (type) {
-      case 'execution_failed': return 'failed';
-      case 'execution_completed': return 'completed';
-      case 'status_changed': return 'changed';
-      case 'case_updated': return 'updated';
-      default: return 'modified';
+      case 'execution_failed': return 'FAILED';
+      case 'execution_completed': return 'COMPLETED';
+      case 'status_changed': return 'CHANGED';
+      case 'case_updated': return 'UPDATED';
+      case 'case_created': return 'CREATED';
+      default: return 'MODIFIED';
     }
   };
 
   return (
-    <div className="divide-y divide-border-subtle text-xs">
+    <div className="divide-y divide-border-strong text-xs">
+      {/* Header */}
+      <div className="grid grid-cols-[70px_60px_1fr_50px] gap-0 bg-surface-3 border-b-2 border-border-strong sticky top-0 z-10">
+        <div className="px-2 py-1.5 text-[10px] font-black tracking-widest text-text-primary uppercase">ACTOR</div>
+        <div className="px-2 py-1.5 text-[10px] font-black tracking-widest text-text-primary uppercase">ACTION</div>
+        <div className="px-2 py-1.5 text-[10px] font-black tracking-widest text-text-primary uppercase">ENTITY</div>
+        <div className="px-2 py-1.5 text-[10px] font-black tracking-widest text-text-primary uppercase text-right">TIME</div>
+      </div>
+      
       {activities.map((activity: any) => (
         <button
           key={activity.id}
@@ -408,36 +447,37 @@ function AccountabilityLog({
               onNavigate(`cycles?cycleId=${activity.entity_id}`);
             }
           }}
-          className="w-full flex items-center gap-2 px-3 py-1.5 text-left hover:bg-surface-2 transition-colors group"
+          className="w-full grid grid-cols-[70px_60px_1fr_50px] gap-0 items-center h-8 text-left hover:bg-surface-2 transition-colors group"
         >
-          {/* Actor - BOLD */}
-          <span className="font-black text-text-primary truncate max-w-[70px] flex-shrink-0">
-            {activity.user_name}
+          {/* Actor - BOLD, truncate */}
+          <span className="px-2 font-black text-text-primary truncate">
+            {activity.user_name?.split(' ')[0] || 'System'}
           </span>
           
           {/* Action */}
-          <span className="text-text-muted font-medium flex-shrink-0">
+          <span className={cn(
+            "px-2 font-bold uppercase tracking-wide text-[10px]",
+            activity.activity_type === 'execution_failed' ? 'text-danger' : 'text-text-muted'
+          )}>
             {getAction(activity.activity_type)}
           </span>
           
           {/* Entity */}
-          <span className="font-semibold text-text-secondary truncate flex-1 min-w-0">
+          <span className="px-2 font-semibold text-text-secondary truncate group-hover:underline">
             {activity.entity_title}
           </span>
           
-          {/* Time */}
+          {/* Time - MONOSPACE */}
           <Tooltip>
             <TooltipTrigger asChild>
-              <span className="text-[10px] text-text-muted tabular-nums flex-shrink-0 font-medium">
-                {formatDistanceToNow(new Date(activity.created_at), { addSuffix: false })}
+              <span className="px-2 text-[10px] text-text-muted tabular-nums font-mono text-right">
+                {formatDistanceToNow(new Date(activity.created_at), { addSuffix: false }).replace(' minutes', 'm').replace(' hours', 'h').replace(' days', 'd').replace('about ', '').replace('less than a minute', '<1m')}
               </span>
             </TooltipTrigger>
-            <TooltipContent side="left" className="text-xs">
-              {format(new Date(activity.created_at), 'PPpp')}
+            <TooltipContent side="left" className="text-xs font-mono">
+              {format(new Date(activity.created_at), 'yyyy-MM-dd HH:mm:ss')}
             </TooltipContent>
           </Tooltip>
-          
-          <ExternalLink className="h-3 w-3 text-text-muted opacity-0 group-hover:opacity-100 flex-shrink-0" />
         </button>
       ))}
     </div>
@@ -445,7 +485,7 @@ function AccountabilityLog({
 }
 
 // ═══════════════════════════════════════════════════════════════════
-// MAIN PAGE COMPONENT
+// MAIN PAGE - Zero whitespace, packed, scrolling required
 // ═══════════════════════════════════════════════════════════════════
 
 export function GlobalTestsOverviewPage() {
@@ -483,7 +523,7 @@ export function GlobalTestsOverviewPage() {
   // Fetch data
   const { metrics, isLoading: metricsLoading, refetch } = useGlobalTestMetrics(scopeType, scopeId);
   const { data: cycles, isLoading: cyclesLoading } = useGlobalTestCycles(scopeType, scopeId);
-  const { data: activities, isLoading: activitiesLoading } = useRecentTestActivity(scopeType, scopeId, 25);
+  const { data: activities, isLoading: activitiesLoading } = useRecentTestActivity(scopeType, scopeId, 30);
   const { data: coverage, isLoading: coverageLoading } = useStoryCoverage(scopeType, scopeId);
 
   const isLoading = metricsLoading || coverageLoading;
@@ -501,7 +541,7 @@ export function GlobalTestsOverviewPage() {
 
   const releaseStatus = determineReleaseStatus();
 
-  // Sort cycles by failure severity
+  // Sort cycles by failure severity - show more
   const sortedCycles = (cycles || [])
     .filter((c: any) => ['active', 'in_progress'].includes(c.status))
     .map((cycle: any) => {
@@ -514,7 +554,7 @@ export function GlobalTestsOverviewPage() {
       if (a._failed !== b._failed) return b._failed - a._failed;
       return b._blocked - a._blocked;
     })
-    .slice(0, 15);
+    .slice(0, 25); // More rows
 
   // Run button guardrails
   const canRun = isProjectScope && (metrics?.totalCases || 0) > 0;
@@ -526,8 +566,8 @@ export function GlobalTestsOverviewPage() {
 
   return (
     <div className="flex flex-col h-full -m-6 bg-surface-1">
-      {/* 1. CONTROL RAIL */}
-      <ControlRail 
+      {/* 1. COMMAND RAIL - Dominant status bar */}
+      <CommandRail 
         status={releaseStatus}
         failedCount={metrics?.failed || 0}
         blockedCount={metrics?.blocked || 0}
@@ -541,14 +581,16 @@ export function GlobalTestsOverviewPage() {
         onNavigate={handleNavigate}
       />
 
-      {/* Context bar - minimal */}
-      <div className="flex items-center justify-between px-4 py-1 bg-surface-0 border-b border-border-subtle">
-        <div className="flex items-center gap-2 text-xs">
-          <span className="font-bold text-text-primary uppercase tracking-wide">
-            {scopeType === 'project' ? 'Project Scope' : 'All Scopes'}
+      {/* Context bar - Compact, operational */}
+      <div className="flex items-center justify-between px-4 h-8 bg-surface-3 border-b-2 border-border-strong">
+        <div className="flex items-center gap-3 text-xs">
+          <span className="font-black text-text-primary uppercase tracking-widest">
+            {scopeType === 'project' ? 'PROJECT SCOPE' : 'PROGRAM SCOPE'}
           </span>
-          <span className="text-text-muted">·</span>
-          <span className="text-text-secondary tabular-nums font-semibold">{metrics?.activeCycles ?? 0} active cycles</span>
+          <span className="text-border-strong">|</span>
+          <span className="text-text-secondary font-bold tabular-nums">{metrics?.activeCycles ?? 0} ACTIVE CYCLES</span>
+          <span className="text-border-strong">|</span>
+          <span className="text-text-secondary font-bold tabular-nums">{sortedCycles.length} DISPLAYED</span>
         </div>
         <Tooltip>
           <TooltipTrigger asChild>
@@ -557,36 +599,33 @@ export function GlobalTestsOverviewPage() {
                 size="sm"
                 onClick={() => setRunTestsOpen(true)}
                 disabled={!canRun}
-                className="h-6 px-2.5 text-xs font-bold bg-brand-primary hover:bg-brand-primary-hover text-white disabled:opacity-50 gap-1"
+                className="h-6 px-3 text-[11px] font-black uppercase tracking-wide bg-brand-primary hover:bg-brand-primary-hover text-white disabled:opacity-50 gap-1"
               >
-                <Play className="h-3 w-3" />
-                Run
+                <Play className="h-3 w-3" strokeWidth={3} />
+                RUN TESTS
               </Button>
             </span>
           </TooltipTrigger>
           {runDisabledReason && (
-            <TooltipContent className="text-xs">{runDisabledReason}</TooltipContent>
+            <TooltipContent className="text-xs font-bold">{runDisabledReason}</TooltipContent>
           )}
         </Tooltip>
       </div>
 
-      {/* 2. SPLIT VIEW - 70/30 fixed grid */}
-      <div className="flex-1 grid grid-cols-[1fr_280px] divide-x divide-border-default overflow-hidden">
+      {/* 2. SPLIT VIEW - 65/35 fixed grid, no gaps */}
+      <div className="flex-1 grid grid-cols-[1fr_320px] divide-x-2 divide-border-strong overflow-hidden">
         
-        {/* LEFT: ACTIVE EXECUTIONS (70%) */}
+        {/* LEFT: ACTIVE EXECUTIONS */}
         <div className="flex flex-col min-h-0 overflow-hidden bg-surface-0">
-          <div className="flex items-center justify-between px-3 py-1.5 border-b border-border-default bg-surface-2">
-            <div className="flex items-center gap-2">
-              <Activity className="h-3.5 w-3.5 text-text-muted" strokeWidth={2.5} />
-              <h2 className="text-[10px] font-black tracking-widest text-text-primary uppercase">
-                Active Executions
-              </h2>
-            </div>
+          <div className="flex items-center justify-between px-3 h-9 border-b-2 border-border-strong bg-surface-3">
+            <h2 className="text-[11px] font-black tracking-widest text-text-primary uppercase">
+              ACTIVE EXECUTIONS
+            </h2>
             <Link
               to={buildUrl('cycles')}
-              className="text-[10px] font-bold text-brand-primary hover:underline flex items-center"
+              className="text-[11px] font-black text-brand-primary hover:underline flex items-center uppercase tracking-wide"
             >
-              All cycles <ChevronRight className="h-3 w-3" />
+              ALL CYCLES <ChevronRight className="h-4 w-4" />
             </Link>
           </div>
           <div className="flex-1 overflow-y-auto">
@@ -599,12 +638,11 @@ export function GlobalTestsOverviewPage() {
           </div>
         </div>
 
-        {/* RIGHT: ACCOUNTABILITY (30%) */}
+        {/* RIGHT: ACCOUNTABILITY LOG */}
         <div className="flex flex-col min-h-0 overflow-hidden bg-surface-0">
-          <div className="flex items-center px-3 py-1.5 border-b border-border-default bg-surface-2">
-            <Clock className="h-3.5 w-3.5 text-text-muted mr-2" strokeWidth={2.5} />
-            <h2 className="text-[10px] font-black tracking-widest text-text-primary uppercase">
-              Accountability
+          <div className="flex items-center px-3 h-9 border-b-2 border-border-strong bg-surface-3">
+            <h2 className="text-[11px] font-black tracking-widest text-text-primary uppercase">
+              ACCOUNTABILITY LOG
             </h2>
           </div>
           <div className="flex-1 overflow-y-auto">
