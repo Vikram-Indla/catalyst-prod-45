@@ -1,16 +1,18 @@
 /**
  * GLOBAL TESTS CASES PAGE
- * Enterprise-grade test case management
+ * Enterprise-grade test case management with folder tree
  */
 
 import React, { useState, useMemo, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { AlertCircle } from 'lucide-react';
+import { AlertCircle, PanelLeftClose, PanelLeft } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/lib/auth';
 import { toast } from 'sonner';
+import { cn } from '@/lib/utils';
 import { TestsPageHeader, useTestsScope } from '../components/TestsPageHeader';
 import { TestCasesGrid, TestCaseRow } from '../components/TestCasesGrid';
 import { TestCaseDetailDrawer } from '../components/TestCaseDetailDrawer';
@@ -18,6 +20,7 @@ import { CreateTestCaseModal } from '../components/CreateTestCaseModal';
 import { AddToSetModal } from '../components/AddToSetModal';
 import { AddToCycleModal } from '../components/AddToCycleModal';
 import { MoveToFolderModal } from '../components/MoveToFolderModal';
+import { TestFolderTree } from '../components/TestFolderTree';
 import {
   runMutationWithAudit,
   createPipelineContext,
@@ -34,10 +37,11 @@ function useTestCasesQuery(
   filters: Record<string, string | null>,
   search: string,
   page: number,
-  pageSize: number
+  pageSize: number,
+  folderId: string | null
 ) {
   return useQuery({
-    queryKey: ['test-cases', scopeId, filters, search, page, pageSize],
+    queryKey: ['test-cases', scopeId, filters, search, page, pageSize, folderId],
     queryFn: async () => {
       if (!scopeId) return { data: [], total: 0 };
 
@@ -53,6 +57,11 @@ function useTestCasesQuery(
         query = query.eq('project_id', scopeId);
       } else {
         query = query.eq('program_id', scopeId);
+      }
+
+      // Folder filter
+      if (folderId) {
+        query = query.eq('folder_id', folderId);
       }
 
       // Search
@@ -107,6 +116,8 @@ export function GlobalTestsCasesPage() {
   });
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(50);
+  const [selectedFolderId, setSelectedFolderId] = useState<string | null>(null);
+  const [folderPanelOpen, setFolderPanelOpen] = useState(true);
 
   // Drawer state
   const [selectedCaseId, setSelectedCaseId] = useState<string | null>(null);
@@ -120,14 +131,15 @@ export function GlobalTestsCasesPage() {
   const [moveToFolderModalOpen, setMoveToFolderModalOpen] = useState(false);
   const [actionCaseIds, setActionCaseIds] = useState<string[]>([]);
 
-  // Data query
+  // Data query (includes folder filter)
   const { data, isLoading, error, refetch } = useTestCasesQuery(
     scopeType as 'program' | 'project',
     scopeId,
     filters,
     search,
     page,
-    pageSize
+    pageSize,
+    selectedFolderId
   );
 
   // Archive mutation
@@ -250,34 +262,80 @@ export function GlobalTestsCasesPage() {
   }
 
   return (
-    <div className="p-6 space-y-4">
-      <TestsPageHeader activePage="cases" onCreate={handleCreateNew} />
+    <div className="flex flex-col h-full">
+      <div className="px-6 pt-4 pb-2">
+        <TestsPageHeader activePage="cases" onCreate={handleCreateNew} />
+      </div>
 
-      <TestCasesGrid
-        cases={data?.data || []}
-        isLoading={isLoading}
-        totalCount={data?.total || 0}
-        page={page}
-        pageSize={pageSize}
-        onPageChange={setPage}
-        onPageSizeChange={setPageSize}
-        onRefresh={refetch}
-        onRowClick={handleRowClick}
-        onCreateNew={handleCreateNew}
-        onBulkArchive={handleBulkArchive}
-        onBulkAddToSet={handleBulkAddToSet}
-        onBulkAddToCycle={handleBulkAddToCycle}
-        onBulkMoveFolder={handleBulkMoveFolder}
-        onViewDetails={handleViewDetails}
-        onEdit={handleEdit}
-        onAddToSet={handleAddToSet}
-        onAddToCycle={handleAddToCycle}
-        onArchive={handleArchive}
-        filters={filters}
-        onFiltersChange={setFilters}
-        searchQuery={search}
-        onSearchChange={setSearch}
-      />
+      <div className="flex flex-1 min-h-0">
+        {/* Folder Tree Panel */}
+        <div
+          className={cn(
+            'border-r border-border-default bg-surface-1 transition-all duration-200 flex flex-col',
+            folderPanelOpen ? 'w-56' : 'w-0 overflow-hidden'
+          )}
+        >
+          {folderPanelOpen && (
+            <TestFolderTree
+              programId={scopeId}
+              entityType="test_case"
+              selectedFolderId={selectedFolderId}
+              onSelectFolder={setSelectedFolderId}
+              className="flex-1"
+            />
+          )}
+        </div>
+
+        {/* Main Content */}
+        <div className="flex-1 flex flex-col min-w-0 p-4">
+          {/* Folder toggle button */}
+          <div className="flex items-center gap-2 mb-3">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-7 w-7"
+              onClick={() => setFolderPanelOpen(!folderPanelOpen)}
+            >
+              {folderPanelOpen ? (
+                <PanelLeftClose className="h-4 w-4" />
+              ) : (
+                <PanelLeft className="h-4 w-4" />
+              )}
+            </Button>
+            {selectedFolderId && (
+              <span className="text-xs text-text-tertiary">
+                Filtered by folder
+              </span>
+            )}
+          </div>
+
+          <TestCasesGrid
+            cases={data?.data || []}
+            isLoading={isLoading}
+            totalCount={data?.total || 0}
+            page={page}
+            pageSize={pageSize}
+            onPageChange={setPage}
+            onPageSizeChange={setPageSize}
+            onRefresh={refetch}
+            onRowClick={handleRowClick}
+            onCreateNew={handleCreateNew}
+            onBulkArchive={handleBulkArchive}
+            onBulkAddToSet={handleBulkAddToSet}
+            onBulkAddToCycle={handleBulkAddToCycle}
+            onBulkMoveFolder={handleBulkMoveFolder}
+            onViewDetails={handleViewDetails}
+            onEdit={handleEdit}
+            onAddToSet={handleAddToSet}
+            onAddToCycle={handleAddToCycle}
+            onArchive={handleArchive}
+            filters={filters}
+            onFiltersChange={setFilters}
+            searchQuery={search}
+            onSearchChange={setSearch}
+          />
+        </div>
+      </div>
 
       {/* Detail Drawer */}
       <TestCaseDetailDrawer
@@ -296,6 +354,7 @@ export function GlobalTestsCasesPage() {
         scopeType={scopeType as 'program' | 'project'}
         scopeId={scopeId || ''}
         onSuccess={handleCaseCreated}
+        defaultFolderId={selectedFolderId}
       />
 
       {/* Add to Set Modal */}

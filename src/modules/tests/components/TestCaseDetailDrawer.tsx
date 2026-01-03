@@ -20,6 +20,7 @@ import {
   ExternalLink,
   Loader2,
   AlertCircle,
+  Library,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -52,6 +53,7 @@ import {
   createPipelineContext,
   PipelineError,
 } from '../lib/actionPipeline';
+import { SharedStepPickerModal } from './SharedStepPickerModal';
 
 // ═══════════════════════════════════════════════════════════════════
 // TYPES
@@ -184,6 +186,7 @@ export function TestCaseDetailDrawer({
   const queryClient = useQueryClient();
   const [isEditing, setIsEditing] = useState(editMode);
   const [activeTab, setActiveTab] = useState('overview');
+  const [libraryPickerOpen, setLibraryPickerOpen] = useState(false);
   
   // Form state
   const [formData, setFormData] = useState<Record<string, any>>({});
@@ -515,6 +518,12 @@ export function TestCaseDetailDrawer({
                                 <div className="flex-1 min-w-0">
                                   <div className="flex items-center gap-2 mb-1">
                                     <Badge variant="secondary" className="text-[10px] px-1.5">Step {step.step_order}</Badge>
+                                    {(step as any).is_shared && (
+                                      <Badge variant="outline" className="text-[10px] px-1.5 text-accent-primary border-accent-primary/30">
+                                        <Library className="h-2.5 w-2.5 mr-0.5" />
+                                        Library
+                                      </Badge>
+                                    )}
                                   </div>
                                   <p className="text-xs text-text-primary mb-1">{step.action}</p>
                                   {step.expected_result && (
@@ -556,15 +565,36 @@ export function TestCaseDetailDrawer({
                     onChange={(e) => setNewStep({ ...newStep, expected_result: e.target.value })}
                     className="h-8 text-xs bg-surface-2"
                   />
-                  <Button
-                    size="sm"
-                    className="h-7 text-xs w-full"
-                    disabled={!newStep.action.trim() || addStepMutation.isPending}
-                    onClick={() => addStepMutation.mutate()}
-                  >
-                    <Plus className="h-3 w-3 mr-1" /> Add Step
-                  </Button>
+                  <div className="flex gap-2">
+                    <Button
+                      size="sm"
+                      className="h-7 text-xs flex-1"
+                      disabled={!newStep.action.trim() || addStepMutation.isPending}
+                      onClick={() => addStepMutation.mutate()}
+                    >
+                      <Plus className="h-3 w-3 mr-1" /> Add Step
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="h-7 text-xs"
+                      onClick={() => setLibraryPickerOpen(true)}
+                    >
+                      <Library className="h-3 w-3 mr-1" /> From Library
+                    </Button>
+                  </div>
                 </div>
+
+                {/* Library Picker Modal */}
+                {testCaseId && (
+                  <SharedStepPickerModal
+                    open={libraryPickerOpen}
+                    onOpenChange={setLibraryPickerOpen}
+                    testCaseId={testCaseId}
+                    currentStepCount={steps.length}
+                    onSuccess={refetchSteps}
+                  />
+                )}
               </TabsContent>
 
               {/* Links Tab */}
