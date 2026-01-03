@@ -277,9 +277,6 @@ export function GlobalTestsCasesPage() {
 
   return (
     <div className="flex flex-col h-full">
-      <div className="px-6 pt-4 pb-2">
-        <TestsPageHeader activePage="cases" onCreate={handleCreateNew} />
-      </div>
 
       <div className="flex flex-1 min-h-0">
         {/* Folder Tree Panel */}
