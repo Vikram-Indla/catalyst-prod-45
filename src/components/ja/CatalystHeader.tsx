@@ -119,6 +119,7 @@ export function CatalystHeader() {
     { label: "Product", hasDropdown: true, moduleCode: "PRODUCT", visibleToProductOwner: true },
     { label: "Program", hasDropdown: true, moduleCode: "PORTFOLIO", visibleToProductOwner: false },
     { label: "Project", hasDropdown: true, moduleCode: "PROGRAM", visibleToProductOwner: false },
+    { label: "Tests", path: "/tests", moduleCode: null, visibleToProductOwner: false }, // Global Tests Module
     { label: "Release", hasDropdown: true, path: "/release", moduleCode: null, visibleToProductOwner: false }, // Always visible
     { label: "Planner", hasDropdown: true, path: "/planner", moduleCode: null, visibleToProductOwner: true }, // Always visible - now with dropdown
   ];
@@ -475,6 +476,34 @@ export function CatalystHeader() {
                         </PopoverContent>
                       )}
                     </Popover>
+                  ) : item.label === "Tests" ? (
+                    // Tests: Direct navigation with active state
+                    <button
+                      style={{
+                        ...navButtonStyle,
+                        color: location.pathname.startsWith('/tests') ? '#2563eb' : navButtonStyle.color,
+                        fontWeight: location.pathname.startsWith('/tests') ? 600 : navButtonStyle.fontWeight,
+                        background: location.pathname.startsWith('/tests') ? 'rgba(37, 99, 235, 0.08)' : 'transparent',
+                      }}
+                      onMouseEnter={(e) => { if (!location.pathname.startsWith('/tests')) e.currentTarget.style.background = 'var(--nav-hover-bg)'; }}
+                      onMouseLeave={(e) => { e.currentTarget.style.background = location.pathname.startsWith('/tests') ? 'rgba(37, 99, 235, 0.08)' : 'transparent'; }}
+                      onClick={() => navigate('/tests')}
+                    >
+                      {item.label}
+                      {location.pathname.startsWith('/tests') && (
+                        <span 
+                          style={{
+                            position: 'absolute',
+                            bottom: '-10px',
+                            left: '14px',
+                            right: '14px',
+                            height: '2px',
+                            background: 'var(--brand-active)',
+                            borderRadius: '1px',
+                          }}
+                        />
+                      )}
+                    </button>
                   ) : (
                     <button
                       style={navButtonStyle}
