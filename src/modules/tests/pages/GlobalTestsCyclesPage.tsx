@@ -331,7 +331,7 @@ export function GlobalTestsCyclesPage() {
           programId ? (
             <TestFolderTree
               programId={programId}
-              entityType="test_cycle"
+              entityType="test_cycles"
               selectedFolderId={selectedFolderId}
               onSelectFolder={setSelectedFolderId}
               className="flex-1"

@@ -278,7 +278,7 @@ export function GlobalTestsCasesPage() {
           {folderPanelOpen && (
             <TestFolderTree
               programId={scopeId}
-              entityType="test_case"
+              entityType="test_cases"
               selectedFolderId={selectedFolderId}
               onSelectFolder={setSelectedFolderId}
               className="flex-1"

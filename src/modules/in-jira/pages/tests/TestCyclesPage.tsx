@@ -443,7 +443,7 @@ export function TestCyclesPage() {
         <ResizablePanel defaultSize={20} minSize={15} maxSize={30}>
           <FolderTree
             programId={programId}
-            entityType="test_cycle"
+            entityType="test_cycles"
             selectedFolderId={selectedFolderId}
             onSelectFolder={setSelectedFolderId}
           />

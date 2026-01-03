@@ -341,7 +341,7 @@ export function TestsCasesPage() {
               <div className="h-full bg-surface-2 border-r border-border-default">
                 <TestFolderTree
                   programId={programId}
-                  entityType="test_case"
+                  entityType="test_cases"
                   selectedFolderId={selectedFolderId}
                   onSelectFolder={setSelectedFolderId}
                 />

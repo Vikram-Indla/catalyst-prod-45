@@ -189,7 +189,7 @@ export function TestFolderTree({
             )}
           >
             <Folder className="h-4 w-4 shrink-0" />
-            <span className="truncate">All {entityType === 'test_case' ? 'Cases' : entityType === 'test_set' ? 'Sets' : 'Cycles'}</span>
+            <span className="truncate">All {entityType === 'test_cases' ? 'Cases' : entityType === 'test_sets' ? 'Sets' : 'Cycles'}</span>
           </button>
 
           {/* Folder tree */}

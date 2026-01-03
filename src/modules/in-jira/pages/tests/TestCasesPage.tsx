@@ -756,7 +756,7 @@ export function TestCasesPage() {
           <div className="h-full border-r border-border-default bg-surface-2">
             <FolderTree
               programId={programId}
-              entityType="test_case"
+              entityType="test_cases"
               selectedFolderId={selectedFolderId}
               onSelectFolder={setSelectedFolderId}
               className="h-full"
