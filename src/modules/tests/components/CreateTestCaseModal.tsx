@@ -41,6 +41,7 @@ interface CreateTestCaseModalProps {
   scopeType: 'program' | 'project';
   scopeId: string;
   onSuccess?: (id: string) => void;
+  defaultFolderId?: string | null;
 }
 
 const INITIAL_FORM = {
@@ -62,11 +63,19 @@ export function CreateTestCaseModal({
   scopeType,
   scopeId,
   onSuccess,
+  defaultFolderId,
 }: CreateTestCaseModalProps) {
   const { user } = useAuth();
   const queryClient = useQueryClient();
-  const [formData, setFormData] = useState(INITIAL_FORM);
+  const [formData, setFormData] = useState({ ...INITIAL_FORM, folder_id: defaultFolderId || '' });
   const [labelInput, setLabelInput] = useState('');
+
+  // Reset form when modal opens with default folder
+  React.useEffect(() => {
+    if (open) {
+      setFormData({ ...INITIAL_FORM, folder_id: defaultFolderId || '' });
+    }
+  }, [open, defaultFolderId]);
 
   // Fetch folders for dropdown
   const { data: folders = [] } = useQuery({
