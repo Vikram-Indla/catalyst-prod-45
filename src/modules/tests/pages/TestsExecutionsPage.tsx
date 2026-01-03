@@ -413,7 +413,8 @@ export function TestsExecutionsPage() {
       <RunTestsModal
         open={runTestsOpen}
         onOpenChange={setRunTestsOpen}
-        projectId={projectId || ''}
+        scopeType="project"
+        scopeId={projectId}
       />
     </div>
   );

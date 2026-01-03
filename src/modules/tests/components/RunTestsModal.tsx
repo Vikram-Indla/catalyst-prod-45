@@ -1,10 +1,11 @@
 /**
  * RUN TESTS MODAL
  * Select a cycle and launch test execution queue
+ * Supports global, program, and project scope
  */
 
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
   Dialog,
   DialogContent,
@@ -20,23 +21,33 @@ import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Play, Clock, CheckCircle2, AlertTriangle, Plus, RefreshCcw } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useProjectTestCycles } from '@/hooks/useProjectTestMetrics';
+import { useGlobalTestCycles } from '../hooks/useGlobalTestMetrics';
+import { ScopeType } from '../hooks/useGlobalTestScope';
 
 interface RunTestsModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  projectId: string;
+  projectId?: string;
+  scopeType?: ScopeType;
+  scopeId?: string | null;
 }
 
 export function RunTestsModal({
   open,
   onOpenChange,
   projectId,
+  scopeType: propScopeType,
+  scopeId: propScopeId,
 }: RunTestsModalProps) {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [selectedCycleId, setSelectedCycleId] = useState<string>('');
   
-  const { cycles, isLoading } = useProjectTestCycles(projectId);
+  // Use props or fallback to URL params
+  const scopeType = propScopeType || (searchParams.get('scopeType') as ScopeType) || 'global';
+  const scopeId = propScopeId !== undefined ? propScopeId : (projectId || searchParams.get('scopeId'));
+  
+  const { data: cycles, isLoading } = useGlobalTestCycles(scopeType, scopeId);
 
   // Reset selection when modal opens
   useEffect(() => {
@@ -45,8 +56,8 @@ export function RunTestsModal({
     }
   }, [open]);
 
-  const activeCycles = cycles.filter((c: any) => 
-    c.status === 'active' || c.status === 'in_progress' || c.status === 'not_started'
+  const activeCycles = (cycles || []).filter((c: any) => 
+    c.status === 'active' || c.status === 'in_progress' || c.status === 'not_started' || c.status === 'planned'
   );
 
   const getExecutionStats = (cycle: any) => {
@@ -61,10 +72,22 @@ export function RunTestsModal({
 
   const handleLaunch = () => {
     if (selectedCycleId) {
-      // Navigate to executions page with cycle filter
       onOpenChange(false);
-      navigate(`/projects/${projectId}/tests/executions?cycle=${selectedCycleId}`);
+      // Navigate to global executions with cycle filter
+      const params = new URLSearchParams();
+      params.set('scopeType', scopeType);
+      if (scopeId) params.set('scopeId', scopeId);
+      params.set('cycleId', selectedCycleId);
+      navigate(`/tests/executions?${params.toString()}`);
     }
+  };
+
+  const handleCreateCycle = () => {
+    onOpenChange(false);
+    const params = new URLSearchParams();
+    params.set('scopeType', scopeType);
+    if (scopeId) params.set('scopeId', scopeId);
+    navigate(`/tests/cycles?${params.toString()}`);
   };
 
   const getStatusColor = (status: string) => {
@@ -72,6 +95,7 @@ export function RunTestsModal({
       case 'active': return 'text-status-success bg-status-success/10';
       case 'in_progress': return 'text-accent-primary bg-accent-subtle';
       case 'not_started': return 'text-text-tertiary bg-surface-3';
+      case 'planned': return 'text-info bg-info/10';
       default: return 'text-text-tertiary bg-surface-3';
     }
   };
@@ -105,10 +129,7 @@ export function RunTestsModal({
               </p>
               <Button 
                 variant="outline"
-                onClick={() => {
-                  onOpenChange(false);
-                  navigate(`/projects/${projectId}/tests/cycles`);
-                }}
+                onClick={handleCreateCycle}
               >
                 <Plus className="h-4 w-4 mr-1.5" />
                 Create Cycle
@@ -118,7 +139,7 @@ export function RunTestsModal({
             <RadioGroup 
               value={selectedCycleId} 
               onValueChange={setSelectedCycleId}
-              className="space-y-3"
+              className="space-y-3 max-h-80 overflow-y-auto"
             >
               {activeCycles.map((cycle: any) => {
                 const stats = getExecutionStats(cycle);

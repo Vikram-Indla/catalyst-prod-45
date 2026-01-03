@@ -96,11 +96,9 @@ export function GlobalTestsExecutionsPage() {
       let query = supabase
         .from('test_cycle_executions')
         .select(`
-          id, status, executed_at, assigned_to, comments, effort_minutes,
-          test_case:test_cases(id, title, priority, test_type),
-          test_cycle:test_cycles(id, key, name, program_id, project_id),
-          assigned_user:profiles!test_cycle_executions_assigned_to_fkey(id, full_name),
-          executed_by_user:profiles!test_cycle_executions_executed_by_fkey(id, full_name)
+          id, status, executed_at, assigned_to, executed_by, comments, effort_minutes, cycle_id, case_id,
+          test_case:case_id(id, title, priority, test_type),
+          test_cycle:cycle_id(id, key, name, program_id, project_id)
         `)
         .order('created_at', { ascending: false })
         .limit(500);
