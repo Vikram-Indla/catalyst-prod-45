@@ -86,6 +86,9 @@ export function GlobalTestsCyclesPage() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
 
+  // SCOPE ENFORCEMENT: Test Cycles are ONLY manageable at project level
+  const isProjectScope = scopeType === 'project';
+
   // UI State
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
@@ -101,7 +104,13 @@ export function GlobalTestsCyclesPage() {
   // Extract programId for folder tree
   const programId = scopeType === 'program' ? scopeId : searchParams.get('programId');
 
-  // Data
+  // SCOPE ENFORCEMENT: Block non-project scope
+  if (!isProjectScope) {
+    const { ProjectScopeRequired } = require('../components/ProjectScopeRequired');
+    return <ProjectScopeRequired featureName="Test Cycles" />;
+  }
+
+  // Data - only fetch if project scope
   const { data: cycles, isLoading, error, refetch } = useGlobalTestCycles(scopeType, scopeId);
 
   // Process cycles with execution stats

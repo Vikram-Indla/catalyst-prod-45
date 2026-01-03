@@ -2,6 +2,12 @@
  * GLOBAL TESTS OVERVIEW - EXECUTIVE MISSION CONTROL
  * Cold, confident, authoritative release authority surface
  * 
+ * SCOPE ENFORCEMENT:
+ * - Test Management is ONLY available at Project scope
+ * - Program/Enterprise scopes show READ-ONLY aggregated dashboards
+ * - Operational actions (New Case, New Cycle, Execute) are HIDDEN at non-project scope
+ * - Must drill-down to Project for any operational action
+ * 
  * Design: Bloomberg/Stripe/Notion executive grade
  * Typography: Catalyst semantic system strictly enforced
  * Color: Danger/warning on metrics only, never backgrounds
@@ -23,6 +29,9 @@ import {
   Info,
   ArrowRight,
   Activity,
+  Lock,
+  Building2,
+  FolderKanban,
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -48,6 +57,7 @@ import { useStoryCoverage } from '../hooks/useStoryCoverage';
 import { RunTestsModal } from '../components/RunTestsModal';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { useTestScopeEnforcement, assertProjectScope } from '../hooks/useTestScopeEnforcement';
 
 // ═══════════════════════════════════════════════════════════════════
 // TYPES
@@ -616,7 +626,17 @@ export function GlobalTestsOverviewPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [runTestsOpen, setRunTestsOpen] = useState(false);
 
-  const projectId = searchParams.get('scopeId');
+  // SCOPE ENFORCEMENT - Test management only at project level
+  const {
+    scopeType,
+    scopeId,
+    isProjectScope,
+    isReadOnlyScope,
+    canExecuteTests,
+    drillDownMessage,
+  } = useTestScopeEnforcement();
+
+  const projectId = isProjectScope ? scopeId : null;
 
   // Fetch projects
   const { data: projects = [], isLoading: projectsLoading } = useQuery<Array<{ id: string; name: string; key?: string }>>({
@@ -758,6 +778,114 @@ export function GlobalTestsOverviewPage() {
     }
   };
 
+  // Handle opening Run Tests modal with scope assertion
+  const handleRunTests = () => {
+    assertProjectScope(scopeType); // Will throw if not project scope
+    setRunTestsOpen(true);
+  };
+
+  // READ-ONLY AGGREGATE VIEW for Program/Enterprise scope
+  if (isReadOnlyScope) {
+    return (
+      <div className="flex flex-col h-full -m-6 bg-surface-1">
+        {/* HEADER BAR */}
+        <div className="bg-surface-0 border-b border-border-default">
+          <div className="max-w-6xl mx-auto px-6 py-3 flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <h1 className="font-semibold text-text-primary">Release Readiness</h1>
+              <div className="flex items-center gap-1.5 px-2 py-1 bg-warning/10 border border-warning/30 rounded c-caption text-warning">
+                <Lock className="h-3 w-3" />
+                <span className="capitalize">{scopeType}</span>
+                <span className="text-text-muted">· Read-only</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* READ-ONLY NOTICE */}
+        <div className="bg-warning/5 border-b border-warning/20">
+          <div className={cn('h-1 bg-warning/50')} />
+          <div className="max-w-6xl mx-auto px-6 py-6">
+            <div className="flex items-start gap-4">
+              {scopeType === 'enterprise' ? (
+                <Building2 className="h-6 w-6 text-warning flex-shrink-0 mt-0.5" />
+              ) : (
+                <FolderKanban className="h-6 w-6 text-warning flex-shrink-0 mt-0.5" />
+              )}
+              <div className="flex-1">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="c-overline font-bold tracking-widest text-warning">
+                    AGGREGATED VIEW
+                  </span>
+                </div>
+                <h1 className="text-xl font-semibold text-text-primary tracking-tight mb-1">
+                  Test Management Requires Project Scope
+                </h1>
+                <p className="c-caption text-text-muted mb-4">
+                  {drillDownMessage}
+                </p>
+                <div className="flex items-center gap-3">
+                  <Select onValueChange={handleProjectChange} disabled={projectsLoading}>
+                    <SelectTrigger className="h-9 w-[250px] bg-surface-0 border-border-default">
+                      <SelectValue placeholder={projectsLoading ? "Loading projects..." : "Select a project to continue"} />
+                    </SelectTrigger>
+                    <SelectContent className="bg-surface-0">
+                      {projects.map((project) => (
+                        <SelectItem key={project.id} value={project.id}>
+                          <div className="flex items-center gap-2">
+                            <Folder className="h-3.5 w-3.5 text-text-muted" />
+                            {project.key && (
+                              <span className="c-caption font-mono text-text-muted">{project.key}</span>
+                            )}
+                            <span>{project.name}</span>
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* AGGREGATE METRICS PLACEHOLDER */}
+        <div className="max-w-6xl mx-auto px-6 py-8 flex-1">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="bg-surface-0 border border-border-default rounded-lg p-6">
+              <div className="c-overline text-text-muted mb-2">TOTAL PROJECTS</div>
+              <div className="c-kpi-sm tabular-nums text-text-primary">{projects.length}</div>
+              <p className="c-caption text-text-muted mt-1">with test suites</p>
+            </div>
+            <div className="bg-surface-0 border border-border-default rounded-lg p-6 opacity-60">
+              <div className="c-overline text-text-muted mb-2">AGGREGATE METRICS</div>
+              <div className="c-caption text-text-muted">
+                <Lock className="h-4 w-4 inline mr-1" />
+                Select project for details
+              </div>
+            </div>
+            <div className="bg-surface-0 border border-border-default rounded-lg p-6 opacity-60">
+              <div className="c-overline text-text-muted mb-2">RELEASE STATUS</div>
+              <div className="c-caption text-text-muted">
+                <Lock className="h-4 w-4 inline mr-1" />
+                Select project for status
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-8 p-6 border border-dashed border-border-default rounded-lg text-center">
+            <Folder className="h-8 w-8 text-text-muted mx-auto mb-3" />
+            <h3 className="font-medium text-text-primary mb-1">Drill Down Required</h3>
+            <p className="c-caption text-text-muted max-w-md mx-auto">
+              Test cases, cycles, and executions are managed at the project level. 
+              Select a project above to view detailed release readiness and manage tests.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col h-full -m-6 bg-surface-1">
       {/* HEADER BAR */}
@@ -772,7 +900,7 @@ export function GlobalTestsOverviewPage() {
               isLoading={projectsLoading}
             />
           </div>
-          {hasProject && (
+          {hasProject && canExecuteTests && (
             <div className="flex items-center gap-2">
               <Button variant="ghost" size="sm" onClick={() => refetch()} className="gap-1.5 c-caption">
                 <RefreshCw className="h-3.5 w-3.5" />
@@ -781,7 +909,7 @@ export function GlobalTestsOverviewPage() {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => setRunTestsOpen(true)}
+                onClick={handleRunTests}
                 className="gap-1.5 c-caption"
               >
                 <Play className="h-3.5 w-3.5" />

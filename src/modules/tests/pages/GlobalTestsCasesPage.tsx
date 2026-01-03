@@ -107,6 +107,9 @@ export function GlobalTestsCasesPage() {
   const queryClient = useQueryClient();
   const { scopeType, scopeId } = useTestsScope();
 
+  // SCOPE ENFORCEMENT: Test Cases are ONLY manageable at project level
+  const isProjectScope = scopeType === 'project';
+  
   // UI State
   const [search, setSearch] = useState('');
   const [filters, setFilters] = useState<Record<string, string | null>>({
@@ -131,16 +134,22 @@ export function GlobalTestsCasesPage() {
   const [moveToFolderModalOpen, setMoveToFolderModalOpen] = useState(false);
   const [actionCaseIds, setActionCaseIds] = useState<string[]>([]);
 
-  // Data query (includes folder filter)
+  // Data query (includes folder filter) - only fetch if project scope
   const { data, isLoading, error, refetch } = useTestCasesQuery(
     scopeType as 'program' | 'project',
-    scopeId,
+    isProjectScope ? scopeId : null, // Only load data at project scope
     filters,
     search,
     page,
     pageSize,
     selectedFolderId
   );
+
+  // SCOPE ENFORCEMENT: Block non-project scope
+  if (!isProjectScope) {
+    const { ProjectScopeRequired } = require('../components/ProjectScopeRequired');
+    return <ProjectScopeRequired featureName="Test Cases" />;
+  }
 
   // Archive mutation
   const archiveMutation = useMutation({
