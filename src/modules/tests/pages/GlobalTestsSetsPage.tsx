@@ -46,6 +46,8 @@ import { useGlobalTestSets } from '../hooks/useGlobalTestMetrics';
 import { ScopeType } from '../hooks/useGlobalTestScope';
 import { CreateTestSetModal } from '../components/CreateTestSetModal';
 import { TestSetDetailDrawer } from '../components/TestSetDetailDrawer';
+import { AddSetsToCycleModal } from '../components/AddSetsToCycleModal';
+import { MoveToFolderModal } from '../components/MoveToFolderModal';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/lib/auth';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -406,6 +408,23 @@ export function GlobalTestsSetsPage() {
         scopeId={scopeId}
       />
 
+      <AddSetsToCycleModal
+        open={addToCycleOpen}
+        onOpenChange={setAddToCycleOpen}
+        setIds={Array.from(selectedIds)}
+        scopeType={scopeType as 'program' | 'project'}
+        scopeId={scopeId || ''}
+        onSuccess={() => setSelectedIds(new Set())}
+      />
+
+      <MoveToFolderModal
+        open={moveToFolderOpen}
+        onOpenChange={setMoveToFolderOpen}
+        caseIds={Array.from(selectedIds)}
+        scopeType={scopeType as 'program' | 'project'}
+        scopeId={scopeId || ''}
+        onSuccess={() => setSelectedIds(new Set())}
+      />
     </div>
   );
 }

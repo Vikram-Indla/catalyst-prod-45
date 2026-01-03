@@ -523,6 +523,91 @@ export function ExecutionRunDrawer({
                                     className="mt-1 bg-surface-1 border-border-default min-h-[60px]"
                                   />
                                 </div>
+                                {/* Evidence attachment */}
+                                <div>
+                                  <Label className="text-xs text-text-tertiary flex items-center gap-1">
+                                    <Paperclip className="h-3 w-3" /> Attach Evidence
+                                  </Label>
+                                  <div className="flex gap-2 mt-1">
+                                    <Button
+                                      variant="outline"
+                                      size="sm"
+                                      className="text-xs gap-1.5"
+                                      onClick={() => {
+                                        const input = document.createElement('input');
+                                        input.type = 'file';
+                                        input.accept = 'image/*';
+                                        input.onchange = async (e) => {
+                                          const file = (e.target as HTMLInputElement).files?.[0];
+                                          if (file && step.id) {
+                                            try {
+                                              const fileName = `${executionId}/${step.step_order}/${Date.now()}_${file.name}`;
+                                              const { error: uploadError } = await supabase.storage
+                                                .from('test-evidence')
+                                                .upload(fileName, file);
+                                              if (uploadError) throw uploadError;
+                                              
+                                              // Save evidence record
+                                              await supabase.from('test_evidence').insert({
+                                                execution_step_id: step.id,
+                                                file_name: file.name,
+                                                file_type: 'screenshot',
+                                                file_path: fileName,
+                                                file_size: file.size,
+                                                mime_type: file.type,
+                                                uploaded_by: user?.id,
+                                              });
+                                              toast.success('Screenshot attached');
+                                            } catch (err: any) {
+                                              toast.error(err.message || 'Failed to upload');
+                                            }
+                                          }
+                                        };
+                                        input.click();
+                                      }}
+                                    >
+                                      <Image className="h-3 w-3" /> Screenshot
+                                    </Button>
+                                    <Button
+                                      variant="outline"
+                                      size="sm"
+                                      className="text-xs gap-1.5"
+                                      onClick={() => {
+                                        const input = document.createElement('input');
+                                        input.type = 'file';
+                                        input.accept = '.pdf,.doc,.docx,.txt,.log';
+                                        input.onchange = async (e) => {
+                                          const file = (e.target as HTMLInputElement).files?.[0];
+                                          if (file && step.id) {
+                                            try {
+                                              const fileName = `${executionId}/${step.step_order}/${Date.now()}_${file.name}`;
+                                              const { error: uploadError } = await supabase.storage
+                                                .from('test-evidence')
+                                                .upload(fileName, file);
+                                              if (uploadError) throw uploadError;
+                                              
+                                              await supabase.from('test_evidence').insert({
+                                                execution_step_id: step.id,
+                                                file_name: file.name,
+                                                file_type: 'document',
+                                                file_path: fileName,
+                                                file_size: file.size,
+                                                mime_type: file.type,
+                                                uploaded_by: user?.id,
+                                              });
+                                              toast.success('Document attached');
+                                            } catch (err: any) {
+                                              toast.error(err.message || 'Failed to upload');
+                                            }
+                                          }
+                                        };
+                                        input.click();
+                                      }}
+                                    >
+                                      <FileText className="h-3 w-3" /> Document
+                                    </Button>
+                                  </div>
+                                </div>
                               </div>
                             )}
                           </Card>

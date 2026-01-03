@@ -1,10 +1,10 @@
 /**
  * GLOBAL TESTS CYCLES PAGE
- * Test cycle management with scope filtering
+ * Test cycle management with scope filtering, full CRUD, bulk actions
  */
 
 import React, { useState, useMemo } from 'react';
-import { useSearchParams, Link } from 'react-router-dom';
+import { useSearchParams, Link, useNavigate } from 'react-router-dom';
 import { 
   Plus, 
   Search, 
@@ -14,6 +14,11 @@ import {
   RefreshCw,
   Play,
   Calendar,
+  Edit,
+  Copy,
+  Archive,
+  Layers,
+  Eye,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -22,17 +27,34 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { useGlobalTestCycles } from '../hooks/useGlobalTestMetrics';
 import { ScopeType } from '../hooks/useGlobalTestScope';
 import { CreateCycleModal } from '../components/CreateCycleModal';
+import { TestCycleDetailDrawer } from '../components/TestCycleDetailDrawer';
+import { AddToSetModal } from '../components/AddToSetModal';
+import { ExecutionRunDrawer } from '../components/ExecutionRunDrawer';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/lib/auth';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
+import { runMutationWithAudit, createPipelineContext } from '../lib/actionPipeline';
 
 // ═══════════════════════════════════════════════════════════════════
 // HELPERS
@@ -55,12 +77,21 @@ function getStatusColor(status: string) {
 
 export function GlobalTestsCyclesPage() {
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const scopeType = (searchParams.get('scopeType') as ScopeType) || 'global';
   const scopeId = searchParams.get('scopeId');
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
 
   // UI State
   const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState<string>('all');
   const [createModalOpen, setCreateModalOpen] = useState(false);
+  const [selectedCycleId, setSelectedCycleId] = useState<string | null>(null);
+  const [detailDrawerOpen, setDetailDrawerOpen] = useState(false);
+  const [selectedExecutionId, setSelectedExecutionId] = useState<string | null>(null);
+  const [executionDrawerOpen, setExecutionDrawerOpen] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
   // Data
   const { data: cycles, isLoading, error, refetch } = useGlobalTestCycles(scopeType, scopeId);
@@ -86,16 +117,181 @@ export function GlobalTestsCyclesPage() {
         c.description?.toLowerCase().includes(q)
       );
     }
+
+    if (statusFilter !== 'all') {
+      result = result.filter((c: any) => c.status === statusFilter);
+    }
     
     return result;
-  }, [cycles, searchQuery]);
+  }, [cycles, searchQuery, statusFilter]);
 
-  const buildUrl = (cycleId: string) => {
+  // Archive mutation
+  const archiveMutation = useMutation({
+    mutationFn: async (cycleIds: string[]) => {
+      if (!user) throw new Error('Not authenticated');
+
+      const context = createPipelineContext(
+        user.id,
+        scopeType === 'project' ? 'project' : scopeType === 'program' ? 'program' : 'global',
+        scopeId
+      );
+
+      for (const cycleId of cycleIds) {
+        await runMutationWithAudit(
+          { cycleId },
+          {
+            context,
+            action: 'delete',
+            entityType: 'test_cycles',
+            mutationFn: async () => {
+              const { error } = await supabase
+                .from('test_cycles')
+                .update({ 
+                  archived: true, 
+                  archived_at: new Date().toISOString(),
+                  archived_by: user.id,
+                })
+                .eq('id', cycleId);
+              if (error) throw error;
+              return { id: cycleId };
+            },
+            getAuditInfo: () => ({
+              entityId: cycleId,
+              description: 'Archived test cycle',
+            }),
+            activityType: 'archived',
+            queryClient,
+            invalidateKeys: [['global-test-cycles', scopeType, scopeId]],
+            successMessage: cycleIds.length === 1 ? 'Test cycle archived' : undefined,
+          }
+        );
+      }
+
+      return cycleIds;
+    },
+    onSuccess: () => {
+      setSelectedIds(new Set());
+      if (selectedIds.size > 1) {
+        toast.success(`${selectedIds.size} cycles archived`);
+      }
+    },
+    onError: (error: Error) => toast.error(error.message),
+  });
+
+  // Clone mutation
+  const cloneMutation = useMutation({
+    mutationFn: async (cycleId: string) => {
+      if (!user) throw new Error('Not authenticated');
+
+      // Get original cycle
+      const { data: original, error: fetchError } = await supabase
+        .from('test_cycles')
+        .select('*')
+        .eq('id', cycleId)
+        .single();
+
+      if (fetchError) throw fetchError;
+
+      // Generate new key
+      const { data: existing } = await supabase
+        .from('test_cycles')
+        .select('key')
+        .order('created_at', { ascending: false })
+        .limit(1);
+
+      const lastNum = existing?.[0]?.key?.match(/CYC-(\d+)/)?.[1];
+      const nextNum = lastNum ? parseInt(lastNum) + 1 : 1;
+      const newKey = `CYC-${nextNum.toString().padStart(3, '0')}`;
+
+      // Create clone
+      const { data: newCycle, error: createError } = await supabase
+        .from('test_cycles')
+        .insert({
+          key: newKey,
+          name: `${original.name} (Copy)`,
+          objective: original.objective,
+          environment: original.environment,
+          build_version: original.build_version,
+          program_id: original.program_id,
+          project_id: original.project_id,
+          status: 'planned',
+          created_by: user.id,
+        })
+        .select()
+        .single();
+
+      if (createError) throw createError;
+
+      // Clone executions
+      const { data: executions } = await supabase
+        .from('test_cycle_executions')
+        .select('case_id, case_version, assigned_to')
+        .eq('cycle_id', cycleId);
+
+      if (executions && executions.length > 0) {
+        await supabase.from('test_cycle_executions').insert(
+          executions.map((e: any) => ({
+            cycle_id: newCycle.id,
+            case_id: e.case_id,
+            case_version: e.case_version,
+            assigned_to: e.assigned_to,
+            status: 'not_executed',
+          }))
+        );
+      }
+
+      // Audit log
+      await supabase.from('test_activity_log').insert({
+        user_id: user.id,
+        activity_type: 'created',
+        entity_type: 'test_cycles',
+        entity_id: newCycle.id,
+        entity_title: newCycle.name,
+        description: `Cloned from ${original.name}`,
+      });
+
+      return newCycle;
+    },
+    onSuccess: (newCycle) => {
+      queryClient.invalidateQueries({ queryKey: ['global-test-cycles'] });
+      toast.success(`Cycle cloned: ${newCycle.name}`);
+    },
+    onError: (error: Error) => toast.error(error.message),
+  });
+
+  const buildExecuteUrl = (cycleId: string) => {
     const params = new URLSearchParams();
     params.set('scopeType', scopeType);
     if (scopeId) params.set('scopeId', scopeId);
     params.set('cycleId', cycleId);
     return `/tests/executions?${params.toString()}`;
+  };
+
+  const handleViewDetails = (cycleId: string) => {
+    setSelectedCycleId(cycleId);
+    setDetailDrawerOpen(true);
+  };
+
+  const handleExecuteFromDrawer = (executionId: string) => {
+    setSelectedExecutionId(executionId);
+    setExecutionDrawerOpen(true);
+  };
+
+  const toggleSelect = (id: string) => {
+    setSelectedIds(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  const toggleSelectAll = () => {
+    if (selectedIds.size === processedCycles.length) {
+      setSelectedIds(new Set());
+    } else {
+      setSelectedIds(new Set(processedCycles.map((c: any) => c.id)));
+    }
   };
 
   if (error) {
@@ -112,8 +308,8 @@ export function GlobalTestsCyclesPage() {
   return (
     <div className="space-y-4">
       {/* Toolbar */}
-      <div className="flex items-center justify-between gap-4">
-        <div className="flex items-center gap-2 flex-1">
+      <div className="flex items-center justify-between gap-4 flex-wrap">
+        <div className="flex items-center gap-2 flex-1 min-w-0">
           <div className="relative w-64">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-tertiary" />
             <Input
@@ -123,6 +319,19 @@ export function GlobalTestsCyclesPage() {
               className="pl-9 bg-surface-2 border-border-default h-9"
             />
           </div>
+
+          <Select value={statusFilter} onValueChange={setStatusFilter}>
+            <SelectTrigger className="w-[130px] h-9 bg-surface-2 border-border-default">
+              <SelectValue placeholder="Status" />
+            </SelectTrigger>
+            <SelectContent className="bg-surface-1 border-border-default">
+              <SelectItem value="all">All Status</SelectItem>
+              <SelectItem value="planned">Planned</SelectItem>
+              <SelectItem value="in_progress">In Progress</SelectItem>
+              <SelectItem value="completed">Completed</SelectItem>
+              <SelectItem value="cancelled">Cancelled</SelectItem>
+            </SelectContent>
+          </Select>
           
           <Button variant="ghost" size="icon" onClick={() => refetch()} className="h-9 w-9">
             <RefreshCw className="h-4 w-4" />
@@ -141,6 +350,29 @@ export function GlobalTestsCyclesPage() {
           </Button>
         </div>
       </div>
+
+      {/* Bulk Actions */}
+      {selectedIds.size > 0 && (
+        <div className="flex items-center gap-3 p-3 bg-accent-subtle/30 rounded-lg border border-accent-primary/20">
+          <span className="text-sm font-medium text-text-primary">
+            {selectedIds.size} selected
+          </span>
+          <div className="flex-1" />
+          <Button
+            size="sm"
+            variant="outline"
+            className="text-status-error hover:bg-status-error/10"
+            onClick={() => archiveMutation.mutate(Array.from(selectedIds))}
+            disabled={archiveMutation.isPending}
+          >
+            <Archive className="h-4 w-4 mr-1.5" />
+            Archive
+          </Button>
+          <Button size="sm" variant="ghost" onClick={() => setSelectedIds(new Set())}>
+            Clear
+          </Button>
+        </div>
+      )}
 
       {/* Cycles Grid */}
       {isLoading ? (
@@ -171,18 +403,27 @@ export function GlobalTestsCyclesPage() {
           {processedCycles.map((cycle: any) => (
             <Card 
               key={cycle.id} 
-              className="bg-surface-2 border-border-default hover:border-accent-primary/30 transition-colors"
+              className={cn(
+                'bg-surface-2 border-border-default hover:border-accent-primary/30 transition-colors',
+                selectedIds.has(cycle.id) && 'border-accent-primary bg-accent-subtle/20'
+              )}
             >
               <CardContent className="p-4">
                 <div className="flex items-start justify-between mb-3">
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-1">
-                      <Badge variant="outline" className="text-xs">{cycle.key}</Badge>
-                      <Badge variant="outline" className={cn('text-xs', getStatusColor(cycle.status))}>
-                        {cycle.status}
-                      </Badge>
+                  <div className="flex items-center gap-2">
+                    <Checkbox
+                      checked={selectedIds.has(cycle.id)}
+                      onCheckedChange={() => toggleSelect(cycle.id)}
+                    />
+                    <div className="flex-1 min-w-0 cursor-pointer" onClick={() => handleViewDetails(cycle.id)}>
+                      <div className="flex items-center gap-2 mb-1">
+                        <Badge variant="outline" className="text-xs">{cycle.key}</Badge>
+                        <Badge variant="outline" className={cn('text-xs', getStatusColor(cycle.status))}>
+                          {cycle.status}
+                        </Badge>
+                      </div>
+                      <h3 className="font-medium text-text-primary truncate">{cycle.name}</h3>
                     </div>
-                    <h3 className="font-medium text-text-primary truncate">{cycle.name}</h3>
                   </div>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
@@ -191,10 +432,30 @@ export function GlobalTestsCyclesPage() {
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="bg-surface-1 border-border-default">
-                      <DropdownMenuItem>Edit</DropdownMenuItem>
-                      <DropdownMenuItem>Add Cases</DropdownMenuItem>
-                      <DropdownMenuItem>Clone</DropdownMenuItem>
-                      <DropdownMenuItem className="text-status-error">Archive</DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => handleViewDetails(cycle.id)}>
+                        <Eye className="h-4 w-4 mr-2" />
+                        View Details
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => handleViewDetails(cycle.id)}>
+                        <Edit className="h-4 w-4 mr-2" />
+                        Edit
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => cloneMutation.mutate(cycle.id)}>
+                        <Copy className="h-4 w-4 mr-2" />
+                        Clone
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => handleViewDetails(cycle.id)}>
+                        <Layers className="h-4 w-4 mr-2" />
+                        Add Cases
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator className="bg-border-default" />
+                      <DropdownMenuItem 
+                        className="text-status-error"
+                        onClick={() => archiveMutation.mutate([cycle.id])}
+                      >
+                        <Archive className="h-4 w-4 mr-2" />
+                        Archive
+                      </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </div>
@@ -244,10 +505,7 @@ export function GlobalTestsCyclesPage() {
                 )}
 
                 <div className="flex items-center gap-2">
-                  <Link
-                    to={buildUrl(cycle.id)}
-                    className="flex-1"
-                  >
+                  <Link to={buildExecuteUrl(cycle.id)} className="flex-1">
                     <Button variant="outline" size="sm" className="w-full gap-2">
                       <Play className="h-3 w-3" />
                       Execute
@@ -260,11 +518,30 @@ export function GlobalTestsCyclesPage() {
         </div>
       )}
 
-      {/* Create Modal */}
+      {/* Modals & Drawers */}
       <CreateCycleModal
         open={createModalOpen}
         onOpenChange={setCreateModalOpen}
-        projectId={scopeType === 'project' ? scopeId || undefined : undefined}
+        projectId={scopeType === 'project' ? scopeId || '' : ''}
+      />
+
+      <TestCycleDetailDrawer
+        open={detailDrawerOpen}
+        onOpenChange={setDetailDrawerOpen}
+        cycleId={selectedCycleId}
+        scopeType={scopeType === 'project' ? 'project' : scopeType === 'program' ? 'program' : 'global'}
+        scopeId={scopeId}
+        onExecute={handleExecuteFromDrawer}
+      />
+
+      <ExecutionRunDrawer
+        open={executionDrawerOpen}
+        onOpenChange={setExecutionDrawerOpen}
+        executionId={selectedExecutionId}
+        onComplete={() => {
+          refetch();
+          queryClient.invalidateQueries({ queryKey: ['test-cycle-detail'] });
+        }}
       />
     </div>
   );
