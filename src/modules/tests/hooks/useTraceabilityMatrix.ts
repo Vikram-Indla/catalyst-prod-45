@@ -1,12 +1,14 @@
 /**
  * Traceability Matrix Hook
  * Full end-to-end traceability: Story ↔ Test Case ↔ Execution ↔ Defect ↔ Story/Feature
+ * 
+ * OPTIMIZED: Single combined query with staleTime to prevent re-fetching
  */
 
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/lib/auth';
-import { toast } from 'sonner';
+import { useMemo } from 'react';
 
 // ==================== TYPES ====================
 
@@ -311,7 +313,6 @@ function detectCoverageGaps(
     });
 
   // 6. Orphan tests (tests not linked to any requirement)
-  const linkedCaseIds = new Set(testCases.flatMap(tc => tc.linkedRequirements.length > 0 ? [tc.id] : []));
   testCases
     .filter(tc => tc.linkedRequirements.length === 0)
     .forEach(tc => {
@@ -334,68 +335,87 @@ function detectCoverageGaps(
   });
 }
 
+// ==================== RAW DATA TYPES ====================
+
+interface RawTraceabilityData {
+  requirements: TraceabilityRequirement[];
+  testCases: TraceabilityTestCase[];
+  executions: TraceabilityExecution[];
+  defects: TraceabilityDefect[];
+}
+
 // ==================== MAIN HOOK ====================
 
 export function useTraceabilityMatrix(programId: string | null) {
   const { user } = useAuth();
   const queryClient = useQueryClient();
 
-  // Fetch requirements (stories with features and epics)
-  const { data: requirementsData, isLoading: reqLoading } = useQuery({
-    queryKey: ['traceability-matrix-requirements', programId],
-    queryFn: async () => {
-      // Get stories
-      const { data: stories, error: storiesError } = await supabase
-        .from('stories')
-        .select(`
-          id, story_key, title, name, status, priority, feature_id,
-          feature:features(id, name, feature_key, epic_id, epic:epics(id, name, epic_key))
-        `)
-        .is('deleted_at', null)
-        .order('story_key');
-
-      if (storiesError) throw storiesError;
-
-      const reqs: TraceabilityRequirement[] = [];
-
-      // Process stories
-      (stories || []).forEach((s: any) => {
-        reqs.push({
-          id: s.id,
-          key: s.story_key || s.id.slice(0, 8),
-          title: s.title || s.name || 'Untitled',
-          type: 'story',
-          status: s.status || 'open',
-          priority: s.priority,
-          parentId: s.feature_id,
-          parentKey: s.feature?.feature_key || s.feature?.name || null,
-        });
-      });
-
-      return reqs;
-    },
-    enabled: !!user,
-  });
-
-  // Fetch test case links
-  const { data: testCaseData, isLoading: tcLoading } = useQuery({
-    queryKey: ['traceability-matrix-testcases', programId],
-    queryFn: async () => {
-      const { data: links, error: linksError } = await supabase
-        .from('test_case_work_item_links')
-        .select(`
-          case_id, work_item_id, work_item_type,
-          test_case:test_cases(id, title, case_key, status, priority)
-        `);
-
-      if (linksError) throw linksError;
-
-      // Group by test case
-      const caseMap = new Map<string, TraceabilityTestCase>();
-
-      (links || []).forEach((l: any) => {
-        if (!l.test_case) return;
+  // Single combined query for all data - runs in parallel on server
+  const { data: rawData, isLoading, refetch: refetchRaw } = useQuery({
+    queryKey: ['traceability-matrix', programId],
+    queryFn: async (): Promise<RawTraceabilityData> => {
+      // Run all queries in parallel
+      const [storiesResult, linksResult, allCasesResult, executionsResult, defectsResult, execDefectsResult] = await Promise.all([
+        // Stories/requirements
+        supabase
+          .from('stories')
+          .select(`
+            id, story_key, title, name, status, priority, feature_id,
+            feature:features(id, name, feature_key, epic_id, epic:epics(id, name, epic_key))
+          `)
+          .is('deleted_at', null)
+          .order('story_key'),
         
+        // Test case links
+        supabase
+          .from('test_case_work_item_links')
+          .select(`
+            case_id, work_item_id, work_item_type,
+            test_case:test_cases(id, title, case_key, status, priority)
+          `),
+        
+        // All test cases (including unlinked)
+        supabase
+          .from('test_cases')
+          .select('id, title, case_key, status, priority')
+          .is('deleted_at', null),
+        
+        // Executions
+        supabase
+          .from('test_cycle_executions')
+          .select(`
+            id, status, case_id, executed_at, executed_by, cycle_id,
+            cycle:test_cycles(id, name, program_id)
+          `)
+          .limit(2000),
+        
+        // Defects
+        supabase
+          .from('defects')
+          .select('id, defect_id, title, severity, workflow_status, linked_story_id, linked_feature_id'),
+        
+        // Execution-defect links
+        supabase
+          .from('test_execution_defects')
+          .select('id, execution_id, defect_work_item_id'),
+      ]);
+
+      // Process requirements
+      const requirements: TraceabilityRequirement[] = (storiesResult.data || []).map((s: any) => ({
+        id: s.id,
+        key: s.story_key || s.id.slice(0, 8),
+        title: s.title || s.name || 'Untitled',
+        type: 'story' as const,
+        status: s.status || 'open',
+        priority: s.priority,
+        parentId: s.feature_id,
+        parentKey: s.feature?.feature_key || s.feature?.name || null,
+      }));
+
+      // Process test cases with links
+      const caseMap = new Map<string, TraceabilityTestCase>();
+      (linksResult.data || []).forEach((l: any) => {
+        if (!l.test_case) return;
         const existing = caseMap.get(l.case_id);
         if (existing) {
           existing.linkedRequirements.push(l.work_item_id);
@@ -411,13 +431,8 @@ export function useTraceabilityMatrix(programId: string | null) {
         }
       });
 
-      // Also get test cases without links
-      const { data: allCases } = await supabase
-        .from('test_cases')
-        .select('id, title, case_key, status, priority')
-        .is('deleted_at', null);
-
-      (allCases || []).forEach((c: any) => {
+      // Add unlinked test cases
+      (allCasesResult.data || []).forEach((c: any) => {
         if (!caseMap.has(c.id)) {
           caseMap.set(c.id, {
             id: c.id,
@@ -430,31 +445,14 @@ export function useTraceabilityMatrix(programId: string | null) {
         }
       });
 
-      return Array.from(caseMap.values());
-    },
-    enabled: !!user,
-  });
+      const testCases = Array.from(caseMap.values());
 
-  // Fetch executions
-  const { data: executionsData, isLoading: execLoading } = useQuery({
-    queryKey: ['traceability-matrix-executions', programId],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('test_cycle_executions')
-        .select(`
-          id, status, case_id, executed_at, executed_by, cycle_id,
-          cycle:test_cycles(id, name, program_id)
-        `)
-        .limit(5000);
+      // Process executions
+      const filteredExecs = programId
+        ? (executionsResult.data || []).filter((e: any) => e.cycle?.program_id === programId)
+        : executionsResult.data || [];
 
-      if (error) throw error;
-
-      // Filter by program if provided
-      const filtered = programId
-        ? (data || []).filter((e: any) => e.cycle?.program_id === programId)
-        : data || [];
-
-      return filtered.map((e: any) => ({
+      const executions: TraceabilityExecution[] = filteredExecs.map((e: any) => ({
         id: e.id,
         caseId: e.case_id,
         cycleId: e.cycle_id,
@@ -462,30 +460,12 @@ export function useTraceabilityMatrix(programId: string | null) {
         status: e.status || 'not_run',
         executedAt: e.executed_at,
         executedBy: e.executed_by,
-      })) as TraceabilityExecution[];
-    },
-    enabled: !!user,
-  });
+      }));
 
-  // Fetch defects
-  const { data: defectsData, isLoading: defectsLoading } = useQuery({
-    queryKey: ['traceability-matrix-defects', programId],
-    queryFn: async () => {
-      // Get execution-defect links
-      const { data: execDefects } = await supabase
-        .from('test_execution_defects')
-        .select('id, execution_id, defect_work_item_id');
-
-      // Get defects
-      const { data: defects } = await supabase
-        .from('defects')
-        .select('id, defect_id, title, severity, workflow_status, linked_story_id, linked_feature_id');
-
-      const defectMap = new Map<string, TraceabilityDefect>();
-
-      (defects || []).forEach((d: any) => {
-        const linkedExec = (execDefects || []).find((ed: any) => ed.defect_work_item_id === d.id);
-        defectMap.set(d.id, {
+      // Process defects
+      const defects: TraceabilityDefect[] = (defectsResult.data || []).map((d: any) => {
+        const linkedExec = (execDefectsResult.data || []).find((ed: any) => ed.defect_work_item_id === d.id);
+        return {
           id: d.id,
           defectKey: d.defect_id || d.id.slice(0, 8),
           title: d.title || 'Untitled',
@@ -494,42 +474,33 @@ export function useTraceabilityMatrix(programId: string | null) {
           linkedExecutionId: linkedExec?.execution_id || null,
           linkedStoryId: d.linked_story_id,
           linkedFeatureId: d.linked_feature_id,
-        });
+        };
       });
 
-      return Array.from(defectMap.values());
+      return { requirements, testCases, executions, defects };
     },
     enabled: !!user,
+    staleTime: 60000, // 1 minute - prevents refetching on mount
+    gcTime: 300000, // 5 minutes cache
   });
 
-  // Compute full matrix
-  const matrixData: TraceabilityMatrixData | null = (() => {
-    if (!requirementsData || !testCaseData || !executionsData || !defectsData) {
-      return null;
-    }
+  // Memoized matrix computation - only recomputes when rawData changes
+  const matrixData = useMemo<TraceabilityMatrixData | null>(() => {
+    if (!rawData) return null;
 
-    const requirements = requirementsData;
-    const testCases = testCaseData;
-    const executions = executionsData;
-    const defects = defectsData;
+    const { requirements, testCases, executions, defects } = rawData;
 
     // Build chains
     const chains: TraceabilityChain[] = requirements.map(req => {
-      // Find linked test cases
       const linkedCases = testCases.filter(tc => tc.linkedRequirements.includes(req.id));
       const linkedCaseIds = new Set(linkedCases.map(tc => tc.id));
-
-      // Find executions for linked cases
       const linkedExecutions = executions.filter(e => linkedCaseIds.has(e.caseId));
-
-      // Find defects linked to these executions or directly to requirement
       const linkedExecutionIds = new Set(linkedExecutions.map(e => e.id));
       const linkedDefects = defects.filter(d =>
         (d.linkedExecutionId && linkedExecutionIds.has(d.linkedExecutionId)) ||
         d.linkedStoryId === req.id
       );
 
-      // Calculate coverage metrics
       const executionCount = linkedExecutions.length;
       const passedCount = linkedExecutions.filter(e => e.status === 'passed').length;
       const failedCount = linkedExecutions.filter(e => e.status === 'failed').length;
@@ -551,39 +522,34 @@ export function useTraceabilityMatrix(programId: string | null) {
         openDefectCount: openDefects,
       };
 
-      const chainBase = {
+      const { level, factors } = calculateRiskLevel({
         requirement: req,
         testCases: linkedCases,
         executions: linkedExecutions,
         defects: linkedDefects,
         coverage,
-      };
-
-      const { level, factors } = calculateRiskLevel(chainBase);
+      });
 
       return {
-        ...chainBase,
+        requirement: req,
+        testCases: linkedCases,
+        executions: linkedExecutions,
+        defects: linkedDefects,
+        coverage,
         riskLevel: level,
         riskFactors: factors,
       };
     });
 
-    // Detect coverage gaps
     const gaps = detectCoverageGaps(requirements, testCases, executions, defects, chains);
 
-    // Calculate summary
+    // Summary
     const totalReqs = requirements.length;
     const reqsWithTests = chains.filter(c => c.coverage.hasTests).length;
     const executedCases = new Set(executions.map(e => e.caseId)).size;
-    const passedCases = new Set(
-      executions.filter(e => e.status === 'passed').map(e => e.caseId)
-    ).size;
-    const failedCases = new Set(
-      executions.filter(e => e.status === 'failed').map(e => e.caseId)
-    ).size;
-    const blockedCases = new Set(
-      executions.filter(e => e.status === 'blocked').map(e => e.caseId)
-    ).size;
+    const passedCases = new Set(executions.filter(e => e.status === 'passed').map(e => e.caseId)).size;
+    const failedCases = new Set(executions.filter(e => e.status === 'failed').map(e => e.caseId)).size;
+    const blockedCases = new Set(executions.filter(e => e.status === 'blocked').map(e => e.caseId)).size;
     const linkedDefects = defects.filter(d => d.linkedExecutionId || d.linkedStoryId).length;
     const avgRisk = chains.length > 0
       ? chains.reduce((sum, c) => {
@@ -619,9 +585,7 @@ export function useTraceabilityMatrix(programId: string | null) {
         highRiskCount: chains.filter(c => c.riskLevel === 'high').length,
       },
     };
-  })();
-
-  const isLoading = reqLoading || tcLoading || execLoading || defectsLoading;
+  }, [rawData]);
 
   // Forward traceability: Requirement -> Test Cases -> Executions -> Defects
   const getForwardTrace = (requirementId: string) => {
@@ -650,12 +614,7 @@ export function useTraceabilityMatrix(programId: string | null) {
         ? matrixData.requirements.filter(r => r.id === defect.linkedStoryId)
         : [];
 
-    return {
-      defect,
-      execution,
-      testCase,
-      requirements,
-    };
+    return { defect, execution, testCase, requirements };
   };
 
   // Get chain from any entity
@@ -697,12 +656,7 @@ export function useTraceabilityMatrix(programId: string | null) {
     getBackwardTrace,
     getTraceChainFromEntity,
     refetch: () => {
-      queryClient.invalidateQueries({ queryKey: ['traceability-matrix-requirements'] });
-      queryClient.invalidateQueries({ queryKey: ['traceability-matrix-testcases'] });
-      queryClient.invalidateQueries({ queryKey: ['traceability-matrix-executions'] });
-      queryClient.invalidateQueries({ queryKey: ['traceability-matrix-defects'] });
+      queryClient.invalidateQueries({ queryKey: ['traceability-matrix'] });
     },
   };
 }
-
-// Types are already exported at definition
