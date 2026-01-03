@@ -100,7 +100,7 @@ export function ExecutionRunDrawer({
           *,
           test_case:test_cases(
             id, title, description, priority, test_type, preconditions,
-            test_steps(id, step_number, description, expected_result, test_data)
+            test_steps(id, step_order, action, expected_result)
           ),
           test_cycle:test_cycles(id, name, key),
           assigned_user:profiles!test_cycle_executions_assigned_to_fkey(id, full_name)
@@ -136,15 +136,15 @@ export function ExecutionRunDrawer({
   useEffect(() => {
     if (execution?.test_case?.test_steps) {
       const steps = [...(execution.test_case.test_steps || [])]
-        .sort((a: any, b: any) => a.step_number - b.step_number);
+        .sort((a: any, b: any) => a.step_order - b.step_order);
 
       const results: StepResult[] = steps.map((step: any) => {
         const existing = existingResults?.find((r: any) => r.test_step_id === step.id);
         return {
           id: existing?.id,
           step_id: step.id,
-          step_order: step.step_number,
-          step_description: step.description,
+          step_order: step.step_order,
+          step_description: step.action,
           expected_result: step.expected_result,
           status: (existing?.status as StepResult['status']) || 'not_executed',
           actual_result: existing?.actual_result || '',
