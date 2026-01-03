@@ -1,10 +1,9 @@
 /**
- * TESTS SIDEBAR
- * Navigation sidebar for the global Tests module
+ * TestsSidebar — Tests module sidebar using SidebarBase
+ * 
+ * Uses the shared SidebarBase component for consistent styling across all non-admin sidebars.
  */
 
-import React from 'react';
-import { NavLink, useSearchParams } from 'react-router-dom';
 import { 
   LayoutDashboard, 
   ListChecks, 
@@ -14,120 +13,43 @@ import {
   BarChart3, 
   Settings,
   GitBranch,
-  ChevronLeft,
-  ChevronRight,
-  FlaskConical,
 } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { SidebarBase, SidebarConfig } from './SidebarBase';
 
 interface TestsSidebarProps {
   expanded: boolean;
   onToggle: () => void;
+  className?: string;
 }
 
-const NAV_ITEMS = [
-  { id: 'overview', label: 'Overview', icon: LayoutDashboard, path: '' },
-  { id: 'cases', label: 'Cases', icon: ListChecks, path: 'cases' },
-  { id: 'sets', label: 'Sets', icon: Package, path: 'sets' },
-  { id: 'cycles', label: 'Cycles', icon: RefreshCcw, path: 'cycles' },
-  { id: 'executions', label: 'Executions', icon: Play, path: 'executions' },
-  { id: 'traceability', label: 'Traceability', icon: GitBranch, path: 'traceability' },
-  { id: 'reports', label: 'Reports', icon: BarChart3, path: 'reports' },
-  { id: 'admin', label: 'Admin', icon: Settings, path: 'admin' },
-];
+const testsSidebarConfig: SidebarConfig = {
+  badge: 'QA',
+  label: 'Tests',
+  items: [
+    { id: 'overview', title: 'Overview', path: '/tests', icon: LayoutDashboard, exact: true },
+    { id: 'cases', title: 'Cases', path: '/tests/cases', icon: ListChecks, exact: false },
+    { id: 'sets', title: 'Sets', path: '/tests/sets', icon: Package, exact: false },
+    { id: 'cycles', title: 'Cycles', path: '/tests/cycles', icon: RefreshCcw, exact: false },
+    { id: 'executions', title: 'Executions', path: '/tests/executions', icon: Play, exact: false },
+    { id: 'traceability', title: 'Traceability', path: '/tests/traceability', icon: GitBranch, exact: false },
+    { id: 'reports', title: 'Reports', path: '/tests/reports', icon: BarChart3, exact: false },
+  ],
+  footerItem: {
+    id: 'admin',
+    title: 'Test Admin',
+    path: '/tests/admin',
+    icon: Settings,
+    exact: true,
+  },
+};
 
-export function TestsSidebar({ expanded, onToggle }: TestsSidebarProps) {
-  const [searchParams] = useSearchParams();
-  
-  // Build URL preserving scope params
-  const buildUrl = (path: string) => {
-    const base = path ? `/tests/${path}` : '/tests';
-    const scopeType = searchParams.get('scopeType');
-    const scopeId = searchParams.get('scopeId');
-    
-    if (scopeType) {
-      const params = new URLSearchParams();
-      params.set('scopeType', scopeType);
-      if (scopeId) params.set('scopeId', scopeId);
-      return `${base}?${params.toString()}`;
-    }
-    return base;
-  };
-
+export function TestsSidebar({ expanded, onToggle, className }: TestsSidebarProps) {
   return (
-    <aside
-      className={cn(
-        'h-full flex flex-col border-r border-border-default bg-surface-2 transition-all duration-200',
-        expanded ? 'w-52' : 'w-14'
-      )}
-    >
-      {/* Header */}
-      <div className={cn(
-        'flex items-center gap-2 px-3 py-4 border-b border-border-default',
-        expanded ? 'justify-between' : 'justify-center'
-      )}>
-        {expanded && (
-          <div className="flex items-center gap-2">
-            <FlaskConical className="h-5 w-5 text-accent-primary" />
-            <span className="font-semibold text-text-primary">Tests</span>
-          </div>
-        )}
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-7 w-7"
-          onClick={onToggle}
-        >
-          {expanded ? (
-            <ChevronLeft className="h-4 w-4" />
-          ) : (
-            <ChevronRight className="h-4 w-4" />
-          )}
-        </Button>
-      </div>
-
-      {/* Navigation */}
-      <nav className="flex-1 py-2 px-2 space-y-1">
-        {NAV_ITEMS.map((item) => {
-          const Icon = item.icon;
-          const linkContent = (
-            <NavLink
-              key={item.id}
-              to={buildUrl(item.path)}
-              end={item.path === ''}
-              className={({ isActive }) =>
-                cn(
-                  'flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors',
-                  isActive
-                    ? 'bg-accent-subtle text-accent-primary'
-                    : 'text-text-secondary hover:text-text-primary hover:bg-surface-3',
-                  !expanded && 'justify-center px-2'
-                )
-              }
-            >
-              <Icon className="h-4 w-4 flex-shrink-0" />
-              {expanded && <span>{item.label}</span>}
-            </NavLink>
-          );
-
-          if (!expanded) {
-            return (
-              <Tooltip key={item.id}>
-                <TooltipTrigger asChild>
-                  {linkContent}
-                </TooltipTrigger>
-                <TooltipContent side="right">
-                  {item.label}
-                </TooltipContent>
-              </Tooltip>
-            );
-          }
-
-          return linkContent;
-        })}
-      </nav>
-    </aside>
+    <SidebarBase
+      config={testsSidebarConfig}
+      expanded={expanded}
+      onToggle={onToggle}
+      className={className}
+    />
   );
 }
