@@ -1,31 +1,18 @@
 /**
- * GLOBAL TESTS OVERVIEW - ENTERPRISE COMMAND CONSOLE
- * Bloomberg / Jira Align class - Mission-critical release authority
- * Dense, intimidating, audit-grade, WCAG AA+ dark mode
+ * GLOBAL TESTS OVERVIEW - ENTERPRISE RELEASE COMMAND CONSOLE
+ * Catalyst V5 • Light Mode Only • Release-Based (NO SPRINTS)
+ * Saudi Ministry of Industry - Mission-critical portfolio management
  */
 
 import React, { useState } from 'react';
 import { useSearchParams, Link, useNavigate } from 'react-router-dom';
 import { 
-  XCircle, 
-  AlertTriangle,
-  CheckCircle2,
+  AlertCircle, 
   Play,
   ChevronRight,
-  RefreshCw,
-  MoreHorizontal,
-  ExternalLink,
 } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { formatDistanceToNow, format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { useGlobalTestMetrics, useGlobalTestCycles } from '../hooks/useGlobalTestMetrics';
 import { useRecentTestActivity } from '../hooks/useRecentTestActivity';
@@ -33,482 +20,617 @@ import { useStoryCoverage } from '../hooks/useStoryCoverage';
 import { ScopeType } from '../hooks/useGlobalTestScope';
 import { RunTestsModal } from '../components/RunTestsModal';
 
-type ReleaseStatus = 'BLOCKED' | 'AT_RISK' | 'READY';
-
 // ═══════════════════════════════════════════════════════════════════
-// COMMAND RAIL - Heavy, dominant, single-row authority bar
+// MOCK DATA - Enterprise release-based test executions
 // ═══════════════════════════════════════════════════════════════════
 
-function CommandRail({ 
-  status, 
-  failedCount,
-  blockedCount,
-  uncoveredCount,
-  passedCount,
-  totalCases,
-  passRate,
-  isLoading,
-  onResolve,
-  onRefresh,
-  onNavigate,
-}: { 
-  status: ReleaseStatus; 
-  failedCount: number;
-  blockedCount: number;
-  uncoveredCount: number;
-  passedCount: number;
-  totalCases: number;
-  passRate: number;
-  isLoading: boolean;
-  onResolve: () => void;
-  onRefresh: () => void;
-  onNavigate: (path: string) => void;
-}) {
-  if (isLoading) {
-    return (
-      <div className="h-12 bg-surface-3 border-b-2 border-border-strong flex items-center px-4">
-        <Skeleton className="h-7 w-full max-w-3xl" />
-      </div>
-    );
-  }
+const MOCK_EXECUTIONS = [
+  { id: '1', name: 'Release 2.4 Regression', owner: null, fail: 4, block: 2, pass: 18, progress: 75, coverage: 62, due: 'Today', critical: true },
+  { id: '2', name: 'Release 2.4 UAT', owner: null, fail: 3, block: 1, pass: 12, progress: 80, coverage: 71, due: 'Today', critical: true },
+  { id: '3', name: 'Release 2.4 API Integration', owner: 'Ahmed K.', fail: 0, block: 1, pass: 24, progress: 96, coverage: 88, due: 'Tomorrow', critical: false },
+  { id: '4', name: 'Release 2.3 Payment Gateway', owner: 'Sara M.', fail: 0, block: 0, pass: 31, progress: 100, coverage: 94, due: 'Dec 18', critical: false },
+  { id: '5', name: 'Release 2.4 Performance', owner: 'Nour A.', fail: 0, block: 0, pass: 8, progress: 67, coverage: 75, due: 'Dec 19', critical: false },
+  { id: '6', name: 'Release 2.3 Auth & Security', owner: 'Adnan T.', fail: 0, block: 0, pass: 19, progress: 100, coverage: 100, due: 'Complete', critical: false },
+  { id: '7', name: 'Release 2.5 Mobile Responsive', owner: 'Layla H.', fail: 0, block: 0, pass: 0, progress: 0, coverage: 0, due: 'Dec 22', critical: false },
+  { id: '8', name: 'Release 2.3 Report Generation', owner: 'Omar F.', fail: 0, block: 0, pass: 14, progress: 100, coverage: 92, due: 'Complete', critical: false },
+];
 
-  const isBlocked = status === 'BLOCKED';
-  const isAtRisk = status === 'AT_RISK';
+const MOCK_ACTIVITY_LOG = [
+  { id: '1', actor: 'Adnan T.', action: 'FAILED', entity: 'Verify user login', time: '2m ago' },
+  { id: '2', actor: 'Sara M.', action: 'PASSED', entity: 'Payment flow test', time: '5m ago' },
+  { id: '3', actor: 'Ahmed K.', action: 'MODIFIED', entity: 'API endpoint check', time: '12m ago' },
+  { id: '4', actor: 'Nour A.', action: 'PASSED', entity: 'Dashboard load t...', time: '18m ago' },
+  { id: '5', actor: 'Adnan T.', action: 'FAILED', entity: 'Password reset ...', time: '23m ago' },
+  { id: '6', actor: 'Layla H.', action: 'CREATED', entity: 'Mobile nav test', time: '31m ago' },
+  { id: '7', actor: 'Omar F.', action: 'PASSED', entity: 'PDF export check', time: '45m ago' },
+  { id: '8', actor: 'Ahmed K.', action: 'MODIFIED', entity: 'Release 2.4 Regr...', time: '1h ago' },
+  { id: '9', actor: 'Sara M.', action: 'PASSED', entity: 'Refund processing', time: '1h ago' },
+  { id: '10', actor: 'Adnan T.', action: 'MODIFIED', entity: 'Auth test suite', time: '2h ago' },
+  { id: '11', actor: 'Nour A.', action: 'CREATED', entity: 'Perf benchmark', time: '2h ago' },
+  { id: '12', actor: 'Omar F.', action: 'PASSED', entity: 'Excel export test', time: '3h ago' },
+];
 
+// ═══════════════════════════════════════════════════════════════════
+// PAGE HEADER - 44px, blue title, meta text, action buttons
+// ═══════════════════════════════════════════════════════════════════
+
+function PageHeader({ onResolve, onRunTests }: { onResolve: () => void; onRunTests: () => void }) {
   return (
-    <div className={cn(
-      "h-12 flex items-stretch border-b-2",
-      isBlocked ? "bg-danger/5 border-danger" : isAtRisk ? "bg-warning/5 border-warning" : "bg-success/5 border-success"
-    )}>
-      {/* 6px left accent bar - ABSOLUTE BLOCK */}
-      <div className={cn(
-        'w-1.5 flex-shrink-0',
-        isBlocked ? 'bg-danger' : isAtRisk ? 'bg-warning' : 'bg-success'
-      )} />
-      
-      {/* Status label - DOMINANT */}
-      <div className={cn(
-        "flex items-center gap-2 px-4 border-r-2",
-        isBlocked ? "border-danger/30" : isAtRisk ? "border-warning/30" : "border-success/30"
-      )}>
-        {isBlocked ? (
-          <XCircle className="h-5 w-5 text-danger" strokeWidth={3} />
-        ) : isAtRisk ? (
-          <AlertTriangle className="h-5 w-5 text-warning" strokeWidth={3} />
-        ) : (
-          <CheckCircle2 className="h-5 w-5 text-success" strokeWidth={3} />
-        )}
-        <span className={cn(
-          "text-sm font-black tracking-tight uppercase",
-          isBlocked ? "text-danger" : isAtRisk ? "text-warning" : "text-success"
-        )}>
-          {isBlocked ? '⛔ RELEASE BLOCKED' : isAtRisk ? '⚠ RELEASE AT RISK' : '✓ READY'}
+    <div 
+      className="flex items-center justify-between h-[44px] px-5 border-b"
+      style={{ 
+        backgroundColor: '#ffffff', 
+        borderColor: '#e5e5e5' 
+      }}
+    >
+      <div className="flex items-center gap-3">
+        <h1 
+          className="text-lg font-bold tracking-tight"
+          style={{ 
+            color: '#2563eb', 
+            letterSpacing: '-0.02em',
+            fontWeight: 700 
+          }}
+        >
+          OVERVIEW
+        </h1>
+        <span 
+          className="text-xs"
+          style={{ color: '#6b7280' }}
+        >
+          147 cases · 58% pass · Project Scope
         </span>
       </div>
-      
-      {/* Severity metrics - NUMBERS OVERPOWER LABELS */}
-      <div className="flex items-stretch">
-        {/* S1 Failed - Always show */}
-        <button
-          onClick={() => failedCount > 0 && onNavigate('executions?status=failed')}
-          className={cn(
-            "flex items-center gap-2 px-4 border-r border-border-strong transition-colors",
-            failedCount > 0 ? "hover:bg-danger/10 cursor-pointer" : "cursor-default"
-          )}
+      <div className="flex items-center gap-2">
+        <Button 
+          size="sm" 
+          onClick={onResolve}
+          className="h-8 px-4 text-xs font-semibold text-white"
+          style={{ backgroundColor: '#ef4444' }}
         >
-          <span className="text-xs font-black tracking-widest text-text-muted">S1 FAIL:</span>
-          <span className={cn(
-            "text-xl font-black tabular-nums leading-none",
-            failedCount > 0 ? "text-danger" : "text-text-muted"
-          )}>
-            {failedCount}
-          </span>
-        </button>
-        
-        {/* S2 Blocked */}
-        <button
-          onClick={() => blockedCount > 0 && onNavigate('executions?status=blocked')}
-          className={cn(
-            "flex items-center gap-2 px-4 border-r border-border-strong transition-colors",
-            blockedCount > 0 ? "hover:bg-warning/10 cursor-pointer" : "cursor-default"
-          )}
+          Resolve Failures
+        </Button>
+        <Button 
+          size="sm" 
+          onClick={onRunTests}
+          className="h-8 px-4 text-xs font-semibold text-white gap-1.5"
+          style={{ backgroundColor: '#2563eb' }}
         >
-          <span className="text-xs font-black tracking-widest text-text-muted">S2 BLOCK:</span>
-          <span className={cn(
-            "text-xl font-black tabular-nums leading-none",
-            blockedCount > 0 ? "text-warning" : "text-text-muted"
-          )}>
-            {blockedCount}
-          </span>
-        </button>
-        
-        {/* S3 Uncovered */}
-        <button
-          onClick={() => uncoveredCount > 0 && onNavigate('traceability')}
-          className={cn(
-            "flex items-center gap-2 px-4 border-r border-border-strong transition-colors",
-            uncoveredCount > 0 ? "hover:bg-surface-3 cursor-pointer" : "cursor-default"
-          )}
-        >
-          <span className="text-xs font-bold tracking-widest text-text-muted">S3 UNCOVERED:</span>
-          <span className="text-lg font-bold tabular-nums leading-none text-text-secondary">
-            {uncoveredCount}
-          </span>
-        </button>
+          <Play className="h-3.5 w-3.5" fill="white" />
+          Run Tests
+        </Button>
       </div>
-      
-      {/* Spacer */}
-      <div className="flex-1" />
-      
-      {/* Right metrics - PASS / TOTAL / RATE */}
-      <div className="flex items-stretch border-l-2 border-border-strong">
-        <button
-          onClick={() => onNavigate('executions?status=passed')}
-          className="flex items-center gap-2 px-4 border-r border-border-default hover:bg-success/10 transition-colors"
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// STATUS RAIL - 48px, single compressed line, gradient background
+// ═══════════════════════════════════════════════════════════════════
+
+function StatusRail() {
+  return (
+    <div 
+      className="flex items-center justify-between h-12 px-5"
+      style={{ 
+        background: 'linear-gradient(90deg, rgba(239,68,68,0.06) 0%, #ffffff 100%)' 
+      }}
+    >
+      {/* Left: Release blocked badge + severity metrics */}
+      <div className="flex items-center gap-6">
+        {/* RELEASE BLOCKED badge */}
+        <div 
+          className="flex items-center gap-2 px-3 py-1.5 rounded"
+          style={{ 
+            backgroundColor: 'rgba(239,68,68,0.12)', 
+            border: '1px solid rgba(239,68,68,0.3)' 
+          }}
         >
-          <span className="text-xs font-bold tracking-wide text-text-muted uppercase">PASS:</span>
-          <span className="text-xl font-black tabular-nums leading-none text-success">
-            {passedCount}
-          </span>
-        </button>
-        
-        <div className="flex items-center gap-2 px-4 border-r border-border-default">
-          <span className="text-xs font-bold tracking-wide text-text-muted uppercase">TOTAL:</span>
-          <span className="text-xl font-black tabular-nums leading-none text-text-primary">
-            {totalCases}
-          </span>
-        </div>
-        
-        <div className="flex items-center gap-2 px-4 border-r border-border-default">
-          <span className="text-xs font-bold tracking-wide text-text-muted uppercase">RATE:</span>
-          <span className={cn(
-            "text-xl font-black tabular-nums leading-none",
-            passRate >= 80 ? "text-success" : passRate >= 60 ? "text-warning" : "text-danger"
-          )}>
-            {passRate}%
-          </span>
-        </div>
-      </div>
-      
-      {/* Actions */}
-      <div className="flex items-center gap-1 px-3">
-        {status !== 'READY' && (
-          <Button
-            size="sm"
-            onClick={onResolve}
-            className="h-8 px-4 text-xs font-black uppercase tracking-wide bg-danger hover:bg-danger/90 text-white"
+          <AlertCircle className="h-4 w-4" style={{ color: '#ef4444' }} />
+          <span 
+            className="text-[11px] font-bold uppercase tracking-wide"
+            style={{ color: '#ef4444' }}
           >
-            Resolve Failures
-          </Button>
-        )}
-        
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-              <MoreHorizontal className="h-5 w-5" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="bg-surface-elevated border-border-strong">
-            <DropdownMenuItem onClick={onRefresh} className="text-xs font-bold">
-              <RefreshCw className="h-4 w-4 mr-2" />
-              Refresh
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => onNavigate('reports')} className="text-xs font-bold">
-              Export Report
-            </DropdownMenuItem>
-            <DropdownMenuItem className="text-xs font-bold text-danger">
-              Escalate
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
-    </div>
-  );
-}
-
-// ═══════════════════════════════════════════════════════════════════
-// EXECUTION TABLE - Dense grid, ≤40px rows, no cards, no whitespace
-// ═══════════════════════════════════════════════════════════════════
-
-function ExecutionTable({ 
-  cycles, 
-  isLoading,
-  onNavigate,
-  onJumpToFailing,
-}: { 
-  cycles: any[];
-  isLoading: boolean;
-  onNavigate: (path: string) => void;
-  onJumpToFailing: (cycleId: string) => void;
-}) {
-  if (isLoading) {
-    return (
-      <div className="divide-y divide-border-default">
-        {[1,2,3,4,5,6,7,8,9,10].map(i => (
-          <div key={i} className="h-10 px-3 flex items-center">
-            <Skeleton className="h-5 w-full" />
-          </div>
-        ))}
-      </div>
-    );
-  }
-
-  if (cycles.length === 0) {
-    return (
-      <div className="h-full flex items-center justify-center bg-surface-2">
-        <div className="text-center py-8">
-          <span className="text-sm font-black text-text-muted uppercase tracking-widest">
-            NO ACTIVE EXECUTIONS
+            RELEASE BLOCKED
           </span>
-          <p className="text-xs text-text-muted mt-1">Create a test cycle to begin</p>
+        </div>
+        
+        {/* Severity metrics inline */}
+        <div className="flex items-center gap-5">
+          <div className="flex items-baseline gap-1.5">
+            <span className="text-[10px] font-semibold uppercase tracking-wide" style={{ color: '#6b7280' }}>
+              S1 FAIL:
+            </span>
+            <span 
+              className="text-lg font-bold tabular-nums"
+              style={{ color: '#ef4444', fontWeight: 700 }}
+            >
+              7
+            </span>
+          </div>
+          
+          <div className="flex items-baseline gap-1.5">
+            <span className="text-[10px] font-semibold uppercase tracking-wide" style={{ color: '#6b7280' }}>
+              S2 BLOCK:
+            </span>
+            <span 
+              className="text-lg font-bold tabular-nums"
+              style={{ color: '#d97706', fontWeight: 700 }}
+            >
+              4
+            </span>
+          </div>
+          
+          <div className="flex items-baseline gap-1.5">
+            <span className="text-[10px] font-semibold uppercase tracking-wide" style={{ color: '#6b7280' }}>
+              S3 UNCOV:
+            </span>
+            <span 
+              className="text-lg font-bold tabular-nums"
+              style={{ color: '#404040', fontWeight: 700 }}
+            >
+              23
+            </span>
+          </div>
         </div>
       </div>
-    );
-  }
-
-  return (
-    <div className="text-xs">
-      {/* Table header - HEAVY, dark */}
-      <div className="grid grid-cols-[1fr_100px_100px_70px_60px] gap-0 bg-surface-3 border-b-2 border-border-strong sticky top-0 z-10">
-        <div className="px-3 py-2 text-[11px] font-black tracking-widest text-text-primary uppercase">CYCLE</div>
-        <div className="px-3 py-2 text-[11px] font-black tracking-widest text-text-primary uppercase">OWNER</div>
-        <div className="px-3 py-2 text-[11px] font-black tracking-widest text-text-primary uppercase text-right">FAIL / BLOCK / PASS</div>
-        <div className="px-3 py-2 text-[11px] font-black tracking-widest text-text-primary uppercase text-right">PROG</div>
-        <div className="px-3 py-2 text-[11px] font-black tracking-widest text-text-primary uppercase text-right">ACTION</div>
-      </div>
       
-      {/* Rows - TIGHT, no card styling, strong borders */}
-      <div className="divide-y divide-border-default">
-        {cycles.map((cycle: any) => {
-          const execs = cycle.test_cycle_executions || [];
-          const total = execs.length;
-          const passed = execs.filter((e: any) => e.status === 'passed').length;
-          const failed = execs.filter((e: any) => e.status === 'failed').length;
-          const blocked = execs.filter((e: any) => e.status === 'blocked').length;
-          const executed = passed + failed + blocked;
-          const progress = total > 0 ? Math.round((executed / total) * 100) : 0;
-          
-          const isFailing = failed > 0;
-          const isBlocked = blocked > 0 && !isFailing;
-          const hasOwner = !!cycle.owner_name;
-
-          return (
-            <div
-              key={cycle.id}
-              className={cn(
-                'grid grid-cols-[1fr_100px_100px_70px_60px] gap-0 items-center h-10 hover:bg-surface-2 transition-colors',
-                isFailing && 'bg-danger/[0.04] border-l-4 border-l-danger',
-                isBlocked && !isFailing && 'bg-warning/[0.03] border-l-4 border-l-warning',
-                !isFailing && !isBlocked && 'border-l-4 border-l-transparent',
-              )}
-            >
-              {/* Cycle name */}
-              <button
-                onClick={() => onNavigate(`cycles/${cycle.id}/execution`)}
-                className="flex items-center gap-2 px-3 text-left truncate group h-full"
-              >
-                {isFailing ? (
-                  <XCircle className="h-4 w-4 text-danger flex-shrink-0" strokeWidth={2.5} />
-                ) : isBlocked ? (
-                  <AlertTriangle className="h-4 w-4 text-warning flex-shrink-0" strokeWidth={2.5} />
-                ) : (
-                  <CheckCircle2 className="h-4 w-4 text-success flex-shrink-0" strokeWidth={2.5} />
-                )}
-                <span className="font-black text-text-primary truncate group-hover:underline">
-                  {cycle.name}
-                </span>
-              </button>
-              
-              {/* Owner - SEVERE if unassigned */}
-              <div className={cn(
-                'px-3 truncate font-bold',
-                hasOwner ? 'text-text-secondary' : 'text-danger font-black'
-              )}>
-                {hasOwner ? cycle.owner_name : '⚠ UNASSIGNED'}
-              </div>
-              
-              {/* Status counts - tabular, numbers dominant */}
-              <div className="px-3 flex items-center justify-end gap-1 font-black tabular-nums">
-                <span className={cn(
-                  "text-sm",
-                  failed > 0 ? 'text-danger' : 'text-text-muted'
-                )}>{failed}</span>
-                <span className="text-text-muted text-xs">/</span>
-                <span className={cn(
-                  "text-sm",
-                  blocked > 0 ? 'text-warning' : 'text-text-muted'
-                )}>{blocked}</span>
-                <span className="text-text-muted text-xs">/</span>
-                <span className={cn(
-                  "text-sm",
-                  passed > 0 ? 'text-success' : 'text-text-muted'
-                )}>{passed}</span>
-              </div>
-              
-              {/* Progress */}
-              <div className="px-3 text-right">
-                <span className={cn(
-                  "text-sm font-black tabular-nums",
-                  progress === 100 ? "text-success" : "text-text-primary"
-                )}>
-                  {progress}%
-                </span>
-              </div>
-              
-              {/* Action */}
-              <div className="px-3 text-right">
-                {isFailing ? (
-                  <button
-                    onClick={() => onJumpToFailing(cycle.id)}
-                    className="text-[11px] font-black text-danger hover:underline uppercase tracking-wide"
-                  >
-                    FIX →
-                  </button>
-                ) : (
-                  <button
-                    onClick={() => onNavigate(`cycles/${cycle.id}/execution`)}
-                    className="text-[11px] font-bold text-brand-primary hover:underline uppercase tracking-wide"
-                  >
-                    VIEW
-                  </button>
-                )}
-              </div>
-            </div>
-          );
-        })}
+      {/* Right: Pass / Total / Rate */}
+      <div className="flex items-center gap-6">
+        <div className="flex items-baseline gap-1.5">
+          <span className="text-[10px] font-semibold uppercase tracking-wide" style={{ color: '#6b7280' }}>
+            PASS:
+          </span>
+          <span 
+            className="text-xl font-bold tabular-nums"
+            style={{ color: '#0d9488', fontWeight: 700 }}
+          >
+            85
+          </span>
+        </div>
+        
+        <div className="flex items-baseline gap-1.5">
+          <span className="text-[10px] font-semibold uppercase tracking-wide" style={{ color: '#6b7280' }}>
+            TOTAL:
+          </span>
+          <span 
+            className="text-xl font-bold tabular-nums"
+            style={{ color: '#0a0a0a', fontWeight: 700 }}
+          >
+            147
+          </span>
+        </div>
+        
+        <div className="flex items-baseline gap-1.5">
+          <span className="text-[10px] font-semibold uppercase tracking-wide" style={{ color: '#6b7280' }}>
+            RATE:
+          </span>
+          <span 
+            className="text-xl font-bold tabular-nums"
+            style={{ color: '#d97706', fontWeight: 700 }}
+          >
+            58%
+          </span>
+        </div>
       </div>
     </div>
   );
 }
 
 // ═══════════════════════════════════════════════════════════════════
-// ACCOUNTABILITY LOG - Forensic audit trail, monospace, no decoration
+// SCOPE BAR - 32px, tab buttons
 // ═══════════════════════════════════════════════════════════════════
 
-function AccountabilityLog({ 
-  activities,
-  isLoading,
-  onNavigate,
-}: { 
-  activities: any[];
-  isLoading: boolean;
-  onNavigate: (path: string) => void;
-}) {
-  if (isLoading) {
-    return (
-      <div className="divide-y divide-border-strong">
-        {[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15].map(i => (
-          <div key={i} className="h-8 px-3 flex items-center">
-            <Skeleton className="h-4 w-full" />
-          </div>
+function ScopeBar({ activeTab, onTabChange }: { activeTab: string; onTabChange: (tab: string) => void }) {
+  return (
+    <div 
+      className="flex items-center justify-between h-8 px-5"
+      style={{ backgroundColor: '#f5f5f5' }}
+    >
+      {/* Left: Scope info */}
+      <div 
+        className="text-[11px] font-semibold uppercase tracking-wide"
+        style={{ color: '#404040', fontWeight: 600 }}
+      >
+        PROJECT SCOPE &nbsp;|&nbsp; 8 ACTIVE CYCLES &nbsp;|&nbsp; 8 DISPLAYED
+      </div>
+      
+      {/* Right: Tab buttons */}
+      <div className="flex items-center gap-1">
+        {['All Cycles', 'Critical', 'In Progress'].map(tab => (
+          <button
+            key={tab}
+            onClick={() => onTabChange(tab)}
+            className={cn(
+              "px-3 py-1 text-[11px] font-medium rounded transition-colors",
+              activeTab === tab 
+                ? "bg-white shadow-sm" 
+                : "hover:bg-white/50"
+            )}
+            style={{ 
+              color: activeTab === tab ? '#2563eb' : '#404040',
+              fontWeight: activeTab === tab ? 600 : 500
+            }}
+          >
+            {tab}
+          </button>
         ))}
       </div>
-    );
-  }
+    </div>
+  );
+}
 
-  if (!activities || activities.length === 0) {
-    return (
-      <div className="h-full flex items-center justify-center bg-surface-2">
-        <span className="text-sm font-black text-text-muted uppercase tracking-widest">
-          NO ACTIVITY
+// ═══════════════════════════════════════════════════════════════════
+// EXECUTIONS TABLE - Dense, 36px rows, sticky headers
+// ═══════════════════════════════════════════════════════════════════
+
+function ExecutionsTable({ onNavigate }: { onNavigate: (path: string) => void }) {
+  const getProgressColor = (val: number) => {
+    if (val >= 90) return '#0d9488';
+    if (val >= 60) return '#d97706';
+    return '#ef4444';
+  };
+
+  return (
+    <div className="flex flex-col h-full">
+      {/* Panel header */}
+      <div 
+        className="flex items-center justify-between px-4 h-9 border-b flex-shrink-0"
+        style={{ backgroundColor: '#f8f8f8', borderColor: '#e5e5e5' }}
+      >
+        <span 
+          className="text-[11px] font-bold uppercase tracking-wider"
+          style={{ color: '#404040', fontWeight: 700, letterSpacing: '0.06em' }}
+        >
+          ACTIVE EXECUTIONS
         </span>
+        <Link
+          to="/tests/cycles"
+          className="text-[11px] font-semibold flex items-center hover:underline"
+          style={{ color: '#2563eb' }}
+        >
+          All Cycles <ChevronRight className="h-3.5 w-3.5" />
+        </Link>
       </div>
-    );
-  }
+      
+      {/* Table */}
+      <div className="flex-1 overflow-auto">
+        <table className="w-full text-xs" style={{ borderCollapse: 'collapse' }}>
+          <thead className="sticky top-0 z-10">
+            <tr style={{ backgroundColor: '#f8f8f8' }}>
+              <th 
+                className="text-left px-4 py-2 font-semibold uppercase tracking-wide border-b"
+                style={{ color: '#6b7280', fontSize: '10px', letterSpacing: '0.05em', width: '28%', borderColor: '#e5e5e5' }}
+              >
+                CYCLE
+              </th>
+              <th 
+                className="text-left px-3 py-2 font-semibold uppercase tracking-wide border-b"
+                style={{ color: '#6b7280', fontSize: '10px', letterSpacing: '0.05em', width: '12%', borderColor: '#e5e5e5' }}
+              >
+                OWNER
+              </th>
+              <th 
+                className="text-center px-3 py-2 font-semibold uppercase tracking-wide border-b"
+                style={{ color: '#6b7280', fontSize: '10px', letterSpacing: '0.05em', width: '16%', borderColor: '#e5e5e5' }}
+              >
+                FAIL / BLOCK / PASS
+              </th>
+              <th 
+                className="text-center px-3 py-2 font-semibold uppercase tracking-wide border-b"
+                style={{ color: '#6b7280', fontSize: '10px', letterSpacing: '0.05em', width: '10%', borderColor: '#e5e5e5' }}
+              >
+                PROGRESS
+              </th>
+              <th 
+                className="text-center px-3 py-2 font-semibold uppercase tracking-wide border-b"
+                style={{ color: '#6b7280', fontSize: '10px', letterSpacing: '0.05em', width: '10%', borderColor: '#e5e5e5' }}
+              >
+                COVERAGE
+              </th>
+              <th 
+                className="text-left px-3 py-2 font-semibold uppercase tracking-wide border-b"
+                style={{ color: '#6b7280', fontSize: '10px', letterSpacing: '0.05em', width: '12%', borderColor: '#e5e5e5' }}
+              >
+                DUE
+              </th>
+              <th 
+                className="text-right px-4 py-2 font-semibold uppercase tracking-wide border-b"
+                style={{ color: '#6b7280', fontSize: '10px', letterSpacing: '0.05em', width: '12%', borderColor: '#e5e5e5' }}
+              >
+                ACTION
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {MOCK_EXECUTIONS.map((row) => {
+              const isCritical = row.fail > 0;
+              const dueColor = row.due === 'Today' ? '#ef4444' : row.due === 'Complete' ? '#0d9488' : '#404040';
+              
+              return (
+                <tr 
+                  key={row.id}
+                  className="border-b transition-colors"
+                  style={{ 
+                    backgroundColor: isCritical ? 'rgba(239,68,68,0.04)' : '#ffffff',
+                    borderColor: '#e5e5e5',
+                    height: '36px'
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!isCritical) e.currentTarget.style.backgroundColor = 'rgba(0,0,0,0.02)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = isCritical ? 'rgba(239,68,68,0.04)' : '#ffffff';
+                  }}
+                >
+                  {/* Cycle name with status dot */}
+                  <td className="px-4 py-2">
+                    <div className="flex items-center gap-2">
+                      <span 
+                        className="w-2 h-2 rounded-full flex-shrink-0"
+                        style={{ 
+                          backgroundColor: isCritical ? '#ef4444' : row.block > 0 ? '#d97706' : '#0d9488' 
+                        }}
+                      />
+                      <span 
+                        className="font-medium truncate"
+                        style={{ color: '#0a0a0a', fontWeight: 500 }}
+                      >
+                        {row.name}
+                      </span>
+                    </div>
+                  </td>
+                  
+                  {/* Owner */}
+                  <td className="px-3 py-2">
+                    {row.owner ? (
+                      <span style={{ color: '#404040', fontWeight: 400 }}>{row.owner}</span>
+                    ) : (
+                      <span className="flex items-center gap-1" style={{ color: '#d97706', fontWeight: 500 }}>
+                        <span>⚠</span> UNASSIGNED
+                      </span>
+                    )}
+                  </td>
+                  
+                  {/* Fail / Block / Pass stats */}
+                  <td className="px-3 py-2 text-center">
+                    <span className="tabular-nums font-semibold">
+                      <span style={{ color: row.fail > 0 ? '#ef4444' : '#9ca3af' }}>{row.fail}</span>
+                      <span style={{ color: '#9ca3af' }}> / </span>
+                      <span style={{ color: row.block > 0 ? '#d97706' : '#9ca3af' }}>{row.block}</span>
+                      <span style={{ color: '#9ca3af' }}> / </span>
+                      <span style={{ color: row.pass > 0 ? '#0d9488' : '#9ca3af' }}>{row.pass}</span>
+                    </span>
+                  </td>
+                  
+                  {/* Progress */}
+                  <td className="px-3 py-2 text-center">
+                    <span 
+                      className="tabular-nums font-semibold"
+                      style={{ color: getProgressColor(row.progress) }}
+                    >
+                      {row.progress}%
+                    </span>
+                  </td>
+                  
+                  {/* Coverage */}
+                  <td className="px-3 py-2 text-center">
+                    <span 
+                      className="tabular-nums font-semibold"
+                      style={{ color: getProgressColor(row.coverage) }}
+                    >
+                      {row.coverage}%
+                    </span>
+                  </td>
+                  
+                  {/* Due */}
+                  <td className="px-3 py-2">
+                    <span style={{ color: dueColor, fontWeight: 500 }}>
+                      {row.due}
+                    </span>
+                  </td>
+                  
+                  {/* Action */}
+                  <td className="px-4 py-2 text-right">
+                    {row.fail > 0 ? (
+                      <button 
+                        className="text-[11px] font-semibold hover:underline"
+                        style={{ color: '#ef4444' }}
+                        onClick={() => onNavigate(`cycles/${row.id}`)}
+                      >
+                        FIX →
+                      </button>
+                    ) : row.progress === 0 ? (
+                      <button 
+                        className="text-[11px] font-semibold hover:underline"
+                        style={{ color: '#0d9488' }}
+                        onClick={() => onNavigate(`cycles/${row.id}`)}
+                      >
+                        Start →
+                      </button>
+                    ) : row.progress < 100 ? (
+                      <button 
+                        className="text-[11px] font-semibold hover:underline"
+                        style={{ color: '#d97706' }}
+                        onClick={() => onNavigate(`cycles/${row.id}`)}
+                      >
+                        Run →
+                      </button>
+                    ) : (
+                      <button 
+                        className="text-[11px] font-semibold hover:underline"
+                        style={{ color: '#2563eb' }}
+                        onClick={() => onNavigate(`cycles/${row.id}`)}
+                      >
+                        View →
+                      </button>
+                    )}
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
 
-  const getAction = (type: string) => {
-    switch (type) {
-      case 'execution_failed': return 'FAILED';
-      case 'execution_completed': return 'COMPLETED';
-      case 'status_changed': return 'CHANGED';
-      case 'case_updated': return 'UPDATED';
-      case 'case_created': return 'CREATED';
-      default: return 'MODIFIED';
+// ═══════════════════════════════════════════════════════════════════
+// ACCOUNTABILITY LOG - Forensic audit trail, 320px fixed width
+// ═══════════════════════════════════════════════════════════════════
+
+function AccountabilityLog() {
+  const getActionStyle = (action: string) => {
+    switch (action) {
+      case 'FAILED':
+        return { backgroundColor: 'rgba(239,68,68,0.1)', color: '#ef4444' };
+      case 'PASSED':
+        return { backgroundColor: 'rgba(13,148,136,0.1)', color: '#0d9488' };
+      case 'MODIFIED':
+        return { backgroundColor: 'rgba(37,99,235,0.1)', color: '#2563eb' };
+      case 'CREATED':
+        return { backgroundColor: 'rgba(107,114,128,0.1)', color: '#404040' };
+      default:
+        return { backgroundColor: 'rgba(107,114,128,0.1)', color: '#404040' };
     }
   };
 
   return (
-    <div className="divide-y divide-border-strong text-xs">
-      {/* Header */}
-      <div className="grid grid-cols-[70px_60px_1fr_50px] gap-0 bg-surface-3 border-b-2 border-border-strong sticky top-0 z-10">
-        <div className="px-2 py-1.5 text-[10px] font-black tracking-widest text-text-primary uppercase">ACTOR</div>
-        <div className="px-2 py-1.5 text-[10px] font-black tracking-widest text-text-primary uppercase">ACTION</div>
-        <div className="px-2 py-1.5 text-[10px] font-black tracking-widest text-text-primary uppercase">ENTITY</div>
-        <div className="px-2 py-1.5 text-[10px] font-black tracking-widest text-text-primary uppercase text-right">TIME</div>
+    <div className="flex flex-col h-full">
+      {/* Panel header */}
+      <div 
+        className="flex items-center justify-between px-4 h-9 border-b flex-shrink-0"
+        style={{ backgroundColor: '#f8f8f8', borderColor: '#e5e5e5' }}
+      >
+        <span 
+          className="text-[11px] font-bold uppercase tracking-wider"
+          style={{ color: '#404040', fontWeight: 700, letterSpacing: '0.06em' }}
+        >
+          ACCOUNTABILITY LOG
+        </span>
+        <button
+          className="text-[11px] font-semibold hover:underline"
+          style={{ color: '#2563eb' }}
+        >
+          Export →
+        </button>
       </div>
       
-      {activities.map((activity: any) => (
-        <button
-          key={activity.id}
-          onClick={() => {
-            if (activity.entity_type === 'test_case') {
-              onNavigate(`cases?caseId=${activity.entity_id}`);
-            } else if (activity.entity_type === 'test_cycle') {
-              onNavigate(`cycles?cycleId=${activity.entity_id}`);
-            }
-          }}
-          className="w-full grid grid-cols-[70px_60px_1fr_50px] gap-0 items-center h-8 text-left hover:bg-surface-2 transition-colors group"
-        >
-          {/* Actor - BOLD, truncate */}
-          <span className="px-2 font-black text-text-primary truncate">
-            {activity.user_name?.split(' ')[0] || 'System'}
-          </span>
-          
-          {/* Action */}
-          <span className={cn(
-            "px-2 font-bold uppercase tracking-wide text-[10px]",
-            activity.activity_type === 'execution_failed' ? 'text-danger' : 'text-text-muted'
-          )}>
-            {getAction(activity.activity_type)}
-          </span>
-          
-          {/* Entity */}
-          <span className="px-2 font-semibold text-text-secondary truncate group-hover:underline">
-            {activity.entity_title}
-          </span>
-          
-          {/* Time - MONOSPACE */}
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <span className="px-2 text-[10px] text-text-muted tabular-nums font-mono text-right">
-                {formatDistanceToNow(new Date(activity.created_at), { addSuffix: false }).replace(' minutes', 'm').replace(' hours', 'h').replace(' days', 'd').replace('about ', '').replace('less than a minute', '<1m')}
-              </span>
-            </TooltipTrigger>
-            <TooltipContent side="left" className="text-xs font-mono">
-              {format(new Date(activity.created_at), 'yyyy-MM-dd HH:mm:ss')}
-            </TooltipContent>
-          </Tooltip>
-        </button>
-      ))}
+      {/* Table */}
+      <div className="flex-1 overflow-auto">
+        <table className="w-full" style={{ borderCollapse: 'collapse', fontSize: '11px' }}>
+          <thead className="sticky top-0 z-10">
+            <tr style={{ backgroundColor: '#f8f8f8' }}>
+              <th 
+                className="text-left px-3 py-1.5 font-semibold uppercase tracking-wide border-b"
+                style={{ color: '#6b7280', fontSize: '10px', borderColor: '#e5e5e5' }}
+              >
+                ACTOR
+              </th>
+              <th 
+                className="text-left px-2 py-1.5 font-semibold uppercase tracking-wide border-b"
+                style={{ color: '#6b7280', fontSize: '10px', borderColor: '#e5e5e5' }}
+              >
+                ACTION
+              </th>
+              <th 
+                className="text-left px-2 py-1.5 font-semibold uppercase tracking-wide border-b"
+                style={{ color: '#6b7280', fontSize: '10px', borderColor: '#e5e5e5' }}
+              >
+                ENTITY
+              </th>
+              <th 
+                className="text-right px-3 py-1.5 font-semibold uppercase tracking-wide border-b"
+                style={{ color: '#6b7280', fontSize: '10px', borderColor: '#e5e5e5' }}
+              >
+                TIME
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {MOCK_ACTIVITY_LOG.map((row) => {
+              const actionStyle = getActionStyle(row.action);
+              
+              return (
+                <tr 
+                  key={row.id}
+                  className="border-b transition-colors cursor-pointer"
+                  style={{ 
+                    borderColor: '#f0f0f0',
+                    backgroundColor: '#ffffff'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = 'rgba(0,0,0,0.02)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = '#ffffff';
+                  }}
+                >
+                  {/* Actor */}
+                  <td className="px-3 py-2">
+                    <span style={{ color: '#0a0a0a', fontWeight: 500 }}>
+                      {row.actor}
+                    </span>
+                  </td>
+                  
+                  {/* Action badge */}
+                  <td className="px-2 py-2">
+                    <span 
+                      className="px-1.5 py-0.5 text-[10px] font-semibold rounded"
+                      style={{ 
+                        ...actionStyle,
+                        borderRadius: '3px'
+                      }}
+                    >
+                      {row.action}
+                    </span>
+                  </td>
+                  
+                  {/* Entity */}
+                  <td className="px-2 py-2">
+                    <span 
+                      className="truncate block max-w-[120px]"
+                      style={{ color: '#404040' }}
+                    >
+                      {row.entity}
+                    </span>
+                  </td>
+                  
+                  {/* Time */}
+                  <td className="px-3 py-2 text-right">
+                    <span style={{ color: '#9ca3af', fontSize: '10px' }}>
+                      {row.time}
+                    </span>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
 
 // ═══════════════════════════════════════════════════════════════════
-// MAIN PAGE - Zero whitespace, packed, scrolling required
+// MAIN PAGE COMPONENT
 // ═══════════════════════════════════════════════════════════════════
 
 export function GlobalTestsOverviewPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [runTestsOpen, setRunTestsOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState('All Cycles');
 
   const scopeType = (searchParams.get('scopeType') as ScopeType) || 'project';
   const scopeId = searchParams.get('scopeId');
 
-  const isProjectScope = scopeType === 'project' && !!scopeId;
-
-  const buildUrl = (path: string, additionalParams?: string) => {
+  const buildUrl = (path: string) => {
     const base = `/tests/${path}`;
     const params = new URLSearchParams();
     params.set('scopeType', scopeType);
     if (scopeId) params.set('scopeId', scopeId);
-    if (additionalParams) {
-      additionalParams.split('&').forEach(p => {
-        const [k, v] = p.split('=');
-        if (k && v) params.set(k, v);
-      });
-    }
     return `${base}?${params.toString()}`;
   };
 
@@ -516,142 +638,49 @@ export function GlobalTestsOverviewPage() {
     navigate(buildUrl(path));
   };
 
-  const handleJumpToFailing = (cycleId: string) => {
-    navigate(buildUrl(`cycles/${cycleId}/execution`, 'filter=failed'));
+  const handleResolve = () => {
+    handleNavigate('executions?status=failed');
   };
-
-  // Fetch data
-  const { metrics, isLoading: metricsLoading, refetch } = useGlobalTestMetrics(scopeType, scopeId);
-  const { data: cycles, isLoading: cyclesLoading } = useGlobalTestCycles(scopeType, scopeId);
-  const { data: activities, isLoading: activitiesLoading } = useRecentTestActivity(scopeType, scopeId, 30);
-  const { data: coverage, isLoading: coverageLoading } = useStoryCoverage(scopeType, scopeId);
-
-  const isLoading = metricsLoading || coverageLoading;
-
-  // Determine release status
-  const determineReleaseStatus = (): ReleaseStatus => {
-    if (!metrics) return 'READY';
-    if ((metrics.failed || 0) > 0) return 'BLOCKED';
-    if ((metrics.blocked || 0) > 2) return 'BLOCKED';
-    if ((metrics.blocked || 0) > 0) return 'AT_RISK';
-    if ((coverage?.coveragePercent || 0) < 40) return 'AT_RISK';
-    if ((metrics.passRate || 0) < 70) return 'AT_RISK';
-    return 'READY';
-  };
-
-  const releaseStatus = determineReleaseStatus();
-
-  // Sort cycles by failure severity - show more
-  const sortedCycles = (cycles || [])
-    .filter((c: any) => ['active', 'in_progress'].includes(c.status))
-    .map((cycle: any) => {
-      const execs = cycle.test_cycle_executions || [];
-      const failed = execs.filter((e: any) => e.status === 'failed').length;
-      const blocked = execs.filter((e: any) => e.status === 'blocked').length;
-      return { ...cycle, _failed: failed, _blocked: blocked };
-    })
-    .sort((a: any, b: any) => {
-      if (a._failed !== b._failed) return b._failed - a._failed;
-      return b._blocked - a._blocked;
-    })
-    .slice(0, 25); // More rows
-
-  // Run button guardrails
-  const canRun = isProjectScope && (metrics?.totalCases || 0) > 0;
-  const runDisabledReason = !isProjectScope 
-    ? 'Operational testing is available at Project scope' 
-    : (metrics?.totalCases || 0) === 0 
-    ? 'Create test cases and a cycle first' 
-    : '';
 
   return (
-    <div className="flex flex-col h-full -m-6 bg-surface-1">
-      {/* 1. COMMAND RAIL - Dominant status bar */}
-      <CommandRail 
-        status={releaseStatus}
-        failedCount={metrics?.failed || 0}
-        blockedCount={metrics?.blocked || 0}
-        uncoveredCount={coverage?.uncoveredCount || 0}
-        passedCount={metrics?.passed || 0}
-        totalCases={metrics?.totalCases || 0}
-        passRate={metrics?.passRate || 0}
-        isLoading={isLoading}
-        onResolve={() => handleNavigate('executions?status=failed&status=blocked')}
-        onRefresh={refetch}
-        onNavigate={handleNavigate}
+    <div 
+      className="flex flex-col h-full -m-6"
+      style={{ backgroundColor: '#fafafa', fontFamily: 'Inter, sans-serif' }}
+    >
+      {/* 1. PAGE HEADER - 44px */}
+      <PageHeader 
+        onResolve={handleResolve}
+        onRunTests={() => setRunTestsOpen(true)}
       />
-
-      {/* Context bar - Compact, operational */}
-      <div className="flex items-center justify-between px-4 h-8 bg-surface-3 border-b-2 border-border-strong">
-        <div className="flex items-center gap-3 text-xs">
-          <span className="font-black text-text-primary uppercase tracking-widest">
-            {scopeType === 'project' ? 'PROJECT SCOPE' : 'PROGRAM SCOPE'}
-          </span>
-          <span className="text-border-strong">|</span>
-          <span className="text-text-secondary font-bold tabular-nums">{metrics?.activeCycles ?? 0} ACTIVE CYCLES</span>
-          <span className="text-border-strong">|</span>
-          <span className="text-text-secondary font-bold tabular-nums">{sortedCycles.length} DISPLAYED</span>
+      
+      {/* 2. STATUS RAIL - 48px */}
+      <StatusRail />
+      
+      {/* 3. SCOPE BAR - 32px */}
+      <ScopeBar activeTab={activeTab} onTabChange={setActiveTab} />
+      
+      {/* 4. MAIN CONTENT - Split layout */}
+      <div 
+        className="flex-1 grid overflow-hidden"
+        style={{ 
+          gridTemplateColumns: '1fr 320px',
+          height: 'calc(100vh - 140px)'
+        }}
+      >
+        {/* Left: Executions Table */}
+        <div 
+          className="border-r overflow-hidden"
+          style={{ borderColor: '#e5e5e5', backgroundColor: '#ffffff' }}
+        >
+          <ExecutionsTable onNavigate={handleNavigate} />
         </div>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <span>
-              <Button
-                size="sm"
-                onClick={() => setRunTestsOpen(true)}
-                disabled={!canRun}
-                className="h-6 px-3 text-[11px] font-black uppercase tracking-wide bg-brand-primary hover:bg-brand-primary-hover text-white disabled:opacity-50 gap-1"
-              >
-                <Play className="h-3 w-3" strokeWidth={3} />
-                RUN TESTS
-              </Button>
-            </span>
-          </TooltipTrigger>
-          {runDisabledReason && (
-            <TooltipContent className="text-xs font-bold">{runDisabledReason}</TooltipContent>
-          )}
-        </Tooltip>
-      </div>
-
-      {/* 2. SPLIT VIEW - 65/35 fixed grid, no gaps */}
-      <div className="flex-1 grid grid-cols-[1fr_320px] divide-x-2 divide-border-strong overflow-hidden">
         
-        {/* LEFT: ACTIVE EXECUTIONS */}
-        <div className="flex flex-col min-h-0 overflow-hidden bg-surface-0">
-          <div className="flex items-center justify-between px-3 h-9 border-b-2 border-border-strong bg-surface-3">
-            <h2 className="text-[11px] font-black tracking-widest text-text-primary uppercase">
-              ACTIVE EXECUTIONS
-            </h2>
-            <Link
-              to={buildUrl('cycles')}
-              className="text-[11px] font-black text-brand-primary hover:underline flex items-center uppercase tracking-wide"
-            >
-              ALL CYCLES <ChevronRight className="h-4 w-4" />
-            </Link>
-          </div>
-          <div className="flex-1 overflow-y-auto">
-            <ExecutionTable 
-              cycles={sortedCycles}
-              isLoading={cyclesLoading}
-              onNavigate={handleNavigate}
-              onJumpToFailing={handleJumpToFailing}
-            />
-          </div>
-        </div>
-
-        {/* RIGHT: ACCOUNTABILITY LOG */}
-        <div className="flex flex-col min-h-0 overflow-hidden bg-surface-0">
-          <div className="flex items-center px-3 h-9 border-b-2 border-border-strong bg-surface-3">
-            <h2 className="text-[11px] font-black tracking-widest text-text-primary uppercase">
-              ACCOUNTABILITY LOG
-            </h2>
-          </div>
-          <div className="flex-1 overflow-y-auto">
-            <AccountabilityLog 
-              activities={activities || []}
-              isLoading={activitiesLoading}
-              onNavigate={handleNavigate}
-            />
-          </div>
+        {/* Right: Accountability Log */}
+        <div 
+          className="overflow-hidden"
+          style={{ backgroundColor: '#ffffff' }}
+        >
+          <AccountabilityLog />
         </div>
       </div>
 
