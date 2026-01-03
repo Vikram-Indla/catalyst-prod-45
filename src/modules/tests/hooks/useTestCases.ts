@@ -1,12 +1,11 @@
 /**
  * useTestCases Hook
- * CRUD operations for test cases with permission gating
+ * CRUD operations for test cases using action pipeline
  */
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@/lib/auth';
 import { usePermission } from '@/hooks/usePermission';
-import { toast } from 'sonner';
 import {
   listTestCases,
   getTestCaseById,
@@ -20,6 +19,7 @@ import {
   TestCaseInput,
   TestCasePatch,
 } from '../api/testCases';
+import { createPipelineContext } from '../lib/actionPipeline';
 
 export interface QueryState {
   filters: TestCaseFilters;
@@ -37,7 +37,8 @@ const defaultQueryState: QueryState = {
  * Hook for listing test cases with CRUD operations
  */
 export function useTestCases(
-  projectId: string | null,
+  scopeType: 'program' | 'project',
+  scopeId: string | null,
   queryState: Partial<QueryState> = {}
 ) {
   const { user } = useAuth();
@@ -46,10 +47,10 @@ export function useTestCases(
   const state = { ...defaultQueryState, ...queryState };
 
   // Permission checks
-  const { hasPermission: canView } = usePermission('test_cases', 'view', 'program', projectId || undefined);
-  const { hasPermission: canCreate } = usePermission('test_cases', 'create', 'program', projectId || undefined);
-  const { hasPermission: canEdit } = usePermission('test_cases', 'edit', 'program', projectId || undefined);
-  const { hasPermission: canDelete } = usePermission('test_cases', 'delete', 'program', projectId || undefined);
+  const { hasPermission: canView } = usePermission('test_cases', 'view', 'program', scopeId || undefined);
+  const { hasPermission: canCreate } = usePermission('test_cases', 'create', 'program', scopeId || undefined);
+  const { hasPermission: canEdit } = usePermission('test_cases', 'edit', 'program', scopeId || undefined);
+  const { hasPermission: canDelete } = usePermission('test_cases', 'delete', 'program', scopeId || undefined);
 
   // List query
   const {
@@ -58,71 +59,88 @@ export function useTestCases(
     error,
     refetch,
   } = useQuery({
-    queryKey: ['test-cases', projectId, state],
+    queryKey: ['test-cases', scopeId, state],
     queryFn: async () => {
-      if (!projectId) return { data: [], total: 0, page: 1, pageSize: 50, totalPages: 0 };
-      return await listTestCases(projectId, state.filters, state.pagination, state.sort);
+      if (!scopeId) return { data: [], total: 0, page: 1, pageSize: 50, totalPages: 0 };
+      return await listTestCases(scopeType, scopeId, state.filters, state.pagination, state.sort);
     },
-    enabled: !!user && !!projectId && canView,
+    enabled: !!user && !!scopeId && canView,
     staleTime: 15000,
   });
 
   // Components for filter
   const { data: components } = useQuery({
-    queryKey: ['test-case-components', projectId],
+    queryKey: ['test-case-components', scopeId],
     queryFn: async () => {
-      if (!projectId) return [];
-      return await getTestCaseComponents(projectId);
+      if (!scopeId) return [];
+      return await getTestCaseComponents(scopeType, scopeId);
     },
-    enabled: !!user && !!projectId,
+    enabled: !!user && !!scopeId,
     staleTime: 60000,
   });
 
   // Create mutation
   const createMutation = useMutation({
     mutationFn: async (input: TestCaseInput) => {
-      if (!projectId || !user) throw new Error('Not authorized');
-      return await createTestCase(projectId, user.id, input);
+      if (!scopeId || !user) throw new Error('Not authorized');
+      const context = createPipelineContext(
+        user.id,
+        scopeType,
+        scopeId,
+        scopeType === 'program' ? scopeId : null,
+        scopeType === 'project' ? scopeId : null
+      );
+      const result = await createTestCase({
+        projectId: scopeType === 'project' ? scopeId : '',
+        input,
+        context,
+        queryClient,
+      });
+      return result.data;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['test-cases', projectId] });
-      queryClient.invalidateQueries({ queryKey: ['test-kpis', projectId] });
-      toast.success('Test case created');
-    },
-    onError: (error: Error) => {
-      toast.error(error.message);
-    },
+    onError: () => {}, // Error toast handled by pipeline
   });
 
   // Update mutation
   const updateMutation = useMutation({
     mutationFn: async (patch: TestCasePatch) => {
-      if (!user) throw new Error('Not authorized');
-      return await updateTestCase(user.id, patch);
+      if (!user || !scopeId) throw new Error('Not authorized');
+      const context = createPipelineContext(
+        user.id,
+        scopeType,
+        scopeId,
+        scopeType === 'program' ? scopeId : null,
+        scopeType === 'project' ? scopeId : null
+      );
+      const result = await updateTestCase({
+        patch,
+        context,
+        queryClient,
+      });
+      return result.data;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['test-cases', projectId] });
-      toast.success('Test case updated');
-    },
-    onError: (error: Error) => {
-      toast.error(error.message);
-    },
+    onError: () => {}, // Error toast handled by pipeline
   });
 
   // Archive mutation
   const archiveMutation = useMutation({
     mutationFn: async (id: string) => {
-      if (!user) throw new Error('Not authorized');
-      return await archiveTestCase(id, user.id);
+      if (!user || !scopeId) throw new Error('Not authorized');
+      const context = createPipelineContext(
+        user.id,
+        scopeType,
+        scopeId,
+        scopeType === 'program' ? scopeId : null,
+        scopeType === 'project' ? scopeId : null
+      );
+      const result = await archiveTestCase({
+        id,
+        context,
+        queryClient,
+      });
+      return result.data;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['test-cases', projectId] });
-      queryClient.invalidateQueries({ queryKey: ['test-kpis', projectId] });
-      toast.success('Test case archived');
-    },
-    onError: (error: Error) => {
-      toast.error(error.message);
-    },
+    onError: () => {}, // Error toast handled by pipeline
   });
 
   return {
