@@ -271,13 +271,13 @@ export function CreateTestCaseModal({
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="text-xs text-text-tertiary mb-1 block">Folder</label>
-              <Select value={formData.folder_id || ''} onValueChange={(v) => setFormData({ ...formData, folder_id: v })}>
+              <Select value={formData.folder_id || '__none__'} onValueChange={(v) => setFormData({ ...formData, folder_id: v === '__none__' ? '' : v })}>
                 <SelectTrigger className="h-9 text-xs bg-surface-2">
                   <FolderOpen className="h-3 w-3 mr-1 text-text-tertiary" />
                   <SelectValue placeholder="Select folder" />
                 </SelectTrigger>
                 <SelectContent className="bg-surface-1">
-                  <SelectItem value="">No folder</SelectItem>
+                  <SelectItem value="__none__">No folder</SelectItem>
                   {folders.map(f => (
                     <SelectItem key={f.id} value={f.id}>{f.name}</SelectItem>
                   ))}
