@@ -1,7 +1,8 @@
 /**
- * TEST CASES PAGE - Production Grade
- * Dense enterprise table with bulk select, filters, sort, pagination
- * Full CRUD with drawer integration and permission gating
+ * TEST CASES PAGE - Complete Test Management
+ * Left sidebar: Folder tree for organization
+ * Center: Dense enterprise table with bulk select, filters, sort, pagination
+ * Right: Detail panel with steps editor
  */
 
 import React, { useState, useMemo, useCallback } from 'react';
@@ -16,15 +17,15 @@ import {
   MoreHorizontal,
   Trash2,
   Archive,
-  UserPlus,
   FolderInput,
-  CheckSquare,
   SortAsc,
   SortDesc,
   X,
   RefreshCw,
   ChevronLeft,
   ChevronRight,
+  PanelLeftClose,
+  PanelLeft,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -52,13 +53,19 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
+import {
+  ResizablePanelGroup,
+  ResizablePanel,
+  ResizableHandle,
+} from '@/components/ui/resizable';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { useProjectContext } from '@/hooks/useProjectContext';
 import { useProjectTestCases } from '@/hooks/useProjectTestMetrics';
 import { usePermission } from '@/hooks/usePermission';
 import { CreateTestCaseModal } from '@/modules/in-jira/components/tests/CreateTestCaseModal';
-import { TestCaseDrawer } from '@/modules/in-jira/components/tests/TestCaseDrawer';
+import { TestFolderTree } from '@/modules/tests/components/TestFolderTree';
+import { TestCaseDetailPanel } from '@/modules/tests/components/TestCaseDetailPanel';
 import { toast } from 'sonner';
 
 // ═══════════════════════════════════════════════════════════════════
@@ -117,11 +124,14 @@ export function TestsCasesPage() {
   const { hasPermission: canEdit } = usePermission('test_cases', 'edit', 'program', projectId);
   const { hasPermission: canDelete } = usePermission('test_cases', 'delete', 'program', projectId);
   
+  // Panel state
+  const [showFolderTree, setShowFolderTree] = useState(true);
+  const [selectedFolderId, setSelectedFolderId] = useState<string | null>(null);
+  const [selectedTestCaseId, setSelectedTestCaseId] = useState<string | null>(null);
+  
   // UI State
   const [searchQuery, setSearchQuery] = useState('');
   const [createModalOpen, setCreateModalOpen] = useState(false);
-  const [drawerOpen, setDrawerOpen] = useState(false);
-  const [selectedTestCase, setSelectedTestCase] = useState<any>(null);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [filtersOpen, setFiltersOpen] = useState(false);
   
@@ -166,6 +176,11 @@ export function TestsCasesPage() {
   const processedCases = useMemo(() => {
     let result = [...(testCases || [])];
     
+    // Filter by folder
+    if (selectedFolderId) {
+      result = result.filter(tc => tc.folder_id === selectedFolderId);
+    }
+    
     // Apply search filter
     if (searchQuery) {
       const q = searchQuery.toLowerCase();
@@ -209,7 +224,7 @@ export function TestsCasesPage() {
     });
     
     return result;
-  }, [testCases, searchQuery, filters, sortField, sortOrder]);
+  }, [testCases, selectedFolderId, searchQuery, filters, sortField, sortOrder]);
 
   // Paginate
   const totalCount = processedCases.length;
@@ -267,10 +282,21 @@ export function TestsCasesPage() {
     }
   };
 
+  // Move to folder
+  const handleMoveToFolder = async (folderId: string | null) => {
+    const ids = Array.from(selectedIds);
+    try {
+      await Promise.all(ids.map(id => updateTestCase({ id, folder_id: folderId })));
+      toast.success(`Moved ${ids.length} test cases`);
+      clearSelection();
+    } catch (err) {
+      toast.error('Failed to move some test cases');
+    }
+  };
+
   // Row handlers
   const handleRowClick = (tc: any) => {
-    setSelectedTestCase(tc);
-    setDrawerOpen(true);
+    setSelectedTestCaseId(tc.id);
   };
 
   const handleSort = (field: SortField) => {
@@ -289,17 +315,9 @@ export function TestsCasesPage() {
 
   const activeFilterCount = Object.values(filters).filter(Boolean).length;
 
-  // Handle update from drawer
+  // Handle update from detail panel
   const handleUpdateTestCase = async (data: any) => {
     await updateTestCase(data);
-    setSelectedTestCase((prev: any) => prev ? { ...prev, ...data } : null);
-  };
-
-  // Handle delete from drawer
-  const handleDeleteTestCase = async (id: string) => {
-    await deleteTestCase(id);
-    setDrawerOpen(false);
-    setSelectedTestCase(null);
   };
 
   if (error) {
@@ -314,381 +332,437 @@ export function TestsCasesPage() {
   }
 
   return (
-    <div className="space-y-4 max-w-full">
-      {/* Toolbar */}
-      <div className="flex items-center justify-between gap-4 flex-wrap">
-        <div className="flex items-center gap-2 flex-1 min-w-0">
-          {/* Search */}
-          <div className="relative w-64">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-tertiary" />
-            <Input
-              placeholder="Search test cases..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-9 bg-surface-2 border-border-default h-9"
-            />
-          </div>
-          
-          {/* Filters Popover */}
-          <Popover open={filtersOpen} onOpenChange={setFiltersOpen}>
-            <PopoverTrigger asChild>
-              <Button variant="outline" size="sm" className="gap-1.5 h-9">
-                <Filter className="h-4 w-4" />
-                Filters
-                {activeFilterCount > 0 && (
-                  <Badge variant="secondary" className="ml-1 h-5 px-1.5 text-xs">
-                    {activeFilterCount}
-                  </Badge>
-                )}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-72 bg-surface-1 border-border-default" align="start">
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium text-text-primary">Filters</span>
-                  {activeFilterCount > 0 && (
-                    <Button variant="ghost" size="sm" onClick={clearFilters} className="h-7 text-xs">
-                      Clear all
+    <div className="h-[calc(100vh-140px)] flex">
+      <ResizablePanelGroup direction="horizontal" className="flex-1">
+        {/* Left Panel - Folder Tree */}
+        {showFolderTree && (
+          <>
+            <ResizablePanel defaultSize={18} minSize={15} maxSize={30}>
+              <div className="h-full bg-surface-2 border-r border-border-default">
+                <TestFolderTree
+                  programId={programId}
+                  entityType="test_case"
+                  selectedFolderId={selectedFolderId}
+                  onSelectFolder={setSelectedFolderId}
+                />
+              </div>
+            </ResizablePanel>
+            <ResizableHandle className="w-1 bg-border-default hover:bg-accent-primary/50 transition-colors" />
+          </>
+        )}
+
+        {/* Center Panel - Test Cases Table */}
+        <ResizablePanel defaultSize={selectedTestCaseId ? 50 : 82}>
+          <div className="h-full flex flex-col p-4 overflow-hidden">
+            {/* Toolbar */}
+            <div className="flex items-center justify-between gap-4 flex-wrap mb-4">
+              <div className="flex items-center gap-2 flex-1 min-w-0">
+                {/* Toggle folder tree */}
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-9 w-9"
+                  onClick={() => setShowFolderTree(!showFolderTree)}
+                >
+                  {showFolderTree ? <PanelLeftClose className="h-4 w-4" /> : <PanelLeft className="h-4 w-4" />}
+                </Button>
+
+                {/* Search */}
+                <div className="relative w-64">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-tertiary" />
+                  <Input
+                    placeholder="Search test cases..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="pl-9 bg-surface-2 border-border-default h-9"
+                  />
+                </div>
+                
+                {/* Filters Popover */}
+                <Popover open={filtersOpen} onOpenChange={setFiltersOpen}>
+                  <PopoverTrigger asChild>
+                    <Button variant="outline" size="sm" className="gap-1.5 h-9">
+                      <Filter className="h-4 w-4" />
+                      Filters
+                      {activeFilterCount > 0 && (
+                        <Badge variant="secondary" className="ml-1 h-5 px-1.5 text-xs">
+                          {activeFilterCount}
+                        </Badge>
+                      )}
                     </Button>
-                  )}
-                </div>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-72 bg-surface-1 border-border-default" align="start">
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-medium text-text-primary">Filters</span>
+                        {activeFilterCount > 0 && (
+                          <Button variant="ghost" size="sm" onClick={clearFilters} className="h-7 text-xs">
+                            Clear all
+                          </Button>
+                        )}
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <label className="text-xs text-text-tertiary">Status</label>
+                        <Select value={filters.status || ''} onValueChange={(v) => setFilters(f => ({ ...f, status: v || null }))}>
+                          <SelectTrigger className="h-8 bg-surface-2 border-border-default">
+                            <SelectValue placeholder="Any status" />
+                          </SelectTrigger>
+                          <SelectContent className="bg-surface-1 border-border-default">
+                            <SelectItem value="">Any status</SelectItem>
+                            <SelectItem value="draft">Draft</SelectItem>
+                            <SelectItem value="under_review">Under Review</SelectItem>
+                            <SelectItem value="approved">Approved</SelectItem>
+                            <SelectItem value="published">Published</SelectItem>
+                            <SelectItem value="deprecated">Deprecated</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <label className="text-xs text-text-tertiary">Priority</label>
+                        <Select value={filters.priority || ''} onValueChange={(v) => setFilters(f => ({ ...f, priority: v || null }))}>
+                          <SelectTrigger className="h-8 bg-surface-2 border-border-default">
+                            <SelectValue placeholder="Any priority" />
+                          </SelectTrigger>
+                          <SelectContent className="bg-surface-1 border-border-default">
+                            <SelectItem value="">Any priority</SelectItem>
+                            <SelectItem value="critical">Critical</SelectItem>
+                            <SelectItem value="high">High</SelectItem>
+                            <SelectItem value="medium">Medium</SelectItem>
+                            <SelectItem value="low">Low</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <label className="text-xs text-text-tertiary">Type</label>
+                        <Select value={filters.type || ''} onValueChange={(v) => setFilters(f => ({ ...f, type: v || null }))}>
+                          <SelectTrigger className="h-8 bg-surface-2 border-border-default">
+                            <SelectValue placeholder="Any type" />
+                          </SelectTrigger>
+                          <SelectContent className="bg-surface-1 border-border-default">
+                            <SelectItem value="">Any type</SelectItem>
+                            <SelectItem value="manual">Manual</SelectItem>
+                            <SelectItem value="automated">Automated</SelectItem>
+                            <SelectItem value="bdd">BDD</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      
+                      {uniqueComponents.length > 0 && (
+                        <div className="space-y-2">
+                          <label className="text-xs text-text-tertiary">Component</label>
+                          <Select value={filters.component || ''} onValueChange={(v) => setFilters(f => ({ ...f, component: v || null }))}>
+                            <SelectTrigger className="h-8 bg-surface-2 border-border-default">
+                              <SelectValue placeholder="Any component" />
+                            </SelectTrigger>
+                            <SelectContent className="bg-surface-1 border-border-default">
+                              <SelectItem value="">Any component</SelectItem>
+                              {uniqueComponents.map(c => (
+                                <SelectItem key={c} value={c}>{c}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      )}
+                    </div>
+                  </PopoverContent>
+                </Popover>
                 
-                <div className="space-y-2">
-                  <label className="text-xs text-text-tertiary">Status</label>
-                  <Select value={filters.status || ''} onValueChange={(v) => setFilters(f => ({ ...f, status: v || null }))}>
-                    <SelectTrigger className="h-8 bg-surface-2 border-border-default">
-                      <SelectValue placeholder="Any status" />
-                    </SelectTrigger>
-                    <SelectContent className="bg-surface-1 border-border-default">
-                      <SelectItem value="">Any status</SelectItem>
-                      <SelectItem value="draft">Draft</SelectItem>
-                      <SelectItem value="under_review">Under Review</SelectItem>
-                      <SelectItem value="approved">Approved</SelectItem>
-                      <SelectItem value="published">Published</SelectItem>
-                      <SelectItem value="deprecated">Deprecated</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                
-                <div className="space-y-2">
-                  <label className="text-xs text-text-tertiary">Priority</label>
-                  <Select value={filters.priority || ''} onValueChange={(v) => setFilters(f => ({ ...f, priority: v || null }))}>
-                    <SelectTrigger className="h-8 bg-surface-2 border-border-default">
-                      <SelectValue placeholder="Any priority" />
-                    </SelectTrigger>
-                    <SelectContent className="bg-surface-1 border-border-default">
-                      <SelectItem value="">Any priority</SelectItem>
-                      <SelectItem value="critical">Critical</SelectItem>
-                      <SelectItem value="high">High</SelectItem>
-                      <SelectItem value="medium">Medium</SelectItem>
-                      <SelectItem value="low">Low</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                
-                <div className="space-y-2">
-                  <label className="text-xs text-text-tertiary">Type</label>
-                  <Select value={filters.type || ''} onValueChange={(v) => setFilters(f => ({ ...f, type: v || null }))}>
-                    <SelectTrigger className="h-8 bg-surface-2 border-border-default">
-                      <SelectValue placeholder="Any type" />
-                    </SelectTrigger>
-                    <SelectContent className="bg-surface-1 border-border-default">
-                      <SelectItem value="">Any type</SelectItem>
-                      <SelectItem value="manual">Manual</SelectItem>
-                      <SelectItem value="automated">Automated</SelectItem>
-                      <SelectItem value="bdd">BDD</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                
-                {uniqueComponents.length > 0 && (
-                  <div className="space-y-2">
-                    <label className="text-xs text-text-tertiary">Component</label>
-                    <Select value={filters.component || ''} onValueChange={(v) => setFilters(f => ({ ...f, component: v || null }))}>
-                      <SelectTrigger className="h-8 bg-surface-2 border-border-default">
-                        <SelectValue placeholder="Any component" />
-                      </SelectTrigger>
-                      <SelectContent className="bg-surface-1 border-border-default">
-                        <SelectItem value="">Any component</SelectItem>
-                        {uniqueComponents.map(c => (
-                          <SelectItem key={c} value={c}>{c}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                {/* Active filter chips */}
+                {activeFilterCount > 0 && (
+                  <div className="flex items-center gap-1.5">
+                    {filters.status && (
+                      <Badge variant="secondary" className="gap-1 h-6">
+                        {filters.status}
+                        <X className="h-3 w-3 cursor-pointer" onClick={() => setFilters(f => ({ ...f, status: null }))} />
+                      </Badge>
+                    )}
+                    {filters.priority && (
+                      <Badge variant="secondary" className="gap-1 h-6">
+                        {filters.priority}
+                        <X className="h-3 w-3 cursor-pointer" onClick={() => setFilters(f => ({ ...f, priority: null }))} />
+                      </Badge>
+                    )}
+                    {filters.type && (
+                      <Badge variant="secondary" className="gap-1 h-6">
+                        {filters.type}
+                        <X className="h-3 w-3 cursor-pointer" onClick={() => setFilters(f => ({ ...f, type: null }))} />
+                      </Badge>
+                    )}
                   </div>
                 )}
-              </div>
-            </PopoverContent>
-          </Popover>
-          
-          {/* Active filter chips */}
-          {activeFilterCount > 0 && (
-            <div className="flex items-center gap-1.5">
-              {filters.status && (
-                <Badge variant="secondary" className="gap-1 h-6">
-                  {filters.status}
-                  <X className="h-3 w-3 cursor-pointer" onClick={() => setFilters(f => ({ ...f, status: null }))} />
-                </Badge>
-              )}
-              {filters.priority && (
-                <Badge variant="secondary" className="gap-1 h-6">
-                  {filters.priority}
-                  <X className="h-3 w-3 cursor-pointer" onClick={() => setFilters(f => ({ ...f, priority: null }))} />
-                </Badge>
-              )}
-              {filters.type && (
-                <Badge variant="secondary" className="gap-1 h-6">
-                  {filters.type}
-                  <X className="h-3 w-3 cursor-pointer" onClick={() => setFilters(f => ({ ...f, type: null }))} />
-                </Badge>
-              )}
-            </div>
-          )}
-          
-          <Button variant="ghost" size="icon" onClick={() => refetch()} className="h-9 w-9">
-            <RefreshCw className="h-4 w-4" />
-          </Button>
-        </div>
-        
-        {/* Bulk Actions (when selected) */}
-        {isSomeSelected && canEdit && (
-          <div className="flex items-center gap-2 px-3 py-1.5 bg-accent-subtle rounded-lg border border-accent-primary/20">
-            <span className="text-sm text-accent-primary font-medium">
-              {selectedIds.size} selected
-            </span>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button size="sm" variant="ghost" className="h-7 gap-1">
-                  Set Status <ChevronDown className="h-3 w-3" />
+                
+                <Button variant="ghost" size="icon" onClick={() => refetch()} className="h-9 w-9">
+                  <RefreshCw className="h-4 w-4" />
                 </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="bg-surface-1 border-border-default">
-                <DropdownMenuItem onClick={() => handleBulkStatusChange('draft')}>Draft</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleBulkStatusChange('under_review')}>Under Review</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleBulkStatusChange('approved')}>Approved</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleBulkStatusChange('published')}>Published</DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-            {canDelete && (
-              <Button size="sm" variant="ghost" onClick={handleBulkArchive} className="h-7 text-status-error hover:text-status-error">
-                <Archive className="h-3.5 w-3.5 mr-1" />
-                Archive
-              </Button>
-            )}
-            <Button size="sm" variant="ghost" onClick={clearSelection} className="h-7">
-              <X className="h-3.5 w-3.5" />
-            </Button>
-          </div>
-        )}
-        
-        {/* Create Button */}
-        {canCreate && (
-          <Button onClick={() => setCreateModalOpen(true)} size="sm" className="h-9" data-cta="create-case">
-            <Plus className="h-4 w-4 mr-1.5" />
-            Create Test Case
-          </Button>
-        )}
-      </div>
-
-      {/* Table */}
-      {isLoading ? (
-        <div className="space-y-2">
-          {[1, 2, 3, 4, 5].map(i => <Skeleton key={i} className="h-12 w-full" />)}
-        </div>
-      ) : paginatedCases.length === 0 ? (
-        <Card className="bg-surface-2 border-border-default p-8 text-center">
-          <ListChecks className="h-12 w-12 mx-auto text-text-tertiary mb-4" />
-          <h3 className="text-lg font-medium text-text-primary mb-2">No Test Cases</h3>
-          <p className="text-text-secondary mb-4">
-            {searchQuery || activeFilterCount > 0 
-              ? 'No test cases match your filters.' 
-              : 'Create your first test case to get started.'}
-          </p>
-          {searchQuery || activeFilterCount > 0 ? (
-            <Button variant="outline" onClick={clearFilters}>Clear Filters</Button>
-          ) : canCreate && (
-            <Button onClick={() => setCreateModalOpen(true)}>
-              <Plus className="h-4 w-4 mr-1.5" />
-              Create Test Case
-            </Button>
-          )}
-        </Card>
-      ) : (
-        <>
-          <div className="border border-border-default rounded-lg overflow-hidden bg-surface-1">
-            <table className="w-full text-sm">
-              <thead className="bg-surface-2 border-b border-border-default">
-                <tr className="text-left text-xs text-text-tertiary uppercase tracking-wide">
-                  <th className="w-10 px-3 py-2.5">
-                    <Checkbox
-                      checked={isAllSelected}
-                      onCheckedChange={toggleSelectAll}
-                      className="border-border-default"
-                    />
-                  </th>
-                  <th 
-                    className="px-3 py-2.5 font-medium cursor-pointer hover:text-text-primary transition-colors"
-                    onClick={() => handleSort('title')}
-                  >
-                    <span className="flex items-center gap-1">
-                      Title
-                      {sortField === 'title' && (sortOrder === 'asc' ? <SortAsc className="h-3 w-3" /> : <SortDesc className="h-3 w-3" />)}
-                    </span>
-                  </th>
-                  <th 
-                    className="w-24 px-3 py-2.5 font-medium cursor-pointer hover:text-text-primary"
-                    onClick={() => handleSort('priority')}
-                  >
-                    <span className="flex items-center gap-1">
-                      Priority
-                      {sortField === 'priority' && (sortOrder === 'asc' ? <SortAsc className="h-3 w-3" /> : <SortDesc className="h-3 w-3" />)}
-                    </span>
-                  </th>
-                  <th 
-                    className="w-28 px-3 py-2.5 font-medium cursor-pointer hover:text-text-primary"
-                    onClick={() => handleSort('status')}
-                  >
-                    <span className="flex items-center gap-1">
-                      Status
-                      {sortField === 'status' && (sortOrder === 'asc' ? <SortAsc className="h-3 w-3" /> : <SortDesc className="h-3 w-3" />)}
-                    </span>
-                  </th>
-                  <th className="w-24 px-3 py-2.5 font-medium">Type</th>
-                  <th className="w-32 px-3 py-2.5 font-medium">Component</th>
-                  <th 
-                    className="w-28 px-3 py-2.5 font-medium cursor-pointer hover:text-text-primary"
-                    onClick={() => handleSort('updated_at')}
-                  >
-                    <span className="flex items-center gap-1">
-                      Updated
-                      {sortField === 'updated_at' && (sortOrder === 'asc' ? <SortAsc className="h-3 w-3" /> : <SortDesc className="h-3 w-3" />)}
-                    </span>
-                  </th>
-                  <th className="w-10 px-3 py-2.5"></th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border-default">
-                {paginatedCases.map(tc => (
-                  <tr
-                    key={tc.id}
-                    className={cn(
-                      "hover:bg-surface-hover cursor-pointer transition-colors",
-                      selectedIds.has(tc.id) && "bg-accent-subtle/50"
-                    )}
-                  >
-                    <td className="px-3 py-2.5" onClick={(e) => e.stopPropagation()}>
-                      <Checkbox
-                        checked={selectedIds.has(tc.id)}
-                        onCheckedChange={() => toggleSelect(tc.id)}
-                        className="border-border-default"
-                      />
-                    </td>
-                    <td className="px-3 py-2.5" onClick={() => handleRowClick(tc)}>
-                      <p className="font-medium text-text-primary truncate max-w-[280px]">
-                        {tc.title}
-                      </p>
-                    </td>
-                    <td className="px-3 py-2.5" onClick={() => handleRowClick(tc)}>
-                      <Badge className={cn('capitalize text-xs border', getPriorityColor(tc.priority))}>
-                        {tc.priority}
-                      </Badge>
-                    </td>
-                    <td className="px-3 py-2.5" onClick={() => handleRowClick(tc)}>
-                      <Badge className={cn('text-xs border', getStatusColor(tc.status))}>
-                        {tc.status?.replace('_', ' ')}
-                      </Badge>
-                    </td>
-                    <td className="px-3 py-2.5 text-text-secondary capitalize" onClick={() => handleRowClick(tc)}>
-                      {tc.test_type}
-                    </td>
-                    <td className="px-3 py-2.5 text-text-secondary truncate max-w-[120px]" onClick={() => handleRowClick(tc)}>
-                      {tc.component || '—'}
-                    </td>
-                    <td className="px-3 py-2.5 text-text-tertiary text-xs" onClick={() => handleRowClick(tc)}>
-                      {tc.updated_at ? format(new Date(tc.updated_at), 'MMM d, yyyy') : '—'}
-                    </td>
-                    <td className="px-3 py-2.5" onClick={(e) => e.stopPropagation()}>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon" className="h-7 w-7">
-                            <MoreHorizontal className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="bg-surface-1 border-border-default">
-                          <DropdownMenuItem onClick={() => handleRowClick(tc)}>
-                            View Details
-                          </DropdownMenuItem>
-                          {canEdit && (
-                            <DropdownMenuItem onClick={() => { setSelectedTestCase(tc); setDrawerOpen(true); }}>
-                              Edit
-                            </DropdownMenuItem>
-                          )}
-                          <DropdownMenuSeparator />
-                          {canDelete && (
-                            <DropdownMenuItem
-                              className="text-status-error focus:text-status-error"
-                              onClick={() => {
-                                if (confirm('Archive this test case?')) {
-                                  deleteTestCase(tc.id);
-                                }
-                              }}
-                            >
-                              <Trash2 className="h-3.5 w-3.5 mr-2" />
-                              Archive
-                            </DropdownMenuItem>
-                          )}
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-
-          {/* Pagination */}
-          <div className="flex items-center justify-between text-sm">
-            <div className="flex items-center gap-2 text-text-tertiary">
-              <span>Showing {((page - 1) * pageSize) + 1}–{Math.min(page * pageSize, totalCount)} of {totalCount}</span>
-              <Select value={String(pageSize)} onValueChange={(v) => { setPageSize(Number(v)); setPage(1); }}>
-                <SelectTrigger className="h-8 w-20 bg-surface-2 border-border-default">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent className="bg-surface-1 border-border-default">
-                  {PAGE_SIZE_OPTIONS.map(size => (
-                    <SelectItem key={size} value={String(size)}>{size}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <span>per page</span>
+              </div>
+              
+              {/* Bulk Actions (when selected) */}
+              {isSomeSelected && canEdit && (
+                <div className="flex items-center gap-2 px-3 py-1.5 bg-accent-subtle rounded-lg border border-accent-primary/20">
+                  <span className="text-sm text-accent-primary font-medium">
+                    {selectedIds.size} selected
+                  </span>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button size="sm" variant="ghost" className="h-7 gap-1">
+                        Set Status <ChevronDown className="h-3 w-3" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="bg-surface-1 border-border-default">
+                      <DropdownMenuItem onClick={() => handleBulkStatusChange('draft')}>Draft</DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => handleBulkStatusChange('under_review')}>Under Review</DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => handleBulkStatusChange('approved')}>Approved</DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => handleBulkStatusChange('published')}>Published</DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                  <Button size="sm" variant="ghost" className="h-7 gap-1">
+                    <FolderInput className="h-3.5 w-3.5" />
+                    Move
+                  </Button>
+                  {canDelete && (
+                    <Button size="sm" variant="ghost" onClick={handleBulkArchive} className="h-7 text-status-error hover:text-status-error">
+                      <Archive className="h-3.5 w-3.5 mr-1" />
+                      Archive
+                    </Button>
+                  )}
+                  <Button size="sm" variant="ghost" onClick={clearSelection} className="h-7">
+                    <X className="h-3.5 w-3.5" />
+                  </Button>
+                </div>
+              )}
+              
+              {/* Create Button */}
+              {canCreate && (
+                <Button onClick={() => setCreateModalOpen(true)} size="sm" className="h-9" data-cta="create-case">
+                  <Plus className="h-4 w-4 mr-1.5" />
+                  Create Test Case
+                </Button>
+              )}
             </div>
-            
-            <div className="flex items-center gap-1">
-              <Button
-                variant="outline"
-                size="icon"
-                className="h-8 w-8"
-                disabled={page <= 1}
-                onClick={() => setPage(p => p - 1)}
-              >
-                <ChevronLeft className="h-4 w-4" />
-              </Button>
-              <span className="px-3 text-text-secondary">
-                Page {page} of {totalPages || 1}
-              </span>
-              <Button
-                variant="outline"
-                size="icon"
-                className="h-8 w-8"
-                disabled={page >= totalPages}
-                onClick={() => setPage(p => p + 1)}
-              >
-                <ChevronRight className="h-4 w-4" />
-              </Button>
+
+            {/* Table */}
+            <div className="flex-1 overflow-auto">
+              {isLoading ? (
+                <div className="space-y-2">
+                  {[1, 2, 3, 4, 5].map(i => <Skeleton key={i} className="h-12 w-full" />)}
+                </div>
+              ) : paginatedCases.length === 0 ? (
+                <Card className="bg-surface-2 border-border-default p-8 text-center">
+                  <ListChecks className="h-12 w-12 mx-auto text-text-tertiary mb-4" />
+                  <h3 className="text-lg font-medium text-text-primary mb-2">No Test Cases</h3>
+                  <p className="text-text-secondary mb-4">
+                    {searchQuery || activeFilterCount > 0 || selectedFolderId
+                      ? 'No test cases match your filters.' 
+                      : 'Create your first test case to get started.'}
+                  </p>
+                  {searchQuery || activeFilterCount > 0 ? (
+                    <Button variant="outline" onClick={clearFilters}>Clear Filters</Button>
+                  ) : canCreate && (
+                    <Button onClick={() => setCreateModalOpen(true)}>
+                      <Plus className="h-4 w-4 mr-1.5" />
+                      Create Test Case
+                    </Button>
+                  )}
+                </Card>
+              ) : (
+                <>
+                  <div className="border border-border-default rounded-lg overflow-hidden bg-surface-1">
+                    <table className="w-full text-sm">
+                      <thead className="bg-surface-2 border-b border-border-default">
+                        <tr className="text-left text-xs text-text-tertiary uppercase tracking-wide">
+                          <th className="w-10 px-3 py-2.5">
+                            <Checkbox
+                              checked={isAllSelected}
+                              onCheckedChange={toggleSelectAll}
+                              className="border-border-default"
+                            />
+                          </th>
+                          <th 
+                            className="px-3 py-2.5 font-medium cursor-pointer hover:text-text-primary transition-colors"
+                            onClick={() => handleSort('title')}
+                          >
+                            <span className="flex items-center gap-1">
+                              Title
+                              {sortField === 'title' && (sortOrder === 'asc' ? <SortAsc className="h-3 w-3" /> : <SortDesc className="h-3 w-3" />)}
+                            </span>
+                          </th>
+                          <th 
+                            className="w-24 px-3 py-2.5 font-medium cursor-pointer hover:text-text-primary"
+                            onClick={() => handleSort('priority')}
+                          >
+                            <span className="flex items-center gap-1">
+                              Priority
+                              {sortField === 'priority' && (sortOrder === 'asc' ? <SortAsc className="h-3 w-3" /> : <SortDesc className="h-3 w-3" />)}
+                            </span>
+                          </th>
+                          <th 
+                            className="w-28 px-3 py-2.5 font-medium cursor-pointer hover:text-text-primary"
+                            onClick={() => handleSort('status')}
+                          >
+                            <span className="flex items-center gap-1">
+                              Status
+                              {sortField === 'status' && (sortOrder === 'asc' ? <SortAsc className="h-3 w-3" /> : <SortDesc className="h-3 w-3" />)}
+                            </span>
+                          </th>
+                          <th className="w-24 px-3 py-2.5 font-medium">Type</th>
+                          <th className="w-32 px-3 py-2.5 font-medium">Component</th>
+                          <th 
+                            className="w-28 px-3 py-2.5 font-medium cursor-pointer hover:text-text-primary"
+                            onClick={() => handleSort('updated_at')}
+                          >
+                            <span className="flex items-center gap-1">
+                              Updated
+                              {sortField === 'updated_at' && (sortOrder === 'asc' ? <SortAsc className="h-3 w-3" /> : <SortDesc className="h-3 w-3" />)}
+                            </span>
+                          </th>
+                          <th className="w-10 px-3 py-2.5"></th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-border-default">
+                        {paginatedCases.map(tc => (
+                          <tr
+                            key={tc.id}
+                            className={cn(
+                              "hover:bg-surface-hover cursor-pointer transition-colors",
+                              selectedIds.has(tc.id) && "bg-accent-subtle/50",
+                              selectedTestCaseId === tc.id && "bg-accent-subtle"
+                            )}
+                          >
+                            <td className="px-3 py-2.5" onClick={(e) => e.stopPropagation()}>
+                              <Checkbox
+                                checked={selectedIds.has(tc.id)}
+                                onCheckedChange={() => toggleSelect(tc.id)}
+                                className="border-border-default"
+                              />
+                            </td>
+                            <td className="px-3 py-2.5" onClick={() => handleRowClick(tc)}>
+                              <p className="font-medium text-text-primary truncate max-w-[280px]">
+                                {tc.title}
+                              </p>
+                            </td>
+                            <td className="px-3 py-2.5" onClick={() => handleRowClick(tc)}>
+                              <Badge className={cn('capitalize text-xs border', getPriorityColor(tc.priority))}>
+                                {tc.priority}
+                              </Badge>
+                            </td>
+                            <td className="px-3 py-2.5" onClick={() => handleRowClick(tc)}>
+                              <Badge className={cn('text-xs border', getStatusColor(tc.status))}>
+                                {tc.status?.replace('_', ' ')}
+                              </Badge>
+                            </td>
+                            <td className="px-3 py-2.5 text-text-secondary capitalize" onClick={() => handleRowClick(tc)}>
+                              {tc.test_type}
+                            </td>
+                            <td className="px-3 py-2.5 text-text-secondary truncate max-w-[120px]" onClick={() => handleRowClick(tc)}>
+                              {tc.component || '—'}
+                            </td>
+                            <td className="px-3 py-2.5 text-text-tertiary text-xs" onClick={() => handleRowClick(tc)}>
+                              {tc.updated_at ? format(new Date(tc.updated_at), 'MMM d, yyyy') : '—'}
+                            </td>
+                            <td className="px-3 py-2.5" onClick={(e) => e.stopPropagation()}>
+                              <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                  <Button variant="ghost" size="icon" className="h-7 w-7">
+                                    <MoreHorizontal className="h-4 w-4" />
+                                  </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end" className="bg-surface-1 border-border-default">
+                                  <DropdownMenuItem onClick={() => handleRowClick(tc)}>
+                                    View Details
+                                  </DropdownMenuItem>
+                                  {canEdit && (
+                                    <DropdownMenuItem onClick={() => handleRowClick(tc)}>
+                                      Edit
+                                    </DropdownMenuItem>
+                                  )}
+                                  <DropdownMenuSeparator />
+                                  {canDelete && (
+                                    <DropdownMenuItem
+                                      className="text-status-error focus:text-status-error"
+                                      onClick={() => {
+                                        if (confirm('Archive this test case?')) {
+                                          deleteTestCase(tc.id);
+                                        }
+                                      }}
+                                    >
+                                      <Trash2 className="h-3.5 w-3.5 mr-2" />
+                                      Archive
+                                    </DropdownMenuItem>
+                                  )}
+                                </DropdownMenuContent>
+                              </DropdownMenu>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  {/* Pagination */}
+                  <div className="flex items-center justify-between text-sm mt-4">
+                    <div className="flex items-center gap-2 text-text-tertiary">
+                      <span>Showing {((page - 1) * pageSize) + 1}–{Math.min(page * pageSize, totalCount)} of {totalCount}</span>
+                      <Select value={String(pageSize)} onValueChange={(v) => { setPageSize(Number(v)); setPage(1); }}>
+                        <SelectTrigger className="h-8 w-20 bg-surface-2 border-border-default">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent className="bg-surface-1 border-border-default">
+                          {PAGE_SIZE_OPTIONS.map(size => (
+                            <SelectItem key={size} value={String(size)}>{size}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <span>per page</span>
+                    </div>
+                    
+                    <div className="flex items-center gap-1">
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        className="h-8 w-8"
+                        disabled={page <= 1}
+                        onClick={() => setPage(p => p - 1)}
+                      >
+                        <ChevronLeft className="h-4 w-4" />
+                      </Button>
+                      <span className="px-3 text-text-secondary">
+                        Page {page} of {totalPages || 1}
+                      </span>
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        className="h-8 w-8"
+                        disabled={page >= totalPages}
+                        onClick={() => setPage(p => p + 1)}
+                      >
+                        <ChevronRight className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
           </div>
-        </>
-      )}
+        </ResizablePanel>
+
+        {/* Right Panel - Test Case Detail */}
+        {selectedTestCaseId && (
+          <>
+            <ResizableHandle className="w-1 bg-border-default hover:bg-accent-primary/50 transition-colors" />
+            <ResizablePanel defaultSize={32} minSize={25} maxSize={50}>
+              <TestCaseDetailPanel
+                testCaseId={selectedTestCaseId}
+                onClose={() => setSelectedTestCaseId(null)}
+                onUpdate={handleUpdateTestCase}
+                isUpdating={isUpdating}
+              />
+            </ResizablePanel>
+          </>
+        )}
+      </ResizablePanelGroup>
 
       {/* Create Modal */}
       <CreateTestCaseModal
@@ -711,18 +785,8 @@ export function TestsCasesPage() {
         }}
         isSubmitting={isCreating}
       />
-
-      {/* Test Case Drawer */}
-      {selectedTestCase && (
-        <TestCaseDrawer
-          open={drawerOpen}
-          onOpenChange={setDrawerOpen}
-          testCase={selectedTestCase}
-          onUpdate={handleUpdateTestCase}
-          onDelete={handleDeleteTestCase}
-          isUpdating={isUpdating}
-        />
-      )}
     </div>
   );
 }
+
+export default TestsCasesPage;
