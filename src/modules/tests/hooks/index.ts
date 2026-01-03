@@ -18,3 +18,8 @@ export type { TestCaseType, TestCaseStatus, TestCasePriority, TestRunStatus, Tes
 export { useNotificationPreferences, useTestNotifications, useCreateNotification } from './useTestNotifications';
 export { useGenerateTestCases, useAnalyzeCoverageGaps, useFailureClusters, useCycleRiskPrediction, useAIDrafts, useAIAuditLog } from './useTestAI';
 export { useLogActivity, useEntityActivityTimeline, useProgramActivityTimeline, useGovernanceStats } from './useTestGovernance';
+
+// Global Test Scope Hooks
+export { useGlobalTestScope } from './useGlobalTestScope';
+export type { ScopeType } from './useGlobalTestScope';
+export { useGlobalTestMetrics, useGlobalTestCases, useGlobalTestCycles, useGlobalTestSets } from './useGlobalTestMetrics';

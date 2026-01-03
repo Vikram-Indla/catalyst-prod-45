@@ -208,6 +208,10 @@ import {
   CTAValidationPage,
   CycleExecutionPage,
 } from "./modules/tests";
+import { GlobalTestsLayout } from "./modules/tests/components/GlobalTestsLayout";
+import { GlobalTestsOverviewPage } from "./modules/tests/pages/GlobalTestsOverviewPage";
+import { GlobalTestsCasesPage } from "./modules/tests/pages/GlobalTestsCasesPage";
+import { GlobalTestsCyclesPage } from "./modules/tests/pages/GlobalTestsCyclesPage";
 import ProjectSummaryPage from "./pages/projects/ProjectSummaryPage";
 import ProjectComingSoonPage from "./pages/projects/ProjectComingSoonPage";
 import ProjectBacklogPage from "./pages/projects/ProjectBacklogPage";
@@ -356,6 +360,18 @@ const App = () => (
               
               {/* Starred items page */}
               <Route path="/starred" element={<StarredPage />} />
+              
+              {/* Global Tests Module */}
+              <Route path="/tests" element={<GlobalTestsLayout />}>
+                <Route index element={<GlobalTestsOverviewPage />} />
+                <Route path="cases" element={<GlobalTestsCasesPage />} />
+                <Route path="sets" element={<TestsSetsPage />} />
+                <Route path="cycles" element={<GlobalTestsCyclesPage />} />
+                <Route path="executions" element={<TestsExecutionsPage />} />
+                <Route path="traceability" element={<TestsTraceabilityPage />} />
+                <Route path="reports" element={<TestsReportsPage />} />
+                <Route path="admin" element={<div className="p-8"><h2 className="text-lg font-semibold">Test Administration</h2><p className="text-text-tertiary mt-2">Configure test settings, custom fields, and preferences.</p></div>} />
+              </Route>
               
               <Route path="/search" element={<SearchPage />} />
               <Route path="/portfolio/:portfolioId/room" element={<PlaceholderPage />} />
