@@ -97,8 +97,9 @@ export function TestsPageHeader({ activePage, onCreate }: TestsPageHeaderProps) 
         </div>
       </div>
       {onCreate && (
-        <Button size="sm" className="bg-accent-primary text-white h-8 text-xs gap-1" onClick={onCreate}>
-          <Plus className="h-3.5 w-3.5" /> Create
+        <Button size="sm" className="bg-accent-primary hover:bg-accent-primary/90 text-white h-8 text-xs gap-1.5 font-semibold shadow-sm" onClick={onCreate}>
+          <Plus className="h-4 w-4" /> Create Test Case
+          <kbd className="ml-1 px-1 py-0.5 text-[9px] bg-white/20 rounded hidden sm:inline">C</kbd>
         </Button>
       )}
     </div>
