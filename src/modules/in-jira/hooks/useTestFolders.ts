@@ -11,7 +11,7 @@ import { logAuditEntry } from '@/lib/auditLogger';
 import { toast } from 'sonner';
 import type { Json } from '@/integrations/supabase/types';
 
-export type FolderEntityType = 'test_case' | 'test_set' | 'test_cycle';
+export type FolderEntityType = 'test_cases' | 'test_sets' | 'test_cycles';
 
 export interface TestFolder {
   id: string;

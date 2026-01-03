@@ -202,7 +202,7 @@ export function GlobalTestsSetsPage() {
         {folderPanelOpen && programId && (
           <TestFolderTree
             programId={programId}
-            entityType="test_set"
+            entityType="test_sets"
             selectedFolderId={selectedFolderId}
             onSelectFolder={setSelectedFolderId}
             className="flex-1"
