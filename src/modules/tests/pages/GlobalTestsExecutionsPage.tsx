@@ -302,120 +302,101 @@ export function GlobalTestsExecutionsPage() {
         </div>
       </div>
 
-      {/* Grid */}
-      {isLoading ? (
-        <div className="space-y-2">
-          {Array.from({ length: 8 }).map((_, i) => (
-            <Skeleton key={i} className="h-14 w-full" />
-          ))}
-        </div>
-      ) : filteredExecutions.length === 0 ? (
-        <div className="text-center py-16 text-text-tertiary">
-          <Play className="h-12 w-12 mx-auto mb-4 opacity-50" />
-          <h3 className="text-lg font-medium text-text-primary mb-2">No executions found</h3>
-          <p className="text-sm mb-4">
-            {hasActiveFilters ? 'Try adjusting your filters' : 'Create a test cycle to start executing tests'}
-          </p>
-          {hasActiveFilters && (
-            <Button variant="outline" onClick={clearFilters}>
-              Clear Filters
-            </Button>
-          )}
-        </div>
-      ) : (
-        <div className="border border-border-default rounded-lg overflow-hidden">
-          <table className="w-full">
-            <thead className="bg-surface-2 border-b border-border-default">
-              <tr className="text-left text-xs text-text-tertiary uppercase tracking-wide">
-                <th className="px-4 py-3 w-10">
-                  <Checkbox
-                    checked={selectedIds.size === filteredExecutions.length && filteredExecutions.length > 0}
-                    onCheckedChange={toggleSelectAll}
-                  />
-                </th>
-                <th className="px-4 py-3 font-medium">Test Case</th>
-                <th className="px-4 py-3 font-medium w-28">Status</th>
-                <th className="px-4 py-3 font-medium w-32">Cycle</th>
-                <th className="px-4 py-3 font-medium w-36">Assignee</th>
-                <th className="px-4 py-3 font-medium w-36">Executed</th>
-                <th className="px-4 py-3 font-medium w-12"></th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border-default">
-              {filteredExecutions.map((exec: any) => (
-                <tr
-                  key={exec.id}
-                  className={cn(
-                    'hover:bg-surface-hover cursor-pointer transition-colors',
-                    selectedIds.has(exec.id) && 'bg-accent-subtle/30'
+      {/* Grid - Always show table structure */}
+      <div className="border border-border-default rounded-lg overflow-hidden text-xs">
+        <table className="w-full">
+          <thead className="bg-surface-3 border-b border-border-default sticky top-0 z-10">
+            <tr className="text-[10px] font-black tracking-widest text-text-muted uppercase">
+              <th className="px-3 py-2 w-10 text-left">
+                <Checkbox
+                  checked={selectedIds.size === filteredExecutions.length && filteredExecutions.length > 0}
+                  onCheckedChange={toggleSelectAll}
+                />
+              </th>
+              <th className="px-3 py-2 text-left">Test Case</th>
+              <th className="px-3 py-2 w-24 text-left">Status</th>
+              <th className="px-3 py-2 w-24 text-left">Cycle</th>
+              <th className="px-3 py-2 w-28 text-left">Assignee</th>
+              <th className="px-3 py-2 w-28 text-left">Started</th>
+              <th className="px-3 py-2 w-20 text-right">Duration</th>
+              <th className="px-3 py-2 w-10"></th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-border-subtle">
+            {isLoading ? (
+              Array.from({ length: 10 }).map((_, i) => (
+                <tr key={i}><td colSpan={8}><Skeleton className="h-9 w-full" /></td></tr>
+              ))
+            ) : filteredExecutions.length === 0 ? (
+              <tr>
+                <td colSpan={8} className="py-8 text-center">
+                  <p className="text-sm font-semibold text-text-muted">No executions found</p>
+                  {hasActiveFilters && (
+                    <Button size="sm" variant="ghost" onClick={clearFilters} className="mt-2 text-xs">
+                      Clear Filters
+                    </Button>
                   )}
-                  onClick={() => handleRowClick(exec.id)}
-                >
-                  <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
-                    <Checkbox
-                      checked={selectedIds.has(exec.id)}
-                      onCheckedChange={() => toggleSelect(exec.id)}
-                    />
-                  </td>
-                  <td className="px-4 py-3">
-                    <div className="flex items-center gap-2">
-                      {getStatusIcon(exec.status)}
-                      <p className="text-sm font-medium text-text-primary truncate max-w-[300px]">
-                        {exec.test_case?.title || '—'}
-                      </p>
-                    </div>
-                    {exec.test_case?.priority && (
-                      <Badge variant="outline" className="text-xs mt-1">
-                        {exec.test_case.priority}
-                      </Badge>
+                </td>
+              </tr>
+            ) : (
+              filteredExecutions.map((exec: any) => {
+                const isFailed = exec.status === 'failed';
+                const isBlocked = exec.status === 'blocked';
+                return (
+                  <tr
+                    key={exec.id}
+                    className={cn(
+                      'hover:bg-surface-2 cursor-pointer transition-colors',
+                      isFailed && 'bg-danger/[0.02] border-l-4 border-l-danger',
+                      isBlocked && !isFailed && 'border-l-4 border-l-warning',
+                      !isFailed && !isBlocked && 'border-l-4 border-l-transparent',
+                      selectedIds.has(exec.id) && 'bg-accent-subtle/20'
                     )}
-                  </td>
-                  <td className="px-4 py-3">
-                    <Badge className={cn('capitalize text-xs', getStatusColor(exec.status || 'not_executed'))}>
-                      {(exec.status || 'not_executed').replace('_', ' ')}
-                    </Badge>
-                  </td>
-                  <td className="px-4 py-3 text-sm text-text-secondary">
-                    {exec.test_cycle?.key || '—'}
-                  </td>
-                  <td className="px-4 py-3">
-                    {exec.assigned_user ? (
+                    onClick={() => handleRowClick(exec.id)}
+                  >
+                    <td className="px-3 py-1.5" onClick={(e) => e.stopPropagation()}>
+                      <Checkbox
+                        checked={selectedIds.has(exec.id)}
+                        onCheckedChange={() => toggleSelect(exec.id)}
+                      />
+                    </td>
+                    <td className="px-3 py-1.5">
                       <div className="flex items-center gap-2">
-                        <div className="h-6 w-6 rounded-full bg-accent-subtle flex items-center justify-center text-xs font-medium text-accent-primary">
-                          {exec.assigned_user.full_name?.charAt(0) || '?'}
-                        </div>
-                        <span className="text-sm text-text-secondary truncate">
-                          {exec.assigned_user.full_name}
+                        {getStatusIcon(exec.status)}
+                        <span className="font-bold text-text-primary truncate max-w-[250px]">
+                          {exec.test_case?.title || '—'}
                         </span>
                       </div>
-                    ) : (
-                      <span className="text-sm text-text-tertiary">Unassigned</span>
-                    )}
-                  </td>
-                  <td className="px-4 py-3 text-sm text-text-tertiary">
-                    {exec.executed_at ? format(new Date(exec.executed_at), 'MMM d, HH:mm') : '—'}
-                  </td>
-                  <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" className="h-8 w-8">
-                          <MoreHorizontal className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className="bg-surface-1 border-border-default">
-                        <DropdownMenuItem onClick={() => handleRowClick(exec.id)}>
-                          <Play className="h-4 w-4 mr-2" />
-                          Execute
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+                    </td>
+                    <td className="px-3 py-1.5">
+                      <Badge className={cn('capitalize text-[10px] h-4 px-1.5', getStatusColor(exec.status || 'not_executed'))}>
+                        {(exec.status || 'pending').replace('_', ' ')}
+                      </Badge>
+                    </td>
+                    <td className="px-3 py-1.5 font-mono text-text-muted">
+                      {exec.test_cycle?.key || '—'}
+                    </td>
+                    <td className="px-3 py-1.5 text-text-muted truncate max-w-[100px]">
+                      {exec.assigned_user?.full_name || 'Unassigned'}
+                    </td>
+                    <td className="px-3 py-1.5 text-text-muted tabular-nums">
+                      {exec.executed_at ? format(new Date(exec.executed_at), 'MMM d, HH:mm') : '—'}
+                    </td>
+                    <td className="px-3 py-1.5 text-right font-mono text-text-muted tabular-nums">
+                      {exec.effort_minutes ? `${exec.effort_minutes}m` : '—'}
+                    </td>
+                    <td className="px-3 py-1.5" onClick={(e) => e.stopPropagation()}>
+                      <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => handleRowClick(exec.id)}>
+                        <Play className="h-3.5 w-3.5" />
+                      </Button>
+                    </td>
+                  </tr>
+                );
+              })
+            )}
+          </tbody>
+        </table>
+      </div>
 
       {/* Drawers & Modals */}
       <ExecutionRunDrawer
