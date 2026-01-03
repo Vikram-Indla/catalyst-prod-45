@@ -44,7 +44,7 @@ const FeatureBacklogPage = lazy(() => import("./modules/feature-backlog/pages/Fe
 const ProjectWorkspace = lazy(() => import("./pages/project/ProjectWorkspace"));
 const BoardView = lazy(() => import("./pages/project/BoardView"));
 const TimelineView = lazy(() => import("./pages/project/TimelineView"));
-const ProjectTestsView = lazy(() => import("./pages/project/ProjectTestsView"));
+
 import { EpicBalancingPage } from "./modules/epic-balancing";
 
 import Defects from "./pages/Defects";
@@ -185,33 +185,6 @@ import {
   ReleaseManagementPage,
   InJiraSettingsPage,
 } from "./modules/in-jira";
-import {
-  TestCommandCenterPage,
-  TestCasesPage,
-  TestSetsPage,
-  TestCyclesPage,
-  TestExecutionsPage,
-  TraceabilityPage,
-  TestReportsPage,
-  TestAdminPage,
-  StepLibraryPage,
-} from "./modules/in-jira/pages/tests";
-import {
-  ProjectTestsLayout,
-  TestsOverviewPage,
-  TestsCasesPage,
-  TestsSetsPage,
-  TestsCyclesPage as ProjectTestsCyclesPage,
-  TestsExecutionsPage,
-  TestsReportsPage,
-  TestsTraceabilityPage,
-  CTAValidationPage,
-  CycleExecutionPage,
-} from "./modules/tests";
-import { GlobalTestsLayout } from "./modules/tests/components/GlobalTestsLayout";
-import { GlobalTestsOverviewPage } from "./modules/tests/pages/GlobalTestsOverviewPage";
-import { GlobalTestsCasesPage } from "./modules/tests/pages/GlobalTestsCasesPage";
-import { GlobalTestsCyclesPage } from "./modules/tests/pages/GlobalTestsCyclesPage";
 import ProjectSummaryPage from "./pages/projects/ProjectSummaryPage";
 import ProjectComingSoonPage from "./pages/projects/ProjectComingSoonPage";
 import ProjectBacklogPage from "./pages/projects/ProjectBacklogPage";
@@ -361,17 +334,6 @@ const App = () => (
               {/* Starred items page */}
               <Route path="/starred" element={<StarredPage />} />
               
-              {/* Global Tests Module */}
-              <Route path="/tests" element={<GlobalTestsLayout />}>
-                <Route index element={<GlobalTestsOverviewPage />} />
-                <Route path="cases" element={<GlobalTestsCasesPage />} />
-                <Route path="sets" element={<TestsSetsPage />} />
-                <Route path="cycles" element={<GlobalTestsCyclesPage />} />
-                <Route path="executions" element={<TestsExecutionsPage />} />
-                <Route path="traceability" element={<TestsTraceabilityPage />} />
-                <Route path="reports" element={<TestsReportsPage />} />
-                <Route path="admin" element={<div className="p-8"><h2 className="text-lg font-semibold">Test Administration</h2><p className="text-text-tertiary mt-2">Configure test settings, custom fields, and preferences.</p></div>} />
-              </Route>
               
               <Route path="/search" element={<SearchPage />} />
               <Route path="/portfolio/:portfolioId/room" element={<PlaceholderPage />} />
@@ -527,17 +489,6 @@ const App = () => (
               <Route path="/programs/:programId/capacity" element={<CapacityWithSidebar />} />
               <Route path="/programs/:programId/settings" element={<PlaceholderPage />} />
               <Route path="/programs/:programId/quarters" element={<QuartersPage />} />
-              {/* Program-level Test Management Routes */}
-              <Route path="/programs/:programId/tests" element={<TestCommandCenterPage />} />
-              <Route path="/programs/:programId/tests/overview" element={<TestCommandCenterPage />} />
-              <Route path="/programs/:programId/tests/cases" element={<TestCasesPage />} />
-              <Route path="/programs/:programId/tests/sets" element={<TestSetsPage />} />
-              <Route path="/programs/:programId/tests/cycles" element={<TestCyclesPage />} />
-              <Route path="/programs/:programId/tests/library" element={<StepLibraryPage />} />
-              <Route path="/programs/:programId/tests/reports" element={<TestReportsPage />} />
-              <Route path="/programs/:programId/tests/traceability" element={<TraceabilityPage />} />
-              <Route path="/programs/:programId/tests/executions" element={<TestExecutionsPage />} />
-              <Route path="/programs/:programId/tests/admin" element={<TestAdminPage />} />
               <Route path="/program-room" element={<Navigate to="/for-you" replace />} />
               <Route path="/pis" element={<PlaceholderPage />} />
               <Route path="/program-board" element={<Navigate to="/for-you" replace />} />
@@ -568,19 +519,6 @@ const App = () => (
               <Route path="/projects/:projectId/backlog" element={<ProjectBacklogPage />} />
               <Route path="/projects/:projectId/roadmap" element={<ProjectComingSoonPage pageTitle="Roadmap" />} />
               <Route path="/projects/:projectId/dependencies" element={<ProjectComingSoonPage pageTitle="Dependencies" />} />
-              {/* Project Tests Module with nested routes */}
-              <Route path="/projects/:projectId/tests" element={<Suspense fallback={<div className="p-8">Loading...</div>}><ProjectTestsLayout /></Suspense>}>
-                <Route index element={<Navigate to="overview" replace />} />
-                <Route path="overview" element={<TestsOverviewPage />} />
-                <Route path="cases" element={<TestsCasesPage />} />
-                <Route path="sets" element={<TestsSetsPage />} />
-                <Route path="cycles" element={<ProjectTestsCyclesPage />} />
-                <Route path="cycles/:cycleId/execution" element={<CycleExecutionPage />} />
-                <Route path="executions" element={<TestsExecutionsPage />} />
-                <Route path="traceability" element={<TestsTraceabilityPage />} />
-                <Route path="reports" element={<TestsReportsPage />} />
-                <Route path="cta-validation" element={<CTAValidationPage />} />
-              </Route>
               <Route path="/projects/:projectId/reports" element={<ProjectComingSoonPage pageTitle="Reports" />} />
               <Route path="/project/:projectId/work" element={<ProjectWorkHubPage />} />
               
@@ -595,16 +533,6 @@ const App = () => (
                 <Route path="releases" element={<InJiraReleasesPage />} />
                 <Route path="release-management" element={<ReleaseManagementPage />} />
                 <Route path="settings" element={<InJiraSettingsPage />} />
-                {/* Test Management Routes */}
-                <Route path="tests" element={<TestCommandCenterPage />} />
-                <Route path="tests/cases" element={<TestCasesPage />} />
-                <Route path="tests/sets" element={<TestSetsPage />} />
-                <Route path="tests/cycles" element={<TestCyclesPage />} />
-                <Route path="tests/executions" element={<TestExecutionsPage />} />
-                <Route path="tests/traceability" element={<TraceabilityPage />} />
-                <Route path="tests/reports" element={<TestReportsPage />} />
-                <Route path="tests/admin" element={<TestAdminPage />} />
-                <Route path="tests/step-library" element={<StepLibraryPage />} />
               </Route>
               <Route path="/teams" element={<TeamComingSoon />} />
               <Route path="/teams/:teamId/room" element={<TeamComingSoon />} />
