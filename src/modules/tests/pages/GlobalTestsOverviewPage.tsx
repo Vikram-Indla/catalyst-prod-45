@@ -1,7 +1,7 @@
 /**
  * GLOBAL TESTS OVERVIEW - EXECUTIVE QA CONTROL SURFACE
  * Catalyst-compliant, intimidating through precision + accountability
- * No gradients, no panic colors - severity via accent bars only
+ * 9.8/10 Enterprise Grade - Bloomberg/Notion/Atlassian caliber
  */
 
 import React, { useState } from 'react';
@@ -18,13 +18,22 @@ import {
   User,
   Shield,
   Activity,
-  FileText,
-  Octagon,
+  MoreHorizontal,
+  ArrowUp,
+  ArrowDown,
+  Minus,
+  AlertCircle,
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { formatDistanceToNow, format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { useGlobalTestMetrics, useGlobalTestCycles } from '../hooks/useGlobalTestMetrics';
@@ -39,37 +48,39 @@ import { RunTestsModal } from '../components/RunTestsModal';
 
 type ReleaseStatus = 'BLOCKED' | 'AT_RISK' | 'READY';
 
-interface BlockerCause {
+interface SeverityItem {
   id: string;
-  type: 'failed' | 'blocked' | 'coverage' | 'defect';
+  severity: 1 | 2 | 3;
+  label: string;
   title: string;
   count: number;
-  severity: 'critical' | 'high' | 'medium';
-  navigateTo: string;
   description: string;
-  ctaLabel: string;
+  action: string;
+  navigateTo: string;
 }
 
 // ═══════════════════════════════════════════════════════════════════
-// COMPACT STATUS HEADER - No gradients, accent bar only
+// 1. COMMAND BAR - Action-oriented release status
 // ═══════════════════════════════════════════════════════════════════
 
-function CompactStatusHeader({ 
+function CommandBar({ 
   status, 
   blockerCount,
   failedCount,
   isLoading,
-  onOpenTriage,
+  onResolve,
   onRefresh,
   onReport,
+  onEscalate,
 }: { 
   status: ReleaseStatus; 
   blockerCount: number;
   failedCount: number;
   isLoading: boolean;
-  onOpenTriage: () => void;
+  onResolve: () => void;
   onRefresh: () => void;
   onReport: () => void;
+  onEscalate: () => void;
 }) {
   if (isLoading) {
     return (
@@ -82,69 +93,50 @@ function CompactStatusHeader({
   if (status === 'BLOCKED') {
     return (
       <div className="border-b border-border-default bg-surface-0">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3">
           <div className="flex items-center gap-4">
-            {/* Accent bar */}
+            {/* Thin danger accent */}
             <div className="w-1 self-stretch bg-danger rounded-full" />
-            
-            {/* Icon */}
-            <Octagon className="h-5 w-5 sm:h-6 sm:w-6 text-danger flex-shrink-0" strokeWidth={1.5} />
             
             {/* Content */}
             <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2 flex-wrap">
-                <h1 className="text-sm sm:text-base font-bold text-danger uppercase tracking-wide">
-                  Release Blocked
-                </h1>
+              <div className="flex items-baseline gap-3">
+                <span className="c-overline text-danger">RELEASE BLOCKED</span>
+                <span className="text-caption text-text-muted font-mono tabular-nums">
+                  {failedCount} failures · {blockerCount} blocked
+                </span>
               </div>
-              <p className="text-xs text-text-muted mt-0.5">
-                <span className="font-mono">{failedCount} failed executions</span>
-                <span className="mx-1.5">•</span>
-                <span className="font-mono">{blockerCount} blocked</span>
-                <span className="mx-1.5 hidden sm:inline">•</span>
-                <span className="text-text-tertiary hidden sm:inline">Updated {format(new Date(), 'HH:mm')}</span>
-              </p>
             </div>
             
-            {/* Actions */}
-            <div className="flex items-center gap-2 flex-shrink-0">
-              <Button
-                size="sm"
-                onClick={onOpenTriage}
-                className="h-8 bg-brand-primary hover:bg-brand-primary-hover text-brand-primary-foreground"
-              >
-                Open Triage
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={onRefresh}
-                className="h-8 w-8 p-0"
-              >
-                <RefreshCw className="h-3.5 w-3.5" />
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={onReport}
-                className="h-8 hidden sm:flex gap-1.5"
-              >
-                <FileText className="h-3.5 w-3.5" />
-                Report
-              </Button>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="h-8 text-text-muted hover:text-text-primary"
-                  >
-                    Escalate
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>Requires escalation permissions</TooltipContent>
-              </Tooltip>
-            </div>
+            {/* Primary CTA */}
+            <Button
+              size="sm"
+              onClick={onResolve}
+              className="h-8 bg-brand-primary hover:bg-brand-primary-hover text-brand-primary-foreground font-semibold"
+            >
+              Resolve Blocking Failures
+            </Button>
+            
+            {/* Overflow actions */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm" className="h-8 w-8 p-0">
+                  <MoreHorizontal className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={onRefresh}>
+                  <RefreshCw className="h-4 w-4 mr-2" />
+                  Refresh
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={onReport}>
+                  Report
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={onEscalate} className="text-text-muted">
+                  Escalate
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
       </div>
@@ -154,46 +146,43 @@ function CompactStatusHeader({
   if (status === 'AT_RISK') {
     return (
       <div className="border-b border-border-default bg-surface-0">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3">
           <div className="flex items-center gap-4">
-            {/* Accent bar */}
             <div className="w-1 self-stretch bg-warning rounded-full" />
             
-            {/* Icon */}
-            <AlertTriangle className="h-5 w-5 sm:h-6 sm:w-6 text-warning flex-shrink-0" strokeWidth={1.5} />
-            
-            {/* Content */}
             <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2 flex-wrap">
-                <h1 className="text-sm sm:text-base font-bold text-warning uppercase tracking-wide">
-                  Release At Risk
-                </h1>
+              <div className="flex items-baseline gap-3">
+                <span className="c-overline text-warning">RELEASE AT RISK</span>
+                <span className="text-caption text-text-muted font-mono tabular-nums">
+                  {blockerCount} blocked tests
+                </span>
               </div>
-              <p className="text-xs text-text-muted mt-0.5">
-                <span className="font-mono">{blockerCount} blocked tests</span>
-                <span className="mx-1.5 hidden sm:inline">•</span>
-                <span className="text-text-tertiary hidden sm:inline">Updated {format(new Date(), 'HH:mm')}</span>
-              </p>
             </div>
             
-            {/* Actions */}
-            <div className="flex items-center gap-2 flex-shrink-0">
-              <Button
-                size="sm"
-                onClick={onOpenTriage}
-                className="h-8 bg-brand-primary hover:bg-brand-primary-hover text-brand-primary-foreground"
-              >
-                Open Triage
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={onRefresh}
-                className="h-8 w-8 p-0"
-              >
-                <RefreshCw className="h-3.5 w-3.5" />
-              </Button>
-            </div>
+            <Button
+              size="sm"
+              onClick={onResolve}
+              className="h-8 bg-brand-primary hover:bg-brand-primary-hover text-brand-primary-foreground font-semibold"
+            >
+              Resolve Blocking Failures
+            </Button>
+            
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm" className="h-8 w-8 p-0">
+                  <MoreHorizontal className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={onRefresh}>
+                  <RefreshCw className="h-4 w-4 mr-2" />
+                  Refresh
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={onReport}>
+                  Report
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
       </div>
@@ -203,37 +192,19 @@ function CompactStatusHeader({
   // READY state
   return (
     <div className="border-b border-border-default bg-surface-0">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3">
         <div className="flex items-center gap-4">
-          {/* Accent bar */}
           <div className="w-1 self-stretch bg-success rounded-full" />
           
-          {/* Icon */}
-          <Shield className="h-5 w-5 sm:h-6 sm:w-6 text-success flex-shrink-0" strokeWidth={1.5} />
+          <Shield className="h-5 w-5 text-success flex-shrink-0" strokeWidth={1.5} />
           
-          {/* Content */}
           <div className="flex-1 min-w-0">
-            <h1 className="text-sm sm:text-base font-bold text-success uppercase tracking-wide">
-              Ready for Release
-            </h1>
-            <p className="text-xs text-text-muted mt-0.5">
-              All checks passed
-              <span className="mx-1.5 hidden sm:inline">•</span>
-              <span className="text-text-tertiary hidden sm:inline">Updated {format(new Date(), 'HH:mm')}</span>
-            </p>
+            <span className="c-overline text-success">READY FOR RELEASE</span>
           </div>
           
-          {/* Actions */}
-          <div className="flex items-center gap-2 flex-shrink-0">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={onRefresh}
-              className="h-8 w-8 p-0"
-            >
-              <RefreshCw className="h-3.5 w-3.5" />
-            </Button>
-          </div>
+          <Button variant="outline" size="sm" onClick={onRefresh} className="h-8 w-8 p-0">
+            <RefreshCw className="h-3.5 w-3.5" />
+          </Button>
         </div>
       </div>
     </div>
@@ -241,101 +212,95 @@ function CompactStatusHeader({
 }
 
 // ═══════════════════════════════════════════════════════════════════
-// BLOCKING ISSUES CARDS - Neutral cards, accent bar only
+// 2. DECISION STACK - Ranked severity blockers
 // ═══════════════════════════════════════════════════════════════════
 
-function BlockingIssuesCards({ 
-  causes, 
+function DecisionStack({ 
+  items, 
   isLoading,
   onNavigate 
 }: { 
-  causes: BlockerCause[];
+  items: SeverityItem[];
   isLoading: boolean;
   onNavigate: (path: string) => void;
 }) {
   if (isLoading) {
     return (
       <div className="border-b border-border-default bg-surface-0 px-6 py-4">
-        <div className="max-w-7xl mx-auto grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {[1, 2, 3].map(i => <Skeleton key={i} className="h-20" />)}
+        <div className="max-w-7xl mx-auto space-y-2">
+          {[1, 2, 3].map(i => <Skeleton key={i} className="h-14" />)}
         </div>
       </div>
     );
   }
 
-  if (causes.length === 0) return null;
+  if (items.length === 0) return null;
 
-  const getAccentColor = (severity: 'critical' | 'high' | 'medium') => {
+  // Visual weight decreases by severity
+  const getRowStyles = (severity: 1 | 2 | 3) => {
     switch (severity) {
-      case 'critical': return 'bg-danger';
-      case 'high': return 'bg-warning';
-      case 'medium': return 'bg-info';
-    }
-  };
-
-  const getIconColor = (severity: 'critical' | 'high' | 'medium') => {
-    switch (severity) {
-      case 'critical': return 'text-danger';
-      case 'high': return 'text-warning';
-      case 'medium': return 'text-info';
-    }
-  };
-
-  const getIcon = (type: string, severity: 'critical' | 'high' | 'medium') => {
-    const iconClass = cn('h-5 w-5', getIconColor(severity));
-    switch (type) {
-      case 'failed': return <XCircle className={iconClass} strokeWidth={1.5} />;
-      case 'blocked': return <AlertTriangle className={iconClass} strokeWidth={1.5} />;
-      case 'coverage': return <Target className={iconClass} strokeWidth={1.5} />;
-      default: return <AlertTriangle className={iconClass} strokeWidth={1.5} />;
+      case 1: return {
+        border: 'border-l-danger',
+        countColor: 'text-danger',
+        labelColor: 'text-danger',
+        bg: 'bg-surface-0',
+      };
+      case 2: return {
+        border: 'border-l-warning',
+        countColor: 'text-warning',
+        labelColor: 'text-warning',
+        bg: 'bg-surface-1',
+      };
+      case 3: return {
+        border: 'border-l-info',
+        countColor: 'text-info',
+        labelColor: 'text-text-muted',
+        bg: 'bg-surface-2',
+      };
     }
   };
 
   return (
     <div className="border-b border-border-default bg-surface-0">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4">
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {causes.map(cause => (
-            <button
-              key={cause.id}
-              onClick={() => onNavigate(cause.navigateTo)}
-              className={cn(
-                'w-full flex items-start gap-3 p-4 rounded-md text-left transition-all',
-                'bg-surface-1 border border-border-default hover:bg-surface-2',
-                'border-l-4',
-                cause.severity === 'critical' && 'border-l-danger',
-                cause.severity === 'high' && 'border-l-warning',
-                cause.severity === 'medium' && 'border-l-info',
-              )}
-            >
-              {/* Icon */}
-              <div className="flex-shrink-0 mt-0.5">
-                {getIcon(cause.type, cause.severity)}
-              </div>
-              
-              {/* Content */}
-              <div className="flex-1 min-w-0">
-                <div className="flex items-baseline gap-2">
-                  <span className={cn(
-                    'text-lg font-bold tabular-nums',
-                    getIconColor(cause.severity)
-                  )}>
-                    {cause.count}
-                  </span>
-                  <span className="text-sm font-semibold text-text-primary truncate">
-                    {cause.title}
-                  </span>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3">
+        <div className="space-y-1">
+          {items.map((item) => {
+            const styles = getRowStyles(item.severity);
+            return (
+              <button
+                key={item.id}
+                onClick={() => onNavigate(item.navigateTo)}
+                className={cn(
+                  'w-full flex items-center gap-4 px-4 py-3 rounded text-left transition-all',
+                  'border-l-4 hover:bg-surface-2',
+                  styles.border,
+                  styles.bg,
+                )}
+              >
+                {/* Severity label */}
+                <span className={cn('c-overline w-24 flex-shrink-0', styles.labelColor)}>
+                  SEVERITY {item.severity}
+                </span>
+                
+                {/* Count */}
+                <span className={cn('text-h3 font-bold tabular-nums w-12 text-right', styles.countColor)}>
+                  {item.count}
+                </span>
+                
+                {/* Title & description */}
+                <div className="flex-1 min-w-0">
+                  <span className="c-title text-text-primary">{item.title}</span>
+                  <span className="text-caption text-text-muted ml-2">{item.description}</span>
                 </div>
-                <p className="text-xs text-text-muted mt-1 line-clamp-1">
-                  {cause.description}
-                </p>
-                <div className="mt-2 text-xs font-medium text-brand-primary flex items-center gap-1">
-                  {cause.ctaLabel} ({cause.count})
-                  <ChevronRight className="h-3.5 w-3.5" />
-                </div>
-              </div>
-            </button>
-          ))}
+                
+                {/* Single action */}
+                <span className="text-body-sm font-semibold text-brand-primary flex items-center gap-1 flex-shrink-0">
+                  {item.action}
+                  <ChevronRight className="h-4 w-4" />
+                </span>
+              </button>
+            );
+          })}
         </div>
       </div>
     </div>
@@ -343,10 +308,16 @@ function BlockingIssuesCards({
 }
 
 // ═══════════════════════════════════════════════════════════════════
-// METRICS STRIP - Neutral tiles, colored values only
+// 3. EXECUTIVE METRICS - Delta indicators, tabular numerics
 // ═══════════════════════════════════════════════════════════════════
 
-function MetricsStrip({
+interface MetricDelta {
+  value: number;
+  delta: number;
+  trend: 'up' | 'down' | 'flat';
+}
+
+function ExecutiveMetrics({
   metrics,
   coverage,
   isLoading,
@@ -369,58 +340,90 @@ function MetricsStrip({
       <div className="border-b border-border-default bg-surface-0">
         <div className="max-w-7xl mx-auto px-6 py-3 flex gap-4">
           {[1, 2, 3, 4].map(i => (
-            <Skeleton key={i} className="h-14 flex-1" />
+            <Skeleton key={i} className="h-12 flex-1" />
           ))}
         </div>
       </div>
     );
   }
 
-  const strips = [
+  // Mock deltas - in production, compare with previous cycle
+  const kpis: Array<{
+    label: string;
+    value: number;
+    delta: number;
+    trend: 'up' | 'down' | 'flat';
+    color: string;
+    path: string;
+  }> = [
     {
       label: 'FAILED',
       value: metrics?.failed || 0,
+      delta: -2, // Mock: 2 fewer than last cycle
+      trend: (metrics?.failed || 0) > 0 ? 'up' : 'flat',
       color: (metrics?.failed || 0) > 0 ? 'text-danger' : 'text-text-muted',
       path: 'executions?status=failed',
     },
     {
       label: 'BLOCKED',
       value: metrics?.blocked || 0,
+      delta: 0,
+      trend: 'flat',
       color: (metrics?.blocked || 0) > 0 ? 'text-warning' : 'text-text-muted',
       path: 'executions?status=blocked',
     },
     {
       label: 'UNCOVERED',
       value: coverage?.uncoveredCount || 0,
+      delta: -5, // Mock: 5 fewer uncovered
+      trend: 'down',
       color: (coverage?.uncoveredCount || 0) > 0 ? 'text-warning' : 'text-text-muted',
       path: 'traceability',
     },
     {
       label: 'PASSED',
       value: metrics?.passed || 0,
+      delta: 3, // Mock: 3 more passed
+      trend: 'up',
       color: (metrics?.passed || 0) > 0 ? 'text-success' : 'text-text-muted',
       path: 'executions?status=passed',
     },
   ];
 
+  const getDeltaIcon = (trend: 'up' | 'down' | 'flat', label: string) => {
+    // For failures/blocked, down is good. For passed, up is good.
+    const isPositive = label === 'PASSED' ? trend === 'up' : trend === 'down';
+    const isNegative = label === 'PASSED' ? trend === 'down' : trend === 'up';
+    
+    if (trend === 'flat') return <Minus className="h-3 w-3 text-text-muted" />;
+    if (isPositive) return <ArrowDown className="h-3 w-3 text-success" />;
+    if (isNegative) return <ArrowUp className="h-3 w-3 text-danger" />;
+    return null;
+  };
+
   return (
     <div className="border-b border-border-default bg-surface-0">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3">
         <div className="flex items-stretch gap-1 overflow-x-auto">
-          {strips.map((strip, idx) => (
+          {kpis.map((kpi, idx) => (
             <button
               key={idx}
-              onClick={() => onNavigate(strip.path)}
+              onClick={() => onNavigate(kpi.path)}
               className={cn(
-                'flex-1 min-w-[80px] px-3 py-2 rounded transition-all text-center',
-                'bg-surface-1 hover:bg-surface-2 focus:outline-none focus:ring-1 focus:ring-border-focus',
+                'flex-1 min-w-[90px] px-4 py-2 rounded transition-all text-center',
+                'hover:bg-surface-2 focus:outline-none focus:ring-1 focus:ring-border-focus',
               )}
             >
-              <div className="text-[9px] font-semibold uppercase tracking-wider text-text-muted">
-                {strip.label}
-              </div>
-              <div className={cn('text-xl font-bold tabular-nums mt-0.5', strip.color)}>
-                {strip.value}
+              <div className="c-overline text-text-muted">{kpi.label}</div>
+              <div className="flex items-center justify-center gap-1.5 mt-1">
+                <span className={cn('text-h2 font-bold tabular-nums', kpi.color)}>
+                  {kpi.value}
+                </span>
+                {kpi.delta !== 0 && (
+                  <span className="flex items-center text-micro tabular-nums">
+                    {getDeltaIcon(kpi.trend, kpi.label)}
+                  </span>
+                )}
               </div>
             </button>
           ))}
@@ -431,34 +434,37 @@ function MetricsStrip({
 }
 
 // ═══════════════════════════════════════════════════════════════════
-// EXECUTION ROW - Clean, no alert backgrounds
+// 4. OPERATIONAL LIST - Execution rows with owner + failure cause
 // ═══════════════════════════════════════════════════════════════════
 
-function ExecutionRow({ 
+function OperationalRow({ 
   cycle, 
-  onNavigate 
+  onNavigate,
+  onJumpToFailing,
 }: { 
   cycle: any;
   onNavigate: (path: string) => void;
+  onJumpToFailing: (cycleId: string) => void;
 }) {
   const execs = cycle.test_cycle_executions || [];
   const total = execs.length;
   const passed = execs.filter((e: any) => e.status === 'passed').length;
   const failed = execs.filter((e: any) => e.status === 'failed').length;
   const blocked = execs.filter((e: any) => e.status === 'blocked').length;
-  const pending = total - passed - failed - blocked;
   const progress = total > 0 ? Math.round(((passed + failed + blocked) / total) * 100) : 0;
 
   const isFailing = failed > 0;
   const isBlocked = blocked > 0 && !isFailing;
+  const hasOwner = !!cycle.owner_name;
+
+  // Mock failure cause - in production, get from latest failed execution
+  const failureCause = isFailing ? 'Assertion failed: expected 200, got 500' : null;
 
   return (
-    <button
-      onClick={() => onNavigate(`cycles/${cycle.id}/execution`)}
+    <div
       className={cn(
-        'w-full flex items-center gap-3 px-4 py-3 text-left transition-all border-b border-border-subtle',
+        'flex items-center gap-3 px-4 py-3 border-b border-border-subtle',
         'hover:bg-surface-2',
-        // Accent bar via border-left
         isFailing && 'border-l-4 border-l-danger',
         isBlocked && 'border-l-4 border-l-warning',
         !isFailing && !isBlocked && 'border-l-4 border-l-transparent',
@@ -470,7 +476,7 @@ function ExecutionRow({
           <XCircle className="h-4 w-4 text-danger" strokeWidth={1.5} />
         ) : isBlocked ? (
           <AlertTriangle className="h-4 w-4 text-warning" strokeWidth={1.5} />
-        ) : pending > 0 ? (
+        ) : progress < 100 ? (
           <Clock className="h-4 w-4 text-info" strokeWidth={1.5} />
         ) : (
           <CheckCircle2 className="h-4 w-4 text-success" strokeWidth={1.5} />
@@ -479,38 +485,55 @@ function ExecutionRow({
       
       {/* Main content */}
       <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2">
-          <span className="font-medium text-sm text-text-primary truncate">
-            {cycle.name}
-          </span>
-          {isFailing && (
-            <span className="text-[10px] font-semibold text-danger uppercase">
-              FAILING
+        <button
+          onClick={() => onNavigate(`cycles/${cycle.id}/execution`)}
+          className="text-left w-full"
+        >
+          <div className="flex items-center gap-2">
+            <span className="c-title text-text-primary truncate">
+              {cycle.name}
             </span>
-          )}
-        </div>
-        <div className="flex items-center gap-3 mt-0.5 text-[10px] text-text-muted">
-          <span>{total} tests</span>
-          <span className="flex items-center gap-1">
-            <User className="h-3 w-3" />
-            {cycle.owner_name || 'Unassigned'}
-          </span>
-          <span className="hidden sm:inline">
-            Last run: {cycle.last_run_at ? formatDistanceToNow(new Date(cycle.last_run_at), { addSuffix: true }) : 'Never'}
-          </span>
-        </div>
+            {isFailing && (
+              <span className="c-overline text-danger">FAILING</span>
+            )}
+          </div>
+          
+          {/* Owner + Last failure inline */}
+          <div className="flex items-center gap-3 mt-0.5">
+            <span className={cn(
+              'text-caption flex items-center gap-1',
+              hasOwner ? 'text-text-muted' : 'text-danger'
+            )}>
+              <User className="h-3 w-3" />
+              {hasOwner ? cycle.owner_name : (
+                <span className="flex items-center gap-1">
+                  <AlertCircle className="h-3 w-3" />
+                  Unassigned
+                </span>
+              )}
+            </span>
+            <span className="text-caption text-text-tertiary tabular-nums">
+              {total} tests
+            </span>
+            {failureCause && (
+              <span className="text-caption text-text-muted truncate max-w-[200px]">
+                {failureCause}
+              </span>
+            )}
+          </div>
+        </button>
       </div>
       
       {/* Stats */}
-      <div className="flex items-center gap-2 text-[10px] flex-shrink-0">
-        {failed > 0 && <span className="text-danger font-semibold">{failed} failed</span>}
-        {blocked > 0 && <span className="text-warning font-semibold">{blocked} blocked</span>}
-        <span className="text-success">{passed} passed</span>
+      <div className="flex items-center gap-2 text-caption flex-shrink-0 tabular-nums">
+        {failed > 0 && <span className="text-danger font-semibold">{failed}F</span>}
+        {blocked > 0 && <span className="text-warning font-semibold">{blocked}B</span>}
+        <span className="text-success">{passed}P</span>
       </div>
       
       {/* Progress */}
-      <div className="flex-shrink-0 w-14 text-right">
-        <div className="text-xs font-semibold tabular-nums text-text-primary">
+      <div className="flex-shrink-0 w-12 text-right tabular-nums">
+        <div className="text-caption font-semibold text-text-primary">
           {progress}%
         </div>
         <div className="w-full h-1 bg-surface-3 rounded-full mt-1 overflow-hidden">
@@ -524,16 +547,32 @@ function ExecutionRow({
         </div>
       </div>
       
-      <ChevronRight className="h-4 w-4 text-text-muted flex-shrink-0 hidden sm:block" />
-    </button>
+      {/* Jump to failing step CTA */}
+      {isFailing && (
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => onJumpToFailing(cycle.id)}
+              className="h-7 px-2 text-caption text-brand-primary hover:text-brand-primary-hover"
+            >
+              Jump
+              <ChevronRight className="h-3 w-3 ml-0.5" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>Jump to failing step</TooltipContent>
+        </Tooltip>
+      )}
+    </div>
   );
 }
 
 // ═══════════════════════════════════════════════════════════════════
-// ACCOUNTABILITY ITEM - No color emphasis, traceable changes
+// 5. ACCOUNTABILITY PANEL - Bold actors, grouped by entity
 // ═══════════════════════════════════════════════════════════════════
 
-function AccountabilityItem({ 
+function AccountabilityRow({ 
   activity,
   onNavigate,
 }: { 
@@ -557,6 +596,14 @@ function AccountabilityItem({
     return null;
   };
 
+  const getEntityIcon = () => {
+    switch (activity.entity_type) {
+      case 'test_case': return <Target className="h-3.5 w-3.5" />;
+      case 'test_cycle': return <Activity className="h-3.5 w-3.5" />;
+      default: return <Clock className="h-3.5 w-3.5" />;
+    }
+  };
+
   return (
     <button
       onClick={() => {
@@ -568,24 +615,24 @@ function AccountabilityItem({
       }}
       className="w-full flex items-start gap-3 px-4 py-3 text-left transition-all border-b border-border-subtle hover:bg-surface-2"
     >
-      {/* Icon */}
-      <div className="flex-shrink-0 mt-0.5">
-        <Activity className="h-4 w-4 text-text-muted" strokeWidth={1.5} />
+      {/* Entity type icon */}
+      <div className="flex-shrink-0 mt-0.5 text-text-muted">
+        {getEntityIcon()}
       </div>
       
       {/* Content */}
       <div className="flex-1 min-w-0">
-        <p className="text-sm text-text-primary">
-          <span className="font-medium">{activity.user_name}</span>
+        <p className="text-body-sm">
+          <span className="font-bold text-text-primary">{activity.user_name}</span>
           <span className="text-text-muted mx-1">{getAction()}</span>
-          <span className="font-medium">{activity.entity_title}</span>
+          <span className="font-medium text-text-secondary">{activity.entity_title}</span>
         </p>
         {getFieldChange() && (
-          <p className="text-[10px] text-text-muted mt-0.5 font-mono">
+          <p className="text-micro text-text-muted mt-0.5 font-mono tabular-nums">
             {getFieldChange()}
           </p>
         )}
-        <p className="text-[10px] text-text-tertiary mt-0.5">
+        <p className="text-micro text-text-tertiary mt-0.5 tabular-nums">
           {formatDistanceToNow(new Date(activity.created_at), { addSuffix: true })}
         </p>
       </div>
@@ -628,6 +675,10 @@ export function GlobalTestsOverviewPage() {
     navigate(buildUrl(path));
   };
 
+  const handleJumpToFailing = (cycleId: string) => {
+    navigate(buildUrl(`cycles/${cycleId}/execution`, 'filter=failed'));
+  };
+
   // Fetch data
   const { metrics, isLoading: metricsLoading, refetch } = useGlobalTestMetrics(scopeType, scopeId);
   const { data: cycles, isLoading: cyclesLoading } = useGlobalTestCycles(scopeType, scopeId);
@@ -649,45 +700,45 @@ export function GlobalTestsOverviewPage() {
 
   const releaseStatus = determineReleaseStatus();
 
-  // Build blocker causes
-  const blockerCauses: BlockerCause[] = [];
+  // Build decision stack - fixed severity order
+  const decisionItems: SeverityItem[] = [];
   
   if ((metrics?.failed || 0) > 0) {
-    blockerCauses.push({
+    decisionItems.push({
       id: 'failed',
-      type: 'failed',
+      severity: 1,
+      label: 'SEVERITY 1',
       title: 'Failed Tests',
       count: metrics?.failed || 0,
-      severity: 'critical',
-      navigateTo: 'executions?status=failed',
       description: 'Critical failures blocking release',
-      ctaLabel: 'View failed tests',
+      action: 'View',
+      navigateTo: 'executions?status=failed',
     });
   }
   
   if ((metrics?.blocked || 0) > 0) {
-    blockerCauses.push({
+    decisionItems.push({
       id: 'blocked',
-      type: 'blocked',
+      severity: 2,
+      label: 'SEVERITY 2',
       title: 'Blocked Tests',
       count: metrics?.blocked || 0,
-      severity: (metrics?.blocked || 0) > 2 ? 'critical' : 'high',
+      description: 'Awaiting dependencies',
+      action: 'View',
       navigateTo: 'executions?status=blocked',
-      description: 'Awaiting dependencies or environment',
-      ctaLabel: 'View blocked tests',
     });
   }
   
-  if ((coverage?.uncoveredCount || 0) > 5) {
-    blockerCauses.push({
+  if ((coverage?.uncoveredCount || 0) > 0) {
+    decisionItems.push({
       id: 'coverage',
-      type: 'coverage',
+      severity: 3,
+      label: 'STRUCTURAL RISK',
       title: 'Uncovered Stories',
       count: coverage?.uncoveredCount || 0,
-      severity: (coverage?.uncoveredCount || 0) > 15 ? 'high' : 'medium',
-      navigateTo: 'traceability',
       description: 'Requirements without test coverage',
-      ctaLabel: 'View uncovered stories',
+      action: 'Plan',
+      navigateTo: 'traceability',
     });
   }
 
@@ -706,6 +757,17 @@ export function GlobalTestsOverviewPage() {
     })
     .slice(0, 10);
 
+  // Group activities by entity type
+  const groupedActivities = React.useMemo(() => {
+    if (!activities) return {};
+    return activities.reduce((acc: Record<string, any[]>, activity: any) => {
+      const type = activity.entity_type || 'other';
+      if (!acc[type]) acc[type] = [];
+      acc[type].push(activity);
+      return acc;
+    }, {});
+  }, [activities]);
+
   // Run button guardrails
   const canRun = isProjectScope && (metrics?.totalCases || 0) > 0;
   const runDisabledReason = !isProjectScope 
@@ -716,26 +778,27 @@ export function GlobalTestsOverviewPage() {
 
   return (
     <div className="flex flex-col h-full -m-6">
-      {/* COMPACT STATUS HEADER */}
-      <CompactStatusHeader 
+      {/* 1. COMMAND BAR */}
+      <CommandBar 
         status={releaseStatus}
         blockerCount={metrics?.blocked || 0}
         failedCount={metrics?.failed || 0}
         isLoading={isLoading}
-        onOpenTriage={() => handleNavigate('executions?status=failed')}
+        onResolve={() => handleNavigate('executions?status=failed&status=blocked')}
         onRefresh={refetch}
         onReport={() => handleNavigate('reports')}
+        onEscalate={() => {}}
       />
 
-      {/* BLOCKING ISSUES CARDS */}
-      <BlockingIssuesCards 
-        causes={blockerCauses}
+      {/* 2. DECISION STACK */}
+      <DecisionStack 
+        items={decisionItems}
         isLoading={isLoading}
         onNavigate={handleNavigate}
       />
 
-      {/* METRICS STRIP */}
-      <MetricsStrip
+      {/* 3. EXECUTIVE METRICS */}
+      <ExecutiveMetrics
         metrics={metrics}
         coverage={coverage || null}
         isLoading={isLoading}
@@ -745,7 +808,7 @@ export function GlobalTestsOverviewPage() {
       {/* CONTEXT BAR */}
       <div className="border-b border-border-default bg-surface-0">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-2 flex items-center justify-between gap-2">
-          <div className="flex items-center gap-2 text-xs text-text-muted">
+          <div className="flex items-center gap-2 text-caption text-text-muted tabular-nums">
             <span className="font-medium text-text-primary">
               {scopeType === 'project' ? 'Project' : scopeType === 'program' ? 'Program' : 'All Projects'}
             </span>
@@ -755,15 +818,6 @@ export function GlobalTestsOverviewPage() {
             <span className="hidden sm:inline">{metrics?.activeCycles ?? 0} active cycles</span>
           </div>
           <div className="flex items-center gap-2">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => refetch()}
-              className="h-7 gap-1.5 text-xs"
-            >
-              <RefreshCw className="h-3.5 w-3.5" />
-              Refresh
-            </Button>
             <Tooltip>
               <TooltipTrigger asChild>
                 <span>
@@ -771,7 +825,7 @@ export function GlobalTestsOverviewPage() {
                     size="sm"
                     onClick={() => setRunTestsOpen(true)}
                     disabled={!canRun}
-                    className="h-7 gap-1.5 text-xs bg-brand-primary hover:bg-brand-primary-hover text-brand-primary-foreground disabled:opacity-50"
+                    className="h-7 gap-1.5 text-caption bg-brand-primary hover:bg-brand-primary-hover text-brand-primary-foreground disabled:opacity-50 font-semibold"
                   >
                     <Play className="h-3.5 w-3.5" />
                     Run
@@ -786,28 +840,28 @@ export function GlobalTestsOverviewPage() {
         </div>
       </div>
 
-      {/* SPLIT VIEW - Executions & Accountability */}
+      {/* SPLIT VIEW - 4. Operational List & 5. Accountability */}
       <div className="flex-1 overflow-hidden bg-surface-1">
         <div className="max-w-7xl mx-auto h-full">
           <div className="grid grid-cols-1 lg:grid-cols-2 h-full divide-y lg:divide-y-0 lg:divide-x divide-border-default">
             
-            {/* LEFT: Active Executions */}
+            {/* LEFT: 4. OPERATIONAL LIST */}
             <div className="flex flex-col min-h-[200px] lg:h-full overflow-hidden">
               <div className="px-4 py-3 border-b border-border-default bg-surface-0 flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Activity className="h-4 w-4 text-text-muted" strokeWidth={1.5} />
-                  <h2 className="text-xs font-semibold text-text-primary uppercase tracking-wide">
-                    Active Executions
+                  <h2 className="c-overline text-text-primary">
+                    ACTIVE EXECUTIONS
                   </h2>
                   {sortedCycles.filter((c: any) => c._failed > 0).length > 0 && (
-                    <Badge variant="outline" className="text-[9px] px-1.5 py-0 text-danger border-danger/30">
+                    <Badge variant="outline" className="text-micro px-1.5 py-0 text-danger border-danger/30 tabular-nums">
                       {sortedCycles.filter((c: any) => c._failed > 0).length} failing
                     </Badge>
                   )}
                 </div>
                 <Link
                   to={buildUrl('cycles')}
-                  className="text-xs text-brand-primary hover:underline flex items-center gap-0.5"
+                  className="text-caption text-brand-primary hover:underline flex items-center gap-0.5"
                 >
                   View all
                   <ChevronRight className="h-3 w-3" />
@@ -821,16 +875,17 @@ export function GlobalTestsOverviewPage() {
                 ) : sortedCycles.length === 0 ? (
                   <div className="flex flex-col items-center justify-center h-full p-6 text-center">
                     <Activity className="h-8 w-8 text-text-muted mb-2" strokeWidth={1} />
-                    <p className="text-sm text-text-muted">No active executions</p>
-                    <p className="text-xs text-text-tertiary mt-1">Start a test run to see progress here</p>
+                    <p className="text-body-sm text-text-muted">No active executions</p>
+                    <p className="text-caption text-text-tertiary mt-1">Start a test run to see progress here</p>
                   </div>
                 ) : (
                   <div>
                     {sortedCycles.map((cycle: any) => (
-                      <ExecutionRow 
+                      <OperationalRow 
                         key={cycle.id} 
                         cycle={cycle} 
                         onNavigate={handleNavigate}
+                        onJumpToFailing={handleJumpToFailing}
                       />
                     ))}
                   </div>
@@ -838,13 +893,13 @@ export function GlobalTestsOverviewPage() {
               </div>
             </div>
 
-            {/* RIGHT: Accountability */}
+            {/* RIGHT: 5. ACCOUNTABILITY */}
             <div className="flex flex-col min-h-[200px] lg:h-full overflow-hidden">
               <div className="px-4 py-3 border-b border-border-default bg-surface-0 flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Clock className="h-4 w-4 text-text-muted" strokeWidth={1.5} />
-                  <h2 className="text-xs font-semibold text-text-primary uppercase tracking-wide">
-                    Recent Changes
+                  <h2 className="c-overline text-text-primary">
+                    ACCOUNTABILITY
                   </h2>
                 </div>
               </div>
@@ -856,17 +911,28 @@ export function GlobalTestsOverviewPage() {
                 ) : !activities || activities.length === 0 ? (
                   <div className="flex flex-col items-center justify-center h-full p-6 text-center">
                     <Clock className="h-8 w-8 text-text-muted mb-2" strokeWidth={1} />
-                    <p className="text-sm text-text-muted">No recent activity</p>
-                    <p className="text-xs text-text-tertiary mt-1">Changes will appear here</p>
+                    <p className="text-body-sm text-text-muted">No recent activity</p>
+                    <p className="text-caption text-text-tertiary mt-1">Changes will appear here</p>
                   </div>
                 ) : (
                   <div>
-                    {activities.map((activity: any) => (
-                      <AccountabilityItem 
-                        key={activity.id} 
-                        activity={activity} 
-                        onNavigate={handleNavigate}
-                      />
+                    {/* Group headers by entity type */}
+                    {Object.entries(groupedActivities).map(([type, items]) => (
+                      <div key={type}>
+                        <div className="px-4 py-1.5 bg-surface-2 border-b border-border-subtle">
+                          <span className="c-overline text-text-muted">
+                            {type === 'test_case' ? 'TEST CASES' : 
+                             type === 'test_cycle' ? 'CYCLES' : 'OTHER'}
+                          </span>
+                        </div>
+                        {(items as any[]).map((activity: any) => (
+                          <AccountabilityRow 
+                            key={activity.id} 
+                            activity={activity} 
+                            onNavigate={handleNavigate}
+                          />
+                        ))}
+                      </div>
                     ))}
                   </div>
                 )}

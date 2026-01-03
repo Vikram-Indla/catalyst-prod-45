@@ -908,3 +908,62 @@
 [data-theme="dark"] .scrollbar-catalyst::-webkit-scrollbar-thumb:hover {
   background: hsl(var(--border-default));
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   CATALYST TYPOGRAPHY UTILITY CLASSES
+   Executive-grade typography for enterprise interfaces
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Titles - Card/section titles */
+.c-title {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+  font-feature-settings: 'cv02' on, 'cv03' on, 'cv04' on;
+}
+
+/* Overline - Labels, badges, table headers */
+.c-overline {
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  font-feature-settings: 'cv02' on, 'cv03' on, 'cv04' on;
+}
+
+/* Body text sizes */
+.text-body-sm {
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.text-caption {
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.text-micro {
+  font-size: 11px;
+  line-height: 1.25;
+}
+
+/* Heading sizes using Catalyst tokens */
+.text-h2 {
+  font-size: 20px;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+}
+
+.text-h3 {
+  font-size: 18px;
+  line-height: 1.375;
+  letter-spacing: -0.01em;
+}
+
+/* Tabular numerics for data display */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum' on;
+}
