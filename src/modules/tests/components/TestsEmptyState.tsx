@@ -1,23 +1,13 @@
 /**
- * TESTS EMPTY STATE
- * Shared empty state component for Test Management module
- * Each page type has a specific CTA that navigates or opens a modal
+ * TESTS EMPTY STATE (Enterprise Pattern)
+ * Shows table structure with inline "No items" text - NEVER centered icons
+ * Per Bloomberg/Jira/Linear enterprise standard
  */
 
 import React from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { 
-  ListChecks, 
-  RefreshCcw, 
-  Play, 
-  Package, 
-  BarChart3,
-  FileText,
-  Plus,
-  ArrowRight,
-} from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 
 type EmptyStateType = 
@@ -35,61 +25,34 @@ interface TestsEmptyStateProps {
 }
 
 const EMPTY_STATE_CONFIG: Record<EmptyStateType, {
-  icon: React.ReactNode;
-  title: string;
-  description: string;
+  message: string;
   primaryLabel: string;
   primaryNavigation?: string;
-  secondaryLabel?: string;
-  secondaryNavigation?: string;
 }> = {
   overview: {
-    icon: <ListChecks className="h-12 w-12 text-text-tertiary" />,
-    title: 'No Test Data Yet',
-    description: 'Start by creating test cases and organizing them into cycles to track execution.',
+    message: 'No test data yet',
     primaryLabel: 'Create Test Case',
-    secondaryLabel: 'View All Cases',
-    secondaryNavigation: 'cases',
   },
   cases: {
-    icon: <FileText className="h-12 w-12 text-text-tertiary" />,
-    title: 'No Test Cases',
-    description: 'Test cases define what to test and expected results. Create your first test case to get started.',
+    message: 'No test cases yet',
     primaryLabel: 'Create Test Case',
-    secondaryLabel: 'Import Cases',
   },
   sets: {
-    icon: <Package className="h-12 w-12 text-text-tertiary" />,
-    title: 'No Test Sets',
-    description: 'Test sets group related test cases together for reuse across cycles. Create a set to organize your tests.',
+    message: 'No test sets yet',
     primaryLabel: 'Create Test Set',
-    secondaryLabel: 'View Cases',
-    secondaryNavigation: 'cases',
   },
   cycles: {
-    icon: <RefreshCcw className="h-12 w-12 text-text-tertiary" />,
-    title: 'No Test Cycles',
-    description: 'Test cycles organize test runs for specific releases or sprints. Create a cycle to start testing.',
-    primaryLabel: 'Create Test Cycle',
-    secondaryLabel: 'View Cases',
-    secondaryNavigation: 'cases',
+    message: 'No test cycles yet',
+    primaryLabel: 'Create Cycle',
   },
   executions: {
-    icon: <Play className="h-12 w-12 text-text-tertiary" />,
-    title: 'No Executions',
-    description: 'Executions track the results of running test cases. Create a cycle and run tests to see executions.',
+    message: 'No executions yet',
     primaryLabel: 'Run Tests',
-    secondaryLabel: 'View Cycles',
-    secondaryNavigation: 'cycles',
   },
   reports: {
-    icon: <BarChart3 className="h-12 w-12 text-text-tertiary" />,
-    title: 'No Report Data',
-    description: 'Reports are generated from test execution data. Run some tests to see analytics and trends.',
+    message: 'No report data yet',
     primaryLabel: 'View Executions',
     primaryNavigation: 'executions',
-    secondaryLabel: 'Run Tests',
-    secondaryNavigation: 'cycles',
   },
 };
 
@@ -110,55 +73,24 @@ export function TestsEmptyState({
     }
   };
 
-  const handleSecondaryClick = () => {
-    if (config.secondaryNavigation) {
-      navigate(`/projects/${projectId}/tests/${config.secondaryNavigation}`);
-    }
-  };
-
+  // Enterprise pattern: inline text, left-aligned, ghost button at bottom
   return (
-    <Card className={cn(
-      'bg-surface-2 border-border-default p-8 text-center',
-      className
-    )}>
-      <div className="flex flex-col items-center max-w-md mx-auto">
-        <div className="p-4 bg-surface-3 rounded-full mb-4">
-          {config.icon}
-        </div>
-        
-        <h3 className="text-lg font-semibold text-text-primary mb-2">
-          {config.title}
-        </h3>
-        
-        <p className="text-text-secondary text-sm mb-6">
-          {config.description}
-        </p>
-
-        <div className="flex items-center gap-3">
-          <Button
-            onClick={handlePrimaryClick}
-            className="gap-2"
-          >
-            {config.primaryNavigation ? (
-              <ArrowRight className="h-4 w-4" />
-            ) : (
-              <Plus className="h-4 w-4" />
-            )}
-            {config.primaryLabel}
-          </Button>
-
-          {config.secondaryLabel && (
-            <Button
-              variant="outline"
-              onClick={handleSecondaryClick}
-              className="gap-2"
-            >
-              {config.secondaryLabel}
-            </Button>
-          )}
-        </div>
+    <div className={cn('border border-border-default rounded-lg bg-surface-0', className)}>
+      <div className="px-4 py-6 text-sm text-text-tertiary">
+        {config.message}
       </div>
-    </Card>
+      <div className="px-4 py-3 border-t border-border-subtle">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={handlePrimaryClick}
+          className="gap-1.5 text-xs text-text-secondary hover:text-text-primary"
+        >
+          <Plus className="h-3.5 w-3.5" />
+          {config.primaryLabel}
+        </Button>
+      </div>
+    </div>
   );
 }
 
