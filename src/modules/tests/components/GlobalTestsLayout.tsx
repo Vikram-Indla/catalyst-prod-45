@@ -68,30 +68,18 @@ function ScopeSwitcher({ scopeType, scopeId, onScopeChange, programs, projects, 
 
   return (
     <div className="flex items-center gap-2">
-      {/* Scope Type Selector */}
+      {/* Scope Type Selector - Project only */}
       <Select 
-        value={scopeType} 
-        onValueChange={(value: ScopeType) => onScopeChange(value, null)}
+        value={scopeType === 'project' ? 'project' : 'project'} 
+        onValueChange={(value: ScopeType) => onScopeChange('project', null)}
       >
         <SelectTrigger className="w-32 h-9 bg-surface-2 border-border-default">
           <div className="flex items-center gap-2">
-            {scopeIcons[scopeType]}
+            <FolderKanban className="h-4 w-4" />
             <SelectValue />
           </div>
         </SelectTrigger>
         <SelectContent className="bg-surface-1 border-border-default">
-          <SelectItem value="global">
-            <div className="flex items-center gap-2">
-              <Building2 className="h-4 w-4" />
-              Enterprise
-            </div>
-          </SelectItem>
-          <SelectItem value="program">
-            <div className="flex items-center gap-2">
-              <Briefcase className="h-4 w-4" />
-              Program
-            </div>
-          </SelectItem>
           <SelectItem value="project">
             <div className="flex items-center gap-2">
               <FolderKanban className="h-4 w-4" />
