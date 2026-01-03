@@ -64,9 +64,6 @@ export function GlobalTestsSetsPage() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
 
-  // SCOPE ENFORCEMENT: Test Sets are ONLY manageable at project level
-  const isProjectScope = scopeType === 'project';
-
   // UI State
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('active');
@@ -82,13 +79,7 @@ export function GlobalTestsSetsPage() {
   // Extract programId for folder tree
   const programId = scopeType === 'program' ? scopeId : searchParams.get('programId');
 
-  // SCOPE ENFORCEMENT: Block non-project scope
-  if (!isProjectScope) {
-    const { ProjectScopeRequired } = require('../components/ProjectScopeRequired');
-    return <ProjectScopeRequired featureName="Test Sets" />;
-  }
-
-  // Data - only fetch if project scope
+  // Data
   const { data: sets, isLoading, error, refetch } = useGlobalTestSets(scopeType, scopeId);
 
   // Filter sets
@@ -119,10 +110,10 @@ export function GlobalTestsSetsPage() {
       
       const context = createPipelineContext(
         user.id,
-        'project',
+        scopeType === 'project' ? 'project' : scopeType === 'program' ? 'program' : 'global',
         scopeId,
-        null,
-        scopeId
+        scopeType === 'program' ? scopeId : null,
+        scopeType === 'project' ? scopeId : null
       );
 
       for (const setId of setIds) {

@@ -56,9 +56,6 @@ export function GlobalTestsExecutionsPage() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
 
-  // SCOPE ENFORCEMENT: Test Executions are ONLY manageable at project level
-  const isProjectScope = scopeType === 'project';
-
   // UI State
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
@@ -69,15 +66,9 @@ export function GlobalTestsExecutionsPage() {
   const [importOpen, setImportOpen] = useState(false);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
-  // SCOPE ENFORCEMENT: Block non-project scope
-  if (!isProjectScope) {
-    const { ProjectScopeRequired } = require('../components/ProjectScopeRequired');
-    return <ProjectScopeRequired featureName="Test Executions" />;
-  }
-
-  // Fetch cycles for filter (always project scope after enforcement)
+  // Fetch cycles for filter
   const { data: cycles } = useQuery({
-    queryKey: ['global-test-cycles-filter', 'project', scopeId],
+    queryKey: ['global-test-cycles-filter', scopeType, scopeId],
     queryFn: async () => {
       let query = supabase
         .from('test_cycles')
@@ -85,7 +76,9 @@ export function GlobalTestsExecutionsPage() {
         .eq('archived', false)
         .order('created_at', { ascending: false });
 
-      if (scopeId) {
+      if (scopeType === 'program' && scopeId) {
+        query = query.eq('program_id', scopeId);
+      } else if (scopeType === 'project' && scopeId) {
         query = query.eq('project_id', scopeId);
       }
 
@@ -93,12 +86,12 @@ export function GlobalTestsExecutionsPage() {
       if (error) throw error;
       return data || [];
     },
-    enabled: !!user && !!scopeId,
+    enabled: !!user,
   });
 
-  // Fetch executions (always project scope after enforcement)
+  // Fetch executions
   const { data: executions, isLoading, error, refetch } = useQuery({
-    queryKey: ['global-test-executions', 'project', scopeId, cycleFilter],
+    queryKey: ['global-test-executions', scopeType, scopeId, cycleFilter],
     queryFn: async () => {
       let query = supabase
         .from('test_cycle_executions')
@@ -117,13 +110,19 @@ export function GlobalTestsExecutionsPage() {
       const { data, error } = await query;
       if (error) throw error;
 
-      // Filter by project scope
+      // Filter by scope
       return (data || []).filter((exec: any) => {
-        if (!scopeId) return true;
-        return exec.test_cycle?.project_id === scopeId;
+        if (scopeType === 'global') return true;
+        if (scopeType === 'program' && scopeId) {
+          return exec.test_cycle?.program_id === scopeId;
+        }
+        if (scopeType === 'project' && scopeId) {
+          return exec.test_cycle?.project_id === scopeId;
+        }
+        return true;
       });
     },
-    enabled: !!user && !!scopeId,
+    enabled: !!user,
   });
 
   // Filter executions
