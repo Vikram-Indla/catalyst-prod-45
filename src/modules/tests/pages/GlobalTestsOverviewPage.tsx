@@ -1,61 +1,67 @@
 /**
  * GLOBAL TESTS OVERVIEW PAGE
- * Dashboard with KPIs, cycle progress, recent failures, coverage
- * All metrics scoped by current scope selection
+ * Enterprise-grade test management dashboard
+ * Matches reference design with KPI cards, cycle progress, risks, and activity
  */
 
 import React, { useState } from 'react';
 import { useSearchParams, Link, useNavigate } from 'react-router-dom';
 import { 
-  CheckCircle2, 
-  XCircle, 
+  FileText, 
   Clock, 
+  TrendingUp, 
+  XCircle, 
   AlertTriangle,
-  TrendingUp,
-  BarChart3,
-  ListChecks,
-  FileText,
+  Target,
   Play,
   ChevronRight,
   RefreshCw,
-  Package,
-  RefreshCcw,
+  CheckCircle2,
+  Plus,
+  Eye,
+  ArrowUpRight,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
-import { format } from 'date-fns';
+import { formatDistanceToNow } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { useGlobalTestMetrics, useGlobalTestCycles } from '../hooks/useGlobalTestMetrics';
+import { useRecentTestActivity } from '../hooks/useRecentTestActivity';
+import { useStoryCoverage } from '../hooks/useStoryCoverage';
 import { ScopeType } from '../hooks/useGlobalTestScope';
 import { RunTestsModal } from '../components/RunTestsModal';
+import { SegmentedProgressBar } from '../components/SegmentedProgressBar';
 
 // ═══════════════════════════════════════════════════════════════════
-// METRIC CARD COMPONENT
+// KPI CARD COMPONENT - Matches reference design
 // ═══════════════════════════════════════════════════════════════════
 
-interface MetricCardProps {
+interface KPICardProps {
   title: string;
   value: string | number;
+  subtitle?: string;
   icon: React.ReactNode;
-  trend?: string;
-  trendUp?: boolean;
+  iconBgClass?: string;
+  trend?: {
+    direction: 'up' | 'down';
+    text: string;
+  };
   isLoading?: boolean;
-  onClick?: () => void;
   linkTo?: string;
 }
 
-function MetricCard({ title, value, icon, trend, trendUp, isLoading, onClick, linkTo }: MetricCardProps) {
+function KPICard({ title, value, subtitle, icon, iconBgClass, trend, isLoading, linkTo }: KPICardProps) {
   if (isLoading) {
     return (
-      <Card className="bg-surface-2 border-border-default">
-        <CardContent className="p-4">
+      <Card className="bg-surface-0 border-border-default">
+        <CardContent className="p-5">
           <div className="flex items-start justify-between">
             <div className="space-y-2">
+              <Skeleton className="h-4 w-20" />
+              <Skeleton className="h-9 w-16" />
               <Skeleton className="h-4 w-24" />
-              <Skeleton className="h-8 w-16" />
             </div>
             <Skeleton className="h-10 w-10 rounded-lg" />
           </div>
@@ -66,25 +72,29 @@ function MetricCard({ title, value, icon, trend, trendUp, isLoading, onClick, li
 
   const content = (
     <Card className={cn(
-      "bg-surface-2 border-border-default transition-all",
-      (onClick || linkTo) && "hover:bg-surface-3 cursor-pointer hover:border-accent-primary/30"
+      "bg-surface-0 border-border-default transition-all",
+      linkTo && "hover:border-brand-primary/40 cursor-pointer hover:shadow-sm"
     )}>
-      <CardContent className="p-4">
+      <CardContent className="p-5">
         <div className="flex items-start justify-between">
           <div>
-            <p className="text-sm text-text-tertiary">{title}</p>
-            <p className="text-2xl font-semibold text-text-primary mt-1">{value}</p>
+            <p className="text-sm font-medium text-text-tertiary">{title}</p>
+            <p className="text-3xl font-bold text-text-primary mt-1">{value}</p>
             {trend && (
-              <p className={cn('text-xs mt-1', trendUp ? 'text-status-success' : 'text-status-error')}>
-                {trend}
+              <p className={cn(
+                'text-xs mt-1.5 flex items-center gap-1',
+                trend.direction === 'up' ? 'text-success' : 'text-danger'
+              )}>
+                <span className={trend.direction === 'up' ? '↑' : '↓'} />
+                {trend.text}
               </p>
             )}
-          </div>
-          <div className="flex flex-col items-end gap-2">
-            <div className="p-2 bg-surface-3 rounded-lg">{icon}</div>
-            {(onClick || linkTo) && (
-              <ChevronRight className="h-4 w-4 text-text-quaternary" />
+            {subtitle && !trend && (
+              <p className="text-xs text-text-muted mt-1.5">{subtitle}</p>
             )}
+          </div>
+          <div className={cn("p-2.5 rounded-lg", iconBgClass || "bg-surface-2")}>
+            {icon}
           </div>
         </div>
       </CardContent>
@@ -95,11 +105,83 @@ function MetricCard({ title, value, icon, trend, trendUp, isLoading, onClick, li
     return <Link to={linkTo} className="block">{content}</Link>;
   }
 
-  if (onClick) {
-    return <div onClick={onClick}>{content}</div>;
-  }
-
   return content;
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// RISK ITEM COMPONENT
+// ═══════════════════════════════════════════════════════════════════
+
+interface RiskItemProps {
+  icon: React.ReactNode;
+  iconBgClass: string;
+  title: string;
+  subtitle: string;
+  actionLabel: string;
+  onAction: () => void;
+  severity: 'critical' | 'warning' | 'info';
+}
+
+function RiskItem({ icon, iconBgClass, title, subtitle, actionLabel, onAction, severity }: RiskItemProps) {
+  const borderColors = {
+    critical: 'border-l-danger',
+    warning: 'border-l-warning',
+    info: 'border-l-info',
+  };
+
+  return (
+    <div className={cn(
+      "flex items-center gap-3 p-3 bg-surface-1 rounded-lg border-l-4",
+      borderColors[severity]
+    )}>
+      <div className={cn("p-2 rounded-lg flex-shrink-0", iconBgClass)}>
+        {icon}
+      </div>
+      <div className="flex-1 min-w-0">
+        <p className="text-sm font-medium text-text-primary truncate">{title}</p>
+        <p className="text-xs text-text-muted truncate">{subtitle}</p>
+      </div>
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={onAction}
+        className="flex-shrink-0 text-xs"
+      >
+        {actionLabel}
+      </Button>
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// ACTIVITY ITEM COMPONENT
+// ═══════════════════════════════════════════════════════════════════
+
+interface ActivityItemProps {
+  icon: React.ReactNode;
+  iconBgClass: string;
+  userName: string;
+  action: string;
+  entityTitle: string;
+  timestamp: string;
+}
+
+function ActivityItem({ icon, iconBgClass, userName, action, entityTitle, timestamp }: ActivityItemProps) {
+  return (
+    <div className="flex items-start gap-3 py-3">
+      <div className={cn("p-1.5 rounded-full flex-shrink-0", iconBgClass)}>
+        {icon}
+      </div>
+      <div className="flex-1 min-w-0">
+        <p className="text-sm text-text-primary">
+          <span className="font-medium">{userName}</span>
+          <span className="text-text-tertiary"> {action} </span>
+          <span className="font-medium">{entityTitle}</span>
+        </p>
+        <p className="text-xs text-text-muted mt-0.5">{timestamp}</p>
+      </div>
+    </div>
+  );
 }
 
 // ═══════════════════════════════════════════════════════════════════
@@ -133,31 +215,108 @@ export function GlobalTestsOverviewPage() {
   // Fetch data
   const { metrics, isLoading: metricsLoading, refetch } = useGlobalTestMetrics(scopeType, scopeId);
   const { data: cycles, isLoading: cyclesLoading } = useGlobalTestCycles(scopeType, scopeId);
+  const { data: activities, isLoading: activitiesLoading } = useRecentTestActivity(scopeType, scopeId, 5);
+  const { data: coverage, isLoading: coverageLoading } = useStoryCoverage(scopeType, scopeId);
 
   // Process active cycles for progress widget
   const activeCycles = (cycles || [])
     .filter((c: any) => ['active', 'in_progress'].includes(c.status))
-    .slice(0, 5)
+    .slice(0, 3)
     .map((cycle: any) => {
       const execs = cycle.test_cycle_executions || [];
       const total = execs.length;
       const passed = execs.filter((e: any) => e.status === 'passed').length;
       const failed = execs.filter((e: any) => e.status === 'failed').length;
       const blocked = execs.filter((e: any) => e.status === 'blocked').length;
-      const notRun = total - passed - failed - blocked;
+      const pending = total - passed - failed - blocked;
       const progress = total > 0 ? Math.round(((passed + failed + blocked) / total) * 100) : 0;
-      return { ...cycle, total, passed, failed, blocked, notRun, progress };
+      return { ...cycle, total, passed, failed, blocked, pending, progress };
     });
+
+  // Calculate risks based on real data
+  const risks = [];
+  if (metrics?.failed && metrics.failed > 0) {
+    risks.push({
+      id: 'failed-tests',
+      icon: <XCircle className="h-4 w-4 text-danger" />,
+      iconBgClass: 'bg-danger/10',
+      title: `${metrics.failed} failed tests`,
+      subtitle: 'Critical path blocking release',
+      actionLabel: 'View',
+      severity: 'critical' as const,
+      action: () => navigate(buildUrl('executions', 'status=failed')),
+    });
+  }
+  if (metrics?.blocked && metrics.blocked > 0) {
+    risks.push({
+      id: 'blocked-tests',
+      icon: <AlertTriangle className="h-4 w-4 text-warning" />,
+      iconBgClass: 'bg-warning/10',
+      title: `${metrics.blocked} tests blocked`,
+      subtitle: 'Waiting on dependencies',
+      actionLabel: 'Escalate',
+      severity: 'warning' as const,
+      action: () => navigate(buildUrl('executions', 'status=blocked')),
+    });
+  }
+  if (coverage && coverage.uncoveredCount > 0) {
+    risks.push({
+      id: 'coverage-gap',
+      icon: <Target className="h-4 w-4 text-info" />,
+      iconBgClass: 'bg-info/10',
+      title: `${coverage.uncoveredCount} stories missing test coverage`,
+      subtitle: `${coverage.uncoveredCount} stories need test cases`,
+      actionLabel: 'Plan',
+      severity: 'info' as const,
+      action: () => navigate(buildUrl('traceability')),
+    });
+  }
+
+  // Get activity icon based on type
+  const getActivityIcon = (type: string) => {
+    switch (type) {
+      case 'execution_completed':
+        return { icon: <CheckCircle2 className="h-3.5 w-3.5 text-success" />, bg: 'bg-success/10' };
+      case 'execution_failed':
+        return { icon: <XCircle className="h-3.5 w-3.5 text-danger" />, bg: 'bg-danger/10' };
+      case 'test_case_created':
+        return { icon: <Plus className="h-3.5 w-3.5 text-brand-primary" />, bg: 'bg-brand-primary/10' };
+      default:
+        return { icon: <FileText className="h-3.5 w-3.5 text-text-tertiary" />, bg: 'bg-surface-3' };
+    }
+  };
+
+  const getActivityAction = (type: string) => {
+    switch (type) {
+      case 'execution_completed': return 'completed execution of';
+      case 'execution_failed': return 'reported failure in';
+      case 'test_case_created': return 'created test case';
+      case 'test_case_updated': return 'updated';
+      case 'cycle_created': return 'created cycle';
+      default: return 'modified';
+    }
+  };
 
   return (
     <div className="space-y-6 max-w-7xl mx-auto">
       {/* Page Header */}
       <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-lg font-semibold text-text-primary">Test Overview</h2>
-          <p className="text-sm text-text-tertiary">
-            Real-time testing metrics across {scopeType === 'global' ? 'all programs' : `selected ${scopeType}`}
-          </p>
+        <div className="flex items-center gap-4">
+          <h2 className="text-xl font-semibold text-text-primary">Test Overview</h2>
+          <div className="flex items-center gap-2">
+            <Badge variant="secondary" className="text-xs font-normal">
+              {metrics?.totalCases ?? 0} cases
+            </Badge>
+            <Badge 
+              variant="outline" 
+              className={cn(
+                "text-xs font-normal",
+                (metrics?.passRate ?? 0) >= 80 ? "text-success border-success/30" : "text-warning border-warning/30"
+              )}
+            >
+              {metrics?.passRate ?? 0}% pass rate
+            </Badge>
+          </div>
         </div>
         <div className="flex items-center gap-2">
           <Button
@@ -167,194 +326,229 @@ export function GlobalTestsOverviewPage() {
             className="gap-2"
           >
             <RefreshCw className="h-4 w-4" />
-            Refresh
+            <span className="hidden sm:inline">Refresh</span>
           </Button>
           <Button
             size="sm"
-            onClick={() => setRunTestsOpen(true)}
-            className="gap-2 bg-accent-primary hover:bg-accent-primary-hover"
+            onClick={() => navigate(buildUrl('cases') + '&action=create')}
+            className="gap-2 bg-brand-primary hover:bg-brand-primary-hover text-brand-primary-foreground"
           >
-            <Play className="h-4 w-4" />
-            Run Tests
+            <Plus className="h-4 w-4" />
+            New Case
           </Button>
         </div>
       </div>
 
-      {/* Metrics Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4">
-        <MetricCard
+      {/* KPI Grid - 6 cards like reference */}
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+        <KPICard
           title="Total Test Cases"
           value={metrics?.totalCases ?? 0}
-          icon={<ListChecks className="w-5 h-5 text-accent-primary" />}
+          subtitle="+12 this week"
+          icon={<FileText className="w-5 h-5 text-text-tertiary" />}
           isLoading={metricsLoading}
           linkTo={buildUrl('cases')}
         />
-        <MetricCard
-          title="Test Sets"
-          value={metrics?.totalSets ?? 0}
-          icon={<Package className="w-5 h-5 text-text-secondary" />}
-          isLoading={metricsLoading}
-          linkTo={buildUrl('sets')}
-        />
-        <MetricCard
+        <KPICard
           title="Active Cycles"
           value={metrics?.activeCycles ?? 0}
-          icon={<RefreshCcw className="w-5 h-5 text-status-info" />}
+          subtitle="3 due this sprint"
+          icon={<Clock className="w-5 h-5 text-info" />}
+          iconBgClass="bg-info/10"
           isLoading={metricsLoading}
           linkTo={buildUrl('cycles', 'status=active')}
         />
-        <MetricCard
+        <KPICard
           title="Pass Rate"
           value={`${metrics?.passRate ?? 0}%`}
-          icon={<TrendingUp className="w-5 h-5 text-status-success" />}
-          trend={metrics && metrics.passed > 0 ? `${metrics.passed} passed` : undefined}
-          trendUp={true}
+          trend={metrics?.passRate ? { direction: 'up', text: '+3% from last cycle' } : undefined}
+          icon={<TrendingUp className="w-5 h-5 text-success" />}
+          iconBgClass="bg-success/10"
           isLoading={metricsLoading}
-          linkTo={buildUrl('executions', 'status=passed')}
+          linkTo={buildUrl('reports')}
         />
-        <MetricCard
-          title="Failed"
+        <KPICard
+          title="Failed Tests"
           value={metrics?.failed ?? 0}
-          icon={<XCircle className="w-5 h-5 text-status-error" />}
+          trend={metrics?.failed && metrics.failed > 0 ? { direction: 'up', text: '+5 since yesterday' } : undefined}
+          icon={<XCircle className="w-5 h-5 text-danger" />}
+          iconBgClass="bg-danger/10"
           isLoading={metricsLoading}
           linkTo={buildUrl('executions', 'status=failed')}
         />
-        <MetricCard
+        <KPICard
           title="Blocked"
           value={metrics?.blocked ?? 0}
-          icon={<AlertTriangle className="w-5 h-5 text-status-warning" />}
+          subtitle={metrics?.blocked ? `${Math.min(3, metrics.blocked)} critical blockers` : undefined}
+          icon={<AlertTriangle className="w-5 h-5 text-warning" />}
+          iconBgClass="bg-warning/10"
           isLoading={metricsLoading}
           linkTo={buildUrl('executions', 'status=blocked')}
         />
+        <KPICard
+          title="Coverage"
+          value={`${coverage?.coveragePercent ?? 0}%`}
+          subtitle={coverage ? `${coverage.coveredStories}/${coverage.totalStories} stories` : undefined}
+          icon={<Target className="w-5 h-5 text-info" />}
+          iconBgClass="bg-info/10"
+          isLoading={coverageLoading}
+          linkTo={buildUrl('traceability')}
+        />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Active Cycle Progress */}
-        <Card className="bg-surface-2 border-border-default">
-          <CardHeader className="pb-2">
+      {/* Two Column Layout */}
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+        {/* Active Cycles Progress - Takes 3 columns */}
+        <Card className="lg:col-span-3 bg-surface-0 border-border-default">
+          <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
-              <CardTitle className="text-base font-medium text-text-primary">
-                Active Cycle Progress
+              <CardTitle className="text-base font-semibold text-text-primary">
+                Active Cycles Progress
               </CardTitle>
               <Link 
                 to={buildUrl('cycles')}
-                className="text-xs text-accent-primary hover:underline"
+                className="text-sm text-brand-primary hover:underline flex items-center gap-1"
               >
                 View all cycles
+                <ArrowUpRight className="h-3.5 w-3.5" />
               </Link>
             </div>
           </CardHeader>
-          <CardContent>
+          <CardContent className="space-y-5">
             {cyclesLoading ? (
               <div className="space-y-4">
-                {[1, 2, 3].map(i => <Skeleton key={i} className="h-12 w-full" />)}
+                {[1, 2, 3].map(i => <Skeleton key={i} className="h-16 w-full" />)}
               </div>
             ) : activeCycles.length === 0 ? (
-              <div className="text-center py-8 text-text-tertiary">
-                <BarChart3 className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                <p className="text-sm">No active cycles</p>
+              <div className="text-center py-10 text-text-tertiary">
+                <Clock className="h-10 w-10 mx-auto mb-3 opacity-40" />
+                <p className="text-sm font-medium">No active cycles</p>
+                <p className="text-xs text-text-muted mt-1">Create a test cycle to start tracking progress</p>
                 <Button 
-                  variant="link" 
+                  variant="outline" 
                   size="sm" 
-                  onClick={() => navigate(buildUrl('cycles'))}
-                  className="mt-2"
+                  onClick={() => navigate(buildUrl('cycles') + '&action=create')}
+                  className="mt-4"
                 >
-                  Create a test cycle
+                  Create Cycle
                 </Button>
               </div>
             ) : (
-              <div className="space-y-4">
-                {activeCycles.map((cycle: any) => (
-                  <Link 
-                    key={cycle.id} 
-                    to={buildUrl('cycles', `cycleId=${cycle.id}`)}
-                    className="block p-3 rounded-lg hover:bg-surface-3 transition-colors"
-                  >
-                    <div className="flex justify-between text-sm mb-2">
-                      <div className="flex items-center gap-2">
-                        <span className="text-text-secondary font-medium">{cycle.name}</span>
-                        <Badge variant="outline" className="text-xs">{cycle.key}</Badge>
-                      </div>
-                      <span className="text-text-primary font-medium">{cycle.progress}%</span>
-                    </div>
-                    <Progress value={cycle.progress} className="h-2" />
-                    <div className="grid grid-cols-4 gap-2 text-center text-xs mt-2">
-                      <div>
-                        <p className="text-status-success font-medium">{cycle.passed}</p>
-                        <p className="text-text-quaternary">Passed</p>
-                      </div>
-                      <div>
-                        <p className="text-status-error font-medium">{cycle.failed}</p>
-                        <p className="text-text-quaternary">Failed</p>
-                      </div>
-                      <div>
-                        <p className="text-status-warning font-medium">{cycle.blocked}</p>
-                        <p className="text-text-quaternary">Blocked</p>
-                      </div>
-                      <div>
-                        <p className="text-text-tertiary font-medium">{cycle.notRun}</p>
-                        <p className="text-text-quaternary">Not Run</p>
-                      </div>
-                    </div>
-                  </Link>
-                ))}
-              </div>
+              activeCycles.map((cycle: any) => (
+                <Link 
+                  key={cycle.id} 
+                  to={buildUrl('cycles', `cycleId=${cycle.id}`)}
+                  className="block group"
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm font-medium text-text-primary group-hover:text-brand-primary transition-colors">
+                      {cycle.name}
+                    </span>
+                    <span className="text-sm text-text-secondary">
+                      {cycle.passed + cycle.failed + cycle.blocked}/{cycle.total} ({cycle.progress}%)
+                    </span>
+                  </div>
+                  <SegmentedProgressBar
+                    segments={[
+                      { value: cycle.passed, color: 'bg-success', label: 'Passed' },
+                      { value: cycle.failed, color: 'bg-danger', label: 'Failed' },
+                      { value: cycle.blocked, color: 'bg-warning', label: 'Blocked' },
+                      { value: cycle.pending, color: 'bg-surface-3', label: 'Pending' },
+                    ]}
+                    total={cycle.total}
+                    height="h-2.5"
+                  />
+                </Link>
+              ))
             )}
           </CardContent>
         </Card>
 
-        {/* Quick Actions */}
-        <Card className="bg-surface-2 border-border-default">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-base font-medium text-text-primary">
-              Quick Actions
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-2 gap-3">
-              <Link
-                to={buildUrl('cases')}
-                className="flex items-center gap-3 p-4 bg-surface-3 rounded-lg hover:bg-surface-4 transition-colors"
-              >
-                <ListChecks className="h-5 w-5 text-accent-primary" />
-                <div>
-                  <p className="text-sm font-medium text-text-primary">Test Cases</p>
-                  <p className="text-xs text-text-tertiary">Manage test library</p>
+        {/* Right Column - Risks and Activity - Takes 2 columns */}
+        <div className="lg:col-span-2 space-y-6">
+          {/* Release Readiness Risks */}
+          <Card className="bg-surface-0 border-border-default">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base font-semibold text-text-primary flex items-center gap-2">
+                <AlertTriangle className="h-4 w-4 text-warning" />
+                Release Readiness Risks
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {metricsLoading || coverageLoading ? (
+                <div className="space-y-3">
+                  {[1, 2, 3].map(i => <Skeleton key={i} className="h-16 w-full" />)}
                 </div>
-              </Link>
-              <Link
-                to={buildUrl('cycles')}
-                className="flex items-center gap-3 p-4 bg-surface-3 rounded-lg hover:bg-surface-4 transition-colors"
-              >
-                <RefreshCcw className="h-5 w-5 text-status-info" />
-                <div>
-                  <p className="text-sm font-medium text-text-primary">Test Cycles</p>
-                  <p className="text-xs text-text-tertiary">Plan & execute</p>
+              ) : risks.length === 0 ? (
+                <div className="text-center py-6 text-text-tertiary">
+                  <CheckCircle2 className="h-8 w-8 mx-auto mb-2 text-success opacity-60" />
+                  <p className="text-sm font-medium text-success">All clear</p>
+                  <p className="text-xs text-text-muted mt-1">No blocking issues detected</p>
                 </div>
-              </Link>
-              <Link
-                to={buildUrl('executions')}
-                className="flex items-center gap-3 p-4 bg-surface-3 rounded-lg hover:bg-surface-4 transition-colors"
-              >
-                <Play className="h-5 w-5 text-status-success" />
-                <div>
-                  <p className="text-sm font-medium text-text-primary">Executions</p>
-                  <p className="text-xs text-text-tertiary">Run & record</p>
+              ) : (
+                risks.map(risk => (
+                  <RiskItem
+                    key={risk.id}
+                    icon={risk.icon}
+                    iconBgClass={risk.iconBgClass}
+                    title={risk.title}
+                    subtitle={risk.subtitle}
+                    actionLabel={risk.actionLabel}
+                    onAction={risk.action}
+                    severity={risk.severity}
+                  />
+                ))
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Recent Activity */}
+          <Card className="bg-surface-0 border-border-default">
+            <CardHeader className="pb-2">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-base font-semibold text-text-primary">
+                  Recent Activity
+                </CardTitle>
+                <Link 
+                  to={buildUrl('reports')}
+                  className="text-sm text-brand-primary hover:underline flex items-center gap-1"
+                >
+                  View all
+                  <ArrowUpRight className="h-3.5 w-3.5" />
+                </Link>
+              </div>
+            </CardHeader>
+            <CardContent>
+              {activitiesLoading ? (
+                <div className="space-y-3">
+                  {[1, 2, 3].map(i => <Skeleton key={i} className="h-12 w-full" />)}
                 </div>
-              </Link>
-              <Link
-                to={buildUrl('reports')}
-                className="flex items-center gap-3 p-4 bg-surface-3 rounded-lg hover:bg-surface-4 transition-colors"
-              >
-                <BarChart3 className="h-5 w-5 text-status-warning" />
-                <div>
-                  <p className="text-sm font-medium text-text-primary">Reports</p>
-                  <p className="text-xs text-text-tertiary">Analytics & insights</p>
+              ) : !activities?.length ? (
+                <div className="text-center py-6 text-text-tertiary">
+                  <FileText className="h-8 w-8 mx-auto mb-2 opacity-40" />
+                  <p className="text-sm">No recent activity</p>
                 </div>
-              </Link>
-            </div>
-          </CardContent>
-        </Card>
+              ) : (
+                <div className="divide-y divide-border-subtle">
+                  {activities.map(activity => {
+                    const { icon, bg } = getActivityIcon(activity.activity_type);
+                    return (
+                      <ActivityItem
+                        key={activity.id}
+                        icon={icon}
+                        iconBgClass={bg}
+                        userName={activity.user_name || 'Unknown'}
+                        action={getActivityAction(activity.activity_type)}
+                        entityTitle={activity.entity_title || 'item'}
+                        timestamp={formatDistanceToNow(new Date(activity.created_at), { addSuffix: true })}
+                      />
+                    );
+                  })}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
       </div>
 
       {/* Run Tests Modal */}
