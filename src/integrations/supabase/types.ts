@@ -15142,6 +15142,92 @@ export type Database = {
           },
         ]
       }
+      shared_step_groups: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          id: string
+          name: string
+          project_id: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          name: string
+          project_id?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          name?: string
+          project_id?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shared_step_groups_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "shared_step_groups_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      shared_step_items: {
+        Row: {
+          action_rich: string
+          created_at: string | null
+          data_input_rich: string | null
+          evidence_required: string | null
+          expected_result_rich: string | null
+          group_id: string
+          id: string
+          step_order: number
+        }
+        Insert: {
+          action_rich: string
+          created_at?: string | null
+          data_input_rich?: string | null
+          evidence_required?: string | null
+          expected_result_rich?: string | null
+          group_id: string
+          id?: string
+          step_order: number
+        }
+        Update: {
+          action_rich?: string
+          created_at?: string | null
+          data_input_rich?: string | null
+          evidence_required?: string | null
+          expected_result_rich?: string | null
+          group_id?: string
+          id?: string
+          step_order?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shared_step_items_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "shared_step_groups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       shared_test_steps: {
         Row: {
           created_at: string | null
@@ -17003,6 +17089,44 @@ export type Database = {
           },
         ]
       }
+      test_audit_log: {
+        Row: {
+          action: string
+          actor_id: string | null
+          changes_json: Json | null
+          created_at: string | null
+          entity_id: string
+          entity_type: string
+          id: string
+        }
+        Insert: {
+          action: string
+          actor_id?: string | null
+          changes_json?: Json | null
+          created_at?: string | null
+          entity_id: string
+          entity_type: string
+          id?: string
+        }
+        Update: {
+          action?: string
+          actor_id?: string | null
+          changes_json?: Json | null
+          created_at?: string | null
+          entity_id?: string
+          entity_type?: string
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "test_audit_log_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       test_case_bulk_operations: {
         Row: {
           case_ids: string[]
@@ -17042,6 +17166,45 @@ export type Database = {
         }
         Relationships: []
       }
+      test_case_dataset_values: {
+        Row: {
+          created_at: string | null
+          dataset_id: string
+          id: string
+          value: string | null
+          variable_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          dataset_id: string
+          id?: string
+          value?: string | null
+          variable_id: string
+        }
+        Update: {
+          created_at?: string | null
+          dataset_id?: string
+          id?: string
+          value?: string | null
+          variable_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "test_case_dataset_values_dataset_id_fkey"
+            columns: ["dataset_id"]
+            isOneToOne: false
+            referencedRelation: "test_case_datasets"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_case_dataset_values_variable_id_fkey"
+            columns: ["variable_id"]
+            isOneToOne: false
+            referencedRelation: "test_case_variables"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       test_case_datasets: {
         Row: {
           case_id: string
@@ -17073,6 +17236,57 @@ export type Database = {
             columns: ["case_id"]
             isOneToOne: false
             referencedRelation: "test_cases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      test_case_links: {
+        Row: {
+          case_id: string
+          created_at: string | null
+          created_by: string | null
+          id: string
+          linked_id: string
+          linked_key: string | null
+          linked_title: string | null
+          linked_type: string
+          relation: string | null
+        }
+        Insert: {
+          case_id: string
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          linked_id: string
+          linked_key?: string | null
+          linked_title?: string | null
+          linked_type: string
+          relation?: string | null
+        }
+        Update: {
+          case_id?: string
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          linked_id?: string
+          linked_key?: string | null
+          linked_title?: string | null
+          linked_type?: string
+          relation?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "test_case_links_case_id_fkey"
+            columns: ["case_id"]
+            isOneToOne: false
+            referencedRelation: "test_cases"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_case_links_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -17253,10 +17467,13 @@ export type Database = {
           case_version: number | null
           created_at: string | null
           description: string
+          evidence_required: string | null
           expected_result: string | null
           id: string
           is_bdd: boolean | null
+          shared_step_group_id: string | null
           step_number: number
+          step_tags: string[] | null
           step_type: string | null
           test_data: string | null
           updated_at: string | null
@@ -17268,10 +17485,13 @@ export type Database = {
           case_version?: number | null
           created_at?: string | null
           description: string
+          evidence_required?: string | null
           expected_result?: string | null
           id?: string
           is_bdd?: boolean | null
+          shared_step_group_id?: string | null
           step_number: number
+          step_tags?: string[] | null
           step_type?: string | null
           test_data?: string | null
           updated_at?: string | null
@@ -17283,15 +17503,25 @@ export type Database = {
           case_version?: number | null
           created_at?: string | null
           description?: string
+          evidence_required?: string | null
           expected_result?: string | null
           id?: string
           is_bdd?: boolean | null
+          shared_step_group_id?: string | null
           step_number?: number
+          step_tags?: string[] | null
           step_type?: string | null
           test_data?: string | null
           updated_at?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "fk_shared_step_group"
+            columns: ["shared_step_group_id"]
+            isOneToOne: false
+            referencedRelation: "shared_step_groups"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "test_case_steps_case_id_fkey"
             columns: ["case_id"]
@@ -17347,6 +17577,38 @@ export type Database = {
             columns: ["program_id"]
             isOneToOne: false
             referencedRelation: "programs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      test_case_variables: {
+        Row: {
+          case_id: string
+          created_at: string | null
+          description: string | null
+          id: string
+          name: string
+        }
+        Insert: {
+          case_id: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name: string
+        }
+        Update: {
+          case_id?: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "test_case_variables_case_id_fkey"
+            columns: ["case_id"]
+            isOneToOne: false
+            referencedRelation: "test_cases"
             referencedColumns: ["id"]
           },
         ]
@@ -17553,6 +17815,7 @@ export type Database = {
           automation_key: string | null
           automation_owner_id: string | null
           automation_status: string | null
+          case_key: string | null
           case_type: string | null
           component: string | null
           created_at: string | null
@@ -17575,10 +17838,13 @@ export type Database = {
           program_id: string | null
           project_id: string | null
           release: string | null
+          requires_approval: boolean | null
+          risk: string | null
           status: Database["public"]["Enums"]["test_case_status"]
           test_type: Database["public"]["Enums"]["test_type"]
           title: string
           updated_at: string | null
+          updated_by: string | null
           version: number | null
         }
         Insert: {
@@ -17587,6 +17853,7 @@ export type Database = {
           automation_key?: string | null
           automation_owner_id?: string | null
           automation_status?: string | null
+          case_key?: string | null
           case_type?: string | null
           component?: string | null
           created_at?: string | null
@@ -17609,10 +17876,13 @@ export type Database = {
           program_id?: string | null
           project_id?: string | null
           release?: string | null
+          requires_approval?: boolean | null
+          risk?: string | null
           status?: Database["public"]["Enums"]["test_case_status"]
           test_type?: Database["public"]["Enums"]["test_type"]
           title: string
           updated_at?: string | null
+          updated_by?: string | null
           version?: number | null
         }
         Update: {
@@ -17621,6 +17891,7 @@ export type Database = {
           automation_key?: string | null
           automation_owner_id?: string | null
           automation_status?: string | null
+          case_key?: string | null
           case_type?: string | null
           component?: string | null
           created_at?: string | null
@@ -17643,10 +17914,13 @@ export type Database = {
           program_id?: string | null
           project_id?: string | null
           release?: string | null
+          requires_approval?: boolean | null
+          risk?: string | null
           status?: Database["public"]["Enums"]["test_case_status"]
           test_type?: Database["public"]["Enums"]["test_type"]
           title?: string
           updated_at?: string | null
+          updated_by?: string | null
           version?: number | null
         }
         Relationships: [
@@ -17669,6 +17943,13 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_cases_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]

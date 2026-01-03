@@ -16,7 +16,7 @@ import { cn } from '@/lib/utils';
 import { TestsPageHeader, useTestsScope } from '../components/TestsPageHeader';
 import { TestCasesGrid, TestCaseRow } from '../components/TestCasesGrid';
 import { TestCaseDetailDrawer } from '../components/TestCaseDetailDrawer';
-import { CreateTestCaseModal } from '../components/CreateTestCaseModal';
+import { EnterpriseTestCaseModal } from '../components/test-case-modal';
 import { AddToSetModal } from '../components/AddToSetModal';
 import { AddToCycleModal } from '../components/AddToCycleModal';
 import { MoveToFolderModal } from '../components/MoveToFolderModal';
@@ -359,11 +359,10 @@ export function GlobalTestsCasesPage() {
       />
 
       {/* Create Modal */}
-      <CreateTestCaseModal
+      <EnterpriseTestCaseModal
         open={createModalOpen}
         onOpenChange={setCreateModalOpen}
-        scopeType={scopeType as 'program' | 'project'}
-        scopeId={scopeId || ''}
+        projectId={scopeId || ''}
         onSuccess={handleCaseCreated}
         defaultFolderId={selectedFolderId}
       />
