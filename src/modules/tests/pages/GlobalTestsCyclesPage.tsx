@@ -327,14 +327,21 @@ export function GlobalTestsCyclesPage() {
           folderPanelOpen ? 'w-56' : 'w-0 overflow-hidden'
         )}
       >
-        {folderPanelOpen && programId && (
-          <TestFolderTree
-            programId={programId}
-            entityType="test_cycle"
-            selectedFolderId={selectedFolderId}
-            onSelectFolder={setSelectedFolderId}
-            className="flex-1"
-          />
+        {folderPanelOpen && (
+          programId ? (
+            <TestFolderTree
+              programId={programId}
+              entityType="test_cycle"
+              selectedFolderId={selectedFolderId}
+              onSelectFolder={setSelectedFolderId}
+              className="flex-1"
+            />
+          ) : (
+            <div className="p-4 text-center text-text-muted text-sm">
+              <p>Folders available in program scope</p>
+              <p className="text-xs mt-1 text-text-tertiary">Switch to a program to organize cycles</p>
+            </div>
+          )
         )}
       </div>
 
