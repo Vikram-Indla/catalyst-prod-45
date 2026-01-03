@@ -12,6 +12,8 @@ export { CycleDrawer } from './components/CycleDrawer';
 export { ExecutionDrawer } from './components/ExecutionDrawer';
 export { MissingWiringBanner, useMissingWiringCheck } from './components/MissingWiringBanner';
 export { TestsEmptyState } from './components/TestsEmptyState';
+export { TestFolderTree } from './components/TestFolderTree';
+export { TestCaseDetailPanel } from './components/TestCaseDetailPanel';
 
 // Project-scoped Pages
 export { TestsOverviewPage } from './pages/TestsOverviewPage';
