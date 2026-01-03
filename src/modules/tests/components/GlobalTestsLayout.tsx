@@ -55,60 +55,35 @@ interface ScopeSwitcherProps {
   isLoading: boolean;
 }
 
-function ScopeSwitcher({ scopeType, scopeId, onScopeChange, programs, projects, isLoading }: ScopeSwitcherProps) {
-  const scopeIcons: Record<ScopeType, React.ReactNode> = {
-    global: <Building2 className="h-4 w-4" />,
-    program: <Briefcase className="h-4 w-4" />,
-    project: <FolderKanban className="h-4 w-4" />,
-  };
-
+function ScopeSwitcher({ scopeId, onScopeChange, projects, isLoading }: ScopeSwitcherProps) {
   if (isLoading) {
     return <Skeleton className="h-9 w-48" />;
   }
 
-  return (
-    <div className="flex items-center gap-2">
-      {/* Scope Type Selector - Project only */}
-      <Select 
-        value={scopeType === 'project' ? 'project' : 'project'} 
-        onValueChange={(value: ScopeType) => onScopeChange('project', null)}
-      >
-        <SelectTrigger className="w-32 h-9 bg-surface-2 border-border-default">
-          <div className="flex items-center gap-2">
-            <FolderKanban className="h-4 w-4" />
-            <SelectValue />
-          </div>
-        </SelectTrigger>
-        <SelectContent className="bg-surface-1 border-border-default">
-          <SelectItem value="project">
-            <div className="flex items-center gap-2">
-              <FolderKanban className="h-4 w-4" />
-              Project
-            </div>
-          </SelectItem>
-        </SelectContent>
-      </Select>
+  // Get current project name
+  const currentProject = projects.find(p => p.id === scopeId);
 
-      {/* Entity Selector (for program/project scope) */}
-      {scopeType !== 'global' && (
-        <Select 
-          value={scopeId || ''} 
-          onValueChange={(value) => onScopeChange(scopeType, value || null)}
-        >
-          <SelectTrigger className="w-48 h-9 bg-surface-2 border-border-default">
-            <SelectValue placeholder={`Select ${scopeType}`} />
-          </SelectTrigger>
-          <SelectContent className="bg-surface-1 border-border-default max-h-64">
-            {scopeType === 'program' && programs.map(p => (
-              <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
-            ))}
-            {scopeType === 'project' && projects.map(p => (
-              <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      )}
-    </div>
+  return (
+    <Select 
+      value={scopeId || ''} 
+      onValueChange={(value) => onScopeChange('project', value || null)}
+    >
+      <SelectTrigger className="w-56 h-9 bg-surface-2 border-border-default">
+        <div className="flex items-center gap-2">
+          <FolderKanban className="h-4 w-4 text-text-tertiary" />
+          <SelectValue placeholder="Select Project">
+            {currentProject?.name || 'Select Project'}
+          </SelectValue>
+        </div>
+      </SelectTrigger>
+      <SelectContent className="bg-surface-1 border-border-default max-h-64">
+        {projects.map(p => (
+          <SelectItem key={p.id} value={p.id}>
+            {p.name}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
   );
 }
 
