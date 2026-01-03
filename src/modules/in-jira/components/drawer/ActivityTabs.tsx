@@ -1,6 +1,6 @@
 /**
  * Activity Tabs Component
- * Comments, History, Work Log, SLA, and Test Management tabs for issue drawer
+ * Comments, History, Work Log, and SLA tabs for issue drawer
  */
 
 import React, { useState } from 'react';
@@ -9,7 +9,6 @@ import {
   Clock, 
   Timer, 
   Target,
-  TestTube,
   Send,
   ArrowUp,
   ArrowDown,
@@ -32,7 +31,6 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { cn } from '@/lib/utils';
 import { formatDistanceToNow } from 'date-fns';
-import { IssueTestManagementTab } from './IssueTestManagementTab';
 
 interface Comment {
   id: string;
@@ -152,12 +150,6 @@ export function ActivityTabs({
             <Target className="h-3.5 w-3.5" />
             SLA
           </TabsTrigger>
-          {programId && issueType && (
-            <TabsTrigger value="tests" className="text-xs gap-1.5">
-              <TestTube className="h-3.5 w-3.5" />
-              Tests
-            </TabsTrigger>
-          )}
         </TabsList>
 
         <Button
@@ -412,19 +404,6 @@ export function ActivityTabs({
         </div>
       </TabsContent>
 
-      {/* Tests Tab */}
-      {programId && issueType && issueKey && issueTitle && (
-        <TabsContent value="tests" className="mt-0">
-          <IssueTestManagementTab
-            issueId={issueId}
-            issueKey={issueKey}
-            issueTitle={issueTitle}
-            issueType={issueType}
-            programId={programId}
-            onExecuteCase={onExecuteTestCase}
-          />
-        </TabsContent>
-      )}
     </Tabs>
   );
 }
