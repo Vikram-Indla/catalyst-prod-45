@@ -57,7 +57,7 @@ interface ScopeSwitcherProps {
 
 function ScopeSwitcher({ scopeId, onScopeChange, projects, isLoading }: ScopeSwitcherProps) {
   if (isLoading) {
-    return <Skeleton className="h-9 w-48" />;
+    return <Skeleton className="h-8 w-52" />;
   }
 
   // Get current project name
@@ -68,17 +68,17 @@ function ScopeSwitcher({ scopeId, onScopeChange, projects, isLoading }: ScopeSwi
       value={scopeId || ''} 
       onValueChange={(value) => onScopeChange('project', value || null)}
     >
-      <SelectTrigger className="w-56 h-9 bg-surface-2 border-border-default">
+      <SelectTrigger className="w-52 h-8 bg-surface-0 border-2 border-border-strong hover:border-brand-primary focus:border-brand-primary font-semibold shadow-sm">
         <div className="flex items-center gap-2">
-          <FolderKanban className="h-4 w-4 text-text-tertiary" />
-          <SelectValue placeholder="Select Project">
+          <FolderKanban className="h-4 w-4 text-brand-primary flex-shrink-0" />
+          <span className="truncate text-sm font-semibold text-text-primary">
             {currentProject?.name || 'Select Project'}
-          </SelectValue>
+          </span>
         </div>
       </SelectTrigger>
-      <SelectContent className="bg-surface-1 border-border-default max-h-64">
+      <SelectContent className="bg-surface-elevated border-border-strong shadow-lg max-h-72">
         {projects.map(p => (
-          <SelectItem key={p.id} value={p.id}>
+          <SelectItem key={p.id} value={p.id} className="text-sm font-medium">
             {p.name}
           </SelectItem>
         ))}
