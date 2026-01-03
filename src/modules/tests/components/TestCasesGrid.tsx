@@ -439,15 +439,6 @@ export function TestCasesGrid({
               <SelectItem value="100">100</SelectItem>
             </SelectContent>
           </Select>
-          <Button
-            size="sm"
-            onClick={onCreateNew}
-            className="h-8 text-xs font-semibold gap-1.5"
-          >
-            <Plus className="w-3.5 h-3.5" />
-            Create Test Case
-            <kbd className="ml-1 px-1 py-0.5 text-[9px] rounded bg-surface-3 text-text-secondary hidden sm:inline">C</kbd>
-          </Button>
         </div>
       </div>
 
