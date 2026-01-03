@@ -67,13 +67,12 @@ function ScopeSwitcher({ scopeId, onScopeChange, projects, isLoading }: ScopeSwi
       value={scopeId || ''} 
       onValueChange={(value) => onScopeChange('project', value || null)}
     >
-      <SelectTrigger className="w-56 h-9 bg-surface-0 border-2 border-border-strong hover:border-brand-primary focus:border-brand-primary rounded-md shadow-sm">
+      <SelectTrigger className="w-56 h-9 bg-surface-0 border-2 border-border-strong hover:border-brand-primary focus:border-brand-primary rounded-md shadow-sm [&>svg]:text-text-muted">
         <div className="flex items-center gap-2">
           <FolderKanban className="h-4 w-4 text-brand-primary flex-shrink-0" />
           <span className="truncate text-sm font-bold text-text-primary">
             {currentProject?.name || 'Select Project'}
           </span>
-          <ChevronDown className="h-4 w-4 text-text-muted ml-auto" />
         </div>
       </SelectTrigger>
       <SelectContent className="bg-surface-elevated border-2 border-border-strong shadow-lg max-h-72">
