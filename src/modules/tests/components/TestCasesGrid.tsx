@@ -439,9 +439,14 @@ export function TestCasesGrid({
               <SelectItem value="100">100</SelectItem>
             </SelectContent>
           </Select>
-          <Button size="sm" className="bg-accent-primary text-white hover:bg-accent-primary/90 h-8 text-xs" onClick={onCreateNew}>
-            <Plus className="w-3.5 h-3.5 mr-1" />
-            New Case
+          <Button
+            size="sm"
+            onClick={onCreateNew}
+            className="h-8 text-xs font-semibold gap-1.5"
+          >
+            <Plus className="w-3.5 h-3.5" />
+            Create Test Case
+            <kbd className="ml-1 px-1 py-0.5 text-[9px] rounded bg-surface-3 text-text-secondary hidden sm:inline">C</kbd>
           </Button>
         </div>
       </div>
@@ -500,13 +505,9 @@ export function TestCasesGrid({
                 <tr>
                   <td colSpan={visibleColumns.length + 2} className="px-4 py-6">
                     <div className="flex items-center gap-4">
-                      <span className="text-sm text-text-tertiary font-medium">No test cases yet</span>
-                      <Button 
-                        size="sm" 
-                        className="bg-accent-primary hover:bg-accent-primary/90 text-white h-7 text-xs gap-1.5 font-semibold"
-                        onClick={onCreateNew}
-                      >
-                        <Plus className="h-3.5 w-3.5" /> Create your first test case
+                      <span className="text-sm text-text-tertiary font-medium">No test cases found</span>
+                      <Button size="sm" className="h-7 text-xs font-semibold" onClick={onCreateNew}>
+                        Create your first test case
                       </Button>
                     </div>
                   </td>
