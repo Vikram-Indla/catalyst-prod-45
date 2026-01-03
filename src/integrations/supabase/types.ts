@@ -15142,92 +15142,6 @@ export type Database = {
           },
         ]
       }
-      shared_step_groups: {
-        Row: {
-          created_at: string | null
-          created_by: string | null
-          description: string | null
-          id: string
-          name: string
-          project_id: string | null
-          updated_at: string | null
-        }
-        Insert: {
-          created_at?: string | null
-          created_by?: string | null
-          description?: string | null
-          id?: string
-          name: string
-          project_id?: string | null
-          updated_at?: string | null
-        }
-        Update: {
-          created_at?: string | null
-          created_by?: string | null
-          description?: string | null
-          id?: string
-          name?: string
-          project_id?: string | null
-          updated_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "shared_step_groups_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "shared_step_groups_project_id_fkey"
-            columns: ["project_id"]
-            isOneToOne: false
-            referencedRelation: "projects"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      shared_step_items: {
-        Row: {
-          action_rich: string
-          created_at: string | null
-          data_input_rich: string | null
-          evidence_required: string | null
-          expected_result_rich: string | null
-          group_id: string
-          id: string
-          step_order: number
-        }
-        Insert: {
-          action_rich: string
-          created_at?: string | null
-          data_input_rich?: string | null
-          evidence_required?: string | null
-          expected_result_rich?: string | null
-          group_id: string
-          id?: string
-          step_order: number
-        }
-        Update: {
-          action_rich?: string
-          created_at?: string | null
-          data_input_rich?: string | null
-          evidence_required?: string | null
-          expected_result_rich?: string | null
-          group_id?: string
-          id?: string
-          step_order?: number
-        }
-        Relationships: [
-          {
-            foreignKeyName: "shared_step_items_group_id_fkey"
-            columns: ["group_id"]
-            isOneToOne: false
-            referencedRelation: "shared_step_groups"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       shared_test_steps: {
         Row: {
           created_at: string | null
@@ -16658,73 +16572,6 @@ export type Database = {
           },
         ]
       }
-      test_activity_log: {
-        Row: {
-          activity_type: string
-          created_at: string | null
-          description: string | null
-          effort_hours: number | null
-          entity_id: string
-          entity_title: string | null
-          entity_type: string
-          id: string
-          metadata: Json | null
-          program_id: string | null
-          project_id: string | null
-          user_id: string | null
-        }
-        Insert: {
-          activity_type: string
-          created_at?: string | null
-          description?: string | null
-          effort_hours?: number | null
-          entity_id: string
-          entity_title?: string | null
-          entity_type: string
-          id?: string
-          metadata?: Json | null
-          program_id?: string | null
-          project_id?: string | null
-          user_id?: string | null
-        }
-        Update: {
-          activity_type?: string
-          created_at?: string | null
-          description?: string | null
-          effort_hours?: number | null
-          entity_id?: string
-          entity_title?: string | null
-          entity_type?: string
-          id?: string
-          metadata?: Json | null
-          program_id?: string | null
-          project_id?: string | null
-          user_id?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "test_activity_log_program_id_fkey"
-            columns: ["program_id"]
-            isOneToOne: false
-            referencedRelation: "projects"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "test_activity_log_project_id_fkey"
-            columns: ["project_id"]
-            isOneToOne: false
-            referencedRelation: "projects"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "test_activity_log_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       test_activity_timeline: {
         Row: {
           action: string
@@ -16780,41 +16627,6 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "test_activity_timeline_program_id_fkey"
-            columns: ["program_id"]
-            isOneToOne: false
-            referencedRelation: "programs"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      test_admin_settings: {
-        Row: {
-          created_at: string
-          id: string
-          program_id: string
-          setting_key: string
-          setting_value: Json
-          updated_at: string
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          program_id: string
-          setting_key: string
-          setting_value?: Json
-          updated_at?: string
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          program_id?: string
-          setting_key?: string
-          setting_value?: Json
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "test_admin_settings_program_id_fkey"
             columns: ["program_id"]
             isOneToOne: false
             referencedRelation: "programs"
@@ -16896,146 +16708,6 @@ export type Database = {
           },
         ]
       }
-      test_ai_audit_log: {
-        Row: {
-          acceptance_notes: string | null
-          accepted_at: string | null
-          action_subtype: string | null
-          action_type: string
-          created_at: string | null
-          error_message: string | null
-          generated_entities: Json | null
-          id: string
-          input_data: Json
-          model_used: string | null
-          output_data: Json | null
-          program_id: string | null
-          response_time_ms: number | null
-          source_entity_id: string | null
-          source_entity_type: string | null
-          status: string | null
-          tokens_used: number | null
-          user_accepted: boolean | null
-          user_id: string
-        }
-        Insert: {
-          acceptance_notes?: string | null
-          accepted_at?: string | null
-          action_subtype?: string | null
-          action_type: string
-          created_at?: string | null
-          error_message?: string | null
-          generated_entities?: Json | null
-          id?: string
-          input_data: Json
-          model_used?: string | null
-          output_data?: Json | null
-          program_id?: string | null
-          response_time_ms?: number | null
-          source_entity_id?: string | null
-          source_entity_type?: string | null
-          status?: string | null
-          tokens_used?: number | null
-          user_accepted?: boolean | null
-          user_id: string
-        }
-        Update: {
-          acceptance_notes?: string | null
-          accepted_at?: string | null
-          action_subtype?: string | null
-          action_type?: string
-          created_at?: string | null
-          error_message?: string | null
-          generated_entities?: Json | null
-          id?: string
-          input_data?: Json
-          model_used?: string | null
-          output_data?: Json | null
-          program_id?: string | null
-          response_time_ms?: number | null
-          source_entity_id?: string | null
-          source_entity_type?: string | null
-          status?: string | null
-          tokens_used?: number | null
-          user_accepted?: boolean | null
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "test_ai_audit_log_program_id_fkey"
-            columns: ["program_id"]
-            isOneToOne: false
-            referencedRelation: "programs"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      test_ai_drafts: {
-        Row: {
-          audit_log_id: string | null
-          created_at: string | null
-          draft_data: Json
-          draft_type: string
-          id: string
-          modifications: Json | null
-          program_id: string | null
-          review_notes: string | null
-          reviewed_at: string | null
-          reviewed_by: string | null
-          status: string | null
-          target_entity_id: string | null
-          target_entity_type: string | null
-          updated_at: string | null
-        }
-        Insert: {
-          audit_log_id?: string | null
-          created_at?: string | null
-          draft_data: Json
-          draft_type: string
-          id?: string
-          modifications?: Json | null
-          program_id?: string | null
-          review_notes?: string | null
-          reviewed_at?: string | null
-          reviewed_by?: string | null
-          status?: string | null
-          target_entity_id?: string | null
-          target_entity_type?: string | null
-          updated_at?: string | null
-        }
-        Update: {
-          audit_log_id?: string | null
-          created_at?: string | null
-          draft_data?: Json
-          draft_type?: string
-          id?: string
-          modifications?: Json | null
-          program_id?: string | null
-          review_notes?: string | null
-          reviewed_at?: string | null
-          reviewed_by?: string | null
-          status?: string | null
-          target_entity_id?: string | null
-          target_entity_type?: string | null
-          updated_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "test_ai_drafts_audit_log_id_fkey"
-            columns: ["audit_log_id"]
-            isOneToOne: false
-            referencedRelation: "test_ai_audit_log"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "test_ai_drafts_program_id_fkey"
-            columns: ["program_id"]
-            isOneToOne: false
-            referencedRelation: "programs"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       test_ai_settings: {
         Row: {
           api_key_ref: string | null
@@ -17089,44 +16761,6 @@ export type Database = {
           },
         ]
       }
-      test_audit_log: {
-        Row: {
-          action: string
-          actor_id: string | null
-          changes_json: Json | null
-          created_at: string | null
-          entity_id: string
-          entity_type: string
-          id: string
-        }
-        Insert: {
-          action: string
-          actor_id?: string | null
-          changes_json?: Json | null
-          created_at?: string | null
-          entity_id: string
-          entity_type: string
-          id?: string
-        }
-        Update: {
-          action?: string
-          actor_id?: string | null
-          changes_json?: Json | null
-          created_at?: string | null
-          entity_id?: string
-          entity_type?: string
-          id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "test_audit_log_actor_id_fkey"
-            columns: ["actor_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       test_case_bulk_operations: {
         Row: {
           case_ids: string[]
@@ -17166,131 +16800,6 @@ export type Database = {
         }
         Relationships: []
       }
-      test_case_dataset_values: {
-        Row: {
-          created_at: string | null
-          dataset_id: string
-          id: string
-          value: string | null
-          variable_id: string
-        }
-        Insert: {
-          created_at?: string | null
-          dataset_id: string
-          id?: string
-          value?: string | null
-          variable_id: string
-        }
-        Update: {
-          created_at?: string | null
-          dataset_id?: string
-          id?: string
-          value?: string | null
-          variable_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "test_case_dataset_values_dataset_id_fkey"
-            columns: ["dataset_id"]
-            isOneToOne: false
-            referencedRelation: "test_case_datasets"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "test_case_dataset_values_variable_id_fkey"
-            columns: ["variable_id"]
-            isOneToOne: false
-            referencedRelation: "test_case_variables"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      test_case_datasets: {
-        Row: {
-          case_id: string
-          created_at: string | null
-          dataset_name: string
-          id: string
-          is_active: boolean | null
-          parameter_values: Json
-        }
-        Insert: {
-          case_id: string
-          created_at?: string | null
-          dataset_name: string
-          id?: string
-          is_active?: boolean | null
-          parameter_values: Json
-        }
-        Update: {
-          case_id?: string
-          created_at?: string | null
-          dataset_name?: string
-          id?: string
-          is_active?: boolean | null
-          parameter_values?: Json
-        }
-        Relationships: [
-          {
-            foreignKeyName: "test_case_datasets_case_id_fkey"
-            columns: ["case_id"]
-            isOneToOne: false
-            referencedRelation: "test_cases"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      test_case_links: {
-        Row: {
-          case_id: string
-          created_at: string | null
-          created_by: string | null
-          id: string
-          linked_id: string
-          linked_key: string | null
-          linked_title: string | null
-          linked_type: string
-          relation: string | null
-        }
-        Insert: {
-          case_id: string
-          created_at?: string | null
-          created_by?: string | null
-          id?: string
-          linked_id: string
-          linked_key?: string | null
-          linked_title?: string | null
-          linked_type: string
-          relation?: string | null
-        }
-        Update: {
-          case_id?: string
-          created_at?: string | null
-          created_by?: string | null
-          id?: string
-          linked_id?: string
-          linked_key?: string | null
-          linked_title?: string | null
-          linked_type?: string
-          relation?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "test_case_links_case_id_fkey"
-            columns: ["case_id"]
-            isOneToOne: false
-            referencedRelation: "test_cases"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "test_case_links_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       test_case_parameters: {
         Row: {
           case_id: string
@@ -17316,15 +16825,7 @@ export type Database = {
           parameter_name?: string
           parameter_type?: string | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "test_case_parameters_case_id_fkey"
-            columns: ["case_id"]
-            isOneToOne: false
-            referencedRelation: "test_cases"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       test_case_priorities: {
         Row: {
@@ -17400,13 +16901,6 @@ export type Database = {
             referencedRelation: "shared_test_steps"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "test_case_shared_steps_test_case_id_fkey"
-            columns: ["test_case_id"]
-            isOneToOne: false
-            referencedRelation: "test_cases"
-            referencedColumns: ["id"]
-          },
         ]
       }
       test_case_statuses: {
@@ -17455,78 +16949,6 @@ export type Database = {
             columns: ["program_id"]
             isOneToOne: false
             referencedRelation: "projects"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      test_case_steps: {
-        Row: {
-          attachment_urls: string[] | null
-          bdd_keyword: string | null
-          case_id: string
-          case_version: number | null
-          created_at: string | null
-          description: string
-          evidence_required: string | null
-          expected_result: string | null
-          id: string
-          is_bdd: boolean | null
-          shared_step_group_id: string | null
-          step_number: number
-          step_tags: string[] | null
-          step_type: string | null
-          test_data: string | null
-          updated_at: string | null
-        }
-        Insert: {
-          attachment_urls?: string[] | null
-          bdd_keyword?: string | null
-          case_id: string
-          case_version?: number | null
-          created_at?: string | null
-          description: string
-          evidence_required?: string | null
-          expected_result?: string | null
-          id?: string
-          is_bdd?: boolean | null
-          shared_step_group_id?: string | null
-          step_number: number
-          step_tags?: string[] | null
-          step_type?: string | null
-          test_data?: string | null
-          updated_at?: string | null
-        }
-        Update: {
-          attachment_urls?: string[] | null
-          bdd_keyword?: string | null
-          case_id?: string
-          case_version?: number | null
-          created_at?: string | null
-          description?: string
-          evidence_required?: string | null
-          expected_result?: string | null
-          id?: string
-          is_bdd?: boolean | null
-          shared_step_group_id?: string | null
-          step_number?: number
-          step_tags?: string[] | null
-          step_type?: string | null
-          test_data?: string | null
-          updated_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "fk_shared_step_group"
-            columns: ["shared_step_group_id"]
-            isOneToOne: false
-            referencedRelation: "shared_step_groups"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "test_case_steps_case_id_fkey"
-            columns: ["case_id"]
-            isOneToOne: false
-            referencedRelation: "test_cases"
             referencedColumns: ["id"]
           },
         ]
@@ -17581,38 +17003,6 @@ export type Database = {
           },
         ]
       }
-      test_case_variables: {
-        Row: {
-          case_id: string
-          created_at: string | null
-          description: string | null
-          id: string
-          name: string
-        }
-        Insert: {
-          case_id: string
-          created_at?: string | null
-          description?: string | null
-          id?: string
-          name: string
-        }
-        Update: {
-          case_id?: string
-          created_at?: string | null
-          description?: string | null
-          id?: string
-          name?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "test_case_variables_case_id_fkey"
-            columns: ["case_id"]
-            isOneToOne: false
-            referencedRelation: "test_cases"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       test_case_version_changes: {
         Row: {
           case_id: string
@@ -17650,15 +17040,7 @@ export type Database = {
           old_value?: string | null
           to_version?: number
         }
-        Relationships: [
-          {
-            foreignKeyName: "test_case_version_changes_case_id_fkey"
-            columns: ["case_id"]
-            isOneToOne: false
-            referencedRelation: "test_cases"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       test_case_versions: {
         Row: {
@@ -17718,22 +17100,7 @@ export type Database = {
           title?: string
           version?: number
         }
-        Relationships: [
-          {
-            foreignKeyName: "test_case_versions_case_id_fkey"
-            columns: ["case_id"]
-            isOneToOne: false
-            referencedRelation: "test_cases"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "test_case_versions_folder_id_fkey"
-            columns: ["folder_id"]
-            isOneToOne: false
-            referencedRelation: "test_folders"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       test_case_work_item_links: {
         Row: {
@@ -17760,15 +17127,7 @@ export type Database = {
           work_item_id?: string
           work_item_type?: string | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "test_case_work_item_links_case_id_fkey"
-            columns: ["case_id"]
-            isOneToOne: false
-            referencedRelation: "test_cases"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       test_case_work_items: {
         Row: {
@@ -17798,161 +17157,7 @@ export type Database = {
           work_item_id?: string
           work_item_type?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "test_case_work_items_test_case_id_fkey"
-            columns: ["test_case_id"]
-            isOneToOne: false
-            referencedRelation: "test_cases"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      test_cases: {
-        Row: {
-          archived_at: string | null
-          archived_by: string | null
-          automation_key: string | null
-          automation_owner_id: string | null
-          automation_status: string | null
-          case_key: string | null
-          case_type: string | null
-          component: string | null
-          created_at: string | null
-          created_by: string
-          deleted_at: string | null
-          deleted_by: string | null
-          description: string | null
-          estimated_effort: number | null
-          expected_result: string | null
-          folder_id: string | null
-          id: string
-          is_archived: boolean | null
-          labels: string[] | null
-          linked_work_item_id: string | null
-          linked_work_item_type: string | null
-          objective: string | null
-          owner_id: string | null
-          preconditions: string | null
-          priority: Database["public"]["Enums"]["test_priority"]
-          program_id: string | null
-          project_id: string | null
-          release: string | null
-          requires_approval: boolean | null
-          risk: string | null
-          status: Database["public"]["Enums"]["test_case_status"]
-          test_type: Database["public"]["Enums"]["test_type"]
-          title: string
-          updated_at: string | null
-          updated_by: string | null
-          version: number | null
-        }
-        Insert: {
-          archived_at?: string | null
-          archived_by?: string | null
-          automation_key?: string | null
-          automation_owner_id?: string | null
-          automation_status?: string | null
-          case_key?: string | null
-          case_type?: string | null
-          component?: string | null
-          created_at?: string | null
-          created_by: string
-          deleted_at?: string | null
-          deleted_by?: string | null
-          description?: string | null
-          estimated_effort?: number | null
-          expected_result?: string | null
-          folder_id?: string | null
-          id?: string
-          is_archived?: boolean | null
-          labels?: string[] | null
-          linked_work_item_id?: string | null
-          linked_work_item_type?: string | null
-          objective?: string | null
-          owner_id?: string | null
-          preconditions?: string | null
-          priority?: Database["public"]["Enums"]["test_priority"]
-          program_id?: string | null
-          project_id?: string | null
-          release?: string | null
-          requires_approval?: boolean | null
-          risk?: string | null
-          status?: Database["public"]["Enums"]["test_case_status"]
-          test_type?: Database["public"]["Enums"]["test_type"]
-          title: string
-          updated_at?: string | null
-          updated_by?: string | null
-          version?: number | null
-        }
-        Update: {
-          archived_at?: string | null
-          archived_by?: string | null
-          automation_key?: string | null
-          automation_owner_id?: string | null
-          automation_status?: string | null
-          case_key?: string | null
-          case_type?: string | null
-          component?: string | null
-          created_at?: string | null
-          created_by?: string
-          deleted_at?: string | null
-          deleted_by?: string | null
-          description?: string | null
-          estimated_effort?: number | null
-          expected_result?: string | null
-          folder_id?: string | null
-          id?: string
-          is_archived?: boolean | null
-          labels?: string[] | null
-          linked_work_item_id?: string | null
-          linked_work_item_type?: string | null
-          objective?: string | null
-          owner_id?: string | null
-          preconditions?: string | null
-          priority?: Database["public"]["Enums"]["test_priority"]
-          program_id?: string | null
-          project_id?: string | null
-          release?: string | null
-          requires_approval?: boolean | null
-          risk?: string | null
-          status?: Database["public"]["Enums"]["test_case_status"]
-          test_type?: Database["public"]["Enums"]["test_type"]
-          title?: string
-          updated_at?: string | null
-          updated_by?: string | null
-          version?: number | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "test_cases_folder_id_fkey"
-            columns: ["folder_id"]
-            isOneToOne: false
-            referencedRelation: "test_folders"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "test_cases_program_id_fkey"
-            columns: ["program_id"]
-            isOneToOne: false
-            referencedRelation: "projects"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "test_cases_project_id_fkey"
-            columns: ["project_id"]
-            isOneToOne: false
-            referencedRelation: "projects"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "test_cases_updated_by_fkey"
-            columns: ["updated_by"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       test_cycle_case_assignments: {
         Row: {
@@ -17988,22 +17193,7 @@ export type Database = {
           milestone?: string | null
           sort_order?: number | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "test_cycle_case_assignments_case_id_fkey"
-            columns: ["case_id"]
-            isOneToOne: false
-            referencedRelation: "test_cases"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "test_cycle_case_assignments_cycle_id_fkey"
-            columns: ["cycle_id"]
-            isOneToOne: false
-            referencedRelation: "test_cycles"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       test_cycle_dependencies: {
         Row: {
@@ -18030,29 +17220,7 @@ export type Database = {
           predecessor_case_id?: string
           successor_case_id?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "test_cycle_dependencies_cycle_id_fkey"
-            columns: ["cycle_id"]
-            isOneToOne: false
-            referencedRelation: "test_cycles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "test_cycle_dependencies_predecessor_case_id_fkey"
-            columns: ["predecessor_case_id"]
-            isOneToOne: false
-            referencedRelation: "test_cases"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "test_cycle_dependencies_successor_case_id_fkey"
-            columns: ["successor_case_id"]
-            isOneToOne: false
-            referencedRelation: "test_cases"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       test_cycle_executions: {
         Row: {
@@ -18118,22 +17286,7 @@ export type Database = {
           timer_paused_at?: string | null
           timer_start_at?: string | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "test_cycle_executions_case_id_fkey"
-            columns: ["case_id"]
-            isOneToOne: false
-            referencedRelation: "test_cases"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "test_cycle_executions_cycle_id_fkey"
-            columns: ["cycle_id"]
-            isOneToOne: false
-            referencedRelation: "test_cycles"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       test_cycle_risk_predictions: {
         Row: {
@@ -18186,13 +17339,6 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "test_cycle_risk_predictions_cycle_id_fkey"
-            columns: ["cycle_id"]
-            isOneToOne: false
-            referencedRelation: "test_cycles"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "test_cycle_risk_predictions_program_id_fkey"
             columns: ["program_id"]
             isOneToOne: false
@@ -18229,20 +17375,6 @@ export type Database = {
             columns: ["added_by"]
             isOneToOne: false
             referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "test_cycle_sets_cycle_id_fkey"
-            columns: ["cycle_id"]
-            isOneToOne: false
-            referencedRelation: "test_cycles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "test_cycle_sets_set_id_fkey"
-            columns: ["set_id"]
-            isOneToOne: false
-            referencedRelation: "test_sets"
             referencedColumns: ["id"]
           },
         ]
@@ -18283,162 +17415,6 @@ export type Database = {
         }
         Relationships: []
       }
-      test_cycles: {
-        Row: {
-          archive_reason: string | null
-          archived: boolean | null
-          archived_at: string | null
-          archived_by: string | null
-          auto_close_on_completion: boolean | null
-          build_version: string | null
-          created_at: string | null
-          created_by: string | null
-          custom_fields: Json | null
-          email_notifications: boolean | null
-          end_date: string | null
-          environment: string | null
-          folder_id: string | null
-          id: string
-          is_adhoc: boolean | null
-          key: string
-          name: string
-          objective: string | null
-          owner_id: string | null
-          program_id: string | null
-          project_id: string | null
-          scope_locked: boolean | null
-          scope_locked_at: string | null
-          scope_locked_by: string | null
-          source_set_id: string | null
-          start_date: string | null
-          status: string | null
-          sync_with_set: boolean | null
-          template_id: string | null
-          updated_at: string | null
-        }
-        Insert: {
-          archive_reason?: string | null
-          archived?: boolean | null
-          archived_at?: string | null
-          archived_by?: string | null
-          auto_close_on_completion?: boolean | null
-          build_version?: string | null
-          created_at?: string | null
-          created_by?: string | null
-          custom_fields?: Json | null
-          email_notifications?: boolean | null
-          end_date?: string | null
-          environment?: string | null
-          folder_id?: string | null
-          id?: string
-          is_adhoc?: boolean | null
-          key: string
-          name: string
-          objective?: string | null
-          owner_id?: string | null
-          program_id?: string | null
-          project_id?: string | null
-          scope_locked?: boolean | null
-          scope_locked_at?: string | null
-          scope_locked_by?: string | null
-          source_set_id?: string | null
-          start_date?: string | null
-          status?: string | null
-          sync_with_set?: boolean | null
-          template_id?: string | null
-          updated_at?: string | null
-        }
-        Update: {
-          archive_reason?: string | null
-          archived?: boolean | null
-          archived_at?: string | null
-          archived_by?: string | null
-          auto_close_on_completion?: boolean | null
-          build_version?: string | null
-          created_at?: string | null
-          created_by?: string | null
-          custom_fields?: Json | null
-          email_notifications?: boolean | null
-          end_date?: string | null
-          environment?: string | null
-          folder_id?: string | null
-          id?: string
-          is_adhoc?: boolean | null
-          key?: string
-          name?: string
-          objective?: string | null
-          owner_id?: string | null
-          program_id?: string | null
-          project_id?: string | null
-          scope_locked?: boolean | null
-          scope_locked_at?: string | null
-          scope_locked_by?: string | null
-          source_set_id?: string | null
-          start_date?: string | null
-          status?: string | null
-          sync_with_set?: boolean | null
-          template_id?: string | null
-          updated_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "test_cycles_folder_id_fkey"
-            columns: ["folder_id"]
-            isOneToOne: false
-            referencedRelation: "test_folders"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "test_cycles_project_id_fkey"
-            columns: ["project_id"]
-            isOneToOne: false
-            referencedRelation: "projects"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "test_cycles_source_set_id_fkey"
-            columns: ["source_set_id"]
-            isOneToOne: false
-            referencedRelation: "test_sets"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      test_dashboard_gadgets: {
-        Row: {
-          config: Json
-          created_at: string | null
-          dashboard_id: string | null
-          gadget_type: string
-          id: string
-          position: Json
-        }
-        Insert: {
-          config?: Json
-          created_at?: string | null
-          dashboard_id?: string | null
-          gadget_type: string
-          id?: string
-          position?: Json
-        }
-        Update: {
-          config?: Json
-          created_at?: string | null
-          dashboard_id?: string | null
-          gadget_type?: string
-          id?: string
-          position?: Json
-        }
-        Relationships: [
-          {
-            foreignKeyName: "test_dashboard_gadgets_dashboard_id_fkey"
-            columns: ["dashboard_id"]
-            isOneToOne: false
-            referencedRelation: "test_dashboards"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       test_dashboard_shares: {
         Row: {
           can_edit: boolean | null
@@ -18464,15 +17440,7 @@ export type Database = {
           id?: string
           shared_with_user_id?: string | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "test_dashboard_shares_dashboard_id_fkey"
-            columns: ["dashboard_id"]
-            isOneToOne: false
-            referencedRelation: "test_dashboards"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       test_dashboard_templates: {
         Row: {
@@ -18507,48 +17475,6 @@ export type Database = {
         }
         Relationships: []
       }
-      test_dashboards: {
-        Row: {
-          created_at: string | null
-          description: string | null
-          id: string
-          is_default: boolean | null
-          layout: Json
-          name: string
-          program_id: string | null
-          template_id: string | null
-          updated_at: string | null
-          user_id: string | null
-          visibility: string | null
-        }
-        Insert: {
-          created_at?: string | null
-          description?: string | null
-          id?: string
-          is_default?: boolean | null
-          layout?: Json
-          name: string
-          program_id?: string | null
-          template_id?: string | null
-          updated_at?: string | null
-          user_id?: string | null
-          visibility?: string | null
-        }
-        Update: {
-          created_at?: string | null
-          description?: string | null
-          id?: string
-          is_default?: boolean | null
-          layout?: Json
-          name?: string
-          program_id?: string | null
-          template_id?: string | null
-          updated_at?: string | null
-          user_id?: string | null
-          visibility?: string | null
-        }
-        Relationships: []
-      }
       test_data_parameters: {
         Row: {
           created_at: string | null
@@ -18574,15 +17500,7 @@ export type Database = {
           test_case_id?: string
           updated_at?: string | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "test_data_parameters_test_case_id_fkey"
-            columns: ["test_case_id"]
-            isOneToOne: false
-            referencedRelation: "test_cases"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       test_data_rows: {
         Row: {
@@ -18606,15 +17524,7 @@ export type Database = {
           test_case_id?: string
           updated_at?: string | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "test_data_rows_test_case_id_fkey"
-            columns: ["test_case_id"]
-            isOneToOne: false
-            referencedRelation: "test_cases"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       test_datasets: {
         Row: {
@@ -18641,15 +17551,7 @@ export type Database = {
           name?: string
           parameters?: Json
         }
-        Relationships: [
-          {
-            foreignKeyName: "test_datasets_cycle_id_fkey"
-            columns: ["cycle_id"]
-            isOneToOne: false
-            referencedRelation: "test_cycles"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       test_evidence: {
         Row: {
@@ -18685,15 +17587,7 @@ export type Database = {
           mime_type?: string
           uploaded_by?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "test_evidence_execution_step_id_fkey"
-            columns: ["execution_step_id"]
-            isOneToOne: false
-            referencedRelation: "test_execution_steps"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       test_execution_defects: {
         Row: {
@@ -18720,50 +17614,6 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "test_execution_defects_execution_id_fkey"
-            columns: ["execution_id"]
-            isOneToOne: false
-            referencedRelation: "test_cycle_executions"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      test_execution_evidence: {
-        Row: {
-          execution_id: string
-          file_name: string
-          file_size_bytes: number | null
-          file_type: string | null
-          file_url: string
-          id: string
-          step_order: number | null
-          uploaded_at: string | null
-          uploaded_by: string | null
-        }
-        Insert: {
-          execution_id: string
-          file_name: string
-          file_size_bytes?: number | null
-          file_type?: string | null
-          file_url: string
-          id?: string
-          step_order?: number | null
-          uploaded_at?: string | null
-          uploaded_by?: string | null
-        }
-        Update: {
-          execution_id?: string
-          file_name?: string
-          file_size_bytes?: number | null
-          file_type?: string | null
-          file_url?: string
-          id?: string
-          step_order?: number | null
-          uploaded_at?: string | null
-          uploaded_by?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "test_execution_evidence_execution_id_fkey"
             columns: ["execution_id"]
             isOneToOne: false
             referencedRelation: "test_cycle_executions"
@@ -18805,13 +17655,6 @@ export type Database = {
             columns: ["copied_from_run_id"]
             isOneToOne: false
             referencedRelation: "test_execution_runs"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "test_execution_runs_cycle_id_fkey"
-            columns: ["cycle_id"]
-            isOneToOne: false
-            referencedRelation: "test_cycles"
             referencedColumns: ["id"]
           },
         ]
@@ -18856,114 +17699,6 @@ export type Database = {
             columns: ["execution_id"]
             isOneToOne: false
             referencedRelation: "test_cycle_executions"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      test_execution_steps: {
-        Row: {
-          actual_result: string | null
-          created_at: string | null
-          id: string
-          screenshot_url: string | null
-          status: Database["public"]["Enums"]["test_step_status"]
-          test_execution_id: string
-          test_step_id: string
-          updated_at: string | null
-        }
-        Insert: {
-          actual_result?: string | null
-          created_at?: string | null
-          id?: string
-          screenshot_url?: string | null
-          status: Database["public"]["Enums"]["test_step_status"]
-          test_execution_id: string
-          test_step_id: string
-          updated_at?: string | null
-        }
-        Update: {
-          actual_result?: string | null
-          created_at?: string | null
-          id?: string
-          screenshot_url?: string | null
-          status?: Database["public"]["Enums"]["test_step_status"]
-          test_execution_id?: string
-          test_step_id?: string
-          updated_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "test_execution_steps_test_execution_id_fkey"
-            columns: ["test_execution_id"]
-            isOneToOne: false
-            referencedRelation: "test_executions"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "test_execution_steps_test_step_id_fkey"
-            columns: ["test_step_id"]
-            isOneToOne: false
-            referencedRelation: "test_steps"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      test_executions: {
-        Row: {
-          actual_result: string | null
-          created_at: string | null
-          defect_id: string | null
-          executed_by: string
-          execution_date: string
-          execution_time_seconds: number | null
-          id: string
-          program_id: string | null
-          status: Database["public"]["Enums"]["test_execution_status"]
-          test_case_id: string
-          test_cycle_id: string
-          updated_at: string | null
-        }
-        Insert: {
-          actual_result?: string | null
-          created_at?: string | null
-          defect_id?: string | null
-          executed_by: string
-          execution_date?: string
-          execution_time_seconds?: number | null
-          id?: string
-          program_id?: string | null
-          status?: Database["public"]["Enums"]["test_execution_status"]
-          test_case_id: string
-          test_cycle_id: string
-          updated_at?: string | null
-        }
-        Update: {
-          actual_result?: string | null
-          created_at?: string | null
-          defect_id?: string | null
-          executed_by?: string
-          execution_date?: string
-          execution_time_seconds?: number | null
-          id?: string
-          program_id?: string | null
-          status?: Database["public"]["Enums"]["test_execution_status"]
-          test_case_id?: string
-          test_cycle_id?: string
-          updated_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "test_executions_program_id_fkey"
-            columns: ["program_id"]
-            isOneToOne: false
-            referencedRelation: "projects"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "test_executions_test_case_id_fkey"
-            columns: ["test_case_id"]
-            isOneToOne: false
-            referencedRelation: "test_cases"
             referencedColumns: ["id"]
           },
         ]
@@ -19030,13 +17765,6 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: [
-          {
-            foreignKeyName: "test_failure_clusters_cycle_id_fkey"
-            columns: ["cycle_id"]
-            isOneToOne: false
-            referencedRelation: "test_cycles"
-            referencedColumns: ["id"]
-          },
           {
             foreignKeyName: "test_failure_clusters_program_id_fkey"
             columns: ["program_id"]
@@ -19146,168 +17874,6 @@ export type Database = {
           },
         ]
       }
-      test_folders: {
-        Row: {
-          created_at: string | null
-          created_by: string
-          entity_type: string | null
-          id: string
-          is_system: boolean | null
-          name: string
-          parent_folder_id: string | null
-          program_id: string | null
-          sort_order: number | null
-          team_id: string | null
-          updated_at: string | null
-        }
-        Insert: {
-          created_at?: string | null
-          created_by: string
-          entity_type?: string | null
-          id?: string
-          is_system?: boolean | null
-          name: string
-          parent_folder_id?: string | null
-          program_id?: string | null
-          sort_order?: number | null
-          team_id?: string | null
-          updated_at?: string | null
-        }
-        Update: {
-          created_at?: string | null
-          created_by?: string
-          entity_type?: string | null
-          id?: string
-          is_system?: boolean | null
-          name?: string
-          parent_folder_id?: string | null
-          program_id?: string | null
-          sort_order?: number | null
-          team_id?: string | null
-          updated_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "test_folders_parent_folder_id_fkey"
-            columns: ["parent_folder_id"]
-            isOneToOne: false
-            referencedRelation: "test_folders"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "test_folders_program_id_fkey"
-            columns: ["program_id"]
-            isOneToOne: false
-            referencedRelation: "projects"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "test_folders_team_id_fkey"
-            columns: ["team_id"]
-            isOneToOne: false
-            referencedRelation: "teams"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      test_narrative_reports: {
-        Row: {
-          ai_action_id: string | null
-          created_at: string
-          created_by: string | null
-          executive_summary: string | null
-          export_formats: string[] | null
-          highlights: Json | null
-          id: string
-          metrics_snapshot: Json | null
-          narrative_sections: Json | null
-          period_end: string
-          period_start: string
-          program_id: string | null
-          published_at: string | null
-          published_by: string | null
-          recommendations: Json | null
-          report_type: string
-          risks_and_blockers: Json | null
-          status: string
-          title: string
-          updated_at: string
-        }
-        Insert: {
-          ai_action_id?: string | null
-          created_at?: string
-          created_by?: string | null
-          executive_summary?: string | null
-          export_formats?: string[] | null
-          highlights?: Json | null
-          id?: string
-          metrics_snapshot?: Json | null
-          narrative_sections?: Json | null
-          period_end: string
-          period_start: string
-          program_id?: string | null
-          published_at?: string | null
-          published_by?: string | null
-          recommendations?: Json | null
-          report_type?: string
-          risks_and_blockers?: Json | null
-          status?: string
-          title: string
-          updated_at?: string
-        }
-        Update: {
-          ai_action_id?: string | null
-          created_at?: string
-          created_by?: string | null
-          executive_summary?: string | null
-          export_formats?: string[] | null
-          highlights?: Json | null
-          id?: string
-          metrics_snapshot?: Json | null
-          narrative_sections?: Json | null
-          period_end?: string
-          period_start?: string
-          program_id?: string | null
-          published_at?: string | null
-          published_by?: string | null
-          recommendations?: Json | null
-          report_type?: string
-          risks_and_blockers?: Json | null
-          status?: string
-          title?: string
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "test_narrative_reports_ai_action_id_fkey"
-            columns: ["ai_action_id"]
-            isOneToOne: false
-            referencedRelation: "test_ai_actions"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "test_narrative_reports_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "test_narrative_reports_program_id_fkey"
-            columns: ["program_id"]
-            isOneToOne: false
-            referencedRelation: "programs"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "test_narrative_reports_published_by_fkey"
-            columns: ["published_by"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       test_notification_email_queue: {
         Row: {
           batch_type: string | null
@@ -19346,128 +17912,6 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
-      }
-      test_notification_preferences: {
-        Row: {
-          created_at: string | null
-          daily_test_summary: boolean | null
-          email_notifications_enabled: boolean | null
-          id: string
-          notify_automation_owner_assigned: boolean | null
-          notify_case_assigned_cycle: boolean | null
-          notify_on_cycle_complete: boolean | null
-          notify_on_test_failure: boolean | null
-          notify_run_step_assigned: boolean | null
-          notify_same_comment_edited: boolean | null
-          notify_step_updated_as_owner: boolean | null
-          notify_tagged_in_comment: boolean | null
-          updated_at: string | null
-          user_id: string
-          weekly_test_report: boolean | null
-        }
-        Insert: {
-          created_at?: string | null
-          daily_test_summary?: boolean | null
-          email_notifications_enabled?: boolean | null
-          id?: string
-          notify_automation_owner_assigned?: boolean | null
-          notify_case_assigned_cycle?: boolean | null
-          notify_on_cycle_complete?: boolean | null
-          notify_on_test_failure?: boolean | null
-          notify_run_step_assigned?: boolean | null
-          notify_same_comment_edited?: boolean | null
-          notify_step_updated_as_owner?: boolean | null
-          notify_tagged_in_comment?: boolean | null
-          updated_at?: string | null
-          user_id: string
-          weekly_test_report?: boolean | null
-        }
-        Update: {
-          created_at?: string | null
-          daily_test_summary?: boolean | null
-          email_notifications_enabled?: boolean | null
-          id?: string
-          notify_automation_owner_assigned?: boolean | null
-          notify_case_assigned_cycle?: boolean | null
-          notify_on_cycle_complete?: boolean | null
-          notify_on_test_failure?: boolean | null
-          notify_run_step_assigned?: boolean | null
-          notify_same_comment_edited?: boolean | null
-          notify_step_updated_as_owner?: boolean | null
-          notify_tagged_in_comment?: boolean | null
-          updated_at?: string | null
-          user_id?: string
-          weekly_test_report?: boolean | null
-        }
-        Relationships: []
-      }
-      test_notifications: {
-        Row: {
-          actor_id: string | null
-          actor_name: string | null
-          created_at: string | null
-          email_sent: boolean | null
-          email_sent_at: string | null
-          entity_id: string | null
-          entity_key: string | null
-          entity_type: string | null
-          event_type: string
-          id: string
-          is_read: boolean | null
-          message: string
-          metadata: Json | null
-          program_id: string | null
-          read_at: string | null
-          title: string
-          user_id: string
-        }
-        Insert: {
-          actor_id?: string | null
-          actor_name?: string | null
-          created_at?: string | null
-          email_sent?: boolean | null
-          email_sent_at?: string | null
-          entity_id?: string | null
-          entity_key?: string | null
-          entity_type?: string | null
-          event_type: string
-          id?: string
-          is_read?: boolean | null
-          message: string
-          metadata?: Json | null
-          program_id?: string | null
-          read_at?: string | null
-          title: string
-          user_id: string
-        }
-        Update: {
-          actor_id?: string | null
-          actor_name?: string | null
-          created_at?: string | null
-          email_sent?: boolean | null
-          email_sent_at?: string | null
-          entity_id?: string | null
-          entity_key?: string | null
-          entity_type?: string | null
-          event_type?: string
-          id?: string
-          is_read?: boolean | null
-          message?: string
-          metadata?: Json | null
-          program_id?: string | null
-          read_at?: string | null
-          title?: string
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "test_notifications_program_id_fkey"
-            columns: ["program_id"]
-            isOneToOne: false
-            referencedRelation: "programs"
-            referencedColumns: ["id"]
-          },
-        ]
       }
       test_permission_denials: {
         Row: {
@@ -19508,188 +17952,6 @@ export type Database = {
           resource_id?: string | null
           resource_type?: string
           user_id?: string
-        }
-        Relationships: []
-      }
-      test_recommendations: {
-        Row: {
-          action_data: Json | null
-          ai_action_id: string | null
-          confidence_score: number | null
-          created_at: string
-          created_by: string | null
-          description: string | null
-          id: string
-          priority: string
-          program_id: string | null
-          recommendation_type: string
-          resolution_notes: string | null
-          resolved_at: string | null
-          resolved_by: string | null
-          source_metrics: Json | null
-          status: string
-          target_entity_id: string | null
-          target_entity_type: string | null
-          title: string
-          updated_at: string
-        }
-        Insert: {
-          action_data?: Json | null
-          ai_action_id?: string | null
-          confidence_score?: number | null
-          created_at?: string
-          created_by?: string | null
-          description?: string | null
-          id?: string
-          priority?: string
-          program_id?: string | null
-          recommendation_type: string
-          resolution_notes?: string | null
-          resolved_at?: string | null
-          resolved_by?: string | null
-          source_metrics?: Json | null
-          status?: string
-          target_entity_id?: string | null
-          target_entity_type?: string | null
-          title: string
-          updated_at?: string
-        }
-        Update: {
-          action_data?: Json | null
-          ai_action_id?: string | null
-          confidence_score?: number | null
-          created_at?: string
-          created_by?: string | null
-          description?: string | null
-          id?: string
-          priority?: string
-          program_id?: string | null
-          recommendation_type?: string
-          resolution_notes?: string | null
-          resolved_at?: string | null
-          resolved_by?: string | null
-          source_metrics?: Json | null
-          status?: string
-          target_entity_id?: string | null
-          target_entity_type?: string | null
-          title?: string
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "test_recommendations_ai_action_id_fkey"
-            columns: ["ai_action_id"]
-            isOneToOne: false
-            referencedRelation: "test_ai_actions"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "test_recommendations_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "test_recommendations_program_id_fkey"
-            columns: ["program_id"]
-            isOneToOne: false
-            referencedRelation: "programs"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "test_recommendations_resolved_by_fkey"
-            columns: ["resolved_by"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      test_report_schedules: {
-        Row: {
-          config: Json
-          created_at: string | null
-          created_by: string | null
-          format: string | null
-          id: string
-          is_active: boolean | null
-          last_run_at: string | null
-          next_run_at: string | null
-          program_id: string
-          recipients: string[] | null
-          report_type: string
-          schedule_cron: string
-          updated_at: string | null
-        }
-        Insert: {
-          config: Json
-          created_at?: string | null
-          created_by?: string | null
-          format?: string | null
-          id?: string
-          is_active?: boolean | null
-          last_run_at?: string | null
-          next_run_at?: string | null
-          program_id: string
-          recipients?: string[] | null
-          report_type: string
-          schedule_cron: string
-          updated_at?: string | null
-        }
-        Update: {
-          config?: Json
-          created_at?: string | null
-          created_by?: string | null
-          format?: string | null
-          id?: string
-          is_active?: boolean | null
-          last_run_at?: string | null
-          next_run_at?: string | null
-          program_id?: string
-          recipients?: string[] | null
-          report_type?: string
-          schedule_cron?: string
-          updated_at?: string | null
-        }
-        Relationships: []
-      }
-      test_reports: {
-        Row: {
-          config: Json
-          created_at: string | null
-          file_url: string | null
-          generated_at: string | null
-          generated_by: string | null
-          id: string
-          program_id: string
-          report_type: string
-          share_expires_at: string | null
-          share_token: string | null
-        }
-        Insert: {
-          config: Json
-          created_at?: string | null
-          file_url?: string | null
-          generated_at?: string | null
-          generated_by?: string | null
-          id?: string
-          program_id: string
-          report_type: string
-          share_expires_at?: string | null
-          share_token?: string | null
-        }
-        Update: {
-          config?: Json
-          created_at?: string | null
-          file_url?: string | null
-          generated_at?: string | null
-          generated_by?: string | null
-          id?: string
-          program_id?: string
-          report_type?: string
-          share_expires_at?: string | null
-          share_token?: string | null
         }
         Relationships: []
       }
@@ -19783,60 +18045,7 @@ export type Database = {
           target_cycle_id?: string | null
           target_folder_id?: string | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "test_set_bulk_operations_target_folder_id_fkey"
-            columns: ["target_folder_id"]
-            isOneToOne: false
-            referencedRelation: "test_folders"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      test_set_cases: {
-        Row: {
-          added_at: string | null
-          added_by: string | null
-          case_id: string
-          case_version: number | null
-          id: string
-          set_id: string
-          sort_order: number | null
-        }
-        Insert: {
-          added_at?: string | null
-          added_by?: string | null
-          case_id: string
-          case_version?: number | null
-          id?: string
-          set_id: string
-          sort_order?: number | null
-        }
-        Update: {
-          added_at?: string | null
-          added_by?: string | null
-          case_id?: string
-          case_version?: number | null
-          id?: string
-          set_id?: string
-          sort_order?: number | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "test_set_cases_case_id_fkey"
-            columns: ["case_id"]
-            isOneToOne: false
-            referencedRelation: "test_cases"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "test_set_cases_set_id_fkey"
-            columns: ["set_id"]
-            isOneToOne: false
-            referencedRelation: "test_sets"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       test_set_versions: {
         Row: {
@@ -19881,100 +18090,7 @@ export type Database = {
           snapshot_cases?: Json | null
           version?: number
         }
-        Relationships: [
-          {
-            foreignKeyName: "test_set_versions_set_id_fkey"
-            columns: ["set_id"]
-            isOneToOne: false
-            referencedRelation: "test_sets"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      test_sets: {
-        Row: {
-          created_at: string | null
-          created_by: string | null
-          description: string | null
-          folder_id: string | null
-          id: string
-          is_smart_set: boolean | null
-          is_versioned: boolean | null
-          key: string
-          name: string
-          objective: string | null
-          owner_id: string | null
-          parent_version_id: string | null
-          program_id: string
-          project_id: string | null
-          smart_set_criteria: Json | null
-          status: string | null
-          updated_at: string | null
-          version: number | null
-        }
-        Insert: {
-          created_at?: string | null
-          created_by?: string | null
-          description?: string | null
-          folder_id?: string | null
-          id?: string
-          is_smart_set?: boolean | null
-          is_versioned?: boolean | null
-          key: string
-          name: string
-          objective?: string | null
-          owner_id?: string | null
-          parent_version_id?: string | null
-          program_id: string
-          project_id?: string | null
-          smart_set_criteria?: Json | null
-          status?: string | null
-          updated_at?: string | null
-          version?: number | null
-        }
-        Update: {
-          created_at?: string | null
-          created_by?: string | null
-          description?: string | null
-          folder_id?: string | null
-          id?: string
-          is_smart_set?: boolean | null
-          is_versioned?: boolean | null
-          key?: string
-          name?: string
-          objective?: string | null
-          owner_id?: string | null
-          parent_version_id?: string | null
-          program_id?: string
-          project_id?: string | null
-          smart_set_criteria?: Json | null
-          status?: string | null
-          updated_at?: string | null
-          version?: number | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "test_sets_folder_id_fkey"
-            columns: ["folder_id"]
-            isOneToOne: false
-            referencedRelation: "test_folders"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "test_sets_parent_version_id_fkey"
-            columns: ["parent_version_id"]
-            isOneToOne: false
-            referencedRelation: "test_sets"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "test_sets_project_id_fkey"
-            columns: ["project_id"]
-            isOneToOne: false
-            referencedRelation: "projects"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       test_steps: {
         Row: {
@@ -20016,13 +18132,6 @@ export type Database = {
             columns: ["library_step_id"]
             isOneToOne: false
             referencedRelation: "shared_test_steps"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "test_steps_test_case_id_fkey"
-            columns: ["test_case_id"]
-            isOneToOne: false
-            referencedRelation: "test_cases"
             referencedColumns: ["id"]
           },
         ]
@@ -20149,124 +18258,6 @@ export type Database = {
           value?: string
         }
         Relationships: []
-      }
-      traceability_findings: {
-        Row: {
-          affected_items: Json | null
-          ai_action_id: string | null
-          created_at: string
-          created_by: string | null
-          description: string | null
-          due_date: string | null
-          finding_type: string
-          id: string
-          linked_defect_id: string | null
-          linked_task_id: string | null
-          owner_id: string | null
-          program_id: string | null
-          recommended_action: string | null
-          resolution_notes: string | null
-          resolved_at: string | null
-          resolved_by: string | null
-          severity: string
-          source_entity_id: string | null
-          source_entity_type: string | null
-          status: string
-          title: string
-          updated_at: string
-        }
-        Insert: {
-          affected_items?: Json | null
-          ai_action_id?: string | null
-          created_at?: string
-          created_by?: string | null
-          description?: string | null
-          due_date?: string | null
-          finding_type: string
-          id?: string
-          linked_defect_id?: string | null
-          linked_task_id?: string | null
-          owner_id?: string | null
-          program_id?: string | null
-          recommended_action?: string | null
-          resolution_notes?: string | null
-          resolved_at?: string | null
-          resolved_by?: string | null
-          severity?: string
-          source_entity_id?: string | null
-          source_entity_type?: string | null
-          status?: string
-          title: string
-          updated_at?: string
-        }
-        Update: {
-          affected_items?: Json | null
-          ai_action_id?: string | null
-          created_at?: string
-          created_by?: string | null
-          description?: string | null
-          due_date?: string | null
-          finding_type?: string
-          id?: string
-          linked_defect_id?: string | null
-          linked_task_id?: string | null
-          owner_id?: string | null
-          program_id?: string | null
-          recommended_action?: string | null
-          resolution_notes?: string | null
-          resolved_at?: string | null
-          resolved_by?: string | null
-          severity?: string
-          source_entity_id?: string | null
-          source_entity_type?: string | null
-          status?: string
-          title?: string
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "traceability_findings_ai_action_id_fkey"
-            columns: ["ai_action_id"]
-            isOneToOne: false
-            referencedRelation: "test_ai_actions"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "traceability_findings_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "traceability_findings_linked_defect_id_fkey"
-            columns: ["linked_defect_id"]
-            isOneToOne: false
-            referencedRelation: "defects"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "traceability_findings_owner_id_fkey"
-            columns: ["owner_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "traceability_findings_program_id_fkey"
-            columns: ["program_id"]
-            isOneToOne: false
-            referencedRelation: "programs"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "traceability_findings_resolved_by_fkey"
-            columns: ["resolved_by"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
       }
       transition_approval_configs: {
         Row: {
