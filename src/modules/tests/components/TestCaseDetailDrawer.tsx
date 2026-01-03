@@ -191,6 +191,8 @@ export function TestCaseDetailDrawer({
   // Form state
   const [formData, setFormData] = useState<Record<string, any>>({});
   const [newStep, setNewStep] = useState({ action: '', expected_result: '' });
+  const [editingStepId, setEditingStepId] = useState<string | null>(null);
+  const [editingStepData, setEditingStepData] = useState<{ action: string; expected_result: string }>({ action: '', expected_result: '' });
 
   const { data: testCase, isLoading, error } = useTestCaseDetails(testCaseId);
   const { data: steps = [], refetch: refetchSteps } = useTestSteps(testCaseId);
@@ -292,6 +294,24 @@ export function TestCaseDetailDrawer({
     },
   });
 
+  // Update step mutation
+  const updateStepMutation = useMutation({
+    mutationFn: async ({ stepId, action, expected_result }: { stepId: string; action: string; expected_result: string }) => {
+      const { error } = await supabase.from('test_steps')
+        .update({ action, expected_result: expected_result || null })
+        .eq('id', stepId);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      refetchSteps();
+      setEditingStepId(null);
+      toast.success('Step updated');
+    },
+    onError: (err: Error) => {
+      toast.error(err.message);
+    },
+  });
+
   // Reorder steps
   const handleStepReorder = async (result: any) => {
     if (!result.destination) return;
@@ -306,6 +326,26 @@ export function TestCaseDetailDrawer({
       )
     );
     refetchSteps();
+  };
+
+  const startEditingStep = (step: TestStep) => {
+    setEditingStepId(step.id);
+    setEditingStepData({ action: step.action, expected_result: step.expected_result || '' });
+  };
+
+  const cancelEditingStep = () => {
+    setEditingStepId(null);
+    setEditingStepData({ action: '', expected_result: '' });
+  };
+
+  const saveEditingStep = () => {
+    if (editingStepId && editingStepData.action.trim()) {
+      updateStepMutation.mutate({
+        stepId: editingStepId,
+        action: editingStepData.action.trim(),
+        expected_result: editingStepData.expected_result.trim(),
+      });
+    }
   };
 
   if (!open) return null;
@@ -510,7 +550,12 @@ export function TestCaseDetailDrawer({
                               <div
                                 ref={prov.innerRef}
                                 {...prov.draggableProps}
-                                className="flex gap-2 p-2 bg-surface-2 border border-border-default rounded-lg"
+                                className={cn(
+                                  "flex gap-2 p-2 border rounded-lg transition-colors",
+                                  editingStepId === step.id 
+                                    ? "bg-accent-subtle/30 border-accent-primary/30" 
+                                    : "bg-surface-2 border-border-default"
+                                )}
                               >
                                 <div {...prov.dragHandleProps} className="cursor-grab pt-1">
                                   <GripVertical className="h-4 w-4 text-text-tertiary" />
@@ -525,21 +570,61 @@ export function TestCaseDetailDrawer({
                                       </Badge>
                                     )}
                                   </div>
-                                  <p className="text-xs text-text-primary mb-1">{step.action}</p>
-                                  {step.expected_result && (
-                                    <p className="text-[11px] text-text-tertiary">
-                                      <span className="font-medium">Expected:</span> {step.expected_result}
-                                    </p>
+                                  {editingStepId === step.id ? (
+                                    <div className="space-y-2">
+                                      <Input
+                                        value={editingStepData.action}
+                                        onChange={(e) => setEditingStepData({ ...editingStepData, action: e.target.value })}
+                                        placeholder="Action / Step description"
+                                        className="h-7 text-xs bg-surface-1"
+                                        autoFocus
+                                      />
+                                      <Input
+                                        value={editingStepData.expected_result}
+                                        onChange={(e) => setEditingStepData({ ...editingStepData, expected_result: e.target.value })}
+                                        placeholder="Expected result (optional)"
+                                        className="h-7 text-xs bg-surface-1"
+                                      />
+                                      <div className="flex gap-1">
+                                        <Button size="sm" className="h-6 text-[10px] px-2" onClick={saveEditingStep} disabled={updateStepMutation.isPending}>
+                                          <Save className="h-3 w-3 mr-1" /> Save
+                                        </Button>
+                                        <Button variant="ghost" size="sm" className="h-6 text-[10px] px-2" onClick={cancelEditingStep}>
+                                          Cancel
+                                        </Button>
+                                      </div>
+                                    </div>
+                                  ) : (
+                                    <div onClick={() => startEditingStep(step)} className="cursor-pointer">
+                                      <p className="text-xs text-text-primary mb-1">{step.action}</p>
+                                      {step.expected_result && (
+                                        <p className="text-[11px] text-text-tertiary">
+                                          <span className="font-medium">Expected:</span> {step.expected_result}
+                                        </p>
+                                      )}
+                                    </div>
                                   )}
                                 </div>
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  className="h-6 w-6 shrink-0"
-                                  onClick={() => deleteStepMutation.mutate(step.id)}
-                                >
-                                  <Trash2 className="h-3 w-3 text-status-error" />
-                                </Button>
+                                {editingStepId !== step.id && (
+                                  <div className="flex flex-col gap-1">
+                                    <Button
+                                      variant="ghost"
+                                      size="icon"
+                                      className="h-6 w-6 shrink-0"
+                                      onClick={() => startEditingStep(step)}
+                                    >
+                                      <Edit className="h-3 w-3 text-text-tertiary" />
+                                    </Button>
+                                    <Button
+                                      variant="ghost"
+                                      size="icon"
+                                      className="h-6 w-6 shrink-0"
+                                      onClick={() => deleteStepMutation.mutate(step.id)}
+                                    >
+                                      <Trash2 className="h-3 w-3 text-status-error" />
+                                    </Button>
+                                  </div>
+                                )}
                               </div>
                             )}
                           </Draggable>

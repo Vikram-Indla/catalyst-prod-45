@@ -19,6 +19,8 @@ import {
   Archive,
   Layers,
   Eye,
+  PanelLeftClose,
+  PanelLeft,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -50,6 +52,7 @@ import { CreateCycleModal } from '../components/CreateCycleModal';
 import { TestCycleDetailDrawer } from '../components/TestCycleDetailDrawer';
 import { AddToSetModal } from '../components/AddToSetModal';
 import { ExecutionRunDrawer } from '../components/ExecutionRunDrawer';
+import { TestFolderTree } from '../components/TestFolderTree';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/lib/auth';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -92,6 +95,11 @@ export function GlobalTestsCyclesPage() {
   const [selectedExecutionId, setSelectedExecutionId] = useState<string | null>(null);
   const [executionDrawerOpen, setExecutionDrawerOpen] = useState(false);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [selectedFolderId, setSelectedFolderId] = useState<string | null>(null);
+  const [folderPanelOpen, setFolderPanelOpen] = useState(true);
+
+  // Extract programId for folder tree
+  const programId = scopeType === 'program' ? scopeId : searchParams.get('programId');
 
   // Data
   const { data: cycles, isLoading, error, refetch } = useGlobalTestCycles(scopeType, scopeId);
@@ -108,6 +116,11 @@ export function GlobalTestsCyclesPage() {
       const progress = total > 0 ? Math.round(((passed + failed + blocked) / total) * 100) : 0;
       return { ...cycle, total, passed, failed, blocked, notRun, progress };
     });
+
+    // Filter by folder
+    if (selectedFolderId) {
+      result = result.filter((c: any) => c.folder_id === selectedFolderId);
+    }
     
     if (searchQuery) {
       const q = searchQuery.toLowerCase();
@@ -123,7 +136,7 @@ export function GlobalTestsCyclesPage() {
     }
     
     return result;
-  }, [cycles, searchQuery, statusFilter]);
+  }, [cycles, searchQuery, statusFilter, selectedFolderId]);
 
   // Archive mutation
   const archiveMutation = useMutation({
@@ -306,7 +319,46 @@ export function GlobalTestsCyclesPage() {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="flex h-full">
+      {/* Folder Tree Panel */}
+      <div
+        className={cn(
+          'border-r border-border-default bg-surface-1 transition-all duration-200 flex flex-col shrink-0',
+          folderPanelOpen ? 'w-56' : 'w-0 overflow-hidden'
+        )}
+      >
+        {folderPanelOpen && programId && (
+          <TestFolderTree
+            programId={programId}
+            entityType="test_cycle"
+            selectedFolderId={selectedFolderId}
+            onSelectFolder={setSelectedFolderId}
+            className="flex-1"
+          />
+        )}
+      </div>
+
+      {/* Main Content */}
+      <div className="flex-1 min-w-0 space-y-4 p-4">
+        {/* Folder toggle */}
+        <div className="flex items-center gap-2 mb-3">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-7 w-7"
+            onClick={() => setFolderPanelOpen(!folderPanelOpen)}
+          >
+            {folderPanelOpen ? (
+              <PanelLeftClose className="h-4 w-4" />
+            ) : (
+              <PanelLeft className="h-4 w-4" />
+            )}
+          </Button>
+          {selectedFolderId && (
+            <span className="text-xs text-text-tertiary">Filtered by folder</span>
+          )}
+        </div>
+        
       {/* Toolbar */}
       <div className="flex items-center justify-between gap-4 flex-wrap">
         <div className="flex items-center gap-2 flex-1 min-w-0">
@@ -543,6 +595,7 @@ export function GlobalTestsCyclesPage() {
           queryClient.invalidateQueries({ queryKey: ['test-cycle-detail'] });
         }}
       />
+      </div>
     </div>
   );
 }

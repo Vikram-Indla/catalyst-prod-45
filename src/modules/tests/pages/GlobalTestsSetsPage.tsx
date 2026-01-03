@@ -1,6 +1,6 @@
 /**
  * GLOBAL TESTS SETS PAGE
- * Enterprise-grade test set management with grid, CRUD, bulk actions
+ * Enterprise-grade test set management with folder tree, grid, CRUD, bulk actions
  */
 
 import React, { useState, useMemo } from 'react';
@@ -19,6 +19,8 @@ import {
   Eye,
   Edit,
   Copy,
+  PanelLeftClose,
+  PanelLeft,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -48,6 +50,7 @@ import { CreateTestSetModal } from '../components/CreateTestSetModal';
 import { TestSetDetailDrawer } from '../components/TestSetDetailDrawer';
 import { AddSetsToCycleModal } from '../components/AddSetsToCycleModal';
 import { MoveToFolderModal } from '../components/MoveToFolderModal';
+import { TestFolderTree } from '../components/TestFolderTree';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/lib/auth';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -70,6 +73,11 @@ export function GlobalTestsSetsPage() {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [addToCycleOpen, setAddToCycleOpen] = useState(false);
   const [moveToFolderOpen, setMoveToFolderOpen] = useState(false);
+  const [selectedFolderId, setSelectedFolderId] = useState<string | null>(null);
+  const [folderPanelOpen, setFolderPanelOpen] = useState(true);
+
+  // Extract programId for folder tree
+  const programId = scopeType === 'program' ? scopeId : searchParams.get('programId');
 
   // Data
   const { data: sets, isLoading, error, refetch } = useGlobalTestSets(scopeType, scopeId);
@@ -77,6 +85,11 @@ export function GlobalTestsSetsPage() {
   // Filter sets
   const filteredSets = useMemo(() => {
     let result = sets || [];
+    
+    // Filter by folder
+    if (selectedFolderId) {
+      result = result.filter((s: any) => s.folder_id === selectedFolderId);
+    }
     
     if (searchQuery) {
       const q = searchQuery.toLowerCase();
@@ -88,7 +101,7 @@ export function GlobalTestsSetsPage() {
     }
     
     return result;
-  }, [sets, searchQuery]);
+  }, [sets, searchQuery, selectedFolderId]);
 
   // Archive mutation using pipeline
   const archiveMutation = useMutation({
@@ -178,7 +191,45 @@ export function GlobalTestsSetsPage() {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="flex h-full">
+      {/* Folder Tree Panel */}
+      <div
+        className={cn(
+          'border-r border-border-default bg-surface-1 transition-all duration-200 flex flex-col shrink-0',
+          folderPanelOpen ? 'w-56' : 'w-0 overflow-hidden'
+        )}
+      >
+        {folderPanelOpen && programId && (
+          <TestFolderTree
+            programId={programId}
+            entityType="test_set"
+            selectedFolderId={selectedFolderId}
+            onSelectFolder={setSelectedFolderId}
+            className="flex-1"
+          />
+        )}
+      </div>
+
+      {/* Main Content */}
+      <div className="flex-1 min-w-0 space-y-4 p-4">
+        {/* Folder toggle */}
+        <div className="flex items-center gap-2">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-7 w-7"
+            onClick={() => setFolderPanelOpen(!folderPanelOpen)}
+          >
+            {folderPanelOpen ? (
+              <PanelLeftClose className="h-4 w-4" />
+            ) : (
+              <PanelLeft className="h-4 w-4" />
+            )}
+          </Button>
+          {selectedFolderId && (
+            <span className="text-xs text-text-tertiary">Filtered by folder</span>
+          )}
+        </div>
       {/* Toolbar */}
       <div className="flex items-center justify-between gap-4">
         <div className="flex items-center gap-2 flex-1">
@@ -425,6 +476,7 @@ export function GlobalTestsSetsPage() {
         scopeId={scopeId || ''}
         onSuccess={() => setSelectedIds(new Set())}
       />
+      </div>
     </div>
   );
 }
