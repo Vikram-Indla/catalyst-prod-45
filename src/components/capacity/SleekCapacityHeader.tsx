@@ -1,16 +1,20 @@
 /**
- * Sleek Capacity Header - CIO Executive Cockpit
- * Max height: 120px | Inline metrics | Live status
+ * Sleek Capacity Header - CIO Executive Cockpit V2.1
+ * Max height: 120px | Inline metrics | Live status | Primary/Secondary View Toggles
  */
 
 import { useState, useEffect } from 'react';
-import { Search, Download, Plus, Filter, ChevronDown, Clock, LayoutGrid, Table2, CalendarDays, FileStack, AlertTriangle, Users, Presentation } from 'lucide-react';
+import { Search, Download, Plus, Filter, ChevronDown, Clock, LayoutGrid, Table2, CalendarDays, FileStack, AlertTriangle, Users, Presentation, Briefcase, Grid3X3 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { cn } from '@/lib/utils';
 import { CATALYST, getUtilizationColor } from '@/lib/catalyst-colors';
 import { formatDistanceToNow } from 'date-fns';
+
+export type PrimaryView = 'resources' | 'projects';
+export type ResourceViewMode = 'cards' | 'table' | 'timeline' | 'heatmap';
+export type ProjectViewMode = 'cards' | 'timeline';
 
 interface SleekCapacityHeaderProps {
   summary: { 
@@ -20,13 +24,21 @@ interface SleekCapacityHeaderProps {
     over: number; 
     utilizationPercentage: number;
   };
-  viewMode: 'cards' | 'table' | 'timeline';
+  // V2.1 Primary/Secondary view architecture
+  primaryView?: PrimaryView;
+  resourceView?: ResourceViewMode;
+  projectView?: ProjectViewMode;
+  onPrimaryViewChange?: (view: PrimaryView) => void;
+  onResourceViewChange?: (view: ResourceViewMode) => void;
+  onProjectViewChange?: (view: ProjectViewMode) => void;
+  // Legacy props for backward compatibility
+  viewMode?: 'cards' | 'table' | 'timeline';
   groupBy: string;
   timelinePeriod: 'weekly' | 'monthly' | 'quarterly';
   searchQuery: string;
   activeFilter?: 'all' | 'available' | 'atCapacity' | 'over';
   departmentFilter?: 'all' | 'delivery' | 'product' | 'support';
-  onViewModeChange: (mode: 'cards' | 'table' | 'timeline') => void;
+  onViewModeChange?: (mode: 'cards' | 'table' | 'timeline') => void;
   onGroupByChange: (groupBy: string) => void;
   onTimelinePeriodChange: (period: 'weekly' | 'monthly' | 'quarterly') => void;
   onSearchChange: (query: string) => void;
@@ -39,6 +51,12 @@ interface SleekCapacityHeaderProps {
 
 export function SleekCapacityHeader({
   summary,
+  primaryView = 'resources',
+  resourceView = 'cards',
+  projectView = 'cards',
+  onPrimaryViewChange,
+  onResourceViewChange,
+  onProjectViewChange,
   viewMode,
   groupBy,
   timelinePeriod,
@@ -166,27 +184,81 @@ export function SleekCapacityHeader({
             />
           </div>
 
-          {/* View Tabs - Scenarios removed */}
-          <div className="flex items-center bg-slate-100 rounded-lg p-1 gap-0.5">
-            {(['cards', 'table', 'timeline'] as const).map((mode) => (
-              <button
-                key={mode}
-                onClick={() => onViewModeChange(mode)}
-                className={cn(
-                  'px-3 py-1.5 text-sm font-medium rounded-md transition-all flex items-center gap-1.5',
-                  viewMode === mode 
-                    ? 'bg-white text-slate-900 shadow-sm' 
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-white/50'
-                )}
-              >
-                <ViewIcon mode={mode} />
-                {mode.charAt(0).toUpperCase() + mode.slice(1)}
-              </button>
-            ))}
+          {/* V2.1: Primary View Toggle - Resources vs Projects */}
+          <div className="flex items-center bg-slate-100 rounded-lg p-0.5 gap-0.5">
+            <button
+              onClick={() => onPrimaryViewChange?.('resources')}
+              className={cn(
+                'px-3 py-1.5 text-sm font-medium rounded-md transition-all flex items-center gap-1.5',
+                primaryView === 'resources'
+                  ? 'bg-white text-slate-900 shadow-sm'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-white/50'
+              )}
+            >
+              <Users className="w-3.5 h-3.5" />
+              Resources
+            </button>
+            <button
+              onClick={() => onPrimaryViewChange?.('projects')}
+              className={cn(
+                'px-3 py-1.5 text-sm font-medium rounded-md transition-all flex items-center gap-1.5',
+                primaryView === 'projects'
+                  ? 'bg-white text-slate-900 shadow-sm'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-white/50'
+              )}
+            >
+              <Briefcase className="w-3.5 h-3.5" />
+              Projects
+            </button>
           </div>
 
+          {/* V2.1: Secondary View Toggle - Changes based on primary view */}
+          {primaryView === 'resources' ? (
+            <div className="flex items-center bg-slate-100 rounded-lg p-0.5 gap-0.5">
+              {(['cards', 'table', 'timeline', 'heatmap'] as ResourceViewMode[]).map((mode) => (
+                <button
+                  key={mode}
+                  onClick={() => {
+                    onResourceViewChange?.(mode);
+                    // Also update legacy viewMode for backward compatibility
+                    if (mode !== 'heatmap') {
+                      onViewModeChange?.(mode as 'cards' | 'table' | 'timeline');
+                    }
+                  }}
+                  className={cn(
+                    'px-2.5 py-1.5 text-sm font-medium rounded-md transition-all flex items-center gap-1',
+                    resourceView === mode
+                      ? 'bg-white text-slate-900 shadow-sm'
+                      : 'text-slate-600 hover:text-slate-900 hover:bg-white/50'
+                  )}
+                >
+                  <ViewIcon mode={mode} />
+                  {mode.charAt(0).toUpperCase() + mode.slice(1)}
+                </button>
+              ))}
+            </div>
+          ) : (
+            <div className="flex items-center bg-slate-100 rounded-lg p-0.5 gap-0.5">
+              {(['cards', 'timeline'] as ProjectViewMode[]).map((mode) => (
+                <button
+                  key={mode}
+                  onClick={() => onProjectViewChange?.(mode)}
+                  className={cn(
+                    'px-2.5 py-1.5 text-sm font-medium rounded-md transition-all flex items-center gap-1',
+                    projectView === mode
+                      ? 'bg-white text-slate-900 shadow-sm'
+                      : 'text-slate-600 hover:text-slate-900 hover:bg-white/50'
+                  )}
+                >
+                  <ViewIcon mode={mode} />
+                  {mode.charAt(0).toUpperCase() + mode.slice(1)}
+                </button>
+              ))}
+            </div>
+          )}
+
           {/* Timeline Period - Only in timeline view */}
-          {viewMode === 'timeline' && (
+          {(resourceView === 'timeline' || (primaryView === 'projects' && projectView === 'timeline')) && (
             <div className="flex items-center bg-slate-100 rounded-md p-0.5">
               {(['weekly', 'monthly', 'quarterly'] as const).map((p) => (
                 <button
@@ -194,8 +266,8 @@ export function SleekCapacityHeader({
                   onClick={() => onTimelinePeriodChange(p)}
                   className={cn(
                     'px-2 py-1 text-xs font-medium rounded transition-all',
-                    timelinePeriod === p 
-                      ? 'bg-slate-900 text-white' 
+                    timelinePeriod === p
+                      ? 'bg-slate-900 text-white'
                       : 'text-slate-500 hover:text-slate-700'
                   )}
                 >
@@ -314,6 +386,7 @@ function ViewIcon({ mode }: { mode: string }) {
   if (mode === 'cards') return <LayoutGrid className={cls} />;
   if (mode === 'table') return <Table2 className={cls} />;
   if (mode === 'timeline') return <CalendarDays className={cls} />;
+  if (mode === 'heatmap') return <Grid3X3 className={cls} />;
   if (mode === 'scenarios') return <FileStack className={cls} />;
   return null;
 }
