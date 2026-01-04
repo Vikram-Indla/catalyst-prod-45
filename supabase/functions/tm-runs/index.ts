@@ -22,15 +22,265 @@ serve(async (req) => {
     const url = new URL(req.url);
     const pathParts = url.pathname.split('/').filter(Boolean);
     
-    // Expected: /tm-runs/scope/:scopeId/runs/:runId? OR /tm-runs/runs/:runId
-    const scopeIdIndex = pathParts.indexOf('scope') + 1;
-    const scopeId = pathParts[scopeIdIndex];
-    const runIdIndex = pathParts.indexOf('runs') + 1;
-    const runId = pathParts[runIdIndex];
-    const action = pathParts[runIdIndex + 1];
+    // URL patterns:
+    // GET /tm-runs?cycle_id={id} - List runs
+    // GET /tm-runs/{id} - Get run with step results
+    // POST /tm-runs - Create run (auto-create step_results)
+    // PATCH /tm-runs/{id}/steps/{stepId} - Update step status
+    // PATCH /tm-runs/{id}/steps/bulk - Bulk update steps
+    // POST /tm-runs/{id}/complete - Mark complete
+    // POST /tm-runs/rerun-failed - Reset failed tests
+    
+    const runId = pathParts[1];
+    const action = pathParts[2];
+    const stepId = pathParts[3];
 
-    // GET /runs/:runId - Get single run (direct access)
-    if (req.method === 'GET' && runId && !scopeId && !action) {
+    // ============================================
+    // STATUS PERCOLATION LOGIC - CRITICAL FUNCTION
+    // ============================================
+    // After any step update, calculate run status:
+    // - ANY step failed → Run = FAILED
+    // - ANY step blocked (no fails) → Run = BLOCKED
+    // - ALL steps passed → Run = PASSED
+    // - ALL steps not_run → Run = NOT_RUN
+    // - Otherwise → Run = IN_PROGRESS
+    // Then update cycle_scope and cycle stats
+    // ============================================
+    async function percolateStatus(runId: string) {
+      console.log(`[PERCOLATION] Starting for run ${runId}`);
+
+      // Get all step results for this run
+      const { data: stepResults, error: stepsError } = await supabase
+        .from('tm_step_results')
+        .select('status')
+        .eq('run_id', runId);
+
+      if (stepsError) {
+        console.error('[PERCOLATION] Error fetching steps:', stepsError);
+        throw stepsError;
+      }
+
+      if (!stepResults || stepResults.length === 0) {
+        console.log('[PERCOLATION] No steps found, setting run to passed');
+        // No steps = run is passed by default
+        await supabase
+          .from('tm_test_runs')
+          .update({ status: 'passed' })
+          .eq('id', runId);
+        return;
+      }
+
+      // Calculate run status from step statuses
+      const statuses = stepResults.map(s => s.status);
+      let newRunStatus: string;
+
+      const hasFailed = statuses.some(s => s === 'failed');
+      const hasBlocked = statuses.some(s => s === 'blocked');
+      const allPassed = statuses.every(s => s === 'passed');
+      const allNotRun = statuses.every(s => s === 'not_run');
+
+      if (hasFailed) {
+        newRunStatus = 'failed';
+      } else if (hasBlocked) {
+        newRunStatus = 'blocked';
+      } else if (allPassed) {
+        newRunStatus = 'passed';
+      } else if (allNotRun) {
+        newRunStatus = 'not_run';
+      } else {
+        newRunStatus = 'in_progress';
+      }
+
+      console.log(`[PERCOLATION] Calculated run status: ${newRunStatus} from steps:`, statuses);
+
+      // Update run status
+      const { error: runUpdateError } = await supabase
+        .from('tm_test_runs')
+        .update({ status: newRunStatus })
+        .eq('id', runId);
+
+      if (runUpdateError) {
+        console.error('[PERCOLATION] Error updating run:', runUpdateError);
+        throw runUpdateError;
+      }
+
+      // Get run details to update scope
+      const { data: run, error: runError } = await supabase
+        .from('tm_test_runs')
+        .select('scope_id, cycle_id')
+        .eq('id', runId)
+        .single();
+
+      if (runError || !run) {
+        console.error('[PERCOLATION] Error fetching run:', runError);
+        throw runError;
+      }
+
+      // Update cycle_scope with current status and latest run
+      const { error: scopeError } = await supabase
+        .from('tm_cycle_scope')
+        .update({
+          current_status: newRunStatus,
+          latest_run_id: runId
+        })
+        .eq('id', run.scope_id);
+
+      if (scopeError) {
+        console.error('[PERCOLATION] Error updating scope:', scopeError);
+        throw scopeError;
+      }
+
+      console.log(`[PERCOLATION] Updated scope ${run.scope_id} with status ${newRunStatus}`);
+
+      // Recalculate ALL cycle statistics
+      await updateCycleStats(run.cycle_id);
+
+      console.log(`[PERCOLATION] Completed for run ${runId}`);
+    }
+
+    // Helper to recalculate cycle statistics
+    async function updateCycleStats(cycleId: string) {
+      console.log(`[STATS] Recalculating stats for cycle ${cycleId}`);
+
+      const { data: scopeItems, error } = await supabase
+        .from('tm_cycle_scope')
+        .select('current_status')
+        .eq('cycle_id', cycleId);
+
+      if (error) {
+        console.error('[STATS] Error fetching scope items:', error);
+        throw error;
+      }
+
+      const counts = {
+        total_cases: scopeItems?.length || 0,
+        not_run_count: 0,
+        passed_count: 0,
+        failed_count: 0,
+        blocked_count: 0
+      };
+
+      scopeItems?.forEach(item => {
+        switch (item.current_status) {
+          case 'not_run': counts.not_run_count++; break;
+          case 'passed': counts.passed_count++; break;
+          case 'failed': counts.failed_count++; break;
+          case 'blocked': counts.blocked_count++; break;
+          case 'in_progress': break; // Count in not_run for stats
+          default: counts.not_run_count++; break;
+        }
+      });
+
+      console.log(`[STATS] Cycle ${cycleId} counts:`, counts);
+
+      const { error: updateError } = await supabase
+        .from('tm_test_cycles')
+        .update(counts)
+        .eq('id', cycleId);
+
+      if (updateError) {
+        console.error('[STATS] Error updating cycle:', updateError);
+        throw updateError;
+      }
+    }
+
+    // GET /tm-runs?cycle_id={id} - List runs for a cycle
+    if (req.method === 'GET' && !runId) {
+      const cycleId = url.searchParams.get('cycle_id');
+      const scopeId = url.searchParams.get('scope_id');
+      const status = url.searchParams.get('status');
+      const page = parseInt(url.searchParams.get('page') || '1');
+      const limit = parseInt(url.searchParams.get('limit') || '50');
+      const offset = (page - 1) * limit;
+
+      let query = supabase
+        .from('tm_test_runs')
+        .select(`
+          *,
+          tm_cycle_scope(
+            id,
+            execution_order,
+            tm_test_cases(id, case_key, title, priority)
+          ),
+          executed_by_user:tm_users(id, display_name, email, avatar_url)
+        `, { count: 'exact' })
+        .order('started_at', { ascending: false })
+        .range(offset, offset + limit - 1);
+
+      if (cycleId) query = query.eq('cycle_id', cycleId);
+      if (scopeId) query = query.eq('scope_id', scopeId);
+      if (status) query = query.eq('status', status);
+
+      const { data, error, count } = await query;
+
+      if (error) throw error;
+
+      return new Response(
+        JSON.stringify({
+          data,
+          pagination: {
+            page,
+            limit,
+            total: count,
+            totalPages: Math.ceil((count || 0) / limit)
+          }
+        }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // POST /tm-runs/rerun-failed - Reset failed tests for rerun
+    if (req.method === 'POST' && runId === 'rerun-failed') {
+      const { cycle_id, scope_ids } = await req.json();
+
+      if (!cycle_id) {
+        return new Response(
+          JSON.stringify({ error: 'cycle_id required' }),
+          { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+
+      // Get failed scope items to reset
+      let query = supabase
+        .from('tm_cycle_scope')
+        .select('id')
+        .eq('cycle_id', cycle_id)
+        .eq('current_status', 'failed');
+
+      if (scope_ids?.length) {
+        query = query.in('id', scope_ids);
+      }
+
+      const { data: failedScopes, error: fetchError } = await query;
+
+      if (fetchError) throw fetchError;
+
+      if (!failedScopes?.length) {
+        return new Response(
+          JSON.stringify({ message: 'No failed tests to reset', reset: 0 }),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+
+      // Reset status to not_run
+      const { error: resetError } = await supabase
+        .from('tm_cycle_scope')
+        .update({ current_status: 'not_run', latest_run_id: null })
+        .in('id', failedScopes.map(s => s.id));
+
+      if (resetError) throw resetError;
+
+      // Update cycle stats
+      await updateCycleStats(cycle_id);
+
+      return new Response(
+        JSON.stringify({ message: 'Failed tests reset', reset: failedScopes.length }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // GET /tm-runs/{id} - Get run with step results
+    if (req.method === 'GET' && runId && !action) {
       const { data, error } = await supabase
         .from('tm_test_runs')
         .select(`
@@ -38,18 +288,21 @@ serve(async (req) => {
           tm_cycle_scope(
             id,
             cycle_id,
-            tm_test_cases(id, case_key, title, priority),
-            tm_test_cycles(id, cycle_key, name)
+            execution_order,
+            assigned_to,
+            tm_test_cases(id, case_key, title, priority, preconditions, description),
+            tm_test_cycles(id, cycle_key, name, status)
           ),
-          executed_by_user:tm_users(id, display_name, avatar_url),
+          executed_by_user:tm_users(id, display_name, email, avatar_url),
           tm_step_results(
             id,
             step_id,
             status,
             actual_result,
             executed_at,
+            executed_by,
             duration_seconds,
-            tm_test_steps(id, step_number, action, expected_result)
+            tm_test_steps(id, step_number, action, expected_result, test_data)
           )
         `)
         .eq('id', runId)
@@ -63,31 +316,12 @@ serve(async (req) => {
         );
       }
 
-      return new Response(
-        JSON.stringify(data),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
-
-    if (!scopeId) {
-      return new Response(
-        JSON.stringify({ error: 'Scope ID required' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
-
-    // GET /scope/:scopeId/runs - List runs for scope
-    if (req.method === 'GET' && !runId) {
-      const { data, error } = await supabase
-        .from('tm_test_runs')
-        .select(`
-          *,
-          executed_by_user:tm_users(id, display_name, avatar_url)
-        `)
-        .eq('scope_id', scopeId)
-        .order('run_number', { ascending: false });
-
-      if (error) throw error;
+      // Sort step results by step number
+      if (data.tm_step_results) {
+        data.tm_step_results.sort((a: { tm_test_steps?: { step_number: number } }, b: { tm_test_steps?: { step_number: number } }) => 
+          (a.tm_test_steps?.step_number || 0) - (b.tm_test_steps?.step_number || 0)
+        );
+      }
 
       return new Response(
         JSON.stringify(data),
@@ -95,8 +329,17 @@ serve(async (req) => {
       );
     }
 
-    // POST /scope/:scopeId/runs - Start new run
+    // POST /tm-runs - Create run (auto-create step_results)
     if (req.method === 'POST' && !runId) {
+      const { scope_id } = await req.json();
+
+      if (!scope_id) {
+        return new Response(
+          JSON.stringify({ error: 'scope_id required' }),
+          { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+
       const { data: { user } } = await supabase.auth.getUser();
       
       const { data: tmUser } = await supabase
@@ -106,7 +349,7 @@ serve(async (req) => {
         .maybeSingle();
 
       // Get scope with case and steps
-      const { data: scope } = await supabase
+      const { data: scope, error: scopeError } = await supabase
         .from('tm_cycle_scope')
         .select(`
           id,
@@ -117,32 +360,32 @@ serve(async (req) => {
             tm_test_steps(id, step_number)
           )
         `)
-        .eq('id', scopeId)
+        .eq('id', scope_id)
         .single();
 
-      if (!scope) {
+      if (scopeError || !scope) {
         return new Response(
           JSON.stringify({ error: 'Scope item not found' }),
           { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
       }
 
-      // Get next run number
+      // Get next run number for this scope
       const { data: lastRun } = await supabase
         .from('tm_test_runs')
         .select('run_number')
-        .eq('scope_id', scopeId)
+        .eq('scope_id', scope_id)
         .order('run_number', { ascending: false })
         .limit(1)
         .maybeSingle();
 
       const runNumber = (lastRun?.run_number || 0) + 1;
 
-      // Create run
+      // Create run with in_progress status
       const { data: run, error: runError } = await supabase
         .from('tm_test_runs')
         .insert({
-          scope_id: scopeId,
+          scope_id: scope_id,
           cycle_id: scope.cycle_id,
           case_id: scope.case_id,
           run_number: runNumber,
@@ -155,18 +398,37 @@ serve(async (req) => {
 
       if (runError) throw runError;
 
-      // Create step results for all steps
-      const testCases = scope.tm_test_cases as unknown as { id: string; tm_test_steps: { id: string; step_number: number }[] } | null;
-      const steps = testCases?.tm_test_steps || [];
+      // Auto-create step results for all test steps
+      const testCase = scope.tm_test_cases as unknown as { id: string; tm_test_steps: { id: string; step_number: number }[] } | null;
+      const steps = testCase?.tm_test_steps || [];
+
+      console.log(`[CREATE RUN] Creating ${steps.length} step results for run ${run.id}`);
+
       if (steps.length > 0) {
-        const stepResults = steps.map((step: { id: string }) => ({
+        // Sort steps by step_number
+        steps.sort((a, b) => a.step_number - b.step_number);
+        
+        const stepResults = steps.map(step => ({
           run_id: run.id,
           step_id: step.id,
           status: 'not_run'
         }));
 
-        await supabase.from('tm_step_results').insert(stepResults);
+        const { error: stepsError } = await supabase
+          .from('tm_step_results')
+          .insert(stepResults);
+
+        if (stepsError) {
+          console.error('[CREATE RUN] Error creating step results:', stepsError);
+          throw stepsError;
+        }
       }
+
+      // Update scope to show in_progress
+      await supabase
+        .from('tm_cycle_scope')
+        .update({ current_status: 'in_progress', latest_run_id: run.id })
+        .eq('id', scope_id);
 
       // Get complete run with step results
       const { data: completeRun } = await supabase
@@ -177,11 +439,19 @@ serve(async (req) => {
             id,
             step_id,
             status,
-            tm_test_steps(id, step_number, action, expected_result)
-          )
+            tm_test_steps(id, step_number, action, expected_result, test_data)
+          ),
+          executed_by_user:tm_users(id, display_name, email)
         `)
         .eq('id', run.id)
         .single();
+
+      // Sort steps
+      if (completeRun?.tm_step_results) {
+        completeRun.tm_step_results.sort((a: { tm_test_steps?: { step_number: number } }, b: { tm_test_steps?: { step_number: number } }) => 
+          (a.tm_test_steps?.step_number || 0) - (b.tm_test_steps?.step_number || 0)
+        );
+      }
 
       return new Response(
         JSON.stringify(completeRun),
@@ -189,45 +459,8 @@ serve(async (req) => {
       );
     }
 
-    // PATCH /scope/:scopeId/runs/:runId - Update run
-    if (req.method === 'PATCH' && runId && !action) {
-      const body = await req.json();
-      
-      const updates: Record<string, unknown> = {};
-      
-      if (body.status !== undefined) {
-        updates.status = body.status;
-        if (body.status !== 'in_progress') {
-          updates.completed_at = new Date().toISOString();
-        }
-      }
-      if (body.notes !== undefined) updates.notes = body.notes;
-      if (body.environment_notes !== undefined) updates.environment_notes = body.environment_notes;
-
-      const { data, error } = await supabase
-        .from('tm_test_runs')
-        .update(updates)
-        .eq('id', runId)
-        .eq('scope_id', scopeId)
-        .select()
-        .single();
-
-      if (error) throw error;
-
-      // Recalculate run status from steps if not explicitly set
-      if (!body.status) {
-        await supabase.rpc('tm_calculate_run_status', { p_run_id: runId });
-      }
-
-      return new Response(
-        JSON.stringify(data),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
-
-    // PUT /scope/:scopeId/runs/:runId/steps/:stepId - Update step result
-    if (req.method === 'PUT' && action === 'steps') {
-      const stepId = pathParts[runIdIndex + 2];
+    // PATCH /tm-runs/{id}/steps/{stepId} - Update single step status with percolation
+    if (req.method === 'PATCH' && runId && action === 'steps' && stepId && stepId !== 'bulk') {
       const body = await req.json();
       const { data: { user } } = await supabase.auth.getUser();
 
@@ -236,6 +469,8 @@ serve(async (req) => {
         .select('id')
         .eq('auth_user_id', user?.id)
         .maybeSingle();
+
+      console.log(`[STEP UPDATE] Updating step ${stepId} in run ${runId} to status: ${body.status}`);
 
       const updates: Record<string, unknown> = {
         status: body.status,
@@ -251,12 +486,16 @@ serve(async (req) => {
         .update(updates)
         .eq('run_id', runId)
         .eq('step_id', stepId)
-        .select()
+        .select(`
+          *,
+          tm_test_steps(id, step_number, action, expected_result)
+        `)
         .single();
 
       if (error) throw error;
 
-      // Trigger status percolation happens via database trigger
+      // ⚠️ CRITICAL: Trigger status percolation
+      await percolateStatus(runId);
 
       return new Response(
         JSON.stringify(data),
@@ -264,142 +503,128 @@ serve(async (req) => {
       );
     }
 
-    // POST /scope/:scopeId/runs/:runId/complete - Complete run
-    if (req.method === 'POST' && action === 'complete') {
-      const body = await req.json();
+    // PATCH /tm-runs/{id}/steps/bulk - Bulk update steps with percolation
+    if (req.method === 'PATCH' && runId && action === 'steps' && stepId === 'bulk') {
+      const { updates: stepUpdates } = await req.json();
+      // stepUpdates = [{ step_id, status, actual_result? }]
 
-      // Recalculate status from steps
-      await supabase.rpc('tm_calculate_run_status', { p_run_id: runId });
-
-      // Get updated run
-      const { data: run } = await supabase
-        .from('tm_test_runs')
-        .select('status')
-        .eq('id', runId)
-        .single();
-
-      const updates: Record<string, unknown> = {
-        completed_at: new Date().toISOString()
-      };
-
-      // Override status if provided
-      if (body.status && ['passed', 'failed', 'blocked'].includes(body.status)) {
-        updates.status = body.status;
-      }
-      if (body.notes) updates.notes = body.notes;
-
-      const { data, error } = await supabase
-        .from('tm_test_runs')
-        .update(updates)
-        .eq('id', runId)
-        .select()
-        .single();
-
-      if (error) throw error;
-
-      return new Response(
-        JSON.stringify(data),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
-
-    // POST /scope/:scopeId/runs/:runId/steps/:stepId/attachments - Add attachment
-    if (req.method === 'POST' && action === 'steps') {
-      const stepId = pathParts[runIdIndex + 2];
-      const subAction = pathParts[runIdIndex + 3];
-      
-      if (subAction === 'attachments') {
-        const { data: { user } } = await supabase.auth.getUser();
-        const formData = await req.formData();
-        const file = formData.get('file') as File;
-
-        if (!file) {
-          return new Response(
-            JSON.stringify({ error: 'File required' }),
-            { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-          );
-        }
-
-        // Get step result
-        const { data: stepResult } = await supabase
-          .from('tm_step_results')
-          .select('id')
-          .eq('run_id', runId)
-          .eq('step_id', stepId)
-          .single();
-
-        const filePath = `runs/${runId}/steps/${stepId}/${Date.now()}_${file.name}`;
-        
-        const { error: uploadError } = await supabase.storage
-          .from('test-attachments')
-          .upload(filePath, file);
-
-        if (uploadError) throw uploadError;
-
-        const { data: urlData } = supabase.storage
-          .from('test-attachments')
-          .getPublicUrl(filePath);
-
-        const { data: tmUser } = await supabase
-          .from('tm_users')
-          .select('id')
-          .eq('auth_user_id', user?.id)
-          .maybeSingle();
-
-        const { data: attachment, error } = await supabase
-          .from('tm_attachments')
-          .insert({
-            entity_type: 'step_result',
-            entity_id: stepResult?.id,
-            filename: file.name,
-            file_path: filePath,
-            file_size: file.size,
-            mime_type: file.type,
-            uploaded_by: tmUser?.id
-          })
-          .select()
-          .single();
-
-        if (error) throw error;
-
+      if (!stepUpdates?.length) {
         return new Response(
-          JSON.stringify({ ...attachment, url: urlData.publicUrl }),
-          { status: 201, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          JSON.stringify({ error: 'updates array required' }),
+          { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
       }
-    }
 
-    // POST /scope/:scopeId/runs/:runId/quick-fail - Quick fail all remaining
-    if (req.method === 'POST' && action === 'quick-fail') {
-      const body = await req.json();
       const { data: { user } } = await supabase.auth.getUser();
-
       const { data: tmUser } = await supabase
         .from('tm_users')
         .select('id')
         .eq('auth_user_id', user?.id)
         .maybeSingle();
 
-      // Update all not_run steps to failed/blocked
-      const { data, error } = await supabase
-        .from('tm_step_results')
-        .update({
-          status: body.status || 'blocked',
-          actual_result: body.reason || 'Marked via quick action',
+      console.log(`[BULK UPDATE] Updating ${stepUpdates.length} steps in run ${runId}`);
+
+      const results = [];
+
+      for (const update of stepUpdates) {
+        const updateData: Record<string, unknown> = {
+          status: update.status,
           executed_at: new Date().toISOString(),
           executed_by: tmUser?.id
-        })
-        .eq('run_id', runId)
-        .eq('status', 'not_run')
-        .select();
+        };
+
+        if (update.actual_result !== undefined) updateData.actual_result = update.actual_result;
+        if (update.duration_seconds !== undefined) updateData.duration_seconds = update.duration_seconds;
+
+        const { data, error } = await supabase
+          .from('tm_step_results')
+          .update(updateData)
+          .eq('run_id', runId)
+          .eq('step_id', update.step_id)
+          .select()
+          .single();
+
+        if (!error && data) {
+          results.push(data);
+        }
+      }
+
+      // ⚠️ CRITICAL: Trigger status percolation after all updates
+      await percolateStatus(runId);
+
+      return new Response(
+        JSON.stringify({ updated: results.length, data: results }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // POST /tm-runs/{id}/complete - Mark run complete with percolation
+    if (req.method === 'POST' && runId && action === 'complete') {
+      const body = await req.json();
+
+      console.log(`[COMPLETE] Completing run ${runId}`);
+
+      // If status override provided, update it
+      if (body.status && ['passed', 'failed', 'blocked'].includes(body.status)) {
+        const updates: Record<string, unknown> = {
+          status: body.status,
+          completed_at: new Date().toISOString()
+        };
+        if (body.notes) updates.notes = body.notes;
+
+        const { error: updateError } = await supabase
+          .from('tm_test_runs')
+          .update(updates)
+          .eq('id', runId);
+
+        if (updateError) throw updateError;
+
+        // Get run for scope update
+        const { data: run } = await supabase
+          .from('tm_test_runs')
+          .select('scope_id, cycle_id')
+          .eq('id', runId)
+          .single();
+
+        if (run) {
+          // Update scope with override status
+          await supabase
+            .from('tm_cycle_scope')
+            .update({ current_status: body.status, latest_run_id: runId })
+            .eq('id', run.scope_id);
+
+          // Update cycle stats
+          await updateCycleStats(run.cycle_id);
+        }
+      } else {
+        // Calculate status from steps and percolate
+        await percolateStatus(runId);
+
+        // Set completed_at
+        await supabase
+          .from('tm_test_runs')
+          .update({ 
+            completed_at: new Date().toISOString(),
+            notes: body.notes || undefined
+          })
+          .eq('id', runId);
+      }
+
+      // Get final run state
+      const { data: finalRun, error } = await supabase
+        .from('tm_test_runs')
+        .select(`
+          *,
+          tm_cycle_scope(id, current_status),
+          executed_by_user:tm_users(id, display_name, email)
+        `)
+        .eq('id', runId)
+        .single();
 
       if (error) throw error;
 
-      // Recalculate run status
-      await supabase.rpc('tm_calculate_run_status', { p_run_id: runId });
-
       return new Response(
-        JSON.stringify({ updated: data.length }),
+        JSON.stringify(finalRun),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
