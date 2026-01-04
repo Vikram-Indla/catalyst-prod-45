@@ -6,6 +6,7 @@ import {
   SheetHeader,
   SheetTitle,
   SheetFooter,
+  SheetBody,
 } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -161,7 +162,7 @@ export function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
 
   return (
     <Sheet open={isOpen} onOpenChange={onClose}>
-      <SheetContent className="w-[480px] sm:max-w-[480px] overflow-y-auto z-[100] fixed right-0 top-0 h-full bg-background border-l shadow-xl">
+      <SheetContent width="medium">
         <SheetHeader>
           <SheetTitle className="flex items-center gap-2">
             <User className="h-5 w-5" />
@@ -172,170 +173,177 @@ export function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
           </SheetDescription>
         </SheetHeader>
 
-        <form onSubmit={handleSubmit} className="mt-6 space-y-6">
-          {/* Basic Info Section */}
-          <div className="space-y-4">
-            <h3 className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-              <User className="h-4 w-4" />
-              Basic Information
-            </h3>
-            
-            <div className="space-y-2">
-              <Label htmlFor="full_name">Full Name</Label>
-              <Input
-                id="full_name"
-                value={formData.full_name}
-                onChange={(e) => setFormData(prev => ({ ...prev, full_name: e.target.value }))}
-                placeholder="Enter full name"
-              />
+        <SheetBody>
+          <form id="edit-user-form" onSubmit={handleSubmit} className="space-y-6">
+            {/* Basic Info Section */}
+            <div className="space-y-4">
+              <h3 className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+                <User className="h-4 w-4" />
+                Basic Information
+              </h3>
+              
+              <div className="space-y-2">
+                <Label htmlFor="full_name">Full Name</Label>
+                <Input
+                  id="full_name"
+                  value={formData.full_name}
+                  onChange={(e) => setFormData(prev => ({ ...prev, full_name: e.target.value }))}
+                  placeholder="Enter full name"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  value={formData.email}
+                  onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+                  placeholder="Enter email address"
+                />
+              </div>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                value={formData.email}
-                onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-                placeholder="Enter email address"
-              />
-            </div>
-          </div>
+            <Separator />
 
-          <Separator />
-
-          {/* Roles Section */}
-          <div className="space-y-4">
-            <h3 className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-              Roles
-            </h3>
-            <div className="flex flex-wrap gap-2">
-              {productRoles?.map((role) => (
-                <Badge
-                  key={role.id}
-                  variant={selectedRoleIds.includes(role.id) ? "default" : "outline"}
-                  className="cursor-pointer transition-colors"
-                  onClick={() => toggleRole(role.id)}
-                >
-                  {selectedRoleIds.includes(role.id) && '✓ '}
-                  {role.name}
-                </Badge>
-              ))}
-            </div>
-            {selectedRoleIds.length === 0 && (
-              <p className="text-xs text-muted-foreground">Click on a role to assign it</p>
-            )}
-          </div>
-
-          <Separator />
-
-          {/* Vendor/Contract Section */}
-          <div className="space-y-4">
-            <h3 className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-              <Building className="h-4 w-4" />
-              Vendor & Contract
-            </h3>
-
-            <div className="space-y-2">
-              <Label htmlFor="vendor">Vendor</Label>
-              <Select
-                value={formData.vendor || '__none__'}
-                onValueChange={(value) => setFormData(prev => ({ ...prev, vendor: value === '__none__' ? '' : value }))}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select vendor" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="__none__">No vendor</SelectItem>
-                  {VENDORS.map((v) => (
-                    <SelectItem key={v} value={v}>{v}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="contract_end_date">Contract End Date</Label>
-              <Input
-                id="contract_end_date"
-                type="date"
-                value={formData.contract_end_date}
-                onChange={(e) => setFormData(prev => ({ ...prev, contract_end_date: e.target.value }))}
-              />
-            </div>
-          </div>
-
-          <Separator />
-
-          {/* Location Section */}
-          <div className="space-y-4">
-            <h3 className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-              <MapPin className="h-4 w-4" />
-              Location
-            </h3>
-
-            <div className="space-y-2">
-              <Label htmlFor="location">Work Location</Label>
-              <Select
-                value={formData.location || '__none__'}
-                onValueChange={(value) => setFormData(prev => ({ ...prev, location: value === '__none__' ? '' : value }))}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select location type" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="__none__">Not specified</SelectItem>
-                  {LOCATIONS.map((loc) => (
-                    <SelectItem key={loc} value={loc}>{loc}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="country">Country</Label>
-              <Select
-                value={formData.country || '__none__'}
-                onValueChange={(value) => setFormData(prev => ({ ...prev, country: value === '__none__' ? '' : value }))}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select country" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="__none__">Not specified</SelectItem>
-                  {COUNTRIES.map((c) => (
-                    <SelectItem key={c.code} value={c.name}>
-                      <span className="flex items-center gap-2">
-                        <img src={c.svg} alt={c.name} className="h-3 w-5 object-cover rounded-sm" />
-                        {c.name}
-                      </span>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-
-          <SheetFooter className="pt-4">
-            <Button type="button" variant="outline" onClick={onClose}>
-              <X className="h-4 w-4 mr-2" />
-              Cancel
-            </Button>
-            <Button type="submit" disabled={updateUser.isPending} className="bg-brand-primary hover:bg-brand-primary-hover">
-              {updateUser.isPending ? (
-                <>
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Saving...
-                </>
-              ) : (
-                <>
-                  <Save className="h-4 w-4 mr-2" />
-                  Save Changes
-                </>
+            {/* Roles Section */}
+            <div className="space-y-4">
+              <h3 className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+                Roles
+              </h3>
+              <div className="flex flex-wrap gap-2">
+                {productRoles?.map((role) => (
+                  <Badge
+                    key={role.id}
+                    variant={selectedRoleIds.includes(role.id) ? "default" : "outline"}
+                    className="cursor-pointer transition-colors"
+                    onClick={() => toggleRole(role.id)}
+                  >
+                    {selectedRoleIds.includes(role.id) && '✓ '}
+                    {role.name}
+                  </Badge>
+                ))}
+              </div>
+              {selectedRoleIds.length === 0 && (
+                <p className="text-xs text-muted-foreground">Click on a role to assign it</p>
               )}
-            </Button>
-          </SheetFooter>
-        </form>
+            </div>
+
+            <Separator />
+
+            {/* Vendor/Contract Section */}
+            <div className="space-y-4">
+              <h3 className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+                <Building className="h-4 w-4" />
+                Vendor & Contract
+              </h3>
+
+              <div className="space-y-2">
+                <Label htmlFor="vendor">Vendor</Label>
+                <Select
+                  value={formData.vendor || '__none__'}
+                  onValueChange={(value) => setFormData(prev => ({ ...prev, vendor: value === '__none__' ? '' : value }))}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select vendor" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="__none__">No vendor</SelectItem>
+                    {VENDORS.map((v) => (
+                      <SelectItem key={v} value={v}>{v}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="contract_end_date">Contract End Date</Label>
+                <Input
+                  id="contract_end_date"
+                  type="date"
+                  value={formData.contract_end_date}
+                  onChange={(e) => setFormData(prev => ({ ...prev, contract_end_date: e.target.value }))}
+                />
+              </div>
+            </div>
+
+            <Separator />
+
+            {/* Location Section */}
+            <div className="space-y-4">
+              <h3 className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+                <MapPin className="h-4 w-4" />
+                Location
+              </h3>
+
+              <div className="space-y-2">
+                <Label htmlFor="location">Work Location</Label>
+                <Select
+                  value={formData.location || '__none__'}
+                  onValueChange={(value) => setFormData(prev => ({ ...prev, location: value === '__none__' ? '' : value }))}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select location type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="__none__">Not specified</SelectItem>
+                    {LOCATIONS.map((loc) => (
+                      <SelectItem key={loc} value={loc}>{loc}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="country">Country</Label>
+                <Select
+                  value={formData.country || '__none__'}
+                  onValueChange={(value) => setFormData(prev => ({ ...prev, country: value === '__none__' ? '' : value }))}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select country" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="__none__">Not specified</SelectItem>
+                    {COUNTRIES.map((c) => (
+                      <SelectItem key={c.code} value={c.name}>
+                        <span className="flex items-center gap-2">
+                          <img src={c.svg} alt={c.name} className="h-3 w-5 object-cover rounded-sm" />
+                          {c.name}
+                        </span>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </form>
+        </SheetBody>
+
+        <SheetFooter>
+          <Button type="button" variant="outline" onClick={onClose}>
+            <X className="h-4 w-4 mr-2" />
+            Cancel
+          </Button>
+          <Button 
+            type="submit" 
+            form="edit-user-form"
+            disabled={updateUser.isPending} 
+            className="bg-brand-primary hover:bg-brand-primary-hover"
+          >
+            {updateUser.isPending ? (
+              <>
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                Saving...
+              </>
+            ) : (
+              <>
+                <Save className="h-4 w-4 mr-2" />
+                Save Changes
+              </>
+            )}
+          </Button>
+        </SheetFooter>
       </SheetContent>
     </Sheet>
   );
