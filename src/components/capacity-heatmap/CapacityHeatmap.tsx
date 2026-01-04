@@ -237,37 +237,6 @@ export const CapacityHeatmap = memo(function CapacityHeatmap({
   return (
     <div ref={heatmapRef} className={cn("space-y-4", className)}>
       {/* Controls row */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => refetch()}
-            disabled={isRefetching}
-          >
-            {isRefetching ? (
-              <Loader2 className="w-4 h-4 mr-1.5 animate-spin" />
-            ) : (
-              <RefreshCw className="w-4 h-4 mr-1.5" />
-            )}
-            Refresh
-          </Button>
-        </div>
-        
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={handleExportPDF}
-          disabled={isExporting}
-        >
-          {isExporting ? (
-            <Loader2 className="w-4 h-4 mr-1.5 animate-spin" />
-          ) : (
-            <Download className="w-4 h-4 mr-1.5" />
-          )}
-          Export PDF
-        </Button>
-      </div>
       
       {/* Enhanced Heatmap Grid */}
       <EnhancedHeatmapGrid
