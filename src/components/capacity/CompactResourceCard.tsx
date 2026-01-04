@@ -129,44 +129,10 @@ export function CompactResourceCard({
           {initials}
         </div>
 
-        {/* Info - Compact with country flag */}
+        {/* Info - Compact */}
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-1.5">
-            <p className="text-sm font-semibold text-foreground truncate leading-tight">{name}</p>
-            {/* Country flag with tooltip */}
-            {profile?.country_flag_svg_url && (
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <img 
-                      src={profile.country_flag_svg_url} 
-                      alt={profile.country || ''} 
-                      className="w-4 h-3 object-cover rounded-sm flex-shrink-0 cursor-help"
-                    />
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>{profile.country || 'Unknown'}</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            )}
-          </div>
-          <div className="flex items-center gap-1.5">
-            <p className="text-[11px] text-muted-foreground truncate leading-tight">{role || 'Team Member'}</p>
-            {/* Location badge */}
-            {profile?.location && (
-              <span 
-                className={cn(
-                  "text-[9px] font-medium px-1 py-0.5 rounded",
-                  profile.location.toLowerCase().includes('onsite') || profile.location.toLowerCase().includes('riyadh')
-                    ? "bg-[#0d9488]/10 text-[#0d9488]" 
-                    : "bg-[#2563eb]/10 text-[#2563eb]"
-                )}
-              >
-                {profile.location.toLowerCase().includes('onsite') || profile.location.toLowerCase().includes('riyadh') ? 'ON' : 'OFF'}
-              </span>
-            )}
-          </div>
+          <p className="text-sm font-semibold text-foreground truncate leading-tight">{name}</p>
+          <p className="text-[11px] text-muted-foreground truncate leading-tight">{role || 'Team Member'}</p>
         </div>
 
         {/* Allocation Badge with warning icon for over-allocated */}

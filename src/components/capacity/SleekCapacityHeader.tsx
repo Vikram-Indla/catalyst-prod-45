@@ -251,8 +251,8 @@ export function SleekCapacityHeader({
                   : 'text-muted-foreground hover:text-foreground hover:bg-card/50'
               )}
             >
-              <LayoutGrid className="w-3.5 h-3.5" />
-              Contracts
+            <LayoutGrid className="w-3.5 h-3.5" />
+              Allocations
             </button>
 
             {/* Gantt (timeline) tab */}
