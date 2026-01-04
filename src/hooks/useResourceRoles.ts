@@ -8,13 +8,26 @@ import { supabase } from '@/integrations/supabase/client';
 
 export interface RoleOption {
   name: string;
+  displayName: string;
   count: number;
+}
+
+/**
+ * Formats a database role name to human-readable format
+ * e.g., "program_manager" -> "Program Manager"
+ */
+function formatRoleName(role: string): string {
+  return role
+    .split('_')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(' ');
 }
 
 async function fetchResourceRoles(): Promise<RoleOption[]> {
   const { data, error } = await supabase
     .from('profiles')
     .select('role')
+    .not('role', 'is', null)
     .order('role');
 
   if (error) {
@@ -31,8 +44,12 @@ async function fetchResourceRoles(): Promise<RoleOption[]> {
   });
 
   return Array.from(roleMap.entries())
-    .map(([name, count]) => ({ name, count }))
-    .sort((a, b) => a.name.localeCompare(b.name));
+    .map(([name, count]) => ({ 
+      name,
+      displayName: formatRoleName(name),
+      count 
+    }))
+    .sort((a, b) => a.displayName.localeCompare(b.displayName));
 }
 
 export function useResourceRoles() {

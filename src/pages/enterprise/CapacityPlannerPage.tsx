@@ -2113,24 +2113,30 @@ function TimelineView({ resources, period, groupBy, groupedByAssignment, grouped
   // Check if resource has any time-boxed allocations
   const hasTimeBoxedAllocations = allocations.length > 0;
 
+  // FIX #1: Use fixed pixel widths for column alignment
+  const columnWidth = period === 'weekly' ? 100 : period === 'monthly' ? 150 : 250;
+  const gridTemplateColumns = `224px repeat(${periods.length}, ${columnWidth}px)`;
+  const totalWidth = 224 + (periods.length * columnWidth);
+
   const renderTimelineHeader = () => (
-    <div className="flex bg-muted/50 dark:bg-surface-3 border-b border-border sticky top-0 z-10">
-      <div className="w-56 px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider border-r border-border shrink-0">
+    <div 
+      className="grid bg-muted/50 dark:bg-surface-3 border-b border-border sticky top-0 z-10"
+      style={{ gridTemplateColumns, width: totalWidth, minWidth: '100%' }}
+    >
+      <div className="px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider border-r border-border">
         Resource
       </div>
-      <div className="flex-1 flex">
-        {periods.map((p, i) => (
-          <div 
-            key={p.key} 
-            className={cn(
-              'flex-1 px-2 py-3 text-center text-[11px] font-semibold text-muted-foreground border-r border-border last:border-r-0 min-w-24',
-              i === 0 && 'bg-primary/5 text-primary'
-            )}
-          >
-            {p.label}
-          </div>
-        ))}
-      </div>
+      {periods.map((p, i) => (
+        <div 
+          key={p.key} 
+          className={cn(
+            'px-2 py-3 text-center text-[11px] font-semibold text-muted-foreground border-r border-border last:border-r-0',
+            i === 0 && 'bg-primary/5 text-primary'
+          )}
+        >
+          {p.label}
+        </div>
+      ))}
     </div>
   );
 
@@ -2245,13 +2251,18 @@ function TimelineView({ resources, period, groupBy, groupedByAssignment, grouped
       <div 
         key={resource.id} 
         className={cn(
-          "flex border-b border-border last:border-b-0 hover:bg-muted/50",
+          "grid border-b border-border last:border-b-0 hover:bg-muted/50",
           isEven && "bg-muted/30"
         )}
-        style={{ borderLeftWidth: '3px', borderLeftColor: allocTheme.bar }}
+        style={{ 
+          gridTemplateColumns: gridTemplateColumns, 
+          width: totalWidth,
+          borderLeftWidth: '3px', 
+          borderLeftColor: allocTheme.bar 
+        }}
       >
         {/* Resource Info */}
-        <div className="w-56 px-4 py-3 flex items-center gap-3 border-r border-border shrink-0">
+        <div className="px-4 py-3 flex items-center gap-3 border-r border-border">
           <div 
             className="w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold text-white shrink-0"
             style={{ backgroundColor: theme.accent }}
@@ -2264,112 +2275,88 @@ function TimelineView({ resources, period, groupBy, groupedByAssignment, grouped
           </div>
         </div>
 
-        {/* Timeline Area with Gantt Bars */}
-        <div className="flex-1 relative">
-          {/* Grid columns for period boundaries */}
-          <div 
-            className="absolute inset-0 grid"
-            style={{ gridTemplateColumns: `repeat(${periods.length}, 1fr)` }}
-          >
-            {periods.map((p, colIdx) => {
-              const isCurrentPeriod = colIdx === 0;
-              const isOver = periodTotals[colIdx] > 100;
-              return (
-                <div 
-                  key={p.key}
-                  className={cn(
-                    'border-r border-border last:border-r-0 h-full',
-                    isCurrentPeriod && 'bg-primary/5',
-                    isOver && 'bg-warning/10'
-                  )}
-                >
-                  {isOver && (
-                    <div className="absolute top-1 right-1 z-10">
-                      <AlertTriangle className="w-3.5 h-3.5 text-orange-500" />
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
+        {/* Timeline Cells - One per period */}
+        {periods.map((p, colIdx) => {
+          const isCurrentPeriod = colIdx === 0;
+          const isOver = periodTotals[colIdx] > 100;
+          
+          // Find bars that cover this column
+          const barsInColumn = ganttBars.filter(bar => 
+            colIdx >= bar.startColIndex && colIdx <= bar.endColIndex
+          );
+          
+          // Only render bar on its start column
+          const barsStartingHere = ganttBars.filter(bar => bar.startColIndex === colIdx);
 
-          {/* Gantt Bars Layer */}
-          <div 
-            className="relative grid min-h-[60px] py-2 px-1"
-            style={{ gridTemplateColumns: `repeat(${periods.length}, 1fr)` }}
-          >
-            {ganttBars.length > 0 ? (
-              <>
-                {ganttBars.map((bar, idx) => {
-                  const projectName = bar.alloc.assignment_name || 'Allocation';
-                  const projectColor = getTimelineProjectColor(projectName);
-                  const tooltipText = `${projectName}: ${bar.alloc.allocation_percent}% (${new Date(bar.alloc.start_date).toLocaleDateString()} – ${new Date(bar.alloc.end_date).toLocaleDateString()})`;
-                  
-                  return (
-                    <div
-                      key={bar.alloc.id || idx}
-                      className="h-7 rounded flex items-center px-3 text-[11px] font-semibold cursor-pointer hover:opacity-90 transition-opacity shadow-sm"
-                      style={{
-                        gridColumn: `${bar.startColIndex + 1} / span ${bar.span}`,
-                        gridRow: idx + 1,
-                        backgroundColor: projectColor.bg,
-                        color: projectColor.text,
-                        margin: '2px 4px',
-                      }}
-                      title={tooltipText}
-                      onClick={() => onEditResource?.(resource.id)}
-                    >
-                      <span className="truncate">
-                        {projectName} ({bar.alloc.allocation_percent}%)
-                      </span>
-                    </div>
-                  );
-                })}
-              </>
-            ) : (
-              /* No allocations - show Available across all periods */
-              <div 
-                className="flex items-center justify-center"
-                style={{ gridColumn: `1 / span ${periods.length}` }}
-              >
-                <button
-                  onClick={() => onEditResource?.(resource.id)}
-                  className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-teal-50 transition-colors cursor-pointer group"
-                >
-                  <CheckCircle2 className="w-4 h-4 text-teal-500 group-hover:text-teal-600" />
-                  <span className="text-xs font-medium text-teal-600 group-hover:text-teal-700">Available</span>
-                </button>
-              </div>
-            )}
-          </div>
-
-          {/* Available indicators for uncovered periods (when partial allocation exists) */}
-          {ganttBars.length > 0 && coveredColumns.size < periods.length && (
+          return (
             <div 
-              className="absolute inset-0 grid pointer-events-none"
-              style={{ gridTemplateColumns: `repeat(${periods.length}, 1fr)` }}
+              key={p.key}
+              className={cn(
+                'relative border-r border-border last:border-r-0 min-h-[60px] py-2 px-1',
+                isCurrentPeriod && 'bg-primary/5',
+                isOver && 'bg-warning/10'
+              )}
             >
-              {periods.map((_, colIdx) => {
-                if (coveredColumns.has(colIdx)) return null;
+              {isOver && (
+                <div className="absolute top-1 right-1 z-10">
+                  <AlertTriangle className="w-3.5 h-3.5 text-orange-500" />
+                </div>
+              )}
+              
+              {/* Render bars that START in this column */}
+              {barsStartingHere.map((bar, idx) => {
+                const projectName = bar.alloc.assignment_name || 'Allocation';
+                const projectColor = getTimelineProjectColor(projectName);
+                const tooltipText = `${projectName}: ${bar.alloc.allocation_percent}% (${new Date(bar.alloc.start_date).toLocaleDateString()} – ${new Date(bar.alloc.end_date).toLocaleDateString()})`;
+                
+                // Calculate width based on span (how many columns it covers)
+                const barWidth = bar.span * columnWidth - 8; // subtract margins
+                
                 return (
-                  <div 
-                    key={colIdx}
-                    className="flex flex-col items-center justify-center pointer-events-auto"
-                    style={{ gridColumn: colIdx + 1 }}
+                  <div
+                    key={bar.alloc.id || idx}
+                    className="absolute h-7 rounded flex items-center px-3 text-[11px] font-semibold cursor-pointer hover:opacity-90 transition-opacity shadow-sm z-10"
+                    style={{
+                      top: 8 + idx * 32,
+                      left: 4,
+                      width: barWidth,
+                      backgroundColor: projectColor.bg,
+                      color: projectColor.text,
+                    }}
+                    title={tooltipText}
+                    onClick={() => onEditResource?.(resource.id)}
                   >
-                    <button
-                      onClick={() => onEditResource?.(resource.id)}
-                      className="flex flex-col items-center py-2 hover:bg-teal-50 rounded transition-colors cursor-pointer group"
-                    >
-                      <CheckCircle2 className="w-4 h-4 text-teal-500 group-hover:text-teal-600" />
-                      <span className="text-[10px] font-medium text-teal-600 group-hover:text-teal-700">Available</span>
-                    </button>
+                    <span className="truncate">
+                      {projectName} ({bar.alloc.allocation_percent}%)
+                    </span>
                   </div>
                 );
               })}
+              
+              {/* Show Available indicator if this column has no bars */}
+              {barsInColumn.length === 0 && ganttBars.length > 0 && (
+                <button
+                  onClick={() => onEditResource?.(resource.id)}
+                  className="absolute inset-0 flex flex-col items-center justify-center hover:bg-teal-50/50 rounded transition-colors cursor-pointer group"
+                >
+                  <CheckCircle2 className="w-4 h-4 text-teal-500 group-hover:text-teal-600" />
+                  <span className="text-[10px] font-medium text-teal-600 group-hover:text-teal-700">Available</span>
+                </button>
+              )}
+              
+              {/* Show Available across all if no allocations at all */}
+              {ganttBars.length === 0 && colIdx === Math.floor(periods.length / 2) && (
+                <button
+                  onClick={() => onEditResource?.(resource.id)}
+                  className="absolute inset-0 flex items-center justify-center hover:bg-teal-50/50 rounded transition-colors cursor-pointer group"
+                >
+                  <CheckCircle2 className="w-4 h-4 text-teal-500 group-hover:text-teal-600 mr-2" />
+                  <span className="text-xs font-medium text-teal-600 group-hover:text-teal-700">Available</span>
+                </button>
+              )}
             </div>
-          )}
-        </div>
+          );
+        })}
       </div>
     );
   };
@@ -2405,10 +2392,12 @@ function TimelineView({ resources, period, groupBy, groupedByAssignment, grouped
 
         {/* Timeline Table */}
         {isExpanded && (
-          <div className="bg-card border border-border rounded-lg overflow-hidden">
-            {renderTimelineHeader()}
-            <div className="max-h-[400px] overflow-y-auto">
-              {groupResources.map((r, i) => renderResourceRow(r, groupName, i % 2 === 0))}
+          <div className="bg-card border border-border rounded-lg overflow-x-auto">
+            <div style={{ minWidth: totalWidth }}>
+              {renderTimelineHeader()}
+              <div className="max-h-[400px] overflow-y-auto">
+                {groupResources.map((r, i) => renderResourceRow(r, groupName, i % 2 === 0))}
+              </div>
             </div>
           </div>
         )}
@@ -2455,10 +2444,12 @@ function TimelineView({ resources, period, groupBy, groupedByAssignment, grouped
   // No grouping
   return (
     <div className="space-y-4">
-      <div className="bg-card border border-border rounded-lg overflow-hidden">
-        {renderTimelineHeader()}
-        <div className="max-h-[500px] overflow-y-auto">
-          {resources.map((r, i) => renderResourceRow(r, r.assignmentName || 'Unassigned', i % 2 === 0))}
+      <div className="bg-card border border-border rounded-lg overflow-x-auto">
+        <div style={{ minWidth: totalWidth }}>
+          {renderTimelineHeader()}
+          <div className="max-h-[500px] overflow-y-auto">
+            {resources.map((r, i) => renderResourceRow(r, r.assignmentName || 'Unassigned', i % 2 === 0))}
+          </div>
         </div>
       </div>
     </div>

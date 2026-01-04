@@ -230,7 +230,7 @@ export function FindAvailabilityPanel({
                   ) : (
                     rolesFromDb?.map(role => (
                       <SelectItem key={role.name} value={role.name}>
-                        {role.name} ({role.count})
+                        {role.displayName} ({role.count})
                       </SelectItem>
                     ))
                   )}
