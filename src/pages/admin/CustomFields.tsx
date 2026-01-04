@@ -61,6 +61,7 @@ export default function CustomFields() {
             <SelectValue placeholder="All Entity Types" />
           </SelectTrigger>
           <SelectContent>
+            <SelectItem value="assignment">Assignment</SelectItem>
             <SelectItem value="initiative">Initiative</SelectItem>
             <SelectItem value="epic">Epic</SelectItem>
             <SelectItem value="feature">Feature</SelectItem>
