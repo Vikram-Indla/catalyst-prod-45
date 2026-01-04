@@ -166,7 +166,7 @@ export function FindAvailabilityPanel({
   };
 
   return (
-    <div className={cn("bg-card dark:bg-slate-900/50 border border-border rounded-xl", className)}>
+    <div className={cn("bg-card border border-border rounded-xl", className)}>
       {/* Collapsed State - Quick Access */}
       <button
         className="w-full flex items-center justify-between p-4 hover:bg-muted/30 rounded-xl transition-colors"

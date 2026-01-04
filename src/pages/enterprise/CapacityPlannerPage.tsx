@@ -385,7 +385,7 @@ export default function CapacityPlannerPage() {
         />
 
         {/* Main Content */}
-        <div className="flex-1 flex flex-col min-h-0 px-6 py-6 bg-slate-50 dark:bg-slate-950">
+        <div className="flex-1 flex flex-col min-h-0 px-6 py-6 bg-surface-2 dark:bg-surface-1">
           {/* V2.1: Find Availability Panel - shown in resources view */}
           {primaryView === 'resources' && (
             <div className="mb-4">
@@ -1266,8 +1266,8 @@ function ViewTabSpec({ icon: Icon, label, active, onClick }: {
       className={cn(
         'flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all',
         active
-          ? 'bg-white text-[#0a0a0a] shadow-sm'
-          : 'text-[#737373] hover:text-[#525252]'
+          ? 'bg-card text-foreground shadow-sm'
+          : 'text-muted-foreground hover:text-foreground'
       )}
     >
       <Icon className="w-4 h-4" />
@@ -1341,7 +1341,7 @@ function CardsView({
           const expanded = isGroupExpanded(assignmentName);
           return (
           // FIX #12: Add bottom border for group separation
-          <div key={assignmentName} className="space-y-3 pb-4 border-b border-slate-100 last:border-b-0">
+          <div key={assignmentName} className="space-y-3 pb-4 border-b border-border last:border-b-0">
             {/* Group Header with capacity bar */}
             <CompactGroupHeader
               assignmentName={assignmentName}
@@ -1393,7 +1393,7 @@ function CardsView({
             : 0;
           return (
             // FIX #12: Add bottom border for group separation
-            <div key={deptName} className="space-y-3 pb-4 border-b border-slate-100 last:border-b-0">
+            <div key={deptName} className="space-y-3 pb-4 border-b border-border last:border-b-0">
               {/* Group Header - Enterprise Style */}
               <div 
                 className="flex items-center justify-between px-5 py-4 border border-[#e5e5e5] rounded-xl cursor-pointer hover:shadow-md transition-all"
@@ -1514,7 +1514,7 @@ function ResourceCard({ resource, groupBy, on360Click, onCardClick }: {
 
   return (
     <div 
-      className="flex items-center gap-3 p-4 bg-white border border-[#e5e5e5] rounded-xl cursor-pointer hover:border-[#d4d4d4] hover:shadow-sm transition-all"
+      className="flex items-center gap-3 p-4 bg-card border border-border rounded-xl cursor-pointer hover:border-border/80 hover:shadow-sm transition-all"
       onClick={onCardClick}
     >
       {/* Avatar - Assignment-based color */}
@@ -1710,7 +1710,7 @@ function TableView({ resources, projects, groupBy, groupedByAssignment, groupedB
           {/* Edit - NO duplicate avatar */}
           <button 
             onClick={(e) => { e.stopPropagation(); onEditResource(row.id); }}
-            className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-500 hover:bg-slate-100 transition-colors"
+            className="w-8 h-8 rounded-lg flex items-center justify-center text-muted-foreground hover:bg-muted transition-colors"
             title="Edit resource"
           >
             <Pencil className="w-4 h-4" />
@@ -1718,7 +1718,7 @@ function TableView({ resources, projects, groupBy, groupedByAssignment, groupedB
           {/* Delete */}
           <button 
             onClick={(e) => { e.stopPropagation(); onDeleteResource(row); }}
-            className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-500 hover:bg-slate-100 transition-colors"
+            className="w-8 h-8 rounded-lg flex items-center justify-center text-muted-foreground hover:bg-muted transition-colors"
             title="Remove from Capacity Planner"
           >
             <Trash2 className="w-4 h-4" />
@@ -1754,7 +1754,7 @@ function TableView({ resources, projects, groupBy, groupedByAssignment, groupedB
     return (
       <div key={groupName} className="space-y-2">
         <div 
-          className="flex items-center gap-3 p-3 bg-white border border-slate-200 rounded-lg"
+          className="flex items-center gap-3 p-3 bg-card border border-border rounded-lg"
           style={{ borderLeftWidth: '4px', borderLeftColor: theme.accent }}
         >
           <div 
@@ -1764,7 +1764,7 @@ function TableView({ resources, projects, groupBy, groupedByAssignment, groupedB
             <Users className="h-4 w-4 text-white" />
           </div>
           <span className="text-sm font-semibold" style={{ color: theme.accent }}>{groupName}</span>
-          <span className="text-xs text-slate-500 ml-auto bg-slate-100 px-2.5 py-1 rounded-full">
+          <span className="text-xs text-muted-foreground ml-auto bg-muted px-2.5 py-1 rounded-full">
             {groupResources.length} resources
           </span>
         </div>
@@ -1787,14 +1787,14 @@ function TableView({ resources, projects, groupBy, groupedByAssignment, groupedB
     return (
       <div key={deptName} className="space-y-2">
         <div 
-          className="flex items-center gap-3 p-3 bg-white border border-slate-200 rounded-lg"
+          className="flex items-center gap-3 p-3 bg-card border border-border rounded-lg"
           style={{ borderLeftWidth: '4px', borderLeftColor: CATALYST.blue.primary }}
         >
           <div className={cn("w-8 h-8 rounded-lg flex items-center justify-center", deptColor.bg)}>
             <Building2 className={cn("h-4 w-4", deptColor.text)} />
           </div>
-          <span className="text-sm font-semibold text-slate-900">{deptName}</span>
-          <span className="text-xs text-slate-500 ml-auto bg-slate-100 px-2.5 py-1 rounded-full">
+          <span className="text-sm font-semibold text-foreground">{deptName}</span>
+          <span className="text-xs text-muted-foreground ml-auto bg-muted px-2.5 py-1 rounded-full">
             {groupResources.length} resources
           </span>
         </div>
@@ -2041,8 +2041,8 @@ function TimelineView({ resources, period, groupBy, groupedByAssignment, grouped
   const hasTimeBoxedAllocations = allocations.length > 0;
 
   const renderTimelineHeader = () => (
-    <div className="flex bg-slate-50 border-b border-slate-200 sticky top-0 z-10">
-      <div className="w-56 px-4 py-3 text-[11px] font-semibold text-slate-500 uppercase tracking-wider border-r border-slate-200 shrink-0">
+    <div className="flex bg-muted/50 dark:bg-surface-3 border-b border-border sticky top-0 z-10">
+      <div className="w-56 px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider border-r border-border shrink-0">
         Resource
       </div>
       <div className="flex-1 flex">
@@ -2050,8 +2050,8 @@ function TimelineView({ resources, period, groupBy, groupedByAssignment, grouped
           <div 
             key={p.key} 
             className={cn(
-              'flex-1 px-2 py-3 text-center text-[11px] font-semibold text-slate-500 border-r border-slate-200 last:border-r-0 min-w-24',
-              i === 0 && 'bg-blue-50/50 text-blue-600'
+              'flex-1 px-2 py-3 text-center text-[11px] font-semibold text-muted-foreground border-r border-border last:border-r-0 min-w-24',
+              i === 0 && 'bg-primary/5 text-primary'
             )}
           >
             {p.label}
@@ -2172,13 +2172,13 @@ function TimelineView({ resources, period, groupBy, groupedByAssignment, grouped
       <div 
         key={resource.id} 
         className={cn(
-          "flex border-b border-slate-100 last:border-b-0 hover:bg-slate-50/50",
-          isEven && "bg-slate-50/30"
+          "flex border-b border-border last:border-b-0 hover:bg-muted/50",
+          isEven && "bg-muted/30"
         )}
         style={{ borderLeftWidth: '3px', borderLeftColor: allocTheme.bar }}
       >
         {/* Resource Info */}
-        <div className="w-56 px-4 py-3 flex items-center gap-3 border-r border-slate-200 shrink-0">
+        <div className="w-56 px-4 py-3 flex items-center gap-3 border-r border-border shrink-0">
           <div 
             className="w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold text-white shrink-0"
             style={{ backgroundColor: theme.accent }}
@@ -2186,8 +2186,8 @@ function TimelineView({ resources, period, groupBy, groupedByAssignment, grouped
             {initials}
           </div>
           <div className="min-w-0">
-            <p className="text-sm font-semibold text-slate-900 truncate">{resource.name}</p>
-            <p className="text-[11px] text-slate-500 truncate">{resource.role || 'Team Member'}</p>
+            <p className="text-sm font-semibold text-foreground truncate">{resource.name}</p>
+            <p className="text-[11px] text-muted-foreground truncate">{resource.role || 'Team Member'}</p>
           </div>
         </div>
 
@@ -2205,9 +2205,9 @@ function TimelineView({ resources, period, groupBy, groupedByAssignment, grouped
                 <div 
                   key={p.key}
                   className={cn(
-                    'border-r border-slate-200 last:border-r-0 h-full',
-                    isCurrentPeriod && 'bg-blue-50/30',
-                    isOver && 'bg-orange-50/30'
+                    'border-r border-border last:border-r-0 h-full',
+                    isCurrentPeriod && 'bg-primary/5',
+                    isOver && 'bg-warning/10'
                   )}
                 >
                   {isOver && (
@@ -2310,12 +2310,12 @@ function TimelineView({ resources, period, groupBy, groupedByAssignment, grouped
         {/* Group Header */}
         <button
           onClick={() => toggleGroup(groupName)}
-          className="w-full flex items-center justify-between px-4 py-3 bg-white border border-slate-200 rounded-lg hover:shadow-sm transition-all"
+          className="w-full flex items-center justify-between px-4 py-3 bg-card border border-border rounded-lg hover:shadow-sm transition-all"
           style={{ borderLeftWidth: '4px', borderLeftColor: theme.accent }}
         >
           <div className="flex items-center gap-3">
-            <ChevronRight className={cn("w-4 h-4 text-slate-400 transition-transform", isExpanded && "rotate-90")} />
-            <div 
+            <ChevronRight className={cn("w-4 h-4 text-muted-foreground transition-transform", isExpanded && "rotate-90")} />
+            <div
               className="w-7 h-7 rounded-lg flex items-center justify-center"
               style={{ backgroundColor: theme.accent }}
             >
@@ -2325,14 +2325,14 @@ function TimelineView({ resources, period, groupBy, groupedByAssignment, grouped
               {groupName}
             </span>
           </div>
-          <span className="text-xs text-slate-500 bg-slate-100 px-2.5 py-1 rounded-full">
+          <span className="text-xs text-muted-foreground bg-muted px-2.5 py-1 rounded-full">
             {groupResources.length} resources
           </span>
         </button>
 
         {/* Timeline Table */}
         {isExpanded && (
-          <div className="bg-white border border-slate-200 rounded-lg overflow-hidden">
+          <div className="bg-card border border-border rounded-lg overflow-hidden">
             {renderTimelineHeader()}
             <div className="max-h-[400px] overflow-y-auto">
               {groupResources.map((r, i) => renderResourceRow(r, groupName, i % 2 === 0))}
@@ -2347,7 +2347,7 @@ function TimelineView({ resources, period, groupBy, groupedByAssignment, grouped
     return (
       <div className="space-y-4">
         {/* Legend */}
-        <div className="flex items-center gap-4 text-xs text-slate-500">
+        <div className="flex items-center gap-4 text-xs text-muted-foreground">
           <span className="flex items-center gap-1.5">
             <span className="w-3 h-3 rounded bg-teal-100 border-l-2 border-teal-500" />
             Available
@@ -2382,7 +2382,7 @@ function TimelineView({ resources, period, groupBy, groupedByAssignment, grouped
   // No grouping
   return (
     <div className="space-y-4">
-      <div className="bg-white border border-slate-200 rounded-lg overflow-hidden">
+      <div className="bg-card border border-border rounded-lg overflow-hidden">
         {renderTimelineHeader()}
         <div className="max-h-[500px] overflow-y-auto">
           {resources.map((r, i) => renderResourceRow(r, r.assignmentName || 'Unassigned', i % 2 === 0))}

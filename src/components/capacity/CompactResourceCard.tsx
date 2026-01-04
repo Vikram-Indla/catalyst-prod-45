@@ -59,7 +59,7 @@ export function CompactResourceCard({
         "relative border rounded-lg p-3 cursor-pointer transition-all group",
         isOverAllocated 
           ? "bg-red-50/40 dark:bg-red-950/20 border-red-300 dark:border-red-800 hover:shadow-red-100 dark:hover:shadow-red-900/20 hover:shadow-md" 
-          : "bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 hover:shadow-md dark:hover:shadow-slate-800/50"
+          : "bg-card border-border hover:border-border/80 hover:shadow-md"
       )}
       style={{ 
         borderLeftWidth: '4px', 
@@ -94,8 +94,8 @@ export function CompactResourceCard({
 
         {/* Info - Compact */}
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-semibold text-slate-900 dark:text-white truncate leading-tight">{name}</p>
-          <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate leading-tight">{role || 'Team Member'}</p>
+          <p className="text-sm font-semibold text-foreground truncate leading-tight">{name}</p>
+          <p className="text-[11px] text-muted-foreground truncate leading-tight">{role || 'Team Member'}</p>
         </div>
 
         {/* Allocation Badge with warning icon for over-allocated */}
@@ -147,7 +147,7 @@ export function CompactResourceCard({
           <Button 
             variant="ghost" 
             size="sm" 
-            className="text-[10px] text-slate-500 dark:text-slate-400 h-5 px-2 hover:text-primary"
+            className="text-[10px] text-muted-foreground h-5 px-2 hover:text-primary"
             onClick={(e) => { e.stopPropagation(); onEdit(); }}
           >
             Edit Allocations
