@@ -15,6 +15,7 @@ interface ResourceAllocation {
   id?: string;
   profile_id?: string;
   profile_name?: string;
+  resource_name?: string;  // Also support this field from hook
   assignment_id?: string;
   assignment_name?: string;
   allocation_percent: number;
@@ -169,7 +170,7 @@ function ProjectStaffingCard({
   // Transform allocations for MiniGantt
   const ganttAllocations = allocations.map(alloc => ({
     id: alloc.id || `${alloc.profile_id}-${alloc.assignment_name}`,
-    assignmentName: alloc.profile_name || 'Resource',
+    assignmentName: alloc.resource_name || alloc.profile_name || 'Resource',
     assignmentColor: projectColor,
     allocationPercent: alloc.allocation_percent,
     startDate: alloc.start_date,
@@ -229,8 +230,9 @@ function ProjectStaffingCard({
         <h4 className="text-xs font-semibold text-muted-foreground uppercase">Assigned Resources</h4>
 
         {allocations.map((alloc) => {
-          const initials = alloc.profile_name
-            ?.split(' ')
+          const displayName = alloc.resource_name || alloc.profile_name || 'Unknown';
+          const initials = displayName
+            .split(' ')
             .map(n => n[0])
             .join('')
             .substring(0, 2)
@@ -245,7 +247,7 @@ function ProjectStaffingCard({
                 {initials}
               </div>
               <div className="flex-1 min-w-0">
-                <div className="text-sm font-medium text-foreground">{alloc.profile_name || 'Unknown'}</div>
+                <div className="text-sm font-medium text-foreground">{displayName}</div>
                 <div className="text-xs text-muted-foreground">
                   {format(new Date(alloc.start_date), 'MMM d')} - {format(new Date(alloc.end_date), 'MMM d, yyyy')}
                 </div>
