@@ -553,7 +553,7 @@ export function AllocationBookingModal({
                       <div className="flex-1 space-y-3">
                         <div className="grid grid-cols-3 gap-3">
                           <div>
-                            <Label className="text-xs text-slate-500">Assignment</Label>
+                            <Label className="text-xs text-slate-500 dark:text-slate-400">Assignment</Label>
                             <Select 
                               value={alloc.assignment_id}
                               onValueChange={(v) => updateAllocation(index, 'assignment_id', v)}
@@ -569,7 +569,7 @@ export function AllocationBookingModal({
                             </Select>
                           </div>
                           <div>
-                            <Label className="text-xs text-slate-500">Allocation %</Label>
+                            <Label className="text-xs text-slate-500 dark:text-slate-400">Allocation %</Label>
                             <Input
                               type="number"
                               min={5}
@@ -596,7 +596,7 @@ export function AllocationBookingModal({
                                     "px-2 py-0.5 text-xs rounded transition-colors",
                                     alloc.allocation_percent === pct 
                                       ? "bg-blue-600 text-white" 
-                                      : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                                      : "bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600"
                                   )}
                                 >
                                   {pct}%
@@ -616,7 +616,7 @@ export function AllocationBookingModal({
                         </div>
                         <div className="grid grid-cols-2 gap-3">
                           <div>
-                            <Label className="text-xs text-slate-500">Start Date</Label>
+                            <Label className="text-xs text-slate-500 dark:text-slate-400">Start Date</Label>
                             <Input
                               type="date"
                               value={alloc.start_date}
@@ -628,7 +628,7 @@ export function AllocationBookingModal({
                             />
                           </div>
                           <div>
-                            <Label className="text-xs text-slate-500">End Date</Label>
+                            <Label className="text-xs text-slate-500 dark:text-slate-400">End Date</Label>
                             <Input
                               type="date"
                               value={alloc.end_date}
@@ -643,7 +643,7 @@ export function AllocationBookingModal({
                         </div>
                         {/* Quick Duration Buttons */}
                         <div className="flex items-center gap-2 mt-2">
-                          <span className="text-xs text-slate-500">Quick:</span>
+                          <span className="text-xs text-slate-500 dark:text-slate-400">Quick:</span>
                           {[
                             { label: '2w', weeks: 2 },
                             { label: '1m', weeks: 4 },
@@ -661,7 +661,7 @@ export function AllocationBookingModal({
                                 updateAllocation(index, 'end_date', format(end, 'yyyy-MM-dd'));
                                 setHasUnsavedChanges(true);
                               }}
-                              className="px-2 py-0.5 text-xs bg-slate-100 text-slate-600 rounded hover:bg-slate-200 transition-colors"
+                              className="px-2 py-0.5 text-xs bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 rounded hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors"
                             >
                               {label}
                             </button>
@@ -672,21 +672,21 @@ export function AllocationBookingModal({
                       // View Mode
                       <>
                         <div className="flex-1">
-                          <div className="font-medium text-slate-900">{alloc.assignment_name}</div>
-                          <div className="text-sm text-slate-500">
+                          <div className="font-medium text-slate-900 dark:text-white">{alloc.assignment_name}</div>
+                          <div className="text-sm text-slate-500 dark:text-slate-400">
                             {alloc.allocation_percent}% • {format(parseISO(alloc.start_date), 'MMM d, yyyy')} — {isOngoing ? 'Ongoing (No end date)' : format(parseISO(alloc.end_date!), 'MMM d, yyyy')}
                           </div>
                         </div>
                         <div className="flex items-center gap-1">
                           <button
                             onClick={() => setEditingIndex(index)}
-                            className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
+                            className="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
                           >
                             <Pencil className="w-4 h-4" />
                           </button>
                           <button
                             onClick={() => setDeleteConfirmIndex(index)}
-                            className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                            className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors"
                             title="Delete allocation"
                           >
                             <Trash2 className="w-4 h-4" />
@@ -699,7 +699,7 @@ export function AllocationBookingModal({
               })}
               
               {allocations.length === 0 && !newAllocation && (
-                <div className="text-center py-8 text-slate-400">
+                <div className="text-center py-8 text-slate-400 dark:text-slate-500">
                   No allocations yet. Click below to add one.
                 </div>
               )}
@@ -942,11 +942,11 @@ export function AllocationBookingModal({
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between px-6 py-4 border-t border-slate-200 bg-slate-50">
+        <div className="flex items-center justify-between px-6 py-4 border-t border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800">
           <Button
             variant="ghost"
             onClick={handleClose}
-            className="text-slate-600"
+            className="text-slate-600 dark:text-slate-300"
           >
             Cancel
           </Button>
