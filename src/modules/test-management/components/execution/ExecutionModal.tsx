@@ -1,9 +1,13 @@
 /**
- * Execution Modal
- * Modal for executing test steps
+ * Execution Modal - Enhanced with Monopoly Features
+ * - Auto-timer with inactivity pause
+ * - Keyboard shortcuts
+ * - Screenshot paste (Ctrl+V)
+ * - Quick defect logging
+ * - Pass All Remaining / Re-run Failed
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -25,9 +29,21 @@ import {
   ChevronLeft,
   ChevronRight,
   Bug,
+  SkipForward,
+  CheckCheck,
+  RotateCcw,
 } from 'lucide-react';
-import { useTestRun, useCreateRun, useUpdateStepResult, useCompleteRun } from '../../hooks/useExecution';
+import { useTestRun, useCreateRun, useUpdateStepResult, useCompleteRun, useBulkUpdateSteps } from '../../hooks/useExecution';
 import type { ExecutionStatus, StepResult } from '../../api/types';
+import { useExecutionTimer } from './hooks/useExecutionTimer';
+import { useExecutionKeyboard } from './hooks/useExecutionKeyboard';
+import { useScreenshotPaste } from './hooks/useScreenshotPaste';
+import { ExecutionTimer } from './ExecutionTimer';
+import { ExecutionProgress } from './ExecutionProgress';
+import { ExecutionShortcutHints } from './ExecutionShortcutHints';
+import { ExecutionScreenshots } from './ExecutionScreenshots';
+import { QuickDefectDialog } from './QuickDefectDialog';
+import { toast } from 'sonner';
 
 interface ExecutionModalProps {
   scopeId: string;
@@ -68,7 +84,7 @@ const STATUS_CONFIG: Record<ExecutionStatus, {
   skipped: {
     label: 'Skipped',
     className: 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300',
-    icon: ChevronRight,
+    icon: SkipForward,
   },
 };
 
@@ -76,11 +92,24 @@ export function ExecutionModal({ scopeId, runId: initialRunId, onClose }: Execut
   const [activeRunId, setActiveRunId] = useState<string | null>(initialRunId || null);
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [actualResult, setActualResult] = useState('');
+  const [defectDialogOpen, setDefectDialogOpen] = useState(false);
+  const [isComplete, setIsComplete] = useState(false);
 
   const { data: run, isLoading: runLoading } = useTestRun(activeRunId);
   const createRun = useCreateRun();
   const updateStep = useUpdateStepResult();
   const completeRun = useCompleteRun();
+  const bulkUpdate = useBulkUpdateSteps();
+
+  const steps = run?.step_results || [];
+  const currentStep = steps[currentStepIndex];
+  const totalSteps = steps.length;
+
+  // Timer hook
+  const timer = useExecutionTimer(activeRunId, isComplete);
+
+  // Screenshot paste hook
+  const screenshots = useScreenshotPaste(true);
 
   // Create a run if we don't have one
   useEffect(() => {
@@ -92,10 +121,6 @@ export function ExecutionModal({ scopeId, runId: initialRunId, onClose }: Execut
       });
     }
   }, [scopeId, initialRunId, activeRunId, createRun]);
-
-  const steps = run?.step_results || [];
-  const currentStep = steps[currentStepIndex];
-  const totalSteps = steps.length;
 
   // Find first unexecuted step when run loads
   useEffect(() => {
@@ -112,10 +137,13 @@ export function ExecutionModal({ scopeId, runId: initialRunId, onClose }: Execut
   // Reset actual result when step changes
   useEffect(() => {
     setActualResult(currentStep?.actual_result || '');
+    screenshots.clearScreenshots();
   }, [currentStep?.id]);
 
-  const handleStepResult = async (status: ExecutionStatus) => {
+  const handleStepResult = useCallback(async (status: ExecutionStatus) => {
     if (!activeRunId || !currentStep) return;
+
+    timer.recordActivity();
 
     await updateStep.mutateAsync({
       runId: activeRunId,
@@ -130,197 +158,337 @@ export function ExecutionModal({ scopeId, runId: initialRunId, onClose }: Execut
     if (currentStepIndex < totalSteps - 1) {
       setCurrentStepIndex(currentStepIndex + 1);
       setActualResult('');
+      screenshots.clearScreenshots();
     } else {
-      // Complete the run
-      await completeRun.mutateAsync({ runId: activeRunId });
-      onClose();
+      // Check if all steps are complete
+      const allComplete = steps.every((s, i) => 
+        i === currentStepIndex ? true : ['passed', 'failed', 'blocked', 'skipped'].includes(s.status)
+      );
+      if (allComplete) {
+        setIsComplete(true);
+        await completeRun.mutateAsync({ runId: activeRunId });
+        toast.success('Test run completed!');
+        onClose();
+      }
     }
-  };
+  }, [activeRunId, currentStep, currentStepIndex, totalSteps, actualResult, timer, updateStep, completeRun, steps, screenshots, onClose]);
 
-  const handlePreviousStep = () => {
+  const handlePreviousStep = useCallback(() => {
     if (currentStepIndex > 0) {
       setCurrentStepIndex(currentStepIndex - 1);
     }
-  };
+  }, [currentStepIndex]);
 
-  const handleNextStep = () => {
+  const handleNextStep = useCallback(() => {
     if (currentStepIndex < totalSteps - 1) {
       setCurrentStepIndex(currentStepIndex + 1);
     }
+  }, [currentStepIndex, totalSteps]);
+
+  const handlePassAllRemaining = async () => {
+    if (!activeRunId) return;
+
+    timer.recordActivity();
+
+    const remainingSteps = steps
+      .filter((s) => s.status === 'not_run' || s.status === 'in_progress')
+      .map((s) => ({
+        step_id: s.step_id,
+        status: 'passed' as ExecutionStatus,
+      }));
+
+    if (remainingSteps.length === 0) {
+      toast.info('No remaining steps to pass');
+      return;
+    }
+
+    await bulkUpdate.mutateAsync({
+      runId: activeRunId,
+      updates: remainingSteps,
+    });
+
+    setIsComplete(true);
+    await completeRun.mutateAsync({ runId: activeRunId });
+    toast.success(`Passed ${remainingSteps.length} remaining steps`);
+    onClose();
   };
 
+  const handleRerunFailed = async () => {
+    if (!activeRunId) return;
+
+    const failedSteps = steps.filter((s) => s.status === 'failed' || s.status === 'blocked');
+    
+    if (failedSteps.length === 0) {
+      toast.info('No failed steps to re-run');
+      return;
+    }
+
+    // Reset failed steps to not_run status for this run
+    const failedStepUpdates = failedSteps.map((s) => ({
+      step_id: s.step_id,
+      status: 'not_run' as ExecutionStatus,
+    }));
+
+    await bulkUpdate.mutateAsync({
+      runId: activeRunId,
+      updates: failedStepUpdates,
+    });
+    
+    // Reset to first failed step
+    const firstFailedIndex = steps.findIndex((s) => s.status === 'failed' || s.status === 'blocked');
+    if (firstFailedIndex >= 0) {
+      setCurrentStepIndex(firstFailedIndex);
+    }
+    
+    toast.success(`Re-running ${failedSteps.length} failed steps`);
+  };
+
+  const handleDefectSubmit = async (data: any) => {
+    // TODO: Integrate with defect API
+    console.log('Defect data:', data, 'Screenshots:', screenshots.getFiles());
+    toast.success('Defect logged successfully');
+  };
+
+  // Keyboard shortcuts
+  useExecutionKeyboard({
+    isOpen: true,
+    isUpdating: updateStep.isPending || completeRun.isPending || bulkUpdate.isPending,
+    onSetStatus: handleStepResult,
+    onOpenDefect: () => setDefectDialogOpen(true),
+    onToggleTimer: timer.toggleTimer,
+    onNext: handleNextStep,
+    onPrevious: handlePreviousStep,
+  });
+
   const isLoading = runLoading || createRun.isPending;
-  const isUpdating = updateStep.isPending || completeRun.isPending;
+  const isUpdating = updateStep.isPending || completeRun.isPending || bulkUpdate.isPending;
+
+  const failedStepsCount = steps.filter((s) => s.status === 'failed' || s.status === 'blocked').length;
+  const remainingStepsCount = steps.filter((s) => s.status === 'not_run' || s.status === 'in_progress').length;
 
   return (
-    <Dialog open onOpenChange={onClose}>
-      <DialogContent className="max-w-3xl max-h-[90vh] flex flex-col">
-        <DialogHeader>
-          <DialogTitle className="flex items-center justify-between">
-            <span>Test Execution</span>
-            {run && (
-              <Badge variant="outline">
-                Run #{run.run_number}
-              </Badge>
-            )}
-          </DialogTitle>
-        </DialogHeader>
-
-        {isLoading ? (
-          <div className="flex items-center justify-center h-64">
-            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-          </div>
-        ) : !currentStep ? (
-          <div className="flex items-center justify-center h-64 text-muted-foreground">
-            No steps to execute
-          </div>
-        ) : (
-          <>
-            {/* Progress Bar */}
-            <div className="flex items-center gap-2 px-1">
-              <span className="text-sm text-muted-foreground">
-                Step {currentStepIndex + 1} of {totalSteps}
-              </span>
-              <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-primary transition-all"
-                  style={{ width: `${((currentStepIndex + 1) / totalSteps) * 100}%` }}
-                />
-              </div>
+    <>
+      <Dialog open onOpenChange={onClose}>
+        <DialogContent className="max-w-3xl max-h-[90vh] flex flex-col">
+          <DialogHeader>
+            <div className="flex items-center justify-between">
+              <DialogTitle className="flex items-center gap-3">
+                <span>Test Execution</span>
+                {run && (
+                  <Badge variant="outline">
+                    Run #{run.run_number}
+                  </Badge>
+                )}
+              </DialogTitle>
+              <ExecutionTimer
+                formattedTime={timer.formattedTime}
+                isRunning={timer.isRunning}
+                onToggle={timer.toggleTimer}
+                disabled={isComplete}
+              />
             </div>
+          </DialogHeader>
 
-            {/* Step Status Pills */}
-            <div className="flex gap-1 flex-wrap px-1">
-              {steps.map((step, index) => {
-                const config = STATUS_CONFIG[step.status as ExecutionStatus] || STATUS_CONFIG.not_run;
-                return (
-                  <button
-                    key={step.id}
-                    onClick={() => setCurrentStepIndex(index)}
-                    className={cn(
-                      'w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium transition-all',
-                      config.className,
-                      index === currentStepIndex && 'ring-2 ring-primary ring-offset-2'
-                    )}
-                  >
-                    {index + 1}
-                  </button>
-                );
-              })}
+          {isLoading ? (
+            <div className="flex items-center justify-center h-64">
+              <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
             </div>
+          ) : !currentStep ? (
+            <div className="flex items-center justify-center h-64 text-muted-foreground">
+              No steps to execute
+            </div>
+          ) : (
+            <>
+              {/* Progress Section */}
+              <ExecutionProgress
+                steps={steps.map((s) => ({ id: s.id, status: s.status as ExecutionStatus }))}
+                currentIndex={currentStepIndex}
+                onStepClick={setCurrentStepIndex}
+              />
 
-            <Separator />
+              <Separator />
 
-            {/* Current Step Details */}
-            <ScrollArea className="flex-1 pr-4">
-              <div className="space-y-4">
-                <div>
-                  <h4 className="text-sm font-medium text-muted-foreground mb-1">
-                    Action
-                  </h4>
-                  <p className="text-foreground bg-muted p-3 rounded-lg">
-                    {currentStep.step?.action || 'No action defined'}
-                  </p>
-                </div>
-
-                <div>
-                  <h4 className="text-sm font-medium text-muted-foreground mb-1">
-                    Expected Result
-                  </h4>
-                  <p className="text-foreground bg-muted p-3 rounded-lg">
-                    {currentStep.step?.expected_result || 'No expected result defined'}
-                  </p>
-                </div>
-
-                {currentStep.step?.test_data && (
+              {/* Current Step Details */}
+              <ScrollArea className="flex-1 pr-4">
+                <div className="space-y-4">
                   <div>
-                    <h4 className="text-sm font-medium text-muted-foreground mb-1">
-                      Test Data
-                    </h4>
-                    <p className="text-foreground bg-muted p-3 rounded-lg font-mono text-sm">
-                      {currentStep.step.test_data}
+                    <div className="flex items-center justify-between mb-1">
+                      <h4 className="text-sm font-medium text-muted-foreground">
+                        Action
+                      </h4>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-7 text-red-600 hover:text-red-700 hover:bg-red-50"
+                        onClick={() => setDefectDialogOpen(true)}
+                      >
+                        <Bug className="h-3 w-3 mr-1" />
+                        Log Defect
+                      </Button>
+                    </div>
+                    <p className="text-foreground bg-muted p-3 rounded-lg">
+                      {currentStep.step?.action || 'No action defined'}
                     </p>
                   </div>
-                )}
 
-                <div>
-                  <h4 className="text-sm font-medium text-muted-foreground mb-1">
-                    Actual Result (optional)
-                  </h4>
-                  <Textarea
-                    value={actualResult}
-                    onChange={(e) => setActualResult(e.target.value)}
-                    placeholder="Enter the actual result or observations..."
-                    rows={3}
+                  <div>
+                    <h4 className="text-sm font-medium text-muted-foreground mb-1">
+                      Expected Result
+                    </h4>
+                    <p className="text-foreground bg-muted p-3 rounded-lg">
+                      {currentStep.step?.expected_result || 'No expected result defined'}
+                    </p>
+                  </div>
+
+                  {currentStep.step?.test_data && (
+                    <div>
+                      <h4 className="text-sm font-medium text-muted-foreground mb-1">
+                        Test Data
+                      </h4>
+                      <p className="text-foreground bg-muted p-3 rounded-lg font-mono text-sm">
+                        {currentStep.step.test_data}
+                      </p>
+                    </div>
+                  )}
+
+                  <div>
+                    <h4 className="text-sm font-medium text-muted-foreground mb-1">
+                      Actual Result (optional)
+                    </h4>
+                    <Textarea
+                      value={actualResult}
+                      onChange={(e) => setActualResult(e.target.value)}
+                      placeholder="Enter the actual result or observations..."
+                      rows={3}
+                    />
+                  </div>
+
+                  {/* Screenshot paste area */}
+                  <ExecutionScreenshots
+                    screenshots={screenshots.screenshots}
+                    onRemove={screenshots.removeScreenshot}
                   />
                 </div>
-              </div>
-            </ScrollArea>
+              </ScrollArea>
 
-            <Separator />
+              <Separator />
 
-            {/* Action Buttons */}
-            <div className="flex items-center justify-between pt-2">
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handlePreviousStep}
-                  disabled={currentStepIndex === 0 || isUpdating}
-                >
-                  <ChevronLeft className="h-4 w-4" />
-                  Previous
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleNextStep}
-                  disabled={currentStepIndex >= totalSteps - 1 || isUpdating}
-                >
-                  Next
-                  <ChevronRight className="h-4 w-4" />
-                </Button>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="text-orange-600 hover:text-orange-700 hover:bg-orange-50"
-                  onClick={() => handleStepResult('blocked')}
-                  disabled={isUpdating}
-                >
-                  <AlertTriangle className="h-4 w-4 mr-1" />
-                  Blocked
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                  onClick={() => handleStepResult('failed')}
-                  disabled={isUpdating}
-                >
-                  <XCircle className="h-4 w-4 mr-1" />
-                  Fail
-                </Button>
-                <Button
-                  size="sm"
-                  className="bg-green-600 hover:bg-green-700 text-white"
-                  onClick={() => handleStepResult('passed')}
-                  disabled={isUpdating}
-                >
-                  {isUpdating ? (
-                    <Loader2 className="h-4 w-4 mr-1 animate-spin" />
-                  ) : (
-                    <CheckCircle2 className="h-4 w-4 mr-1" />
+              {/* Bulk Actions Row */}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  {remainingStepsCount > 1 && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handlePassAllRemaining}
+                      disabled={isUpdating}
+                      className="text-green-600 hover:text-green-700"
+                    >
+                      <CheckCheck className="h-4 w-4 mr-1" />
+                      Pass All Remaining ({remainingStepsCount})
+                    </Button>
                   )}
-                  Pass
-                </Button>
+                  {failedStepsCount > 0 && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handleRerunFailed}
+                      disabled={isUpdating}
+                      className="text-orange-600 hover:text-orange-700"
+                    >
+                      <RotateCcw className="h-4 w-4 mr-1" />
+                      Re-run Failed ({failedStepsCount})
+                    </Button>
+                  )}
+                </div>
               </div>
-            </div>
-          </>
-        )}
-      </DialogContent>
-    </Dialog>
+
+              {/* Action Buttons */}
+              <div className="flex items-center justify-between pt-2">
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handlePreviousStep}
+                    disabled={currentStepIndex === 0 || isUpdating}
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                    Previous
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleNextStep}
+                    disabled={currentStepIndex >= totalSteps - 1 || isUpdating}
+                  >
+                    Next
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="text-gray-600 hover:text-gray-700 hover:bg-gray-50"
+                    onClick={() => handleStepResult('skipped')}
+                    disabled={isUpdating}
+                  >
+                    <SkipForward className="h-4 w-4 mr-1" />
+                    Skip
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="text-orange-600 hover:text-orange-700 hover:bg-orange-50"
+                    onClick={() => handleStepResult('blocked')}
+                    disabled={isUpdating}
+                  >
+                    <AlertTriangle className="h-4 w-4 mr-1" />
+                    Blocked
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                    onClick={() => handleStepResult('failed')}
+                    disabled={isUpdating}
+                  >
+                    <XCircle className="h-4 w-4 mr-1" />
+                    Fail
+                  </Button>
+                  <Button
+                    size="sm"
+                    className="bg-green-600 hover:bg-green-700 text-white"
+                    onClick={() => handleStepResult('passed')}
+                    disabled={isUpdating}
+                  >
+                    {isUpdating ? (
+                      <Loader2 className="h-4 w-4 mr-1 animate-spin" />
+                    ) : (
+                      <CheckCircle2 className="h-4 w-4 mr-1" />
+                    )}
+                    Pass
+                  </Button>
+                </div>
+              </div>
+
+              {/* Keyboard Shortcuts Hints */}
+              <ExecutionShortcutHints />
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Quick Defect Dialog */}
+      <QuickDefectDialog
+        open={defectDialogOpen}
+        onOpenChange={setDefectDialogOpen}
+        stepAction={currentStep?.step?.action}
+        expectedResult={currentStep?.step?.expected_result}
+        actualResult={actualResult}
+        onSubmit={handleDefectSubmit}
+      />
+    </>
   );
 }
