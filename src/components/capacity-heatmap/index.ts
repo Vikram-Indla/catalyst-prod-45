@@ -7,3 +7,6 @@ export { HeatmapEmptyState } from './HeatmapEmptyState';
 export { HeatmapErrorState } from './HeatmapErrorState';
 export { CellDetailPanel } from './CellDetailPanel';
 export { HeatmapContextMenu } from './HeatmapContextMenu';
+export { HeatmapSummaryDashboard } from './HeatmapSummaryDashboard';
+export { EnhancedHeatmapGrid } from './EnhancedHeatmapGrid';
+export { EnhancedHeatmapLegend } from './EnhancedHeatmapLegend';
