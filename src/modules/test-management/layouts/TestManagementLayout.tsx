@@ -92,10 +92,14 @@ export function TestManagementLayout() {
   // Sidebar Navigation Content
   const SidebarContent = ({ collapsed = false }: { collapsed?: boolean }) => (
     <div className="flex h-full flex-col">
-      {/* Header with Project Selector - Fixed 52px height to align with main header */}
+      {/* Header - Fixed 52px height to align with main header */}
       <div
-        className="border-b border-border flex items-center"
-        style={{ height: '52px', padding: collapsed ? '0' : '0 12px' }}
+        className="flex items-center"
+        style={{ 
+          height: '52px', 
+          padding: collapsed ? '0' : '0 12px',
+          borderBottom: '1px solid var(--divider, hsl(var(--border)))',
+        }}
       >
         <div className={cn(
           'flex items-center gap-2',
