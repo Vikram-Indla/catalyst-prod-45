@@ -1,6 +1,7 @@
 /**
  * Hook to fetch unique roles from the database with real-time subscription
  * Used for role dropdown in Find Available Resources panel
+ * Fetches from product_roles table (same source as /admin/users)
  */
 
 import { useQuery, useQueryClient } from '@tanstack/react-query';
@@ -13,48 +14,42 @@ export interface RoleOption {
   count: number;
 }
 
-/**
- * Formats a database role name to human-readable format
- * e.g., "program_manager" -> "Program Manager"
- */
-function formatRoleName(role: string): string {
-  // If it already looks properly formatted (has space or first letter is uppercase with no underscores)
-  if (!role.includes('_') && role.charAt(0) === role.charAt(0).toUpperCase()) {
-    return role;
-  }
-  
-  return role
-    .split('_')
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-    .join(' ');
-}
-
 async function fetchResourceRoles(): Promise<RoleOption[]> {
-  const { data, error } = await supabase
-    .from('profiles')
-    .select('role')
-    .not('role', 'is', null)
-    .order('role');
+  // Fetch all product roles with user count
+  const { data: productRoles, error: rolesError } = await supabase
+    .from('product_roles')
+    .select('id, name, code')
+    .order('name');
 
-  if (error) {
-    console.error('Error fetching roles:', error);
-    throw error;
+  if (rolesError) {
+    console.error('Error fetching product roles:', rolesError);
+    throw rolesError;
   }
 
-  // Build unique role counts
-  const roleMap = new Map<string, number>();
-  data?.forEach(item => {
-    if (item.role) {
-      roleMap.set(item.role, (roleMap.get(item.role) || 0) + 1);
-    }
+  // Fetch user_product_roles to count users per role
+  const { data: userRoles, error: userRolesError } = await supabase
+    .from('user_product_roles')
+    .select('role_id');
+
+  if (userRolesError) {
+    console.error('Error fetching user roles:', userRolesError);
+    throw userRolesError;
+  }
+
+  // Count users per role
+  const roleCountMap = new Map<string, number>();
+  userRoles?.forEach(ur => {
+    roleCountMap.set(ur.role_id, (roleCountMap.get(ur.role_id) || 0) + 1);
   });
 
-  return Array.from(roleMap.entries())
-    .map(([name, count]) => ({ 
-      name,
-      displayName: formatRoleName(name),
-      count 
+  // Build role options with counts
+  return (productRoles || [])
+    .map(role => ({
+      name: role.name,
+      displayName: role.name,
+      count: roleCountMap.get(role.id) || 0
     }))
+    .filter(role => role.count > 0) // Only show roles that have users assigned
     .sort((a, b) => a.displayName.localeCompare(b.displayName));
 }
 
@@ -64,16 +59,26 @@ export function useResourceRoles() {
   // Set up real-time subscription
   useEffect(() => {
     const channel = supabase
-      .channel('profiles-role-changes')
+      .channel('product-roles-changes')
       .on(
         'postgres_changes',
         {
-          event: '*', // Listen to INSERT, UPDATE, DELETE
+          event: '*',
           schema: 'public',
-          table: 'profiles',
+          table: 'product_roles',
         },
         () => {
-          // Invalidate and refetch roles when profiles change
+          queryClient.invalidateQueries({ queryKey: ['resource-roles'] });
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'user_product_roles',
+        },
+        () => {
           queryClient.invalidateQueries({ queryKey: ['resource-roles'] });
         }
       )
@@ -87,6 +92,6 @@ export function useResourceRoles() {
   return useQuery({
     queryKey: ['resource-roles'],
     queryFn: fetchResourceRoles,
-    staleTime: 30 * 1000, // 30 seconds (reduced since we have realtime)
+    staleTime: 30 * 1000,
   });
 }
