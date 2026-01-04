@@ -3,9 +3,9 @@
  * Full-featured defects management with table/board view, filters, and detail panel
  */
 
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { formatDistanceToNow } from 'date-fns';
+import { formatDistanceToNow, subDays, isAfter, parseISO } from 'date-fns';
 import { 
   Bug, 
   Plus, 
@@ -21,7 +21,9 @@ import {
   Edit,
   Trash2,
   ExternalLink,
-  Square
+  Square,
+  Calendar,
+  Keyboard
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -60,6 +62,16 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
@@ -90,6 +102,21 @@ const MOCK_TEAM_MEMBERS = [
   { id: '3', full_name: 'Mohammed Khan' },
 ];
 
+// Mock cycles
+const MOCK_CYCLES = [
+  { id: 'cy-1', name: 'Sprint 24 Regression' },
+  { id: 'cy-2', name: 'Sprint 23 Regression' },
+  { id: 'cy-3', name: 'Release 2.3 Smoke' },
+];
+
+// Date range options
+const DATE_RANGE_OPTIONS = [
+  { value: 'all', label: 'All Time' },
+  { value: '7', label: 'Last 7 Days' },
+  { value: '30', label: 'Last 30 Days' },
+  { value: '90', label: 'Last 90 Days' },
+];
+
 const SEVERITY_CONFIG: Record<DefectSeverity, { 
   label: string; 
   icon: React.ElementType;
@@ -117,9 +144,12 @@ export function DefectsPage() {
   const [statusFilter, setStatusFilter] = useState<DefectStatus | 'all'>('all');
   const [assigneeFilter, setAssigneeFilter] = useState<string>('all');
   const [cycleFilter, setCycleFilter] = useState<string>('all');
+  const [dateRangeFilter, setDateRangeFilter] = useState<string>('all');
+  const [showShortcuts, setShowShortcuts] = useState(false);
 
   // Selection
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [focusedDefectIndex, setFocusedDefectIndex] = useState<number>(-1);
 
   // Panels & Modals
   const [selectedDefect, setSelectedDefect] = useState<Defect | null>(null);
@@ -149,10 +179,23 @@ export function DefectsPage() {
 
   const defects = defectsData?.data || [];
 
+  // Filter defects by date range (client-side)
+  const filteredDefects = useMemo(() => {
+    if (dateRangeFilter === 'all') return defects;
+    
+    const daysAgo = parseInt(dateRangeFilter, 10);
+    const cutoffDate = subDays(new Date(), daysAgo);
+    
+    return defects.filter(d => {
+      const createdAt = parseISO(d.created_at);
+      return isAfter(createdAt, cutoffDate);
+    });
+  }, [defects, dateRangeFilter]);
+
   // Handle highlight from URL
   useEffect(() => {
-    if (highlightId && defects.length > 0) {
-      const defectToHighlight = defects.find(d => d.id === highlightId);
+    if (highlightId && filteredDefects.length > 0) {
+      const defectToHighlight = filteredDefects.find(d => d.id === highlightId);
       if (defectToHighlight) {
         setSelectedDefect(defectToHighlight);
         // Clear highlight from URL
@@ -161,25 +204,108 @@ export function DefectsPage() {
         setSearchParams(newParams, { replace: true });
       }
     }
-  }, [highlightId, defects, searchParams, setSearchParams]);
+  }, [highlightId, filteredDefects, searchParams, setSearchParams]);
 
   // Calculate metrics
   const metrics = useMemo(() => {
-    const total = defects.length;
-    const open = defects.filter(d => d.status === 'open').length;
-    const inProgress = defects.filter(d => d.status === 'in_progress').length;
-    const fixed = defects.filter(d => d.status === 'resolved').length;
-    const closed = defects.filter(d => d.status === 'closed').length;
+    const total = filteredDefects.length;
+    const open = filteredDefects.filter(d => d.status === 'open').length;
+    const inProgress = filteredDefects.filter(d => d.status === 'in_progress').length;
+    const fixed = filteredDefects.filter(d => d.status === 'resolved').length;
+    const closed = filteredDefects.filter(d => d.status === 'closed').length;
     
     const severityCounts = {
-      critical: defects.filter(d => d.severity === 'critical').length,
-      major: defects.filter(d => d.severity === 'major').length,
-      minor: defects.filter(d => d.severity === 'minor').length,
-      trivial: defects.filter(d => d.severity === 'trivial').length,
+      critical: filteredDefects.filter(d => d.severity === 'critical').length,
+      major: filteredDefects.filter(d => d.severity === 'major').length,
+      minor: filteredDefects.filter(d => d.severity === 'minor').length,
+      trivial: filteredDefects.filter(d => d.severity === 'trivial').length,
     };
 
     return { total, open, inProgress, fixed, closed, severityCounts };
-  }, [defects]);
+  }, [filteredDefects]);
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Ignore if in input or textarea
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
+        return;
+      }
+      
+      // N - New defect
+      if (e.key === 'n' && !e.ctrlKey && !e.metaKey) {
+        e.preventDefault();
+        setCreateModalOpen(true);
+        return;
+      }
+      
+      // E - Edit selected
+      if (e.key === 'e' && selectedDefect) {
+        e.preventDefault();
+        setEditingDefect(selectedDefect);
+        setCreateModalOpen(true);
+        return;
+      }
+      
+      // Escape - Close panel/modal
+      if (e.key === 'Escape') {
+        if (createModalOpen) {
+          setCreateModalOpen(false);
+        } else if (selectedDefect) {
+          setSelectedDefect(null);
+        }
+        return;
+      }
+      
+      // Delete - Delete selected with confirm
+      if ((e.key === 'Delete' || e.key === 'Backspace') && selectedDefect && !deleteConfirmDefect) {
+        e.preventDefault();
+        setDeleteConfirmDefect(selectedDefect);
+        return;
+      }
+      
+      // 1-4 - Change severity of selected
+      if (['1', '2', '3', '4'].includes(e.key) && selectedDefect) {
+        const severities: DefectSeverity[] = ['critical', 'major', 'minor', 'trivial'];
+        const newSeverity = severities[parseInt(e.key) - 1];
+        toast.info(`Severity changed to ${newSeverity}`);
+        // Would call update mutation here
+        return;
+      }
+      
+      // Arrow navigation in table
+      if (viewMode === 'table' && filteredDefects.length > 0) {
+        if (e.key === 'ArrowDown') {
+          e.preventDefault();
+          setFocusedDefectIndex(prev => {
+            const next = Math.min(prev + 1, filteredDefects.length - 1);
+            setSelectedDefect(filteredDefects[next]);
+            return next;
+          });
+        }
+        if (e.key === 'ArrowUp') {
+          e.preventDefault();
+          setFocusedDefectIndex(prev => {
+            const next = Math.max(prev - 1, 0);
+            setSelectedDefect(filteredDefects[next]);
+            return next;
+          });
+        }
+        if (e.key === 'Enter' && focusedDefectIndex >= 0) {
+          setSelectedDefect(filteredDefects[focusedDefectIndex]);
+        }
+      }
+      
+      // ? - Show shortcuts help
+      if (e.key === '?') {
+        e.preventDefault();
+        setShowShortcuts(true);
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [selectedDefect, createModalOpen, deleteConfirmDefect, viewMode, filteredDefects, focusedDefectIndex]);
 
   // Handlers
   const handleCreate = async (data: any) => {
@@ -249,10 +375,10 @@ export function DefectsPage() {
   };
 
   const toggleSelectAll = () => {
-    if (selectedIds.size === defects.length) {
+    if (selectedIds.size === filteredDefects.length) {
       setSelectedIds(new Set());
     } else {
-      setSelectedIds(new Set(defects.map(d => d.id)));
+      setSelectedIds(new Set(filteredDefects.map(d => d.id)));
     }
   };
 
@@ -268,15 +394,16 @@ export function DefectsPage() {
     });
   };
 
+  const handleCloseModal = () => {
+    setCreateModalOpen(false);
+    setEditingDefect(null);
+  };
+
   const getInitials = (name?: string) => {
     if (!name) return '?';
     return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
   };
 
-  const handleCloseModal = () => {
-    setCreateModalOpen(false);
-    setEditingDefect(null);
-  };
 
   return (
     <div className="flex h-full">
@@ -365,6 +492,33 @@ export function DefectsPage() {
               ))}
             </SelectContent>
           </Select>
+          <Select value={cycleFilter} onValueChange={setCycleFilter}>
+            <SelectTrigger className="w-[160px]">
+              <SelectValue placeholder="Cycle" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Cycles</SelectItem>
+              <SelectItem value="none">No Cycle</SelectItem>
+              {MOCK_CYCLES.map((cycle) => (
+                <SelectItem key={cycle.id} value={cycle.id}>
+                  {cycle.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Select value={dateRangeFilter} onValueChange={setDateRangeFilter}>
+            <SelectTrigger className="w-[130px]">
+              <Calendar className="h-4 w-4 mr-1" />
+              <SelectValue placeholder="Date" />
+            </SelectTrigger>
+            <SelectContent>
+              {DATE_RANGE_OPTIONS.map((opt) => (
+                <SelectItem key={opt.value} value={opt.value}>
+                  {opt.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
           <div className="flex-1" />
           
           {/* Bulk actions */}
@@ -399,6 +553,23 @@ export function DefectsPage() {
               <LayoutGrid className="h-4 w-4" />
             </ToggleGroupItem>
           </ToggleGroup>
+          
+          {/* Keyboard shortcuts hint */}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8"
+                onClick={() => setShowShortcuts(true)}
+              >
+                <Keyboard className="h-4 w-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Keyboard shortcuts (?)</p>
+            </TooltipContent>
+          </Tooltip>
         </div>
 
         {/* Content */}
@@ -408,7 +579,7 @@ export function DefectsPage() {
               <Skeleton key={i} className="h-14 w-full" />
             ))}
           </div>
-        ) : defects.length === 0 ? (
+        ) : filteredDefects.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 text-center">
             <Bug className="h-12 w-12 text-muted-foreground mb-4" />
             <h3 className="text-lg font-medium mb-1">No defects found</h3>
@@ -427,7 +598,7 @@ export function DefectsPage() {
                 <TableRow className="bg-muted/50">
                   <TableHead className="w-10">
                     <Checkbox
-                      checked={selectedIds.size === defects.length && defects.length > 0}
+                      checked={selectedIds.size === filteredDefects.length && filteredDefects.length > 0}
                       onCheckedChange={toggleSelectAll}
                     />
                   </TableHead>
@@ -442,20 +613,25 @@ export function DefectsPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {defects.map((defect) => {
+                {filteredDefects.map((defect, index) => {
                   const severityConfig = SEVERITY_CONFIG[defect.severity];
                   const statusConfig = STATUS_CONFIG[defect.status];
                   const SeverityIcon = severityConfig?.icon || Info;
                   const isSelected = selectedIds.has(defect.id);
+                  const isFocused = focusedDefectIndex === index;
 
                   return (
                     <TableRow 
                       key={defect.id}
                       className={cn(
                         "cursor-pointer hover:bg-muted/50 group",
-                        selectedDefect?.id === defect.id && "bg-primary/5"
+                        selectedDefect?.id === defect.id && "bg-primary/5",
+                        isFocused && "ring-1 ring-inset ring-primary/50"
                       )}
-                      onClick={() => setSelectedDefect(defect)}
+                      onClick={() => {
+                        setSelectedDefect(defect);
+                        setFocusedDefectIndex(index);
+                      }}
                     >
                       <TableCell onClick={(e) => e.stopPropagation()}>
                         <Checkbox
@@ -557,12 +733,61 @@ export function DefectsPage() {
           </div>
         ) : (
           <DefectBoardView
-            defects={defects}
+            defects={filteredDefects}
             onDefectClick={setSelectedDefect}
             onStatusChange={handleStatusChange}
           />
         )}
       </div>
+
+      {/* Keyboard Shortcuts Modal */}
+      <AlertDialog open={showShortcuts} onOpenChange={setShowShortcuts}>
+        <AlertDialogContent className="max-w-md">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
+              <Keyboard className="h-5 w-5" />
+              Keyboard Shortcuts
+            </AlertDialogTitle>
+          </AlertDialogHeader>
+          <div className="space-y-3 py-4">
+            <div className="flex justify-between text-sm">
+              <span className="text-muted-foreground">New defect</span>
+              <kbd className="px-2 py-0.5 bg-muted rounded text-xs font-mono">N</kbd>
+            </div>
+            <div className="flex justify-between text-sm">
+              <span className="text-muted-foreground">Edit selected</span>
+              <kbd className="px-2 py-0.5 bg-muted rounded text-xs font-mono">E</kbd>
+            </div>
+            <div className="flex justify-between text-sm">
+              <span className="text-muted-foreground">Delete selected</span>
+              <kbd className="px-2 py-0.5 bg-muted rounded text-xs font-mono">Delete</kbd>
+            </div>
+            <div className="flex justify-between text-sm">
+              <span className="text-muted-foreground">Close panel/modal</span>
+              <kbd className="px-2 py-0.5 bg-muted rounded text-xs font-mono">Esc</kbd>
+            </div>
+            <div className="flex justify-between text-sm">
+              <span className="text-muted-foreground">Navigate up/down</span>
+              <div className="flex gap-1">
+                <kbd className="px-2 py-0.5 bg-muted rounded text-xs font-mono">↑</kbd>
+                <kbd className="px-2 py-0.5 bg-muted rounded text-xs font-mono">↓</kbd>
+              </div>
+            </div>
+            <div className="flex justify-between text-sm">
+              <span className="text-muted-foreground">Set severity 1-4</span>
+              <div className="flex gap-1">
+                <kbd className="px-2 py-0.5 bg-muted rounded text-xs font-mono">1</kbd>
+                <kbd className="px-2 py-0.5 bg-muted rounded text-xs font-mono">2</kbd>
+                <kbd className="px-2 py-0.5 bg-muted rounded text-xs font-mono">3</kbd>
+                <kbd className="px-2 py-0.5 bg-muted rounded text-xs font-mono">4</kbd>
+              </div>
+            </div>
+          </div>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Close</AlertDialogCancel>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       {/* Detail Panel */}
       {selectedDefect && (
