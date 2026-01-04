@@ -239,14 +239,14 @@ export function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
             <div className="space-y-2">
               <Label htmlFor="vendor">Vendor</Label>
               <Select
-                value={formData.vendor}
-                onValueChange={(value) => setFormData(prev => ({ ...prev, vendor: value }))}
+                value={formData.vendor || '__none__'}
+                onValueChange={(value) => setFormData(prev => ({ ...prev, vendor: value === '__none__' ? '' : value }))}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select vendor" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">No vendor</SelectItem>
+                  <SelectItem value="__none__">No vendor</SelectItem>
                   {VENDORS.map((v) => (
                     <SelectItem key={v} value={v}>{v}</SelectItem>
                   ))}
@@ -277,14 +277,14 @@ export function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
             <div className="space-y-2">
               <Label htmlFor="location">Work Location</Label>
               <Select
-                value={formData.location}
-                onValueChange={(value) => setFormData(prev => ({ ...prev, location: value }))}
+                value={formData.location || '__none__'}
+                onValueChange={(value) => setFormData(prev => ({ ...prev, location: value === '__none__' ? '' : value }))}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select location type" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Not specified</SelectItem>
+                  <SelectItem value="__none__">Not specified</SelectItem>
                   {LOCATIONS.map((loc) => (
                     <SelectItem key={loc} value={loc}>{loc}</SelectItem>
                   ))}
@@ -295,14 +295,14 @@ export function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
             <div className="space-y-2">
               <Label htmlFor="country">Country</Label>
               <Select
-                value={formData.country}
-                onValueChange={(value) => setFormData(prev => ({ ...prev, country: value }))}
+                value={formData.country || '__none__'}
+                onValueChange={(value) => setFormData(prev => ({ ...prev, country: value === '__none__' ? '' : value }))}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select country" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Not specified</SelectItem>
+                  <SelectItem value="__none__">Not specified</SelectItem>
                   {COUNTRIES.map((c) => (
                     <SelectItem key={c.code} value={c.name}>
                       <span className="flex items-center gap-2">
