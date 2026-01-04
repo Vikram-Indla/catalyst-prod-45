@@ -2029,53 +2029,72 @@ function TimelineView({ resources, period, groupBy, groupedByAssignment, grouped
 
   const isGroupExpanded = (name: string) => expandedGroups[name] === true;
 
-  // Generate periods based on selected period type - dynamic from current date
+  // Generate periods based on selected period type - dynamic from current date to Dec 26, 2026
   const periods = useMemo(() => {
     const now = new Date();
     const currentMonth = now.getMonth();
     const currentYear = now.getFullYear();
+    const endDate = new Date(2026, 11, 26); // December 26, 2026
     
     if (period === 'monthly') {
-      // 6 months from current month
+      // Calculate months from current month to December 2026
       const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-      return Array.from({ length: 6 }, (_, i) => {
-        const monthIndex = (currentMonth + i) % 12;
-        const year = currentYear + Math.floor((currentMonth + i) / 12);
+      const months: { label: string; key: string }[] = [];
+      let year = currentYear;
+      let monthIndex = currentMonth;
+      
+      while (year < 2026 || (year === 2026 && monthIndex <= 11)) {
         const shortYear = String(year).slice(-2);
-        return {
+        months.push({
           label: `${monthNames[monthIndex]} '${shortYear}`,
           key: `${year}-${String(monthIndex + 1).padStart(2, '0')}`,
-        };
-      });
+        });
+        monthIndex++;
+        if (monthIndex > 11) {
+          monthIndex = 0;
+          year++;
+        }
+      }
+      return months;
     }
     if (period === 'quarterly') {
-      // 4 quarters starting from current quarter
-      const currentQuarter = Math.floor(currentMonth / 3);
-      return Array.from({ length: 4 }, (_, i) => {
-        const quarterIndex = (currentQuarter + i) % 4;
-        const year = currentYear + Math.floor((currentQuarter + i) / 4);
+      // Calculate quarters from current quarter to Q4 2026
+      const quarters: { label: string; key: string }[] = [];
+      let year = currentYear;
+      let quarterIndex = Math.floor(currentMonth / 3);
+      
+      while (year < 2026 || (year === 2026 && quarterIndex <= 3)) {
         const shortYear = String(year).slice(-2);
-        return {
+        quarters.push({
           label: `Q${quarterIndex + 1} '${shortYear}`,
           key: `${year}-Q${quarterIndex + 1}`,
-        };
-      });
+        });
+        quarterIndex++;
+        if (quarterIndex > 3) {
+          quarterIndex = 0;
+          year++;
+        }
+      }
+      return quarters;
     }
-    // Weekly - 12 weeks (3 months from current week)
+    // Weekly - from current week to December 26, 2026
     const weekLabels: { label: string; key: string }[] = [];
     const startOfCurrentWeek = new Date(now);
     startOfCurrentWeek.setDate(now.getDate() - now.getDay()); // Sunday start
     
-    for (let i = 0; i < 12; i++) {
-      const weekDate = new Date(startOfCurrentWeek);
-      weekDate.setDate(startOfCurrentWeek.getDate() + (i * 7));
+    let weekNum = 1;
+    let weekDate = new Date(startOfCurrentWeek);
+    
+    while (weekDate <= endDate) {
       const weekMonth = weekDate.toLocaleString('en-US', { month: 'short' });
       const weekDay = weekDate.getDate();
       const weekYear = String(weekDate.getFullYear()).slice(-2);
       weekLabels.push({
         label: `${weekMonth} ${weekDay} '${weekYear}`,
-        key: `${weekDate.getFullYear()}-W${String(i + 1).padStart(2, '0')}`,
+        key: `${weekDate.getFullYear()}-W${String(weekNum).padStart(2, '0')}`,
       });
+      weekDate.setDate(weekDate.getDate() + 7);
+      weekNum++;
     }
     return weekLabels;
   }, [period]);
@@ -2337,25 +2356,14 @@ function TimelineView({ resources, period, groupBy, groupedByAssignment, grouped
                 );
               })}
               
-              {/* Show Available indicator if this column has no bars */}
-              {barsInColumn.length === 0 && ganttBars.length > 0 && (
+              {/* Only show Available if this period has no allocation coverage at all */}
+              {barsInColumn.length === 0 && periodTotals[colIdx] === 0 && (
                 <button
                   onClick={() => onEditResource?.(resource.id)}
                   className="absolute inset-0 flex flex-col items-center justify-center hover:bg-teal-50/50 rounded transition-colors cursor-pointer group"
                 >
                   <CheckCircle2 className="w-4 h-4 text-teal-500 group-hover:text-teal-600" />
                   <span className="text-[10px] font-medium text-teal-600 group-hover:text-teal-700">Available</span>
-                </button>
-              )}
-              
-              {/* Show Available across all if no allocations at all */}
-              {ganttBars.length === 0 && colIdx === Math.floor(periods.length / 2) && (
-                <button
-                  onClick={() => onEditResource?.(resource.id)}
-                  className="absolute inset-0 flex items-center justify-center hover:bg-teal-50/50 rounded transition-colors cursor-pointer group"
-                >
-                  <CheckCircle2 className="w-4 h-4 text-teal-500 group-hover:text-teal-600 mr-2" />
-                  <span className="text-xs font-medium text-teal-600 group-hover:text-teal-700">Available</span>
                 </button>
               )}
             </div>
@@ -2394,13 +2402,17 @@ function TimelineView({ resources, period, groupBy, groupedByAssignment, grouped
           </span>
         </button>
 
-        {/* Timeline Table */}
+        {/* Timeline Table - header outside scroll container to prevent overlap */}
         {isExpanded && (
-          <div className="bg-card border border-border rounded-lg overflow-x-auto">
-            <div style={{ width: totalWidth, minWidth: totalWidth }}>
-              <div className="max-h-[400px] overflow-y-auto">
+          <div className="bg-card border border-border rounded-lg overflow-hidden">
+            <div className="overflow-x-auto">
+              <div style={{ width: totalWidth, minWidth: totalWidth }}>
+                {/* Sticky header outside the vertical scroll */}
                 {renderTimelineHeader()}
-                {groupResources.map((r, i) => renderResourceRow(r, groupName, i % 2 === 0))}
+                {/* Scrollable rows */}
+                <div className="max-h-[400px] overflow-y-auto">
+                  {groupResources.map((r, i) => renderResourceRow(r, groupName, i % 2 === 0))}
+                </div>
               </div>
             </div>
           </div>
@@ -2445,14 +2457,18 @@ function TimelineView({ resources, period, groupBy, groupedByAssignment, grouped
     );
   }
   
-  // No grouping
+  // No grouping - header outside scroll container to prevent overlap
   return (
     <div className="space-y-4">
-      <div className="bg-card border border-border rounded-lg overflow-x-auto">
-        <div style={{ width: totalWidth, minWidth: totalWidth }}>
-          <div className="max-h-[500px] overflow-y-auto">
+      <div className="bg-card border border-border rounded-lg overflow-hidden">
+        <div className="overflow-x-auto">
+          <div style={{ width: totalWidth, minWidth: totalWidth }}>
+            {/* Sticky header outside the vertical scroll */}
             {renderTimelineHeader()}
-            {resources.map((r, i) => renderResourceRow(r, r.assignmentName || 'Unassigned', i % 2 === 0))}
+            {/* Scrollable rows */}
+            <div className="max-h-[500px] overflow-y-auto">
+              {resources.map((r, i) => renderResourceRow(r, r.assignmentName || 'Unassigned', i % 2 === 0))}
+            </div>
           </div>
         </div>
       </div>
