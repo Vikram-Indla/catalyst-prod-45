@@ -2177,7 +2177,7 @@ function TimelineView({ resources, period, groupBy, groupedByAssignment, grouped
     return periods.map((p, colIdx) => {
       let periodStart: Date;
       let periodEnd: Date;
-      
+
       if (period === 'monthly') {
         const monthIndex = (now.getMonth() + colIdx) % 12;
         const year = now.getFullYear() + Math.floor((now.getMonth() + colIdx) / 12);
@@ -2193,11 +2193,15 @@ function TimelineView({ resources, period, groupBy, groupedByAssignment, grouped
         const startOfCurrentWeek = new Date(now);
         startOfCurrentWeek.setDate(now.getDate() - now.getDay());
         periodStart = new Date(startOfCurrentWeek);
-        periodStart.setDate(startOfCurrentWeek.getDate() + (colIdx * 7));
+        periodStart.setDate(startOfCurrentWeek.getDate() + colIdx * 7);
         periodEnd = new Date(periodStart);
         periodEnd.setDate(periodStart.getDate() + 6);
       }
-      
+
+      // Normalize to full-day range so date-only strings (YYYY-MM-DD) match reliably
+      periodStart.setHours(0, 0, 0, 0);
+      periodEnd.setHours(23, 59, 59, 999);
+
       return { ...p, start: periodStart, end: periodEnd };
     });
   }, [periods, period]);
