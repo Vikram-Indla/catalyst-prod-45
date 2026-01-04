@@ -1993,6 +1993,43 @@ function TableView({ resources, projects, groupBy, groupedByAssignment, groupedB
       },
     },
     {
+      id: 'contractEndDate',
+      header: 'Contract End',
+      accessor: (row: ResourceMetric) => {
+        const profile = getProfile(row.id);
+        return profile?.contract_end_date || null;
+      },
+      width: '130px',
+      sortable: true,
+      render: (_: any, row: ResourceMetric) => {
+        const profile = getProfile(row.id);
+        const contractStatus = profile?.contractStatus;
+        const endDate = profile?.contract_end_date;
+        
+        if (!endDate) {
+          return <span className="text-xs text-muted-foreground">Permanent</span>;
+        }
+        
+        const formatted = new Date(endDate).toLocaleDateString('en-US', {
+          month: 'short',
+          day: 'numeric',
+          year: 'numeric'
+        });
+        
+        return (
+          <span className={cn(
+            "text-xs font-medium px-2 py-1 rounded",
+            contractStatus?.status === 'critical' && 'bg-red-100 text-[#be123c]',
+            contractStatus?.status === 'warning' && 'bg-amber-100 text-[#ca8a04]',
+            contractStatus?.status === 'healthy' && 'bg-teal-100 text-[#0d9488]',
+            contractStatus?.status === 'expired' && 'bg-muted text-muted-foreground'
+          )}>
+            {formatted}
+          </span>
+        );
+      },
+    },
+    {
       id: 'actions',
       header: 'Actions',
       accessor: 'id',
@@ -2021,7 +2058,7 @@ function TableView({ resources, projects, groupBy, groupedByAssignment, groupedB
         );
       },
     },
-  ], [projects, onResourceClick, onEditResource, onDeleteResource]);
+  ], [projects, onResourceClick, onEditResource, onDeleteResource, getProfile]);
 
   const handleSelectionChange = (ids: string[]) => {
     setSelectedIds(ids);
