@@ -4,7 +4,7 @@
  */
 
 import { useState, useEffect, useMemo } from 'react';
-import { X, Plus, Trash2, Pencil, Calendar, AlertTriangle, Zap, Clock, UserMinus } from 'lucide-react';
+import { X, Plus, Trash2, Pencil, Calendar, AlertTriangle, Zap, Clock, UserMinus, Building2 } from 'lucide-react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
@@ -25,13 +25,21 @@ import type {
   AllocationBookingInput 
 } from '@/modules/capacity-planner/types';
 
+export interface CapacityDepartment {
+  id: string;
+  name: string;
+  color?: string;
+}
+
 interface Props {
   isOpen: boolean;
   onClose: () => void;
   resource: CapacityResource | null;
   existingAllocations: ResourceAllocation[];
   resourceAssignments: { id: string; name: string }[];
+  departments?: CapacityDepartment[];
   onSave: (resourceId: string, allocations: AllocationBookingInput[]) => Promise<void>;
+  onUpdateDepartment?: (resourceId: string, departmentId: string | null) => Promise<void>;
   mode: 'add' | 'edit';
 }
 
@@ -41,7 +49,9 @@ export function AllocationBookingModal({
   resource,
   existingAllocations,
   resourceAssignments,
+  departments = [],
   onSave,
+  onUpdateDepartment,
   mode
 }: Props) {
   const [allocations, setAllocations] = useState<AllocationBookingInput[]>([]);
@@ -51,13 +61,14 @@ export function AllocationBookingModal({
   const [deleteConfirmIndex, setDeleteConfirmIndex] = useState<number | null>(null);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [showUnsavedWarning, setShowUnsavedWarning] = useState(false);
+  const [selectedDepartmentId, setSelectedDepartmentId] = useState<string | null>(null);
 
   // Timeline configuration - 6 months from current month
   const timelineStart = startOfMonth(new Date());
   const timelineEnd = addMonths(timelineStart, 6);
   const months = eachMonthOfInterval({ start: timelineStart, end: addMonths(timelineStart, 5) });
 
-  // Initialize from existing allocations
+  // Initialize from existing allocations and department
   useEffect(() => {
     if (resource && existingAllocations.length > 0) {
       setAllocations(existingAllocations.map(a => ({
@@ -70,6 +81,12 @@ export function AllocationBookingModal({
       })));
     } else {
       setAllocations([]);
+    }
+    // Initialize department from resource
+    if (resource?.department_id) {
+      setSelectedDepartmentId(resource.department_id);
+    } else {
+      setSelectedDepartmentId(null);
     }
     setEditingIndex(null);
     setNewAllocation(null);
@@ -269,6 +286,11 @@ export function AllocationBookingModal({
     
     setIsSaving(true);
     try {
+      // Save department change if it differs from current
+      if (onUpdateDepartment && selectedDepartmentId !== resource.department_id) {
+        await onUpdateDepartment(resource.id, selectedDepartmentId);
+      }
+      // Save allocations
       await onSave(resource.id, allocations.filter(a => a.assignment_id));
       setHasUnsavedChanges(false);
       onClose();
@@ -278,6 +300,16 @@ export function AllocationBookingModal({
       setIsSaving(false);
     }
   }
+
+  function handleDepartmentChange(value: string) {
+    setSelectedDepartmentId(value === 'unassigned' ? null : value);
+    setHasUnsavedChanges(true);
+  }
+
+  // Get current department name for display
+  const currentDepartmentName = selectedDepartmentId 
+    ? departments.find(d => d.id === selectedDepartmentId)?.name || 'Unassigned'
+    : 'Unassigned';
 
   if (!resource) return null;
 
@@ -301,9 +333,26 @@ export function AllocationBookingModal({
                 Edit Allocations: {resource.name}
               </h2>
               <p className="text-sm text-slate-500 dark:text-slate-400">
-                {resource.role} • {resource.department} Department
+                {resource.role}
               </p>
             </div>
+          </div>
+          {/* Department Selector */}
+          <div className="flex items-center gap-2">
+            <Building2 className="w-4 h-4 text-slate-400" />
+            <Select value={selectedDepartmentId || 'unassigned'} onValueChange={handleDepartmentChange}>
+              <SelectTrigger className="w-40 h-8 text-sm">
+                <SelectValue placeholder="Select Department" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="unassigned">Unassigned</SelectItem>
+                {departments.map(dept => (
+                  <SelectItem key={dept.id} value={dept.id}>
+                    {dept.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
         </div>
 
