@@ -291,25 +291,6 @@ export function SleekCapacityHeader({
             </button>
           </div>
 
-          {/* Timeline Period - Only in timeline view */}
-          {(resourceView === 'timeline' || (primaryView === 'projects' && projectView === 'timeline')) && (
-            <div className="flex items-center bg-muted rounded-md p-0.5">
-              {(['weekly', 'monthly', 'quarterly'] as const).map((p) => (
-                <button
-                  key={p}
-                  onClick={() => onTimelinePeriodChange(p)}
-                  className={cn(
-                    'px-2 py-1 text-xs font-medium rounded transition-all',
-                    timelinePeriod === p
-                      ? 'bg-foreground text-background'
-                      : 'text-muted-foreground hover:text-foreground'
-                  )}
-                >
-                  {p.charAt(0).toUpperCase() + p.slice(1)}
-                </button>
-              ))}
-            </div>
-          )}
 
           {/* Critical Alert Pill */}
           {summary.over > 0 && (

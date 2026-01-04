@@ -10,6 +10,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { AnimatePresence, motion } from 'framer-motion';
 import { 
   Users, CheckCircle2, BarChart3, AlertTriangle, TrendingUp, Download, Plus, 
@@ -95,7 +96,7 @@ export default function CapacityPlannerPage() {
 
   // View state - V2.1 architecture
   const [primaryView, setPrimaryView] = useState<PrimaryView>('resources');
-  const [resourceView, setResourceView] = useState<ResourceViewMode>('cards');
+  const [resourceView, setResourceView] = useState<ResourceViewMode>('table');
   const [projectView, setProjectView] = useState<ProjectViewMode>('cards');
   const [currentView, setCurrentView] = useState<ViewType>('cards');
   const [period, setPeriod] = useState<PeriodType>('monthly');
@@ -1921,6 +1922,30 @@ function TableView({ resources, projects, groupBy, groupedByAssignment, groupedB
       },
     },
     {
+      id: 'assignments',
+      header: 'Assignment',
+      accessor: (row: ResourceMetric) => row.assignmentName || 'Unassigned',
+      width: '200px',
+      sortable: true,
+      render: (_: any, row: ResourceMetric) => {
+        const assignmentName = row.assignmentName || 'Unassigned';
+        const theme = getAssignmentTheme(assignmentName);
+        return (
+          <span 
+            className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-semibold truncate max-w-[180px]"
+            style={{ 
+              backgroundColor: `${theme.accent}15`, 
+              color: theme.accent,
+              borderLeft: `3px solid ${theme.accent}`
+            }}
+            title={assignmentName}
+          >
+            {assignmentName}
+          </span>
+        );
+      },
+    },
+    {
       id: 'role',
       header: 'Role',
       accessor: 'role',
@@ -1980,30 +2005,6 @@ function TableView({ resources, projects, groupBy, groupedByAssignment, groupedB
       },
     },
     {
-      id: 'assignments',
-      header: 'Assignment',
-      accessor: (row: ResourceMetric) => row.assignmentName || 'Unassigned',
-      width: '200px',
-      sortable: true,
-      render: (_: any, row: ResourceMetric) => {
-        const assignmentName = row.assignmentName || 'Unassigned';
-        const theme = getAssignmentTheme(assignmentName);
-        return (
-          <span 
-            className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-semibold truncate max-w-[180px]"
-            style={{ 
-              backgroundColor: `${theme.accent}15`, 
-              color: theme.accent,
-              borderLeft: `3px solid ${theme.accent}`
-            }}
-            title={assignmentName}
-          >
-            {assignmentName}
-          </span>
-        );
-      },
-    },
-    {
       id: 'contractEndDate',
       header: 'Contract End',
       accessor: (row: ResourceMetric) => {
@@ -2021,22 +2022,40 @@ function TableView({ resources, projects, groupBy, groupedByAssignment, groupedB
           return <span className="text-xs text-muted-foreground">Permanent</span>;
         }
         
-        const formatted = new Date(endDate).toLocaleDateString('en-US', {
+        const endDateObj = new Date(endDate);
+        const now = new Date();
+        const diffTime = endDateObj.getTime() - now.getTime();
+        const daysRemaining = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        
+        const formatted = endDateObj.toLocaleDateString('en-US', {
           month: 'short',
           day: 'numeric',
           year: 'numeric'
         });
         
+        const tooltipText = daysRemaining > 0 
+          ? `${daysRemaining} days remaining` 
+          : daysRemaining === 0 
+            ? 'Expires today' 
+            : `Expired ${Math.abs(daysRemaining)} days ago`;
+        
         return (
-          <span className={cn(
-            "text-xs font-medium px-2 py-1 rounded",
-            contractStatus?.status === 'critical' && 'bg-red-100 text-[#be123c]',
-            contractStatus?.status === 'warning' && 'bg-amber-100 text-[#ca8a04]',
-            contractStatus?.status === 'healthy' && 'bg-teal-100 text-[#0d9488]',
-            contractStatus?.status === 'expired' && 'bg-muted text-muted-foreground'
-          )}>
-            {formatted}
-          </span>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <span className={cn(
+                "text-xs font-medium px-2 py-1 rounded cursor-help",
+                contractStatus?.status === 'critical' && 'bg-red-100 text-[#be123c]',
+                contractStatus?.status === 'warning' && 'bg-amber-100 text-[#ca8a04]',
+                contractStatus?.status === 'healthy' && 'bg-teal-100 text-[#0d9488]',
+                contractStatus?.status === 'expired' && 'bg-muted text-muted-foreground'
+              )}>
+                {formatted}
+              </span>
+            </TooltipTrigger>
+            <TooltipContent side="top" className="font-medium">
+              {tooltipText}
+            </TooltipContent>
+          </Tooltip>
         );
       },
     },
