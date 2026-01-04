@@ -676,7 +676,7 @@ export default function CapacityPlannerPage() {
                   exit={{ opacity: 0, y: -10 }}
                   transition={{ duration: 0.2 }}
                 >
-                  <CapacityHeatmap />
+                  <CapacityHeatmap departmentFilter={departmentFilter} />
                 </motion.div>
               )}
             </AnimatePresence>

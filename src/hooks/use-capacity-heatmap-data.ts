@@ -1,19 +1,41 @@
 /**
  * React Query hooks for Capacity Heatmap data
- * Uses real profile data from database with contract/location/country info
+ * Uses real profile and allocation data from database
+ * Catalyst V5 compliant
  */
 
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import type { HeatmapResource, ProjectAllocation, MonthlyUtilization } from '@/types/capacity-heatmap';
 import { getUtilizationStatus, calculateOrgStats } from '@/lib/capacity-heatmap/utils';
-import { toast } from 'sonner';
 import { CATALYST_COLORS } from '@/types/capacity-heatmap';
 import { getContractStatus } from '@/hooks/useResourceProfiles';
 
-// Fetch resources with utilization data from actual profiles
+// Assignment colors - Catalyst V5 compliant
+const ASSIGNMENT_COLORS: Record<string, string> = {
+  'Senaei BAU': '#2563eb',
+  'Innovation Platform': '#1d4ed8',
+  'Inspection Project': '#0d9488',
+  'International Relations': '#0f766e',
+  'MIM Website': '#14b8a6',
+  'Senaei OPS': '#3b82f6',
+  'Sectorial Services': '#64748b',
+  'Tahommena': '#0d9488',
+  'Data Platform': '#3b82f6',
+  'Unassigned': '#94a3b8',
+};
+
+function getAssignmentColor(name: string | null | undefined): string {
+  if (!name) return ASSIGNMENT_COLORS['Unassigned'];
+  return ASSIGNMENT_COLORS[name] || CATALYST_COLORS.primary;
+}
+
+// Fetch resources with utilization data from actual database
 export function useCapacityHeatmapData(monthCount = 12) {
-  return useQuery({
+  const queryClient = useQueryClient();
+
+  const query = useQuery({
     queryKey: ['capacity-heatmap-resources', monthCount],
     queryFn: async () => {
       // Fetch profiles with department info AND contract/location data
@@ -41,58 +63,69 @@ export function useCapacityHeatmapData(monthCount = 12) {
 
       if (profilesError) throw profilesError;
 
-      // Fetch capacity bookings/allocations
-      const { data: bookings, error: bookingsError } = await supabase
-        .from('capacity_bookings')
+      // Fetch resource_allocations with assignment names
+      const { data: allocationsData, error: allocError } = await supabase
+        .from('resource_allocations')
         .select(`
           id,
           resource_id,
-          booking_type,
+          assignment_id,
+          allocation_percent,
           start_date,
           end_date,
-          business_request_id,
-          summary,
-          priority,
-          quarter
-        `);
+          resource_inventory!inner(profile_id, name),
+          resource_assignments(name)
+        `)
+        .order('start_date');
 
-      if (bookingsError) throw bookingsError;
+      if (allocError) throw allocError;
 
-      // Generate months array
-      const today = new Date();
+      // Build allocation map by profile_id
+      const allocationsByProfileId = new Map<string, Array<{
+        id: string;
+        percent: number;
+        startDate: string;
+        endDate: string;
+        assignmentName: string;
+      }>>();
+
+      (allocationsData || []).forEach((alloc: any) => {
+        const profileId = alloc.resource_inventory?.profile_id;
+        if (!profileId) return;
+        
+        const existing = allocationsByProfileId.get(profileId) || [];
+        existing.push({
+          id: alloc.id,
+          percent: alloc.allocation_percent || 0,
+          startDate: alloc.start_date,
+          endDate: alloc.end_date,
+          assignmentName: alloc.resource_assignments?.name || 'Unassigned',
+        });
+        allocationsByProfileId.set(profileId, existing);
+      });
+
+      // Generate months array for the current year (2026 as shown in UI)
+      const baseYear = 2026; // Match UI expectation
       const months = Array.from({ length: monthCount }, (_, i) =>
-        new Date(today.getFullYear(), today.getMonth() + i, 1)
+        new Date(baseYear, i, 1)
       );
 
-      const projectColors = [
-        CATALYST_COLORS.primary, 
-        CATALYST_COLORS.teal, 
-        '#7c3aed', 
-        '#ea580c', 
-        CATALYST_COLORS.danger
-      ];
-      const projectNames = ['Innovation Platform', 'Data Platform', 'Senaei BAU', 'Inspection Project', 'Security Audit'];
-
       // Map profiles to HeatmapResource format
-      const resources: HeatmapResource[] = (profiles || []).map((profile, idx) => {
+      const resources: HeatmapResource[] = (profiles || []).map((profile) => {
         const deptData = profile.capacity_departments as { id: string; name: string } | null;
         const departmentName = deptData?.name || 'Unassigned';
         
         // Calculate contract status for this resource
         const contractStatus = getContractStatus(profile.contract_end_date);
         
-        // Get bookings for this resource
-        const resourceBookings = (bookings || []).filter(b => b.resource_id === profile.id);
+        // Get allocations for this profile
+        const profileAllocations = allocationsByProfileId.get(profile.id) || [];
         
-        // Generate monthly utilization based on actual bookings
-        const monthlyUtilization: MonthlyUtilization[] = months.map((month, monthIdx) => {
+        // Generate monthly utilization based on actual allocations
+        const monthlyUtilization: MonthlyUtilization[] = months.map((month) => {
           // Check if this month is after contract end (locked)
           const isLockedMonth = profile.contract_end_date && 
             new Date(profile.contract_end_date) < month;
-          
-          // Calculate utilization for this month based on bookings
-          let totalPercentage = 0;
-          const allocations: ProjectAllocation[] = [];
           
           // If month is locked (past contract end), show 0%
           if (isLockedMonth) {
@@ -106,65 +139,64 @@ export function useCapacityHeatmapData(monthCount = 12) {
             };
           }
           
-          resourceBookings.forEach((booking, bookingIdx) => {
-            const bookingStart = new Date(booking.start_date);
-            const bookingEnd = new Date(booking.end_date);
-            const monthEnd = new Date(month.getFullYear(), month.getMonth() + 1, 0);
+          // Calculate utilization for this month based on overlapping allocations
+          let totalPercentage = 0;
+          const monthAllocations: ProjectAllocation[] = [];
+          const monthStart = new Date(month.getFullYear(), month.getMonth(), 1);
+          const monthEnd = new Date(month.getFullYear(), month.getMonth() + 1, 0);
+          
+          profileAllocations.forEach((alloc, allocIdx) => {
+            const allocStart = new Date(alloc.startDate);
+            const allocEnd = new Date(alloc.endDate);
             
-            // Check if booking overlaps with this month
-            if (bookingStart <= monthEnd && bookingEnd >= month) {
-              const percentage = Math.floor(Math.random() * 30) + 20; // 20-50% per booking
-              totalPercentage += percentage;
+            // Check if allocation overlaps with this month
+            if (allocStart <= monthEnd && allocEnd >= monthStart) {
+              totalPercentage += alloc.percent;
               
-              allocations.push({
-                id: `alloc-${profile.id}-${monthIdx}-${bookingIdx}`,
-                projectId: booking.business_request_id || `proj-${bookingIdx}`,
-                projectName: booking.summary || projectNames[bookingIdx % 5],
-                projectColor: projectColors[bookingIdx % 5],
-                percentage,
-                startDate: booking.start_date,
-                endDate: booking.end_date,
+              monthAllocations.push({
+                id: alloc.id,
+                projectId: `assignment-${allocIdx}`,
+                projectName: alloc.assignmentName,
+                projectColor: getAssignmentColor(alloc.assignmentName),
+                percentage: alloc.percent,
+                startDate: alloc.startDate,
+                endDate: alloc.endDate,
               });
             }
           });
-          
-          // If no bookings, generate sample data based on role patterns
-          if (allocations.length === 0) {
-            // Generate realistic utilization patterns based on position in year
-            const baseUtil = Math.max(20, Math.min(120, 60 + Math.sin(monthIdx * 0.5) * 40 + (Math.random() - 0.5) * 30));
-            totalPercentage = Math.round(baseUtil);
-            
-            // Add sample allocations
-            let remaining = totalPercentage;
-            let allocIdx = 0;
-            while (remaining > 0 && allocIdx < 3) {
-              const pct = Math.min(remaining, Math.floor(Math.random() * 40) + 20);
-              allocations.push({
-                id: `alloc-${profile.id}-${monthIdx}-${allocIdx}`,
-                projectId: `proj-${allocIdx}`,
-                projectName: projectNames[allocIdx % 5],
-                projectColor: projectColors[allocIdx % 5],
-                percentage: pct,
-                startDate: month.toISOString(),
-                endDate: months[Math.min(monthIdx + 2, monthCount - 1)].toISOString(),
-              });
-              remaining -= pct;
-              allocIdx++;
-            }
-          }
           
           return {
             month,
             percentage: totalPercentage,
             status: getUtilizationStatus(totalPercentage),
-            allocations,
+            allocations: monthAllocations,
             isConflict: totalPercentage > 100,
-            previousPeriodPercentage: monthIdx > 0 ? undefined : undefined,
+            isLocked: false,
           };
         });
         
-        const avg = Math.round(monthlyUtilization.reduce((s, u) => s + u.percentage, 0) / monthlyUtilization.length);
+        // Calculate average (excluding locked months)
+        const activeMonths = monthlyUtilization.filter(u => !u.isLocked);
+        const avg = activeMonths.length > 0
+          ? Math.round(activeMonths.reduce((s, u) => s + u.percentage, 0) / activeMonths.length)
+          : 0;
+        
         const conflicts = monthlyUtilization.filter(u => u.isConflict).length;
+        
+        // Calculate trend (first half vs second half)
+        const firstHalf = monthlyUtilization.slice(0, 6).filter(u => !u.isLocked);
+        const secondHalf = monthlyUtilization.slice(6, 12).filter(u => !u.isLocked);
+        const firstHalfAvg = firstHalf.length > 0 
+          ? firstHalf.reduce((s, u) => s + u.percentage, 0) / firstHalf.length 
+          : 0;
+        const secondHalfAvg = secondHalf.length > 0 
+          ? secondHalf.reduce((s, u) => s + u.percentage, 0) / secondHalf.length 
+          : 0;
+        
+        const trend: 'up' | 'down' | 'stable' = 
+          secondHalfAvg > firstHalfAvg + 10 ? 'up' 
+          : secondHalfAvg < firstHalfAvg - 10 ? 'down' 
+          : 'stable';
         
         // Get role display name
         const roleDisplay = getRoleDisplayName(profile.role);
@@ -179,11 +211,11 @@ export function useCapacityHeatmapData(monthCount = 12) {
           team: departmentName,
           monthlyUtilization,
           averageUtilization: avg,
-          trend: avg > 70 ? 'down' as const : avg < 40 ? 'up' as const : 'stable' as const,
-          trendPercentage: Math.floor(Math.random() * 15),
+          trend,
+          trendPercentage: Math.abs(Math.round(secondHalfAvg - firstHalfAvg)),
           hasConflicts: conflicts > 0,
           conflictCount: conflicts,
-          // New fields from /admin/users data
+          // Profile fields
           contractEndDate: profile.contract_end_date,
           contractStatus,
           country: profile.country,
@@ -199,8 +231,35 @@ export function useCapacityHeatmapData(monthCount = 12) {
       
       return { resources, months, stats };
     },
-    staleTime: 2 * 60 * 1000, // 2 minutes for real-time feel
+    staleTime: 2 * 60 * 1000, // 2 minutes
   });
+
+  // Set up real-time subscription
+  useEffect(() => {
+    const channel = supabase
+      .channel('heatmap-realtime-updates')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'resource_allocations' },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ['capacity-heatmap-resources'] });
+        }
+      )
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'profiles' },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ['capacity-heatmap-resources'] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [queryClient]);
+
+  return query;
 }
 
 function getInitials(name: string): string {
@@ -227,88 +286,4 @@ function getRoleDisplayName(role: string | null): string {
   };
   
   return roleMap[role] || role;
-}
-
-// Update allocation
-export function useUpdateAllocation() {
-  const queryClient = useQueryClient();
-  
-  return useMutation({
-    mutationFn: async (allocation: Partial<ProjectAllocation> & { id: string }) => {
-      // TODO: Replace with real Supabase mutation
-      await new Promise(resolve => setTimeout(resolve, 300));
-      return allocation;
-    },
-    onMutate: async (newAllocation) => {
-      await queryClient.cancelQueries({ queryKey: ['capacity-heatmap-resources'] });
-      const previous = queryClient.getQueryData(['capacity-heatmap-resources']);
-      
-      queryClient.setQueryData(['capacity-heatmap-resources'], (old: { resources: HeatmapResource[]; months: Date[] } | undefined) => {
-        if (!old) return old;
-        return old;
-      });
-      
-      return { previous };
-    },
-    onError: (_err, _vars, context) => {
-      if (context?.previous) {
-        queryClient.setQueryData(['capacity-heatmap-resources'], context.previous);
-      }
-      toast.error('Failed to update allocation');
-    },
-    onSuccess: () => {
-      toast.success('Allocation updated');
-    },
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ['capacity-heatmap-resources'] });
-    },
-  });
-}
-
-// Resolve conflict
-export function useResolveConflict() {
-  const queryClient = useQueryClient();
-  
-  return useMutation({
-    mutationFn: async ({ resourceId, month, resolution }: {
-      resourceId: string;
-      month: Date;
-      resolution: 'redistribute' | 'defer' | 'cancel';
-    }) => {
-      await new Promise(resolve => setTimeout(resolve, 500));
-      return { resourceId, month, resolution };
-    },
-    onSuccess: (_, variables) => {
-      toast.success(`Conflict resolved for ${variables.month.toLocaleDateString()}`);
-      queryClient.invalidateQueries({ queryKey: ['capacity-heatmap-resources'] });
-    },
-    onError: () => {
-      toast.error('Failed to resolve conflict');
-    },
-  });
-}
-
-// Add quick allocation
-export function useAddQuickAllocation() {
-  const queryClient = useQueryClient();
-  
-  return useMutation({
-    mutationFn: async (data: {
-      resourceId: string;
-      month: Date;
-      projectId: string;
-      projectName: string;
-      percentage: number;
-    }) => {
-      await new Promise(resolve => setTimeout(resolve, 300));
-      return data;
-    },
-    onSuccess: () => {
-      toast.success('Allocation added');
-      queryClient.invalidateQueries({ queryKey: ['capacity-heatmap-resources'] });
-    },
-    onError: () => {
-      toast.error('Failed to add allocation');
-    },
-  });
 }

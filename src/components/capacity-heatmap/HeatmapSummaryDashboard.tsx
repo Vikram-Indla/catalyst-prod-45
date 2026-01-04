@@ -105,10 +105,11 @@ export const HeatmapSummaryDashboard = memo(function HeatmapSummaryDashboard({
             {/* Scale legend */}
             <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
               <div className="flex items-center gap-1">
-                <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: `${CATALYST_COLORS.teal}40` }} />
-                <div className="w-3 h-3 rounded-sm bg-blue-200" />
-                <div className="w-3 h-3 rounded-sm bg-blue-400" />
-                <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: CATALYST_COLORS.primary }} />
+                <div className="w-3 h-3 rounded-sm border border-teal-500" style={{ backgroundColor: 'rgba(13, 148, 136, 0.25)' }} />
+                <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: '#bfdbfe' }} />
+                <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: '#93c5fd' }} />
+                <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: '#3b82f6' }} />
+                <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: '#1d4ed8' }} />
                 <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: CATALYST_COLORS.danger }} />
               </div>
               <span>0% → 100% → Over</span>
