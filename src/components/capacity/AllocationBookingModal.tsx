@@ -320,7 +320,6 @@ export function AllocationBookingModal({
                 <span className="text-sm text-slate-600 dark:text-slate-400">Total:</span>
                 <span className="text-lg font-bold" style={{ color: statusColor }}>
                   {totalAllocation}%
-                  {totalAllocation}%
                 </span>
                 <span 
                   className="px-2 py-0.5 text-xs font-semibold rounded border"
