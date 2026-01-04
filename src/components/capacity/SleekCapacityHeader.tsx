@@ -197,12 +197,29 @@ export function SleekCapacityHeader({
             />
           </div>
 
-          {/* V2.1: Unified View Toggle - Projects + Resource Views */}
+          {/* V2.1: Unified View Toggle - List, Projects, Contracts, Gantt, Heatmap */}
           <div className="flex items-center bg-muted rounded-lg p-0.5 gap-0.5">
+            {/* List (table) tab */}
+            <button
+              onClick={() => {
+                onPrimaryViewChange?.('resources');
+                onResourceViewChange?.('table');
+                onViewModeChange?.('table');
+              }}
+              className={cn(
+                'px-2.5 py-1.5 text-sm font-medium rounded-md transition-all flex items-center gap-1',
+                primaryView === 'resources' && resourceView === 'table'
+                  ? 'bg-card text-foreground shadow-sm'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-card/50'
+              )}
+            >
+              <Table2 className="w-3.5 h-3.5" />
+              List
+            </button>
+
             {/* Projects tab */}
             <button
               onClick={() => {
-                // Switch to Projects view with Cards
                 if (resourceView !== 'cards') {
                   onResourceViewChange?.('cards');
                   onViewModeChange?.('cards');
@@ -219,33 +236,59 @@ export function SleekCapacityHeader({
               <Briefcase className="w-3.5 h-3.5" />
               Projects
             </button>
-            
-            {/* Separator */}
-            <div className="w-px h-5 bg-border mx-0.5" />
-            
-            {/* Resource view modes: Cards, Table, Timeline, Heatmap */}
-            {(['cards', 'table', 'timeline', 'heatmap'] as ResourceViewMode[]).map((mode) => (
-              <button
-                key={mode}
-                onClick={() => {
-                  // Switch to Resources view with selected mode
-                  onPrimaryViewChange?.('resources');
-                  onResourceViewChange?.(mode);
-                  if (mode !== 'heatmap') {
-                    onViewModeChange?.(mode as 'cards' | 'table' | 'timeline');
-                  }
-                }}
-                className={cn(
-                  'px-2.5 py-1.5 text-sm font-medium rounded-md transition-all flex items-center gap-1',
-                  primaryView === 'resources' && resourceView === mode
-                    ? 'bg-card text-foreground shadow-sm'
-                    : 'text-muted-foreground hover:text-foreground hover:bg-card/50'
-                )}
-              >
-                <ViewIcon mode={mode} />
-                {mode.charAt(0).toUpperCase() + mode.slice(1)}
-              </button>
-            ))}
+
+            {/* Contracts (cards) tab */}
+            <button
+              onClick={() => {
+                onPrimaryViewChange?.('resources');
+                onResourceViewChange?.('cards');
+                onViewModeChange?.('cards');
+              }}
+              className={cn(
+                'px-2.5 py-1.5 text-sm font-medium rounded-md transition-all flex items-center gap-1',
+                primaryView === 'resources' && resourceView === 'cards'
+                  ? 'bg-card text-foreground shadow-sm'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-card/50'
+              )}
+            >
+              <LayoutGrid className="w-3.5 h-3.5" />
+              Contracts
+            </button>
+
+            {/* Gantt (timeline) tab */}
+            <button
+              onClick={() => {
+                onPrimaryViewChange?.('resources');
+                onResourceViewChange?.('timeline');
+                onViewModeChange?.('timeline');
+              }}
+              className={cn(
+                'px-2.5 py-1.5 text-sm font-medium rounded-md transition-all flex items-center gap-1',
+                primaryView === 'resources' && resourceView === 'timeline'
+                  ? 'bg-card text-foreground shadow-sm'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-card/50'
+              )}
+            >
+              <CalendarDays className="w-3.5 h-3.5" />
+              Gantt
+            </button>
+
+            {/* Heatmap tab */}
+            <button
+              onClick={() => {
+                onPrimaryViewChange?.('resources');
+                onResourceViewChange?.('heatmap');
+              }}
+              className={cn(
+                'px-2.5 py-1.5 text-sm font-medium rounded-md transition-all flex items-center gap-1',
+                primaryView === 'resources' && resourceView === 'heatmap'
+                  ? 'bg-card text-foreground shadow-sm'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-card/50'
+              )}
+            >
+              <Grid3X3 className="w-3.5 h-3.5" />
+              Heatmap
+            </button>
           </div>
 
           {/* Timeline Period - Only in timeline view */}
