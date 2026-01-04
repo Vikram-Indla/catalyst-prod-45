@@ -42,8 +42,12 @@ async function fetchResourceRoles(): Promise<RoleOption[]> {
     roleCountMap.set(ur.role_id, (roleCountMap.get(ur.role_id) || 0) + 1);
   });
 
-  // Build role options with counts
+  // System roles to exclude from dropdowns
+  const SYSTEM_ROLES = ['super_admin'];
+
+  // Build role options with counts, excluding system roles
   return (productRoles || [])
+    .filter(role => !SYSTEM_ROLES.includes(role.code)) // Exclude system roles
     .map(role => ({
       name: role.name,
       displayName: role.name,
