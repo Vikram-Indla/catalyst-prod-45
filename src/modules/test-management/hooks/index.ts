@@ -11,6 +11,9 @@ export * from './useCycles';
 // Execution
 export * from './useExecution';
 
+// Defects
+export * from './useDefects';
+
 // My Work
 export * from './useMyWork';
 
