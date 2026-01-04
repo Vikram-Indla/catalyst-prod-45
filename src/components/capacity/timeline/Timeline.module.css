@@ -12,7 +12,7 @@
  */
 
 /* ═══════════════════════════════════════════════════════════════
-   CONTAINER — Full viewport height
+   CONTAINER — Full viewport height with premium depth
    ═══════════════════════════════════════════════════════════════ */
 
 .timelineContainer {
@@ -24,7 +24,10 @@
   border-radius: 16px;
   border: 1px solid rgba(0, 0, 0, 0.08);
   overflow: hidden;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.04), 0 1px 3px rgba(0,0,0,0.06);
+  /* Multi-layer shadow for premium depth */
+  box-shadow: 
+    0 1px 3px rgba(0, 0, 0, 0.04),
+    0 2px 6px rgba(0, 0, 0, 0.02);
   position: relative;
 }
 
@@ -102,21 +105,62 @@
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   ROW — Hover and states
+   ROW — Hover and states with accent line
    ═══════════════════════════════════════════════════════════════ */
 
 .timelineRow {
   display: flex;
   border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-  transition: background-color 0.15s ease;
+  transition: 
+    background-color 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+    transform 0.15s ease;
   min-height: 72px;
   position: relative;
   /* Clip content to row boundaries */
   overflow: hidden;
 }
 
+/* Left accent line on hover — premium micro-animation */
+.timelineRow::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 8px;
+  bottom: 8px;
+  width: 3px;
+  background: linear-gradient(180deg, #3b82f6 0%, #2563eb 100%);
+  border-radius: 0 3px 3px 0;
+  opacity: 0;
+  transform: translateX(-3px);
+  transition: 
+    opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+    transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 15;
+}
+
+.timelineRow:hover::before {
+  opacity: 1;
+  transform: translateX(0);
+}
+
 .timelineRow:hover {
-  background: rgba(37, 99, 235, 0.015); /* primary subtle */
+  background: linear-gradient(
+    90deg,
+    rgba(37, 99, 235, 0.02) 0%,
+    rgba(37, 99, 235, 0.01) 30%,
+    transparent 100%
+  );
+}
+
+/* Focus state for keyboard navigation */
+.timelineRow:focus-within {
+  background: rgba(37, 99, 235, 0.02);
+  outline: none;
+}
+
+.timelineRow:focus-within::before {
+  opacity: 1;
+  transform: translateX(0);
 }
 
 .rowCritical {
@@ -127,12 +171,20 @@
   background: linear-gradient(90deg, rgba(239, 68, 68, 0.06) 0%, rgba(37, 99, 235, 0.015) 40%);
 }
 
+.rowCritical::before {
+  background: linear-gradient(180deg, #f87171 0%, #ef4444 100%);
+}
+
 .rowAvailable {
   background: linear-gradient(90deg, rgba(13, 148, 136, 0.03) 0%, transparent 40%); /* teal */
 }
 
 .rowAvailable:hover {
   background: linear-gradient(90deg, rgba(13, 148, 136, 0.05) 0%, rgba(37, 99, 235, 0.015) 40%);
+}
+
+.rowAvailable::before {
+  background: linear-gradient(180deg, #14b8a6 0%, #0d9488 100%);
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -160,7 +212,7 @@
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   AVATAR — Squircle with depth
+   AVATAR — Squircle with multi-layer depth
    ═══════════════════════════════════════════════════════════════ */
 
 .avatarWrapper {
@@ -177,6 +229,7 @@
   justify-content: center;
   font-weight: 600;
   font-size: 13px;
+  font-variant-numeric: tabular-nums;
   letter-spacing: 0.02em;
   color: white;
   position: relative;
@@ -184,25 +237,31 @@
 
 .avatarPrimary {
   background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); /* primary gradient */
+  /* Multi-layer shadow for premium depth */
   box-shadow: 
-    0 2px 4px rgba(37, 99, 235, 0.2),
+    0 1px 2px rgba(37, 99, 235, 0.1),
+    0 2px 4px rgba(37, 99, 235, 0.1),
+    0 4px 8px rgba(37, 99, 235, 0.15),
     inset 0 1px 0 rgba(255, 255, 255, 0.15);
 }
 
 .avatarTeal {
   background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%); /* teal gradient */
   box-shadow: 
-    0 2px 4px rgba(13, 148, 136, 0.2),
+    0 1px 2px rgba(13, 148, 136, 0.1),
+    0 2px 4px rgba(13, 148, 136, 0.1),
+    0 4px 8px rgba(13, 148, 136, 0.15),
     inset 0 1px 0 rgba(255, 255, 255, 0.15);
 }
 
-/* Contract Ring */
+/* Contract Ring with improved animation */
 .avatarRing {
   position: absolute;
   inset: -4px;
   border-radius: 16px;
   border: 3px solid var(--ring-color, #9ca3af);
   pointer-events: none;
+  transition: border-color 0.2s ease;
 }
 
 .ringTeal { --ring-color: #0d9488; }
@@ -210,13 +269,22 @@
 .ringDanger { --ring-color: #ef4444; }
 .ringGray { --ring-color: #9ca3af; }
 
+/* Smooth pulse animation for critical */
 .ringDanger {
-  animation: pulseRing 2s ease-in-out infinite;
+  animation: pulseRing 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
 @keyframes pulseRing {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.7; transform: scale(1.05); }
+  0%, 100% { 
+    opacity: 1; 
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4);
+  }
+  50% { 
+    opacity: 0.8; 
+    transform: scale(1.03);
+    box-shadow: 0 0 0 4px rgba(239, 68, 68, 0);
+  }
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -246,88 +314,152 @@
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   ALLOCATION BAR — Gradient with depth
+   ALLOCATION BAR — Gradient with depth + glass effect
    ═══════════════════════════════════════════════════════════════ */
 
 .allocationBar {
   height: 32px;
-  border-radius: 8px;
+  border-radius: 6px;
   display: flex;
   align-items: center;
   padding: 0 12px;
   position: absolute;
   /* top is set via inline styles for proper stacking */
   transition: 
-    box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1),
-    transform 0.15s ease;
+    box-shadow 0.15s cubic-bezier(0.4, 0, 0.2, 1),
+    transform 0.15s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
   overflow: hidden;
   white-space: nowrap;
   font-size: 12px;
   font-weight: 600;
+  font-variant-numeric: tabular-nums;
   letter-spacing: 0.01em;
   color: white;
   z-index: 10;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
 }
 
+/* Top edge glass highlight */
 .allocationBar::before {
   content: '';
   position: absolute;
-  inset: 0;
-  border-radius: 8px;
-  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.25) 20%,
+    rgba(255, 255, 255, 0.35) 50%,
+    rgba(255, 255, 255, 0.25) 80%,
+    transparent 100%
+  );
+  border-radius: 6px 6px 0 0;
+  pointer-events: none;
+}
+
+/* Bottom edge subtle shadow inside */
+.allocationBar::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: rgba(0, 0, 0, 0.12);
+  border-radius: 0 0 6px 6px;
   pointer-events: none;
 }
 
 .allocationBar:hover {
-  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3), 0 4px 8px rgba(0, 0, 0, 0.1);
-  z-index: 10;
+  transform: translateY(-1px);
+  z-index: 15;
 }
 
-/* Bar Colors — CATALYST V5 ONLY */
+/* Focus state for accessibility */
+.allocationBar:focus-visible {
+  outline: none;
+  box-shadow: 
+    0 0 0 2px white,
+    0 0 0 4px #2563eb,
+    0 4px 12px rgba(37, 99, 235, 0.25);
+}
+
+/* Bar Colors — CATALYST V5 with multi-layer shadows */
 .barPrimary {
   background: linear-gradient(180deg, #3b82f6 0%, #2563eb 50%, #1d4ed8 100%);
-  box-shadow: 0 2px 4px rgba(37, 99, 235, 0.15), 0 1px 2px rgba(0, 0, 0, 0.1);
+  box-shadow: 
+    0 1px 2px rgba(37, 99, 235, 0.15),
+    0 2px 4px rgba(37, 99, 235, 0.12),
+    0 4px 8px rgba(37, 99, 235, 0.1);
 }
 .barPrimary:hover {
-  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3), 0 4px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 
+    0 2px 4px rgba(37, 99, 235, 0.2),
+    0 4px 8px rgba(37, 99, 235, 0.18),
+    0 8px 16px rgba(37, 99, 235, 0.15);
 }
 
 .barTeal {
   background: linear-gradient(180deg, #14b8a6 0%, #0d9488 100%);
-  box-shadow: 0 2px 4px rgba(13, 148, 136, 0.15), 0 1px 2px rgba(0, 0, 0, 0.1);
+  box-shadow: 
+    0 1px 2px rgba(13, 148, 136, 0.15),
+    0 2px 4px rgba(13, 148, 136, 0.12),
+    0 4px 8px rgba(13, 148, 136, 0.1);
 }
 .barTeal:hover {
-  box-shadow: 0 8px 20px rgba(13, 148, 136, 0.3), 0 4px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 
+    0 2px 4px rgba(13, 148, 136, 0.2),
+    0 4px 8px rgba(13, 148, 136, 0.18),
+    0 8px 16px rgba(13, 148, 136, 0.15);
 }
 
 .barWarning {
   background: linear-gradient(180deg, #f59e0b 0%, #d97706 100%);
-  box-shadow: 0 2px 4px rgba(217, 119, 6, 0.15), 0 1px 2px rgba(0, 0, 0, 0.1);
+  box-shadow: 
+    0 1px 2px rgba(217, 119, 6, 0.15),
+    0 2px 4px rgba(217, 119, 6, 0.12),
+    0 4px 8px rgba(217, 119, 6, 0.1);
 }
 .barWarning:hover {
-  box-shadow: 0 8px 20px rgba(217, 119, 6, 0.3), 0 4px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 
+    0 2px 4px rgba(217, 119, 6, 0.2),
+    0 4px 8px rgba(217, 119, 6, 0.18),
+    0 8px 16px rgba(217, 119, 6, 0.15);
 }
 
 .barSlate {
   background: linear-gradient(180deg, #64748b 0%, #475569 100%);
-  box-shadow: 0 2px 4px rgba(71, 85, 105, 0.15), 0 1px 2px rgba(0, 0, 0, 0.1);
+  box-shadow: 
+    0 1px 2px rgba(71, 85, 105, 0.15),
+    0 2px 4px rgba(71, 85, 105, 0.12),
+    0 4px 8px rgba(71, 85, 105, 0.1);
 }
 .barSlate:hover {
-  box-shadow: 0 8px 20px rgba(71, 85, 105, 0.3), 0 4px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 
+    0 2px 4px rgba(71, 85, 105, 0.2),
+    0 4px 8px rgba(71, 85, 105, 0.18),
+    0 8px 16px rgba(71, 85, 105, 0.15);
 }
 
 .barDanger {
   background: linear-gradient(180deg, #f87171 0%, #ef4444 100%);
-  box-shadow: 0 2px 4px rgba(239, 68, 68, 0.15), 0 1px 2px rgba(0, 0, 0, 0.1);
+  box-shadow: 
+    0 1px 2px rgba(239, 68, 68, 0.15),
+    0 2px 4px rgba(239, 68, 68, 0.12),
+    0 4px 8px rgba(239, 68, 68, 0.1);
 }
 .barDanger:hover {
-  box-shadow: 0 8px 20px rgba(239, 68, 68, 0.3), 0 4px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 
+    0 2px 4px rgba(239, 68, 68, 0.2),
+    0 4px 8px rgba(239, 68, 68, 0.18),
+    0 8px 16px rgba(239, 68, 68, 0.15);
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   AVAILABLE CELL — Subtle elegance
+   AVAILABLE CELL — Subtle elegance with refined transitions
    ═══════════════════════════════════════════════════════════════ */
 
 .availableCell {
@@ -337,12 +469,24 @@
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  transition: background-color 0.15s ease;
+  transition: 
+    background-color 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+    transform 0.15s ease;
   cursor: pointer;
+  border-radius: 6px;
+  margin: 4px;
 }
 
 .availableCell:hover {
-  background: rgba(13, 148, 136, 0.04);
+  background: rgba(13, 148, 136, 0.06);
+}
+
+/* Focus state for keyboard navigation */
+.availableCell:focus-visible {
+  outline: none;
+  box-shadow: 
+    0 0 0 2px white,
+    0 0 0 4px #0d9488;
 }
 
 .availableDot {
@@ -350,24 +494,28 @@
   height: 6px;
   border-radius: 50%;
   background: rgba(13, 148, 136, 0.35); /* teal */
-  transition: all 0.2s ease;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .availableCell:hover .availableDot {
-  width: 8px;
-  height: 8px;
-  background: rgba(13, 148, 136, 0.6);
-  box-shadow: 0 0 12px rgba(13, 148, 136, 0.4);
+  width: 10px;
+  height: 10px;
+  background: #0d9488;
+  box-shadow: 
+    0 0 0 4px rgba(13, 148, 136, 0.15),
+    0 0 12px rgba(13, 148, 136, 0.3);
 }
 
 .availableLabel {
-  font-size: 10px;
-  font-weight: 500;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
   color: #0d9488; /* teal-600 */
   opacity: 0;
   transform: translateY(4px);
-  transition: all 0.2s ease;
-  margin-top: 4px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  margin-top: 6px;
 }
 
 .availableCell:hover .availableLabel {
@@ -376,7 +524,7 @@
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   CONTRACT MARKER — Visual poetry
+   CONTRACT MARKER — Visual poetry with badge appear animation
    ═══════════════════════════════════════════════════════════════ */
 
 .contractMarker {
@@ -409,25 +557,66 @@
   box-shadow: 0 0 0 3px white, 0 0 12px var(--marker-color);
 }
 
+/* Premium badge with gradient and animation */
 .contractMarkerBadge {
   position: absolute;
   top: -4px;
   left: 50%;
   transform: translateX(-50%);
   padding: 3px 8px;
-  background: var(--marker-color);
+  background: linear-gradient(
+    135deg,
+    var(--marker-color-light) 0%,
+    var(--marker-color) 100%
+  );
   color: white;
   font-size: 9px;
   font-weight: 600;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.03em;
   border-radius: 10px;
   white-space: nowrap;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  /* Multi-layer shadow for premium depth */
+  box-shadow: 
+    0 1px 2px rgba(0, 0, 0, 0.15),
+    0 2px 4px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  /* Badge appear animation */
+  animation: badgeAppear 0.2s ease-out;
 }
 
-.markerTeal { --marker-color: #0d9488; }
-.markerWarning { --marker-color: #d97706; }
-.markerDanger { --marker-color: #ef4444; }
+@keyframes badgeAppear {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+.contractMarkerBadge .icon {
+  width: 10px;
+  height: 10px;
+  opacity: 0.9;
+}
+
+/* Color variants with light versions for gradient */
+.markerTeal { 
+  --marker-color: #0d9488; 
+  --marker-color-light: #14b8a6;
+}
+.markerWarning { 
+  --marker-color: #d97706; 
+  --marker-color-light: #f59e0b;
+}
+.markerDanger { 
+  --marker-color: #dc2626; 
+  --marker-color-light: #ef4444;
+}
 
 /* ═══════════════════════════════════════════════════════════════
    LOCKED ZONE — Elegant restriction
@@ -634,6 +823,124 @@
 }
 
 /* ═══════════════════════════════════════════════════════════════
+   LOADING SKELETON — Premium shimmer effect
+   ═══════════════════════════════════════════════════════════════ */
+
+.skeletonCell {
+  background: linear-gradient(
+    90deg,
+    #f3f4f6 0%,
+    #e5e7eb 50%,
+    #f3f4f6 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+  border-radius: 6px;
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.skeletonAvatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+}
+
+.skeletonText {
+  height: 14px;
+  border-radius: 4px;
+  width: 80%;
+}
+
+.skeletonTextSm {
+  height: 10px;
+  width: 60%;
+  border-radius: 3px;
+  margin-top: 6px;
+}
+
+.skeletonBar {
+  height: 28px;
+  border-radius: 6px;
+  width: 85%;
+  margin: 4px auto;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   AVG COLUMN — Sticky with accent
+   ═══════════════════════════════════════════════════════════════ */
+
+.avgColumn {
+  width: 80px;
+  min-width: 80px;
+  flex-shrink: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(249, 250, 251, 0.8) 0%,
+    rgba(243, 244, 246, 0.9) 100%
+  );
+  border-left: 2px solid rgba(37, 99, 235, 0.1);
+  position: sticky;
+  right: 0;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 12px;
+}
+
+.avgValue {
+  font-size: 18px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+
+.avgValueHigh {
+  color: #1d4ed8;
+}
+
+.avgValueMedium {
+  color: #0d9488;
+}
+
+.avgValueLow {
+  color: #d97706;
+}
+
+.avgStatus {
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-top: 4px;
+}
+
+.avgStatusAvail {
+  color: #0d9488;
+}
+
+.avgStatusFreeing {
+  color: #6b7280;
+}
+
+/* Freeing arrow bounce animation */
+.freeingArrow {
+  display: inline-block;
+  animation: bounceDown 1s ease-in-out infinite;
+}
+
+@keyframes bounceDown {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(2px); }
+}
+
+/* ═══════════════════════════════════════════════════════════════
    DARK MODE OVERRIDES
    ═══════════════════════════════════════════════════════════════ */
 
@@ -665,4 +972,23 @@
 :global([data-theme="dark"]) .legend {
   background: hsl(0 0% 6%);
   border-color: rgba(255, 255, 255, 0.06);
+}
+
+:global([data-theme="dark"]) .avgColumn {
+  background: linear-gradient(
+    180deg,
+    rgba(20, 20, 20, 0.95) 0%,
+    rgba(15, 15, 15, 0.95) 100%
+  );
+  border-left-color: rgba(59, 130, 246, 0.2);
+}
+
+:global([data-theme="dark"]) .skeletonCell {
+  background: linear-gradient(
+    90deg,
+    hsl(0 0% 12%) 0%,
+    hsl(0 0% 18%) 50%,
+    hsl(0 0% 12%) 100%
+  );
+  background-size: 200% 100%;
 }
