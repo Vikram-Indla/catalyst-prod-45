@@ -1821,6 +1821,17 @@ function TableView({ resources, projects, groupBy, groupedByAssignment, groupedB
   const { getProfile } = useResourceProfiles();
   const getProjectName = (projectId: string) => projects.find(p => p.id === projectId)?.name || 'Unknown';
 
+  // Helper to get assignment names from allocations for a resource
+  const getAssignmentNamesForResource = useCallback((resourceId: string): string[] => {
+    const resourceAllocations = allocations.filter(
+      a => a.profile_id === resourceId || a.resource_id === resourceId
+    );
+    const names = resourceAllocations
+      .map(a => a.assignment_name)
+      .filter((name): name is string => !!name);
+    return [...new Set(names)]; // Unique names
+  }, [allocations]);
+
   // Contract ring styles helper
   const getRingStyle = (status: string) => {
     const ringStyles: Record<string, string> = {
@@ -1833,7 +1844,7 @@ function TableView({ resources, projects, groupBy, groupedByAssignment, groupedB
     return ringStyles[status] || 'ring-muted-foreground/30';
   };
 
-  // Sort resources by vendor first, then assignment name
+  // Sort resources by vendor first, then assignment name from allocations
   const sortedResources = useMemo(() => {
     return [...resources].sort((a, b) => {
       const aProfile = getProfile(a.id);
@@ -1846,14 +1857,16 @@ function TableView({ resources, projects, groupBy, groupedByAssignment, groupedB
       if (aVendor && !bVendor) return -1;
       if (aVendor !== bVendor) return aVendor.localeCompare(bVendor);
       
-      // Then sort by assignment name
-      const aName = a.assignmentName || 'Unassigned';
-      const bName = b.assignmentName || 'Unassigned';
+      // Then sort by assignment name from allocations
+      const aNames = getAssignmentNamesForResource(a.id);
+      const bNames = getAssignmentNamesForResource(b.id);
+      const aName = aNames[0] || a.assignmentName || 'Unassigned';
+      const bName = bNames[0] || b.assignmentName || 'Unassigned';
       if (aName === 'Unassigned' && bName !== 'Unassigned') return 1;
       if (bName === 'Unassigned' && aName !== 'Unassigned') return -1;
       return aName.localeCompare(bName);
     });
-  }, [resources, getProfile]);
+  }, [resources, getProfile, getAssignmentNamesForResource]);
 
   // If the table data changes (e.g., after edits, filtering, or refetch),
   // drop any selections that no longer exist in the current dataset.
@@ -1964,12 +1977,39 @@ function TableView({ resources, projects, groupBy, groupedByAssignment, groupedB
     {
       id: 'assignments',
       header: 'Assignment',
-      accessor: (row: ResourceMetric) => row.assignmentName || 'Unassigned',
+      accessor: (row: ResourceMetric) => {
+        // Get assignment names from allocations table (source of truth)
+        const names = getAssignmentNamesForResource(row.id);
+        return names.length > 0 ? names[0] : (row.assignmentName || 'Unassigned');
+      },
       width: '200px',
       sortable: true,
       render: (_: any, row: ResourceMetric) => {
-        const assignmentName = row.assignmentName || 'Unassigned';
+        // Get assignment names from allocations table (source of truth)
+        const names = getAssignmentNamesForResource(row.id);
+        const assignmentName = names.length > 0 ? names[0] : (row.assignmentName || 'Unassigned');
         const theme = getAssignmentTheme(assignmentName);
+        
+        // Show multiple assignments if exists
+        if (names.length > 1) {
+          return (
+            <div className="flex items-center gap-1">
+              <span 
+                className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-semibold truncate max-w-[140px]"
+                style={{ 
+                  backgroundColor: `${theme.accent}15`, 
+                  color: theme.accent,
+                  borderLeft: `3px solid ${theme.accent}`
+                }}
+                title={names.join(', ')}
+              >
+                {assignmentName}
+              </span>
+              <span className="text-xs text-muted-foreground">+{names.length - 1}</span>
+            </div>
+          );
+        }
+        
         return (
           <span 
             className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-semibold truncate max-w-[180px]"
@@ -2104,7 +2144,7 @@ function TableView({ resources, projects, groupBy, groupedByAssignment, groupedB
         );
       },
     },
-  ], [projects, onResourceClick, onEditResource, onDeleteResource, getProfile]);
+  ], [projects, onResourceClick, onEditResource, onDeleteResource, getProfile, getAssignmentNamesForResource, resources]);
 
   const handleSelectionChange = (ids: string[]) => {
     setSelectedIds(ids);
