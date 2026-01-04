@@ -1,6 +1,7 @@
 /**
  * Mini-Gantt Timeline for Resource Cards
  * Shows 6-month allocation timeline with stacked project bars
+ * DARK MODE SUPPORT INCLUDED
  * 
  * CATALYST V5 COLORS:
  * - Available: Teal #0d9488
@@ -152,8 +153,8 @@ export function MiniGanttCard({ allocations, className, showPeriodTotals = true 
   if (allocations.length === 0) {
     return (
       <div className={cn("mb-2", className)}>
-        <div className="h-12 bg-slate-50 rounded border border-dashed border-slate-200 flex items-center justify-center">
-          <span className="text-[10px] text-slate-400">No allocations — fully available</span>
+        <div className="h-12 bg-slate-50 dark:bg-slate-800/50 rounded border border-dashed border-slate-200 dark:border-slate-600 flex items-center justify-center">
+          <span className="text-[10px] text-slate-400 dark:text-slate-500">No allocations — fully available</span>
         </div>
       </div>
     );
@@ -163,21 +164,21 @@ export function MiniGanttCard({ allocations, className, showPeriodTotals = true 
     <TooltipProvider>
       <div className={cn("mb-2", className)}>
         {/* Month labels */}
-        <div className="flex text-[9px] text-slate-400 mb-0.5 px-0.5">
+        <div className="flex text-[9px] text-slate-400 dark:text-slate-500 mb-0.5 px-0.5">
           {monthsData.map((month, i) => (
             <div key={i} className="flex-1 text-center truncate">{month.label}</div>
           ))}
         </div>
         
         {/* Timeline container */}
-        <div className="relative bg-slate-50 rounded border border-slate-200 overflow-hidden"
+        <div className="relative bg-slate-50 dark:bg-slate-800 rounded border border-slate-200 dark:border-slate-700 overflow-hidden"
           style={{ height: `${Math.max(28, bars.length * 14 + 10)}px` }}
         >
           {/* Conflict zone backgrounds */}
           {monthsData.map((month, i) => month.isConflict && (
             <div
               key={`conflict-${i}`}
-              className="absolute top-0 bottom-0 bg-red-100/60"
+              className="absolute top-0 bottom-0 bg-red-100/60 dark:bg-red-900/30"
               style={{
                 left: `${(i / 6) * 100}%`,
                 width: `${100 / 6}%`,
@@ -188,7 +189,7 @@ export function MiniGanttCard({ allocations, className, showPeriodTotals = true 
           {/* Grid lines for months */}
           <div className="absolute inset-0 flex">
             {monthsData.map((_, i) => (
-              <div key={i} className="flex-1 border-r border-slate-100 last:border-r-0" />
+              <div key={i} className="flex-1 border-r border-slate-100 dark:border-slate-700 last:border-r-0" />
             ))}
           </div>
           
@@ -225,7 +226,7 @@ export function MiniGanttCard({ allocations, className, showPeriodTotals = true 
                     </span>
                   </div>
                 </TooltipTrigger>
-                <TooltipContent side="top" className="bg-slate-900 text-white text-xs p-2 shadow-xl">
+                <TooltipContent side="top" className="bg-slate-900 dark:bg-slate-800 text-white text-xs p-2 shadow-xl border dark:border-slate-700">
                   <p className="font-semibold">{bar.name}</p>
                   <p className="text-slate-300">{bar.percent}% allocation</p>
                   <p className="text-slate-400 text-[10px]">
@@ -244,10 +245,10 @@ export function MiniGanttCard({ allocations, className, showPeriodTotals = true 
               <div key={i} className="flex-1 text-center">
                 <span className={cn(
                   "font-semibold",
-                  month.total === 0 && "text-slate-300",
-                  month.total > 0 && month.total < 80 && "text-teal-600",
-                  month.total >= 80 && month.total <= 100 && "text-blue-600",
-                  month.total > 100 && "text-red-600"
+                  month.total === 0 && "text-slate-300 dark:text-slate-600",
+                  month.total > 0 && month.total < 80 && "text-teal-600 dark:text-teal-400",
+                  month.total >= 80 && month.total <= 100 && "text-blue-600 dark:text-blue-400",
+                  month.total > 100 && "text-red-600 dark:text-red-400"
                 )}>
                   {month.total}%
                   {month.isConflict && <span className="ml-0.5">⚠</span>}

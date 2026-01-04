@@ -1,6 +1,6 @@
 /**
  * Compact Resource Card - CIO Executive Cockpit
- * Max height: 72px | Dense information | Risk indicators
+ * DARK MODE SUPPORT INCLUDED
  * Updated for Time-Boxed Allocations with mini-gantt timeline
  * 
  * CATALYST V5 COLORS:
@@ -58,8 +58,8 @@ export function CompactResourceCard({
       className={cn(
         "relative border rounded-lg p-3 cursor-pointer transition-all group",
         isOverAllocated 
-          ? "bg-red-50/40 border-red-300 hover:shadow-red-100 hover:shadow-md" 
-          : "bg-white border-slate-200 hover:border-slate-300 hover:shadow-md"
+          ? "bg-red-50/40 dark:bg-red-950/20 border-red-300 dark:border-red-800 hover:shadow-red-100 dark:hover:shadow-red-900/20 hover:shadow-md" 
+          : "bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 hover:shadow-md dark:hover:shadow-slate-800/50"
       )}
       style={{ 
         borderLeftWidth: '4px', 
@@ -84,7 +84,8 @@ export function CompactResourceCard({
           onClick={(e) => { e.stopPropagation(); onOpen360(); }}
           className={cn(
             "w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold text-white cursor-pointer hover:ring-2 hover:ring-offset-1 shrink-0 transition-all",
-            isOverAllocated ? "hover:ring-red-500" : "hover:ring-blue-500"
+            isOverAllocated ? "hover:ring-red-500" : "hover:ring-blue-500",
+            "dark:ring-offset-slate-900"
           )}
           style={{ backgroundColor: isOverAllocated ? CATALYST_V5.error.hex : theme.accent }}
         >
@@ -93,8 +94,8 @@ export function CompactResourceCard({
 
         {/* Info - Compact */}
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-semibold text-slate-900 truncate leading-tight">{name}</p>
-          <p className="text-[11px] text-slate-500 truncate leading-tight">{role || 'Team Member'}</p>
+          <p className="text-sm font-semibold text-slate-900 dark:text-white truncate leading-tight">{name}</p>
+          <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate leading-tight">{role || 'Team Member'}</p>
         </div>
 
         {/* Allocation Badge with warning icon for over-allocated */}
@@ -105,7 +106,7 @@ export function CompactResourceCard({
           <span 
             className={cn(
               "text-xs font-bold px-2 py-0.5 rounded",
-              isOverAllocated && "bg-red-100 text-red-600"
+              isOverAllocated && "bg-red-100 dark:bg-red-900/50 text-red-600 dark:text-red-400"
             )}
             style={!isOverAllocated ? { backgroundColor: alloc.bg, color: alloc.text } : undefined}
           >
@@ -122,7 +123,7 @@ export function CompactResourceCard({
         <span 
           className={cn(
             "text-[9px] font-semibold uppercase tracking-wide px-1.5 py-0.5 rounded flex items-center gap-1",
-            isOverAllocated && "bg-red-100 text-red-600"
+            isOverAllocated && "bg-red-100 dark:bg-red-900/50 text-red-600 dark:text-red-400"
           )}
           style={!isOverAllocated ? { 
             color: alloc.labelColor,
@@ -146,7 +147,7 @@ export function CompactResourceCard({
           <Button 
             variant="ghost" 
             size="sm" 
-            className="text-[10px] text-slate-500 h-5 px-2 hover:text-primary"
+            className="text-[10px] text-slate-500 dark:text-slate-400 h-5 px-2 hover:text-primary"
             onClick={(e) => { e.stopPropagation(); onEdit(); }}
           >
             Edit Allocations
