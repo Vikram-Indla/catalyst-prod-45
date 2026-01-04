@@ -11,9 +11,7 @@ import { cn } from '@/lib/utils';
 import { useHeatmapStore } from '@/stores/capacity-heatmap-store';
 import { useKeyboardShortcuts } from '@/hooks/use-keyboard-shortcuts';
 import { useCapacityHeatmapData } from '@/hooks/use-capacity-heatmap-data';
-import { CapacityPulseHeader } from './CapacityPulseHeader';
 import { HeatmapLegend } from './HeatmapLegend';
-import { AttentionBanner } from './AttentionBanner';
 import { HeatmapCell } from './HeatmapCell';
 import { KeyboardShortcutsPanel } from './KeyboardShortcutsPanel';
 import { HeatmapEmptyState } from './HeatmapEmptyState';
@@ -33,7 +31,6 @@ export const CapacityHeatmap = memo(function CapacityHeatmap({
   className
 }: CapacityHeatmapProps) {
   const heatmapRef = useRef<HTMLDivElement>(null);
-  const [dismissedBanner, setDismissedBanner] = useState(false);
   
   // Detail panel state
   const [selectedCell, setSelectedCell] = useState<{
@@ -170,11 +167,6 @@ export const CapacityHeatmap = memo(function CapacityHeatmap({
     setContextMenu(null);
   }, [contextMenu, filteredResources]);
   
-  // Handle conflict resolve
-  const handleResolveConflict = useCallback((conflict: Conflict) => {
-    toast.info(`Opening conflict resolution for ${conflict.resourceName}`);
-    setSelectedCell({ resourceId: conflict.resourceId, month: conflict.month });
-  }, []);
   
   // Get selected resource and utilization for detail panel
   const selectedResource = selectedCell 
@@ -254,18 +246,6 @@ export const CapacityHeatmap = memo(function CapacityHeatmap({
   }
   return (
     <div className={cn("space-y-4", className)}>
-      {/* Pulse Header */}
-      <CapacityPulseHeader stats={data.stats} />
-      
-      {/* Attention Banner */}
-      {!dismissedBanner && data.stats.conflicts.length > 0 && (
-        <AttentionBanner
-          conflicts={data.stats.conflicts}
-          onResolve={handleResolveConflict}
-          onDismiss={() => setDismissedBanner(true)}
-        />
-      )}
-      
       {/* Legend */}
       <HeatmapLegend />
       
