@@ -92,20 +92,20 @@ export function TestManagementLayout() {
   // Sidebar Navigation Content
   const SidebarContent = ({ collapsed = false }: { collapsed?: boolean }) => (
     <div className="flex h-full flex-col">
-      {/* Header with Project Selector */}
+      {/* Header with Project Selector - Fixed 52px height to align with main header */}
       <div
-        className={cn(
-          'border-b border-border p-3',
-          collapsed && 'flex justify-center'
-        )}
+        className="border-b border-border flex items-center"
+        style={{ height: '52px', padding: collapsed ? '0' : '0 12px' }}
       >
-        <div className="flex items-center gap-2 mb-2">
+        <div className={cn(
+          'flex items-center gap-2',
+          collapsed && 'justify-center w-full'
+        )}>
           <FlaskConical className="h-5 w-5 text-primary shrink-0" />
           {!collapsed && (
             <span className="font-semibold text-foreground">Test Management</span>
           )}
         </div>
-        <TMProjectSelector collapsed={collapsed} />
       </div>
 
       {/* Navigation Items */}
@@ -227,7 +227,7 @@ export function TestManagementLayout() {
       {/* Main Content Area */}
       <div className="flex flex-1 flex-col overflow-hidden">
         {/* Top Header */}
-        <header className="flex h-14 items-center justify-between border-b border-border bg-background px-4">
+        <header className="flex items-center justify-between border-b border-border bg-background px-4" style={{ height: '52px' }}>
           {/* Left Section */}
           <div className="flex items-center gap-3">
             {/* Mobile Menu Button */}
