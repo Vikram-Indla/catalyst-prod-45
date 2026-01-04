@@ -418,16 +418,58 @@ const ResourceRow = memo(function ResourceRow({
   onCellContextMenu,
   getGhostPercentage,
 }: ResourceRowProps) {
+  // Get ring color based on contract status
+  const getRingStyle = () => {
+    if (!resource.contractStatus) return 'ring-primary/30';
+    
+    const ringStyles = {
+      healthy: 'ring-[#0d9488]', // Teal
+      warning: 'ring-[#ca8a04]', // Gold
+      critical: 'ring-[#be123c] animate-pulse', // Rose with pulse
+      expired: 'ring-muted-foreground/40',
+      permanent: 'ring-muted-foreground/30'
+    };
+    
+    return ringStyles[resource.contractStatus.status] || 'ring-primary/30';
+  };
+
   return (
     <div className="flex items-center hover:bg-muted/20 transition-colors">
-      {/* Resource info */}
+      {/* Resource info with contract ring */}
       <div className="w-56 flex-shrink-0 px-4 py-2 flex items-center gap-3">
-        <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-xs font-medium text-primary">
+        <div className={cn(
+          "w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-xs font-medium text-primary ring-2",
+          getRingStyle()
+        )}>
           {resource.initials}
         </div>
-        <div className="min-w-0">
-          <div className="text-sm font-medium truncate">{resource.name}</div>
-          <div className="text-xs text-muted-foreground truncate">{resource.role}</div>
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-medium truncate">{resource.name}</span>
+            {/* Location flag */}
+            {resource.countryFlagUrl && (
+              <img 
+                src={resource.countryFlagUrl} 
+                alt={resource.country || ''} 
+                className="w-4 h-3 object-cover rounded-sm flex-shrink-0"
+                title={resource.country || ''}
+              />
+            )}
+          </div>
+          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+            <span className="truncate">{resource.role}</span>
+            {/* Contract days indicator */}
+            {resource.contractStatus && resource.contractStatus.status !== 'permanent' && (
+              <span className={cn(
+                "text-[10px] px-1 py-0.5 rounded font-medium flex-shrink-0",
+                resource.contractStatus.status === 'critical' && 'bg-red-100 text-[#be123c]',
+                resource.contractStatus.status === 'warning' && 'bg-amber-100 text-[#ca8a04]',
+                resource.contractStatus.status === 'healthy' && 'bg-teal-100 text-[#0d9488]'
+              )}>
+                {resource.contractStatus.label}
+              </span>
+            )}
+          </div>
         </div>
       </div>
       

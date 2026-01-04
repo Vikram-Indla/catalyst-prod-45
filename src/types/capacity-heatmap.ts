@@ -38,6 +38,17 @@ export interface MonthlyUtilization {
   allocations: ProjectAllocation[];
   isConflict: boolean;
   previousPeriodPercentage?: number;
+  isLocked?: boolean; // True if month is after contract end date
+}
+
+export interface ContractStatusInfo {
+  status: 'healthy' | 'warning' | 'critical' | 'expired' | 'permanent';
+  daysRemaining: number | null;
+  color: string;
+  ringColor: string;
+  bgColor: string;
+  label: string;
+  textColor: string;
 }
 
 export interface HeatmapResource {
@@ -55,6 +66,15 @@ export interface HeatmapResource {
   trendPercentage: number;
   hasConflicts: boolean;
   conflictCount: number;
+  // New fields from /admin/users
+  contractEndDate?: string | null;
+  contractStatus?: ContractStatusInfo;
+  country?: string | null;
+  countryCode?: string | null;
+  countryFlagUrl?: string | null;
+  location?: string | null;
+  vendor?: string | null;
+  avatarUrl?: string | null;
 }
 
 export interface HeatmapGroup {
