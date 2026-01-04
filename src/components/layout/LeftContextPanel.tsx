@@ -258,7 +258,7 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
       </button>
 
       <div style={{ height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-        {/* Context Header - 52px per reference */}
+        {/* Context Header - 52px per reference, always show border for alignment */}
         <div 
           style={{ 
             height: '52px', 
@@ -266,7 +266,7 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
             display: 'flex', 
             alignItems: 'center',
             justifyContent: expanded ? 'space-between' : 'center',
-            borderBottom: expanded ? '1px solid var(--divider)' : 'none',
+            borderBottom: '1px solid var(--divider)',
             flexShrink: 0,
           }}
         >
