@@ -32,7 +32,7 @@ export function useResourceAllocations() {
           created_at,
           updated_at,
           created_by,
-          resource_inventory(id, name, profile_id),
+          resource_inventory(id, name, profile_id, role_name),
           resource_assignments(id, name)
         `
         )
@@ -53,6 +53,7 @@ export function useResourceAllocations() {
         assignment_name: row.resource_assignments?.name,
         resource_name: row.resource_inventory?.name,
         profile_id: row.resource_inventory?.profile_id,
+        role_name: row.resource_inventory?.role_name,
       })) as ResourceAllocation[];
     },
   });

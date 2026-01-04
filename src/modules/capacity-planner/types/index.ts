@@ -74,6 +74,7 @@ export interface ResourceAllocation {
   assignment_name?: string;
   resource_name?: string;
   profile_id?: string;
+  role_name?: string;           // Role of the resource
 }
 
 /**
