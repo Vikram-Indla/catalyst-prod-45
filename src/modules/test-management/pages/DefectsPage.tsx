@@ -409,7 +409,7 @@ export function DefectsPage() {
     <div className="flex h-full">
       {/* Main Content */}
       <div className={cn(
-        "flex-1 flex flex-col gap-4 transition-all duration-300",
+        "flex-1 flex flex-col gap-4 transition-all duration-300 overflow-auto",
         selectedDefect ? "mr-[450px]" : ""
       )}>
         {/* Header */}
