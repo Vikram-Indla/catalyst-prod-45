@@ -197,9 +197,9 @@ export function SleekCapacityHeader({
             />
           </div>
 
-          {/* V2.1: Unified View Toggle - List, Projects, Contracts, Gantt, Heatmap */}
+          {/* V2.1: Unified View Toggle - Resources, Projects, Contracts, Gantt, Heatmap */}
           <div className="flex items-center bg-muted rounded-lg p-0.5 gap-0.5">
-            {/* List (table) tab */}
+            {/* Resources (table) tab */}
             <button
               onClick={() => {
                 onPrimaryViewChange?.('resources');
@@ -214,7 +214,7 @@ export function SleekCapacityHeader({
               )}
             >
               <Table2 className="w-3.5 h-3.5" />
-              List
+              Resources
             </button>
 
             {/* Projects tab */}
