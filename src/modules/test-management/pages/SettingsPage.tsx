@@ -203,7 +203,7 @@ export function SettingsPage() {
                 <div className="flex flex-wrap gap-2 mb-4">
                   {[
                     { name: 'Automation', color: '#3b82f6' },
-                    { name: 'API', color: '#8b5cf6' },
+                    { name: 'API', color: '#2563eb' },
                     { name: 'UI', color: '#ec4899' },
                     { name: 'Mobile', color: '#10b981' },
                     { name: 'Backend', color: '#f59e0b' },

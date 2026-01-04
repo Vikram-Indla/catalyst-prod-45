@@ -204,7 +204,7 @@ export function AIPrioritize({
       <DialogContent className="max-w-4xl max-h-[90vh] flex flex-col">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Sparkles className="h-5 w-5 text-purple-500" />
+            <Sparkles className="h-5 w-5 text-blue-600" />
             AI Test Prioritization
           </DialogTitle>
         </DialogHeader>
@@ -313,7 +313,7 @@ export function AIPrioritize({
                       className={cn(
                         'transition-all',
                         pCase.new_order !== pCase.original_order &&
-                          'border-purple-200 bg-purple-50/50'
+                          'border-blue-200 bg-blue-50/50'
                       )}
                     >
                       <CardContent className="p-3">
@@ -324,7 +324,7 @@ export function AIPrioritize({
                               className={cn(
                                 'w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold',
                                 index < 3
-                                  ? 'bg-purple-500 text-white'
+                                  ? 'bg-blue-600 text-white'
                                   : 'bg-muted text-muted-foreground'
                               )}
                             >

@@ -132,7 +132,7 @@ export function AIInsights({
       case 'recommendation':
         return <Lightbulb className="h-5 w-5 text-yellow-500" />;
       case 'pattern':
-        return <TrendingUp className="h-5 w-5 text-purple-500" />;
+        return <TrendingUp className="h-5 w-5 text-blue-600" />;
       case 'regression':
         return <TrendingDown className="h-5 w-5 text-red-500" />;
     }
@@ -155,7 +155,7 @@ export function AIInsights({
       <div className="flex items-center justify-between">
         <div>
           <h3 className="text-lg font-semibold flex items-center gap-2">
-            <Sparkles className="h-5 w-5 text-purple-500" />
+            <Sparkles className="h-5 w-5 text-blue-600" />
             AI Insights
           </h3>
           <p className="text-sm text-muted-foreground">
@@ -187,7 +187,7 @@ export function AIInsights({
         <div className="grid grid-cols-4 gap-3">
           <Card>
             <CardContent className="p-3 text-center">
-              <div className="text-2xl font-bold text-purple-600">
+              <div className="text-2xl font-bold text-blue-600">
                 {metrics.patternsFound}
               </div>
               <div className="text-xs text-muted-foreground">Patterns Found</div>

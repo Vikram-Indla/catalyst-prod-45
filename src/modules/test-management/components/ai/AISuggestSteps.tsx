@@ -127,7 +127,7 @@ export function AISuggestSteps({
         size="sm"
         onClick={handleGenerate}
         disabled={isGenerating}
-        className="text-purple-600 border-purple-200 hover:bg-purple-50 hover:border-purple-300"
+        className="text-blue-600 border-blue-200 hover:bg-blue-50 hover:border-blue-300"
       >
         {isGenerating ? (
           <>
@@ -143,13 +143,13 @@ export function AISuggestSteps({
       </Button>
 
       {suggestions.length > 0 && (
-        <Card className="border-purple-200 bg-purple-50/50 dark:bg-purple-950/20">
+        <Card className="border-blue-200 bg-blue-50/50 dark:bg-blue-950/20">
           <div
             className="flex items-center justify-between p-3 cursor-pointer"
             onClick={() => setIsExpanded(!isExpanded)}
           >
             <div className="flex items-center gap-2">
-              <Sparkles className="h-4 w-4 text-purple-600" />
+              <Sparkles className="h-4 w-4 text-blue-600" />
               <span className="text-sm font-medium">AI Suggestions</span>
               <Badge variant="secondary" className="text-xs">
                 {pendingCount} pending

@@ -202,7 +202,7 @@ export function AISearch({
             onPressedChange={setIsAIMode}
             className={cn(
               'absolute right-2 top-1/2 -translate-y-1/2 h-7 px-2',
-              isAIMode && 'bg-purple-100 text-purple-700'
+              isAIMode && 'bg-blue-100 text-blue-700'
             )}
           >
             <Sparkles className="h-3 w-3 mr-1" />
@@ -220,12 +220,12 @@ export function AISearch({
 
       {/* Query Interpretation */}
       {interpretation && (
-        <Card className="border-purple-200 bg-purple-50/50 dark:bg-purple-950/20">
+        <Card className="border-blue-200 bg-blue-50/50 dark:bg-blue-950/20">
           <CardContent className="p-3 space-y-2">
             <div className="flex items-start gap-2">
-              <Lightbulb className="h-4 w-4 text-purple-600 mt-0.5" />
+              <Lightbulb className="h-4 w-4 text-blue-600 mt-0.5" />
               <div className="flex-1">
-                <p className="text-sm text-purple-800 dark:text-purple-200">
+                <p className="text-sm text-blue-800 dark:text-blue-200">
                   {interpretation.interpreted}
                 </p>
                 <div className="flex gap-2 mt-2 flex-wrap">
@@ -238,7 +238,7 @@ export function AISearch({
               </div>
             </div>
             {interpretation.suggestions && interpretation.suggestions.length > 0 && (
-              <div className="text-xs text-purple-600 dark:text-purple-400 mt-2">
+              <div className="text-xs text-blue-600 dark:text-blue-400 mt-2">
                 <span className="font-medium">Tips: </span>
                 {interpretation.suggestions.join(' • ')}
               </div>
