@@ -223,14 +223,14 @@ export function EnhancedTimelineView({
   className,
 }: EnhancedTimelineViewProps) {
   
-  // Generate months for timeline (9 months starting from January)
+  // Generate months for timeline (full year Jan-Dec)
   const months = useMemo((): TimelinePeriod[] => {
     const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     const currentDate = new Date();
     const currentMonth = currentDate.getMonth();
     const currentYear = currentDate.getFullYear();
     
-    return Array.from({ length: 9 }, (_, index) => {
+    return Array.from({ length: 12 }, (_, index) => {
       const monthIndex = index;
       const start = new Date(year, monthIndex, 1);
       const end = new Date(year, monthIndex + 1, 0);
@@ -246,7 +246,7 @@ export function EnhancedTimelineView({
   }, [year]);
 
   const timelineStartDate = months[0]?.start || new Date(year, 0, 1);
-  const timelineEndDate = months[months.length - 1]?.end || new Date(year, 8, 30);
+  const timelineEndDate = months[months.length - 1]?.end || new Date(year, 11, 31);
 
   // Build allocation map by resource
   const allocationsByResource = useMemo(() => {
