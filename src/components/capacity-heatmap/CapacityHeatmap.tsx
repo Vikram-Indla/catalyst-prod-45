@@ -73,7 +73,7 @@ export const CapacityHeatmap = memo(function CapacityHeatmap({
     return data.months[0].getFullYear();
   }, [data?.months]);
   
-  // Filter resources
+  // Filter resources - EXACT MATCH logic same as Cards/Table (CapacityPlannerPage line 208)
   const filteredResources = useMemo(() => {
     if (!data?.resources) return [];
     
@@ -88,15 +88,16 @@ export const CapacityHeatmap = memo(function CapacityHeatmap({
         }
       }
       
-      // Department filter from props (from parent page)
+      // Department filter from props - EXACT MATCH (same as Cards/Table)
+      // CapacityPlannerPage line 208: departmentFilter === 'all' || r.department?.toLowerCase() === departmentFilter
       if (departmentFilter && departmentFilter !== 'all') {
         const deptLower = r.department?.toLowerCase() || '';
-        if (!deptLower.includes(departmentFilter.toLowerCase())) {
+        if (deptLower !== departmentFilter.toLowerCase()) {
           return false;
         }
       }
       
-      // Department filter from store
+      // Department filter from store (if set via advanced filters)
       if (filters.departments.length > 0 && !filters.departments.includes(r.department)) {
         return false;
       }
