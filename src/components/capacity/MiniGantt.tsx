@@ -120,7 +120,7 @@ export function MiniGantt({
           >
             {/* Show label if bar is wide enough */}
             {bar.width > 20 && (
-              <span className="text-xs text-white px-1 truncate block leading-3">
+              <span className="text-xs px-1 truncate block leading-3 text-white drop-shadow-[0_1px_1px_rgba(0,0,0,0.5)]" style={{ textShadow: '0 0 3px rgba(0,0,0,0.7), 0 1px 2px rgba(0,0,0,0.5)' }}>
                 {bar.allocation.assignmentName}
               </span>
             )}
