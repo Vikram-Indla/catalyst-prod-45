@@ -1353,6 +1353,7 @@ export default function CapacityPlannerPage() {
                   groupBy={groupBy}
                   isCollapsed={false}
                   compactMode={true}
+                  allocations={allocations}
                   onResourceClick={() => {}}
                   onEditResource={() => {}}
                 />
