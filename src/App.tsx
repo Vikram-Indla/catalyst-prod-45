@@ -284,6 +284,7 @@ import {
   TestManagementLayout,
   TestCasesPage,
   TestCyclesPage,
+  CycleDetailPage,
   DefectsPage as TMDefectsPage,
   ReportsPage as TMReportsPage,
   SettingsPage as TMSettingsPage,
@@ -713,6 +714,7 @@ const App = () => (
                 <Route path="my-work" element={<MyWorkPage />} />
                 <Route path="cases" element={<TestCasesPage />} />
                 <Route path="cycles" element={<TestCyclesPage />} />
+                <Route path="cycles/:cycleId" element={<CycleDetailPage />} />
                 <Route path="defects" element={<TMDefectsPage />} />
                 <Route path="reports" element={<TMReportsPage />} />
                 <Route path="settings" element={<TMSettingsPage />} />
