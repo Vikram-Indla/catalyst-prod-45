@@ -166,10 +166,10 @@ export function FindAvailabilityPanel({
   };
 
   return (
-    <div className={cn("bg-gradient-to-r from-primary/5 to-teal-500/5 border border-primary/20 rounded-xl", className)}>
+    <div className={cn("bg-card dark:bg-slate-900/50 border border-border rounded-xl", className)}>
       {/* Collapsed State - Quick Access */}
       <button
-        className="w-full flex items-center justify-between p-4"
+        className="w-full flex items-center justify-between p-4 hover:bg-muted/30 rounded-xl transition-colors"
         onClick={() => setIsExpanded(!isExpanded)}
       >
         <div className="flex items-center gap-3">
