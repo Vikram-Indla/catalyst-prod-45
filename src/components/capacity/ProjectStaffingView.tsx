@@ -168,6 +168,9 @@ function ProjectStaffingCard({
   const config = statusConfig[status];
   const projectColor = project.color || getAssignmentColor(project.name);
 
+  const totalResources = totalAssigned / 100;
+  const formatResources = (n: number) => n.toFixed(2).replace(/\.?0+$/, '');
+
   // Transform allocations for MiniGantt
   const ganttAllocations = allocations.map(alloc => ({
     id: alloc.id || `${alloc.profile_id}-${alloc.assignment_name}`,
@@ -200,11 +203,9 @@ function ProjectStaffingCard({
 
         <div className="text-right">
           <div className="text-2xl font-bold" style={{ color: config.color }}>
-            {totalAssigned}%
+            {formatResources(totalResources)}
           </div>
-          <div className="text-sm text-muted-foreground">
-            total allocated
-          </div>
+          <div className="text-sm text-muted-foreground">resources</div>
         </div>
       </div>
 
