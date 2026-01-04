@@ -213,25 +213,6 @@ export function CapacityHeader({
             ))}
           </div>
 
-          {/* TIMELINE PERIOD — Only visible in Timeline view */}
-          {viewMode === 'timeline' && (
-            <div className="flex items-center bg-[#f5f5f4] rounded-lg p-1">
-              {(['weekly', 'monthly', 'quarterly'] as const).map((period) => (
-                <button
-                  key={period}
-                  onClick={() => onTimelinePeriodChange(period)}
-                  className={cn(
-                    'px-4 py-2 text-sm font-medium transition-all rounded-md',
-                    timelinePeriod === period 
-                      ? 'bg-[#0a0a0a] text-white' 
-                      : 'text-[#525252] hover:bg-white/60'
-                  )}
-                >
-                  {period.charAt(0).toUpperCase() + period.slice(1)}
-                </button>
-              ))}
-            </div>
-          )}
         </div>
 
         {/* RIGHT CONTROLS */}
