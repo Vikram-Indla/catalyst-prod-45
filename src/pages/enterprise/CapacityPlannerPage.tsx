@@ -50,6 +50,13 @@ import { HeatmapView } from '@/components/capacity/HeatmapView';
 import { FindAvailabilityPanel } from '@/components/capacity/FindAvailabilityPanel';
 import { ProjectStaffingView } from '@/components/capacity/ProjectStaffingView';
 import { GroupedTableView } from '@/components/capacity/GroupedTableView';
+import { ScaleWarningBanner } from '@/components/capacity/ScaleWarningBanner';
+import { VirtualizedCardsView } from '@/components/capacity/VirtualizedCardsView';
+import { HierarchicalHeatmap } from '@/components/capacity/HierarchicalHeatmap';
+import { EnhancedSearch } from '@/components/capacity/EnhancedSearch';
+import { UndoRedoControls } from '@/components/capacity/UndoRedoControls';
+import { CapacityPlannerSkeleton } from '@/components/capacity/CapacityPlannerSkeleton';
+import { UndoRedoProvider } from '@/contexts/UndoRedoContext';
 
 // Department colors - Catalyst V5 compliant
 const departmentColors: Record<string, { bg: string; text: string; badge: string }> = {
