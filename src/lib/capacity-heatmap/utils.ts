@@ -21,21 +21,30 @@ export function getUtilizationStatus(percentage: number): UtilizationStatus {
 }
 
 export function getUtilizationColor(percentage: number, mode: 'standard' | 'thermal' = 'standard') {
+  // Catalyst V5 brand colors matching the legend:
+  // 0% Available = Blue
+  // 1-40% Light = Teal  
+  // 41-70% Moderate = Gold/Yellow-Orange
+  // 71-85% Optimal = Orange
+  // 86-100% At Capacity = Deep Orange/Red-Orange
+  // >100% Over-allocated = Pink/Red
+  
   if (mode === 'thermal') {
-    if (percentage === 0) return { bg: CATALYST_COLORS.primary, text: '#fff', pulse: false };
-    if (percentage <= 40) return { bg: CATALYST_COLORS.teal, text: '#fff', pulse: false };
-    if (percentage <= 70) return { bg: CATALYST_COLORS.warning, text: '#fff', pulse: false };
-    if (percentage <= 100) return { bg: '#ea580c', text: '#fff', pulse: false };
-    return { bg: CATALYST_COLORS.danger, text: '#fff', pulse: true };
+    if (percentage === 0) return { bg: '#2563eb', text: '#fff', pulse: false };  // Blue
+    if (percentage <= 40) return { bg: '#0d9488', text: '#fff', pulse: false };  // Teal
+    if (percentage <= 70) return { bg: '#ca8a04', text: '#fff', pulse: false };  // Gold
+    if (percentage <= 85) return { bg: '#ea580c', text: '#fff', pulse: false };  // Orange
+    if (percentage <= 100) return { bg: '#c2410c', text: '#fff', pulse: false }; // Deep Orange
+    return { bg: '#be123c', text: '#fff', pulse: true };  // Rose/Pink
   }
   
-  // Standard mode - 6 levels
-  if (percentage === 0) return { bg: '#e5e7eb', text: '#6b7280', pulse: false };
-  if (percentage <= 40) return { bg: `${CATALYST_COLORS.teal}33`, text: CATALYST_COLORS.teal, pulse: false };
-  if (percentage <= 70) return { bg: CATALYST_COLORS.teal, text: '#fff', pulse: false };
-  if (percentage <= 85) return { bg: CATALYST_COLORS.primaryLight, text: '#fff', pulse: false };
-  if (percentage <= 100) return { bg: CATALYST_COLORS.primary, text: '#fff', pulse: false };
-  return { bg: CATALYST_COLORS.danger, text: '#fff', pulse: true };
+  // Standard mode - 6 levels matching the legend
+  if (percentage === 0) return { bg: '#2563eb', text: '#fff', pulse: false };  // Blue - Available
+  if (percentage <= 40) return { bg: '#0d9488', text: '#fff', pulse: false };  // Teal - Light
+  if (percentage <= 70) return { bg: '#ca8a04', text: '#fff', pulse: false };  // Gold - Moderate
+  if (percentage <= 85) return { bg: '#ea580c', text: '#fff', pulse: false };  // Orange - Optimal
+  if (percentage <= 100) return { bg: '#c2410c', text: '#fff', pulse: false }; // Deep Orange - At Capacity
+  return { bg: '#be123c', text: '#fff', pulse: true };  // Rose - Over-allocated
 }
 
 export function getHealthStatus(utilization: number, conflictCount: number): HealthStatus {
