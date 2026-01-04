@@ -77,17 +77,26 @@ export function HeatmapView({
     });
   }, [resources, allocations, weeks]);
 
-  // Get color based on allocation percentage
+  // Get color based on allocation percentage - using lighter, softer colors
   const getHeatColor = (allocation: number) => {
-    if (allocation === 0) return 'bg-slate-100';
-    if (allocation < 50) return 'bg-teal-200';
-    if (allocation < 80) return 'bg-teal-400';
-    if (allocation <= 100) return 'bg-blue-500';
-    return 'bg-amber-500'; // Over-allocated
+    if (allocation === 0) return 'bg-slate-50 dark:bg-slate-800/50';
+    if (allocation < 50) return 'bg-emerald-100 dark:bg-emerald-900/30';
+    if (allocation < 80) return 'bg-sky-100 dark:bg-sky-900/30';
+    if (allocation <= 100) return 'bg-blue-200 dark:bg-blue-800/40';
+    return 'bg-amber-200 dark:bg-amber-800/40'; // Over-allocated
+  };
+
+  // Get text color based on allocation
+  const getTextColor = (allocation: number) => {
+    if (allocation === 0) return 'text-slate-400';
+    if (allocation < 50) return 'text-emerald-600 dark:text-emerald-400';
+    if (allocation < 80) return 'text-sky-600 dark:text-sky-400';
+    if (allocation <= 100) return 'text-blue-600 dark:text-blue-400';
+    return 'text-amber-600 dark:text-amber-400';
   };
 
   const getHeatOpacity = (allocation: number) => {
-    if (allocation === 0) return 'opacity-50';
+    if (allocation === 0) return 'opacity-60';
     return 'opacity-100';
   };
 
@@ -126,15 +135,15 @@ export function HeatmapView({
                 <div
                   key={i}
                   className={cn(
-                    "w-8 h-6 flex-shrink-0 flex items-center justify-center rounded-sm mx-0.5 transition-all cursor-pointer hover:ring-2 hover:ring-primary/50",
+                    "w-8 h-6 flex-shrink-0 flex items-center justify-center rounded-sm mx-0.5 transition-all cursor-pointer hover:ring-2 hover:ring-primary/50 border border-border/30",
                     getHeatColor(data.allocation),
                     getHeatOpacity(data.allocation)
                   )}
                   title={`${format(data.week, 'MMM d')}: ${data.allocation}%`}
                 >
                   {data.allocation > 0 && (
-                    <span className="text-[10px] font-medium text-white">
-                      {data.allocation > 100 ? '!' : ''}
+                    <span className={cn("text-[10px] font-semibold", getTextColor(data.allocation))}>
+                      {data.allocation}
                     </span>
                   )}
                 </div>
@@ -147,23 +156,23 @@ export function HeatmapView({
         <div className="flex items-center gap-4 mt-4 pt-4 border-t border-border">
           <span className="text-xs text-muted-foreground">Legend:</span>
           <div className="flex items-center gap-1">
-            <div className="w-4 h-4 rounded bg-slate-100" />
+            <div className="w-4 h-4 rounded bg-slate-50 dark:bg-slate-800/50 border border-border/30" />
             <span className="text-xs text-muted-foreground">0%</span>
           </div>
           <div className="flex items-center gap-1">
-            <div className="w-4 h-4 rounded bg-teal-200" />
+            <div className="w-4 h-4 rounded bg-emerald-100 dark:bg-emerald-900/30 border border-border/30" />
             <span className="text-xs text-muted-foreground">1-50%</span>
           </div>
           <div className="flex items-center gap-1">
-            <div className="w-4 h-4 rounded bg-teal-400" />
+            <div className="w-4 h-4 rounded bg-sky-100 dark:bg-sky-900/30 border border-border/30" />
             <span className="text-xs text-muted-foreground">50-80%</span>
           </div>
           <div className="flex items-center gap-1">
-            <div className="w-4 h-4 rounded bg-blue-500" />
+            <div className="w-4 h-4 rounded bg-blue-200 dark:bg-blue-800/40 border border-border/30" />
             <span className="text-xs text-muted-foreground">80-100%</span>
           </div>
           <div className="flex items-center gap-1">
-            <div className="w-4 h-4 rounded bg-amber-500" />
+            <div className="w-4 h-4 rounded bg-amber-200 dark:bg-amber-800/40 border border-border/30" />
             <span className="text-xs text-muted-foreground">&gt;100%</span>
           </div>
         </div>
