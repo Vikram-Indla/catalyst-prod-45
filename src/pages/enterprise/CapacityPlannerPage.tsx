@@ -346,15 +346,16 @@ export default function CapacityPlannerPage() {
     return allocations.filter(a => a.profile_id === resourceId);
   }, [allocations]);
 
-  // Calculate dynamic utilization from actual time-boxed allocations
-  const dynamicUtilization = useMemo(() => {
-    if (resources.length === 0) return 0;
-    
+  // Calculate dynamic summary stats from filtered resources based on time-boxed allocations
+  const filteredSummary = useMemo(() => {
     const now = new Date();
+    let available = 0;
+    let atCapacity = 0;
+    let over = 0;
     let totalUtilization = 0;
-    let resourcesWithAllocations = 0;
-    
-    resources.forEach(resource => {
+
+    filteredResources.forEach(resource => {
+      // Get current active allocations for this resource
       const resourceAllocations = allocations.filter(a => {
         if (a.profile_id !== resource.id) return false;
         const allocStart = new Date(a.start_date);
@@ -363,14 +364,29 @@ export default function CapacityPlannerPage() {
       });
       
       const currentAllocation = resourceAllocations.reduce((sum, a) => sum + a.allocation_percent, 0);
-      if (currentAllocation > 0) {
-        resourcesWithAllocations++;
-      }
       totalUtilization += Math.min(currentAllocation, 100);
+
+      if (currentAllocation > 100) {
+        over++;
+      } else if (currentAllocation >= 80) {
+        atCapacity++;
+      } else {
+        available++;
+      }
     });
-    
-    return resources.length > 0 ? Math.round(totalUtilization / resources.length) : 0;
-  }, [resources, allocations]);
+
+    const utilizationPercentage = filteredResources.length > 0 
+      ? Math.round(totalUtilization / filteredResources.length) 
+      : 0;
+
+    return {
+      total: filteredResources.length,
+      available,
+      atCapacity,
+      over,
+      utilizationPercentage,
+    };
+  }, [filteredResources, allocations]);
 
   // Only show loading state on initial load, not during background refetches (e.g., after DnD)
   const hasData = resources.length > 0 || metrics.resources.length > 0;
@@ -390,11 +406,11 @@ export default function CapacityPlannerPage() {
         {/* Header - Enterprise Grade */}
         <SleekCapacityHeader
           summary={{
-            total: metrics.summary.total,
-            available: metrics.summary.available + metrics.summary.healthy,
-            atCapacity: metrics.summary.atCapacity,
-            over: metrics.summary.overAllocated,
-            utilizationPercentage: dynamicUtilization,
+            total: filteredSummary.total,
+            available: filteredSummary.available,
+            atCapacity: filteredSummary.atCapacity,
+            over: filteredSummary.over,
+            utilizationPercentage: filteredSummary.utilizationPercentage,
           }}
           primaryView={primaryView}
           resourceView={resourceView}
