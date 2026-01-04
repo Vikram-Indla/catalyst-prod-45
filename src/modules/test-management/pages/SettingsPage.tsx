@@ -54,13 +54,7 @@ export function SettingsPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      {/* Header */}
-      <div>
-        <h1 className="text-2xl font-semibold text-foreground">Settings</h1>
-        <p className="text-sm text-muted-foreground">
-          Configure test management settings and preferences
-        </p>
-      </div>
+      {/* Header is provided by TestManagementContent */}
 
       <div className="flex gap-6">
         {/* Settings Navigation */}

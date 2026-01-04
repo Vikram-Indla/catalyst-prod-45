@@ -282,9 +282,9 @@ export function CycleDetailPage() {
         <div className="flex items-start justify-between">
           <div className="space-y-1">
             <div className="flex items-center gap-3">
-              <h1 className="text-2xl font-semibold">
+              <h2 className="text-2xl font-semibold">
                 {cycle.cycle_key}: {cycle.title}
-              </h1>
+              </h2>
               <Select value={cycle.status} onValueChange={(v) => handleStatusChange(v as CycleStatus)}>
                 <SelectTrigger className={cn('w-[140px] h-8', statusInfo.class)}>
                   <StatusIcon className="h-3.5 w-3.5 mr-1" />
