@@ -251,7 +251,7 @@ export function TestCasesPage() {
   const totalCaseCount = pagination.total;
 
   return (
-    <div className="flex h-full gap-0">
+    <div className="flex h-[calc(100vh-120px)] gap-0 -m-6">
       {/* Left Panel - Folder Tree */}
       <div className="w-60 shrink-0 border-r border-border-default bg-surface-0">
         <FolderTree
