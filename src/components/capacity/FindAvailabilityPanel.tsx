@@ -65,6 +65,7 @@ export function FindAvailabilityPanel({
   // Fetch roles from database
   const { data: rolesFromDb, isLoading: rolesLoading } = useResourceRoles();
   const [isExpanded, setIsExpanded] = useState(false);
+  const [activePeriod, setActivePeriod] = useState<string | null>(null); // FIX: Track active quick period
   const [criteria, setCriteria] = useState<FindAvailabilityCriteria>({
     role: '',
     allocationNeeded: 50,
@@ -72,7 +73,7 @@ export function FindAvailabilityPanel({
     endDate: format(addMonths(new Date(), 3), 'yyyy-MM-dd')
   });
 
-  // Find matching resources
+  // Find matching resources - FIX: Sort by availability, available first
   const matches = useMemo(() => {
     if (!criteria.role) {
       return { perfect: [], partial: [], future: [] };
@@ -120,6 +121,7 @@ export function FindAvailabilityPanel({
         matchType: 'perfect'
       };
 
+      // FIX: Proper categorization based on availability vs needed
       if (availablePercent >= criteria.allocationNeeded) {
         match.matchType = 'perfect';
         results.perfect.push(match);
@@ -142,18 +144,37 @@ export function FindAvailabilityPanel({
       }
     });
 
-    // Sort by availability
+    // FIX: Sort by availability - highest first
     results.perfect.sort((a, b) => b.availablePercent - a.availablePercent);
     results.partial.sort((a, b) => b.availablePercent - a.availablePercent);
+    results.future.sort((a, b) => {
+      // Sort future by earliest availability date
+      const aDate = a.availableFrom ? new Date(a.availableFrom).getTime() : Infinity;
+      const bDate = b.availableFrom ? new Date(b.availableFrom).getTime() : Infinity;
+      return aDate - bDate;
+    });
 
     return results;
   }, [resources, allocations, criteria]);
 
-  const handleQuickPeriod = (months: number) => {
+  // FIX: Quick period handler with active state tracking
+  const handleQuickPeriod = (periodId: string, months: number) => {
+    setActivePeriod(periodId);
     setCriteria({
       ...criteria,
       startDate: format(new Date(), 'yyyy-MM-dd'),
       endDate: format(addMonths(new Date(), months), 'yyyy-MM-dd')
+    });
+  };
+
+  // FIX: Clear filters handler
+  const handleClearFilters = () => {
+    setActivePeriod(null);
+    setCriteria({
+      role: '',
+      allocationNeeded: 50,
+      startDate: format(new Date(), 'yyyy-MM-dd'),
+      endDate: format(addMonths(new Date(), 3), 'yyyy-MM-dd')
     });
   };
 
@@ -271,19 +292,24 @@ export function FindAvailabilityPanel({
             </div>
           </div>
 
-          {/* Quick Duration Buttons + Clear Filters */}
+          {/* Quick Duration Buttons + Clear Filters - FIX: Highlight active period */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <span className="text-sm text-muted-foreground">Quick periods:</span>
               {[
-                { label: 'Next Month', months: 1 },
-                { label: 'Next Quarter', months: 3 },
-                { label: 'Next 6 Months', months: 6 }
+                { id: 'month', label: 'Next Month', months: 1 },
+                { id: 'quarter', label: 'Next Quarter', months: 3 },
+                { id: '6months', label: 'Next 6 Months', months: 6 }
               ].map((period) => (
                 <button
-                  key={period.label}
-                  className="px-3 py-1 text-sm bg-card border border-border rounded hover:bg-muted transition-colors"
-                  onClick={() => handleQuickPeriod(period.months)}
+                  key={period.id}
+                  className={cn(
+                    "px-3 py-1 text-sm rounded transition-colors",
+                    activePeriod === period.id
+                      ? "bg-primary text-primary-foreground font-medium"
+                      : "bg-card border border-border hover:bg-muted"
+                  )}
+                  onClick={() => handleQuickPeriod(period.id, period.months)}
                 >
                   {period.label}
                 </button>
@@ -294,12 +320,7 @@ export function FindAvailabilityPanel({
             <Button
               variant="outline"
               size="sm"
-              onClick={() => setCriteria({
-                role: '',
-                allocationNeeded: 50,
-                startDate: format(new Date(), 'yyyy-MM-dd'),
-                endDate: format(addMonths(new Date(), 3), 'yyyy-MM-dd')
-              })}
+              onClick={handleClearFilters}
               className="text-muted-foreground hover:text-foreground"
             >
               Clear Filters
@@ -394,7 +415,7 @@ export function FindAvailabilityPanel({
   );
 }
 
-// Match Card Component
+// Match Card Component - FIX: Book button state and availability colors
 function MatchCard({
   match,
   criteria,
@@ -414,6 +435,12 @@ function MatchCard({
     .join('')
     .substring(0, 2)
     .toUpperCase() || 'NA';
+
+  // FIX: Determine if resource has enough availability
+  const hasEnoughAvailability = match.availablePercent >= criteria.allocationNeeded;
+  
+  // FIX: Availability text color based on match
+  const availabilityColor = hasEnoughAvailability ? 'text-teal-600' : 'text-amber-600';
 
   return (
     <div className="flex items-center gap-4 p-3 bg-card rounded-lg border border-border hover:border-primary/30 transition-colors">
@@ -439,7 +466,8 @@ function MatchCard({
       </div>
 
       <div className="flex-shrink-0 text-right">
-        <div className="text-sm font-semibold text-teal-600">
+        {/* FIX: Color-coded availability text */}
+        <div className={cn("text-sm font-semibold", availabilityColor)}>
           {match.availablePercent}% available
         </div>
         {showAdjustment && match.adjustmentNeeded && (
@@ -452,7 +480,17 @@ function MatchCard({
         )}
       </div>
 
-      <Button size="sm" onClick={onBook} className="bg-primary hover:bg-primary/90">
+      {/* FIX: Book button - disabled when not enough availability */}
+      <Button 
+        size="sm" 
+        onClick={onBook}
+        disabled={!hasEnoughAvailability}
+        className={cn(
+          hasEnoughAvailability
+            ? "bg-primary hover:bg-primary/90 text-primary-foreground"
+            : "bg-muted text-muted-foreground cursor-not-allowed"
+        )}
+      >
         Book
       </Button>
     </div>

@@ -56,10 +56,12 @@ export function CompactResourceCard({
   return (
     <div 
       className={cn(
-        "relative border rounded-lg p-3 cursor-pointer transition-all group",
+        "relative border rounded-lg p-3 cursor-pointer group",
+        // Micro-interactions: smooth transitions for hover effects
+        "transition-all duration-200 hover:-translate-y-1 hover:shadow-lg active:scale-[0.98]",
         isOverAllocated 
-          ? "bg-red-50/40 dark:bg-red-950/20 border-red-300 dark:border-red-800 hover:shadow-red-100 dark:hover:shadow-red-900/20 hover:shadow-md" 
-          : "bg-card border-border hover:border-border/80 hover:shadow-md"
+          ? "bg-red-50/40 dark:bg-red-950/20 border-red-300 dark:border-red-800 hover:shadow-red-100 dark:hover:shadow-red-900/20" 
+          : "bg-card border-border hover:border-primary/30"
       )}
       style={{ 
         borderLeftWidth: '4px', 
@@ -138,7 +140,7 @@ export function CompactResourceCard({
           <Button 
             variant="destructive" 
             size="sm" 
-            className="text-[10px] h-5 px-2"
+            className="text-[10px] h-5 px-2 transition-transform active:scale-95"
             onClick={(e) => { e.stopPropagation(); onEdit(); }}
           >
             Resolve Conflict
@@ -147,7 +149,7 @@ export function CompactResourceCard({
           <Button 
             variant="ghost" 
             size="sm" 
-            className="text-[10px] text-muted-foreground h-5 px-2 hover:text-primary"
+            className="text-[10px] text-muted-foreground h-5 px-2 hover:text-primary transition-transform active:scale-95"
             onClick={(e) => { e.stopPropagation(); onEdit(); }}
           >
             Edit Allocations
