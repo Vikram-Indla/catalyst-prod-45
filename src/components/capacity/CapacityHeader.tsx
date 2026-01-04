@@ -190,9 +190,14 @@ export function CapacityHeader({
             />
           </div>
 
-          {/* VIEW TABS — STRONG ACTIVE STATE with filled background + bottom indicator */}
+          {/* VIEW TABS — List, Contracts, Gantt order */}
           <div className="flex items-center bg-[#f5f5f4] rounded-xl p-1">
-            {(['cards', 'table', 'timeline', 'scenarios'] as const).map((mode) => (
+            {([
+              { mode: 'table' as const, label: 'List' },
+              { mode: 'cards' as const, label: 'Contracts' },
+              { mode: 'timeline' as const, label: 'Gantt' },
+              { mode: 'scenarios' as const, label: 'Scenarios' },
+            ]).map(({ mode, label }) => (
               <button
                 key={mode}
                 onClick={() => onViewModeChange(mode)}
@@ -204,7 +209,7 @@ export function CapacityHeader({
                 )}
               >
                 <ViewIcon mode={mode} />
-                {mode.charAt(0).toUpperCase() + mode.slice(1)}
+                {label}
                 {/* Bottom border indicator for active */}
                 {viewMode === mode && (
                   <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-6 h-0.5 bg-[#1d4ed8] rounded-full" />
