@@ -3,7 +3,7 @@
  * Single source of truth for context-aware navigation
  */
 
-export type WorkspaceType = 'home' | 'enterprise' | 'product' | 'program' | 'project';
+export type WorkspaceType = 'home' | 'enterprise' | 'product' | 'program' | 'project' | 'tests';
 
 export interface WorkspaceContext {
   type: WorkspaceType;
@@ -23,6 +23,11 @@ export function deriveWorkspaceType(pathname: string): WorkspaceType {
   // Home - includes /for-you which is the main home route
   if (pathname === '/' || pathname === '/home' || pathname === '/for-you') {
     return 'home';
+  }
+  
+  // Test Management routes
+  if (pathname.startsWith('/tests')) {
+    return 'tests';
   }
   
   // Enterprise tier routes
@@ -76,6 +81,8 @@ export function getActiveNavItem(workspaceType: WorkspaceType): string {
       return 'Program';
     case 'project':
       return 'Project';
+    case 'tests':
+      return 'Tests';
     default:
       return '';
   }

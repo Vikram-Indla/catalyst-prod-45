@@ -290,6 +290,7 @@ import {
   SettingsPage as TMSettingsPage,
   MyWorkPage
 } from "./modules/test-management";
+import { TestManagementContent } from "./modules/test-management/layouts/TestManagementContent";
 
 const queryClient = new QueryClient();
 
@@ -709,7 +710,7 @@ const App = () => (
               <Route path="/knowledge-hub/documents/:documentId" element={<KnowledgeHubDocumentPage />} />
               
               {/* Test Management Module Routes */}
-              <Route path="/tests" element={<TestManagementLayout />}>
+              <Route path="/tests" element={<TestManagementContent />}>
                 <Route index element={<Navigate to="/tests/my-work" replace />} />
                 <Route path="my-work" element={<MyWorkPage />} />
                 <Route path="cases" element={<TestCasesPage />} />
