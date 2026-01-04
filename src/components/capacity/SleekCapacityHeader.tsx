@@ -197,24 +197,12 @@ export function SleekCapacityHeader({
             />
           </div>
 
-          {/* V2.1: Primary View Toggle - Resources vs Projects */}
+          {/* V2.1: Unified View Toggle - Projects + Resource Views */}
           <div className="flex items-center bg-muted rounded-lg p-0.5 gap-0.5">
-            <button
-              onClick={() => onPrimaryViewChange?.('resources')}
-              className={cn(
-                'px-3 py-1.5 text-sm font-medium rounded-md transition-all flex items-center gap-1.5',
-                primaryView === 'resources'
-                  ? 'bg-card text-foreground shadow-sm'
-                  : 'text-muted-foreground hover:text-foreground hover:bg-card/50'
-              )}
-            >
-              <Users className="w-3.5 h-3.5" />
-              Resources
-            </button>
+            {/* Projects tab */}
             <button
               onClick={() => {
-                // FIX: Tab coupling - Projects only supports Cards view
-                // If current resource view is timeline/table/heatmap, switch to cards first
+                // Switch to Projects view with Cards
                 if (resourceView !== 'cards') {
                   onResourceViewChange?.('cards');
                   onViewModeChange?.('cards');
@@ -222,7 +210,7 @@ export function SleekCapacityHeader({
                 onPrimaryViewChange?.('projects');
               }}
               className={cn(
-                'px-3 py-1.5 text-sm font-medium rounded-md transition-all flex items-center gap-1.5',
+                'px-2.5 py-1.5 text-sm font-medium rounded-md transition-all flex items-center gap-1',
                 primaryView === 'projects'
                   ? 'bg-card text-foreground shadow-sm'
                   : 'text-muted-foreground hover:text-foreground hover:bg-card/50'
@@ -231,62 +219,34 @@ export function SleekCapacityHeader({
               <Briefcase className="w-3.5 h-3.5" />
               Projects
             </button>
+            
+            {/* Separator */}
+            <div className="w-px h-5 bg-border mx-0.5" />
+            
+            {/* Resource view modes: Cards, Table, Timeline, Heatmap */}
+            {(['cards', 'table', 'timeline', 'heatmap'] as ResourceViewMode[]).map((mode) => (
+              <button
+                key={mode}
+                onClick={() => {
+                  // Switch to Resources view with selected mode
+                  onPrimaryViewChange?.('resources');
+                  onResourceViewChange?.(mode);
+                  if (mode !== 'heatmap') {
+                    onViewModeChange?.(mode as 'cards' | 'table' | 'timeline');
+                  }
+                }}
+                className={cn(
+                  'px-2.5 py-1.5 text-sm font-medium rounded-md transition-all flex items-center gap-1',
+                  primaryView === 'resources' && resourceView === mode
+                    ? 'bg-card text-foreground shadow-sm'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-card/50'
+                )}
+              >
+                <ViewIcon mode={mode} />
+                {mode.charAt(0).toUpperCase() + mode.slice(1)}
+              </button>
+            ))}
           </div>
-
-          {/* V2.1: Secondary View Toggle - Changes based on primary view */}
-          {primaryView === 'resources' ? (
-            <div className="flex items-center bg-muted rounded-lg p-0.5 gap-0.5">
-              {(['cards', 'table', 'timeline', 'heatmap'] as ResourceViewMode[]).map((mode) => (
-                <button
-                  key={mode}
-                  onClick={() => {
-                    // FIX: Tab coupling - Timeline/Table/Heatmap only work with Resources view
-                    // This is already in Resources view, so just update the mode
-                    onResourceViewChange?.(mode);
-                    // Also update legacy viewMode for backward compatibility
-                    if (mode !== 'heatmap') {
-                      onViewModeChange?.(mode as 'cards' | 'table' | 'timeline');
-                    }
-                  }}
-                  className={cn(
-                    'px-2.5 py-1.5 text-sm font-medium rounded-md transition-all flex items-center gap-1',
-                    resourceView === mode
-                      ? 'bg-card text-foreground shadow-sm'
-                      : 'text-muted-foreground hover:text-foreground hover:bg-card/50'
-                  )}
-                >
-                  <ViewIcon mode={mode} />
-                  {mode.charAt(0).toUpperCase() + mode.slice(1)}
-                </button>
-              ))}
-            </div>
-          ) : (
-            <div className="flex items-center bg-muted rounded-lg p-0.5 gap-0.5">
-              {(['cards', 'timeline'] as ProjectViewMode[]).map((mode) => (
-                <button
-                  key={mode}
-                  onClick={() => {
-                    // FIX #3: Tab coupling - If clicking Timeline in Projects view, switch to Resources first
-                    if (mode === 'timeline') {
-                      onPrimaryViewChange?.('resources');
-                      onResourceViewChange?.('timeline');
-                    } else {
-                      onProjectViewChange?.(mode);
-                    }
-                  }}
-                  className={cn(
-                    'px-2.5 py-1.5 text-sm font-medium rounded-md transition-all flex items-center gap-1',
-                    projectView === mode
-                      ? 'bg-card text-foreground shadow-sm'
-                      : 'text-muted-foreground hover:text-foreground hover:bg-card/50'
-                  )}
-                >
-                  <ViewIcon mode={mode} />
-                  {mode.charAt(0).toUpperCase() + mode.slice(1)}
-                </button>
-              ))}
-            </div>
-          )}
 
           {/* Timeline Period - Only in timeline view */}
           {(resourceView === 'timeline' || (primaryView === 'projects' && projectView === 'timeline')) && (
