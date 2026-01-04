@@ -2021,30 +2021,6 @@ function TableView({ resources, projects, groupBy, groupedByAssignment, groupedB
       },
     },
     {
-      id: 'allocation',
-      header: 'Allocation',
-      accessor: 'allocation',
-      width: '180px',
-      sortable: true,
-      render: (value: number) => {
-        const barColor = getAllocationBarColor(value);
-        return (
-          <div className="flex items-center gap-3">
-            <span className="text-sm font-semibold text-[#0a0a0a] w-12">{value}%</span>
-            <div className="flex-1 h-2 bg-[#e5e5e5] rounded-full overflow-hidden">
-              <div 
-                className="h-full rounded-full transition-all"
-                style={{ 
-                  width: `${Math.min(value, 100)}%`,
-                  backgroundColor: barColor 
-                }}
-              />
-            </div>
-          </div>
-        );
-      },
-    },
-    {
       id: 'contractEndDate',
       header: 'Contract End',
       accessor: (row: ResourceMetric) => {
