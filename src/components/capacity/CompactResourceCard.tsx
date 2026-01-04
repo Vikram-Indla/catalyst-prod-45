@@ -21,6 +21,12 @@ import type { ResourceAllocation } from '@/modules/capacity-planner/types';
 import { MiniGanttCard } from './MiniGanttCard';
 import { Button } from '@/components/ui/button';
 import { useResourceProfiles, getContractStatus } from '@/hooks/useResourceProfiles';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 
 interface CompactResourceCardProps {
   id: string;
@@ -58,6 +64,16 @@ export function CompactResourceCard({
   const isOverAllocated = totalAllocation > 100;
   const isCritical = totalAllocation > 120;
   const overflowAmount = Math.max(0, totalAllocation - 100);
+
+  // Format contract end date
+  const formatContractDate = (date: string | null | undefined) => {
+    if (!date) return null;
+    return new Date(date).toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric'
+    });
+  };
 
   // Contract ring styles
   const ringStyles = {
@@ -117,14 +133,22 @@ export function CompactResourceCard({
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-1.5">
             <p className="text-sm font-semibold text-foreground truncate leading-tight">{name}</p>
-            {/* Country flag */}
+            {/* Country flag with tooltip */}
             {profile?.country_flag_svg_url && (
-              <img 
-                src={profile.country_flag_svg_url} 
-                alt={profile.country || ''} 
-                className="w-4 h-3 object-cover rounded-sm flex-shrink-0"
-                title={profile.country || ''}
-              />
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <img 
+                      src={profile.country_flag_svg_url} 
+                      alt={profile.country || ''} 
+                      className="w-4 h-3 object-cover rounded-sm flex-shrink-0 cursor-help"
+                    />
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>{profile.country || 'Unknown'}</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             )}
           </div>
           <div className="flex items-center gap-1.5">
@@ -161,8 +185,8 @@ export function CompactResourceCard({
               {totalAllocation}%
             </span>
           </div>
-          {/* Contract days badge */}
-          {contractStatus.status !== 'permanent' && (
+          {/* Contract end date badge */}
+          {contractStatus.status !== 'permanent' && profile?.contract_end_date && (
             <span className={cn(
               "text-[9px] font-medium px-1 py-0.5 rounded",
               contractStatus.status === 'critical' && 'bg-red-100 text-[#be123c]',
@@ -170,7 +194,7 @@ export function CompactResourceCard({
               contractStatus.status === 'healthy' && 'bg-teal-100 text-[#0d9488]',
               contractStatus.status === 'expired' && 'bg-muted text-muted-foreground'
             )}>
-              {contractStatus.label}
+              {formatContractDate(profile.contract_end_date)}
             </span>
           )}
         </div>
