@@ -236,13 +236,6 @@ export const CapacityHeatmap = memo(function CapacityHeatmap({
   
   return (
     <div ref={heatmapRef} className={cn("space-y-4", className)}>
-      {/* Summary Dashboard */}
-      <HeatmapSummaryDashboard
-        stats={data.stats}
-        resources={filteredResources}
-        year={year}
-      />
-      
       {/* Controls row */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
