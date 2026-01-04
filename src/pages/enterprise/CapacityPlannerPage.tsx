@@ -46,7 +46,7 @@ import {
 import { SleekCapacityHeader, PrimaryView, ResourceViewMode, ProjectViewMode } from '@/components/capacity/SleekCapacityHeader';
 import { CompactGroupHeader } from '@/components/capacity/CompactGroupHeader';
 import { CompactResourceCard } from '@/components/capacity/CompactResourceCard';
-import { HeatmapView } from '@/components/capacity/HeatmapView';
+import { CapacityHeatmap } from '@/components/capacity-heatmap';
 import { FindAvailabilityPanel } from '@/components/capacity/FindAvailabilityPanel';
 import { ProjectStaffingView } from '@/components/capacity/ProjectStaffingView';
 import { GroupedTableView } from '@/components/capacity/GroupedTableView';
@@ -513,11 +513,7 @@ export default function CapacityPlannerPage() {
                 />
               )}
               {resourceView === 'heatmap' && (
-                <HeatmapView
-                  resources={filteredResources}
-                  allocations={allocations}
-                  weeksToShow={12}
-                />
+                <CapacityHeatmap />
               )}
             </>
           )}
