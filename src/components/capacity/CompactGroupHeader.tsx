@@ -40,7 +40,7 @@ export function CompactGroupHeader({
     <div 
       className={cn(
         "flex items-center justify-between h-11 px-4 rounded-lg cursor-pointer transition-all hover:shadow-sm",
-        "border border-slate-200 bg-white"
+        "border border-border bg-card"
       )}
       style={{ 
         // FIX #8: Left color bar for group distinction
@@ -53,7 +53,7 @@ export function CompactGroupHeader({
       <div className="flex items-center gap-3">
         <ChevronRight 
           className={cn(
-            "w-4 h-4 transition-transform shrink-0 text-slate-400",
+            "w-4 h-4 transition-transform shrink-0 text-muted-foreground",
             isExpanded && "rotate-90"
           )}
         />
@@ -83,7 +83,7 @@ export function CompactGroupHeader({
       {/* Right: Stats + Utilization + Count */}
       <div className="flex items-center gap-4">
         {/* Inline stats with colored dots */}
-        <div className="hidden md:flex items-center gap-3 text-xs text-slate-600">
+        <div className="hidden md:flex items-center gap-3 text-xs text-muted-foreground">
           {availableCount > 0 && (
             <span className="flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-teal-500" />
@@ -98,8 +98,8 @@ export function CompactGroupHeader({
 
         {/* Utilization mini gauge */}
         <div className="flex items-center gap-2">
-          <div className="w-16 h-1.5 bg-slate-200 rounded-full overflow-hidden hidden sm:block">
-            <div 
+          <div className="w-16 h-1.5 bg-muted rounded-full overflow-hidden hidden sm:block">
+            <div
               className="h-full rounded-full"
               style={{ 
                 width: `${Math.min(averageUtilization, 100)}%`,
