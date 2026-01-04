@@ -19,6 +19,8 @@ import {
   ALLOCATION_SEGMENT_COLORS,
 } from '@/lib/catalyst-colors';
 import { cn } from '@/lib/utils';
+import { toast } from 'sonner';
+import { useResourceProfiles } from '@/hooks/useResourceProfiles';
 import type { 
   CapacityResource, 
   ResourceAllocation, 
@@ -62,6 +64,11 @@ export function AllocationBookingModal({
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [showUnsavedWarning, setShowUnsavedWarning] = useState(false);
   const [selectedDepartmentId, setSelectedDepartmentId] = useState<string | null>(null);
+
+  // Get profile data for contract end date validation
+  const { getProfile } = useResourceProfiles();
+  const profile = resource ? getProfile(resource.id) : null;
+  const contractEndDate = profile?.contract_end_date;
 
   // Timeline configuration - 6 months from current month
   const timelineStart = startOfMonth(new Date());
@@ -116,8 +123,20 @@ export function AllocationBookingModal({
 
   function confirmNewAllocation() {
     if (newAllocation && newAllocation.assignment_id) {
+      // Validate against contract end date
+      if (contractEndDate && newAllocation.end_date) {
+        const allocEnd = new Date(newAllocation.end_date);
+        const contractEnd = new Date(contractEndDate);
+        if (allocEnd > contractEnd) {
+          toast.error('Allocation end date cannot exceed contract end date', {
+            description: `Contract ends on ${format(contractEnd, 'MMM d, yyyy')}. Please adjust the allocation end date.`
+          });
+          return;
+        }
+      }
       setAllocations([...allocations, newAllocation]);
       setNewAllocation(null);
+      setHasUnsavedChanges(true);
     }
   }
 
@@ -293,6 +312,25 @@ export function AllocationBookingModal({
 
   async function handleSave() {
     if (!resource) return;
+    
+    // Validate all allocations against contract end date
+    if (contractEndDate) {
+      const contractEnd = new Date(contractEndDate);
+      const invalidAllocation = allocations.find(alloc => {
+        if (alloc.end_date) {
+          const allocEnd = new Date(alloc.end_date);
+          return allocEnd > contractEnd;
+        }
+        return false;
+      });
+      
+      if (invalidAllocation) {
+        toast.error('Allocation end date cannot exceed contract end date', {
+          description: `Contract ends on ${format(contractEnd, 'MMM d, yyyy')}. Please adjust the allocation "${invalidAllocation.assignment_name}" end date.`
+        });
+        return;
+      }
+    }
     
     setIsSaving(true);
     try {
