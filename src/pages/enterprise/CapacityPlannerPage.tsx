@@ -1360,9 +1360,16 @@ function CardsView({
     return allocations.filter(a => a.profile_id === resourceId);
   };
 
-  // Helper to calculate total allocation from actual allocations
+  // Helper to calculate total allocation from actual allocations - only for CURRENT period
   const getTotalAllocationForResource = (resourceId: string): number => {
-    const resourceAllocations = allocations.filter(a => a.profile_id === resourceId);
+    const now = new Date();
+    const resourceAllocations = allocations.filter(a => {
+      if (a.profile_id !== resourceId) return false;
+      // Only count allocations that are active NOW (overlap with today)
+      const allocStart = new Date(a.start_date);
+      const allocEnd = new Date(a.end_date);
+      return allocStart <= now && allocEnd >= now;
+    });
     return resourceAllocations.reduce((sum, a) => sum + (a.allocation_percent || 0), 0);
   };
   // Default to collapsed state - groups start collapsed
