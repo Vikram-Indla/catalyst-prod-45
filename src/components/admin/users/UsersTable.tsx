@@ -27,16 +27,16 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { Search, MoreHorizontal, UserCog, Power, PowerOff, ShieldCheck, Trash2, KeyRound, CheckCircle, XCircle, Clock, Mail, Upload } from 'lucide-react';
+import { Search, MoreHorizontal, Power, PowerOff, Trash2, KeyRound, CheckCircle, XCircle, Clock, Upload, Pencil } from 'lucide-react';
 import { UserProfile, useDeleteUser, useApproveUser, useRejectUser, useDisableUser, ApprovalStatus, getDisplayStatus } from '@/hooks/useUsers';
-import { format, formatDistanceToNow, isToday, isYesterday } from 'date-fns';
+import { format, isToday, isYesterday } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { ResponsiveTableWrapper } from '@/components/layout/ResponsivePageContainer';
 import { ResetPasswordDialog } from './ResetPasswordDialog';
-import { EditEmailDialog } from './EditEmailDialog';
 import { BulkUpdateDrawer } from './BulkUpdateDrawer';
+import { EditUserDrawer } from './EditUserDrawer';
 import { useIsSuperAdmin } from '@/hooks/useUsers';
-import { VENDORS, LOCATIONS, COUNTRIES, formatContractEndDate } from '@/lib/countryLookup';
+import { formatContractEndDate } from '@/lib/countryLookup';
 
 interface UsersTableProps {
   users: UserProfile[];
@@ -45,7 +45,7 @@ interface UsersTableProps {
   onEditPermissions?: (userId: string) => void;
 }
 
-export function UsersTable({ users, isLoading, onEditRoles, onEditPermissions }: UsersTableProps) {
+export function UsersTable({ users, isLoading }: UsersTableProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [roleFilter, setRoleFilter] = useState('all');
   const [approvalFilter, setApprovalFilter] = useState('all');
@@ -55,7 +55,7 @@ export function UsersTable({ users, isLoading, onEditRoles, onEditPermissions }:
   const [userToDelete, setUserToDelete] = useState<UserProfile | null>(null);
   const [userToReject, setUserToReject] = useState<UserProfile | null>(null);
   const [resetPasswordUser, setResetPasswordUser] = useState<UserProfile | null>(null);
-  const [editEmailUser, setEditEmailUser] = useState<UserProfile | null>(null);
+  const [editUser, setEditUser] = useState<UserProfile | null>(null);
   const [isBulkUpdateOpen, setIsBulkUpdateOpen] = useState(false);
   
   const deleteUser = useDeleteUser();
@@ -384,21 +384,10 @@ export function UsersTable({ users, isLoading, onEditRoles, onEditPermissions }:
                               <DropdownMenuSeparator />
                             </>
                           )}
-                          {onEditRoles && (
-                            <DropdownMenuItem onClick={() => onEditRoles(user.id)}>
-                              <ShieldCheck className="h-4 w-4 mr-2" />
-                              Edit Roles
-                            </DropdownMenuItem>
-                          )}
-                          {onEditPermissions && (
-                            <DropdownMenuItem onClick={() => onEditPermissions(user.id)}>
-                              <UserCog className="h-4 w-4 mr-2" />
-                              Edit Permissions
-                            </DropdownMenuItem>
-                          )}
-                          <DropdownMenuItem onClick={() => setEditEmailUser(user)}>
-                            <Mail className="h-4 w-4 mr-2" />
-                            Edit Email
+                          {/* Edit User - single unified edit option */}
+                          <DropdownMenuItem onClick={() => setEditUser(user)}>
+                            <Pencil className="h-4 w-4 mr-2" />
+                            Edit User
                           </DropdownMenuItem>
                           {/* Reset Password - only for Approved users, only for admins */}
                           {user.approval_status === 'APPROVED' && isSuperAdmin && (
@@ -518,13 +507,11 @@ export function UsersTable({ users, isLoading, onEditRoles, onEditPermissions }:
         userName={resetPasswordUser?.full_name || resetPasswordUser?.email || null}
       />
 
-      {/* Edit Email Dialog */}
-      <EditEmailDialog
-        isOpen={!!editEmailUser}
-        onClose={() => setEditEmailUser(null)}
-        userId={editEmailUser?.id || null}
-        userName={editEmailUser?.full_name || null}
-        currentEmail={editEmailUser?.email || null}
+      {/* Edit User Drawer */}
+      <EditUserDrawer
+        isOpen={!!editUser}
+        onClose={() => setEditUser(null)}
+        user={editUser}
       />
 
       {/* Bulk Update Drawer */}
