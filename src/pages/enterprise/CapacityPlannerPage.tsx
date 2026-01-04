@@ -1915,30 +1915,18 @@ function TableView({ resources, projects, groupBy, groupedByAssignment, groupedB
                   />
                 )}
               </div>
-              <div className="flex items-center gap-1.5">
-                {profile?.location && (
-                  <span 
-                    className={cn(
-                      "text-[9px] font-medium px-1 py-0.5 rounded",
-                      profile.location.toLowerCase().includes('onsite') || profile.location.toLowerCase().includes('riyadh')
-                        ? "bg-[#0d9488]/10 text-[#0d9488]" 
-                        : "bg-[#2563eb]/10 text-[#2563eb]"
-                    )}
-                  >
-                    {profile.location}
-                  </span>
-                )}
-                {contractStatus !== 'permanent' && profile?.contractStatus && (
-                  <span className={cn(
+              {profile?.location && (
+                <span 
+                  className={cn(
                     "text-[9px] font-medium px-1 py-0.5 rounded",
-                    contractStatus === 'critical' && 'bg-red-100 text-[#be123c]',
-                    contractStatus === 'warning' && 'bg-amber-100 text-[#ca8a04]',
-                    contractStatus === 'healthy' && 'bg-teal-100 text-[#0d9488]'
-                  )}>
-                    {profile.contractStatus.label}
-                  </span>
-                )}
-              </div>
+                    profile.location.toLowerCase().includes('onsite') || profile.location.toLowerCase().includes('riyadh')
+                      ? "bg-[#0d9488]/10 text-[#0d9488]" 
+                      : "bg-[#2563eb]/10 text-[#2563eb]"
+                  )}
+                >
+                  {profile.location}
+                </span>
+              )}
             </div>
           </div>
         );
@@ -1980,48 +1968,36 @@ function TableView({ resources, projects, groupBy, groupedByAssignment, groupedB
       accessor: (row: ResourceMetric) => {
         // Get assignment names from allocations table (source of truth)
         const names = getAssignmentNamesForResource(row.id);
-        return names.length > 0 ? names[0] : (row.assignmentName || 'Unassigned');
+        return names.length > 0 ? names.join(', ') : (row.assignmentName || 'Unassigned');
       },
-      width: '200px',
+      width: '280px',
       sortable: true,
       render: (_: any, row: ResourceMetric) => {
         // Get assignment names from allocations table (source of truth)
         const names = getAssignmentNamesForResource(row.id);
-        const assignmentName = names.length > 0 ? names[0] : (row.assignmentName || 'Unassigned');
-        const theme = getAssignmentTheme(assignmentName);
+        const allNames = names.length > 0 ? names : [row.assignmentName || 'Unassigned'];
         
-        // Show multiple assignments if exists
-        if (names.length > 1) {
-          return (
-            <div className="flex items-center gap-1">
-              <span 
-                className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-semibold truncate max-w-[140px]"
-                style={{ 
-                  backgroundColor: `${theme.accent}15`, 
-                  color: theme.accent,
-                  borderLeft: `3px solid ${theme.accent}`
-                }}
-                title={names.join(', ')}
-              >
-                {assignmentName}
-              </span>
-              <span className="text-xs text-muted-foreground">+{names.length - 1}</span>
-            </div>
-          );
-        }
-        
+        // Show all assignment labels
         return (
-          <span 
-            className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-semibold truncate max-w-[180px]"
-            style={{ 
-              backgroundColor: `${theme.accent}15`, 
-              color: theme.accent,
-              borderLeft: `3px solid ${theme.accent}`
-            }}
-            title={assignmentName}
-          >
-            {assignmentName}
-          </span>
+          <div className="flex flex-wrap items-center gap-1">
+            {allNames.map((name, idx) => {
+              const theme = getAssignmentTheme(name);
+              return (
+                <span 
+                  key={idx}
+                  className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-semibold truncate max-w-[120px]"
+                  style={{ 
+                    backgroundColor: `${theme.accent}15`, 
+                    color: theme.accent,
+                    borderLeft: `2px solid ${theme.accent}`
+                  }}
+                  title={name}
+                >
+                  {name}
+                </span>
+              );
+            })}
+          </div>
         );
       },
     },
