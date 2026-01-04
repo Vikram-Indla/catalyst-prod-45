@@ -88,10 +88,11 @@ interface AllocationBarProps {
   leftPx: number;
   widthPx: number;
   rowIndex: number;
+  totalBars: number;
   onClick?: () => void;
 }
 
-function AllocationBar({ allocation, leftPx, widthPx, rowIndex, onClick }: AllocationBarProps) {
+function AllocationBar({ allocation, leftPx, widthPx, rowIndex, totalBars, onClick }: AllocationBarProps) {
   const projectName = allocation.assignment_name || 'Allocation';
   const barStyle = getTimelineBarStyle(projectName);
   
@@ -121,13 +122,35 @@ function AllocationBar({ allocation, leftPx, widthPx, rowIndex, onClick }: Alloc
     return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
   };
 
+  // Calculate vertical position - stack bars within the row without overflow
+  // Row height is 72px, bar height is 32px, we need ~6px padding
+  // For single bar: center it (top: 50%, transform: -50%)
+  // For multiple bars: stack them evenly with smaller gaps
+  const barHeight = 28; // Slightly smaller for multiple bars
+  const rowHeight = 72;
+  const padding = 6;
+  const availableHeight = rowHeight - (padding * 2);
+  
+  let topPx: number;
+  if (totalBars === 1) {
+    // Single bar - center it
+    topPx = (rowHeight - 32) / 2;
+  } else {
+    // Multiple bars - stack them with even spacing
+    const totalBarSpace = totalBars * barHeight;
+    const gap = Math.max(2, (availableHeight - totalBarSpace) / (totalBars + 1));
+    topPx = padding + gap + (rowIndex * (barHeight + gap));
+  }
+
   return (
     <div
       className={cn(styles.allocationBar, getBarClass())}
       style={{
         left: leftPx,
         width: Math.max(widthPx, 80),
-        top: `calc(50% + ${rowIndex * 36}px)`,
+        top: topPx,
+        height: totalBars > 1 ? barHeight : 32,
+        transform: 'none', // Remove the transform since we're calculating exact position
       }}
       onClick={onClick}
       title={`${projectName}: ${allocation.allocation_percent}%`}
@@ -384,7 +407,8 @@ export function EnhancedTimelineView({
                       allocation={alloc}
                       leftPx={position.leftPx}
                       widthPx={position.widthPx}
-                      rowIndex={idx > 0 ? idx : 0}
+                      rowIndex={idx}
+                      totalBars={resourceAllocations.length}
                       onClick={() => onEditResource?.(resource.id)}
                     />
                   );

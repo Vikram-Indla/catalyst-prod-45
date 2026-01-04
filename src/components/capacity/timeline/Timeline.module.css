@@ -107,6 +107,10 @@
   border-bottom: 1px solid rgba(0, 0, 0, 0.05);
   transition: background-color 0.15s ease;
   min-height: 72px;
+  position: relative;
+  /* Clip vertical overflow so bars don't bleed into adjacent rows */
+  overflow-y: clip;
+  overflow-x: visible;
 }
 
 .timelineRow:hover {
@@ -221,6 +225,9 @@
   display: flex;
   flex: 1;
   position: relative;
+  overflow-x: visible; /* Allow bars to extend horizontally */
+  overflow-y: clip; /* Prevent bars from bleeding into other rows */
+  isolation: isolate; /* Create stacking context */
 }
 
 .timelineCell {
@@ -247,10 +254,8 @@
   align-items: center;
   padding: 0 12px;
   position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
+  /* top and transform are set via inline styles now for proper stacking */
   transition: 
-    transform 0.2s cubic-bezier(0.4, 0, 0.2, 1),
     box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
   overflow: hidden;
@@ -272,7 +277,7 @@
 }
 
 .allocationBar:hover {
-  transform: translateY(calc(-50% - 2px));
+  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3), 0 4px 8px rgba(0, 0, 0, 0.1);
   z-index: 10;
 }
 
