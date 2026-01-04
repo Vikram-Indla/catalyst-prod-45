@@ -66,8 +66,8 @@ const SEVERITY_CONFIG: Record<DefectSeverity, {
 
 const STATUS_CONFIG: Record<DefectStatus, { label: string; className: string }> = {
   open: { label: 'Open', className: 'border-danger text-danger' },
-  in_progress: { label: 'In Progress', className: 'bg-info text-white border-info' },
-  resolved: { label: 'Fixed', className: 'bg-purple-500 text-white border-purple-500' },
+  in_progress: { label: 'In Progress', className: 'bg-blue-600 text-white border-blue-600' },
+  resolved: { label: 'Fixed', className: 'bg-teal-600 text-white border-teal-600' },
   closed: { label: 'Closed', className: 'bg-muted text-muted-foreground' },
   wont_fix: { label: "Won't Fix", className: 'bg-muted text-muted-foreground line-through' },
 };

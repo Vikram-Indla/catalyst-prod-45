@@ -57,9 +57,9 @@ export function DefectsMetricsBar({
           </div>
         </div>
         <div className="flex-1 text-center py-3 px-4 border-r">
-          <div className="text-2xl font-bold text-purple-500">{fixed}</div>
+          <div className="text-2xl font-bold text-teal-600">{fixed}</div>
           <div className="text-xs text-muted-foreground flex items-center justify-center gap-1">
-            <span className="inline-block w-2 h-2 rounded-full bg-purple-500" />
+            <span className="inline-block w-2 h-2 rounded-full bg-teal-600" />
             Fixed {fixedPercent}%
           </div>
         </div>

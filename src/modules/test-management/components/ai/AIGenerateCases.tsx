@@ -178,7 +178,7 @@ export function AIGenerateCases({
       <DialogContent className="max-w-4xl max-h-[90vh] flex flex-col">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Sparkles className="h-5 w-5 text-purple-500" />
+            <Sparkles className="h-5 w-5 text-blue-600" />
             AI Generate Test Cases
           </DialogTitle>
         </DialogHeader>

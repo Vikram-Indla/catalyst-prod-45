@@ -63,7 +63,7 @@ const MOCK_TYPES = [
 
 const MOCK_LABELS = [
   { id: 'l1', name: 'Automation', color: '#3b82f6' },
-  { id: 'l2', name: 'API', color: '#8b5cf6' },
+  { id: 'l2', name: 'API', color: '#2563eb' },
   { id: 'l3', name: 'UI', color: '#ec4899' },
   { id: 'l4', name: 'Mobile', color: '#10b981' },
 ];
