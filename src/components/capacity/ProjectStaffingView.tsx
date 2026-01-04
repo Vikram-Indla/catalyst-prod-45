@@ -182,7 +182,11 @@ function ProjectStaffingCard({
   }));
 
   return (
-    <div className={cn("bg-card rounded-xl border-2 p-4", config.border)}>
+    <div className={cn(
+      "bg-card rounded-xl border-2 p-4",
+      "transition-all duration-200 hover:-translate-y-1 hover:shadow-lg cursor-pointer",
+      config.border
+    )}>
       {/* Header */}
       <div className="flex items-start justify-between mb-4">
         <div className="flex items-center gap-3">

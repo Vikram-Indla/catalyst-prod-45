@@ -10,11 +10,12 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { AnimatePresence, motion } from 'framer-motion';
 import { 
   Users, CheckCircle2, BarChart3, AlertTriangle, TrendingUp, Download, Plus, 
   Search, LayoutGrid, Table2, CalendarDays, GanttChart, FileStack, Bot,
   ChevronLeft, ChevronRight, ChevronUp, ChevronDown, Clock, Eye, Copy, Check, RotateCcw, Play,
-  Pencil, Trash2, Cloud, Settings2, ArrowLeftRight, Building2, X
+  Pencil, Trash2, Cloud, Settings2, ArrowLeftRight, Building2, X, RefreshCw, AlertCircle
 } from 'lucide-react';
 import { useCapacityData, useAssignments, useAiRecommendations, useCapacityDepartments, useResourceManagement, useResourceAssignments, useResourceAllocations, exportCapacityToPdf, AllocationBookingModal } from '@/modules/capacity-planner';
 
@@ -79,7 +80,8 @@ const projectColors = [
 export default function CapacityPlannerPage() {
   const queryClient = useQueryClient();
 
-  const { metrics, projects, resources, assignments, isLoading, isFetching } = useCapacityData();
+  const { metrics, projects, resources, assignments, isLoading, isFetching, isError, error, refetch } = useCapacityData();
+  const [isRetrying, setIsRetrying] = useState(false);
   const { createAssignment, deleteAssignment } = useAssignments();
   const { recommendations, highPriorityCount } = useAiRecommendations({ 
     resources: metrics.resources, 
@@ -389,6 +391,19 @@ export default function CapacityPlannerPage() {
     };
   }, [filteredResources, allocations]);
 
+  // Handle retry for error state
+  const handleRetry = useCallback(async () => {
+    setIsRetrying(true);
+    try {
+      await refetch();
+      toast.success('Data refreshed successfully');
+    } catch {
+      toast.error('Failed to refresh data');
+    } finally {
+      setIsRetrying(false);
+    }
+  }, [refetch]);
+
   // Only show loading state on initial load, not during background refetches (e.g., after DnD)
   const hasData = resources.length > 0 || metrics.resources.length > 0;
   if (isLoading && !hasData) {
@@ -420,6 +435,40 @@ export default function CapacityPlannerPage() {
           {/* Skeleton Content */}
           <div className="flex-1 p-6">
             <CapacityPlannerSkeleton view="cards" count={8} />
+          </div>
+        </div>
+      </PageChrome>
+    );
+  }
+
+  // Error state
+  if (isError && !hasData) {
+    return (
+      <PageChrome hideHeader>
+        <div className="flex flex-col h-full bg-[hsl(var(--background))]">
+          <div className="flex-1 flex flex-col items-center justify-center py-20 px-8">
+            <div className="w-20 h-20 rounded-full bg-destructive/10 flex items-center justify-center mb-6">
+              <AlertCircle className="h-10 w-10 text-destructive" />
+            </div>
+            <h3 className="text-xl font-semibold text-foreground mb-2">
+              Failed to load capacity data
+            </h3>
+            <p className="text-muted-foreground text-center max-w-sm mb-6">
+              {(error as Error)?.message || 'Something went wrong while loading. Please try again.'}
+            </p>
+            <Button onClick={handleRetry} disabled={isRetrying} className="transition-transform active:scale-95">
+              {isRetrying ? (
+                <>
+                  <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                  Retrying...
+                </>
+              ) : (
+                <>
+                  <RefreshCw className="h-4 w-4 mr-2" />
+                  Try Again
+                </>
+              )}
+            </Button>
           </div>
         </div>
       </PageChrome>
@@ -498,108 +547,158 @@ export default function CapacityPlannerPage() {
 
           {/* Resources Primary View */}
           {primaryView === 'resources' && (
-            <>
+            <AnimatePresence mode="wait">
               {/* Empty State */}
               {filteredResources.length === 0 && (
-                <div className="flex flex-col items-center justify-center py-20 px-8 bg-card rounded-xl border border-border">
-                  <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mb-4">
-                    <Users className="h-8 w-8 text-muted-foreground" />
+                <motion.div 
+                  key="empty"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.2 }}
+                  className="flex flex-col items-center justify-center py-20 px-8 bg-card rounded-xl border border-border"
+                >
+                  <div className="w-20 h-20 rounded-full bg-muted flex items-center justify-center mb-6">
+                    <Users className="h-10 w-10 text-muted-foreground" />
                   </div>
-                  <h3 className="text-lg font-semibold text-foreground mb-2">
+                  <h3 className="text-xl font-semibold text-foreground mb-2">
                     No resources found
                   </h3>
-                  <p className="text-muted-foreground text-center max-w-sm mb-4">
-                    Try adjusting your filters or search criteria, or add new resources to the capacity planner.
+                  <p className="text-muted-foreground text-center max-w-sm mb-6">
+                    No resources match your current filters. Try adjusting your search criteria or clearing filters.
                   </p>
-                  <div className="flex gap-2">
+                  <div className="flex gap-3">
                     <Button 
                       variant="outline" 
                       onClick={() => {
                         setSearchQuery('');
                         setDepartmentFilter('all');
                         setActiveFilter('all');
+                        toast.info('Filters cleared', { description: 'Showing all resources.' });
                       }}
+                      className="transition-transform active:scale-95"
                     >
+                      <X className="h-4 w-4 mr-2" />
                       Clear Filters
                     </Button>
-                    <Button onClick={() => setResourceModalOpen(true)} className="bg-primary">
+                    <Button onClick={() => setResourceModalOpen(true)} className="bg-primary transition-transform active:scale-95">
                       <Plus className="h-4 w-4 mr-1" />
                       Add Resource
                     </Button>
                   </div>
-                </div>
+                </motion.div>
               )}
 
               {/* Cards View */}
               {filteredResources.length > 0 && resourceView === 'cards' && (
-                <CardsView 
-                  resources={filteredResources} 
-                  groupedByAssignment={groupedByAssignment}
-                  groupedByDepartment={groupedByDepartment}
-                  groupBy={groupBy}
-                  isCollapsed={isCollapsed}
-                  compactMode={compactMode}
-                  allocations={allocations}
-                  onResourceClick={openResourceDrawer}
-                  onEditResource={handleOpenAllocationModal}
-                />
+                <motion.div
+                  key="cards"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <CardsView 
+                    resources={filteredResources} 
+                    groupedByAssignment={groupedByAssignment}
+                    groupedByDepartment={groupedByDepartment}
+                    groupBy={groupBy}
+                    isCollapsed={isCollapsed}
+                    compactMode={compactMode}
+                    allocations={allocations}
+                    onResourceClick={openResourceDrawer}
+                    onEditResource={handleOpenAllocationModal}
+                  />
+                </motion.div>
               )}
               {/* Table View */}
               {filteredResources.length > 0 && resourceView === 'table' && (
-                <TableView 
-                  resources={filteredResources} 
-                  projects={projects}
-                  groupBy={groupBy}
-                  groupedByAssignment={groupedByAssignment}
-                  groupedByDepartment={groupedByDepartment}
-                  allocations={allocations}
-                  onResourceClick={openResourceDrawer}
-                  onEditResource={handleOpenAllocationModal}
-                  onDeleteResource={(resource) => {
-                    setResourceToDelete(resource);
-                    setResourcesToDelete([]);
-                    setDeleteConfirmOpen(true);
-                  }}
-                  onBulkDelete={(resources) => {
-                    setResourcesToDelete(resources);
-                    setResourceToDelete(null);
-                    setDeleteConfirmOpen(true);
-                  }}
-                  onBulkEdit={(resources) => {
-                    setResourcesToBulkEdit(resources);
-                    setBulkEditOpen(true);
-                  }}
-                />
+                <motion.div
+                  key="table"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <TableView 
+                    resources={filteredResources} 
+                    projects={projects}
+                    groupBy={groupBy}
+                    groupedByAssignment={groupedByAssignment}
+                    groupedByDepartment={groupedByDepartment}
+                    allocations={allocations}
+                    onResourceClick={openResourceDrawer}
+                    onEditResource={handleOpenAllocationModal}
+                    onDeleteResource={(resource) => {
+                      setResourceToDelete(resource);
+                      setResourcesToDelete([]);
+                      setDeleteConfirmOpen(true);
+                    }}
+                    onBulkDelete={(resources) => {
+                      setResourcesToDelete(resources);
+                      setResourceToDelete(null);
+                      setDeleteConfirmOpen(true);
+                    }}
+                    onBulkEdit={(resources) => {
+                      setResourcesToBulkEdit(resources);
+                      setBulkEditOpen(true);
+                    }}
+                  />
+                </motion.div>
               )}
               {/* Timeline View */}
               {filteredResources.length > 0 && resourceView === 'timeline' && (
-                <TimelineView 
-                  resources={filteredResources} 
-                  period={period}
-                  groupBy={groupBy}
-                  groupedByAssignment={groupedByAssignment}
-                  groupedByDepartment={groupedByDepartment}
-                  allocations={allocations}
-                  onEditResource={handleOpenAllocationModal}
-                />
+                <motion.div
+                  key="timeline"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <TimelineView 
+                    resources={filteredResources} 
+                    period={period}
+                    groupBy={groupBy}
+                    groupedByAssignment={groupedByAssignment}
+                    groupedByDepartment={groupedByDepartment}
+                    allocations={allocations}
+                    onEditResource={handleOpenAllocationModal}
+                  />
+                </motion.div>
               )}
               {/* Heatmap View */}
               {filteredResources.length > 0 && resourceView === 'heatmap' && (
-                <CapacityHeatmap />
+                <motion.div
+                  key="heatmap"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <CapacityHeatmap />
+                </motion.div>
               )}
-            </>
+            </AnimatePresence>
           )}
 
           {/* Projects Primary View */}
           {primaryView === 'projects' && (
-            <ProjectStaffingView
-              assignments={resourceAssignments}
-              allocations={allocations}
-              onAssignResource={(assignmentId) => {
-                // Open find availability with project context
-                setResourceModalOpen(true);
-              }}
-            />
+            <motion.div
+              key="projects"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.2 }}
+            >
+              <ProjectStaffingView
+                assignments={resourceAssignments}
+                allocations={allocations}
+                onAssignResource={(assignmentId) => {
+                  // Open find availability with project context
+                  setResourceModalOpen(true);
+                }}
+              />
+            </motion.div>
           )}
         </div>
 

@@ -7,7 +7,7 @@ export function useCapacityData() {
   const queryClient = useQueryClient();
 
   // Fetch all resources from profiles table with assignment_id from resource_inventory
-  const { data: resources = [], isLoading: resourcesLoading, isFetching: resourcesFetching } = useQuery({
+  const { data: resources = [], isLoading: resourcesLoading, isFetching: resourcesFetching, isError: resourcesError, error: resourcesErrorObj, refetch: refetchResources } = useQuery({
     queryKey: ['capacity-planner-resources'],
     staleTime: 30000, // Reduce unnecessary refetches during DnD
     queryFn: async () => {
@@ -104,7 +104,7 @@ export function useCapacityData() {
   });
 
   // Fetch all projects
-  const { data: projects = [], isLoading: projectsLoading } = useQuery({
+  const { data: projects = [], isLoading: projectsLoading, isError: projectsError } = useQuery({
     queryKey: ['capacity-planner-projects'],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -122,7 +122,7 @@ export function useCapacityData() {
   });
 
   // Fetch all active assignments
-  const { data: assignments = [], isLoading: assignmentsLoading } = useQuery({
+  const { data: assignments = [], isLoading: assignmentsLoading, isError: assignmentsError } = useQuery({
     queryKey: ['capacity-planner-assignments'],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -136,7 +136,7 @@ export function useCapacityData() {
   });
 
   // Fetch scenarios
-  const { data: scenarios = [], isLoading: scenariosLoading } = useQuery({
+  const { data: scenarios = [], isLoading: scenariosLoading, isError: scenariosError } = useQuery({
     queryKey: ['capacity-planner-scenarios'],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -247,5 +247,8 @@ export function useCapacityData() {
     metrics: calculateMetrics(),
     isLoading: resourcesLoading || projectsLoading || assignmentsLoading || scenariosLoading,
     isFetching: resourcesFetching,
+    isError: resourcesError || projectsError || assignmentsError || scenariosError,
+    error: resourcesErrorObj,
+    refetch: refetchResources,
   };
 }
