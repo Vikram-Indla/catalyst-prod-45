@@ -22,22 +22,27 @@ serve(async (req) => {
     const url = new URL(req.url);
     const pathParts = url.pathname.split('/').filter(Boolean);
     
-    // Expected: /tm-cycles/projects/:projectId/cycles/:cycleId?
-    const projectIdIndex = pathParts.indexOf('projects') + 1;
-    const projectId = pathParts[projectIdIndex];
-    const cycleIdIndex = pathParts.indexOf('cycles') + 1;
-    const cycleId = pathParts[cycleIdIndex];
-    const action = pathParts[cycleIdIndex + 1];
+    // URL patterns:
+    // GET /tm-cycles?project_id={id} - List cycles
+    // GET /tm-cycles/{id} - Get cycle with stats
+    // POST /tm-cycles - Create cycle
+    // PATCH /tm-cycles/{id} - Update cycle
+    // DELETE /tm-cycles/{id} - Delete cycle
+    // POST /tm-cycles/{id}/clone - Clone cycle
+    
+    const cycleId = pathParts[1]; // After 'tm-cycles'
+    const action = pathParts[2]; // 'clone' if present
 
-    if (!projectId) {
-      return new Response(
-        JSON.stringify({ error: 'Project ID required' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
-
-    // GET /projects/:projectId/cycles - List cycles
+    // GET /tm-cycles?project_id={id} - List cycles
     if (req.method === 'GET' && !cycleId) {
+      const projectId = url.searchParams.get('project_id');
+      if (!projectId) {
+        return new Response(
+          JSON.stringify({ error: 'project_id query parameter required' }),
+          { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+
       const status = url.searchParams.get('status');
       const environment_id = url.searchParams.get('environment_id');
       const page = parseInt(url.searchParams.get('page') || '1');
@@ -50,7 +55,7 @@ serve(async (req) => {
           *,
           tm_environments(id, name),
           tm_cycle_scope(count),
-          created_by_user:tm_users!tm_test_cycles_created_by_fkey(id, display_name)
+          created_by_user:tm_users!tm_test_cycles_created_by_fkey(id, display_name, email)
         `, { count: 'exact' })
         .eq('project_id', projectId)
         .order('created_at', { ascending: false })
@@ -77,9 +82,17 @@ serve(async (req) => {
       );
     }
 
-    // POST /projects/:projectId/cycles - Create cycle
+    // POST /tm-cycles - Create cycle
     if (req.method === 'POST' && !cycleId) {
       const body = await req.json();
+      
+      if (!body.project_id) {
+        return new Response(
+          JSON.stringify({ error: 'project_id required in body' }),
+          { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+
       const { data: { user } } = await supabase.auth.getUser();
 
       // Get user's tm_users id
@@ -89,15 +102,17 @@ serve(async (req) => {
         .eq('auth_user_id', user?.id)
         .maybeSingle();
 
-      // Generate cycle key
-      const { data: keyData } = await supabase.rpc('tm_next_entity_key', {
-        p_project_id: projectId,
+      // Generate cycle key using next_entity_key function
+      const { data: keyData, error: keyError } = await supabase.rpc('tm_next_entity_key', {
+        p_project_id: body.project_id,
         p_prefix: 'CY'
       });
 
+      console.log('Generated key:', keyData, 'Error:', keyError);
+
       const cycleData = {
-        project_id: projectId,
-        cycle_key: keyData || `CY-${Date.now()}`,
+        project_id: body.project_id,
+        cycle_key: keyData || `CY-${String(Date.now()).slice(-3).padStart(3, '0')}`,
         name: body.name,
         description: body.description,
         environment_id: body.environment_id,
@@ -105,6 +120,7 @@ serve(async (req) => {
         planned_end_date: body.planned_end_date,
         status: 'not_started',
         created_by: tmUser?.id,
+        // Initialize all stats to 0
         total_cases: 0,
         passed_count: 0,
         failed_count: 0,
@@ -115,7 +131,11 @@ serve(async (req) => {
       const { data, error } = await supabase
         .from('tm_test_cycles')
         .insert(cycleData)
-        .select()
+        .select(`
+          *,
+          tm_environments(id, name),
+          created_by_user:tm_users!tm_test_cycles_created_by_fkey(id, display_name, email)
+        `)
         .single();
 
       if (error) throw error;
@@ -138,7 +158,13 @@ serve(async (req) => {
           await supabase.from('tm_cycle_scope').insert(scopeItems);
           
           // Update cycle counts
-          await supabase.rpc('tm_update_cycle_stats', { p_cycle_id: data.id });
+          await supabase
+            .from('tm_test_cycles')
+            .update({ 
+              total_cases: setCases.length, 
+              not_run_count: setCases.length 
+            })
+            .eq('id', data.id);
         }
       }
 
@@ -159,7 +185,14 @@ serve(async (req) => {
           }));
 
           await supabase.from('tm_cycle_scope').insert(scopeItems);
-          await supabase.rpc('tm_update_cycle_stats', { p_cycle_id: data.id });
+          
+          await supabase
+            .from('tm_test_cycles')
+            .update({ 
+              total_cases: folderCases.length, 
+              not_run_count: folderCases.length 
+            })
+            .eq('id', data.id);
         }
       }
 
@@ -169,7 +202,7 @@ serve(async (req) => {
       );
     }
 
-    // GET /projects/:projectId/cycles/:cycleId - Get single cycle
+    // GET /tm-cycles/{id} - Get single cycle with stats
     if (req.method === 'GET' && cycleId && !action) {
       const { data, error } = await supabase
         .from('tm_test_cycles')
@@ -183,12 +216,11 @@ serve(async (req) => {
             assigned_to,
             execution_order,
             tm_test_cases(id, case_key, title, priority),
-            assignee:tm_users(id, display_name)
+            assignee:tm_users(id, display_name, email)
           ),
-          created_by_user:tm_users!tm_test_cycles_created_by_fkey(id, display_name)
+          created_by_user:tm_users!tm_test_cycles_created_by_fkey(id, display_name, email)
         `)
         .eq('id', cycleId)
-        .eq('project_id', projectId)
         .maybeSingle();
 
       if (error) throw error;
@@ -199,13 +231,25 @@ serve(async (req) => {
         );
       }
 
+      // Calculate progress stats
+      const executed = data.passed_count + data.failed_count + data.blocked_count;
+      const progress = data.total_cases > 0 ? Math.round((executed / data.total_cases) * 100) : 0;
+      const passRate = executed > 0 ? Math.round((data.passed_count / executed) * 100) : 0;
+
       return new Response(
-        JSON.stringify(data),
+        JSON.stringify({
+          ...data,
+          stats: {
+            executed,
+            progress,
+            passRate
+          }
+        }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    // PATCH /projects/:projectId/cycles/:cycleId - Update cycle
+    // PATCH /tm-cycles/{id} - Update cycle
     if (req.method === 'PATCH' && cycleId && !action) {
       const body = await req.json();
       
@@ -253,8 +297,11 @@ serve(async (req) => {
         .from('tm_test_cycles')
         .update(updates)
         .eq('id', cycleId)
-        .eq('project_id', projectId)
-        .select()
+        .select(`
+          *,
+          tm_environments(id, name),
+          created_by_user:tm_users!tm_test_cycles_created_by_fkey(id, display_name, email)
+        `)
         .single();
 
       if (error) throw error;
@@ -265,7 +312,7 @@ serve(async (req) => {
       );
     }
 
-    // DELETE /projects/:projectId/cycles/:cycleId - Delete cycle
+    // DELETE /tm-cycles/{id} - Delete cycle (prevent if has runs)
     if (req.method === 'DELETE' && cycleId && !action) {
       // Check if cycle has any runs
       const { count } = await supabase
@@ -280,18 +327,23 @@ serve(async (req) => {
         );
       }
 
+      // Delete scope items first
+      await supabase
+        .from('tm_cycle_scope')
+        .delete()
+        .eq('cycle_id', cycleId);
+
       const { error } = await supabase
         .from('tm_test_cycles')
         .delete()
-        .eq('id', cycleId)
-        .eq('project_id', projectId);
+        .eq('id', cycleId);
 
       if (error) throw error;
 
       return new Response(null, { status: 204, headers: corsHeaders });
     }
 
-    // POST /projects/:projectId/cycles/:cycleId/clone - Clone cycle
+    // POST /tm-cycles/{id}/clone - Clone cycle with scope
     if (req.method === 'POST' && action === 'clone') {
       const body = await req.json();
       const { data: { user } } = await supabase.auth.getUser();
@@ -302,13 +354,17 @@ serve(async (req) => {
         .eq('auth_user_id', user?.id)
         .maybeSingle();
 
-      // Get original cycle
-      const { data: original } = await supabase
+      // Get original cycle with scope
+      const { data: original, error: originalError } = await supabase
         .from('tm_test_cycles')
-        .select('*, tm_cycle_scope(*)')
+        .select(`
+          *,
+          tm_cycle_scope(case_id, assigned_to, execution_order)
+        `)
         .eq('id', cycleId)
         .single();
 
+      if (originalError) throw originalError;
       if (!original) {
         return new Response(
           JSON.stringify({ error: 'Cycle not found' }),
@@ -316,17 +372,19 @@ serve(async (req) => {
         );
       }
 
-      // Generate new key
+      // Generate new key using next_entity_key
       const { data: keyData } = await supabase.rpc('tm_next_entity_key', {
-        p_project_id: projectId,
+        p_project_id: original.project_id,
         p_prefix: 'CY'
       });
 
-      // Create new cycle
+      const scopeCount = original.tm_cycle_scope?.length || 0;
+
+      // Create new cycle with reset stats
       const { data: newCycle, error: cycleError } = await supabase
         .from('tm_test_cycles')
         .insert({
-          project_id: projectId,
+          project_id: original.project_id,
           cycle_key: keyData,
           name: body.name || `${original.name} (Copy)`,
           description: original.description,
@@ -335,23 +393,28 @@ serve(async (req) => {
           planned_end_date: body.planned_end_date,
           status: 'not_started',
           created_by: tmUser?.id,
-          total_cases: original.total_cases,
-          not_run_count: original.total_cases,
+          // Initialize stats based on scope
+          total_cases: scopeCount,
+          not_run_count: scopeCount,
           passed_count: 0,
           failed_count: 0,
           blocked_count: 0
         })
-        .select()
+        .select(`
+          *,
+          tm_environments(id, name),
+          created_by_user:tm_users!tm_test_cycles_created_by_fkey(id, display_name, email)
+        `)
         .single();
 
       if (cycleError) throw cycleError;
 
-      // Clone scope items
+      // Clone scope items with not_run status
       if (original.tm_cycle_scope?.length) {
-        const scopeItems = original.tm_cycle_scope.map((s: Record<string, unknown>) => ({
+        const scopeItems = original.tm_cycle_scope.map((s: { case_id: string; assigned_to: string | null; execution_order: number }) => ({
           cycle_id: newCycle.id,
           case_id: s.case_id,
-          current_status: 'not_run',
+          current_status: 'not_run', // Always reset to not_run
           assigned_to: body.keep_assignments ? s.assigned_to : null,
           execution_order: s.execution_order
         }));
@@ -362,62 +425,6 @@ serve(async (req) => {
       return new Response(
         JSON.stringify(newCycle),
         { status: 201, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
-
-    // GET /projects/:projectId/cycles/:cycleId/progress - Get progress
-    if (req.method === 'GET' && action === 'progress') {
-      const { data, error } = await supabase
-        .from('tm_test_cycles')
-        .select(`
-          id,
-          total_cases,
-          passed_count,
-          failed_count,
-          blocked_count,
-          not_run_count,
-          planned_start_date,
-          planned_end_date,
-          actual_start_date,
-          status
-        `)
-        .eq('id', cycleId)
-        .single();
-
-      if (error) throw error;
-
-      const executed = data.passed_count + data.failed_count + data.blocked_count;
-      const progress = data.total_cases > 0 ? Math.round((executed / data.total_cases) * 100) : 0;
-      const passRate = executed > 0 ? Math.round((data.passed_count / executed) * 100) : 0;
-
-      // Calculate schedule status
-      const now = new Date();
-      const endDate = data.planned_end_date ? new Date(data.planned_end_date) : null;
-      const startDate = data.planned_start_date ? new Date(data.planned_start_date) : null;
-      
-      let scheduleStatus = 'on_track';
-      if (endDate && now > endDate && data.status !== 'completed') {
-        scheduleStatus = 'overdue';
-      } else if (startDate && endDate) {
-        const totalDays = (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24);
-        const daysElapsed = (now.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24);
-        const expectedProgress = (daysElapsed / totalDays) * 100;
-        if (progress < expectedProgress - 10) {
-          scheduleStatus = 'behind';
-        } else if (progress > expectedProgress + 10) {
-          scheduleStatus = 'ahead';
-        }
-      }
-
-      return new Response(
-        JSON.stringify({
-          ...data,
-          executed,
-          progress,
-          passRate,
-          scheduleStatus
-        }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
