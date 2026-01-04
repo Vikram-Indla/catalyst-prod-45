@@ -212,7 +212,15 @@ export function SleekCapacityHeader({
               Resources
             </button>
             <button
-              onClick={() => onPrimaryViewChange?.('projects')}
+              onClick={() => {
+                // FIX: Tab coupling - Projects only supports Cards view
+                // If current resource view is timeline/table/heatmap, switch to cards first
+                if (resourceView !== 'cards') {
+                  onResourceViewChange?.('cards');
+                  onViewModeChange?.('cards');
+                }
+                onPrimaryViewChange?.('projects');
+              }}
               className={cn(
                 'px-3 py-1.5 text-sm font-medium rounded-md transition-all flex items-center gap-1.5',
                 primaryView === 'projects'
@@ -232,6 +240,8 @@ export function SleekCapacityHeader({
                 <button
                   key={mode}
                   onClick={() => {
+                    // FIX: Tab coupling - Timeline/Table/Heatmap only work with Resources view
+                    // This is already in Resources view, so just update the mode
                     onResourceViewChange?.(mode);
                     // Also update legacy viewMode for backward compatibility
                     if (mode !== 'heatmap') {

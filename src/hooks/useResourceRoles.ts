@@ -45,12 +45,20 @@ async function fetchResourceRoles(): Promise<RoleOption[]> {
   // System/admin roles to exclude from dropdowns
   const SYSTEM_ROLES = ['super_admin', 'management'];
 
+  // Helper function to format role names (snake_case to Title Case)
+  const formatRoleName = (name: string): string => {
+    return name
+      .split('_')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(' ');
+  };
+
   // Build role options with counts, excluding system roles
   return (productRoles || [])
     .filter(role => !SYSTEM_ROLES.includes(role.code)) // Exclude system roles
     .map(role => ({
       name: role.name,
-      displayName: role.name,
+      displayName: formatRoleName(role.name), // Format for display
       count: roleCountMap.get(role.id) || 0
     }))
     .filter(role => role.count > 0) // Only show roles that have users assigned

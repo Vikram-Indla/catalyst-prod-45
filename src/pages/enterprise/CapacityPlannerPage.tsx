@@ -393,9 +393,34 @@ export default function CapacityPlannerPage() {
   const hasData = resources.length > 0 || metrics.resources.length > 0;
   if (isLoading && !hasData) {
     return (
-      <PageChrome>
-        <div className="flex items-center justify-center h-full">
-          <div className="text-muted-foreground">Loading capacity data...</div>
+      <PageChrome hideHeader>
+        <div className="flex flex-col h-full bg-[hsl(var(--background))]">
+          {/* Skeleton Header */}
+          <div className="bg-card border-b border-border p-4 space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="h-4 w-24 bg-muted rounded animate-pulse" />
+                <div className="h-4 w-16 bg-muted rounded animate-pulse" />
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="h-7 w-20 bg-muted rounded animate-pulse" />
+                <div className="h-7 w-28 bg-primary/20 rounded animate-pulse" />
+              </div>
+            </div>
+            <div className="flex items-center gap-6">
+              {[...Array(4)].map((_, i) => (
+                <div key={i} className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-muted animate-pulse" />
+                  <div className="h-6 w-12 bg-muted rounded animate-pulse" />
+                </div>
+              ))}
+            </div>
+          </div>
+          
+          {/* Skeleton Content */}
+          <div className="flex-1 p-6">
+            <CapacityPlannerSkeleton view="cards" count={8} />
+          </div>
         </div>
       </PageChrome>
     );
@@ -474,7 +499,39 @@ export default function CapacityPlannerPage() {
           {/* Resources Primary View */}
           {primaryView === 'resources' && (
             <>
-              {resourceView === 'cards' && (
+              {/* Empty State */}
+              {filteredResources.length === 0 && (
+                <div className="flex flex-col items-center justify-center py-20 px-8 bg-card rounded-xl border border-border">
+                  <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mb-4">
+                    <Users className="h-8 w-8 text-muted-foreground" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-foreground mb-2">
+                    No resources found
+                  </h3>
+                  <p className="text-muted-foreground text-center max-w-sm mb-4">
+                    Try adjusting your filters or search criteria, or add new resources to the capacity planner.
+                  </p>
+                  <div className="flex gap-2">
+                    <Button 
+                      variant="outline" 
+                      onClick={() => {
+                        setSearchQuery('');
+                        setDepartmentFilter('all');
+                        setActiveFilter('all');
+                      }}
+                    >
+                      Clear Filters
+                    </Button>
+                    <Button onClick={() => setResourceModalOpen(true)} className="bg-primary">
+                      <Plus className="h-4 w-4 mr-1" />
+                      Add Resource
+                    </Button>
+                  </div>
+                </div>
+              )}
+
+              {/* Cards View */}
+              {filteredResources.length > 0 && resourceView === 'cards' && (
                 <CardsView 
                   resources={filteredResources} 
                   groupedByAssignment={groupedByAssignment}
@@ -487,7 +544,8 @@ export default function CapacityPlannerPage() {
                   onEditResource={handleOpenAllocationModal}
                 />
               )}
-              {resourceView === 'table' && (
+              {/* Table View */}
+              {filteredResources.length > 0 && resourceView === 'table' && (
                 <TableView 
                   resources={filteredResources} 
                   projects={projects}
@@ -513,7 +571,8 @@ export default function CapacityPlannerPage() {
                   }}
                 />
               )}
-              {resourceView === 'timeline' && (
+              {/* Timeline View */}
+              {filteredResources.length > 0 && resourceView === 'timeline' && (
                 <TimelineView 
                   resources={filteredResources} 
                   period={period}
@@ -524,7 +583,8 @@ export default function CapacityPlannerPage() {
                   onEditResource={handleOpenAllocationModal}
                 />
               )}
-              {resourceView === 'heatmap' && (
+              {/* Heatmap View */}
+              {filteredResources.length > 0 && resourceView === 'heatmap' && (
                 <CapacityHeatmap />
               )}
             </>
@@ -2212,10 +2272,14 @@ function TimelineView({ resources, period, groupBy, groupedByAssignment, grouped
     });
   }, [periods, period]);
 
-  // Calculate Gantt bar position for an allocation
+  // Calculate Gantt bar position for an allocation - pixel-precise version
   const calculateGanttBar = useCallback((alloc: ResourceAllocation) => {
     const allocStart = new Date(alloc.start_date);
     const allocEnd = new Date(alloc.end_date);
+    
+    // Normalize allocation dates to full-day range
+    allocStart.setHours(0, 0, 0, 0);
+    allocEnd.setHours(23, 59, 59, 999);
     
     // Find start column index
     let startColIndex = periodDateRanges.findIndex(p => 
@@ -2246,9 +2310,39 @@ function TimelineView({ resources, period, groupBy, groupedByAssignment, grouped
       return null;
     }
     
+    // Calculate pixel-precise left offset within first column
+    const startPeriod = periodDateRanges[startColIndex];
+    const periodDuration = startPeriod.end.getTime() - startPeriod.start.getTime();
+    const allocStartInPeriod = Math.max(allocStart.getTime(), startPeriod.start.getTime());
+    const leftOffsetRatio = (allocStartInPeriod - startPeriod.start.getTime()) / periodDuration;
+    const leftOffset = leftOffsetRatio * columnWidth;
+    
+    // Calculate pixel-precise width
+    const endPeriod = periodDateRanges[endColIndex];
+    const endPeriodDuration = endPeriod.end.getTime() - endPeriod.start.getTime();
+    const allocEndInPeriod = Math.min(allocEnd.getTime(), endPeriod.end.getTime());
+    const rightOffsetRatio = (allocEndInPeriod - endPeriod.start.getTime()) / endPeriodDuration;
+    const rightOffset = rightOffsetRatio * columnWidth;
+    
+    // Total width: (full columns in between) + (partial start) + (partial end)
     const span = endColIndex - startColIndex + 1;
-    return { startColIndex, endColIndex, span };
-  }, [periodDateRanges]);
+    let barWidth: number;
+    if (startColIndex === endColIndex) {
+      // Bar fits within single column
+      barWidth = (rightOffsetRatio - leftOffsetRatio) * columnWidth;
+    } else {
+      // Bar spans multiple columns
+      const startColRemainder = (1 - leftOffsetRatio) * columnWidth;
+      const endColPortion = rightOffsetRatio * columnWidth;
+      const middleColumns = (span - 2) * columnWidth;
+      barWidth = startColRemainder + middleColumns + endColPortion;
+    }
+    
+    // Minimum width for visibility
+    barWidth = Math.max(barWidth, 60);
+    
+    return { startColIndex, endColIndex, span, leftOffset, barWidth };
+  }, [periodDateRanges, columnWidth]);
 
   const renderResourceRow = (resource: ResourceMetric, assignmentName: string, isEven: boolean) => {
     const theme = getAssignmentTheme(assignmentName);
@@ -2345,26 +2439,27 @@ function TimelineView({ resources, period, groupBy, groupedByAssignment, grouped
                 </div>
               )}
               
-              {/* Render bars that START in this column */}
+              {/* Render bars that START in this column - pixel-precise positioning */}
               {barsStartingHere.map((bar, idx) => {
                 const projectName = bar.alloc.assignment_name || 'Allocation';
                 const projectColor = getTimelineProjectColor(projectName);
                 const tooltipText = `${projectName}: ${bar.alloc.allocation_percent}% (${new Date(bar.alloc.start_date).toLocaleDateString()} – ${new Date(bar.alloc.end_date).toLocaleDateString()})`;
                 
-                 // Calculate width based on span (how many columns it covers)
-                 const barWidth = bar.span * columnWidth;
+                // Use pixel-precise positioning from calculateGanttBar
+                const leftPx = bar.leftOffset || 0;
+                const widthPx = bar.barWidth || (bar.span * columnWidth);
 
-                 return (
-                   <div
-                     key={bar.alloc.id || idx}
-                     className="absolute h-7 rounded flex items-center px-3 text-[11px] font-semibold cursor-pointer hover:opacity-90 transition-opacity shadow-sm z-10"
-                     style={{
-                       top: 8 + idx * 32,
-                       left: 0,
-                       width: barWidth,
-                       backgroundColor: projectColor.bg,
-                       color: projectColor.text,
-                     }}
+                return (
+                  <div
+                    key={bar.alloc.id || idx}
+                    className="absolute h-7 rounded flex items-center px-3 text-[11px] font-semibold cursor-pointer hover:opacity-90 transition-opacity shadow-sm z-10"
+                    style={{
+                      top: 8 + idx * 32,
+                      left: leftPx,
+                      width: widthPx,
+                      backgroundColor: projectColor.bg,
+                      color: projectColor.text,
+                    }}
                     title={tooltipText}
                     onClick={() => onEditResource?.(resource.id)}
                   >
