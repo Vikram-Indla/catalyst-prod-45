@@ -1,121 +1,176 @@
 /**
  * Test Cycles Page
- * Displays test cycles with progress stats and management
+ * Displays test cycles with grid/list view, filters, and management
  */
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { 
   RefreshCw, 
   Plus, 
   Search, 
-  Filter, 
-  MoreHorizontal,
-  Copy,
-  Trash2,
-  Edit,
-  Play,
-  CheckCircle2,
-  XCircle,
-  AlertCircle,
-  Clock
+  LayoutGrid,
+  List,
+  Filter
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { cn } from '@/lib/utils';
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
+  Table,
+  TableBody,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
+import { Skeleton } from '@/components/ui/skeleton';
+import { useTestCycles, useCreateTestCycle, useUpdateTestCycle, useDeleteTestCycle, useDuplicateCycle } from '../hooks/useCycles';
+import { CycleCard, CycleRow, CreateCycleModal } from '../components/cycles';
+import type { TestCycle, CycleStatus } from '../api/types';
+import { toast } from 'sonner';
 
-// Mock data for test cycles
-const mockCycles = [
-  { 
-    id: '1', 
-    key: 'CY-001', 
-    name: 'Sprint 23 Regression', 
-    status: 'IN_PROGRESS', 
-    totalCases: 45,
-    passedCount: 28,
-    failedCount: 5,
-    blockedCount: 2,
-    notRunCount: 10,
-    progress: 78,
-    passRate: 85,
-    dueDate: '2024-01-20'
-  },
-  { 
-    id: '2', 
-    key: 'CY-002', 
-    name: 'Authentication Module', 
-    status: 'COMPLETED', 
-    totalCases: 20,
-    passedCount: 18,
-    failedCount: 2,
-    blockedCount: 0,
-    notRunCount: 0,
-    progress: 100,
-    passRate: 90,
-    dueDate: '2024-01-15'
-  },
-  { 
-    id: '3', 
-    key: 'CY-003', 
-    name: 'API Integration Tests', 
-    status: 'PLANNED', 
-    totalCases: 30,
-    passedCount: 0,
-    failedCount: 0,
-    blockedCount: 0,
-    notRunCount: 30,
-    progress: 0,
-    passRate: 0,
-    dueDate: '2024-01-25'
-  },
-  { 
-    id: '4', 
-    key: 'CY-004', 
-    name: 'Performance Baseline', 
-    status: 'IN_PROGRESS', 
-    totalCases: 15,
-    passedCount: 8,
-    failedCount: 1,
-    blockedCount: 1,
-    notRunCount: 5,
-    progress: 67,
-    passRate: 80,
-    dueDate: '2024-01-22'
-  },
-];
-
-const statusConfig: Record<string, { label: string; class: string; icon: React.ElementType }> = {
-  PLANNED: { label: 'Planned', class: 'bg-muted text-muted-foreground', icon: Clock },
-  IN_PROGRESS: { label: 'In Progress', class: 'bg-info/10 text-info border-info/20', icon: Play },
-  COMPLETED: { label: 'Completed', class: 'bg-success/10 text-success border-success/20', icon: CheckCircle2 },
-  CANCELLED: { label: 'Cancelled', class: 'bg-danger/10 text-danger border-danger/20', icon: XCircle },
-};
+// Default project ID - in production this would come from context/route
+const DEFAULT_PROJECT_ID = 'test-project-1';
 
 export function TestCyclesPage() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [searchQuery, setSearchQuery] = useState('');
-  const [statusFilter, setStatusFilter] = useState<string | null>(null);
+  const [statusFilter, setStatusFilter] = useState<CycleStatus | 'all'>('all');
+  const [environmentFilter, setEnvironmentFilter] = useState<string>('all');
+  
+  // Modals
+  const [createModalOpen, setCreateModalOpen] = useState(false);
+  const [editingCycle, setEditingCycle] = useState<TestCycle | null>(null);
+  const [deleteConfirmCycle, setDeleteConfirmCycle] = useState<TestCycle | null>(null);
 
-  const filteredCycles = mockCycles.filter(cycle => 
-    (cycle.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    cycle.key.toLowerCase().includes(searchQuery.toLowerCase())) &&
-    (!statusFilter || cycle.status === statusFilter)
-  );
+  // Get project ID from search params or use default
+  const projectId = searchParams.get('projectId') || DEFAULT_PROJECT_ID;
+
+  // Fetch cycles
+  const { data: cyclesData, isLoading, refetch } = useTestCycles({
+    project_id: projectId,
+    status: statusFilter !== 'all' ? statusFilter : undefined,
+    search: searchQuery || undefined,
+  });
+
+  // Mutations
+  const createCycle = useCreateTestCycle();
+  const updateCycle = useUpdateTestCycle();
+  const deleteCycle = useDeleteTestCycle();
+  const duplicateCycle = useDuplicateCycle();
+
+  const cycles = cyclesData?.data || [];
+
+  // Client-side filtering for environment (if not supported by API)
+  const filteredCycles = useMemo(() => {
+    if (environmentFilter === 'all') return cycles;
+    return cycles.filter(c => c.environment_id === environmentFilter);
+  }, [cycles, environmentFilter]);
+
+  // Get unique environments for filter
+  const environments = useMemo(() => {
+    const envMap = new Map<string, { id: string; name: string }>();
+    cycles.forEach(c => {
+      if (c.environment) {
+        envMap.set(c.environment.id, c.environment);
+      }
+    });
+    return Array.from(envMap.values());
+  }, [cycles]);
 
   // Summary stats
-  const stats = {
-    total: mockCycles.length,
-    inProgress: mockCycles.filter(c => c.status === 'IN_PROGRESS').length,
-    completed: mockCycles.filter(c => c.status === 'COMPLETED').length,
-    avgPassRate: Math.round(mockCycles.reduce((acc, c) => acc + c.passRate, 0) / mockCycles.length),
+  const stats = useMemo(() => ({
+    total: cycles.length,
+    inProgress: cycles.filter(c => c.status === 'active').length,
+    completed: cycles.filter(c => c.status === 'completed').length,
+    avgPassRate: cycles.length > 0 
+      ? Math.round(
+          cycles.reduce((acc, c) => {
+            const stats = c.statistics;
+            if (!stats || stats.total_cases === 0) return acc;
+            const executed = stats.total_cases - stats.not_run_count;
+            return acc + (executed > 0 ? (stats.passed_count / executed) * 100 : 0);
+          }, 0) / cycles.filter(c => c.statistics?.total_cases).length
+        ) || 0
+      : 0,
+  }), [cycles]);
+
+  // Handlers
+  const handleCreate = async (data: any) => {
+    try {
+      await createCycle.mutateAsync({
+        ...data,
+        project_id: projectId,
+        case_ids: [], // Will add cases after creation
+      });
+      setCreateModalOpen(false);
+    } catch (error) {
+      // Error handled by mutation
+    }
+  };
+
+  const handleEdit = (cycle: TestCycle) => {
+    setEditingCycle(cycle);
+    setCreateModalOpen(true);
+  };
+
+  const handleUpdate = async (data: any) => {
+    if (!editingCycle) return;
+    try {
+      await updateCycle.mutateAsync({
+        id: editingCycle.id,
+        ...data,
+      });
+      setEditingCycle(null);
+      setCreateModalOpen(false);
+    } catch (error) {
+      // Error handled by mutation
+    }
+  };
+
+  const handleClone = async (cycle: TestCycle) => {
+    try {
+      await duplicateCycle.mutateAsync({ 
+        id: cycle.id, 
+        newTitle: `${cycle.title} (Copy)` 
+      });
+    } catch (error) {
+      // Error handled by mutation
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!deleteConfirmCycle) return;
+    try {
+      await deleteCycle.mutateAsync(deleteConfirmCycle.id);
+      setDeleteConfirmCycle(null);
+    } catch (error) {
+      // Error handled by mutation
+    }
+  };
+
+  const handleCloseModal = () => {
+    setCreateModalOpen(false);
+    setEditingCycle(null);
   };
 
   return (
@@ -128,8 +183,8 @@ export function TestCyclesPage() {
             Manage test execution cycles and track progress
           </p>
         </div>
-        <Button className="gap-2">
-          <Plus className="h-4 w-4" />
+        <Button onClick={() => setCreateModalOpen(true)}>
+          <Plus className="h-4 w-4 mr-2" />
           New Cycle
         </Button>
       </div>
@@ -170,7 +225,7 @@ export function TestCyclesPage() {
         </Card>
       </div>
 
-      {/* Filters */}
+      {/* Toolbar */}
       <div className="flex items-center gap-3">
         <div className="relative flex-1 max-w-md">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -181,107 +236,156 @@ export function TestCyclesPage() {
             className="pl-9"
           />
         </div>
-        <Button variant="outline" className="gap-2">
-          <Filter className="h-4 w-4" />
-          Filters
-        </Button>
+        <Select 
+          value={statusFilter} 
+          onValueChange={(v) => setStatusFilter(v as CycleStatus | 'all')}
+        >
+          <SelectTrigger className="w-[140px]">
+            <SelectValue placeholder="Status" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Status</SelectItem>
+            <SelectItem value="planned">Planned</SelectItem>
+            <SelectItem value="active">In Progress</SelectItem>
+            <SelectItem value="completed">Completed</SelectItem>
+            <SelectItem value="cancelled">Cancelled</SelectItem>
+          </SelectContent>
+        </Select>
+        <Select value={environmentFilter} onValueChange={setEnvironmentFilter}>
+          <SelectTrigger className="w-[160px]">
+            <SelectValue placeholder="Environment" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Environments</SelectItem>
+            {environments.map((env) => (
+              <SelectItem key={env.id} value={env.id}>{env.name}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <div className="flex-1" />
+        <ToggleGroup 
+          type="single" 
+          value={viewMode} 
+          onValueChange={(v) => v && setViewMode(v as 'grid' | 'list')}
+        >
+          <ToggleGroupItem value="grid" aria-label="Grid view">
+            <LayoutGrid className="h-4 w-4" />
+          </ToggleGroupItem>
+          <ToggleGroupItem value="list" aria-label="List view">
+            <List className="h-4 w-4" />
+          </ToggleGroupItem>
+        </ToggleGroup>
       </div>
 
-      {/* Cycles Grid */}
-      <div className="grid grid-cols-2 gap-4">
-        {filteredCycles.map((cycle) => {
-          const statusInfo = statusConfig[cycle.status];
-          const StatusIcon = statusInfo.icon;
-
-          return (
-            <Card key={cycle.id} className="hover:shadow-md transition-shadow cursor-pointer">
-              <CardHeader className="pb-3">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="font-mono text-sm text-primary">{cycle.key}</span>
-                      <Badge variant="outline" className={cn('text-xs', statusInfo.class)}>
-                        <StatusIcon className="h-3 w-3 mr-1" />
-                        {statusInfo.label}
-                      </Badge>
-                    </div>
-                    <CardTitle className="text-lg">{cycle.name}</CardTitle>
-                  </div>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon" className="h-8 w-8">
-                        <MoreHorizontal className="h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem>
-                        <Edit className="h-4 w-4 mr-2" />
-                        Edit
-                      </DropdownMenuItem>
-                      <DropdownMenuItem>
-                        <Copy className="h-4 w-4 mr-2" />
-                        Clone
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem className="text-destructive">
-                        <Trash2 className="h-4 w-4 mr-2" />
-                        Delete
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </div>
+      {/* Content */}
+      {isLoading ? (
+        <div className="grid grid-cols-2 gap-4">
+          {[1, 2, 3, 4].map((i) => (
+            <Card key={i}>
+              <CardHeader>
+                <Skeleton className="h-6 w-32" />
+                <Skeleton className="h-5 w-48" />
               </CardHeader>
               <CardContent>
-                {/* Progress Bar */}
-                <div className="mb-4">
-                  <div className="flex items-center justify-between text-sm mb-1.5">
-                    <span className="text-muted-foreground">Progress</span>
-                    <span className="font-medium">{cycle.progress}%</span>
-                  </div>
-                  <Progress value={cycle.progress} className="h-2" />
+                <Skeleton className="h-2 w-full mb-4" />
+                <div className="flex gap-4">
+                  <Skeleton className="h-8 w-12" />
+                  <Skeleton className="h-8 w-12" />
+                  <Skeleton className="h-8 w-12" />
                 </div>
-
-                {/* Stats Row */}
-                <div className="flex items-center justify-between text-sm">
-                  <div className="flex items-center gap-4">
-                    <div className="flex items-center gap-1.5">
-                      <div className="h-2.5 w-2.5 rounded-full bg-success" />
-                      <span className="text-muted-foreground">Passed:</span>
-                      <span className="font-medium">{cycle.passedCount}</span>
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      <div className="h-2.5 w-2.5 rounded-full bg-danger" />
-                      <span className="text-muted-foreground">Failed:</span>
-                      <span className="font-medium">{cycle.failedCount}</span>
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      <div className="h-2.5 w-2.5 rounded-full bg-warning" />
-                      <span className="text-muted-foreground">Blocked:</span>
-                      <span className="font-medium">{cycle.blockedCount}</span>
-                    </div>
-                  </div>
-                  <div className="text-muted-foreground">
-                    {cycle.totalCases} total
-                  </div>
-                </div>
-
-                {/* Pass Rate */}
-                {cycle.status !== 'PLANNED' && (
-                  <div className="mt-3 pt-3 border-t border-border-subtle flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">Pass Rate</span>
-                    <span className={cn(
-                      'text-sm font-semibold',
-                      cycle.passRate >= 80 ? 'text-success' : cycle.passRate >= 60 ? 'text-warning' : 'text-danger'
-                    )}>
-                      {cycle.passRate}%
-                    </span>
-                  </div>
-                )}
               </CardContent>
             </Card>
-          );
-        })}
-      </div>
+          ))}
+        </div>
+      ) : filteredCycles.length === 0 ? (
+        <div className="flex flex-col items-center justify-center py-16 text-center">
+          <RefreshCw className="h-12 w-12 text-muted-foreground mb-4" />
+          <h3 className="text-lg font-medium mb-1">No test cycles yet</h3>
+          <p className="text-muted-foreground mb-4">
+            Create a cycle to start organizing your test execution
+          </p>
+          <Button onClick={() => setCreateModalOpen(true)}>
+            <Plus className="h-4 w-4 mr-2" />
+            Create Cycle
+          </Button>
+        </div>
+      ) : viewMode === 'grid' ? (
+        <div className="grid grid-cols-2 gap-4">
+          {filteredCycles.map((cycle) => (
+            <CycleCard
+              key={cycle.id}
+              cycle={cycle}
+              onEdit={handleEdit}
+              onClone={handleClone}
+              onDelete={setDeleteConfirmCycle}
+            />
+          ))}
+        </div>
+      ) : (
+        <div className="border rounded-lg">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="w-24">Key</TableHead>
+                <TableHead>Name</TableHead>
+                <TableHead className="w-28">Status</TableHead>
+                <TableHead className="w-40">Progress</TableHead>
+                <TableHead className="w-16">Passed</TableHead>
+                <TableHead className="w-16">Failed</TableHead>
+                <TableHead className="w-16">Blocked</TableHead>
+                <TableHead className="w-24">Due Date</TableHead>
+                <TableHead className="w-16">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filteredCycles.map((cycle) => (
+                <CycleRow
+                  key={cycle.id}
+                  cycle={cycle}
+                  onEdit={handleEdit}
+                  onClone={handleClone}
+                  onDelete={setDeleteConfirmCycle}
+                />
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      )}
+
+      {/* Create/Edit Modal */}
+      <CreateCycleModal
+        open={createModalOpen}
+        onOpenChange={handleCloseModal}
+        cycle={editingCycle}
+        environments={environments as any}
+        onSubmit={editingCycle ? handleUpdate : handleCreate}
+        isLoading={createCycle.isPending || updateCycle.isPending}
+      />
+
+      {/* Delete Confirmation */}
+      <AlertDialog 
+        open={!!deleteConfirmCycle} 
+        onOpenChange={(open) => !open && setDeleteConfirmCycle(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Test Cycle</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete "{deleteConfirmCycle?.title}"? 
+              This will remove all execution history and cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={handleDelete}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
