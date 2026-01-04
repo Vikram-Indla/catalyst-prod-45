@@ -185,18 +185,6 @@ export function CompactResourceCard({
               {totalAllocation}%
             </span>
           </div>
-          {/* Contract end date badge */}
-          {contractStatus.status !== 'permanent' && profile?.contract_end_date && (
-            <span className={cn(
-              "text-[9px] font-medium px-1 py-0.5 rounded",
-              contractStatus.status === 'critical' && 'bg-red-100 text-[#be123c]',
-              contractStatus.status === 'warning' && 'bg-amber-100 text-[#ca8a04]',
-              contractStatus.status === 'healthy' && 'bg-teal-100 text-[#0d9488]',
-              contractStatus.status === 'expired' && 'bg-muted text-muted-foreground'
-            )}>
-              {formatContractDate(profile.contract_end_date)}
-            </span>
-          )}
         </div>
       </div>
 
