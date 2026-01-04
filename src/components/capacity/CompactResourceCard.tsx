@@ -229,14 +229,18 @@ export function CompactResourceCard({
             Resolve Conflict
           </Button>
         ) : (
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            className="text-[10px] text-muted-foreground h-5 px-2 hover:text-primary transition-transform active:scale-95"
-            onClick={(e) => { e.stopPropagation(); onEdit(); }}
-          >
-            Edit Allocations
-          </Button>
+          <span className={cn(
+            "text-[10px] font-medium px-2 py-1 rounded",
+            contractStatus.status === 'critical' && 'bg-red-100 text-[#be123c]',
+            contractStatus.status === 'warning' && 'bg-amber-100 text-[#ca8a04]',
+            contractStatus.status === 'healthy' && 'bg-teal-100 text-[#0d9488]',
+            contractStatus.status === 'expired' && 'bg-muted text-muted-foreground',
+            contractStatus.status === 'permanent' && 'bg-muted text-muted-foreground'
+          )}>
+            {profile?.contract_end_date 
+              ? formatContractDate(profile.contract_end_date)
+              : 'Permanent'}
+          </span>
         )}
       </div>
     </div>
