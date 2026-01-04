@@ -2,7 +2,7 @@
  * Cycle Card Component - Grid view card for test cycles
  */
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import { format } from 'date-fns';
 import { useNavigate } from 'react-router-dom';
 import { 
@@ -15,7 +15,9 @@ import {
   XCircle, 
   Clock,
   Users,
-  Calendar
+  Calendar,
+  Globe,
+  ArrowRight
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -35,6 +37,7 @@ interface CycleCardProps {
   onEdit?: (cycle: TestCycle) => void;
   onClone?: (cycle: TestCycle) => void;
   onDelete?: (cycle: TestCycle) => void;
+  onContinue?: (cycle: TestCycle) => void;
 }
 
 const STATUS_CONFIG: Record<string, { label: string; class: string; icon: React.ElementType }> = {
@@ -44,7 +47,7 @@ const STATUS_CONFIG: Record<string, { label: string; class: string; icon: React.
   cancelled: { label: 'Cancelled', class: 'bg-danger/10 text-danger border-danger/20', icon: XCircle },
 };
 
-export function CycleCard({ cycle, onEdit, onClone, onDelete }: CycleCardProps) {
+export function CycleCard({ cycle, onEdit, onClone, onDelete, onContinue }: CycleCardProps) {
   const navigate = useNavigate();
   const statusInfo = STATUS_CONFIG[cycle.status] || STATUS_CONFIG.planned;
   const StatusIcon = statusInfo.icon;
@@ -66,8 +69,24 @@ export function CycleCard({ cycle, onEdit, onClone, onDelete }: CycleCardProps) 
     ? Math.round((stats.passed_count / totalExecuted) * 100) 
     : 0;
 
+  // Count unique testers
+  const testerCount = useMemo(() => {
+    if (!cycle.scope) return 0;
+    const uniqueTesters = new Set(cycle.scope.filter(s => s.assigned_to).map(s => s.assigned_to));
+    return uniqueTesters.size;
+  }, [cycle.scope]);
+
   const handleCardClick = () => {
     navigate(`/test-management/cycles/${cycle.id}`);
+  };
+
+  const handleContinue = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (onContinue) {
+      onContinue(cycle);
+    } else {
+      navigate(`/test-management/cycles/${cycle.id}`);
+    }
   };
 
   return (
@@ -174,26 +193,62 @@ export function CycleCard({ cycle, onEdit, onClone, onDelete }: CycleCardProps) 
         </div>
 
         {/* Footer Info */}
-        <div className="flex items-center justify-between text-sm text-muted-foreground pt-2 border-t border-border-subtle">
-          <div className="flex items-center gap-4">
+        <div className="flex items-center justify-between text-sm text-muted-foreground pt-3 border-t border-border-subtle">
+          <div className="flex items-center gap-3 flex-wrap">
             {cycle.environment && (
-              <span>{cycle.environment.name}</span>
-            )}
-            {cycle.planned_end && (
               <span className="flex items-center gap-1">
-                <Calendar className="h-3 w-3" />
-                {format(new Date(cycle.planned_end), 'MMM d, yyyy')}
+                <Globe className="h-3.5 w-3.5" />
+                {cycle.environment.name}
+              </span>
+            )}
+            {cycle.planned_start && cycle.planned_end && (
+              <span className="flex items-center gap-1">
+                <Calendar className="h-3.5 w-3.5" />
+                {format(new Date(cycle.planned_start), 'MMM d')} - {format(new Date(cycle.planned_end), 'MMM d')}
+              </span>
+            )}
+            {testerCount > 0 && (
+              <span className="flex items-center gap-1">
+                <Users className="h-3.5 w-3.5" />
+                {testerCount} tester{testerCount !== 1 ? 's' : ''}
               </span>
             )}
           </div>
-          {cycle.status !== 'planned' && (
-            <span className={cn(
-              'font-semibold',
-              passRate >= 80 ? 'text-success' : passRate >= 60 ? 'text-warning' : 'text-danger'
-            )}>
-              {passRate}% Pass Rate
-            </span>
-          )}
+        </div>
+
+        {/* Actions */}
+        <div className="flex items-center justify-between pt-3 border-t border-border-subtle">
+          <Button 
+            variant="ghost" 
+            size="sm"
+            className="text-muted-foreground hover:text-foreground"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleCardClick();
+            }}
+          >
+            View Details
+          </Button>
+          <div className="flex items-center gap-2">
+            {cycle.status !== 'planned' && totalExecuted > 0 && (
+              <span className={cn(
+                'text-sm font-medium',
+                passRate >= 80 ? 'text-success' : passRate >= 60 ? 'text-warning' : 'text-danger'
+              )}>
+                {passRate}%
+              </span>
+            )}
+            {(cycle.status === 'active' || cycle.status === 'planned') && stats.not_run_count > 0 && (
+              <Button 
+                size="sm" 
+                className="gap-1"
+                onClick={handleContinue}
+              >
+                {cycle.status === 'planned' ? 'Start' : 'Continue'}
+                <ArrowRight className="h-3.5 w-3.5" />
+              </Button>
+            )}
+          </div>
         </div>
       </CardContent>
     </Card>

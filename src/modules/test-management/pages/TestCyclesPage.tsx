@@ -5,13 +5,14 @@
 
 import React, { useState, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { format } from 'date-fns';
 import { 
   RefreshCw, 
   Plus, 
   Search, 
   LayoutGrid,
   List,
-  Filter
+  CalendarRange
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -40,15 +41,20 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
+import { Calendar } from '@/components/ui/calendar';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useTestCycles, useCreateTestCycle, useUpdateTestCycle, useDeleteTestCycle, useDuplicateCycle } from '../hooks/useCycles';
 import { CycleCard, CycleRow, CreateCycleModal } from '../components/cycles';
+import { useProjectStore } from '../stores/projectStore';
 import type { TestCycle, CycleStatus } from '../api/types';
 import { toast } from 'sonner';
-
-// Default project ID - in production this would come from context/route
-const DEFAULT_PROJECT_ID = 'test-project-1';
+import { cn } from '@/lib/utils';
 
 export function TestCyclesPage() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -56,14 +62,16 @@ export function TestCyclesPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<CycleStatus | 'all'>('all');
   const [environmentFilter, setEnvironmentFilter] = useState<string>('all');
+  const [dateRange, setDateRange] = useState<{ from?: Date; to?: Date }>({});
   
   // Modals
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [editingCycle, setEditingCycle] = useState<TestCycle | null>(null);
   const [deleteConfirmCycle, setDeleteConfirmCycle] = useState<TestCycle | null>(null);
 
-  // Get project ID from search params or use default
-  const projectId = searchParams.get('projectId') || DEFAULT_PROJECT_ID;
+  // Get project ID from store or search params
+  const selectedProjectId = useProjectStore(s => s.selectedProjectId);
+  const projectId = selectedProjectId || searchParams.get('projectId') || 'test-project-1';
 
   // Fetch cycles
   const { data: cyclesData, isLoading, refetch } = useTestCycles({
@@ -80,11 +88,30 @@ export function TestCyclesPage() {
 
   const cycles = cyclesData?.data || [];
 
-  // Client-side filtering for environment (if not supported by API)
+  // Client-side filtering for environment and date range
   const filteredCycles = useMemo(() => {
-    if (environmentFilter === 'all') return cycles;
-    return cycles.filter(c => c.environment_id === environmentFilter);
-  }, [cycles, environmentFilter]);
+    let result = cycles;
+    
+    if (environmentFilter !== 'all') {
+      result = result.filter(c => c.environment_id === environmentFilter);
+    }
+    
+    if (dateRange.from) {
+      result = result.filter(c => {
+        if (!c.planned_start) return true;
+        return new Date(c.planned_start) >= dateRange.from!;
+      });
+    }
+    
+    if (dateRange.to) {
+      result = result.filter(c => {
+        if (!c.planned_end) return true;
+        return new Date(c.planned_end) <= dateRange.to!;
+      });
+    }
+    
+    return result;
+  }, [cycles, environmentFilter, dateRange]);
 
   // Get unique environments for filter
   const environments = useMemo(() => {
@@ -226,8 +253,8 @@ export function TestCyclesPage() {
       </div>
 
       {/* Toolbar */}
-      <div className="flex items-center gap-3">
-        <div className="relative flex-1 max-w-md">
+      <div className="flex flex-wrap items-center gap-3">
+        <div className="relative flex-1 min-w-[200px] max-w-md">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             placeholder="Search cycles..."
@@ -262,6 +289,46 @@ export function TestCyclesPage() {
             ))}
           </SelectContent>
         </Select>
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button variant="outline" className={cn(
+              "gap-2",
+              (dateRange.from || dateRange.to) && "border-primary text-primary"
+            )}>
+              <CalendarRange className="h-4 w-4" />
+              {dateRange.from ? (
+                dateRange.to ? (
+                  `${format(dateRange.from, 'MMM d')} - ${format(dateRange.to, 'MMM d')}`
+                ) : (
+                  format(dateRange.from, 'MMM d, yyyy')
+                )
+              ) : (
+                'Date Range'
+              )}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0" align="start">
+            <Calendar
+              mode="range"
+              selected={{ from: dateRange.from, to: dateRange.to }}
+              onSelect={(range) => setDateRange({ from: range?.from, to: range?.to })}
+              numberOfMonths={2}
+              initialFocus
+            />
+            {(dateRange.from || dateRange.to) && (
+              <div className="border-t p-2">
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="w-full"
+                  onClick={() => setDateRange({})}
+                >
+                  Clear dates
+                </Button>
+              </div>
+            )}
+          </PopoverContent>
+        </Popover>
         <div className="flex-1" />
         <ToggleGroup 
           type="single" 
@@ -279,8 +346,8 @@ export function TestCyclesPage() {
 
       {/* Content */}
       {isLoading ? (
-        <div className="grid grid-cols-2 gap-4">
-          {[1, 2, 3, 4].map((i) => (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {[1, 2, 3, 4, 5, 6].map((i) => (
             <Card key={i}>
               <CardHeader>
                 <Skeleton className="h-6 w-32" />
@@ -310,7 +377,7 @@ export function TestCyclesPage() {
           </Button>
         </div>
       ) : viewMode === 'grid' ? (
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {filteredCycles.map((cycle) => (
             <CycleCard
               key={cycle.id}
