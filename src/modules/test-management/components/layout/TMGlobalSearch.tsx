@@ -73,13 +73,13 @@ const getTypeIcon = (type: string) => {
 const getTypePath = (type: string, id: string) => {
   switch (type) {
     case 'case':
-      return `/test-management/cases?caseId=${id}`;
+      return `/tests/cases?caseId=${id}`;
     case 'cycle':
-      return `/test-management/cycles/${id}`;
+      return `/tests/cycles/${id}`;
     case 'defect':
-      return `/test-management/defects?defectId=${id}`;
+      return `/tests/defects?defectId=${id}`;
     default:
-      return '/test-management';
+      return '/tests';
   }
 };
 
@@ -116,13 +116,13 @@ export function TMGlobalSearch({ open, onOpenChange }: TMGlobalSearchProps) {
     (action: string) => {
       switch (action) {
         case 'create-case':
-          navigate('/test-management/cases?create=true');
+          navigate('/tests/cases?create=true');
           break;
         case 'create-cycle':
-          navigate('/test-management/cycles?create=true');
+          navigate('/tests/cycles?create=true');
           break;
         case 'create-defect':
-          navigate('/test-management/defects?create=true');
+          navigate('/tests/defects?create=true');
           break;
       }
       onOpenChange(false);

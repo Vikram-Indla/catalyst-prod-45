@@ -204,7 +204,7 @@ export function CreateDefectModal({
                     <Button 
                       variant="ghost" 
                       size="sm"
-                      onClick={() => window.open(`/test-management/defects?highlight=${dup.id}`, '_blank')}
+                      onClick={() => window.open(`/tests/defects?highlight=${dup.id}`, '_blank')}
                     >
                       View
                     </Button>

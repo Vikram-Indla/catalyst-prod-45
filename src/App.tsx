@@ -709,8 +709,8 @@ const App = () => (
               <Route path="/knowledge-hub/documents/:documentId" element={<KnowledgeHubDocumentPage />} />
               
               {/* Test Management Module Routes */}
-              <Route path="/test-management" element={<TestManagementLayout />}>
-                <Route index element={<Navigate to="/test-management/my-work" replace />} />
+              <Route path="/tests" element={<TestManagementLayout />}>
+                <Route index element={<Navigate to="/tests/my-work" replace />} />
                 <Route path="my-work" element={<MyWorkPage />} />
                 <Route path="cases" element={<TestCasesPage />} />
                 <Route path="cycles" element={<TestCyclesPage />} />

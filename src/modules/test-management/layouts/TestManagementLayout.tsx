@@ -49,12 +49,12 @@ interface NavItem {
 }
 
 const navItems: NavItem[] = [
-  { path: '/test-management/my-work', label: 'My Work', icon: Home, badge: 12 },
-  { path: '/test-management/cases', label: 'Test Cases', icon: FileText, badge: 156 },
-  { path: '/test-management/cycles', label: 'Test Cycles', icon: RefreshCw, badge: 8 },
-  { path: '/test-management/defects', label: 'Defects', icon: Bug, badge: 23 },
-  { path: '/test-management/reports', label: 'Reports', icon: BarChart3 },
-  { path: '/test-management/settings', label: 'Settings', icon: Settings, separator: true },
+  { path: '/tests/my-work', label: 'My Work', icon: Home, badge: 12 },
+  { path: '/tests/cases', label: 'Test Cases', icon: FileText, badge: 156 },
+  { path: '/tests/cycles', label: 'Test Cycles', icon: RefreshCw, badge: 8 },
+  { path: '/tests/defects', label: 'Defects', icon: Bug, badge: 23 },
+  { path: '/tests/reports', label: 'Reports', icon: BarChart3 },
+  { path: '/tests/settings', label: 'Settings', icon: Settings, separator: true },
 ];
 
 export function TestManagementLayout() {
@@ -72,14 +72,14 @@ export function TestManagementLayout() {
   // Generate breadcrumbs from path
   const getBreadcrumbs = () => {
     const pathParts = location.pathname.split('/').filter(Boolean);
-    const breadcrumbs = [{ label: 'Test Management', path: '/test-management' }];
+    const breadcrumbs = [{ label: 'Tests', path: '/tests' }];
 
     if (pathParts.length > 1) {
       const currentNav = navItems.find((item) => item.path === location.pathname);
       if (currentNav) {
         breadcrumbs.push({ label: currentNav.label, path: currentNav.path });
       } else if (pathParts[1] === 'cycles' && pathParts[2]) {
-        breadcrumbs.push({ label: 'Test Cycles', path: '/test-management/cycles' });
+        breadcrumbs.push({ label: 'Test Cycles', path: '/tests/cycles' });
         breadcrumbs.push({ label: pathParts[2].toUpperCase(), path: location.pathname });
       }
     }

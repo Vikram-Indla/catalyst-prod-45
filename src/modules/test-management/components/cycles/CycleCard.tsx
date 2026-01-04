@@ -77,7 +77,7 @@ export function CycleCard({ cycle, onEdit, onClone, onDelete, onContinue }: Cycl
   }, [cycle.scope]);
 
   const handleCardClick = () => {
-    navigate(`/test-management/cycles/${cycle.id}`);
+    navigate(`/tests/cycles/${cycle.id}`);
   };
 
   const handleContinue = (e: React.MouseEvent) => {
@@ -85,7 +85,7 @@ export function CycleCard({ cycle, onEdit, onClone, onDelete, onContinue }: Cycl
     if (onContinue) {
       onContinue(cycle);
     } else {
-      navigate(`/test-management/cycles/${cycle.id}`);
+      navigate(`/tests/cycles/${cycle.id}`);
     }
   };
 
