@@ -1833,17 +1833,27 @@ function TableView({ resources, projects, groupBy, groupedByAssignment, groupedB
     return ringStyles[status] || 'ring-muted-foreground/30';
   };
 
-  // Sort resources by assignment name by default
+  // Sort resources by vendor first, then assignment name
   const sortedResources = useMemo(() => {
     return [...resources].sort((a, b) => {
+      const aProfile = getProfile(a.id);
+      const bProfile = getProfile(b.id);
+      const aVendor = aProfile?.vendor || '';
+      const bVendor = bProfile?.vendor || '';
+      
+      // First sort by vendor (empty vendors at the end)
+      if (!aVendor && bVendor) return 1;
+      if (aVendor && !bVendor) return -1;
+      if (aVendor !== bVendor) return aVendor.localeCompare(bVendor);
+      
+      // Then sort by assignment name
       const aName = a.assignmentName || 'Unassigned';
       const bName = b.assignmentName || 'Unassigned';
-      // Put 'Unassigned' at the end
       if (aName === 'Unassigned' && bName !== 'Unassigned') return 1;
       if (bName === 'Unassigned' && aName !== 'Unassigned') return -1;
       return aName.localeCompare(bName);
     });
-  }, [resources]);
+  }, [resources, getProfile]);
 
   // If the table data changes (e.g., after edits, filtering, or refetch),
   // drop any selections that no longer exist in the current dataset.
@@ -1918,6 +1928,36 @@ function TableView({ resources, projects, groupBy, groupedByAssignment, groupedB
               </div>
             </div>
           </div>
+        );
+      },
+    },
+    {
+      id: 'vendor',
+      header: 'Vendor',
+      accessor: (row: ResourceMetric) => {
+        const profile = getProfile(row.id);
+        return profile?.vendor || '';
+      },
+      width: '120px',
+      sortable: true,
+      filterable: true,
+      filterOptions: (() => {
+        // Build unique vendor options from resources
+        const uniqueVendors = new Set<string>();
+        resources.forEach(r => {
+          const profile = getProfile(r.id);
+          if (profile?.vendor) uniqueVendors.add(profile.vendor);
+        });
+        return Array.from(uniqueVendors).sort().map(v => ({ value: v, label: v }));
+      })(),
+      render: (_: any, row: ResourceMetric) => {
+        const profile = getProfile(row.id);
+        const vendor = profile?.vendor;
+        if (!vendor) {
+          return <span className="text-xs text-muted-foreground">-</span>;
+        }
+        return (
+          <span className="text-sm font-medium text-foreground">{vendor}</span>
         );
       },
     },
