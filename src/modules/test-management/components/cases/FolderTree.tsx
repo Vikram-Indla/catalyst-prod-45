@@ -243,8 +243,14 @@ export function FolderTree({
 
   return (
     <div className="flex flex-col h-full">
-      {/* Header */}
-      <div className="flex items-center justify-between p-3 border-b border-border-subtle">
+      {/* Header - 52px aligned with main content header */}
+      <div
+        className="flex items-center justify-between px-3"
+        style={{
+          height: '52px',
+          borderBottom: '1px solid var(--divider, hsl(var(--border)))',
+        }}
+      >
         <h3 className="font-semibold text-sm">Folders</h3>
         <Button
           variant="ghost"

@@ -110,7 +110,13 @@ export function CasesToolbar({
   };
 
   return (
-    <div className="flex items-center gap-3 p-3 bg-surface-0 border-b border-border-subtle">
+    <div
+      className="flex items-center gap-3 px-3 bg-surface-0"
+      style={{
+        height: '52px',
+        borderBottom: '1px solid var(--divider, hsl(var(--border)))',
+      }}
+    >
       {/* Search */}
       <div className="relative flex-1 max-w-md">
         <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
