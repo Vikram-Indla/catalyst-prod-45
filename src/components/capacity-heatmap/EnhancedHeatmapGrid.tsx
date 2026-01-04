@@ -87,10 +87,10 @@ export const EnhancedHeatmapGrid = memo(function EnhancedHeatmapGrid({
   
   return (
     <div className={cn("rounded-xl border border-border bg-card overflow-hidden", className)}>
-      <div className="overflow-x-auto">
+      <div className="overflow-auto max-h-[calc(100vh-280px)]">
         <div className="min-w-max">
-          {/* Header */}
-          <div className="flex items-stretch border-b border-border bg-muted/30 sticky top-0 z-10">
+          {/* Header - Sticky */}
+          <div className="flex items-stretch border-b border-border bg-card sticky top-0 z-20 shadow-sm">
             {/* Resource column header */}
             <div className="w-60 flex-shrink-0 px-4 py-3 border-r border-border flex items-center justify-between">
               <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
