@@ -51,11 +51,11 @@ export function CapacitySummaryCards({
       iconColor: 'text-[var(--status-info)]', // Gold
     },
     { 
-      label: 'Open Vacancies', 
-      value: openVacancies, 
-      icon: Square, 
-      iconBg: 'bg-[#c8ccd0]/10', 
-      iconColor: 'text-[#c8ccd0]', // Grey
+      label: 'Human Resources', 
+      value: totalMembers, 
+      icon: Users, 
+      iconBg: 'bg-[#3b82f6]/10', 
+      iconColor: 'text-[#3b82f6]', // Blue
     },
   ];
 
