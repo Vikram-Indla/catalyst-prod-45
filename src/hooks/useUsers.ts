@@ -70,7 +70,8 @@ export function useUsers() {
       const { data: profiles, error: profilesError } = await supabase
         .from('profiles')
         .select('*, approval_status, requested_at, approved_at, rejected_at, rejection_reason, signup_attempts_count, vendor, contract_end_date, country, country_code, country_flag_svg_url, location')
-        .order('full_name');
+        .order('vendor', { ascending: true, nullsFirst: false })
+        .order('full_name', { ascending: true });
 
       if (profilesError) throw profilesError;
 
