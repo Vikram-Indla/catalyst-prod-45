@@ -21,30 +21,30 @@ export function getUtilizationStatus(percentage: number): UtilizationStatus {
 }
 
 export function getUtilizationColor(percentage: number, mode: 'standard' | 'thermal' = 'standard') {
-  // Catalyst V5 brand colors matching the legend:
-  // 0% Available = Blue
-  // 1-40% Light = Teal  
-  // 41-70% Moderate = Gold/Yellow-Orange
-  // 71-85% Optimal = Orange
-  // 86-100% At Capacity = Deep Orange/Red-Orange
-  // >100% Over-allocated = Pink/Red
+  // Catalyst V5 brand colors - BLUE/TEAL scale (matching reference design):
+  // 0% Available = Teal with border (available for booking)
+  // 1-40% Light = Light Blue
+  // 41-70% Moderate = Medium Blue
+  // 71-85% Optimal = Primary Blue
+  // 86-100% At Capacity = Dark Blue
+  // >100% Over-allocated = Red/Danger
   
   if (mode === 'thermal') {
-    if (percentage === 0) return { bg: '#2563eb', text: '#fff', pulse: false };  // Blue
-    if (percentage <= 40) return { bg: '#0d9488', text: '#fff', pulse: false };  // Teal
-    if (percentage <= 70) return { bg: '#ca8a04', text: '#fff', pulse: false };  // Gold
-    if (percentage <= 85) return { bg: '#ea580c', text: '#fff', pulse: false };  // Orange
-    if (percentage <= 100) return { bg: '#c2410c', text: '#fff', pulse: false }; // Deep Orange
-    return { bg: '#be123c', text: '#fff', pulse: true };  // Rose/Pink
+    if (percentage === 0) return { bg: 'rgba(13, 148, 136, 0.25)', text: '#0d9488', pulse: false };  // Teal transparent
+    if (percentage <= 40) return { bg: '#bfdbfe', text: '#1e40af', pulse: false };  // blue-200
+    if (percentage <= 70) return { bg: '#93c5fd', text: '#1e3a8a', pulse: false };  // blue-300
+    if (percentage <= 85) return { bg: '#3b82f6', text: '#ffffff', pulse: false };  // blue-500
+    if (percentage <= 100) return { bg: '#1d4ed8', text: '#ffffff', pulse: false }; // blue-700
+    return { bg: '#ef4444', text: '#ffffff', pulse: true };  // red-500 (danger)
   }
   
-  // Standard mode - 6 levels matching the legend
-  if (percentage === 0) return { bg: '#2563eb', text: '#fff', pulse: false };  // Blue - Available
-  if (percentage <= 40) return { bg: '#0d9488', text: '#fff', pulse: false };  // Teal - Light
-  if (percentage <= 70) return { bg: '#ca8a04', text: '#fff', pulse: false };  // Gold - Moderate
-  if (percentage <= 85) return { bg: '#ea580c', text: '#fff', pulse: false };  // Orange - Optimal
-  if (percentage <= 100) return { bg: '#c2410c', text: '#fff', pulse: false }; // Deep Orange - At Capacity
-  return { bg: '#be123c', text: '#fff', pulse: true };  // Rose - Over-allocated
+  // Standard mode - Blue scale matching reference design
+  if (percentage === 0) return { bg: 'rgba(13, 148, 136, 0.25)', text: '#0d9488', pulse: false };  // Teal transparent - Available
+  if (percentage <= 40) return { bg: '#bfdbfe', text: '#1e40af', pulse: false };  // blue-200 - Light
+  if (percentage <= 70) return { bg: '#93c5fd', text: '#1e3a8a', pulse: false };  // blue-300 - Moderate
+  if (percentage <= 85) return { bg: '#3b82f6', text: '#ffffff', pulse: false };  // blue-500 - Optimal
+  if (percentage <= 100) return { bg: '#1d4ed8', text: '#ffffff', pulse: false }; // blue-700 - At Capacity
+  return { bg: '#ef4444', text: '#ffffff', pulse: true };  // red-500 - Over-allocated
 }
 
 export function getHealthStatus(utilization: number, conflictCount: number): HealthStatus {

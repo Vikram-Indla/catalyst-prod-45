@@ -27,10 +27,12 @@ import { exportToPDF, exportToCSV } from '@/lib/capacity-heatmap/export';
 
 interface CapacityHeatmapProps {
   className?: string;
+  departmentFilter?: string;
 }
 
 export const CapacityHeatmap = memo(function CapacityHeatmap({
-  className
+  className,
+  departmentFilter
 }: CapacityHeatmapProps) {
   const heatmapRef = useRef<HTMLDivElement>(null);
   const [isExporting, setIsExporting] = useState(false);
@@ -86,7 +88,15 @@ export const CapacityHeatmap = memo(function CapacityHeatmap({
         }
       }
       
-      // Department filter
+      // Department filter from props (from parent page)
+      if (departmentFilter && departmentFilter !== 'all') {
+        const deptLower = r.department?.toLowerCase() || '';
+        if (!deptLower.includes(departmentFilter.toLowerCase())) {
+          return false;
+        }
+      }
+      
+      // Department filter from store
       if (filters.departments.length > 0 && !filters.departments.includes(r.department)) {
         return false;
       }
@@ -98,7 +108,7 @@ export const CapacityHeatmap = memo(function CapacityHeatmap({
       
       return true;
     });
-  }, [data?.resources, searchQuery, filters]);
+  }, [data?.resources, searchQuery, filters, departmentFilter]);
   
   // Handle export to PDF
   const handleExportPDF = useCallback(async () => {
