@@ -19,16 +19,19 @@
   display: flex;
   flex-direction: column;
   min-height: calc(100vh - 280px);
+  max-height: calc(100vh - 200px);
   background: white;
   border-radius: 16px;
   border: 1px solid rgba(0, 0, 0, 0.08);
   overflow: hidden;
   box-shadow: 0 1px 2px rgba(0,0,0,0.04), 0 1px 3px rgba(0,0,0,0.06);
+  position: relative;
 }
 
 .timelineBody {
   flex: 1;
   overflow: auto;
+  position: relative;
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -108,9 +111,8 @@
   transition: background-color 0.15s ease;
   min-height: 72px;
   position: relative;
-  /* Clip vertical overflow so bars don't bleed into adjacent rows */
-  overflow-y: clip;
-  overflow-x: visible;
+  /* Ensure bars stay within their row */
+  contain: layout;
 }
 
 .timelineRow:hover {
@@ -225,9 +227,9 @@
   display: flex;
   flex: 1;
   position: relative;
-  overflow-x: visible; /* Allow bars to extend horizontally */
-  overflow-y: clip; /* Prevent bars from bleeding into other rows */
+  overflow: visible; /* Allow bars to extend */
   isolation: isolate; /* Create stacking context */
+  min-height: 72px;
 }
 
 .timelineCell {
@@ -254,17 +256,19 @@
   align-items: center;
   padding: 0 12px;
   position: absolute;
-  /* top and transform are set via inline styles now for proper stacking */
+  /* top is set via inline styles for proper stacking */
   transition: 
-    box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+    transform 0.15s ease;
   cursor: pointer;
   overflow: hidden;
   white-space: nowrap;
   font-size: 12px;
-  font-weight: 500;
+  font-weight: 600;
   letter-spacing: 0.01em;
   color: white;
-  z-index: 5;
+  z-index: 10;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 .allocationBar::before {
@@ -435,13 +439,14 @@
   bottom: 0;
   background: repeating-linear-gradient(
     135deg,
-    rgba(156, 163, 175, 0.06) 0px,
-    rgba(156, 163, 175, 0.06) 4px,
-    transparent 4px,
-    transparent 8px
+    rgba(156, 163, 175, 0.08) 0px,
+    rgba(156, 163, 175, 0.08) 4px,
+    rgba(156, 163, 175, 0.02) 4px,
+    rgba(156, 163, 175, 0.02) 8px
   );
   pointer-events: none;
-  z-index: 1;
+  z-index: 2;
+  border-left: 2px dashed rgba(156, 163, 175, 0.4);
 }
 
 .lockedZone::before {
@@ -451,7 +456,23 @@
   top: 0;
   bottom: 0;
   width: 32px;
-  background: linear-gradient(90deg, rgba(255,255,255,0.8) 0%, transparent 100%);
+  background: linear-gradient(90deg, rgba(156, 163, 175, 0.15) 0%, transparent 100%);
+}
+
+.lockedZoneBadge {
+  position: absolute;
+  top: 50%;
+  left: 8px;
+  transform: translateY(-50%);
+  background: rgba(107, 114, 128, 0.9);
+  color: white;
+  font-size: 9px;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 4px;
+  white-space: nowrap;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+  z-index: 3;
 }
 
 /* ═══════════════════════════════════════════════════════════════

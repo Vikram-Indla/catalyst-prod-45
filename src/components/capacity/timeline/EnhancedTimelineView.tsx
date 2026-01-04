@@ -425,15 +425,23 @@ export function EnhancedTimelineView({
                   />
                 )}
 
-                {/* Locked Zone */}
-                {contractMarkerLeft !== null && (
+                {/* Locked Zone with Contract End Date */}
+                {contractMarkerLeft !== null && resource.contractEndDate && (
                   <div
                     className={styles.lockedZone}
                     style={{
                       left: contractMarkerLeft,
                       right: 0,
                     }}
-                  />
+                  >
+                    <div className={styles.lockedZoneBadge}>
+                      Contract ends {new Date(resource.contractEndDate).toLocaleDateString('en-US', { 
+                        month: 'short', 
+                        day: 'numeric',
+                        year: 'numeric'
+                      })}
+                    </div>
+                  </div>
                 )}
               </div>
             </div>
