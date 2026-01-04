@@ -18259,6 +18259,1711 @@ export type Database = {
         }
         Relationships: []
       }
+      tm_ai_embeddings: {
+        Row: {
+          created_at: string | null
+          embedding_data: Json | null
+          entity_id: string
+          entity_type: string
+          id: string
+          model: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          embedding_data?: Json | null
+          entity_id: string
+          entity_type: string
+          id?: string
+          model?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          embedding_data?: Json | null
+          entity_id?: string
+          entity_type?: string
+          id?: string
+          model?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      tm_ai_usage_log: {
+        Row: {
+          created_at: string | null
+          feature: string
+          id: string
+          model: string | null
+          project_id: string | null
+          request_data: Json | null
+          response_summary: string | null
+          tokens_used: number | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          feature: string
+          id?: string
+          model?: string | null
+          project_id?: string | null
+          request_data?: Json | null
+          response_summary?: string | null
+          tokens_used?: number | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          feature?: string
+          id?: string
+          model?: string | null
+          project_id?: string | null
+          request_data?: Json | null
+          response_summary?: string | null
+          tokens_used?: number | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tm_ai_usage_log_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "tm_projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_ai_usage_log_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_traceability_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "tm_ai_usage_log_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tm_attachments: {
+        Row: {
+          created_at: string | null
+          entity_id: string
+          entity_type: string
+          file_name: string
+          file_path: string
+          file_size: number | null
+          id: string
+          mime_type: string | null
+          uploaded_by: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          entity_id: string
+          entity_type: string
+          file_name: string
+          file_path: string
+          file_size?: number | null
+          id?: string
+          mime_type?: string | null
+          uploaded_by?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          entity_id?: string
+          entity_type?: string
+          file_name?: string
+          file_path?: string
+          file_size?: number | null
+          id?: string
+          mime_type?: string | null
+          uploaded_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tm_attachments_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tm_audit_log: {
+        Row: {
+          action: Database["public"]["Enums"]["tm_audit_action"]
+          actor_id: string | null
+          changes: Json | null
+          created_at: string | null
+          entity_id: string
+          entity_type: string
+          id: string
+          ip_address: unknown
+          project_id: string | null
+          user_agent: string | null
+        }
+        Insert: {
+          action: Database["public"]["Enums"]["tm_audit_action"]
+          actor_id?: string | null
+          changes?: Json | null
+          created_at?: string | null
+          entity_id: string
+          entity_type: string
+          id?: string
+          ip_address?: unknown
+          project_id?: string | null
+          user_agent?: string | null
+        }
+        Update: {
+          action?: Database["public"]["Enums"]["tm_audit_action"]
+          actor_id?: string | null
+          changes?: Json | null
+          created_at?: string | null
+          entity_id?: string
+          entity_type?: string
+          id?: string
+          ip_address?: unknown
+          project_id?: string | null
+          user_agent?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tm_audit_log_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_audit_log_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "tm_projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_audit_log_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_traceability_summary"
+            referencedColumns: ["project_id"]
+          },
+        ]
+      }
+      tm_case_labels: {
+        Row: {
+          created_at: string | null
+          id: string
+          label_id: string
+          test_case_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          label_id: string
+          test_case_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          label_id?: string
+          test_case_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tm_case_labels_label_id_fkey"
+            columns: ["label_id"]
+            isOneToOne: false
+            referencedRelation: "tm_labels"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_case_labels_test_case_id_fkey"
+            columns: ["test_case_id"]
+            isOneToOne: false
+            referencedRelation: "tm_test_cases"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_case_labels_test_case_id_fkey"
+            columns: ["test_case_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_test_cases_full"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tm_case_priorities: {
+        Row: {
+          color: string | null
+          created_at: string | null
+          id: string
+          is_default: boolean | null
+          name: string
+          project_id: string | null
+          sort_order: number | null
+        }
+        Insert: {
+          color?: string | null
+          created_at?: string | null
+          id?: string
+          is_default?: boolean | null
+          name: string
+          project_id?: string | null
+          sort_order?: number | null
+        }
+        Update: {
+          color?: string | null
+          created_at?: string | null
+          id?: string
+          is_default?: boolean | null
+          name?: string
+          project_id?: string | null
+          sort_order?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tm_case_priorities_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "tm_projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_case_priorities_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_traceability_summary"
+            referencedColumns: ["project_id"]
+          },
+        ]
+      }
+      tm_case_types: {
+        Row: {
+          color: string | null
+          created_at: string | null
+          icon: string | null
+          id: string
+          is_default: boolean | null
+          name: string
+          project_id: string | null
+        }
+        Insert: {
+          color?: string | null
+          created_at?: string | null
+          icon?: string | null
+          id?: string
+          is_default?: boolean | null
+          name: string
+          project_id?: string | null
+        }
+        Update: {
+          color?: string | null
+          created_at?: string | null
+          icon?: string | null
+          id?: string
+          is_default?: boolean | null
+          name?: string
+          project_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tm_case_types_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "tm_projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_case_types_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_traceability_summary"
+            referencedColumns: ["project_id"]
+          },
+        ]
+      }
+      tm_comments: {
+        Row: {
+          author_id: string | null
+          content: string
+          created_at: string | null
+          entity_id: string
+          entity_type: string
+          id: string
+          parent_id: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          author_id?: string | null
+          content: string
+          created_at?: string | null
+          entity_id: string
+          entity_type: string
+          id?: string
+          parent_id?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          author_id?: string | null
+          content?: string
+          created_at?: string | null
+          entity_id?: string
+          entity_type?: string
+          id?: string
+          parent_id?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tm_comments_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_comments_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "tm_comments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tm_cycle_scope: {
+        Row: {
+          added_at: string | null
+          assigned_to: string | null
+          current_status:
+            | Database["public"]["Enums"]["tm_execution_status"]
+            | null
+          cycle_id: string
+          id: string
+          sort_order: number | null
+          test_case_id: string
+        }
+        Insert: {
+          added_at?: string | null
+          assigned_to?: string | null
+          current_status?:
+            | Database["public"]["Enums"]["tm_execution_status"]
+            | null
+          cycle_id: string
+          id?: string
+          sort_order?: number | null
+          test_case_id: string
+        }
+        Update: {
+          added_at?: string | null
+          assigned_to?: string | null
+          current_status?:
+            | Database["public"]["Enums"]["tm_execution_status"]
+            | null
+          cycle_id?: string
+          id?: string
+          sort_order?: number | null
+          test_case_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tm_cycle_scope_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_cycle_scope_cycle_id_fkey"
+            columns: ["cycle_id"]
+            isOneToOne: false
+            referencedRelation: "tm_test_cycles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_cycle_scope_cycle_id_fkey"
+            columns: ["cycle_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_cycle_progress"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_cycle_scope_cycle_id_fkey"
+            columns: ["cycle_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_execution_by_assignee"
+            referencedColumns: ["cycle_id"]
+          },
+          {
+            foreignKeyName: "tm_cycle_scope_cycle_id_fkey"
+            columns: ["cycle_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_my_work"
+            referencedColumns: ["context_id"]
+          },
+          {
+            foreignKeyName: "tm_cycle_scope_test_case_id_fkey"
+            columns: ["test_case_id"]
+            isOneToOne: false
+            referencedRelation: "tm_test_cases"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_cycle_scope_test_case_id_fkey"
+            columns: ["test_case_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_test_cases_full"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tm_defect_links: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          defect_id: string
+          id: string
+          step_result_id: string | null
+          test_run_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          defect_id: string
+          id?: string
+          step_result_id?: string | null
+          test_run_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          defect_id?: string
+          id?: string
+          step_result_id?: string | null
+          test_run_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tm_defect_links_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_defect_links_defect_id_fkey"
+            columns: ["defect_id"]
+            isOneToOne: false
+            referencedRelation: "tm_defects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_defect_links_step_result_id_fkey"
+            columns: ["step_result_id"]
+            isOneToOne: false
+            referencedRelation: "tm_step_results"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_defect_links_test_run_id_fkey"
+            columns: ["test_run_id"]
+            isOneToOne: false
+            referencedRelation: "tm_test_runs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tm_defects: {
+        Row: {
+          assignee_id: string | null
+          created_at: string | null
+          defect_key: string
+          description: string | null
+          external_id: string | null
+          external_url: string | null
+          id: string
+          project_id: string
+          reporter_id: string | null
+          resolved_at: string | null
+          severity: Database["public"]["Enums"]["tm_defect_severity"] | null
+          status: Database["public"]["Enums"]["tm_defect_status"] | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          assignee_id?: string | null
+          created_at?: string | null
+          defect_key: string
+          description?: string | null
+          external_id?: string | null
+          external_url?: string | null
+          id?: string
+          project_id: string
+          reporter_id?: string | null
+          resolved_at?: string | null
+          severity?: Database["public"]["Enums"]["tm_defect_severity"] | null
+          status?: Database["public"]["Enums"]["tm_defect_status"] | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          assignee_id?: string | null
+          created_at?: string | null
+          defect_key?: string
+          description?: string | null
+          external_id?: string | null
+          external_url?: string | null
+          id?: string
+          project_id?: string
+          reporter_id?: string | null
+          resolved_at?: string | null
+          severity?: Database["public"]["Enums"]["tm_defect_severity"] | null
+          status?: Database["public"]["Enums"]["tm_defect_status"] | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tm_defects_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_defects_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "tm_projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_defects_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_traceability_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "tm_defects_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tm_environments: {
+        Row: {
+          config: Json | null
+          created_at: string | null
+          description: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          project_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          config?: Json | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          project_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          config?: Json | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          project_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tm_environments_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "tm_projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_environments_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_traceability_summary"
+            referencedColumns: ["project_id"]
+          },
+        ]
+      }
+      tm_folders: {
+        Row: {
+          case_count: number | null
+          created_at: string | null
+          created_by: string | null
+          depth: number | null
+          id: string
+          name: string
+          parent_id: string | null
+          path: unknown
+          project_id: string
+          sort_order: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          case_count?: number | null
+          created_at?: string | null
+          created_by?: string | null
+          depth?: number | null
+          id?: string
+          name: string
+          parent_id?: string | null
+          path?: unknown
+          project_id: string
+          sort_order?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          case_count?: number | null
+          created_at?: string | null
+          created_by?: string | null
+          depth?: number | null
+          id?: string
+          name?: string
+          parent_id?: string | null
+          path?: unknown
+          project_id?: string
+          sort_order?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tm_folders_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_folders_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "tm_folders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_folders_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "tm_projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_folders_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_traceability_summary"
+            referencedColumns: ["project_id"]
+          },
+        ]
+      }
+      tm_key_sequences: {
+        Row: {
+          current_value: number | null
+          id: string
+          prefix: string
+          project_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          current_value?: number | null
+          id?: string
+          prefix: string
+          project_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          current_value?: number | null
+          id?: string
+          prefix?: string
+          project_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tm_key_sequences_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "tm_projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_key_sequences_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_traceability_summary"
+            referencedColumns: ["project_id"]
+          },
+        ]
+      }
+      tm_labels: {
+        Row: {
+          color: string | null
+          created_at: string | null
+          id: string
+          name: string
+          project_id: string
+        }
+        Insert: {
+          color?: string | null
+          created_at?: string | null
+          id?: string
+          name: string
+          project_id: string
+        }
+        Update: {
+          color?: string | null
+          created_at?: string | null
+          id?: string
+          name?: string
+          project_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tm_labels_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "tm_projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_labels_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_traceability_summary"
+            referencedColumns: ["project_id"]
+          },
+        ]
+      }
+      tm_notifications: {
+        Row: {
+          created_at: string | null
+          entity_id: string | null
+          entity_type: string | null
+          id: string
+          is_read: boolean | null
+          message: string | null
+          title: string
+          type: Database["public"]["Enums"]["tm_notification_type"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          entity_id?: string | null
+          entity_type?: string | null
+          id?: string
+          is_read?: boolean | null
+          message?: string | null
+          title: string
+          type: Database["public"]["Enums"]["tm_notification_type"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          entity_id?: string | null
+          entity_type?: string | null
+          id?: string
+          is_read?: boolean | null
+          message?: string | null
+          title?: string
+          type?: Database["public"]["Enums"]["tm_notification_type"]
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tm_notifications_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tm_permissions: {
+        Row: {
+          created_at: string | null
+          granted: boolean | null
+          id: string
+          permission_key: string
+          role_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          granted?: boolean | null
+          id?: string
+          permission_key: string
+          role_id: string
+        }
+        Update: {
+          created_at?: string | null
+          granted?: boolean | null
+          id?: string
+          permission_key?: string
+          role_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tm_permissions_role_id_fkey"
+            columns: ["role_id"]
+            isOneToOne: false
+            referencedRelation: "tm_roles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tm_projects: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          id: string
+          is_active: boolean | null
+          key: string
+          name: string
+          settings: Json | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          key: string
+          name: string
+          settings?: Json | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          key?: string
+          name?: string
+          settings?: Json | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tm_projects_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tm_roles: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          is_system: boolean | null
+          name: string
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_system?: boolean | null
+          name: string
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_system?: boolean | null
+          name?: string
+        }
+        Relationships: []
+      }
+      tm_saved_filters: {
+        Row: {
+          created_at: string | null
+          entity_type: string
+          filter_config: Json
+          id: string
+          is_default: boolean | null
+          is_shared: boolean | null
+          name: string
+          project_id: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          entity_type: string
+          filter_config: Json
+          id?: string
+          is_default?: boolean | null
+          is_shared?: boolean | null
+          name: string
+          project_id?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          entity_type?: string
+          filter_config?: Json
+          id?: string
+          is_default?: boolean | null
+          is_shared?: boolean | null
+          name?: string
+          project_id?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tm_saved_filters_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "tm_projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_saved_filters_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_traceability_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "tm_saved_filters_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tm_set_cases: {
+        Row: {
+          added_at: string | null
+          id: string
+          sort_order: number | null
+          test_case_id: string
+          test_set_id: string
+        }
+        Insert: {
+          added_at?: string | null
+          id?: string
+          sort_order?: number | null
+          test_case_id: string
+          test_set_id: string
+        }
+        Update: {
+          added_at?: string | null
+          id?: string
+          sort_order?: number | null
+          test_case_id?: string
+          test_set_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tm_set_cases_test_case_id_fkey"
+            columns: ["test_case_id"]
+            isOneToOne: false
+            referencedRelation: "tm_test_cases"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_set_cases_test_case_id_fkey"
+            columns: ["test_case_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_test_cases_full"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_set_cases_test_set_id_fkey"
+            columns: ["test_set_id"]
+            isOneToOne: false
+            referencedRelation: "tm_test_sets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tm_step_results: {
+        Row: {
+          actual_result: string | null
+          created_at: string | null
+          duration_seconds: number | null
+          executed_at: string | null
+          executed_by: string | null
+          id: string
+          status: Database["public"]["Enums"]["tm_execution_status"] | null
+          test_run_id: string
+          test_step_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          actual_result?: string | null
+          created_at?: string | null
+          duration_seconds?: number | null
+          executed_at?: string | null
+          executed_by?: string | null
+          id?: string
+          status?: Database["public"]["Enums"]["tm_execution_status"] | null
+          test_run_id: string
+          test_step_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          actual_result?: string | null
+          created_at?: string | null
+          duration_seconds?: number | null
+          executed_at?: string | null
+          executed_by?: string | null
+          id?: string
+          status?: Database["public"]["Enums"]["tm_execution_status"] | null
+          test_run_id?: string
+          test_step_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tm_step_results_executed_by_fkey"
+            columns: ["executed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_step_results_test_run_id_fkey"
+            columns: ["test_run_id"]
+            isOneToOne: false
+            referencedRelation: "tm_test_runs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_step_results_test_step_id_fkey"
+            columns: ["test_step_id"]
+            isOneToOne: false
+            referencedRelation: "tm_test_steps"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tm_template_categories: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          name: string
+          sort_order: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name: string
+          sort_order?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name?: string
+          sort_order?: number | null
+        }
+        Relationships: []
+      }
+      tm_test_case_templates: {
+        Row: {
+          category_id: string | null
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          id: string
+          is_global: boolean | null
+          name: string
+          project_id: string | null
+          template_data: Json
+          updated_at: string | null
+        }
+        Insert: {
+          category_id?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_global?: boolean | null
+          name: string
+          project_id?: string | null
+          template_data: Json
+          updated_at?: string | null
+        }
+        Update: {
+          category_id?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_global?: boolean | null
+          name?: string
+          project_id?: string | null
+          template_data?: Json
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tm_test_case_templates_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "tm_template_categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_test_case_templates_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_test_case_templates_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "tm_projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_test_case_templates_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_traceability_summary"
+            referencedColumns: ["project_id"]
+          },
+        ]
+      }
+      tm_test_cases: {
+        Row: {
+          automation_id: string | null
+          automation_status: string | null
+          case_key: string
+          case_type_id: string | null
+          created_at: string | null
+          created_by: string | null
+          custom_fields: Json | null
+          description: string | null
+          estimated_time: number | null
+          expected_result: string | null
+          folder_id: string | null
+          id: string
+          is_template: boolean | null
+          preconditions: string | null
+          priority_id: string | null
+          project_id: string
+          status: Database["public"]["Enums"]["tm_case_status"] | null
+          title: string
+          updated_at: string | null
+          version: number | null
+        }
+        Insert: {
+          automation_id?: string | null
+          automation_status?: string | null
+          case_key: string
+          case_type_id?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          custom_fields?: Json | null
+          description?: string | null
+          estimated_time?: number | null
+          expected_result?: string | null
+          folder_id?: string | null
+          id?: string
+          is_template?: boolean | null
+          preconditions?: string | null
+          priority_id?: string | null
+          project_id: string
+          status?: Database["public"]["Enums"]["tm_case_status"] | null
+          title: string
+          updated_at?: string | null
+          version?: number | null
+        }
+        Update: {
+          automation_id?: string | null
+          automation_status?: string | null
+          case_key?: string
+          case_type_id?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          custom_fields?: Json | null
+          description?: string | null
+          estimated_time?: number | null
+          expected_result?: string | null
+          folder_id?: string | null
+          id?: string
+          is_template?: boolean | null
+          preconditions?: string | null
+          priority_id?: string | null
+          project_id?: string
+          status?: Database["public"]["Enums"]["tm_case_status"] | null
+          title?: string
+          updated_at?: string | null
+          version?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tm_test_cases_case_type_id_fkey"
+            columns: ["case_type_id"]
+            isOneToOne: false
+            referencedRelation: "tm_case_types"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_test_cases_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_test_cases_folder_id_fkey"
+            columns: ["folder_id"]
+            isOneToOne: false
+            referencedRelation: "tm_folders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_test_cases_priority_id_fkey"
+            columns: ["priority_id"]
+            isOneToOne: false
+            referencedRelation: "tm_case_priorities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_test_cases_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "tm_projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_test_cases_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_traceability_summary"
+            referencedColumns: ["project_id"]
+          },
+        ]
+      }
+      tm_test_cycles: {
+        Row: {
+          actual_end: string | null
+          actual_start: string | null
+          blocked_count: number | null
+          created_at: string | null
+          created_by: string | null
+          cycle_key: string
+          description: string | null
+          environment_id: string | null
+          failed_count: number | null
+          id: string
+          name: string
+          not_run_count: number | null
+          passed_count: number | null
+          planned_end: string | null
+          planned_start: string | null
+          project_id: string
+          skipped_count: number | null
+          status: Database["public"]["Enums"]["tm_cycle_status"] | null
+          total_cases: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          actual_end?: string | null
+          actual_start?: string | null
+          blocked_count?: number | null
+          created_at?: string | null
+          created_by?: string | null
+          cycle_key: string
+          description?: string | null
+          environment_id?: string | null
+          failed_count?: number | null
+          id?: string
+          name: string
+          not_run_count?: number | null
+          passed_count?: number | null
+          planned_end?: string | null
+          planned_start?: string | null
+          project_id: string
+          skipped_count?: number | null
+          status?: Database["public"]["Enums"]["tm_cycle_status"] | null
+          total_cases?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          actual_end?: string | null
+          actual_start?: string | null
+          blocked_count?: number | null
+          created_at?: string | null
+          created_by?: string | null
+          cycle_key?: string
+          description?: string | null
+          environment_id?: string | null
+          failed_count?: number | null
+          id?: string
+          name?: string
+          not_run_count?: number | null
+          passed_count?: number | null
+          planned_end?: string | null
+          planned_start?: string | null
+          project_id?: string
+          skipped_count?: number | null
+          status?: Database["public"]["Enums"]["tm_cycle_status"] | null
+          total_cases?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tm_test_cycles_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_test_cycles_environment_id_fkey"
+            columns: ["environment_id"]
+            isOneToOne: false
+            referencedRelation: "tm_environments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_test_cycles_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "tm_projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_test_cycles_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_traceability_summary"
+            referencedColumns: ["project_id"]
+          },
+        ]
+      }
+      tm_test_runs: {
+        Row: {
+          completed_at: string | null
+          created_at: string | null
+          cycle_scope_id: string
+          duration_seconds: number | null
+          environment_snapshot: Json | null
+          executed_by: string | null
+          id: string
+          notes: string | null
+          run_number: number | null
+          started_at: string | null
+          status: Database["public"]["Enums"]["tm_execution_status"] | null
+          updated_at: string | null
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string | null
+          cycle_scope_id: string
+          duration_seconds?: number | null
+          environment_snapshot?: Json | null
+          executed_by?: string | null
+          id?: string
+          notes?: string | null
+          run_number?: number | null
+          started_at?: string | null
+          status?: Database["public"]["Enums"]["tm_execution_status"] | null
+          updated_at?: string | null
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string | null
+          cycle_scope_id?: string
+          duration_seconds?: number | null
+          environment_snapshot?: Json | null
+          executed_by?: string | null
+          id?: string
+          notes?: string | null
+          run_number?: number | null
+          started_at?: string | null
+          status?: Database["public"]["Enums"]["tm_execution_status"] | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tm_test_runs_cycle_scope_id_fkey"
+            columns: ["cycle_scope_id"]
+            isOneToOne: false
+            referencedRelation: "tm_cycle_scope"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_test_runs_cycle_scope_id_fkey"
+            columns: ["cycle_scope_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_my_work"
+            referencedColumns: ["item_id"]
+          },
+          {
+            foreignKeyName: "tm_test_runs_executed_by_fkey"
+            columns: ["executed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tm_test_sets: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          id: string
+          is_smart: boolean | null
+          name: string
+          project_id: string
+          smart_query: Json | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_smart?: boolean | null
+          name: string
+          project_id: string
+          smart_query?: Json | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_smart?: boolean | null
+          name?: string
+          project_id?: string
+          smart_query?: Json | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tm_test_sets_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_test_sets_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "tm_projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_test_sets_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_traceability_summary"
+            referencedColumns: ["project_id"]
+          },
+        ]
+      }
+      tm_test_steps: {
+        Row: {
+          action: string
+          created_at: string | null
+          expected_result: string | null
+          id: string
+          is_shared: boolean | null
+          shared_step_id: string | null
+          step_number: number
+          test_case_id: string
+          test_data: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          action: string
+          created_at?: string | null
+          expected_result?: string | null
+          id?: string
+          is_shared?: boolean | null
+          shared_step_id?: string | null
+          step_number: number
+          test_case_id: string
+          test_data?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          action?: string
+          created_at?: string | null
+          expected_result?: string | null
+          id?: string
+          is_shared?: boolean | null
+          shared_step_id?: string | null
+          step_number?: number
+          test_case_id?: string
+          test_data?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tm_test_steps_shared_step_id_fkey"
+            columns: ["shared_step_id"]
+            isOneToOne: false
+            referencedRelation: "tm_test_steps"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_test_steps_test_case_id_fkey"
+            columns: ["test_case_id"]
+            isOneToOne: false
+            referencedRelation: "tm_test_cases"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_test_steps_test_case_id_fkey"
+            columns: ["test_case_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_test_cases_full"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tm_user_presence: {
+        Row: {
+          entity_id: string | null
+          entity_type: string | null
+          id: string
+          last_seen: string | null
+          project_id: string | null
+          user_id: string
+        }
+        Insert: {
+          entity_id?: string | null
+          entity_type?: string | null
+          id?: string
+          last_seen?: string | null
+          project_id?: string | null
+          user_id: string
+        }
+        Update: {
+          entity_id?: string | null
+          entity_type?: string | null
+          id?: string
+          last_seen?: string | null
+          project_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tm_user_presence_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "tm_projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_user_presence_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_traceability_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "tm_user_presence_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tm_user_roles: {
+        Row: {
+          assigned_at: string | null
+          assigned_by: string | null
+          id: string
+          project_id: string
+          role_id: string
+          user_id: string
+        }
+        Insert: {
+          assigned_at?: string | null
+          assigned_by?: string | null
+          id?: string
+          project_id: string
+          role_id: string
+          user_id: string
+        }
+        Update: {
+          assigned_at?: string | null
+          assigned_by?: string | null
+          id?: string
+          project_id?: string
+          role_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tm_user_roles_assigned_by_fkey"
+            columns: ["assigned_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_user_roles_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "tm_projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_user_roles_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_traceability_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "tm_user_roles_role_id_fkey"
+            columns: ["role_id"]
+            isOneToOne: false
+            referencedRelation: "tm_roles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_user_roles_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       transition_approval_configs: {
         Row: {
           approval_type: string | null
@@ -19877,7 +21582,240 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      v_tm_cycle_progress: {
+        Row: {
+          actual_end: string | null
+          actual_start: string | null
+          blocked_count: number | null
+          created_at: string | null
+          created_by: string | null
+          created_by_name: string | null
+          cycle_key: string | null
+          description: string | null
+          environment_id: string | null
+          environment_name: string | null
+          failed_count: number | null
+          id: string | null
+          name: string | null
+          not_run_count: number | null
+          passed_count: number | null
+          planned_end: string | null
+          planned_start: string | null
+          progress_percent: number | null
+          project_id: string | null
+          project_key: string | null
+          project_name: string | null
+          schedule_status: string | null
+          skipped_count: number | null
+          status: Database["public"]["Enums"]["tm_cycle_status"] | null
+          total_cases: number | null
+          updated_at: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tm_test_cycles_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_test_cycles_environment_id_fkey"
+            columns: ["environment_id"]
+            isOneToOne: false
+            referencedRelation: "tm_environments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_test_cycles_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "tm_projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_test_cycles_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_traceability_summary"
+            referencedColumns: ["project_id"]
+          },
+        ]
+      }
+      v_tm_execution_by_assignee: {
+        Row: {
+          assignee_name: string | null
+          blocked: number | null
+          completion_percent: number | null
+          cycle_id: string | null
+          cycle_name: string | null
+          failed: number | null
+          not_run: number | null
+          passed: number | null
+          project_id: string | null
+          total_assigned: number | null
+          user_id: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tm_cycle_scope_assigned_to_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_test_cycles_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "tm_projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_test_cycles_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_traceability_summary"
+            referencedColumns: ["project_id"]
+          },
+        ]
+      }
+      v_tm_my_work: {
+        Row: {
+          assigned_at: string | null
+          context_id: string | null
+          context_name: string | null
+          due_date: string | null
+          item_id: string | null
+          item_key: string | null
+          item_title: string | null
+          status: Database["public"]["Enums"]["tm_execution_status"] | null
+          urgency: string | null
+          user_id: string | null
+          work_type: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tm_cycle_scope_assigned_to_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      v_tm_test_cases_full: {
+        Row: {
+          automation_id: string | null
+          automation_status: string | null
+          case_key: string | null
+          case_type_id: string | null
+          created_at: string | null
+          created_by: string | null
+          created_by_name: string | null
+          custom_fields: Json | null
+          description: string | null
+          estimated_time: number | null
+          expected_result: string | null
+          folder_id: string | null
+          folder_name: string | null
+          folder_path: unknown
+          id: string | null
+          is_template: boolean | null
+          labels: Json | null
+          preconditions: string | null
+          priority_color: string | null
+          priority_id: string | null
+          priority_name: string | null
+          project_id: string | null
+          project_key: string | null
+          project_name: string | null
+          status: Database["public"]["Enums"]["tm_case_status"] | null
+          step_count: number | null
+          title: string | null
+          type_color: string | null
+          type_name: string | null
+          updated_at: string | null
+          version: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tm_test_cases_case_type_id_fkey"
+            columns: ["case_type_id"]
+            isOneToOne: false
+            referencedRelation: "tm_case_types"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_test_cases_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_test_cases_folder_id_fkey"
+            columns: ["folder_id"]
+            isOneToOne: false
+            referencedRelation: "tm_folders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_test_cases_priority_id_fkey"
+            columns: ["priority_id"]
+            isOneToOne: false
+            referencedRelation: "tm_case_priorities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_test_cases_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "tm_projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_test_cases_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_traceability_summary"
+            referencedColumns: ["project_id"]
+          },
+        ]
+      }
+      v_tm_traceability_summary: {
+        Row: {
+          approved_cases: number | null
+          completed_cycles: number | null
+          open_defects: number | null
+          project_id: string | null
+          project_key: string | null
+          project_name: string | null
+          total_cases: number | null
+          total_cycles: number | null
+        }
+        Insert: {
+          approved_cases?: never
+          completed_cycles?: never
+          open_defects?: never
+          project_id?: string | null
+          project_key?: string | null
+          project_name?: string | null
+          total_cases?: never
+          total_cycles?: never
+        }
+        Update: {
+          approved_cases?: never
+          completed_cycles?: never
+          open_defects?: never
+          project_id?: string | null
+          project_key?: string | null
+          project_name?: string | null
+          total_cases?: never
+          total_cycles?: never
+        }
+        Relationships: []
+      }
     }
     Functions: {
       bulk_assign_roles: {
@@ -20035,6 +21973,31 @@ export type Database = {
       soft_delete_incident: {
         Args: { p_incident_id: string }
         Returns: undefined
+      }
+      text2ltree: { Args: { "": string }; Returns: unknown }
+      tm_calculate_run_status: {
+        Args: { p_run_id: string }
+        Returns: Database["public"]["Enums"]["tm_execution_status"]
+      }
+      tm_check_circular_folder: {
+        Args: { p_folder_id: string; p_new_parent_id: string }
+        Returns: boolean
+      }
+      tm_next_entity_key: {
+        Args: { p_prefix: string; p_project_id: string }
+        Returns: string
+      }
+      tm_update_cycle_stats: {
+        Args: { p_cycle_id: string }
+        Returns: undefined
+      }
+      tm_update_folder_counts: {
+        Args: { p_folder_id: string }
+        Returns: undefined
+      }
+      tm_user_has_access: {
+        Args: { p_project_id: string; p_user_id: string }
+        Returns: boolean
       }
       track_room_access: {
         Args: {
@@ -20340,6 +22303,35 @@ export type Database = {
       test_step_status: "passed" | "failed" | "blocked" | "skipped"
       test_type: "manual" | "automated" | "bdd"
       theme_status: "proposed" | "active" | "done" | "cancelled"
+      tm_audit_action:
+        | "create"
+        | "update"
+        | "delete"
+        | "execute"
+        | "assign"
+        | "clone"
+      tm_case_status: "draft" | "ready" | "approved" | "deprecated"
+      tm_cycle_status: "planned" | "in_progress" | "completed" | "archived"
+      tm_defect_severity: "critical" | "major" | "minor" | "trivial"
+      tm_defect_status:
+        | "open"
+        | "in_progress"
+        | "resolved"
+        | "closed"
+        | "reopened"
+      tm_execution_status:
+        | "not_run"
+        | "in_progress"
+        | "passed"
+        | "failed"
+        | "blocked"
+        | "skipped"
+      tm_notification_type:
+        | "assignment"
+        | "mention"
+        | "status_change"
+        | "comment"
+        | "due_date"
       track_by_type: "POINTS" | "HOURS"
       urgency_level: "high" | "medium" | "low"
       user_approval_status:
@@ -20781,6 +22773,39 @@ export const Constants = {
       test_step_status: ["passed", "failed", "blocked", "skipped"],
       test_type: ["manual", "automated", "bdd"],
       theme_status: ["proposed", "active", "done", "cancelled"],
+      tm_audit_action: [
+        "create",
+        "update",
+        "delete",
+        "execute",
+        "assign",
+        "clone",
+      ],
+      tm_case_status: ["draft", "ready", "approved", "deprecated"],
+      tm_cycle_status: ["planned", "in_progress", "completed", "archived"],
+      tm_defect_severity: ["critical", "major", "minor", "trivial"],
+      tm_defect_status: [
+        "open",
+        "in_progress",
+        "resolved",
+        "closed",
+        "reopened",
+      ],
+      tm_execution_status: [
+        "not_run",
+        "in_progress",
+        "passed",
+        "failed",
+        "blocked",
+        "skipped",
+      ],
+      tm_notification_type: [
+        "assignment",
+        "mention",
+        "status_change",
+        "comment",
+        "due_date",
+      ],
       track_by_type: ["POINTS", "HOURS"],
       urgency_level: ["high", "medium", "low"],
       user_approval_status: [
