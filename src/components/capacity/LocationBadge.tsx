@@ -5,12 +5,18 @@
  */
 
 import { cn } from '@/lib/utils';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 
 interface LocationBadgeProps {
   flag: string; // Flag URL or emoji
   location?: string | null; // Location type (e.g., "Riyadh", "Remote")
   country?: string | null;
-  contractDays?: number | null;
+  contractEndDate?: string | null;
   contractColor?: string;
   compact?: boolean;
   className?: string;
@@ -20,7 +26,7 @@ export function LocationBadge({
   flag,
   location,
   country,
-  contractDays,
+  contractEndDate,
   contractColor = 'text-muted-foreground',
   compact = false,
   className
@@ -28,14 +34,38 @@ export function LocationBadge({
   const isUrl = flag?.startsWith('http');
   const isOnsite = location?.toLowerCase().includes('onsite') || location?.toLowerCase().includes('riyadh');
 
+  const formatContractDate = (date: string | null | undefined) => {
+    if (!date) return 'Permanent';
+    return new Date(date).toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric'
+    });
+  };
+
+  const FlagElement = (
+    <>
+      {isUrl ? (
+        <img src={flag} alt={country || ''} className={compact ? "w-4 h-3 object-cover rounded-sm" : "w-5 h-4 object-cover rounded-sm"} />
+      ) : (
+        <span className={compact ? "text-sm" : "text-base"}>{flag}</span>
+      )}
+    </>
+  );
+
   if (compact) {
     return (
       <div className={cn("flex items-center gap-1", className)}>
-        {isUrl ? (
-          <img src={flag} alt={country || ''} className="w-4 h-3 object-cover rounded-sm" />
-        ) : (
-          <span className="text-sm">{flag}</span>
-        )}
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <span className="cursor-help">{FlagElement}</span>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>{country || 'Unknown'}</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
         {location && (
           <span 
             className={cn(
@@ -55,11 +85,16 @@ export function LocationBadge({
   return (
     <div className={cn("flex flex-col gap-1", className)}>
       <div className="flex items-center gap-1.5">
-        {isUrl ? (
-          <img src={flag} alt={country || ''} className="w-5 h-4 object-cover rounded-sm" />
-        ) : (
-          <span className="text-base">{flag}</span>
-        )}
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <span className="cursor-help">{FlagElement}</span>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>{country || 'Unknown'}</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
         {location && (
           <span 
             className={cn(
@@ -74,17 +109,11 @@ export function LocationBadge({
         )}
       </div>
 
-      {contractDays !== undefined && (
+      {contractEndDate !== undefined && (
         <div className="flex items-center gap-1">
           <span className="text-[10px] text-muted-foreground">Contract</span>
           <span className={cn("text-[10px] font-medium", contractColor)}>
-            {contractDays === null ? (
-              <span className="flex items-center gap-0.5">
-                <span>∞</span> Permanent
-              </span>
-            ) : (
-              `${contractDays} days`
-            )}
+            {formatContractDate(contractEndDate)}
           </span>
         </div>
       )}
