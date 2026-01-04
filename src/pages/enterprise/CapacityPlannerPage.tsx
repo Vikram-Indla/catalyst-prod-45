@@ -327,6 +327,20 @@ export default function CapacityPlannerPage() {
     await saveAllocations.mutateAsync({ resourceId, allocations: allocationInputs });
   }, [saveAllocations]);
 
+  // Handler to update resource department
+  const handleUpdateDepartment = useCallback(async (resourceId: string, departmentId: string | null) => {
+    const { error } = await supabase
+      .from('profiles')
+      .update({ department_id: departmentId })
+      .eq('id', resourceId);
+    
+    if (error) {
+      toast.error(`Failed to update department: ${error.message}`);
+      throw error;
+    }
+    toast.success('Department updated');
+  }, []);
+
   // Get allocations for a specific resource
   const getResourceAllocations = useCallback((resourceId: string): ResourceAllocation[] => {
     return allocations.filter(a => a.profile_id === resourceId);
@@ -1024,7 +1038,9 @@ export default function CapacityPlannerPage() {
           resource={allocationModalResource}
           existingAllocations={allocationModalResource ? getResourceAllocations(allocationModalResource.id) : []}
           resourceAssignments={resourceAssignments.map(a => ({ id: a.id, name: a.name || '' }))}
+          departments={departments}
           onSave={handleSaveAllocations}
+          onUpdateDepartment={handleUpdateDepartment}
           mode={allocationModalResource && getResourceAllocations(allocationModalResource.id).length > 0 ? 'edit' : 'add'}
         />
 
