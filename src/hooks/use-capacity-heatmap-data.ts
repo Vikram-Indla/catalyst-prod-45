@@ -1,6 +1,6 @@
 /**
  * React Query hooks for Capacity Heatmap data
- * Uses real profile data from database
+ * Uses real profile data from database with contract/location/country info
  */
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -9,13 +9,14 @@ import type { HeatmapResource, ProjectAllocation, MonthlyUtilization } from '@/t
 import { getUtilizationStatus, calculateOrgStats } from '@/lib/capacity-heatmap/utils';
 import { toast } from 'sonner';
 import { CATALYST_COLORS } from '@/types/capacity-heatmap';
+import { getContractStatus } from '@/hooks/useResourceProfiles';
 
 // Fetch resources with utilization data from actual profiles
 export function useCapacityHeatmapData(monthCount = 12) {
   return useQuery({
     queryKey: ['capacity-heatmap-resources', monthCount],
     queryFn: async () => {
-      // Fetch profiles with department info
+      // Fetch profiles with department info AND contract/location data
       const { data: profiles, error: profilesError } = await supabase
         .from('profiles')
         .select(`
@@ -24,6 +25,13 @@ export function useCapacityHeatmapData(monthCount = 12) {
           email,
           role,
           department_id,
+          contract_end_date,
+          country,
+          country_code,
+          country_flag_svg_url,
+          location,
+          vendor,
+          avatar_url,
           capacity_departments:department_id (
             id,
             name
@@ -70,14 +78,33 @@ export function useCapacityHeatmapData(monthCount = 12) {
         const deptData = profile.capacity_departments as { id: string; name: string } | null;
         const departmentName = deptData?.name || 'Unassigned';
         
+        // Calculate contract status for this resource
+        const contractStatus = getContractStatus(profile.contract_end_date);
+        
         // Get bookings for this resource
         const resourceBookings = (bookings || []).filter(b => b.resource_id === profile.id);
         
         // Generate monthly utilization based on actual bookings
         const monthlyUtilization: MonthlyUtilization[] = months.map((month, monthIdx) => {
+          // Check if this month is after contract end (locked)
+          const isLockedMonth = profile.contract_end_date && 
+            new Date(profile.contract_end_date) < month;
+          
           // Calculate utilization for this month based on bookings
           let totalPercentage = 0;
           const allocations: ProjectAllocation[] = [];
+          
+          // If month is locked (past contract end), show 0%
+          if (isLockedMonth) {
+            return {
+              month,
+              percentage: 0,
+              status: 'available' as const,
+              allocations: [],
+              isConflict: false,
+              isLocked: true,
+            };
+          }
           
           resourceBookings.forEach((booking, bookingIdx) => {
             const bookingStart = new Date(booking.start_date);
@@ -156,6 +183,15 @@ export function useCapacityHeatmapData(monthCount = 12) {
           trendPercentage: Math.floor(Math.random() * 15),
           hasConflicts: conflicts > 0,
           conflictCount: conflicts,
+          // New fields from /admin/users data
+          contractEndDate: profile.contract_end_date,
+          contractStatus,
+          country: profile.country,
+          countryCode: profile.country_code,
+          countryFlagUrl: profile.country_flag_svg_url,
+          location: profile.location,
+          vendor: profile.vendor,
+          avatarUrl: profile.avatar_url,
         };
       });
       
@@ -163,7 +199,7 @@ export function useCapacityHeatmapData(monthCount = 12) {
       
       return { resources, months, stats };
     },
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    staleTime: 2 * 60 * 1000, // 2 minutes for real-time feel
   });
 }
 

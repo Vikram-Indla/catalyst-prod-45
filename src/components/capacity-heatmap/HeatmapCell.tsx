@@ -39,7 +39,13 @@ export const HeatmapCell = memo(function HeatmapCell({
 }: HeatmapCellProps) {
   const { viewMode, patternMode, hoveredCell, setHoveredCell, timeLapseMonth, isTimeLapsePlaying } = useHeatmapStore();
   
-  const colors = getUtilizationColor(utilization.percentage, viewMode);
+  // Handle locked months (past contract end date)
+  const isLocked = utilization.isLocked;
+  
+  const colors = isLocked 
+    ? { bg: 'hsl(var(--muted))', text: 'hsl(var(--muted-foreground))', pulse: false }
+    : getUtilizationColor(utilization.percentage, viewMode);
+  
   const isHovered = hoveredCell?.resourceId === resourceId && 
     isSameMonth(hoveredCell.month, utilization.month);
   
@@ -56,13 +62,15 @@ export const HeatmapCell = memo(function HeatmapCell({
     utilization.month.getMonth() === timeLapseMonth;
   
   // Calculate display percentage (with ghost if in scenario mode)
-  const displayPercentage = ghostPercentage 
+  const displayPercentage = isLocked ? 0 : (ghostPercentage 
     ? utilization.percentage + ghostPercentage 
-    : utilization.percentage;
+    : utilization.percentage);
   
-  const displayColors = ghostPercentage 
-    ? getUtilizationColor(displayPercentage, viewMode)
-    : colors;
+  const displayColors = isLocked
+    ? colors
+    : ghostPercentage 
+      ? getUtilizationColor(displayPercentage, viewMode)
+      : colors;
   
   return (
     <Tooltip delayDuration={200}>
@@ -99,16 +107,23 @@ export const HeatmapCell = memo(function HeatmapCell({
             repeat: Infinity,
           } : { duration: 0.15 }}
         >
+          {/* Locked indicator */}
+          {isLocked && (
+            <span className="text-[10px] text-muted-foreground">🔒</span>
+          )}
+          
           {/* Percentage text */}
-          <span className={cn(
-            "text-[10px] font-semibold",
-            utilization.percentage === 0 && "text-muted-foreground"
-          )}>
-            {displayPercentage > 0 ? displayPercentage : ''}
-          </span>
+          {!isLocked && (
+            <span className={cn(
+              "text-[10px] font-semibold",
+              utilization.percentage === 0 && "text-muted-foreground"
+            )}>
+              {displayPercentage > 0 ? displayPercentage : ''}
+            </span>
+          )}
           
           {/* Conflict indicator */}
-          {utilization.isConflict && (
+          {utilization.isConflict && !isLocked && (
             <motion.span
               className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full text-[8px] font-bold flex items-center justify-center"
               style={{ 
