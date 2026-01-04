@@ -1298,6 +1298,12 @@ function CardsView({
   const getResourceAllocations = (resourceId: string) => {
     return allocations.filter(a => a.profile_id === resourceId);
   };
+
+  // Helper to calculate total allocation from actual allocations
+  const getTotalAllocationForResource = (resourceId: string): number => {
+    const resourceAllocations = allocations.filter(a => a.profile_id === resourceId);
+    return resourceAllocations.reduce((sum, a) => sum + (a.allocation_percent || 0), 0);
+  };
   // Default to collapsed state - groups start collapsed
   const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({});
 
@@ -1353,7 +1359,7 @@ function CardsView({
                     role={resource.role || 'Team Member'}
                     department={resource.department}
                     assignmentName={assignmentName}
-                    totalAllocation={resource.allocation || 0}
+                    totalAllocation={getTotalAllocationForResource(resource.id)}
                     allocations={getResourceAllocations(resource.id)}
                     onOpen360={() => onResourceClick(resource)}
                     onEdit={() => onEditResource(resource.id)}
@@ -1454,7 +1460,7 @@ function CardsView({
                       role={resource.role || 'Team Member'}
                       department={resource.department}
                       assignmentName={resource.assignmentName}
-                      totalAllocation={resource.allocation || 0}
+                      totalAllocation={getTotalAllocationForResource(resource.id)}
                       allocations={getResourceAllocations(resource.id)}
                       onOpen360={() => onResourceClick(resource)}
                       onEdit={() => onEditResource(resource.id)}
@@ -1479,7 +1485,7 @@ function CardsView({
           role={resource.role || 'Team Member'}
           department={resource.department}
           assignmentName={resource.assignmentName}
-          totalAllocation={resource.allocation || 0}
+          totalAllocation={getTotalAllocationForResource(resource.id)}
           allocations={getResourceAllocations(resource.id)}
           onOpen360={() => onResourceClick(resource)}
           onEdit={() => onEditResource(resource.id)}
