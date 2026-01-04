@@ -377,7 +377,7 @@ export default function CapacityPlannerPage() {
         />
 
         {/* Main Content */}
-        <div className="flex-1 flex flex-col min-h-0 px-6 py-6 bg-[#fafafa]">
+        <div className="flex-1 flex flex-col min-h-0 px-6 py-6 bg-slate-50 dark:bg-slate-950">
           {/* V2.1: Find Availability Panel - shown in resources view */}
           {primaryView === 'resources' && (
             <div className="mb-4">
