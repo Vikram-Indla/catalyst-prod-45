@@ -279,6 +279,17 @@ const IncidentAnalyticsPage = lazy(() => import("./modules/incidents/analytics/p
 const IncidentInsightsPage = lazy(() => import("./modules/incidents/analytics/pages/IncidentInsightsPage"));
 const IncidentKanbanPage = lazy(() => import("./modules/incidents/kanban/pages/IncidentKanbanPage"));
 
+// Test Management Module
+import { 
+  TestManagementLayout,
+  TestCasesPage,
+  TestCyclesPage,
+  DefectsPage as TMDefectsPage,
+  ReportsPage as TMReportsPage,
+  SettingsPage as TMSettingsPage,
+  MyWorkPage
+} from "./modules/test-management";
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -695,6 +706,17 @@ const App = () => (
               <Route path="/knowledge-hub" element={<KnowledgeHubPage />} />
               <Route path="/knowledge-hub/spaces/:spaceId" element={<KnowledgeHubSpacePage />} />
               <Route path="/knowledge-hub/documents/:documentId" element={<KnowledgeHubDocumentPage />} />
+              
+              {/* Test Management Module Routes */}
+              <Route path="/test-management" element={<TestManagementLayout />}>
+                <Route index element={<Navigate to="/test-management/my-work" replace />} />
+                <Route path="my-work" element={<MyWorkPage />} />
+                <Route path="cases" element={<TestCasesPage />} />
+                <Route path="cycles" element={<TestCyclesPage />} />
+                <Route path="defects" element={<TMDefectsPage />} />
+                <Route path="reports" element={<TMReportsPage />} />
+                <Route path="settings" element={<TMSettingsPage />} />
+              </Route>
               
               {/* Release Management Routes - LOCKED FOR UAT */}
               <Route path="/release" element={<Navigate to="/release/incidents" replace />} />

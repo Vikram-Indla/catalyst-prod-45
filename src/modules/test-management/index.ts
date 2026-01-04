@@ -13,3 +13,9 @@ export * from './stores';
 
 // Components
 export * from './components';
+
+// Layouts
+export * from './layouts';
+
+// Pages
+export * from './pages';
