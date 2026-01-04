@@ -13613,6 +13613,10 @@ export type Database = {
           approved_at: string | null
           approved_by: string | null
           avatar_url: string | null
+          contract_end_date: string | null
+          country: string | null
+          country_code: string | null
+          country_flag_svg_url: string | null
           created_at: string | null
           department_id: string | null
           email: string | null
@@ -13622,6 +13626,7 @@ export type Database = {
           last_login: string | null
           last_login_at: string | null
           last_signup_attempt_at: string | null
+          location: string | null
           locked_until: string | null
           must_change_password: boolean
           rejected_at: string | null
@@ -13632,6 +13637,7 @@ export type Database = {
           signup_attempts_count: number | null
           status: string
           updated_at: string | null
+          vendor: string | null
         }
         Insert: {
           approval_status?:
@@ -13640,6 +13646,10 @@ export type Database = {
           approved_at?: string | null
           approved_by?: string | null
           avatar_url?: string | null
+          contract_end_date?: string | null
+          country?: string | null
+          country_code?: string | null
+          country_flag_svg_url?: string | null
           created_at?: string | null
           department_id?: string | null
           email?: string | null
@@ -13649,6 +13659,7 @@ export type Database = {
           last_login?: string | null
           last_login_at?: string | null
           last_signup_attempt_at?: string | null
+          location?: string | null
           locked_until?: string | null
           must_change_password?: boolean
           rejected_at?: string | null
@@ -13659,6 +13670,7 @@ export type Database = {
           signup_attempts_count?: number | null
           status?: string
           updated_at?: string | null
+          vendor?: string | null
         }
         Update: {
           approval_status?:
@@ -13667,6 +13679,10 @@ export type Database = {
           approved_at?: string | null
           approved_by?: string | null
           avatar_url?: string | null
+          contract_end_date?: string | null
+          country?: string | null
+          country_code?: string | null
+          country_flag_svg_url?: string | null
           created_at?: string | null
           department_id?: string | null
           email?: string | null
@@ -13676,6 +13692,7 @@ export type Database = {
           last_login?: string | null
           last_login_at?: string | null
           last_signup_attempt_at?: string | null
+          location?: string | null
           locked_until?: string | null
           must_change_password?: boolean
           rejected_at?: string | null
@@ -13686,6 +13703,7 @@ export type Database = {
           signup_attempts_count?: number | null
           status?: string
           updated_at?: string | null
+          vendor?: string | null
         }
         Relationships: [
           {
@@ -20245,6 +20263,47 @@ export type Database = {
         }
         Relationships: []
       }
+      user_bulk_update_audit: {
+        Row: {
+          id: string
+          mapping_input: Json | null
+          results_summary: Json | null
+          total_mismatched: number
+          total_skipped: number
+          total_updated: number
+          triggered_at: string
+          triggered_by: string | null
+        }
+        Insert: {
+          id?: string
+          mapping_input?: Json | null
+          results_summary?: Json | null
+          total_mismatched?: number
+          total_skipped?: number
+          total_updated?: number
+          triggered_at?: string
+          triggered_by?: string | null
+        }
+        Update: {
+          id?: string
+          mapping_input?: Json | null
+          results_summary?: Json | null
+          total_mismatched?: number
+          total_skipped?: number
+          total_updated?: number
+          triggered_at?: string
+          triggered_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_bulk_update_audit_triggered_by_fkey"
+            columns: ["triggered_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_email_preferences: {
         Row: {
           digest_day: string | null
@@ -20352,6 +20411,61 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      user_field_change_log: {
+        Row: {
+          bulk_update_id: string | null
+          changed_at: string
+          changed_by: string | null
+          field_name: string
+          id: string
+          new_value: string | null
+          old_value: string | null
+          user_id: string
+        }
+        Insert: {
+          bulk_update_id?: string | null
+          changed_at?: string
+          changed_by?: string | null
+          field_name: string
+          id?: string
+          new_value?: string | null
+          old_value?: string | null
+          user_id: string
+        }
+        Update: {
+          bulk_update_id?: string | null
+          changed_at?: string
+          changed_by?: string | null
+          field_name?: string
+          id?: string
+          new_value?: string | null
+          old_value?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_field_change_log_bulk_update_id_fkey"
+            columns: ["bulk_update_id"]
+            isOneToOne: false
+            referencedRelation: "user_bulk_update_audit"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_field_change_log_changed_by_fkey"
+            columns: ["changed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_field_change_log_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_forecast_preferences: {
         Row: {
