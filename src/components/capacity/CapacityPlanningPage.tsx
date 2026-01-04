@@ -134,7 +134,7 @@ export function CapacityPlanningPage() {
             underallocated={stats.under}
             fullyAllocated={stats.full}
             overallocated={stats.over}
-            openVacancies={openVacancies}
+            humanResources={stats.total}
           />
         )}
 
