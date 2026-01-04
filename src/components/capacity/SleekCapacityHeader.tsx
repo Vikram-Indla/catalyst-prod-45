@@ -291,14 +291,14 @@ export function SleekCapacityHeader({
           {/* Department Filter */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm" className="h-7 px-3 text-xs text-slate-600 bg-white border-slate-200 whitespace-nowrap">
+              <Button variant="outline" size="sm" className="h-7 px-3 text-xs text-slate-600 dark:text-slate-300 bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 whitespace-nowrap">
                 <Filter className="h-3.5 w-3.5 mr-1.5" />
                 {departmentFilter === 'all' ? 'All Depts' : 
                  departmentFilter === 'delivery' ? 'Delivery Only' :
                  departmentFilter === 'product' ? 'Product Only' : 'Support Only'}
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="bg-white">
+            <DropdownMenuContent align="end" className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700">
               <DropdownMenuItem onClick={() => onDepartmentFilterChange?.('delivery')}>Delivery Only</DropdownMenuItem>
               <DropdownMenuItem onClick={() => onDepartmentFilterChange?.('product')}>Product Only</DropdownMenuItem>
               <DropdownMenuItem onClick={() => onDepartmentFilterChange?.('support')}>Support Only</DropdownMenuItem>
@@ -308,12 +308,12 @@ export function SleekCapacityHeader({
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm" className="h-7 px-2 text-xs text-slate-600">
+              <Button variant="ghost" size="sm" className="h-7 px-2 text-xs text-slate-600 dark:text-slate-300">
                 Group: {groupBy === 'none' ? 'None' : groupBy.charAt(0).toUpperCase() + groupBy.slice(1)}
                 <ChevronDown className="h-3 w-3 ml-1" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="bg-white">
+            <DropdownMenuContent align="end" className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700">
               <DropdownMenuItem onClick={() => onGroupByChange('assignment')}>Assignment</DropdownMenuItem>
               <DropdownMenuItem onClick={() => onGroupByChange('department')}>Department</DropdownMenuItem>
               <DropdownMenuItem onClick={() => onGroupByChange('none')}>None</DropdownMenuItem>
