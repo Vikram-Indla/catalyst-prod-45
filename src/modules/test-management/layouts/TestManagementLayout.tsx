@@ -1,9 +1,10 @@
 /**
  * Test Management Layout
  * Provides sidebar navigation, header, and content area for TM module
+ * Fully responsive with mobile drawer support
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Outlet, NavLink, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import {
@@ -18,9 +19,11 @@ import {
   Search,
   Bell,
   ChevronDown,
+  Menu,
+  X,
+  FlaskConical,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   DropdownMenu,
@@ -29,219 +32,270 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { TMProjectSelector } from '../components/layout/TMProjectSelector';
+import { TMGlobalSearch } from '../components/layout/TMGlobalSearch';
+import { useUIStore } from '../stores/uiStore';
 
-const navItems = [
-  { path: '/test-management/my-work', label: 'My Work', icon: Home },
-  { path: '/test-management/cases', label: 'Test Cases', icon: FileText },
-  { path: '/test-management/cycles', label: 'Test Cycles', icon: RefreshCw },
-  { path: '/test-management/defects', label: 'Defects', icon: Bug },
+interface NavItem {
+  path: string;
+  label: string;
+  icon: React.ElementType;
+  badge?: number;
+  separator?: boolean;
+}
+
+const navItems: NavItem[] = [
+  { path: '/test-management/my-work', label: 'My Work', icon: Home, badge: 12 },
+  { path: '/test-management/cases', label: 'Test Cases', icon: FileText, badge: 156 },
+  { path: '/test-management/cycles', label: 'Test Cycles', icon: RefreshCw, badge: 8 },
+  { path: '/test-management/defects', label: 'Defects', icon: Bug, badge: 23 },
   { path: '/test-management/reports', label: 'Reports', icon: BarChart3 },
-  { path: '/test-management/settings', label: 'Settings', icon: Settings },
-];
-
-// Mock projects for selector
-const mockProjects = [
-  { id: 'proj-1', name: 'Catalyst Platform', key: 'CAT' },
-  { id: 'proj-2', name: 'Mobile App', key: 'MOB' },
-  { id: 'proj-3', name: 'API Gateway', key: 'API' },
+  { path: '/test-management/settings', label: 'Settings', icon: Settings, separator: true },
 ];
 
 export function TestManagementLayout() {
-  const [isCollapsed, setIsCollapsed] = useState(false);
-  const [selectedProject, setSelectedProject] = useState(mockProjects[0].id);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
+  
+  const { sidebarCollapsed, setSidebarCollapsed, toggleSidebar } = useUIStore();
+
+  // Close mobile menu on route change
+  useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [location.pathname]);
 
   // Generate breadcrumbs from path
   const getBreadcrumbs = () => {
     const pathParts = location.pathname.split('/').filter(Boolean);
     const breadcrumbs = [{ label: 'Test Management', path: '/test-management' }];
-    
+
     if (pathParts.length > 1) {
-      const currentNav = navItems.find(item => item.path === location.pathname);
+      const currentNav = navItems.find((item) => item.path === location.pathname);
       if (currentNav) {
         breadcrumbs.push({ label: currentNav.label, path: currentNav.path });
+      } else if (pathParts[1] === 'cycles' && pathParts[2]) {
+        breadcrumbs.push({ label: 'Test Cycles', path: '/test-management/cycles' });
+        breadcrumbs.push({ label: pathParts[2].toUpperCase(), path: location.pathname });
       }
     }
-    
+
     return breadcrumbs;
   };
 
   const breadcrumbs = getBreadcrumbs();
-  const currentProject = mockProjects.find(p => p.id === selectedProject);
 
-  return (
-    <div className="flex h-full w-full overflow-hidden bg-surface-1">
-      {/* Left Sidebar */}
-      <aside
+  // Sidebar Navigation Content
+  const SidebarContent = ({ collapsed = false }: { collapsed?: boolean }) => (
+    <div className="flex h-full flex-col">
+      {/* Header with Project Selector */}
+      <div
         className={cn(
-          'flex flex-col border-r border-border-default bg-sidebar-background transition-all duration-300',
-          isCollapsed ? 'w-16' : 'w-60'
+          'border-b border-border p-3',
+          collapsed && 'flex justify-center'
         )}
       >
-        {/* Project Selector */}
-        <div className={cn(
-          'border-b border-border-default p-3',
-          isCollapsed && 'flex justify-center'
-        )}>
-          {isCollapsed ? (
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <div className="flex h-9 w-9 items-center justify-center rounded-md bg-primary text-primary-foreground font-semibold text-sm">
-                  {currentProject?.key?.slice(0, 2) || 'TM'}
-                </div>
-              </TooltipTrigger>
-              <TooltipContent side="right">
-                {currentProject?.name || 'Select Project'}
-              </TooltipContent>
-            </Tooltip>
-          ) : (
-            <Select value={selectedProject} onValueChange={setSelectedProject}>
-              <SelectTrigger className="w-full bg-surface-0">
-                <div className="flex items-center gap-2">
-                  <div className="flex h-6 w-6 items-center justify-center rounded bg-primary text-primary-foreground text-xs font-semibold">
-                    {currentProject?.key?.slice(0, 2) || 'TM'}
-                  </div>
-                  <SelectValue placeholder="Select project" />
-                </div>
-              </SelectTrigger>
-              <SelectContent>
-                {mockProjects.map((project) => (
-                  <SelectItem key={project.id} value={project.id}>
-                    <div className="flex items-center gap-2">
-                      <div className="flex h-5 w-5 items-center justify-center rounded bg-primary/10 text-primary text-xs font-semibold">
-                        {project.key.slice(0, 2)}
-                      </div>
-                      {project.name}
-                    </div>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+        <div className="flex items-center gap-2 mb-2">
+          <FlaskConical className="h-5 w-5 text-primary shrink-0" />
+          {!collapsed && (
+            <span className="font-semibold text-foreground">Test Management</span>
           )}
         </div>
+        <TMProjectSelector collapsed={collapsed} />
+      </div>
 
-        {/* Navigation Items */}
-        <ScrollArea className="flex-1 py-2">
-          <nav className="flex flex-col gap-1 px-2">
-            {navItems.map((item) => {
-              const Icon = item.icon;
-              const isActive = location.pathname === item.path;
+      {/* Navigation Items */}
+      <ScrollArea className="flex-1 py-2">
+        <nav className="flex flex-col gap-1 px-2">
+          {navItems.map((item, index) => {
+            const Icon = item.icon;
+            const isActive = location.pathname === item.path;
+            const showSeparator = item.separator && index > 0;
 
-              if (isCollapsed) {
-                return (
-                  <Tooltip key={item.path}>
+            return (
+              <React.Fragment key={item.path}>
+                {showSeparator && <div className="my-2 border-t border-border" />}
+                {collapsed ? (
+                  <Tooltip>
                     <TooltipTrigger asChild>
                       <NavLink
                         to={item.path}
                         className={cn(
-                          'flex h-10 w-10 items-center justify-center rounded-md transition-colors mx-auto',
+                          'flex h-10 w-10 items-center justify-center rounded-md transition-colors mx-auto relative',
                           isActive
                             ? 'bg-primary text-primary-foreground'
                             : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
                         )}
                       >
                         <Icon className="h-5 w-5" />
+                        {item.badge && !isActive && (
+                          <span className="absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary text-[10px] font-medium text-primary-foreground px-1">
+                            {item.badge > 99 ? '99+' : item.badge}
+                          </span>
+                        )}
                       </NavLink>
                     </TooltipTrigger>
-                    <TooltipContent side="right">{item.label}</TooltipContent>
+                    <TooltipContent side="right">
+                      <div className="flex items-center gap-2">
+                        {item.label}
+                        {item.badge && (
+                          <Badge variant="secondary" className="h-5">
+                            {item.badge}
+                          </Badge>
+                        )}
+                      </div>
+                    </TooltipContent>
                   </Tooltip>
-                );
-              }
+                ) : (
+                  <NavLink
+                    to={item.path}
+                    className={cn(
+                      'flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium transition-colors',
+                      isActive
+                        ? 'bg-primary text-primary-foreground'
+                        : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
+                    )}
+                  >
+                    <Icon className="h-5 w-5 shrink-0" />
+                    <span className="flex-1">{item.label}</span>
+                    {item.badge && (
+                      <Badge
+                        variant={isActive ? 'secondary' : 'outline'}
+                        className={cn(
+                          'h-5 min-w-5 justify-center',
+                          isActive && 'bg-primary-foreground/20 text-primary-foreground border-0'
+                        )}
+                      >
+                        {item.badge > 99 ? '99+' : item.badge}
+                      </Badge>
+                    )}
+                  </NavLink>
+                )}
+              </React.Fragment>
+            );
+          })}
+        </nav>
+      </ScrollArea>
 
-              return (
-                <NavLink
-                  key={item.path}
-                  to={item.path}
-                  className={cn(
-                    'flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium transition-colors',
-                    isActive
-                      ? 'bg-primary text-primary-foreground'
-                      : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
-                  )}
-                >
-                  <Icon className="h-5 w-5" />
-                  <span>{item.label}</span>
-                </NavLink>
-              );
-            })}
-          </nav>
-        </ScrollArea>
+      {/* Collapse Toggle (Desktop only) */}
+      <div className="border-t border-border p-2 hidden lg:block">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={toggleSidebar}
+          className={cn(
+            'w-full justify-center text-muted-foreground hover:text-foreground',
+            collapsed && 'px-0'
+          )}
+        >
+          {collapsed ? (
+            <ChevronRight className="h-4 w-4" />
+          ) : (
+            <>
+              <ChevronLeft className="h-4 w-4 mr-2" />
+              <span>Collapse</span>
+            </>
+          )}
+        </Button>
+      </div>
+    </div>
+  );
 
-        {/* Collapse Toggle */}
-        <div className="border-t border-border-default p-2">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setIsCollapsed(!isCollapsed)}
-            className={cn(
-              'w-full justify-center text-muted-foreground hover:text-foreground',
-              isCollapsed && 'px-0'
-            )}
-          >
-            {isCollapsed ? (
-              <ChevronRight className="h-4 w-4" />
-            ) : (
-              <>
-                <ChevronLeft className="h-4 w-4 mr-2" />
-                <span>Collapse</span>
-              </>
-            )}
-          </Button>
-        </div>
+  return (
+    <div className="flex h-full w-full overflow-hidden bg-muted/30">
+      {/* Desktop Sidebar */}
+      <aside
+        className={cn(
+          'hidden lg:flex flex-col border-r border-border bg-background transition-all duration-300',
+          sidebarCollapsed ? 'w-16' : 'w-60'
+        )}
+      >
+        <SidebarContent collapsed={sidebarCollapsed} />
       </aside>
+
+      {/* Mobile Sidebar (Drawer) */}
+      <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+        <SheetContent side="left" className="w-72 p-0">
+          <SidebarContent collapsed={false} />
+        </SheetContent>
+      </Sheet>
 
       {/* Main Content Area */}
       <div className="flex flex-1 flex-col overflow-hidden">
         {/* Top Header */}
-        <header className="flex h-14 items-center justify-between border-b border-border-default bg-surface-0 px-4">
-          {/* Breadcrumbs */}
-          <nav className="flex items-center gap-1.5 text-sm">
-            {breadcrumbs.map((crumb, index) => (
-              <React.Fragment key={crumb.path}>
-                {index > 0 && (
-                  <ChevronRight className="h-4 w-4 text-muted-foreground" />
-                )}
-                <NavLink
-                  to={crumb.path}
-                  className={cn(
-                    'hover:text-primary transition-colors',
-                    index === breadcrumbs.length - 1
-                      ? 'font-medium text-foreground'
-                      : 'text-muted-foreground'
+        <header className="flex h-14 items-center justify-between border-b border-border bg-background px-4">
+          {/* Left Section */}
+          <div className="flex items-center gap-3">
+            {/* Mobile Menu Button */}
+            <Button
+              variant="ghost"
+              size="icon"
+              className="lg:hidden"
+              onClick={() => setMobileMenuOpen(true)}
+            >
+              <Menu className="h-5 w-5" />
+            </Button>
+
+            {/* Breadcrumbs */}
+            <nav className="flex items-center gap-1.5 text-sm">
+              {breadcrumbs.map((crumb, index) => (
+                <React.Fragment key={crumb.path}>
+                  {index > 0 && (
+                    <ChevronRight className="h-4 w-4 text-muted-foreground" />
                   )}
-                >
-                  {crumb.label}
-                </NavLink>
-              </React.Fragment>
-            ))}
-          </nav>
+                  <NavLink
+                    to={crumb.path}
+                    className={cn(
+                      'hover:text-primary transition-colors',
+                      index === breadcrumbs.length - 1
+                        ? 'font-medium text-foreground'
+                        : 'text-muted-foreground'
+                    )}
+                  >
+                    {crumb.label}
+                  </NavLink>
+                </React.Fragment>
+              ))}
+            </nav>
+          </div>
 
           {/* Right Section */}
-          <div className="flex items-center gap-3">
-            {/* Global Search */}
-            <div className="relative w-64">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-              <Input
-                placeholder="Search tests, cycles, defects..."
-                className="pl-9 h-9 bg-surface-2"
-              />
-            </div>
+          <div className="flex items-center gap-2">
+            {/* Global Search Button */}
+            <Button
+              variant="outline"
+              size="sm"
+              className="hidden sm:flex items-center gap-2 text-muted-foreground w-64 justify-between"
+              onClick={() => setSearchOpen(true)}
+            >
+              <div className="flex items-center gap-2">
+                <Search className="h-4 w-4" />
+                <span>Search...</span>
+              </div>
+              <kbd className="pointer-events-none hidden h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex">
+                <span className="text-xs">⌘</span>K
+              </kbd>
+            </Button>
+
+            {/* Mobile Search Button */}
+            <Button
+              variant="ghost"
+              size="icon"
+              className="sm:hidden"
+              onClick={() => setSearchOpen(true)}
+            >
+              <Search className="h-5 w-5" />
+            </Button>
 
             {/* Notifications */}
             <Button variant="ghost" size="icon" className="relative">
               <Bell className="h-5 w-5 text-muted-foreground" />
-              <Badge 
-                variant="destructive" 
+              <Badge
+                variant="destructive"
                 className="absolute -top-1 -right-1 h-4 w-4 p-0 flex items-center justify-center text-[10px]"
               >
                 3
@@ -258,12 +312,17 @@ export function TestManagementLayout() {
                       JD
                     </AvatarFallback>
                   </Avatar>
-                  <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                  <ChevronDown className="h-4 w-4 text-muted-foreground hidden sm:block" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-48">
-                <DropdownMenuItem>Profile</DropdownMenuItem>
-                <DropdownMenuItem>Settings</DropdownMenuItem>
+              <DropdownMenuContent align="end" className="w-56">
+                <div className="px-2 py-1.5">
+                  <p className="text-sm font-medium">John Doe</p>
+                  <p className="text-xs text-muted-foreground">john.doe@company.com</p>
+                </div>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem>My Profile</DropdownMenuItem>
+                <DropdownMenuItem>Preferences</DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem className="text-destructive">
                   Sign Out
@@ -274,10 +333,13 @@ export function TestManagementLayout() {
         </header>
 
         {/* Page Content */}
-        <main className="flex-1 overflow-auto p-6 bg-surface-1">
+        <main className="flex-1 overflow-auto p-6 bg-muted/30">
           <Outlet />
         </main>
       </div>
+
+      {/* Global Search Dialog */}
+      <TMGlobalSearch open={searchOpen} onOpenChange={setSearchOpen} />
     </div>
   );
 }
