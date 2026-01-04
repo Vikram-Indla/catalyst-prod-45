@@ -27,14 +27,16 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { Search, MoreHorizontal, UserCog, Power, PowerOff, ShieldCheck, Trash2, KeyRound, CheckCircle, XCircle, Clock, Mail } from 'lucide-react';
+import { Search, MoreHorizontal, UserCog, Power, PowerOff, ShieldCheck, Trash2, KeyRound, CheckCircle, XCircle, Clock, Mail, Upload } from 'lucide-react';
 import { UserProfile, useDeleteUser, useApproveUser, useRejectUser, useDisableUser, ApprovalStatus, getDisplayStatus } from '@/hooks/useUsers';
 import { format, formatDistanceToNow, isToday, isYesterday } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { ResponsiveTableWrapper } from '@/components/layout/ResponsivePageContainer';
 import { ResetPasswordDialog } from './ResetPasswordDialog';
 import { EditEmailDialog } from './EditEmailDialog';
+import { BulkUpdateDrawer } from './BulkUpdateDrawer';
 import { useIsSuperAdmin } from '@/hooks/useUsers';
+import { VENDORS, LOCATIONS, COUNTRIES, formatContractEndDate } from '@/lib/countryLookup';
 
 interface UsersTableProps {
   users: UserProfile[];
@@ -47,10 +49,14 @@ export function UsersTable({ users, isLoading, onEditRoles, onEditPermissions }:
   const [searchTerm, setSearchTerm] = useState('');
   const [roleFilter, setRoleFilter] = useState('all');
   const [approvalFilter, setApprovalFilter] = useState('all');
+  const [vendorFilter, setVendorFilter] = useState('all');
+  const [countryFilter, setCountryFilter] = useState('all');
+  const [locationFilter, setLocationFilter] = useState('all');
   const [userToDelete, setUserToDelete] = useState<UserProfile | null>(null);
   const [userToReject, setUserToReject] = useState<UserProfile | null>(null);
   const [resetPasswordUser, setResetPasswordUser] = useState<UserProfile | null>(null);
   const [editEmailUser, setEditEmailUser] = useState<UserProfile | null>(null);
+  const [isBulkUpdateOpen, setIsBulkUpdateOpen] = useState(false);
   
   const deleteUser = useDeleteUser();
   const approveUser = useApproveUser();
@@ -60,6 +66,11 @@ export function UsersTable({ users, isLoading, onEditRoles, onEditPermissions }:
 
   // Get unique roles for filter dropdown
   const allRoles = [...new Set(users.flatMap(u => u.roles.map(r => r.role_name)))];
+  
+  // Get unique vendors and countries from actual data
+  const uniqueVendors = [...new Set(users.map(u => u.vendor).filter(Boolean))];
+  const uniqueCountries = [...new Set(users.map(u => u.country).filter(Boolean))];
+  const uniqueLocations = [...new Set(users.map(u => u.location).filter(Boolean))];
 
   const filteredUsers = users.filter(user => {
     const matchesSearch = 
@@ -71,7 +82,11 @@ export function UsersTable({ users, isLoading, onEditRoles, onEditPermissions }:
     
     const matchesApproval = approvalFilter === 'all' || user.approval_status === approvalFilter;
     
-    return matchesSearch && matchesRole && matchesApproval;
+    const matchesVendor = vendorFilter === 'all' || user.vendor === vendorFilter;
+    const matchesCountry = countryFilter === 'all' || user.country === countryFilter;
+    const matchesLocation = locationFilter === 'all' || user.location === locationFilter;
+    
+    return matchesSearch && matchesRole && matchesApproval && matchesVendor && matchesCountry && matchesLocation;
   });
 
   const formatLastLogin = (lastLogin: string | null) => {
@@ -172,13 +187,25 @@ export function UsersTable({ users, isLoading, onEditRoles, onEditPermissions }:
 
   return (
     <Card>
-      <CardHeader>
-        <CardTitle>User List</CardTitle>
-        <CardDescription>View and manage all users in the system</CardDescription>
+      <CardHeader className="flex flex-row items-center justify-between">
+        <div>
+          <CardTitle>User List</CardTitle>
+          <CardDescription>View and manage all users in the system</CardDescription>
+        </div>
+        {isSuperAdmin && (
+          <Button 
+            variant="outline" 
+            onClick={() => setIsBulkUpdateOpen(true)}
+            className="flex items-center gap-2"
+          >
+            <Upload className="h-4 w-4" />
+            Bulk Update
+          </Button>
+        )}
       </CardHeader>
       <CardContent>
-        {/* Filters */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 mb-4">
+        {/* Filters - Row 1 */}
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 mb-3">
           <div className="relative flex-1 w-full sm:max-w-xs">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
@@ -189,7 +216,7 @@ export function UsersTable({ users, isLoading, onEditRoles, onEditPermissions }:
             />
           </div>
           <Select value={roleFilter} onValueChange={setRoleFilter}>
-            <SelectTrigger className="w-full sm:w-[180px]">
+            <SelectTrigger className="w-full sm:w-[150px]">
               <SelectValue placeholder="All Roles" />
             </SelectTrigger>
             <SelectContent>
@@ -200,12 +227,12 @@ export function UsersTable({ users, isLoading, onEditRoles, onEditPermissions }:
             </SelectContent>
           </Select>
           <Select value={approvalFilter} onValueChange={setApprovalFilter}>
-            <SelectTrigger className="w-full sm:w-[180px]">
-              <SelectValue placeholder="Approval Status" />
+            <SelectTrigger className="w-full sm:w-[150px]">
+              <SelectValue placeholder="Approval" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Approval</SelectItem>
-              <SelectItem value="PENDING_APPROVAL">Pending Approval</SelectItem>
+              <SelectItem value="PENDING_APPROVAL">Pending</SelectItem>
               <SelectItem value="APPROVED">Approved</SelectItem>
               <SelectItem value="REJECTED">Rejected</SelectItem>
               <SelectItem value="DISABLED">Disabled</SelectItem>
@@ -213,15 +240,55 @@ export function UsersTable({ users, isLoading, onEditRoles, onEditPermissions }:
           </Select>
         </div>
 
+        {/* Filters - Row 2 (Vendor/Country/Location) */}
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 mb-4">
+          <Select value={vendorFilter} onValueChange={setVendorFilter}>
+            <SelectTrigger className="w-full sm:w-[140px]">
+              <SelectValue placeholder="Vendor" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Vendors</SelectItem>
+              {uniqueVendors.map(vendor => (
+                <SelectItem key={vendor} value={vendor!}>{vendor}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Select value={countryFilter} onValueChange={setCountryFilter}>
+            <SelectTrigger className="w-full sm:w-[140px]">
+              <SelectValue placeholder="Country" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Countries</SelectItem>
+              {uniqueCountries.map(country => (
+                <SelectItem key={country} value={country!}>{country}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Select value={locationFilter} onValueChange={setLocationFilter}>
+            <SelectTrigger className="w-full sm:w-[140px]">
+              <SelectValue placeholder="Location" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Locations</SelectItem>
+              {uniqueLocations.map(loc => (
+                <SelectItem key={loc} value={loc!}>{loc}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
         {/* Table */}
-        <ResponsiveTableWrapper minWidth={700}>
+        <ResponsiveTableWrapper minWidth={1100}>
           <table className="w-full">
             <thead>
               <tr className="border-b bg-muted/30">
                 <th className="text-left py-3 px-4 text-xs font-medium text-muted-foreground">Name</th>
+                <th className="text-left py-3 px-4 text-xs font-medium text-muted-foreground">Vendor</th>
+                <th className="text-left py-3 px-4 text-xs font-medium text-muted-foreground">End Date</th>
+                <th className="text-left py-3 px-4 text-xs font-medium text-muted-foreground">Location</th>
+                <th className="text-left py-3 px-4 text-xs font-medium text-muted-foreground">Country</th>
                 <th className="text-left py-3 px-4 text-xs font-medium text-muted-foreground">Role(s)</th>
                 <th className="text-left py-3 px-4 text-xs font-medium text-muted-foreground">Approval</th>
-                <th className="text-left py-3 px-4 text-xs font-medium text-muted-foreground">Last Login</th>
                 <th className="text-left py-3 px-4 text-xs font-medium text-muted-foreground">Status</th>
                 <th className="text-right py-3 px-4 text-xs font-medium text-muted-foreground">Actions</th>
               </tr>
@@ -242,6 +309,41 @@ export function UsersTable({ users, isLoading, onEditRoles, onEditPermissions }:
                   </td>
                   <td className="py-3 px-4">
                     <div className="text-sm">
+                      {user.vendor || <span className="text-muted-foreground">-</span>}
+                    </div>
+                  </td>
+                  <td className="py-3 px-4">
+                    <div className="text-sm">
+                      {formatContractEndDate(user.contract_end_date)}
+                    </div>
+                  </td>
+                  <td className="py-3 px-4">
+                    <div className="text-sm">
+                      {user.location ? (
+                        <Badge variant="outline" className="text-xs">
+                          {user.location}
+                        </Badge>
+                      ) : (
+                        <span className="text-muted-foreground">-</span>
+                      )}
+                    </div>
+                  </td>
+                  <td className="py-3 px-4">
+                    <div className="flex items-center gap-2">
+                      {user.country_flag_svg_url && (
+                        <img 
+                          src={user.country_flag_svg_url} 
+                          alt={user.country || ''} 
+                          className="h-4 w-6 object-cover rounded-sm"
+                        />
+                      )}
+                      <span className="text-sm">
+                        {user.country || <span className="text-muted-foreground">-</span>}
+                      </span>
+                    </div>
+                  </td>
+                  <td className="py-3 px-4">
+                    <div className="text-sm">
                       {user.roles.length > 0 
                         ? user.roles.map(r => r.role_name).join(', ')
                         : <span className="text-muted-foreground">No roles</span>
@@ -250,11 +352,6 @@ export function UsersTable({ users, isLoading, onEditRoles, onEditPermissions }:
                   </td>
                   <td className="py-3 px-4">
                     {getApprovalBadge(user.approval_status)}
-                  </td>
-                  <td className="py-3 px-4">
-                    <div className="text-sm text-muted-foreground">
-                      {formatLastLogin(user.last_login)}
-                    </div>
                   </td>
                   <td className="py-3 px-4">
                     <Badge 
@@ -428,6 +525,13 @@ export function UsersTable({ users, isLoading, onEditRoles, onEditPermissions }:
         userId={editEmailUser?.id || null}
         userName={editEmailUser?.full_name || null}
         currentEmail={editEmailUser?.email || null}
+      />
+
+      {/* Bulk Update Drawer */}
+      <BulkUpdateDrawer
+        isOpen={isBulkUpdateOpen}
+        onClose={() => setIsBulkUpdateOpen(false)}
+        users={users}
       />
     </Card>
   );

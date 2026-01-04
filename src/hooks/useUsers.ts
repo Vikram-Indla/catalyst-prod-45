@@ -21,6 +21,13 @@ export interface UserProfile {
   updated_at: string | null;
   roles: UserRoleInfo[];
   business_lines: string[];
+  // Vendor/Contract metadata
+  vendor: string | null;
+  contract_end_date: string | null;
+  country: string | null;
+  country_code: string | null;
+  country_flag_svg_url: string | null;
+  location: string | null;
 }
 
 // Derive display status from approval_status
@@ -59,10 +66,10 @@ export function useUsers() {
   const query = useQuery({
     queryKey: ['users-list'],
     queryFn: async () => {
-      // Fetch all profiles with approval fields
+      // Fetch all profiles with approval and vendor fields
       const { data: profiles, error: profilesError } = await supabase
         .from('profiles')
-        .select('*, approval_status, requested_at, approved_at, rejected_at, rejection_reason, signup_attempts_count')
+        .select('*, approval_status, requested_at, approved_at, rejected_at, rejection_reason, signup_attempts_count, vendor, contract_end_date, country, country_code, country_flag_svg_url, location')
         .order('full_name');
 
       if (profilesError) throw profilesError;
