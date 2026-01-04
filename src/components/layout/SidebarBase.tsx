@@ -109,7 +109,6 @@ export function SidebarBase({
           )}
         </button>
 
-        {/* Section Header */}
         <div 
           style={{ 
             height: '52px',
@@ -117,7 +116,7 @@ export function SidebarBase({
             display: 'flex',
             alignItems: 'center',
             justifyContent: expanded ? 'flex-start' : 'center',
-            borderBottom: expanded ? '1px solid var(--divider)' : 'none',
+            borderBottom: '1px solid var(--divider)',
             flexShrink: 0,
           }}
         >

@@ -412,14 +412,8 @@ export function DefectsPage() {
         "flex-1 flex flex-col gap-4 transition-all duration-300 overflow-auto",
         selectedDefect ? "mr-[450px]" : ""
       )}>
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-semibold text-foreground">Defects</h1>
-            <p className="text-sm text-muted-foreground">
-              Track and manage defects found during testing
-            </p>
-          </div>
+        {/* Header Actions (title is in module header) */}
+        <div className="flex items-center justify-end">
           <Button onClick={() => setCreateModalOpen(true)}>
             <Plus className="h-4 w-4 mr-2" />
             New Defect
