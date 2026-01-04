@@ -11,7 +11,7 @@ interface CapacitySummaryCardsProps {
   underallocated: number;
   fullyAllocated: number;
   overallocated: number;
-  openVacancies: number;
+  humanResources: number;
 }
 
 export function CapacitySummaryCards({
@@ -19,7 +19,7 @@ export function CapacitySummaryCards({
   underallocated,
   fullyAllocated,
   overallocated,
-  openVacancies
+  humanResources
 }: CapacitySummaryCardsProps) {
   const cards = [
     { 
@@ -52,7 +52,7 @@ export function CapacitySummaryCards({
     },
     { 
       label: 'Human Resources', 
-      value: totalMembers, 
+      value: humanResources, 
       icon: Users, 
       iconBg: 'bg-[#3b82f6]/10', 
       iconColor: 'text-[#3b82f6]', // Blue
