@@ -305,12 +305,6 @@ export function AllocationBookingModal({
               </p>
             </div>
           </div>
-          <button
-            onClick={onClose}
-            className="text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
-          >
-            <X className="w-5 h-5" />
-          </button>
         </div>
 
         {/* Body - Scrollable */}
