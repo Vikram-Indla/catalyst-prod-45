@@ -62,7 +62,7 @@ export function CycleRow({ cycle, onEdit, onClone, onDelete }: CycleRowProps) {
     : 0;
 
   const handleRowClick = () => {
-    navigate(`/test-management/cycles/${cycle.id}`);
+    navigate(`/tests/cycles/${cycle.id}`);
   };
 
   return (

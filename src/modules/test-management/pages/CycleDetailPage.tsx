@@ -134,7 +134,7 @@ export function CycleDetailPage() {
   const cases = casesData?.data || [];
 
   // Handlers
-  const handleBack = () => navigate('/test-management/cycles');
+  const handleBack = () => navigate('/tests/cycles');
 
   const handleStatusChange = async (status: CycleStatus) => {
     if (!cycle) return;
@@ -163,7 +163,7 @@ export function CycleDetailPage() {
     if (!cycle) return;
     try {
       const newCycle = await duplicateCycle.mutateAsync({ id: cycle.id });
-      navigate(`/test-management/cycles/${newCycle.id}`);
+      navigate(`/tests/cycles/${newCycle.id}`);
     } catch (error) {
       // Handled by mutation
     }
@@ -467,7 +467,7 @@ export function CycleDetailPage() {
           <CycleDefectsTable
             defects={[]}
             onViewDefect={(defectId) => {
-              navigate(`/test-management/defects?defectId=${defectId}`);
+              navigate(`/tests/defects?defectId=${defectId}`);
             }}
           />
         </TabsContent>
