@@ -528,8 +528,8 @@ export default function CapacityPlannerPage() {
 
         {/* Main Content */}
         <div className="flex-1 flex flex-col min-h-0 px-6 py-6 bg-surface-2 dark:bg-surface-1">
-          {/* V2.1: Find Availability Panel - shown in resources view */}
-          {primaryView === 'resources' && (
+          {/* V2.1: Find Availability Panel - shown only in table view */}
+          {primaryView === 'resources' && resourceView === 'table' && (
             <div className="mb-4">
               <FindAvailabilityPanel
                 resources={filteredResources}
