@@ -2152,7 +2152,13 @@ function TimelineView({ resources, period, groupBy, groupedByAssignment, grouped
   const renderTimelineHeader = () => (
     <div 
       className="grid bg-muted/50 dark:bg-surface-3 border-b border-border sticky top-0 z-10"
-      style={{ gridTemplateColumns, width: totalWidth, minWidth: totalWidth }}
+      style={{ 
+        gridTemplateColumns, 
+        width: totalWidth, 
+        minWidth: totalWidth,
+        borderLeftWidth: '3px',
+        borderLeftColor: 'transparent'
+      }}
     >
       <div className="px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider border-r border-border">
         Resource
