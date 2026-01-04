@@ -8,7 +8,7 @@ import { Outlet } from 'react-router-dom';
 
 export function TestManagementContent() {
   return (
-    <div className="flex-1 overflow-auto">
+    <div className="flex-1 h-full overflow-auto bg-surface-1">
       <Outlet />
     </div>
   );
