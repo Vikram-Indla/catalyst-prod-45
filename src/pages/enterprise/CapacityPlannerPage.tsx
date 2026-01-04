@@ -2100,15 +2100,24 @@ function TimelineView({ resources, period, groupBy, groupedByAssignment, grouped
   }, [period]);
 
   // Build a map of resourceId -> allocations from the time-boxed allocations
+  // Index by BOTH profile_id AND resource_id to ensure lookups work regardless of key used
   const allocationsByResource = useMemo(() => {
     const map = new Map<string, ResourceAllocation[]>();
     allocations.forEach((a) => {
-      const key = a.profile_id || a.resource_id;
-      if (!key) return;
-      if (!map.has(key)) {
-        map.set(key, []);
+      // Add by profile_id if present
+      if (a.profile_id) {
+        if (!map.has(a.profile_id)) {
+          map.set(a.profile_id, []);
+        }
+        map.get(a.profile_id)!.push(a);
       }
-      map.get(key)!.push(a);
+      // Also add by resource_id if different from profile_id
+      if (a.resource_id && a.resource_id !== a.profile_id) {
+        if (!map.has(a.resource_id)) {
+          map.set(a.resource_id, []);
+        }
+        map.get(a.resource_id)!.push(a);
+      }
     });
     return map;
   }, [allocations]);
