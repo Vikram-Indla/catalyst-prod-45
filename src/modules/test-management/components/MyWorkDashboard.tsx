@@ -190,7 +190,7 @@ export function MyWorkDashboard() {
   ).length || 0;
 
   return (
-    <div className="flex flex-col h-full -m-6">
+    <div className="flex flex-col h-[calc(100%+48px)] w-[calc(100%+48px)] -m-6">
       {/* Header */}
       <div className="flex items-center justify-between px-6 py-4 border-b border-border">
         <div>
