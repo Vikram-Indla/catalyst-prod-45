@@ -149,7 +149,7 @@ export function SleekCapacityHeader({
         </div>
       </div>
 
-      {/* ROW 2: Inline Metrics + Utilization — Height: 44px */}
+      {/* ROW 2: Inline Metrics + Filter Context + Utilization — Height: 44px */}
       <div className="flex items-center justify-between px-4 py-2 border-b border-border/50">
         <div className="flex items-center gap-6">
           {/* Inline Metrics - Descriptive labels */}
@@ -164,6 +164,19 @@ export function SleekCapacityHeader({
             pct={overPct} 
             alert={summary.over > 0} 
           />
+          
+          {/* FIX #2: Filter Context Label */}
+          <div className="w-px h-6 bg-border" />
+          <div className="flex items-center gap-2 px-3 py-1.5 bg-muted rounded-full">
+            <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+              Showing:
+            </span>
+            <span className="text-sm font-semibold text-foreground">
+              {departmentFilter === 'delivery' ? 'Delivery Only' : 
+               departmentFilter === 'product' ? 'Product Only' :
+               departmentFilter === 'support' ? 'Support Only' : 'All Resources'}
+            </span>
+          </div>
         </div>
 
         {/* Utilization Gauge */}
