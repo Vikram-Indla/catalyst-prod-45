@@ -298,9 +298,13 @@ export function UsersTable({ users, isLoading }: UsersTableProps) {
                 <tr key={user.id} className="border-b last:border-b-0 hover:bg-muted/20 transition-colors">
                   <td className="py-3 px-4">
                     <div className="flex items-center gap-3">
-                      <div className="h-8 w-8 rounded-full bg-brand-primary/20 flex items-center justify-center text-xs font-medium text-brand-primary">
+                      <button
+                        onClick={() => setEditUser(user)}
+                        className="h-8 w-8 rounded-full bg-brand-primary/20 flex items-center justify-center text-xs font-medium text-brand-primary hover:bg-brand-primary/30 transition-colors cursor-pointer"
+                        title="Edit user"
+                      >
                         {getInitials(user.full_name)}
-                      </div>
+                      </button>
                       <div>
                         <div className="text-sm font-medium">{user.full_name || 'Unknown'}</div>
                         <div className="text-xs text-muted-foreground">{user.email}</div>
