@@ -111,8 +111,8 @@
   transition: background-color 0.15s ease;
   min-height: 72px;
   position: relative;
-  /* Ensure bars stay within their row */
-  contain: layout;
+  /* Clip content to row boundaries */
+  overflow: hidden;
 }
 
 .timelineRow:hover {
