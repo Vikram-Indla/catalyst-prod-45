@@ -258,22 +258,39 @@ export function FindAvailabilityPanel({
             </div>
           </div>
 
-          {/* Quick Duration Buttons */}
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-muted-foreground">Quick periods:</span>
-            {[
-              { label: 'Next Month', months: 1 },
-              { label: 'Next Quarter', months: 3 },
-              { label: 'Next 6 Months', months: 6 }
-            ].map((period) => (
-              <button
-                key={period.label}
-                className="px-3 py-1 text-sm bg-card border border-border rounded hover:bg-muted transition-colors"
-                onClick={() => handleQuickPeriod(period.months)}
-              >
-                {period.label}
-              </button>
-            ))}
+          {/* Quick Duration Buttons + Clear Filters */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-muted-foreground">Quick periods:</span>
+              {[
+                { label: 'Next Month', months: 1 },
+                { label: 'Next Quarter', months: 3 },
+                { label: 'Next 6 Months', months: 6 }
+              ].map((period) => (
+                <button
+                  key={period.label}
+                  className="px-3 py-1 text-sm bg-card border border-border rounded hover:bg-muted transition-colors"
+                  onClick={() => handleQuickPeriod(period.months)}
+                >
+                  {period.label}
+                </button>
+              ))}
+            </div>
+            
+            {/* Clear Filters Button */}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setCriteria({
+                role: '',
+                allocationNeeded: 50,
+                startDate: format(new Date(), 'yyyy-MM-dd'),
+                endDate: format(addMonths(new Date(), 3), 'yyyy-MM-dd')
+              })}
+              className="text-muted-foreground hover:text-foreground"
+            >
+              Clear Filters
+            </Button>
           </div>
 
           {/* Results */}
