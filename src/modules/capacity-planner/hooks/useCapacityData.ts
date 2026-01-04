@@ -35,14 +35,15 @@ export function useCapacityData() {
         .from('resource_inventory')
         .select('id, name, assignment_id, profile_id, default_capacity_percent');
       
-      // Fetch user_product_roles with role names for synced role display
-      const { data: userProductRoles } = await supabase
-        .from('user_product_roles')
-        .select('user_id, role_id, product_roles(id, name)');
+      // Fetch user_roles from admin/users (user_roles table) for role display
+      const { data: userRolesData } = await supabase
+        .from('user_roles')
+        .select('user_id, role');
       const userRoleMap = new Map<string, string>();
-      (userProductRoles || []).forEach((upr: any) => {
-        if (upr.product_roles?.name && !userRoleMap.has(upr.user_id)) {
-          userRoleMap.set(upr.user_id, upr.product_roles.name);
+      (userRolesData || []).forEach((ur: any) => {
+        // Take the first role if user has multiple
+        if (ur.role && !userRoleMap.has(ur.user_id)) {
+          userRoleMap.set(ur.user_id, ur.role);
         }
       });
       
@@ -173,9 +174,9 @@ export function useCapacityData() {
       })
       .subscribe();
 
-    const userProductRolesChannel = supabase
-      .channel('capacity-user-product-roles-changes')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'user_product_roles' }, () => {
+    const userRolesChannel = supabase
+      .channel('capacity-user-roles-changes')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'user_roles' }, () => {
         queryClient.invalidateQueries({ queryKey: ['capacity-planner-resources'] });
       })
       .subscribe();
@@ -192,7 +193,7 @@ export function useCapacityData() {
       supabase.removeChannel(profilesChannel);
       supabase.removeChannel(resourceInventoryChannel);
       supabase.removeChannel(resourceAssignmentsChannel);
-      supabase.removeChannel(userProductRolesChannel);
+      supabase.removeChannel(userRolesChannel);
       supabase.removeChannel(scenariosChannel);
     };
   }, [queryClient]);
