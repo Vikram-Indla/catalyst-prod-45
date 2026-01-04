@@ -202,7 +202,7 @@ function ProjectStaffingCard({
             {totalAssigned}%
           </div>
           <div className="text-sm text-muted-foreground">
-            of {requiredCapacity}% needed
+            total allocated
           </div>
         </div>
       </div>
