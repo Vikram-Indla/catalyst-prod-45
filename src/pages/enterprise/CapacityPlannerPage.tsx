@@ -55,6 +55,7 @@ import { ScaleWarningBanner } from '@/components/capacity/ScaleWarningBanner';
 import { VirtualizedCardsView } from '@/components/capacity/VirtualizedCardsView';
 import { HierarchicalHeatmap } from '@/components/capacity/HierarchicalHeatmap';
 import { EnhancedSearch } from '@/components/capacity/EnhancedSearch';
+import { EnhancedTimelineView } from '@/components/capacity/timeline';
 import { UndoRedoControls } from '@/components/capacity/UndoRedoControls';
 import { CapacityPlannerSkeleton } from '@/components/capacity/CapacityPlannerSkeleton';
 import { UndoRedoProvider } from '@/contexts/UndoRedoContext';
@@ -647,7 +648,7 @@ export default function CapacityPlannerPage() {
                   />
                 </motion.div>
               )}
-              {/* Timeline View */}
+              {/* Timeline View - Enhanced Catalyst V5 Design */}
               {filteredResources.length > 0 && resourceView === 'timeline' && (
                 <motion.div
                   key="timeline"
@@ -656,13 +657,18 @@ export default function CapacityPlannerPage() {
                   exit={{ opacity: 0, y: -10 }}
                   transition={{ duration: 0.2 }}
                 >
-                  <TimelineView 
-                    resources={filteredResources} 
-                    period={period}
-                    groupBy={groupBy}
-                    groupedByAssignment={groupedByAssignment}
-                    groupedByDepartment={groupedByDepartment}
+                  <EnhancedTimelineView 
+                    resources={filteredResources.map(r => ({
+                      id: r.id,
+                      name: r.name,
+                      role: r.role,
+                      department: r.department,
+                      allocation: r.allocation,
+                      contractEndDate: (r as any).contract_end_date || (r as any).contractEndDate || null,
+                      assignmentName: r.assignmentName,
+                    }))} 
                     allocations={allocations}
+                    year={2026}
                     onEditResource={handleOpenAllocationModal}
                   />
                 </motion.div>
@@ -1375,13 +1381,18 @@ export default function CapacityPlannerPage() {
                 />
               )}
               {currentView === 'timeline' && (
-                <TimelineView 
-                  resources={filteredResources} 
-                  period={period}
-                  groupBy={groupBy}
-                  groupedByAssignment={groupedByAssignment}
-                  groupedByDepartment={groupedByDepartment}
+                <EnhancedTimelineView 
+                  resources={filteredResources.map(r => ({
+                    id: r.id,
+                    name: r.name,
+                    role: r.role,
+                    department: r.department,
+                    allocation: r.allocation,
+                    contractEndDate: (r as any).contract_end_date || (r as any).contractEndDate || null,
+                    assignmentName: r.assignmentName,
+                  }))} 
                   allocations={allocations}
+                  year={2026}
                   onEditResource={() => {}}
                 />
               )}
