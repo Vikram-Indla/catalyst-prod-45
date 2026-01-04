@@ -90,28 +90,28 @@ export function SleekCapacityHeader({
   }, [lastRefresh]);
 
   return (
-    <div className="bg-white border-b border-slate-200">
+    <div className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800">
       {/* ROW 1: Breadcrumb + Live Status + Actions — Height: 40px */}
-      <div className="flex items-center justify-between px-4 py-2 border-b border-slate-100">
+      <div className="flex items-center justify-between px-4 py-2 border-b border-slate-100 dark:border-slate-800">
         <div className="flex items-center gap-3">
           {/* Breadcrumb - Match Strategic Backlog typography */}
           <div className="flex items-center gap-2">
-            <span className="text-sm text-slate-500">Enterprise</span>
-            <span className="text-slate-300">/</span>
-            <span className="text-sm font-semibold text-slate-900">Capacity</span>
+            <span className="text-sm text-slate-500 dark:text-slate-400">Enterprise</span>
+            <span className="text-slate-300 dark:text-slate-600">/</span>
+            <span className="text-sm font-semibold text-slate-900 dark:text-white">Capacity</span>
           </div>
           
           {/* Separator */}
-          <div className="w-px h-4 bg-slate-200" />
+          <div className="w-px h-4 bg-slate-200 dark:bg-slate-700" />
           
           {/* Live Status */}
-          <div className="flex items-center gap-1.5 text-xs text-slate-500">
+          <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
             <div className="relative flex items-center justify-center">
               <span className="w-1.5 h-1.5 rounded-full bg-teal-500" />
               <span className="absolute w-1.5 h-1.5 rounded-full bg-teal-500 animate-ping" />
             </div>
             <span className="font-medium">Live</span>
-            <span className="text-slate-300">•</span>
+            <span className="text-slate-300 dark:text-slate-600">•</span>
             <Clock className="w-3 h-3" />
             <span>{timeAgo} ago</span>
           </div>
@@ -123,7 +123,7 @@ export function SleekCapacityHeader({
             variant="ghost" 
             size="sm"
             onClick={onExport}
-            className="h-7 px-2 text-xs text-slate-500 hover:text-slate-700"
+            className="h-7 px-2 text-xs text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
           >
             <Download className="h-3.5 w-3.5 mr-1" />
             Export
@@ -132,7 +132,7 @@ export function SleekCapacityHeader({
             onClick={onPresentationMode}
             variant="ghost" 
             size="sm"
-            className="h-7 px-3 text-xs text-slate-500 hover:text-slate-700 hover:bg-slate-100"
+            className="h-7 px-3 text-xs text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"
             title="Presentation Mode"
           >
             <Presentation className="h-3.5 w-3.5 mr-1" />
@@ -150,11 +150,11 @@ export function SleekCapacityHeader({
       </div>
 
       {/* ROW 2: Inline Metrics + Utilization — Height: 44px */}
-      <div className="flex items-center justify-between px-4 py-2 border-b border-slate-100">
+      <div className="flex items-center justify-between px-4 py-2 border-b border-slate-100 dark:border-slate-800">
         <div className="flex items-center gap-6">
           {/* Inline Metrics - Descriptive labels */}
           <InlineMetric value={summary.total} label="Total" color="slate" />
-          <div className="w-px h-6 bg-slate-200" />
+          <div className="w-px h-6 bg-slate-200 dark:bg-slate-700" />
           <InlineMetric value={summary.available} label="Available" color="teal" />
           <InlineMetric value={summary.atCapacity} label="At Capacity" color="blue" />
           <InlineMetric 
@@ -175,24 +175,24 @@ export function SleekCapacityHeader({
         <div className="flex items-center gap-3">
           {/* Search */}
           <div className="relative">
-            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400" />
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400 dark:text-slate-500" />
             <Input
               value={searchQuery}
               onChange={(e) => onSearchChange(e.target.value)}
               placeholder="Search..."
-              className="w-44 h-7 pl-8 pr-3 text-xs bg-white border-slate-200 rounded-md focus:ring-1 focus:ring-blue-500/20 focus:border-blue-500"
+              className="w-44 h-7 pl-8 pr-3 text-xs bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 dark:text-white rounded-md focus:ring-1 focus:ring-blue-500/20 focus:border-blue-500"
             />
           </div>
 
           {/* V2.1: Primary View Toggle - Resources vs Projects */}
-          <div className="flex items-center bg-slate-100 rounded-lg p-0.5 gap-0.5">
+          <div className="flex items-center bg-slate-100 dark:bg-slate-800 rounded-lg p-0.5 gap-0.5">
             <button
               onClick={() => onPrimaryViewChange?.('resources')}
               className={cn(
                 'px-3 py-1.5 text-sm font-medium rounded-md transition-all flex items-center gap-1.5',
                 primaryView === 'resources'
-                  ? 'bg-white text-slate-900 shadow-sm'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-white/50'
+                  ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-white/50 dark:hover:bg-slate-700/50'
               )}
             >
               <Users className="w-3.5 h-3.5" />
@@ -203,8 +203,8 @@ export function SleekCapacityHeader({
               className={cn(
                 'px-3 py-1.5 text-sm font-medium rounded-md transition-all flex items-center gap-1.5',
                 primaryView === 'projects'
-                  ? 'bg-white text-slate-900 shadow-sm'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-white/50'
+                  ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-white/50 dark:hover:bg-slate-700/50'
               )}
             >
               <Briefcase className="w-3.5 h-3.5" />
@@ -214,7 +214,7 @@ export function SleekCapacityHeader({
 
           {/* V2.1: Secondary View Toggle - Changes based on primary view */}
           {primaryView === 'resources' ? (
-            <div className="flex items-center bg-slate-100 rounded-lg p-0.5 gap-0.5">
+            <div className="flex items-center bg-slate-100 dark:bg-slate-800 rounded-lg p-0.5 gap-0.5">
               {(['cards', 'table', 'timeline', 'heatmap'] as ResourceViewMode[]).map((mode) => (
                 <button
                   key={mode}
@@ -228,8 +228,8 @@ export function SleekCapacityHeader({
                   className={cn(
                     'px-2.5 py-1.5 text-sm font-medium rounded-md transition-all flex items-center gap-1',
                     resourceView === mode
-                      ? 'bg-white text-slate-900 shadow-sm'
-                      : 'text-slate-600 hover:text-slate-900 hover:bg-white/50'
+                      ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm'
+                      : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-white/50 dark:hover:bg-slate-700/50'
                   )}
                 >
                   <ViewIcon mode={mode} />
@@ -238,7 +238,7 @@ export function SleekCapacityHeader({
               ))}
             </div>
           ) : (
-            <div className="flex items-center bg-slate-100 rounded-lg p-0.5 gap-0.5">
+            <div className="flex items-center bg-slate-100 dark:bg-slate-800 rounded-lg p-0.5 gap-0.5">
               {(['cards', 'timeline'] as ProjectViewMode[]).map((mode) => (
                 <button
                   key={mode}
@@ -246,8 +246,8 @@ export function SleekCapacityHeader({
                   className={cn(
                     'px-2.5 py-1.5 text-sm font-medium rounded-md transition-all flex items-center gap-1',
                     projectView === mode
-                      ? 'bg-white text-slate-900 shadow-sm'
-                      : 'text-slate-600 hover:text-slate-900 hover:bg-white/50'
+                      ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm'
+                      : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-white/50 dark:hover:bg-slate-700/50'
                   )}
                 >
                   <ViewIcon mode={mode} />
@@ -259,7 +259,7 @@ export function SleekCapacityHeader({
 
           {/* Timeline Period - Only in timeline view */}
           {(resourceView === 'timeline' || (primaryView === 'projects' && projectView === 'timeline')) && (
-            <div className="flex items-center bg-slate-100 rounded-md p-0.5">
+            <div className="flex items-center bg-slate-100 dark:bg-slate-800 rounded-md p-0.5">
               {(['weekly', 'monthly', 'quarterly'] as const).map((p) => (
                 <button
                   key={p}
@@ -267,8 +267,8 @@ export function SleekCapacityHeader({
                   className={cn(
                     'px-2 py-1 text-xs font-medium rounded transition-all',
                     timelinePeriod === p
-                      ? 'bg-slate-900 text-white'
-                      : 'text-slate-500 hover:text-slate-700'
+                      ? 'bg-slate-900 dark:bg-slate-600 text-white'
+                      : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
                   )}
                 >
                   {p.charAt(0).toUpperCase() + p.slice(1)}
@@ -325,7 +325,7 @@ export function SleekCapacityHeader({
   );
 }
 
-// FIX #1: Stats with visual weight - bold numbers, colored dots
+// FIX #1: Stats with visual weight - bold numbers, colored dots (DARK MODE)
 function InlineMetric({ value, label, color, pct, alert }: { 
   value: number; 
   label: string; 
@@ -334,29 +334,29 @@ function InlineMetric({ value, label, color, pct, alert }: {
   alert?: boolean 
 }) {
   const colors = {
-    slate: { text: 'text-slate-900', dot: 'bg-slate-400' },
-    teal: { text: 'text-teal-600', dot: 'bg-teal-500' },      // #0d9488 - Available
-    blue: { text: 'text-blue-600', dot: 'bg-blue-600' },      // #2563eb - At Capacity
-    red: { text: 'text-red-600', dot: 'bg-red-500' },         // #ef4444 - Over-Allocated
+    slate: { text: 'text-slate-900 dark:text-white', dot: 'bg-slate-400' },
+    teal: { text: 'text-teal-600 dark:text-teal-400', dot: 'bg-teal-500' },      // #0d9488 - Available
+    blue: { text: 'text-blue-600 dark:text-blue-400', dot: 'bg-blue-600' },      // #2563eb - At Capacity
+    red: { text: 'text-red-600 dark:text-red-400', dot: 'bg-red-500' },          // #ef4444 - Over-Allocated
   };
   const c = colors[color];
   
   // Grey out the number when value is 0 for "Over"
-  const numberColor = (color === 'red' && value === 0) ? 'text-slate-400' : c.text;
+  const numberColor = (color === 'red' && value === 0) ? 'text-slate-400 dark:text-slate-600' : c.text;
   
   return (
     <div className="flex items-center gap-1.5">
       <span className={cn('w-2 h-2 rounded-full', c.dot, alert && 'animate-pulse')} />
       <span className={cn('text-lg font-bold tabular-nums', numberColor)}>{value}</span>
       {pct !== undefined && pct > 0 && (
-        <span className="text-xs text-red-500 font-medium">({pct}%)</span>
+        <span className="text-xs text-red-500 dark:text-red-400 font-medium">({pct}%)</span>
       )}
-      <span className="text-xs text-slate-500">{label}</span>
+      <span className="text-xs text-slate-500 dark:text-slate-400">{label}</span>
     </div>
   );
 }
 
-// FIX #11: Utilization properly aligned with number prominent
+// FIX #11: Utilization properly aligned with number prominent (DARK MODE)
 function UtilizationGauge({ value }: { value: number }) {
   const color = value > 100 ? CATALYST.bronze.primary : value > 90 ? CATALYST.blue.primary : CATALYST.teal.primary;
   
@@ -369,9 +369,9 @@ function UtilizationGauge({ value }: { value: number }) {
         >
           {value}%
         </span>
-        <span className="text-[10px] text-slate-500 uppercase tracking-wider">Utilization</span>
+        <span className="text-[10px] text-slate-500 dark:text-slate-400 uppercase tracking-wider">Utilization</span>
       </div>
-      <div className="w-20 h-2 bg-slate-100 rounded-full overflow-hidden">
+      <div className="w-20 h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
         <div 
           className="h-full rounded-full transition-all"
           style={{ width: `${Math.min(value, 100)}%`, backgroundColor: color }}

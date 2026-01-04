@@ -286,9 +286,9 @@ export function AllocationBookingModal({
   return (
     <>
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-hidden flex flex-col p-0 gap-0">
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-hidden flex flex-col p-0 gap-0 dark:bg-slate-900">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-slate-700">
           <div className="flex items-center gap-4">
             <div 
               className="w-12 h-12 rounded-full flex items-center justify-center text-white text-lg font-bold"
@@ -297,17 +297,17 @@ export function AllocationBookingModal({
               {initials}
             </div>
             <div>
-              <h2 className="text-lg font-semibold text-slate-900">
+              <h2 className="text-lg font-semibold text-slate-900 dark:text-white">
                 Edit Allocations: {resource.name}
               </h2>
-              <p className="text-sm text-slate-500">
+              <p className="text-sm text-slate-500 dark:text-slate-400">
                 {resource.role} • {resource.department} Department
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="text-slate-400 hover:text-slate-600 transition-colors"
+            className="text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -317,14 +317,15 @@ export function AllocationBookingModal({
         <div className="flex-1 overflow-y-auto px-6 py-5 space-y-6">
           
           {/* Current Allocation Summary */}
-          <div className="bg-slate-50 rounded-xl p-4">
+          <div className="bg-slate-50 dark:bg-slate-800 rounded-xl p-4">
             <div className="flex items-center justify-between mb-3">
-              <h3 className="text-sm font-semibold text-slate-700 uppercase tracking-wide">
+              <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wide">
                 Current Allocation Summary
               </h3>
               <div className="flex items-center gap-2">
-                <span className="text-sm text-slate-600">Total:</span>
+                <span className="text-sm text-slate-600 dark:text-slate-400">Total:</span>
                 <span className="text-lg font-bold" style={{ color: statusColor }}>
+                  {totalAllocation}%
                   {totalAllocation}%
                 </span>
                 <span 
@@ -341,7 +342,7 @@ export function AllocationBookingModal({
             </div>
             
             {/* Segmented Progress Bar */}
-            <div className="h-4 bg-white rounded-full overflow-hidden flex">
+            <div className="h-4 bg-white dark:bg-slate-700 rounded-full overflow-hidden flex">
               {allocations.map((alloc, idx) => {
                 const theme = getAssignmentTheme(alloc.assignment_name || '');
                 const segmentColor = ALLOCATION_SEGMENT_COLORS[idx % ALLOCATION_SEGMENT_COLORS.length];
@@ -369,14 +370,14 @@ export function AllocationBookingModal({
                         className="w-3 h-3 rounded-full"
                         style={{ backgroundColor: segmentColor }}
                       />
-                      <span className="text-xs text-slate-600">
+                      <span className="text-xs text-slate-600 dark:text-slate-400">
                         {alloc.assignment_name} {alloc.allocation_percent}%
                       </span>
                     </div>
                   );
                 })}
               </div>
-              <span className="text-xs text-slate-500">
+              <span className="text-xs text-slate-500 dark:text-slate-400">
                 {Math.max(0, 100 - totalAllocation)}% available for new bookings
               </span>
             </div>
@@ -403,7 +404,7 @@ export function AllocationBookingModal({
                   <h4 className="text-sm font-bold" style={{ color: CATALYST_V5.overAllocated.hex }}>
                     Conflict Detected: +{overflowAmount}% over capacity
                   </h4>
-                  <p className="text-xs text-slate-600">
+                  <p className="text-xs text-slate-600 dark:text-slate-400">
                     {conflictPeriods.length === 1 
                       ? `In ${format(conflictPeriods[0].month, 'MMMM yyyy')} (${conflictPeriods[0].total}%)`
                       : `In ${conflictPeriods.length} periods: ${conflictPeriods.map(p => format(p.month, 'MMM')).join(', ')}`
@@ -414,20 +415,20 @@ export function AllocationBookingModal({
               
               {/* Quick Fix Options */}
               {quickFixes.length > 0 && (
-                <div className="px-4 py-3 bg-white border-t border-slate-100">
+                <div className="px-4 py-3 bg-white dark:bg-slate-800 border-t border-slate-100 dark:border-slate-700">
                   <div className="flex items-center gap-2 mb-2">
-                    <Zap className="w-4 h-4 text-amber-600" />
-                    <span className="text-xs font-semibold text-slate-700 uppercase">Quick Fixes</span>
+                    <Zap className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+                    <span className="text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase">Quick Fixes</span>
                   </div>
                   <div className="flex flex-wrap gap-2">
                     {quickFixes.map((fix, idx) => (
                       <button
                         key={idx}
                         onClick={fix.action}
-                        className="flex items-center gap-2 px-3 py-2 text-xs font-medium bg-amber-50 text-amber-800 rounded-lg border border-amber-200 hover:bg-amber-100 transition-colors"
+                        className="flex items-center gap-2 px-3 py-2 text-xs font-medium bg-amber-50 dark:bg-amber-900/30 text-amber-800 dark:text-amber-200 rounded-lg border border-amber-200 dark:border-amber-700 hover:bg-amber-100 dark:hover:bg-amber-900/50 transition-colors"
                       >
                         <span>{fix.label}</span>
-                        <span className="text-amber-600">→</span>
+                        <span className="text-amber-600 dark:text-amber-400">→</span>
                       </button>
                     ))}
                   </div>
@@ -439,19 +440,19 @@ export function AllocationBookingModal({
           {/* Allocation Timeline */}
           <div>
             <div className="flex items-center gap-2 mb-3">
-              <Calendar className="w-4 h-4 text-slate-400" />
-              <h3 className="text-sm font-semibold text-slate-700 uppercase tracking-wide">
+              <Calendar className="w-4 h-4 text-slate-400 dark:text-slate-500" />
+              <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wide">
                 Allocation Timeline
               </h3>
             </div>
             
-            <div className="bg-white border border-slate-200 rounded-xl p-4">
+            <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-4">
               {/* Month Headers */}
               <div className="flex mb-2">
                 {months.map((month, i) => (
                   <div 
                     key={i} 
-                    className="flex-1 text-xs text-slate-500 font-medium"
+                    className="flex-1 text-xs text-slate-500 dark:text-slate-400 font-medium"
                   >
                     {format(month, "MMM ''yy")}
                   </div>
@@ -465,7 +466,7 @@ export function AllocationBookingModal({
                   {months.map((_, i) => (
                     <div 
                       key={i} 
-                      className="flex-1 border-l border-slate-100 first:border-l-0"
+                      className="flex-1 border-l border-slate-100 dark:border-slate-700 first:border-l-0"
                     />
                   ))}
                 </div>
