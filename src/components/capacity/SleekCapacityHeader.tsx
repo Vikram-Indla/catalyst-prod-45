@@ -255,7 +255,15 @@ export function SleekCapacityHeader({
               {(['cards', 'timeline'] as ProjectViewMode[]).map((mode) => (
                 <button
                   key={mode}
-                  onClick={() => onProjectViewChange?.(mode)}
+                  onClick={() => {
+                    // FIX #3: Tab coupling - If clicking Timeline in Projects view, switch to Resources first
+                    if (mode === 'timeline') {
+                      onPrimaryViewChange?.('resources');
+                      onResourceViewChange?.('timeline');
+                    } else {
+                      onProjectViewChange?.(mode);
+                    }
+                  }}
                   className={cn(
                     'px-2.5 py-1.5 text-sm font-medium rounded-md transition-all flex items-center gap-1',
                     projectView === mode

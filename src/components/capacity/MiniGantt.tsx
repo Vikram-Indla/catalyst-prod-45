@@ -109,21 +109,23 @@ export function MiniGantt({
         {bars.map((bar, index) => (
           <div
             key={bar.allocation.id}
-            className="absolute h-3 rounded-sm cursor-pointer hover:brightness-110 transition-all"
+            className="absolute h-4 rounded-sm cursor-pointer hover:brightness-110 transition-all flex items-center"
             style={{
               left: `${bar.left}%`,
-              width: `${Math.max(bar.width, 2)}%`,
-              top: index * 16,
+              width: `${Math.max(bar.width, 8)}%`,
+              minWidth: '60px',
+              top: index * 18,
               backgroundColor: bar.allocation.assignmentColor
             }}
             title={`${bar.allocation.assignmentName} (${bar.allocation.allocationPercent}%)`}
           >
-            {/* Show label if bar is wide enough */}
-            {bar.width > 20 && (
-              <span className="text-xs px-1 truncate block leading-3 text-white drop-shadow-[0_1px_1px_rgba(0,0,0,0.5)]" style={{ textShadow: '0 0 3px rgba(0,0,0,0.7), 0 1px 2px rgba(0,0,0,0.5)' }}>
-                {bar.allocation.assignmentName}
-              </span>
-            )}
+            {/* Always show label - resource name is critical */}
+            <span 
+              className="text-[10px] px-1.5 truncate block leading-4 text-white font-medium"
+              style={{ textShadow: '0 0 3px rgba(0,0,0,0.7), 0 1px 2px rgba(0,0,0,0.5)' }}
+            >
+              {bar.allocation.assignmentName}
+            </span>
           </div>
         ))}
 
