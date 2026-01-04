@@ -57,6 +57,7 @@ import { EnhancedSearch } from '@/components/capacity/EnhancedSearch';
 import { UndoRedoControls } from '@/components/capacity/UndoRedoControls';
 import { CapacityPlannerSkeleton } from '@/components/capacity/CapacityPlannerSkeleton';
 import { UndoRedoProvider } from '@/contexts/UndoRedoContext';
+import { RESOURCE_COLUMN_WIDTH, WEEK_COLUMN_WIDTH, MONTH_COLUMN_WIDTH, QUARTER_COLUMN_WIDTH } from '@/lib/capacity/timeline-columns';
 
 // Department colors - Catalyst V5 compliant
 const departmentColors: Record<string, { bg: string; text: string; badge: string }> = {
@@ -2114,14 +2115,16 @@ function TimelineView({ resources, period, groupBy, groupedByAssignment, grouped
   const hasTimeBoxedAllocations = allocations.length > 0;
 
   // FIX #1: Use fixed pixel widths for column alignment
-  const columnWidth = period === 'weekly' ? 100 : period === 'monthly' ? 150 : 250;
-  const gridTemplateColumns = `224px repeat(${periods.length}, ${columnWidth}px)`;
-  const totalWidth = 224 + (periods.length * columnWidth);
+  const columnWidth = period === 'weekly' ? WEEK_COLUMN_WIDTH : period === 'monthly' ? MONTH_COLUMN_WIDTH : QUARTER_COLUMN_WIDTH;
+
+  // Explicit pixel template (no repeat/fr units) to avoid rounding drift.
+  const gridTemplateColumns = `${RESOURCE_COLUMN_WIDTH}px ${Array.from({ length: periods.length }, () => `${columnWidth}px`).join(' ')}`;
+  const totalWidth = RESOURCE_COLUMN_WIDTH + (periods.length * columnWidth);
 
   const renderTimelineHeader = () => (
     <div 
       className="grid bg-muted/50 dark:bg-surface-3 border-b border-border sticky top-0 z-10"
-      style={{ gridTemplateColumns, width: totalWidth, minWidth: '100%' }}
+      style={{ gridTemplateColumns, width: totalWidth, minWidth: totalWidth }}
     >
       <div className="px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider border-r border-border">
         Resource
@@ -2257,6 +2260,7 @@ function TimelineView({ resources, period, groupBy, groupedByAssignment, grouped
         style={{ 
           gridTemplateColumns: gridTemplateColumns, 
           width: totalWidth,
+          minWidth: totalWidth,
           borderLeftWidth: '3px', 
           borderLeftColor: allocTheme.bar 
         }}
@@ -2292,7 +2296,7 @@ function TimelineView({ resources, period, groupBy, groupedByAssignment, grouped
             <div 
               key={p.key}
               className={cn(
-                'relative border-r border-border last:border-r-0 min-h-[60px] py-2 px-1',
+                'relative border-r border-border last:border-r-0 min-h-[60px] py-2 px-0',
                 isCurrentPeriod && 'bg-primary/5',
                 isOver && 'bg-warning/10'
               )}
@@ -2309,20 +2313,20 @@ function TimelineView({ resources, period, groupBy, groupedByAssignment, grouped
                 const projectColor = getTimelineProjectColor(projectName);
                 const tooltipText = `${projectName}: ${bar.alloc.allocation_percent}% (${new Date(bar.alloc.start_date).toLocaleDateString()} – ${new Date(bar.alloc.end_date).toLocaleDateString()})`;
                 
-                // Calculate width based on span (how many columns it covers)
-                const barWidth = bar.span * columnWidth - 8; // subtract margins
-                
-                return (
-                  <div
-                    key={bar.alloc.id || idx}
-                    className="absolute h-7 rounded flex items-center px-3 text-[11px] font-semibold cursor-pointer hover:opacity-90 transition-opacity shadow-sm z-10"
-                    style={{
-                      top: 8 + idx * 32,
-                      left: 4,
-                      width: barWidth,
-                      backgroundColor: projectColor.bg,
-                      color: projectColor.text,
-                    }}
+                 // Calculate width based on span (how many columns it covers)
+                 const barWidth = bar.span * columnWidth;
+
+                 return (
+                   <div
+                     key={bar.alloc.id || idx}
+                     className="absolute h-7 rounded flex items-center px-3 text-[11px] font-semibold cursor-pointer hover:opacity-90 transition-opacity shadow-sm z-10"
+                     style={{
+                       top: 8 + idx * 32,
+                       left: 0,
+                       width: barWidth,
+                       backgroundColor: projectColor.bg,
+                       color: projectColor.text,
+                     }}
                     title={tooltipText}
                     onClick={() => onEditResource?.(resource.id)}
                   >
@@ -2393,9 +2397,9 @@ function TimelineView({ resources, period, groupBy, groupedByAssignment, grouped
         {/* Timeline Table */}
         {isExpanded && (
           <div className="bg-card border border-border rounded-lg overflow-x-auto">
-            <div style={{ minWidth: totalWidth }}>
-              {renderTimelineHeader()}
+            <div style={{ width: totalWidth, minWidth: totalWidth }}>
               <div className="max-h-[400px] overflow-y-auto">
+                {renderTimelineHeader()}
                 {groupResources.map((r, i) => renderResourceRow(r, groupName, i % 2 === 0))}
               </div>
             </div>
@@ -2445,9 +2449,9 @@ function TimelineView({ resources, period, groupBy, groupedByAssignment, grouped
   return (
     <div className="space-y-4">
       <div className="bg-card border border-border rounded-lg overflow-x-auto">
-        <div style={{ minWidth: totalWidth }}>
-          {renderTimelineHeader()}
+        <div style={{ width: totalWidth, minWidth: totalWidth }}>
           <div className="max-h-[500px] overflow-y-auto">
+            {renderTimelineHeader()}
             {resources.map((r, i) => renderResourceRow(r, r.assignmentName || 'Unassigned', i % 2 === 0))}
           </div>
         </div>
