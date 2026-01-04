@@ -364,3 +364,25 @@ export interface TesterPerformance {
   avg_duration: number;
   defects_filed: number;
 }
+
+// ============================================================================
+// ADDITIONAL TYPES
+// ============================================================================
+
+export interface TMEnvironment {
+  id: string;
+  project_id: string;
+  name: string;
+  description?: string;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface TMTeamMember {
+  id: string;
+  full_name: string;
+  email?: string;
+  avatar_url?: string;
+  role?: string;
+}
