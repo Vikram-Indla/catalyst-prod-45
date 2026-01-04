@@ -43,9 +43,12 @@ import {
   getUtilizationColor,
   getInitials,
 } from '@/lib/catalyst-colors';
-import { SleekCapacityHeader } from '@/components/capacity/SleekCapacityHeader';
+import { SleekCapacityHeader, PrimaryView, ResourceViewMode, ProjectViewMode } from '@/components/capacity/SleekCapacityHeader';
 import { CompactGroupHeader } from '@/components/capacity/CompactGroupHeader';
 import { CompactResourceCard } from '@/components/capacity/CompactResourceCard';
+import { HeatmapView } from '@/components/capacity/HeatmapView';
+import { FindAvailabilityPanel } from '@/components/capacity/FindAvailabilityPanel';
+import { ProjectStaffingView } from '@/components/capacity/ProjectStaffingView';
 
 // Department colors - Catalyst V5 compliant
 const departmentColors: Record<string, { bg: string; text: string; badge: string }> = {
@@ -77,7 +80,10 @@ export default function CapacityPlannerPage() {
   // Edit resource state
   const [editResourceId, setEditResourceId] = useState<string | null>(null);
 
-  // View state
+  // View state - V2.1 architecture
+  const [primaryView, setPrimaryView] = useState<PrimaryView>('resources');
+  const [resourceView, setResourceView] = useState<ResourceViewMode>('cards');
+  const [projectView, setProjectView] = useState<ProjectViewMode>('cards');
   const [currentView, setCurrentView] = useState<ViewType>('cards');
   const [period, setPeriod] = useState<PeriodType>('monthly');
   const [groupBy, setGroupBy] = useState<GroupByType>('none');
@@ -342,6 +348,17 @@ export default function CapacityPlannerPage() {
             over: metrics.summary.overAllocated,
             utilizationPercentage: metrics.summary.avgUtilization,
           }}
+          primaryView={primaryView}
+          resourceView={resourceView}
+          projectView={projectView}
+          onPrimaryViewChange={setPrimaryView}
+          onResourceViewChange={(view) => {
+            setResourceView(view);
+            if (view !== 'heatmap') {
+              setCurrentView(view as ViewType);
+            }
+          }}
+          onProjectViewChange={setProjectView}
           viewMode={currentView as 'cards' | 'table' | 'timeline'}
           groupBy={groupBy}
           timelinePeriod={period}
@@ -361,54 +378,95 @@ export default function CapacityPlannerPage() {
 
         {/* Main Content */}
         <div className="flex-1 flex flex-col min-h-0 px-6 py-6 bg-[#fafafa]">
-          {currentView === 'cards' && (
-            <CardsView 
-              resources={filteredResources} 
-              groupedByAssignment={groupedByAssignment}
-              groupedByDepartment={groupedByDepartment}
-              groupBy={groupBy}
-              isCollapsed={isCollapsed}
-              compactMode={compactMode}
-              allocations={allocations}
-              onResourceClick={openResourceDrawer}
-              onEditResource={handleOpenAllocationModal}
-            />
+          {/* V2.1: Find Availability Panel - shown in resources view */}
+          {primaryView === 'resources' && (
+            <div className="mb-4">
+              <FindAvailabilityPanel
+                resources={filteredResources}
+                allocations={allocations}
+                onBookResource={(resourceId, criteria) => {
+                  const resource = filteredResources.find(r => r.id === resourceId);
+                  if (resource) {
+                    setAllocationModalResource(resource);
+                    setAllocationModalOpen(true);
+                  }
+                }}
+              />
+            </div>
           )}
-          {currentView === 'table' && (
-            <TableView 
-              resources={filteredResources} 
-              projects={projects}
-              groupBy={groupBy}
-              groupedByAssignment={groupedByAssignment}
-              groupedByDepartment={groupedByDepartment}
-              allocations={allocations}
-              onResourceClick={openResourceDrawer}
-              onEditResource={handleOpenAllocationModal}
-              onDeleteResource={(resource) => {
-                setResourceToDelete(resource);
-                setResourcesToDelete([]);
-                setDeleteConfirmOpen(true);
-              }}
-              onBulkDelete={(resources) => {
-                setResourcesToDelete(resources);
-                setResourceToDelete(null);
-                setDeleteConfirmOpen(true);
-              }}
-              onBulkEdit={(resources) => {
-                setResourcesToBulkEdit(resources);
-                setBulkEditOpen(true);
-              }}
-            />
+
+          {/* Resources Primary View */}
+          {primaryView === 'resources' && (
+            <>
+              {resourceView === 'cards' && (
+                <CardsView 
+                  resources={filteredResources} 
+                  groupedByAssignment={groupedByAssignment}
+                  groupedByDepartment={groupedByDepartment}
+                  groupBy={groupBy}
+                  isCollapsed={isCollapsed}
+                  compactMode={compactMode}
+                  allocations={allocations}
+                  onResourceClick={openResourceDrawer}
+                  onEditResource={handleOpenAllocationModal}
+                />
+              )}
+              {resourceView === 'table' && (
+                <TableView 
+                  resources={filteredResources} 
+                  projects={projects}
+                  groupBy={groupBy}
+                  groupedByAssignment={groupedByAssignment}
+                  groupedByDepartment={groupedByDepartment}
+                  allocations={allocations}
+                  onResourceClick={openResourceDrawer}
+                  onEditResource={handleOpenAllocationModal}
+                  onDeleteResource={(resource) => {
+                    setResourceToDelete(resource);
+                    setResourcesToDelete([]);
+                    setDeleteConfirmOpen(true);
+                  }}
+                  onBulkDelete={(resources) => {
+                    setResourcesToDelete(resources);
+                    setResourceToDelete(null);
+                    setDeleteConfirmOpen(true);
+                  }}
+                  onBulkEdit={(resources) => {
+                    setResourcesToBulkEdit(resources);
+                    setBulkEditOpen(true);
+                  }}
+                />
+              )}
+              {resourceView === 'timeline' && (
+                <TimelineView 
+                  resources={filteredResources} 
+                  period={period}
+                  groupBy={groupBy}
+                  groupedByAssignment={groupedByAssignment}
+                  groupedByDepartment={groupedByDepartment}
+                  allocations={allocations}
+                  onEditResource={handleOpenAllocationModal}
+                />
+              )}
+              {resourceView === 'heatmap' && (
+                <HeatmapView
+                  resources={filteredResources}
+                  allocations={allocations}
+                  weeksToShow={12}
+                />
+              )}
+            </>
           )}
-          {currentView === 'timeline' && (
-            <TimelineView 
-              resources={filteredResources} 
-              period={period}
-              groupBy={groupBy}
-              groupedByAssignment={groupedByAssignment}
-              groupedByDepartment={groupedByDepartment}
+
+          {/* Projects Primary View */}
+          {primaryView === 'projects' && (
+            <ProjectStaffingView
+              assignments={resourceAssignments}
               allocations={allocations}
-              onEditResource={handleOpenAllocationModal}
+              onAssignResource={(assignmentId) => {
+                // Open find availability with project context
+                setResourceModalOpen(true);
+              }}
             />
           )}
         </div>
