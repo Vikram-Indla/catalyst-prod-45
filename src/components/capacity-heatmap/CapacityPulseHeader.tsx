@@ -12,16 +12,39 @@ import { getHealthColor, getHealthGradient } from '@/lib/capacity-heatmap/utils'
 import { CATALYST_COLORS } from '@/types/capacity-heatmap';
 
 interface CapacityPulseHeaderProps {
-  stats: OrgStats;
+  stats: OrgStats | null | undefined;
   className?: string;
 }
+
+// Safe number utility - returns fallback if value is null, undefined, NaN, or Infinity
+const safeNumber = (value: number | undefined | null, fallback: number = 0): number => {
+  if (value === undefined || value === null || !isFinite(value)) return fallback;
+  return value;
+};
+
+// Safe division utility - prevents division by zero
+const safeDivide = (numerator: number, denominator: number, fallback: number = 0): number => {
+  if (!denominator || denominator === 0 || !isFinite(denominator)) return fallback;
+  const result = numerator / denominator;
+  return isFinite(result) ? result : fallback;
+};
 
 export const CapacityPulseHeader = memo(function CapacityPulseHeader({
   stats,
   className
 }: CapacityPulseHeaderProps) {
-  const healthColor = getHealthColor(stats.healthStatus);
-  const healthGradient = getHealthGradient(stats.healthStatus);
+  // Safe extraction with defaults
+  const overallUtilization = safeNumber(stats?.overallUtilization, 0);
+  const availableCapacity = safeNumber(stats?.availableCapacity, 100);
+  const conflictCount = safeNumber(stats?.conflictCount, 0);
+  const totalResources = safeNumber(stats?.totalResources, 0);
+  const trend = stats?.trend ?? 'stable';
+  const trendPercentage = safeNumber(stats?.trendPercentage, 0);
+  const healthStatus = stats?.healthStatus ?? 'healthy';
+  const pulseRate = safeNumber(stats?.pulseRate, 1);
+
+  const healthColor = getHealthColor(healthStatus);
+  const healthGradient = getHealthGradient(healthStatus);
   
   const statusLabel = useMemo(() => {
     const labels = {
@@ -30,10 +53,17 @@ export const CapacityPulseHeader = memo(function CapacityPulseHeader({
       healthy: 'Healthy Utilization',
       underutilized: 'Capacity Available',
     };
-    return labels[stats.healthStatus];
-  }, [stats.healthStatus]);
+    return labels[healthStatus];
+  }, [healthStatus]);
   
-  const TrendIcon = stats.trend === 'up' ? TrendingUp : stats.trend === 'down' ? TrendingDown : Minus;
+  // Safe pulse duration calculation
+  const pulseDuration = safeDivide(2, pulseRate, 2);
+  const fastPulseDuration = safeDivide(1.5, pulseRate, 1.5);
+  
+  // Safe average calculation
+  const avgAvailable = Math.round(safeDivide(availableCapacity, totalResources, 0));
+  
+  const TrendIcon = trend === 'up' ? TrendingUp : trend === 'down' ? TrendingDown : Minus;
   
   return (
     <motion.div
@@ -55,7 +85,7 @@ export const CapacityPulseHeader = memo(function CapacityPulseHeader({
           opacity: [0.05, 0.15, 0.05],
         }}
         transition={{
-          duration: 2 / stats.pulseRate,
+          duration: pulseDuration,
           repeat: Infinity,
           ease: "easeInOut",
         }}
@@ -70,7 +100,7 @@ export const CapacityPulseHeader = memo(function CapacityPulseHeader({
               scale: [1, 1.1, 1],
             }}
             transition={{
-              duration: 2 / stats.pulseRate,
+              duration: pulseDuration,
               repeat: Infinity,
               ease: "easeInOut",
             }}
@@ -93,7 +123,7 @@ export const CapacityPulseHeader = memo(function CapacityPulseHeader({
                 opacity: [0.6, 0],
               }}
               transition={{
-                duration: 1.5 / stats.pulseRate,
+                duration: fastPulseDuration,
                 repeat: Infinity,
                 ease: "easeOut",
               }}
@@ -103,7 +133,7 @@ export const CapacityPulseHeader = memo(function CapacityPulseHeader({
           <div>
             <h2 className="text-2xl font-bold text-foreground flex items-center gap-2">
               Capacity Pulse
-              {stats.conflictCount > 0 && (
+              {conflictCount > 0 && (
                 <span 
                   className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium"
                   style={{ 
@@ -112,7 +142,7 @@ export const CapacityPulseHeader = memo(function CapacityPulseHeader({
                   }}
                 >
                   <AlertTriangle className="w-3 h-3" />
-                  {stats.conflictCount} conflicts
+                  {conflictCount} conflict{conflictCount !== 1 ? 's' : ''}
                 </span>
               )}
             </h2>
@@ -138,20 +168,20 @@ export const CapacityPulseHeader = memo(function CapacityPulseHeader({
               className="text-3xl font-bold"
               style={{ color: healthColor }}
             >
-              {stats.overallUtilization}%
+              {overallUtilization}%
             </div>
             <div className="text-xs text-muted-foreground flex items-center gap-1 justify-center">
               <TrendIcon 
                 className="w-3 h-3" 
                 style={{ 
-                  color: stats.trend === 'stable' 
+                  color: trend === 'stable' 
                     ? CATALYST_COLORS.primary 
-                    : stats.trend === 'up' 
+                    : trend === 'up' 
                       ? CATALYST_COLORS.warning 
                       : CATALYST_COLORS.teal 
                 }}
               />
-              {stats.trendPercentage}% vs last period
+              {trendPercentage}% vs last period
             </div>
           </div>
           
@@ -159,7 +189,7 @@ export const CapacityPulseHeader = memo(function CapacityPulseHeader({
           <div className="text-center">
             <div className="text-3xl font-bold text-foreground flex items-center justify-center gap-1">
               <Users className="w-6 h-6 text-muted-foreground" />
-              {stats.totalResources}
+              {totalResources}
             </div>
             <div className="text-xs text-muted-foreground">
               Total Resources
@@ -172,7 +202,7 @@ export const CapacityPulseHeader = memo(function CapacityPulseHeader({
               className="text-3xl font-bold"
               style={{ color: CATALYST_COLORS.teal }}
             >
-              {Math.round(stats.availableCapacity / stats.totalResources)}%
+              {avgAvailable}%
             </div>
             <div className="text-xs text-muted-foreground">
               Avg Available

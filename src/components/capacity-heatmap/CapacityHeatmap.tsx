@@ -5,7 +5,7 @@
  */
 
 import { memo, useRef, useMemo, useCallback, useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown, ChevronRight, User } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useHeatmapStore } from '@/stores/capacity-heatmap-store';
@@ -19,6 +19,10 @@ import { SearchFilterBar } from './SearchFilterBar';
 import { TimeLapsePlayer } from './TimeLapsePlayer';
 import { HeatmapCell } from './HeatmapCell';
 import { KeyboardShortcutsPanel } from './KeyboardShortcutsPanel';
+import { HeatmapEmptyState } from './HeatmapEmptyState';
+import { HeatmapErrorState } from './HeatmapErrorState';
+import { CellDetailPanel } from './CellDetailPanel';
+import { HeatmapContextMenu } from './HeatmapContextMenu';
 import type { HeatmapResource, Conflict } from '@/types/capacity-heatmap';
 import { formatMonth } from '@/lib/capacity-heatmap/utils';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -34,11 +38,25 @@ export const CapacityHeatmap = memo(function CapacityHeatmap({
   const heatmapRef = useRef<HTMLDivElement>(null);
   const [dismissedBanner, setDismissedBanner] = useState(false);
   
+  // Detail panel state
+  const [selectedCell, setSelectedCell] = useState<{
+    resourceId: string;
+    month: Date;
+  } | null>(null);
+  
+  // Context menu state
+  const [contextMenu, setContextMenu] = useState<{
+    x: number;
+    y: number;
+    resourceId: string;
+    month: Date;
+  } | null>(null);
+  
   // Initialize keyboard shortcuts
   useKeyboardShortcuts();
   
-  // Fetch data
-  const { data, isLoading, error } = useCapacityHeatmapData(12);
+  // Fetch data with refetch capability
+  const { data, isLoading, error, refetch, isRefetching } = useCapacityHeatmapData(12);
   
   const { 
     searchQuery, 
@@ -98,20 +116,92 @@ export const CapacityHeatmap = memo(function CapacityHeatmap({
     return [...new Set(data.resources.map(r => r.department))].sort();
   }, [data?.resources]);
   
-  // Handle cell click
+  // Handle cell click - opens detail panel
   const handleCellClick = useCallback((resourceId: string, month: Date, e: React.MouseEvent) => {
     selectCell(resourceId, month, e.ctrlKey || e.metaKey);
     if (!e.ctrlKey && !e.metaKey) {
+      setSelectedCell({ resourceId, month });
       openDetailPanel(resourceId, month);
     }
   }, [selectCell, openDetailPanel]);
   
+  // Handle detail panel close
+  const handlePanelClose = useCallback(() => {
+    setSelectedCell(null);
+  }, []);
+  
+  // Handle context menu
+  const handleCellContextMenu = useCallback((
+    e: React.MouseEvent,
+    resourceId: string,
+    month: Date
+  ) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setContextMenu({ x: e.clientX, y: e.clientY, resourceId, month });
+  }, []);
+  
+  // Handle context menu actions
+  const handleContextMenuAction = useCallback((action: string) => {
+    if (!contextMenu) return;
+    
+    const resource = filteredResources.find(r => r.id === contextMenu.resourceId);
+    
+    switch (action) {
+      case 'resolve-conflict':
+        toast.info(`Opening conflict resolution for ${resource?.name}`);
+        setSelectedCell({ resourceId: contextMenu.resourceId, month: contextMenu.month });
+        break;
+      case 'view-breakdown':
+      case 'edit-allocation':
+        setSelectedCell({ resourceId: contextMenu.resourceId, month: contextMenu.month });
+        break;
+      case 'find-replacement':
+        toast.info('Find replacement feature coming soon');
+        break;
+      case 'adjust-timeline':
+        toast.info('Adjust timeline feature coming soon');
+        break;
+      case 'send-message':
+        toast.info(`Message ${resource?.name}`);
+        break;
+      case 'open-profile':
+        toast.info(`Open profile for ${resource?.name}`);
+        break;
+    }
+    
+    setContextMenu(null);
+  }, [contextMenu, filteredResources]);
+  
   // Handle conflict resolve
   const handleResolveConflict = useCallback((conflict: Conflict) => {
     toast.info(`Opening conflict resolution for ${conflict.resourceName}`);
-    openDetailPanel(conflict.resourceId, conflict.month);
-  }, [openDetailPanel]);
+    setSelectedCell({ resourceId: conflict.resourceId, month: conflict.month });
+  }, []);
   
+  // Get selected resource and utilization for detail panel
+  const selectedResource = selectedCell 
+    ? filteredResources.find(r => r.id === selectedCell.resourceId) 
+    : null;
+  
+  const selectedUtilization = selectedResource && selectedCell
+    ? selectedResource.monthlyUtilization.find(u => 
+        u.month.getFullYear() === selectedCell.month.getFullYear() &&
+        u.month.getMonth() === selectedCell.month.getMonth()
+      )
+    : null;
+  
+  // Get context menu resource and utilization
+  const contextMenuResource = contextMenu 
+    ? filteredResources.find(r => r.id === contextMenu.resourceId) 
+    : null;
+  
+  const contextMenuUtilization = contextMenuResource && contextMenu
+    ? contextMenuResource.monthlyUtilization.find(u => 
+        u.month.getFullYear() === contextMenu.month.getFullYear() &&
+        u.month.getMonth() === contextMenu.month.getMonth()
+      )
+    : null;
   // Get ghost allocation for a cell
   const getGhostPercentage = useCallback((resourceId: string, month: Date) => {
     if (!scenarioMode) return undefined;
@@ -137,18 +227,34 @@ export const CapacityHeatmap = memo(function CapacityHeatmap({
     );
   }
   
-  // Error state
+  // Error state with retry
   if (error || !data) {
     return (
-      <div className={cn("flex items-center justify-center h-64", className)}>
-        <div className="text-center">
-          <p className="text-destructive">Failed to load capacity data</p>
-          <p className="text-sm text-muted-foreground mt-1">Please try again later</p>
-        </div>
+      <div className={cn("rounded-lg border border-border bg-card", className)}>
+        <HeatmapErrorState
+          error={error}
+          onRetry={() => refetch()}
+          isRetrying={isRefetching}
+        />
       </div>
     );
   }
   
+  // No resources - show empty state with CTAs
+  if (data.resources.length === 0) {
+    return (
+      <div className={cn("rounded-lg border border-border bg-card", className)}>
+        <HeatmapEmptyState
+          onAddResource={() => {
+            toast.info('Add resource feature coming soon');
+          }}
+          onImportData={() => {
+            toast.info('Import data feature coming soon');
+          }}
+        />
+      </div>
+    );
+  }
   return (
     <div className={cn("space-y-4", className)}>
       {/* Pulse Header */}
@@ -212,11 +318,12 @@ export const CapacityHeatmap = memo(function CapacityHeatmap({
               months={data.months}
               selectedCells={selectedCells}
               onCellClick={handleCellClick}
+              onCellContextMenu={handleCellContextMenu}
               getGhostPercentage={getGhostPercentage}
             />
           ))}
           
-          {/* Empty state */}
+          {/* Empty filtered state */}
           {filteredResources.length === 0 && (
             <div className="flex items-center justify-center py-12 text-muted-foreground">
               No resources match your filters
@@ -227,6 +334,41 @@ export const CapacityHeatmap = memo(function CapacityHeatmap({
       
       {/* Keyboard shortcuts panel */}
       <KeyboardShortcutsPanel />
+      
+      {/* Cell Detail Panel */}
+      <AnimatePresence>
+        {selectedCell && selectedResource && selectedUtilization && (
+          <CellDetailPanel
+            resource={selectedResource}
+            utilization={selectedUtilization}
+            scenarioMode={scenarioMode}
+            onClose={handlePanelClose}
+            onResolveConflict={() => {
+              toast.info('Conflict resolution feature coming soon');
+            }}
+            onAddAllocation={(percentage, projectName) => {
+              toast.info(`Adding ${percentage}% allocation to ${projectName}`);
+            }}
+            onEditAllocation={(id) => {
+              toast.info(`Editing allocation ${id}`);
+            }}
+          />
+        )}
+      </AnimatePresence>
+      
+      {/* Context Menu */}
+      <AnimatePresence>
+        {contextMenu && contextMenuResource && contextMenuUtilization && (
+          <HeatmapContextMenu
+            x={contextMenu.x}
+            y={contextMenu.y}
+            resource={contextMenuResource}
+            utilization={contextMenuUtilization}
+            onClose={() => setContextMenu(null)}
+            onAction={handleContextMenuAction}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 });
@@ -238,6 +380,7 @@ interface DepartmentGroupProps {
   months: Date[];
   selectedCells: { resourceId: string; month: Date }[];
   onCellClick: (resourceId: string, month: Date, e: React.MouseEvent) => void;
+  onCellContextMenu: (e: React.MouseEvent, resourceId: string, month: Date) => void;
   getGhostPercentage: (resourceId: string, month: Date) => number | undefined;
 }
 
@@ -247,6 +390,7 @@ const DepartmentGroup = memo(function DepartmentGroup({
   months,
   selectedCells,
   onCellClick,
+  onCellContextMenu,
   getGhostPercentage,
 }: DepartmentGroupProps) {
   const { expandedGroups, toggleGroupExpanded } = useHeatmapStore();
@@ -282,6 +426,7 @@ const DepartmentGroup = memo(function DepartmentGroup({
               months={months}
               selectedCells={selectedCells}
               onCellClick={onCellClick}
+              onCellContextMenu={onCellContextMenu}
               getGhostPercentage={getGhostPercentage}
             />
           ))}
@@ -297,6 +442,7 @@ interface ResourceRowProps {
   months: Date[];
   selectedCells: { resourceId: string; month: Date }[];
   onCellClick: (resourceId: string, month: Date, e: React.MouseEvent) => void;
+  onCellContextMenu: (e: React.MouseEvent, resourceId: string, month: Date) => void;
   getGhostPercentage: (resourceId: string, month: Date) => number | undefined;
 }
 
@@ -305,6 +451,7 @@ const ResourceRow = memo(function ResourceRow({
   months,
   selectedCells,
   onCellClick,
+  onCellContextMenu,
   getGhostPercentage,
 }: ResourceRowProps) {
   return (
@@ -336,6 +483,7 @@ const ResourceRow = memo(function ResourceRow({
               isSelected={isSelected}
               ghostPercentage={getGhostPercentage(resource.id, util.month)}
               onClick={(e) => onCellClick(resource.id, util.month, e)}
+              onContextMenu={(e) => onCellContextMenu(e, resource.id, util.month)}
             />
           );
         })}
