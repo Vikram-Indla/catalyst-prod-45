@@ -232,8 +232,9 @@ function ProjectStaffingCard({
         <h4 className="text-xs font-semibold text-muted-foreground uppercase">Assigned Resources</h4>
 
         {allocations.map((alloc) => {
-          const displayName = alloc.resource_name || alloc.profile_name || 'Unknown';
-          const initials = displayName
+          // FIX #5: Ensure every allocation displays a name with fallback chain
+          const resourceName = alloc.resource_name || alloc.profile_name || 'Unknown Resource';
+          const initials = resourceName
             .split(' ')
             .map(n => n[0])
             .join('')
@@ -249,7 +250,7 @@ function ProjectStaffingCard({
                 {initials}
               </div>
               <div className="flex-1 min-w-0">
-                <div className="text-sm font-medium text-foreground">{displayName}</div>
+                <div className="text-sm font-medium text-foreground">{resourceName}</div>
                 <div className="text-xs text-muted-foreground">
                   <span className="mr-2">{alloc.role_name || 'No role'}</span>
                   <span>{format(new Date(alloc.start_date), 'MMM d')} - {format(new Date(alloc.end_date), 'MMM d, yyyy')}</span>

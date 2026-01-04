@@ -415,8 +415,19 @@ export default function CapacityPlannerPage() {
           primaryView={primaryView}
           resourceView={resourceView}
           projectView={projectView}
-          onPrimaryViewChange={setPrimaryView}
+          onPrimaryViewChange={(view) => {
+            // FIX #3: Tab coupling - Projects tab only allows Cards view
+            if (view === 'projects' && resourceView !== 'cards') {
+              setResourceView('cards');
+              setCurrentView('cards');
+            }
+            setPrimaryView(view);
+          }}
           onResourceViewChange={(view) => {
+            // FIX #3: Tab coupling - Timeline/Heatmap should auto-switch to Resources
+            if (primaryView === 'projects' && (view === 'timeline' || view === 'heatmap' || view === 'table')) {
+              setPrimaryView('resources');
+            }
             setResourceView(view);
             if (view !== 'heatmap') {
               setCurrentView(view as ViewType);

@@ -4,13 +4,15 @@
  */
 
 import { useState, useMemo } from 'react';
-import { Search, ChevronDown, CheckCircle, AlertCircle, Clock, UserX, Calendar } from 'lucide-react';
+import { Search, ChevronDown, CheckCircle, AlertCircle, Clock, UserX, Calendar, Loader2 } from 'lucide-react';
 import { format, addMonths } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
 import { MiniGantt } from './MiniGantt';
+import { useResourceRoles } from '@/hooks/useResourceRoles';
 
 interface ResourceMetric {
   id: string;
@@ -53,25 +55,14 @@ interface AvailabilityMatch {
   currentAllocations: ResourceAllocation[];
 }
 
-const ROLES = [
-  'Senior Developer',
-  'Developer',
-  'Tech Lead',
-  'QA Engineer',
-  'DevOps Engineer',
-  'Product Manager',
-  'Project Manager',
-  'Business Analyst',
-  'Designer',
-  'Architect'
-];
-
 export function FindAvailabilityPanel({
   resources,
   allocations,
   onBookResource,
   className
 }: FindAvailabilityPanelProps) {
+  // Fetch roles from database
+  const { data: rolesFromDb, isLoading: rolesLoading } = useResourceRoles();
   const [isExpanded, setIsExpanded] = useState(false);
   const [criteria, setCriteria] = useState<FindAvailabilityCriteria>({
     role: '',
@@ -220,12 +211,29 @@ export function FindAvailabilityPanel({
                 onValueChange={(v) => setCriteria({ ...criteria, role: v })}
               >
                 <SelectTrigger className="mt-1">
-                  <SelectValue placeholder="Any Role" />
+                  {rolesLoading ? (
+                    <div className="flex items-center gap-2">
+                      <Loader2 className="h-3 w-3 animate-spin" />
+                      <span className="text-muted-foreground">Loading...</span>
+                    </div>
+                  ) : (
+                    <SelectValue placeholder="Any Role" />
+                  )}
                 </SelectTrigger>
                 <SelectContent>
-                  {ROLES.map(role => (
-                    <SelectItem key={role} value={role}>{role}</SelectItem>
-                  ))}
+                  {rolesLoading ? (
+                    <div className="p-2 space-y-2">
+                      <Skeleton className="h-5 w-full" />
+                      <Skeleton className="h-5 w-full" />
+                      <Skeleton className="h-5 w-full" />
+                    </div>
+                  ) : (
+                    rolesFromDb?.map(role => (
+                      <SelectItem key={role.name} value={role.name}>
+                        {role.name} ({role.count})
+                      </SelectItem>
+                    ))
+                  )}
                 </SelectContent>
               </Select>
             </div>
