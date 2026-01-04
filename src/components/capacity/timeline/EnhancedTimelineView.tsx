@@ -123,23 +123,27 @@ function AllocationBar({ allocation, leftPx, widthPx, rowIndex, totalBars, onCli
   };
 
   // Calculate vertical position - stack bars within the row without overflow
-  // Row height is 72px, bar height is 32px, we need ~6px padding
-  // For single bar: center it (top: 50%, transform: -50%)
-  // For multiple bars: stack them evenly with smaller gaps
-  const barHeight = 28; // Slightly smaller for multiple bars
-  const rowHeight = 72;
-  const padding = 6;
-  const availableHeight = rowHeight - (padding * 2);
+  // Row height is dynamic based on number of bars
+  const baseRowHeight = 72;
+  const padding = 4;
+  const gap = 2;
   
+  // Calculate bar height based on number of bars
+  let barHeight: number;
   let topPx: number;
+  
   if (totalBars === 1) {
-    // Single bar - center it
-    topPx = (rowHeight - 32) / 2;
+    barHeight = 32;
+    topPx = (baseRowHeight - barHeight) / 2;
+  } else if (totalBars === 2) {
+    barHeight = 26;
+    const totalNeeded = (barHeight * 2) + gap;
+    const startOffset = (baseRowHeight - totalNeeded) / 2;
+    topPx = startOffset + (rowIndex * (barHeight + gap));
   } else {
-    // Multiple bars - stack them with even spacing
-    const totalBarSpace = totalBars * barHeight;
-    const gap = Math.max(2, (availableHeight - totalBarSpace) / (totalBars + 1));
-    topPx = padding + gap + (rowIndex * (barHeight + gap));
+    // 3+ bars - compress them to fit
+    barHeight = Math.max(18, Math.floor((baseRowHeight - padding * 2 - (gap * (totalBars - 1))) / totalBars));
+    topPx = padding + (rowIndex * (barHeight + gap));
   }
 
   return (
@@ -149,8 +153,7 @@ function AllocationBar({ allocation, leftPx, widthPx, rowIndex, totalBars, onCli
         left: leftPx,
         width: Math.max(widthPx, 80),
         top: topPx,
-        height: totalBars > 1 ? barHeight : 32,
-        transform: 'none', // Remove the transform since we're calculating exact position
+        height: barHeight,
       }}
       onClick={onClick}
       title={`${projectName}: ${allocation.allocation_percent}%`}

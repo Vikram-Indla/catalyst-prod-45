@@ -17,6 +17,7 @@ export interface CapacityResource {
   avatar_url?: string;
   created_at: string;
   updated_at: string;
+  contract_end_date?: string | null;
   // Computed
   allocation?: number;
   assignments?: CapacityAssignment[];

@@ -13,7 +13,7 @@ export function useCapacityData() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('profiles')
-        .select('id, full_name, email, role, avatar_url, created_at, updated_at, department_id')
+        .select('id, full_name, email, role, avatar_url, created_at, updated_at, department_id, contract_end_date')
         .order('full_name');
       if (error) throw error;
       
@@ -98,6 +98,7 @@ export function useCapacityData() {
           avatar_url: p.avatar_url,
           created_at: p.created_at,
           updated_at: p.updated_at,
+          contract_end_date: (p as any).contract_end_date || null,
         };
       }) as CapacityResource[];
     },
