@@ -172,9 +172,19 @@ export function AllocationBookingModal({
     });
   }, [allocations, months]);
 
-  const totalAllocation = useMemo(() => {
-    return allocations.reduce((sum, a) => sum + (a.allocation_percent || 0), 0);
-  }, [allocations]);
+  // Current allocation = max concurrent allocation across visible months (not simple sum)
+  const currentAllocation = useMemo(() => {
+    // Get the current month's total allocation (allocations that overlap with today)
+    const today = new Date();
+    const currentMonthTotal = monthlyTotals.find(mt => 
+      mt.month.getMonth() === today.getMonth() && 
+      mt.month.getFullYear() === today.getFullYear()
+    );
+    return currentMonthTotal?.total || 0;
+  }, [monthlyTotals]);
+
+  // For backwards compatibility, keep totalAllocation but make it smarter
+  const totalAllocation = currentAllocation;
 
   // Find conflict periods (months where allocation > 100%)
   const conflictPeriods = useMemo(() => {
