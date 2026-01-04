@@ -11,6 +11,7 @@
  */
 
 import { cn } from '@/lib/utils';
+import { AlertTriangle } from 'lucide-react';
 import { 
   getAssignmentTheme, 
   getAllocationTheme,
@@ -48,36 +49,44 @@ export function CompactResourceCard({
   // Status-based colors for border and progress bar
   const alloc = getAllocationTheme(totalAllocation);
   const initials = name.split(' ').map((n: string) => n[0]).join('').slice(0, 2).toUpperCase();
-  const isRisk = totalAllocation > 100;
+  const isOverAllocated = totalAllocation > 100;
   const isCritical = totalAllocation > 120;
+  const overflowAmount = Math.max(0, totalAllocation - 100);
 
   return (
     <div 
       className={cn(
-        "relative bg-white border rounded-lg p-3 cursor-pointer transition-all hover:shadow-md group",
-        isRisk ? "border-orange-200" : "border-slate-200 hover:border-slate-300"
+        "relative border rounded-lg p-3 cursor-pointer transition-all group",
+        isOverAllocated 
+          ? "bg-red-50/40 border-red-300 hover:shadow-red-100 hover:shadow-md" 
+          : "bg-white border-slate-200 hover:border-slate-300 hover:shadow-md"
       )}
       style={{ 
-        borderLeftWidth: '3px', 
-        borderLeftColor: alloc.bar,
+        borderLeftWidth: '4px', 
+        borderLeftColor: isOverAllocated ? CATALYST_V5.error.hex : alloc.bar,
       }}
       onClick={onEdit}
     >
       {/* Risk indicator dot - Catalyst V5 colors */}
-      {isRisk && (
+      {isOverAllocated && (
         <div 
-          className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full animate-pulse"
+          className="absolute -top-1 -right-1 w-3 h-3 rounded-full animate-pulse flex items-center justify-center"
           style={{ backgroundColor: isCritical ? CATALYST_V5.error.hex : CATALYST_V5.overAllocated.hex }}
-        />
+        >
+          <span className="text-[7px] text-white font-bold">!</span>
+        </div>
       )}
 
       {/* Header: Avatar + Name + Allocation */}
       <div className="flex items-center gap-2.5 mb-2">
-        {/* Avatar with assignment-based color */}
+        {/* Avatar with status-based color for over-allocated */}
         <div 
           onClick={(e) => { e.stopPropagation(); onOpen360(); }}
-          className="w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold text-white cursor-pointer hover:ring-2 hover:ring-blue-500 hover:ring-offset-1 shrink-0 transition-all"
-          style={{ backgroundColor: theme.accent }}
+          className={cn(
+            "w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold text-white cursor-pointer hover:ring-2 hover:ring-offset-1 shrink-0 transition-all",
+            isOverAllocated ? "hover:ring-red-500" : "hover:ring-blue-500"
+          )}
+          style={{ backgroundColor: isOverAllocated ? CATALYST_V5.error.hex : theme.accent }}
         >
           {initials}
         </div>
@@ -88,38 +97,61 @@ export function CompactResourceCard({
           <p className="text-[11px] text-slate-500 truncate leading-tight">{role || 'Team Member'}</p>
         </div>
 
-        {/* Allocation Badge with status color */}
-        <span 
-          className="text-xs font-bold px-2 py-0.5 rounded shrink-0"
-          style={{ backgroundColor: alloc.bg, color: alloc.text }}
-        >
-          {totalAllocation}%
-        </span>
+        {/* Allocation Badge with warning icon for over-allocated */}
+        <div className="flex items-center gap-1 shrink-0">
+          {isOverAllocated && (
+            <AlertTriangle className="w-3.5 h-3.5 text-red-500" />
+          )}
+          <span 
+            className={cn(
+              "text-xs font-bold px-2 py-0.5 rounded",
+              isOverAllocated && "bg-red-100 text-red-600"
+            )}
+            style={!isOverAllocated ? { backgroundColor: alloc.bg, color: alloc.text } : undefined}
+          >
+            {totalAllocation}%
+          </span>
+        </div>
       </div>
 
       {/* Mini-Gantt Timeline */}
       <MiniGanttCard allocations={allocations} />
 
-      {/* Footer: Status + Edit button */}
+      {/* Footer: Status + Action button */}
       <div className="flex items-center justify-between">
         <span 
-          className="text-[9px] font-semibold uppercase tracking-wide px-1.5 py-0.5 rounded"
-          style={{ 
+          className={cn(
+            "text-[9px] font-semibold uppercase tracking-wide px-1.5 py-0.5 rounded flex items-center gap-1",
+            isOverAllocated && "bg-red-100 text-red-600"
+          )}
+          style={!isOverAllocated ? { 
             color: alloc.labelColor,
             backgroundColor: alloc.labelBg
-          }}
+          } : undefined}
         >
-          {alloc.label}
+          {isOverAllocated && <AlertTriangle className="w-2.5 h-2.5" />}
+          {isOverAllocated ? `+${overflowAmount}% OVER` : alloc.label}
         </span>
         
-        <Button 
-          variant="ghost" 
-          size="sm" 
-          className="text-[10px] text-slate-500 h-5 px-2 hover:text-primary"
-          onClick={(e) => { e.stopPropagation(); onEdit(); }}
-        >
-          Edit Allocations
-        </Button>
+        {isOverAllocated ? (
+          <Button 
+            variant="destructive" 
+            size="sm" 
+            className="text-[10px] h-5 px-2"
+            onClick={(e) => { e.stopPropagation(); onEdit(); }}
+          >
+            Resolve Conflict
+          </Button>
+        ) : (
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            className="text-[10px] text-slate-500 h-5 px-2 hover:text-primary"
+            onClick={(e) => { e.stopPropagation(); onEdit(); }}
+          >
+            Edit Allocations
+          </Button>
+        )}
       </div>
     </div>
   );
