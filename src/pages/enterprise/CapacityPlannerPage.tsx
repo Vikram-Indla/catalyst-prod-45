@@ -1151,6 +1151,7 @@ export default function CapacityPlannerPage() {
                   groupBy={groupBy}
                   groupedByAssignment={groupedByAssignment}
                   groupedByDepartment={groupedByDepartment}
+                  allocations={allocations}
                   onEditResource={() => {}}
                 />
               )}
