@@ -1359,15 +1359,18 @@ export default function CapacityPlannerPage() {
                 />
               )}
               {currentView === 'table' && (
-                <GroupedTableView 
+                <TableView 
                   resources={filteredResources}
+                  projects={projects}
+                  groupBy={groupBy}
+                  groupedByAssignment={groupedByAssignment}
+                  groupedByDepartment={groupedByDepartment}
                   allocations={allocations}
-                  defaultGroupBy={groupBy === 'assignment' ? 'assignment' : groupBy === 'department' ? 'department' : 'department'}
-                  onEditResource={handleOpenAllocationModal}
-                  onDeleteResource={(resource) => {
-                    setResourceToDelete(resource as ResourceMetric);
-                    setDeleteConfirmOpen(true);
-                  }}
+                  onResourceClick={() => {}}
+                  onEditResource={() => {}}
+                  onDeleteResource={() => {}}
+                  onBulkDelete={() => {}}
+                  onBulkEdit={() => {}}
                 />
               )}
               {currentView === 'timeline' && (
