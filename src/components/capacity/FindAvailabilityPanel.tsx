@@ -4,14 +4,13 @@
  */
 
 import { useState, useMemo } from 'react';
-import { Search, ChevronDown, CheckCircle, AlertCircle, Clock, UserX, CalendarIcon, Loader2 } from 'lucide-react';
-import { format, addMonths, parse } from 'date-fns';
+import { Search, ChevronDown, CheckCircle, AlertCircle, Clock, UserX, Loader2 } from 'lucide-react';
+import { format, addMonths } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Calendar } from '@/components/ui/calendar';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { CatalystDatePicker } from '@/components/ui/catalyst-date-picker';
 import { cn } from '@/lib/utils';
 import { MiniGantt } from './MiniGantt';
 import { useResourceRoles } from '@/hooks/useResourceRoles';
@@ -242,56 +241,26 @@ export function FindAvailabilityPanel({
 
             <div>
               <label className="text-xs font-medium text-muted-foreground uppercase">From</label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className={cn(
-                      "w-full mt-1 justify-start text-left font-normal",
-                      !criteria.startDate && "text-muted-foreground"
-                    )}
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {criteria.startDate ? format(parse(criteria.startDate, 'yyyy-MM-dd', new Date()), 'MM/dd/yyyy') : <span>Pick a date</span>}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={criteria.startDate ? parse(criteria.startDate, 'yyyy-MM-dd', new Date()) : undefined}
-                    onSelect={(date) => date && setCriteria({ ...criteria, startDate: format(date, 'yyyy-MM-dd') })}
-                    initialFocus
-                    className={cn("p-3 pointer-events-auto")}
-                  />
-                </PopoverContent>
-              </Popover>
+              <div className="mt-1">
+                <CatalystDatePicker
+                  value={criteria.startDate}
+                  onChange={(date) => setCriteria({ ...criteria, startDate: date ? format(date, 'yyyy-MM-dd') : format(new Date(), 'yyyy-MM-dd') })}
+                  placeholder="Pick a date"
+                  showClearButton={false}
+                />
+              </div>
             </div>
 
             <div>
               <label className="text-xs font-medium text-muted-foreground uppercase">To</label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className={cn(
-                      "w-full mt-1 justify-start text-left font-normal",
-                      !criteria.endDate && "text-muted-foreground"
-                    )}
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {criteria.endDate ? format(parse(criteria.endDate, 'yyyy-MM-dd', new Date()), 'MM/dd/yyyy') : <span>Pick a date</span>}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={criteria.endDate ? parse(criteria.endDate, 'yyyy-MM-dd', new Date()) : undefined}
-                    onSelect={(date) => date && setCriteria({ ...criteria, endDate: format(date, 'yyyy-MM-dd') })}
-                    initialFocus
-                    className={cn("p-3 pointer-events-auto")}
-                  />
-                </PopoverContent>
-              </Popover>
+              <div className="mt-1">
+                <CatalystDatePicker
+                  value={criteria.endDate}
+                  onChange={(date) => setCriteria({ ...criteria, endDate: date ? format(date, 'yyyy-MM-dd') : format(addMonths(new Date(), 3), 'yyyy-MM-dd') })}
+                  placeholder="Pick a date"
+                  showClearButton={false}
+                />
+              </div>
             </div>
 
             <div className="flex items-end">
