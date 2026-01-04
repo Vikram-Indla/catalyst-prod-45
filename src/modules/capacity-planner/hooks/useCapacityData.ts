@@ -35,15 +35,21 @@ export function useCapacityData() {
         .from('resource_inventory')
         .select('id, name, assignment_id, profile_id, default_capacity_percent');
       
-      // Fetch user_roles from admin/users (user_roles table) for role display
-      const { data: userRolesData } = await supabase
-        .from('user_roles')
-        .select('user_id, role');
+      // Fetch product roles for role display (same source as /admin/users)
+      const [{ data: userProductRoles }, { data: productRoles }] = await Promise.all([
+        supabase.from('user_product_roles').select('user_id, role_id'),
+        supabase.from('product_roles').select('id, name'),
+      ]);
+
+      const roleIdToName = new Map<string, string>(
+        (productRoles || []).map((r: any) => [r.id, r.name])
+      );
+
       const userRoleMap = new Map<string, string>();
-      (userRolesData || []).forEach((ur: any) => {
-        // Take the first role if user has multiple
-        if (ur.role && !userRoleMap.has(ur.user_id)) {
-          userRoleMap.set(ur.user_id, ur.role);
+      (userProductRoles || []).forEach((upr: any) => {
+        const roleName = roleIdToName.get(upr.role_id);
+        if (roleName && !userRoleMap.has(upr.user_id)) {
+          userRoleMap.set(upr.user_id, roleName);
         }
       });
       
@@ -77,8 +83,8 @@ export function useCapacityData() {
         const assignmentName = assignmentId ? assignmentTypeMap.get(assignmentId) || null : null;
         // Use dynamic allocation from time-boxed resource_allocations (not static default_capacity_percent)
         const defaultCapacity = currentAllocationByProfile.get(p.id) ?? 0;
-        // Use product role if available, fallback to profiles.role
-        const roleName = userRoleMap.get(p.id) || p.role || 'Team Member';
+        // Use product role if available (same as /admin/users); otherwise show placeholder
+        const roleName = userRoleMap.get(p.id) || 'No role';
         return {
           id: p.id,
           name: fullName,
@@ -174,9 +180,9 @@ export function useCapacityData() {
       })
       .subscribe();
 
-    const userRolesChannel = supabase
-      .channel('capacity-user-roles-changes')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'user_roles' }, () => {
+    const userProductRolesChannel = supabase
+      .channel('capacity-user-product-roles-changes')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'user_product_roles' }, () => {
         queryClient.invalidateQueries({ queryKey: ['capacity-planner-resources'] });
       })
       .subscribe();
@@ -193,7 +199,7 @@ export function useCapacityData() {
       supabase.removeChannel(profilesChannel);
       supabase.removeChannel(resourceInventoryChannel);
       supabase.removeChannel(resourceAssignmentsChannel);
-      supabase.removeChannel(userRolesChannel);
+      supabase.removeChannel(userProductRolesChannel);
       supabase.removeChannel(scenariosChannel);
     };
   }, [queryClient]);
