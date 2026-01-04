@@ -16,6 +16,7 @@ interface ResourceAllocation {
   profile_id?: string;
   profile_name?: string;
   resource_name?: string;  // Also support this field from hook
+  role_name?: string;      // Role of the resource
   assignment_id?: string;
   assignment_name?: string;
   allocation_percent: number;
@@ -249,7 +250,8 @@ function ProjectStaffingCard({
               <div className="flex-1 min-w-0">
                 <div className="text-sm font-medium text-foreground">{displayName}</div>
                 <div className="text-xs text-muted-foreground">
-                  {format(new Date(alloc.start_date), 'MMM d')} - {format(new Date(alloc.end_date), 'MMM d, yyyy')}
+                  {alloc.role_name && <span className="mr-2">{alloc.role_name}</span>}
+                  <span>{format(new Date(alloc.start_date), 'MMM d')} - {format(new Date(alloc.end_date), 'MMM d, yyyy')}</span>
                 </div>
               </div>
               <div className="text-sm font-semibold text-foreground">
