@@ -9,9 +9,9 @@
  */
 
 import { useMemo } from 'react';
-import { format, startOfMonth, endOfMonth, addMonths, isWithinInterval } from 'date-fns';
+import { format, startOfMonth, endOfMonth, addMonths } from 'date-fns';
 import { cn } from '@/lib/utils';
-import { ALLOCATION_SEGMENT_COLORS } from '@/lib/catalyst-colors';
+import { ALLOCATION_SEGMENT_COLORS, CATALYST_V5 } from '@/lib/catalyst-colors';
 import type { ResourceAllocation } from '@/modules/capacity-planner/types';
 import {
   Tooltip,
@@ -23,6 +23,7 @@ import {
 interface MiniGanttCardProps {
   allocations: ResourceAllocation[];
   className?: string;
+  showPeriodTotals?: boolean;
 }
 
 interface BarSegment {
@@ -34,6 +35,15 @@ interface BarSegment {
   widthPercent: number;
   startDate: Date;
   endDate: Date | null;
+}
+
+interface MonthData {
+  label: string;
+  start: Date;
+  end: Date;
+  total: number;
+  isConflict: boolean;
+  overflow: number;
 }
 
 function calculateBarPosition(
@@ -66,17 +76,39 @@ function calculateTodayPosition(timelineStart: Date, timelineEnd: Date): number 
   return Math.max(0, Math.min(100, position));
 }
 
-export function MiniGanttCard({ allocations, className }: MiniGanttCardProps) {
+export function MiniGanttCard({ allocations, className, showPeriodTotals = true }: MiniGanttCardProps) {
   // Generate 6 months starting from current month
-  const { months, timelineStart, timelineEnd, todayPosition, bars } = useMemo(() => {
+  const { monthsData, timelineStart, timelineEnd, todayPosition, bars, hasConflict } = useMemo(() => {
     const now = new Date();
     const start = startOfMonth(now);
     const end = endOfMonth(addMonths(now, 5));
     
-    const monthLabels: string[] = [];
+    // Generate month data with totals
+    const months: MonthData[] = [];
     for (let i = 0; i < 6; i++) {
-      const month = addMonths(start, i);
-      monthLabels.push(format(month, "MMM ''yy"));
+      const monthStart = startOfMonth(addMonths(start, i));
+      const monthEnd = endOfMonth(monthStart);
+      
+      // Calculate total allocation for this month
+      const monthTotal = allocations.reduce((sum, alloc) => {
+        const allocStart = new Date(alloc.start_date);
+        const allocEnd = alloc.end_date ? new Date(alloc.end_date) : end;
+        
+        // Check if allocation overlaps with this month
+        if (allocStart <= monthEnd && allocEnd >= monthStart) {
+          return sum + (alloc.allocation_percent || 0);
+        }
+        return sum;
+      }, 0);
+      
+      months.push({
+        label: format(monthStart, "MMM ''yy"),
+        start: monthStart,
+        end: monthEnd,
+        total: monthTotal,
+        isConflict: monthTotal > 100,
+        overflow: Math.max(0, monthTotal - 100),
+      });
     }
     
     const todayPos = calculateTodayPosition(start, end);
@@ -107,11 +139,12 @@ export function MiniGanttCard({ allocations, className }: MiniGanttCardProps) {
       });
     
     return {
-      months: monthLabels,
+      monthsData: months,
       timelineStart: start,
       timelineEnd: end,
       todayPosition: todayPos,
       bars: barSegments,
+      hasConflict: months.some(m => m.isConflict),
     };
   }, [allocations]);
 
@@ -131,18 +164,30 @@ export function MiniGanttCard({ allocations, className }: MiniGanttCardProps) {
       <div className={cn("mb-2", className)}>
         {/* Month labels */}
         <div className="flex text-[9px] text-slate-400 mb-0.5 px-0.5">
-          {months.map((month, i) => (
-            <div key={i} className="flex-1 text-center truncate">{month}</div>
+          {monthsData.map((month, i) => (
+            <div key={i} className="flex-1 text-center truncate">{month.label}</div>
           ))}
         </div>
         
         {/* Timeline container */}
         <div className="relative bg-slate-50 rounded border border-slate-200 overflow-hidden"
-          style={{ height: `${Math.max(24, bars.length * 14 + 8)}px` }}
+          style={{ height: `${Math.max(28, bars.length * 14 + 10)}px` }}
         >
+          {/* Conflict zone backgrounds */}
+          {monthsData.map((month, i) => month.isConflict && (
+            <div
+              key={`conflict-${i}`}
+              className="absolute top-0 bottom-0 bg-red-100/60"
+              style={{
+                left: `${(i / 6) * 100}%`,
+                width: `${100 / 6}%`,
+              }}
+            />
+          ))}
+          
           {/* Grid lines for months */}
           <div className="absolute inset-0 flex">
-            {months.map((_, i) => (
+            {monthsData.map((_, i) => (
               <div key={i} className="flex-1 border-r border-slate-100 last:border-r-0" />
             ))}
           </div>
@@ -161,20 +206,26 @@ export function MiniGanttCard({ allocations, className }: MiniGanttCardProps) {
               <Tooltip key={bar.id}>
                 <TooltipTrigger asChild>
                   <div
-                    className="h-3 rounded-sm flex items-center px-1 text-white text-[8px] font-medium truncate cursor-default hover:brightness-110 transition-all"
+                    className="h-3.5 rounded-sm flex items-center px-1 text-white text-[8px] font-medium truncate cursor-default hover:brightness-110 hover:scale-[1.02] transition-all"
                     style={{
                       backgroundColor: bar.color,
                       marginLeft: `${bar.startPercent}%`,
-                      width: `${Math.max(bar.widthPercent, 2)}%`,
+                      width: `${Math.max(bar.widthPercent, 3)}%`,
                       maxWidth: `${100 - bar.startPercent}%`,
+                      minWidth: '20px',
                     }}
                   >
                     <span className="truncate">
-                      {bar.widthPercent > 15 ? `${bar.name} ${bar.percent}%` : bar.percent > 0 ? `${bar.percent}%` : ''}
+                      {bar.widthPercent > 20 
+                        ? `${bar.name} ${bar.percent}%`
+                        : bar.widthPercent > 10
+                          ? `${bar.percent}%`
+                          : ''
+                      }
                     </span>
                   </div>
                 </TooltipTrigger>
-                <TooltipContent side="top" className="bg-slate-900 text-white text-xs p-2">
+                <TooltipContent side="top" className="bg-slate-900 text-white text-xs p-2 shadow-xl">
                   <p className="font-semibold">{bar.name}</p>
                   <p className="text-slate-300">{bar.percent}% allocation</p>
                   <p className="text-slate-400 text-[10px]">
@@ -185,6 +236,26 @@ export function MiniGanttCard({ allocations, className }: MiniGanttCardProps) {
             ))}
           </div>
         </div>
+        
+        {/* Period totals row */}
+        {showPeriodTotals && (
+          <div className="flex text-[9px] mt-0.5 px-0.5">
+            {monthsData.map((month, i) => (
+              <div key={i} className="flex-1 text-center">
+                <span className={cn(
+                  "font-semibold",
+                  month.total === 0 && "text-slate-300",
+                  month.total > 0 && month.total < 80 && "text-teal-600",
+                  month.total >= 80 && month.total <= 100 && "text-blue-600",
+                  month.total > 100 && "text-red-600"
+                )}>
+                  {month.total}%
+                  {month.isConflict && <span className="ml-0.5">⚠</span>}
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </TooltipProvider>
   );

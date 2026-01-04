@@ -160,7 +160,7 @@ export function SleekCapacityHeader({
           <InlineMetric 
             value={summary.over} 
             label="Over-Allocated" 
-            color="amber" 
+            color="red" 
             pct={overPct} 
             alert={summary.over > 0} 
           />
@@ -329,27 +329,27 @@ export function SleekCapacityHeader({
 function InlineMetric({ value, label, color, pct, alert }: { 
   value: number; 
   label: string; 
-  color: 'slate' | 'teal' | 'blue' | 'amber'; 
+  color: 'slate' | 'teal' | 'blue' | 'red'; 
   pct?: number; 
   alert?: boolean 
 }) {
   const colors = {
     slate: { text: 'text-slate-900', dot: 'bg-slate-400' },
-    teal: { text: 'text-teal-600', dot: 'bg-teal-500' },
-    blue: { text: 'text-blue-600', dot: 'bg-blue-500' },
-    amber: { text: 'text-amber-600', dot: 'bg-amber-500' },
+    teal: { text: 'text-teal-600', dot: 'bg-teal-500' },      // #0d9488 - Available
+    blue: { text: 'text-blue-600', dot: 'bg-blue-600' },      // #2563eb - At Capacity
+    red: { text: 'text-red-600', dot: 'bg-red-500' },         // #ef4444 - Over-Allocated
   };
   const c = colors[color];
   
-  // FIX #1: Grey out the number when value is 0 for "Over"
-  const numberColor = (color === 'amber' && value === 0) ? 'text-slate-400' : c.text;
+  // Grey out the number when value is 0 for "Over"
+  const numberColor = (color === 'red' && value === 0) ? 'text-slate-400' : c.text;
   
   return (
     <div className="flex items-center gap-1.5">
       <span className={cn('w-2 h-2 rounded-full', c.dot, alert && 'animate-pulse')} />
       <span className={cn('text-lg font-bold tabular-nums', numberColor)}>{value}</span>
       {pct !== undefined && pct > 0 && (
-        <span className="text-xs text-amber-500 font-medium">({pct}%)</span>
+        <span className="text-xs text-red-500 font-medium">({pct}%)</span>
       )}
       <span className="text-xs text-slate-500">{label}</span>
     </div>
