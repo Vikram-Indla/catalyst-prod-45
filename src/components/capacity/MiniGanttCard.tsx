@@ -25,6 +25,7 @@ interface MiniGanttCardProps {
   allocations: ResourceAllocation[];
   className?: string;
   showPeriodTotals?: boolean;
+  contractEndDate?: string | null;
 }
 
 interface BarSegment {
@@ -77,9 +78,9 @@ function calculateTodayPosition(timelineStart: Date, timelineEnd: Date): number 
   return Math.max(0, Math.min(100, position));
 }
 
-export function MiniGanttCard({ allocations, className, showPeriodTotals = true }: MiniGanttCardProps) {
+export function MiniGanttCard({ allocations, className, showPeriodTotals = true, contractEndDate }: MiniGanttCardProps) {
   // Generate 6 months starting from current month
-  const { monthsData, timelineStart, timelineEnd, todayPosition, bars, hasConflict } = useMemo(() => {
+  const { monthsData, timelineStart, timelineEnd, todayPosition, bars, hasConflict, contractEndPosition } = useMemo(() => {
     const now = new Date();
     const start = startOfMonth(now);
     const end = endOfMonth(addMonths(now, 5));
@@ -139,6 +140,16 @@ export function MiniGanttCard({ allocations, className, showPeriodTotals = true 
         };
       });
     
+    // Calculate contract end position
+    let contractPos: number | null = null;
+    if (contractEndDate) {
+      const contractEnd = new Date(contractEndDate);
+      if (contractEnd >= start && contractEnd <= end) {
+        const timelineMs = end.getTime() - start.getTime();
+        contractPos = ((contractEnd.getTime() - start.getTime()) / timelineMs) * 100;
+      }
+    }
+    
     return {
       monthsData: months,
       timelineStart: start,
@@ -146,8 +157,9 @@ export function MiniGanttCard({ allocations, className, showPeriodTotals = true 
       todayPosition: todayPos,
       bars: barSegments,
       hasConflict: months.some(m => m.isConflict),
+      contractEndPosition: contractPos,
     };
-  }, [allocations]);
+  }, [allocations, contractEndDate]);
 
   // Empty state
   if (allocations.length === 0) {
@@ -200,6 +212,27 @@ export function MiniGanttCard({ allocations, className, showPeriodTotals = true 
           >
             <div className="absolute -top-0.5 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-red-500 rounded-full" />
           </div>
+          
+          {/* Contract end marker */}
+          {contractEndPosition !== null && (
+            <>
+              <div 
+                className="absolute top-0 bottom-0 w-0.5 bg-amber-500 z-15"
+                style={{ left: `${contractEndPosition}%` }}
+              >
+                <div className="absolute -top-0.5 left-1/2 -translate-x-1/2 text-[7px]">🔒</div>
+              </div>
+              {/* Locked zone after contract end */}
+              <div 
+                className="absolute top-0 bottom-0 bg-muted/60 z-5"
+                style={{ 
+                  left: `${contractEndPosition}%`,
+                  right: 0,
+                  backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 3px, rgba(0,0,0,0.05) 3px, rgba(0,0,0,0.05) 6px)'
+                }}
+              />
+            </>
+          )}
           
           {/* Allocation bars - stacked vertically */}
           <div className="absolute inset-x-1 top-1 space-y-0.5 z-10">

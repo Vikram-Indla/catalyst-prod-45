@@ -59,6 +59,7 @@ import { UndoRedoControls } from '@/components/capacity/UndoRedoControls';
 import { CapacityPlannerSkeleton } from '@/components/capacity/CapacityPlannerSkeleton';
 import { UndoRedoProvider } from '@/contexts/UndoRedoContext';
 import { RESOURCE_COLUMN_WIDTH, WEEK_COLUMN_WIDTH, MONTH_COLUMN_WIDTH, QUARTER_COLUMN_WIDTH } from '@/lib/capacity/timeline-columns';
+import { useResourceProfiles } from '@/hooks/useResourceProfiles';
 
 // Department colors - Catalyst V5 compliant
 const departmentColors: Record<string, { bg: string; text: string; badge: string }> = {
@@ -1805,7 +1806,20 @@ interface TableViewProps {
 
 function TableView({ resources, projects, groupBy, groupedByAssignment, groupedByDepartment, allocations = [], onResourceClick, onEditResource, onDeleteResource, onBulkDelete, onBulkEdit }: TableViewProps) {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const { getProfile } = useResourceProfiles();
   const getProjectName = (projectId: string) => projects.find(p => p.id === projectId)?.name || 'Unknown';
+
+  // Contract ring styles helper
+  const getRingStyle = (status: string) => {
+    const ringStyles: Record<string, string> = {
+      healthy: 'ring-[#0d9488]',
+      warning: 'ring-[#ca8a04]',
+      critical: 'ring-[#be123c]',
+      expired: 'ring-muted-foreground/40',
+      permanent: 'ring-muted-foreground/30'
+    };
+    return ringStyles[status] || 'ring-muted-foreground/30';
+  };
 
   // Sort resources by assignment name by default
   const sortedResources = useMemo(() => {
@@ -1839,15 +1853,58 @@ function TableView({ resources, projects, groupBy, groupedByAssignment, groupedB
       render: (value: string, row: ResourceMetric) => {
         const initials = row.name?.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'NA';
         const avatarColor = getAssignmentColor(row.assignmentName);
+        const profile = getProfile(row.id);
+        const contractStatus = profile?.contractStatus?.status || 'permanent';
+        
         return (
           <div className="flex items-center gap-3">
             <div 
-              className="w-10 h-10 rounded-full flex items-center justify-center text-xs font-semibold text-white shrink-0"
+              className={cn(
+                "w-10 h-10 rounded-full flex items-center justify-center text-xs font-semibold text-white shrink-0 ring-[3px]",
+                getRingStyle(contractStatus),
+                contractStatus === 'critical' && "animate-pulse"
+              )}
               style={{ backgroundColor: avatarColor }}
             >
               {initials}
             </div>
-            <span className="font-medium text-sm text-[#0a0a0a]">{value}</span>
+            <div className="flex flex-col">
+              <div className="flex items-center gap-1.5">
+                <span className="font-medium text-sm text-[#0a0a0a] dark:text-foreground">{value}</span>
+                {profile?.country_flag_svg_url && (
+                  <img 
+                    src={profile.country_flag_svg_url} 
+                    alt={profile.country || ''} 
+                    className="w-4 h-3 object-cover rounded-sm"
+                    title={profile.country || ''}
+                  />
+                )}
+              </div>
+              <div className="flex items-center gap-1.5">
+                {profile?.location && (
+                  <span 
+                    className={cn(
+                      "text-[9px] font-medium px-1 py-0.5 rounded",
+                      profile.location.toLowerCase().includes('onsite') || profile.location.toLowerCase().includes('riyadh')
+                        ? "bg-[#0d9488]/10 text-[#0d9488]" 
+                        : "bg-[#2563eb]/10 text-[#2563eb]"
+                    )}
+                  >
+                    {profile.location}
+                  </span>
+                )}
+                {contractStatus !== 'permanent' && profile?.contractStatus && (
+                  <span className={cn(
+                    "text-[9px] font-medium px-1 py-0.5 rounded",
+                    contractStatus === 'critical' && 'bg-red-100 text-[#be123c]',
+                    contractStatus === 'warning' && 'bg-amber-100 text-[#ca8a04]',
+                    contractStatus === 'healthy' && 'bg-teal-100 text-[#0d9488]'
+                  )}>
+                    {profile.contractStatus.label}
+                  </span>
+                )}
+              </div>
+            </div>
           </div>
         );
       },
