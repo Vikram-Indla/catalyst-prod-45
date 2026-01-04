@@ -12,11 +12,8 @@ import { useHeatmapStore } from '@/stores/capacity-heatmap-store';
 import { useKeyboardShortcuts } from '@/hooks/use-keyboard-shortcuts';
 import { useCapacityHeatmapData } from '@/hooks/use-capacity-heatmap-data';
 import { CapacityPulseHeader } from './CapacityPulseHeader';
-import { HeatmapToolbar } from './HeatmapToolbar';
 import { HeatmapLegend } from './HeatmapLegend';
 import { AttentionBanner } from './AttentionBanner';
-import { SearchFilterBar } from './SearchFilterBar';
-import { TimeLapsePlayer } from './TimeLapsePlayer';
 import { HeatmapCell } from './HeatmapCell';
 import { KeyboardShortcutsPanel } from './KeyboardShortcutsPanel';
 import { HeatmapEmptyState } from './HeatmapEmptyState';
@@ -268,19 +265,6 @@ export const CapacityHeatmap = memo(function CapacityHeatmap({
           onDismiss={() => setDismissedBanner(true)}
         />
       )}
-      
-      {/* Toolbar */}
-      <HeatmapToolbar
-        resources={filteredResources}
-        months={data.months}
-        heatmapRef={heatmapRef}
-      />
-      
-      {/* Search and filters */}
-      <SearchFilterBar departments={departments} />
-      
-      {/* Time-lapse player */}
-      <TimeLapsePlayer months={data.months} />
       
       {/* Legend */}
       <HeatmapLegend />
