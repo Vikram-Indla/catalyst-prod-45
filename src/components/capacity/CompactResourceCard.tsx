@@ -1,7 +1,7 @@
 /**
  * Compact Resource Card - CIO Executive Cockpit
  * DARK MODE SUPPORT INCLUDED
- * Updated for Time-Boxed Allocations with mini-gantt timeline
+ * Updated with Contract Ring, Country Flag, Location Badge
  * 
  * CATALYST V5 COLORS:
  * - Available: Teal #0d9488
@@ -11,7 +11,7 @@
  */
 
 import { cn } from '@/lib/utils';
-import { AlertTriangle } from 'lucide-react';
+import { AlertTriangle, Lock } from 'lucide-react';
 import { 
   getAssignmentTheme, 
   getAllocationTheme,
@@ -20,6 +20,7 @@ import {
 import type { ResourceAllocation } from '@/modules/capacity-planner/types';
 import { MiniGanttCard } from './MiniGanttCard';
 import { Button } from '@/components/ui/button';
+import { useResourceProfiles, getContractStatus } from '@/hooks/useResourceProfiles';
 
 interface CompactResourceCardProps {
   id: string;
@@ -44,6 +45,11 @@ export function CompactResourceCard({
   onOpen360, 
   onEdit 
 }: CompactResourceCardProps) {
+  // Get profile data with contract status
+  const { getProfile } = useResourceProfiles();
+  const profile = getProfile(id);
+  const contractStatus = profile?.contractStatus || getContractStatus(null);
+  
   // Avatar color from assignment theme
   const theme = getAssignmentTheme(assignmentName);
   // Status-based colors for border and progress bar
@@ -53,6 +59,15 @@ export function CompactResourceCard({
   const isCritical = totalAllocation > 120;
   const overflowAmount = Math.max(0, totalAllocation - 100);
 
+  // Contract ring styles
+  const ringStyles = {
+    healthy: 'ring-[#0d9488]', // Teal
+    warning: 'ring-[#ca8a04]', // Gold
+    critical: 'ring-[#be123c]', // Rose
+    expired: 'ring-muted-foreground/40',
+    permanent: 'ring-muted-foreground/30'
+  };
+
   return (
     <div 
       className={cn(
@@ -61,7 +76,9 @@ export function CompactResourceCard({
         "transition-all duration-200 hover:-translate-y-1 hover:shadow-lg active:scale-[0.98]",
         isOverAllocated 
           ? "bg-red-50/40 dark:bg-red-950/20 border-red-300 dark:border-red-800 hover:shadow-red-100 dark:hover:shadow-red-900/20" 
-          : "bg-card border-border hover:border-primary/30"
+          : contractStatus.status === 'critical'
+            ? "bg-red-50/20 dark:bg-red-950/10 border-border"
+            : "bg-card border-border hover:border-primary/30"
       )}
       style={{ 
         borderLeftWidth: '4px', 
@@ -81,12 +98,14 @@ export function CompactResourceCard({
 
       {/* Header: Avatar + Name + Allocation */}
       <div className="flex items-center gap-2.5 mb-2">
-        {/* Avatar with status-based color for over-allocated */}
+        {/* Avatar with contract ring */}
         <div 
           onClick={(e) => { e.stopPropagation(); onOpen360(); }}
           className={cn(
-            "w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold text-white cursor-pointer hover:ring-2 hover:ring-offset-1 shrink-0 transition-all",
-            isOverAllocated ? "hover:ring-red-500" : "hover:ring-blue-500",
+            "w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold text-white cursor-pointer shrink-0 transition-all",
+            "ring-[3px]",
+            ringStyles[contractStatus.status],
+            contractStatus.status === 'critical' && "animate-pulse",
             "dark:ring-offset-slate-900"
           )}
           style={{ backgroundColor: isOverAllocated ? CATALYST_V5.error.hex : theme.accent }}
@@ -94,31 +113,71 @@ export function CompactResourceCard({
           {initials}
         </div>
 
-        {/* Info - Compact */}
+        {/* Info - Compact with country flag */}
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-semibold text-foreground truncate leading-tight">{name}</p>
-          <p className="text-[11px] text-muted-foreground truncate leading-tight">{role || 'Team Member'}</p>
+          <div className="flex items-center gap-1.5">
+            <p className="text-sm font-semibold text-foreground truncate leading-tight">{name}</p>
+            {/* Country flag */}
+            {profile?.country_flag_svg_url && (
+              <img 
+                src={profile.country_flag_svg_url} 
+                alt={profile.country || ''} 
+                className="w-4 h-3 object-cover rounded-sm flex-shrink-0"
+                title={profile.country || ''}
+              />
+            )}
+          </div>
+          <div className="flex items-center gap-1.5">
+            <p className="text-[11px] text-muted-foreground truncate leading-tight">{role || 'Team Member'}</p>
+            {/* Location badge */}
+            {profile?.location && (
+              <span 
+                className={cn(
+                  "text-[9px] font-medium px-1 py-0.5 rounded",
+                  profile.location.toLowerCase().includes('onsite') || profile.location.toLowerCase().includes('riyadh')
+                    ? "bg-[#0d9488]/10 text-[#0d9488]" 
+                    : "bg-[#2563eb]/10 text-[#2563eb]"
+                )}
+              >
+                {profile.location.toLowerCase().includes('onsite') || profile.location.toLowerCase().includes('riyadh') ? 'ON' : 'OFF'}
+              </span>
+            )}
+          </div>
         </div>
 
         {/* Allocation Badge with warning icon for over-allocated */}
-        <div className="flex items-center gap-1 shrink-0">
-          {isOverAllocated && (
-            <AlertTriangle className="w-3.5 h-3.5 text-red-500" />
-          )}
-          <span 
-            className={cn(
-              "text-xs font-bold px-2 py-0.5 rounded",
-              isOverAllocated && "bg-red-100 dark:bg-red-900/50 text-red-600 dark:text-red-400"
+        <div className="flex flex-col items-end gap-0.5 shrink-0">
+          <div className="flex items-center gap-1">
+            {isOverAllocated && (
+              <AlertTriangle className="w-3.5 h-3.5 text-red-500" />
             )}
-            style={!isOverAllocated ? { backgroundColor: alloc.bg, color: alloc.text } : undefined}
-          >
-            {totalAllocation}%
-          </span>
+            <span 
+              className={cn(
+                "text-xs font-bold px-2 py-0.5 rounded",
+                isOverAllocated && "bg-red-100 dark:bg-red-900/50 text-red-600 dark:text-red-400"
+              )}
+              style={!isOverAllocated ? { backgroundColor: alloc.bg, color: alloc.text } : undefined}
+            >
+              {totalAllocation}%
+            </span>
+          </div>
+          {/* Contract days badge */}
+          {contractStatus.status !== 'permanent' && (
+            <span className={cn(
+              "text-[9px] font-medium px-1 py-0.5 rounded",
+              contractStatus.status === 'critical' && 'bg-red-100 text-[#be123c]',
+              contractStatus.status === 'warning' && 'bg-amber-100 text-[#ca8a04]',
+              contractStatus.status === 'healthy' && 'bg-teal-100 text-[#0d9488]',
+              contractStatus.status === 'expired' && 'bg-muted text-muted-foreground'
+            )}>
+              {contractStatus.label}
+            </span>
+          )}
         </div>
       </div>
 
       {/* Mini-Gantt Timeline */}
-      <MiniGanttCard allocations={allocations} />
+      <MiniGanttCard allocations={allocations} contractEndDate={profile?.contract_end_date} />
 
       {/* Footer: Status + Action button */}
       <div className="flex items-center justify-between">
