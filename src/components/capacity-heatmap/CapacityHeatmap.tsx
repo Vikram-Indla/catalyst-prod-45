@@ -1,0 +1,352 @@
+/**
+ * Main Capacity Heatmap Component
+ * Assembles all heatmap components into a production-ready view
+ * Catalyst V5 compliant
+ */
+
+import { memo, useRef, useMemo, useCallback, useState } from 'react';
+import { motion } from 'framer-motion';
+import { ChevronDown, ChevronRight, User } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { useHeatmapStore } from '@/stores/capacity-heatmap-store';
+import { useKeyboardShortcuts } from '@/hooks/use-keyboard-shortcuts';
+import { useCapacityHeatmapData } from '@/hooks/use-capacity-heatmap-data';
+import { CapacityPulseHeader } from './CapacityPulseHeader';
+import { HeatmapToolbar } from './HeatmapToolbar';
+import { HeatmapLegend } from './HeatmapLegend';
+import { AttentionBanner } from './AttentionBanner';
+import { SearchFilterBar } from './SearchFilterBar';
+import { TimeLapsePlayer } from './TimeLapsePlayer';
+import { HeatmapCell } from './HeatmapCell';
+import { KeyboardShortcutsPanel } from './KeyboardShortcutsPanel';
+import type { HeatmapResource, Conflict } from '@/types/capacity-heatmap';
+import { formatMonth } from '@/lib/capacity-heatmap/utils';
+import { Skeleton } from '@/components/ui/skeleton';
+import { toast } from 'sonner';
+
+interface CapacityHeatmapProps {
+  className?: string;
+}
+
+export const CapacityHeatmap = memo(function CapacityHeatmap({
+  className
+}: CapacityHeatmapProps) {
+  const heatmapRef = useRef<HTMLDivElement>(null);
+  const [dismissedBanner, setDismissedBanner] = useState(false);
+  
+  // Initialize keyboard shortcuts
+  useKeyboardShortcuts();
+  
+  // Fetch data
+  const { data, isLoading, error } = useCapacityHeatmapData(12);
+  
+  const { 
+    searchQuery, 
+    filters,
+    selectCell,
+    selectedCells,
+    openDetailPanel,
+    scenarioMode,
+    ghostAllocations,
+  } = useHeatmapStore();
+  
+  // Filter resources
+  const filteredResources = useMemo(() => {
+    if (!data?.resources) return [];
+    
+    return data.resources.filter(r => {
+      // Search filter
+      if (searchQuery) {
+        const query = searchQuery.toLowerCase();
+        if (!r.name.toLowerCase().includes(query) && 
+            !r.role.toLowerCase().includes(query) &&
+            !r.department.toLowerCase().includes(query)) {
+          return false;
+        }
+      }
+      
+      // Department filter
+      if (filters.departments.length > 0 && !filters.departments.includes(r.department)) {
+        return false;
+      }
+      
+      // Conflicts filter
+      if (filters.showOnlyConflicts && !r.hasConflicts) {
+        return false;
+      }
+      
+      return true;
+    });
+  }, [data?.resources, searchQuery, filters]);
+  
+  // Group by department
+  const groupedResources = useMemo(() => {
+    const groups: Record<string, HeatmapResource[]> = {};
+    
+    filteredResources.forEach(r => {
+      const dept = r.department || 'Unassigned';
+      if (!groups[dept]) groups[dept] = [];
+      groups[dept].push(r);
+    });
+    
+    return groups;
+  }, [filteredResources]);
+  
+  // Get unique departments
+  const departments = useMemo(() => {
+    if (!data?.resources) return [];
+    return [...new Set(data.resources.map(r => r.department))].sort();
+  }, [data?.resources]);
+  
+  // Handle cell click
+  const handleCellClick = useCallback((resourceId: string, month: Date, e: React.MouseEvent) => {
+    selectCell(resourceId, month, e.ctrlKey || e.metaKey);
+    if (!e.ctrlKey && !e.metaKey) {
+      openDetailPanel(resourceId, month);
+    }
+  }, [selectCell, openDetailPanel]);
+  
+  // Handle conflict resolve
+  const handleResolveConflict = useCallback((conflict: Conflict) => {
+    toast.info(`Opening conflict resolution for ${conflict.resourceName}`);
+    openDetailPanel(conflict.resourceId, conflict.month);
+  }, [openDetailPanel]);
+  
+  // Get ghost allocation for a cell
+  const getGhostPercentage = useCallback((resourceId: string, month: Date) => {
+    if (!scenarioMode) return undefined;
+    const ghost = ghostAllocations.find(g => 
+      g.resourceId === resourceId && 
+      g.month.getTime() === month.getTime()
+    );
+    return ghost?.percentage;
+  }, [scenarioMode, ghostAllocations]);
+  
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className={cn("space-y-4 p-6", className)}>
+        <Skeleton className="h-32 w-full" />
+        <Skeleton className="h-12 w-full" />
+        <div className="space-y-2">
+          {Array.from({ length: 8 }).map((_, i) => (
+            <Skeleton key={i} className="h-10 w-full" />
+          ))}
+        </div>
+      </div>
+    );
+  }
+  
+  // Error state
+  if (error || !data) {
+    return (
+      <div className={cn("flex items-center justify-center h-64", className)}>
+        <div className="text-center">
+          <p className="text-destructive">Failed to load capacity data</p>
+          <p className="text-sm text-muted-foreground mt-1">Please try again later</p>
+        </div>
+      </div>
+    );
+  }
+  
+  return (
+    <div className={cn("space-y-4", className)}>
+      {/* Pulse Header */}
+      <CapacityPulseHeader stats={data.stats} />
+      
+      {/* Attention Banner */}
+      {!dismissedBanner && data.stats.conflicts.length > 0 && (
+        <AttentionBanner
+          conflicts={data.stats.conflicts}
+          onResolve={handleResolveConflict}
+          onDismiss={() => setDismissedBanner(true)}
+        />
+      )}
+      
+      {/* Toolbar */}
+      <HeatmapToolbar
+        resources={filteredResources}
+        months={data.months}
+        heatmapRef={heatmapRef}
+      />
+      
+      {/* Search and filters */}
+      <SearchFilterBar departments={departments} />
+      
+      {/* Time-lapse player */}
+      <TimeLapsePlayer months={data.months} />
+      
+      {/* Legend */}
+      <HeatmapLegend />
+      
+      {/* Heatmap Grid */}
+      <div 
+        ref={heatmapRef}
+        className="overflow-x-auto rounded-lg border border-border bg-card"
+      >
+        <div className="min-w-max">
+          {/* Header row with months */}
+          <div className="flex items-center border-b border-border bg-muted/30 sticky top-0 z-10">
+            <div className="w-56 flex-shrink-0 px-4 py-3 font-medium text-sm text-muted-foreground">
+              Resource
+            </div>
+            {data.months.map((month, i) => (
+              <div
+                key={i}
+                className="w-10 flex-shrink-0 text-center py-3 text-xs font-medium text-muted-foreground"
+              >
+                {formatMonth(month)}
+              </div>
+            ))}
+            <div className="w-16 flex-shrink-0 text-center py-3 text-xs font-medium text-muted-foreground">
+              Avg
+            </div>
+          </div>
+          
+          {/* Grouped rows */}
+          {Object.entries(groupedResources).map(([dept, resources]) => (
+            <DepartmentGroup
+              key={dept}
+              department={dept}
+              resources={resources}
+              months={data.months}
+              selectedCells={selectedCells}
+              onCellClick={handleCellClick}
+              getGhostPercentage={getGhostPercentage}
+            />
+          ))}
+          
+          {/* Empty state */}
+          {filteredResources.length === 0 && (
+            <div className="flex items-center justify-center py-12 text-muted-foreground">
+              No resources match your filters
+            </div>
+          )}
+        </div>
+      </div>
+      
+      {/* Keyboard shortcuts panel */}
+      <KeyboardShortcutsPanel />
+    </div>
+  );
+});
+
+// Department group component
+interface DepartmentGroupProps {
+  department: string;
+  resources: HeatmapResource[];
+  months: Date[];
+  selectedCells: { resourceId: string; month: Date }[];
+  onCellClick: (resourceId: string, month: Date, e: React.MouseEvent) => void;
+  getGhostPercentage: (resourceId: string, month: Date) => number | undefined;
+}
+
+const DepartmentGroup = memo(function DepartmentGroup({
+  department,
+  resources,
+  months,
+  selectedCells,
+  onCellClick,
+  getGhostPercentage,
+}: DepartmentGroupProps) {
+  const { expandedGroups, toggleGroupExpanded } = useHeatmapStore();
+  const isCollapsed = expandedGroups.has('__all_collapsed__') || expandedGroups.has(department);
+  
+  return (
+    <div className="border-b border-border last:border-b-0">
+      {/* Group header */}
+      <motion.button
+        className="w-full flex items-center px-4 py-2 bg-muted/20 hover:bg-muted/40 transition-colors"
+        onClick={() => toggleGroupExpanded(department)}
+      >
+        {isCollapsed ? (
+          <ChevronRight className="w-4 h-4 mr-2 text-muted-foreground" />
+        ) : (
+          <ChevronDown className="w-4 h-4 mr-2 text-muted-foreground" />
+        )}
+        <span className="font-medium text-sm">{department}</span>
+        <span className="ml-2 text-xs text-muted-foreground">({resources.length})</span>
+      </motion.button>
+      
+      {/* Resources */}
+      {!isCollapsed && (
+        <motion.div
+          initial={{ opacity: 0, height: 0 }}
+          animate={{ opacity: 1, height: 'auto' }}
+          exit={{ opacity: 0, height: 0 }}
+        >
+          {resources.map((resource) => (
+            <ResourceRow
+              key={resource.id}
+              resource={resource}
+              months={months}
+              selectedCells={selectedCells}
+              onCellClick={onCellClick}
+              getGhostPercentage={getGhostPercentage}
+            />
+          ))}
+        </motion.div>
+      )}
+    </div>
+  );
+});
+
+// Resource row component
+interface ResourceRowProps {
+  resource: HeatmapResource;
+  months: Date[];
+  selectedCells: { resourceId: string; month: Date }[];
+  onCellClick: (resourceId: string, month: Date, e: React.MouseEvent) => void;
+  getGhostPercentage: (resourceId: string, month: Date) => number | undefined;
+}
+
+const ResourceRow = memo(function ResourceRow({
+  resource,
+  months,
+  selectedCells,
+  onCellClick,
+  getGhostPercentage,
+}: ResourceRowProps) {
+  return (
+    <div className="flex items-center hover:bg-muted/20 transition-colors">
+      {/* Resource info */}
+      <div className="w-56 flex-shrink-0 px-4 py-2 flex items-center gap-3">
+        <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-xs font-medium text-primary">
+          {resource.initials}
+        </div>
+        <div className="min-w-0">
+          <div className="text-sm font-medium truncate">{resource.name}</div>
+          <div className="text-xs text-muted-foreground truncate">{resource.role}</div>
+        </div>
+      </div>
+      
+      {/* Cells */}
+      <div className="flex items-center gap-0.5">
+        {resource.monthlyUtilization.map((util, i) => {
+          const isSelected = selectedCells.some(
+            c => c.resourceId === resource.id && c.month.getTime() === util.month.getTime()
+          );
+          
+          return (
+            <HeatmapCell
+              key={i}
+              resourceId={resource.id}
+              resourceName={resource.name}
+              utilization={util}
+              isSelected={isSelected}
+              ghostPercentage={getGhostPercentage(resource.id, util.month)}
+              onClick={(e) => onCellClick(resource.id, util.month, e)}
+            />
+          );
+        })}
+      </div>
+      
+      {/* Average */}
+      <div className="w-16 flex-shrink-0 text-center text-sm font-medium">
+        {resource.averageUtilization}%
+      </div>
+    </div>
+  );
+});
+
+export default CapacityHeatmap;
