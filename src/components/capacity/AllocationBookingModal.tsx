@@ -332,27 +332,30 @@ export function AllocationBookingModal({
               <h2 className="text-lg font-semibold text-slate-900 dark:text-white">
                 Edit Allocations: {resource.name}
               </h2>
-              <p className="text-sm text-slate-500 dark:text-slate-400">
-                {resource.role}
-              </p>
+              <div className="flex items-center gap-3 mt-1">
+                <span className="text-sm text-slate-500 dark:text-slate-400">
+                  {resource.role}
+                </span>
+                <span className="text-slate-300 dark:text-slate-600">•</span>
+                {/* Department Selector - inline with role */}
+                <div className="flex items-center gap-1.5">
+                  <Building2 className="w-3.5 h-3.5 text-slate-400" />
+                  <Select value={selectedDepartmentId || 'unassigned'} onValueChange={handleDepartmentChange}>
+                    <SelectTrigger className="w-32 h-6 text-xs border-dashed bg-transparent px-2">
+                      <SelectValue placeholder="Department" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="unassigned">Unassigned</SelectItem>
+                      {departments.map(dept => (
+                        <SelectItem key={dept.id} value={dept.id}>
+                          {dept.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
             </div>
-          </div>
-          {/* Department Selector */}
-          <div className="flex items-center gap-2">
-            <Building2 className="w-4 h-4 text-slate-400" />
-            <Select value={selectedDepartmentId || 'unassigned'} onValueChange={handleDepartmentChange}>
-              <SelectTrigger className="w-40 h-8 text-sm">
-                <SelectValue placeholder="Select Department" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="unassigned">Unassigned</SelectItem>
-                {departments.map(dept => (
-                  <SelectItem key={dept.id} value={dept.id}>
-                    {dept.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
           </div>
         </div>
 

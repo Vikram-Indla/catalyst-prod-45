@@ -46,6 +46,24 @@ export function useCapacityData() {
         }
       });
       
+      // Fetch resource_allocations with resource_inventory join for profile mapping
+      const now = new Date().toISOString().split('T')[0];
+      const { data: allocationsData } = await supabase
+        .from('resource_allocations')
+        .select('resource_id, allocation_percent, start_date, end_date, resource_inventory!inner(profile_id)')
+        .lte('start_date', now)
+        .gte('end_date', now);
+      
+      // Calculate current allocation per profile from time-boxed allocations
+      const currentAllocationByProfile = new Map<string, number>();
+      (allocationsData || []).forEach((alloc: any) => {
+        const profileId = alloc.resource_inventory?.profile_id;
+        if (profileId) {
+          const current = currentAllocationByProfile.get(profileId) || 0;
+          currentAllocationByProfile.set(profileId, current + alloc.allocation_percent);
+        }
+      });
+      
       // Create maps for both profile_id and name-based lookup (fallback)
       const inventoryByProfileId = new Map(resourceInventory?.filter(r => r.profile_id).map(r => [r.profile_id, r]) || []);
       const inventoryByName = new Map(resourceInventory?.map(r => [r.name?.toLowerCase(), r]) || []);
@@ -56,7 +74,8 @@ export function useCapacityData() {
         const inventory = inventoryByProfileId.get(p.id) || inventoryByName.get(fullName.toLowerCase());
         const assignmentId = inventory?.assignment_id || null;
         const assignmentName = assignmentId ? assignmentTypeMap.get(assignmentId) || null : null;
-        const defaultCapacity = inventory?.default_capacity_percent ?? 0;
+        // Use dynamic allocation from time-boxed resource_allocations (not static default_capacity_percent)
+        const defaultCapacity = currentAllocationByProfile.get(p.id) ?? 0;
         // Use product role if available, fallback to profiles.role
         const roleName = userRoleMap.get(p.id) || p.role || 'Team Member';
         return {
