@@ -161,7 +161,7 @@ export function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
 
   return (
     <Sheet open={isOpen} onOpenChange={onClose}>
-      <SheetContent className="w-[480px] sm:max-w-[480px] overflow-y-auto">
+      <SheetContent className="w-[480px] sm:max-w-[480px] overflow-y-auto z-[100] fixed right-0 top-0 h-full bg-background border-l shadow-xl">
         <SheetHeader>
           <SheetTitle className="flex items-center gap-2">
             <User className="h-5 w-5" />
