@@ -166,7 +166,31 @@ export function useResourceAllocations() {
     }) => {
       const inventoryId = await ensureInventoryId(resourceId);
 
-      // Process each allocation
+      // Get existing allocations for this resource to determine what to delete
+      const { data: existingAllocations, error: fetchError } = await supabase
+        .from('resource_allocations')
+        .select('id')
+        .eq('resource_id', inventoryId);
+
+      if (fetchError) throw fetchError;
+
+      const existingIds = new Set((existingAllocations || []).map(a => a.id));
+      const newIds = new Set(newAllocations.filter(a => a.id).map(a => a.id));
+
+      // Find allocations that were deleted (exist in DB but not in new array)
+      const idsToDelete = [...existingIds].filter(id => !newIds.has(id));
+
+      // Delete removed allocations
+      if (idsToDelete.length > 0) {
+        const { error: deleteError } = await supabase
+          .from('resource_allocations')
+          .delete()
+          .in('id', idsToDelete);
+
+        if (deleteError) throw deleteError;
+      }
+
+      // Process each allocation (update existing or insert new)
       for (const alloc of newAllocations) {
         if (alloc.id) {
           // Update existing
