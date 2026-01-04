@@ -40,21 +40,44 @@ export function useResourceAllocations() {
 
       if (error) throw error;
 
-      return (data || []).map((row: any) => ({
-        id: row.id,
-        resource_id: row.resource_id,
-        assignment_id: row.assignment_id,
-        allocation_percent: row.allocation_percent,
-        start_date: row.start_date,
-        end_date: row.end_date,
-        created_at: row.created_at,
-        updated_at: row.updated_at,
-        created_by: row.created_by,
-        assignment_name: row.resource_assignments?.name,
-        resource_name: row.resource_inventory?.name,
-        profile_id: row.resource_inventory?.profile_id,
-        role_name: row.resource_inventory?.role_name,
-      })) as ResourceAllocation[];
+      // Populate role_name from the same roles source used in /admin/users
+      const [{ data: userProductRoles }, { data: productRoles }] = await Promise.all([
+        supabase.from('user_product_roles').select('user_id, role_id'),
+        supabase.from('product_roles').select('id, name'),
+      ]);
+
+      const roleIdToName = new Map<string, string>(
+        (productRoles || []).map((r: any) => [r.id, r.name])
+      );
+
+      const roleNameByUserId = new Map<string, string>();
+      (userProductRoles || []).forEach((upr: any) => {
+        const roleName = roleIdToName.get(upr.role_id);
+        if (roleName && !roleNameByUserId.has(upr.user_id)) {
+          roleNameByUserId.set(upr.user_id, roleName);
+        }
+      });
+
+      return (data || []).map((row: any) => {
+        const profileId = row.resource_inventory?.profile_id as string | undefined;
+        const roleName = profileId ? roleNameByUserId.get(profileId) : undefined;
+
+        return {
+          id: row.id,
+          resource_id: row.resource_id,
+          assignment_id: row.assignment_id,
+          allocation_percent: row.allocation_percent,
+          start_date: row.start_date,
+          end_date: row.end_date,
+          created_at: row.created_at,
+          updated_at: row.updated_at,
+          created_by: row.created_by,
+          assignment_name: row.resource_assignments?.name,
+          resource_name: row.resource_inventory?.name,
+          profile_id: profileId,
+          role_name: roleName || row.resource_inventory?.role_name || null,
+        };
+      }) as ResourceAllocation[];
     },
   });
 
