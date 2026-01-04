@@ -525,7 +525,7 @@ export function AllocationBookingModal({
 
           {/* Existing Allocations List */}
           <div>
-            <h3 className="text-sm font-semibold text-slate-700 uppercase tracking-wide mb-3">
+            <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wide mb-3">
               Existing Allocations ({allocations.length})
             </h3>
             
@@ -539,8 +539,8 @@ export function AllocationBookingModal({
                   <div
                     key={index}
                     className={cn(
-                      "flex items-center gap-4 p-4 bg-white border rounded-xl transition-all",
-                      isEditing ? "border-blue-400 ring-2 ring-blue-100" : "border-slate-200"
+                      "flex items-center gap-4 p-4 bg-white dark:bg-slate-800 border rounded-xl transition-all",
+                      isEditing ? "border-blue-400 ring-2 ring-blue-100 dark:ring-blue-900" : "border-slate-200 dark:border-slate-700"
                     )}
                   >
                     <div 
@@ -707,15 +707,15 @@ export function AllocationBookingModal({
             
             {/* New Allocation Form */}
             {newAllocation && (
-              <div className="mt-3 p-4 bg-blue-50 border-2 border-blue-200 border-dashed rounded-xl">
+              <div className="mt-3 p-4 bg-blue-50 dark:bg-blue-950/30 border-2 border-blue-200 dark:border-blue-800 border-dashed rounded-xl">
                 <div className="grid grid-cols-3 gap-3 mb-3">
                   <div>
-                    <Label className="text-xs text-slate-600">Assignment</Label>
+                    <Label className="text-xs text-slate-600 dark:text-slate-400">Assignment</Label>
                     <Select 
                       value={newAllocation.assignment_id}
                       onValueChange={(v) => updateNewAllocation('assignment_id', v)}
                     >
-                      <SelectTrigger className="mt-1 bg-white">
+                      <SelectTrigger className="mt-1 bg-white dark:bg-slate-800">
                         <SelectValue placeholder="Select..." />
                       </SelectTrigger>
                       <SelectContent>
@@ -726,7 +726,7 @@ export function AllocationBookingModal({
                     </Select>
                   </div>
                   <div>
-                    <Label className="text-xs text-slate-600">Allocation %</Label>
+                    <Label className="text-xs text-slate-600 dark:text-slate-400">Allocation %</Label>
                     <Input
                       type="number"
                       min={5}
@@ -734,7 +734,7 @@ export function AllocationBookingModal({
                       step={5}
                       value={newAllocation.allocation_percent}
                       onChange={(e) => updateNewAllocation('allocation_percent', parseInt(e.target.value) || 0)}
-                      className="mt-1 bg-white"
+                      className="mt-1 bg-white dark:bg-slate-800"
                     />
                     {/* Quick Percentage Buttons */}
                     <div className="flex gap-1 mt-1">
@@ -747,7 +747,7 @@ export function AllocationBookingModal({
                             "px-2 py-0.5 text-xs rounded transition-colors",
                             newAllocation.allocation_percent === pct 
                               ? "bg-blue-600 text-white" 
-                              : "bg-white text-slate-600 hover:bg-slate-100"
+                              : "bg-white dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-600"
                           )}
                         >
                           {pct}%
@@ -778,27 +778,27 @@ export function AllocationBookingModal({
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <Label className="text-xs text-slate-600">Start Date</Label>
+                    <Label className="text-xs text-slate-600 dark:text-slate-400">Start Date</Label>
                     <Input
                       type="date"
                       value={newAllocation.start_date}
                       onChange={(e) => updateNewAllocation('start_date', e.target.value)}
-                      className="mt-1 bg-white"
+                      className="mt-1 bg-white dark:bg-slate-800"
                     />
                   </div>
                   <div>
-                    <Label className="text-xs text-slate-600">End Date</Label>
+                    <Label className="text-xs text-slate-600 dark:text-slate-400">End Date</Label>
                     <Input
                       type="date"
                       value={newAllocation.end_date}
                       onChange={(e) => updateNewAllocation('end_date', e.target.value)}
-                      className="mt-1 bg-white"
+                      className="mt-1 bg-white dark:bg-slate-800"
                     />
                   </div>
                 </div>
                 {/* Quick Duration Buttons */}
                 <div className="flex items-center gap-2 mt-2">
-                  <span className="text-xs text-slate-500">Quick:</span>
+                  <span className="text-xs text-slate-500 dark:text-slate-400">Quick:</span>
                   {[
                     { label: '2 weeks', weeks: 2 },
                     { label: '1 month', weeks: 4 },
@@ -815,7 +815,7 @@ export function AllocationBookingModal({
                         end.setDate(end.getDate() + (weeks * 7) - 1);
                         updateNewAllocation('end_date', format(end, 'yyyy-MM-dd'));
                       }}
-                      className="px-2 py-0.5 text-xs bg-white text-slate-600 rounded hover:bg-slate-100 transition-colors"
+                      className="px-2 py-0.5 text-xs bg-white dark:bg-slate-700 text-slate-600 dark:text-slate-300 rounded hover:bg-slate-100 dark:hover:bg-slate-600 transition-colors"
                     >
                       {label}
                     </button>
@@ -828,7 +828,7 @@ export function AllocationBookingModal({
             {!newAllocation && (
               <button
                 onClick={startAddingAllocation}
-                className="w-full mt-3 py-3 border-2 border-dashed border-slate-300 rounded-xl text-slate-500 font-medium hover:border-blue-400 hover:text-blue-600 transition-colors flex items-center justify-center gap-2"
+                className="w-full mt-3 py-3 border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-xl text-slate-500 dark:text-slate-400 font-medium hover:border-blue-400 dark:hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-400 transition-colors flex items-center justify-center gap-2"
               >
                 <Plus className="w-4 h-4" />
                 Add New Allocation
