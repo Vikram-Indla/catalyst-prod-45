@@ -91,8 +91,8 @@ export function SleekCapacityHeader({
 
   return (
     <div className="bg-card border-b border-border">
-      {/* ROW 1: Breadcrumb + Live Status + Actions — Height: 40px */}
-      <div className="flex items-center justify-between px-4 py-2 border-b border-border/50">
+      {/* ROW 1: Breadcrumb + Live Status + Actions — Height: 52px to align with left panel */}
+      <div className="flex items-center justify-between px-4 border-b border-border/50" style={{ height: '52px' }}>
         <div className="flex items-center gap-3">
           {/* Breadcrumb - Match Strategic Backlog typography */}
           <div className="flex items-center gap-2">
