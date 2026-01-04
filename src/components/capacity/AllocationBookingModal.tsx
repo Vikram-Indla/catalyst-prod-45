@@ -4,8 +4,9 @@
  */
 
 import { useState, useEffect, useMemo } from 'react';
-import { X, Plus, Trash2, Pencil, Calendar } from 'lucide-react';
+import { X, Plus, Trash2, Pencil, Calendar, AlertTriangle, Zap, Clock, UserMinus } from 'lucide-react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -47,6 +48,9 @@ export function AllocationBookingModal({
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [newAllocation, setNewAllocation] = useState<AllocationBookingInput | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const [deleteConfirmIndex, setDeleteConfirmIndex] = useState<number | null>(null);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [showUnsavedWarning, setShowUnsavedWarning] = useState(false);
 
   // Timeline configuration - 6 months from current month
   const timelineStart = startOfMonth(new Date());
@@ -155,10 +159,62 @@ export function AllocationBookingModal({
     return allocations.reduce((sum, a) => sum + (a.allocation_percent || 0), 0);
   }, [allocations]);
 
-  const hasConflict = totalAllocation > 100;
-  const status = totalAllocation > 100 ? 'over' : totalAllocation === 100 ? 'atCapacity' : 'available';
+  // Find conflict periods (months where allocation > 100%)
+  const conflictPeriods = useMemo(() => {
+    return monthlyTotals.filter(mt => mt.total > 100);
+  }, [monthlyTotals]);
+
+  const hasConflict = conflictPeriods.length > 0;
+  const maxConflict = Math.max(...monthlyTotals.map(mt => mt.total), 0);
+  const overflowAmount = Math.max(0, maxConflict - 100);
+  const status = maxConflict > 100 ? 'over' : maxConflict === 100 ? 'atCapacity' : 'available';
   const statusLabel = status === 'over' ? 'OVER-ALLOCATED' : status === 'atCapacity' ? 'AT CAPACITY' : 'AVAILABLE';
-  const statusColor = status === 'over' ? '#d97706' : status === 'atCapacity' ? '#2563eb' : '#0d9488';
+  const statusColor = status === 'over' ? CATALYST_V5.overAllocated.hex : status === 'atCapacity' ? CATALYST_V5.optimal.hex : CATALYST_V5.available.hex;
+
+  // Quick fix suggestions for conflicts
+  const quickFixes = useMemo(() => {
+    if (!hasConflict || allocations.length < 2) return [];
+    
+    const fixes: { label: string; description: string; action: () => void }[] = [];
+    
+    // Find the newest allocation (likely the one to adjust)
+    const sorted = [...allocations].sort((a, b) => 
+      new Date(b.start_date).getTime() - new Date(a.start_date).getTime()
+    );
+    const newest = sorted[0];
+    const newestIdx = allocations.findIndex(a => a === newest);
+    
+    if (newest && newestIdx >= 0) {
+      const reduceAmount = Math.min(newest.allocation_percent, overflowAmount);
+      const newPercent = newest.allocation_percent - reduceAmount;
+      
+      if (newPercent >= 10) {
+        fixes.push({
+          label: `Reduce ${newest.assignment_name} to ${newPercent}%`,
+          description: `Reduces conflict by ${reduceAmount}%`,
+          action: () => {
+            updateAllocation(newestIdx, 'allocation_percent', newPercent);
+            setHasUnsavedChanges(true);
+          }
+        });
+      }
+      
+      // Delay start option
+      if (conflictPeriods.length > 0) {
+        const firstConflictEnd = addMonths(conflictPeriods[conflictPeriods.length - 1].month, 1);
+        fixes.push({
+          label: `Delay start to ${format(firstConflictEnd, 'MMM d')}`,
+          description: 'Avoids overlap with existing allocations',
+          action: () => {
+            updateAllocation(newestIdx, 'start_date', format(firstConflictEnd, 'yyyy-MM-dd'));
+            setHasUnsavedChanges(true);
+          }
+        });
+      }
+    }
+    
+    return fixes;
+  }, [hasConflict, allocations, overflowAmount, conflictPeriods]);
 
   // Calculate bar positions for timeline
   const totalDays = differenceInDays(timelineEnd, timelineStart);
@@ -194,12 +250,27 @@ export function AllocationBookingModal({
 
   const allocationBars = getAllocationBars(allocations);
 
+  function handleClose() {
+    if (hasUnsavedChanges) {
+      setShowUnsavedWarning(true);
+    } else {
+      onClose();
+    }
+  }
+
+  function confirmDelete(index: number) {
+    setAllocations(allocations.filter((_, i) => i !== index));
+    setDeleteConfirmIndex(null);
+    setHasUnsavedChanges(true);
+  }
+
   async function handleSave() {
     if (!resource) return;
     
     setIsSaving(true);
     try {
       await onSave(resource.id, allocations.filter(a => a.assignment_id));
+      setHasUnsavedChanges(false);
       onClose();
     } catch (error) {
       console.error('Failed to save allocations:', error);
@@ -213,7 +284,8 @@ export function AllocationBookingModal({
   const initials = resource.name?.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() || '??';
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <>
+    <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-hidden flex flex-col p-0 gap-0">
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200">
@@ -309,6 +381,60 @@ export function AllocationBookingModal({
               </span>
             </div>
           </div>
+
+          {/* CONFLICT RESOLUTION BANNER */}
+          {hasConflict && (
+            <div 
+              className="rounded-xl border-2 overflow-hidden"
+              style={{ borderColor: CATALYST_V5.overAllocated.hex }}
+            >
+              {/* Banner Header */}
+              <div 
+                className="flex items-center gap-3 px-4 py-3"
+                style={{ backgroundColor: CATALYST_V5.overAllocated.bgSolid }}
+              >
+                <div 
+                  className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
+                  style={{ backgroundColor: `${CATALYST_V5.overAllocated.hex}20` }}
+                >
+                  <AlertTriangle className="w-5 h-5" style={{ color: CATALYST_V5.overAllocated.hex }} />
+                </div>
+                <div className="flex-1">
+                  <h4 className="text-sm font-bold" style={{ color: CATALYST_V5.overAllocated.hex }}>
+                    Conflict Detected: +{overflowAmount}% over capacity
+                  </h4>
+                  <p className="text-xs text-slate-600">
+                    {conflictPeriods.length === 1 
+                      ? `In ${format(conflictPeriods[0].month, 'MMMM yyyy')} (${conflictPeriods[0].total}%)`
+                      : `In ${conflictPeriods.length} periods: ${conflictPeriods.map(p => format(p.month, 'MMM')).join(', ')}`
+                    }
+                  </p>
+                </div>
+              </div>
+              
+              {/* Quick Fix Options */}
+              {quickFixes.length > 0 && (
+                <div className="px-4 py-3 bg-white border-t border-slate-100">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Zap className="w-4 h-4 text-amber-600" />
+                    <span className="text-xs font-semibold text-slate-700 uppercase">Quick Fixes</span>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {quickFixes.map((fix, idx) => (
+                      <button
+                        key={idx}
+                        onClick={fix.action}
+                        className="flex items-center gap-2 px-3 py-2 text-xs font-medium bg-amber-50 text-amber-800 rounded-lg border border-amber-200 hover:bg-amber-100 transition-colors"
+                      >
+                        <span>{fix.label}</span>
+                        <span className="text-amber-600">→</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Allocation Timeline */}
           <div>
@@ -449,9 +575,33 @@ export function AllocationBookingModal({
                               max={100}
                               step={5}
                               value={alloc.allocation_percent}
-                              onChange={(e) => updateAllocation(index, 'allocation_percent', parseInt(e.target.value) || 0)}
+                              onChange={(e) => {
+                                updateAllocation(index, 'allocation_percent', parseInt(e.target.value) || 0);
+                                setHasUnsavedChanges(true);
+                              }}
                               className="mt-1"
                             />
+                            {/* Quick Percentage Buttons */}
+                            <div className="flex gap-1 mt-1">
+                              {[25, 50, 75, 100].map(pct => (
+                                <button
+                                  key={pct}
+                                  type="button"
+                                  onClick={() => {
+                                    updateAllocation(index, 'allocation_percent', pct);
+                                    setHasUnsavedChanges(true);
+                                  }}
+                                  className={cn(
+                                    "px-2 py-0.5 text-xs rounded transition-colors",
+                                    alloc.allocation_percent === pct 
+                                      ? "bg-blue-600 text-white" 
+                                      : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                                  )}
+                                >
+                                  {pct}%
+                                </button>
+                              ))}
+                            </div>
                           </div>
                           <div className="flex items-end">
                             <Button
@@ -469,7 +619,10 @@ export function AllocationBookingModal({
                             <Input
                               type="date"
                               value={alloc.start_date}
-                              onChange={(e) => updateAllocation(index, 'start_date', e.target.value)}
+                              onChange={(e) => {
+                                updateAllocation(index, 'start_date', e.target.value);
+                                setHasUnsavedChanges(true);
+                              }}
                               className="mt-1"
                             />
                           </div>
@@ -478,11 +631,40 @@ export function AllocationBookingModal({
                             <Input
                               type="date"
                               value={alloc.end_date}
-                              onChange={(e) => updateAllocation(index, 'end_date', e.target.value)}
+                              onChange={(e) => {
+                                updateAllocation(index, 'end_date', e.target.value);
+                                setHasUnsavedChanges(true);
+                              }}
                               className="mt-1"
                               placeholder="Ongoing"
                             />
                           </div>
+                        </div>
+                        {/* Quick Duration Buttons */}
+                        <div className="flex items-center gap-2 mt-2">
+                          <span className="text-xs text-slate-500">Quick:</span>
+                          {[
+                            { label: '2w', weeks: 2 },
+                            { label: '1m', weeks: 4 },
+                            { label: '2m', weeks: 9 },
+                            { label: '3m', weeks: 13 },
+                            { label: '6m', weeks: 26 },
+                          ].map(({ label, weeks }) => (
+                            <button
+                              key={label}
+                              type="button"
+                              onClick={() => {
+                                const start = new Date(alloc.start_date);
+                                const end = new Date(start);
+                                end.setDate(end.getDate() + (weeks * 7) - 1);
+                                updateAllocation(index, 'end_date', format(end, 'yyyy-MM-dd'));
+                                setHasUnsavedChanges(true);
+                              }}
+                              className="px-2 py-0.5 text-xs bg-slate-100 text-slate-600 rounded hover:bg-slate-200 transition-colors"
+                            >
+                              {label}
+                            </button>
+                          ))}
                         </div>
                       </div>
                     ) : (
@@ -502,8 +684,9 @@ export function AllocationBookingModal({
                             <Pencil className="w-4 h-4" />
                           </button>
                           <button
-                            onClick={() => removeAllocation(index)}
+                            onClick={() => setDeleteConfirmIndex(index)}
                             className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                            title="Delete allocation"
                           >
                             <Trash2 className="w-4 h-4" />
                           </button>
@@ -552,11 +735,32 @@ export function AllocationBookingModal({
                       onChange={(e) => updateNewAllocation('allocation_percent', parseInt(e.target.value) || 0)}
                       className="mt-1 bg-white"
                     />
+                    {/* Quick Percentage Buttons */}
+                    <div className="flex gap-1 mt-1">
+                      {[25, 50, 75, 100].map(pct => (
+                        <button
+                          key={pct}
+                          type="button"
+                          onClick={() => updateNewAllocation('allocation_percent', pct)}
+                          className={cn(
+                            "px-2 py-0.5 text-xs rounded transition-colors",
+                            newAllocation.allocation_percent === pct 
+                              ? "bg-blue-600 text-white" 
+                              : "bg-white text-slate-600 hover:bg-slate-100"
+                          )}
+                        >
+                          {pct}%
+                        </button>
+                      ))}
+                    </div>
                   </div>
                   <div className="flex items-end gap-2">
                     <Button
                       size="sm"
-                      onClick={confirmNewAllocation}
+                      onClick={() => {
+                        confirmNewAllocation();
+                        setHasUnsavedChanges(true);
+                      }}
                       disabled={!newAllocation.assignment_id}
                       className="bg-blue-600 hover:bg-blue-700"
                     >
@@ -590,6 +794,31 @@ export function AllocationBookingModal({
                       className="mt-1 bg-white"
                     />
                   </div>
+                </div>
+                {/* Quick Duration Buttons */}
+                <div className="flex items-center gap-2 mt-2">
+                  <span className="text-xs text-slate-500">Quick:</span>
+                  {[
+                    { label: '2 weeks', weeks: 2 },
+                    { label: '1 month', weeks: 4 },
+                    { label: '2 months', weeks: 9 },
+                    { label: '3 months', weeks: 13 },
+                    { label: '6 months', weeks: 26 },
+                  ].map(({ label, weeks }) => (
+                    <button
+                      key={label}
+                      type="button"
+                      onClick={() => {
+                        const start = new Date(newAllocation.start_date);
+                        const end = new Date(start);
+                        end.setDate(end.getDate() + (weeks * 7) - 1);
+                        updateNewAllocation('end_date', format(end, 'yyyy-MM-dd'));
+                      }}
+                      className="px-2 py-0.5 text-xs bg-white text-slate-600 rounded hover:bg-slate-100 transition-colors"
+                    >
+                      {label}
+                    </button>
+                  ))}
                 </div>
               </div>
             )}
@@ -715,7 +944,7 @@ export function AllocationBookingModal({
         <div className="flex items-center justify-between px-6 py-4 border-t border-slate-200 bg-slate-50">
           <Button
             variant="ghost"
-            onClick={onClose}
+            onClick={handleClose}
             className="text-slate-600"
           >
             Cancel
@@ -730,5 +959,57 @@ export function AllocationBookingModal({
         </div>
       </DialogContent>
     </Dialog>
+
+    {/* Delete Confirmation Dialog */}
+    <AlertDialog open={deleteConfirmIndex !== null} onOpenChange={() => setDeleteConfirmIndex(null)}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Delete Allocation?</AlertDialogTitle>
+          <AlertDialogDescription>
+            {deleteConfirmIndex !== null && allocations[deleteConfirmIndex] && (
+              <>
+                Are you sure you want to remove the <strong>{allocations[deleteConfirmIndex].assignment_name}</strong> allocation 
+                ({allocations[deleteConfirmIndex].allocation_percent}%)? This action cannot be undone.
+              </>
+            )}
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogAction 
+            onClick={() => deleteConfirmIndex !== null && confirmDelete(deleteConfirmIndex)}
+            className="bg-red-600 hover:bg-red-700"
+          >
+            Delete
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+
+    {/* Unsaved Changes Warning */}
+    <AlertDialog open={showUnsavedWarning} onOpenChange={setShowUnsavedWarning}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Unsaved Changes</AlertDialogTitle>
+          <AlertDialogDescription>
+            You have unsaved changes. Are you sure you want to close without saving?
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Keep Editing</AlertDialogCancel>
+          <AlertDialogAction 
+            onClick={() => {
+              setShowUnsavedWarning(false);
+              setHasUnsavedChanges(false);
+              onClose();
+            }}
+            className="bg-red-600 hover:bg-red-700"
+          >
+            Discard Changes
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+    </>
   );
 }
