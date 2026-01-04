@@ -49,6 +49,7 @@ import { CompactResourceCard } from '@/components/capacity/CompactResourceCard';
 import { HeatmapView } from '@/components/capacity/HeatmapView';
 import { FindAvailabilityPanel } from '@/components/capacity/FindAvailabilityPanel';
 import { ProjectStaffingView } from '@/components/capacity/ProjectStaffingView';
+import { GroupedTableView } from '@/components/capacity/GroupedTableView';
 
 // Department colors - Catalyst V5 compliant
 const departmentColors: Record<string, { bg: string; text: string; badge: string }> = {
@@ -1125,17 +1126,15 @@ export default function CapacityPlannerPage() {
                 />
               )}
               {currentView === 'table' && (
-                <TableView 
-                  resources={filteredResources} 
-                  projects={projects}
-                  groupBy={groupBy}
-                  groupedByAssignment={groupedByAssignment}
-                  groupedByDepartment={groupedByDepartment}
-                  onResourceClick={() => {}}
-                  onEditResource={() => {}}
-                  onDeleteResource={() => {}}
-                  onBulkDelete={() => {}}
-                  onBulkEdit={() => {}}
+                <GroupedTableView 
+                  resources={filteredResources}
+                  allocations={allocations}
+                  defaultGroupBy={groupBy === 'assignment' ? 'assignment' : groupBy === 'department' ? 'department' : 'department'}
+                  onEditResource={handleOpenAllocationModal}
+                  onDeleteResource={(resource) => {
+                    setResourceToDelete(resource as ResourceMetric);
+                    setDeleteConfirmOpen(true);
+                  }}
                 />
               )}
               {currentView === 'timeline' && (
