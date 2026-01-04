@@ -14391,6 +14391,7 @@ export type Database = {
           resource_id: string
           start_date: string
           updated_at: string
+          updated_by: string | null
         }
         Insert: {
           allocation_percent?: number
@@ -14402,6 +14403,7 @@ export type Database = {
           resource_id: string
           start_date?: string
           updated_at?: string
+          updated_by?: string | null
         }
         Update: {
           allocation_percent?: number
@@ -14413,6 +14415,7 @@ export type Database = {
           resource_id?: string
           start_date?: string
           updated_at?: string
+          updated_by?: string | null
         }
         Relationships: [
           {

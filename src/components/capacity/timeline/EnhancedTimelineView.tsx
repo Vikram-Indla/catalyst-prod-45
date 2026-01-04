@@ -11,11 +11,15 @@
  * - Locked zones post-contract
  */
 
-import React, { useMemo, useCallback } from 'react';
+import React, { useMemo, useCallback, useState } from 'react';
 import { cn } from '@/lib/utils';
 import { CATALYST_COLORS, getContractStatus, getTimelineBarStyle } from '@/lib/constants/catalyst-colors';
 import styles from './Timeline.module.css';
 import type { ResourceAllocation } from '@/modules/capacity-planner/types';
+import { DraggableAllocationBar } from './DraggableAllocationBar';
+import { useRealtimeAllocations } from '@/hooks/useRealtimeAllocations';
+import { SyncStatusProvider } from '@/contexts/SyncStatusContext';
+import { SyncStatusIndicator } from '@/components/ui/SyncStatusIndicator';
 
 // ═══════════════════════════════════════════════════════════════
 // TYPES
@@ -328,22 +332,37 @@ export function EnhancedTimelineView({
     return endDate < month.start;
   };
 
+  // Enable real-time subscriptions
+  useRealtimeAllocations();
+  
+  // Dragging state
+  const [isDraggingAny, setIsDraggingAny] = useState(false);
+  
+  const totalWidth = months.length * MONTH_WIDTH;
+
   return (
-    <div className={cn(styles.timelineContainer, className)}>
-      {/* Header */}
-      <div className={styles.timelineHeader}>
-        <div className={styles.resourceColumnHeader}>Resource</div>
-        <div className={styles.monthsContainer}>
-          {months.map(month => (
-            <div
-              key={month.key}
-              className={cn(styles.monthHeader, month.isCurrent && styles.monthHeaderCurrent)}
-            >
-              {month.label}
-            </div>
-          ))}
+    <SyncStatusProvider>
+      <div className={cn(styles.timelineContainer, className)}>
+        {/* Header */}
+        <div className={styles.timelineHeader}>
+          <div className={styles.resourceColumnHeader}>
+            Resource
+          </div>
+          <div className={styles.monthsContainer}>
+            {months.map(month => (
+              <div
+                key={month.key}
+                className={cn(styles.monthHeader, month.isCurrent && styles.monthHeaderCurrent)}
+              >
+                {month.label}
+              </div>
+            ))}
+          </div>
+          {/* Sync Status Indicator */}
+          <div className="absolute top-2 right-4 z-10">
+            <SyncStatusIndicator />
+          </div>
         </div>
-      </div>
 
       {/* Body */}
       <div className={styles.timelineBody}>
@@ -399,19 +418,26 @@ export function EnhancedTimelineView({
                   );
                 })}
 
-                {/* Allocation Bars - rendered on top */}
+                {/* Allocation Bars - Draggable */}
                 {resourceAllocations.map((alloc, idx) => {
-                  const position = calculateBarPosition(alloc);
-                  if (!position) return null;
-                  
                   return (
-                    <AllocationBar
+                    <DraggableAllocationBar
                       key={alloc.id || idx}
-                      allocation={alloc}
-                      leftPx={position.leftPx}
-                      widthPx={position.widthPx}
+                      allocation={{
+                        id: alloc.id,
+                        start_date: alloc.start_date,
+                        end_date: alloc.end_date,
+                        allocation_percent: alloc.allocation_percent,
+                        assignment_name: alloc.assignment_name,
+                        profile_id: alloc.profile_id,
+                      }}
+                      timelineStartDate={timelineStartDate}
+                      timelineEndDate={timelineEndDate}
+                      totalWidth={totalWidth}
                       rowIndex={idx}
                       totalBars={resourceAllocations.length}
+                      onDragStart={() => setIsDraggingAny(true)}
+                      onDragEnd={() => setIsDraggingAny(false)}
                       onClick={() => onEditResource?.(resource.id)}
                     />
                   );
@@ -483,6 +509,7 @@ export function EnhancedTimelineView({
         </div>
       </div>
     </div>
+    </SyncStatusProvider>
   );
 }
 
