@@ -1,75 +1,58 @@
 /**
  * Reports Page
- * Displays various test management reports and analytics
+ * Comprehensive test management reports and analytics with multiple tabs
  */
 
-import React from 'react';
-import { 
-  BarChart3, 
-  FileText, 
-  GitBranch, 
-  TrendingUp,
-  PieChart,
-  Calendar,
-  Download,
-  ExternalLink
-} from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { cn } from '@/lib/utils';
+import React, { useState } from 'react';
+import { subDays } from 'date-fns';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import {
+  ReportFilters,
+  ReportFiltersState,
+  DashboardTab,
+  ExecutionTab,
+  TraceabilityTab,
+  BurndownTab,
+  TeamTab,
+  ExportDropdown,
+} from '../components/reports';
 
-const reportCards = [
-  {
-    id: 'traceability',
-    title: 'Traceability Matrix',
-    description: 'Coverage mapping between requirements and test cases',
-    icon: GitBranch,
-    color: 'text-primary',
-    bgColor: 'bg-primary/10',
-  },
-  {
-    id: 'execution',
-    title: 'Execution Summary',
-    description: 'Overview of test execution results by cycle',
-    icon: BarChart3,
-    color: 'text-success',
-    bgColor: 'bg-success/10',
-  },
-  {
-    id: 'burndown',
-    title: 'Burndown Chart',
-    description: 'Track test execution progress over time',
-    icon: TrendingUp,
-    color: 'text-info',
-    bgColor: 'bg-info/10',
-  },
-  {
-    id: 'defect-analysis',
-    title: 'Defect Analysis',
-    description: 'Defect trends, severity distribution, and aging',
-    icon: PieChart,
-    color: 'text-danger',
-    bgColor: 'bg-danger/10',
-  },
-  {
-    id: 'test-coverage',
-    title: 'Test Coverage',
-    description: 'Coverage analysis by module and feature',
-    icon: FileText,
-    color: 'text-warning',
-    bgColor: 'bg-warning/10',
-  },
-  {
-    id: 'cycle-history',
-    title: 'Cycle History',
-    description: 'Historical comparison of test cycles',
-    icon: Calendar,
-    color: 'text-muted-foreground',
-    bgColor: 'bg-muted',
-  },
+// Mock project and cycle data
+const MOCK_PROJECTS = [
+  { id: 'proj-1', name: 'Mobile Banking App' },
+  { id: 'proj-2', name: 'Web Portal' },
+  { id: 'proj-3', name: 'API Gateway' },
+];
+
+const MOCK_CYCLES = [
+  { id: 'CY-015', name: 'Sprint 24 Regression' },
+  { id: 'CY-014', name: 'Sprint 23 Regression' },
+  { id: 'CY-013', name: 'Q4 Release' },
+  { id: 'CY-012', name: 'Security Audit' },
 ];
 
 export function ReportsPage() {
+  const [filters, setFilters] = useState<ReportFiltersState>({
+    projectId: null,
+    cycleId: null,
+    dateRange: {
+      from: subDays(new Date(), 30),
+      to: new Date(),
+    },
+    preset: '30days',
+  });
+
+  const [activeTab, setActiveTab] = useState('dashboard');
+
+  const handleRefresh = () => {
+    // Trigger refetch of data
+    console.log('Refreshing reports with filters:', filters);
+  };
+
+  const handleExport = (format: string) => {
+    console.log('Exporting report as:', format, 'with filters:', filters);
+  };
+
   return (
     <div className="flex flex-col gap-6">
       {/* Header */}
@@ -77,126 +60,51 @@ export function ReportsPage() {
         <div>
           <h1 className="text-2xl font-semibold text-foreground">Reports</h1>
           <p className="text-sm text-muted-foreground">
-            Generate and view test management reports
+            Comprehensive test execution analytics and insights
           </p>
         </div>
-        <Button variant="outline" className="gap-2">
-          <Download className="h-4 w-4" />
-          Export All
-        </Button>
+        <ExportDropdown onExport={handleExport} />
       </div>
 
-      {/* Quick Stats */}
-      <div className="grid grid-cols-4 gap-4">
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Total Test Cases</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">248</div>
-            <p className="text-xs text-success">+12 this week</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Tests Executed</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">1,842</div>
-            <p className="text-xs text-muted-foreground">This month</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Avg Pass Rate</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-success">87%</div>
-            <p className="text-xs text-success">+3% vs last month</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Open Defects</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-danger">23</div>
-            <p className="text-xs text-danger">5 critical</p>
-          </CardContent>
-        </Card>
-      </div>
+      {/* Global Filters */}
+      <ReportFilters
+        filters={filters}
+        onFiltersChange={setFilters}
+        onRefresh={handleRefresh}
+        projects={MOCK_PROJECTS}
+        cycles={MOCK_CYCLES}
+      />
 
-      {/* Report Cards Grid */}
-      <div className="grid grid-cols-3 gap-4">
-        {reportCards.map((report) => {
-          const Icon = report.icon;
-          return (
-            <Card 
-              key={report.id} 
-              className="hover:shadow-md transition-shadow cursor-pointer group"
-            >
-              <CardHeader>
-                <div className="flex items-start justify-between">
-                  <div className={cn(
-                    'flex h-10 w-10 items-center justify-center rounded-lg',
-                    report.bgColor
-                  )}>
-                    <Icon className={cn('h-5 w-5', report.color)} />
-                  </div>
-                  <Button 
-                    variant="ghost" 
-                    size="icon" 
-                    className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity"
-                  >
-                    <ExternalLink className="h-4 w-4" />
-                  </Button>
-                </div>
-                <CardTitle className="text-lg mt-3">{report.title}</CardTitle>
-                <CardDescription>{report.description}</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Button variant="outline" className="w-full">
-                  View Report
-                </Button>
-              </CardContent>
-            </Card>
-          );
-        })}
-      </div>
+      {/* Tabs */}
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <TabsList className="grid w-full grid-cols-5 max-w-2xl">
+          <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
+          <TabsTrigger value="execution">Execution</TabsTrigger>
+          <TabsTrigger value="traceability">Traceability</TabsTrigger>
+          <TabsTrigger value="burndown">Burndown</TabsTrigger>
+          <TabsTrigger value="team">Team</TabsTrigger>
+        </TabsList>
 
-      {/* Recent Reports */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">Recently Generated</CardTitle>
-          <CardDescription>Your recently viewed and generated reports</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-3">
-            {[
-              { name: 'Sprint 23 Execution Summary', type: 'Execution', date: 'Jan 15, 2024' },
-              { name: 'Q4 Traceability Matrix', type: 'Traceability', date: 'Jan 10, 2024' },
-              { name: 'Authentication Module Coverage', type: 'Coverage', date: 'Jan 8, 2024' },
-            ].map((report, idx) => (
-              <div 
-                key={idx} 
-                className="flex items-center justify-between p-3 rounded-lg border border-border-subtle hover:bg-surface-2 transition-colors cursor-pointer"
-              >
-                <div className="flex items-center gap-3">
-                  <FileText className="h-5 w-5 text-muted-foreground" />
-                  <div>
-                    <p className="font-medium text-sm">{report.name}</p>
-                    <p className="text-xs text-muted-foreground">{report.type} • {report.date}</p>
-                  </div>
-                </div>
-                <Button variant="ghost" size="sm" className="gap-1">
-                  <Download className="h-4 w-4" />
-                  Download
-                </Button>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+        <TabsContent value="dashboard" className="mt-6">
+          <DashboardTab />
+        </TabsContent>
+
+        <TabsContent value="execution" className="mt-6">
+          <ExecutionTab />
+        </TabsContent>
+
+        <TabsContent value="traceability" className="mt-6">
+          <TraceabilityTab />
+        </TabsContent>
+
+        <TabsContent value="burndown" className="mt-6">
+          <BurndownTab />
+        </TabsContent>
+
+        <TabsContent value="team" className="mt-6">
+          <TeamTab />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
