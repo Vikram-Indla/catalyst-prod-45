@@ -11,6 +11,7 @@ import {
   Bug,
   BarChart3,
   Settings,
+  LayoutDashboard,
 } from 'lucide-react';
 import { SidebarBase, SidebarConfig } from './SidebarBase';
 
@@ -24,6 +25,7 @@ const testManagementSidebarConfig: SidebarConfig = {
   badge: 'TM',
   label: 'Test Management',
   items: [
+    { id: 'command-center', title: 'Command Center', path: '/tests/command-center', icon: LayoutDashboard, exact: true },
     { id: 'my-work', title: 'My Work', path: '/tests/my-work', icon: Home, exact: true },
     { id: 'cases', title: 'Test Cases', path: '/tests/cases', icon: FileText, exact: false },
     { id: 'cycles', title: 'Test Cycles', path: '/tests/cycles', icon: RefreshCw, exact: false },

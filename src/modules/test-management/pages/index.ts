@@ -9,3 +9,4 @@ export { DefectsPage } from './DefectsPage';
 export { ReportsPage } from './ReportsPage';
 export { SettingsPage } from './SettingsPage';
 export { MyWorkPage } from './MyWorkPage';
+export { CommandCenterPage } from './CommandCenterPage';
