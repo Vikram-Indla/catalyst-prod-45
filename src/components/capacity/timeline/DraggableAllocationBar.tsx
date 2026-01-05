@@ -421,9 +421,9 @@ export function DraggableAllocationBar({
             top: tooltipPosition.y - 40,
           }}
         >
-          <div className="bg-slate-900 text-white px-3 py-2 rounded-lg shadow-xl text-xs">
+          <div className="bg-[var(--surface-elevated)] dark:bg-[var(--surface-elevated)] text-foreground dark:text-[var(--text-primary)] px-3 py-2 rounded-lg shadow-xl text-xs border border-border dark:border-[var(--border-subtle)]">
             <div className="font-semibold">{tooltipDate}</div>
-            <div className="text-slate-400 text-[10px] mt-0.5">
+            <div className="text-muted-foreground dark:text-[var(--text-secondary)] text-[10px] mt-0.5">
               {dragMode === 'move' 
                 ? calculateWeeksDelta(originalLeft, currentLeft)
                 : dragMode === 'resize-end'

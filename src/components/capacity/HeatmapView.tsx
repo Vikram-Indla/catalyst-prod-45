@@ -77,41 +77,36 @@ export function HeatmapView({
     });
   }, [resources, allocations, weeks]);
 
-  // Get color based on allocation percentage - using lighter, softer colors
+  // Get color based on allocation percentage - using Catalyst v5 tokens
   const getHeatColor = (allocation: number) => {
-    if (allocation === 0) return 'bg-slate-50 dark:bg-slate-800/50';
-    if (allocation < 50) return 'bg-emerald-100 dark:bg-emerald-900/30';
-    if (allocation < 80) return 'bg-sky-100 dark:bg-sky-900/30';
-    if (allocation <= 100) return 'bg-blue-200 dark:bg-blue-800/40';
-    return 'bg-amber-200 dark:bg-amber-800/40'; // Over-allocated
+    if (allocation === 0) return 'bg-muted/50 dark:bg-[var(--surface-3)]';
+    if (allocation < 50) return 'bg-emerald-100 dark:bg-emerald-900/40';
+    if (allocation < 80) return 'bg-sky-100 dark:bg-sky-900/40';
+    if (allocation <= 100) return 'bg-blue-200 dark:bg-blue-800/50';
+    return 'bg-amber-200 dark:bg-amber-700/50'; // Over-allocated
   };
 
-  // Get text color based on allocation
+  // Get text color based on allocation - NO OPACITY
   const getTextColor = (allocation: number) => {
-    if (allocation === 0) return 'text-slate-400';
-    if (allocation < 50) return 'text-emerald-600 dark:text-emerald-400';
-    if (allocation < 80) return 'text-sky-600 dark:text-sky-400';
-    if (allocation <= 100) return 'text-blue-600 dark:text-blue-400';
-    return 'text-amber-600 dark:text-amber-400';
-  };
-
-  const getHeatOpacity = (allocation: number) => {
-    if (allocation === 0) return 'opacity-60';
-    return 'opacity-100';
+    if (allocation === 0) return 'text-muted-foreground dark:text-[var(--text-secondary)]';
+    if (allocation < 50) return 'text-emerald-600 dark:text-emerald-300';
+    if (allocation < 80) return 'text-sky-600 dark:text-sky-300';
+    if (allocation <= 100) return 'text-blue-600 dark:text-blue-200';
+    return 'text-amber-600 dark:text-amber-200';
   };
 
   return (
     <div className={cn("overflow-x-auto", className)}>
       <div className="min-w-max">
         {/* Header with week labels */}
-        <div className="flex items-center border-b border-border pb-2 mb-2">
-          <div className="w-48 flex-shrink-0 text-sm font-medium text-muted-foreground">
+        <div className="flex items-center border-b border-border dark:border-[var(--border-default)] pb-2 mb-2">
+          <div className="w-48 flex-shrink-0 text-sm font-medium text-foreground dark:text-[var(--text-primary)]">
             Resource
           </div>
           {weeks.map((week, i) => (
             <div
               key={i}
-              className="w-8 flex-shrink-0 text-center text-xs text-muted-foreground"
+              className="w-8 flex-shrink-0 text-center text-xs text-muted-foreground dark:text-[var(--text-secondary)]"
             >
               {format(week, 'M/d')}
             </div>
@@ -121,12 +116,12 @@ export function HeatmapView({
         {/* Heatmap rows */}
         <div className="space-y-1">
           {heatmapData.map(({ resource, weeks: weeklyData }) => (
-            <div key={resource.id} className="flex items-center group hover:bg-muted/30 rounded">
+            <div key={resource.id} className="flex items-center group hover:bg-muted/30 dark:hover:bg-[var(--surface-3)] rounded">
               <div className="w-48 flex-shrink-0 pr-3">
-                <div className="text-sm font-medium text-foreground truncate">
+                <div className="text-sm font-medium text-foreground dark:text-[var(--text-primary)] truncate">
                   {resource.name}
                 </div>
-                <div className="text-xs text-muted-foreground truncate">
+                <div className="text-xs text-muted-foreground dark:text-[var(--text-secondary)] truncate">
                   {resource.role}
                 </div>
               </div>
@@ -135,9 +130,8 @@ export function HeatmapView({
                 <div
                   key={i}
                   className={cn(
-                    "w-8 h-6 flex-shrink-0 flex items-center justify-center rounded-sm mx-0.5 transition-all cursor-pointer hover:ring-2 hover:ring-primary/50 border border-border/30",
-                    getHeatColor(data.allocation),
-                    getHeatOpacity(data.allocation)
+                    "w-8 h-6 flex-shrink-0 flex items-center justify-center rounded-sm mx-0.5 transition-all cursor-pointer hover:ring-2 hover:ring-primary/50 border border-border/30 dark:border-[var(--border-subtle)]",
+                    getHeatColor(data.allocation)
                   )}
                   title={`${format(data.week, 'MMM d')}: ${data.allocation}%`}
                 >
@@ -153,27 +147,27 @@ export function HeatmapView({
         </div>
 
         {/* Legend */}
-        <div className="flex items-center gap-4 mt-4 pt-4 border-t border-border">
-          <span className="text-xs text-muted-foreground">Legend:</span>
+        <div className="flex items-center gap-4 mt-4 pt-4 border-t border-border dark:border-[var(--border-default)]">
+          <span className="text-xs text-muted-foreground dark:text-[var(--text-secondary)]">Legend:</span>
           <div className="flex items-center gap-1">
-            <div className="w-4 h-4 rounded bg-slate-50 dark:bg-slate-800/50 border border-border/30" />
-            <span className="text-xs text-muted-foreground">0%</span>
+            <div className="w-4 h-4 rounded bg-muted/50 dark:bg-[var(--surface-3)] border border-border/30 dark:border-[var(--border-subtle)]" />
+            <span className="text-xs text-muted-foreground dark:text-[var(--text-secondary)]">0%</span>
           </div>
           <div className="flex items-center gap-1">
-            <div className="w-4 h-4 rounded bg-emerald-100 dark:bg-emerald-900/30 border border-border/30" />
-            <span className="text-xs text-muted-foreground">1-50%</span>
+            <div className="w-4 h-4 rounded bg-emerald-100 dark:bg-emerald-900/40 border border-border/30 dark:border-[var(--border-subtle)]" />
+            <span className="text-xs text-muted-foreground dark:text-[var(--text-secondary)]">1-50%</span>
           </div>
           <div className="flex items-center gap-1">
-            <div className="w-4 h-4 rounded bg-sky-100 dark:bg-sky-900/30 border border-border/30" />
-            <span className="text-xs text-muted-foreground">50-80%</span>
+            <div className="w-4 h-4 rounded bg-sky-100 dark:bg-sky-900/40 border border-border/30 dark:border-[var(--border-subtle)]" />
+            <span className="text-xs text-muted-foreground dark:text-[var(--text-secondary)]">50-80%</span>
           </div>
           <div className="flex items-center gap-1">
-            <div className="w-4 h-4 rounded bg-blue-200 dark:bg-blue-800/40 border border-border/30" />
-            <span className="text-xs text-muted-foreground">80-100%</span>
+            <div className="w-4 h-4 rounded bg-blue-200 dark:bg-blue-800/50 border border-border/30 dark:border-[var(--border-subtle)]" />
+            <span className="text-xs text-muted-foreground dark:text-[var(--text-secondary)]">80-100%</span>
           </div>
           <div className="flex items-center gap-1">
-            <div className="w-4 h-4 rounded bg-amber-200 dark:bg-amber-800/40 border border-border/30" />
-            <span className="text-xs text-muted-foreground">&gt;100%</span>
+            <div className="w-4 h-4 rounded bg-amber-200 dark:bg-amber-700/50 border border-border/30 dark:border-[var(--border-subtle)]" />
+            <span className="text-xs text-muted-foreground dark:text-[var(--text-secondary)]">&gt;100%</span>
           </div>
         </div>
       </div>
