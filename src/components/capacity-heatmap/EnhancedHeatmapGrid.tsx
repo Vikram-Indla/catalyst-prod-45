@@ -314,20 +314,21 @@ const EnhancedResourceRow = memo(function EnhancedResourceRow({
                 <div key={month.getTime()} className="relative">
                   {/* Contract end badge - positioned on specific month */}
                   {contractEndsInThisMonth && resource.contractEndDate && (
-                    <div className="absolute -top-1 left-1/2 -translate-x-1/2 z-10">
+                    <div className="absolute -top-2 left-1/2 -translate-x-1/2 z-20">
                       <div 
-                        className="px-1.5 py-0.5 rounded text-[9px] font-semibold whitespace-nowrap flex items-center gap-0.5"
-                        style={{ 
-                          backgroundColor: resource.contractStatus?.status === 'critical' 
-                            ? '#fef2f2' 
-                            : '#fffbeb',
-                          color: resource.contractStatus?.status === 'critical' 
-                            ? CATALYST_COLORS.danger 
-                            : CATALYST_COLORS.warning,
-                          border: `1px solid ${resource.contractStatus?.status === 'critical' ? CATALYST_COLORS.danger : CATALYST_COLORS.warning}40`
+                        className={cn(
+                          "px-2 py-1 rounded-md text-[10px] font-bold whitespace-nowrap flex items-center gap-1 shadow-lg",
+                          resource.contractStatus?.status === 'critical' 
+                            ? "bg-rose-500 text-white animate-pulse"
+                            : "bg-amber-500 text-white"
+                        )}
+                        style={{
+                          boxShadow: resource.contractStatus?.status === 'critical'
+                            ? '0 4px 12px rgba(239, 68, 68, 0.4)'
+                            : '0 4px 12px rgba(245, 158, 11, 0.4)'
                         }}
                       >
-                        <Clock className="w-2.5 h-2.5" />
+                        <Clock className="w-3 h-3" />
                         {formatContractBadge(resource.contractEndDate)}
                       </div>
                     </div>
@@ -498,14 +499,29 @@ interface ResourceInsightsCellProps {
 const ResourceInsightsCell = memo(function ResourceInsightsCell({ resource }: ResourceInsightsCellProps) {
   // Generate smart insights based on resource data
   const insights = useMemo(() => {
-    const items: { icon: React.ReactNode; text: string; color: string; priority: number }[] = [];
+    const items: { icon: React.ReactNode; text: string; color: string; priority: number; isBold?: boolean }[] = [];
     
-    // Contract ending soon - highest priority
+    // Always show average utilization first
+    const avgColor = resource.averageUtilization > 100 
+      ? 'text-rose-600 dark:text-rose-400'
+      : resource.averageUtilization < 50 
+        ? 'text-emerald-600 dark:text-emerald-400'
+        : 'text-blue-600 dark:text-blue-400';
+    
+    items.push({
+      icon: <TrendingUp className="w-3 h-3" />,
+      text: `Avg: ${resource.averageUtilization}%`,
+      color: avgColor,
+      priority: 0,
+      isBold: true
+    });
+    
+    // Contract ending soon - highest priority alert
     if (resource.contractStatus?.status === 'critical') {
       const days = resource.contractStatus.daysRemaining;
       items.push({
         icon: <AlertTriangle className="w-3 h-3" />,
-        text: `Contract ends in ${days} days`,
+        text: `⚠ Ends in ${days}d`,
         color: 'text-rose-600 dark:text-rose-400',
         priority: 1
       });
@@ -513,7 +529,7 @@ const ResourceInsightsCell = memo(function ResourceInsightsCell({ resource }: Re
       const days = resource.contractStatus.daysRemaining;
       items.push({
         icon: <Calendar className="w-3 h-3" />,
-        text: `Contract ends in ${days}d`,
+        text: `Ends in ${days}d`,
         color: 'text-amber-600 dark:text-amber-400',
         priority: 2
       });
@@ -522,37 +538,20 @@ const ResourceInsightsCell = memo(function ResourceInsightsCell({ resource }: Re
     // Over-allocated - high priority
     if (resource.averageUtilization > 100) {
       items.push({
-        icon: <TrendingUp className="w-3 h-3" />,
-        text: `${resource.averageUtilization - 100}% over capacity`,
+        icon: <AlertTriangle className="w-3 h-3" />,
+        text: `${resource.averageUtilization - 100}% over`,
         color: 'text-rose-600 dark:text-rose-400',
         priority: 1
       });
     }
     
     // Available capacity - opportunity
-    if (resource.averageUtilization < 50) {
+    if (resource.averageUtilization < 50 && resource.averageUtilization > 0) {
       items.push({
         icon: <Sparkles className="w-3 h-3" />,
-        text: `${100 - resource.averageUtilization}% available`,
+        text: `${100 - resource.averageUtilization}% free`,
         color: 'text-emerald-600 dark:text-emerald-400',
         priority: 3
-      });
-    }
-    
-    // Trend insights
-    if (resource.trend === 'up' && resource.trendPercentage > 10) {
-      items.push({
-        icon: <TrendingUp className="w-3 h-3" />,
-        text: `↗ Filling up (+${resource.trendPercentage}%)`,
-        color: 'text-amber-600 dark:text-amber-400',
-        priority: 4
-      });
-    } else if (resource.trend === 'down' && resource.trendPercentage > 10) {
-      items.push({
-        icon: <TrendingDown className="w-3 h-3" />,
-        text: `↘ Freeing up (-${resource.trendPercentage}%)`,
-        color: 'text-emerald-600 dark:text-emerald-400',
-        priority: 4
       });
     }
     
@@ -566,37 +565,46 @@ const ResourceInsightsCell = memo(function ResourceInsightsCell({ resource }: Re
       });
     }
     
-    // Vendor info
+    // Vendor info - always show if available
     if (resource.vendor) {
       items.push({
         icon: <Users className="w-3 h-3" />,
         text: resource.vendor,
-        color: 'text-muted-foreground',
+        color: 'text-sky-600 dark:text-sky-400',
+        priority: 10 // Always last
+      });
+    }
+    
+    // Trend insights (lower priority)
+    if (resource.trend === 'up' && resource.trendPercentage > 10) {
+      items.push({
+        icon: <TrendingUp className="w-3 h-3" />,
+        text: `↗ +${resource.trendPercentage}%`,
+        color: 'text-amber-600 dark:text-amber-400',
+        priority: 5
+      });
+    } else if (resource.trend === 'down' && resource.trendPercentage > 10) {
+      items.push({
+        icon: <TrendingDown className="w-3 h-3" />,
+        text: `↘ -${resource.trendPercentage}%`,
+        color: 'text-emerald-600 dark:text-emerald-400',
         priority: 5
       });
     }
     
-    // Sort by priority and take top 2
-    return items.sort((a, b) => a.priority - b.priority).slice(0, 2);
+    // Sort by priority and take top 3
+    return items.sort((a, b) => a.priority - b.priority).slice(0, 3);
   }, [resource]);
 
-  // If no insights, show stable status
-  if (insights.length === 0) {
-    return (
-      <div className="w-48 flex-shrink-0 flex items-center justify-center py-2 px-3 bg-muted/10">
-        <span className="text-xs text-muted-foreground italic">Stable • No alerts</span>
-      </div>
-    );
-  }
-
   return (
-    <div className="w-48 flex-shrink-0 flex flex-col justify-center gap-0.5 py-1.5 px-3 bg-muted/10">
+    <div className="w-48 flex-shrink-0 flex flex-col justify-center gap-0.5 py-1 px-3 bg-muted/5 border-l border-border/30">
       {insights.map((insight, i) => (
         <div 
           key={i}
           className={cn(
-            "flex items-center gap-1.5 text-[11px] font-medium leading-tight",
-            insight.color
+            "flex items-center gap-1.5 text-[11px] leading-tight truncate",
+            insight.color,
+            insight.isBold ? "font-bold" : "font-medium"
           )}
         >
           {insight.icon}
