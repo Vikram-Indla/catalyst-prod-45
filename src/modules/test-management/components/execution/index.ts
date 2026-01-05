@@ -9,7 +9,9 @@ export { ExecutionShortcutHints } from './ExecutionShortcutHints';
 export { ExecutionScreenshots } from './ExecutionScreenshots';
 export { QuickDefectDialog } from './QuickDefectDialog';
 
+// Full-page runner
+export * from './runner';
+
 // Hooks
 export { useExecutionTimer } from './hooks/useExecutionTimer';
 export { useExecutionKeyboard, KEYBOARD_SHORTCUTS } from './hooks/useExecutionKeyboard';
-export { useScreenshotPaste } from './hooks/useScreenshotPaste';
