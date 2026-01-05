@@ -539,18 +539,8 @@ export default function TMCommandCenter() {
   return (
     <div className="p-6 bg-surface-1 min-h-screen">
       {/* ==================== HEADER ==================== */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="mb-6">
         <h1 className="text-xl font-semibold text-text-primary">Command Center</h1>
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <span>Last updated: {lastUpdated.toLocaleTimeString()}</span>
-          <button
-            onClick={handleRefresh}
-            className="p-1.5 hover:bg-surface-2 rounded-lg transition-all"
-            title="Refresh dashboard"
-          >
-            <RefreshCw className={`w-4 h-4 ${kpisLoading ? 'animate-spin' : ''}`} />
-          </button>
-        </div>
       </div>
 
       {/* ==================== PRIMARY KPIs ==================== */}
