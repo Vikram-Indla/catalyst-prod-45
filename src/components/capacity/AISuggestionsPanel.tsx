@@ -139,10 +139,10 @@ function SuggestionCard({
     <TooltipProvider>
       <Collapsible open={showDetails} onOpenChange={setShowDetails}>
         <div className={cn(
-          "bg-white dark:bg-slate-900 rounded-lg border transition-all",
+          "bg-card dark:bg-[var(--surface-0)] rounded-lg border transition-all",
           isTopMatch 
-            ? "border-violet-300 dark:border-violet-700 shadow-sm" 
-            : "border-slate-200 dark:border-slate-700",
+            ? "border-violet-300 dark:border-violet-500 shadow-sm" 
+            : "border-border dark:border-[var(--border-subtle)]",
           "hover:shadow-md"
         )}>
           <div className="flex items-center gap-3 p-3">
@@ -151,7 +151,7 @@ function SuggestionCard({
               "w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold",
               isTopMatch 
                 ? "bg-gradient-to-br from-violet-500 to-blue-500 text-white" 
-                : "bg-slate-100 dark:bg-slate-800 text-muted-foreground"
+                : "bg-muted dark:bg-[var(--surface-3)] text-muted-foreground dark:text-[var(--text-secondary)]"
             )}>
               {rank}
             </div>

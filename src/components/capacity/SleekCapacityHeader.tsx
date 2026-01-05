@@ -228,7 +228,7 @@ export function SleekCapacityHeader({
         </div>
 
         {/* Hero Tab Strip - High contrast for both light and dark */}
-        <div className="relative flex items-center bg-slate-200/80 dark:bg-slate-700/60 rounded-2xl p-1.5 gap-1 shadow-inner border border-slate-300 dark:border-slate-600">
+        <div className="relative flex items-center bg-muted/80 dark:bg-[var(--surface-3)] rounded-2xl p-1.5 gap-1 shadow-inner border border-border dark:border-[var(--border-default)]">
           {viewTabs.map((tab) => {
             const Icon = tab.icon;
             return (
@@ -238,8 +238,8 @@ export function SleekCapacityHeader({
                 className={cn(
                   'relative flex items-center gap-2.5 px-6 py-2.5 text-sm font-semibold rounded-xl transition-all duration-200',
                   tab.isActive 
-                    ? 'bg-white dark:bg-slate-800 text-emerald-600 dark:text-emerald-300 shadow-md border border-slate-300 dark:border-slate-500'
-                    : 'text-slate-600 dark:text-slate-300 hover:text-slate-800 dark:hover:text-white hover:bg-white/50 dark:hover:bg-slate-600/50'
+                    ? 'bg-card dark:bg-[var(--surface-elevated)] text-emerald-600 dark:text-emerald-300 shadow-md border border-border dark:border-[var(--border-default)]'
+                    : 'text-muted-foreground dark:text-[var(--text-secondary)] hover:text-foreground dark:hover:text-[var(--text-primary)] hover:bg-card/50 dark:hover:bg-[var(--surface-2)]'
                 )}
               >
                 <Icon className={cn(
@@ -257,7 +257,7 @@ export function SleekCapacityHeader({
       </div>
 
       {/* ROW 3: Stats + Filters + Utilization (dedicated row with breathing room) */}
-      <div className="flex items-center justify-between px-5 py-2.5 bg-slate-100/50 dark:bg-slate-800/40 border-b border-border/30">
+      <div className="flex items-center justify-between px-5 py-2.5 bg-muted/50 dark:bg-[var(--surface-2)] border-b border-border/30 dark:border-[var(--border-subtle)]">
         {/* Left: Clickable Stat Chips */}
         <div className="flex items-center gap-2">
           <StatChip 
@@ -301,8 +301,8 @@ export function SleekCapacityHeader({
                 size="sm" 
                 className={cn(
                   "h-9 px-4 text-sm gap-2 rounded-lg transition-colors",
-                  "bg-white dark:bg-slate-700 border-slate-300 dark:border-slate-500 text-slate-700 dark:text-slate-200",
-                  "hover:bg-slate-50 dark:hover:bg-slate-600",
+                  "bg-card dark:bg-[var(--surface-3)] border-border dark:border-[var(--border-default)] text-foreground dark:text-[var(--text-primary)]",
+                  "hover:bg-muted dark:hover:bg-[var(--surface-elevated)]",
                   departmentFilter !== 'all' && "border-emerald-400 dark:border-emerald-500 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300"
                 )}
               >
@@ -312,7 +312,7 @@ export function SleekCapacityHeader({
                    departmentFilter === 'delivery' ? 'Delivery' :
                    departmentFilter === 'product' ? 'Product' : 'Support'}
                 </span>
-                <ChevronDown className="h-3.5 w-3.5 opacity-50" />
+                <ChevronDown className="h-3.5 w-3.5 text-muted-foreground dark:text-[var(--text-secondary)]" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-48 bg-card border-border shadow-lg">
@@ -357,8 +357,8 @@ export function SleekCapacityHeader({
                 size="sm" 
                 className={cn(
                   "h-9 px-4 text-sm gap-2 rounded-lg transition-colors",
-                  "bg-white dark:bg-slate-700 border-slate-300 dark:border-slate-500 text-slate-700 dark:text-slate-200",
-                  "hover:bg-slate-50 dark:hover:bg-slate-600",
+                  "bg-card dark:bg-[var(--surface-3)] border-border dark:border-[var(--border-default)] text-foreground dark:text-[var(--text-primary)]",
+                  "hover:bg-muted dark:hover:bg-[var(--surface-elevated)]",
                   groupBy !== 'none' && "border-emerald-400 dark:border-emerald-500 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300"
                 )}
               >
@@ -368,7 +368,7 @@ export function SleekCapacityHeader({
                    groupBy === 'assignment' ? 'By Assignment' : 
                    groupBy === 'department' ? 'By Department' : groupBy}
                 </span>
-                <ChevronDown className="h-3.5 w-3.5 opacity-50" />
+                <ChevronDown className="h-3.5 w-3.5 text-muted-foreground dark:text-[var(--text-secondary)]" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-48 bg-card border-border shadow-lg">
@@ -419,28 +419,28 @@ interface StatChipProps {
 function StatChip({ value, label, color, isActive, onClick, pulse }: StatChipProps) {
   const colorStyles = {
     default: {
-      dot: 'bg-slate-500 dark:bg-slate-400',
-      activeBg: 'bg-white dark:bg-slate-700',
-      activeText: 'text-slate-800 dark:text-slate-100',
-      inactiveText: 'text-slate-600 dark:text-slate-300',
+      dot: 'bg-muted-foreground dark:bg-[var(--text-secondary)]',
+      activeBg: 'bg-card dark:bg-[var(--surface-3)]',
+      activeText: 'text-foreground dark:text-[var(--text-primary)]',
+      inactiveText: 'text-muted-foreground dark:text-[var(--text-secondary)]',
     },
     emerald: {
       dot: 'bg-emerald-500',
       activeBg: 'bg-emerald-100 dark:bg-emerald-900/50',
       activeText: 'text-emerald-700 dark:text-emerald-300',
-      inactiveText: 'text-slate-600 dark:text-slate-300',
+      inactiveText: 'text-muted-foreground dark:text-[var(--text-secondary)]',
     },
     blue: {
       dot: 'bg-blue-500',
       activeBg: 'bg-blue-100 dark:bg-blue-900/50',
       activeText: 'text-blue-700 dark:text-blue-300',
-      inactiveText: 'text-slate-600 dark:text-slate-300',
+      inactiveText: 'text-muted-foreground dark:text-[var(--text-secondary)]',
     },
     rose: {
       dot: 'bg-rose-500',
       activeBg: 'bg-rose-100 dark:bg-rose-900/50',
       activeText: 'text-rose-700 dark:text-rose-300',
-      inactiveText: 'text-slate-600 dark:text-slate-300',
+      inactiveText: 'text-muted-foreground dark:text-[var(--text-secondary)]',
     },
   };
   
@@ -455,7 +455,7 @@ function StatChip({ value, label, color, isActive, onClick, pulse }: StatChipPro
         "hover:scale-[1.02] active:scale-[0.98]",
         isActive 
           ? cn(styles.activeBg, styles.activeText, "shadow-sm border border-current/20")
-          : cn(styles.inactiveText, "hover:bg-white/50 dark:hover:bg-slate-700/50")
+          : cn(styles.inactiveText, "hover:bg-card/50 dark:hover:bg-[var(--surface-3)]")
       )}
     >
       <span className={cn(
@@ -465,7 +465,7 @@ function StatChip({ value, label, color, isActive, onClick, pulse }: StatChipPro
       )} />
       <span className={cn(
         "font-bold tabular-nums text-base",
-        isZero && "opacity-40"
+        isZero && "text-muted-foreground dark:text-[var(--text-secondary)]"
       )}>
         {value}
       </span>
@@ -489,16 +489,16 @@ function UtilizationBadge({ value }: { value: number }) {
       : 'bg-emerald-500';
   
   return (
-    <div className="flex items-center gap-3 pl-4 pr-2 py-2 bg-white dark:bg-slate-700 rounded-lg border border-slate-200 dark:border-slate-500 shadow-sm">
+    <div className="flex items-center gap-3 pl-4 pr-2 py-2 bg-card dark:bg-[var(--surface-3)] rounded-lg border border-border dark:border-[var(--border-default)] shadow-sm">
       <div className="flex flex-col items-end">
         <span className={cn("text-xl font-bold tabular-nums leading-none", textColor)}>
           {value}%
         </span>
-        <span className="text-[10px] text-slate-500 dark:text-slate-400 uppercase tracking-wider font-medium">
+        <span className="text-[10px] text-muted-foreground dark:text-[var(--text-secondary)] uppercase tracking-wider font-medium">
           Utilization
         </span>
       </div>
-      <div className="w-2 h-10 bg-slate-200 dark:bg-slate-600 rounded-full overflow-hidden">
+      <div className="w-2 h-10 bg-muted dark:bg-[var(--surface-2)] rounded-full overflow-hidden">
         <div 
           className={cn("w-full rounded-full transition-all duration-500", bgColor)}
           style={{ height: `${Math.min(value, 100)}%`, marginTop: `${100 - Math.min(value, 100)}%` }}

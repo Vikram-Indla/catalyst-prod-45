@@ -138,15 +138,15 @@ export function GroupedTableView({
   }, [groups]);
 
   return (
-    <div className={cn("bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden", className)}>
+    <div className={cn("bg-card dark:bg-[var(--surface-0)] rounded-xl border border-border dark:border-[var(--border-subtle)] overflow-hidden", className)}>
       {/* Controls */}
-      <div className="flex items-center justify-between p-4 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50">
+      <div className="flex items-center justify-between p-4 border-b border-border dark:border-[var(--border-default)] bg-muted/50 dark:bg-[var(--surface-2)]">
         <div className="flex items-center gap-4">
-          <span className="text-sm text-slate-500 dark:text-slate-400">{resources.length} resources</span>
+          <span className="text-sm text-muted-foreground dark:text-[var(--text-secondary)]">{resources.length} resources</span>
           <select 
             value={groupBy} 
             onChange={(e) => setGroupBy(e.target.value as GroupByField)}
-            className="text-sm border border-slate-200 dark:border-slate-600 rounded-lg px-3 py-1.5 bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
+            className="text-sm border border-border dark:border-[var(--border-default)] rounded-lg px-3 py-1.5 bg-card dark:bg-[var(--surface-3)] text-foreground dark:text-[var(--text-primary)]"
           >
             <option value="department">Group by Department</option>
             <option value="role">Group by Role</option>
@@ -171,15 +171,15 @@ export function GroupedTableView({
       {/* Table */}
       <div className="overflow-x-auto">
         <table className="w-full">
-          <thead className="bg-slate-50 dark:bg-slate-800 sticky top-0 z-10">
+          <thead className="bg-muted/50 dark:bg-[var(--surface-2)] sticky top-0 z-10">
             <tr>
-              <th className="w-10"></th>
-              <th className="text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wide px-4 py-3">Name</th>
-              <th className="text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wide px-4 py-3">Role</th>
-              <th className="text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wide px-4 py-3">Allocation</th>
-              <th className="text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wide px-4 py-3 w-56">Timeline</th>
-              <th className="text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wide px-4 py-3">Status</th>
-              <th className="w-20"></th>
+              <th className="w-10 border-r border-border dark:border-[var(--border-subtle)]"></th>
+              <th className="text-left text-xs font-medium text-muted-foreground dark:text-[var(--text-primary)] uppercase tracking-wide px-4 py-3 border-r border-border dark:border-[var(--border-subtle)] border-b border-border dark:border-[var(--border-default)]">Name</th>
+              <th className="text-left text-xs font-medium text-muted-foreground dark:text-[var(--text-primary)] uppercase tracking-wide px-4 py-3 border-r border-border dark:border-[var(--border-subtle)] border-b border-border dark:border-[var(--border-default)]">Role</th>
+              <th className="text-left text-xs font-medium text-muted-foreground dark:text-[var(--text-primary)] uppercase tracking-wide px-4 py-3 border-r border-border dark:border-[var(--border-subtle)] border-b border-border dark:border-[var(--border-default)]">Allocation</th>
+              <th className="text-left text-xs font-medium text-muted-foreground dark:text-[var(--text-primary)] uppercase tracking-wide px-4 py-3 w-56 border-r border-border dark:border-[var(--border-subtle)] border-b border-border dark:border-[var(--border-default)]">Timeline</th>
+              <th className="text-left text-xs font-medium text-muted-foreground dark:text-[var(--text-primary)] uppercase tracking-wide px-4 py-3 border-r border-border dark:border-[var(--border-subtle)] border-b border-border dark:border-[var(--border-default)]">Status</th>
+              <th className="w-20 border-b border-border dark:border-[var(--border-default)]"></th>
             </tr>
           </thead>
           <tbody>
@@ -187,16 +187,16 @@ export function GroupedTableView({
               <Fragment key={`group-${group.key}`}>
                 {/* Group Header */}
                 <tr
-                  className="bg-slate-100 dark:bg-slate-800/50 cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors"
+                  className="bg-muted/30 dark:bg-[var(--surface-2)] cursor-pointer hover:bg-muted/50 dark:hover:bg-[var(--surface-3)] transition-colors"
                   onClick={() => toggleGroup(group.key)}
                 >
-                  <td className="px-3 py-3 text-slate-500 dark:text-slate-400">
+                  <td className="px-3 py-3 text-muted-foreground dark:text-[var(--text-secondary)] border-r border-border dark:border-[var(--border-subtle)]">
                     {expandedGroups.has(group.key) 
                       ? <ChevronDown className="h-4 w-4" /> 
                       : <ChevronRight className="h-4 w-4" />
                     }
                   </td>
-                  <td colSpan={2} className="px-4 py-3">
+                  <td colSpan={2} className="px-4 py-3 border-r border-border dark:border-[var(--border-subtle)]">
                     <div className="flex items-center gap-3">
                       <div 
                         className="w-8 h-8 rounded-lg flex items-center justify-center"
@@ -204,12 +204,12 @@ export function GroupedTableView({
                       >
                         <Users className="h-4 w-4" style={{ color: group.color }} />
                       </div>
-                      <span className="font-semibold text-slate-900 dark:text-white">{group.label}</span>
-                      <span className="text-sm text-slate-500 dark:text-slate-400">({group.count})</span>
+                      <span className="font-semibold text-foreground dark:text-[var(--text-primary)]">{group.label}</span>
+                      <span className="text-sm text-muted-foreground dark:text-[var(--text-secondary)]">({group.count})</span>
                     </div>
                   </td>
-                  <td className="px-4 py-3">
-                    <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                  <td className="px-4 py-3 border-r border-border dark:border-[var(--border-subtle)]">
+                    <span className="text-sm font-medium text-foreground dark:text-[var(--text-primary)]">
                       Avg: {group.avgUtilization}%
                     </span>
                   </td>
@@ -227,10 +227,10 @@ export function GroupedTableView({
                   return (
                     <tr 
                       key={resource.id} 
-                      className="border-b border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors"
+                      className="border-b border-border dark:border-[var(--border-subtle)] hover:bg-muted/30 dark:hover:bg-[var(--surface-3)] transition-colors"
                     >
-                      <td></td>
-                      <td className="px-4 py-3">
+                      <td className="border-r border-border dark:border-[var(--border-subtle)]"></td>
+                      <td className="px-4 py-3 border-r border-border dark:border-[var(--border-subtle)]">
                         <div className="flex items-center gap-3">
                           <div 
                             className="w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold text-white shrink-0"
@@ -238,23 +238,23 @@ export function GroupedTableView({
                           >
                             {initials}
                           </div>
-                          <span className="font-medium text-slate-900 dark:text-white">{resource.name}</span>
+                          <span className="font-medium text-foreground dark:text-[var(--text-primary)]">{resource.name}</span>
                         </div>
                       </td>
-                      <td className="px-4 py-3 text-sm text-slate-600 dark:text-slate-400">
+                      <td className="px-4 py-3 text-sm text-muted-foreground dark:text-[var(--text-primary)] border-r border-border dark:border-[var(--border-subtle)]">
                         {resource.role || '-'}
                       </td>
-                      <td className="px-4 py-3">
+                      <td className="px-4 py-3 border-r border-border dark:border-[var(--border-subtle)]">
                         <div className="flex items-center gap-2">
                           <span 
                             className={cn(
                               "text-sm font-semibold",
-                              isOverAllocated ? "text-red-600 dark:text-red-400" : "text-slate-900 dark:text-white"
+                              isOverAllocated ? "text-red-600 dark:text-red-400" : "text-foreground dark:text-[var(--text-primary)]"
                             )}
                           >
                             {resource.allocation || 0}%
                           </span>
-                          <div className="w-20 h-1.5 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+                          <div className="w-20 h-1.5 bg-muted dark:bg-[var(--surface-3)] rounded-full overflow-hidden">
                             <div 
                               className="h-full rounded-full transition-all"
                               style={{ 
@@ -265,10 +265,10 @@ export function GroupedTableView({
                           </div>
                         </div>
                       </td>
-                      <td className="px-4 py-3">
+                      <td className="px-4 py-3 border-r border-border dark:border-[var(--border-subtle)]">
                         <InlineTimeline allocations={resourceAllocations} />
                       </td>
-                      <td className="px-4 py-3">
+                      <td className="px-4 py-3 border-r border-border dark:border-[var(--border-subtle)]">
                         <span 
                           className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold uppercase"
                           style={{ 
@@ -283,14 +283,14 @@ export function GroupedTableView({
                         <div className="flex items-center gap-1">
                           <button 
                             onClick={(e) => { e.stopPropagation(); onEditResource?.(resource.id); }}
-                            className="w-7 h-7 rounded-lg flex items-center justify-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+                            className="w-7 h-7 rounded-lg flex items-center justify-center text-muted-foreground dark:text-[var(--text-secondary)] hover:text-foreground dark:hover:text-[var(--text-primary)] hover:bg-muted dark:hover:bg-[var(--surface-3)] transition-colors"
                             title="Edit"
                           >
                             <Pencil className="w-3.5 h-3.5" />
                           </button>
                           <button 
                             onClick={(e) => { e.stopPropagation(); onDeleteResource?.(resource); }}
-                            className="w-7 h-7 rounded-lg flex items-center justify-center text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 transition-colors"
+                            className="w-7 h-7 rounded-lg flex items-center justify-center text-muted-foreground dark:text-[var(--text-secondary)] hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 transition-colors"
                             title="Remove"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
@@ -338,9 +338,9 @@ function InlineTimeline({ allocations }: { allocations: ResourceAllocation[] }) 
         {months.map((_, i) => (
           <div 
             key={i} 
-            className="w-10 h-5 rounded-sm bg-slate-100 dark:bg-slate-800 flex items-center justify-center"
+            className="w-10 h-5 rounded-sm bg-muted dark:bg-[var(--surface-3)] flex items-center justify-center"
           >
-            <span className="text-[8px] text-slate-400 dark:text-slate-500">0%</span>
+            <span className="text-[8px] text-muted-foreground dark:text-[var(--text-secondary)]">0%</span>
           </div>
         ))}
       </div>
@@ -350,11 +350,11 @@ function InlineTimeline({ allocations }: { allocations: ResourceAllocation[] }) 
   return (
     <div className="flex gap-0.5">
       {monthlyTotals.map((total, i) => {
-        const color = total === 0 ? 'bg-slate-100 dark:bg-slate-800' :
+        const color = total === 0 ? 'bg-muted dark:bg-[var(--surface-3)]' :
                       total <= 50 ? 'bg-teal-400' :
                       total <= 80 ? 'bg-teal-600' :
                       total <= 100 ? 'bg-blue-600' : 'bg-red-500';
-        const textColor = total === 0 ? 'text-slate-400 dark:text-slate-500' : 'text-white';
+        const textColor = total === 0 ? 'text-muted-foreground dark:text-[var(--text-secondary)]' : 'text-white';
         
         return (
           <div 

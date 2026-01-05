@@ -326,8 +326,8 @@ export function ProjectGrid({
                                         className={cn(
                                           "w-16 h-8 text-center text-sm mx-auto",
                                           changed && "bg-brand-primary/10 border-brand-primary",
-                                          !isEditMode && "bg-muted/50 text-muted-foreground cursor-not-allowed opacity-60",
-                                          isLocked && "bg-muted text-muted-foreground cursor-not-allowed"
+                                          !isEditMode && "bg-muted/50 dark:bg-[var(--surface-3)] text-muted-foreground dark:text-[var(--text-secondary)] cursor-not-allowed",
+                                          isLocked && "bg-muted dark:bg-[var(--surface-2)] text-muted-foreground dark:text-[var(--text-secondary)] cursor-not-allowed"
                                         )}
                                       />
                                     </TooltipTrigger>
