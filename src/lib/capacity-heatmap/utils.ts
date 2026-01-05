@@ -21,30 +21,46 @@ export function getUtilizationStatus(percentage: number): UtilizationStatus {
 }
 
 export function getUtilizationColor(percentage: number, mode: 'standard' | 'thermal' = 'standard') {
-  // Catalyst V5 brand colors - LIGHTER, SOFTER scale (avoiding visual screaming):
-  // 0% Available = Light teal/mint (available for booking)
-  // 1-40% Light = Very light emerald
-  // 41-70% Moderate = Light sky blue
-  // 71-85% Optimal = Light blue
-  // 86-100% At Capacity = Medium blue (not too dark)
-  // >100% Over-allocated = Light amber/orange
+  // Catalyst V5 brand colors
+  // Dark mode aware - text colors must be readable
+  const isDark = typeof document !== 'undefined' && 
+    (document.documentElement.classList.contains('dark') || 
+     document.documentElement.getAttribute('data-theme') === 'dark');
   
-  if (mode === 'thermal') {
-    if (percentage === 0) return { bg: 'rgba(16, 185, 129, 0.15)', text: '#059669', pulse: false };  // Emerald transparent
-    if (percentage <= 40) return { bg: '#d1fae5', text: '#047857', pulse: false };  // emerald-100
-    if (percentage <= 70) return { bg: '#e0f2fe', text: '#0369a1', pulse: false };  // sky-100
-    if (percentage <= 85) return { bg: '#bfdbfe', text: '#1d4ed8', pulse: false };  // blue-200
-    if (percentage <= 100) return { bg: '#93c5fd', text: '#1e40af', pulse: false }; // blue-300
-    return { bg: '#fde68a', text: '#b45309', pulse: true };  // amber-200 (warning, not danger)
+  // 0% Available = Teal tint (available for booking)
+  // 1-40% Light = Light green/emerald
+  // 41-70% Moderate = Light sky/blue
+  // 71-85% Optimal = Medium blue
+  // 86-100% At Capacity = Darker blue
+  // >100% Over-allocated = Amber/orange warning
+  
+  if (isDark) {
+    // DARK MODE - use darker backgrounds with light text
+    if (percentage === 0) return { bg: 'rgba(13, 148, 136, 0.25)', text: '#5eead4', pulse: false };  // teal
+    if (percentage <= 40) return { bg: 'rgba(16, 185, 129, 0.25)', text: '#6ee7b7', pulse: false };  // emerald
+    if (percentage <= 70) return { bg: 'rgba(56, 189, 248, 0.25)', text: '#7dd3fc', pulse: false };  // sky
+    if (percentage <= 85) return { bg: 'rgba(59, 130, 246, 0.30)', text: '#93c5fd', pulse: false };  // blue
+    if (percentage <= 100) return { bg: 'rgba(37, 99, 235, 0.35)', text: '#bfdbfe', pulse: false }; // blue darker
+    return { bg: 'rgba(245, 158, 11, 0.35)', text: '#fcd34d', pulse: true };  // amber - warning
   }
   
-  // Standard mode - Lighter, softer colors
-  if (percentage === 0) return { bg: 'rgba(16, 185, 129, 0.15)', text: '#059669', pulse: false };  // Light mint - Available
-  if (percentage <= 40) return { bg: '#d1fae5', text: '#047857', pulse: false };  // emerald-100 - Light
-  if (percentage <= 70) return { bg: '#e0f2fe', text: '#0369a1', pulse: false };  // sky-100 - Moderate
-  if (percentage <= 85) return { bg: '#bfdbfe', text: '#1d4ed8', pulse: false };  // blue-200 - Optimal
-  if (percentage <= 100) return { bg: '#93c5fd', text: '#1e40af', pulse: false }; // blue-300 - At Capacity
-  return { bg: '#fde68a', text: '#b45309', pulse: true };  // amber-200 - Over-allocated
+  // LIGHT MODE
+  if (mode === 'thermal') {
+    if (percentage === 0) return { bg: 'rgba(16, 185, 129, 0.15)', text: '#059669', pulse: false };
+    if (percentage <= 40) return { bg: '#d1fae5', text: '#047857', pulse: false };
+    if (percentage <= 70) return { bg: '#e0f2fe', text: '#0369a1', pulse: false };
+    if (percentage <= 85) return { bg: '#bfdbfe', text: '#1d4ed8', pulse: false };
+    if (percentage <= 100) return { bg: '#93c5fd', text: '#1e40af', pulse: false };
+    return { bg: '#fde68a', text: '#b45309', pulse: true };
+  }
+  
+  // Standard mode - light colors
+  if (percentage === 0) return { bg: 'rgba(16, 185, 129, 0.15)', text: '#059669', pulse: false };
+  if (percentage <= 40) return { bg: '#d1fae5', text: '#047857', pulse: false };
+  if (percentage <= 70) return { bg: '#e0f2fe', text: '#0369a1', pulse: false };
+  if (percentage <= 85) return { bg: '#bfdbfe', text: '#1d4ed8', pulse: false };
+  if (percentage <= 100) return { bg: '#93c5fd', text: '#1e40af', pulse: false };
+  return { bg: '#fde68a', text: '#b45309', pulse: true };
 }
 
 export function getHealthStatus(utilization: number, conflictCount: number): HealthStatus {

@@ -311,7 +311,7 @@ export function DraggableAllocationBar({
       {/* Ghost (original position) */}
       {showGhost && (
         <div
-          className={cn(styles.allocationBar, 'opacity-30 border-2 border-dashed border-gray-400')}
+          className={cn(styles.allocationBar, 'opacity-30 border-2 border-dashed border-border-strong')}
           style={{
             left: originalLeft,
             width: Math.max(originalWidth, 80),
