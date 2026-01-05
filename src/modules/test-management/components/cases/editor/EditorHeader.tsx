@@ -222,11 +222,16 @@ export function EditorHeader({
         )}
         <Button
           size="sm"
-          className="gap-1.5 bg-gradient-to-b from-primary to-primary/90 shadow-sm"
+          className={cn(
+            'gap-1.5 shadow-sm transition-all duration-200',
+            isDirty 
+              ? 'bg-gradient-to-b from-primary to-primary/90 hover:shadow-md hover:shadow-primary/20' 
+              : 'bg-gradient-to-b from-success to-success/90'
+          )}
           onClick={onSave}
           disabled={disabled || isSaving}
         >
-          <Save className="h-3.5 w-3.5" />
+          <Save className={cn('h-3.5 w-3.5', isSaving && 'animate-pulse')} />
           {isSaving ? 'Saving...' : isDirty ? 'Save' : 'Saved'}
           <kbd className="ml-1.5 px-1.5 py-0.5 bg-white/15 rounded text-[10px]">⌘S</kbd>
         </Button>

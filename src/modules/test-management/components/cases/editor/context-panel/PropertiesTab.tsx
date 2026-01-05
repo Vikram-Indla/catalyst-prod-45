@@ -58,10 +58,10 @@ interface PropertyRowProps {
 
 function PropertyRow({ icon, label, children }: PropertyRowProps) {
   return (
-    <div className="flex items-center gap-3 py-2.5 border-b border-border/50 last:border-0">
+    <div className="flex items-center gap-3 py-2.5 border-b border-border/50 last:border-0 group hover:bg-muted/30 -mx-2 px-2 rounded-lg transition-colors duration-150">
       <div className="flex items-center gap-2 w-[100px] shrink-0">
-        <span className="text-muted-foreground">{icon}</span>
-        <span className="text-[11px] font-medium text-muted-foreground">{label}</span>
+        <span className="text-muted-foreground group-hover:text-foreground transition-colors">{icon}</span>
+        <span className="text-[11px] font-medium text-muted-foreground group-hover:text-foreground transition-colors">{label}</span>
       </div>
       <div className="flex-1 min-w-0">{children}</div>
     </div>
@@ -203,13 +203,20 @@ export function PropertiesTab({
                 key={label.id}
                 onClick={() => toggleLabel(label.id)}
                 className={cn(
-                  'px-2.5 py-1 rounded-full text-[11px] font-medium border transition-all',
+                  'px-2.5 py-1 rounded-full text-[11px] font-medium border transition-all duration-200',
+                  'hover:scale-105 active:scale-95',
                   isSelected
-                    ? 'bg-primary/10 text-primary border-primary/30'
-                    : 'bg-muted/50 text-muted-foreground border-transparent hover:border-primary/20 hover:text-foreground'
+                    ? 'bg-primary/10 text-primary border-primary/30 shadow-sm shadow-primary/10'
+                    : 'bg-muted/50 text-muted-foreground border-transparent hover:border-primary/20 hover:text-foreground hover:bg-muted'
                 )}
               >
-                <span className="inline-block w-2 h-2 rounded-full mr-1.5" style={{ backgroundColor: label.color }} />
+                <span 
+                  className={cn(
+                    'inline-block w-2 h-2 rounded-full mr-1.5 transition-transform',
+                    isSelected && 'scale-110'
+                  )} 
+                  style={{ backgroundColor: label.color }} 
+                />
                 {label.name}
               </button>
             );

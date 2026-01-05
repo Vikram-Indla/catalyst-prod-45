@@ -47,7 +47,7 @@ export function ObjectiveSection({ objective, onChange, className }: ObjectiveSe
 
       {/* Section Body */}
       {isExpanded && (
-        <div className="p-5">
+        <div className="p-5 animate-in fade-in-0 slide-in-from-top-2 duration-200">
           <Textarea
             value={objective}
             onChange={(e) => onChange(e.target.value)}
@@ -56,11 +56,15 @@ export function ObjectiveSection({ objective, onChange, className }: ObjectiveSe
               'min-h-[140px] p-4 resize-y',
               'border border-border rounded-lg',
               'text-sm leading-relaxed text-foreground',
-              'placeholder:text-muted-foreground',
-              'focus:border-primary/30 focus:ring-2 focus:ring-primary/10',
-              'transition-all duration-150'
+              'placeholder:text-muted-foreground/60',
+              'focus:border-primary/50 focus:shadow-[0_0_0_3px_hsl(var(--primary)/0.1)]',
+              'transition-all duration-200'
             )}
           />
+          <div className="flex items-center justify-between mt-2 text-[10px] text-muted-foreground/60">
+            <span>{objective.length} characters</span>
+            <span>Tip: Be specific about expected behavior</span>
+          </div>
         </div>
       )}
     </div>
