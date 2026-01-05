@@ -296,16 +296,6 @@ export function CommandCenterPage() {
 
   return (
     <div className="p-6 space-y-6 bg-background min-h-screen">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold text-text-primary">Command Center</h1>
-        <button 
-          onClick={handleRefresh} 
-          className="p-2 hover:bg-surface-2 rounded-lg transition-all text-text-secondary hover:text-text-primary"
-        >
-          <RefreshCw className="h-4 w-4" />
-        </button>
-      </div>
 
       {/* Primary KPIs */}
       <div className="grid grid-cols-5 gap-4">
