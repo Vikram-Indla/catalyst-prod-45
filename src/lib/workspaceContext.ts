@@ -82,7 +82,7 @@ export function getActiveNavItem(workspaceType: WorkspaceType): string {
     case 'project':
       return 'Project';
     case 'tests':
-      return 'Tests';
+      return 'Command Center';
     default:
       return '';
   }
