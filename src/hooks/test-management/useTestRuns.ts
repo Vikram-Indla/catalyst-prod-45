@@ -1,14 +1,8 @@
-// ============================================================================
-// HOOK: useTestRuns
-// File: /hooks/test-management/useTestRuns.ts
-// ============================================================================
-
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { TMRun, TMStepResult, RunStatus } from '@/types/test-management';
 import { toast } from 'sonner';
 
-// Status mapping (DB uses lowercase)
 type DbExecutionStatus = 'not_run' | 'in_progress' | 'passed' | 'failed' | 'blocked' | 'skipped';
 
 const execStatusToDb = (status: RunStatus): DbExecutionStatus => {
@@ -35,66 +29,12 @@ const execStatusFromDb = (status: string | null): RunStatus => {
   return map[status || 'not_run'] || 'NOT_RUN';
 };
 
-// Partial test case for run display (subset of TMTestCase)
-interface RunTestCaseInfo {
-  id: string;
-  key: string;
-  title: string;
-}
-
-// Extended TMRun with partial test_case for list views
-interface TMRunWithPartialCase extends Omit<TMRun, 'test_case'> {
-  test_case?: RunTestCaseInfo;
-}
-
-// Helper to map DB row to TMRun
-function mapDbRowToTMRun(row: any): TMRunWithPartialCase {
-  return {
-    id: row.id,
-    cycle_id: row.cycle_scope?.cycle_id || '',
-    scope_id: row.cycle_scope_id,
-    case_id: row.cycle_scope?.test_case_id || '',
-    run_number: row.run_number || 1,
-    status: execStatusFromDb(row.status),
-    executed_by: row.executed_by || '',
-    started_at: row.started_at || '',
-    completed_at: row.completed_at || undefined,
-    duration_seconds: row.duration_seconds || undefined,
-    notes: row.notes || undefined,
-    environment: undefined,
-    test_case: row.test_case,
-    executor: row.executor,
-    step_results: row.step_results,
-  };
-}
-
-// Helper to map DB row to TMStepResult
-function mapDbRowToTMStepResult(row: any): TMStepResult {
-  return {
-    id: row.id,
-    run_id: row.test_run_id,
-    step_id: row.test_step_id,
-    step_number: row.step?.step_number || 0,
-    status: execStatusFromDb(row.status),
-    actual_result: row.actual_result || undefined,
-    executed_at: row.executed_at || undefined,
-    defect_id: row.defect_id || undefined,
-    step: row.step,
-    defect: row.defect,
-  };
-}
-
-// ============================================================================
-// FETCH RUNS FOR CYCLE
-// ============================================================================
-
 export function useTestRuns(cycleId: string | undefined) {
   return useQuery({
     queryKey: ['tm-runs', cycleId],
-    queryFn: async (): Promise<TMRunWithPartialCase[]> => {
+    queryFn: async (): Promise<TMRun[]> => {
       if (!cycleId) return [];
 
-      // First get the cycle scope items for this cycle
       const { data: scopeItems, error: scopeError } = await supabase
         .from('tm_cycle_scope')
         .select('id')
@@ -124,29 +64,35 @@ export function useTestRuns(cycleId: string | undefined) {
       }
 
       return (data || []).map(row => ({
-        ...mapDbRowToTMRun(row),
+        id: row.id,
+        cycle_id: row.cycle_scope?.cycle_id || cycleId,
+        scope_id: row.cycle_scope_id,
+        case_id: row.cycle_scope?.test_case_id || '',
+        run_number: row.run_number || 1,
+        status: execStatusFromDb(row.status),
+        executed_by: row.executed_by || '',
+        started_at: row.started_at || '',
+        completed_at: row.completed_at || undefined,
+        duration_seconds: row.duration_seconds || undefined,
+        notes: row.notes || undefined,
         test_case: row.cycle_scope?.test_case ? {
           id: row.cycle_scope.test_case.id,
-          title: row.cycle_scope.test_case.title,
           key: row.cycle_scope.test_case.case_key,
+          title: row.cycle_scope.test_case.title,
         } : undefined,
-      }));
+        executor: row.executor,
+      })) as TMRun[];
     },
     enabled: !!cycleId,
   });
 }
 
-// ============================================================================
-// FETCH SINGLE RUN WITH STEP RESULTS
-// ============================================================================
-
 export function useTestRun(runId: string | undefined) {
   return useQuery({
     queryKey: ['tm-run', runId],
-    queryFn: async (): Promise<TMRunWithPartialCase | null> => {
+    queryFn: async (): Promise<TMRun | null> => {
       if (!runId) return null;
 
-      // Fetch run
       const { data: run, error: runError } = await supabase
         .from('tm_test_runs')
         .select(`
@@ -163,7 +109,6 @@ export function useTestRun(runId: string | undefined) {
       if (runError) throw runError;
       if (!run) return null;
 
-      // Fetch step results
       const { data: stepResults, error: stepsError } = await supabase
         .from('tm_step_results')
         .select(`
@@ -174,44 +119,61 @@ export function useTestRun(runId: string | undefined) {
 
       if (stepsError) throw stepsError;
 
-      // Sort step results by step number
       const sortedResults = (stepResults || [])
-        .map(mapDbRowToTMStepResult)
-        .sort((a, b) => a.step_number - b.step_number);
+        .map(s => ({
+          id: s.id,
+          run_id: s.test_run_id,
+          step_id: s.test_step_id,
+          step_number: s.step?.step_number || 0,
+          status: execStatusFromDb(s.status),
+          actual_result: s.actual_result || undefined,
+          executed_at: s.executed_at || undefined,
+          step: s.step ? {
+            id: s.step.id,
+            case_id: s.step.test_case_id,
+            step_number: s.step.step_number,
+            action: s.step.action,
+            test_data: s.step.test_data || undefined,
+            expected_result: s.step.expected_result || '',
+            created_at: s.step.created_at || '',
+            updated_at: s.step.updated_at || '',
+          } : undefined,
+        }))
+        .sort((a, b) => a.step_number - b.step_number) as TMStepResult[];
 
-      const mappedRun = mapDbRowToTMRun(run);
-      
       return {
-        ...mappedRun,
+        id: run.id,
+        cycle_id: run.cycle_scope?.cycle_id || '',
+        scope_id: run.cycle_scope_id,
+        case_id: run.cycle_scope?.test_case_id || '',
+        run_number: run.run_number || 1,
+        status: execStatusFromDb(run.status),
+        executed_by: run.executed_by || '',
+        started_at: run.started_at || '',
+        completed_at: run.completed_at || undefined,
+        duration_seconds: run.duration_seconds || undefined,
+        notes: run.notes || undefined,
         test_case: run.cycle_scope?.test_case ? {
           id: run.cycle_scope.test_case.id,
-          title: run.cycle_scope.test_case.title,
           key: run.cycle_scope.test_case.case_key,
+          title: run.cycle_scope.test_case.title,
         } : undefined,
+        executor: run.executor,
         step_results: sortedResults,
-      };
+      } as TMRun;
     },
     enabled: !!runId,
   });
 }
 
-// ============================================================================
-// CREATE RUN (Start Execution)
-// ============================================================================
-
 export function useCreateRun() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (input: { 
-      cycle_id: string;
-      scope_id: string;
-      case_id: string;
-    }): Promise<TMRunWithPartialCase> => {
+    mutationFn: async (input: { cycle_id: string; scope_id: string; case_id: string }): Promise<TMRun> => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      // Get next run number for this scope
       const { count } = await supabase
         .from('tm_test_runs')
         .select('*', { count: 'exact', head: true })
@@ -219,13 +181,12 @@ export function useCreateRun() {
 
       const runNumber = (count || 0) + 1;
 
-      // Create run
       const { data: run, error: runError } = await supabase
         .from('tm_test_runs')
         .insert({
           cycle_scope_id: input.scope_id,
           run_number: runNumber,
-          status: 'in_progress',
+          status: 'in_progress' as DbExecutionStatus,
           executed_by: user.id,
           started_at: new Date().toISOString(),
         })
@@ -234,7 +195,6 @@ export function useCreateRun() {
 
       if (runError) throw runError;
 
-      // Fetch case steps
       const { data: steps, error: stepsError } = await supabase
         .from('tm_test_steps')
         .select('*')
@@ -243,12 +203,11 @@ export function useCreateRun() {
 
       if (stepsError) throw stepsError;
 
-      // Create step results (all not_run)
       if (steps && steps.length > 0) {
         const stepResults = steps.map(step => ({
           test_run_id: run.id,
           test_step_id: step.id,
-          status: 'not_run' as const,
+          status: 'not_run' as DbExecutionStatus,
         }));
 
         const { error: resultsError } = await supabase
@@ -258,13 +217,21 @@ export function useCreateRun() {
         if (resultsError) throw resultsError;
       }
 
-      // Update scope status to in_progress
       await supabase
         .from('tm_cycle_scope')
-        .update({ current_status: 'in_progress' })
+        .update({ current_status: 'in_progress' as DbExecutionStatus })
         .eq('id', input.scope_id);
 
-      return mapDbRowToTMRun({ ...run, cycle_scope: { cycle_id: input.cycle_id, test_case_id: input.case_id } });
+      return {
+        id: run.id,
+        cycle_id: input.cycle_id,
+        scope_id: input.scope_id,
+        case_id: input.case_id,
+        run_number: runNumber,
+        status: 'IN_PROGRESS',
+        executed_by: user.id,
+        started_at: run.started_at,
+      } as TMRun;
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['tm-runs', variables.cycle_id] });
@@ -277,20 +244,11 @@ export function useCreateRun() {
   });
 }
 
-// ============================================================================
-// UPDATE STEP RESULT
-// ============================================================================
-
 export function useUpdateStepResult() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (input: { 
-      step_result_id: string;
-      run_id: string;
-      status: RunStatus;
-      actual_result?: string;
-    }): Promise<TMStepResult> => {
+    mutationFn: async (input: { step_result_id: string; run_id: string; status: RunStatus; actual_result?: string }): Promise<TMStepResult> => {
       const { data, error } = await supabase
         .from('tm_step_results')
         .update({
@@ -303,7 +261,15 @@ export function useUpdateStepResult() {
         .single();
 
       if (error) throw error;
-      return mapDbRowToTMStepResult(data);
+      return {
+        id: data.id,
+        run_id: data.test_run_id,
+        step_id: data.test_step_id,
+        step_number: 0,
+        status: execStatusFromDb(data.status),
+        actual_result: data.actual_result || undefined,
+        executed_at: data.executed_at || undefined,
+      } as TMStepResult;
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['tm-run', variables.run_id] });
@@ -314,22 +280,11 @@ export function useUpdateStepResult() {
   });
 }
 
-// ============================================================================
-// BULK UPDATE STEPS
-// ============================================================================
-
 export function useBulkUpdateSteps() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (input: { 
-      run_id: string;
-      updates: Array<{
-        step_result_id: string;
-        status: RunStatus;
-        actual_result?: string;
-      }>;
-    }): Promise<void> => {
+    mutationFn: async (input: { run_id: string; updates: Array<{ step_result_id: string; status: RunStatus; actual_result?: string }> }): Promise<void> => {
       for (const update of input.updates) {
         await supabase
           .from('tm_step_results')
@@ -350,26 +305,16 @@ export function useBulkUpdateSteps() {
   });
 }
 
-// ============================================================================
-// COMPLETE RUN (Finalize Execution)
-// ============================================================================
-
 export function useCompleteRun() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (input: { 
-      run_id: string;
-      cycle_id: string;
-      scope_id: string;
-    }): Promise<TMRunWithPartialCase> => {
-      // Calculate final status from step results
+    mutationFn: async (input: { run_id: string; cycle_id: string; scope_id: string }): Promise<TMRun> => {
       const { data: stepResults } = await supabase
         .from('tm_step_results')
         .select('status')
         .eq('test_run_id', input.run_id);
 
-      // Status percolation: failed > blocked > passed > skipped > not_run
       let finalStatus: DbExecutionStatus = 'passed';
       
       if (stepResults) {
@@ -380,23 +325,21 @@ export function useCompleteRun() {
         } else if (hasStatus('blocked')) {
           finalStatus = 'blocked';
         } else if (hasStatus('not_run') || hasStatus('in_progress')) {
-          finalStatus = 'not_run'; // Incomplete
+          finalStatus = 'not_run';
         } else if (hasStatus('skipped') && !hasStatus('passed')) {
           finalStatus = 'skipped';
         }
       }
 
-      // Get run start time to calculate duration
       const { data: run } = await supabase
         .from('tm_test_runs')
         .select('started_at')
         .eq('id', input.run_id)
-        .single();
+        .maybeSingle();
 
       const startedAt = run?.started_at ? new Date(run.started_at) : new Date();
       const durationSeconds = Math.floor((Date.now() - startedAt.getTime()) / 1000);
 
-      // Update run
       const { data: updatedRun, error: runError } = await supabase
         .from('tm_test_runs')
         .update({
@@ -410,13 +353,23 @@ export function useCompleteRun() {
 
       if (runError) throw runError;
 
-      // Update scope with final status
       await supabase
         .from('tm_cycle_scope')
         .update({ current_status: finalStatus })
         .eq('id', input.scope_id);
 
-      return mapDbRowToTMRun(updatedRun);
+      return {
+        id: updatedRun.id,
+        cycle_id: input.cycle_id,
+        scope_id: input.scope_id,
+        case_id: '',
+        run_number: updatedRun.run_number || 1,
+        status: execStatusFromDb(updatedRun.status),
+        executed_by: updatedRun.executed_by || '',
+        started_at: updatedRun.started_at || '',
+        completed_at: updatedRun.completed_at || undefined,
+        duration_seconds: updatedRun.duration_seconds || undefined,
+      } as TMRun;
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['tm-run', variables.run_id] });
@@ -431,33 +384,23 @@ export function useCompleteRun() {
   });
 }
 
-// ============================================================================
-// ABORT RUN
-// ============================================================================
-
 export function useAbortRun() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (input: { 
-      run_id: string;
-      cycle_id: string;
-      scope_id: string;
-    }): Promise<void> => {
-      // Update run to indicate it was aborted
+    mutationFn: async (input: { run_id: string; cycle_id: string; scope_id: string }): Promise<void> => {
       await supabase
         .from('tm_test_runs')
         .update({
-          status: 'not_run',
+          status: 'not_run' as DbExecutionStatus,
           completed_at: new Date().toISOString(),
           notes: 'Execution aborted',
         })
         .eq('id', input.run_id);
 
-      // Revert scope status
       await supabase
         .from('tm_cycle_scope')
-        .update({ current_status: 'not_run' })
+        .update({ current_status: 'not_run' as DbExecutionStatus })
         .eq('id', input.scope_id);
     },
     onSuccess: (_, variables) => {
@@ -472,25 +415,14 @@ export function useAbortRun() {
   });
 }
 
-// ============================================================================
-// LINK DEFECT TO STEP RESULT
-// ============================================================================
-
 export function useLinkDefectToStep() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (input: { 
-      step_result_id: string;
-      defect_id: string;
-      run_id: string;
-    }): Promise<void> => {
-      // Note: defect_id column may not exist in tm_step_results
-      // This would need to be handled via a linking table if not present
-      console.warn('Link defect to step - check if defect_id column exists in tm_step_results');
-      
-      // For now, we can create a defect link record if such table exists
-      // or update the step result if the column exists
+    mutationFn: async (input: { step_result_id: string; defect_id: string; run_id: string }): Promise<void> => {
+      // Note: This assumes defect_id column exists in tm_step_results
+      // If not, a linking table would be needed
+      console.log('Linking defect', input.defect_id, 'to step result', input.step_result_id);
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['tm-run', variables.run_id] });
@@ -502,16 +434,11 @@ export function useLinkDefectToStep() {
   });
 }
 
-// ============================================================================
-// RE-RUN FAILED TESTS
-// ============================================================================
-
 export function useRerunFailed() {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async (input: { cycle_id: string }): Promise<number> => {
-      // Get all failed/blocked scope items
       const { data: failedScope, error } = await supabase
         .from('tm_cycle_scope')
         .select('id')
@@ -520,12 +447,11 @@ export function useRerunFailed() {
 
       if (error) throw error;
 
-      // Reset their status to not_run
       if (failedScope && failedScope.length > 0) {
         const ids = failedScope.map(s => s.id);
         await supabase
           .from('tm_cycle_scope')
-          .update({ current_status: 'not_run' })
+          .update({ current_status: 'not_run' as DbExecutionStatus })
           .in('id', ids);
       }
 
@@ -542,10 +468,6 @@ export function useRerunFailed() {
   });
 }
 
-// ============================================================================
-// GET MY ASSIGNED WORK
-// ============================================================================
-
 export function useMyWork(projectId: string | undefined) {
   return useQuery({
     queryKey: ['tm-my-work', projectId],
@@ -553,33 +475,30 @@ export function useMyWork(projectId: string | undefined) {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return { assigned: [], recent: [] };
 
-      // Get assigned scope items using the view
-      // Filter by status in application logic to avoid type instantiation issues
-      const { data: allAssigned, error: assignedError } = await supabase
-        .from('v_tm_my_work')
-        .select('*')
-        .eq('user_id', user.id)
+      const { data: assigned, error: assignedError } = await supabase
+        .from('tm_cycle_scope')
+        .select(`
+          *,
+          test_case:tm_test_cases(id, case_key, title, priority:tm_case_priorities(*)),
+          cycle:tm_test_cycles(id, cycle_key, name, status, project_id)
+        `)
+        .eq('assigned_to', user.id)
+        .in('current_status', ['not_run', 'in_progress', 'blocked'])
         .order('added_at', { ascending: false })
-        .limit(50);
+        .limit(20);
 
       if (assignedError) {
         console.error('Error fetching assigned work:', assignedError);
       }
 
-      // Filter for active statuses (v_tm_my_work uses 'status' not 'current_status')
-      const assigned = (allAssigned || []).filter(
-        item => ['not_run', 'in_progress', 'blocked'].includes(item.status || '')
-      ).slice(0, 20);
-
-      // Get recent runs by this user
       const { data: recent, error: recentError } = await supabase
         .from('tm_test_runs')
         .select(`
           *,
           cycle_scope:tm_cycle_scope(
-            id, cycle_id,
+            cycle_id, test_case_id,
             test_case:tm_test_cases(id, case_key, title),
-            cycle:tm_test_cycles(id, cycle_key, name)
+            cycle:tm_test_cycles(id, cycle_key, name, project_id)
           )
         `)
         .eq('executed_by', user.id)
@@ -590,15 +509,33 @@ export function useMyWork(projectId: string | undefined) {
         console.error('Error fetching recent runs:', recentError);
       }
 
+      let filteredAssigned = (assigned || []).map(a => ({
+        ...a,
+        test_case: a.test_case ? { ...a.test_case, key: a.test_case.case_key } : undefined,
+        cycle: a.cycle ? { ...a.cycle, key: a.cycle.cycle_key } : undefined,
+        status: execStatusFromDb(a.current_status),
+      }));
+
+      if (projectId) {
+        filteredAssigned = filteredAssigned.filter(a => a.cycle?.project_id === projectId);
+      }
+
+      const mappedRecent = (recent || []).map(r => ({
+        ...r,
+        status: execStatusFromDb(r.status),
+        test_case: r.cycle_scope?.test_case ? { 
+          ...r.cycle_scope.test_case, 
+          key: r.cycle_scope.test_case.case_key 
+        } : undefined,
+        cycle: r.cycle_scope?.cycle ? { 
+          ...r.cycle_scope.cycle, 
+          key: r.cycle_scope.cycle.cycle_key 
+        } : undefined,
+      }));
+
       return {
-        assigned: assigned || [],
-        recent: (recent || []).map(r => ({
-          ...mapDbRowToTMRun(r),
-          test_case: r.cycle_scope?.test_case ? {
-            ...r.cycle_scope.test_case,
-            key: r.cycle_scope.test_case.case_key,
-          } : undefined,
-        })),
+        assigned: filteredAssigned.filter(a => a.cycle),
+        recent: mappedRecent,
       };
     },
     enabled: true,
