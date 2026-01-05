@@ -1,14 +1,8 @@
-// ============================================================================
-// HOOK: useFolders
-// File: /hooks/test-management/useFolders.ts
-// ============================================================================
-
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { TMFolder } from '@/types/test-management';
 import { toast } from 'sonner';
 
-// Fetch folder tree for a project
 export function useFolders(projectId: string | undefined) {
   return useQuery({
     queryKey: ['tm-folders', projectId],
@@ -29,32 +23,20 @@ export function useFolders(projectId: string | undefined) {
       return (data || []).map(f => ({
         ...f,
         path: String(f.path || ''),
-        parent_id: f.parent_id || null,
       })) as TMFolder[];
     },
     enabled: !!projectId,
   });
 }
 
-// Build hierarchical folder tree from flat list
-export function useFolderTree(projectId: string | undefined) {
-  const { data: folders, ...rest } = useFolders(projectId);
-
-  const tree = buildFolderTree(folders || []);
-
-  return { data: tree, folders: folders || [], ...rest };
-}
-
 function buildFolderTree(folders: TMFolder[]): TMFolder[] {
   const map = new Map<string, TMFolder>();
   const roots: TMFolder[] = [];
 
-  // First pass: create map
   folders.forEach(folder => {
     map.set(folder.id, { ...folder, children: [] });
   });
 
-  // Second pass: build tree
   folders.forEach(folder => {
     const node = map.get(folder.id)!;
     if (folder.parent_id) {
@@ -71,14 +53,18 @@ function buildFolderTree(folders: TMFolder[]): TMFolder[] {
   return roots;
 }
 
-// Fetch folder with case count
+export function useFolderTree(projectId: string | undefined) {
+  const { data: folders, ...rest } = useFolders(projectId);
+  const tree = buildFolderTree(folders || []);
+  return { data: tree, folders: folders || [], ...rest };
+}
+
 export function useFoldersWithCounts(projectId: string | undefined) {
   return useQuery({
     queryKey: ['tm-folders-with-counts', projectId],
     queryFn: async (): Promise<TMFolder[]> => {
       if (!projectId) return [];
 
-      // Get folders
       const { data: folders, error: foldersError } = await supabase
         .from('tm_folders')
         .select('*')
@@ -87,7 +73,6 @@ export function useFoldersWithCounts(projectId: string | undefined) {
 
       if (foldersError) throw foldersError;
 
-      // Get case counts per folder
       const { data: counts, error: countsError } = await supabase
         .from('tm_test_cases')
         .select('folder_id')
@@ -95,7 +80,6 @@ export function useFoldersWithCounts(projectId: string | undefined) {
 
       if (countsError) throw countsError;
 
-      // Calculate counts
       const countMap = new Map<string, number>();
       counts?.forEach(c => {
         const folderId = c.folder_id || 'unfiled';
@@ -105,7 +89,6 @@ export function useFoldersWithCounts(projectId: string | undefined) {
       return (folders || []).map(f => ({
         ...f,
         path: String(f.path || ''),
-        parent_id: f.parent_id || null,
         case_count: countMap.get(f.id) || 0,
       })) as TMFolder[];
     },
@@ -113,7 +96,6 @@ export function useFoldersWithCounts(projectId: string | undefined) {
   });
 }
 
-// Create folder
 export function useCreateFolder() {
   const queryClient = useQueryClient();
 
@@ -123,7 +105,6 @@ export function useCreateFolder() {
       name: string;
       parent_id?: string | null;
     }): Promise<TMFolder> => {
-      // Calculate path
       let path = `/${input.name}`;
       if (input.parent_id) {
         const { data: parent } = await supabase
@@ -133,11 +114,10 @@ export function useCreateFolder() {
           .single();
         
         if (parent) {
-          path = `${parent.path}/${input.name}`;
+          path = `${String(parent.path || '')}/${input.name}`;
         }
       }
 
-      // Get next sort order
       const { data: existing } = await supabase
         .from('tm_folders')
         .select('sort_order')
@@ -164,7 +144,6 @@ export function useCreateFolder() {
       return {
         ...data,
         path: String(data.path || ''),
-        parent_id: data.parent_id || null,
       } as TMFolder;
     },
     onSuccess: (_, variables) => {
@@ -178,7 +157,6 @@ export function useCreateFolder() {
   });
 }
 
-// Update folder
 export function useUpdateFolder() {
   const queryClient = useQueryClient();
 
@@ -204,7 +182,6 @@ export function useUpdateFolder() {
       return {
         ...data,
         path: String(data.path || ''),
-        parent_id: data.parent_id || null,
       } as TMFolder;
     },
     onSuccess: (_, variables) => {
@@ -217,7 +194,6 @@ export function useUpdateFolder() {
   });
 }
 
-// Delete folder
 export function useDeleteFolder() {
   const queryClient = useQueryClient();
 
