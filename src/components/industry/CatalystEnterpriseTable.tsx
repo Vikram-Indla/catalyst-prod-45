@@ -5,22 +5,9 @@ import { cn } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
 
 // ============================================================================
-// CATALYST ENTERPRISE TABLE - ENTERPRISE-GRADE VISUAL QUALITY
+// CATALYST V5 ENTERPRISE TABLE - DARK MODE COMPLIANT
+// Uses Catalyst v5 semantic tokens for proper dark mode support
 // ============================================================================
-
-// Catalyst Blue + Teal Palette - uses CSS tokens for dark mode support
-const colors = {
-  olive: 'var(--brand-primary, #2563eb)',       // Changed to blue
-  bronze: 'var(--secondary-grey, #6b7280)',     // Changed to gray
-  primary: 'var(--brand-primary, #2563eb)',
-  primaryHover: 'var(--brand-primary-hover, #1d4ed8)',
-  champagne: 'var(--secondary-grey, #9ca3af)',  // Changed to light gray
-  grey: 'var(--secondary-grey, #c8ccd0)',
-  white: 'var(--surface-1, #ffffff)',
-  border: 'var(--border-color, #e5e5e5)',
-  muted: 'var(--text-2, #6b7280)',
-  danger: '#dc2626',
-};
 
 export type SortDirection = 'asc' | 'desc' | null;
 
@@ -124,17 +111,6 @@ function InlineCellEditor({
     }
   };
 
-  const inputStyle: React.CSSProperties = {
-    width: '100%',
-    padding: '6px 10px',
-    border: `2px solid var(--brand-accent)`,
-    borderRadius: '4px',
-    fontSize: '14px',
-    outline: 'none',
-    backgroundColor: 'var(--input-bg)',
-    color: 'var(--input-text)',
-  };
-
   if (type === 'select' && options) {
     return (
       <select
@@ -146,7 +122,11 @@ function InlineCellEditor({
         }}
         onBlur={() => onCancel()}
         onKeyDown={handleKeyDown}
-        style={{ ...inputStyle, cursor: 'pointer' }}
+        className={cn(
+          "w-full px-2.5 py-1.5 text-sm rounded border-2 cursor-pointer",
+          "bg-[var(--table-toolbar-input-bg)] text-[var(--table-text-primary)]",
+          "border-[var(--brand-primary-hex)] focus:outline-none"
+        )}
       >
         <option value="">Select...</option>
         {options.map((opt) => (
@@ -164,13 +144,17 @@ function InlineCellEditor({
       onChange={(e) => setLocalValue(e.target.value)}
       onBlur={() => onSave(localValue === '' ? null : (type === 'number' ? Number(localValue) : localValue))}
       onKeyDown={handleKeyDown}
-      style={inputStyle}
+      className={cn(
+        "w-full px-2.5 py-1.5 text-sm rounded border-2",
+        "bg-[var(--table-toolbar-input-bg)] text-[var(--table-text-primary)]",
+        "border-[var(--brand-primary-hex)] focus:outline-none"
+      )}
     />
   );
 }
 
 // ============================================================================
-// COLUMN HEADER WITH SORT & FILTER - POLISHED
+// COLUMN HEADER WITH SORT & FILTER - CATALYST V5 COMPLIANT
 // ============================================================================
 function ColumnHeader<T>({ 
   column, 
@@ -224,21 +208,20 @@ function ColumnHeader<T>({
   return (
     <div className="relative">
       <div className="flex items-center gap-1.5">
-        <span className={cn(
-          "font-semibold uppercase tracking-wider text-xs whitespace-nowrap transition-colors",
-          "text-gray-600 dark:text-gray-400"
-        )}>
+        {/* Header text - text-primary in dark mode */}
+        <span className="font-semibold uppercase tracking-wider text-xs whitespace-nowrap transition-colors text-[var(--table-header-text)]">
           {column.header}
         </span>
         
+        {/* Sort button */}
         {column.sortable !== false && (
           <button
             onClick={(e) => { e.stopPropagation(); onSort(column.id); }}
             className={cn(
               "p-0.5 rounded transition-colors",
               isSorted 
-                ? "text-[#2563eb] dark:text-[#60a5fa]" 
-                : "text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300"
+                ? "text-[var(--brand-primary-hex)]" 
+                : "text-[var(--table-icon-default)] hover:text-[var(--table-icon-hover)]"
             )}
             title="Sort"
           >
@@ -252,20 +235,21 @@ function ColumnHeader<T>({
           </button>
         )}
 
+        {/* Filter button */}
         {column.filterable !== false && column.filterOptions && column.filterOptions.length > 0 && (
           <button
             onClick={(e) => { e.stopPropagation(); setShowFilter(!showFilter); }}
             className={cn(
               "p-0.5 rounded transition-colors",
               hasFilters 
-                ? "text-[#2563eb] dark:text-[#60a5fa]" 
-                : "text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300"
+                ? "text-[var(--brand-primary-hex)]" 
+                : "text-[var(--table-icon-default)] hover:text-[var(--table-icon-hover)]"
             )}
             title="Filter"
           >
             <Icons.Filter />
             {hasFilters && (
-              <span className="ml-0.5 text-[10px] bg-[#2563eb] text-white dark:bg-[#60a5fa] dark:text-gray-900 rounded-full px-1">
+              <span className="ml-0.5 text-[10px] bg-[var(--brand-primary-hex)] text-white rounded-full px-1">
                 {filterValues.length}
               </span>
             )}
@@ -273,17 +257,17 @@ function ColumnHeader<T>({
         )}
       </div>
 
+      {/* Filter dropdown - uses Catalyst v5 surface tokens */}
       {showFilter && column.filterOptions && (
         <div 
           ref={dropdownRef} 
           className={cn(
             "absolute top-full right-0 mt-2 w-60 z-[100] rounded-lg border shadow-lg",
-            "bg-white dark:bg-[#1a1a1a]",
-            "border-gray-200 dark:border-gray-700"
+            "bg-[var(--table-container-bg)] border-[var(--table-container-border)]"
           )}
         >
-          <div className="p-3 border-b border-gray-200 dark:border-gray-700">
-            <div className="text-xs font-semibold text-gray-600 dark:text-gray-400">
+          <div className="p-3 border-b border-[var(--table-header-border)]">
+            <div className="text-xs font-semibold text-[var(--table-text-secondary)]">
               Filter by {column.header}
             </div>
           </div>
@@ -294,8 +278,8 @@ function ColumnHeader<T>({
                 className={cn(
                   "flex items-center gap-2.5 px-3 py-2.5 cursor-pointer text-sm transition-colors",
                   selectedFilters.includes(opt.value) 
-                    ? "bg-[rgba(37,99,235,0.1)] dark:bg-[rgba(37,99,235,0.2)]" 
-                    : "hover:bg-gray-50 dark:hover:bg-gray-800"
+                    ? "bg-[var(--selection-row-bg)]" 
+                    : "hover:bg-[var(--table-row-hover)]"
                 )}
               >
                 <input
@@ -304,22 +288,23 @@ function ColumnHeader<T>({
                   onChange={() => handleFilterToggle(opt.value)}
                   className={cn(
                     "w-4 h-4 rounded transition-all cursor-pointer",
-                    "border-gray-300 text-[#2563eb] focus:ring-[#2563eb] focus:ring-offset-0",
-                    "dark:border-gray-500 dark:bg-gray-800 dark:checked:bg-[#2563eb] dark:checked:border-[#2563eb]"
+                    "border-[var(--table-container-border)] text-[var(--brand-primary-hex)]",
+                    "focus:ring-[var(--brand-primary-hex)] focus:ring-offset-0",
+                    "bg-[var(--table-toolbar-input-bg)]"
                   )}
                 />
-                <span className="flex-1 text-gray-700 dark:text-gray-300">{opt.label}</span>
+                <span className="flex-1 text-[var(--table-text-primary)]">{opt.label}</span>
               </label>
             ))}
           </div>
           <div className={cn(
             "flex justify-between p-3 border-t",
-            "border-gray-200 dark:border-gray-700",
-            "bg-gray-50 dark:bg-[#262626]"
+            "border-[var(--table-header-border)]",
+            "bg-[var(--table-header-bg)]"
           )}>
             <button
               onClick={clearFilters}
-              className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
+              className="text-sm text-[var(--table-text-secondary)] hover:text-[var(--table-text-primary)]"
             >
               Clear
             </button>
@@ -327,8 +312,7 @@ function ColumnHeader<T>({
               onClick={applyFilters}
               className={cn(
                 "px-4 py-1.5 text-sm font-medium rounded transition-colors",
-                "bg-[#2563eb] text-white hover:bg-[#1d4ed8]",
-                "dark:bg-[#2563eb] dark:hover:bg-[#1d4ed8]"
+                "bg-[var(--brand-primary-hex)] text-white hover:opacity-90"
               )}
             >
               Apply
@@ -341,7 +325,7 @@ function ColumnHeader<T>({
 }
 
 // ============================================================================
-// ROW ACTIONS MENU
+// ROW ACTIONS MENU - CATALYST V5 COMPLIANT
 // ============================================================================
 function RowActionsMenu({ onEdit }: { onEdit: () => void }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -363,9 +347,9 @@ function RowActionsMenu({ onEdit }: { onEdit: () => void }) {
         onClick={(e) => { e.stopPropagation(); setIsOpen(!isOpen); }}
         className={cn(
           "p-1 rounded transition-colors",
-          "text-gray-400 dark:text-gray-500",
-          "hover:bg-gray-100 dark:hover:bg-gray-800",
-          "hover:text-gray-600 dark:hover:text-gray-300"
+          "text-[var(--table-icon-default)]",
+          "hover:bg-[var(--table-row-hover)]",
+          "hover:text-[var(--table-icon-hover)]"
         )}
       >
         <Icons.MoreHorizontal />
@@ -374,15 +358,14 @@ function RowActionsMenu({ onEdit }: { onEdit: () => void }) {
       {isOpen && (
         <div className={cn(
           "absolute right-0 top-full mt-1 min-w-[120px] z-50 rounded-lg border shadow-lg",
-          "bg-white dark:bg-[#1a1a1a]",
-          "border-gray-200 dark:border-gray-700"
+          "bg-[var(--table-container-bg)] border-[var(--table-container-border)]"
         )}>
           <button
             onClick={(e) => { e.stopPropagation(); onEdit(); setIsOpen(false); }}
             className={cn(
               "w-full px-3 py-2 text-left text-sm transition-colors",
-              "text-gray-700 dark:text-gray-300",
-              "hover:bg-gray-50 dark:hover:bg-gray-800"
+              "text-[var(--table-text-primary)]",
+              "hover:bg-[var(--table-row-hover)]"
             )}
           >
             Edit Row
@@ -394,7 +377,7 @@ function RowActionsMenu({ onEdit }: { onEdit: () => void }) {
 }
 
 // ============================================================================
-// MAIN TABLE COMPONENT
+// MAIN TABLE COMPONENT - CATALYST V5 DARK MODE COMPLIANT
 // ============================================================================
 export function CatalystEnterpriseTable<T extends { id: string }>({
   data,
@@ -556,49 +539,52 @@ export function CatalystEnterpriseTable<T extends { id: string }>({
     }
   };
 
-  // Render row content with enterprise styling
+  // Render row content with Catalyst v5 styling
   const renderRowContent = (row: T, rowIndex: number, dragHandleProps?: any, isDragging?: boolean) => (
     <>
       {/* Drag handle column */}
       {enableDragDrop && (
-        <td className="py-3 px-2 w-8" {...dragHandleProps}>
+        <td className="py-3 px-2 w-8 border-r border-[var(--table-cell-divider)]" {...dragHandleProps}>
           <GripVertical 
             className={cn(
               "h-4 w-4 cursor-grab active:cursor-grabbing transition-colors",
               isDragging 
-                ? "text-[#2563eb] dark:text-[#60a5fa]" 
-                : "text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400"
+                ? "text-[var(--brand-primary-hex)]" 
+                : "text-[var(--table-icon-default)] hover:text-[var(--table-icon-hover)]"
             )} 
           />
         </td>
       )}
-      {/* Checkbox with enhanced visibility */}
+      {/* Checkbox with Catalyst v5 styling */}
       {showCheckboxes && (
-        <td className="py-3 px-4 w-12" onClick={(e) => e.stopPropagation()}>
+        <td className="py-3 px-4 w-12 border-r border-[var(--table-cell-divider)]" onClick={(e) => e.stopPropagation()}>
           <input
             type="checkbox"
             checked={selectedRows.includes(row.id)}
             onChange={(e) => handleCheckboxChange(e, row.id)}
             className={cn(
               "w-4 h-4 rounded transition-all cursor-pointer",
-              "border-gray-300 text-[#2563eb] focus:ring-[#2563eb] focus:ring-offset-0",
-              "dark:border-gray-500 dark:bg-gray-800 dark:checked:bg-[#2563eb] dark:checked:border-[#2563eb]",
-              "hover:border-[#2563eb] dark:hover:border-[#2563eb]"
+              "border-[var(--table-container-border)] text-[var(--brand-primary-hex)]",
+              "focus:ring-[var(--brand-primary-hex)] focus:ring-offset-0",
+              "bg-[var(--table-toolbar-input-bg)]",
+              "hover:border-[var(--brand-primary-hex)]"
             )}
           />
         </td>
       )}
-      {columns.map((column) => {
+      {columns.map((column, colIndex) => {
         const value = typeof column.accessor === 'function' 
           ? column.accessor(row) 
           : (row as any)[column.accessor];
         const isEditing = editingCell?.rowId === row.id && editingCell?.columnId === column.id;
+        const isLastColumn = colIndex === columns.length - 1 && !showActionsColumn;
 
         return (
           <td
             key={column.id}
             className={cn(
-              "py-3 px-4 align-middle text-gray-900 dark:text-gray-100",
+              "py-3 px-4 align-middle text-[var(--table-text-primary)]",
+              !isLastColumn && "border-r border-[var(--table-cell-divider)]",
               column.width && `w-[${column.width}]`
             )}
             style={{ width: column.width }}
@@ -622,7 +608,7 @@ export function CatalystEnterpriseTable<T extends { id: string }>({
                   column.editable && "hover:border-[rgba(37,99,235,0.3)] hover:bg-[rgba(37,99,235,0.05)]"
                 )}
               >
-                {value ?? <span className="text-gray-400 dark:text-gray-500">—</span>}
+                {value ?? <span className="text-[var(--table-text-muted)]">—</span>}
               </span>
             )}
           </td>
@@ -638,18 +624,15 @@ export function CatalystEnterpriseTable<T extends { id: string }>({
     </>
   );
 
-  // Empty state component
+  // Empty state component with Catalyst v5 styling
   const EmptyState = () => (
     <tr>
       <td colSpan={columns.length + (showCheckboxes ? 1 : 0) + (showActionsColumn ? 1 : 0) + (enableDragDrop ? 1 : 0)} className="py-16">
         <div className="flex flex-col items-center justify-center text-center">
-          <div className={cn(
-            "w-12 h-12 rounded-full flex items-center justify-center mb-3",
-            "bg-gray-100 dark:bg-gray-800"
-          )}>
-            <Inbox className="w-6 h-6 text-gray-400 dark:text-gray-500" />
+          <div className="w-12 h-12 rounded-full flex items-center justify-center mb-3 bg-[var(--table-header-bg)]">
+            <Inbox className="w-6 h-6 text-[var(--table-icon-default)]" />
           </div>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">
+          <p className="text-sm text-[var(--table-empty-text)] mb-2">
             {processedData.length === 0 
               ? "No requests found" 
               : `Showing ${processedData.length} request${processedData.length !== 1 ? 's' : ''}`}
@@ -657,7 +640,7 @@ export function CatalystEnterpriseTable<T extends { id: string }>({
           {onCreateNew && (
             <button 
               onClick={onCreateNew}
-              className="text-sm text-[#2563eb] dark:text-[#60a5fa] hover:underline font-medium"
+              className="text-sm text-[var(--brand-primary-hex)] hover:underline font-medium"
             >
               + Create new request
             </button>
@@ -669,20 +652,20 @@ export function CatalystEnterpriseTable<T extends { id: string }>({
 
   const tableContent = (
     <TooltipProvider>
+      {/* Table container with Catalyst v5 surface tokens */}
       <div className={cn(
         "rounded-lg border overflow-hidden",
-        "bg-white dark:bg-[#1a1a1a]",
-        "border-gray-200 dark:border-gray-700",
-        "shadow-sm dark:shadow-none"
+        "bg-[var(--table-container-bg)] border-[var(--table-container-border)]",
+        "shadow-[var(--shadow-elev-1)]"
       )}>
         {/* Request count header */}
         <div className={cn(
           "flex items-center justify-between px-4 py-2.5 border-b",
-          "border-gray-200 dark:border-gray-700",
-          "bg-gray-50/50 dark:bg-[#262626]"
+          "border-[var(--table-header-border)]",
+          "bg-[var(--table-header-bg)]"
         )}>
-          <span className="text-sm text-gray-700 dark:text-gray-300">
-            <span className="font-semibold">{processedData.length}</span> {processedData.length === 1 ? 'request' : 'requests'}
+          <span className="text-sm text-[var(--table-text-secondary)]">
+            <span className="font-semibold text-[var(--table-text-primary)]">{processedData.length}</span> {processedData.length === 1 ? 'request' : 'requests'}
           </span>
         </div>
 
@@ -699,62 +682,66 @@ export function CatalystEnterpriseTable<T extends { id: string }>({
               {showActionsColumn && <col className="w-12" />}
             </colgroup>
             
-            {/* Header with polish */}
+            {/* Header with Catalyst v5 styling */}
             <thead>
               <tr className={cn(
                 "border-b",
-                "bg-gray-50 dark:bg-[#262626]",
-                "border-gray-200 dark:border-gray-700"
+                "bg-[var(--table-header-bg)]",
+                "border-[var(--table-header-border)]"
               )}>
                 {enableDragDrop && (
-                  <th className="py-3 px-2 w-8"></th>
+                  <th className="py-3 px-2 w-8 border-r border-[var(--table-cell-divider)]"></th>
                 )}
                 {showCheckboxes && (
-                  <th className="py-3 px-4 w-12 text-center">
+                  <th className="py-3 px-4 w-12 text-center border-r border-[var(--table-cell-divider)]">
                     <input
                       type="checkbox"
                       checked={processedData.length > 0 && selectedRows.length === processedData.length}
                       onChange={handleSelectAll}
                       className={cn(
                         "w-4 h-4 rounded transition-all cursor-pointer",
-                        "border-gray-300 text-[#2563eb] focus:ring-[#2563eb] focus:ring-offset-0",
-                        "dark:border-gray-500 dark:bg-gray-800 dark:checked:bg-[#2563eb] dark:checked:border-[#2563eb]"
+                        "border-[var(--table-container-border)] text-[var(--brand-primary-hex)]",
+                        "focus:ring-[var(--brand-primary-hex)] focus:ring-offset-0",
+                        "bg-[var(--table-toolbar-input-bg)]"
                       )}
                     />
                   </th>
                 )}
-                {columns.map((column) => (
-                  <th 
-                    key={column.id} 
-                    className={cn(
-                      "py-3 px-4 text-left cursor-pointer transition-colors",
-                      "hover:bg-gray-100 dark:hover:bg-gray-800"
-                    )}
-                    style={{ width: column.width }}
-                  >
-                    <ColumnHeader
-                      column={column}
-                      sortConfig={sortConfig}
-                      filterValues={filters[column.id] || []}
-                      onSort={handleSort}
-                      onFilter={handleFilter}
-                    />
-                  </th>
-                ))}
+                {columns.map((column, colIndex) => {
+                  const isLastColumn = colIndex === columns.length - 1 && !showActionsColumn;
+                  return (
+                    <th 
+                      key={column.id} 
+                      className={cn(
+                        "py-3 px-4 text-left cursor-pointer transition-colors",
+                        !isLastColumn && "border-r border-[var(--table-cell-divider)]",
+                        "hover:bg-[var(--table-row-hover)]"
+                      )}
+                      style={{ width: column.width }}
+                    >
+                      <ColumnHeader
+                        column={column}
+                        sortConfig={sortConfig}
+                        filterValues={filters[column.id] || []}
+                        onSort={handleSort}
+                        onFilter={handleFilter}
+                      />
+                    </th>
+                  );
+                })}
                 {showActionsColumn && (
                   <th className="py-3 px-4 w-12"></th>
                 )}
               </tr>
             </thead>
             
-            {/* Body with row separation */}
+            {/* Body with Catalyst v5 row styling */}
             {enableDragDrop ? (
               <Droppable droppableId={droppableId}>
                 {(provided) => (
                   <tbody 
                     ref={provided.innerRef} 
                     {...provided.droppableProps}
-                    className="divide-y divide-gray-200 dark:divide-gray-700"
                   >
                     {processedData.length === 0 ? (
                       <EmptyState />
@@ -768,16 +755,17 @@ export function CatalystEnterpriseTable<T extends { id: string }>({
                               onClick={() => handleRowClick(row)}
                               className={cn(
                                 "transition-colors cursor-pointer",
+                                "border-b border-[var(--table-row-border)]",
                                 // Alternating row backgrounds
                                 rowIndex % 2 === 0 
-                                  ? "bg-white dark:bg-[#1a1a1a]" 
-                                  : "bg-gray-50/50 dark:bg-[#222222]",
-                                // Hover state
-                                "hover:bg-[rgba(37,99,235,0.05)] dark:hover:bg-[rgba(37,99,235,0.1)]",
-                                // Selected state
-                                selectedRows.includes(row.id) && "bg-[rgba(37,99,235,0.1)] dark:bg-[rgba(37,99,235,0.15)] ring-1 ring-inset ring-[rgba(37,99,235,0.3)]",
+                                  ? "bg-[var(--table-row-bg)]" 
+                                  : "bg-[var(--table-row-alt-bg)]",
+                                // Hover state - surface-3 in dark mode
+                                "hover:bg-[var(--table-row-hover)]",
+                                // Selected state - surface-elevated
+                                selectedRows.includes(row.id) && "bg-[var(--table-row-selected)] ring-1 ring-inset ring-[var(--brand-primary-hex)]/30",
                                 // Dragging state
-                                snapshot.isDragging && "bg-[rgba(37,99,235,0.15)] dark:bg-[rgba(37,99,235,0.2)] shadow-lg"
+                                snapshot.isDragging && "bg-[var(--selection-row-bg)] shadow-lg"
                               )}
                             >
                               {renderRowContent(row, rowIndex, provided.dragHandleProps, snapshot.isDragging)}
@@ -791,7 +779,7 @@ export function CatalystEnterpriseTable<T extends { id: string }>({
                 )}
               </Droppable>
             ) : (
-              <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+              <tbody>
                 {processedData.length === 0 ? (
                   <EmptyState />
                 ) : (
@@ -801,14 +789,15 @@ export function CatalystEnterpriseTable<T extends { id: string }>({
                       onClick={() => handleRowClick(row)}
                       className={cn(
                         "transition-colors cursor-pointer",
+                        "border-b border-[var(--table-row-border)]",
                         // Alternating row backgrounds
                         rowIndex % 2 === 0 
-                          ? "bg-white dark:bg-[#1a1a1a]" 
-                          : "bg-gray-50/50 dark:bg-[#222222]",
-                        // Hover state
-                        "hover:bg-[rgba(37,99,235,0.05)] dark:hover:bg-[rgba(37,99,235,0.1)]",
+                          ? "bg-[var(--table-row-bg)]" 
+                          : "bg-[var(--table-row-alt-bg)]",
+                        // Hover state - obvious per spec
+                        "hover:bg-[var(--table-row-hover)]",
                         // Selected state
-                        selectedRows.includes(row.id) && "bg-[rgba(37,99,235,0.1)] dark:bg-[rgba(37,99,235,0.15)] ring-1 ring-inset ring-[rgba(37,99,235,0.3)]"
+                        selectedRows.includes(row.id) && "bg-[var(--table-row-selected)] ring-1 ring-inset ring-[var(--brand-primary-hex)]/30"
                       )}
                     >
                       {renderRowContent(row, rowIndex)}
@@ -825,7 +814,7 @@ export function CatalystEnterpriseTable<T extends { id: string }>({
           <div className={cn(
             "fixed bottom-6 left-1/2 -translate-x-1/2 z-[1000]",
             "flex items-center gap-3 px-5 py-3 rounded-lg",
-            "bg-gray-900 dark:bg-gray-800 text-white shadow-lg"
+            "bg-[var(--surface-elevated)] text-[var(--table-text-primary)] shadow-lg"
           )}>
             <Icons.Undo />
             <span className="text-sm">{undoStack.length} unsaved change{undoStack.length !== 1 ? 's' : ''}</span>
@@ -833,7 +822,7 @@ export function CatalystEnterpriseTable<T extends { id: string }>({
               onClick={handleUndo}
               className={cn(
                 "flex items-center gap-1.5 px-3 py-1.5 rounded text-sm font-medium transition-colors",
-                "bg-[#2563eb] text-white hover:bg-[#1d4ed8]"
+                "bg-[var(--brand-primary-hex)] text-white hover:opacity-90"
               )}
             >
               Undo (Ctrl+Z)
@@ -846,7 +835,7 @@ export function CatalystEnterpriseTable<T extends { id: string }>({
           <div className={cn(
             "fixed top-6 right-6 z-[1000]",
             "flex items-center gap-2 px-5 py-3 rounded-lg",
-            "bg-[#0d9488] text-white shadow-lg"
+            "bg-[var(--status-success)] text-white shadow-lg"
           )}>
             <Icons.Check /> {toast}
           </div>
