@@ -21,7 +21,6 @@ import {
   Ban
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
@@ -49,9 +48,23 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { cn } from '@/lib/utils';
-import { useTestCycle, useUpdateTestCycle, useDuplicateCycle, useCompleteCycle, useAddCasesToCycle, useRemoveCasesFromCycle, useAssignTester } from '../hooks/useCycles';
-import { useTestRuns, useRerunFailed } from '../hooks/useExecution';
-import { useTestCases } from '../hooks/useCases';
+import { 
+  useTestCycle, 
+  useCycleScope, 
+  useTestRuns,
+  useDefectsByCycle,
+  useAddCasesToScope, 
+  useRemoveFromScope, 
+  useAssignTester,
+  useStartCycle,
+  useCompleteCycle,
+  useCloneCycle,
+  useUpdateCycle,
+  useTeamMembers,
+  useTestCases,
+  useRerunFailed,
+} from '@/hooks/test-management';
+import { useProjectStore } from '../stores/projectStore';
 import { 
   CycleScopeTable, 
   CycleRunsTable, 
@@ -72,19 +85,34 @@ const STATUS_CONFIG: Record<CycleStatus, { label: string; class: string; icon: R
   cancelled: { label: 'Cancelled', class: 'bg-danger/10 text-danger border-danger/20', icon: XCircle },
 };
 
-// Mock team members - would come from API in production
-const MOCK_TEAM_MEMBERS = [
-  { id: '1', full_name: 'Ahmed Al-Rashid', current_case_count: 12 },
-  { id: '2', full_name: 'Fatima Hassan', current_case_count: 8 },
-  { id: '3', full_name: 'Mohammed Khan', current_case_count: 15 },
-];
+// Map hook status to component status
+const mapCycleStatus = (status: string): CycleStatus => {
+  const map: Record<string, CycleStatus> = {
+    'PLANNED': 'planned',
+    'IN_PROGRESS': 'active',
+    'COMPLETED': 'completed',
+    'CANCELLED': 'cancelled',
+  };
+  return map[status] || 'planned';
+};
 
-// Default project ID - in production this would come from context
-const DEFAULT_PROJECT_ID = 'test-project-1';
+const mapStatusToHook = (status: CycleStatus): 'PLANNED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED' => {
+  const map: Record<CycleStatus, 'PLANNED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED'> = {
+    'planned': 'PLANNED',
+    'active': 'IN_PROGRESS',
+    'completed': 'COMPLETED',
+    'cancelled': 'CANCELLED',
+  };
+  return map[status];
+};
 
 export function CycleDetailPage() {
   const { cycleId } = useParams<{ cycleId: string }>();
   const navigate = useNavigate();
+  
+  // Get project ID from store
+  const selectedProjectId = useProjectStore(s => s.selectedProjectId);
+  const projectId = selectedProjectId || undefined;
   
   const [activeTab, setActiveTab] = useState('scope');
   const [editModalOpen, setEditModalOpen] = useState(false);
@@ -94,132 +122,166 @@ export function CycleDetailPage() {
   const [executionScopeId, setExecutionScopeId] = useState<string | null>(null);
   const [completeConfirmOpen, setCompleteConfirmOpen] = useState(false);
 
-  // Fetch cycle data
-  const { data: cycle, isLoading: cycleLoading } = useTestCycle(cycleId || null);
+  // Fetch cycle data using new hooks
+  const { data: cycle, isLoading: cycleLoading } = useTestCycle(cycleId);
+  
+  // Fetch scope for this cycle
+  const { data: scopeData = [] } = useCycleScope(cycleId);
   
   // Fetch runs for this cycle
-  const { data: runsData } = useTestRuns({ cycle_id: cycleId });
+  const { data: runsData = [] } = useTestRuns(cycleId);
+  
+  // Fetch defects for this cycle
+  const { data: defectsData = [] } = useDefectsByCycle(cycleId);
   
   // Fetch test cases for adding to scope
-  const { data: casesData } = useTestCases({ project_id: DEFAULT_PROJECT_ID });
+  const { data: casesData } = useTestCases(projectId);
+  
+  // Fetch team members for assignment
+  const { data: teamMembers = [] } = useTeamMembers(projectId || null);
 
   // Mutations
-  const updateCycle = useUpdateTestCycle();
-  const duplicateCycle = useDuplicateCycle();
-  const completeCycle = useCompleteCycle();
-  const addCases = useAddCasesToCycle();
-  const removeCases = useRemoveCasesFromCycle();
-  const assignTester = useAssignTester();
-  const rerunFailed = useRerunFailed();
+  const updateCycleMutation = useUpdateCycle();
+  const cloneCycleMutation = useCloneCycle();
+  const completeCycleMutation = useCompleteCycle();
+  const startCycleMutation = useStartCycle();
+  const addCasesMutation = useAddCasesToScope();
+  const removeCasesMutation = useRemoveFromScope();
+  const assignTesterMutation = useAssignTester();
+  const rerunFailedMutation = useRerunFailed();
 
-  // Calculate stats
+  // Calculate stats from cycle data
   const stats = useMemo(() => {
-    if (!cycle?.statistics) {
+    if (!cycle) {
       return { total: 0, passed: 0, failed: 0, blocked: 0, notRun: 0, progress: 0, passRate: 0 };
     }
-    const s = cycle.statistics;
-    const executed = s.total_cases - s.not_run_count;
+    const total = cycle.total_cases || 0;
+    const passed = cycle.passed_count || 0;
+    const failed = cycle.failed_count || 0;
+    const blocked = cycle.blocked_count || 0;
+    const notRun = cycle.not_run_count || 0;
+    const executed = total - notRun;
     return {
-      total: s.total_cases,
-      passed: s.passed_count,
-      failed: s.failed_count,
-      blocked: s.blocked_count,
-      notRun: s.not_run_count,
-      progress: s.total_cases > 0 ? Math.round((executed / s.total_cases) * 100) : 0,
-      passRate: executed > 0 ? Math.round((s.passed_count / executed) * 100) : 0,
+      total,
+      passed,
+      failed,
+      blocked,
+      notRun,
+      progress: total > 0 ? Math.round((executed / total) * 100) : 0,
+      passRate: executed > 0 ? Math.round((passed / executed) * 100) : 0,
     };
   }, [cycle]);
 
-  const runs = runsData?.data || [];
-  const cases = casesData?.data || [];
+  // Map scope data to component format
+  const scope = useMemo(() => scopeData.map(s => ({
+    id: s.id,
+    cycle_id: s.cycle_id,
+    case_id: s.case_id,
+    assigned_to: s.assigned_to,
+    current_status: s.status?.toLowerCase() || 'not_run',
+    latest_run_id: s.last_run_id,
+    created_at: s.created_at,
+    updated_at: s.created_at,
+    test_case: s.test_case ? {
+      id: s.test_case.id,
+      case_key: s.test_case.key,
+      title: s.test_case.title,
+      priority: s.test_case.priority,
+    } : undefined,
+    assignee: s.assignee,
+  })), [scopeData]);
+
+  // Map runs to component format
+  const runs = useMemo(() => runsData.map(r => ({
+    id: r.id,
+    cycle_id: r.cycle_id,
+    scope_id: r.scope_id,
+    case_id: r.case_id,
+    run_number: r.run_number,
+    status: r.status?.toLowerCase() || 'not_run',
+    executed_by: r.executed_by,
+    started_at: r.started_at,
+    completed_at: r.completed_at,
+    duration_seconds: r.duration_seconds,
+    test_case: r.test_case ? {
+      id: r.test_case.id,
+      case_key: r.test_case.key,
+      title: r.test_case.title,
+    } : undefined,
+    executor: r.executor,
+  })), [runsData]);
+
+  // Map cases for adding to scope
+  const cases = casesData?.cases || [];
 
   // Handlers
   const handleBack = () => navigate('/tests/cycles');
 
   const handleStatusChange = async (status: CycleStatus) => {
-    if (!cycle) return;
+    if (!cycle || !projectId) return;
     if (status === 'completed') {
       setCompleteConfirmOpen(true);
       return;
     }
-    try {
-      await updateCycle.mutateAsync({ id: cycle.id, status });
-    } catch (error) {
-      // Handled by mutation
-    }
+    updateCycleMutation.mutate({ 
+      id: cycle.id, 
+      status: mapStatusToHook(status),
+      project_id: projectId 
+    });
   };
 
   const handleComplete = async () => {
-    if (!cycle) return;
-    try {
-      await completeCycle.mutateAsync(cycle.id);
-      setCompleteConfirmOpen(false);
-    } catch (error) {
-      // Handled by mutation
-    }
+    if (!cycle || !projectId) return;
+    completeCycleMutation.mutate({ id: cycle.id, project_id: projectId }, {
+      onSuccess: () => setCompleteConfirmOpen(false),
+    });
   };
 
   const handleClone = async () => {
-    if (!cycle) return;
-    try {
-      const newCycle = await duplicateCycle.mutateAsync({ id: cycle.id });
-      navigate(`/tests/cycles/${newCycle.id}`);
-    } catch (error) {
-      // Handled by mutation
-    }
+    if (!cycle || !projectId) return;
+    cloneCycleMutation.mutate({ id: cycle.id, project_id: projectId }, {
+      onSuccess: (newCycle) => {
+        if (newCycle?.id) navigate(`/tests/cycles/${newCycle.id}`);
+      },
+    });
   };
 
   const handleRerunFailed = async () => {
-    if (!cycle) return;
-    try {
-      await rerunFailed.mutateAsync({ cycleId: cycle.id });
-    } catch (error) {
-      // Handled by mutation
-    }
+    if (!cycle || !projectId) return;
+    rerunFailedMutation.mutate({ cycle_id: cycle.id });
   };
 
   const handleAddCases = async (caseIds: string[]) => {
-    if (!cycle) return;
-    try {
-      await addCases.mutateAsync({ cycleId: cycle.id, caseIds });
-      setAddCasesModalOpen(false);
-    } catch (error) {
-      // Handled by mutation
-    }
+    if (!cycle || !projectId) return;
+    addCasesMutation.mutate({ cycle_id: cycle.id, case_ids: caseIds }, {
+      onSuccess: () => setAddCasesModalOpen(false),
+    });
   };
 
   const handleRemoveFromScope = async (scopeIds: string[]) => {
-    if (!cycle) return;
-    try {
-      await removeCases.mutateAsync({ cycleId: cycle.id, scopeIds });
-    } catch (error) {
-      // Handled by mutation
-    }
+    if (!cycle || !projectId) return;
+    removeCasesMutation.mutate({ cycle_id: cycle.id, scope_ids: scopeIds });
   };
 
   const handleAssign = async (data: { mode: 'single' | 'round-robin'; userId?: string; userIds?: string[] }) => {
-    if (!cycle || selectedScopeIds.length === 0) return;
+    if (!cycle || selectedScopeIds.length === 0 || !projectId) return;
     
-    try {
-      if (data.mode === 'single' && data.userId) {
-        // Assign all selected to single user
-        for (const scopeId of selectedScopeIds) {
-          await assignTester.mutateAsync({ cycleId: cycle.id, scopeId, userId: data.userId });
-        }
-      } else if (data.mode === 'round-robin' && data.userIds && data.userIds.length >= 2) {
-        // Round-robin assignment
-        const userIds = data.userIds;
-        for (let i = 0; i < selectedScopeIds.length; i++) {
-          const userId = userIds[i % userIds.length];
-          await assignTester.mutateAsync({ cycleId: cycle.id, scopeId: selectedScopeIds[i], userId });
+    if (data.mode === 'single' && data.userId) {
+      // Assign all selected to single user
+      assignTesterMutation.mutate({ cycle_id: cycle.id, scope_ids: selectedScopeIds, assigned_to: data.userId });
+    } else if (data.mode === 'round-robin' && data.userIds && data.userIds.length >= 2) {
+      // For round-robin, split into groups and assign
+      const userIds = data.userIds;
+      for (let i = 0; i < userIds.length; i++) {
+        const scopeSubset = selectedScopeIds.filter((_, idx) => idx % userIds.length === i);
+        if (scopeSubset.length > 0) {
+          assignTesterMutation.mutate({ cycle_id: cycle.id, scope_ids: scopeSubset, assigned_to: userIds[i] });
         }
       }
-      setAssignModalOpen(false);
-      setSelectedScopeIds([]);
-      toast.success('Cases assigned successfully');
-    } catch (error) {
-      // Handled by mutation
     }
+    setAssignModalOpen(false);
+    setSelectedScopeIds([]);
+    toast.success('Cases assigned successfully');
   };
 
   const handleExecute = (scopeId: string) => {
@@ -228,17 +290,21 @@ export function CycleDetailPage() {
 
   const handleViewRuns = (scopeId: string) => {
     setActiveTab('runs');
-    // Could add additional filtering logic
   };
 
   const handleUpdate = async (data: any) => {
-    if (!cycle) return;
-    try {
-      await updateCycle.mutateAsync({ id: cycle.id, ...data });
-      setEditModalOpen(false);
-    } catch (error) {
-      // Handled by mutation
-    }
+    if (!cycle || !projectId) return;
+    updateCycleMutation.mutate({ 
+      id: cycle.id, 
+      name: data.title || data.name,
+      description: data.description,
+      environment: data.environment_id,
+      planned_start_date: data.planned_start,
+      planned_end_date: data.planned_end,
+      project_id: projectId 
+    }, {
+      onSuccess: () => setEditModalOpen(false),
+    });
   };
 
   if (cycleLoading) {
@@ -261,9 +327,11 @@ export function CycleDetailPage() {
     );
   }
 
-  const statusInfo = STATUS_CONFIG[cycle.status];
+  // Map cycle status for display
+  const displayStatus = mapCycleStatus(cycle.status);
+  const statusInfo = STATUS_CONFIG[displayStatus];
   const StatusIcon = statusInfo.icon;
-  const isReadOnly = cycle.status === 'completed' || cycle.status === 'cancelled';
+  const isReadOnly = displayStatus === 'completed' || displayStatus === 'cancelled';
 
   return (
     <div className="flex flex-col gap-6">
@@ -283,9 +351,9 @@ export function CycleDetailPage() {
           <div className="space-y-1">
             <div className="flex items-center gap-3">
               <h2 className="text-2xl font-semibold">
-                {cycle.cycle_key}: {cycle.title}
+                {cycle.key}: {cycle.name}
               </h2>
-              <Select value={cycle.status} onValueChange={(v) => handleStatusChange(v as CycleStatus)}>
+              <Select value={displayStatus} onValueChange={(v) => handleStatusChange(v as CycleStatus)}>
                 <SelectTrigger className={cn('w-[140px] h-8', statusInfo.class)}>
                   <StatusIcon className="h-3.5 w-3.5 mr-1" />
                   <SelectValue />
@@ -303,9 +371,9 @@ export function CycleDetailPage() {
               </Select>
             </div>
             <p className="text-sm text-muted-foreground">
-              {cycle.environment?.name && `${cycle.environment.name} • `}
-              {cycle.planned_start && cycle.planned_end && (
-                `${format(new Date(cycle.planned_start), 'MMM d')} - ${format(new Date(cycle.planned_end), 'MMM d, yyyy')}`
+              {cycle.environment && `${cycle.environment} • `}
+              {cycle.planned_start_date && cycle.planned_end_date && (
+                `${format(new Date(cycle.planned_start_date), 'MMM d')} - ${format(new Date(cycle.planned_end_date), 'MMM d, yyyy')}`
               )}
             </p>
           </div>
@@ -324,7 +392,7 @@ export function CycleDetailPage() {
                 Re-run Failed
               </Button>
             )}
-            {cycle.status === 'active' && (
+            {displayStatus === 'active' && (
               <Button size="sm" onClick={() => setCompleteConfirmOpen(true)}>
                 <CheckCircle className="h-4 w-4 mr-1" />
                 Complete Cycle
@@ -431,7 +499,7 @@ export function CycleDetailPage() {
             Runs ({runs.length})
           </TabsTrigger>
           <TabsTrigger value="defects">
-            Defects (0)
+            Defects ({defectsData.length})
           </TabsTrigger>
           <TabsTrigger value="reports">
             Reports
@@ -440,7 +508,7 @@ export function CycleDetailPage() {
 
         <TabsContent value="scope" className="mt-4">
           <CycleScopeTable
-            scope={cycle.scope || []}
+            scope={scope as any}
             onExecute={handleExecute}
             onAddCases={() => setAddCasesModalOpen(true)}
             onAssign={(ids) => {
@@ -455,7 +523,7 @@ export function CycleDetailPage() {
 
         <TabsContent value="runs" className="mt-4">
           <CycleRunsTable
-            runs={runs}
+            runs={runs as any}
             onViewRun={(runId) => {
               // Could open a run detail modal
               toast.info('Run details coming soon');
@@ -465,7 +533,7 @@ export function CycleDetailPage() {
 
         <TabsContent value="defects" className="mt-4">
           <CycleDefectsTable
-            defects={[]}
+            defects={defectsData as any}
             onViewDefect={(defectId) => {
               navigate(`/tests/defects?defectId=${defectId}`);
             }}
@@ -474,12 +542,12 @@ export function CycleDetailPage() {
 
         <TabsContent value="reports" className="mt-4">
           <CycleReportsTab
-            statistics={cycle.statistics || {
-              total_cases: 0,
-              not_run_count: 0,
-              passed_count: 0,
-              failed_count: 0,
-              blocked_count: 0,
+            statistics={{
+              total_cases: stats.total,
+              not_run_count: stats.notRun,
+              passed_count: stats.passed,
+              failed_count: stats.failed,
+              blocked_count: stats.blocked,
             }}
           />
         </TabsContent>
@@ -489,27 +557,39 @@ export function CycleDetailPage() {
       <CreateCycleModal
         open={editModalOpen}
         onOpenChange={setEditModalOpen}
-        cycle={cycle}
+        cycle={{
+          id: cycle.id,
+          project_id: cycle.project_id,
+          cycle_key: cycle.key,
+          title: cycle.name,
+          description: cycle.description,
+          status: displayStatus,
+          planned_start: cycle.planned_start_date,
+          planned_end: cycle.planned_end_date,
+          environment_id: cycle.environment || undefined,
+          created_at: cycle.created_at,
+          updated_at: cycle.updated_at,
+        } as any}
         onSubmit={handleUpdate}
-        isLoading={updateCycle.isPending}
+        isLoading={updateCycleMutation.isPending}
       />
 
       <AddCasesToScopeModal
         open={addCasesModalOpen}
         onOpenChange={setAddCasesModalOpen}
-        cases={cases}
-        existingScope={cycle.scope || []}
+        cases={cases.map(c => ({ ...c, case_key: c.key, is_template: false })) as any}
+        existingScope={scope as any}
         onSubmit={handleAddCases}
-        isLoading={addCases.isPending}
+        isLoading={addCasesMutation.isPending}
       />
 
       <AssignTestersModal
         open={assignModalOpen}
         onOpenChange={setAssignModalOpen}
         selectedCount={selectedScopeIds.length}
-        teamMembers={MOCK_TEAM_MEMBERS}
+        teamMembers={teamMembers.map(m => ({ id: m.id, full_name: m.full_name, current_case_count: 0 }))}
         onSubmit={handleAssign}
-        isLoading={assignTester.isPending}
+        isLoading={assignTesterMutation.isPending}
       />
 
       {/* Execution Modal */}
