@@ -9,6 +9,7 @@ import { Outlet, useLocation } from 'react-router-dom';
 const getTMTitle = (pathname: string): string | null => {
   // Pages with their own toolbar/header don't need module header
   if (pathname.startsWith('/tests/cases')) return null;
+  if (pathname.startsWith('/tests/command-center')) return null;
   
   if (pathname.startsWith('/tests/my-work')) return 'My Work';
   if (pathname.startsWith('/tests/cycles/')) return 'Cycle Details';
@@ -16,7 +17,7 @@ const getTMTitle = (pathname: string): string | null => {
   if (pathname.startsWith('/tests/defects')) return 'Defects';
   if (pathname.startsWith('/tests/reports')) return 'Reports';
   if (pathname.startsWith('/tests/settings')) return 'Settings';
-  return 'Tests';
+  return 'Command Center';
 };
 
 export function TestManagementContent() {

@@ -299,17 +299,12 @@ export function CommandCenterPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold text-text-primary">Command Center</h1>
-        <div className="flex items-center gap-3">
-          <span className="text-sm text-text-secondary">
-            Last updated: {new Date().toLocaleTimeString()}
-          </span>
-          <button 
-            onClick={handleRefresh} 
-            className="p-2 hover:bg-surface-2 rounded-lg transition-all text-text-secondary hover:text-text-primary"
-          >
-            <RefreshCw className="h-4 w-4" />
-          </button>
-        </div>
+        <button 
+          onClick={handleRefresh} 
+          className="p-2 hover:bg-surface-2 rounded-lg transition-all text-text-secondary hover:text-text-primary"
+        >
+          <RefreshCw className="h-4 w-4" />
+        </button>
       </div>
 
       {/* Primary KPIs */}
