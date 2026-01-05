@@ -1,8 +1,8 @@
 // src/components/work-manager/WorkManagerSettings.tsx
-// Settings & Configuration View
+// Settings & Configuration View - 9.8 Executive UX + Dark Mode Enforcement
 
 import { useState } from 'react';
-import { Plus, Edit2, Trash2, GripVertical, X } from 'lucide-react';
+import { Plus, Edit2, Trash2, GripVertical } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -101,13 +101,13 @@ export function WorkManagerSettings() {
 
   const statusOptions = ['Backlog', 'Planned', 'In Progress', 'Waiting', 'Done'];
 
-  // Get status badge class
+  // Get status badge styling - using semantic tokens
   const getStatusBadgeClass = (status: string) => {
     switch (status) {
-      case 'Done': return 'bg-status-success-bg text-status-success';
-      case 'In Progress': return 'bg-status-warning-bg text-status-warning';
-      case 'Planned': return 'bg-status-info-bg text-status-info';
-      default: return 'bg-surface-muted text-text-secondary';
+      case 'Done': return 'bg-success/10 text-success';
+      case 'In Progress': return 'bg-warning/10 text-warning';
+      case 'Planned': return 'bg-primary/10 text-primary';
+      default: return 'bg-muted text-muted-foreground';
     }
   };
 
@@ -224,23 +224,23 @@ export function WorkManagerSettings() {
 
   return (
     <div className="max-w-4xl">
-      {/* Header */}
+      {/* Header - Clear intent */}
       <div className="mb-6">
-        <h2 className="text-[16px] font-semibold text-foreground">Settings</h2>
-        <p className="text-[13px] text-muted-foreground">Configure your Work Manager preferences</p>
+        <h2 className="text-lg font-semibold text-foreground">Settings</h2>
+        <p className="text-sm text-muted-foreground">Configure your Work Manager preferences</p>
       </div>
 
-      {/* Tab Navigation */}
-      <div className="flex border-b border-border-default mb-6">
+      {/* Tab Navigation - Calm, precise, unambiguous */}
+      <div className="flex border-b border-border mb-6">
         {tabs.map((tab) => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
             className={cn(
-              'px-4 py-3 text-[13px] font-medium border-b-2 transition-colors -mb-px',
+              'px-4 py-3 text-sm font-medium border-b-2 transition-colors -mb-px',
               activeTab === tab.id
-                ? 'text-brand-primary border-brand-primary'
-                : 'text-muted-foreground border-transparent hover:text-foreground'
+                ? 'text-primary border-primary'
+                : 'text-muted-foreground border-transparent hover:text-foreground hover:border-border'
             )}
           >
             {tab.label}
@@ -250,11 +250,11 @@ export function WorkManagerSettings() {
 
       {/* Tab Content */}
       {activeTab === 'columns' && (
-        <div className="space-y-6">
+        <div className="space-y-5">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-[14px] font-semibold text-foreground">Default Board Columns</h3>
-              <p className="text-[12px] text-muted-foreground mt-1">Configure the default columns and WIP limits for new boards</p>
+              <h3 className="text-sm font-semibold text-foreground">Default Board Columns</h3>
+              <p className="text-xs text-muted-foreground mt-1">Configure the default columns for task boards</p>
             </div>
             <Button variant="outline" size="sm" className="gap-2" onClick={handleOpenAddColumn}>
               <Plus className="w-4 h-4" />
@@ -262,48 +262,53 @@ export function WorkManagerSettings() {
             </Button>
           </div>
 
-          <div className="bg-surface-card border border-border-default rounded-lg overflow-hidden">
+          <div className="bg-card border border-border rounded-lg overflow-hidden">
             <table className="w-full">
               <thead>
-                <tr className="bg-surface-muted">
+                <tr className="bg-muted/50 border-b border-border">
                   <th className="w-10"></th>
-                  <th className="text-left px-4 py-3 text-[11px] font-semibold text-text-muted uppercase tracking-wide">Column Name</th>
-                  <th className="text-left px-4 py-3 text-[11px] font-semibold text-text-muted uppercase tracking-wide">Status Mapping</th>
-                  
-                  <th className="text-center px-4 py-3 text-[11px] font-semibold text-text-muted uppercase tracking-wide">Position</th>
-                  <th className="text-right px-4 py-3 text-[11px] font-semibold text-text-muted uppercase tracking-wide">Actions</th>
+                  <th className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Column Name</th>
+                  <th className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Status Mapping</th>
+                  <th className="text-center px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Position</th>
+                  <th className="text-right px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {columns.map((column, index) => (
-                  <tr key={column.id} className="border-b border-border-subtle hover:bg-surface-muted">
+                  <tr 
+                    key={column.id} 
+                    className={cn(
+                      "border-b border-border hover:bg-muted/30 transition-colors",
+                      index % 2 === 1 && "bg-muted/10"
+                    )}
+                  >
                     <td className="px-2 py-3 text-center">
-                      <GripVertical className="w-4 h-4 text-text-muted cursor-grab" />
+                      <GripVertical className="w-4 h-4 text-muted-foreground cursor-grab" />
                     </td>
-                    <td className="px-4 py-3 text-[13px] font-medium text-foreground">{column.name}</td>
+                    <td className="px-4 py-3 text-sm font-medium text-foreground">{column.name}</td>
                     <td className="px-4 py-3">
-                      <span className={cn('px-2 py-0.5 text-[11px] font-medium rounded', getStatusBadgeClass(column.status))}>
+                      <span className={cn('px-2.5 py-1 text-xs font-medium rounded-md', getStatusBadgeClass(column.status))}>
                         {column.status}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-center text-[13px] text-text-muted">
+                    <td className="px-4 py-3 text-center text-sm text-muted-foreground">
                       {index + 1}
                     </td>
                     <td className="px-4 py-3 text-right">
-                      <div className="flex items-center justify-end gap-2">
+                      <div className="flex items-center justify-end gap-1">
                         <button
                           onClick={() => handleOpenEditColumn(column)}
-                          className="p-1.5 rounded hover:bg-surface-hover"
+                          className="p-1.5 rounded-md hover:bg-muted transition-colors"
                           title="Edit column"
                         >
-                          <Edit2 className="w-4 h-4 text-text-muted" />
+                          <Edit2 className="w-4 h-4 text-muted-foreground" />
                         </button>
                         <button
                           onClick={() => handleOpenDeleteColumn(column)}
-                          className="p-1.5 rounded hover:bg-surface-hover hover:text-red-500"
+                          className="p-1.5 rounded-md hover:bg-muted hover:text-destructive transition-colors"
                           title="Delete column"
                         >
-                          <Trash2 className="w-4 h-4 text-text-muted" />
+                          <Trash2 className="w-4 h-4 text-muted-foreground" />
                         </button>
                       </div>
                     </td>
@@ -313,18 +318,18 @@ export function WorkManagerSettings() {
             </table>
           </div>
 
-          <div className="text-[12px] text-text-muted">
-            <strong>Note:</strong> WIP (Work In Progress) limits help teams maintain focus by limiting the number of tasks that can be in a column simultaneously.
-          </div>
+          <p className="text-xs text-muted-foreground">
+            <span className="font-medium">Note:</span> WIP limits help teams maintain focus by limiting concurrent tasks per column.
+          </p>
         </div>
       )}
 
       {activeTab === 'recurrence' && (
-        <div className="space-y-6">
+        <div className="space-y-5">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-[14px] font-semibold text-foreground">Recurrence Templates</h3>
-              <p className="text-[12px] text-muted-foreground mt-1">Manage templates for recurring tasks</p>
+              <h3 className="text-sm font-semibold text-foreground">Recurrence Templates</h3>
+              <p className="text-xs text-muted-foreground mt-1">Manage templates for recurring tasks</p>
             </div>
             <Button variant="outline" size="sm" className="gap-2" onClick={handleOpenAddTemplate}>
               <Plus className="w-4 h-4" />
@@ -332,23 +337,29 @@ export function WorkManagerSettings() {
             </Button>
           </div>
 
-          <div className="bg-surface-card border border-border-default rounded-lg overflow-hidden">
+          <div className="bg-card border border-border rounded-lg overflow-hidden">
             <table className="w-full">
               <thead>
-                <tr className="bg-surface-muted">
-                  <th className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wide">Template Name</th>
-                  <th className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wide">Frequency</th>
-                  <th className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wide">Next Run</th>
-                  <th className="text-center px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wide">Active</th>
-                  <th className="text-right px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wide">Actions</th>
+                <tr className="bg-muted/50 border-b border-border">
+                  <th className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Template Name</th>
+                  <th className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Frequency</th>
+                  <th className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Next Run</th>
+                  <th className="text-center px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Active</th>
+                  <th className="text-right px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {templates.map((template) => (
-                  <tr key={template.id} className="border-b border-border-subtle hover:bg-muted/50 transition-colors">
-                    <td className="px-4 py-3 text-[13px] font-medium text-foreground">{template.name}</td>
-                    <td className="px-4 py-3 text-[13px] text-foreground/70">{template.frequency}</td>
-                    <td className="px-4 py-3 text-[13px] text-muted-foreground">{template.nextRun}</td>
+                {templates.map((template, index) => (
+                  <tr 
+                    key={template.id} 
+                    className={cn(
+                      "border-b border-border hover:bg-muted/30 transition-colors",
+                      index % 2 === 1 && "bg-muted/10"
+                    )}
+                  >
+                    <td className="px-4 py-3 text-sm font-medium text-foreground">{template.name}</td>
+                    <td className="px-4 py-3 text-sm text-muted-foreground">{template.frequency}</td>
+                    <td className="px-4 py-3 text-sm text-muted-foreground">{template.nextRun}</td>
                     <td className="px-4 py-3 text-center">
                       <Switch
                         checked={template.active}
@@ -369,18 +380,18 @@ export function WorkManagerSettings() {
       )}
 
       {activeTab === 'notifications' && (
-        <div className="space-y-6">
+        <div className="space-y-5">
           <div>
-            <h3 className="text-[14px] font-semibold text-foreground">Notification Preferences</h3>
-            <p className="text-[12px] text-muted-foreground mt-1">Configure when and how you receive notifications</p>
+            <h3 className="text-sm font-semibold text-foreground">Notification Preferences</h3>
+            <p className="text-xs text-muted-foreground mt-1">Configure when and how you receive notifications</p>
           </div>
 
-          <div className="bg-surface-card border border-border-default rounded-lg divide-y divide-border-subtle">
+          <div className="bg-card border border-border rounded-lg divide-y divide-border">
             {notifications.map((notification) => (
-              <div key={notification.id} className="flex items-center justify-between p-4 hover:bg-muted/50 transition-colors">
+              <div key={notification.id} className="flex items-center justify-between p-4 hover:bg-muted/30 transition-colors">
                 <div>
-                  <span className="text-[13px] font-medium text-foreground">{notification.label}</span>
-                  <p className="text-[12px] text-muted-foreground mt-0.5">{notification.description}</p>
+                  <span className="text-sm font-medium text-foreground">{notification.label}</span>
+                  <p className="text-xs text-muted-foreground mt-0.5">{notification.description}</p>
                 </div>
                 <Switch
                   checked={notification.checked}
@@ -393,30 +404,30 @@ export function WorkManagerSettings() {
       )}
 
       {activeTab === 'integrations' && (
-        <div className="space-y-6">
+        <div className="space-y-5">
           <div>
-            <h3 className="text-[14px] font-semibold text-foreground">Integrations</h3>
-            <p className="text-[12px] text-muted-foreground mt-1">Connect Work Manager with other Catalyst modules</p>
+            <h3 className="text-sm font-semibold text-foreground">Integrations</h3>
+            <p className="text-xs text-muted-foreground mt-1">Connect Work Manager with other Catalyst modules</p>
           </div>
 
-          <div className="grid gap-4">
+          <div className="grid gap-3">
             {integrations.map((integration) => (
               <div
                 key={integration.name}
-                className="flex items-center justify-between p-4 bg-surface-card border border-border-default rounded-lg hover:bg-muted/50 transition-colors"
+                className="flex items-center justify-between p-4 bg-card border border-border rounded-lg hover:bg-muted/30 transition-colors"
               >
                 <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-lg bg-surface-muted flex items-center justify-center text-lg">
+                  <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center text-lg">
                     {integration.icon}
                   </div>
                   <div>
-                    <span className="text-[13px] font-medium text-foreground">{integration.name}</span>
-                    <p className="text-[12px] text-muted-foreground">{integration.description}</p>
+                    <span className="text-sm font-medium text-foreground">{integration.name}</span>
+                    <p className="text-xs text-muted-foreground">{integration.description}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
                   {integration.connected ? (
-                    <span className="px-2 py-1 bg-status-success-bg text-status-success text-[11px] font-medium rounded">
+                    <span className="px-2.5 py-1 bg-success/10 text-success text-xs font-medium rounded-md">
                       Connected
                     </span>
                   ) : (
