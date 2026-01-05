@@ -236,7 +236,7 @@ export function ExecutionRunnerPage() {
       />
 
       {/* Main Content */}
-      <main className="flex flex-1 overflow-hidden">
+      <main className="flex flex-1 overflow-hidden animate-fade-in" style={{ animationDelay: '100ms' }}>
         {/* Execution Panel - Left 65% */}
         <TestCasePanel
           testCase={currentScope?.test_case}
