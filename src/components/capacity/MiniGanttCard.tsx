@@ -165,8 +165,8 @@ export function MiniGanttCard({ allocations, className, showPeriodTotals = true,
   if (allocations.length === 0) {
     return (
       <div className={cn("mb-2", className)}>
-        <div className="h-12 bg-muted/50 rounded border border-dashed border-border flex items-center justify-center">
-          <span className="text-[10px] text-muted-foreground">No allocations — fully available</span>
+        <div className="h-12 bg-muted/50 dark:bg-[var(--surface-2)] rounded border border-dashed border-border dark:border-[var(--border-subtle)] flex items-center justify-center">
+          <span className="text-[10px] text-muted-foreground dark:text-[var(--text-secondary)]">No allocations — fully available</span>
         </div>
       </div>
     );
@@ -176,21 +176,21 @@ export function MiniGanttCard({ allocations, className, showPeriodTotals = true,
     <TooltipProvider>
       <div className={cn("mb-2", className)}>
         {/* Month labels */}
-        <div className="flex text-[9px] text-muted-foreground mb-0.5 px-0.5">
+        <div className="flex text-[9px] text-muted-foreground dark:text-[var(--text-secondary)] mb-0.5 px-0.5">
           {monthsData.map((month, i) => (
             <div key={i} className="flex-1 text-center truncate">{month.label}</div>
           ))}
         </div>
         
         {/* Timeline container */}
-        <div className="relative bg-muted/50 rounded border border-border overflow-hidden"
+        <div className="relative bg-muted/50 dark:bg-[var(--surface-2)] rounded border border-border dark:border-[var(--border-subtle)] overflow-hidden"
           style={{ height: `${Math.max(28, bars.length * 14 + 10)}px` }}
         >
           {/* Conflict zone backgrounds */}
           {monthsData.map((month, i) => month.isConflict && (
             <div
               key={`conflict-${i}`}
-              className="absolute top-0 bottom-0 bg-red-100/60 dark:bg-red-900/30"
+              className="absolute top-0 bottom-0 bg-red-100/60 dark:bg-red-900/40"
               style={{
                 left: `${(i / 6) * 100}%`,
                 width: `${100 / 6}%`,
@@ -201,7 +201,7 @@ export function MiniGanttCard({ allocations, className, showPeriodTotals = true,
           {/* Grid lines for months */}
           <div className="absolute inset-0 flex">
             {monthsData.map((_, i) => (
-              <div key={i} className="flex-1 border-r border-border/50 last:border-r-0" />
+              <div key={i} className="flex-1 border-r border-border/50 dark:border-[var(--border-subtle)] last:border-r-0" />
             ))}
           </div>
           
@@ -217,14 +217,14 @@ export function MiniGanttCard({ allocations, className, showPeriodTotals = true,
           {contractEndPosition !== null && (
             <>
               <div 
-                className="absolute top-0 bottom-0 w-0.5 bg-amber-500 z-15"
+                className="absolute top-0 bottom-0 w-0.5 bg-amber-500 dark:bg-amber-400 z-15"
                 style={{ left: `${contractEndPosition}%` }}
               >
                 <div className="absolute -top-0.5 left-1/2 -translate-x-1/2 text-[7px]">🔒</div>
               </div>
               {/* Locked zone after contract end */}
               <div 
-                className="absolute top-0 bottom-0 bg-muted/60 z-5"
+                className="absolute top-0 bottom-0 bg-muted/60 dark:bg-[var(--surface-3)]/60 z-5"
                 style={{ 
                   left: `${contractEndPosition}%`,
                   right: 0,
@@ -259,10 +259,10 @@ export function MiniGanttCard({ allocations, className, showPeriodTotals = true,
                     </span>
                   </div>
                 </TooltipTrigger>
-                <TooltipContent side="top" className="bg-popover text-popover-foreground text-xs p-2 shadow-xl border border-border">
+                <TooltipContent side="top" className="bg-[var(--surface-elevated)] dark:bg-[var(--surface-elevated)] text-foreground dark:text-[var(--text-primary)] text-xs p-2 shadow-xl border border-border dark:border-[var(--border-subtle)]">
                   <p className="font-semibold">{bar.name}</p>
-                  <p className="text-muted-foreground">{bar.percent}% allocation</p>
-                  <p className="text-muted-foreground/75 text-[10px]">
+                  <p className="text-muted-foreground dark:text-[var(--text-secondary)]">{bar.percent}% allocation</p>
+                  <p className="text-muted-foreground/75 dark:text-[var(--text-tertiary)] text-[10px]">
                     {format(bar.startDate, 'MMM d, yyyy')} — {bar.endDate ? format(bar.endDate, 'MMM d, yyyy') : 'Ongoing'}
                   </p>
                 </TooltipContent>
@@ -278,7 +278,7 @@ export function MiniGanttCard({ allocations, className, showPeriodTotals = true,
               <div key={i} className="flex-1 text-center">
                 <span className={cn(
                   "font-semibold",
-                  month.total === 0 && "text-muted-foreground/50",
+                  month.total === 0 && "text-muted-foreground/50 dark:text-[var(--text-tertiary)]",
                   month.total > 0 && month.total < 80 && "text-teal-600 dark:text-teal-400",
                   month.total >= 80 && month.total <= 100 && "text-blue-600 dark:text-blue-400",
                   month.total > 100 && "text-red-600 dark:text-red-400"
