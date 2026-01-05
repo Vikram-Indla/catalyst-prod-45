@@ -2224,6 +2224,156 @@ export type Database = {
           },
         ]
       }
+      daily_execution_stats: {
+        Row: {
+          avg_duration_seconds: number | null
+          blocked_count: number | null
+          cycle_id: string | null
+          defects_found: number | null
+          failed_count: number | null
+          id: string
+          pass_rate: number | null
+          passed_count: number | null
+          project_id: string
+          skipped_count: number | null
+          stat_date: string
+          total_duration_seconds: number | null
+          total_executions: number | null
+          unique_cases_executed: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          avg_duration_seconds?: number | null
+          blocked_count?: number | null
+          cycle_id?: string | null
+          defects_found?: number | null
+          failed_count?: number | null
+          id?: string
+          pass_rate?: number | null
+          passed_count?: number | null
+          project_id: string
+          skipped_count?: number | null
+          stat_date: string
+          total_duration_seconds?: number | null
+          total_executions?: number | null
+          unique_cases_executed?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          avg_duration_seconds?: number | null
+          blocked_count?: number | null
+          cycle_id?: string | null
+          defects_found?: number | null
+          failed_count?: number | null
+          id?: string
+          pass_rate?: number | null
+          passed_count?: number | null
+          project_id?: string
+          skipped_count?: number | null
+          stat_date?: string
+          total_duration_seconds?: number | null
+          total_executions?: number | null
+          unique_cases_executed?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "daily_execution_stats_cycle_id_fkey"
+            columns: ["cycle_id"]
+            isOneToOne: false
+            referencedRelation: "tm_test_cycles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "daily_execution_stats_cycle_id_fkey"
+            columns: ["cycle_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_cycle_progress"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "daily_execution_stats_cycle_id_fkey"
+            columns: ["cycle_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_execution_by_assignee"
+            referencedColumns: ["cycle_id"]
+          },
+          {
+            foreignKeyName: "daily_execution_stats_cycle_id_fkey"
+            columns: ["cycle_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_my_work"
+            referencedColumns: ["context_id"]
+          },
+          {
+            foreignKeyName: "daily_execution_stats_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      dashboard_widgets: {
+        Row: {
+          config: Json
+          created_at: string | null
+          grid_h: number
+          grid_w: number
+          grid_x: number
+          grid_y: number
+          id: string
+          name: string
+          project_id: string
+          updated_at: string | null
+          user_id: string
+          widget_type: Database["public"]["Enums"]["widget_type"]
+        }
+        Insert: {
+          config?: Json
+          created_at?: string | null
+          grid_h?: number
+          grid_w?: number
+          grid_x?: number
+          grid_y?: number
+          id?: string
+          name: string
+          project_id: string
+          updated_at?: string | null
+          user_id: string
+          widget_type: Database["public"]["Enums"]["widget_type"]
+        }
+        Update: {
+          config?: Json
+          created_at?: string | null
+          grid_h?: number
+          grid_w?: number
+          grid_x?: number
+          grid_y?: number
+          id?: string
+          name?: string
+          project_id?: string
+          updated_at?: string | null
+          user_id?: string
+          widget_type?: Database["public"]["Enums"]["widget_type"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dashboard_widgets_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dashboard_widgets_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       defect_attachments: {
         Row: {
           capture_type: string
@@ -5786,6 +5936,76 @@ export type Database = {
             columns: ["team_id"]
             isOneToOne: false
             referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      generated_reports: {
+        Row: {
+          expires_at: string | null
+          file_size_bytes: number | null
+          file_url: string | null
+          format: Database["public"]["Enums"]["report_format"]
+          generated_at: string | null
+          generated_by: string | null
+          id: string
+          name: string
+          parameters: Json
+          project_id: string
+          report_config_id: string | null
+          report_type: Database["public"]["Enums"]["report_type"]
+          snapshot_data: Json | null
+        }
+        Insert: {
+          expires_at?: string | null
+          file_size_bytes?: number | null
+          file_url?: string | null
+          format: Database["public"]["Enums"]["report_format"]
+          generated_at?: string | null
+          generated_by?: string | null
+          id?: string
+          name: string
+          parameters?: Json
+          project_id: string
+          report_config_id?: string | null
+          report_type: Database["public"]["Enums"]["report_type"]
+          snapshot_data?: Json | null
+        }
+        Update: {
+          expires_at?: string | null
+          file_size_bytes?: number | null
+          file_url?: string | null
+          format?: Database["public"]["Enums"]["report_format"]
+          generated_at?: string | null
+          generated_by?: string | null
+          id?: string
+          name?: string
+          parameters?: Json
+          project_id?: string
+          report_config_id?: string | null
+          report_type?: Database["public"]["Enums"]["report_type"]
+          snapshot_data?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "generated_reports_generated_by_fkey"
+            columns: ["generated_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "generated_reports_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "generated_reports_report_config_id_fkey"
+            columns: ["report_config_id"]
+            isOneToOne: false
+            referencedRelation: "report_configurations"
             referencedColumns: ["id"]
           },
         ]
@@ -14344,6 +14564,72 @@ export type Database = {
           },
         ]
       }
+      report_configurations: {
+        Row: {
+          config: Json
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          id: string
+          is_public: boolean | null
+          last_generated_at: string | null
+          name: string
+          project_id: string
+          report_type: Database["public"]["Enums"]["report_type"]
+          schedule_cron: string | null
+          schedule_enabled: boolean | null
+          schedule_recipients: string[] | null
+          updated_at: string | null
+        }
+        Insert: {
+          config?: Json
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_public?: boolean | null
+          last_generated_at?: string | null
+          name: string
+          project_id: string
+          report_type: Database["public"]["Enums"]["report_type"]
+          schedule_cron?: string | null
+          schedule_enabled?: boolean | null
+          schedule_recipients?: string[] | null
+          updated_at?: string | null
+        }
+        Update: {
+          config?: Json
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_public?: boolean | null
+          last_generated_at?: string | null
+          name?: string
+          project_id?: string
+          report_type?: Database["public"]["Enums"]["report_type"]
+          schedule_cron?: string | null
+          schedule_enabled?: boolean | null
+          schedule_recipients?: string[] | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "report_configurations_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "report_configurations_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       report_definitions: {
         Row: {
           category: string
@@ -22102,11 +22388,57 @@ export type Database = {
           depth: number
         }[]
       }
+      get_coverage_stats: {
+        Args: { p_cycle_id?: string; p_project_id: string }
+        Returns: {
+          automated_test_cases: number
+          automation_rate_pct: number
+          executed_test_cases: number
+          execution_coverage_pct: number
+          total_test_cases: number
+        }[]
+      }
       get_dependency_counts: {
         Args: { p_item_id: string; p_item_type: string }
         Returns: {
           blocked_by_count: number
           blocks_count: number
+        }[]
+      }
+      get_execution_summary: {
+        Args: {
+          p_cycle_ids?: string[]
+          p_end_date: string
+          p_project_id: string
+          p_start_date: string
+        }
+        Returns: {
+          blocked_count: number
+          defects_found: number
+          failed_count: number
+          pass_rate: number
+          passed_count: number
+          skipped_count: number
+          total_duration_seconds: number
+          total_executions: number
+          unique_cases_executed: number
+        }[]
+      }
+      get_execution_trend: {
+        Args: {
+          p_end_date: string
+          p_grouping?: string
+          p_project_id: string
+          p_start_date: string
+        }
+        Returns: {
+          blocked_count: number
+          failed_count: number
+          pass_rate: number
+          passed_count: number
+          period_start: string
+          skipped_count: number
+          total_executions: number
         }[]
       }
       get_user_role: {
@@ -22404,6 +22736,14 @@ export type Database = {
       program_status: "active" | "archived"
       release_status: "planned" | "ready" | "shipped"
       release_vehicle_type: "program" | "team" | "portfolio"
+      report_format: "pdf" | "xlsx" | "csv" | "json"
+      report_type:
+        | "execution_summary"
+        | "coverage_report"
+        | "defect_analysis"
+        | "trend_analysis"
+        | "cycle_comparison"
+        | "custom"
       risk_level: "low" | "med" | "high"
       roam_status: "resolved" | "owned" | "accepted" | "mitigated"
       room_type:
@@ -22499,6 +22839,15 @@ export type Database = {
         | "REJECTED"
         | "DISABLED"
       vote_status: "pending" | "approved" | "rejected" | "vetoed"
+      widget_type:
+        | "kpi_card"
+        | "bar_chart"
+        | "line_chart"
+        | "donut_chart"
+        | "table"
+        | "heatmap"
+        | "progress_bar"
+        | "trend_sparkline"
       work_item_dependency_type: "epic" | "feature"
       work_item_type_enum: "epic" | "feature" | "story" | "task" | "defect"
     }
@@ -22868,6 +23217,15 @@ export const Constants = {
       program_status: ["active", "archived"],
       release_status: ["planned", "ready", "shipped"],
       release_vehicle_type: ["program", "team", "portfolio"],
+      report_format: ["pdf", "xlsx", "csv", "json"],
+      report_type: [
+        "execution_summary",
+        "coverage_report",
+        "defect_analysis",
+        "trend_analysis",
+        "cycle_comparison",
+        "custom",
+      ],
       risk_level: ["low", "med", "high"],
       roam_status: ["resolved", "owned", "accepted", "mitigated"],
       room_type: [
@@ -22974,6 +23332,16 @@ export const Constants = {
         "DISABLED",
       ],
       vote_status: ["pending", "approved", "rejected", "vetoed"],
+      widget_type: [
+        "kpi_card",
+        "bar_chart",
+        "line_chart",
+        "donut_chart",
+        "table",
+        "heatmap",
+        "progress_bar",
+        "trend_sparkline",
+      ],
       work_item_dependency_type: ["epic", "feature"],
       work_item_type_enum: ["epic", "feature", "story", "task", "defect"],
     },
