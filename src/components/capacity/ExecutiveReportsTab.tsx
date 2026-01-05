@@ -279,9 +279,9 @@ export function ExecutiveReportsTab({
                 {stats.over}
               </Badge>
             </li>
-            <li className="flex justify-between items-center py-1.5 border-b border-border">
-              <span className="text-xs text-[#f59e0b]">📋 Open Vacancies</span>
-              <Badge variant="secondary" className="text-[10px] h-5 px-1.5 bg-[rgba(245,158,11,0.1)] text-[#f59e0b]">
+            <li className="flex justify-between items-center py-1.5 border-b border-border dark:border-[var(--border-subtle)]">
+              <span className="text-xs text-amber-600 dark:text-amber-400">📋 Open Vacancies</span>
+              <Badge variant="secondary" className="text-[10px] h-5 px-1.5 bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300">
                 {openVacancyCount}
               </Badge>
             </li>
@@ -360,7 +360,7 @@ export function ExecutiveReportsTab({
                     <td className="p-2 text-center text-sm">{softAlloc}%</td>
                     <td className="p-2 text-center">
                       {projectVacancies > 0 ? (
-                        <Badge variant="destructive" className="text-[10px] h-5 px-1.5 bg-[rgba(245,158,11,0.1)] text-[#f59e0b]">
+                        <Badge variant="destructive" className="text-[10px] h-5 px-1.5 bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300">
                           {projectVacancies}
                         </Badge>
                       ) : '-'}
@@ -395,9 +395,9 @@ export function ExecutiveReportsTab({
                     const util = calculateUtilization(resource, currentWeek, currentYear);
                     const status = util > 100 ? 'over' : util >= 80 ? 'full' : 'under';
                     const statusColors = {
-                      over: { bg: 'bg-[rgba(239,68,68,0.1)]', text: 'text-[#ef4444]', label: 'Over' },
-                      full: { bg: 'bg-[rgba(13,148,136,0.1)]', text: 'text-[#0d9488]', label: 'Full' },
-                      under: { bg: 'bg-[rgba(245,158,11,0.1)]', text: 'text-[#f59e0b]', label: 'Under' }
+                      over: { bg: 'bg-red-100 dark:bg-red-900/40', text: 'text-red-700 dark:text-red-300', label: 'Over' },
+                      full: { bg: 'bg-teal-100 dark:bg-teal-900/40', text: 'text-teal-700 dark:text-teal-300', label: 'Full' },
+                      under: { bg: 'bg-amber-100 dark:bg-amber-900/40', text: 'text-amber-700 dark:text-amber-300', label: 'Under' }
                     };
 
                     const assignedProjects = resource.allocations
@@ -412,10 +412,10 @@ export function ExecutiveReportsTab({
                       <tr key={resource.id} className="border-b border-border last:border-b-0 hover:bg-muted/10">
                         <td className="p-2">
                           <div className="flex items-center gap-2">
-                            <div className="w-6 h-6 rounded-full bg-[rgba(37,99,235,0.2)] flex items-center justify-center text-[10px] font-medium text-[#2563eb]">
+                            <div className="w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-900/40 flex items-center justify-center text-[10px] font-medium text-blue-700 dark:text-blue-300">
                               {resource.initials}
                             </div>
-                            <span className="text-sm font-medium">{resource.name}</span>
+                            <span className="text-sm font-medium text-foreground dark:text-[var(--text-primary)]">{resource.name}</span>
                           </div>
                         </td>
                         <td className="p-2 text-center text-xs">{resource.primarySkill}</td>

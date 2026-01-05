@@ -225,7 +225,7 @@ export function CompactResourceCard({
               {role || 'Team Member'}
             </p>
             {department && (
-              <p className="text-[10px] text-muted-foreground/70 dark:text-[var(--text-tertiary)] truncate mt-0.5">
+              <p className="text-[10px] text-muted-foreground dark:text-[var(--muted-foreground)] truncate mt-0.5">
                 {department}
               </p>
             )}

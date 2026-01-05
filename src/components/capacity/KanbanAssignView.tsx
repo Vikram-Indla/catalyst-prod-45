@@ -504,8 +504,8 @@ export function KanbanAssignView({
                             snapshot.isDraggingOver && "opacity-0"
                           )}
                         >
-                          <div className="w-12 h-12 rounded-full bg-muted/50 flex items-center justify-center mb-2">
-                            <Users className="h-5 w-5 text-muted-foreground/50" />
+                          <div className="w-12 h-12 rounded-full bg-muted/50 dark:bg-[var(--surface-3)] flex items-center justify-center mb-2">
+                            <Users className="h-5 w-5 text-muted-foreground dark:text-[var(--text-secondary)]" />
                           </div>
                           <p className="text-xs text-muted-foreground">
                             Drop resources here

@@ -163,9 +163,9 @@ export function SleekCapacityHeader({
         <div className="flex items-center gap-4">
           {/* Breadcrumb */}
           <div className="flex items-center gap-2">
-            <span className="text-sm text-muted-foreground">Enterprise</span>
-            <span className="text-muted-foreground/40">/</span>
-            <span className="text-sm font-semibold text-foreground">Capacity</span>
+            <span className="text-sm text-muted-foreground dark:text-[var(--text-secondary)]">Enterprise</span>
+            <span className="text-muted-foreground dark:text-[var(--muted-foreground)]">/</span>
+            <span className="text-sm font-semibold text-foreground dark:text-[var(--text-primary)]">Capacity</span>
           </div>
           
           <div className="w-px h-4 bg-border" />
@@ -177,7 +177,7 @@ export function SleekCapacityHeader({
               <span className="absolute w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping" />
             </div>
             <span className="font-medium text-emerald-600 dark:text-emerald-400">Live</span>
-            <span className="text-muted-foreground/40">•</span>
+            <span className="text-muted-foreground dark:text-[var(--muted-foreground)]">•</span>
             <Clock className="w-3 h-3" />
             <span>{timeAgo} ago</span>
           </div>
