@@ -54,138 +54,21 @@ export interface PerformanceStats {
   personalBest: number;
 }
 
-// Mock work items data
-const MOCK_WORK_ITEMS: WorkItem[] = [
-  {
-    id: '1',
-    key: 'INC-160',
-    summary: 'Cache invalidation causing stale data in dashboard',
-    mode: 'OPS',
-    level: 'Release',
-    updatedAt: '2h ago',
-    assignee: { id: 'u1', name: 'Ahmed Al-Rashid', initials: 'AR', avatarColor: '#dc2626' },
-    group: 'YESTERDAY',
-  },
-  {
-    id: '2',
-    key: 'INC-159',
-    summary: 'Network timeout on mobile connections',
-    mode: 'OPS',
-    level: 'Release',
-    updatedAt: '4h ago',
-    assignee: { id: 'u2', name: 'Sarah Chen', initials: 'SC', avatarColor: '#2563eb' },
-    group: 'YESTERDAY',
-  },
-  {
-    id: '3',
-    key: 'FTR-020',
-    summary: 'Sustainability reporting module development',
-    mode: 'DEL',
-    level: 'Program',
-    updatedAt: '1d ago',
-    assignee: { id: 'u1', name: 'Ahmed Al-Rashid', initials: 'AR', avatarColor: '#dc2626' },
-    group: 'THIS_WEEK',
-    starred: true,
-  },
-  {
-    id: '4',
-    key: 'FTR-019',
-    summary: 'Investor portal accessibility compliance',
-    mode: 'DEL',
-    level: 'Program',
-    updatedAt: '2d ago',
-    assignee: { id: 'u3', name: 'Maya Johnson', initials: 'MJ', avatarColor: '#0d9488' },
-    group: 'THIS_WEEK',
-  },
-  {
-    id: '5',
-    key: 'PLN-045',
-    summary: 'Q2 capacity planning for mobile team',
-    mode: 'PLN',
-    level: 'Portfolio',
-    updatedAt: '3d ago',
-    assignee: { id: 'u1', name: 'Ahmed Al-Rashid', initials: 'AR', avatarColor: '#dc2626' },
-    group: 'THIS_WEEK',
-  },
-  {
-    id: '6',
-    key: 'INC-155',
-    summary: 'Login authentication flow optimization',
-    mode: 'OPS',
-    level: 'Team',
-    updatedAt: '5d ago',
-    assignee: { id: 'u4', name: 'James Wilson', initials: 'JW', avatarColor: '#7c3aed' },
-    group: 'EARLIER',
-  },
-  {
-    id: '7',
-    key: 'FTR-018',
-    summary: 'Real-time notification system upgrade',
-    mode: 'DEL',
-    level: 'Release',
-    updatedAt: '1w ago',
-    assignee: { id: 'u2', name: 'Sarah Chen', initials: 'SC', avatarColor: '#2563eb' },
-    group: 'EARLIER',
-    starred: true,
-  },
-  {
-    id: '8',
-    key: 'PLN-042',
-    summary: 'Annual technology roadmap review',
-    mode: 'PLN',
-    level: 'Portfolio',
-    updatedAt: '1w ago',
-    assignee: { id: 'u1', name: 'Ahmed Al-Rashid', initials: 'AR', avatarColor: '#dc2626' },
-    group: 'EARLIER',
-  },
-];
+// Empty work items - no seed data
+const MOCK_WORK_ITEMS: WorkItem[] = [];
 
-// Mock AI suggestions
-const MOCK_AI_SUGGESTIONS: AISuggestion[] = [
-  {
-    id: 'ai1',
-    itemId: '1',
-    key: 'INC-160',
-    title: 'Cache invalidation causing stale data',
-    type: 'incident',
-    reason: 'This incident has been open for 18 hours and is blocking 3 dependent features. Customer escalation expected if not resolved today.',
-    timeLeft: '6h left',
-    isPriority: true,
-    context: 'Blocking 3 features',
-  },
-  {
-    id: 'ai2',
-    itemId: '3',
-    key: 'FTR-020',
-    title: 'Sustainability reporting module',
-    type: 'feature',
-    reason: 'Sprint ends in 2 days',
-    isPriority: false,
-    context: 'Sprint deadline approaching',
-    timeLeft: '2d',
-  },
-  {
-    id: 'ai3',
-    itemId: '4',
-    key: 'FTR-019',
-    title: 'Investor portal accessibility',
-    type: 'feature',
-    reason: 'Compliance deadline next week',
-    isPriority: false,
-    context: 'Regulatory requirement',
-    timeLeft: '5d',
-  },
-];
+// Empty AI suggestions - no seed data
+const MOCK_AI_SUGGESTIONS: AISuggestion[] = [];
 
-// Mock performance stats
+// Empty performance stats
 const MOCK_PERFORMANCE_STATS: PerformanceStats = {
-  closed: 12,
-  ops: 5,
-  del: 4,
-  pln: 3,
-  slaRate: 94,
-  percentChange: 15,
-  personalBest: 15,
+  closed: 0,
+  ops: 0,
+  del: 0,
+  pln: 0,
+  slaRate: 0,
+  percentChange: 0,
+  personalBest: 0,
 };
 
 export function useForYouData() {
