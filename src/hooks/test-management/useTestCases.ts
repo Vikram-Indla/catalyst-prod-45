@@ -1,21 +1,10 @@
-// ============================================================================
-// HOOK: useTestCases
-// File: /hooks/test-management/useTestCases.ts
-// ============================================================================
-
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { 
-  TMTestCase, 
-  TMCaseStep, 
-  CaseFilters, 
-  CreateCaseInput, 
-  UpdateCaseInput,
-} from '@/types/test-management';
+import { TMTestCase, TMCaseStep, CaseFilters, CreateCaseInput, UpdateCaseInput } from '@/types/test-management';
 import { toast } from 'sonner';
 
-// Map our type status to database enum
 type DbCaseStatus = 'draft' | 'ready' | 'approved' | 'deprecated';
+
 const statusToDb = (status: string): DbCaseStatus => {
   const map: Record<string, DbCaseStatus> = {
     'DRAFT': 'draft',
@@ -36,10 +25,6 @@ const statusFromDb = (status: string | null): string => {
   return map[status || 'draft'] || 'DRAFT';
 };
 
-// ============================================================================
-// FETCH TEST CASES (with filters)
-// ============================================================================
-
 export function useTestCases(projectId: string | undefined, filters?: CaseFilters) {
   return useQuery({
     queryKey: ['tm-cases', projectId, filters],
@@ -52,13 +37,11 @@ export function useTestCases(projectId: string | undefined, filters?: CaseFilter
           *,
           priority:tm_case_priorities(*),
           type:tm_case_types(*),
-          folder:tm_folders(id, name, path),
-          created_by_user:profiles!tm_test_cases_created_by_fkey(id, full_name, avatar_url)
+          folder:tm_folders(id, name, path)
         `, { count: 'exact' })
         .eq('project_id', projectId)
         .order('updated_at', { ascending: false });
 
-      // Apply filters
       if (filters?.folder_id) {
         if (filters.folder_id === 'unfiled') {
           query = query.is('folder_id', null);
@@ -88,7 +71,6 @@ export function useTestCases(projectId: string | undefined, filters?: CaseFilter
         query = query.or(`title.ilike.%${filters.search}%,case_key.ilike.%${filters.search}%`);
       }
 
-      // Pagination
       const page = filters?.page || 1;
       const perPage = filters?.per_page || 25;
       const from = (page - 1) * perPage;
@@ -102,29 +84,20 @@ export function useTestCases(projectId: string | undefined, filters?: CaseFilter
         throw error;
       }
 
-      // Map to our types
       const cases = (data || []).map(c => ({
         ...c,
         key: c.case_key,
         status: statusFromDb(c.status),
         type_id: c.case_type_id,
-        updated_by: c.created_by,
-        version: c.version || 1,
+        updated_by: c.created_by || '',
         objective: c.description,
       })) as unknown as TMTestCase[];
 
-      return {
-        cases,
-        total: count || 0,
-      };
+      return { cases, total: count || 0 };
     },
     enabled: !!projectId,
   });
 }
-
-// ============================================================================
-// FETCH SINGLE TEST CASE (with steps)
-// ============================================================================
 
 export function useTestCase(caseId: string | undefined) {
   return useQuery({
@@ -132,23 +105,19 @@ export function useTestCase(caseId: string | undefined) {
     queryFn: async (): Promise<TMTestCase | null> => {
       if (!caseId) return null;
 
-      // Fetch case
       const { data: testCase, error: caseError } = await supabase
         .from('tm_test_cases')
         .select(`
           *,
           priority:tm_case_priorities(*),
           type:tm_case_types(*),
-          folder:tm_folders(id, name, path),
-          created_by_user:profiles!tm_test_cases_created_by_fkey(id, full_name, avatar_url)
+          folder:tm_folders(id, name, path)
         `)
         .eq('id', caseId)
-        .maybeSingle();
+        .single();
 
       if (caseError) throw caseError;
-      if (!testCase) return null;
 
-      // Fetch steps
       const { data: steps, error: stepsError } = await supabase
         .from('tm_test_steps')
         .select('*')
@@ -157,17 +126,13 @@ export function useTestCase(caseId: string | undefined) {
 
       if (stepsError) throw stepsError;
 
-      // Fetch labels
       const { data: caseLabels, error: labelsError } = await supabase
         .from('tm_case_labels')
-        .select(`
-          label:tm_labels(*)
-        `)
+        .select('label:tm_labels(*)')
         .eq('test_case_id', caseId);
 
       if (labelsError) throw labelsError;
 
-      // Map steps to our type
       const mappedSteps = (steps || []).map(s => ({
         id: s.id,
         case_id: s.test_case_id,
@@ -185,7 +150,6 @@ export function useTestCase(caseId: string | undefined) {
         status: statusFromDb(testCase.status),
         type_id: testCase.case_type_id,
         updated_by: testCase.created_by || '',
-        version: testCase.version || 1,
         objective: testCase.description,
         steps: mappedSteps,
         labels: caseLabels?.map(cl => cl.label).filter(Boolean) || [],
@@ -194,10 +158,6 @@ export function useTestCase(caseId: string | undefined) {
     enabled: !!caseId,
   });
 }
-
-// ============================================================================
-// FETCH CASE STEPS
-// ============================================================================
 
 export function useTestCaseSteps(caseId: string | undefined) {
   return useQuery({
@@ -212,7 +172,7 @@ export function useTestCaseSteps(caseId: string | undefined) {
         .order('step_number', { ascending: true });
 
       if (error) throw error;
-      
+
       return (data || []).map(s => ({
         id: s.id,
         case_id: s.test_case_id,
@@ -228,12 +188,7 @@ export function useTestCaseSteps(caseId: string | undefined) {
   });
 }
 
-// ============================================================================
-// GENERATE CASE KEY
-// ============================================================================
-
 async function generateCaseKey(projectId: string): Promise<string> {
-  // Get project prefix
   const { data: project } = await supabase
     .from('tm_projects')
     .select('key')
@@ -242,17 +197,13 @@ async function generateCaseKey(projectId: string): Promise<string> {
 
   const prefix = project?.key || 'TC';
 
-  // Try to use the database function
   const { data, error } = await supabase.rpc('tm_next_entity_key', {
     p_prefix: prefix,
     p_project_id: projectId,
   });
 
-  if (!error && data) {
-    return data;
-  }
+  if (!error && data) return data;
 
-  // Fallback: generate manually
   const { count } = await supabase
     .from('tm_test_cases')
     .select('*', { count: 'exact', head: true })
@@ -262,23 +213,16 @@ async function generateCaseKey(projectId: string): Promise<string> {
   return `${prefix}-${String(nextNum).padStart(3, '0')}`;
 }
 
-// ============================================================================
-// CREATE TEST CASE
-// ============================================================================
-
 export function useCreateTestCase() {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async (input: CreateCaseInput & { project_id: string }): Promise<TMTestCase> => {
-      // Get current user
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      // Generate key
       const caseKey = await generateCaseKey(input.project_id);
 
-      // Create case
       const { data: testCase, error: caseError } = await supabase
         .from('tm_test_cases')
         .insert({
@@ -299,7 +243,6 @@ export function useCreateTestCase() {
 
       if (caseError) throw caseError;
 
-      // Create steps if provided
       if (input.steps && input.steps.length > 0) {
         const stepsToInsert = input.steps.map((step, index) => ({
           test_case_id: testCase.id,
@@ -316,24 +259,21 @@ export function useCreateTestCase() {
         if (stepsError) throw stepsError;
       }
 
-      // Add labels if provided
       if (input.label_ids && input.label_ids.length > 0) {
         const labelsToInsert = input.label_ids.map(labelId => ({
           test_case_id: testCase.id,
           label_id: labelId,
         }));
 
-        const { error: labelsError } = await supabase
-          .from('tm_case_labels')
-          .insert(labelsToInsert);
-
-        if (labelsError) console.error('Error adding labels:', labelsError);
+        await supabase.from('tm_case_labels').insert(labelsToInsert);
       }
 
       return {
         ...testCase,
         key: testCase.case_key,
         status: statusFromDb(testCase.status),
+        type_id: testCase.case_type_id,
+        updated_by: testCase.created_by || '',
       } as unknown as TMTestCase;
     },
     onSuccess: (data) => {
@@ -347,10 +287,6 @@ export function useCreateTestCase() {
   });
 }
 
-// ============================================================================
-// UPDATE TEST CASE
-// ============================================================================
-
 export function useUpdateTestCase() {
   const queryClient = useQueryClient();
 
@@ -361,14 +297,12 @@ export function useUpdateTestCase() {
 
       const { id, steps, label_ids, project_id, ...updates } = input;
 
-      // Get current version
       const { data: current } = await supabase
         .from('tm_test_cases')
         .select('version')
         .eq('id', id)
         .maybeSingle();
 
-      // Map updates to db columns
       const dbUpdates: Record<string, unknown> = {};
       if (updates.title) dbUpdates.title = updates.title;
       if (updates.objective !== undefined) dbUpdates.description = updates.objective;
@@ -379,7 +313,6 @@ export function useUpdateTestCase() {
       if (updates.type_id !== undefined) dbUpdates.case_type_id = updates.type_id;
       dbUpdates.version = (current?.version || 0) + 1;
 
-      // Update case
       const { data: testCase, error: caseError } = await supabase
         .from('tm_test_cases')
         .update(dbUpdates)
@@ -389,12 +322,9 @@ export function useUpdateTestCase() {
 
       if (caseError) throw caseError;
 
-      // Update steps if provided
       if (steps !== undefined) {
-        // Delete existing steps
         await supabase.from('tm_test_steps').delete().eq('test_case_id', id);
 
-        // Insert new steps
         if (steps.length > 0) {
           const stepsToInsert = steps.map((step, index) => ({
             test_case_id: id,
@@ -404,20 +334,13 @@ export function useUpdateTestCase() {
             expected_result: step.expected_result,
           }));
 
-          const { error: stepsError } = await supabase
-            .from('tm_test_steps')
-            .insert(stepsToInsert);
-
-          if (stepsError) throw stepsError;
+          await supabase.from('tm_test_steps').insert(stepsToInsert);
         }
       }
 
-      // Update labels if provided
       if (label_ids !== undefined) {
-        // Delete existing labels
         await supabase.from('tm_case_labels').delete().eq('test_case_id', id);
 
-        // Insert new labels
         if (label_ids.length > 0) {
           const labelsToInsert = label_ids.map(labelId => ({
             test_case_id: id,
@@ -432,6 +355,8 @@ export function useUpdateTestCase() {
         ...testCase,
         key: testCase.case_key,
         status: statusFromDb(testCase.status),
+        type_id: testCase.case_type_id,
+        updated_by: testCase.created_by || '',
       } as unknown as TMTestCase;
     },
     onSuccess: (data) => {
@@ -445,10 +370,6 @@ export function useUpdateTestCase() {
     },
   });
 }
-
-// ============================================================================
-// DELETE TEST CASE
-// ============================================================================
 
 export function useDeleteTestCase() {
   const queryClient = useQueryClient();
@@ -473,10 +394,6 @@ export function useDeleteTestCase() {
   });
 }
 
-// ============================================================================
-// CLONE TEST CASE
-// ============================================================================
-
 export function useCloneTestCase() {
   const queryClient = useQueryClient();
 
@@ -485,7 +402,6 @@ export function useCloneTestCase() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      // Fetch original case with steps
       const { data: original, error: fetchError } = await supabase
         .from('tm_test_cases')
         .select('*')
@@ -500,10 +416,8 @@ export function useCloneTestCase() {
         .eq('test_case_id', input.id)
         .order('step_number');
 
-      // Generate new key
       const caseKey = await generateCaseKey(input.project_id);
 
-      // Create cloned case
       const { data: cloned, error: cloneError } = await supabase
         .from('tm_test_cases')
         .insert({
@@ -512,7 +426,7 @@ export function useCloneTestCase() {
           title: `${original.title} (Copy)`,
           description: original.description,
           preconditions: original.preconditions,
-          status: 'draft',
+          status: 'draft' as DbCaseStatus,
           folder_id: original.folder_id,
           priority_id: original.priority_id,
           case_type_id: original.case_type_id,
@@ -524,7 +438,6 @@ export function useCloneTestCase() {
 
       if (cloneError) throw cloneError;
 
-      // Clone steps
       if (steps && steps.length > 0) {
         const stepsToInsert = steps.map(step => ({
           test_case_id: cloned.id,
@@ -541,6 +454,8 @@ export function useCloneTestCase() {
         ...cloned,
         key: cloned.case_key,
         status: statusFromDb(cloned.status),
+        type_id: cloned.case_type_id,
+        updated_by: cloned.created_by || '',
       } as unknown as TMTestCase;
     },
     onSuccess: (data) => {
@@ -553,19 +468,11 @@ export function useCloneTestCase() {
   });
 }
 
-// ============================================================================
-// MOVE TEST CASE TO FOLDER
-// ============================================================================
-
 export function useMoveTestCase() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (input: { 
-      case_ids: string[]; 
-      folder_id: string | null;
-      project_id: string;
-    }): Promise<void> => {
+    mutationFn: async (input: { case_ids: string[]; folder_id: string | null; project_id: string }): Promise<void> => {
       const { error } = await supabase
         .from('tm_test_cases')
         .update({ folder_id: input.folder_id })
@@ -583,10 +490,6 @@ export function useMoveTestCase() {
     },
   });
 }
-
-// ============================================================================
-// BULK DELETE TEST CASES
-// ============================================================================
 
 export function useBulkDeleteTestCases() {
   const queryClient = useQueryClient();
