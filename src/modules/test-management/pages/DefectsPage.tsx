@@ -21,7 +21,6 @@ import {
   Edit,
   Trash2,
   ExternalLink,
-  Square,
   Calendar,
   Keyboard
 } from 'lucide-react';
@@ -63,11 +62,6 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
@@ -77,37 +71,84 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
 import { 
   useDefects, 
+  useDefectStats,
   useCreateDefect, 
   useUpdateDefect, 
   useDeleteDefect,
-  useChangeDefectStatus,
-  useBulkUpdateDefectStatus 
-} from '../hooks/useDefects';
+  useUpdateDefectStatus,
+  useTeamMembers,
+  useTestCycles,
+  type TMDefect,
+  type DefectStatus as TMDefectStatus,
+  type DefectSeverity as TMDefectSeverity,
+} from '@/hooks/test-management';
 import { 
   DefectsMetricsBar, 
   DefectBoardView, 
   DefectDetailPanel, 
   CreateDefectModal 
 } from '../components/defects';
-import type { Defect, DefectSeverity, DefectStatus } from '../api/types';
 import { toast } from 'sonner';
 
-// Default project ID - in production this would come from context/route
-const DEFAULT_PROJECT_ID = 'test-project-1';
+// Re-export types for internal use (lowercase for compatibility with existing components)
+type DefectSeverity = 'critical' | 'major' | 'minor' | 'trivial';
+type DefectStatus = 'open' | 'in_progress' | 'resolved' | 'closed' | 'wont_fix';
 
-// Mock team members
-const MOCK_TEAM_MEMBERS = [
-  { id: '1', full_name: 'Ahmed Al-Rashid' },
-  { id: '2', full_name: 'Fatima Hassan' },
-  { id: '3', full_name: 'Mohammed Khan' },
-];
+// Helper to convert TMDefect to component-compatible format
+function mapTMDefectToDefect(d: TMDefect): any {
+  return {
+    id: d.id,
+    defect_key: d.key,
+    title: d.title,
+    description: d.description,
+    severity: d.severity.toLowerCase() as DefectSeverity,
+    status: mapStatus(d.status),
+    assigned_to: d.assigned_to,
+    assigned_user: d.assignee ? {
+      id: d.assignee.id,
+      full_name: d.assignee.full_name,
+      avatar_url: d.assignee.avatar_url,
+    } : undefined,
+    reporter: d.reporter ? {
+      id: d.reporter.id,
+      full_name: d.reporter.full_name,
+      avatar_url: d.reporter.avatar_url,
+    } : undefined,
+    created_at: d.created_at,
+    updated_at: d.updated_at,
+    external_id: d.external_id,
+    external_tracker_url: d.external_url,
+    linked_run_id: undefined, // Would need to be fetched from links
+  };
+}
 
-// Mock cycles
-const MOCK_CYCLES = [
-  { id: 'cy-1', name: 'Sprint 24 Regression' },
-  { id: 'cy-2', name: 'Sprint 23 Regression' },
-  { id: 'cy-3', name: 'Release 2.3 Smoke' },
-];
+function mapStatus(status: TMDefectStatus): DefectStatus {
+  const map: Record<TMDefectStatus, DefectStatus> = {
+    'OPEN': 'open',
+    'IN_PROGRESS': 'in_progress',
+    'FIXED': 'resolved',
+    'VERIFIED': 'closed',
+    'CLOSED': 'closed',
+    'WONT_FIX': 'wont_fix',
+    'DUPLICATE': 'closed',
+  };
+  return map[status] || 'open';
+}
+
+function mapStatusToTM(status: DefectStatus): TMDefectStatus {
+  const map: Record<DefectStatus, TMDefectStatus> = {
+    'open': 'OPEN',
+    'in_progress': 'IN_PROGRESS',
+    'resolved': 'FIXED',
+    'closed': 'CLOSED',
+    'wont_fix': 'WONT_FIX',
+  };
+  return map[status] || 'OPEN';
+}
+
+function mapSeverityToTM(severity: DefectSeverity): TMDefectSeverity {
+  return severity.toUpperCase() as TMDefectSeverity;
+}
 
 // Date range options
 const DATE_RANGE_OPTIONS = [
@@ -152,32 +193,42 @@ export function DefectsPage() {
   const [focusedDefectIndex, setFocusedDefectIndex] = useState<number>(-1);
 
   // Panels & Modals
-  const [selectedDefect, setSelectedDefect] = useState<Defect | null>(null);
+  const [selectedDefect, setSelectedDefect] = useState<any | null>(null);
   const [createModalOpen, setCreateModalOpen] = useState(false);
-  const [editingDefect, setEditingDefect] = useState<Defect | null>(null);
-  const [deleteConfirmDefect, setDeleteConfirmDefect] = useState<Defect | null>(null);
+  const [editingDefect, setEditingDefect] = useState<any | null>(null);
+  const [deleteConfirmDefect, setDeleteConfirmDefect] = useState<any | null>(null);
 
   // Get project ID from search params
-  const projectId = searchParams.get('projectId') || DEFAULT_PROJECT_ID;
+  const projectId = searchParams.get('projectId') || undefined;
   const highlightId = searchParams.get('highlight');
 
-  // Fetch defects
-  const { data: defectsData, isLoading, refetch } = useDefects({
-    project_id: projectId,
-    status: statusFilter !== 'all' ? statusFilter : undefined,
-    severity: severityFilter !== 'all' ? severityFilter : undefined,
-    assigned_to: assigneeFilter !== 'all' && assigneeFilter !== 'unassigned' ? assigneeFilter : undefined,
+  // Build filters for the hook
+  const filters = useMemo(() => ({
+    status: statusFilter !== 'all' ? mapStatusToTM(statusFilter as DefectStatus) : undefined,
+    severity: severityFilter !== 'all' ? mapSeverityToTM(severityFilter as DefectSeverity) : undefined,
+    assigned_to: assigneeFilter !== 'all' ? assigneeFilter : undefined,
     search: searchQuery || undefined,
-  });
+  }), [statusFilter, severityFilter, assigneeFilter, searchQuery]);
+
+  // Fetch defects using new hooks
+  const { data: defectsRaw, isLoading: defectsLoading } = useDefects(projectId, filters);
+  const { data: stats, isLoading: statsLoading } = useDefectStats(projectId);
+  const { data: teamMembers } = useTeamMembers(projectId || null);
+  const { data: cycles } = useTestCycles(projectId);
 
   // Mutations
-  const createDefect = useCreateDefect();
-  const updateDefect = useUpdateDefect();
-  const deleteDefect = useDeleteDefect();
-  const changeStatus = useChangeDefectStatus();
-  const bulkUpdateStatus = useBulkUpdateDefectStatus();
+  const createDefectMutation = useCreateDefect();
+  const updateDefectMutation = useUpdateDefect();
+  const deleteDefectMutation = useDeleteDefect();
+  const updateStatusMutation = useUpdateDefectStatus();
 
-  const defects = defectsData?.data || [];
+  // Map raw defects to component format
+  const defects = useMemo(() => 
+    (defectsRaw || []).map(mapTMDefectToDefect),
+    [defectsRaw]
+  );
+
+  const isLoading = defectsLoading || statsLoading;
 
   // Filter defects by date range (client-side)
   const filteredDefects = useMemo(() => {
@@ -186,7 +237,7 @@ export function DefectsPage() {
     const daysAgo = parseInt(dateRangeFilter, 10);
     const cutoffDate = subDays(new Date(), daysAgo);
     
-    return defects.filter(d => {
+    return defects.filter((d: any) => {
       const createdAt = parseISO(d.created_at);
       return isAfter(createdAt, cutoffDate);
     });
@@ -206,23 +257,39 @@ export function DefectsPage() {
     }
   }, [highlightId, filteredDefects, searchParams, setSearchParams]);
 
-  // Calculate metrics
+  // Metrics from stats hook
   const metrics = useMemo(() => {
+    if (stats) {
+      return {
+        total: stats.total,
+        open: stats.by_status.OPEN || 0,
+        inProgress: stats.by_status.IN_PROGRESS || 0,
+        fixed: (stats.by_status.FIXED || 0) + (stats.by_status.VERIFIED || 0),
+        closed: stats.by_status.CLOSED || 0,
+        severityCounts: {
+          critical: stats.by_severity.CRITICAL || 0,
+          major: stats.by_severity.MAJOR || 0,
+          minor: stats.by_severity.MINOR || 0,
+          trivial: stats.by_severity.TRIVIAL || 0,
+        },
+      };
+    }
+    // Fallback to calculating from filtered defects
     const total = filteredDefects.length;
-    const open = filteredDefects.filter(d => d.status === 'open').length;
-    const inProgress = filteredDefects.filter(d => d.status === 'in_progress').length;
-    const fixed = filteredDefects.filter(d => d.status === 'resolved').length;
-    const closed = filteredDefects.filter(d => d.status === 'closed').length;
+    const open = filteredDefects.filter((d: any) => d.status === 'open').length;
+    const inProgress = filteredDefects.filter((d: any) => d.status === 'in_progress').length;
+    const fixed = filteredDefects.filter((d: any) => d.status === 'resolved').length;
+    const closed = filteredDefects.filter((d: any) => d.status === 'closed').length;
     
     const severityCounts = {
-      critical: filteredDefects.filter(d => d.severity === 'critical').length,
-      major: filteredDefects.filter(d => d.severity === 'major').length,
-      minor: filteredDefects.filter(d => d.severity === 'minor').length,
-      trivial: filteredDefects.filter(d => d.severity === 'trivial').length,
+      critical: filteredDefects.filter((d: any) => d.severity === 'critical').length,
+      major: filteredDefects.filter((d: any) => d.severity === 'major').length,
+      minor: filteredDefects.filter((d: any) => d.severity === 'minor').length,
+      trivial: filteredDefects.filter((d: any) => d.severity === 'trivial').length,
     };
 
     return { total, open, inProgress, fixed, closed, severityCounts };
-  }, [filteredDefects]);
+  }, [stats, filteredDefects]);
 
   // Keyboard shortcuts
   useEffect(() => {
@@ -309,9 +376,18 @@ export function DefectsPage() {
 
   // Handlers
   const handleCreate = async (data: any) => {
+    if (!projectId) {
+      toast.error('No project selected');
+      return;
+    }
     try {
-      await createDefect.mutateAsync({
-        ...data,
+      await createDefectMutation.mutateAsync({
+        title: data.title,
+        description: data.description,
+        severity: mapSeverityToTM(data.severity),
+        assigned_to: data.assigned_to,
+        external_id: data.external_id,
+        external_url: data.external_tracker_url,
         project_id: projectId,
       });
       setCreateModalOpen(false);
@@ -322,11 +398,16 @@ export function DefectsPage() {
   };
 
   const handleUpdate = async (data: any) => {
-    if (!editingDefect) return;
+    if (!editingDefect || !projectId) return;
     try {
-      await updateDefect.mutateAsync({
+      await updateDefectMutation.mutateAsync({
         id: editingDefect.id,
-        ...data,
+        title: data.title,
+        description: data.description,
+        severity: mapSeverityToTM(data.severity),
+        status: mapStatusToTM(data.status),
+        assigned_to: data.assigned_to,
+        project_id: projectId,
       });
       setCreateModalOpen(false);
       setEditingDefect(null);
@@ -341,9 +422,9 @@ export function DefectsPage() {
   };
 
   const handleDelete = async () => {
-    if (!deleteConfirmDefect) return;
+    if (!deleteConfirmDefect || !projectId) return;
     try {
-      await deleteDefect.mutateAsync(deleteConfirmDefect.id);
+      await deleteDefectMutation.mutateAsync({ id: deleteConfirmDefect.id, project_id: projectId });
       setDeleteConfirmDefect(null);
       if (selectedDefect?.id === deleteConfirmDefect.id) {
         setSelectedDefect(null);
@@ -354,7 +435,8 @@ export function DefectsPage() {
   };
 
   const handleStatusChange = async (defectId: string, status: DefectStatus) => {
-    changeStatus.mutate(defectId, status);
+    if (!projectId) return;
+    updateStatusMutation.mutate({ id: defectId, status: mapStatusToTM(status), project_id: projectId });
     // Update local state for immediate UI feedback
     if (selectedDefect?.id === defectId) {
       setSelectedDefect({ ...selectedDefect, status });
@@ -362,16 +444,13 @@ export function DefectsPage() {
   };
 
   const handleBulkStatusChange = async (status: DefectStatus) => {
-    if (selectedIds.size === 0) return;
-    try {
-      await bulkUpdateStatus.mutateAsync({
-        ids: Array.from(selectedIds),
-        status,
-      });
-      setSelectedIds(new Set());
-    } catch (error) {
-      // Error handled by mutation
+    if (selectedIds.size === 0 || !projectId) return;
+    // Update each selected defect
+    for (const id of Array.from(selectedIds)) {
+      updateStatusMutation.mutate({ id, status: mapStatusToTM(status), project_id: projectId });
     }
+    setSelectedIds(new Set());
+    toast.success(`${selectedIds.size} defect(s) updated`);
   };
 
   const toggleSelectAll = () => {
@@ -479,7 +558,7 @@ export function DefectsPage() {
             <SelectContent>
               <SelectItem value="all">All Assignees</SelectItem>
               <SelectItem value="unassigned">Unassigned</SelectItem>
-              {MOCK_TEAM_MEMBERS.map((member) => (
+              {(teamMembers || []).map((member) => (
                 <SelectItem key={member.id} value={member.id}>
                   {member.full_name}
                 </SelectItem>
@@ -493,7 +572,7 @@ export function DefectsPage() {
             <SelectContent>
               <SelectItem value="all">All Cycles</SelectItem>
               <SelectItem value="none">No Cycle</SelectItem>
-              {MOCK_CYCLES.map((cycle) => (
+              {(cycles || []).map((cycle) => (
                 <SelectItem key={cycle.id} value={cycle.id}>
                   {cycle.name}
                 </SelectItem>
@@ -806,9 +885,9 @@ export function DefectsPage() {
         open={createModalOpen}
         onOpenChange={handleCloseModal}
         defect={editingDefect}
-        teamMembers={MOCK_TEAM_MEMBERS}
+        teamMembers={(teamMembers || []).map(m => ({ id: m.id, full_name: m.full_name }))}
         onSubmit={editingDefect ? handleUpdate : handleCreate}
-        isLoading={createDefect.isPending || updateDefect.isPending}
+        isLoading={createDefectMutation.isPending || updateDefectMutation.isPending}
       />
 
       {/* Delete Confirmation */}
