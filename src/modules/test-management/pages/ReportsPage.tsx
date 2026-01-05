@@ -3,9 +3,11 @@
  * Comprehensive test management reports and analytics with multiple tabs
  */
 
-import React, { useState } from 'react';
-import { subDays } from 'date-fns';
+import React, { useState, useMemo } from 'react';
+import { useSearchParams } from 'react-router-dom';
+import { subDays, format } from 'date-fns';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Skeleton } from '@/components/ui/skeleton';
 import {
   ReportFilters,
   ReportFiltersState,
@@ -16,24 +18,29 @@ import {
   TeamTab,
   ExportDropdown,
 } from '../components/reports';
-
-// Mock project and cycle data
-const MOCK_PROJECTS = [
-  { id: 'proj-1', name: 'Mobile Banking App' },
-  { id: 'proj-2', name: 'Web Portal' },
-  { id: 'proj-3', name: 'API Gateway' },
-];
-
-const MOCK_CYCLES = [
-  { id: 'CY-015', name: 'Sprint 24 Regression' },
-  { id: 'CY-014', name: 'Sprint 23 Regression' },
-  { id: 'CY-013', name: 'Q4 Release' },
-  { id: 'CY-012', name: 'Security Audit' },
-];
+import { 
+  useReportSummary, 
+  useExecutionTrend, 
+  useExecutionReport,
+  useTraceabilityMatrix, 
+  useBurndownData, 
+  useTeamPerformance, 
+  useRecentActivity,
+  useCycleProgress,
+  useTestCycles,
+  useProjects
+} from '@/hooks/test-management';
+import { useProjectStore } from '../stores/projectStore';
 
 export function ReportsPage() {
+  const [searchParams] = useSearchParams();
+  
+  // Get project ID from store or search params
+  const selectedProjectId = useProjectStore(s => s.selectedProjectId);
+  const projectId = selectedProjectId || searchParams.get('projectId') || undefined;
+
   const [filters, setFilters] = useState<ReportFiltersState>({
-    projectId: null,
+    projectId: projectId || null,
     cycleId: null,
     dateRange: {
       from: subDays(new Date(), 30),
@@ -44,8 +51,38 @@ export function ReportsPage() {
 
   const [activeTab, setActiveTab] = useState('dashboard');
 
+  // Convert date range to string format for hooks
+  const dateRange = useMemo(() => ({
+    from: filters.dateRange.from ? format(filters.dateRange.from, 'yyyy-MM-dd') : undefined,
+    to: filters.dateRange.to ? format(filters.dateRange.to, 'yyyy-MM-dd') : undefined,
+  }), [filters.dateRange]);
+
+  // Fetch data using hooks
+  const { data: summary, isLoading: summaryLoading } = useReportSummary(projectId, dateRange);
+  const { data: trendData = [], isLoading: trendLoading } = useExecutionTrend(projectId, dateRange, filters.cycleId || undefined);
+  const { data: executionReport, isLoading: reportLoading } = useExecutionReport(projectId, filters.cycleId || undefined);
+  const { data: traceability, isLoading: traceLoading } = useTraceabilityMatrix(projectId);
+  const { data: burndown, isLoading: burndownLoading } = useBurndownData(filters.cycleId || undefined);
+  const { data: teamPerformance = [], isLoading: teamLoading } = useTeamPerformance(projectId, dateRange);
+  const { data: recentActivity = [], isLoading: activityLoading } = useRecentActivity(projectId, 10);
+  const { data: cycleProgress = [], isLoading: progressLoading } = useCycleProgress(projectId);
+  const { data: cycles = [] } = useTestCycles(projectId);
+  const { data: projects = [] } = useProjects();
+
+  // Map projects to dropdown format
+  const projectOptions = useMemo(() => 
+    projects.map(p => ({ id: p.id, name: p.name })),
+    [projects]
+  );
+
+  // Map cycles to dropdown format
+  const cycleOptions = useMemo(() => 
+    cycles.map(c => ({ id: c.id, name: `${c.key}: ${c.name}` })),
+    [cycles]
+  );
+
   const handleRefresh = () => {
-    // Trigger refetch of data
+    // React Query will refetch when filters change
     console.log('Refreshing reports with filters:', filters);
   };
 
@@ -65,8 +102,8 @@ export function ReportsPage() {
         filters={filters}
         onFiltersChange={setFilters}
         onRefresh={handleRefresh}
-        projects={MOCK_PROJECTS}
-        cycles={MOCK_CYCLES}
+        projects={projectOptions}
+        cycles={cycleOptions}
       />
 
       {/* Tabs */}
@@ -80,23 +117,49 @@ export function ReportsPage() {
         </TabsList>
 
         <TabsContent value="dashboard" className="mt-6">
-          <DashboardTab />
+          <DashboardTab 
+            summary={summary}
+            summaryLoading={summaryLoading}
+            trendData={trendData}
+            trendLoading={trendLoading}
+            cycleProgress={cycleProgress}
+            progressLoading={progressLoading}
+            recentActivity={recentActivity}
+            activityLoading={activityLoading}
+          />
         </TabsContent>
 
         <TabsContent value="execution" className="mt-6">
-          <ExecutionTab />
+          <ExecutionTab 
+            summary={summary}
+            summaryLoading={summaryLoading}
+            executionReport={executionReport}
+            reportLoading={reportLoading}
+          />
         </TabsContent>
 
         <TabsContent value="traceability" className="mt-6">
-          <TraceabilityTab />
+          <TraceabilityTab 
+            traceability={traceability as any}
+            isLoading={traceLoading}
+          />
         </TabsContent>
 
         <TabsContent value="burndown" className="mt-6">
-          <BurndownTab />
+          <BurndownTab 
+            burndown={burndown}
+            isLoading={burndownLoading}
+            cycles={cycleOptions}
+            selectedCycleId={filters.cycleId}
+            onCycleChange={(cycleId) => setFilters({ ...filters, cycleId })}
+          />
         </TabsContent>
 
         <TabsContent value="team" className="mt-6">
-          <TeamTab />
+          <TeamTab 
+            teamPerformance={teamPerformance}
+            isLoading={teamLoading}
+          />
         </TabsContent>
       </Tabs>
     </div>

@@ -5,6 +5,7 @@
 
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
 import {
   Table,
   TableBody,
@@ -25,55 +26,27 @@ import {
 } from 'recharts';
 import { Folder, AlertTriangle, CheckCircle, AlertCircle, Circle } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { Badge } from '@/components/ui/badge';
 
-// Mock data
-const COVERAGE_STATS = {
-  totalFeatures: 40,
-  coveredFeatures: 34,
-  percentage: 85,
-};
-
-const TRACEABILITY_DATA = [
-  {
-    folder: 'Authentication',
-    icon: Folder,
-    isFolder: true,
-    children: [
-      { name: 'Login', cases: 8, lastRun: 'Jan 15', passRate: 87, gap: false },
-      { name: 'Logout', cases: 3, lastRun: 'Jan 15', passRate: 100, gap: false },
-      { name: 'Password Reset', cases: 5, lastRun: 'Jan 14', passRate: 80, gap: false },
-      { name: 'SSO', cases: 0, lastRun: '-', passRate: 0, gap: true },
-    ],
-  },
-  {
-    folder: 'User Management',
-    icon: Folder,
-    isFolder: true,
-    children: [
-      { name: 'Create User', cases: 4, lastRun: 'Jan 15', passRate: 100, gap: false },
-      { name: 'Edit User', cases: 3, lastRun: 'Jan 12', passRate: 67, gap: false },
-      { name: 'Delete User', cases: 2, lastRun: 'Jan 10', passRate: 100, gap: false },
-    ],
-  },
-  {
-    folder: 'Dashboard',
-    icon: Folder,
-    isFolder: true,
-    children: [
-      { name: 'Widgets', cases: 6, lastRun: 'Jan 15', passRate: 83, gap: false },
-      { name: 'Export', cases: 0, lastRun: '-', passRate: 0, gap: true },
-    ],
-  },
-];
-
-const COVERAGE_BY_MODULE = [
-  { module: 'Authentication', coverage: 85, color: 'hsl(var(--success))' },
-  { module: 'User Mgmt', coverage: 90, color: 'hsl(var(--success))' },
-  { module: 'Dashboard', coverage: 55, color: 'hsl(var(--warning))' },
-  { module: 'Reports', coverage: 40, color: 'hsl(var(--danger))' },
-  { module: 'Settings', coverage: 100, color: 'hsl(var(--success))' },
-];
+interface TraceabilityTabProps {
+  traceability?: {
+    folders: Array<{
+      id: string;
+      name: string;
+      path: unknown;
+      cases: number;
+      executed: number;
+      passed: number;
+      failed: number;
+      lastRun: string | null;
+      passRate: number;
+      gap: string;
+    }>;
+    coverage: number;
+    totalCases?: number;
+    executedCases?: number;
+  };
+  isLoading: boolean;
+}
 
 function GapIndicator({ passRate, hasGap }: { passRate: number; hasGap: boolean }) {
   if (hasGap) {
@@ -113,7 +86,41 @@ function PassRateBadge({ rate }: { rate: number }) {
   return <span className={cn('font-medium', colorClass)}>{rate}%</span>;
 }
 
-export function TraceabilityTab() {
+export function TraceabilityTab({ traceability, isLoading }: TraceabilityTabProps) {
+  const folderData = traceability?.folders || [];
+  const totalCases = traceability?.totalCases || folderData.reduce((sum, c) => sum + c.cases, 0);
+  const coveredCases = folderData.reduce((sum, c) => sum + c.passed + c.failed, 0);
+  const coveragePercent = traceability?.coverage || (totalCases > 0 ? Math.round((coveredCases / totalCases) * 100) : 0);
+
+  // Chart data
+  const chartData = folderData.filter(c => c.cases > 0).slice(0, 8).map(c => ({
+    module: c.name.length > 12 ? c.name.substring(0, 12) + '...' : c.name,
+    coverage: c.passRate,
+    color: c.passRate >= 80 ? 'hsl(var(--success))' : c.passRate >= 50 ? 'hsl(var(--warning))' : 'hsl(var(--danger))',
+  }));
+
+  if (isLoading) {
+    return (
+      <div className="space-y-6">
+        <Card>
+          <CardContent className="pt-6">
+            <div className="flex items-center gap-6">
+              <Skeleton className="h-32 w-32 rounded-full" />
+              <div className="space-y-2">
+                <Skeleton className="h-6 w-48" />
+                <Skeleton className="h-4 w-64" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        <div className="grid grid-cols-3 gap-6">
+          <Skeleton className="h-[400px] col-span-2" />
+          <Skeleton className="h-[400px]" />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       {/* Coverage Summary */}
@@ -138,32 +145,32 @@ export function TraceabilityTab() {
                     fill="none"
                     stroke="hsl(var(--success))"
                     strokeWidth="12"
-                    strokeDasharray={`${(COVERAGE_STATS.percentage / 100) * 352} 352`}
+                    strokeDasharray={`${(coveragePercent / 100) * 352} 352`}
                     strokeLinecap="round"
                   />
                 </svg>
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="text-2xl font-bold">{COVERAGE_STATS.percentage}%</span>
+                  <span className="text-2xl font-bold">{coveragePercent}%</span>
                 </div>
               </div>
             </div>
             <div>
               <h3 className="text-lg font-semibold">Test Coverage</h3>
               <p className="text-muted-foreground">
-                {COVERAGE_STATS.coveredFeatures}/{COVERAGE_STATS.totalFeatures} features have tests
+                {folderData.filter(c => c.cases > 0).length}/{folderData.length} folders have tests
               </p>
               <div className="flex items-center gap-4 mt-3">
                 <div className="flex items-center gap-1.5">
                   <CheckCircle className="h-4 w-4 text-success" />
-                  <span className="text-sm">&gt;80% pass rate</span>
+                  <span className="text-sm">&gt;80% coverage</span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <Circle className="h-4 w-4 fill-warning text-warning" />
-                  <span className="text-sm">50-80% pass rate</span>
+                  <span className="text-sm">50-80% coverage</span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <AlertCircle className="h-4 w-4 text-danger" />
-                  <span className="text-sm">&lt;50% pass rate</span>
+                  <span className="text-sm">&lt;50% coverage</span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <AlertTriangle className="h-4 w-4 text-warning" />
@@ -183,96 +190,93 @@ export function TraceabilityTab() {
             <CardTitle className="text-lg">Coverage Matrix</CardTitle>
           </CardHeader>
           <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Feature / Folder</TableHead>
-                  <TableHead className="text-right">Cases</TableHead>
-                  <TableHead>Last Run</TableHead>
-                  <TableHead className="text-right">Pass Rate</TableHead>
-                  <TableHead className="w-16">Gap</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {TRACEABILITY_DATA.map((folder) => (
-                  <React.Fragment key={folder.folder}>
-                    {/* Folder row */}
-                    <TableRow className="bg-surface-2/50">
-                      <TableCell colSpan={5}>
-                        <div className="flex items-center gap-2 font-medium">
+            {folderData.length === 0 ? (
+              <div className="py-8 text-center text-muted-foreground">
+                No folders with test cases found
+              </div>
+            ) : (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Folder</TableHead>
+                    <TableHead className="text-right">Cases</TableHead>
+                    <TableHead className="text-right">Passed</TableHead>
+                    <TableHead className="text-right">Failed</TableHead>
+                    <TableHead className="text-right">Coverage</TableHead>
+                    <TableHead className="w-16">Status</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {folderData.map((folder) => (
+                    <TableRow key={folder.id}>
+                      <TableCell>
+                        <div className="flex items-center gap-2">
                           <Folder className="h-4 w-4 text-muted-foreground" />
-                          {folder.folder}
+                          {folder.name}
                         </div>
                       </TableCell>
+                      <TableCell className="text-right">
+                        {folder.cases > 0 ? folder.cases : (
+                          <span className="text-muted-foreground">0</span>
+                        )}
+                      </TableCell>
+                      <TableCell className="text-right text-success">{folder.passed}</TableCell>
+                      <TableCell className="text-right text-danger">{folder.failed}</TableCell>
+                      <TableCell className="text-right">
+                        <PassRateBadge rate={folder.passRate} />
+                      </TableCell>
+                      <TableCell>
+                        <GapIndicator passRate={folder.passRate} hasGap={folder.cases === 0} />
+                      </TableCell>
                     </TableRow>
-                    {/* Children rows */}
-                    {folder.children.map((child) => (
-                      <TableRow key={`${folder.folder}-${child.name}`}>
-                        <TableCell className="pl-8">
-                          <span className="text-muted-foreground mr-2">├─</span>
-                          {child.name}
-                        </TableCell>
-                        <TableCell className="text-right">
-                          {child.cases > 0 ? child.cases : (
-                            <span className="text-muted-foreground">0</span>
-                          )}
-                        </TableCell>
-                        <TableCell>
-                          {child.lastRun !== '-' ? child.lastRun : (
-                            <span className="text-muted-foreground">-</span>
-                          )}
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <PassRateBadge rate={child.passRate} />
-                        </TableCell>
-                        <TableCell>
-                          <GapIndicator passRate={child.passRate} hasGap={child.gap} />
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </React.Fragment>
-                ))}
-              </TableBody>
-            </Table>
+                  ))}
+                </TableBody>
+              </Table>
+            )}
           </CardContent>
         </Card>
 
         {/* Coverage Chart */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg">Coverage by Module</CardTitle>
+            <CardTitle className="text-lg">Coverage by Folder</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="h-[300px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={COVERAGE_BY_MODULE} layout="vertical">
-                  <CartesianGrid strokeDasharray="3 3" className="stroke-border" horizontal={false} />
-                  <XAxis type="number" domain={[0, 100]} className="text-xs" />
-                  <YAxis dataKey="module" type="category" className="text-xs" width={80} />
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: 'hsl(var(--card))',
-                      border: '1px solid hsl(var(--border))',
-                    }}
-                    formatter={(value: number) => [`${value}%`, 'Coverage']}
-                  />
-                  <Bar dataKey="coverage" radius={[0, 4, 4, 0]} barSize={20}>
-                    {COVERAGE_BY_MODULE.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-            <div className="mt-4 space-y-2">
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-muted-foreground">Legend:</span>
+            {chartData.length === 0 ? (
+              <div className="h-[300px] flex items-center justify-center text-muted-foreground">
+                No data available
               </div>
+            ) : (
+              <div className="h-[300px]">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={chartData} layout="vertical">
+                    <CartesianGrid strokeDasharray="3 3" className="stroke-border" horizontal={false} />
+                    <XAxis type="number" domain={[0, 100]} className="text-xs" />
+                    <YAxis dataKey="module" type="category" className="text-xs" width={80} />
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: 'hsl(var(--card))',
+                        border: '1px solid hsl(var(--border))',
+                      }}
+                      formatter={(value: number) => [`${value}%`, 'Coverage']}
+                    />
+                    <Bar dataKey="coverage" radius={[0, 4, 4, 0]} barSize={20}>
+                      {chartData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.color} />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            )}
+            <div className="mt-4 space-y-2">
               <div className="flex items-center gap-2 text-sm">
                 <div className="w-3 h-3 rounded bg-success" />
-                <span>Covered</span>
-                <div className="w-3 h-3 rounded bg-muted ml-3" />
-                <span>Gap</span>
+                <span>&gt;80%</span>
+                <div className="w-3 h-3 rounded bg-warning ml-3" />
+                <span>50-80%</span>
+                <div className="w-3 h-3 rounded bg-danger ml-3" />
+                <span>&lt;50%</span>
               </div>
             </div>
           </CardContent>
