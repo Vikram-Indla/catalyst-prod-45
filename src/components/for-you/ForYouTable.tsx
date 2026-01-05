@@ -193,7 +193,7 @@ export function ForYouTable({
       )}
     >
       {/* Table Header - Catalyst V5: using table header bg token */}
-      <div className="grid grid-cols-[40px_100px_1fr_80px_90px_90px_160px] gap-4 px-4 py-3 bg-[var(--table-header-bg)] border-b border-[var(--border-color)]">
+      <div className="grid grid-cols-[40px_100px_1fr_80px_90px_160px] gap-4 px-4 py-3 bg-[var(--table-header-bg)] border-b border-[var(--border-color)]">
         <div className="flex items-center">
           <Checkbox 
             checked={isAllSelected}
@@ -210,9 +210,6 @@ export function ForYouTable({
         </span>
         <span className="text-xs font-semibold text-text-muted uppercase tracking-wide whitespace-nowrap flex items-center">
           Mode
-        </span>
-        <span className="text-xs font-semibold text-text-muted uppercase tracking-wide whitespace-nowrap flex items-center">
-          Level
         </span>
         <span className="text-xs font-semibold text-text-muted uppercase tracking-wide whitespace-nowrap flex items-center">
           Updated
@@ -248,7 +245,7 @@ export function ForYouTable({
                   onRowClick(item.id);
                 }}
                 className={cn(
-                  "grid grid-cols-[40px_100px_1fr_80px_90px_90px_160px] gap-4 px-4 py-3 cursor-pointer transition-colors group",
+                  "grid grid-cols-[40px_100px_1fr_80px_90px_160px] gap-4 px-4 py-3 cursor-pointer transition-colors group",
                   "border-b border-border-subtle",
                   indexInGroup === groupedItems[group].length - 1 && "border-b-0",
                   isSelected && "bg-[hsl(var(--surface-active))]",
@@ -294,11 +291,6 @@ export function ForYouTable({
                     {item.mode}
                   </span>
                 </div>
-
-                {/* Level - Using link color for dark mode */}
-                <a className="flex items-center text-[13px] font-medium text-[hsl(var(--link-color))] hover:text-[hsl(var(--link-color-hover))] hover:underline cursor-pointer">
-                  {item.level}
-                </a>
 
                 {/* Updated */}
                 <div className="flex items-center text-[13px] text-text-muted">
