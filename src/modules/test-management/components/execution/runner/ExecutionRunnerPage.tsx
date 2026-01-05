@@ -13,6 +13,7 @@ import { useExecutionKeyboard } from '../hooks/useExecutionKeyboard';
 import { ExecutionHeader } from './ExecutionHeader';
 import { TestCasePanel } from './TestCasePanel';
 import { ExecutionContextPanel } from './ExecutionContextPanel';
+import { ExecutionFooter } from './ExecutionFooter';
 import { QuickDefectDialog } from '../QuickDefectDialog';
 import type { ExecutionStatus, CycleScope } from '../../../api/types';
 import { toast } from 'sonner';
@@ -261,6 +262,9 @@ export function ExecutionRunnerPage() {
           onLogDefect={() => setDefectDialogOpen(true)}
         />
       </main>
+
+      {/* Footer with shortcuts and stats */}
+      <ExecutionFooter run={run} steps={steps} />
 
       {/* Quick Defect Dialog */}
       <QuickDefectDialog
