@@ -359,12 +359,15 @@ export function CaseModal({
             {/* Folder */}
             <div className="space-y-2">
               <Label>Folder</Label>
-              <Select value={folderId} onValueChange={setFolderId}>
+              <Select 
+                value={folderId || '__none__'} 
+                onValueChange={(v) => setFolderId(v === '__none__' ? '' : v)}
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="Root (no folder)" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Root (no folder)</SelectItem>
+                  <SelectItem value="__none__">Root (no folder)</SelectItem>
                   {flatFolders.map(({ folder, level }) => (
                     <SelectItem key={folder.id} value={folder.id}>
                       <span style={{ paddingLeft: `${level * 16}px` }}>{folder.name}</span>
