@@ -288,7 +288,8 @@ import {
   DefectsPage as TMDefectsPage,
   ReportsPage as TMReportsPage,
   SettingsPage as TMSettingsPage,
-  MyWorkPage
+  MyWorkPage,
+  CommandCenterPage
 } from "./modules/test-management";
 import { TestManagementContent } from "./modules/test-management/layouts/TestManagementContent";
 
@@ -712,6 +713,7 @@ const App = () => (
               {/* Test Management Module Routes */}
               <Route path="/tests" element={<TestManagementContent />}>
                 <Route index element={<Navigate to="/tests/my-work" replace />} />
+                <Route path="command-center" element={<CommandCenterPage />} />
                 <Route path="my-work" element={<MyWorkPage />} />
                 <Route path="cases" element={<TestCasesPage />} />
                 <Route path="cycles" element={<TestCyclesPage />} />

@@ -30,3 +30,14 @@ export * from './useAI';
 
 // Auth
 export * from './useAuth';
+
+// Command Center
+export {
+  useCommandCenterKPIs,
+  useActiveCycles,
+  useActivityFeed,
+  commandCenterKeys,
+  type CommandCenterKPIs,
+  type ActiveCycleSummary,
+  type ActivityFeedItem,
+} from './useCommandCenter';

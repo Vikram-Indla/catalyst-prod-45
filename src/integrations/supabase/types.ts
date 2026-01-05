@@ -18280,6 +18280,48 @@ export type Database = {
         }
         Relationships: []
       }
+      tm_activity_log: {
+        Row: {
+          action_type: string
+          created_at: string | null
+          entity_id: string | null
+          entity_key: string | null
+          entity_title: string | null
+          entity_type: string
+          id: string
+          metadata: Json | null
+          project_id: string | null
+          user_id: string | null
+          user_name: string | null
+        }
+        Insert: {
+          action_type: string
+          created_at?: string | null
+          entity_id?: string | null
+          entity_key?: string | null
+          entity_title?: string | null
+          entity_type: string
+          id?: string
+          metadata?: Json | null
+          project_id?: string | null
+          user_id?: string | null
+          user_name?: string | null
+        }
+        Update: {
+          action_type?: string
+          created_at?: string | null
+          entity_id?: string | null
+          entity_key?: string | null
+          entity_title?: string | null
+          entity_type?: string
+          id?: string
+          metadata?: Json | null
+          project_id?: string | null
+          user_id?: string | null
+          user_name?: string | null
+        }
+        Relationships: []
+      }
       tm_ai_embeddings: {
         Row: {
           created_at: string | null
