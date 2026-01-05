@@ -239,14 +239,15 @@ export function CaseModal({
 
   return (
     <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
-      <DialogContent className="max-w-3xl max-h-[90vh] p-0 flex flex-col">
-        <DialogHeader className="px-6 py-4 border-b border-border-subtle">
+      <DialogContent className="max-w-3xl max-h-[90vh] h-[90vh] sm:h-auto p-0 flex flex-col overflow-hidden">
+        <DialogHeader className="px-6 py-4 border-b border-border-subtle flex-shrink-0">
           <DialogTitle>
             {isEditing ? `Edit ${testCase.case_key}` : 'Create Test Case'}
           </DialogTitle>
         </DialogHeader>
 
-        <ScrollArea className="flex-1 px-6 py-4">
+        <ScrollArea className="flex-1 min-h-0 overflow-auto">
+          <div className="px-6 py-4">
           <div className="space-y-6">
             {/* Title */}
             <div className="space-y-2">
@@ -486,6 +487,7 @@ export function CaseModal({
               )}
             </div>
           </div>
+        </div>
         </ScrollArea>
 
         <DialogFooter className="px-6 py-4 border-t border-border-subtle">
