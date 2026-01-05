@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useMemo, useCallback } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import {
   useTestCases,
   useTestCase,
@@ -76,6 +76,7 @@ function mapTMCaseToCase(c: TMTestCase): any {
 
 export function TestCasesPage() {
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   
   // State
   const [selectedFolderId, setSelectedFolderId] = useState<string | null>(null);
@@ -161,14 +162,14 @@ export function TestCasesPage() {
   }, []);
 
   const handleCreateCase = useCallback(() => {
-    setEditingCase(null);
-    setModalOpen(true);
-  }, []);
+    // Navigate to full-screen editor for new case
+    navigate(`/tests/cases/new/edit?projectId=${projectId}${selectedFolderId ? `&folderId=${selectedFolderId}` : ''}`);
+  }, [navigate, projectId, selectedFolderId]);
 
   const handleEditCase = useCallback((testCase: any) => {
-    setEditingCase(testCase);
-    setModalOpen(true);
-  }, []);
+    // Navigate to full-screen editor
+    navigate(`/tests/cases/${testCase.id}/edit?projectId=${projectId}`);
+  }, [navigate, projectId]);
 
   const handleDuplicateCase = useCallback((testCase: any) => {
     if (!projectId) return;
