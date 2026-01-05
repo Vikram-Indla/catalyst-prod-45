@@ -174,15 +174,56 @@
     --card-bg: #ffffff;
     --card-border: #f0f0f0;
     
-    /* Table tokens (HEX) */
-    --table-row-bg: #ffffff;
-    --table-row-hover: rgba(0, 0, 0, 0.02);
-    --table-header-bg: rgba(0, 0, 0, 0.02);
+    /* ═══════════════════════════════════════════════════════════════
+       TABLE TOKENS - CATALYST V5 LIGHT MODE SPECIFICATION
+       ═══════════════════════════════════════════════════════════════ */
+    
+    /* Table container */
+    --table-container-bg: #ffffff;          /* surface-0 */
+    --table-container-border: #e8e8e8;      /* border-subtle */
+    
+    /* Table header */
+    --table-header-bg: #f8f8f7;             /* surface-2 */
+    --table-header-text: #0a0a0a;           /* text-primary */
+    --table-header-border: #e0e0e0;         /* border-default */
+    
+    /* Table body rows */
+    --table-row-bg: #ffffff;                /* surface-0 */
+    --table-row-alt-bg: #fafafa;            /* surface-1 - alternating */
+    --table-row-hover: #f5f5f5;             /* surface-hover */
+    --table-row-selected: rgba(37, 99, 235, 0.06);
+    --table-row-border: #e8e8e8;            /* border-subtle */
+    
+    /* Table cell dividers (column separators) */
+    --table-cell-divider: #e8e8e8;          /* border-subtle */
+    
+    /* Table cell text hierarchy */
+    --table-text-primary: #0a0a0a;          /* text-primary */
+    --table-text-secondary: #404040;        /* text-secondary */
+    --table-text-muted: #737373;            /* muted-foreground */
+    
+    /* Table icons */
+    --table-icon-default: #525252;          /* icon-default */
+    --table-icon-hover: #0a0a0a;            /* text-primary */
+    --table-icon-disabled: #a3a3a3;         /* muted */
+    
+    /* Table toolbar */
+    --table-toolbar-bg: #fafafa;            /* surface-1 */
+    --table-toolbar-input-bg: #f3f3f3;      /* surface-3 */
+    --table-toolbar-input-border: #e8e8e8;  /* border-subtle */
+    
+    /* Table selection */
     --table-section-bg: rgba(0, 0, 0, 0.02);
     --row-hover: rgba(0, 0, 0, 0.02);
     --selection-row-bg: rgba(37, 99, 235, 0.06);
     --selection-bar-accent: #2563eb;
     --focus-ring-hex: #2563eb;
+    
+    /* Table empty state */
+    --table-empty-bg: #ffffff;              /* surface-0 */
+    --table-empty-border: #e8e8e8;          /* border-subtle */
+    --table-empty-title: #0a0a0a;           /* text-primary */
+    --table-empty-text: #404040;            /* text-secondary */
     
     /* Link colors (HSL triplets for hsl() usage) */
     --link-color: 217 91% 53%;
@@ -452,15 +493,57 @@
     --card-bg: #141414;
     --card-border: #2c2c2c;
     
-    /* Table tokens (HEX) */
-    --table-row-bg: #141414;
-    --table-row-hover: #1c1c1c;
-    --table-header-bg: rgba(59, 130, 246, 0.1);
+    /* ═══════════════════════════════════════════════════════════════
+       TABLE TOKENS - CATALYST V5 DARK MODE SPECIFICATION
+       These are the canonical table tokens for enterprise dark mode
+       ═══════════════════════════════════════════════════════════════ */
+    
+    /* Table container */
+    --table-container-bg: #262626;          /* surface-0 */
+    --table-container-border: #333333;      /* border-subtle */
+    
+    /* Table header */
+    --table-header-bg: #1f1f1f;             /* surface-2 */
+    --table-header-text: #f5f5f5;           /* text-primary */
+    --table-header-border: #404040;         /* border-default */
+    
+    /* Table body rows */
+    --table-row-bg: #262626;                /* surface-0 */
+    --table-row-alt-bg: #1f1f1f;            /* surface-2 - alternating */
+    --table-row-hover: #2d2d2d;             /* surface-3 */
+    --table-row-selected: #333333;          /* surface-elevated */
+    --table-row-border: #333333;            /* border-subtle */
+    
+    /* Table cell dividers (column separators) */
+    --table-cell-divider: #333333;          /* border-subtle */
+    
+    /* Table cell text hierarchy */
+    --table-text-primary: #f5f5f5;          /* text-primary - names, titles */
+    --table-text-secondary: #a3a3a3;        /* text-secondary - metadata */
+    --table-text-muted: #b3b3b3;            /* muted-foreground - helpers */
+    
+    /* Table icons */
+    --table-icon-default: #a3a3a3;          /* text-secondary */
+    --table-icon-hover: #f5f5f5;            /* text-primary */
+    --table-icon-disabled: #737373;         /* text-tertiary */
+    
+    /* Table toolbar */
+    --table-toolbar-bg: #1a1a1a;            /* surface-1 */
+    --table-toolbar-input-bg: #2d2d2d;      /* surface-3 */
+    --table-toolbar-input-border: #333333;  /* border-subtle */
+    
+    /* Table selection */
     --table-section-bg: #1a1a1a;
-    --row-hover: #1c1c1c;
+    --row-hover: #2d2d2d;
     --selection-row-bg: rgba(59, 130, 246, 0.12);
     --selection-bar-accent: #3b82f6;
     --focus-ring-hex: #3b82f6;
+    
+    /* Table empty state */
+    --table-empty-bg: #262626;              /* surface-0 */
+    --table-empty-border: #333333;          /* border-subtle - dashed */
+    --table-empty-title: #f5f5f5;           /* text-primary */
+    --table-empty-text: #a3a3a3;            /* text-secondary */
     
     /* Link colors (HSL triplets for hsl() usage) */
     --link-color: 217 91% 70%;
@@ -966,4 +1049,250 @@
 .tabular-nums {
   font-variant-numeric: tabular-nums;
   font-feature-settings: 'tnum' on;
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   CATALYST V5 — GLOBAL TABLE DARK MODE ENFORCEMENT
+   Overrides forbidden Tailwind gray classes in dark mode for all tables
+   ════════════════════════════════════════════════════════════════════════════ */
+
+/* ═══════════════════════════════════════════════════════════════
+   TABLE CONTAINER OVERRIDES
+   Forces all table containers to use Catalyst v5 surface tokens
+   ═══════════════════════════════════════════════════════════════ */
+
+.dark table,
+[data-theme="dark"] table {
+  background-color: var(--table-container-bg);
+  border-color: var(--table-container-border);
+}
+
+.dark [class*="dark:bg-gray-900"],
+[data-theme="dark"] [class*="dark:bg-gray-900"] {
+  background-color: var(--table-container-bg) !important;
+}
+
+.dark [class*="dark:bg-gray-800"],
+[data-theme="dark"] [class*="dark:bg-gray-800"] {
+  background-color: var(--table-row-hover) !important;
+}
+
+.dark [class*="dark:bg-gray-700"],
+[data-theme="dark"] [class*="dark:bg-gray-700"] {
+  background-color: var(--table-header-bg) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   TABLE HEADER OVERRIDES
+   Forces headers to use text-primary for readability
+   ═══════════════════════════════════════════════════════════════ */
+
+.dark thead,
+[data-theme="dark"] thead {
+  background-color: var(--table-header-bg);
+  border-color: var(--table-header-border);
+}
+
+.dark thead th,
+[data-theme="dark"] thead th {
+  color: var(--table-header-text);
+  border-color: var(--table-cell-divider);
+}
+
+.dark [class*="dark:text-gray-400"],
+[data-theme="dark"] [class*="dark:text-gray-400"] {
+  color: var(--table-text-secondary) !important;
+}
+
+.dark [class*="dark:text-gray-300"],
+[data-theme="dark"] [class*="dark:text-gray-300"] {
+  color: var(--table-text-primary) !important;
+}
+
+.dark [class*="dark:text-gray-100"],
+[data-theme="dark"] [class*="dark:text-gray-100"] {
+  color: var(--table-text-primary) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   TABLE ROW OVERRIDES
+   Forces row backgrounds and hover states
+   ═══════════════════════════════════════════════════════════════ */
+
+.dark tbody tr,
+[data-theme="dark"] tbody tr {
+  background-color: var(--table-row-bg);
+  border-color: var(--table-row-border);
+}
+
+.dark tbody tr:nth-child(even),
+[data-theme="dark"] tbody tr:nth-child(even) {
+  background-color: var(--table-row-alt-bg);
+}
+
+.dark tbody tr:hover,
+[data-theme="dark"] tbody tr:hover {
+  background-color: var(--table-row-hover) !important;
+}
+
+.dark [class*="dark:hover:bg-gray-800"]:hover,
+[data-theme="dark"] [class*="dark:hover:bg-gray-800"]:hover {
+  background-color: var(--table-row-hover) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   TABLE CELL OVERRIDES
+   Forces cell text and dividers
+   ═══════════════════════════════════════════════════════════════ */
+
+.dark td,
+[data-theme="dark"] td {
+  color: var(--table-text-primary);
+  border-color: var(--table-cell-divider);
+}
+
+.dark [class*="dark:border-gray-700"],
+[data-theme="dark"] [class*="dark:border-gray-700"] {
+  border-color: var(--table-container-border) !important;
+}
+
+.dark [class*="dark:border-gray-600"],
+[data-theme="dark"] [class*="dark:border-gray-600"] {
+  border-color: var(--table-header-border) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   TABLE ICON OVERRIDES
+   Forces icon visibility per Catalyst v5 spec
+   ═══════════════════════════════════════════════════════════════ */
+
+.dark [class*="dark:text-gray-500"],
+[data-theme="dark"] [class*="dark:text-gray-500"] {
+  color: var(--table-icon-default) !important;
+}
+
+.dark [class*="dark:text-gray-500"]:hover,
+[data-theme="dark"] [class*="dark:text-gray-500"]:hover {
+  color: var(--table-icon-hover) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   TABLE INPUT OVERRIDES
+   Forces checkbox/input visibility
+   ═══════════════════════════════════════════════════════════════ */
+
+.dark input[type="checkbox"],
+[data-theme="dark"] input[type="checkbox"] {
+  background-color: var(--table-toolbar-input-bg);
+  border-color: var(--table-container-border);
+}
+
+.dark input[type="checkbox"]:checked,
+[data-theme="dark"] input[type="checkbox"]:checked {
+  background-color: var(--brand-primary-hex);
+  border-color: var(--brand-primary-hex);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   CATALYST TABLE UTILITY CLASSES
+   Use these classes for proper table styling
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Table container */
+.catalyst-table {
+  background-color: var(--table-container-bg);
+  border: 1px solid var(--table-container-border);
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+/* Table header */
+.catalyst-table-header {
+  background-color: var(--table-header-bg);
+  border-bottom: 1px solid var(--table-header-border);
+}
+
+.catalyst-table-header th {
+  color: var(--table-header-text);
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  border-right: 1px solid var(--table-cell-divider);
+}
+
+.catalyst-table-header th:last-child {
+  border-right: none;
+}
+
+/* Table row */
+.catalyst-table-row {
+  background-color: var(--table-row-bg);
+  border-bottom: 1px solid var(--table-row-border);
+  transition: background-color 150ms ease;
+}
+
+.catalyst-table-row:nth-child(even) {
+  background-color: var(--table-row-alt-bg);
+}
+
+.catalyst-table-row:hover {
+  background-color: var(--table-row-hover);
+}
+
+.catalyst-table-row.selected {
+  background-color: var(--table-row-selected);
+}
+
+/* Table cell */
+.catalyst-table-cell {
+  color: var(--table-text-primary);
+  border-right: 1px solid var(--table-cell-divider);
+}
+
+.catalyst-table-cell:last-child {
+  border-right: none;
+}
+
+/* Text hierarchy */
+.catalyst-table-text-primary {
+  color: var(--table-text-primary);
+}
+
+.catalyst-table-text-secondary {
+  color: var(--table-text-secondary);
+}
+
+.catalyst-table-text-muted {
+  color: var(--table-text-muted);
+}
+
+/* Table toolbar */
+.catalyst-table-toolbar {
+  background-color: var(--table-toolbar-bg);
+  border-bottom: 1px solid var(--table-header-border);
+}
+
+.catalyst-table-toolbar input {
+  background-color: var(--table-toolbar-input-bg);
+  border: 1px solid var(--table-toolbar-input-border);
+  color: var(--table-text-primary);
+}
+
+.catalyst-table-toolbar input::placeholder {
+  color: var(--table-text-muted);
+}
+
+/* Empty state */
+.catalyst-table-empty {
+  background-color: var(--table-empty-bg);
+  border: 1px dashed var(--table-empty-border);
+}
+
+.catalyst-table-empty-title {
+  color: var(--table-empty-title);
+}
+
+.catalyst-table-empty-text {
+  color: var(--table-empty-text);
 }
