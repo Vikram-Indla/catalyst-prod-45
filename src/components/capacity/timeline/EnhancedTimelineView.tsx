@@ -167,11 +167,11 @@ function AllocationBar({ allocation, leftPx, widthPx, rowIndex, totalBars, onCli
       </span>
       <div className={styles.barTooltip}>
         <div className="font-semibold mb-1">{projectName}</div>
-        <div className="text-gray-300 text-[11px]">
+        <div className="text-muted-foreground text-[11px]">
           {formatDate(allocation.start_date)} – {formatDate(allocation.end_date)}
         </div>
         <div className="mt-1">
-          <span className="text-gray-400">Allocation:</span>{' '}
+          <span className="text-muted-foreground">Allocation:</span>{' '}
           <span className="font-medium">{allocation.allocation_percent}%</span>
         </div>
       </div>
