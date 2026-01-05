@@ -64,7 +64,7 @@ export function CapacitySummaryCards({
       {cards.map((card) => (
         <div 
           key={card.label}
-          className="bg-card border border-border rounded-md p-3 flex items-center gap-2"
+          className="bg-card dark:bg-[var(--surface-0)] border border-border dark:border-[var(--border-subtle)] rounded-md p-3 flex items-center gap-2"
         >
           <div className={cn(
             "w-8 h-8 rounded-md flex items-center justify-center flex-shrink-0",
@@ -73,8 +73,8 @@ export function CapacitySummaryCards({
             <card.icon className={cn("h-4 w-4", card.iconColor)} />
           </div>
           <div className="flex-1 min-w-0">
-            <span className="text-lg font-semibold text-foreground">{card.value}</span>
-            <p className="text-xs text-muted-foreground">{card.label}</p>
+            <span className="text-lg font-semibold text-foreground dark:text-[var(--text-primary)]">{card.value}</span>
+            <p className="text-xs text-muted-foreground dark:text-[var(--text-secondary)]">{card.label}</p>
           </div>
         </div>
       ))}

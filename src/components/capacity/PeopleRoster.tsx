@@ -38,9 +38,9 @@ export function PeopleRoster({
 
   const getStatusBadge = (status: 'over' | 'full' | 'under', label: string) => {
     const styles = {
-      over: 'bg-[rgba(239,68,68,0.1)] text-[#ef4444] border-[rgba(239,68,68,0.2)]',
-      full: 'bg-[rgba(13,148,136,0.1)] text-[#0d9488] border-[rgba(13,148,136,0.2)]',
-      under: 'bg-[rgba(245,158,11,0.1)] text-[#f59e0b] border-[rgba(245,158,11,0.2)]',
+      over: 'bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300 border-red-300 dark:border-red-700',
+      full: 'bg-teal-100 dark:bg-teal-900/40 text-teal-700 dark:text-teal-300 border-teal-300 dark:border-teal-700',
+      under: 'bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300 border-amber-300 dark:border-amber-700',
     };
     return (
       <Badge variant="outline" className={cn("text-xs font-medium", styles[status])}>
@@ -59,26 +59,26 @@ export function PeopleRoster({
 
   return (
     <TooltipProvider>
-    <div className="overflow-x-auto bg-card border border-border rounded-lg">
+    <div className="overflow-x-auto bg-card dark:bg-[var(--surface-0)] border border-border dark:border-[var(--border-subtle)] rounded-lg">
       <table className="w-full">
         <thead>
-          <tr className="border-b border-border bg-muted/30">
-            <th className="text-left py-3 px-4 text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+          <tr className="border-b border-border dark:border-[var(--border-default)] bg-muted/30 dark:bg-[var(--surface-2)]">
+            <th className="text-left py-3 px-4 text-xs font-semibold text-muted-foreground dark:text-[var(--text-primary)] uppercase tracking-wide border-r border-border dark:border-[var(--border-subtle)]">
               Resource
             </th>
-            <th className="text-left py-3 px-4 text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+            <th className="text-left py-3 px-4 text-xs font-semibold text-muted-foreground dark:text-[var(--text-primary)] uppercase tracking-wide border-r border-border dark:border-[var(--border-subtle)]">
               Skill
             </th>
-            <th className="text-left py-3 px-4 text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+            <th className="text-left py-3 px-4 text-xs font-semibold text-muted-foreground dark:text-[var(--text-primary)] uppercase tracking-wide border-r border-border dark:border-[var(--border-subtle)]">
               Utilization
             </th>
-            <th className="text-left py-3 px-4 text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+            <th className="text-left py-3 px-4 text-xs font-semibold text-muted-foreground dark:text-[var(--text-primary)] uppercase tracking-wide border-r border-border dark:border-[var(--border-subtle)]">
               Allocations
             </th>
-            <th className="text-left py-3 px-4 text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+            <th className="text-left py-3 px-4 text-xs font-semibold text-muted-foreground dark:text-[var(--text-primary)] uppercase tracking-wide border-r border-border dark:border-[var(--border-subtle)]">
               Status
             </th>
-            <th className="text-right py-3 px-4 text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+            <th className="text-right py-3 px-4 text-xs font-semibold text-muted-foreground dark:text-[var(--text-primary)] uppercase tracking-wide">
               Actions
             </th>
           </tr>
@@ -94,47 +94,47 @@ export function PeopleRoster({
             return (
               <tr 
                 key={resource.id} 
-                className="border-b border-border last:border-b-0 hover:bg-muted/30 transition-colors"
+                className="border-b border-border dark:border-[var(--border-subtle)] last:border-b-0 hover:bg-muted/30 dark:hover:bg-[var(--surface-3)] transition-colors"
               >
                 {/* Resource */}
-                <td className="py-3 px-4">
+                <td className="py-3 px-4 border-r border-border dark:border-[var(--border-subtle)]">
                   <div 
                     className="flex items-center gap-3 cursor-pointer"
                     onClick={() => onResourceClick(resource.id)}
                   >
-                    <Avatar className="h-9 w-9 bg-[rgba(37,99,235,0.1)] border border-[rgba(37,99,235,0.2)]">
-                      <AvatarFallback className="bg-[rgba(37,99,235,0.1)] text-[#2563eb] text-xs font-semibold">
+                    <Avatar className="h-9 w-9 bg-primary/10 dark:bg-primary/20 border border-primary/30 dark:border-primary/40">
+                      <AvatarFallback className="bg-primary/10 dark:bg-primary/20 text-primary dark:text-primary text-xs font-semibold">
                         {resource.initials}
                       </AvatarFallback>
                     </Avatar>
                     <div>
-                      <div className="font-medium text-foreground text-sm hover:text-[#2563eb] transition-colors">
+                      <div className="font-medium text-foreground dark:text-[var(--text-primary)] text-sm hover:text-primary transition-colors">
                         {resource.name}
                       </div>
-                      <div className="text-xs text-muted-foreground">{resource.role}</div>
+                      <div className="text-xs text-muted-foreground dark:text-[var(--text-secondary)]">{resource.role}</div>
                     </div>
                   </div>
                 </td>
 
                 {/* Skill */}
-                <td className="py-3 px-4">
-                  <span className="text-sm text-foreground">{resource.primarySkill}</span>
+                <td className="py-3 px-4 border-r border-border dark:border-[var(--border-subtle)]">
+                  <span className="text-sm text-foreground dark:text-[var(--text-primary)]">{resource.primarySkill}</span>
                 </td>
 
                 {/* Utilization */}
-                <td className="py-3 px-4">
+                <td className="py-3 px-4 border-r border-border dark:border-[var(--border-subtle)]">
                   <span className={cn(
                     "text-sm font-medium",
-                    utilization > 100 ? "text-[#ef4444]" : 
-                    utilization >= 80 ? "text-[#0d9488]" : 
-                    "text-[#f59e0b]"
+                    utilization > 100 ? "text-red-600 dark:text-red-400" : 
+                    utilization >= 80 ? "text-teal-600 dark:text-teal-400" : 
+                    "text-amber-600 dark:text-amber-400"
                   )}>
                     {utilization}%
                   </span>
                 </td>
 
                 {/* Allocations - Styled cards matching reference */}
-                <td className="py-3 px-4">
+                <td className="py-3 px-4 border-r border-border dark:border-[var(--border-subtle)]">
                   <div className="flex flex-col gap-1.5">
                     {weekAllocations.length > 0 ? (
                       <>
@@ -151,27 +151,30 @@ export function PeopleRoster({
                                     "rounded-lg px-3 py-2 text-xs font-medium cursor-default flex items-center gap-2 max-w-[180px]",
                                     isFirst 
                                       ? "border-2" 
-                                      : "border border-dashed bg-white"
+                                      : "border border-dashed bg-card dark:bg-[var(--surface-3)]"
                                   )}
                                   style={{ 
                                     borderColor: project.color,
-                                    backgroundColor: isFirst ? `${project.color}15` : 'white',
-                                    color: isFirst ? project.color : '#1a1a1a',
+                                    backgroundColor: isFirst ? `${project.color}20` : undefined,
+                                    color: isFirst ? project.color : undefined,
                                   }}
                                 >
                                   <span 
                                     className="w-2 h-2 rounded-full flex-shrink-0"
                                     style={{ backgroundColor: project.color }}
                                   />
-                                  <span className="truncate">
+                                  <span className={cn(
+                                    "truncate",
+                                    !isFirst && "text-foreground dark:text-[var(--text-primary)]"
+                                  )}>
                                     {project.shortName}
                                   </span>
                                   <span className="ml-auto font-semibold">{allocation.percentage}%</span>
                                 </div>
                               </TooltipTrigger>
-                              <TooltipContent side="top" className="bg-foreground text-background text-xs">
+                              <TooltipContent side="top" className="bg-[var(--surface-elevated)] dark:bg-[var(--surface-elevated)] text-foreground dark:text-[var(--text-primary)] text-xs border border-border dark:border-[var(--border-subtle)]">
                                 <p className="font-medium">{project.name}</p>
-                                <p>{allocation.percentage}% allocation</p>
+                                <p className="text-muted-foreground dark:text-[var(--text-secondary)]">{allocation.percentage}% allocation</p>
                               </TooltipContent>
                             </Tooltip>
                           );
@@ -179,11 +182,11 @@ export function PeopleRoster({
                         {weekAllocations.length > 2 && (
                           <Tooltip>
                             <TooltipTrigger asChild>
-                              <div className="text-xs text-muted-foreground font-medium px-2 py-1 bg-muted rounded cursor-default w-fit">
+                              <div className="text-xs text-muted-foreground dark:text-[var(--text-secondary)] font-medium px-2 py-1 bg-muted dark:bg-[var(--surface-3)] rounded cursor-default w-fit">
                                 +{weekAllocations.length - 2}
                               </div>
                             </TooltipTrigger>
-                            <TooltipContent side="top" className="bg-foreground text-background text-xs">
+                            <TooltipContent side="top" className="bg-[var(--surface-elevated)] dark:bg-[var(--surface-elevated)] text-foreground dark:text-[var(--text-primary)] text-xs border border-border dark:border-[var(--border-subtle)]">
                               {weekAllocations.slice(2).map(a => {
                                 const p = getProjectById(a.projectId);
                                 return <p key={a.id}>{p?.name}: {a.percentage}%</p>;
@@ -193,13 +196,13 @@ export function PeopleRoster({
                         )}
                       </>
                     ) : (
-                      <span className="text-xs text-muted-foreground">No allocations</span>
+                      <span className="text-xs text-muted-foreground dark:text-[var(--text-secondary)]">No allocations</span>
                     )}
                   </div>
                 </td>
 
                 {/* Status */}
-                <td className="py-3 px-4">
+                <td className="py-3 px-4 border-r border-border dark:border-[var(--border-subtle)]">
                   {getStatusBadge(statusInfo.status, statusInfo.label)}
                 </td>
 
