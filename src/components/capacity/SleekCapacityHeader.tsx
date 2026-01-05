@@ -229,18 +229,8 @@ export function SleekCapacityHeader({
             />
           </div>
 
-          {/* Hero Tab Strip - Award-winning segment control */}
-          <div className="relative flex items-center bg-muted/60 rounded-xl p-1 gap-0.5">
-            {/* Animated active indicator */}
-            <div 
-              className="absolute h-[calc(100%-8px)] bg-card rounded-lg shadow-sm border border-border/50 transition-all duration-300 ease-out"
-              style={{
-                width: `calc(${100 / viewTabs.length}% - 4px)`,
-                left: `calc(${(activeTabIndex * 100) / viewTabs.length}% + 4px)`,
-                top: '4px',
-              }}
-            />
-            
+          {/* Hero Tab Strip - Bold, prominent segment control */}
+          <div className="relative flex items-center bg-slate-100 dark:bg-slate-800/80 rounded-2xl p-1.5 gap-1 shadow-inner border border-slate-200 dark:border-slate-700">
             {viewTabs.map((tab) => {
               const Icon = tab.icon;
               return (
@@ -248,13 +238,16 @@ export function SleekCapacityHeader({
                   key={tab.id}
                   onClick={tab.onClick}
                   className={cn(
-                    'relative z-10 flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-colors duration-200',
+                    'relative flex items-center gap-2.5 px-5 py-2.5 text-sm font-semibold rounded-xl transition-all duration-200',
                     tab.isActive 
-                      ? 'text-foreground' 
-                      : 'text-muted-foreground hover:text-foreground'
+                      ? 'bg-white dark:bg-slate-900 text-emerald-700 dark:text-emerald-400 shadow-md border border-slate-200 dark:border-slate-600'
+                      : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-200/50 dark:hover:bg-slate-700/50'
                   )}
                 >
-                  <Icon className="w-4 h-4" />
+                  <Icon className={cn(
+                    "w-4.5 h-4.5",
+                    tab.isActive && "text-emerald-600 dark:text-emerald-400"
+                  )} />
                   <span>{tab.label}</span>
                 </button>
               );

@@ -157,9 +157,9 @@ export const EnhancedHeatmapGrid = memo(function EnhancedHeatmapGrid({
               </div>
             ))}
             
-            {/* Insights column header */}
-            <div className="w-48 flex-shrink-0 flex items-center justify-center py-2 bg-muted/50 px-3">
-              <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Insights</span>
+            {/* Notes column header */}
+            <div className="w-64 flex-shrink-0 flex items-center justify-start py-2 px-4 bg-muted/50">
+              <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Notes</span>
             </div>
           </div>
           
@@ -312,21 +312,11 @@ const EnhancedResourceRow = memo(function EnhancedResourceRow({
               
               return (
                 <div key={month.getTime()} className="relative">
-                  {/* Contract end badge - positioned on specific month */}
+                  {/* Contract end badge - subtle teal styling */}
                   {contractEndsInThisMonth && resource.contractEndDate && (
                     <div className="absolute -top-2 left-1/2 -translate-x-1/2 z-20">
                       <div 
-                        className={cn(
-                          "px-2 py-1 rounded-md text-[10px] font-bold whitespace-nowrap flex items-center gap-1 shadow-lg",
-                          resource.contractStatus?.status === 'critical' 
-                            ? "bg-rose-500 text-white animate-pulse"
-                            : "bg-amber-500 text-white"
-                        )}
-                        style={{
-                          boxShadow: resource.contractStatus?.status === 'critical'
-                            ? '0 4px 12px rgba(239, 68, 68, 0.4)'
-                            : '0 4px 12px rgba(245, 158, 11, 0.4)'
-                        }}
+                        className="px-2 py-1 rounded-md text-[10px] font-semibold whitespace-nowrap flex items-center gap-1 bg-teal-50 dark:bg-teal-900/40 text-teal-700 dark:text-teal-300 border border-teal-200 dark:border-teal-700 shadow-sm"
                       >
                         <Clock className="w-3 h-3" />
                         {formatContractBadge(resource.contractEndDate)}
@@ -497,119 +487,120 @@ interface ResourceInsightsCellProps {
 }
 
 const ResourceInsightsCell = memo(function ResourceInsightsCell({ resource }: ResourceInsightsCellProps) {
-  // Generate smart insights based on resource data
+  // Generate meaningful insights - no averages, proper English, use space well
   const insights = useMemo(() => {
-    const items: { icon: React.ReactNode; text: string; color: string; priority: number; isBold?: boolean }[] = [];
+    const items: { text: string; color: string; priority: number }[] = [];
     
-    // Always show average utilization first
-    const avgColor = resource.averageUtilization > 100 
-      ? 'text-rose-600 dark:text-rose-400'
-      : resource.averageUtilization < 50 
-        ? 'text-emerald-600 dark:text-emerald-400'
-        : 'text-blue-600 dark:text-blue-400';
-    
-    items.push({
-      icon: <TrendingUp className="w-3 h-3" />,
-      text: `Avg: ${resource.averageUtilization}%`,
-      color: avgColor,
-      priority: 0,
-      isBold: true
-    });
-    
-    // Contract ending soon - highest priority alert
+    // Contract status - most important
     if (resource.contractStatus?.status === 'critical') {
       const days = resource.contractStatus.daysRemaining;
       items.push({
-        icon: <AlertTriangle className="w-3 h-3" />,
-        text: `⚠ Ends in ${days}d`,
+        text: `Contract expires in ${days} days — action required`,
         color: 'text-rose-600 dark:text-rose-400',
         priority: 1
       });
     } else if (resource.contractStatus?.status === 'warning') {
       const days = resource.contractStatus.daysRemaining;
       items.push({
-        icon: <Calendar className="w-3 h-3" />,
-        text: `Ends in ${days}d`,
+        text: `Contract renewal due in ${days} days`,
         color: 'text-amber-600 dark:text-amber-400',
         priority: 2
       });
-    }
-    
-    // Over-allocated - high priority
-    if (resource.averageUtilization > 100) {
+    } else if (resource.contractEndDate) {
+      const endDate = new Date(resource.contractEndDate);
+      const formatted = endDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
       items.push({
-        icon: <AlertTriangle className="w-3 h-3" />,
-        text: `${resource.averageUtilization - 100}% over`,
-        color: 'text-rose-600 dark:text-rose-400',
-        priority: 1
+        text: `Contract valid until ${formatted}`,
+        color: 'text-teal-600 dark:text-teal-400',
+        priority: 5
       });
     }
     
-    // Available capacity - opportunity
-    if (resource.averageUtilization < 50 && resource.averageUtilization > 0) {
+    // Capacity status
+    if (resource.averageUtilization > 100) {
       items.push({
-        icon: <Sparkles className="w-3 h-3" />,
-        text: `${100 - resource.averageUtilization}% free`,
+        text: `Currently over-allocated by ${resource.averageUtilization - 100}%`,
+        color: 'text-rose-600 dark:text-rose-400',
+        priority: 1
+      });
+    } else if (resource.averageUtilization === 100) {
+      items.push({
+        text: 'Fully allocated — no capacity available',
+        color: 'text-blue-600 dark:text-blue-400',
+        priority: 3
+      });
+    } else if (resource.averageUtilization < 30) {
+      items.push({
+        text: `Has significant availability for new work`,
         color: 'text-emerald-600 dark:text-emerald-400',
         priority: 3
+      });
+    } else if (resource.averageUtilization < 70) {
+      items.push({
+        text: 'Has capacity for additional assignments',
+        color: 'text-emerald-600 dark:text-emerald-400',
+        priority: 4
       });
     }
     
     // Conflicts
     if (resource.conflictCount > 0) {
       items.push({
-        icon: <AlertTriangle className="w-3 h-3" />,
-        text: `${resource.conflictCount} conflict${resource.conflictCount > 1 ? 's' : ''}`,
+        text: `${resource.conflictCount} scheduling conflict${resource.conflictCount > 1 ? 's' : ''} detected`,
         color: 'text-rose-600 dark:text-rose-400',
         priority: 2
       });
     }
     
-    // Vendor info - always show if available
+    // Vendor / team info
     if (resource.vendor) {
       items.push({
-        icon: <Users className="w-3 h-3" />,
-        text: resource.vendor,
+        text: `Contractor via ${resource.vendor}`,
         color: 'text-sky-600 dark:text-sky-400',
-        priority: 10 // Always last
+        priority: 6
       });
     }
     
-    // Trend insights (lower priority)
-    if (resource.trend === 'up' && resource.trendPercentage > 10) {
+    // Trend insights
+    if (resource.trend === 'up' && resource.trendPercentage > 15) {
       items.push({
-        icon: <TrendingUp className="w-3 h-3" />,
-        text: `↗ +${resource.trendPercentage}%`,
+        text: 'Workload increasing — monitor capacity',
         color: 'text-amber-600 dark:text-amber-400',
-        priority: 5
+        priority: 4
       });
-    } else if (resource.trend === 'down' && resource.trendPercentage > 10) {
+    } else if (resource.trend === 'down' && resource.trendPercentage > 15) {
       items.push({
-        icon: <TrendingDown className="w-3 h-3" />,
-        text: `↘ -${resource.trendPercentage}%`,
+        text: 'Workload decreasing — capacity opening up',
         color: 'text-emerald-600 dark:text-emerald-400',
-        priority: 5
+        priority: 4
       });
     }
     
-    // Sort by priority and take top 3
-    return items.sort((a, b) => a.priority - b.priority).slice(0, 3);
+    // Sort by priority and take top 2
+    return items.sort((a, b) => a.priority - b.priority).slice(0, 2);
   }, [resource]);
 
+  // Fallback if no insights
+  if (insights.length === 0) {
+    return (
+      <div className="w-64 flex-shrink-0 flex items-center px-4 py-2 bg-muted/5 border-l border-border/30">
+        <span className="text-xs text-muted-foreground">No alerts or updates</span>
+      </div>
+    );
+  }
+
   return (
-    <div className="w-48 flex-shrink-0 flex flex-col justify-center gap-0.5 py-1 px-3 bg-muted/5 border-l border-border/30">
+    <div className="w-64 flex-shrink-0 flex flex-col justify-center gap-1.5 py-2 px-4 bg-muted/5 border-l border-border/30">
       {insights.map((insight, i) => (
-        <div 
+        <p 
           key={i}
           className={cn(
-            "flex items-center gap-1.5 text-[11px] leading-tight truncate",
-            insight.color,
-            insight.isBold ? "font-bold" : "font-medium"
+            "text-xs leading-relaxed",
+            insight.color
           )}
         >
-          {insight.icon}
-          <span className="truncate">{insight.text}</span>
-        </div>
+          {insight.text}
+        </p>
       ))}
     </div>
   );
