@@ -7,7 +7,6 @@ import { cyclesApi, type ListCyclesParams } from '../api';
 import type { TestCycle, CreateCycleInput, UpdateCycleInput, CycleScope, PaginatedResponse } from '../api/types';
 import { useToast } from '@/hooks/use-toast';
 import { parseApiError } from '../api/client';
-import { MOCK_TEST_CYCLES } from '../data/mockData';
 
 // Query Keys
 export const cycleKeys = {
@@ -21,40 +20,11 @@ export const cycleKeys = {
 
 /**
  * List test cycles
- * Falls back to mock data if API fails
  */
 export function useTestCycles(params: ListCyclesParams) {
   return useQuery({
     queryKey: cycleKeys.list(params),
-    queryFn: async (): Promise<PaginatedResponse<TestCycle>> => {
-      try {
-        return await cyclesApi.list(params);
-      } catch (error) {
-        console.warn('API unavailable, using mock cycles:', error);
-        let filtered = [...MOCK_TEST_CYCLES];
-        
-        if (params.status) {
-          filtered = filtered.filter(c => c.status === params.status);
-        }
-        if (params.search) {
-          const search = params.search.toLowerCase();
-          filtered = filtered.filter(c => 
-            c.title.toLowerCase().includes(search) || 
-            c.cycle_key.toLowerCase().includes(search)
-          );
-        }
-        
-        return {
-          data: filtered,
-          pagination: {
-            page: params.page || 1,
-            limit: params.limit || 25,
-            total: filtered.length,
-            totalPages: Math.ceil(filtered.length / (params.limit || 25)),
-          },
-        };
-      }
-    },
+    queryFn: () => cyclesApi.list(params),
     staleTime: 30000,
   });
 }

@@ -7,7 +7,6 @@ import { casesApi, foldersApi, type ListCasesParams } from '../api';
 import type { TestCase, CreateTestCaseInput, UpdateTestCaseInput, Folder, CreateFolderInput, TestStep, PaginatedResponse } from '../api/types';
 import { useToast } from '@/hooks/use-toast';
 import { parseApiError } from '../api/client';
-import { MOCK_TEST_CASES, MOCK_FOLDERS } from '../data/mockData';
 
 // Query Keys
 export const caseKeys = {
@@ -32,43 +31,11 @@ export const folderKeys = {
 
 /**
  * List test cases with filtering and pagination
- * Falls back to mock data if API fails
  */
 export function useTestCases(params: ListCasesParams) {
   return useQuery({
     queryKey: caseKeys.list(params),
-    queryFn: async (): Promise<PaginatedResponse<TestCase>> => {
-      try {
-        return await casesApi.list(params);
-      } catch (error) {
-        console.warn('API unavailable, using mock data:', error);
-        let filtered = [...MOCK_TEST_CASES];
-        
-        if (params.folder_id) {
-          filtered = filtered.filter(c => c.folder_id === params.folder_id);
-        }
-        if (params.status) {
-          filtered = filtered.filter(c => c.status === params.status);
-        }
-        if (params.search) {
-          const search = params.search.toLowerCase();
-          filtered = filtered.filter(c => 
-            c.title.toLowerCase().includes(search) || 
-            c.case_key.toLowerCase().includes(search)
-          );
-        }
-        
-        return {
-          data: filtered,
-          pagination: {
-            page: params.page || 1,
-            limit: params.limit || 25,
-            total: filtered.length,
-            totalPages: Math.ceil(filtered.length / (params.limit || 25)),
-          },
-        };
-      }
-    },
+    queryFn: () => casesApi.list(params),
     staleTime: 30000,
   });
 }
@@ -330,25 +297,11 @@ export function useUpdateTestCaseSteps() {
 
 /**
  * Get folder tree
- * Falls back to mock data if API fails
  */
 export function useFolderTree(projectId: string) {
   return useQuery({
     queryKey: folderKeys.tree(projectId),
-    queryFn: async (): Promise<Folder[]> => {
-      try {
-        return await foldersApi.getTree(projectId);
-      } catch (error) {
-        console.warn('API unavailable, using mock folders:', error);
-        // Build tree structure from flat mock data
-        const folders = MOCK_FOLDERS.filter(f => f.project_id === projectId || projectId === 'proj-1');
-        const rootFolders = folders.filter(f => !f.parent_id);
-        return rootFolders.map(root => ({
-          ...root,
-          children: folders.filter(f => f.parent_id === root.id),
-        }));
-      }
-    },
+    queryFn: () => foldersApi.getTree(projectId),
     enabled: !!projectId,
     staleTime: 60000,
   });
@@ -360,17 +313,7 @@ export function useFolderTree(projectId: string) {
 export function useFolders(projectId: string, parentId?: string | null) {
   return useQuery({
     queryKey: folderKeys.list(projectId, parentId),
-    queryFn: async (): Promise<Folder[]> => {
-      try {
-        return await foldersApi.list({ project_id: projectId, parent_id: parentId });
-      } catch (error) {
-        console.warn('API unavailable, using mock folders:', error);
-        return MOCK_FOLDERS.filter(f => 
-          (f.project_id === projectId || projectId === 'proj-1') &&
-          (parentId ? f.parent_id === parentId : !f.parent_id)
-        );
-      }
-    },
+    queryFn: () => foldersApi.list({ project_id: projectId, parent_id: parentId }),
     enabled: !!projectId,
   });
 }
