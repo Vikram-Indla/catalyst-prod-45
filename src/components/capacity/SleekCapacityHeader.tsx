@@ -227,8 +227,8 @@ export function SleekCapacityHeader({
           />
         </div>
 
-        {/* Hero Tab Strip - Bold, prominent segment control */}
-        <div className="relative flex items-center bg-slate-100 dark:bg-slate-800/80 rounded-2xl p-1.5 gap-1 shadow-inner border border-slate-200 dark:border-slate-700">
+        {/* Hero Tab Strip - High contrast for both light and dark */}
+        <div className="relative flex items-center bg-slate-200/80 dark:bg-slate-700/60 rounded-2xl p-1.5 gap-1 shadow-inner border border-slate-300 dark:border-slate-600">
           {viewTabs.map((tab) => {
             const Icon = tab.icon;
             return (
@@ -238,13 +238,13 @@ export function SleekCapacityHeader({
                 className={cn(
                   'relative flex items-center gap-2.5 px-6 py-2.5 text-sm font-semibold rounded-xl transition-all duration-200',
                   tab.isActive 
-                    ? 'bg-white dark:bg-slate-900 text-emerald-700 dark:text-emerald-400 shadow-md border border-slate-200 dark:border-slate-600'
-                    : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-200/50 dark:hover:bg-slate-700/50'
+                    ? 'bg-white dark:bg-slate-800 text-emerald-600 dark:text-emerald-300 shadow-md border border-slate-300 dark:border-slate-500'
+                    : 'text-slate-600 dark:text-slate-300 hover:text-slate-800 dark:hover:text-white hover:bg-white/50 dark:hover:bg-slate-600/50'
                 )}
               >
                 <Icon className={cn(
                   "w-4 h-4",
-                  tab.isActive && "text-emerald-600 dark:text-emerald-400"
+                  tab.isActive ? "text-emerald-600 dark:text-emerald-300" : ""
                 )} />
                 <span>{tab.label}</span>
               </button>
@@ -257,7 +257,7 @@ export function SleekCapacityHeader({
       </div>
 
       {/* ROW 3: Stats + Filters + Utilization (dedicated row with breathing room) */}
-      <div className="flex items-center justify-between px-5 py-2.5 bg-muted/20">
+      <div className="flex items-center justify-between px-5 py-2.5 bg-slate-100/50 dark:bg-slate-800/40 border-b border-border/30">
         {/* Left: Clickable Stat Chips */}
         <div className="flex items-center gap-2">
           <StatChip 
@@ -300,8 +300,10 @@ export function SleekCapacityHeader({
                 variant="outline" 
                 size="sm" 
                 className={cn(
-                  "h-9 px-4 text-sm gap-2 border-border bg-card hover:bg-muted transition-colors rounded-lg",
-                  departmentFilter !== 'all' && "border-emerald-300 dark:border-emerald-700 bg-emerald-50 dark:bg-emerald-900/20"
+                  "h-9 px-4 text-sm gap-2 rounded-lg transition-colors",
+                  "bg-white dark:bg-slate-700 border-slate-300 dark:border-slate-500 text-slate-700 dark:text-slate-200",
+                  "hover:bg-slate-50 dark:hover:bg-slate-600",
+                  departmentFilter !== 'all' && "border-emerald-400 dark:border-emerald-500 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300"
                 )}
               >
                 <Filter className="h-4 w-4" />
@@ -354,8 +356,10 @@ export function SleekCapacityHeader({
                 variant="outline" 
                 size="sm" 
                 className={cn(
-                  "h-9 px-4 text-sm gap-2 border-border bg-card hover:bg-muted transition-colors rounded-lg",
-                  groupBy !== 'none' && "border-emerald-300 dark:border-emerald-700 bg-emerald-50 dark:bg-emerald-900/20"
+                  "h-9 px-4 text-sm gap-2 rounded-lg transition-colors",
+                  "bg-white dark:bg-slate-700 border-slate-300 dark:border-slate-500 text-slate-700 dark:text-slate-200",
+                  "hover:bg-slate-50 dark:hover:bg-slate-600",
+                  groupBy !== 'none' && "border-emerald-400 dark:border-emerald-500 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300"
                 )}
               >
                 <Layers className="h-4 w-4" />
@@ -415,24 +419,28 @@ interface StatChipProps {
 function StatChip({ value, label, color, isActive, onClick, pulse }: StatChipProps) {
   const colorStyles = {
     default: {
-      dot: 'bg-muted-foreground',
-      activeBg: 'bg-muted',
-      activeText: 'text-foreground',
+      dot: 'bg-slate-500 dark:bg-slate-400',
+      activeBg: 'bg-white dark:bg-slate-700',
+      activeText: 'text-slate-800 dark:text-slate-100',
+      inactiveText: 'text-slate-600 dark:text-slate-300',
     },
     emerald: {
       dot: 'bg-emerald-500',
-      activeBg: 'bg-emerald-500/10',
-      activeText: 'text-emerald-700 dark:text-emerald-400',
+      activeBg: 'bg-emerald-100 dark:bg-emerald-900/50',
+      activeText: 'text-emerald-700 dark:text-emerald-300',
+      inactiveText: 'text-slate-600 dark:text-slate-300',
     },
     blue: {
       dot: 'bg-blue-500',
-      activeBg: 'bg-blue-500/10',
-      activeText: 'text-blue-700 dark:text-blue-400',
+      activeBg: 'bg-blue-100 dark:bg-blue-900/50',
+      activeText: 'text-blue-700 dark:text-blue-300',
+      inactiveText: 'text-slate-600 dark:text-slate-300',
     },
     rose: {
       dot: 'bg-rose-500',
-      activeBg: 'bg-rose-500/10',
-      activeText: 'text-rose-700 dark:text-rose-400',
+      activeBg: 'bg-rose-100 dark:bg-rose-900/50',
+      activeText: 'text-rose-700 dark:text-rose-300',
+      inactiveText: 'text-slate-600 dark:text-slate-300',
     },
   };
   
@@ -446,12 +454,12 @@ function StatChip({ value, label, color, isActive, onClick, pulse }: StatChipPro
         "flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200",
         "hover:scale-[1.02] active:scale-[0.98]",
         isActive 
-          ? cn(styles.activeBg, styles.activeText, "shadow-sm ring-1 ring-inset ring-current/20")
-          : "text-muted-foreground hover:text-foreground hover:bg-muted/60"
+          ? cn(styles.activeBg, styles.activeText, "shadow-sm border border-current/20")
+          : cn(styles.inactiveText, "hover:bg-white/50 dark:hover:bg-slate-700/50")
       )}
     >
       <span className={cn(
-        'w-2 h-2 rounded-full flex-shrink-0',
+        'w-2.5 h-2.5 rounded-full flex-shrink-0',
         styles.dot,
         pulse && 'animate-pulse'
       )} />
@@ -461,18 +469,18 @@ function StatChip({ value, label, color, isActive, onClick, pulse }: StatChipPro
       )}>
         {value}
       </span>
-      <span className="font-normal opacity-80">{label}</span>
+      <span className="font-normal">{label}</span>
     </button>
   );
 }
 
 // Compact Utilization Badge
 function UtilizationBadge({ value }: { value: number }) {
-  const color = value > 100 
-    ? 'text-rose-600 dark:text-rose-400' 
+  const textColor = value > 100 
+    ? 'text-rose-600 dark:text-rose-300' 
     : value > 90 
-      ? 'text-amber-600 dark:text-amber-400' 
-      : 'text-emerald-600 dark:text-emerald-400';
+      ? 'text-amber-600 dark:text-amber-300' 
+      : 'text-emerald-600 dark:text-emerald-300';
   
   const bgColor = value > 100 
     ? 'bg-rose-500' 
@@ -481,16 +489,16 @@ function UtilizationBadge({ value }: { value: number }) {
       : 'bg-emerald-500';
   
   return (
-    <div className="flex items-center gap-2 pl-3 pr-1 py-1 bg-muted/40 rounded-lg">
+    <div className="flex items-center gap-3 pl-4 pr-2 py-2 bg-white dark:bg-slate-700 rounded-lg border border-slate-200 dark:border-slate-500 shadow-sm">
       <div className="flex flex-col items-end">
-        <span className={cn("text-lg font-bold tabular-nums leading-none", color)}>
+        <span className={cn("text-xl font-bold tabular-nums leading-none", textColor)}>
           {value}%
         </span>
-        <span className="text-[9px] text-muted-foreground uppercase tracking-wider">
-          Util
+        <span className="text-[10px] text-slate-500 dark:text-slate-400 uppercase tracking-wider font-medium">
+          Utilization
         </span>
       </div>
-      <div className="w-1.5 h-8 bg-muted rounded-full overflow-hidden">
+      <div className="w-2 h-10 bg-slate-200 dark:bg-slate-600 rounded-full overflow-hidden">
         <div 
           className={cn("w-full rounded-full transition-all duration-500", bgColor)}
           style={{ height: `${Math.min(value, 100)}%`, marginTop: `${100 - Math.min(value, 100)}%` }}
