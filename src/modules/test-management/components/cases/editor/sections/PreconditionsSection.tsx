@@ -84,7 +84,7 @@ export function PreconditionsSection({ preconditions, onChange, className }: Pre
 
       {/* Section Body */}
       {isExpanded && (
-        <div className="p-5">
+        <div className="p-5 animate-in fade-in-0 slide-in-from-top-2 duration-200">
           <div className="flex flex-col gap-2.5">
             {preconditions.map((precondition, index) => (
               <div

@@ -193,31 +193,31 @@ export function StepsSection({
 
                   {/* Step Body (expanded view) */}
                   {isStepExpanded && (
-                    <div className="px-4 pb-4 animate-in slide-in-from-top-2 duration-200">
+                    <div className="px-4 pb-4 animate-in fade-in-0 slide-in-from-top-2 duration-300 ease-out">
                       <div className="h-px bg-border mb-4" />
 
                       {/* Action & Expected Result */}
                       <div className="grid grid-cols-2 gap-4 mb-4">
-                        <div>
-                          <label className="block text-[10px] font-semibold text-muted-foreground uppercase tracking-wide mb-1.5">
+                        <div className="group">
+                          <label className="block text-[10px] font-semibold text-muted-foreground uppercase tracking-wide mb-1.5 group-focus-within:text-primary transition-colors">
                             Action <span className="text-destructive">*</span>
                           </label>
                           <Textarea
                             value={step.action}
                             onChange={(e) => handleUpdateStep(step.id, 'action', e.target.value)}
                             placeholder="What should the tester do?"
-                            className="min-h-[80px] text-sm resize-y"
+                            className="min-h-[80px] text-sm resize-y transition-all duration-150 focus:border-primary/50 focus:shadow-[0_0_0_3px_hsl(var(--primary)/0.1)]"
                           />
                         </div>
-                        <div>
-                          <label className="block text-[10px] font-semibold text-muted-foreground uppercase tracking-wide mb-1.5">
+                        <div className="group">
+                          <label className="block text-[10px] font-semibold text-muted-foreground uppercase tracking-wide mb-1.5 group-focus-within:text-primary transition-colors">
                             Expected Result <span className="text-destructive">*</span>
                           </label>
                           <Textarea
                             value={step.expected_result}
                             onChange={(e) => handleUpdateStep(step.id, 'expected_result', e.target.value)}
                             placeholder="What should happen?"
-                            className="min-h-[80px] text-sm resize-y"
+                            className="min-h-[80px] text-sm resize-y transition-all duration-150 focus:border-primary/50 focus:shadow-[0_0_0_3px_hsl(var(--primary)/0.1)]"
                           />
                         </div>
                       </div>

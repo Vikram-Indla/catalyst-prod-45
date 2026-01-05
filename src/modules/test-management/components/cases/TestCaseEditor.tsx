@@ -314,16 +314,38 @@ export function TestCaseEditor({
       {/* ══════════════════════════════════════════════════════════════════════════ */}
       {/* FOOTER */}
       {/* ══════════════════════════════════════════════════════════════════════════ */}
-      <footer className="flex items-center justify-between px-5 py-2 bg-background border-t border-border shrink-0">
+      <footer className="flex items-center justify-between px-5 py-2.5 bg-gradient-to-b from-background to-muted/30 border-t border-border shrink-0">
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
-            <span className="w-1.5 h-1.5 rounded-full bg-success" />
+            <span className={cn(
+              'w-1.5 h-1.5 rounded-full transition-colors duration-300',
+              isDirty ? 'bg-warning animate-pulse' : 'bg-success'
+            )} />
             {isDirty ? 'Unsaved changes' : 'All changes saved'}
+            {lastSaved && !isDirty && (
+              <span className="text-muted-foreground/60 ml-1">
+                at {lastSaved.toLocaleTimeString()}
+              </span>
+            )}
           </div>
         </div>
         <div className="flex items-center gap-4 text-[11px] text-muted-foreground">
-          <span>{stepsList.length} steps</span>
-          {estimatedTime && <span>~{estimatedTime} min</span>}
+          <span className="flex items-center gap-1.5">
+            <span className="w-4 h-4 flex items-center justify-center bg-primary/10 text-primary rounded text-[9px] font-bold">
+              {stepsList.length}
+            </span>
+            steps
+          </span>
+          {estimatedTime && (
+            <span className="flex items-center gap-1">
+              <Clock className="h-3 w-3" />
+              ~{estimatedTime} min
+            </span>
+          )}
+          <span className="text-muted-foreground/50">|</span>
+          <span className="text-muted-foreground/60">
+            <kbd className="px-1.5 py-0.5 bg-muted rounded text-[10px]">⌘S</kbd> to save
+          </span>
         </div>
       </footer>
     </div>
