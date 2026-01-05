@@ -283,6 +283,7 @@ const IncidentKanbanPage = lazy(() => import("./modules/incidents/kanban/pages/I
 import { 
   TestManagementLayout,
   TestCasesPage,
+  TestCaseEditorPage,
   TestCyclesPage,
   CycleDetailPage,
   DefectsPage as TMDefectsPage,
@@ -722,6 +723,9 @@ const App = () => (
                 <Route path="reports" element={<TMReportsPage />} />
                 <Route path="settings" element={<TMSettingsPage />} />
               </Route>
+              
+              {/* Test Case Editor - Full Screen (outside shell) */}
+              <Route path="/tests/cases/:caseId/edit" element={<ProtectedRoute><TestCaseEditorPage /></ProtectedRoute>} />
               
               {/* Release Management Routes - LOCKED FOR UAT */}
               <Route path="/release" element={<Navigate to="/release/incidents" replace />} />
