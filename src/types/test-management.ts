@@ -331,3 +331,111 @@ export interface TesterPerformance {
   avg_duration: number;
   defects_filed: number;
 }
+
+// ============================================================
+// DASHBOARD VIEW TYPES
+// ============================================================
+export interface TMDashboardKPIs {
+  totalAssigned: number;
+  notRun: number;
+  inProgress: number;
+  passedToday: number;
+  failedToday: number;
+  coverage: number;
+  coverageGaps: number;
+  passRate: number;
+  passRateTrend: number;
+  openDefects: number;
+  criticalDefects: number;
+  majorDefects: number;
+  minorDefects: number;
+  blockers: number;
+}
+
+export interface TMCycleSummary {
+  id: string;
+  key: string;
+  name: string;
+  status: CycleStatus;
+  daysLeft: number | null;
+  isOverdue: boolean;
+  progress: {
+    total: number;
+    passed: number;
+    failed: number;
+    blocked: number;
+    inProgress: number;
+    notRun: number;
+  };
+  percentage: number;
+}
+
+export interface TMActivityItem {
+  id: string;
+  userName: string;
+  userAvatar: string | null;
+  actionType: string;
+  entityType: string;
+  entityKey: string;
+  entityTitle: string | null;
+  createdAt: string;
+  isLive: boolean;
+}
+
+export interface TMMyWorkItem {
+  id: string;
+  key: string;
+  title: string;
+  status: CaseStatus;
+  statusColor: 'success' | 'warning' | 'danger' | 'default';
+  priority: string | null;
+  cycleKey: string | null;
+  updatedAt: string;
+}
+
+// ============================================================
+// HELPER FUNCTIONS
+// ============================================================
+export function getCaseStatusColor(status: CaseStatus): 'success' | 'warning' | 'danger' | 'default' {
+  const map: Record<CaseStatus, 'success' | 'warning' | 'danger' | 'default'> = {
+    APPROVED: 'success',
+    REVIEW: 'warning',
+    DEPRECATED: 'danger',
+    DRAFT: 'default',
+  };
+  return map[status] ?? 'default';
+}
+
+export function formatTimeAgo(dateString: string): string {
+  const now = new Date();
+  const date = new Date(dateString);
+  const seconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+  
+  if (seconds < 60) return 'Just now';
+  if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`;
+  if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`;
+  if (seconds < 604800) return `${Math.floor(seconds / 86400)}d ago`;
+  return date.toLocaleDateString();
+}
+
+export function getExecutionStatusColor(status: RunStatus): string {
+  const map: Record<RunStatus, string> = {
+    PASSED: 'text-success',
+    FAILED: 'text-danger',
+    BLOCKED: 'text-warning',
+    IN_PROGRESS: 'text-info',
+    NOT_RUN: 'text-muted-foreground',
+    SKIPPED: 'text-muted-foreground',
+  };
+  return map[status] ?? 'text-muted-foreground';
+}
+
+export function getSeverityColor(severity: DefectSeverity): string {
+  const map: Record<DefectSeverity, string> = {
+    CRITICAL: 'text-danger',
+    MAJOR: 'text-warning',
+    MINOR: 'text-info',
+    TRIVIAL: 'text-muted-foreground',
+  };
+  return map[severity] ?? 'text-muted-foreground';
+}
