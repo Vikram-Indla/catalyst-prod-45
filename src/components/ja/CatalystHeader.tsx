@@ -487,7 +487,7 @@ export function CatalystHeader() {
                       }}
                       onMouseEnter={(e) => { if (!location.pathname.startsWith('/tests')) e.currentTarget.style.background = 'var(--nav-hover-bg)'; }}
                       onMouseLeave={(e) => { e.currentTarget.style.background = location.pathname.startsWith('/tests') ? 'rgba(37, 99, 235, 0.08)' : 'transparent'; }}
-                      onClick={() => navigate('/tests')}
+                      onClick={() => navigate('/tests/command-center')}
                     >
                       {item.label}
                       {location.pathname.startsWith('/tests') && (
