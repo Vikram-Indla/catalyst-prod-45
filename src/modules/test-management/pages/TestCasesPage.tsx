@@ -98,8 +98,10 @@ export function TestCasesPage() {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [caseToDelete, setCaseToDelete] = useState<any | null>(null);
 
-  // Get project ID from URL
-  const projectId = searchParams.get('projectId') || undefined;
+  // Get project ID from URL or use default TM project
+  const urlProjectId = searchParams.get('projectId');
+  const DEFAULT_TM_PROJECT_ID = '00000000-0000-0000-0000-000000000001';
+  const projectId = urlProjectId || DEFAULT_TM_PROJECT_ID;
 
   // Build filters for the hook (include pagination in filters)
   const caseFilters = useMemo(() => ({
@@ -315,18 +317,6 @@ export function TestCasesPage() {
     (labels || []).map(l => ({ id: l.id, name: l.name, color: l.color })),
     [labels]
   );
-
-  // Show empty state if no project selected
-  if (!projectId) {
-    return (
-      <div className="flex h-full items-center justify-center">
-        <div className="text-center text-muted-foreground">
-          <p>No project selected</p>
-          <p className="text-sm">Please select a project to view test cases</p>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="flex h-full gap-0">
