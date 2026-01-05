@@ -38,8 +38,8 @@ export function Button360({ onClick, className, size = 'md' }: Button360Props) {
           
           // Hover state - teal filled
           "hover:bg-[#0d9488] hover:border-[#0d9488]",
-          "hover:shadow-[0_4px_12px_rgba(13,148,136,0.3)]",
-          "hover:ring-[#0d9488]/50",
+          "hover:shadow-lg hover:shadow-teal-500/20",
+          "hover:ring-teal-500/50",
           
           sizeStyles[size],
           className
@@ -81,7 +81,7 @@ export function Button360({ onClick, className, size = 'md' }: Button360Props) {
               cy="27"
               r={size === 'sm' ? 18 : 24}
               fill="none"
-              stroke="rgba(13, 148, 136, 0.4)"
+              className="stroke-teal-500/40"
               strokeWidth="1.5"
               strokeDasharray="4 4"
             />
@@ -89,7 +89,7 @@ export function Button360({ onClick, className, size = 'md' }: Button360Props) {
 
           {/* Orbiting Dot */}
           <div 
-            className="absolute w-2 h-2 bg-[#0d9488] rounded-full shadow-[0_0_6px_rgba(13,148,136,0.6)] animate-orbit"
+            className="absolute w-2 h-2 bg-[#0d9488] rounded-full shadow-lg shadow-teal-500/40 animate-orbit"
             style={{
               '--orbit-radius': size === 'sm' ? '18px' : '24px'
             } as React.CSSProperties}

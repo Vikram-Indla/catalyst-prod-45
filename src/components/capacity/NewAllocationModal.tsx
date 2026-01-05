@@ -164,9 +164,9 @@ export function NewAllocationModal({
           </div>
 
           {willExceed && resourceId && (
-            <div className="flex items-center gap-2 p-3 bg-[rgba(245,158,11,0.1)] border border-[rgba(245,158,11,0.2)] rounded-lg text-sm">
-              <AlertTriangle className="h-4 w-4 text-[#f59e0b] flex-shrink-0" />
-              <span className="text-[#d97706]">
+            <div className="flex items-center gap-2 p-3 bg-amber-100 dark:bg-amber-900/40 border border-amber-300 dark:border-amber-700 rounded-lg text-sm">
+              <AlertTriangle className="h-4 w-4 text-amber-600 dark:text-amber-400 flex-shrink-0" />
+              <span className="text-amber-700 dark:text-amber-300">
                 This will exceed 100% allocation ({currentUtilization}% + {percentage}% = {currentUtilization + percentage}%)
               </span>
             </div>

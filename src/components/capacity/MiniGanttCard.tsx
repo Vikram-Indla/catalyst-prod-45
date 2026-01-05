@@ -224,11 +224,11 @@ export function MiniGanttCard({ allocations, className, showPeriodTotals = true,
               </div>
               {/* Locked zone after contract end */}
               <div 
-                className="absolute top-0 bottom-0 bg-muted/60 dark:bg-[var(--surface-3)]/60 z-5"
+                className="absolute top-0 bottom-0 bg-muted/60 dark:bg-[var(--surface-3)] z-5"
                 style={{ 
                   left: `${contractEndPosition}%`,
                   right: 0,
-                  backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 3px, rgba(0,0,0,0.05) 3px, rgba(0,0,0,0.05) 6px)'
+                  backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 3px, hsl(var(--muted) / 0.1) 3px, hsl(var(--muted) / 0.1) 6px)'
                 }}
               />
             </>
@@ -262,7 +262,7 @@ export function MiniGanttCard({ allocations, className, showPeriodTotals = true,
                 <TooltipContent side="top" className="bg-[var(--surface-elevated)] dark:bg-[var(--surface-elevated)] text-foreground dark:text-[var(--text-primary)] text-xs p-2 shadow-xl border border-border dark:border-[var(--border-subtle)]">
                   <p className="font-semibold">{bar.name}</p>
                   <p className="text-muted-foreground dark:text-[var(--text-secondary)]">{bar.percent}% allocation</p>
-                  <p className="text-muted-foreground/75 dark:text-[var(--text-tertiary)] text-[10px]">
+                  <p className="text-muted-foreground dark:text-[var(--muted-foreground)] text-[10px]">
                     {format(bar.startDate, 'MMM d, yyyy')} — {bar.endDate ? format(bar.endDate, 'MMM d, yyyy') : 'Ongoing'}
                   </p>
                 </TooltipContent>
@@ -276,9 +276,9 @@ export function MiniGanttCard({ allocations, className, showPeriodTotals = true,
           <div className="flex text-[9px] mt-0.5 px-0.5">
             {monthsData.map((month, i) => (
               <div key={i} className="flex-1 text-center">
-                <span className={cn(
+              <span className={cn(
                   "font-semibold",
-                  month.total === 0 && "text-muted-foreground/50 dark:text-[var(--text-tertiary)]",
+                  month.total === 0 && "text-muted-foreground dark:text-[var(--muted-foreground)]",
                   month.total > 0 && month.total < 80 && "text-teal-600 dark:text-teal-400",
                   month.total >= 80 && month.total <= 100 && "text-blue-600 dark:text-blue-400",
                   month.total > 100 && "text-red-600 dark:text-red-400"

@@ -169,7 +169,7 @@ export function ExecutiveSummaryStrip({ resources, className }: ExecutiveSummary
             <div
               key={metric.label}
               className={cn(
-                "flex items-center gap-2.5 px-3 py-2 rounded-md min-w-fit flex-1 max-w-[160px]",
+                "flex items-center gap-2.5 px-3 py-2 rounded-md min-w-fit flex-1 max-w-[160px] transition-colors",
                 styles.bg
               )}
             >
@@ -182,7 +182,7 @@ export function ExecutiveSummaryStrip({ resources, className }: ExecutiveSummary
                   {metric.label}
                 </div>
                 {metric.subLabel && (
-                  <div className="text-[9px] text-muted-foreground/70 dark:text-[var(--text-tertiary)] truncate">
+                  <div className="text-[9px] text-muted-foreground dark:text-[var(--muted-foreground)] truncate">
                     {metric.subLabel}
                   </div>
                 )}
