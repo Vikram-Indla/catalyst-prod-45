@@ -290,7 +290,8 @@ import {
   ReportsPage as TMReportsPage,
   SettingsPage as TMSettingsPage,
   MyWorkPage,
-  CommandCenterPage
+  CommandCenterPage,
+  ExecutionRunnerPage
 } from "./modules/test-management";
 import { TestManagementContent } from "./modules/test-management/layouts/TestManagementContent";
 
@@ -726,6 +727,10 @@ const App = () => (
               
               {/* Test Case Editor - Full Screen (outside shell) */}
               <Route path="/tests/cases/:caseId/edit" element={<ProtectedRoute><TestCaseEditorPage /></ProtectedRoute>} />
+              
+              {/* Execution Runner - Full Screen (outside shell) */}
+              <Route path="/tests/execution/:cycleId" element={<ProtectedRoute><ExecutionRunnerPage /></ProtectedRoute>} />
+              <Route path="/tests/execution/:cycleId/:scopeId" element={<ProtectedRoute><ExecutionRunnerPage /></ProtectedRoute>} />
               
               {/* Release Management Routes - LOCKED FOR UAT */}
               <Route path="/release" element={<Navigate to="/release/incidents" replace />} />
