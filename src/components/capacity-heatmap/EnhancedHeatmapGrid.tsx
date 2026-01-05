@@ -5,7 +5,7 @@
 
 import { memo, useMemo, useCallback, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronDown, ChevronRight, ArrowDownAZ, SortAsc, Clock } from 'lucide-react';
+import { ChevronDown, ChevronRight, ArrowDownAZ, SortAsc, Clock, TrendingUp, TrendingDown, AlertTriangle, Calendar, Sparkles, Users } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { 
   Tooltip,
@@ -157,10 +157,9 @@ export const EnhancedHeatmapGrid = memo(function EnhancedHeatmapGrid({
               </div>
             ))}
             
-            {/* Avg column header */}
-            <div className="w-20 flex-shrink-0 flex flex-col justify-center items-center py-2 bg-muted/50">
-              <span className="text-xs font-semibold text-muted-foreground uppercase">Avg</span>
-              <span className="text-[10px] text-muted-foreground">{year}</span>
+            {/* Insights column header */}
+            <div className="w-48 flex-shrink-0 flex items-center justify-center py-2 bg-muted/50 px-3">
+              <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Insights</span>
             </div>
           </div>
           
@@ -348,27 +347,8 @@ const EnhancedResourceRow = memo(function EnhancedResourceRow({
         );
       })}
       
-      {/* Average column */}
-      <div className="w-20 flex-shrink-0 flex flex-col items-center justify-center py-2 bg-muted/10">
-        <span 
-          className="text-lg font-bold tabular-nums"
-          style={{ 
-            color: resource.averageUtilization > 100 
-              ? CATALYST_COLORS.danger 
-              : resource.averageUtilization < 50 
-                ? CATALYST_COLORS.teal 
-                : CATALYST_COLORS.primary 
-          }}
-        >
-          {resource.averageUtilization}%
-        </span>
-        <span 
-          className="text-[9px] font-medium uppercase"
-          style={{ color: statusLabel.color }}
-        >
-          {statusLabel.text}
-        </span>
-      </div>
+      {/* Insights column */}
+      <ResourceInsightsCell resource={resource} />
     </div>
   );
 });
@@ -507,5 +487,122 @@ const EnhancedHeatmapCell = memo(function EnhancedHeatmapCell({
         </div>
       </TooltipContent>
     </Tooltip>
+  );
+});
+
+// Resource Insights Cell - Smart insights about contract, allocation, trends
+interface ResourceInsightsCellProps {
+  resource: HeatmapResource;
+}
+
+const ResourceInsightsCell = memo(function ResourceInsightsCell({ resource }: ResourceInsightsCellProps) {
+  // Generate smart insights based on resource data
+  const insights = useMemo(() => {
+    const items: { icon: React.ReactNode; text: string; color: string; priority: number }[] = [];
+    
+    // Contract ending soon - highest priority
+    if (resource.contractStatus?.status === 'critical') {
+      const days = resource.contractStatus.daysRemaining;
+      items.push({
+        icon: <AlertTriangle className="w-3 h-3" />,
+        text: `Contract ends in ${days} days`,
+        color: 'text-rose-600 dark:text-rose-400',
+        priority: 1
+      });
+    } else if (resource.contractStatus?.status === 'warning') {
+      const days = resource.contractStatus.daysRemaining;
+      items.push({
+        icon: <Calendar className="w-3 h-3" />,
+        text: `Contract ends in ${days}d`,
+        color: 'text-amber-600 dark:text-amber-400',
+        priority: 2
+      });
+    }
+    
+    // Over-allocated - high priority
+    if (resource.averageUtilization > 100) {
+      items.push({
+        icon: <TrendingUp className="w-3 h-3" />,
+        text: `${resource.averageUtilization - 100}% over capacity`,
+        color: 'text-rose-600 dark:text-rose-400',
+        priority: 1
+      });
+    }
+    
+    // Available capacity - opportunity
+    if (resource.averageUtilization < 50) {
+      items.push({
+        icon: <Sparkles className="w-3 h-3" />,
+        text: `${100 - resource.averageUtilization}% available`,
+        color: 'text-emerald-600 dark:text-emerald-400',
+        priority: 3
+      });
+    }
+    
+    // Trend insights
+    if (resource.trend === 'up' && resource.trendPercentage > 10) {
+      items.push({
+        icon: <TrendingUp className="w-3 h-3" />,
+        text: `↗ Filling up (+${resource.trendPercentage}%)`,
+        color: 'text-amber-600 dark:text-amber-400',
+        priority: 4
+      });
+    } else if (resource.trend === 'down' && resource.trendPercentage > 10) {
+      items.push({
+        icon: <TrendingDown className="w-3 h-3" />,
+        text: `↘ Freeing up (-${resource.trendPercentage}%)`,
+        color: 'text-emerald-600 dark:text-emerald-400',
+        priority: 4
+      });
+    }
+    
+    // Conflicts
+    if (resource.conflictCount > 0) {
+      items.push({
+        icon: <AlertTriangle className="w-3 h-3" />,
+        text: `${resource.conflictCount} conflict${resource.conflictCount > 1 ? 's' : ''}`,
+        color: 'text-rose-600 dark:text-rose-400',
+        priority: 2
+      });
+    }
+    
+    // Vendor info
+    if (resource.vendor) {
+      items.push({
+        icon: <Users className="w-3 h-3" />,
+        text: resource.vendor,
+        color: 'text-muted-foreground',
+        priority: 5
+      });
+    }
+    
+    // Sort by priority and take top 2
+    return items.sort((a, b) => a.priority - b.priority).slice(0, 2);
+  }, [resource]);
+
+  // If no insights, show stable status
+  if (insights.length === 0) {
+    return (
+      <div className="w-48 flex-shrink-0 flex items-center justify-center py-2 px-3 bg-muted/10">
+        <span className="text-xs text-muted-foreground italic">Stable • No alerts</span>
+      </div>
+    );
+  }
+
+  return (
+    <div className="w-48 flex-shrink-0 flex flex-col justify-center gap-0.5 py-1.5 px-3 bg-muted/10">
+      {insights.map((insight, i) => (
+        <div 
+          key={i}
+          className={cn(
+            "flex items-center gap-1.5 text-[11px] font-medium leading-tight",
+            insight.color
+          )}
+        >
+          {insight.icon}
+          <span className="truncate">{insight.text}</span>
+        </div>
+      ))}
+    </div>
   );
 });
