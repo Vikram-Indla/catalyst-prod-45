@@ -49,18 +49,61 @@ import {
 import { Calendar } from '@/components/ui/calendar';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useTestCycles, useCreateTestCycle, useUpdateTestCycle, useDeleteTestCycle, useDuplicateCycle } from '../hooks/useCycles';
+import { 
+  useTestCycles, 
+  useCreateCycle, 
+  useUpdateCycle,
+  useDeleteCycle,
+  useStartCycle, 
+  useCompleteCycle,
+  useCloneCycle,
+  useEnvironments,
+} from '@/hooks/test-management';
+import type { TMCycle } from '@/types/test-management';
 import { CycleCard, CycleRow, CreateCycleModal } from '../components/cycles';
 import { useProjectStore } from '../stores/projectStore';
 import type { TestCycle, CycleStatus } from '../api/types';
-import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 
+// Map TMCycle to component-compatible TestCycle
+function mapToTestCycle(cycle: TMCycle): TestCycle {
+  const statusMap: Record<string, CycleStatus> = {
+    'PLANNED': 'planned',
+    'IN_PROGRESS': 'active',
+    'COMPLETED': 'completed',
+    'CANCELLED': 'cancelled',
+  };
+  
+  return {
+    id: cycle.id,
+    project_id: cycle.project_id,
+    cycle_key: cycle.key,
+    title: cycle.name,
+    description: cycle.description || '',
+    status: statusMap[cycle.status] || 'planned',
+    environment_id: cycle.environment || undefined,
+    environment: cycle.environment ? { id: cycle.environment, name: cycle.environment } as any : undefined,
+    planned_start: cycle.planned_start_date || undefined,
+    planned_end: cycle.planned_end_date || undefined,
+    actual_start: cycle.actual_start_date || undefined,
+    actual_end: cycle.actual_end_date || undefined,
+    created_at: cycle.created_at,
+    updated_at: cycle.updated_at,
+    statistics: {
+      total_cases: cycle.total_cases || 0,
+      passed_count: cycle.passed_count || 0,
+      failed_count: cycle.failed_count || 0,
+      blocked_count: cycle.blocked_count || 0,
+      not_run_count: cycle.not_run_count || 0,
+    },
+  } as TestCycle;
+}
+
 export function TestCyclesPage() {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [searchQuery, setSearchQuery] = useState('');
-  const [statusFilter, setStatusFilter] = useState<CycleStatus | 'all'>('all');
+  const [statusFilter, setStatusFilter] = useState<string>('all');
   const [environmentFilter, setEnvironmentFilter] = useState<string>('all');
   const [dateRange, setDateRange] = useState<{ from?: Date; to?: Date }>({});
   
@@ -71,26 +114,33 @@ export function TestCyclesPage() {
 
   // Get project ID from store or search params
   const selectedProjectId = useProjectStore(s => s.selectedProjectId);
-  const projectId = selectedProjectId || searchParams.get('projectId') || 'test-project-1';
+  const projectId = selectedProjectId || searchParams.get('projectId') || undefined;
 
-  // Fetch cycles
-  const { data: cyclesData, isLoading, refetch } = useTestCycles({
-    project_id: projectId,
-    status: statusFilter !== 'all' ? statusFilter : undefined,
+  // Build filters for the hook
+  const filters = useMemo(() => ({
+    status: statusFilter !== 'all' ? statusFilter.toUpperCase() as 'PLANNED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED' : undefined,
     search: searchQuery || undefined,
-  });
+  }), [statusFilter, searchQuery]);
 
-  // Mutations
-  const createCycle = useCreateTestCycle();
-  const updateCycle = useUpdateTestCycle();
-  const deleteCycle = useDeleteTestCycle();
-  const duplicateCycle = useDuplicateCycle();
+  // Fetch cycles using new hooks
+  const { data: cycles = [], isLoading: cyclesLoading, refetch } = useTestCycles(projectId, filters);
+  const { data: environmentNames = [] } = useEnvironments(projectId || null);
 
-  const cycles = cyclesData?.data || [];
+  // Convert environment strings to objects for dropdown
+  const environmentOptions = environmentNames.map((name, idx) => ({ id: name, name }));
+  const createCycleMutation = useCreateCycle();
+  const updateCycleMutation = useUpdateCycle();
+  const deleteCycleMutation = useDeleteCycle();
+  const startCycleMutation = useStartCycle();
+  const completeCycleMutation = useCompleteCycle();
+  const cloneCycleMutation = useCloneCycle();
+
+  // Map cycles to component-compatible format
+  const mappedCycles = useMemo(() => cycles.map(mapToTestCycle), [cycles]);
 
   // Client-side filtering for environment and date range
   const filteredCycles = useMemo(() => {
-    let result = cycles;
+    let result = mappedCycles;
     
     if (environmentFilter !== 'all') {
       result = result.filter(c => c.environment_id === environmentFilter);
@@ -111,48 +161,39 @@ export function TestCyclesPage() {
     }
     
     return result;
-  }, [cycles, environmentFilter, dateRange]);
-
-  // Get unique environments for filter
-  const environments = useMemo(() => {
-    const envMap = new Map<string, { id: string; name: string }>();
-    cycles.forEach(c => {
-      if (c.environment) {
-        envMap.set(c.environment.id, c.environment);
-      }
-    });
-    return Array.from(envMap.values());
-  }, [cycles]);
+  }, [mappedCycles, environmentFilter, dateRange]);
 
   // Summary stats
   const stats = useMemo(() => ({
-    total: cycles.length,
-    inProgress: cycles.filter(c => c.status === 'active').length,
-    completed: cycles.filter(c => c.status === 'completed').length,
-    avgPassRate: cycles.length > 0 
+    total: mappedCycles.length,
+    inProgress: mappedCycles.filter(c => c.status === 'active').length,
+    completed: mappedCycles.filter(c => c.status === 'completed').length,
+    avgPassRate: mappedCycles.length > 0 
       ? Math.round(
-          cycles.reduce((acc, c) => {
+          mappedCycles.reduce((acc, c) => {
             const stats = c.statistics;
             if (!stats || stats.total_cases === 0) return acc;
             const executed = stats.total_cases - stats.not_run_count;
             return acc + (executed > 0 ? (stats.passed_count / executed) * 100 : 0);
-          }, 0) / cycles.filter(c => c.statistics?.total_cases).length
+          }, 0) / mappedCycles.filter(c => c.statistics?.total_cases).length
         ) || 0
       : 0,
-  }), [cycles]);
+  }), [mappedCycles]);
 
   // Handlers
   const handleCreate = async (data: any) => {
-    try {
-      await createCycle.mutateAsync({
-        ...data,
-        project_id: projectId,
-        case_ids: [], // Will add cases after creation
-      });
-      setCreateModalOpen(false);
-    } catch (error) {
-      // Error handled by mutation
-    }
+    if (!projectId) return;
+    createCycleMutation.mutate({
+      name: data.title || data.name,
+      description: data.description,
+      environment: data.environment_id,
+      build_version: data.build_version,
+      planned_start_date: data.planned_start,
+      planned_end_date: data.planned_end,
+      project_id: projectId,
+    }, {
+      onSuccess: () => setCreateModalOpen(false),
+    });
   };
 
   const handleEdit = (cycle: TestCycle) => {
@@ -161,44 +202,54 @@ export function TestCyclesPage() {
   };
 
   const handleUpdate = async (data: any) => {
-    if (!editingCycle) return;
-    try {
-      await updateCycle.mutateAsync({
-        id: editingCycle.id,
-        ...data,
-      });
-      setEditingCycle(null);
-      setCreateModalOpen(false);
-    } catch (error) {
-      // Error handled by mutation
-    }
+    if (!editingCycle || !projectId) return;
+    updateCycleMutation.mutate({
+      id: editingCycle.id,
+      name: data.title || data.name,
+      description: data.description,
+      environment: data.environment_id,
+      build_version: data.build_version,
+      planned_start_date: data.planned_start,
+      planned_end_date: data.planned_end,
+      project_id: projectId,
+    }, {
+      onSuccess: () => {
+        setEditingCycle(null);
+        setCreateModalOpen(false);
+      },
+    });
   };
 
   const handleClone = async (cycle: TestCycle) => {
-    try {
-      await duplicateCycle.mutateAsync({ 
-        id: cycle.id, 
-        newTitle: `${cycle.title} (Copy)` 
-      });
-    } catch (error) {
-      // Error handled by mutation
-    }
+    if (!projectId) return;
+    cloneCycleMutation.mutate({ 
+      id: cycle.id, 
+      project_id: projectId,
+    });
+  };
+
+  const handleStart = async (cycle: TestCycle) => {
+    if (!projectId) return;
+    startCycleMutation.mutate({ id: cycle.id, project_id: projectId });
+  };
+
+  const handleComplete = async (cycle: TestCycle) => {
+    if (!projectId) return;
+    completeCycleMutation.mutate({ id: cycle.id, project_id: projectId });
   };
 
   const handleDelete = async () => {
-    if (!deleteConfirmCycle) return;
-    try {
-      await deleteCycle.mutateAsync(deleteConfirmCycle.id);
-      setDeleteConfirmCycle(null);
-    } catch (error) {
-      // Error handled by mutation
-    }
+    if (!deleteConfirmCycle || !projectId) return;
+    deleteCycleMutation.mutate({ id: deleteConfirmCycle.id, project_id: projectId }, {
+      onSuccess: () => setDeleteConfirmCycle(null),
+    });
   };
 
   const handleCloseModal = () => {
     setCreateModalOpen(false);
     setEditingCycle(null);
   };
+
 
   return (
     <div className="flex flex-col gap-6">
@@ -278,7 +329,7 @@ export function TestCyclesPage() {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All Environments</SelectItem>
-            {environments.map((env) => (
+            {environmentOptions.map((env) => (
               <SelectItem key={env.id} value={env.id}>{env.name}</SelectItem>
             ))}
           </SelectContent>
@@ -339,7 +390,7 @@ export function TestCyclesPage() {
       </div>
 
       {/* Content */}
-      {isLoading ? (
+      {cyclesLoading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {[1, 2, 3, 4, 5, 6].map((i) => (
             <Card key={i}>
@@ -361,9 +412,9 @@ export function TestCyclesPage() {
       ) : filteredCycles.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-16 text-center">
           <RefreshCw className="h-12 w-12 text-muted-foreground mb-4" />
-          <h3 className="text-lg font-medium mb-1">No test cycles yet</h3>
+          <h3 className="text-lg font-medium mb-1">No test cycles found</h3>
           <p className="text-muted-foreground mb-4">
-            Create a cycle to start organizing your test execution
+            Create your first cycle to start organizing test execution
           </p>
           <Button onClick={() => setCreateModalOpen(true)}>
             <Plus className="h-4 w-4 mr-2" />
@@ -418,9 +469,9 @@ export function TestCyclesPage() {
         open={createModalOpen}
         onOpenChange={handleCloseModal}
         cycle={editingCycle}
-        environments={environments as any}
+        environments={environmentOptions as any}
         onSubmit={editingCycle ? handleUpdate : handleCreate}
-        isLoading={createCycle.isPending || updateCycle.isPending}
+        isLoading={createCycleMutation.isPending || updateCycleMutation.isPending}
       />
 
       {/* Delete Confirmation */}
