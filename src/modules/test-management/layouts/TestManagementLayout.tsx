@@ -72,7 +72,7 @@ export function TestManagementLayout() {
   // Generate breadcrumbs from path
   const getBreadcrumbs = () => {
     const pathParts = location.pathname.split('/').filter(Boolean);
-    const breadcrumbs = [{ label: 'Tests', path: '/tests' }];
+    const breadcrumbs = [{ label: 'Command Center', path: '/tests' }];
 
     if (pathParts.length > 1) {
       const currentNav = navItems.find((item) => item.path === location.pathname);
