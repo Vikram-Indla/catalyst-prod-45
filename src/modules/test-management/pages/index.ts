@@ -12,3 +12,4 @@ export { SettingsPage } from './SettingsPage';
 export { MyWorkPage } from './MyWorkPage';
 export { CommandCenterPage } from './CommandCenterPage';
 export { ExecutionRunnerPage } from './ExecutionRunnerPage';
+export { AnalyticsDashboardPage } from './AnalyticsDashboardPage';

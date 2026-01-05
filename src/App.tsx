@@ -291,7 +291,8 @@ import {
   SettingsPage as TMSettingsPage,
   MyWorkPage,
   CommandCenterPage,
-  ExecutionRunnerPage
+  ExecutionRunnerPage,
+  AnalyticsDashboardPage
 } from "./modules/test-management";
 import { TestManagementContent } from "./modules/test-management/layouts/TestManagementContent";
 
@@ -722,6 +723,7 @@ const App = () => (
                 <Route path="cycles/:cycleId" element={<CycleDetailPage />} />
                 <Route path="defects" element={<TMDefectsPage />} />
                 <Route path="reports" element={<TMReportsPage />} />
+                <Route path="analytics" element={<AnalyticsDashboardPage />} />
                 <Route path="settings" element={<TMSettingsPage />} />
               </Route>
               
