@@ -119,7 +119,7 @@ export function CatalystHeader() {
     { label: "Product", hasDropdown: true, moduleCode: "PRODUCT", visibleToProductOwner: true },
     { label: "Program", hasDropdown: true, moduleCode: "PORTFOLIO", visibleToProductOwner: false },
     { label: "Project", hasDropdown: true, moduleCode: "PROGRAM", visibleToProductOwner: false },
-    { label: "Command Center", path: "/tests", moduleCode: null, visibleToProductOwner: false }, // Global Tests Module
+    { label: "Tests", path: "/tests", moduleCode: null, visibleToProductOwner: false }, // Global Tests Module
     { label: "Release", hasDropdown: true, path: "/release", moduleCode: null, visibleToProductOwner: false }, // Always visible
     { label: "Planner", hasDropdown: true, path: "/planner", moduleCode: null, visibleToProductOwner: true }, // Always visible - now with dropdown
   ];
@@ -476,8 +476,8 @@ export function CatalystHeader() {
                         </PopoverContent>
                       )}
                     </Popover>
-                  ) : item.label === "Command Center" ? (
-                    // Command Center: Direct navigation with active state
+                  ) : item.label === "Tests" ? (
+                    // Tests: Direct navigation with active state
                     <button
                       style={{
                         ...navButtonStyle,
