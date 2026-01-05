@@ -20,7 +20,9 @@ export function ExecutionFooter({ run, steps }: ExecutionFooterProps) {
   const blockedCount = steps.filter(s => s.status === 'blocked').length;
 
   return (
-    <footer className="flex items-center justify-between px-5 py-2.5 bg-background border-t flex-shrink-0">
+    <footer className="flex items-center justify-between px-5 py-2.5 bg-background border-t flex-shrink-0 animate-fade-in"
+      style={{ animationDelay: '150ms' }}
+    >
       {/* Left - Status */}
       <div className="flex items-center gap-4">
         <div className="flex items-center gap-1.5 text-xs text-muted-foreground">

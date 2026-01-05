@@ -99,10 +99,10 @@ export function StepExecutionCard({
     <Collapsible open={isExpanded} onOpenChange={setIsExpanded}>
       <div
         className={cn(
-          'border rounded-2xl overflow-hidden transition-all duration-200',
+          'border rounded-2xl overflow-hidden transition-all duration-300 ease-out',
           config.className,
-          isActive && 'ring-2 ring-primary/20 shadow-lg',
-          !isActive && 'hover:shadow-sm'
+          isActive && 'ring-2 ring-primary/20 shadow-lg scale-[1.01]',
+          !isActive && 'hover:shadow-md hover:scale-[1.005]'
         )}
         onClick={() => {
           onSelect();

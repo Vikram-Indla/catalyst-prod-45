@@ -64,7 +64,7 @@ export function ExecutionHeader({
   const strokeDashoffset = circumference - (progressPercentage / 100) * circumference;
 
   return (
-    <header className="flex items-center justify-between px-5 py-2.5 bg-gradient-to-b from-background to-muted/30 border-b flex-shrink-0">
+    <header className="flex items-center justify-between px-5 py-2.5 bg-gradient-to-b from-background to-muted/30 border-b flex-shrink-0 animate-fade-in">
       {/* Left Section */}
       <div className="flex items-center gap-4">
         {/* Back Button */}
