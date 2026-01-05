@@ -74,7 +74,7 @@ import {
   AddCasesToScopeModal,
   AssignTestersModal
 } from '../components/cycles';
-import { ExecutionModal } from '../components/execution';
+// ExecutionModal removed - now using full-page runner
 import type { CycleStatus } from '../api/types';
 import { toast } from 'sonner';
 
@@ -119,7 +119,7 @@ export function CycleDetailPage() {
   const [addCasesModalOpen, setAddCasesModalOpen] = useState(false);
   const [assignModalOpen, setAssignModalOpen] = useState(false);
   const [selectedScopeIds, setSelectedScopeIds] = useState<string[]>([]);
-  const [executionScopeId, setExecutionScopeId] = useState<string | null>(null);
+  // executionScopeId state removed - now using full-page runner
   const [completeConfirmOpen, setCompleteConfirmOpen] = useState(false);
 
   // Fetch cycle data using new hooks
@@ -285,7 +285,20 @@ export function CycleDetailPage() {
   };
 
   const handleExecute = (scopeId: string) => {
-    setExecutionScopeId(scopeId);
+    // Navigate to full-page execution runner
+    navigate(`/tests/execution/${cycleId}/${scopeId}`);
+  };
+
+  const handleStartExecution = () => {
+    // Start from first unexecuted case
+    const firstUnexecuted = scope.find(s => 
+      s.current_status === 'not_run' || s.current_status === 'in_progress'
+    ) || scope[0];
+    if (firstUnexecuted) {
+      navigate(`/tests/execution/${cycleId}/${firstUnexecuted.id}`);
+    } else {
+      navigate(`/tests/execution/${cycleId}`);
+    }
   };
 
   const handleViewRuns = (scopeId: string) => {
@@ -378,6 +391,12 @@ export function CycleDetailPage() {
             </p>
           </div>
           <div className="flex items-center gap-2">
+            {displayStatus === 'active' && stats.total > 0 && (
+              <Button size="sm" onClick={handleStartExecution} className="bg-teal-600 hover:bg-teal-700">
+                <Play className="h-4 w-4 mr-1" />
+                Start Execution
+              </Button>
+            )}
             <Button variant="outline" size="sm" onClick={() => setEditModalOpen(true)}>
               <Edit className="h-4 w-4 mr-1" />
               Edit
@@ -393,7 +412,7 @@ export function CycleDetailPage() {
               </Button>
             )}
             {displayStatus === 'active' && (
-              <Button size="sm" onClick={() => setCompleteConfirmOpen(true)}>
+              <Button variant="outline" size="sm" onClick={() => setCompleteConfirmOpen(true)}>
                 <CheckCircle className="h-4 w-4 mr-1" />
                 Complete Cycle
               </Button>
@@ -592,13 +611,7 @@ export function CycleDetailPage() {
         isLoading={assignTesterMutation.isPending}
       />
 
-      {/* Execution Modal */}
-      {executionScopeId && (
-        <ExecutionModal
-          scopeId={executionScopeId}
-          onClose={() => setExecutionScopeId(null)}
-        />
-      )}
+      {/* Execution Modal removed - now using full-page runner at /tests/execution/:cycleId/:scopeId */}
 
       {/* Complete Confirmation */}
       <AlertDialog open={completeConfirmOpen} onOpenChange={setCompleteConfirmOpen}>

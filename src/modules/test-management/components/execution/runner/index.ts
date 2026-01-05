@@ -9,3 +9,4 @@ export { TestCaseHeader } from './TestCaseHeader';
 export { PreconditionsBar } from './PreconditionsBar';
 export { StepExecutionCard } from './StepExecutionCard';
 export { ExecutionContextPanel } from './ExecutionContextPanel';
+export { ExecutionFooter } from './ExecutionFooter';
