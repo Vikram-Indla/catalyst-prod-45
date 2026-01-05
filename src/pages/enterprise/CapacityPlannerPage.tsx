@@ -2008,7 +2008,7 @@ function TableView({ resources, projects, groupBy, groupedByAssignment, groupedB
       width: '160px',
       sortable: true,
       render: (value: string) => (
-        <span className="text-sm text-[#404040]">{value || '-'}</span>
+        <span className="text-sm text-slate-600 dark:text-slate-300">{value || '-'}</span>
       ),
     },
     {
