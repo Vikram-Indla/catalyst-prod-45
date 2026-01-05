@@ -286,13 +286,6 @@ const EnhancedResourceRow = memo(function EnhancedResourceRow({
       
       {/* Cells by quarter */}
       {quarters.map((quarter, qIndex) => {
-        // Check if contract ends in this quarter
-        const contractEndsInQuarter = contractEndMonth && 
-          quarter.months.some(m => 
-            m.getMonth() === contractEndMonth.month && 
-            m.getFullYear() === contractEndMonth.year
-          );
-        
         return (
           <div 
             key={quarter.label}
@@ -301,28 +294,7 @@ const EnhancedResourceRow = memo(function EnhancedResourceRow({
               qIndex < quarters.length - 1 && "border-r-2 border-border"
             )}
           >
-            {/* Contract end badge */}
-            {contractEndsInQuarter && resource.contractEndDate && (
-              <div className="absolute -top-0.5 left-1/2 -translate-x-1/2 z-10">
-                <div 
-                  className="px-1.5 py-0.5 rounded text-[9px] font-semibold whitespace-nowrap flex items-center gap-0.5"
-                  style={{ 
-                    backgroundColor: resource.contractStatus?.status === 'critical' 
-                      ? '#fef2f2' 
-                      : '#fffbeb',
-                    color: resource.contractStatus?.status === 'critical' 
-                      ? CATALYST_COLORS.danger 
-                      : CATALYST_COLORS.warning,
-                    border: `1px solid ${resource.contractStatus?.status === 'critical' ? CATALYST_COLORS.danger : CATALYST_COLORS.warning}40`
-                  }}
-                >
-                  <Clock className="w-2.5 h-2.5" />
-                  {formatContractBadge(resource.contractEndDate)}
-                </div>
-              </div>
-            )}
-            
-            {quarter.months.map((month) => {
+            {quarter.months.map((month, monthIdx) => {
               const util = resource.monthlyUtilization.find(u => 
                 u.month.getMonth() === month.getMonth() && 
                 u.month.getFullYear() === month.getFullYear()
@@ -334,16 +306,42 @@ const EnhancedResourceRow = memo(function EnhancedResourceRow({
                 c => c.resourceId === resource.id && c.month.getTime() === util.month.getTime()
               );
               
+              // Check if contract ends in THIS specific month
+              const contractEndsInThisMonth = contractEndMonth && 
+                month.getMonth() === contractEndMonth.month && 
+                month.getFullYear() === contractEndMonth.year;
+              
               return (
-                <EnhancedHeatmapCell
-                  key={month.getTime()}
-                  resourceId={resource.id}
-                  resourceName={resource.name}
-                  utilization={util}
-                  isSelected={isSelected}
-                  viewMode={viewMode}
-                  onClick={(e) => onCellClick(resource.id, month, e)}
-                />
+                <div key={month.getTime()} className="relative">
+                  {/* Contract end badge - positioned on specific month */}
+                  {contractEndsInThisMonth && resource.contractEndDate && (
+                    <div className="absolute -top-1 left-1/2 -translate-x-1/2 z-10">
+                      <div 
+                        className="px-1.5 py-0.5 rounded text-[9px] font-semibold whitespace-nowrap flex items-center gap-0.5"
+                        style={{ 
+                          backgroundColor: resource.contractStatus?.status === 'critical' 
+                            ? '#fef2f2' 
+                            : '#fffbeb',
+                          color: resource.contractStatus?.status === 'critical' 
+                            ? CATALYST_COLORS.danger 
+                            : CATALYST_COLORS.warning,
+                          border: `1px solid ${resource.contractStatus?.status === 'critical' ? CATALYST_COLORS.danger : CATALYST_COLORS.warning}40`
+                        }}
+                      >
+                        <Clock className="w-2.5 h-2.5" />
+                        {formatContractBadge(resource.contractEndDate)}
+                      </div>
+                    </div>
+                  )}
+                  <EnhancedHeatmapCell
+                    resourceId={resource.id}
+                    resourceName={resource.name}
+                    utilization={util}
+                    isSelected={isSelected}
+                    viewMode={viewMode}
+                    onClick={(e) => onCellClick(resource.id, month, e)}
+                  />
+                </div>
               );
             })}
           </div>
