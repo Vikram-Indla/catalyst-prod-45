@@ -214,187 +214,187 @@ export function SleekCapacityHeader({
         </div>
       </div>
 
-      {/* ROW 2: Hero Tabs + Stats + Filters */}
-      <div className="flex items-center justify-between px-5 py-2.5 gap-4">
-        {/* Left: Search + Hero Tabs */}
-        <div className="flex items-center gap-4">
-          {/* Search */}
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              value={searchQuery}
-              onChange={(e) => onSearchChange(e.target.value)}
-              placeholder="Search resources..."
-              className="w-52 h-9 pl-9 pr-3 text-sm bg-muted/50 border-transparent rounded-lg focus:bg-background focus:border-primary/30 focus:ring-2 focus:ring-primary/10 transition-all"
-            />
-          </div>
-
-          {/* Hero Tab Strip - Bold, prominent segment control */}
-          <div className="relative flex items-center bg-slate-100 dark:bg-slate-800/80 rounded-2xl p-1.5 gap-1 shadow-inner border border-slate-200 dark:border-slate-700">
-            {viewTabs.map((tab) => {
-              const Icon = tab.icon;
-              return (
-                <button
-                  key={tab.id}
-                  onClick={tab.onClick}
-                  className={cn(
-                    'relative flex items-center gap-2.5 px-5 py-2.5 text-sm font-semibold rounded-xl transition-all duration-200',
-                    tab.isActive 
-                      ? 'bg-white dark:bg-slate-900 text-emerald-700 dark:text-emerald-400 shadow-md border border-slate-200 dark:border-slate-600'
-                      : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-200/50 dark:hover:bg-slate-700/50'
-                  )}
-                >
-                  <Icon className={cn(
-                    "w-4.5 h-4.5",
-                    tab.isActive && "text-emerald-600 dark:text-emerald-400"
-                  )} />
-                  <span>{tab.label}</span>
-                </button>
-              );
-            })}
-          </div>
+      {/* ROW 2: Search + Hero Tabs (full width for tabs) */}
+      <div className="flex items-center justify-between px-5 py-3 border-b border-border/40">
+        {/* Search */}
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            value={searchQuery}
+            onChange={(e) => onSearchChange(e.target.value)}
+            placeholder="Search resources..."
+            className="w-56 h-10 pl-10 pr-3 text-sm bg-muted/50 border-transparent rounded-xl focus:bg-background focus:border-primary/30 focus:ring-2 focus:ring-primary/10 transition-all"
+          />
         </div>
 
-        {/* Right: Interactive Stat Chips + Filters */}
+        {/* Hero Tab Strip - Bold, prominent segment control */}
+        <div className="relative flex items-center bg-slate-100 dark:bg-slate-800/80 rounded-2xl p-1.5 gap-1 shadow-inner border border-slate-200 dark:border-slate-700">
+          {viewTabs.map((tab) => {
+            const Icon = tab.icon;
+            return (
+              <button
+                key={tab.id}
+                onClick={tab.onClick}
+                className={cn(
+                  'relative flex items-center gap-2.5 px-6 py-2.5 text-sm font-semibold rounded-xl transition-all duration-200',
+                  tab.isActive 
+                    ? 'bg-white dark:bg-slate-900 text-emerald-700 dark:text-emerald-400 shadow-md border border-slate-200 dark:border-slate-600'
+                    : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-200/50 dark:hover:bg-slate-700/50'
+                )}
+              >
+                <Icon className={cn(
+                  "w-4 h-4",
+                  tab.isActive && "text-emerald-600 dark:text-emerald-400"
+                )} />
+                <span>{tab.label}</span>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Spacer */}
+        <div className="w-56" />
+      </div>
+
+      {/* ROW 3: Stats + Filters + Utilization (dedicated row with breathing room) */}
+      <div className="flex items-center justify-between px-5 py-2.5 bg-muted/20">
+        {/* Left: Clickable Stat Chips */}
+        <div className="flex items-center gap-2">
+          <StatChip 
+            value={summary.total} 
+            label="Total" 
+            color="default"
+            isActive={activeFilter === 'all'}
+            onClick={() => onFilterChange?.('all')}
+          />
+          <StatChip 
+            value={summary.available} 
+            label="Available" 
+            color="emerald"
+            isActive={activeFilter === 'available'}
+            onClick={() => onFilterChange?.('available')}
+          />
+          <StatChip 
+            value={summary.atCapacity} 
+            label="At Capacity" 
+            color="blue"
+            isActive={activeFilter === 'atCapacity'}
+            onClick={() => onFilterChange?.('atCapacity')}
+          />
+          <StatChip 
+            value={summary.over} 
+            label="Over-Allocated" 
+            color="rose"
+            isActive={activeFilter === 'over'}
+            onClick={() => onFilterChange?.('over')}
+            pulse={summary.over > 0}
+          />
+        </div>
+
+        {/* Right: Filters + Utilization */}
         <div className="flex items-center gap-3">
-          {/* Clickable Stat Chips - Act as filters */}
-          <div className="flex items-center gap-1.5 bg-muted/40 rounded-lg p-1">
-            <StatChip 
-              value={summary.total} 
-              label="Total" 
-              color="default"
-              isActive={activeFilter === 'all'}
-              onClick={() => onFilterChange?.('all')}
-            />
-            <StatChip 
-              value={summary.available} 
-              label="Avail" 
-              color="emerald"
-              isActive={activeFilter === 'available'}
-              onClick={() => onFilterChange?.('available')}
-            />
-            <StatChip 
-              value={summary.atCapacity} 
-              label="Full" 
-              color="blue"
-              isActive={activeFilter === 'atCapacity'}
-              onClick={() => onFilterChange?.('atCapacity')}
-            />
-            <StatChip 
-              value={summary.over} 
-              label="Over" 
-              color="rose"
-              isActive={activeFilter === 'over'}
-              onClick={() => onFilterChange?.('over')}
-              pulse={summary.over > 0}
-            />
-          </div>
+          {/* Track Filter */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className={cn(
+                  "h-9 px-4 text-sm gap-2 border-border bg-card hover:bg-muted transition-colors rounded-lg",
+                  departmentFilter !== 'all' && "border-emerald-300 dark:border-emerald-700 bg-emerald-50 dark:bg-emerald-900/20"
+                )}
+              >
+                <Filter className="h-4 w-4" />
+                <span className="font-medium">
+                  {departmentFilter === 'all' ? 'All Tracks' : 
+                   departmentFilter === 'delivery' ? 'Delivery' :
+                   departmentFilter === 'product' ? 'Product' : 'Support'}
+                </span>
+                <ChevronDown className="h-3.5 w-3.5 opacity-50" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-48 bg-card border-border shadow-lg">
+              <DropdownMenuLabel className="text-xs text-muted-foreground">Filter by Track</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem 
+                onClick={() => onDepartmentFilterChange?.('all')}
+                className={cn(departmentFilter === 'all' && "bg-primary/10")}
+              >
+                <Users className="w-4 h-4 mr-2" />
+                All Tracks
+              </DropdownMenuItem>
+              <DropdownMenuItem 
+                onClick={() => onDepartmentFilterChange?.('delivery')}
+                className={cn(departmentFilter === 'delivery' && "bg-primary/10")}
+              >
+                <Briefcase className="w-4 h-4 mr-2" />
+                Delivery
+              </DropdownMenuItem>
+              <DropdownMenuItem 
+                onClick={() => onDepartmentFilterChange?.('product')}
+                className={cn(departmentFilter === 'product' && "bg-primary/10")}
+              >
+                <LayoutGrid className="w-4 h-4 mr-2" />
+                Product
+              </DropdownMenuItem>
+              <DropdownMenuItem 
+                onClick={() => onDepartmentFilterChange?.('support')}
+                className={cn(departmentFilter === 'support' && "bg-primary/10")}
+              >
+                <Users className="w-4 h-4 mr-2" />
+                Support
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          {/* Group By */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className={cn(
+                  "h-9 px-4 text-sm gap-2 border-border bg-card hover:bg-muted transition-colors rounded-lg",
+                  groupBy !== 'none' && "border-emerald-300 dark:border-emerald-700 bg-emerald-50 dark:bg-emerald-900/20"
+                )}
+              >
+                <Layers className="h-4 w-4" />
+                <span className="font-medium">
+                  {groupBy === 'none' ? 'No Grouping' : 
+                   groupBy === 'assignment' ? 'By Assignment' : 
+                   groupBy === 'department' ? 'By Department' : groupBy}
+                </span>
+                <ChevronDown className="h-3.5 w-3.5 opacity-50" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-48 bg-card border-border shadow-lg">
+              <DropdownMenuLabel className="text-xs text-muted-foreground">Group Resources</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem 
+                onClick={() => onGroupByChange('none')}
+                className={cn(groupBy === 'none' && "bg-primary/10")}
+              >
+                No Grouping
+              </DropdownMenuItem>
+              <DropdownMenuItem 
+                onClick={() => onGroupByChange('assignment')}
+                className={cn(groupBy === 'assignment' && "bg-primary/10")}
+              >
+                By Assignment
+              </DropdownMenuItem>
+              <DropdownMenuItem 
+                onClick={() => onGroupByChange('department')}
+                className={cn(groupBy === 'department' && "bg-primary/10")}
+              >
+                By Department
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
 
           {/* Divider */}
-          <div className="w-px h-7 bg-border/60" />
+          <div className="w-px h-8 bg-border" />
 
-          {/* Unified Compact Filter Bar */}
-          <div className="flex items-center gap-1.5">
-            {/* Track Filter (replaces department) */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  className={cn(
-                    "h-8 px-3 text-xs gap-1.5 border-border/60 bg-card hover:bg-muted transition-colors",
-                    departmentFilter !== 'all' && "border-primary/40 bg-primary/5"
-                  )}
-                >
-                  <Filter className="h-3.5 w-3.5" />
-                  <span className="font-medium">
-                    {departmentFilter === 'all' ? 'All Tracks' : 
-                     departmentFilter === 'delivery' ? 'Delivery' :
-                     departmentFilter === 'product' ? 'Product' : 'Support'}
-                  </span>
-                  <ChevronDown className="h-3 w-3 opacity-50" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-44 bg-card border-border shadow-lg">
-                <DropdownMenuLabel className="text-xs text-muted-foreground">Filter by Track</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem 
-                  onClick={() => onDepartmentFilterChange?.('all')}
-                  className={cn(departmentFilter === 'all' && "bg-primary/10")}
-                >
-                  <Users className="w-3.5 h-3.5 mr-2" />
-                  All Tracks
-                </DropdownMenuItem>
-                <DropdownMenuItem 
-                  onClick={() => onDepartmentFilterChange?.('delivery')}
-                  className={cn(departmentFilter === 'delivery' && "bg-primary/10")}
-                >
-                  <Briefcase className="w-3.5 h-3.5 mr-2" />
-                  Delivery
-                </DropdownMenuItem>
-                <DropdownMenuItem 
-                  onClick={() => onDepartmentFilterChange?.('product')}
-                  className={cn(departmentFilter === 'product' && "bg-primary/10")}
-                >
-                  <LayoutGrid className="w-3.5 h-3.5 mr-2" />
-                  Product
-                </DropdownMenuItem>
-                <DropdownMenuItem 
-                  onClick={() => onDepartmentFilterChange?.('support')}
-                  className={cn(departmentFilter === 'support' && "bg-primary/10")}
-                >
-                  <Users className="w-3.5 h-3.5 mr-2" />
-                  Support
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-
-            {/* Group By */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  className={cn(
-                    "h-8 px-3 text-xs gap-1.5 border-border/60 bg-card hover:bg-muted transition-colors",
-                    groupBy !== 'none' && "border-primary/40 bg-primary/5"
-                  )}
-                >
-                  <Layers className="h-3.5 w-3.5" />
-                  <span className="font-medium">
-                    {groupBy === 'none' ? 'No Grouping' : 
-                     groupBy === 'assignment' ? 'By Assignment' : 
-                     groupBy === 'department' ? 'By Department' : groupBy}
-                  </span>
-                  <ChevronDown className="h-3 w-3 opacity-50" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-44 bg-card border-border shadow-lg">
-                <DropdownMenuLabel className="text-xs text-muted-foreground">Group Resources</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem 
-                  onClick={() => onGroupByChange('none')}
-                  className={cn(groupBy === 'none' && "bg-primary/10")}
-                >
-                  No Grouping
-                </DropdownMenuItem>
-                <DropdownMenuItem 
-                  onClick={() => onGroupByChange('assignment')}
-                  className={cn(groupBy === 'assignment' && "bg-primary/10")}
-                >
-                  By Assignment
-                </DropdownMenuItem>
-                <DropdownMenuItem 
-                  onClick={() => onGroupByChange('department')}
-                  className={cn(groupBy === 'department' && "bg-primary/10")}
-                >
-                  By Department
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-
-          {/* Utilization Badge */}
+          {/* Utilization Badge - Larger */}
           <UtilizationBadge value={summary.utilizationPercentage} />
         </div>
       </div>
@@ -443,25 +443,25 @@ function StatChip({ value, label, color, isActive, onClick, pulse }: StatChipPro
     <button
       onClick={onClick}
       className={cn(
-        "flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-medium transition-all duration-200",
-        "hover:scale-105 active:scale-95",
+        "flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200",
+        "hover:scale-[1.02] active:scale-[0.98]",
         isActive 
           ? cn(styles.activeBg, styles.activeText, "shadow-sm ring-1 ring-inset ring-current/20")
           : "text-muted-foreground hover:text-foreground hover:bg-muted/60"
       )}
     >
       <span className={cn(
-        'w-1.5 h-1.5 rounded-full flex-shrink-0',
+        'w-2 h-2 rounded-full flex-shrink-0',
         styles.dot,
         pulse && 'animate-pulse'
       )} />
       <span className={cn(
-        "font-bold tabular-nums",
+        "font-bold tabular-nums text-base",
         isZero && "opacity-40"
       )}>
         {value}
       </span>
-      <span className="opacity-70">{label}</span>
+      <span className="font-normal opacity-80">{label}</span>
     </button>
   );
 }
