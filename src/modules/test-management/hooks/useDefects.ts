@@ -7,7 +7,6 @@ import { defectsApi, type ListDefectsParams } from '../api';
 import type { Defect, CreateDefectInput, UpdateDefectInput, DefectStatus, DefectSeverity, PaginatedResponse } from '../api/types';
 import { useToast } from '@/hooks/use-toast';
 import { parseApiError } from '../api/client';
-import { MOCK_DEFECTS } from '../data/mockData';
 
 // Query Keys
 export const defectKeys = {
@@ -21,47 +20,11 @@ export const defectKeys = {
 
 /**
  * List defects with filtering and pagination
- * Falls back to mock data if API fails
  */
 export function useDefects(params: ListDefectsParams) {
   return useQuery({
     queryKey: defectKeys.list(params),
-    queryFn: async (): Promise<PaginatedResponse<Defect>> => {
-      try {
-        return await defectsApi.list(params);
-      } catch (error) {
-        console.warn('API unavailable, using mock data:', error);
-        // Filter mock data based on params
-        let filtered = [...MOCK_DEFECTS];
-        
-        if (params.status) {
-          filtered = filtered.filter(d => d.status === params.status);
-        }
-        if (params.severity) {
-          filtered = filtered.filter(d => d.severity === params.severity);
-        }
-        if (params.assigned_to) {
-          filtered = filtered.filter(d => d.assigned_to === params.assigned_to);
-        }
-        if (params.search) {
-          const search = params.search.toLowerCase();
-          filtered = filtered.filter(d => 
-            d.title.toLowerCase().includes(search) || 
-            d.defect_key.toLowerCase().includes(search)
-          );
-        }
-        
-        return {
-          data: filtered,
-          pagination: {
-            page: params.page || 1,
-            limit: params.limit || 25,
-            total: filtered.length,
-            totalPages: Math.ceil(filtered.length / (params.limit || 25)),
-          },
-        };
-      }
-    },
+    queryFn: () => defectsApi.list(params),
     staleTime: 30000,
   });
 }
