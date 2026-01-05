@@ -16,6 +16,7 @@ import {
   X,
   Layers
 } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -35,6 +36,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { WorkManagerBoards } from '@/components/work-manager/WorkManagerBoards';
 import { WorkManagerTasks } from '@/components/work-manager/WorkManagerTasks';
+import { ExecutiveSummaryStrip } from '@/components/work-manager/ExecutiveSummaryStrip';
 import { WorkManagerInsights } from '@/components/work-manager/WorkManagerInsights';
 import { WorkManagerTeams } from '@/components/work-manager/WorkManagerTeams';
 import { WorkManagerSettings } from '@/components/work-manager/WorkManagerSettings';
@@ -322,14 +324,14 @@ export function WorkManager({ tab: initialTab }: WorkManagerProps) {
   return (
     <div className="flex flex-col h-full">
       {/* Page Header */}
-      <div className="flex items-center justify-between px-6 py-4 border-b border-border bg-card">
+      <div className="flex items-center justify-between px-6 py-4 border-b border-border-default bg-surface-0">
         <div>
-          <h1 className="text-[20px] font-semibold text-gray-900 dark:text-gray-100">Work Manager</h1>
-          <p className="text-[13px] text-gray-500 dark:text-gray-400 mt-1">Personal task management and team coordination</p>
+          <h1 className="text-xl font-semibold text-text-primary">Work Manager</h1>
+          <p className="text-sm text-text-muted mt-1">Personal task management and team coordination</p>
         </div>
         <Button 
           onClick={() => setIsNewTaskDialogOpen(true)}
-          className="bg-[#2563eb] hover:bg-[#1d4ed8] text-white gap-2 shadow-sm hover:shadow-md transition-all duration-200"
+          className="bg-brand-primary hover:bg-brand-primary-hover text-brand-primary-foreground gap-2 shadow-sm hover:shadow-md transition-all duration-200"
         >
           <Plus className="w-4 h-4" />
           New Task
@@ -337,7 +339,7 @@ export function WorkManager({ tab: initialTab }: WorkManagerProps) {
       </div>
 
       {/* Tab Navigation */}
-      <div className="flex items-center gap-1 px-6 py-2 border-b border-border bg-card">
+      <div className="flex items-center gap-1 px-6 py-2 border-b border-border-default bg-surface-0">
         {tabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
@@ -345,13 +347,12 @@ export function WorkManager({ tab: initialTab }: WorkManagerProps) {
             <button
               key={tab.id}
               onClick={() => handleTabChange(tab.id)}
-              className={`
-                flex items-center gap-2 px-4 py-2 rounded-md text-[13px] font-medium transition-all duration-200
-                ${isActive 
-                  ? 'bg-[#2563eb] text-white shadow-sm' 
-                  : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
-                }
-              `}
+              className={cn(
+                'flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all duration-200',
+                isActive 
+                  ? 'bg-brand-primary text-brand-primary-foreground shadow-sm' 
+                  : 'text-text-secondary hover:bg-surface-2'
+              )}
             >
               <Icon className="w-4 h-4" />
               {tab.label}
@@ -362,33 +363,33 @@ export function WorkManager({ tab: initialTab }: WorkManagerProps) {
 
       {/* Toolbar - Show for boards and tasks views */}
       {(activeTab === 'boards' || activeTab === 'tasks') && (
-        <div className="flex items-center justify-between px-6 py-3 bg-muted border-b border-border">
+        <div className="flex items-center justify-between px-6 py-3 bg-surface-2 border-b border-border-default">
           <div className="flex items-center gap-3">
             {/* Current Team Indicator */}
             {filters.teamId && (
-                <div className="flex items-center gap-2 px-3 py-1.5 bg-card border border-border rounded-md">
-                <Users className="w-4 h-4 text-muted-foreground" />
-                <span className="text-[13px] font-medium text-foreground">
+              <div className="flex items-center gap-2 px-3 py-1.5 bg-surface-0 border border-border-subtle rounded-md">
+                <Users className="w-4 h-4 text-text-muted" />
+                <span className="text-sm font-medium text-text-primary">
                   {teamsData.find(t => t.id === filters.teamId)?.name || 'Team'}
                 </span>
               </div>
             )}
             {!filters.teamId && canViewAllTeams && (
-              <div className="flex items-center gap-2 px-3 py-1.5 bg-card border border-border rounded-md">
-                <Users className="w-4 h-4 text-muted-foreground" />
-                <span className="text-[13px] font-medium text-foreground">All Teams</span>
+              <div className="flex items-center gap-2 px-3 py-1.5 bg-surface-0 border border-border-subtle rounded-md">
+                <Users className="w-4 h-4 text-text-muted" />
+                <span className="text-sm font-medium text-text-primary">All Teams</span>
               </div>
             )}
 
             {/* Search */}
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
               <Input
                 type="text"
                 placeholder="Search tasks..."
                 value={filters.search}
                 onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
-                className="pl-9 w-[280px] h-9 text-[13px] border border-gray-300 dark:border-gray-600 shadow-sm bg-white dark:bg-gray-900 focus:ring-2 focus:ring-[#2563eb]/20 focus:border-[#2563eb] transition-all duration-200"
+                className="pl-9 w-[280px] h-9 text-sm border border-border-default shadow-sm bg-surface-0 focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary transition-all duration-200"
               />
             </div>
           </div>
@@ -573,9 +574,16 @@ export function WorkManager({ tab: initialTab }: WorkManagerProps) {
       )}
 
       {/* Tab Content */}
-      <div className="flex-1 overflow-auto p-6 bg-gray-100 dark:bg-gray-900">
+      <div className="flex-1 overflow-auto p-6 bg-surface-1">
+        {/* Executive Summary Strip - Show for boards and tasks */}
+        {(activeTab === 'boards' || activeTab === 'tasks') && (
+          <div className="mb-4">
+            <ExecutiveSummaryStrip tasks={extendedTasks} />
+          </div>
+        )}
+        
         {activeTab === 'boards' && (
-          <WorkManagerBoards 
+          <WorkManagerBoards
             tasks={filteredTasks} 
             onOpenTask={handleOpenTask}
             onMoveTask={handleMoveTask}

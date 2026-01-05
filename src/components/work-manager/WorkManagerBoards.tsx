@@ -1,5 +1,5 @@
 // src/components/work-manager/WorkManagerBoards.tsx
-// Kanban Board View (Drag & Drop) - Enterprise Grade
+// Kanban Board View - Executive Grade (9.8 UX Standard)
 
 import { useMemo, useState } from 'react';
 import { DragDropContext, Droppable, Draggable, type DropResult } from '@hello-pangea/dnd';
@@ -46,11 +46,11 @@ interface WorkManagerBoardsProps {
 
 // Due date groupings
 const dueDateGroups = [
-  { id: 'overdue', name: 'Overdue', color: '#dc2626' },
-  { id: 'today', name: 'Due Today', color: '#ea580c' },
-  { id: 'next7', name: 'Next 7 Days', color: '#f59e0b' },
-  { id: 'future', name: 'Future', color: '#0d9488' },
-  { id: 'none', name: 'No Due Date', color: '#6b7280' },
+  { id: 'overdue', name: 'Overdue', color: 'hsl(var(--danger))' },
+  { id: 'today', name: 'Due Today', color: 'hsl(var(--warning))' },
+  { id: 'next7', name: 'Next 7 Days', color: 'hsl(var(--brand-primary))' },
+  { id: 'future', name: 'Future', color: 'hsl(var(--success))' },
+  { id: 'none', name: 'No Due Date', color: 'hsl(var(--text-muted))' },
 ];
 
 export function WorkManagerBoards({ 
@@ -80,7 +80,6 @@ export function WorkManagerBoards({
           color: team.color,
         }));
       case 'assignee':
-        // Get unique assignees from tasks
         const assigneeIds = [...new Set(tasks.map(t => t.assigneeId))];
         return assigneeIds.map(id => {
           const user = usersData.find(u => u.id === id);
@@ -135,7 +134,7 @@ export function WorkManagerBoards({
       }
     });
 
-    // Sort by column position within each group
+    // Sort by column position
     Object.keys(grouped).forEach(key => {
       grouped[key].sort((a, b) => a.columnPosition - b.columnPosition);
     });
@@ -147,7 +146,6 @@ export function WorkManagerBoards({
     const { destination, source, draggableId } = result;
     if (!destination) return;
 
-    // Only allow drag for status grouping
     if (groupBy !== 'status') return;
 
     const fromStatus = source.droppableId as TaskStatus;
@@ -207,16 +205,14 @@ export function WorkManagerBoards({
   };
 
   const hiddenColumnsList = dynamicColumns.filter(col => hiddenColumns.has(col.id));
-
-  // Check if drag is enabled
   const isDragEnabled = groupBy === 'status';
 
   return (
     <>
       {/* Hidden columns indicator */}
       {hiddenColumnsList.length > 0 && (
-        <div className="flex items-center gap-2 mb-4 p-2 bg-muted/50 rounded-lg">
-          <span className="text-sm text-muted-foreground">Hidden columns:</span>
+        <div className="flex items-center gap-2 mb-4 p-2 bg-surface-2 border border-border-subtle rounded-lg">
+          <span className="text-sm text-text-muted">Hidden columns:</span>
           {hiddenColumnsList.map(col => (
             <Button
               key={col.id}
@@ -298,35 +294,39 @@ function BoardColumn({
   const getGroupIcon = () => {
     switch (groupBy) {
       case 'team':
-        return <Users className="w-4 h-4 text-muted-foreground" />;
+        return <Users className="w-4 h-4 text-text-muted" />;
       case 'assignee':
-        return <User className="w-4 h-4 text-muted-foreground" />;
+        return <User className="w-4 h-4 text-text-muted" />;
       case 'dueDate':
-        return <Calendar className="w-4 h-4 text-muted-foreground" />;
+        return <Calendar className="w-4 h-4 text-text-muted" />;
       default:
-        // TEAL for Done per design spec v2
-        return column.id === 'Done' ? <CheckCircle2 className="w-4 h-4 text-[#0d9488]/60 dark:text-[#14b8a6]/60" /> : null;
+        return column.id === 'Done' ? <CheckCircle2 className="w-4 h-4 text-success" /> : null;
     }
   };
 
   return (
-    <div className="flex-shrink-0 w-[300px] min-w-[280px] bg-gradient-to-b from-muted/50 to-muted/30 dark:from-neutral-900 dark:to-neutral-900/80 rounded-xl flex flex-col max-h-[calc(100vh-240px)] border border-border dark:border-gray-800 shadow-inner-sm">
-      {/* Column Header - with bottom gradient fade */}
-      <div className="flex items-center justify-between p-3 border-b border-border dark:border-gray-700 bg-gradient-to-b from-card/60 to-muted/30 dark:from-gray-800/30">
+    <div className={cn(
+      "flex-shrink-0 w-[300px] min-w-[280px] rounded-xl flex flex-col max-h-[calc(100vh-300px)]",
+      // Surface separation: column bg is surface-2, cards are surface-0
+      "bg-surface-2 border border-border-subtle"
+    )}>
+      {/* Column Header */}
+      <div className="flex items-center justify-between p-3 border-b border-border-subtle bg-surface-3 rounded-t-xl">
         <div className="flex items-center gap-2">
           {column.color && (
             <div 
-              className="w-2.5 h-2.5 rounded-full flex-shrink-0 shadow-sm"
+              className="w-2.5 h-2.5 rounded-full flex-shrink-0"
               style={{ backgroundColor: column.color }}
             />
           )}
           {getGroupIcon()}
           <span className={cn(
-            "text-[13px] font-semibold tracking-tight",
-            // TEAL for Done per design spec v2
-            column.id === 'Done' ? 'text-[#0d9488]/80 dark:text-[#14b8a6]/70' : 'text-foreground'
-          )}>{column.name}</span>
-          <span className="px-2 py-0.5 bg-muted dark:bg-white/10 text-muted-foreground dark:text-gray-300 text-[11px] font-semibold rounded-full">
+            "text-sm font-semibold tracking-tight",
+            column.id === 'Done' ? 'text-success' : 'text-text-primary'
+          )}>
+            {column.name}
+          </span>
+          <span className="px-2 py-0.5 bg-surface-1 text-text-muted text-xs font-semibold rounded-full">
             {tasks.length}
           </span>
         </div>
@@ -334,13 +334,13 @@ function BoardColumn({
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button 
-                className="p-1.5 rounded-md hover:bg-muted dark:hover:bg-gray-700 transition-colors" 
+                className="p-1.5 rounded-md hover:bg-surface-1 transition-colors" 
                 type="button"
               >
-                <MoreHorizontal className="w-4 h-4 text-muted-foreground" />
+                <MoreHorizontal className="w-4 h-4 text-text-muted" />
               </button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-48 bg-popover shadow-elevated">
+            <DropdownMenuContent align="end" className="w-48">
               {groupBy === 'status' && (
                 <>
                   <DropdownMenuItem
@@ -375,7 +375,7 @@ function BoardColumn({
               </DropdownMenuItem>
               {groupBy === 'status' && (
                 <DropdownMenuItem
-                  className="gap-2 cursor-pointer text-destructive focus:text-destructive"
+                  className="gap-2 cursor-pointer text-danger focus:text-danger"
                   onSelect={onClearColumn}
                   disabled={tasks.length === 0}
                 >
@@ -396,16 +396,16 @@ function BoardColumn({
             {...dropProvided.droppableProps}
             className={cn(
               'flex-1 overflow-y-auto p-3 space-y-3 scroll-smooth',
-              dropSnapshot.isDraggingOver && isDragEnabled && 'bg-[rgba(37,99,235,0.1)] ring-2 ring-inset ring-[rgba(37,99,235,0.2)]'
+              dropSnapshot.isDraggingOver && isDragEnabled && 'bg-brand-primary/5 ring-2 ring-inset ring-brand-primary/20'
             )}
           >
             {tasks.length === 0 ? (
-              <div className="border-2 border-dashed border-border rounded-xl p-8 text-center bg-muted/30">
-                <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center mx-auto mb-3">
-                  <CheckCircle2 className="w-6 h-6 text-stone-400 dark:text-gray-500" />
+              <div className="border-2 border-dashed border-border-subtle rounded-xl p-8 text-center bg-surface-1/50">
+                <div className="w-12 h-12 rounded-full bg-surface-3 flex items-center justify-center mx-auto mb-3">
+                  <CheckCircle2 className="w-6 h-6 text-text-muted" />
                 </div>
-                <p className="text-[12px] font-medium text-stone-500 dark:text-gray-400">No tasks</p>
-                <p className="text-[11px] text-stone-400 dark:text-gray-500 mt-1">
+                <p className="text-sm font-medium text-text-secondary">No tasks</p>
+                <p className="text-xs text-text-muted mt-1">
                   {isDragEnabled ? 'Drop tasks here' : 'No items in this group'}
                 </p>
               </div>
