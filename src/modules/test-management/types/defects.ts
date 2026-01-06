@@ -65,6 +65,7 @@ export interface Defect {
   // Environment
   environment: string | null;
   environment_details: unknown | null;
+  component?: string | null;
   
   // Assignment & Ownership
   project_id: string | null;
@@ -104,6 +105,9 @@ export interface Defect {
   comments_count?: number;
   attachments_count?: number;
 }
+
+// Alias for components that need extended relations
+export type DefectWithRelations = Defect;
 
 export interface UserProfile {
   id: string;
