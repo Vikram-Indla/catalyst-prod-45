@@ -3,9 +3,9 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 
 /**
- * CATALYST TABLE — Bloomberg/Linear Grade Dark Mode
+ * CATALYST TABLE — Bloomberg/Linear Grade Dark Mode v3
  * 
- * DARK MODE GRAMMAR:
+ * DARK MODE GRAMMAR (RENDER-LEVEL):
  * - NO outer container borders
  * - NO vertical column dividers
  * - Ultra-subtle row separators: rgba(255,255,255,0.035)
@@ -19,8 +19,8 @@ const Table = React.forwardRef<HTMLTableElement, React.HTMLAttributes<HTMLTableE
       "relative w-full overflow-auto rounded-lg",
       // Light mode: white background with subtle border
       "bg-card border border-border/60",
-      // Dark mode: flush with background, NO outer border (surface-based)
-      "dark:bg-transparent dark:border-transparent"
+      // Dark mode: NO outer border, flush with background
+      "dark:bg-transparent dark:border-0 dark:border-none"
     )}>
       <table ref={ref} className={cn("w-full caption-bottom text-sm", className)} {...props} />
     </div>
@@ -36,7 +36,7 @@ const TableHeader = React.forwardRef<HTMLTableSectionElement, React.HTMLAttribut
         // Light mode: subtle header background with border
         "bg-muted/50 border-b border-border/60",
         // Dark mode: slight surface lift, ultra-subtle separator
-        "dark:bg-white/[0.02] dark:border-b dark:border-white/[0.04]",
+        "dark:bg-[#1f1f1f] dark:border-b dark:border-white/[0.035]",
         className
       )} 
       {...props} 
@@ -67,7 +67,7 @@ const TableFooter = React.forwardRef<HTMLTableSectionElement, React.HTMLAttribut
         "font-medium [&>tr]:last:border-b-0",
         "bg-muted/30 border-t border-border/60",
         // Dark mode: subtle surface, ultra-subtle top border
-        "dark:bg-white/[0.02] dark:border-white/[0.04]",
+        "dark:bg-[#1f1f1f] dark:border-white/[0.035]",
         className
       )} 
       {...props} 
@@ -90,7 +90,7 @@ const TableRow = React.forwardRef<HTMLTableRowElement, React.HTMLAttributes<HTML
         "h-10 transition-colors",
         // Light mode: subtle border
         "border-b border-border/50",
-        // Dark mode: ultra-subtle separator
+        // Dark mode: ultra-subtle separator (render-level enforced)
         "dark:border-b dark:border-white/[0.035]",
         // Hover: surface lift
         "hover:bg-muted/50 dark:hover:bg-white/[0.04]",
@@ -121,8 +121,8 @@ const TableHead = React.forwardRef<HTMLTableCellElement, React.ThHTMLAttributes<
         "text-muted-foreground",
         // Light mode: subtle column dividers
         "border-r border-border/30 last:border-r-0",
-        // Dark mode: NO column dividers
-        "dark:border-r-0",
+        // Dark mode: NO column dividers at all
+        "dark:border-r-0 dark:border-0",
         "[&:has([role=checkbox])]:pr-0",
         className,
       )}
@@ -144,8 +144,8 @@ const TableCell = React.forwardRef<HTMLTableCellElement, React.TdHTMLAttributes<
         "px-4 py-2 align-middle text-foreground",
         // Light mode: subtle column dividers
         "border-r border-border/20 last:border-r-0",
-        // Dark mode: NO column dividers
-        "dark:border-r-0",
+        // Dark mode: NO column dividers at all
+        "dark:border-r-0 dark:border-0",
         "[&:has([role=checkbox])]:pr-0",
         className
       )} 

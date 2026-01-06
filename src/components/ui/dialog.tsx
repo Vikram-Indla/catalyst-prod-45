@@ -32,14 +32,15 @@ const DialogOverlay = React.forwardRef<
 DialogOverlay.displayName = DialogPrimitive.Overlay.displayName;
 
 // Semantic size variants for Atlassian-like dialog sizing
+// Dark mode: NO visible border, shadow provides depth
 const dialogContentVariants = cva(
   cn(
     "fixed left-[50%] top-[50%] z-[250] grid w-full translate-x-[-50%] translate-y-[-50%]",
     "gap-4 rounded-xl",
     // Light mode: white bg, subtle border
     "bg-background border border-border/60",
-    // Dark mode: surface-0 elevation, ultra-subtle border, shadow for depth
-    "dark:bg-[#1a1a1a] dark:border-white/[0.04] dark:shadow-2xl dark:shadow-black/40",
+    // Dark mode: surface elevation, NO visible border, shadow for depth
+    "dark:bg-[#212121] dark:border-0 dark:shadow-2xl dark:shadow-black/50",
     "duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out",
     "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
     "data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
@@ -99,12 +100,13 @@ DialogContent.displayName = DialogPrimitive.Content.displayName;
 
 /**
  * DialogHeader — Ultra-subtle divider in dark mode
+ * Divider barely visible, content hierarchy through typography
  */
 const DialogHeader = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
   <div 
     className={cn(
       "flex flex-col space-y-1.5 text-center sm:text-left pb-4",
-      "border-b border-border/60 dark:border-white/[0.05]",
+      "border-b border-border/60 dark:border-white/[0.035]",
       className
     )} 
     {...props} 
@@ -114,12 +116,13 @@ DialogHeader.displayName = "DialogHeader";
 
 /**
  * DialogFooter — Surface lift + ultra-subtle divider
+ * Background shift provides separation, not border
  */
 const DialogFooter = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
   <div 
     className={cn(
       "flex flex-col-reverse sm:flex-row sm:justify-end sm:gap-3 pt-4",
-      "border-t border-border/60 dark:border-white/[0.05]",
+      "border-t border-border/60 dark:border-white/[0.035]",
       "bg-muted/30 dark:bg-white/[0.02] -mx-6 -mb-6 px-6 pb-6 rounded-b-xl",
       className
     )} 
