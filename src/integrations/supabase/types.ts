@@ -21113,50 +21113,128 @@ export type Database = {
       }
       tm_defects: {
         Row: {
+          actual_result: string | null
+          affects_version: string | null
           assignee_id: string | null
+          browser: string | null
+          browser_version: string | null
+          component: string | null
           created_at: string | null
+          customer_name: string | null
+          customer_reported: boolean | null
           defect_key: string
+          defect_type: string | null
           description: string | null
+          device_type: string | null
+          due_date: string | null
+          environment: string | null
+          epic_link: string | null
+          expected_result: string | null
           external_id: string | null
           external_url: string | null
+          fix_version: string | null
+          found_during: string | null
+          found_in_build: string | null
+          frequency: string | null
           id: string
+          is_blocker: boolean | null
+          is_regression: boolean | null
+          is_security_issue: boolean | null
+          labels: string[] | null
+          module: string | null
+          operating_system: string | null
+          priority: string | null
           project_id: string
           reporter_id: string | null
           resolved_at: string | null
           severity: Database["public"]["Enums"]["tm_defect_severity"] | null
+          sprint: string | null
           status: Database["public"]["Enums"]["tm_defect_status"] | null
+          steps_to_reproduce: string | null
           title: string
           updated_at: string | null
         }
         Insert: {
+          actual_result?: string | null
+          affects_version?: string | null
           assignee_id?: string | null
+          browser?: string | null
+          browser_version?: string | null
+          component?: string | null
           created_at?: string | null
+          customer_name?: string | null
+          customer_reported?: boolean | null
           defect_key: string
+          defect_type?: string | null
           description?: string | null
+          device_type?: string | null
+          due_date?: string | null
+          environment?: string | null
+          epic_link?: string | null
+          expected_result?: string | null
           external_id?: string | null
           external_url?: string | null
+          fix_version?: string | null
+          found_during?: string | null
+          found_in_build?: string | null
+          frequency?: string | null
           id?: string
+          is_blocker?: boolean | null
+          is_regression?: boolean | null
+          is_security_issue?: boolean | null
+          labels?: string[] | null
+          module?: string | null
+          operating_system?: string | null
+          priority?: string | null
           project_id: string
           reporter_id?: string | null
           resolved_at?: string | null
           severity?: Database["public"]["Enums"]["tm_defect_severity"] | null
+          sprint?: string | null
           status?: Database["public"]["Enums"]["tm_defect_status"] | null
+          steps_to_reproduce?: string | null
           title: string
           updated_at?: string | null
         }
         Update: {
+          actual_result?: string | null
+          affects_version?: string | null
           assignee_id?: string | null
+          browser?: string | null
+          browser_version?: string | null
+          component?: string | null
           created_at?: string | null
+          customer_name?: string | null
+          customer_reported?: boolean | null
           defect_key?: string
+          defect_type?: string | null
           description?: string | null
+          device_type?: string | null
+          due_date?: string | null
+          environment?: string | null
+          epic_link?: string | null
+          expected_result?: string | null
           external_id?: string | null
           external_url?: string | null
+          fix_version?: string | null
+          found_during?: string | null
+          found_in_build?: string | null
+          frequency?: string | null
           id?: string
+          is_blocker?: boolean | null
+          is_regression?: boolean | null
+          is_security_issue?: boolean | null
+          labels?: string[] | null
+          module?: string | null
+          operating_system?: string | null
+          priority?: string | null
           project_id?: string
           reporter_id?: string | null
           resolved_at?: string | null
           severity?: Database["public"]["Enums"]["tm_defect_severity"] | null
+          sprint?: string | null
           status?: Database["public"]["Enums"]["tm_defect_status"] | null
+          steps_to_reproduce?: string | null
           title?: string
           updated_at?: string | null
         }
