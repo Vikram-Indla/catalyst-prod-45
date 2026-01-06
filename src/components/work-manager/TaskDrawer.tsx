@@ -322,8 +322,7 @@ export function TaskDrawer({ isOpen, task, activeTab, onClose, onTabChange, onUp
                         {assignee && (
                           <div className="flex items-center gap-2.5">
                             <div 
-                              className="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 text-white"
-                              style={{ backgroundColor: assignee.avatarColor || '#2563eb' }}
+                              className="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 text-primary-foreground bg-primary"
                             >
                               {assignee.initials}
                             </div>

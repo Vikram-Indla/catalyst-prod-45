@@ -169,8 +169,8 @@ export function CatalystHeader() {
               lineHeight: 1
             }}
           >
-            <span className="text-foreground dark:text-white">Cata</span>
-            <span className="text-[#c69c6d] dark:text-[#d4b896]">lyst</span>
+            <span className="text-foreground">Cata</span>
+            <span className="text-brand-gold">lyst</span>
           </span>
         </a>
         
@@ -222,7 +222,7 @@ export function CatalystHeader() {
                 padding: '0 14px',
                 fontSize: '14px',
                 fontWeight: isActive ? 600 : 500,
-                color: isActive ? '#2563eb' : 'var(--nav-text)',
+                color: isActive ? 'hsl(var(--primary))' : 'var(--nav-text)',
                 borderRadius: '6px',
                 display: 'flex',
                 alignItems: 'center',
@@ -481,12 +481,12 @@ export function CatalystHeader() {
                     <button
                       style={{
                         ...navButtonStyle,
-                        color: location.pathname.startsWith('/tests') ? '#2563eb' : navButtonStyle.color,
+                        color: location.pathname.startsWith('/tests') ? 'hsl(var(--primary))' : navButtonStyle.color,
                         fontWeight: location.pathname.startsWith('/tests') ? 600 : navButtonStyle.fontWeight,
-                        background: location.pathname.startsWith('/tests') ? 'rgba(37, 99, 235, 0.08)' : 'transparent',
+                        background: location.pathname.startsWith('/tests') ? 'hsl(var(--primary) / 0.08)' : 'transparent',
                       }}
                       onMouseEnter={(e) => { if (!location.pathname.startsWith('/tests')) e.currentTarget.style.background = 'var(--nav-hover-bg)'; }}
-                      onMouseLeave={(e) => { e.currentTarget.style.background = location.pathname.startsWith('/tests') ? 'rgba(37, 99, 235, 0.08)' : 'transparent'; }}
+                      onMouseLeave={(e) => { e.currentTarget.style.background = location.pathname.startsWith('/tests') ? 'hsl(var(--primary) / 0.08)' : 'transparent'; }}
                       onClick={() => navigate('/tests/command-center')}
                     >
                       {item.label}
@@ -615,8 +615,7 @@ export function CatalystHeader() {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <div 
-                  className="w-8 h-8 rounded-full flex items-center justify-center text-white text-[13px] font-semibold cursor-pointer transition-transform hover:scale-105"
-                  style={{ background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)' }}
+                  className="w-8 h-8 rounded-full flex items-center justify-center text-primary-foreground text-[13px] font-semibold cursor-pointer transition-transform hover:scale-105 bg-gradient-to-br from-primary to-primary/80"
                   title="Profile"
                 >
                   {user?.email?.charAt(0).toUpperCase() || 'U'}

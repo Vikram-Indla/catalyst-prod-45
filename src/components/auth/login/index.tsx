@@ -202,15 +202,8 @@ export function CatalystLoginPage() {
     return (
       <div className="login-container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
-          <div style={{ 
-            width: '40px', 
-            height: '40px', 
-            border: '3px solid #2563eb',
-            borderTopColor: 'transparent',
-            borderRadius: '50%',
-            animation: 'spin 1s linear infinite'
-          }} />
-          <span style={{ color: '#2563eb', fontSize: '0.875rem', fontWeight: 500 }}>Signing you in...</span>
+          <div className="w-10 h-10 border-3 border-primary border-t-transparent rounded-full animate-spin" />
+          <span className="text-primary text-sm font-medium">Signing you in...</span>
         </div>
       </div>
     );
@@ -219,27 +212,18 @@ export function CatalystLoginPage() {
   // Show pending message
   if (showPendingMessage) {
     return (
-      <div className="login-container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <div style={{ textAlign: 'center', maxWidth: '400px', padding: '2rem' }}>
-          <div style={{ 
-            width: '64px', 
-            height: '64px', 
-            margin: '0 auto 1.5rem',
-            borderRadius: '50%',
-            backgroundColor: 'rgba(37, 99, 235, 0.1)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center'
-          }}>
-            <FileText style={{ width: '32px', height: '32px', color: '#2563eb' }} />
+      <div className="login-container flex items-center justify-center">
+        <div className="text-center max-w-[400px] p-8">
+          <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-primary/10 flex items-center justify-center">
+            <FileText className="w-8 h-8 text-primary" />
           </div>
-          <h2 style={{ fontSize: '1.5rem', fontWeight: 600, color: '#fff', marginBottom: '0.75rem' }}>
+          <h2 className="text-2xl font-semibold text-foreground mb-3">
             Registration Submitted
           </h2>
-          <p style={{ color: '#9ca3af', marginBottom: '1.5rem' }}>
+          <p className="text-muted-foreground mb-6">
             Thanks for registering. Your account is pending approval.
           </p>
-          <p style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '2rem' }}>
+          <p className="text-sm text-muted-foreground mb-8">
             You can sign in once an administrator approves your request.
           </p>
           <button

@@ -536,10 +536,9 @@ export function CreateEpicDialog({
                               >
                                 <Check
                                   className={cn(
-                                    'mr-2 h-4 w-4 flex-shrink-0',
+                                    'mr-2 h-4 w-4 flex-shrink-0 text-primary',
                                     themeId === theme.id ? 'opacity-100' : 'opacity-0'
                                   )}
-                                  style={{ color: '#2563eb' }}
                                 />
                                 <span 
                                   className="flex-1 text-sm font-medium"
@@ -577,7 +576,7 @@ export function CreateEpicDialog({
                       >
                         {selectedBR ? (
                           <span className="flex items-center gap-2">
-                            <span className="font-mono" style={{ color: '#2563eb' }}>
+                            <span className="font-mono text-primary">
                               {selectedBR.request_key}
                             </span>
                             <span className="truncate">{selectedBR.title}</span>
@@ -635,13 +634,12 @@ export function CreateEpicDialog({
                             >
                               <Check
                                 className={cn(
-                                  'mr-2 h-4 w-4 flex-shrink-0',
+                                  'mr-2 h-4 w-4 flex-shrink-0 text-primary',
                                   linkedBusinessRequestId === br.id ? 'opacity-100' : 'opacity-0'
                                 )}
-                                style={{ color: '#2563eb' }}
                               />
                               <div className="flex items-center gap-2 flex-1 min-w-0">
-                                <span className="font-mono shrink-0" style={{ color: '#2563eb' }}>
+                                <span className="font-mono shrink-0 text-primary">
                                   {br.request_key}
                                 </span>
                                 <span 
