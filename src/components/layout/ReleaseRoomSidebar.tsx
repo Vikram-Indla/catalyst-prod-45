@@ -19,7 +19,7 @@ export function ReleaseRoomSidebar({ expanded, onToggle, className }: ReleaseRoo
       { id: 'incident-reports', title: 'Incident Reports', path: '/release/incident-reports', icon: FileText, exact: true },
       { id: 'committee-queue', title: 'Committee Queue', path: '/release/committee-queue', icon: Users, exact: true },
       { id: 'versions', title: 'Releases', path: '/release/versions', icon: Tag, exact: false },
-      { id: 'calendar', title: 'Calendar', path: '/release/calendar', icon: Calendar, exact: true },
+      { id: 'calendar', title: 'Release Calendar', path: '/release/calendar', icon: Calendar, exact: true },
     ],
     footerItem: {
       id: 'release-settings',
