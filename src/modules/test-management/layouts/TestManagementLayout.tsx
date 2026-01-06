@@ -53,8 +53,7 @@ const navItems: NavItem[] = [
   { path: '/tests/cases', label: 'Test Cases', icon: FileText, badge: 156 },
   { path: '/tests/cycles', label: 'Test Cycles', icon: RefreshCw, badge: 8 },
   { path: '/tests/defects', label: 'Defects', icon: Bug, badge: 23 },
-  { path: '/tests/analytics', label: 'Analytics', icon: BarChart3 },
-  { path: '/tests/reports', label: 'Reports', icon: BarChart3 },
+  { path: '/tests/analytics', label: 'Reports', icon: BarChart3 },
   { path: '/tests/settings', label: 'Settings', icon: Settings, separator: true },
 ];
 

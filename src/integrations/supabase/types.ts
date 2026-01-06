@@ -279,6 +279,66 @@ export type Database = {
         }
         Relationships: []
       }
+      api_keys: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          expires_at: string | null
+          id: string
+          is_active: boolean | null
+          key_hash: string
+          key_prefix: string
+          last_used_at: string | null
+          name: string
+          project_id: string
+          scopes: string[] | null
+          usage_count: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          key_hash: string
+          key_prefix: string
+          last_used_at?: string | null
+          name: string
+          project_id: string
+          scopes?: string[] | null
+          usage_count?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          key_hash?: string
+          key_prefix?: string
+          last_used_at?: string | null
+          name?: string
+          project_id?: string
+          scopes?: string[] | null
+          usage_count?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "api_keys_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "api_keys_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       assignments: {
         Row: {
           allocation_percentage: number
@@ -2134,6 +2194,87 @@ export type Database = {
           work_item_type?: string
         }
         Relationships: []
+      }
+      custom_field_definitions: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          default_value: string | null
+          description: string | null
+          entity_type: string
+          field_key: string
+          field_type: string
+          id: string
+          is_required: boolean | null
+          is_visible: boolean | null
+          max_value: number | null
+          min_value: number | null
+          name: string
+          options: Json | null
+          project_id: string
+          show_in_list: boolean | null
+          sort_order: number | null
+          updated_at: string | null
+          validation_regex: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          default_value?: string | null
+          description?: string | null
+          entity_type: string
+          field_key: string
+          field_type: string
+          id?: string
+          is_required?: boolean | null
+          is_visible?: boolean | null
+          max_value?: number | null
+          min_value?: number | null
+          name: string
+          options?: Json | null
+          project_id: string
+          show_in_list?: boolean | null
+          sort_order?: number | null
+          updated_at?: string | null
+          validation_regex?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          default_value?: string | null
+          description?: string | null
+          entity_type?: string
+          field_key?: string
+          field_type?: string
+          id?: string
+          is_required?: boolean | null
+          is_visible?: boolean | null
+          max_value?: number | null
+          min_value?: number | null
+          name?: string
+          options?: Json | null
+          project_id?: string
+          show_in_list?: boolean | null
+          sort_order?: number | null
+          updated_at?: string | null
+          validation_regex?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "custom_field_definitions_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "custom_field_definitions_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       custom_field_defs: {
         Row: {
@@ -12245,6 +12386,72 @@ export type Database = {
         }
         Relationships: []
       }
+      notification_preferences: {
+        Row: {
+          created_at: string | null
+          email_digest: string | null
+          email_enabled: boolean | null
+          id: string
+          in_app_enabled: boolean | null
+          preferences: Json | null
+          project_id: string | null
+          quiet_hours_enabled: boolean | null
+          quiet_hours_end: string | null
+          quiet_hours_start: string | null
+          slack_dm: boolean | null
+          slack_enabled: boolean | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          email_digest?: string | null
+          email_enabled?: boolean | null
+          id?: string
+          in_app_enabled?: boolean | null
+          preferences?: Json | null
+          project_id?: string | null
+          quiet_hours_enabled?: boolean | null
+          quiet_hours_end?: string | null
+          quiet_hours_start?: string | null
+          slack_dm?: boolean | null
+          slack_enabled?: boolean | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          email_digest?: string | null
+          email_enabled?: boolean | null
+          id?: string
+          in_app_enabled?: boolean | null
+          preferences?: Json | null
+          project_id?: string | null
+          quiet_hours_enabled?: boolean | null
+          quiet_hours_end?: string | null
+          quiet_hours_start?: string | null
+          slack_dm?: boolean | null
+          slack_enabled?: boolean | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notification_preferences_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notification_preferences_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notifications: {
         Row: {
           created_at: string
@@ -14154,6 +14361,129 @@ export type Database = {
         }
         Relationships: []
       }
+      project_audit_logs: {
+        Row: {
+          action: string
+          changes: Json | null
+          created_at: string | null
+          entity_id: string | null
+          entity_name: string | null
+          entity_type: string
+          id: string
+          metadata: Json | null
+          project_id: string | null
+          user_email: string | null
+          user_id: string | null
+          user_name: string | null
+        }
+        Insert: {
+          action: string
+          changes?: Json | null
+          created_at?: string | null
+          entity_id?: string | null
+          entity_name?: string | null
+          entity_type: string
+          id?: string
+          metadata?: Json | null
+          project_id?: string | null
+          user_email?: string | null
+          user_id?: string | null
+          user_name?: string | null
+        }
+        Update: {
+          action?: string
+          changes?: Json | null
+          created_at?: string | null
+          entity_id?: string | null
+          entity_name?: string | null
+          entity_type?: string
+          id?: string
+          metadata?: Json | null
+          project_id?: string | null
+          user_email?: string | null
+          user_id?: string | null
+          user_name?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_audit_logs_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_audit_logs_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      project_integrations: {
+        Row: {
+          config: Json
+          connected_at: string | null
+          connected_by: string | null
+          created_at: string | null
+          id: string
+          integration_type: string
+          last_sync_at: string | null
+          last_sync_error: string | null
+          last_sync_status: string | null
+          name: string | null
+          project_id: string
+          status: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          config?: Json
+          connected_at?: string | null
+          connected_by?: string | null
+          created_at?: string | null
+          id?: string
+          integration_type: string
+          last_sync_at?: string | null
+          last_sync_error?: string | null
+          last_sync_status?: string | null
+          name?: string | null
+          project_id: string
+          status?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          config?: Json
+          connected_at?: string | null
+          connected_by?: string | null
+          created_at?: string | null
+          id?: string
+          integration_type?: string
+          last_sync_at?: string | null
+          last_sync_error?: string | null
+          last_sync_status?: string | null
+          name?: string | null
+          project_id?: string
+          status?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_integrations_connected_by_fkey"
+            columns: ["connected_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_integrations_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       project_key_aliases: {
         Row: {
           created_at: string | null
@@ -14185,21 +14515,48 @@ export type Database = {
       }
       project_members: {
         Row: {
+          accepted_at: string | null
           created_at: string | null
+          email: string | null
           id: string
+          invitation_token: string | null
+          invited_at: string | null
+          invited_by: string | null
+          last_active_at: string | null
           project_id: string
+          role: string
+          status: string
+          updated_at: string | null
           user_id: string
         }
         Insert: {
+          accepted_at?: string | null
           created_at?: string | null
+          email?: string | null
           id?: string
+          invitation_token?: string | null
+          invited_at?: string | null
+          invited_by?: string | null
+          last_active_at?: string | null
           project_id: string
+          role?: string
+          status?: string
+          updated_at?: string | null
           user_id: string
         }
         Update: {
+          accepted_at?: string | null
           created_at?: string | null
+          email?: string | null
           id?: string
+          invitation_token?: string | null
+          invited_at?: string | null
+          invited_by?: string | null
+          last_active_at?: string | null
           project_id?: string
+          role?: string
+          status?: string
+          updated_at?: string | null
           user_id?: string
         }
         Relationships: [
@@ -14217,10 +14574,66 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "project_members_invited_by_fkey"
+            columns: ["invited_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      project_roles: {
+        Row: {
+          color: string | null
+          created_at: string | null
+          description: string | null
+          icon: string | null
+          id: string
+          is_system: boolean | null
+          name: string
+          permissions: Json
+          project_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          color?: string | null
+          created_at?: string | null
+          description?: string | null
+          icon?: string | null
+          id?: string
+          is_system?: boolean | null
+          name: string
+          permissions?: Json
+          project_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          color?: string | null
+          created_at?: string | null
+          description?: string | null
+          icon?: string | null
+          id?: string
+          is_system?: boolean | null
+          name?: string
+          permissions?: Json
+          project_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_roles_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
         ]
       }
       projects: {
         Row: {
+          archived_at: string | null
+          archived_by: string | null
           created_at: string | null
           description: string | null
           id: string
@@ -14229,11 +14642,14 @@ export type Database = {
           name: string
           program_id: string
           rte_id: string | null
+          settings: Json | null
           status: Database["public"]["Enums"]["program_status"] | null
           updated_at: string | null
           wip_limits: Json | null
         }
         Insert: {
+          archived_at?: string | null
+          archived_by?: string | null
           created_at?: string | null
           description?: string | null
           id?: string
@@ -14242,11 +14658,14 @@ export type Database = {
           name: string
           program_id: string
           rte_id?: string | null
+          settings?: Json | null
           status?: Database["public"]["Enums"]["program_status"] | null
           updated_at?: string | null
           wip_limits?: Json | null
         }
         Update: {
+          archived_at?: string | null
+          archived_by?: string | null
           created_at?: string | null
           description?: string | null
           id?: string
@@ -14255,6 +14674,7 @@ export type Database = {
           name?: string
           program_id?: string
           rte_id?: string | null
+          settings?: Json | null
           status?: Database["public"]["Enums"]["program_status"] | null
           updated_at?: string | null
           wip_limits?: Json | null
@@ -14265,6 +14685,13 @@ export type Database = {
             columns: ["program_id"]
             isOneToOne: false
             referencedRelation: "programs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "projects_archived_by_fkey"
+            columns: ["archived_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -21281,6 +21708,66 @@ export type Database = {
           },
         ]
       }
+      webhooks: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          events: string[]
+          failure_count: number | null
+          id: string
+          is_active: boolean | null
+          last_response_code: number | null
+          last_triggered_at: string | null
+          name: string
+          project_id: string
+          secret: string | null
+          url: string
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          events: string[]
+          failure_count?: number | null
+          id?: string
+          is_active?: boolean | null
+          last_response_code?: number | null
+          last_triggered_at?: string | null
+          name: string
+          project_id: string
+          secret?: string | null
+          url: string
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          events?: string[]
+          failure_count?: number | null
+          id?: string
+          is_active?: boolean | null
+          last_response_code?: number | null
+          last_triggered_at?: string | null
+          name?: string
+          project_id?: string
+          secret?: string | null
+          url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "webhooks_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "webhooks_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       work_item_activity: {
         Row: {
           activity_type: string
@@ -22325,6 +22812,10 @@ export type Database = {
         Returns: undefined
       }
       create_adhoc_cycle: { Args: never; Returns: string }
+      create_default_project_roles: {
+        Args: { p_project_id: string }
+        Returns: undefined
+      }
       create_notification: {
         Args: {
           p_entity_id?: string
@@ -22335,6 +22826,18 @@ export type Database = {
           p_user_id: string
         }
         Returns: undefined
+      }
+      create_project_audit_log: {
+        Args: {
+          p_action: string
+          p_changes?: Json
+          p_entity_id?: string
+          p_entity_name?: string
+          p_entity_type: string
+          p_metadata?: Json
+          p_project_id: string
+        }
+        Returns: string
       }
       current_user_is_approved: { Args: never; Returns: boolean }
       derive_dependency_container: {
@@ -22606,6 +23109,7 @@ export type Database = {
         | "backlog"
         | "implementing"
         | "done"
+      field_entity: "test_case" | "test_cycle" | "defect" | "test_run"
       field_type:
         | "text"
         | "number"
@@ -22694,6 +23198,7 @@ export type Database = {
         | "sprint_started"
         | "sprint_closed"
         | "version_released"
+      integration_status: "connected" | "disconnected" | "error" | "pending"
       integration_type:
         | "slack"
         | "github"
@@ -23074,6 +23579,7 @@ export const Constants = {
         "implementing",
         "done",
       ],
+      field_entity: ["test_case", "test_cycle", "defect", "test_run"],
       field_type: [
         "text",
         "number",
@@ -23171,6 +23677,7 @@ export const Constants = {
         "sprint_closed",
         "version_released",
       ],
+      integration_status: ["connected", "disconnected", "error", "pending"],
       integration_type: [
         "slack",
         "github",
