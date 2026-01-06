@@ -288,7 +288,7 @@ import {
   CycleDetailPage,
   DefectsPage as TMDefectsPage,
   ReportsPage as TMReportsPage,
-  SettingsPage as TMSettingsPage,
+  TMSettingsPage,
   MyWorkPage,
   CommandCenterPage,
   ExecutionRunnerPage,
