@@ -120,8 +120,8 @@ export default function IncidentsDashboard() {
                 <svg viewBox="0 0 600 180" className="w-full h-full">
                   <defs>
                     <linearGradient id="blueGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                      <stop offset="0%" style={{ stopColor: '#2563eb', stopOpacity: 0.4 }} />
-                      <stop offset="100%" style={{ stopColor: '#2563eb', stopOpacity: 0 }} />
+                      <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity={0.4} />
+                      <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity={0} />
                     </linearGradient>
                   </defs>
                   {[30, 60, 90, 120].map((y) => (
