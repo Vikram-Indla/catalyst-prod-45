@@ -86,7 +86,7 @@ import {
   DefectsMetricsBar, 
   DefectBoardView, 
   DefectDetailPanel, 
-  CreateDefectModal 
+  CreateDefectDialogEnterprise 
 } from '../components/defects';
 import { toast } from 'sonner';
 
@@ -880,14 +880,16 @@ export function DefectsPage() {
         </div>
       )}
 
-      {/* Create/Edit Modal */}
-      <CreateDefectModal
+      {/* Create/Edit Modal - Enterprise Version */}
+      <CreateDefectDialogEnterprise
         open={createModalOpen}
         onOpenChange={handleCloseModal}
+        projectId={projectId}
         defect={editingDefect}
-        teamMembers={(teamMembers || []).map(m => ({ id: m.id, full_name: m.full_name }))}
-        onSubmit={editingDefect ? handleUpdate : handleCreate}
-        isLoading={createDefectMutation.isPending || updateDefectMutation.isPending}
+        onSuccess={() => {
+          setCreateModalOpen(false);
+          setEditingDefect(null);
+        }}
       />
 
       {/* Delete Confirmation */}
