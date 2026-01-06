@@ -1,5 +1,6 @@
 /**
  * Defect Card Component - for Board view
+ * Uses Catalyst V5 semantic tokens - NO hardcoded colors
  */
 
 import React from 'react';
@@ -7,6 +8,7 @@ import { Flame, AlertTriangle, Info, Minus, Link2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
+import { SEVERITY_TOKENS, type SemanticSeverity } from '@/lib/semantic-tokens';
 import type { Defect, DefectSeverity } from '../../api/types';
 
 interface DefectCardProps {
@@ -15,41 +17,17 @@ interface DefectCardProps {
   isDragging?: boolean;
 }
 
-const SEVERITY_CONFIG: Record<DefectSeverity, { 
-  label: string; 
-  icon: React.ElementType;
-  bgColor: string;
-  borderColor: string;
-}> = {
-  critical: { 
-    label: 'Critical', 
-    icon: Flame, 
-    bgColor: 'bg-danger/10',
-    borderColor: 'border-l-danger'
-  },
-  major: { 
-    label: 'Major', 
-    icon: AlertTriangle, 
-    bgColor: 'bg-warning/10',
-    borderColor: 'border-l-warning'
-  },
-  minor: { 
-    label: 'Minor', 
-    icon: Info, 
-    bgColor: 'bg-yellow-500/10',
-    borderColor: 'border-l-yellow-500'
-  },
-  trivial: { 
-    label: 'Trivial', 
-    icon: Minus, 
-    bgColor: 'bg-muted',
-    borderColor: 'border-l-muted-foreground'
-  },
+const SEVERITY_ICONS: Record<DefectSeverity, React.ElementType> = {
+  critical: Flame,
+  major: AlertTriangle,
+  minor: Info,
+  trivial: Minus,
 };
 
 export function DefectCard({ defect, onClick, isDragging }: DefectCardProps) {
-  const severityConfig = SEVERITY_CONFIG[defect.severity];
-  const SeverityIcon = severityConfig.icon;
+  const severity = defect.severity as SemanticSeverity;
+  const severityConfig = SEVERITY_TOKENS[severity] || SEVERITY_TOKENS.trivial;
+  const SeverityIcon = SEVERITY_ICONS[defect.severity] || Minus;
 
   const getInitials = (name?: string) => {
     if (!name) return '?';
@@ -60,7 +38,7 @@ export function DefectCard({ defect, onClick, isDragging }: DefectCardProps) {
     <div
       className={cn(
         "bg-card border rounded-lg p-3 cursor-pointer transition-all border-l-4",
-        severityConfig.borderColor,
+        severityConfig.railClass,
         isDragging 
           ? "shadow-lg ring-2 ring-primary/20 rotate-2" 
           : "hover:shadow-md hover:border-primary/30"
@@ -70,7 +48,7 @@ export function DefectCard({ defect, onClick, isDragging }: DefectCardProps) {
       {/* Key & Severity */}
       <div className="flex items-center justify-between mb-2">
         <span className="font-mono text-xs text-primary">{defect.defect_key}</span>
-        <Badge className={cn('text-[10px] gap-0.5 px-1.5 py-0', severityConfig.bgColor)}>
+        <Badge className={cn('text-[10px] gap-0.5 px-1.5 py-0 border', severityConfig.chipClass)}>
           <SeverityIcon className="h-2.5 w-2.5" />
           {severityConfig.label}
         </Badge>

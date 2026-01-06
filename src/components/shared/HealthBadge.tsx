@@ -1,5 +1,6 @@
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
+import { HEALTH_TOKENS, type SemanticHealth } from '@/lib/semantic-tokens';
 
 interface HealthBadgeProps {
   health: 'green' | 'yellow' | 'red' | null;
@@ -9,14 +10,13 @@ interface HealthBadgeProps {
 export function HealthBadge({ health, className }: HealthBadgeProps) {
   if (!health) return null;
 
-  const variants = {
-    green: 'bg-[rgba(13,148,136,0.08)] text-[#0d9488] border-[rgba(13,148,136,0.2)]',
-    yellow: 'bg-[rgba(217,119,6,0.08)] text-[#d97706] border-[rgba(217,119,6,0.2)]',
-    red: 'bg-[rgba(239,68,68,0.08)] text-[#ef4444] border-[rgba(239,68,68,0.2)]',
-  };
+  const healthConfig = HEALTH_TOKENS[health as SemanticHealth];
 
   return (
-    <Badge variant="outline" className={cn(variants[health], className)}>
+    <Badge 
+      variant="outline" 
+      className={cn('border', healthConfig?.chipClass, className)}
+    >
       {health}
     </Badge>
   );

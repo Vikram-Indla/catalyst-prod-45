@@ -1,5 +1,6 @@
 /**
  * Defect Detail Panel - Slides in from right
+ * Uses Catalyst V5 semantic tokens - NO hardcoded colors
  */
 
 import React, { useState } from 'react';
@@ -35,6 +36,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
+import { SEVERITY_TOKENS, STATUS_TOKENS, type SemanticSeverity, type SemanticStatus } from '@/lib/semantic-tokens';
 import type { Defect, DefectSeverity, DefectStatus } from '../../api/types';
 
 interface DefectDetailPanelProps {
@@ -53,23 +55,19 @@ interface DefectDetailPanelProps {
   isLoading?: boolean;
 }
 
-const SEVERITY_CONFIG: Record<DefectSeverity, { 
-  label: string; 
-  icon: React.ElementType;
-  className: string;
-}> = {
-  critical: { label: 'Critical', icon: Flame, className: 'bg-danger text-white' },
-  major: { label: 'Major', icon: AlertTriangle, className: 'bg-warning text-white' },
-  minor: { label: 'Minor', icon: Info, className: 'bg-yellow-500 text-white' },
-  trivial: { label: 'Trivial', icon: Minus, className: 'bg-muted text-muted-foreground' },
+const SEVERITY_ICONS: Record<DefectSeverity, React.ElementType> = {
+  critical: Flame,
+  major: AlertTriangle,
+  minor: Info,
+  trivial: Minus,
 };
 
-const STATUS_CONFIG: Record<DefectStatus, { label: string; className: string }> = {
-  open: { label: 'Open', className: 'border-danger text-danger' },
-  in_progress: { label: 'In Progress', className: 'bg-blue-600 text-white border-blue-600' },
-  resolved: { label: 'Fixed', className: 'bg-teal-600 text-white border-teal-600' },
-  closed: { label: 'Closed', className: 'bg-muted text-muted-foreground' },
-  wont_fix: { label: "Won't Fix", className: 'bg-muted text-muted-foreground line-through' },
+const STATUS_LABELS: Record<DefectStatus, string> = {
+  open: 'Open',
+  in_progress: 'In Progress',
+  resolved: 'Fixed',
+  closed: 'Closed',
+  wont_fix: "Won't Fix",
 };
 
 export function DefectDetailPanel({
@@ -82,8 +80,10 @@ export function DefectDetailPanel({
   isLoading,
 }: DefectDetailPanelProps) {
   const [newComment, setNewComment] = useState('');
-  const severityConfig = SEVERITY_CONFIG[defect.severity];
-  const SeverityIcon = severityConfig.icon;
+  
+  const severity = defect.severity as SemanticSeverity;
+  const severityConfig = SEVERITY_TOKENS[severity] || SEVERITY_TOKENS.trivial;
+  const SeverityIcon = SEVERITY_ICONS[defect.severity] || Minus;
 
   const getInitials = (name?: string) => {
     if (!name) return '?';
@@ -114,7 +114,7 @@ export function DefectDetailPanel({
         </div>
         <h2 className="text-lg font-semibold mb-3">{defect.title}</h2>
         <div className="flex items-center gap-2">
-          <Badge className={cn('gap-1', severityConfig.className)}>
+          <Badge className={cn('gap-1 border', severityConfig.chipClass)}>
             <SeverityIcon className="h-3 w-3" />
             {severityConfig.label}
           </Badge>
@@ -123,9 +123,9 @@ export function DefectDetailPanel({
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              {Object.entries(STATUS_CONFIG).map(([key, config]) => (
+              {Object.entries(STATUS_LABELS).map(([key, label]) => (
                 <SelectItem key={key} value={key}>
-                  {config.label}
+                  {label}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -165,7 +165,7 @@ export function DefectDetailPanel({
               </div>
               <div>
                 <span className="text-muted-foreground">Status</span>
-                <div className="mt-0.5">{STATUS_CONFIG[defect.status]?.label || defect.status}</div>
+                <div className="mt-0.5">{STATUS_LABELS[defect.status] || defect.status}</div>
               </div>
               <div>
                 <span className="text-muted-foreground">Assignee</span>
