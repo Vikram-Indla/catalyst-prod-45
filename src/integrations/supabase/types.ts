@@ -2734,18 +2734,22 @@ export type Database = {
           assignee_id: string | null
           created_at: string | null
           defect_id: string
+          defect_key: string | null
           description: string | null
           due_date: string | null
           duplicate_of_id: string | null
           environment: string | null
           environment_details: Json | null
           expected_result: string
+          external_id: string | null
+          external_url: string | null
           id: string
           linked_feature_id: string | null
           linked_story_id: string | null
           preconditions: string | null
           priority: string
           project_id: string | null
+          reported_by: string | null
           reporter_id: string | null
           resolution: string | null
           resolved_at: string | null
@@ -2753,9 +2757,13 @@ export type Database = {
           root_cause: string | null
           severity: string
           sla_target_hours: number | null
+          status: string | null
+          step_number: number | null
           steps_to_reproduce: Json | null
           tags: string[] | null
           target_release_id: string | null
+          test_case_id: string | null
+          test_run_id: string | null
           title: string
           updated_at: string | null
           workflow_status: string
@@ -2765,18 +2773,22 @@ export type Database = {
           assignee_id?: string | null
           created_at?: string | null
           defect_id: string
+          defect_key?: string | null
           description?: string | null
           due_date?: string | null
           duplicate_of_id?: string | null
           environment?: string | null
           environment_details?: Json | null
           expected_result: string
+          external_id?: string | null
+          external_url?: string | null
           id?: string
           linked_feature_id?: string | null
           linked_story_id?: string | null
           preconditions?: string | null
           priority: string
           project_id?: string | null
+          reported_by?: string | null
           reporter_id?: string | null
           resolution?: string | null
           resolved_at?: string | null
@@ -2784,9 +2796,13 @@ export type Database = {
           root_cause?: string | null
           severity: string
           sla_target_hours?: number | null
+          status?: string | null
+          step_number?: number | null
           steps_to_reproduce?: Json | null
           tags?: string[] | null
           target_release_id?: string | null
+          test_case_id?: string | null
+          test_run_id?: string | null
           title: string
           updated_at?: string | null
           workflow_status?: string
@@ -2796,18 +2812,22 @@ export type Database = {
           assignee_id?: string | null
           created_at?: string | null
           defect_id?: string
+          defect_key?: string | null
           description?: string | null
           due_date?: string | null
           duplicate_of_id?: string | null
           environment?: string | null
           environment_details?: Json | null
           expected_result?: string
+          external_id?: string | null
+          external_url?: string | null
           id?: string
           linked_feature_id?: string | null
           linked_story_id?: string | null
           preconditions?: string | null
           priority?: string
           project_id?: string | null
+          reported_by?: string | null
           reporter_id?: string | null
           resolution?: string | null
           resolved_at?: string | null
@@ -2815,9 +2835,13 @@ export type Database = {
           root_cause?: string | null
           severity?: string
           sla_target_hours?: number | null
+          status?: string | null
+          step_number?: number | null
           steps_to_reproduce?: Json | null
           tags?: string[] | null
           target_release_id?: string | null
+          test_case_id?: string | null
+          test_run_id?: string | null
           title?: string
           updated_at?: string | null
           workflow_status?: string
@@ -2877,6 +2901,20 @@ export type Database = {
             columns: ["target_release_id"]
             isOneToOne: false
             referencedRelation: "releases"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "defects_test_case_id_fkey"
+            columns: ["test_case_id"]
+            isOneToOne: false
+            referencedRelation: "test_cases"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "defects_test_run_id_fkey"
+            columns: ["test_run_id"]
+            isOneToOne: false
+            referencedRelation: "test_runs"
             referencedColumns: ["id"]
           },
         ]
@@ -16514,6 +16552,54 @@ export type Database = {
         }
         Relationships: []
       }
+      step_results: {
+        Row: {
+          actual_result: string | null
+          executed_at: string | null
+          executed_by: string | null
+          id: string
+          notes: string | null
+          status: string | null
+          test_run_id: string
+          test_step_id: string
+        }
+        Insert: {
+          actual_result?: string | null
+          executed_at?: string | null
+          executed_by?: string | null
+          id?: string
+          notes?: string | null
+          status?: string | null
+          test_run_id: string
+          test_step_id: string
+        }
+        Update: {
+          actual_result?: string | null
+          executed_at?: string | null
+          executed_by?: string | null
+          id?: string
+          notes?: string | null
+          status?: string | null
+          test_run_id?: string
+          test_step_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "step_results_test_run_id_fkey"
+            columns: ["test_run_id"]
+            isOneToOne: false
+            referencedRelation: "test_runs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "step_results_test_step_id_fkey"
+            columns: ["test_step_id"]
+            isOneToOne: false
+            referencedRelation: "test_steps"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       stories: {
         Row: {
           acceptance_criteria: string | null
@@ -17827,6 +17913,42 @@ export type Database = {
           },
         ]
       }
+      test_case_requirements: {
+        Row: {
+          created_at: string | null
+          id: string
+          requirement_id: string
+          test_case_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          requirement_id: string
+          test_case_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          requirement_id?: string
+          test_case_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "test_case_requirements_requirement_id_fkey"
+            columns: ["requirement_id"]
+            isOneToOne: false
+            referencedRelation: "requirements"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_case_requirements_test_case_id_fkey"
+            columns: ["test_case_id"]
+            isOneToOne: false
+            referencedRelation: "test_cases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       test_case_shared_steps: {
         Row: {
           created_at: string | null
@@ -18115,6 +18237,80 @@ export type Database = {
         }
         Relationships: []
       }
+      test_cases: {
+        Row: {
+          approved_at: string | null
+          assignee_id: string | null
+          automation_status: string | null
+          created_at: string | null
+          created_by: string | null
+          folder_id: string | null
+          id: string
+          objective: string | null
+          preconditions: string | null
+          priority: string | null
+          project_id: string
+          reviewer_id: string | null
+          status: string | null
+          tags: string[] | null
+          test_key: string | null
+          test_type: string | null
+          title: string
+          updated_at: string | null
+          version: number | null
+        }
+        Insert: {
+          approved_at?: string | null
+          assignee_id?: string | null
+          automation_status?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          folder_id?: string | null
+          id?: string
+          objective?: string | null
+          preconditions?: string | null
+          priority?: string | null
+          project_id: string
+          reviewer_id?: string | null
+          status?: string | null
+          tags?: string[] | null
+          test_key?: string | null
+          test_type?: string | null
+          title: string
+          updated_at?: string | null
+          version?: number | null
+        }
+        Update: {
+          approved_at?: string | null
+          assignee_id?: string | null
+          automation_status?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          folder_id?: string | null
+          id?: string
+          objective?: string | null
+          preconditions?: string | null
+          priority?: string | null
+          project_id?: string
+          reviewer_id?: string | null
+          status?: string | null
+          tags?: string[] | null
+          test_key?: string | null
+          test_type?: string | null
+          title?: string
+          updated_at?: string | null
+          version?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "test_cases_folder_id_fkey"
+            columns: ["folder_id"]
+            isOneToOne: false
+            referencedRelation: "test_folders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       test_cycle_case_assignments: {
         Row: {
           assigned_at: string | null
@@ -18367,6 +18563,57 @@ export type Database = {
           is_global?: boolean | null
           name?: string
           project_id?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      test_cycles: {
+        Row: {
+          build_version: string | null
+          created_at: string | null
+          created_by: string | null
+          cycle_key: string | null
+          description: string | null
+          end_date: string | null
+          environment: string | null
+          id: string
+          name: string
+          owner_id: string | null
+          project_id: string
+          start_date: string | null
+          status: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          build_version?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          cycle_key?: string | null
+          description?: string | null
+          end_date?: string | null
+          environment?: string | null
+          id?: string
+          name: string
+          owner_id?: string | null
+          project_id: string
+          start_date?: string | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          build_version?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          cycle_key?: string | null
+          description?: string | null
+          end_date?: string | null
+          environment?: string | null
+          id?: string
+          name?: string
+          owner_id?: string | null
+          project_id?: string
+          start_date?: string | null
+          status?: string | null
           updated_at?: string | null
         }
         Relationships: []
@@ -18830,6 +19077,50 @@ export type Database = {
           },
         ]
       }
+      test_folders: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          id: string
+          name: string
+          parent_id: string | null
+          project_id: string
+          sort_order: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          name: string
+          parent_id?: string | null
+          project_id: string
+          sort_order?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          name?: string
+          parent_id?: string | null
+          project_id?: string
+          sort_order?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "test_folders_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "test_folders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       test_notification_email_queue: {
         Row: {
           batch_type: string | null
@@ -18958,6 +19249,63 @@ export type Database = {
           },
         ]
       }
+      test_runs: {
+        Row: {
+          assignee_id: string | null
+          created_at: string | null
+          duration_seconds: number | null
+          executed_at: string | null
+          executed_by: string | null
+          id: string
+          notes: string | null
+          status: string | null
+          test_case_id: string
+          test_cycle_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          assignee_id?: string | null
+          created_at?: string | null
+          duration_seconds?: number | null
+          executed_at?: string | null
+          executed_by?: string | null
+          id?: string
+          notes?: string | null
+          status?: string | null
+          test_case_id: string
+          test_cycle_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          assignee_id?: string | null
+          created_at?: string | null
+          duration_seconds?: number | null
+          executed_at?: string | null
+          executed_by?: string | null
+          id?: string
+          notes?: string | null
+          status?: string | null
+          test_case_id?: string
+          test_cycle_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "test_runs_test_case_id_fkey"
+            columns: ["test_case_id"]
+            isOneToOne: false
+            referencedRelation: "test_cases"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_runs_test_cycle_id_fkey"
+            columns: ["test_cycle_id"]
+            isOneToOne: false
+            referencedRelation: "test_cycles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       test_set_bulk_operations: {
         Row: {
           completed_at: string | null
@@ -19052,34 +19400,40 @@ export type Database = {
         Row: {
           action: string
           created_at: string | null
+          evidence_required: boolean | null
           expected_result: string | null
           id: string
           is_shared: boolean | null
           library_step_id: string | null
           step_order: number
           test_case_id: string
+          test_data: string | null
           updated_at: string | null
         }
         Insert: {
           action: string
           created_at?: string | null
+          evidence_required?: boolean | null
           expected_result?: string | null
           id?: string
           is_shared?: boolean | null
           library_step_id?: string | null
           step_order: number
           test_case_id: string
+          test_data?: string | null
           updated_at?: string | null
         }
         Update: {
           action?: string
           created_at?: string | null
+          evidence_required?: boolean | null
           expected_result?: string | null
           id?: string
           is_shared?: boolean | null
           library_step_id?: string | null
           step_order?: number
           test_case_id?: string
+          test_data?: string | null
           updated_at?: string | null
         }
         Relationships: [
@@ -23183,6 +23537,8 @@ export type Database = {
           total_test_cases: number
         }[]
       }
+      get_cycle_progress: { Args: { p_cycle_id: string }; Returns: Json }
+      get_dashboard_stats: { Args: { p_project_id: string }; Returns: Json }
       get_dependency_counts: {
         Args: { p_item_id: string; p_item_type: string }
         Returns: {
