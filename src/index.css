@@ -1555,63 +1555,345 @@
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   CATALYST DARK MODE — BORDER KILL SWITCH
-   Purpose: Zero visible dividers in dark mode (render-level enforcement)
+   CATALYST DARK MODE — RENDER-LEVEL BORDER ELIMINATION
+   Bloomberg/Linear Grade: Zero visible white dividers
+   
+   This is NOT token-level theming. This is RENDER-LEVEL enforcement.
+   All borders, dividers, separators forced to ultra-subtle rgba.
    ═══════════════════════════════════════════════════════════════════════════ */
 
-/* Kill HRs completely */
+/* 
+ * BORDER SOURCE MAP (what this kills):
+ * - Tailwind: border-*, divide-*, ring-*, outline-*
+ * - shadcn/ui: Separator, Table, Card, Dialog, Popover, DropdownMenu, Tabs
+ * - Global: hr, table, tr, thead, tbody, .container, .panel, .section
+ * - Hardcoded: #fff, rgba(255,255,255,0.1+), border-white/*
+ */
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   STEP 1: KILL ALL HRs AND SEPARATOR COMPONENTS
+   ═══════════════════════════════════════════════════════════════════════════ */
 .dark hr,
-[data-theme="dark"] hr {
-  display: none !important;
+.dark [data-radix-separator],
+[data-theme="dark"] hr,
+[data-theme="dark"] [data-radix-separator] {
+  border-color: rgba(255,255,255,0.04) !important;
+  background-color: rgba(255,255,255,0.04) !important;
+  opacity: 0.5 !important;
 }
 
-/* Neutralize all borders & dividers */
-.dark :where(
-  .border, .border-t, .border-b, .border-l, .border-r,
-  [class*="border-"],
-  [class*="divide-"],
-  table, thead, tbody, tr, td, th
-),
-[data-theme="dark"] :where(
-  .border, .border-t, .border-b, .border-l, .border-r,
-  [class*="border-"],
-  [class*="divide-"],
-  table, thead, tbody, tr, td, th
-) {
+/* ═══════════════════════════════════════════════════════════════════════════
+   STEP 2: NEUTRALIZE ALL BORDER CLASSES (GLOBAL)
+   Force ALL border-color to ultra-subtle regardless of Tailwind class
+   ═══════════════════════════════════════════════════════════════════════════ */
+.dark,
+[data-theme="dark"] {
+  /* Base border-color for all elements */
+  --tw-border-opacity: 0.04 !important;
+}
+
+.dark *,
+[data-theme="dark"] * {
+  /* Force border-color inheritance to ultra-subtle */
+  --tw-divide-opacity: 0.04 !important;
+}
+
+/* All border classes: force ultra-subtle */
+.dark .border,
+.dark .border-t,
+.dark .border-b,
+.dark .border-l,
+.dark .border-r,
+.dark .border-x,
+.dark .border-y,
+.dark [class*="border-"],
+[data-theme="dark"] .border,
+[data-theme="dark"] .border-t,
+[data-theme="dark"] .border-b,
+[data-theme="dark"] .border-l,
+[data-theme="dark"] .border-r,
+[data-theme="dark"] .border-x,
+[data-theme="dark"] .border-y,
+[data-theme="dark"] [class*="border-"] {
+  border-color: rgba(255,255,255,0.04) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   STEP 3: KILL TAILWIND DIVIDE UTILITIES
+   ═══════════════════════════════════════════════════════════════════════════ */
+.dark [class*="divide-y"] > * + *,
+.dark [class*="divide-x"] > * + *,
+.dark .divide-y > * + *,
+.dark .divide-x > * + *,
+[data-theme="dark"] [class*="divide-y"] > * + *,
+[data-theme="dark"] [class*="divide-x"] > * + *,
+[data-theme="dark"] .divide-y > * + *,
+[data-theme="dark"] .divide-x > * + * {
+  border-color: rgba(255,255,255,0.04) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   STEP 4: TABLE BORDERS — ULTRA-SUBTLE ROW SEPARATORS ONLY
+   ═══════════════════════════════════════════════════════════════════════════ */
+.dark table,
+.dark thead,
+.dark tbody,
+.dark tfoot,
+.dark tr,
+.dark th,
+.dark td,
+[data-theme="dark"] table,
+[data-theme="dark"] thead,
+[data-theme="dark"] tbody,
+[data-theme="dark"] tfoot,
+[data-theme="dark"] tr,
+[data-theme="dark"] th,
+[data-theme="dark"] td {
   border-color: rgba(255,255,255,0.035) !important;
 }
 
-/* Kill Tailwind divide utilities explicitly */
-.dark :where([class*="divide-y"], [class*="divide-x"]) > :not([hidden]) ~ :not([hidden]),
-[data-theme="dark"] :where([class*="divide-y"], [class*="divide-x"]) > :not([hidden]) ~ :not([hidden]) {
-  border-color: rgba(255,255,255,0.035) !important;
+/* Remove outer table container borders */
+.dark table,
+.dark [class*="Table"],
+[data-theme="dark"] table,
+[data-theme="dark"] [class*="Table"] {
+  border: none !important;
 }
 
-/* Override legacy white borders */
-.dark :where(
-  .border-white,
-  .border-white\/10,
-  .border-white\/20,
-  .border-white\/30
-),
-[data-theme="dark"] :where(
-  .border-white,
-  .border-white\/10,
-  .border-white\/20,
-  .border-white\/30
-) {
-  border-color: rgba(255,255,255,0.035) !important;
+/* Row separators only - ultra subtle */
+.dark tr,
+[data-theme="dark"] tr {
+  border-bottom-color: rgba(255,255,255,0.035) !important;
+  border-left: none !important;
+  border-right: none !important;
+  border-top: none !important;
 }
 
-/* Remove outlines masquerading as borders */
-.dark :where(.outline, .outline-1, .ring-1),
-[data-theme="dark"] :where(.outline, .outline-1, .ring-1) {
-  outline-color: rgba(255,255,255,0.035) !important;
+/* Kill column dividers */
+.dark th,
+.dark td,
+[data-theme="dark"] th,
+[data-theme="dark"] td {
+  border-left: none !important;
+  border-right: none !important;
 }
 
-/* Preserve accessibility - focus states */
+/* ═══════════════════════════════════════════════════════════════════════════
+   STEP 5: CARD/SECTION BORDERS — SURFACE ELEVATION, NOT LINES
+   ═══════════════════════════════════════════════════════════════════════════ */
+.dark .card,
+.dark [class*="Card"],
+.dark .panel,
+.dark .section,
+.dark [class*="container"],
+.dark [class*="Container"],
+[data-theme="dark"] .card,
+[data-theme="dark"] [class*="Card"],
+[data-theme="dark"] .panel,
+[data-theme="dark"] .section,
+[data-theme="dark"] [class*="container"],
+[data-theme="dark"] [class*="Container"] {
+  border-color: rgba(255,255,255,0.04) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   STEP 6: DIALOG/DRAWER/POPOVER BORDERS
+   ═══════════════════════════════════════════════════════════════════════════ */
+.dark [role="dialog"],
+.dark [data-radix-dialog-content],
+.dark [data-radix-popover-content],
+.dark [data-radix-dropdown-menu-content],
+.dark [data-radix-menu-content],
+.dark [class*="Dialog"],
+.dark [class*="Drawer"],
+.dark [class*="Popover"],
+.dark [class*="DropdownMenu"],
+[data-theme="dark"] [role="dialog"],
+[data-theme="dark"] [data-radix-dialog-content],
+[data-theme="dark"] [data-radix-popover-content],
+[data-theme="dark"] [data-radix-dropdown-menu-content],
+[data-theme="dark"] [data-radix-menu-content],
+[data-theme="dark"] [class*="Dialog"],
+[data-theme="dark"] [class*="Drawer"],
+[data-theme="dark"] [class*="Popover"],
+[data-theme="dark"] [class*="DropdownMenu"] {
+  border-color: rgba(255,255,255,0.04) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   STEP 7: LEGACY WHITE BORDER OVERRIDES
+   ═══════════════════════════════════════════════════════════════════════════ */
+.dark .border-white,
+.dark .border-white\/5,
+.dark .border-white\/10,
+.dark .border-white\/20,
+.dark .border-white\/30,
+.dark .border-white\/40,
+.dark .border-white\/50,
+.dark [class*="border-gray"],
+.dark [class*="border-slate"],
+.dark [class*="border-neutral"],
+[data-theme="dark"] .border-white,
+[data-theme="dark"] .border-white\/5,
+[data-theme="dark"] .border-white\/10,
+[data-theme="dark"] .border-white\/20,
+[data-theme="dark"] .border-white\/30,
+[data-theme="dark"] .border-white\/40,
+[data-theme="dark"] .border-white\/50,
+[data-theme="dark"] [class*="border-gray"],
+[data-theme="dark"] [class*="border-slate"],
+[data-theme="dark"] [class*="border-neutral"] {
+  border-color: rgba(255,255,255,0.04) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   STEP 8: RING & OUTLINE UTILITIES
+   ═══════════════════════════════════════════════════════════════════════════ */
+.dark .ring,
+.dark .ring-1,
+.dark .ring-2,
+.dark [class*="ring-"],
+.dark .outline,
+.dark .outline-1,
+.dark [class*="outline-"],
+[data-theme="dark"] .ring,
+[data-theme="dark"] .ring-1,
+[data-theme="dark"] .ring-2,
+[data-theme="dark"] [class*="ring-"],
+[data-theme="dark"] .outline,
+[data-theme="dark"] .outline-1,
+[data-theme="dark"] [class*="outline-"] {
+  --tw-ring-color: rgba(255,255,255,0.04) !important;
+  outline-color: rgba(255,255,255,0.04) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   STEP 9: TABS & NAVIGATION BORDERS
+   ═══════════════════════════════════════════════════════════════════════════ */
+.dark [role="tablist"],
+.dark [class*="Tabs"],
+.dark [class*="TabsList"],
+.dark nav,
+.dark [class*="Navigation"],
+.dark [class*="Sidebar"],
+[data-theme="dark"] [role="tablist"],
+[data-theme="dark"] [class*="Tabs"],
+[data-theme="dark"] [class*="TabsList"],
+[data-theme="dark"] nav,
+[data-theme="dark"] [class*="Navigation"],
+[data-theme="dark"] [class*="Sidebar"] {
+  border-color: rgba(255,255,255,0.04) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   STEP 10: PRESERVE ACCESSIBILITY — FOCUS STATES
+   Focus rings MUST remain visible (blue brand color)
+   ═══════════════════════════════════════════════════════════════════════════ */
 .dark *:focus-visible,
 [data-theme="dark"] *:focus-visible {
   outline: none !important;
-  box-shadow: 0 0 0 2px rgba(59,130,246,0.7) !important;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.7) !important;
+}
+
+/* Selection state - uses brand primary */
+.dark [data-state="checked"],
+.dark [data-state="selected"],
+.dark [aria-selected="true"],
+[data-theme="dark"] [data-state="checked"],
+[data-theme="dark"] [data-state="selected"],
+[data-theme="dark"] [aria-selected="true"] {
+  border-color: rgba(59, 130, 246, 0.5) !important;
+}
+
+/* Error state - uses destructive */
+.dark [data-invalid="true"],
+.dark [aria-invalid="true"],
+.dark .border-destructive,
+.dark .border-red-500,
+.dark .border-danger,
+[data-theme="dark"] [data-invalid="true"],
+[data-theme="dark"] [aria-invalid="true"],
+[data-theme="dark"] .border-destructive,
+[data-theme="dark"] .border-red-500,
+[data-theme="dark"] .border-danger {
+  border-color: rgba(239, 68, 68, 0.5) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   STEP 11: SPECIFIC SHADCN COMPONENT OVERRIDES
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Input/Select borders - slightly more visible for usability */
+.dark input,
+.dark select,
+.dark textarea,
+.dark [role="combobox"],
+.dark [role="listbox"],
+[data-theme="dark"] input,
+[data-theme="dark"] select,
+[data-theme="dark"] textarea,
+[data-theme="dark"] [role="combobox"],
+[data-theme="dark"] [role="listbox"] {
+  border-color: rgba(255,255,255,0.06) !important;
+}
+
+.dark input:focus,
+.dark select:focus,
+.dark textarea:focus,
+[data-theme="dark"] input:focus,
+[data-theme="dark"] select:focus,
+[data-theme="dark"] textarea:focus {
+  border-color: rgba(59, 130, 246, 0.5) !important;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2) !important;
+}
+
+/* Accordion borders */
+.dark [data-radix-accordion-item],
+.dark [class*="Accordion"],
+[data-theme="dark"] [data-radix-accordion-item],
+[data-theme="dark"] [class*="Accordion"] {
+  border-color: rgba(255,255,255,0.04) !important;
+}
+
+/* Badge/Tag borders */
+.dark [class*="Badge"],
+.dark [class*="Tag"],
+.dark [class*="Chip"],
+.dark [class*="Lozenge"],
+[data-theme="dark"] [class*="Badge"],
+[data-theme="dark"] [class*="Tag"],
+[data-theme="dark"] [class*="Chip"],
+[data-theme="dark"] [class*="Lozenge"] {
+  border-color: rgba(255,255,255,0.06) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   CATALYST DARK MODE SEMANTIC SURFACE TOKENS
+   Use these for surface-based hierarchy instead of borders
+   ═══════════════════════════════════════════════════════════════════════════ */
+.dark,
+[data-theme="dark"] {
+  /* Surface elevation scale (4-8% contrast delta) */
+  --bg-0: #0f0f0f;           /* Deepest - rarely used */
+  --bg-1: #1a1a1a;           /* Page background */
+  --bg-2: #212121;           /* Cards, sections (4% lift) */
+  --bg-3: #292929;           /* Raised surfaces (8% lift) */
+  --bg-4: #333333;           /* Highest elevation */
+  
+  /* Text hierarchy - all opaque, never disabled-looking */
+  --text-1: #f5f5f5;         /* Primary text */
+  --text-2: #d4d4d4;         /* Secondary text */
+  --text-3: #a3a3a3;         /* Muted text */
+  
+  /* Divider - ultra-subtle, row separators only */
+  --divider: rgba(255,255,255,0.04);
+  
+  /* Border - near-invisible, rare use */
+  --border: rgba(255,255,255,0.04);
+  
+  /* Ring - brand blue for focus */
+  --ring: rgba(59,130,246,0.7);
+  
+  /* Shadow - depth indicator */
+  --shadow: 0 4px 12px rgba(0,0,0,0.4);
 }
