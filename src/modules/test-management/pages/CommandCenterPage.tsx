@@ -295,11 +295,11 @@ export function CommandCenterPage() {
   };
 
   const handleViewAllCycles = () => {
-    navigate('/test-management/cycles');
+    navigate('/tests/cycles');
   };
 
   const handleViewAllActivity = () => {
-    navigate('/test-management/my-work');
+    navigate('/tests/my-work');
   };
 
   if (kpisLoading) {
