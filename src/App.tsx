@@ -286,7 +286,7 @@ import {
   TestCaseEditorPage,
   TestCyclesPage,
   CycleDetailPage,
-  DefectsPage as TMDefectsPage,
+  TMDefectsPage,
   ReportsPage as TMReportsPage,
   TMSettingsPage,
   MyWorkPage,
