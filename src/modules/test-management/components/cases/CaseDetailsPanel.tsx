@@ -184,8 +184,8 @@ export function CaseDetailsPanel({
                 {testCase.priority ? (
                   <div className="flex items-center gap-1.5">
                     <div
-                      className="h-2.5 w-2.5 rounded-full"
-                      style={{ backgroundColor: testCase.priority.color || '#888' }}
+                      className="h-2.5 w-2.5 rounded-full bg-muted-foreground"
+                      style={testCase.priority.color ? { backgroundColor: testCase.priority.color } : undefined}
                     />
                     <span className="text-sm">{testCase.priority.name}</span>
                   </div>

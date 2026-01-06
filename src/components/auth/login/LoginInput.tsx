@@ -72,8 +72,7 @@ export const LoginInput = forwardRef<HTMLInputElement, LoginInputProps>(
         {error && (
           <p 
             id={`${inputId}-error`}
-            className="mt-1 text-xs"
-            style={{ color: '#ef4444' }}
+            className="mt-1 text-xs text-destructive"
           >
             {error}
           </p>
