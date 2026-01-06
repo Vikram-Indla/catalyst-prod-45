@@ -29,13 +29,14 @@ import {
   Loader2
 } from 'lucide-react';
 import { REPORT_CATEGORIES, REPORT_TYPES, ReportTypeConfig, ReportCategory } from '../../config/reportTypes';
-import { useCycles } from '../../hooks/useCycles';
+import { useTestCycles } from '../../hooks/useCycles';
 
 interface CreateReportDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onGenerate: (reportType: string, params: Record<string, any>) => void;
   isGenerating?: boolean;
+  projectId?: string;
 }
 
 const iconMap: Record<string, any> = {
@@ -50,13 +51,14 @@ const iconMap: Record<string, any> = {
   User,
 };
 
-export function CreateReportDialog({ open, onOpenChange, onGenerate, isGenerating }: CreateReportDialogProps) {
+export function CreateReportDialog({ open, onOpenChange, onGenerate, isGenerating, projectId }: CreateReportDialogProps) {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedReportType, setSelectedReportType] = useState<ReportTypeConfig | null>(null);
   const [formValues, setFormValues] = useState<Record<string, any>>({});
   const [step, setStep] = useState<'category' | 'type' | 'params'>('category');
   
-  const { data: cycles = [] } = useCycles();
+  const { data: cyclesData } = useTestCycles({ project_id: projectId || '' });
+  const cycles = cyclesData?.data || [];
 
   // Reset when dialog closes
   useEffect(() => {
