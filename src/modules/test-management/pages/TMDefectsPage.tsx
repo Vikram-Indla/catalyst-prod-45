@@ -89,7 +89,7 @@ import {
 } from '@/hooks/test-management';
 import { 
   DefectBoardView, 
-  CreateDefectModal 
+  CreateDefectDialogEnterprise 
 } from '../components/defects';
 import { DefectDetailPanelEnhanced } from '../components/defects/DefectDetailPanelEnhanced';
 import { toast } from 'sonner';
@@ -689,43 +689,19 @@ export function TMDefectsPage() {
         </div>
       )}
       
-      {/* Create/Edit Modal */}
-      <CreateDefectModal
+      {/* Create/Edit Modal - Enterprise Version */}
+      <CreateDefectDialogEnterprise
         open={createModalOpen}
         onOpenChange={(open) => {
           setCreateModalOpen(open);
           if (!open) setEditingDefect(null);
         }}
+        projectId={projectId}
         defect={editingDefect}
-        teamMembers={(teamMembers || []).map(m => ({ id: m.id, full_name: m.full_name }))}
-        onSubmit={async (data) => {
-          try {
-            if (editingDefect) {
-              await updateDefectMutation.mutateAsync({
-                id: editingDefect.id,
-                project_id: projectId!,
-                title: data.title,
-                description: data.description,
-                severity: mapSeverityToTM(data.severity as DefectSeverity),
-                status: data.status ? mapStatusToTM(data.status as DefectStatus) : undefined,
-                assigned_to: data.assigned_to,
-              });
-            } else {
-              await createDefectMutation.mutateAsync({
-                project_id: projectId!,
-                title: data.title,
-                description: data.description,
-                severity: mapSeverityToTM(data.severity as DefectSeverity),
-                assigned_to: data.assigned_to,
-              });
-            }
-            setCreateModalOpen(false);
-            setEditingDefect(null);
-          } catch (error: any) {
-            toast.error(`Failed to ${editingDefect ? 'update' : 'create'} defect: ${error.message}`);
-          }
+        onSuccess={() => {
+          setCreateModalOpen(false);
+          setEditingDefect(null);
         }}
-        isLoading={createDefectMutation.isPending || updateDefectMutation.isPending}
       />
       
       {/* Delete Confirmation */}
