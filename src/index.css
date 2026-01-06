@@ -394,412 +394,353 @@
   .dark,
   [data-theme="dark"] {
     /* ═══════════════════════════════════════════════════════════════
-       CATALYST V5 AWARD-GRADE DARK MODE
-       Bloomberg/Linear/Notion grade: Premium, calm, intentional
-       No pure black, no pure white for body text
+       CATALYST V5 NO-DRIFT DARK MODE — Award Grade
+       Bloomberg/Linear/Notion level: Surface hierarchy, subtle borders
+       Surfaces do the separation, not borders.
        ═══════════════════════════════════════════════════════════════ */
     
-    /* === CORE SURFACES (Premium dark, no pure black) === */
-    --bg-app: #0E0F11;                   /* Deepest app background */
-    --bg-0: #111214;                     /* Base surface */
-    --bg-1: #141518;                     /* Cards, panels */
-    --bg-2: #181A1E;                     /* Raised surfaces */
-    --bg-3: #1D2026;                     /* Highest elevation */
+    /* === BRAND TOKENS (Immutable) === */
+    --brand-dark: #1A1A1A;
+    --brand-gold: #C69C6D;
+    --brand-gold-hover: #B8905F;
+    
+    /* === A) SURFACE LADDER (No pure black; subtle elevation steps) === */
+    --bg-0: #0F1113;                     /* App background */
+    --bg-1: #141619;                     /* Page canvas */
+    --bg-2: #181B1F;                     /* Panels */
+    --bg-3: #1D2126;                     /* Cards */
+    --bg-4: #232830;                     /* Raised/hover */
+    --bg-5: #2A313A;                     /* Active/selected surface */
+    --bg-app: var(--bg-0);
     
     /* Shadcn surface mappings */
-    --background: 220 10% 7%;            /* #0E0F11 - app background */
+    --background: 220 10% 7%;            /* #0F1113 */
     --foreground: 0 0% 92%;              /* rgba(255,255,255,0.92) */
     
-    --card: 220 8% 9%;                   /* #141518 - cards */
+    --card: 216 10% 10%;                 /* #1D2126 - bg-3 */
     --card-foreground: 0 0% 92%;
     
-    --popover: 220 8% 11%;               /* #181A1E - elevated */
+    --popover: 216 10% 11%;              /* #232830 - bg-4 */
     --popover-foreground: 0 0% 92%;
     
-    --primary: 217 91% 60%;              /* #3b82f6 blue - brand primary */
+    --primary: 217 91% 60%;              /* #3b82f6 blue */
     --primary-foreground: 0 0% 100%;     /* pure white on buttons only */
     
-    --secondary: 220 8% 9%;              /* #141518 - matches card */
+    --secondary: 216 10% 10%;            /* matches card */
     --secondary-foreground: 0 0% 92%;
     
-    --muted: 220 8% 12%;                 /* #1D2026 */
-    --muted-foreground: 0 0% 74%;        /* rgba(255,255,255,0.74) */
+    --muted: 216 10% 12%;                /* #232830 */
+    --muted-foreground: 0 0% 72%;        /* --fg-2 */
     
-    --accent: 217 91% 60%;               /* blue accent */
+    --accent: 217 91% 60%;
     --accent-foreground: 0 0% 100%;
     
     --destructive: 0 65% 55%;
     --destructive-foreground: 0 0% 98%;
     
-    /* === TEXT LADDER (No pure white for body text) === */
-    --text-1: rgba(255,255,255,0.92);    /* Primary text */
-    --text-2: rgba(255,255,255,0.74);    /* Secondary text */
-    --text-3: rgba(255,255,255,0.56);    /* Muted/meta text */
-    --text-4: rgba(255,255,255,0.40);    /* Disabled text */
-    --text-inverse: #0a0a0a;             /* Text on light backgrounds */
+    /* === B) TEXT LADDER (Readable, consistent — no pure white body) === */
+    --fg-1: rgba(255,255,255,0.92);      /* Primary text */
+    --fg-2: rgba(255,255,255,0.72);      /* Secondary text */
+    --fg-3: rgba(255,255,255,0.55);      /* Muted/hints */
+    --fg-4: rgba(255,255,255,0.38);      /* Disabled */
+    
+    --text-1: var(--fg-1);
+    --text-2: var(--fg-2);
+    --text-3: var(--fg-3);
+    --text-4: var(--fg-4);
+    --text-inverse: #0a0a0a;
     
     /* HSL versions for Tailwind */
-    --text-primary: 0 0% 92%;            /* rgba(255,255,255,0.92) */
-    --text-secondary: 0 0% 74%;          /* rgba(255,255,255,0.74) */
-    --text-tertiary: 0 0% 56%;           /* rgba(255,255,255,0.56) */
-    --text-muted: 0 0% 56%;              /* rgba(255,255,255,0.56) */
+    --text-primary: 0 0% 92%;
+    --text-secondary: 0 0% 72%;
+    --text-tertiary: 0 0% 55%;
+    --text-muted: 0 0% 55%;
     
-    /* === STROKES/BORDERS (Near-invisible) === */
-    --stroke-1: rgba(255,255,255,0.06);  /* Default borders */
-    --stroke-2: rgba(255,255,255,0.10);  /* Emphasized borders */
+    /* === C) DIVIDER + BORDER GRAMMAR (Never white lines) === */
+    --divider: rgba(255,255,255,0.06);
+    --border-subtle: rgba(255,255,255,0.08);
+    --border-strong: rgba(255,255,255,0.12);
+    --stroke-1: var(--divider);
+    --stroke-2: var(--border-subtle);
     
-    --border: 0 0% 100% / 0.06;          /* rgba(255,255,255,0.06) */
-    --input: 0 0% 100% / 0.08;           /* Slightly visible for inputs */
-    --ring: 217 91% 60%;                 /* Blue focus ring */
+    --border: 0 0% 100% / 0.06;
+    --input: 0 0% 100% / 0.08;
+    --ring: 217 91% 60%;
     
-    /* === BRAND ACCENT (Catalyst Gold — used sparingly) === */
-    --accent-gold: #C69C6D;
-    --accent-gold-hover: #B8905F;
-    --accent-gold-soft: rgba(198,156,109,0.14);
+    /* === D) INTERACTION TOKENS === */
+    --focus-ring: rgba(198,156,109,0.55);  /* Brand gold focus */
+    --hover: rgba(255,255,255,0.04);
+    --active: rgba(255,255,255,0.07);
+    --selected: rgba(92,124,92,0.10);      /* Catalyst green tint */
     
-    /* === SIDEBAR (Green tint for active states) === */
-    --sidebar-background: 220 10% 8%;    /* #111214 */
-    --sidebar-foreground: 0 0% 90%;
-    --sidebar-primary: 217 91% 60%;      /* blue */
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 120 26% 42%;       /* #5C7C5C green */
-    --sidebar-accent-foreground: 0 0% 100%;
-    --sidebar-border: 0 0% 100% / 0.04;
-    --sidebar-ring: 217 91% 60%;
-    --sidebar-hover: rgba(92,124,92,0.08); /* Green tint hover */
-    --sidebar-active: rgba(92,124,92,0.12); /* Green tint active */
+    --row-hover: var(--hover);
+    --row-selected: rgba(59, 130, 246, 0.10);
+    --row-active: rgba(59, 130, 246, 0.14);
     
-    /* === SURFACE TOKENS (Semantic aliases) === */
-    --surface-0: 220 8% 9%;              /* #141518 - cards, dialogs */
-    --surface-1: 220 10% 7%;             /* #0E0F11 - page background */
-    --surface-2: 220 8% 11%;             /* #181A1E - subtle sections */
-    --surface-3: 220 8% 13%;             /* #1D2026 - muted containers */
-    --surface-elevated: 220 8% 15%;      /* #242730 - popovers, dropdowns */
-    --surface-overlay: 0 0% 0%;          /* black base for overlays */
+    /* === E) SEMANTIC TOKENS (Stable meaning, no drift) === */
+    --info-fg: rgba(120,170,255,0.95);
+    --info-bg: rgba(120,170,255,0.12);
+    --info-bd: rgba(120,170,255,0.22);
     
-    /* === BORDER TOKENS — Near-invisible === */
-    --border-subtle: 0 0% 100% / 0.04;   /* rgba(255,255,255,0.04) - barely visible */
-    --border-default: 0 0% 100% / 0.06;  /* rgba(255,255,255,0.06) - subtle separator */
-    --border-strong: 0 0% 100% / 0.10;   /* rgba(255,255,255,0.10) - for emphasis only */
-    --border-focus: 217 91% 60%;         /* blue - only for focus states */
+    --success-fg: rgba(85,196,136,0.95);
+    --success-bg: rgba(85,196,136,0.12);
+    --success-bd: rgba(85,196,136,0.22);
     
-    /* === BRAND/ACTION TOKENS === */
-    --brand-primary: 217 91% 60%;        /* #3b82f6 */
-    --brand-primary-hover: 217 91% 68%;  /* #60a5fa */
-    --brand-primary-foreground: 0 0% 100%;
-    --brand-teal: 120 26% 42%;           /* #5C7C5C - Catalyst secondary green */
-    --brand-teal-hover: 120 26% 48%;
-    --brand-gold: 34 40% 60%;            /* #C69C6D - Catalyst gold */
-    --brand-gold-hover: 34 40% 52%;      /* #B8905F */
+    --warning-fg: rgba(242,184,90,0.95);
+    --warning-bg: rgba(242,184,90,0.12);
+    --warning-bd: rgba(242,184,90,0.22);
     
-    /* === SEMANTIC TOKENS (Premium muted, NOT neon) === */
-    --danger: rgba(255,107,107,0.92);
-    --danger-soft: rgba(255,107,107,0.14);
-    --warning: rgba(255,196,107,0.92);
-    --warning-soft: rgba(255,196,107,0.14);
-    --success: rgba(92,124,92,0.92);     /* Uses Catalyst secondary-green */
-    --success-soft: rgba(92,124,92,0.16);
-    --info: rgba(96,165,250,0.92);
-    --info-soft: rgba(96,165,250,0.14);
+    --danger-fg: rgba(255,107,107,0.95);
+    --danger-bg: rgba(255,107,107,0.12);
+    --danger-bd: rgba(255,107,107,0.22);
     
-    /* HSL versions for Tailwind compatibility */
-    --success-hsl: 120 26% 42%;          /* #5C7C5C */
-    --warning-hsl: 38 100% 71%;          /* #FFC46B - muted amber */
-    --danger-hsl: 0 100% 71%;            /* #FF6B6B - muted coral */
-    --info-hsl: 217 91% 68%;             /* #60A5FA - muted sky */
+    --neutral-fg: rgba(255,255,255,0.72);
+    --neutral-bg: rgba(255,255,255,0.06);
+    --neutral-bd: rgba(255,255,255,0.10);
     
-    --success-foreground: 0 0% 100%;
-    --success-bg: 120 26% 42%;
-    --success-border: 120 26% 42%;
-    
-    --warning-foreground: 0 0% 100%;
-    --warning-bg: 38 100% 71%;
-    --warning-border: 38 100% 71%;
-    
-    --danger-foreground: 0 0% 100%;
-    --danger-bg: 0 100% 71%;
-    --danger-border: 0 100% 71%;
-    
-    --info-foreground: 0 0% 100%;
-    --info-bg: 217 91% 68%;
-    --info-border: 217 91% 68%;
-    
-    /* === FOCUS & OVERLAY TOKENS === */
-    --focus-ring: 217 91% 60%;
-    --overlay: 0 0% 0%;
-    
-    /* === ROW STATE TOKENS === */
-    --row-hover: rgba(255, 255, 255, 0.04);
-    --row-selected: rgba(59, 130, 246, 0.08);
-    --row-active: rgba(59, 130, 246, 0.12);
-    
-    /* === INPUT TOKENS === */
-    --input-bg: var(--bg-1);
-    --input-bd: var(--stroke-1);
-    --input-focus: hsl(217 91% 60%);
-    
-    /* === CHART/DATAVIZ TOKENS (V5 Palette) === */
-    --chart-1: #3b82f6;    /* Blue - primary */
-    --chart-2: #5c7c5c;    /* Green - success (Catalyst secondary) */
-    --chart-3: #c69c6d;    /* Gold - accent */
-    --chart-4: #60a5fa;    /* Light blue */
-    --chart-5: #8b7355;    /* Bronze */
-    --chart-6: #d4b896;    /* Champagne */
-    --chart-7: #ff6b6b;    /* Coral - danger */
-    --chart-8: #ffc46b;    /* Amber - warning */
-    
-    /* === DIVIDER TOKEN === */
-    --divider: rgba(255, 255, 255, 0.06);
-    
-    /* === SHADOW TOKENS (Stronger for dark mode) === */
+    /* === F) SHADOWS (Modern, soft depth) === */
+    --shadow-1: 0 1px 0 rgba(255,255,255,0.03), 0 8px 24px rgba(0,0,0,0.55);
+    --shadow-2: 0 1px 0 rgba(255,255,255,0.04), 0 14px 38px rgba(0,0,0,0.60);
     --shadow-color: 0 0% 0%;
-    --shadow-1: 0 1px 3px hsl(0 0% 0% / 0.40), 0 1px 2px hsl(0 0% 0% / 0.30);
-    --shadow-2: 0 4px 12px hsl(0 0% 0% / 0.50), 0 2px 4px hsl(0 0% 0% / 0.40);
     --shadow-elev-1: var(--shadow-1);
     --shadow-elev-2: var(--shadow-2);
-    --shadow-elev-3: 0 8px 24px hsl(0 0% 0% / 0.60), 0 4px 8px hsl(0 0% 0% / 0.45);
+    --shadow-elev-3: 0 1px 0 rgba(255,255,255,0.05), 0 20px 50px rgba(0,0,0,0.65);
     --shadow-brand: 0 4px 12px hsl(217 91% 60% / 0.25);
-
-    /* ═══════════════════════════════════════════════════════════════
-       LEGACY HEX MAPPINGS — DARK MODE (Updated to V5)
-       These are HEX values for direct var() usage without hsl()
-       ═══════════════════════════════════════════════════════════════ */
     
-    /* Legacy surface tokens (HEX for direct use) — V5 surfaces */
-    --bg: #0E0F11;
-    --bg-workspace: #0E0F11;
-    --bg-cream: #0E0F11;
-    --bg-card: #141518;
-    --bg-sidebar: #111214;
-    --surface-bg: #0E0F11;
-    --surface-subtle: #141518;
-    --surface-hover: rgba(255, 255, 255, 0.04);
-    --surface-active: rgba(92, 124, 92, 0.12);   /* Green tint active */
-    --surface-card: #141518;
-    --surface-muted: #181A1E;
+    /* === SEMANTIC TOKEN ALIASES (V5 Final) === */
+    --sem-info: var(--info-fg);
+    --sem-info-bg: var(--info-bg);
+    --sem-info-border: var(--info-bd);
     
-    /* Legacy text tokens (HEX for direct use) — V5 text ladder */
-    --text-1-hex: rgba(255,255,255,0.92);
-    --text-2-hex: rgba(255,255,255,0.74);
-    --text-3-hex: rgba(255,255,255,0.56);
-    --text-4-hex: rgba(255,255,255,0.40);
-    --text-secondary-strong: rgba(255,255,255,0.74);
+    --sem-success: var(--success-fg);
+    --sem-success-bg: var(--success-bg);
+    --sem-success-border: var(--success-bd);
     
-    /* Icon tokens (HEX) */
-    --icon-default: rgba(255,255,255,0.74);
-    --icon-muted: rgba(255,255,255,0.56);
-    --icon-muted: #8a8a8a;
+    --sem-warning: var(--warning-fg);
+    --sem-warning-bg: var(--warning-bg);
+    --sem-warning-border: var(--warning-bd);
     
-    /* ═══════════════════════════════════════════════════════════════
-       DARK MODE BORDER TOKENS — rgba(255,255,255, 0.035-0.06)
-       Never white, never bright. Borders must not dominate content.
-       ═══════════════════════════════════════════════════════════════ */
-    --divider: rgba(255, 255, 255, 0.04);
-    --border-color: rgba(255, 255, 255, 0.05);
-    --border-subtle-hex: rgba(255, 255, 255, 0.035);
-    --border-default-hex: rgba(255, 255, 255, 0.05);
+    --sem-danger: var(--danger-fg);
+    --sem-danger-bg: var(--danger-bg);
+    --sem-danger-border: var(--danger-bd);
     
-    /* Text tokens HEX (for inline styles) */
-    --text-primary-hex: #f5f5f5;
-    --text-secondary-hex: #a3a3a3;
-    --text-muted-hex: #737373;
+    --sem-critical: var(--danger-fg);
+    --sem-critical-bg: rgba(255,107,107,0.14);
+    --sem-critical-border: rgba(255,107,107,0.28);
     
-    /* Navigation tokens (HEX) */
-    --nav-bg: #1c1c1c;
-    --nav-hover-bg: rgba(255, 255, 255, 0.04);
-    --nav-active-bg: rgba(59, 130, 246, 0.15);
-    /* Legacy HEX aliases (DO NOT override canonical HSL tokens above) */
-    --brand-active-hex: #3b82f6;
-    --brand-primary-hex: #3b82f6;
-    --brand-primary-hover-hex: #60a5fa;
+    --sem-blocked: var(--danger-fg);
+    --sem-blocked-bg: var(--danger-bg);
+    --sem-overdue: var(--danger-fg);
+    --sem-overdue-bg: var(--danger-bg);
     
-    /* Brand colors (HEX) */
-    --accent-blue: #3b82f6;
-    --accent-blue-hover: #2563eb;
-    
-    /* Card tokens (HEX) — Surface elevation, minimal border */
-    --card-bg: #212121;
-    --card-border: rgba(255, 255, 255, 0.04);
-    
-    /* ═══════════════════════════════════════════════════════════════
-       TABLE TOKENS - BLOOMBERG/LINEAR GRADE DARK MODE
-       No outer container borders. Subtle row separators only.
-       Surface contrast for hierarchy, not grid lines.
-       ═══════════════════════════════════════════════════════════════ */
-    
-    /* Table container — NO outer border, surface elevation only */
-    --table-container-bg: #1a1a1a;          /* flush with page */
-    --table-container-border: transparent;   /* NO container border */
-    
-    /* Table header — Slight surface lift, NO bright border */
-    --table-header-bg: #1e1e1e;             /* subtle lift */
-    --table-header-text: #f5f5f5;           /* text-primary */
-    --table-header-border: rgba(255, 255, 255, 0.035); /* ultra subtle */
-    
-    /* Table body rows — Hover is primary affordance */
-    --table-row-bg: transparent;            /* transparent, inherits container */
-    --table-row-alt-bg: rgba(255, 255, 255, 0.015); /* barely visible alternation */
-    --table-row-hover: rgba(255, 255, 255, 0.04);  /* clear hover state */
-    --table-row-selected: rgba(59, 130, 246, 0.12);
-    --table-row-border: rgba(255, 255, 255, 0.035); /* ultra subtle separator */
-    
-    /* Table cell dividers — NO vertical dividers in dark mode */
-    --table-cell-divider: transparent;
-    
-    /* Table cell text hierarchy */
-    --table-text-primary: #f5f5f5;          /* text-primary - names, titles */
-    --table-text-secondary: #a3a3a3;        /* text-secondary - metadata */
-    --table-text-muted: #b3b3b3;            /* muted-foreground - helpers */
-    
-    /* Table icons */
-    --table-icon-default: #a3a3a3;          /* text-secondary */
-    --table-icon-hover: #f5f5f5;            /* text-primary */
-    --table-icon-disabled: #737373;         /* text-tertiary */
-    
-    /* Table toolbar */
-    --table-toolbar-bg: #1a1a1a;            /* surface-1 */
-    --table-toolbar-input-bg: #2d2d2d;      /* surface-3 */
-    --table-toolbar-input-border: #333333;  /* border-subtle */
-    
-    /* Table selection */
-    --table-section-bg: #1a1a1a;
-    --row-hover: #2d2d2d;
-    --selection-row-bg: rgba(59, 130, 246, 0.12);
-    --selection-bar-accent: #3b82f6;
-    --focus-ring-hex: #3b82f6;
-    
-    /* Table empty state */
-    --table-empty-bg: #262626;              /* surface-0 */
-    --table-empty-border: #333333;          /* border-subtle - dashed */
-    --table-empty-title: #f5f5f5;           /* text-primary */
-    --table-empty-text: #a3a3a3;            /* text-secondary */
-    
-    /* ═══════════════════════════════════════════════════════════════
-       CATALYST V5 SEMANTIC COLOR SYSTEM — AWARD-GRADE DARK MODE
-       Bloomberg/Linear/Notion grade: Muted, calm, intentional
-       Semantic meaning via chips/indicators; body text stays in text ladder
-       ═══════════════════════════════════════════════════════════════ */
-    
-    /* === SEMANTIC TEXT TOKENS (Premium, muted — NOT neon) === */
-    --sem-danger: rgba(255,107,107,0.92);      /* Muted coral */
-    --sem-warning: rgba(255,196,107,0.92);     /* Muted amber */
-    --sem-success: rgba(92,124,92,0.92);       /* Catalyst secondary-green */
-    --sem-info: rgba(96,165,250,0.92);         /* Muted sky */
-    --sem-critical: rgba(255,107,107,0.92);    /* Same as danger */
-    --sem-blocked: rgba(255,107,107,0.92);     /* Same as danger */
-    --sem-overdue: rgba(255,107,107,0.92);     /* Same as danger */
-    --sem-high: rgba(255,196,107,0.92);        /* Warning tone for high priority */
-    --sem-medium: rgba(255,255,255,0.56);      /* Uses text-3 */
-    --sem-low: rgba(255,255,255,0.40);         /* Uses text-4 */
-    --sem-done: rgba(92,124,92,0.92);          /* Success tone */
-    
-    /* === SEMANTIC BACKGROUND TOKENS (Tinted chips, subtle) === */
-    --sem-danger-bg: rgba(255,107,107,0.14);
-    --sem-warning-bg: rgba(255,196,107,0.14);
-    --sem-success-bg: rgba(92,124,92,0.16);
-    --sem-info-bg: rgba(96,165,250,0.14);
-    --sem-critical-bg: rgba(255,107,107,0.16);
-    --sem-blocked-bg: rgba(255,107,107,0.14);
-    --sem-overdue-bg: rgba(255,107,107,0.14);
-    --sem-high-bg: rgba(255,196,107,0.14);
-    --sem-medium-bg: rgba(255,255,255,0.06);
+    --sem-high: var(--warning-fg);
+    --sem-high-bg: var(--warning-bg);
+    --sem-medium: var(--fg-3);
+    --sem-medium-bg: var(--neutral-bg);
+    --sem-low: var(--fg-4);
     --sem-low-bg: rgba(255,255,255,0.04);
-    --sem-done-bg: rgba(92,124,92,0.16);
+    --sem-done: var(--success-fg);
+    --sem-done-bg: var(--success-bg);
     
-    /* === SEMANTIC BORDER TOKENS (For chips with borders) === */
-    --sem-danger-border: rgba(255,107,107,0.30);
-    --sem-warning-border: rgba(255,196,107,0.30);
-    --sem-success-border: rgba(92,124,92,0.35);
-    --sem-info-border: rgba(96,165,250,0.30);
-    --sem-critical-border: rgba(255,107,107,0.35);
-    
-    /* === BRAND ACCENT TOKENS (Catalyst Gold — used sparingly) === */
-    --accent-text: #C69C6D;
+    /* === BRAND ACCENT (Gold — used sparingly) === */
+    --accent-gold: var(--brand-gold);
+    --accent-gold-hover: var(--brand-gold-hover);
+    --accent-gold-soft: rgba(198,156,109,0.14);
+    --accent-text: var(--brand-gold);
     --accent-bg: rgba(198,156,109,0.14);
     --accent-border: rgba(198,156,109,0.30);
     
-    /* Link colors (HSL triplets for hsl() usage) */
+    /* === SIDEBAR (Green tint for active — immutable) === */
+    --sidebar-background: 216 10% 8%;
+    --sidebar-foreground: 0 0% 90%;
+    --sidebar-primary: 217 91% 60%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 120 26% 42%;       /* #5C7C5C */
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 0 0% 100% / 0.04;
+    --sidebar-ring: 217 91% 60%;
+    --sidebar-hover: rgba(92,124,92,0.08);  /* Green tint hover */
+    --sidebar-active: rgba(92,124,92,0.12); /* Green tint active */
+    
+    /* === HSL FALLBACKS (for shadcn) === */
+    --success: 152 56% 55%;
+    --success-foreground: 0 0% 100%;
+    --warning: 38 92% 65%;
+    --warning-foreground: 0 0% 100%;
+    --danger: 0 100% 71%;
+    --danger-foreground: 0 0% 100%;
+    --info: 217 91% 74%;
+    --info-foreground: 0 0% 100%;
+    
+    /* === SURFACE TOKEN ALIASES === */
+    --surface-0: 216 10% 10%;
+    --surface-1: 220 10% 7%;
+    --surface-2: 216 10% 11%;
+    --surface-3: 216 10% 13%;
+    --surface-elevated: 216 10% 15%;
+    --surface-overlay: 0 0% 0%;
+    
+    /* === INPUT TOKENS === */
+    --input-bg: var(--bg-3);
+    --input-bd: var(--border-subtle);
+    --input-focus: hsl(217 91% 60%);
+    
+    /* === CHART PALETTE === */
+    --chart-1: #3b82f6;
+    --chart-2: #55c488;
+    --chart-3: #c69c6d;
+    --chart-4: #78aaff;
+    --chart-5: #8b7355;
+    --chart-6: #d4b896;
+    --chart-7: #ff6b6b;
+    --chart-8: #f2b85a;
+    
+    /* === LINK COLORS === */
     --link-color: 217 91% 70%;
     --link-color-hover: 217 91% 78%;
     
-    /* Status colors (HEX for direct use) - V5 Premium versions */
-    --status-success: rgba(92,124,92,0.92);
-    --status-success-light: rgba(92,124,92,1);
-    --status-success-bg: rgba(92,124,92,0.16);
-    --status-success-bg-hover: rgba(92,124,92,0.22);
-    --status-success-border: rgba(92,124,92,0.35);
+    /* === STATUS ALIASES (use semantic tokens) === */
+    --status-success: var(--success-fg);
+    --status-success-bg: var(--success-bg);
+    --status-success-border: var(--success-bd);
+    --status-warning: var(--warning-fg);
+    --status-warning-bg: var(--warning-bg);
+    --status-warning-border: var(--warning-bd);
+    --status-info: var(--info-fg);
+    --status-info-bg: var(--info-bg);
+    --status-info-border: var(--info-bd);
+    --status-danger: var(--danger-fg);
+    --status-danger-bg: var(--danger-bg);
+    --status-danger-border: var(--danger-bd);
+    --status-muted: var(--fg-3);
+    --status-muted-bg: var(--neutral-bg);
+    --status-muted-border: var(--neutral-bd);
     
-    --status-warning: rgba(255,196,107,0.92);
-    --status-warning-bg: rgba(255,196,107,0.14);
-    --status-warning-border: rgba(255,196,107,0.30);
+    /* === LEGACY HEX ALIASES (for inline compatibility) === */
+    --bg: var(--bg-0);
+    --bg-workspace: var(--bg-0);
+    --bg-cream: var(--bg-0);
+    --bg-card: var(--bg-3);
+    --bg-sidebar: var(--bg-1);
+    --surface-bg: var(--bg-0);
+    --surface-subtle: var(--bg-1);
+    --surface-hover: var(--hover);
+    --surface-active: var(--selected);
+    --surface-card: var(--bg-3);
+    --surface-muted: var(--bg-2);
     
-    --status-info: rgba(96,165,250,0.92);
-    --status-info-bg: rgba(96,165,250,0.14);
-    --status-info-border: rgba(96,165,250,0.30);
+    --text-1-hex: var(--fg-1);
+    --text-2-hex: var(--fg-2);
+    --text-3-hex: var(--fg-3);
+    --text-4-hex: var(--fg-4);
+    --text-secondary-strong: var(--fg-2);
+    --text-primary-hex: #ebebeb;
+    --text-secondary-hex: #b8b8b8;
+    --text-muted-hex: #8c8c8c;
     
-    --status-muted: rgba(255,255,255,0.56);
-    --status-muted-bg: rgba(255,255,255,0.06);
-    --status-muted-border: rgba(144, 164, 174, 0.30);
+    --icon-default: var(--fg-2);
+    --icon-muted: var(--fg-3);
     
-    --status-danger: #e57373;
-    --status-danger-bg: rgba(229, 115, 115, 0.12);
-    --status-danger-border: rgba(229, 115, 115, 0.30);
+    --border-color: var(--divider);
+    --border-subtle-hex: var(--border-subtle);
+    --border-default-hex: var(--divider);
     
-    /* Secondary brand colors (HSL triplets) */
+    --nav-bg: var(--bg-2);
+    --nav-hover-bg: var(--hover);
+    --nav-active-bg: rgba(59, 130, 246, 0.12);
+    
+    --brand-active-hex: #3b82f6;
+    --brand-primary-hex: #3b82f6;
+    --brand-primary-hover-hex: #60a5fa;
+    --accent-blue: #3b82f6;
+    --accent-blue-hover: #2563eb;
+    
+    --card-bg: var(--bg-3);
+    --card-border: var(--divider);
+    
+    /* === TABLE TOKENS (Bloomberg grade — surface only) === */
+    --table-container-bg: var(--bg-1);
+    --table-container-border: transparent;
+    --table-header-bg: var(--bg-2);
+    --table-header-text: var(--fg-1);
+    --table-header-border: var(--divider);
+    --table-row-bg: transparent;
+    --table-row-alt-bg: rgba(255,255,255,0.015);
+    --table-row-hover: var(--hover);
+    --table-row-selected: var(--row-selected);
+    --table-row-border: var(--divider);
+    --table-cell-divider: transparent;
+    --table-text-primary: var(--fg-1);
+    --table-text-secondary: var(--fg-2);
+    --table-text-muted: var(--fg-3);
+    --table-icon-default: var(--fg-2);
+    --table-icon-hover: var(--fg-1);
+    --table-icon-disabled: var(--fg-4);
+    --table-toolbar-bg: var(--bg-1);
+    --table-toolbar-input-bg: var(--bg-3);
+    --table-toolbar-input-border: var(--border-subtle);
+    --table-section-bg: var(--bg-1);
+    --selection-row-bg: var(--row-selected);
+    --selection-bar-accent: #3b82f6;
+    --focus-ring-hex: #3b82f6;
+    --table-empty-bg: var(--bg-2);
+    --table-empty-border: var(--border-subtle);
+    --table-empty-title: var(--fg-1);
+    --table-empty-text: var(--fg-2);
+    
+    /* === DIALOG TOKENS === */
+    --dialog-bg: var(--bg-2);
+    --dialog-border: var(--divider);
+    --dialog-divider: var(--divider);
+    --dialog-footer-bg: var(--bg-3);
+    --dialog-title-color: var(--fg-1);
+    --dialog-desc-color: var(--fg-2);
+    --dialog-close-color: var(--fg-2);
+    --dialog-section-bg: var(--bg-3);
+    --dialog-section-border: var(--divider);
+    --dialog-input-bg: var(--bg-4);
+    --dialog-input-border: var(--border-subtle);
+    --dialog-label-color: var(--fg-2);
+    --dialog-label-required: var(--info-fg);
+    
+    /* === INDUSTRY TOKENS === */
+    --industry-bg-page: var(--bg-1);
+    --industry-bg-card: var(--bg-3);
+    --industry-bg-subtle: var(--bg-2);
+    --industry-bg-hover: var(--hover);
+    --industry-border-default: var(--divider);
+    --industry-border-subtle: var(--border-subtle);
+    --industry-text-primary: var(--fg-1);
+    --industry-text-secondary: var(--fg-2);
+    --industry-text-muted: var(--fg-3);
+    --industry-text-disabled: var(--fg-4);
+    --industry-status-new: var(--info-fg);
+    --industry-status-progress: var(--info-fg);
+    --industry-status-review: #b39ddb;
+    --industry-status-approved: var(--success-fg);
+    --industry-status-blocked: var(--danger-fg);
+    
+    /* === PROGRESS TOKENS === */
+    --progress-bg: var(--bg-4);
+    --progress-track: var(--bg-4);
+    
+    /* === SECONDARY BRAND COLORS === */
     --secondary-blue: 217 91% 60%;
-    --secondary-teal: 173 58% 50%;
+    --secondary-teal: 152 56% 55%;
     --secondary-olive: 120 26% 42%;
     --secondary-bronze: 30 24% 44%;
     --secondary-champagne: 34 40% 71%;
-    --secondary-blue-bg: rgba(59, 130, 246, 0.15);
-    --secondary-teal-bg: rgba(77, 182, 172, 0.12);
+    --secondary-blue-bg: rgba(59, 130, 246, 0.12);
+    --secondary-teal-bg: rgba(85, 196, 136, 0.12);
+    --brand-blue-bg: rgba(59, 130, 246, 0.12);
+    --brand-teal-bg: rgba(85, 196, 136, 0.12);
     
-    /* Progress tokens (HEX) */
-    --progress-bg: #404040;
-    --progress-track: #404040;
-    
-    /* Brand background tokens (HEX with alpha) */
-    --brand-blue-bg: rgba(59, 130, 246, 0.15);
-    --brand-teal-bg: rgba(77, 182, 172, 0.12);
-    
-    /* Industry Backlog tokens - Dark — Surface-based, no bright borders */
-    --industry-bg-page: #1a1a1a;
-    --industry-bg-card: #212121;
-    --industry-bg-subtle: #1e1e1e;
-    --industry-bg-hover: rgba(255, 255, 255, 0.04);
-    --industry-border-default: rgba(255, 255, 255, 0.05);
-    --industry-border-subtle: rgba(255, 255, 255, 0.035);
-    --industry-text-primary: #fafafa;
-    --industry-text-secondary: #d4d4d4;
-    --industry-text-muted: #a3a3a3;
-    --industry-text-disabled: #737373;
-    
-    /* Industry Status Colors - Dark (Premium muted) */
-    --industry-status-new: #64b5f6;
-    --industry-status-progress: #64b5f6;
-    --industry-status-review: #b39ddb;
-    --industry-status-approved: #4db6ac;
-    --industry-status-blocked: #e57373;
-    
-    /* Industry Priority Colors - Dark (Premium muted) */
-    --industry-priority-high: #ffb74d;
-    --industry-priority-medium: #90a4ae;
-    --industry-priority-low: #78909c;
-    
-    /* Dialog tokens - Dark — Surface elevation, subtle dividers */
-    --dialog-bg: #1a1a1a;
-    --dialog-border: rgba(255, 255, 255, 0.04);
-    --dialog-divider: rgba(255, 255, 255, 0.05);
-    --dialog-footer-bg: #1e1e1e;
-    --dialog-title-color: #f5f5f5;
-    --dialog-desc-color: #a3a3a3;
-    --dialog-close-color: #a3a3a3;
-    --dialog-section-bg: #1e1e1e;
-    --dialog-section-border: rgba(255, 255, 255, 0.04);
-    --dialog-input-bg: #262626;
-    --dialog-input-border: rgba(255, 255, 255, 0.06);
-    --dialog-label-color: #a3a3a3;
-    --dialog-label-required: #64b5f6;
+    /* === BRAND TOKENS (HSL) === */
+    --brand-primary: 217 91% 60%;
+    --brand-primary-hover: 217 91% 68%;
+    --brand-primary-foreground: 0 0% 100%;
+    --brand-teal: 152 56% 55%;
+    --brand-teal-hover: 152 56% 62%;
   }
   
   * {
@@ -1019,6 +960,110 @@
   .dark .c-surface-hover:hover,
   [data-theme="dark"] .c-surface-hover:hover {
     background-color: hsl(var(--muted) / 0.3);
+  }
+  
+  /* ════════════════════════════════════════════════════════════════════════════
+     CATALYST V5 NO-DRIFT UTILITY CLASSES
+     Token-mapped utilities for guaranteed dark mode compliance
+     ════════════════════════════════════════════════════════════════════════════ */
+  
+  /* === SURFACE UTILITIES === */
+  .c-bg-0 { background-color: var(--bg-0); }
+  .c-bg-1 { background-color: var(--bg-1); }
+  .c-bg-2 { background-color: var(--bg-2); }
+  .c-bg-3 { background-color: var(--bg-3); }
+  .c-bg-4 { background-color: var(--bg-4); }
+  .c-bg-5 { background-color: var(--bg-5); }
+  
+  /* === TEXT UTILITIES === */
+  .c-fg-1 { color: var(--fg-1); }
+  .c-fg-2 { color: var(--fg-2); }
+  .c-fg-3 { color: var(--fg-3); }
+  .c-fg-4 { color: var(--fg-4); }
+  
+  /* === BORDER UTILITIES === */
+  .c-divider { border-color: var(--divider); }
+  .c-border-subtle { border-color: var(--border-subtle); }
+  .c-border-strong { border-color: var(--border-strong); }
+  
+  /* === INTERACTION UTILITIES === */
+  .c-hover { background-color: var(--hover); }
+  .c-active { background-color: var(--active); }
+  .c-selected { background-color: var(--selected); }
+  .c-focus { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
+  
+  /* === CARD COMPONENT (Shadow-driven depth, no visible border) === */
+  .c-card {
+    background-color: var(--bg-3);
+    box-shadow: var(--shadow-1);
+    border: 1px solid var(--divider);
+    border-radius: 0.5rem;
+  }
+  
+  /* === PANEL COMPONENT === */
+  .c-panel {
+    background-color: var(--bg-2);
+    border-radius: 0.5rem;
+  }
+  
+  /* === BADGE/CHIP SEMANTIC VARIANTS === */
+  .c-badge--info {
+    background-color: var(--info-bg);
+    color: var(--info-fg);
+    border: 1px solid var(--info-bd);
+  }
+  
+  .c-badge--success {
+    background-color: var(--success-bg);
+    color: var(--success-fg);
+    border: 1px solid var(--success-bd);
+  }
+  
+  .c-badge--warning {
+    background-color: var(--warning-bg);
+    color: var(--warning-fg);
+    border: 1px solid var(--warning-bd);
+  }
+  
+  .c-badge--danger {
+    background-color: var(--danger-bg);
+    color: var(--danger-fg);
+    border: 1px solid var(--danger-bd);
+  }
+  
+  .c-badge--neutral {
+    background-color: var(--neutral-bg);
+    color: var(--neutral-fg);
+    border: 1px solid var(--neutral-bd);
+  }
+  
+  /* === INPUT COMPONENT (Token-compliant) === */
+  .c-input {
+    background-color: var(--bg-3);
+    border: 1px solid var(--border-subtle);
+    color: var(--fg-1);
+  }
+  .c-input::placeholder {
+    color: var(--fg-3);
+  }
+  .c-input:focus {
+    border-color: var(--input-focus);
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 0;
+  }
+  
+  /* === TABS COMPONENT (Gold indicator, not neon blue) === */
+  .c-tab {
+    color: var(--fg-2);
+    transition: color 0.15s, background-color 0.15s;
+  }
+  .c-tab:hover {
+    background-color: var(--hover);
+  }
+  .c-tab[data-state="active"],
+  .c-tab.active {
+    color: var(--fg-1);
+    border-bottom-color: var(--brand-gold);
   }
 }
 

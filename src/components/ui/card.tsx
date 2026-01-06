@@ -3,14 +3,14 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 
 /**
- * Card Component — Catalyst Dark-Mode Grammar v3
- * Bloomberg/Linear grade: Surface elevation, NO visible borders
+ * Card Component — Catalyst V5 No-Drift Grammar
+ * Award-grade: Shadow-driven depth, NO visible borders in dark mode
  * 
  * DARK MODE RULES:
- * - Surface bg-2 (4% above page) for elevation
- * - Border completely invisible (rgba 0.04)
+ * - Surface bg-3 (elevated) for cards
+ * - Border: divider token (rgba 0.06)
  * - Shadow provides all depth
- * - Focus states use brand blue ring
+ * - Focus states use brand ring
  */
 const Card = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(({ className, ...props }, ref) => (
   <div 
@@ -19,8 +19,8 @@ const Card = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElemen
       "rounded-lg bg-card text-card-foreground",
       // Light mode: subtle shadow and border
       "shadow-sm border border-border/60",
-      // Dark mode: shadow-driven depth, NO visible border
-      "dark:bg-[#212121] dark:shadow-lg dark:shadow-black/30 dark:border-transparent",
+      // Dark mode: token-driven, shadow depth, minimal border
+      "dark:bg-[var(--bg-3)] dark:shadow-[var(--shadow-1)] dark:border-[var(--divider)]",
       "focus:outline-none focus-visible:outline-none",
       className
     )} 
@@ -38,14 +38,14 @@ CardHeader.displayName = "CardHeader";
 
 const CardTitle = React.forwardRef<HTMLParagraphElement, React.HTMLAttributes<HTMLHeadingElement>>(
   ({ className, ...props }, ref) => (
-    <h3 ref={ref} className={cn("text-2xl font-semibold leading-none tracking-tight text-foreground", className)} {...props} />
+    <h3 ref={ref} className={cn("text-2xl font-semibold leading-none tracking-tight text-foreground dark:text-[var(--fg-1)]", className)} {...props} />
   ),
 );
 CardTitle.displayName = "CardTitle";
 
 const CardDescription = React.forwardRef<HTMLParagraphElement, React.HTMLAttributes<HTMLParagraphElement>>(
   ({ className, ...props }, ref) => (
-    <p ref={ref} className={cn("text-sm text-muted-foreground", className)} {...props} />
+    <p ref={ref} className={cn("text-sm text-muted-foreground dark:text-[var(--fg-2)]", className)} {...props} />
   ),
 );
 CardDescription.displayName = "CardDescription";
