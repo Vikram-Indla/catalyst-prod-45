@@ -26,11 +26,11 @@ const LINK_TYPE_LABELS: Record<LinkType, string> = {
 };
 
 const LINK_TYPE_COLORS: Record<LinkType, string> = {
-  blocks: 'bg-red-500/10 text-red-700 border-red-500/20',
-  blocked_by: 'bg-orange-500/10 text-orange-700 border-orange-500/20',
-  relates_to: 'bg-blue-500/10 text-blue-700 border-blue-500/20',
-  duplicates: 'bg-purple-500/10 text-purple-700 border-purple-500/20',
-  duplicated_by: 'bg-purple-500/10 text-purple-700 border-purple-500/20',
+  blocks: 'bg-[var(--sem-danger-bg)] text-[var(--sem-danger)] border-[var(--sem-danger-border)]',
+  blocked_by: 'bg-[var(--sem-warning-bg)] text-[var(--sem-warning)] border-[var(--sem-warning-border)]',
+  relates_to: 'bg-[var(--sem-info-bg)] text-[var(--sem-info)] border-[var(--sem-info-border)]',
+  duplicates: 'bg-brand-primary/10 text-brand-primary border-brand-primary/20',
+  duplicated_by: 'bg-brand-primary/10 text-brand-primary border-brand-primary/20',
 };
 
 export function StoryLinks({ storyId }: StoryLinksProps) {

@@ -71,8 +71,8 @@ export function WorkItemStarButton({
       className={cn(
         sizeClasses[size],
         'transition-all duration-200',
-        isStarred && 'text-amber-500 hover:text-amber-600',
-        !isStarred && 'text-muted-foreground hover:text-amber-500',
+        isStarred && 'text-[var(--sem-warning)] hover:text-[var(--sem-warning)]',
+        !isStarred && 'text-muted-foreground hover:text-[var(--sem-warning)]',
         isPending && 'opacity-50 cursor-wait',
         !shouldBeVisible && 'opacity-0',
         className

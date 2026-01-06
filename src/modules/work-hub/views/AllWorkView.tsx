@@ -44,11 +44,11 @@ interface WorkItem {
 const mockItems: WorkItem[] = [];
 
 const typeColors: Record<string, string> = {
-  Feature: 'bg-amber-500',
-  Story: 'bg-[#0d9488]',
-  Task: 'bg-blue-500',
-  Defect: 'bg-red-500',
-  Subtask: 'bg-neutral-500',
+  Feature: 'bg-[var(--sem-warning)]',
+  Story: 'bg-brand-teal',
+  Task: 'bg-[var(--sem-info)]',
+  Defect: 'bg-[var(--sem-danger)]',
+  Subtask: 'bg-muted-foreground',
 };
 
 // Available columns for configuration
@@ -76,11 +76,11 @@ const mockAssignees = [
 ];
 
 const mockTypes = [
-  { id: 'epic', name: 'Epic', icon: Zap, color: 'text-amber-500' },
-  { id: 'business-gap', name: 'Business Gap', icon: AlertCircle, color: 'text-amber-600' },
-  { id: 'change-request', name: 'Change Request', icon: CheckSquare, color: 'text-blue-500' },
-  { id: 'production-incident', name: 'Production Incident', icon: AlertCircle, color: 'text-red-500' },
-  { id: 'backend', name: 'Backend', icon: FileText, color: 'text-gray-500' },
+  { id: 'epic', name: 'Epic', icon: Zap, color: 'text-[var(--sem-warning)]' },
+  { id: 'business-gap', name: 'Business Gap', icon: AlertCircle, color: 'text-[var(--sem-warning)]' },
+  { id: 'change-request', name: 'Change Request', icon: CheckSquare, color: 'text-[var(--sem-info)]' },
+  { id: 'production-incident', name: 'Production Incident', icon: AlertCircle, color: 'text-[var(--sem-danger)]' },
+  { id: 'backend', name: 'Backend', icon: FileText, color: 'text-muted-foreground' },
 ];
 
 const mockStatuses = [
@@ -98,9 +98,9 @@ const mockStatuses = [
 // Jira-style status lozenge component
 function StatusLozenge({ status, category }: { status: string; category: 'todo' | 'in_progress' | 'done' }) {
   const categoryStyles = {
-    todo: 'bg-neutral-100 text-neutral-700 border-neutral-200',
-    in_progress: 'bg-blue-50 text-blue-700 border-blue-200',
-    done: 'bg-[rgba(13,148,136,0.1)] text-[#0d9488] border-[rgba(13,148,136,0.2)]',
+    todo: 'bg-muted text-muted-foreground border-border',
+    in_progress: 'bg-[var(--sem-info-bg)] text-[var(--sem-info)] border-[var(--sem-info-border)]',
+    done: 'bg-[var(--sem-success-bg)] text-[var(--sem-success)] border-[var(--sem-success-border)]',
   };
 
   return (
@@ -116,15 +116,15 @@ function StatusLozenge({ status, category }: { status: string; category: 'todo' 
 // Status badge for filter dropdown
 function StatusBadge({ name, category }: { name: string; category: string }) {
   const categoryStyles: Record<string, string> = {
-    todo: 'bg-neutral-100 text-neutral-700',
-    in_progress: 'bg-amber-100 text-amber-800',
-    done: 'bg-[rgba(13,148,136,0.1)] text-[#0d9488]',
+    todo: 'bg-muted text-muted-foreground',
+    in_progress: 'bg-[var(--sem-warning-bg)] text-[var(--sem-warning)]',
+    done: 'bg-[var(--sem-success-bg)] text-[var(--sem-success)]',
   };
 
   return (
     <span className={cn(
       'inline-flex items-center px-2 py-0.5 rounded text-[10px] leading-[14px] font-semibold uppercase',
-      categoryStyles[category] || 'bg-slate-100 text-slate-700'
+      categoryStyles[category] || 'bg-muted text-muted-foreground'
     )}>
       {name}
     </span>
@@ -147,13 +147,13 @@ function FilterButton({
       className={cn(
         'inline-flex items-center gap-1 h-8 px-3 rounded-md border text-[13px] leading-[20px] transition-colors',
         isActive 
-          ? 'bg-blue-600 border-blue-600 text-white' 
-          : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'
+          ? 'bg-brand-primary border-brand-primary text-[var(--text-inverse)]' 
+          : 'bg-card border-border text-foreground hover:bg-muted'
       )}
     >
       {label}
       <ChevronDown className="h-3.5 w-3.5" />
-      <ChevronDown className="h-3.5 w-3.5 text-slate-400" />
+      <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
     </button>
   );
 }

@@ -129,7 +129,7 @@ export function ConversionDialog({
           {/* Justification */}
           <div className="space-y-2">
             <label className="text-sm font-medium text-foreground">
-              Justification <span className="text-red-500">*</span>
+              Justification <span className="text-[var(--sem-danger)]">*</span>
             </label>
             <Textarea
               value={justification}
@@ -147,7 +147,7 @@ export function ConversionDialog({
           {/* CAP Committee Option */}
           <div className={cn(
             "flex items-start gap-3 p-3 rounded-lg border",
-            sendToCommittee ? "bg-yellow-50 border-yellow-200" : "bg-muted/50 border-border"
+            sendToCommittee ? "bg-[var(--sem-warning-bg)] border-[var(--sem-warning-border)]" : "bg-muted/50 border-border"
           )}>
             <Checkbox
               id="send-to-committee"
@@ -166,7 +166,7 @@ export function ConversionDialog({
                 L3 incidents require committee approval before conversion. The incident will be reviewed by designated approvers.
               </p>
               {sendToCommittee && (
-                <Badge variant="outline" className="mt-2 text-[10px] bg-yellow-100 text-yellow-800 border-yellow-300">
+                <Badge variant="outline" className="mt-2 text-[10px] bg-[var(--sem-warning-bg)] text-[var(--sem-warning)] border-[var(--sem-warning-border)]">
                   Recommended for L3
                 </Badge>
               )}
