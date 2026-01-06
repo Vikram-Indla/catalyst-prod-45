@@ -199,13 +199,13 @@ export default function IncidentsList() {
               placeholder="Search incidents..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-9 bg-white border-border"
+              className="pl-9 bg-background border-border"
             />
           </div>
 
           {/* Pagination - only in list mode */}
           {viewMode === 'list' && (
-            <div className="flex items-center gap-1 border border-border rounded-md bg-white px-1">
+            <div className="flex items-center gap-1 border border-border rounded-md bg-background px-1">
               <Button variant="ghost" size="sm" onClick={() => goToPage(currentPage - 1)} disabled={currentPage === 1} className="h-8 w-8 p-0">
                 <ChevronLeft className="h-4 w-4" />
               </Button>
@@ -219,7 +219,7 @@ export default function IncidentsList() {
           )}
 
           {/* View Toggle */}
-          <div className="flex border border-border rounded-md overflow-hidden bg-white">
+          <div className="flex border border-border rounded-md overflow-hidden bg-background">
             <button
               onClick={() => setViewMode('list')}
               className={cn(
@@ -279,7 +279,7 @@ export default function IncidentsList() {
               <Filter className="h-4 w-4 mr-2" />
               Filters
               {activeFilterCount > 0 && (
-                <Badge variant="secondary" className="ml-1 h-5 px-1.5 bg-brand-primary text-white rounded-full text-xs">
+                <Badge variant="secondary" className="ml-1 h-5 px-1.5 bg-brand-primary text-primary-foreground rounded-full text-xs">
                   {activeFilterCount}
                 </Badge>
               )}
