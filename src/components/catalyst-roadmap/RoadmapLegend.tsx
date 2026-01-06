@@ -11,10 +11,10 @@ export function RoadmapLegend() {
       <div className="flex items-center gap-3">
         <span className="text-[9px] font-semibold text-text-muted uppercase tracking-wide">Status</span>
         <div className="flex gap-3">
-          <LegendItem color="#0d9488" label="On Track" />
-          <LegendItem color="#d97706" label="At Risk" />
-          <LegendItem color="#dc2626" label="Blocked" />
-          <LegendItem color="#737373" label="Pending" />
+          <LegendItem color="var(--success-fg, #0d9488)" label="On Track" />
+          <LegendItem color="var(--warning-fg, #d97706)" label="At Risk" />
+          <LegendItem color="var(--danger-fg, #dc2626)" label="Blocked" />
+          <LegendItem color="var(--fg-3, #737373)" label="Pending" />
         </div>
       </div>
 
@@ -22,9 +22,9 @@ export function RoadmapLegend() {
       <div className="flex items-center gap-3">
         <span className="text-[9px] font-semibold text-text-muted uppercase tracking-wide">Milestones</span>
         <div className="flex gap-3">
-          <LegendMilestone color="#d97706" label="Strategic" />
-          <LegendMilestone color="#0d9488" label="Release" />
-          <LegendMilestone color="#8b5cf6" label="Decision" />
+          <LegendMilestone color="var(--warning-fg, #d97706)" label="Strategic" />
+          <LegendMilestone color="var(--success-fg, #0d9488)" label="Release" />
+          <LegendMilestone color="var(--chart-4, #8b5cf6)" label="Decision" />
         </div>
       </div>
 

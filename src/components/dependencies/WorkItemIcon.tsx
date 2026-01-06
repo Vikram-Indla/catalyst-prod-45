@@ -36,27 +36,27 @@ const SIZE_MAP = {
 function getTypeColor(type: WorkItemIconType): string {
   switch (type) {
     case 'objective':
-      return '#2563eb'; // Blue
+      return 'var(--info-fg, #2563eb)'; // Blue
     case 'keyresult':
-      return 'var(--brand-gold)';
+      return 'var(--brand-gold, #c69c6d)';
     case 'epic':
-      return '#8b5cf6'; // Purple
+      return 'var(--chart-4, #8b5cf6)'; // Purple
     case 'feature':
-      return '#22c55e'; // Green
+      return 'var(--success-fg, #22c55e)'; // Green
     case 'story':
-      return '#2563eb'; // Blue
+      return 'var(--info-fg, #2563eb)'; // Blue
     case 'demand':
-      return '#2563eb'; // Blue
+      return 'var(--info-fg, #2563eb)'; // Blue
     case 'dependency':
-      return '#2563eb'; // Blue
+      return 'var(--info-fg, #2563eb)'; // Blue
     case 'risk':
-      return '#f97316'; // Orange
+      return 'var(--warning-fg, #f97316)'; // Orange
     case 'theme':
-      return '#2563eb'; // Blue
+      return 'var(--info-fg, #2563eb)'; // Blue
     case 'snapshot':
-      return '#2563eb'; // Blue
+      return 'var(--info-fg, #2563eb)'; // Blue
     default:
-      return 'var(--text-muted)';
+      return 'var(--fg-3)';
   }
 }
 

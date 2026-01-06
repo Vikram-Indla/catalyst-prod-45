@@ -46,8 +46,8 @@ function ThemeRow({ item, level, isExpanded, isSelected, onToggle, onSelect }: T
       style={{ height: ROW_HEIGHT }}
       className={cn(
         "group cursor-pointer transition-colors flex items-center",
-        "hover:bg-[#F6F8FA] dark:hover:bg-[#21262D]",
-        isSelected && "bg-[rgba(37,99,235,0.05)] dark:bg-[rgba(37,99,235,0.08)]"
+        "hover:bg-surface-hover dark:hover:bg-[var(--hover)]",
+        isSelected && "bg-[var(--row-selected)] dark:bg-[var(--row-selected)]"
       )}
     >
       <div className={cn("flex items-center gap-3 px-4 w-full", indentClass)}>
@@ -58,12 +58,12 @@ function ThemeRow({ item, level, isExpanded, isSelected, onToggle, onSelect }: T
               e.stopPropagation();
               onToggle();
             }}
-            className="p-0.5 rounded hover:bg-[#E1E4E8] dark:hover:bg-[#30363D]"
+            className="p-0.5 rounded hover:bg-muted"
           >
             <ChevronRight 
               size={14} 
               className={cn(
-                "text-[#8B949E] transition-transform",
+                "text-muted-foreground transition-transform",
                 isExpanded && "rotate-90"
               )} 
             />
@@ -79,21 +79,21 @@ function ThemeRow({ item, level, isExpanded, isSelected, onToggle, onSelect }: T
 
         {/* Content */}
         <div className="flex-1 min-w-0">
-          <p className="text-xs text-[#8B949E] dark:text-[#6E7681] font-mono">
+          <p className="text-xs text-muted-foreground font-mono">
             # {item.id.slice(0, 8)}
           </p>
-          <p className="text-sm font-medium text-[#24292F] dark:text-[#E6EDF3] truncate">
+          <p className="text-sm font-medium text-foreground truncate">
             {item.name}
           </p>
           {item.strategy && (
-            <p className="text-xs text-[#8B949E] dark:text-[#6E7681] truncate">
+            <p className="text-xs text-muted-foreground truncate">
               {item.strategy}
             </p>
           )}
         </div>
 
         {/* Status Dot */}
-        <div className={cn("w-2.5 h-2.5 rounded-full flex-shrink-0", statusColors[item.status]?.dot || 'bg-[#8B949E]')} />
+        <div className={cn("w-2.5 h-2.5 rounded-full flex-shrink-0", statusColors[item.status]?.dot || 'bg-muted-foreground')} />
       </div>
     </div>
   );
@@ -155,20 +155,20 @@ export function RoadmapThemePanel({
   return (
     <div className={cn(
       "w-80 flex-shrink-0 overflow-y-auto",
-      "bg-white dark:bg-[#161B22]",
-      "border-r border-[#E1E4E8] dark:border-[#30363D]"
+      "bg-card dark:bg-[var(--bg-1)]",
+      "border-r border-border"
     )}>
       {/* Header */}
       <div className={cn(
         "sticky top-0 z-10 px-4 py-3",
-        "bg-[#FAFBFC] dark:bg-[#0D1117]",
-        "border-b border-[#E1E4E8] dark:border-[#30363D]"
+        "bg-muted dark:bg-[var(--bg-2)]",
+        "border-b border-border"
       )}>
         <div className="flex items-center justify-between">
-          <span className="text-[11px] font-semibold uppercase tracking-wider text-[#8B949E] dark:text-[#6E7681]">
+          <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
             THEME
           </span>
-          <span className="text-[11px] font-semibold uppercase tracking-wider text-[#8B949E] dark:text-[#6E7681]">
+          <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
             Status
           </span>
         </div>
@@ -179,7 +179,7 @@ export function RoadmapThemePanel({
         {filteredItems.length > 0 ? (
           renderItems(filteredItems)
         ) : (
-          <div className="px-4 py-8 text-center text-sm text-[#8B949E] dark:text-[#6E7681]">
+          <div className="px-4 py-8 text-center text-sm text-muted-foreground">
             No items found
           </div>
         )}
