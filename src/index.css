@@ -1553,3 +1553,65 @@
 [data-theme="dark"] [class*="Timeline"] [class*="text-"] {
   opacity: 1 !important;
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   CATALYST DARK MODE — BORDER KILL SWITCH
+   Purpose: Zero visible dividers in dark mode (render-level enforcement)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Kill HRs completely */
+.dark hr,
+[data-theme="dark"] hr {
+  display: none !important;
+}
+
+/* Neutralize all borders & dividers */
+.dark :where(
+  .border, .border-t, .border-b, .border-l, .border-r,
+  [class*="border-"],
+  [class*="divide-"],
+  table, thead, tbody, tr, td, th
+),
+[data-theme="dark"] :where(
+  .border, .border-t, .border-b, .border-l, .border-r,
+  [class*="border-"],
+  [class*="divide-"],
+  table, thead, tbody, tr, td, th
+) {
+  border-color: rgba(255,255,255,0.035) !important;
+}
+
+/* Kill Tailwind divide utilities explicitly */
+.dark :where([class*="divide-y"], [class*="divide-x"]) > :not([hidden]) ~ :not([hidden]),
+[data-theme="dark"] :where([class*="divide-y"], [class*="divide-x"]) > :not([hidden]) ~ :not([hidden]) {
+  border-color: rgba(255,255,255,0.035) !important;
+}
+
+/* Override legacy white borders */
+.dark :where(
+  .border-white,
+  .border-white\/10,
+  .border-white\/20,
+  .border-white\/30
+),
+[data-theme="dark"] :where(
+  .border-white,
+  .border-white\/10,
+  .border-white\/20,
+  .border-white\/30
+) {
+  border-color: rgba(255,255,255,0.035) !important;
+}
+
+/* Remove outlines masquerading as borders */
+.dark :where(.outline, .outline-1, .ring-1),
+[data-theme="dark"] :where(.outline, .outline-1, .ring-1) {
+  outline-color: rgba(255,255,255,0.035) !important;
+}
+
+/* Preserve accessibility - focus states */
+.dark *:focus-visible,
+[data-theme="dark"] *:focus-visible {
+  outline: none !important;
+  box-shadow: 0 0 0 2px rgba(59,130,246,0.7) !important;
+}
