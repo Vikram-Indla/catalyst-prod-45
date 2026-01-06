@@ -1,6 +1,7 @@
 // TMRequirementsPage - Requirements Traceability Page
 import React, { useState } from 'react';
-import { Upload, RefreshCw, Link } from 'lucide-react';
+import { Download, RefreshCw, Link, Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useProjectStore } from '../stores/projectStore';
@@ -19,8 +20,10 @@ import {
   RequirementDetailPanel,
   LinkTestCasesDialog,
   GapAnalysisView,
+  SyncFromJiraDialog,
 } from '../components/requirements';
 import { RequirementWithCoverage } from '../types/requirements';
+import { exportTraceabilityMatrix } from '../utils/exportTraceabilityMatrix';
 
 type ViewTab = 'coverage' | 'matrix' | 'gaps';
 
@@ -29,6 +32,8 @@ export default function TMRequirementsPage() {
   const [activeTab, setActiveTab] = useState<ViewTab>('coverage');
   const [selectedRequirement, setSelectedRequirement] = useState<RequirementWithCoverage | null>(null);
   const [linkDialogOpen, setLinkDialogOpen] = useState(false);
+  const [syncDialogOpen, setSyncDialogOpen] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
 
   // Data queries
   const { data: requirementTree = [], isLoading: treeLoading } = useRequirementTree(selectedProjectId);
@@ -57,6 +62,46 @@ export default function TMRequirementsPage() {
     });
   };
 
+  const handleExportMatrix = async () => {
+    if (!requirementTree.length) {
+      toast.error('No requirements to export');
+      return;
+    }
+
+    setIsExporting(true);
+    try {
+      // Flatten requirement tree for export
+      const flatRequirements = requirementTree.map(req => ({
+        id: req.id,
+        requirement_key: req.requirement_key,
+        title: req.title,
+        priority: req.priority || undefined,
+        status: req.status,
+      }));
+
+      // Get all test cases for export, mapping test_key to case_key
+      const allCases = allTestCases.map(tc => ({
+        id: tc.id,
+        case_key: tc.test_key,
+        title: tc.title,
+      }));
+
+      // Build links from the requirement links query
+      const allLinks = links.map(l => ({
+        requirement_id: selectedRequirement?.id || '',
+        test_case_id: l.test_case_id,
+      }));
+
+      exportTraceabilityMatrix(flatRequirements, allCases, allLinks);
+      toast.success('Traceability matrix exported');
+    } catch (error: any) {
+      console.error('Export failed:', error);
+      toast.error(error.message || 'Failed to export matrix');
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
   return (
     <div className="flex flex-col h-full bg-background">
       {/* Header */}
@@ -66,11 +111,15 @@ export default function TMRequirementsPage() {
           <p className="text-xs text-muted-foreground">Coverage, Matrix & Gap Analysis</p>
         </div>
         <div className="flex items-center gap-3">
-          <Button variant="outline" size="sm">
-            <Upload className="w-4 h-4 mr-1.5" />
+          <Button variant="outline" size="sm" onClick={handleExportMatrix} disabled={isExporting}>
+            {isExporting ? (
+              <Loader2 className="w-4 h-4 mr-1.5 animate-spin" />
+            ) : (
+              <Download className="w-4 h-4 mr-1.5" />
+            )}
             Export Matrix
           </Button>
-          <Button variant="outline" size="sm">
+          <Button variant="outline" size="sm" onClick={() => setSyncDialogOpen(true)}>
             <RefreshCw className="w-4 h-4 mr-1.5" />
             Sync from Jira
           </Button>
@@ -162,6 +211,15 @@ export default function TMRequirementsPage() {
         linkedTestCaseIds={links.map(l => l.test_case_id)}
         onLink={handleLinkTestCases}
         isLoading={linkTestCases.isPending}
+      />
+
+      {/* Sync from Jira Dialog */}
+      <SyncFromJiraDialog
+        open={syncDialogOpen}
+        onOpenChange={setSyncDialogOpen}
+        onSuccess={() => {
+          // Refetch requirements after sync
+        }}
       />
     </div>
   );
