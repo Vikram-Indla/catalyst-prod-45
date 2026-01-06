@@ -8,5 +8,7 @@ export { CasesDataTable, type SortField, type SortDirection } from './CasesDataT
 export { CaseDetailsPanel } from './CaseDetailsPanel';
 export { CaseModal } from './CaseModal';
 export { TestCaseEditor } from './TestCaseEditor';
+export { AddToCycleDialog } from './AddToCycleDialog';
+export { ImportTestCasesDialog } from './ImportTestCasesDialog';
 // Only export main editor components, not individual tabs to avoid conflicts with reports module
 export { EditorHeader, EditorToolbar, ContextPanel } from './editor';
