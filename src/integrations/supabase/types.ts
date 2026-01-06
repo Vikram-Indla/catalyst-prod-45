@@ -19228,6 +19228,66 @@ export type Database = {
           },
         ]
       }
+      tm_audit_logs: {
+        Row: {
+          action: string
+          changes: Json | null
+          created_at: string | null
+          entity_id: string | null
+          entity_name: string | null
+          entity_type: string
+          id: string
+          metadata: Json | null
+          project_id: string | null
+          user_email: string | null
+          user_id: string | null
+          user_name: string | null
+        }
+        Insert: {
+          action: string
+          changes?: Json | null
+          created_at?: string | null
+          entity_id?: string | null
+          entity_name?: string | null
+          entity_type: string
+          id?: string
+          metadata?: Json | null
+          project_id?: string | null
+          user_email?: string | null
+          user_id?: string | null
+          user_name?: string | null
+        }
+        Update: {
+          action?: string
+          changes?: Json | null
+          created_at?: string | null
+          entity_id?: string | null
+          entity_name?: string | null
+          entity_type?: string
+          id?: string
+          metadata?: Json | null
+          project_id?: string | null
+          user_email?: string | null
+          user_id?: string | null
+          user_name?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tm_audit_logs_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_audit_logs_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       tm_case_labels: {
         Row: {
           created_at: string | null
@@ -22977,6 +23037,18 @@ export type Database = {
         Args: { p_folder_id: string; p_new_parent_id: string }
         Returns: boolean
       }
+      tm_create_audit_log: {
+        Args: {
+          p_action: string
+          p_changes?: Json
+          p_entity_id?: string
+          p_entity_name?: string
+          p_entity_type: string
+          p_metadata?: Json
+          p_project_id: string
+        }
+        Returns: string
+      }
       tm_next_entity_key: {
         Args: { p_prefix: string; p_project_id: string }
         Returns: string
@@ -23024,6 +23096,21 @@ export type Database = {
     Enums: {
       alignment_type: "direct" | "inherited"
       app_role: "admin" | "program_manager" | "team_lead" | "user"
+      audit_action:
+        | "create"
+        | "update"
+        | "delete"
+        | "login"
+        | "logout"
+        | "invite"
+        | "join"
+        | "leave"
+        | "archive"
+        | "restore"
+        | "export"
+        | "import"
+        | "connect"
+        | "disconnect"
       auth_method: "token" | "oauth"
       board_scope_type: "portfolio" | "program" | "team"
       board_type:
@@ -23484,6 +23571,22 @@ export const Constants = {
     Enums: {
       alignment_type: ["direct", "inherited"],
       app_role: ["admin", "program_manager", "team_lead", "user"],
+      audit_action: [
+        "create",
+        "update",
+        "delete",
+        "login",
+        "logout",
+        "invite",
+        "join",
+        "leave",
+        "archive",
+        "restore",
+        "export",
+        "import",
+        "connect",
+        "disconnect",
+      ],
       auth_method: ["token", "oauth"],
       board_scope_type: ["portfolio", "program", "team"],
       board_type: [
