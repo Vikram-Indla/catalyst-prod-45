@@ -17,15 +17,15 @@ export function AIProgressCard({ stats }: AIProgressCardProps) {
       {/* Narrative Text */}
       <div className="text-sm text-muted-foreground leading-relaxed mb-4">
         You've closed <strong className="text-foreground">{stats.closed} items</strong> this week —{' '}
-        <span className="text-emerald-600 dark:text-emerald-400 font-semibold">{stats.percentChange}% more</span> than last week.
+        <span className="text-[var(--sem-success)] font-semibold">{stats.percentChange}% more</span> than last week.
         Your SLA compliance is at <strong className="text-foreground">{stats.slaRate}%</strong>.
         <br /><br />
         {remaining > 0 ? (
-          <span className="text-emerald-600 dark:text-emerald-400 font-semibold">
+          <span className="text-[var(--sem-success)] font-semibold">
             You're {remaining} away from your personal best of {stats.personalBest}.
           </span>
         ) : (
-          <span className="text-emerald-600 dark:text-emerald-400 font-semibold">
+          <span className="text-[var(--sem-success)] font-semibold">
             You've matched your personal best of {stats.personalBest}!
           </span>
         )}

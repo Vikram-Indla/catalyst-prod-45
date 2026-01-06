@@ -21,16 +21,16 @@ interface KPICardProps {
 }
 
 const iconColorClasses = {
-  blue: 'bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400',
-  teal: 'bg-teal-100 text-teal-600 dark:bg-teal-900/30 dark:text-teal-400',
-  orange: 'bg-orange-100 text-orange-600 dark:bg-orange-900/30 dark:text-orange-400',
-  red: 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400',
-  purple: 'bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400',
+  blue: 'bg-[var(--sem-info-bg)] text-[var(--sem-info)]',
+  teal: 'bg-brand-teal/10 text-brand-teal',
+  orange: 'bg-[var(--sem-warning-bg)] text-[var(--sem-warning)]',
+  red: 'bg-[var(--sem-danger-bg)] text-[var(--sem-danger)]',
+  purple: 'bg-brand-primary/10 text-brand-primary',
 };
 
 const valueColorClasses = {
   default: 'text-foreground',
-  teal: 'text-teal-600 dark:text-teal-400',
+  teal: 'text-brand-teal',
   red: 'text-destructive',
 };
 
@@ -51,9 +51,9 @@ export function KPICard({
     : Minus;
 
   const trendColor = trend?.direction === 'up'
-    ? 'bg-teal-100 text-teal-600 dark:bg-teal-900/30 dark:text-teal-400'
+    ? 'bg-[var(--sem-success-bg)] text-[var(--sem-success)]'
     : trend?.direction === 'down'
-    ? 'bg-red-100 text-destructive dark:bg-red-900/30'
+    ? 'bg-[var(--sem-danger-bg)] text-destructive'
     : 'bg-muted text-muted-foreground';
 
   return (

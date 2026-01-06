@@ -58,32 +58,32 @@ const STATUS_CONFIG: Record<ExecutionStatus, {
 }> = {
   not_run: {
     label: 'Not Run',
-    className: 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300',
+    className: 'bg-muted text-muted-foreground',
     icon: Play,
   },
   in_progress: {
     label: 'In Progress',
-    className: 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300',
+    className: 'bg-[var(--sem-info-bg)] text-[var(--sem-info)] border-[var(--sem-info-border)]',
     icon: Loader2,
   },
   passed: {
     label: 'Passed',
-    className: 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300',
+    className: 'bg-[var(--sem-success-bg)] text-[var(--sem-success)] border-[var(--sem-success-border)]',
     icon: CheckCircle2,
   },
   failed: {
     label: 'Failed',
-    className: 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300',
+    className: 'bg-[var(--sem-danger-bg)] text-[var(--sem-danger)] border-[var(--sem-danger-border)]',
     icon: XCircle,
   },
   blocked: {
     label: 'Blocked',
-    className: 'bg-orange-100 text-orange-700 dark:bg-orange-900 dark:text-orange-300',
+    className: 'bg-[var(--sem-warning-bg)] text-[var(--sem-warning)] border-[var(--sem-warning-border)]',
     icon: AlertTriangle,
   },
   skipped: {
     label: 'Skipped',
-    className: 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300',
+    className: 'bg-muted text-muted-foreground',
     icon: SkipForward,
   },
 };
@@ -319,7 +319,7 @@ export function ExecutionModal({ scopeId, runId: initialRunId, onClose }: Execut
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="h-7 text-red-600 hover:text-red-700 hover:bg-red-50"
+                        className="h-7 text-[var(--sem-danger)] hover:text-[var(--sem-danger)] hover:bg-[var(--sem-danger-bg)]"
                         onClick={() => setDefectDialogOpen(true)}
                       >
                         <Bug className="h-3 w-3 mr-1" />
@@ -382,7 +382,7 @@ export function ExecutionModal({ scopeId, runId: initialRunId, onClose }: Execut
                       size="sm"
                       onClick={handlePassAllRemaining}
                       disabled={isUpdating}
-                      className="text-green-600 hover:text-green-700"
+                      className="text-[var(--sem-success)] hover:text-[var(--sem-success)] hover:bg-[var(--sem-success-bg)]"
                     >
                       <CheckCheck className="h-4 w-4 mr-1" />
                       Pass All Remaining ({remainingStepsCount})
@@ -394,7 +394,7 @@ export function ExecutionModal({ scopeId, runId: initialRunId, onClose }: Execut
                       size="sm"
                       onClick={handleRerunFailed}
                       disabled={isUpdating}
-                      className="text-orange-600 hover:text-orange-700"
+                      className="text-[var(--sem-warning)] hover:text-[var(--sem-warning)] hover:bg-[var(--sem-warning-bg)]"
                     >
                       <RotateCcw className="h-4 w-4 mr-1" />
                       Re-run Failed ({failedStepsCount})
@@ -430,7 +430,7 @@ export function ExecutionModal({ scopeId, runId: initialRunId, onClose }: Execut
                   <Button
                     variant="outline"
                     size="sm"
-                    className="text-gray-600 hover:text-gray-700 hover:bg-gray-50"
+                    className="text-muted-foreground hover:text-foreground hover:bg-muted"
                     onClick={() => handleStepResult('skipped')}
                     disabled={isUpdating}
                   >
@@ -440,7 +440,7 @@ export function ExecutionModal({ scopeId, runId: initialRunId, onClose }: Execut
                   <Button
                     variant="outline"
                     size="sm"
-                    className="text-orange-600 hover:text-orange-700 hover:bg-orange-50"
+                    className="text-[var(--sem-warning)] hover:text-[var(--sem-warning)] hover:bg-[var(--sem-warning-bg)]"
                     onClick={() => handleStepResult('blocked')}
                     disabled={isUpdating}
                   >
@@ -450,7 +450,7 @@ export function ExecutionModal({ scopeId, runId: initialRunId, onClose }: Execut
                   <Button
                     variant="outline"
                     size="sm"
-                    className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                    className="text-[var(--sem-danger)] hover:text-[var(--sem-danger)] hover:bg-[var(--sem-danger-bg)]"
                     onClick={() => handleStepResult('failed')}
                     disabled={isUpdating}
                   >
@@ -459,7 +459,7 @@ export function ExecutionModal({ scopeId, runId: initialRunId, onClose }: Execut
                   </Button>
                   <Button
                     size="sm"
-                    className="bg-green-600 hover:bg-green-700 text-white"
+                    className="bg-[var(--sem-success)] hover:bg-[var(--sem-success)]/90 text-[var(--text-inverse)]"
                     onClick={() => handleStepResult('passed')}
                     disabled={isUpdating}
                   >

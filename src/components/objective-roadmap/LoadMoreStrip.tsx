@@ -28,7 +28,7 @@ export const LoadMoreStrip: React.FC<LoadMoreStripProps> = ({
           <strong className="text-foreground">{totalCount}</strong> {entityLabel}
         </span>
         {needAttentionCount > 0 && (
-          <span className="flex items-center gap-1.5 text-sm text-amber-600">
+          <span className="flex items-center gap-1.5 text-sm text-[var(--sem-warning)]">
             <AlertTriangle size={14} />
             {needAttentionCount} {singular}{needAttentionCount !== 1 ? 's' : ''} below need attention
           </span>

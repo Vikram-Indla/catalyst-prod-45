@@ -14,8 +14,8 @@ interface KeyResultsTabV2Props {
 
 function getDirectionIcon(direction: string) {
   switch (direction) {
-    case 'increase': return <TrendingUp className="h-3.5 w-3.5 text-green-500" />;
-    case 'decrease': return <TrendingDown className="h-3.5 w-3.5 text-red-500" />;
+    case 'increase': return <TrendingUp className="h-3.5 w-3.5 text-[var(--sem-success)]" />;
+    case 'decrease': return <TrendingDown className="h-3.5 w-3.5 text-[var(--sem-danger)]" />;
     default: return <Minus className="h-3.5 w-3.5 text-muted-foreground" />;
   }
 }

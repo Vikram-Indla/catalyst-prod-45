@@ -16,10 +16,10 @@ interface WorkflowStatusesPanelProps {
 }
 
 const CATEGORY_COLORS: Record<string, string> = {
-  todo: 'bg-indigo-100 text-indigo-700 border-indigo-200',
-  inprogress: 'bg-amber-100 text-amber-700 border-amber-200',
-  done: 'bg-green-100 text-green-700 border-green-200',
-  other: 'bg-gray-100 text-gray-700 border-gray-200',
+  todo: 'bg-[var(--sem-info-bg)] text-[var(--sem-info)] border-[var(--sem-info-border)]',
+  inprogress: 'bg-[var(--sem-warning-bg)] text-[var(--sem-warning)] border-[var(--sem-warning-border)]',
+  done: 'bg-[var(--sem-success-bg)] text-[var(--sem-success)] border-[var(--sem-success-border)]',
+  other: 'bg-muted text-muted-foreground border-border',
 };
 
 const CATEGORY_LABELS: Record<string, string> = {

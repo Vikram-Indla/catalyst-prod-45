@@ -34,25 +34,25 @@ interface FeatureBacklogTableProps {
 }
 
 const STATUS_CONFIG: Record<string, { label: string; className: string }> = {
-  funnel: { label: 'Funnel', className: 'bg-muted text-muted-foreground border-muted-foreground/30' },
-  analyzing: { label: 'Analyzing', className: 'bg-blue-100 text-blue-700 border-blue-300 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-700' },
-  backlog: { label: 'Backlog', className: 'bg-slate-100 text-slate-700 border-slate-300 dark:bg-slate-800/50 dark:text-slate-300 dark:border-slate-600' },
+  funnel: { label: 'Funnel', className: 'bg-muted text-muted-foreground border-border' },
+  analyzing: { label: 'Analyzing', className: 'bg-[var(--sem-info-bg)] text-[var(--sem-info)] border-[var(--sem-info-border)]' },
+  backlog: { label: 'Backlog', className: 'bg-muted text-muted-foreground border-border' },
   implementing: { label: 'In Progress', className: 'bg-brand-primary/15 text-brand-primary border-brand-primary/30' },
-  done: { label: 'Done', className: 'bg-emerald-100 text-emerald-700 border-emerald-300 dark:bg-emerald-900/30 dark:text-emerald-300 dark:border-emerald-700' },
+  done: { label: 'Done', className: 'bg-[var(--sem-success-bg)] text-[var(--sem-success)] border-[var(--sem-success-border)]' },
 };
 
 const PRIORITY_CONFIG: Record<string, { label: string; className: string }> = {
-  critical: { label: 'Critical', className: 'bg-red-100 text-red-700 border-red-300 dark:bg-red-900/30 dark:text-red-300 dark:border-red-700' },
-  high: { label: 'High', className: 'bg-amber-100 text-amber-700 border-amber-300 dark:bg-amber-900/30 dark:text-amber-300 dark:border-amber-700' },
-  medium: { label: 'Medium', className: 'bg-slate-100 text-slate-600 border-slate-300 dark:bg-slate-800/50 dark:text-slate-400 dark:border-slate-600' },
-  low: { label: 'Low', className: 'bg-gray-100 text-gray-600 border-gray-300 dark:bg-gray-800/50 dark:text-gray-400 dark:border-gray-600' },
+  critical: { label: 'Critical', className: 'bg-[var(--sem-critical-bg)] text-[var(--sem-critical)] border-[var(--sem-critical-border)]' },
+  high: { label: 'High', className: 'bg-[var(--sem-danger-bg)] text-[var(--sem-danger)] border-[var(--sem-danger-border)]' },
+  medium: { label: 'Medium', className: 'bg-[var(--sem-warning-bg)] text-[var(--sem-warning)] border-[var(--sem-warning-border)]' },
+  low: { label: 'Low', className: 'bg-muted text-muted-foreground border-border' },
 };
 
 const HEALTH_CONFIG: Record<string, { label: string; className: string }> = {
-  green: { label: 'On Track', className: 'bg-emerald-100 text-emerald-700 border-emerald-300 dark:bg-emerald-900/30 dark:text-emerald-300' },
-  yellow: { label: 'At Risk', className: 'bg-amber-100 text-amber-700 border-amber-300 dark:bg-amber-900/30 dark:text-amber-300' },
-  amber: { label: 'At Risk', className: 'bg-amber-100 text-amber-700 border-amber-300 dark:bg-amber-900/30 dark:text-amber-300' },
-  red: { label: 'Off Track', className: 'bg-red-100 text-red-700 border-red-300 dark:bg-red-900/30 dark:text-red-300' },
+  green: { label: 'On Track', className: 'bg-[var(--sem-success-bg)] text-[var(--sem-success)] border-[var(--sem-success-border)]' },
+  yellow: { label: 'At Risk', className: 'bg-[var(--sem-warning-bg)] text-[var(--sem-warning)] border-[var(--sem-warning-border)]' },
+  amber: { label: 'At Risk', className: 'bg-[var(--sem-warning-bg)] text-[var(--sem-warning)] border-[var(--sem-warning-border)]' },
+  red: { label: 'Off Track', className: 'bg-[var(--sem-danger-bg)] text-[var(--sem-danger)] border-[var(--sem-danger-border)]' },
 };
 
 export function FeatureBacklogTable({
@@ -217,7 +217,7 @@ function renderCell(item: FeatureBacklogItem, columnId: string) {
   switch (columnId) {
     case 'key':
       return (
-        <span className="font-mono text-sm text-[#2563eb] hover:text-[#1d4ed8] hover:underline whitespace-nowrap">
+        <span className="font-mono text-sm text-brand-primary hover:text-brand-primary-hover hover:underline whitespace-nowrap">
           {item.key}
         </span>
       );

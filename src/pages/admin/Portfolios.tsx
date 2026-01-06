@@ -311,8 +311,8 @@ export default function Portfolios() {
                           <td className="p-3 text-sm">
                             <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs ${
                               program.status === 'active' 
-                                ? 'bg-green-100 text-green-800' 
-                                : 'bg-gray-100 text-gray-800'
+                                ? 'bg-[var(--sem-success-bg)] text-[var(--sem-success)]' 
+                                : 'bg-muted text-muted-foreground'
                             }`}>
                               {program.status === 'active' ? 'Active' : 'Archived'}
                             </span>

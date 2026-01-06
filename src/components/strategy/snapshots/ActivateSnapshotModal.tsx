@@ -53,11 +53,11 @@ export function ActivateSnapshotModal({ open, onClose, snapshot, onOpenQuarters 
         <div className="py-4 space-y-4">
           {/* Current active snapshot warning */}
           {currentActiveSnapshot && (
-            <div className="flex items-start gap-3 p-3 bg-amber-50 border border-amber-200 rounded-md">
-              <AlertTriangle className="h-5 w-5 text-amber-600 flex-shrink-0 mt-0.5" />
+            <div className="flex items-start gap-3 p-3 bg-[var(--sem-warning-bg)] border border-[var(--sem-warning-border)] rounded-md">
+              <AlertTriangle className="h-5 w-5 text-[var(--sem-warning)] flex-shrink-0 mt-0.5" />
               <div className="text-sm">
-                <p className="font-medium text-amber-800">Another snapshot is currently active</p>
-                <p className="text-amber-700 mt-1">
+                <p className="font-medium text-foreground">Another snapshot is currently active</p>
+                <p className="text-muted-foreground mt-1">
                   "{currentActiveSnapshot.name}" will be set back to DRAFT when you activate this snapshot.
                 </p>
               </div>
@@ -71,11 +71,11 @@ export function ActivateSnapshotModal({ open, onClose, snapshot, onOpenQuarters 
               
               <div className={cn(
                 'flex items-center justify-between p-3 rounded-md border',
-                hasQuarters ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'
+                hasQuarters ? 'bg-[var(--sem-success-bg)] border-[var(--sem-success-border)]' : 'bg-[var(--sem-danger-bg)] border-[var(--sem-danger-border)]'
               )}>
                 <div className="flex items-center gap-2">
-                  <CalendarRange className={cn('h-4 w-4', hasQuarters ? 'text-green-600' : 'text-red-600')} />
-                  <span className={cn('text-sm', hasQuarters ? 'text-green-800' : 'text-red-800')}>
+                  <CalendarRange className={cn('h-4 w-4', hasQuarters ? 'text-[var(--sem-success)]' : 'text-[var(--sem-danger)]')} />
+                  <span className={cn('text-sm', hasQuarters ? 'text-[var(--sem-success)]' : 'text-[var(--sem-danger)]')}>
                     At least 1 Quarter assigned
                   </span>
                 </div>
@@ -83,7 +83,7 @@ export function ActivateSnapshotModal({ open, onClose, snapshot, onOpenQuarters 
                   <Button 
                     variant="ghost" 
                     size="sm" 
-                    className="h-7 text-xs text-red-700 hover:text-red-800"
+                    className="h-7 text-xs text-[var(--sem-danger)] hover:text-[var(--sem-danger)]"
                     onClick={() => {
                       onClose();
                       setTimeout(onOpenQuarters, 100);
@@ -96,11 +96,11 @@ export function ActivateSnapshotModal({ open, onClose, snapshot, onOpenQuarters 
 
               <div className={cn(
                 'flex items-center justify-between p-3 rounded-md border',
-                hasThemes ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'
+                hasThemes ? 'bg-[var(--sem-success-bg)] border-[var(--sem-success-border)]' : 'bg-[var(--sem-danger-bg)] border-[var(--sem-danger-border)]'
               )}>
                 <div className="flex items-center gap-2">
-                  <Layers className={cn('h-4 w-4', hasThemes ? 'text-green-600' : 'text-red-600')} />
-                  <span className={cn('text-sm', hasThemes ? 'text-green-800' : 'text-red-800')}>
+                  <Layers className={cn('h-4 w-4', hasThemes ? 'text-[var(--sem-success)]' : 'text-[var(--sem-danger)]')} />
+                  <span className={cn('text-sm', hasThemes ? 'text-[var(--sem-success)]' : 'text-[var(--sem-danger)]')}>
                     At least 1 Theme linked
                   </span>
                 </div>
@@ -108,7 +108,7 @@ export function ActivateSnapshotModal({ open, onClose, snapshot, onOpenQuarters 
                   <Button 
                     variant="ghost" 
                     size="sm" 
-                    className="h-7 text-xs text-red-700 hover:text-red-800"
+                    className="h-7 text-xs text-[var(--sem-danger)] hover:text-[var(--sem-danger)]"
                     onClick={() => {
                       onClose();
                       navigate(`/enterprise/strategic-backlog?snapshot=${snapshot.id}&tab=themes`);
