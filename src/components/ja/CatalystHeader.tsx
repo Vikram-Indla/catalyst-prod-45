@@ -120,7 +120,7 @@ export function CatalystHeader() {
     { label: "Program", hasDropdown: true, moduleCode: "PORTFOLIO", visibleToProductOwner: false },
     { label: "Project", hasDropdown: true, moduleCode: "PROGRAM", visibleToProductOwner: false },
     { label: "Tests", path: "/tests", moduleCode: null, visibleToProductOwner: false }, // Global Tests Module
-    { label: "Release", hasDropdown: true, path: "/release", moduleCode: null, visibleToProductOwner: false }, // Always visible
+    { label: "Operations", hasDropdown: true, path: "/release", moduleCode: null, visibleToProductOwner: false }, // Always visible
     { label: "Planner", hasDropdown: true, path: "/planner", moduleCode: null, visibleToProductOwner: true }, // Always visible - now with dropdown
   ];
 
