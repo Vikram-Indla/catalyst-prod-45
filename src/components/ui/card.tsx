@@ -2,10 +2,21 @@ import * as React from "react";
 
 import { cn } from "@/lib/utils";
 
+/**
+ * Card Component — Catalyst Dark-Mode Grammar
+ * Uses surface elevation instead of bright borders
+ * Border is subtle (darker than text in dark mode)
+ */
 const Card = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(({ className, ...props }, ref) => (
   <div 
     ref={ref} 
-    className={cn("rounded-lg shadow-sm border border-border bg-card text-card-foreground focus:outline-none focus-visible:outline-none", className)} 
+    className={cn(
+      "rounded-lg bg-card text-card-foreground",
+      "shadow-sm dark:shadow-md",
+      "border border-border/50 dark:border-border/30",
+      "focus:outline-none focus-visible:outline-none",
+      className
+    )} 
     {...props} 
   />
 ));

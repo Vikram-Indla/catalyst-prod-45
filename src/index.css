@@ -358,7 +358,7 @@
     --destructive: 0 62% 60%;
     --destructive-foreground: 0 0% 98%;
     
-    --border: 0 0% 25%;                  /* #404040 */
+    --border: 0 0% 18%;                  /* #2d2d2d - darker than text for Catalyst dark mode grammar */
     --input: 0 0% 18%;                   /* #2d2d2d */
     --ring: 217 91% 60%;                 /* blue focus ring */
     
@@ -392,9 +392,10 @@
     --surface-overlay: 0 0% 0%;          /* black base for overlays */
     
     /* === BORDER TOKENS === */
-    --border-subtle: 0 0% 20%;           /* #333333 */
-    --border-default: 0 0% 25%;          /* #404040 */
-    --border-strong: 0 0% 35%;           /* #595959 */
+    /* Catalyst Dark Mode Grammar: Borders must be darker than text */
+    --border-subtle: 0 0% 16%;           /* #292929 - very subtle, darker than text */
+    --border-default: 0 0% 18%;          /* #2d2d2d - darker than muted text */
+    --border-strong: 0 0% 25%;           /* #404040 - still darker than secondary text */
     --border-focus: 217 91% 60%;         /* blue */
     
     /* === BRAND/ACTION TOKENS === */
@@ -465,11 +466,11 @@
     --icon-default: #b3b3b3;
     --icon-muted: #8a8a8a;
     
-    /* Divider and border legacy (HEX) */
-    --divider: #2a2a2a;
-    --border-color: #2c2c2c;
-    --border-subtle-hex: #333333;
-    --border-default-hex: #404040;
+    /* Divider and border legacy (HEX) - Catalyst Grammar: darker than text */
+    --divider: #242424;
+    --border-color: #262626;
+    --border-subtle-hex: #292929;
+    --border-default-hex: #2d2d2d;
     
     /* Text tokens HEX (for inline styles) */
     --text-primary-hex: #f5f5f5;
@@ -739,6 +740,68 @@
     font-family: "SF Mono", "Monaco", "Consolas", monospace;
     font-size: 0.8125rem;    /* 13px */
     line-height: 1.25rem;    /* 20px */
+  }
+  
+  /* ════════════════════════════════════════════════════════════════════════════
+     CATALYST DARK-MODE GRAMMAR — Section & Card Surface Classes
+     These enforce surface-based hierarchy instead of borders
+     ════════════════════════════════════════════════════════════════════════════ */
+  
+  /* Section surface - elevated container, no border */
+  .c-section {
+    @apply rounded-lg overflow-hidden;
+    background-color: hsl(var(--card) / 0.5);
+  }
+  .dark .c-section,
+  [data-theme="dark"] .c-section {
+    background-color: hsl(var(--card) / 0.3);
+  }
+  
+  /* Section header - surface separation via background, not border */
+  .c-section-header {
+    @apply px-4 py-2.5;
+    background-color: hsl(var(--muted) / 0.3);
+  }
+  .dark .c-section-header,
+  [data-theme="dark"] .c-section-header {
+    background-color: hsl(var(--muted) / 0.1);
+  }
+  
+  /* Card surface - nested elevated surface, no border */
+  .c-card-surface {
+    @apply rounded-md;
+    background-color: hsl(var(--muted) / 0.4);
+  }
+  .dark .c-card-surface,
+  [data-theme="dark"] .c-card-surface {
+    background-color: hsl(var(--muted) / 0.2);
+  }
+  
+  /* Subtle divider - only for internal structure, never for framing */
+  .c-divider {
+    @apply border-t;
+    border-color: hsl(var(--border) / 0.3);
+  }
+  .dark .c-divider,
+  [data-theme="dark"] .c-divider {
+    border-color: hsl(var(--border) / 0.2);
+  }
+  
+  /* Table row separator - subtle, darker than text */
+  .c-table-divider {
+    border-bottom: 1px solid hsl(var(--border-subtle));
+  }
+  
+  /* Surface hover state - uses background tint, not border */
+  .c-surface-hover {
+    @apply transition-colors duration-150;
+  }
+  .c-surface-hover:hover {
+    background-color: hsl(var(--muted) / 0.6);
+  }
+  .dark .c-surface-hover:hover,
+  [data-theme="dark"] .c-surface-hover:hover {
+    background-color: hsl(var(--muted) / 0.3);
   }
 }
 
