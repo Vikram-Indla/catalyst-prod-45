@@ -26,14 +26,14 @@ const PRIORITY_STYLES: Record<string, { light: string; dark: string }> = {
     dark: 'dark:bg-[rgba(107,114,128,0.15)] dark:text-[#9ca3af] dark:border-[rgba(107,114,128,0.4)]'
   },
   unscored: {
-    light: 'bg-transparent text-gray-400 border-2 border-dashed border-gray-200',
-    dark: 'dark:text-gray-500 dark:border-gray-700'
+    light: 'bg-transparent text-muted-foreground border-2 border-dashed border-border/50',
+    dark: 'dark:text-muted-foreground dark:border-border/30'
   },
 };
 
 export function PriorityCell({ priority }: PriorityCellProps) {
   if (!priority) {
-    return <span className="text-gray-400 dark:text-gray-500">—</span>;
+    return <span className="text-muted-foreground">—</span>;
   }
 
   const normalizedPriority = priority.toLowerCase();

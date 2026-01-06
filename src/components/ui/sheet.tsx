@@ -94,9 +94,9 @@ const SheetContent = React.forwardRef<React.ElementRef<typeof SheetPrimitive.Con
             // 2. Explicit white/gray-900 ensures opaque panel in both modes
             // 3. Explicit text colors ensure readable text
             // 4. rounded-none ensures clean rectangle edges (no rounded corners)
-            "flex flex-col overflow-hidden bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 rounded-none",
+            "flex flex-col overflow-hidden bg-card text-foreground rounded-none",
             // Border styling
-            isHorizontal ? "border-l border-gray-200 dark:border-gray-700" : "border-t border-gray-200 dark:border-gray-700",
+            isHorizontal ? "border-l border-border/30 dark:border-border/20" : "border-t border-border/30 dark:border-border/20",
             className
           )}
           {...props}
@@ -106,11 +106,11 @@ const SheetContent = React.forwardRef<React.ElementRef<typeof SheetPrimitive.Con
             <SheetPrimitive.Close className={cn(
               "absolute right-4 top-4 rounded-md p-1",
               "opacity-70 transition-opacity",
-              "hover:opacity-100 hover:bg-gray-100 dark:hover:bg-gray-800",
-              "focus:outline-none focus:ring-2 focus:ring-gray-400 dark:focus:ring-gray-500",
-              "focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-900",
+              "hover:opacity-100 hover:bg-muted",
+              "focus:outline-none focus:ring-2 focus:ring-ring",
+              "focus:ring-offset-2 focus:ring-offset-background",
               "disabled:pointer-events-none",
-              "text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
+              "text-muted-foreground hover:text-foreground"
             )}>
               <X className="h-4 w-4" />
               <span className="sr-only">Close</span>
@@ -127,7 +127,7 @@ const SheetHeader = ({ className, ...props }: React.HTMLAttributes<HTMLDivElemen
   <div 
     className={cn(
       "flex flex-col gap-1 px-6 py-4 shrink-0",
-      "bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700",
+      "bg-muted border-b border-border/30 dark:border-border/20",
       className
     )} 
     {...props} 
@@ -139,7 +139,7 @@ const SheetFooter = ({ className, ...props }: React.HTMLAttributes<HTMLDivElemen
   <div 
     className={cn(
       "flex flex-col-reverse sm:flex-row sm:justify-end sm:gap-2 px-6 py-4 mt-auto shrink-0",
-      "bg-gray-50 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700",
+      "bg-muted border-t border-border/30 dark:border-border/20",
       className
     )} 
     {...props} 
@@ -151,7 +151,7 @@ const SheetBody = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>
   <div 
     className={cn(
       "flex-1 overflow-auto px-6 py-4",
-      "bg-white dark:bg-gray-900",
+      "bg-card",
       className
     )} 
     {...props} 
@@ -163,7 +163,7 @@ const SheetTitle = React.forwardRef<
   React.ElementRef<typeof SheetPrimitive.Title>,
   React.ComponentPropsWithoutRef<typeof SheetPrimitive.Title>
 >(({ className, ...props }, ref) => (
-  <SheetPrimitive.Title ref={ref} className={cn("text-lg font-semibold text-gray-900 dark:text-gray-100", className)} {...props} />
+  <SheetPrimitive.Title ref={ref} className={cn("text-lg font-semibold text-foreground", className)} {...props} />
 ));
 SheetTitle.displayName = SheetPrimitive.Title.displayName;
 
@@ -171,7 +171,7 @@ const SheetDescription = React.forwardRef<
   React.ElementRef<typeof SheetPrimitive.Description>,
   React.ComponentPropsWithoutRef<typeof SheetPrimitive.Description>
 >(({ className, ...props }, ref) => (
-  <SheetPrimitive.Description ref={ref} className={cn("text-sm text-gray-500 dark:text-gray-400", className)} {...props} />
+  <SheetPrimitive.Description ref={ref} className={cn("text-sm text-muted-foreground", className)} {...props} />
 ));
 SheetDescription.displayName = SheetPrimitive.Description.displayName;
 

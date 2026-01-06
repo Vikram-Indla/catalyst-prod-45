@@ -8,7 +8,7 @@ const Input = React.forwardRef<HTMLInputElement, React.ComponentProps<"input">>(
       <input
         type={type}
         className={cn(
-          "flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base text-foreground",
+          "flex h-10 w-full rounded-md border border-border/50 dark:border-border/30 bg-background px-3 py-2 text-base text-foreground",
           "ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground",
           "placeholder:text-muted-foreground",
           // Focus ring uses BLUE per design spec v2
