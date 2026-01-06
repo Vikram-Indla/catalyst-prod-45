@@ -251,32 +251,26 @@ export const reportsService = {
 
       case 'traceability-summary':
       case 'traceability-detail': {
-        const { data: requirements } = await supabase
-          .from('requirements')
-          .select('*')
-          .limit(100);
-        
-        const { data: links } = await supabase
-          .from('tm_test_case_requirements')
-          .select('*, tm_test_cases(*)')
+        // Traceability based on test cases with requirements linked via description or tags
+        const { data: testCases } = await supabase
+          .from('tm_test_cases')
+          .select('id, case_key, title, description, tags')
+          .eq('project_id', params.projectId || '')
           .limit(500);
         
-        const reqCoverage = (requirements || []).map((req: any) => {
-          const linkedCases = (links || []).filter((l: any) => l.requirement_id === req.id);
-          return {
-            ...req,
-            linkedCasesCount: linkedCases.length,
-            coverage: linkedCases.length > 0 ? 'covered' : 'uncovered'
-          };
-        });
+        // For traceability, we analyze test cases that reference requirements
+        const casesWithReqs = (testCases || []).filter((tc: any) => 
+          tc.description?.toLowerCase().includes('req') || 
+          (tc.tags || []).some((t: string) => t.toLowerCase().includes('req'))
+        );
         
         data = {
-          requirements: reqCoverage,
-          totalRequirements: (requirements || []).length,
-          coveredCount: reqCoverage.filter((r: any) => r.coverage === 'covered').length,
-          uncoveredCount: reqCoverage.filter((r: any) => r.coverage === 'uncovered').length,
-          coveragePercentage: (requirements || []).length > 0 
-            ? (reqCoverage.filter((r: any) => r.coverage === 'covered').length / (requirements || []).length) * 100 
+          testCases: testCases || [],
+          totalCases: (testCases || []).length,
+          casesWithRequirements: casesWithReqs.length,
+          casesWithoutRequirements: (testCases || []).length - casesWithReqs.length,
+          coveragePercentage: (testCases || []).length > 0 
+            ? (casesWithReqs.length / (testCases || []).length) * 100 
             : 0
         };
         break;
