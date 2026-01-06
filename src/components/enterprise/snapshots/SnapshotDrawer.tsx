@@ -836,10 +836,9 @@ export function SnapshotDrawer({ isOpen, onClose, snapshotId, onSave }: Snapshot
             <TabsContent value="quarters" className="p-4 space-y-4 m-0">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <h3 className="font-medium" style={{ color: '#f5f5f5' }}>Assign Quarters</h3>
+                  <h3 className="font-medium text-foreground">Assign Quarters</h3>
                   <span 
-                    className="px-2 py-0.5 rounded text-xs font-medium"
-                    style={{ backgroundColor: '#333333', color: '#a3a3a3' }}
+                    className="px-2 py-0.5 rounded text-xs font-medium bg-muted text-muted-foreground"
                   >
                     {selectedQuarters.length}
                   </span>
@@ -848,29 +847,19 @@ export function SnapshotDrawer({ isOpen, onClose, snapshotId, onSave }: Snapshot
 
               {/* Search */}
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4" style={{ color: '#737373' }} />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <input
                   value={quarterSearch}
                   onChange={(e) => setQuarterSearch(e.target.value)}
                   placeholder="Search quarters..."
-                  className="w-full pl-9 pr-4 py-3 rounded-lg text-sm"
-                  style={{
-                    backgroundColor: '#1a1a1a',
-                    border: '1px solid #333333',
-                    color: '#f5f5f5'
-                  }}
+                  className="w-full pl-9 pr-4 py-3 rounded-lg text-sm bg-muted border border-border text-foreground"
                 />
               </div>
 
               {/* Warning Banner */}
               {selectedQuarters.length === 0 && (
                 <div 
-                  className="p-3 rounded-lg text-sm"
-                  style={{
-                    backgroundColor: 'rgba(245, 158, 11, 0.1)',
-                    border: '1px solid rgba(245, 158, 11, 0.3)',
-                    color: '#d97706'
-                  }}
+                  className="p-3 rounded-lg text-sm bg-warning/10 border border-warning/30 text-warning"
                 >
                   No quarters selected. Please assign at least one quarter.
                 </div>
@@ -885,35 +874,25 @@ export function SnapshotDrawer({ isOpen, onClose, snapshotId, onSave }: Snapshot
                   return (
                     <label
                       key={quarter.id}
-                      className="flex items-center gap-4 p-4 rounded-lg cursor-pointer transition-colors"
-                      style={{
-                        backgroundColor: isSelected ? 'rgba(13, 148, 136, 0.08)' : '#1a1a1a',
-                        border: isSelected ? '1px solid rgba(13, 148, 136, 0.3)' : '1px solid #333333'
-                      }}
+                      className={cn(
+                        "flex items-center gap-4 p-4 rounded-lg cursor-pointer transition-colors",
+                        isSelected ? "bg-success/10 border border-success/30" : "bg-muted border border-border"
+                      )}
                     >
                       <Checkbox
                         checked={isSelected}
                         onCheckedChange={() => handleQuarterToggle(quarter.id)}
-                        className="data-[state=checked]:bg-teal-600 data-[state=checked]:border-teal-600"
-                        style={{
-                          borderColor: isSelected ? '#0d9488' : '#404040',
-                          backgroundColor: isSelected ? '#0d9488' : 'transparent'
-                        }}
+                        className="data-[state=checked]:bg-success data-[state=checked]:border-success"
                       />
                       <div className="flex-1">
-                        <div className="text-sm font-semibold" style={{ color: '#f5f5f5' }}>{quarter.name}</div>
-                        <div className="text-xs" style={{ color: '#737373' }}>
+                        <div className="text-sm font-semibold text-foreground">{quarter.name}</div>
+                        <div className="text-xs text-muted-foreground">
                           {format(new Date(quarter.startDate), 'MMM d')} — {format(new Date(quarter.endDate), 'MMM d, yyyy')}
                         </div>
                       </div>
                       {outOfRange && (
                         <span 
-                          className="px-2.5 py-1 rounded text-[11px] font-medium"
-                          style={{
-                            backgroundColor: 'rgba(115, 115, 115, 0.15)',
-                            border: '1px solid rgba(115, 115, 115, 0.3)',
-                            color: '#8a8a8a'
-                          }}
+                          className="px-2.5 py-1 rounded text-[11px] font-medium bg-muted-foreground/15 border border-muted-foreground/30 text-muted-foreground"
                         >
                           Out of range
                         </span>
@@ -923,7 +902,7 @@ export function SnapshotDrawer({ isOpen, onClose, snapshotId, onSave }: Snapshot
                 })}
               </div>
 
-              <p className="text-xs" style={{ color: '#737373' }}>
+              <p className="text-xs text-muted-foreground">
                 Quarters must fall within the snapshot date range
               </p>
             </TabsContent>
@@ -932,10 +911,9 @@ export function SnapshotDrawer({ isOpen, onClose, snapshotId, onSave }: Snapshot
             <TabsContent value="themes" className="p-4 space-y-4 m-0">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <h3 className="font-medium" style={{ color: '#f5f5f5' }}>Link Themes</h3>
+                  <h3 className="font-medium text-foreground">Link Themes</h3>
                   <span 
-                    className="px-2 py-0.5 rounded text-xs font-medium"
-                    style={{ backgroundColor: '#333333', color: '#a3a3a3' }}
+                    className="px-2 py-0.5 rounded text-xs font-medium bg-muted text-muted-foreground"
                   >
                     {selectedThemes.length}
                   </span>
@@ -944,23 +922,18 @@ export function SnapshotDrawer({ isOpen, onClose, snapshotId, onSave }: Snapshot
 
               {/* Search */}
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4" style={{ color: '#737373' }} />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <input
                   value={themeSearch}
                   onChange={(e) => setThemeSearch(e.target.value)}
                   placeholder="Search themes..."
-                  className="w-full pl-9 pr-4 py-3 rounded-lg text-sm"
-                  style={{
-                    backgroundColor: '#1a1a1a',
-                    border: '1px solid #333333',
-                    color: '#f5f5f5'
-                  }}
+                  className="w-full pl-9 pr-4 py-3 rounded-lg text-sm bg-muted border border-border text-foreground"
                 />
               </div>
 
               {/* Empty State */}
               {filteredThemes.length === 0 && (
-                <div className="text-center py-8" style={{ color: '#737373' }}>
+                <div className="text-center py-8 text-muted-foreground">
                   {themes.length === 0 ? 'No themes available' : 'No themes match your search'}
                 </div>
               )}
@@ -973,39 +946,26 @@ export function SnapshotDrawer({ isOpen, onClose, snapshotId, onSave }: Snapshot
                   return (
                     <label
                       key={theme.id}
-                      className="flex items-center gap-4 p-4 rounded-lg cursor-pointer transition-colors"
-                      style={{
-                        backgroundColor: isSelected ? 'rgba(13, 148, 136, 0.08)' : '#1a1a1a',
-                        border: isSelected ? '1px solid rgba(13, 148, 136, 0.3)' : '1px solid #333333'
-                      }}
+                      className={cn(
+                        "flex items-center gap-4 p-4 rounded-lg cursor-pointer transition-colors",
+                        isSelected ? "bg-success/10 border border-success/30" : "bg-muted border border-border"
+                      )}
                     >
                       <Checkbox
                         checked={isSelected}
                         onCheckedChange={() => handleThemeToggle(theme.id)}
-                        className="data-[state=checked]:bg-teal-600 data-[state=checked]:border-teal-600"
-                        style={{
-                          borderColor: isSelected ? '#0d9488' : '#404040',
-                          backgroundColor: isSelected ? '#0d9488' : 'transparent'
-                        }}
+                        className="data-[state=checked]:bg-success data-[state=checked]:border-success"
                       />
                       <div className="flex-1">
-                        <div className="text-sm font-semibold" style={{ color: '#f5f5f5' }}>{theme.name}</div>
+                        <div className="text-sm font-semibold text-foreground">{theme.name}</div>
                       </div>
                       <span 
-                        className="px-2.5 py-1 rounded text-[11px] font-medium"
-                        style={
+                        className={cn(
+                          "px-2.5 py-1 rounded text-[11px] font-medium",
                           theme.status === 'active' 
-                            ? {
-                                backgroundColor: 'rgba(92, 124, 92, 0.15)',
-                                border: '1px solid rgba(92, 124, 92, 0.3)',
-                                color: '#6b9b6b'
-                              }
-                            : {
-                                backgroundColor: 'rgba(37, 99, 235, 0.15)',
-                                border: '1px solid rgba(37, 99, 235, 0.3)',
-                                color: '#2563eb'
-                              }
-                        }
+                            ? "bg-success/15 border border-success/30 text-success"
+                            : "bg-primary/15 border border-primary/30 text-primary"
+                        )}
                       >
                         {theme.status === 'active' ? 'Active' : 'Proposed'}
                       </span>

@@ -1391,7 +1391,7 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
                                   barPos.continuesLeft ? "rounded-l-none" : "rounded-l-full",
                                   barPos.continuesRight ? "rounded-r-none" : "rounded-r-full"
                                 )}
-                                style={{ background: STATUS_BAR_GRADIENTS[item.status] || 'linear-gradient(90deg, #2563eb, #60a5fa)', position: 'relative', zIndex: 5 }}
+                                style={{ background: STATUS_BAR_GRADIENTS[item.status] || 'linear-gradient(90deg, hsl(var(--primary)), hsl(var(--primary) / 0.7))', position: 'relative', zIndex: 5 }}
                               >
 
                                 {/* Milestones - Properly centered on bar */}

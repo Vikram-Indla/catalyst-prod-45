@@ -303,7 +303,7 @@ const POBAWidget: React.FC<POBAWidgetProps> = ({
                         <span className="text-gray-500 flex items-center gap-2">
                           <FileCheck className="w-3 h-3" /> Closed
                         </span>
-                        <span className="font-semibold" style={{ color: "#0d9488" }}>
+                        <span className="font-semibold text-success">
                           {resource.closed}
                         </span>
                       </div>
@@ -313,7 +313,7 @@ const POBAWidget: React.FC<POBAWidgetProps> = ({
                         <span className="text-gray-600 font-medium flex items-center gap-2">
                           <TrendingUp className="w-3 h-3" /> Total Throughput
                         </span>
-                        <span className="font-bold" style={{ color: "#2563eb" }}>
+                        <span className="font-bold text-primary">
                           {total}
                         </span>
                       </div>
@@ -342,7 +342,7 @@ const POBAWidget: React.FC<POBAWidgetProps> = ({
           Showing {visibleResources.length} of {resources.length} resources
         </span>
         <span>
-          Total Closed: <strong style={{ color: "#0d9488" }}>{totalClosed}</strong>
+          Total Closed: <strong className="text-success">{totalClosed}</strong>
         </span>
       </div>
     </div>
