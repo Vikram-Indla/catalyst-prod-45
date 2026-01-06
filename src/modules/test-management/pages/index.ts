@@ -7,6 +7,7 @@ export { TestCaseEditorPage } from './TestCaseEditorPage';
 export { TestCyclesPage } from './TestCyclesPage';
 export { CycleDetailPage } from './CycleDetailPage';
 export { DefectsPage } from './DefectsPage';
+export { TMDefectsPage } from './TMDefectsPage';
 export { ReportsPage } from './ReportsPage';
 export { SettingsPage } from './SettingsPage';
 export { TMSettingsPage } from './TMSettingsPage';
