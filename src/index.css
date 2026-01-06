@@ -1095,31 +1095,114 @@
 }
 
 /* ════════════════════════════════════════════════════════════════════════════
-   SIDEBAR ACTIVE STATES — Scoped to sidebar elements ONLY
+   SIDE PANEL (LEFT NAV) — EXPLICIT LOCKDOWN (MANDATORY)
+   Treat as PRIMARY NAV SURFACE with its own elevation.
+   Do NOT let it inherit page defaults.
    ════════════════════════════════════════════════════════════════════════════ */
 
 @layer components {
-  /* Active sidebar items should be blue - ONLY sidebar elements */
+  /* === 1) SIDE PANEL CONTAINER === */
+  aside,
+  [data-sidebar],
+  .sidebar,
+  [class*="Sidebar"] {
+    background-color: var(--bg-1);
+    border-right: 1px solid var(--divider);
+    box-shadow: inset -1px 0 0 var(--divider);
+  }
+  
+  /* === 2) SECTION HEADERS (e.g., "Enterprise", "Test Management") === */
+  aside [data-sidebar="group-label"],
+  [data-sidebar] [data-sidebar="group-label"],
+  .sidebar-section-header,
+  [class*="SidebarGroupLabel"] {
+    color: var(--fg-3);
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    /* MUST NOT use disabled color */
+  }
+  
+  /* === 3) NAV ITEMS (default state) === */
+  aside [data-sidebar="menu-button"],
+  [data-sidebar] [data-sidebar="menu-button"],
+  .sidebar-nav-item,
+  [class*="SidebarMenuButton"] {
+    color: var(--fg-2);
+    background: transparent;
+  }
+  aside [data-sidebar="menu-button"] svg,
+  [data-sidebar] [data-sidebar="menu-button"] svg,
+  .sidebar-nav-item svg {
+    color: currentColor;
+  }
+  
+  /* === 4) NAV ITEM HOVER === */
+  aside [data-sidebar="menu-button"]:hover,
+  [data-sidebar] [data-sidebar="menu-button"]:hover,
+  .sidebar-nav-item:hover {
+    background-color: rgba(92,124,92,0.08) !important;
+    color: var(--fg-1) !important;
+  }
+  aside [data-sidebar="menu-button"]:hover svg,
+  [data-sidebar] [data-sidebar="menu-button"]:hover svg,
+  .sidebar-nav-item:hover svg {
+    color: var(--fg-1);
+  }
+  
+  /* === 5) NAV ITEM ACTIVE (current route) === */
+  aside [data-sidebar="menu-button"][data-active="true"],
+  aside [data-sidebar="menu-button"].active,
+  aside [aria-current="page"],
   [data-sidebar] [data-active="true"],
   [data-sidebar] .active,
   [data-sidebar="menu-button"][data-state="active"],
-  [data-sidebar="menu-button"][data-active="true"] {
-    background-color: hsl(var(--sidebar-accent)) !important;
-    color: hsl(var(--sidebar-accent-foreground)) !important;
+  .sidebar-nav-item--active,
+  [class*="SidebarMenuButton"][data-active="true"] {
+    background-color: rgba(92,124,92,0.12) !important;
+    color: var(--fg-1) !important;
+    position: relative;
+  }
+  /* Left indicator bar for active item */
+  aside [data-sidebar="menu-button"][data-active="true"]::before,
+  aside [data-sidebar="menu-button"].active::before,
+  aside [aria-current="page"]::before,
+  [data-sidebar] [data-active="true"]::before,
+  [data-sidebar] .active::before,
+  .sidebar-nav-item--active::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 4px;
+    bottom: 4px;
+    width: 2px;
+    background-color: var(--brand-gold);
+    border-radius: 0 1px 1px 0;
+  }
+  aside [data-sidebar="menu-button"][data-active="true"] svg,
+  aside [data-sidebar="menu-button"].active svg,
+  [data-sidebar] [data-active="true"] svg,
+  .sidebar-nav-item--active svg {
+    color: var(--fg-1);
   }
   
-  /* Sidebar menu items */
-  [data-sidebar="menu-button"] {
-    color: hsl(var(--text-secondary));
+  /* === 6) COUNTERS / BADGES IN SIDE PANEL === */
+  aside .badge,
+  aside [class*="Badge"],
+  [data-sidebar] .badge,
+  [data-sidebar] [class*="Badge"] {
+    /* MUST use semantic badge tokens only - no raw gray/blue pills */
+    /* Minimum contrast = fg-2 */
   }
   
-  [data-sidebar="menu-button"]:hover {
-    background-color: hsl(var(--surface-hover));
-  }
-  
-  .dark [data-sidebar="menu-button"]:hover,
-  [data-theme="dark"] [data-sidebar="menu-button"]:hover {
-    background-color: hsl(var(--surface-hover));
+  /* === DARK MODE SIDEBAR OVERRIDES === */
+  .dark aside,
+  .dark [data-sidebar],
+  .dark .sidebar,
+  [data-theme="dark"] aside,
+  [data-theme="dark"] [data-sidebar],
+  [data-theme="dark"] .sidebar {
+    background-color: var(--bg-1);
+    border-right-color: var(--divider);
   }
   
   /* Dark mode contrast utilities for muted elements */
@@ -2665,6 +2748,7 @@
 [data-theme="dark"] [class*="Sidebar"] [class*="active"],
 [data-theme="dark"] [class*="Sidebar"] [aria-current="page"] {
   background-color: var(--sidebar-active) !important;
+  color: var(--fg-1) !important;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
