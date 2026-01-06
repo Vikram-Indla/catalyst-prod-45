@@ -19,7 +19,11 @@ const VIOLATION_PATTERNS = {
   // Hardcoded white with opacity
   whiteOpacity: /\b(text|bg|border|ring)-white\/([\d]+)\b/,
   // Raw white classes
-  rawWhite: /\b(text-white|bg-white|border-white|ring-white)\b(?!\/)/,
+  rawWhite: /\b(text-white|bg-white|border-white|ring-white)\b/,
+  // Hardcoded hex colors in Tailwind arbitrary values
+  hexArbitrary: /\b(text|bg|border|ring|fill|stroke)-\[#[0-9a-fA-F]{3,8}\]/,
+  // RGB/HSL arbitrary colors
+  rgbArbitrary: /\b(text|bg|border|ring|fill|stroke)-\[(rgb|hsl)a?\(/,
 };
 
 // CSS property patterns for inline style violations

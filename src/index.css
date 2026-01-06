@@ -4304,3 +4304,228 @@ table .text-gray-500,
    - --chart-7: #ff6b6b (coral)
    - --chart-8: #f2b85a (amber)
    ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   CATALYST V5 — HARDCODED HEX COLOR OVERRIDES (DARK MODE)
+   Catch common inline hex patterns used across the codebase
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* === GitHub-style Gray Hex Colors → V5 Tokens === */
+
+/* Light gray hex text (muted) */
+.dark [class*="text-\\[\\#8B949E\\]"],
+.dark [class*="text-\\[\\#6E7681\\]"],
+.dark [class*="text-\\[\\#8C8C8C\\]"],
+.dark [class*="text-\\[\\#737373\\]"],
+.dark [class*="text-\\[\\#999999\\]"],
+.dark [class*="text-\\[\\#a3a3a3\\]"],
+[data-theme="dark"] [class*="text-\\[\\#8B949E\\]"],
+[data-theme="dark"] [class*="text-\\[\\#6E7681\\]"],
+[data-theme="dark"] [class*="text-\\[\\#8C8C8C\\]"],
+[data-theme="dark"] [class*="text-\\[\\#737373\\]"],
+[data-theme="dark"] [class*="text-\\[\\#999999\\]"],
+[data-theme="dark"] [class*="text-\\[\\#a3a3a3\\]"] {
+  color: var(--fg-3) !important;
+}
+
+/* Dark gray hex text (primary in light mode) */
+.dark [class*="text-\\[\\#24292F\\]"],
+.dark [class*="text-\\[\\#1f2328\\]"],
+.dark [class*="text-\\[\\#0a0a0a\\]"],
+.dark [class*="text-\\[\\#0f0f0f\\]"],
+.dark [class*="text-\\[\\#171717\\]"],
+.dark [class*="text-\\[\\#262626\\]"],
+.dark [class*="text-\\[\\#404040\\]"],
+.dark [class*="text-\\[\\#525252\\]"],
+[data-theme="dark"] [class*="text-\\[\\#24292F\\]"],
+[data-theme="dark"] [class*="text-\\[\\#1f2328\\]"],
+[data-theme="dark"] [class*="text-\\[\\#0a0a0a\\]"],
+[data-theme="dark"] [class*="text-\\[\\#0f0f0f\\]"],
+[data-theme="dark"] [class*="text-\\[\\#171717\\]"],
+[data-theme="dark"] [class*="text-\\[\\#262626\\]"],
+[data-theme="dark"] [class*="text-\\[\\#404040\\]"],
+[data-theme="dark"] [class*="text-\\[\\#525252\\]"] {
+  color: var(--fg-1) !important;
+}
+
+/* White hex text */
+.dark [class*="text-\\[\\#E6EDF3\\]"],
+.dark [class*="text-\\[\\#ffffff\\]"],
+.dark [class*="text-\\[\\#FFFFFF\\]"],
+.dark [class*="text-\\[\\#fff\\]"],
+.dark [class*="text-\\[\\#FFF\\]"],
+.dark [class*="text-\\[\\#e5e5e5\\]"],
+.dark [class*="text-\\[\\#ebebeb\\]"],
+[data-theme="dark"] [class*="text-\\[\\#E6EDF3\\]"],
+[data-theme="dark"] [class*="text-\\[\\#ffffff\\]"],
+[data-theme="dark"] [class*="text-\\[\\#FFFFFF\\]"],
+[data-theme="dark"] [class*="text-\\[\\#fff\\]"],
+[data-theme="dark"] [class*="text-\\[\\#FFF\\]"],
+[data-theme="dark"] [class*="text-\\[\\#e5e5e5\\]"],
+[data-theme="dark"] [class*="text-\\[\\#ebebeb\\]"] {
+  color: var(--fg-1) !important;
+}
+
+/* === GitHub-style Background Hex Colors → V5 Surfaces === */
+
+/* White/light backgrounds */
+.dark [class*="bg-\\[\\#ffffff\\]"],
+.dark [class*="bg-\\[\\#FFFFFF\\]"],
+.dark [class*="bg-\\[\\#fff\\]"],
+.dark [class*="bg-\\[\\#FFF\\]"],
+.dark [class*="bg-\\[\\#FAFBFC\\]"],
+.dark [class*="bg-\\[\\#F6F8FA\\]"],
+.dark [class*="bg-\\[\\#fafafa\\]"],
+.dark [class*="bg-\\[\\#f5f5f5\\]"],
+.dark [class*="bg-\\[\\#f8f8f8\\]"],
+[data-theme="dark"] [class*="bg-\\[\\#ffffff\\]"],
+[data-theme="dark"] [class*="bg-\\[\\#FFFFFF\\]"],
+[data-theme="dark"] [class*="bg-\\[\\#fff\\]"],
+[data-theme="dark"] [class*="bg-\\[\\#FFF\\]"],
+[data-theme="dark"] [class*="bg-\\[\\#FAFBFC\\]"],
+[data-theme="dark"] [class*="bg-\\[\\#F6F8FA\\]"],
+[data-theme="dark"] [class*="bg-\\[\\#fafafa\\]"],
+[data-theme="dark"] [class*="bg-\\[\\#f5f5f5\\]"],
+[data-theme="dark"] [class*="bg-\\[\\#f8f8f8\\]"] {
+  background-color: var(--bg-2) !important;
+}
+
+/* GitHub dark surfaces */
+.dark [class*="bg-\\[\\#0D1117\\]"],
+.dark [class*="bg-\\[\\#161B22\\]"],
+.dark [class*="bg-\\[\\#21262D\\]"],
+.dark [class*="bg-\\[\\#30363D\\]"],
+.dark [class*="bg-\\[\\#0f0f0f\\]"],
+.dark [class*="bg-\\[\\#1a1a1a\\]"],
+.dark [class*="bg-\\[\\#262626\\]"],
+[data-theme="dark"] [class*="bg-\\[\\#0D1117\\]"],
+[data-theme="dark"] [class*="bg-\\[\\#161B22\\]"],
+[data-theme="dark"] [class*="bg-\\[\\#21262D\\]"],
+[data-theme="dark"] [class*="bg-\\[\\#30363D\\]"],
+[data-theme="dark"] [class*="bg-\\[\\#0f0f0f\\]"],
+[data-theme="dark"] [class*="bg-\\[\\#1a1a1a\\]"],
+[data-theme="dark"] [class*="bg-\\[\\#262626\\]"] {
+  background-color: var(--bg-1) !important;
+}
+
+/* === GitHub-style Border Hex Colors → V5 Strokes === */
+
+.dark [class*="border-\\[\\#E1E4E8\\]"],
+.dark [class*="border-\\[\\#30363D\\]"],
+.dark [class*="border-\\[\\#e5e5e5\\]"],
+.dark [class*="border-\\[\\#d9d9d9\\]"],
+.dark [class*="border-\\[\\#f0f0f0\\]"],
+[data-theme="dark"] [class*="border-\\[\\#E1E4E8\\]"],
+[data-theme="dark"] [class*="border-\\[\\#30363D\\]"],
+[data-theme="dark"] [class*="border-\\[\\#e5e5e5\\]"],
+[data-theme="dark"] [class*="border-\\[\\#d9d9d9\\]"],
+[data-theme="dark"] [class*="border-\\[\\#f0f0f0\\]"] {
+  border-color: var(--divider) !important;
+}
+
+/* === HOVER STATES FOR HEX PATTERNS === */
+
+.dark [class*="hover\\:bg-\\[\\#F6F8FA\\]"]:hover,
+.dark [class*="hover\\:bg-\\[\\#21262D\\]"]:hover,
+.dark [class*="hover\\:bg-\\[\\#E1E4E8\\]"]:hover,
+.dark [class*="hover\\:bg-\\[\\#30363D\\]"]:hover,
+[data-theme="dark"] [class*="hover\\:bg-\\[\\#F6F8FA\\]"]:hover,
+[data-theme="dark"] [class*="hover\\:bg-\\[\\#21262D\\]"]:hover,
+[data-theme="dark"] [class*="hover\\:bg-\\[\\#E1E4E8\\]"]:hover,
+[data-theme="dark"] [class*="hover\\:bg-\\[\\#30363D\\]"]:hover {
+  background-color: var(--hover) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   CATALYST V5 — DARK:* VARIANT OVERRIDES
+   Catch dark:bg-*, dark:text-*, dark:border-* patterns
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* dark:bg-* surface patterns */
+.dark .dark\:bg-gray-700,
+.dark .dark\:bg-gray-800,
+.dark .dark\:bg-gray-900,
+.dark .dark\:bg-slate-700,
+.dark .dark\:bg-slate-800,
+.dark .dark\:bg-slate-900,
+.dark .dark\:bg-zinc-700,
+.dark .dark\:bg-zinc-800,
+.dark .dark\:bg-zinc-900,
+.dark .dark\:bg-neutral-700,
+.dark .dark\:bg-neutral-800,
+.dark .dark\:bg-neutral-900 {
+  background-color: var(--bg-1) !important;
+}
+
+/* dark:text-* foreground patterns */
+.dark .dark\:text-gray-100,
+.dark .dark\:text-gray-200,
+.dark .dark\:text-gray-300,
+.dark .dark\:text-slate-100,
+.dark .dark\:text-slate-200,
+.dark .dark\:text-slate-300,
+.dark .dark\:text-zinc-100,
+.dark .dark\:text-zinc-200,
+.dark .dark\:text-zinc-300,
+.dark .dark\:text-neutral-100,
+.dark .dark\:text-neutral-200,
+.dark .dark\:text-neutral-300 {
+  color: var(--fg-1) !important;
+}
+
+.dark .dark\:text-gray-400,
+.dark .dark\:text-slate-400,
+.dark .dark\:text-zinc-400,
+.dark .dark\:text-neutral-400 {
+  color: var(--fg-3) !important;
+}
+
+.dark .dark\:text-gray-500,
+.dark .dark\:text-slate-500,
+.dark .dark\:text-zinc-500,
+.dark .dark\:text-neutral-500 {
+  color: var(--fg-2) !important;
+}
+
+/* dark:border-* patterns */
+.dark .dark\:border-gray-600,
+.dark .dark\:border-gray-700,
+.dark .dark\:border-gray-800,
+.dark .dark\:border-slate-600,
+.dark .dark\:border-slate-700,
+.dark .dark\:border-slate-800,
+.dark .dark\:border-zinc-600,
+.dark .dark\:border-zinc-700,
+.dark .dark\:border-zinc-800,
+.dark .dark\:border-neutral-600,
+.dark .dark\:border-neutral-700,
+.dark .dark\:border-neutral-800 {
+  border-color: var(--divider) !important;
+}
+
+/* dark:hover:bg-* patterns */
+.dark .dark\:hover\:bg-gray-700:hover,
+.dark .dark\:hover\:bg-gray-800:hover,
+.dark .dark\:hover\:bg-slate-700:hover,
+.dark .dark\:hover\:bg-slate-800:hover,
+.dark .dark\:hover\:bg-zinc-700:hover,
+.dark .dark\:hover\:bg-zinc-800:hover,
+.dark .dark\:hover\:bg-neutral-700:hover,
+.dark .dark\:hover\:bg-neutral-800:hover {
+  background-color: var(--bg-3) !important;
+}
+
+.dark .dark\:hover\:text-gray-100:hover,
+.dark .dark\:hover\:text-gray-200:hover,
+.dark .dark\:hover\:text-gray-300:hover,
+.dark .dark\:hover\:text-slate-100:hover,
+.dark .dark\:hover\:text-slate-200:hover,
+.dark .dark\:hover\:text-slate-300:hover,
+.dark .dark\:hover\:text-zinc-100:hover,
+.dark .dark\:hover\:text-zinc-200:hover,
+.dark .dark\:hover\:text-zinc-300:hover,
+.dark .dark\:hover\:text-neutral-100:hover,
+.dark .dark\:hover\:text-neutral-200:hover,
+.dark .dark\:hover\:text-neutral-300:hover {
+  color: var(--fg-1) !important;
+}
