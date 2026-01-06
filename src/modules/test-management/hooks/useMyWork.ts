@@ -48,12 +48,14 @@ export function useMyWork() {
         .select(`
           id,
           current_status,
-          tm_test_cases (id, case_key, title, priority_id),
-          tm_test_cycles (id, cycle_key, title, status)
+          cycle_id,
+          test_case_id,
+          tm_test_cases:test_case_id (id, case_key, title, priority_id),
+          tm_test_cycles:cycle_id (id, cycle_key, name, status, planned_end)
         `)
         .eq('assigned_to', user.id)
         .in('current_status', ['not_run', 'in_progress'])
-        .order('created_at', { ascending: false })
+        .order('added_at', { ascending: false })
         .limit(50);
 
       // Fetch recent runs by user
@@ -67,10 +69,13 @@ export function useMyWork() {
           run_number,
           status,
           completed_at,
-          tm_cycle_scope (
+          scope_id,
+          tm_cycle_scope:scope_id (
             id,
-            tm_test_cases (id, case_key, title),
-            tm_test_cycles (id, cycle_key, title)
+            test_case_id,
+            cycle_id,
+            tm_test_cases:test_case_id (id, case_key, title),
+            tm_test_cycles:cycle_id (id, cycle_key, name)
           )
         `)
         .eq('executed_by', user.id)
@@ -84,7 +89,8 @@ export function useMyWork() {
         title: item.tm_test_cases?.title || 'Unknown',
         key: item.tm_test_cases?.case_key || '',
         status: item.current_status,
-        cycle_title: item.tm_test_cycles?.title,
+        cycle_title: item.tm_test_cycles?.name,
+        due_date: item.tm_test_cycles?.planned_end,
       }));
 
       // Filter pending (not_run only)
@@ -97,7 +103,7 @@ export function useMyWork() {
         title: run.tm_cycle_scope?.tm_test_cases?.title || 'Unknown',
         key: `Run #${run.run_number}`,
         status: run.status,
-        cycle_title: run.tm_cycle_scope?.tm_test_cycles?.title,
+        cycle_title: run.tm_cycle_scope?.tm_test_cycles?.name,
       }));
 
       // Calculate stats
@@ -140,12 +146,14 @@ export function useAssignedWork(userId: string | null) {
         .select(`
           id,
           current_status,
-          tm_test_cases (id, case_key, title, priority_id),
-          tm_test_cycles (id, cycle_key, title, status, planned_end)
+          test_case_id,
+          cycle_id,
+          tm_test_cases:test_case_id (id, case_key, title, priority_id),
+          tm_test_cycles:cycle_id (id, cycle_key, name, status, planned_end)
         `)
         .eq('assigned_to', userId)
         .neq('current_status', 'passed')
-        .order('created_at', { ascending: false });
+        .order('added_at', { ascending: false });
 
       return (data || []).map((item: any) => ({
         id: item.id,
@@ -153,7 +161,7 @@ export function useAssignedWork(userId: string | null) {
         title: item.tm_test_cases?.title || 'Unknown',
         key: item.tm_test_cases?.case_key || '',
         status: item.current_status,
-        cycle_title: item.tm_test_cycles?.title,
+        cycle_title: item.tm_test_cycles?.name,
         due_date: item.tm_test_cycles?.planned_end,
       }));
     },
