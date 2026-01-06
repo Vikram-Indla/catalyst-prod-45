@@ -98,6 +98,32 @@ export default {
           border: "hsl(var(--info-border) / 0.20)",
         },
         
+        /* === CATALYST V5 SEMANTIC COLORS (Premium, muted in dark mode) === */
+        sem: {
+          danger: "var(--sem-danger)",
+          warning: "var(--sem-warning)",
+          success: "var(--sem-success)",
+          info: "var(--sem-info)",
+          critical: "var(--sem-critical)",
+          blocked: "var(--sem-blocked)",
+          overdue: "var(--sem-overdue)",
+          high: "var(--sem-high)",
+          medium: "var(--sem-medium)",
+          low: "var(--sem-low)",
+          done: "var(--sem-done)",
+          "danger-bg": "var(--sem-danger-bg)",
+          "warning-bg": "var(--sem-warning-bg)",
+          "success-bg": "var(--sem-success-bg)",
+          "info-bg": "var(--sem-info-bg)",
+          "critical-bg": "var(--sem-critical-bg)",
+          "blocked-bg": "var(--sem-blocked-bg)",
+          "overdue-bg": "var(--sem-overdue-bg)",
+          "high-bg": "var(--sem-high-bg)",
+          "medium-bg": "var(--sem-medium-bg)",
+          "low-bg": "var(--sem-low-bg)",
+          "done-bg": "var(--sem-done-bg)",
+        },
+        
         /* === FOCUS & OVERLAY === */
         "focus-ring": "hsl(var(--focus-ring))",
         overlay: "hsl(var(--overlay))",

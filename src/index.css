@@ -110,6 +110,37 @@
     --focus-ring: 217 91% 60%;           /* #3b82f6 */
     --overlay: 0 0% 0%;                  /* black - use with alpha */
     
+    /* === CATALYST V5 SEMANTIC TOKENS (Light Mode) === */
+    --sem-danger: #dc2626;               /* Red-600 for light mode */
+    --sem-warning: #d97706;              /* Amber-600 for light mode */
+    --sem-success: #0d9488;              /* Teal-600 for light mode */
+    --sem-info: #2563eb;                 /* Blue-600 for light mode */
+    --sem-critical: #b91c1c;             /* Red-700 */
+    --sem-blocked: #dc2626;              /* Same as danger */
+    --sem-overdue: #dc2626;              /* Same as danger */
+    --sem-high: #d97706;                 /* Warning tone */
+    --sem-medium: #6b7280;               /* Gray-500 */
+    --sem-low: #9ca3af;                  /* Gray-400 */
+    --sem-done: #0d9488;                 /* Success tone */
+    
+    --sem-danger-bg: rgba(220, 38, 38, 0.08);
+    --sem-warning-bg: rgba(217, 119, 6, 0.08);
+    --sem-success-bg: rgba(13, 148, 136, 0.08);
+    --sem-info-bg: rgba(37, 99, 235, 0.08);
+    --sem-critical-bg: rgba(185, 28, 28, 0.10);
+    --sem-blocked-bg: rgba(220, 38, 38, 0.08);
+    --sem-overdue-bg: rgba(220, 38, 38, 0.08);
+    --sem-high-bg: rgba(217, 119, 6, 0.08);
+    --sem-medium-bg: rgba(107, 114, 128, 0.08);
+    --sem-low-bg: rgba(156, 163, 175, 0.08);
+    --sem-done-bg: rgba(13, 148, 136, 0.08);
+    
+    --sem-danger-border: rgba(220, 38, 38, 0.25);
+    --sem-warning-border: rgba(217, 119, 6, 0.25);
+    --sem-success-border: rgba(13, 148, 136, 0.25);
+    --sem-info-border: rgba(37, 99, 235, 0.25);
+    --sem-critical-border: rgba(185, 28, 28, 0.30);
+    
     /* === SHADOW TOKENS (as HSL base for shadows) === */
     --shadow-color: 0 0% 10%;            /* #1a1a1a */
     --shadow-elev-1: 0 1px 3px hsl(0 0% 0% / 0.05), 0 1px 2px hsl(0 0% 0% / 0.03);
@@ -555,32 +586,72 @@
     --table-empty-title: #f5f5f5;           /* text-primary */
     --table-empty-text: #a3a3a3;            /* text-secondary */
     
+    /* ═══════════════════════════════════════════════════════════════
+       CATALYST V5 SEMANTIC COLOR SYSTEM — PREMIUM DARK MODE
+       Bloomberg/Linear/Notion grade: Muted, calm, intentional
+       No neon colors. Semantic chips use tinted backgrounds.
+       ═══════════════════════════════════════════════════════════════ */
+    
+    /* === SEMANTIC TEXT TOKENS (Premium, readable) === */
+    /* These replace neon text-red-400, text-orange-400, etc. */
+    --sem-danger: #e57373;              /* Muted coral - not neon red */
+    --sem-warning: #ffb74d;             /* Muted amber - not neon orange */
+    --sem-success: #4db6ac;             /* Muted teal - not neon green */
+    --sem-info: #64b5f6;                /* Muted sky - not neon blue */
+    --sem-critical: #ef9a9a;            /* Softer than danger for extreme states */
+    --sem-blocked: #e57373;             /* Same as danger */
+    --sem-overdue: #e57373;             /* Same as danger */
+    --sem-high: #ffb74d;                /* Warning tone for high priority */
+    --sem-medium: #90a4ae;              /* Neutral for medium priority */
+    --sem-low: #78909c;                 /* Muted gray-blue for low */
+    --sem-done: #4db6ac;                /* Success tone */
+    
+    /* === SEMANTIC BACKGROUND TOKENS (Tinted chips, subtle) === */
+    --sem-danger-bg: rgba(229, 115, 115, 0.12);
+    --sem-warning-bg: rgba(255, 183, 77, 0.12);
+    --sem-success-bg: rgba(77, 182, 172, 0.12);
+    --sem-info-bg: rgba(100, 181, 246, 0.12);
+    --sem-critical-bg: rgba(239, 154, 154, 0.15);
+    --sem-blocked-bg: rgba(229, 115, 115, 0.12);
+    --sem-overdue-bg: rgba(229, 115, 115, 0.12);
+    --sem-high-bg: rgba(255, 183, 77, 0.12);
+    --sem-medium-bg: rgba(144, 164, 174, 0.12);
+    --sem-low-bg: rgba(120, 144, 156, 0.12);
+    --sem-done-bg: rgba(77, 182, 172, 0.12);
+    
+    /* === SEMANTIC BORDER TOKENS (For chips with borders) === */
+    --sem-danger-border: rgba(229, 115, 115, 0.30);
+    --sem-warning-border: rgba(255, 183, 77, 0.30);
+    --sem-success-border: rgba(77, 182, 172, 0.30);
+    --sem-info-border: rgba(100, 181, 246, 0.30);
+    --sem-critical-border: rgba(239, 154, 154, 0.35);
+    
     /* Link colors (HSL triplets for hsl() usage) */
     --link-color: 217 91% 70%;
     --link-color-hover: 217 91% 78%;
     
-    /* Status colors (HEX for direct use) */
-    --status-success: #14b8a6;
-    --status-success-light: #2dd4bf;
-    --status-success-bg: rgba(20, 184, 166, 0.15);
-    --status-success-bg-hover: rgba(20, 184, 166, 0.2);
-    --status-success-border: rgba(20, 184, 166, 0.4);
+    /* Status colors (HEX for direct use) - Premium muted versions */
+    --status-success: #4db6ac;
+    --status-success-light: #80cbc4;
+    --status-success-bg: rgba(77, 182, 172, 0.12);
+    --status-success-bg-hover: rgba(77, 182, 172, 0.18);
+    --status-success-border: rgba(77, 182, 172, 0.30);
     
-    --status-warning: #f59e0b;
-    --status-warning-bg: rgba(245, 158, 11, 0.15);
-    --status-warning-border: rgba(245, 158, 11, 0.4);
+    --status-warning: #ffb74d;
+    --status-warning-bg: rgba(255, 183, 77, 0.12);
+    --status-warning-border: rgba(255, 183, 77, 0.30);
     
-    --status-info: #3b82f6;
-    --status-info-bg: rgba(59, 130, 246, 0.15);
-    --status-info-border: rgba(59, 130, 246, 0.4);
+    --status-info: #64b5f6;
+    --status-info-bg: rgba(100, 181, 246, 0.12);
+    --status-info-border: rgba(100, 181, 246, 0.30);
     
-    --status-muted: #6b7280;
-    --status-muted-bg: rgba(107, 114, 128, 0.15);
-    --status-muted-border: rgba(107, 114, 128, 0.4);
+    --status-muted: #90a4ae;
+    --status-muted-bg: rgba(144, 164, 174, 0.12);
+    --status-muted-border: rgba(144, 164, 174, 0.30);
     
-    --status-danger: #f87171;
-    --status-danger-bg: rgba(248, 113, 113, 0.15);
-    --status-danger-border: rgba(248, 113, 113, 0.4);
+    --status-danger: #e57373;
+    --status-danger-bg: rgba(229, 115, 115, 0.12);
+    --status-danger-border: rgba(229, 115, 115, 0.30);
     
     /* Secondary brand colors (HSL triplets) */
     --secondary-blue: 217 91% 60%;
@@ -588,16 +659,16 @@
     --secondary-olive: 120 26% 42%;
     --secondary-bronze: 30 24% 44%;
     --secondary-champagne: 34 40% 71%;
-    --secondary-blue-bg: rgba(59, 130, 246, 0.2);
-    --secondary-teal-bg: rgba(20, 184, 166, 0.2);
+    --secondary-blue-bg: rgba(59, 130, 246, 0.15);
+    --secondary-teal-bg: rgba(77, 182, 172, 0.12);
     
     /* Progress tokens (HEX) */
     --progress-bg: #404040;
     --progress-track: #404040;
     
     /* Brand background tokens (HEX with alpha) */
-    --brand-blue-bg: rgba(59, 130, 246, 0.2);
-    --brand-teal-bg: rgba(20, 184, 166, 0.15);
+    --brand-blue-bg: rgba(59, 130, 246, 0.15);
+    --brand-teal-bg: rgba(77, 182, 172, 0.12);
     
     /* Industry Backlog tokens - Dark — Surface-based, no bright borders */
     --industry-bg-page: #1a1a1a;
@@ -611,17 +682,17 @@
     --industry-text-muted: #a3a3a3;
     --industry-text-disabled: #737373;
     
-    /* Industry Status Colors - Dark */
-    --industry-status-new: #60a5fa;
-    --industry-status-progress: #3b82f6;
-    --industry-status-review: #a78bfa;
-    --industry-status-approved: #14b8a6;
-    --industry-status-blocked: #f87171;
+    /* Industry Status Colors - Dark (Premium muted) */
+    --industry-status-new: #64b5f6;
+    --industry-status-progress: #64b5f6;
+    --industry-status-review: #b39ddb;
+    --industry-status-approved: #4db6ac;
+    --industry-status-blocked: #e57373;
     
-    /* Industry Priority Colors - Dark */
-    --industry-priority-high: #3b82f6;
-    --industry-priority-medium: #60a5fa;
-    --industry-priority-low: #93c5fd;
+    /* Industry Priority Colors - Dark (Premium muted) */
+    --industry-priority-high: #ffb74d;
+    --industry-priority-medium: #90a4ae;
+    --industry-priority-low: #78909c;
     
     /* Dialog tokens - Dark — Surface elevation, subtle dividers */
     --dialog-bg: #1a1a1a;
@@ -636,7 +707,7 @@
     --dialog-input-bg: #262626;
     --dialog-input-border: rgba(255, 255, 255, 0.06);
     --dialog-label-color: #a3a3a3;
-    --dialog-label-required: #3b82f6;
+    --dialog-label-required: #64b5f6;
   }
   
   * {
@@ -1896,4 +1967,357 @@
   
   /* Shadow - depth indicator */
   --shadow: 0 4px 12px rgba(0,0,0,0.4);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   CATALYST V5 — SEMANTIC COLOR DRIFT NEUTRALIZATION
+   Bloomberg/Linear/Notion grade: No neon colors in dark mode
+   
+   This section converts all raw Tailwind semantic colors to premium muted versions.
+   text-red-*, text-orange-*, text-yellow-*, text-green-*, text-blue-* → muted
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   RED/DANGER — Muted coral, not neon
+   ═══════════════════════════════════════════════════════════════════════════ */
+.dark .text-red-300,
+.dark .text-red-400,
+.dark .text-red-500,
+.dark .text-red-600,
+[data-theme="dark"] .text-red-300,
+[data-theme="dark"] .text-red-400,
+[data-theme="dark"] .text-red-500,
+[data-theme="dark"] .text-red-600 {
+  color: var(--sem-danger) !important;
+}
+
+.dark .bg-red-50,
+.dark .bg-red-100,
+.dark .bg-red-900\/10,
+.dark .bg-red-900\/20,
+.dark .bg-red-900\/50,
+[data-theme="dark"] .bg-red-50,
+[data-theme="dark"] .bg-red-100,
+[data-theme="dark"] .bg-red-900\/10,
+[data-theme="dark"] .bg-red-900\/20,
+[data-theme="dark"] .bg-red-900\/50 {
+  background-color: var(--sem-danger-bg) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ORANGE/WARNING — Muted amber, not neon
+   ═══════════════════════════════════════════════════════════════════════════ */
+.dark .text-orange-300,
+.dark .text-orange-400,
+.dark .text-orange-500,
+.dark .text-orange-600,
+.dark .text-amber-300,
+.dark .text-amber-400,
+.dark .text-amber-500,
+.dark .text-amber-600,
+[data-theme="dark"] .text-orange-300,
+[data-theme="dark"] .text-orange-400,
+[data-theme="dark"] .text-orange-500,
+[data-theme="dark"] .text-orange-600,
+[data-theme="dark"] .text-amber-300,
+[data-theme="dark"] .text-amber-400,
+[data-theme="dark"] .text-amber-500,
+[data-theme="dark"] .text-amber-600 {
+  color: var(--sem-warning) !important;
+}
+
+.dark .bg-orange-50,
+.dark .bg-orange-100,
+.dark .bg-orange-900\/10,
+.dark .bg-orange-900\/20,
+.dark .bg-amber-50,
+.dark .bg-amber-100,
+.dark .bg-amber-900\/10,
+.dark .bg-amber-900\/20,
+[data-theme="dark"] .bg-orange-50,
+[data-theme="dark"] .bg-orange-100,
+[data-theme="dark"] .bg-orange-900\/10,
+[data-theme="dark"] .bg-orange-900\/20,
+[data-theme="dark"] .bg-amber-50,
+[data-theme="dark"] .bg-amber-100,
+[data-theme="dark"] .bg-amber-900\/10,
+[data-theme="dark"] .bg-amber-900\/20 {
+  background-color: var(--sem-warning-bg) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   YELLOW — Map to warning (amber), not neon yellow
+   ═══════════════════════════════════════════════════════════════════════════ */
+.dark .text-yellow-300,
+.dark .text-yellow-400,
+.dark .text-yellow-500,
+.dark .text-yellow-600,
+[data-theme="dark"] .text-yellow-300,
+[data-theme="dark"] .text-yellow-400,
+[data-theme="dark"] .text-yellow-500,
+[data-theme="dark"] .text-yellow-600 {
+  color: var(--sem-warning) !important;
+}
+
+.dark .bg-yellow-50,
+.dark .bg-yellow-100,
+.dark .bg-yellow-900\/10,
+.dark .bg-yellow-900\/20,
+[data-theme="dark"] .bg-yellow-50,
+[data-theme="dark"] .bg-yellow-100,
+[data-theme="dark"] .bg-yellow-900\/10,
+[data-theme="dark"] .bg-yellow-900\/20 {
+  background-color: var(--sem-warning-bg) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   GREEN/SUCCESS — Muted teal, not neon green
+   ═══════════════════════════════════════════════════════════════════════════ */
+.dark .text-green-300,
+.dark .text-green-400,
+.dark .text-green-500,
+.dark .text-green-600,
+.dark .text-emerald-300,
+.dark .text-emerald-400,
+.dark .text-emerald-500,
+.dark .text-emerald-600,
+.dark .text-teal-300,
+.dark .text-teal-400,
+.dark .text-teal-500,
+.dark .text-teal-600,
+[data-theme="dark"] .text-green-300,
+[data-theme="dark"] .text-green-400,
+[data-theme="dark"] .text-green-500,
+[data-theme="dark"] .text-green-600,
+[data-theme="dark"] .text-emerald-300,
+[data-theme="dark"] .text-emerald-400,
+[data-theme="dark"] .text-emerald-500,
+[data-theme="dark"] .text-emerald-600,
+[data-theme="dark"] .text-teal-300,
+[data-theme="dark"] .text-teal-400,
+[data-theme="dark"] .text-teal-500,
+[data-theme="dark"] .text-teal-600 {
+  color: var(--sem-success) !important;
+}
+
+.dark .bg-green-50,
+.dark .bg-green-100,
+.dark .bg-green-900\/10,
+.dark .bg-green-900\/20,
+.dark .bg-green-900\/50,
+.dark .bg-emerald-50,
+.dark .bg-emerald-100,
+.dark .bg-emerald-900\/10,
+.dark .bg-emerald-900\/20,
+.dark .bg-teal-50,
+.dark .bg-teal-100,
+.dark .bg-teal-900\/10,
+.dark .bg-teal-900\/20,
+[data-theme="dark"] .bg-green-50,
+[data-theme="dark"] .bg-green-100,
+[data-theme="dark"] .bg-green-900\/10,
+[data-theme="dark"] .bg-green-900\/20,
+[data-theme="dark"] .bg-green-900\/50,
+[data-theme="dark"] .bg-emerald-50,
+[data-theme="dark"] .bg-emerald-100,
+[data-theme="dark"] .bg-emerald-900\/10,
+[data-theme="dark"] .bg-emerald-900\/20,
+[data-theme="dark"] .bg-teal-50,
+[data-theme="dark"] .bg-teal-100,
+[data-theme="dark"] .bg-teal-900\/10,
+[data-theme="dark"] .bg-teal-900\/20 {
+  background-color: var(--sem-success-bg) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   BLUE/INFO — Muted sky, not neon blue
+   ═══════════════════════════════════════════════════════════════════════════ */
+.dark .text-blue-300,
+.dark .text-blue-400,
+.dark .text-blue-500,
+.dark .text-blue-600,
+.dark .text-sky-300,
+.dark .text-sky-400,
+.dark .text-sky-500,
+.dark .text-sky-600,
+[data-theme="dark"] .text-blue-300,
+[data-theme="dark"] .text-blue-400,
+[data-theme="dark"] .text-blue-500,
+[data-theme="dark"] .text-blue-600,
+[data-theme="dark"] .text-sky-300,
+[data-theme="dark"] .text-sky-400,
+[data-theme="dark"] .text-sky-500,
+[data-theme="dark"] .text-sky-600 {
+  color: var(--sem-info) !important;
+}
+
+.dark .bg-blue-50,
+.dark .bg-blue-100,
+.dark .bg-blue-900\/10,
+.dark .bg-blue-900\/20,
+.dark .bg-sky-50,
+.dark .bg-sky-100,
+.dark .bg-sky-900\/10,
+.dark .bg-sky-900\/20,
+[data-theme="dark"] .bg-blue-50,
+[data-theme="dark"] .bg-blue-100,
+[data-theme="dark"] .bg-blue-900\/10,
+[data-theme="dark"] .bg-blue-900\/20,
+[data-theme="dark"] .bg-sky-50,
+[data-theme="dark"] .bg-sky-100,
+[data-theme="dark"] .bg-sky-900\/10,
+[data-theme="dark"] .bg-sky-900\/20 {
+  background-color: var(--sem-info-bg) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   GRAY TEXT — Ensure readable, not washed out
+   Map gray-300/400/500 to proper text hierarchy
+   ═══════════════════════════════════════════════════════════════════════════ */
+.dark .text-gray-300,
+.dark .text-slate-300,
+.dark .text-neutral-300,
+.dark .text-zinc-300,
+[data-theme="dark"] .text-gray-300,
+[data-theme="dark"] .text-slate-300,
+[data-theme="dark"] .text-neutral-300,
+[data-theme="dark"] .text-zinc-300 {
+  color: var(--text-2) !important;
+}
+
+.dark .text-gray-400,
+.dark .text-slate-400,
+.dark .text-neutral-400,
+.dark .text-zinc-400,
+[data-theme="dark"] .text-gray-400,
+[data-theme="dark"] .text-slate-400,
+[data-theme="dark"] .text-neutral-400,
+[data-theme="dark"] .text-zinc-400 {
+  color: var(--text-3) !important;
+}
+
+.dark .text-gray-500,
+.dark .text-slate-500,
+.dark .text-neutral-500,
+.dark .text-zinc-500,
+[data-theme="dark"] .text-gray-500,
+[data-theme="dark"] .text-slate-500,
+[data-theme="dark"] .text-neutral-500,
+[data-theme="dark"] .text-zinc-500 {
+  color: var(--text-3) !important;
+}
+
+.dark .text-gray-600,
+.dark .text-slate-600,
+.dark .text-neutral-600,
+.dark .text-zinc-600,
+[data-theme="dark"] .text-gray-600,
+[data-theme="dark"] .text-slate-600,
+[data-theme="dark"] .text-neutral-600,
+[data-theme="dark"] .text-zinc-600 {
+  color: var(--text-3) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   PURPLE/VIOLET — Muted lavender for special states
+   ═══════════════════════════════════════════════════════════════════════════ */
+.dark .text-purple-300,
+.dark .text-purple-400,
+.dark .text-purple-500,
+.dark .text-violet-300,
+.dark .text-violet-400,
+.dark .text-violet-500,
+[data-theme="dark"] .text-purple-300,
+[data-theme="dark"] .text-purple-400,
+[data-theme="dark"] .text-purple-500,
+[data-theme="dark"] .text-violet-300,
+[data-theme="dark"] .text-violet-400,
+[data-theme="dark"] .text-violet-500 {
+  color: #b39ddb !important; /* Muted lavender */
+}
+
+.dark .bg-purple-50,
+.dark .bg-purple-100,
+.dark .bg-purple-900\/10,
+.dark .bg-purple-900\/20,
+.dark .bg-violet-50,
+.dark .bg-violet-100,
+.dark .bg-violet-900\/10,
+.dark .bg-violet-900\/20,
+[data-theme="dark"] .bg-purple-50,
+[data-theme="dark"] .bg-purple-100,
+[data-theme="dark"] .bg-purple-900\/10,
+[data-theme="dark"] .bg-purple-900\/20,
+[data-theme="dark"] .bg-violet-50,
+[data-theme="dark"] .bg-violet-100,
+[data-theme="dark"] .bg-violet-900\/10,
+[data-theme="dark"] .bg-violet-900\/20 {
+  background-color: rgba(179, 157, 219, 0.12) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   PINK/ROSE — Muted for special states
+   ═══════════════════════════════════════════════════════════════════════════ */
+.dark .text-pink-300,
+.dark .text-pink-400,
+.dark .text-pink-500,
+.dark .text-rose-300,
+.dark .text-rose-400,
+.dark .text-rose-500,
+[data-theme="dark"] .text-pink-300,
+[data-theme="dark"] .text-pink-400,
+[data-theme="dark"] .text-pink-500,
+[data-theme="dark"] .text-rose-300,
+[data-theme="dark"] .text-rose-400,
+[data-theme="dark"] .text-rose-500 {
+  color: #f48fb1 !important; /* Muted pink */
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ICON COLOR OVERRIDES — Consistent with text semantics
+   ═══════════════════════════════════════════════════════════════════════════ */
+.dark svg.text-red-400,
+.dark svg.text-red-500,
+.dark svg.text-red-600,
+[data-theme="dark"] svg.text-red-400,
+[data-theme="dark"] svg.text-red-500,
+[data-theme="dark"] svg.text-red-600 {
+  color: var(--sem-danger) !important;
+}
+
+.dark svg.text-orange-400,
+.dark svg.text-orange-500,
+.dark svg.text-amber-400,
+.dark svg.text-amber-500,
+[data-theme="dark"] svg.text-orange-400,
+[data-theme="dark"] svg.text-orange-500,
+[data-theme="dark"] svg.text-amber-400,
+[data-theme="dark"] svg.text-amber-500 {
+  color: var(--sem-warning) !important;
+}
+
+.dark svg.text-green-400,
+.dark svg.text-green-500,
+.dark svg.text-emerald-400,
+.dark svg.text-emerald-500,
+.dark svg.text-teal-400,
+.dark svg.text-teal-500,
+[data-theme="dark"] svg.text-green-400,
+[data-theme="dark"] svg.text-green-500,
+[data-theme="dark"] svg.text-emerald-400,
+[data-theme="dark"] svg.text-emerald-500,
+[data-theme="dark"] svg.text-teal-400,
+[data-theme="dark"] svg.text-teal-500 {
+  color: var(--sem-success) !important;
+}
+
+.dark svg.text-blue-400,
+.dark svg.text-blue-500,
+.dark svg.text-sky-400,
+.dark svg.text-sky-500,
+[data-theme="dark"] svg.text-blue-400,
+[data-theme="dark"] svg.text-blue-500,
+[data-theme="dark"] svg.text-sky-400,
+[data-theme="dark"] svg.text-sky-500 {
+  color: var(--sem-info) !important;
 }
