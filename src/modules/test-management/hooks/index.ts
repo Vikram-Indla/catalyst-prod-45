@@ -25,7 +25,7 @@ export {
   useDefectAttachments,
   useDefectAuditLog,
   useDefectWorkItemLinks,
-  useDefectColumnPreferences,
+  useDefectColumnPreferences as useDefectColumnPrefsSupabase,
   useBulkUpdateDefects,
   useCreateDefectComment,
   useUpdateDefectComment,
@@ -35,6 +35,9 @@ export {
   useDeleteDefectWorkItemLink,
   useSaveDefectColumnPreferences,
 } from './useDefectsSupabase';
+
+// Column Preferences (standalone hook)
+export { useDefectColumnPreferences } from './useDefectColumnPreferences';
 
 // My Work
 export * from './useMyWork';
