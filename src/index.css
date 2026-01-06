@@ -110,6 +110,38 @@
     --focus-ring: 217 91% 60%;           /* #3b82f6 */
     --overlay: 0 0% 0%;                  /* black - use with alpha */
     
+    /* === V5 ADDITIONAL TOKENS (Light Mode) === */
+    --bg-app: #ffffff;
+    --bg-0: #ffffff;
+    --bg-1: #fafafa;
+    --bg-2: #f5f5f5;
+    --bg-3: #f0f0f0;
+    --text-1: #0a0a0a;
+    --text-2: #525252;
+    --text-3: #737373;
+    --text-4: #a3a3a3;
+    --stroke-1: rgba(0, 0, 0, 0.08);
+    --stroke-2: rgba(0, 0, 0, 0.15);
+    --divider: rgba(0, 0, 0, 0.08);
+    --row-hover: rgba(0, 0, 0, 0.04);
+    --row-selected: rgba(37, 99, 235, 0.08);
+    --row-active: rgba(37, 99, 235, 0.12);
+    --input-bg: #ffffff;
+    --input-bd: rgba(0, 0, 0, 0.15);
+    --input-focus: #2563eb;
+    --shadow-1: 0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.03);
+    --shadow-2: 0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04);
+    
+    /* Chart palette (light mode) */
+    --chart-1: #2563eb;
+    --chart-2: #0d9488;
+    --chart-3: #c69c6d;
+    --chart-4: #3b82f6;
+    --chart-5: #8b7355;
+    --chart-6: #d4b896;
+    --chart-7: #dc2626;
+    --chart-8: #d97706;
+    
     /* === CATALYST V5 SEMANTIC TOKENS (Light Mode) === */
     --sem-danger: #dc2626;               /* Red-600 for light mode */
     --sem-warning: #d97706;              /* Amber-600 for light mode */
@@ -496,10 +528,35 @@
     --focus-ring: 217 91% 60%;
     --overlay: 0 0% 0%;
     
+    /* === ROW STATE TOKENS === */
+    --row-hover: rgba(255, 255, 255, 0.04);
+    --row-selected: rgba(59, 130, 246, 0.08);
+    --row-active: rgba(59, 130, 246, 0.12);
+    
+    /* === INPUT TOKENS === */
+    --input-bg: var(--bg-1);
+    --input-bd: var(--stroke-1);
+    --input-focus: hsl(217 91% 60%);
+    
+    /* === CHART/DATAVIZ TOKENS (V5 Palette) === */
+    --chart-1: #3b82f6;    /* Blue - primary */
+    --chart-2: #5c7c5c;    /* Green - success (Catalyst secondary) */
+    --chart-3: #c69c6d;    /* Gold - accent */
+    --chart-4: #60a5fa;    /* Light blue */
+    --chart-5: #8b7355;    /* Bronze */
+    --chart-6: #d4b896;    /* Champagne */
+    --chart-7: #ff6b6b;    /* Coral - danger */
+    --chart-8: #ffc46b;    /* Amber - warning */
+    
+    /* === DIVIDER TOKEN === */
+    --divider: rgba(255, 255, 255, 0.06);
+    
     /* === SHADOW TOKENS (Stronger for dark mode) === */
     --shadow-color: 0 0% 0%;
-    --shadow-elev-1: 0 1px 3px hsl(0 0% 0% / 0.40), 0 1px 2px hsl(0 0% 0% / 0.30);
-    --shadow-elev-2: 0 4px 12px hsl(0 0% 0% / 0.50), 0 2px 4px hsl(0 0% 0% / 0.40);
+    --shadow-1: 0 1px 3px hsl(0 0% 0% / 0.40), 0 1px 2px hsl(0 0% 0% / 0.30);
+    --shadow-2: 0 4px 12px hsl(0 0% 0% / 0.50), 0 2px 4px hsl(0 0% 0% / 0.40);
+    --shadow-elev-1: var(--shadow-1);
+    --shadow-elev-2: var(--shadow-2);
     --shadow-elev-3: 0 8px 24px hsl(0 0% 0% / 0.60), 0 4px 8px hsl(0 0% 0% / 0.45);
     --shadow-brand: 0 4px 12px hsl(217 91% 60% / 0.25);
 
@@ -2536,4 +2593,431 @@
 [data-theme="dark"] [class*="Sidebar"] [class*="active"],
 [data-theme="dark"] [class*="Sidebar"] [aria-current="page"] {
   background-color: var(--sidebar-active) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   CATALYST V5 — COMPREHENSIVE GRAY/SLATE/ZINC TEXT OVERRIDE
+   Map ALL remaining gray text shades to V5 text ladder
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Light grays (100-200) → text-1 (primary) */
+.dark .text-zinc-100,
+.dark .text-zinc-200,
+.dark .text-stone-100,
+.dark .text-stone-200,
+[data-theme="dark"] .text-zinc-100,
+[data-theme="dark"] .text-zinc-200,
+[data-theme="dark"] .text-stone-100,
+[data-theme="dark"] .text-stone-200 {
+  color: var(--text-1) !important;
+}
+
+/* Mid grays (300) → text-2 (secondary) */
+.dark .text-zinc-300,
+.dark .text-stone-300,
+[data-theme="dark"] .text-zinc-300,
+[data-theme="dark"] .text-stone-300 {
+  color: var(--text-2) !important;
+}
+
+/* Darker grays (400-500) → text-3 (muted) */
+.dark .text-zinc-400,
+.dark .text-zinc-500,
+.dark .text-stone-400,
+.dark .text-stone-500,
+[data-theme="dark"] .text-zinc-400,
+[data-theme="dark"] .text-zinc-500,
+[data-theme="dark"] .text-stone-400,
+[data-theme="dark"] .text-stone-500 {
+  color: var(--text-3) !important;
+}
+
+/* Darker grays (600-700) → text-4 (disabled) */
+.dark .text-zinc-600,
+.dark .text-zinc-700,
+.dark .text-stone-600,
+.dark .text-stone-700,
+[data-theme="dark"] .text-zinc-600,
+[data-theme="dark"] .text-zinc-700,
+[data-theme="dark"] .text-stone-600,
+[data-theme="dark"] .text-stone-700 {
+  color: var(--text-4) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   CATALYST V5 — COMPREHENSIVE GRAY BG OVERRIDE
+   Map ALL remaining gray backgrounds to V5 surfaces
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Light mode light grays in dark mode → bg-1 */
+.dark .bg-gray-50,
+.dark .bg-gray-100,
+.dark .bg-slate-50,
+.dark .bg-slate-100,
+.dark .bg-zinc-50,
+.dark .bg-zinc-100,
+.dark .bg-stone-50,
+.dark .bg-stone-100,
+[data-theme="dark"] .bg-gray-50,
+[data-theme="dark"] .bg-gray-100,
+[data-theme="dark"] .bg-slate-50,
+[data-theme="dark"] .bg-slate-100,
+[data-theme="dark"] .bg-zinc-50,
+[data-theme="dark"] .bg-zinc-100,
+[data-theme="dark"] .bg-stone-50,
+[data-theme="dark"] .bg-stone-100 {
+  background-color: var(--bg-1) !important;
+}
+
+/* Mid grays (200-300) → bg-2 */
+.dark .bg-gray-200,
+.dark .bg-gray-300,
+.dark .bg-slate-200,
+.dark .bg-slate-300,
+.dark .bg-zinc-200,
+.dark .bg-zinc-300,
+.dark .bg-stone-200,
+.dark .bg-stone-300,
+[data-theme="dark"] .bg-gray-200,
+[data-theme="dark"] .bg-gray-300,
+[data-theme="dark"] .bg-slate-200,
+[data-theme="dark"] .bg-slate-300,
+[data-theme="dark"] .bg-zinc-200,
+[data-theme="dark"] .bg-zinc-300,
+[data-theme="dark"] .bg-stone-200,
+[data-theme="dark"] .bg-stone-300 {
+  background-color: var(--bg-2) !important;
+}
+
+/* bg-white → bg-1 (cards) */
+.dark .bg-white,
+[data-theme="dark"] .bg-white {
+  background-color: var(--bg-1) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   CATALYST V5 — INPUT/FORM FIELD ENFORCEMENT
+   All inputs, selects, textareas use V5 input tokens
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.dark input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+.dark select,
+.dark textarea,
+.dark [role="combobox"],
+.dark [role="listbox"],
+.dark [data-slot="control"],
+[data-theme="dark"] input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+[data-theme="dark"] select,
+[data-theme="dark"] textarea,
+[data-theme="dark"] [role="combobox"],
+[data-theme="dark"] [role="listbox"],
+[data-theme="dark"] [data-slot="control"] {
+  background-color: var(--bg-1) !important;
+  border-color: var(--stroke-1) !important;
+  color: var(--text-1) !important;
+}
+
+.dark input::placeholder,
+.dark textarea::placeholder,
+[data-theme="dark"] input::placeholder,
+[data-theme="dark"] textarea::placeholder {
+  color: var(--text-3) !important;
+}
+
+.dark input:focus,
+.dark select:focus,
+.dark textarea:focus,
+[data-theme="dark"] input:focus,
+[data-theme="dark"] select:focus,
+[data-theme="dark"] textarea:focus {
+  border-color: hsl(var(--ring)) !important;
+  box-shadow: 0 0 0 2px hsl(var(--ring) / 0.2) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   CATALYST V5 — DROPDOWN/SELECT CONTENT ENFORCEMENT
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.dark [data-radix-select-content],
+.dark [data-radix-popover-content],
+.dark [data-radix-dropdown-menu-content],
+.dark [role="menu"],
+.dark [role="listbox"],
+[data-theme="dark"] [data-radix-select-content],
+[data-theme="dark"] [data-radix-popover-content],
+[data-theme="dark"] [data-radix-dropdown-menu-content],
+[data-theme="dark"] [role="menu"],
+[data-theme="dark"] [role="listbox"] {
+  background-color: var(--bg-2) !important;
+  border-color: var(--stroke-1) !important;
+}
+
+.dark [role="option"]:hover,
+.dark [role="menuitem"]:hover,
+.dark [data-radix-collection-item]:hover,
+[data-theme="dark"] [role="option"]:hover,
+[data-theme="dark"] [role="menuitem"]:hover,
+[data-theme="dark"] [data-radix-collection-item]:hover {
+  background-color: var(--surface-hover) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   CATALYST V5 — CHART/DATAVIZ TOKEN ENFORCEMENT
+   Recharts, chart.js, and other chart libraries
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.dark .recharts-cartesian-grid line,
+.dark .recharts-polar-grid line,
+[data-theme="dark"] .recharts-cartesian-grid line,
+[data-theme="dark"] .recharts-polar-grid line {
+  stroke: var(--stroke-1) !important;
+}
+
+.dark .recharts-cartesian-axis-tick text,
+.dark .recharts-legend-item-text,
+.dark .recharts-label,
+[data-theme="dark"] .recharts-cartesian-axis-tick text,
+[data-theme="dark"] .recharts-legend-item-text,
+[data-theme="dark"] .recharts-label {
+  fill: var(--text-2) !important;
+}
+
+.dark .recharts-tooltip-wrapper,
+[data-theme="dark"] .recharts-tooltip-wrapper {
+  background-color: var(--bg-2) !important;
+  border-color: var(--stroke-1) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   CATALYST V5 — ADDITIONAL BORDER OVERRIDES
+   Catch remaining border patterns
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.dark .border-gray-200,
+.dark .border-gray-300,
+.dark .border-slate-200,
+.dark .border-slate-300,
+.dark .border-zinc-200,
+.dark .border-zinc-300,
+.dark .border-stone-200,
+.dark .border-stone-300,
+[data-theme="dark"] .border-gray-200,
+[data-theme="dark"] .border-gray-300,
+[data-theme="dark"] .border-slate-200,
+[data-theme="dark"] .border-slate-300,
+[data-theme="dark"] .border-zinc-200,
+[data-theme="dark"] .border-zinc-300,
+[data-theme="dark"] .border-stone-200,
+[data-theme="dark"] .border-stone-300 {
+  border-color: var(--stroke-1) !important;
+}
+
+.dark .border-gray-100,
+.dark .border-slate-100,
+.dark .border-zinc-100,
+.dark .border-stone-100,
+[data-theme="dark"] .border-gray-100,
+[data-theme="dark"] .border-slate-100,
+[data-theme="dark"] .border-zinc-100,
+[data-theme="dark"] .border-stone-100 {
+  border-color: var(--stroke-1) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   CATALYST V5 — HOVER STATE ENFORCEMENT
+   Ensure hover states use V5 surface-hover
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.dark .hover\:bg-gray-50:hover,
+.dark .hover\:bg-gray-100:hover,
+.dark .hover\:bg-slate-50:hover,
+.dark .hover\:bg-slate-100:hover,
+.dark .hover\:bg-slate-800:hover,
+[data-theme="dark"] .hover\:bg-gray-50:hover,
+[data-theme="dark"] .hover\:bg-gray-100:hover,
+[data-theme="dark"] .hover\:bg-slate-50:hover,
+[data-theme="dark"] .hover\:bg-slate-100:hover,
+[data-theme="dark"] .hover\:bg-slate-800:hover {
+  background-color: var(--surface-hover) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   CATALYST V5 — ROW/TABLE STATES
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.dark tr:hover,
+.dark [role="row"]:hover,
+[data-theme="dark"] tr:hover,
+[data-theme="dark"] [role="row"]:hover {
+  background-color: var(--surface-hover) !important;
+}
+
+.dark tr[data-state="selected"],
+.dark [role="row"][aria-selected="true"],
+[data-theme="dark"] tr[data-state="selected"],
+[data-theme="dark"] [role="row"][aria-selected="true"] {
+  background-color: rgba(59, 130, 246, 0.08) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   CATALYST V5 — DIALOG/MODAL ENFORCEMENT
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.dark [role="dialog"],
+.dark [data-radix-dialog-content],
+[data-theme="dark"] [role="dialog"],
+[data-theme="dark"] [data-radix-dialog-content] {
+  background-color: var(--bg-1) !important;
+  border-color: var(--stroke-1) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   CATALYST V5 — DIVIDE UTILITIES OVERRIDE
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.dark .divide-gray-200 > * + *,
+.dark .divide-gray-300 > * + *,
+.dark .divide-slate-200 > * + *,
+.dark .divide-slate-300 > * + *,
+[data-theme="dark"] .divide-gray-200 > * + *,
+[data-theme="dark"] .divide-gray-300 > * + *,
+[data-theme="dark"] .divide-slate-200 > * + *,
+[data-theme="dark"] .divide-slate-300 > * + * {
+  border-color: var(--stroke-1) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   CATALYST V5 — RING/FOCUS UTILITIES OVERRIDE
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.dark .ring-gray-200,
+.dark .ring-gray-300,
+.dark .ring-slate-200,
+.dark .ring-slate-300,
+[data-theme="dark"] .ring-gray-200,
+[data-theme="dark"] .ring-gray-300,
+[data-theme="dark"] .ring-slate-200,
+[data-theme="dark"] .ring-slate-300 {
+  --tw-ring-color: var(--stroke-1) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   CATALYST V5 — SEMANTIC LIGHT-MODE CLASS OVERRIDE IN DARK
+   Classes like bg-green-100 in dark mode → semantic soft bg
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Success semantics */
+.dark .bg-green-50,
+.dark .bg-green-100,
+.dark .bg-emerald-50,
+.dark .bg-emerald-100,
+.dark .bg-teal-50,
+.dark .bg-teal-100,
+[data-theme="dark"] .bg-green-50,
+[data-theme="dark"] .bg-green-100,
+[data-theme="dark"] .bg-emerald-50,
+[data-theme="dark"] .bg-emerald-100,
+[data-theme="dark"] .bg-teal-50,
+[data-theme="dark"] .bg-teal-100 {
+  background-color: var(--sem-success-bg) !important;
+}
+
+/* Warning semantics */
+.dark .bg-amber-50,
+.dark .bg-amber-100,
+.dark .bg-orange-50,
+.dark .bg-orange-100,
+.dark .bg-yellow-50,
+.dark .bg-yellow-100,
+[data-theme="dark"] .bg-amber-50,
+[data-theme="dark"] .bg-amber-100,
+[data-theme="dark"] .bg-orange-50,
+[data-theme="dark"] .bg-orange-100,
+[data-theme="dark"] .bg-yellow-50,
+[data-theme="dark"] .bg-yellow-100 {
+  background-color: var(--sem-warning-bg) !important;
+}
+
+/* Danger semantics */
+.dark .bg-red-50,
+.dark .bg-red-100,
+.dark .bg-rose-50,
+.dark .bg-rose-100,
+[data-theme="dark"] .bg-red-50,
+[data-theme="dark"] .bg-red-100,
+[data-theme="dark"] .bg-rose-50,
+[data-theme="dark"] .bg-rose-100 {
+  background-color: var(--sem-danger-bg) !important;
+}
+
+/* Info semantics */
+.dark .bg-blue-50,
+.dark .bg-blue-100,
+.dark .bg-sky-50,
+.dark .bg-sky-100,
+[data-theme="dark"] .bg-blue-50,
+[data-theme="dark"] .bg-blue-100,
+[data-theme="dark"] .bg-sky-50,
+[data-theme="dark"] .bg-sky-100 {
+  background-color: var(--sem-info-bg) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   CATALYST V5 — SEMANTIC TEXT CLASS OVERRIDE IN DARK
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Success text */
+.dark .text-green-700,
+.dark .text-green-800,
+.dark .text-emerald-700,
+.dark .text-emerald-800,
+.dark .text-teal-700,
+.dark .text-teal-800,
+[data-theme="dark"] .text-green-700,
+[data-theme="dark"] .text-green-800,
+[data-theme="dark"] .text-emerald-700,
+[data-theme="dark"] .text-emerald-800,
+[data-theme="dark"] .text-teal-700,
+[data-theme="dark"] .text-teal-800 {
+  color: var(--sem-success) !important;
+}
+
+/* Warning text */
+.dark .text-amber-700,
+.dark .text-amber-800,
+.dark .text-orange-700,
+.dark .text-orange-800,
+.dark .text-yellow-700,
+.dark .text-yellow-800,
+[data-theme="dark"] .text-amber-700,
+[data-theme="dark"] .text-amber-800,
+[data-theme="dark"] .text-orange-700,
+[data-theme="dark"] .text-orange-800,
+[data-theme="dark"] .text-yellow-700,
+[data-theme="dark"] .text-yellow-800 {
+  color: var(--sem-warning) !important;
+}
+
+/* Danger text */
+.dark .text-red-700,
+.dark .text-red-800,
+.dark .text-rose-700,
+.dark .text-rose-800,
+[data-theme="dark"] .text-red-700,
+[data-theme="dark"] .text-red-800,
+[data-theme="dark"] .text-rose-700,
+[data-theme="dark"] .text-rose-800 {
+  color: var(--sem-danger) !important;
+}
+
+/* Info text */
+.dark .text-blue-700,
+.dark .text-blue-800,
+.dark .text-sky-700,
+.dark .text-sky-800,
+[data-theme="dark"] .text-blue-700,
+[data-theme="dark"] .text-blue-800,
+[data-theme="dark"] .text-sky-700,
+[data-theme="dark"] .text-sky-800 {
+  color: var(--sem-info) !important;
 }
