@@ -331,25 +331,26 @@
   .dark,
   [data-theme="dark"] {
     /* ═══════════════════════════════════════════════════════════════
-       DARK MODE — Blue/Teal palette with proper contrast
-       Not pure black - softer #1a1a1a base
+       DARK MODE — Bloomberg/Linear Grade Surface-Based Hierarchy
+       No white dividers. Borders via rgba(255,255,255, 0.035-0.06).
+       Visual hierarchy through depth, not lines.
        ═══════════════════════════════════════════════════════════════ */
     --background: 0 0% 10%;              /* #1a1a1a - softer than pure black */
     --foreground: 0 0% 96%;              /* #f5f5f5 */
     
-    --card: 0 0% 15%;                    /* #262626 */
+    --card: 0 0% 13%;                    /* #212121 - 4% lift from background */
     --card-foreground: 0 0% 96%;
     
-    --popover: 0 0% 18%;                 /* #2d2d2d elevated */
+    --popover: 0 0% 16%;                 /* #292929 - 6% lift for elevated surfaces */
     --popover-foreground: 0 0% 96%;
     
     --primary: 217 91% 60%;              /* #3b82f6 blue - brand primary */
     --primary-foreground: 0 0% 100%;     /* white text on blue */
     
-    --secondary: 0 0% 15%;               /* #262626 */
+    --secondary: 0 0% 13%;               /* #212121 - matches card */
     --secondary-foreground: 0 0% 96%;
     
-    --muted: 0 0% 18%;                   /* #2d2d2d */
+    --muted: 0 0% 15%;                   /* #262626 */
     --muted-foreground: 0 0% 70%;        /* #b3b3b3 - increased for better dark mode contrast */
     
     --accent: 217 91% 60%;               /* blue accent */
@@ -358,18 +359,22 @@
     --destructive: 0 62% 60%;
     --destructive-foreground: 0 0% 98%;
     
-    --border: 0 0% 18%;                  /* #2d2d2d - darker than text for Catalyst dark mode grammar */
-    --input: 0 0% 18%;                   /* #2d2d2d */
+    /* ═══════════════════════════════════════════════════════════════
+       CATALYST DARK MODE GRAMMAR — BORDER DISCIPLINE
+       Borders at rgba(255,255,255, 0.035-0.06) — never white, never bright
+       ═══════════════════════════════════════════════════════════════ */
+    --border: 0 0% 100% / 0.045;         /* rgba(255,255,255,0.045) - ultra subtle */
+    --input: 0 0% 100% / 0.06;           /* rgba(255,255,255,0.06) - slightly visible for inputs */
     --ring: 217 91% 60%;                 /* blue focus ring */
     
-    /* Sidebar dark */
-    --sidebar-background: 0 0% 12%;      /* #1f1f1f slightly elevated */
+    /* Sidebar dark - surface elevation, not borders */
+    --sidebar-background: 0 0% 11%;      /* #1c1c1c - slight lift from page */
     --sidebar-foreground: 0 0% 90%;
     --sidebar-primary: 217 91% 60%;      /* blue */
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 217 91% 60%;
     --sidebar-accent-foreground: 0 0% 100%;
-    --sidebar-border: 0 0% 20%;          /* #333333 */
+    --sidebar-border: 0 0% 100% / 0.04;  /* ultra subtle sidebar border */
     --sidebar-ring: 217 91% 60%;
 
     /* ═══════════════════════════════════════════════════════════════
@@ -383,20 +388,20 @@
     --text-muted: 0 0% 45%;              /* #737373 */
     --text-inverse: 0 0% 4%;             /* #0a0a0a */
     
-    /* === SURFACE TOKENS === */
-    --surface-0: 0 0% 15%;               /* #262626 - cards, dialogs */
+    /* === SURFACE TOKENS — 4-8% contrast delta between levels === */
+    --surface-0: 0 0% 13%;               /* #212121 - cards, dialogs (4% above page) */
     --surface-1: 0 0% 10%;               /* #1a1a1a - page background */
     --surface-2: 0 0% 12%;               /* #1f1f1f - subtle sections */
-    --surface-3: 0 0% 18%;               /* #2d2d2d - muted containers */
-    --surface-elevated: 0 0% 20%;        /* #333333 - popovers, dropdowns */
+    --surface-3: 0 0% 16%;               /* #292929 - muted containers (6% above page) */
+    --surface-elevated: 0 0% 18%;        /* #2e2e2e - popovers, dropdowns (8% above page) */
     --surface-overlay: 0 0% 0%;          /* black base for overlays */
     
-    /* === BORDER TOKENS === */
-    /* Catalyst Dark Mode Grammar: Borders must be darker than text */
-    --border-subtle: 0 0% 16%;           /* #292929 - very subtle, darker than text */
-    --border-default: 0 0% 18%;          /* #2d2d2d - darker than muted text */
-    --border-strong: 0 0% 25%;           /* #404040 - still darker than secondary text */
-    --border-focus: 217 91% 60%;         /* blue */
+    /* === BORDER TOKENS — Ultra-subtle, never bright === */
+    /* Catalyst Dark Mode Grammar: Borders must be darker/subtler than text */
+    --border-subtle: 0 0% 100% / 0.035;  /* rgba(255,255,255,0.035) - barely visible */
+    --border-default: 0 0% 100% / 0.05;  /* rgba(255,255,255,0.05) - subtle separator */
+    --border-strong: 0 0% 100% / 0.08;   /* rgba(255,255,255,0.08) - for emphasis only */
+    --border-focus: 217 91% 60%;         /* blue - only for focus states */
     
     /* === BRAND/ACTION TOKENS === */
     --brand-primary: 217 91% 60%;        /* #3b82f6 */
@@ -442,18 +447,18 @@
        These are HEX values for direct var() usage without hsl()
        ═══════════════════════════════════════════════════════════════ */
     
-    /* Legacy surface tokens (HEX for direct use) */
+    /* Legacy surface tokens (HEX for direct use) — 4-8% surface elevation */
     --bg: #1a1a1a;
     --bg-workspace: #1a1a1a;
     --bg-cream: #1a1a1a;
-    --bg-card: #262626;
-    --bg-sidebar: #1f1f1f;
+    --bg-card: #212121;                     /* 4% lift from page */
+    --bg-sidebar: #1c1c1c;
     --surface-bg: #1a1a1a;
-    --surface-subtle: #1f1f1f;
-    --surface-hover: #333333;
+    --surface-subtle: #1e1e1e;
+    --surface-hover: rgba(255, 255, 255, 0.04);  /* 4% white overlay for hover */
     --surface-active: rgba(59, 130, 246, 0.15);
-    --surface-card: #262626;
-    --surface-muted: #2d2d2d;
+    --surface-card: #212121;
+    --surface-muted: #262626;
     
     /* Legacy text tokens (HEX for direct use) */
     --text-1: #f5f5f5;
@@ -466,11 +471,14 @@
     --icon-default: #b3b3b3;
     --icon-muted: #8a8a8a;
     
-    /* Divider and border legacy (HEX) - Catalyst Grammar: darker than text */
-    --divider: #242424;
-    --border-color: #262626;
-    --border-subtle-hex: #292929;
-    --border-default-hex: #2d2d2d;
+    /* ═══════════════════════════════════════════════════════════════
+       DARK MODE BORDER TOKENS — rgba(255,255,255, 0.035-0.06)
+       Never white, never bright. Borders must not dominate content.
+       ═══════════════════════════════════════════════════════════════ */
+    --divider: rgba(255, 255, 255, 0.04);
+    --border-color: rgba(255, 255, 255, 0.05);
+    --border-subtle-hex: rgba(255, 255, 255, 0.035);
+    --border-default-hex: rgba(255, 255, 255, 0.05);
     
     /* Text tokens HEX (for inline styles) */
     --text-primary-hex: #f5f5f5;
@@ -478,7 +486,7 @@
     --text-muted-hex: #737373;
     
     /* Navigation tokens (HEX) */
-    --nav-bg: #1f1f1f;
+    --nav-bg: #1c1c1c;
     --nav-hover-bg: rgba(255, 255, 255, 0.04);
     --nav-active-bg: rgba(59, 130, 246, 0.15);
     /* Legacy HEX aliases (DO NOT override canonical HSL tokens above) */
@@ -490,33 +498,34 @@
     --accent-blue: #3b82f6;
     --accent-blue-hover: #2563eb;
     
-    /* Card tokens (HEX) */
-    --card-bg: #141414;
-    --card-border: #2c2c2c;
+    /* Card tokens (HEX) — Surface elevation, minimal border */
+    --card-bg: #212121;
+    --card-border: rgba(255, 255, 255, 0.04);
     
     /* ═══════════════════════════════════════════════════════════════
-       TABLE TOKENS - CATALYST V5 DARK MODE SPECIFICATION
-       These are the canonical table tokens for enterprise dark mode
+       TABLE TOKENS - BLOOMBERG/LINEAR GRADE DARK MODE
+       No outer container borders. Subtle row separators only.
+       Surface contrast for hierarchy, not grid lines.
        ═══════════════════════════════════════════════════════════════ */
     
-    /* Table container */
-    --table-container-bg: #262626;          /* surface-0 */
-    --table-container-border: #333333;      /* border-subtle */
+    /* Table container — NO outer border, surface elevation only */
+    --table-container-bg: #1a1a1a;          /* flush with page */
+    --table-container-border: transparent;   /* NO container border */
     
-    /* Table header */
-    --table-header-bg: #1f1f1f;             /* surface-2 */
+    /* Table header — Slight surface lift, NO bright border */
+    --table-header-bg: #1e1e1e;             /* subtle lift */
     --table-header-text: #f5f5f5;           /* text-primary */
-    --table-header-border: #404040;         /* border-default */
+    --table-header-border: rgba(255, 255, 255, 0.035); /* ultra subtle */
     
-    /* Table body rows */
-    --table-row-bg: #262626;                /* surface-0 */
-    --table-row-alt-bg: #1f1f1f;            /* surface-2 - alternating */
-    --table-row-hover: #2d2d2d;             /* surface-3 */
-    --table-row-selected: #333333;          /* surface-elevated */
-    --table-row-border: #333333;            /* border-subtle */
+    /* Table body rows — Hover is primary affordance */
+    --table-row-bg: transparent;            /* transparent, inherits container */
+    --table-row-alt-bg: rgba(255, 255, 255, 0.015); /* barely visible alternation */
+    --table-row-hover: rgba(255, 255, 255, 0.04);  /* clear hover state */
+    --table-row-selected: rgba(59, 130, 246, 0.12);
+    --table-row-border: rgba(255, 255, 255, 0.035); /* ultra subtle separator */
     
-    /* Table cell dividers (column separators) */
-    --table-cell-divider: #333333;          /* border-subtle */
+    /* Table cell dividers — NO vertical dividers in dark mode */
+    --table-cell-divider: transparent;
     
     /* Table cell text hierarchy */
     --table-text-primary: #f5f5f5;          /* text-primary - names, titles */
@@ -590,13 +599,13 @@
     --brand-blue-bg: rgba(59, 130, 246, 0.2);
     --brand-teal-bg: rgba(20, 184, 166, 0.15);
     
-    /* Industry Backlog tokens - Dark */
-    --industry-bg-page: #0a0a0a;
-    --industry-bg-card: #171717;
-    --industry-bg-subtle: #0f0f0f;
-    --industry-bg-hover: rgba(64, 64, 64, 0.5);
-    --industry-border-default: #404040;
-    --industry-border-subtle: #404040;
+    /* Industry Backlog tokens - Dark — Surface-based, no bright borders */
+    --industry-bg-page: #1a1a1a;
+    --industry-bg-card: #212121;
+    --industry-bg-subtle: #1e1e1e;
+    --industry-bg-hover: rgba(255, 255, 255, 0.04);
+    --industry-border-default: rgba(255, 255, 255, 0.05);
+    --industry-border-subtle: rgba(255, 255, 255, 0.035);
     --industry-text-primary: #fafafa;
     --industry-text-secondary: #d4d4d4;
     --industry-text-muted: #a3a3a3;
@@ -614,18 +623,18 @@
     --industry-priority-medium: #60a5fa;
     --industry-priority-low: #93c5fd;
     
-    /* Dialog tokens - Dark */
+    /* Dialog tokens - Dark — Surface elevation, subtle dividers */
     --dialog-bg: #1a1a1a;
-    --dialog-border: #333333;
-    --dialog-divider: #333333;
-    --dialog-footer-bg: #242424;
+    --dialog-border: rgba(255, 255, 255, 0.04);
+    --dialog-divider: rgba(255, 255, 255, 0.05);
+    --dialog-footer-bg: #1e1e1e;
     --dialog-title-color: #f5f5f5;
-    --dialog-desc-color: #737373;
+    --dialog-desc-color: #a3a3a3;
     --dialog-close-color: #a3a3a3;
-    --dialog-section-bg: #242424;
-    --dialog-section-border: #2a2a2a;
-    --dialog-input-bg: #2a2a2a;
-    --dialog-input-border: #404040;
+    --dialog-section-bg: #1e1e1e;
+    --dialog-section-border: rgba(255, 255, 255, 0.04);
+    --dialog-input-bg: #262626;
+    --dialog-input-border: rgba(255, 255, 255, 0.06);
     --dialog-label-color: #a3a3a3;
     --dialog-label-required: #3b82f6;
   }
@@ -642,6 +651,51 @@
   body {
     @apply bg-background text-foreground;
     font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   CATALYST DARK MODE GRAMMAR — Global Border Softening
+   Ensures no white dividers leak through anywhere
+   ════════════════════════════════════════════════════════════════════════════ */
+
+@layer base {
+  .dark,
+  [data-theme="dark"] {
+    /* Global border softening for any border-border usage */
+    /* Cards - no outer border, use shadow for depth */
+    .card,
+    [class*="rounded-lg"][class*="border"] {
+      border-color: rgba(255, 255, 255, 0.04);
+    }
+    
+    /* Dividers and separators */
+    hr,
+    [role="separator"] {
+      border-color: rgba(255, 255, 255, 0.04);
+      background-color: rgba(255, 255, 255, 0.04);
+    }
+    
+    /* Table rows - ultra subtle */
+    tr {
+      border-color: rgba(255, 255, 255, 0.035);
+    }
+    
+    /* Input borders - slightly more visible for usability */
+    input,
+    textarea,
+    select,
+    [role="combobox"] {
+      border-color: rgba(255, 255, 255, 0.06);
+    }
+    
+    /* Focus states use brand color */
+    input:focus,
+    textarea:focus,
+    select:focus,
+    [role="combobox"]:focus {
+      border-color: hsl(217 91% 60%);
+    }
   }
 }
 
