@@ -149,6 +149,39 @@ export default {
           "done-bg": "var(--sem-done-bg)",
         },
         
+        /* === V5 ROW STATES === */
+        "row-hover": "var(--row-hover)",
+        "row-selected": "var(--row-selected)",
+        "row-active": "var(--row-active)",
+        
+        /* === V5 INPUT TOKENS === */
+        "input-bg": "var(--input-bg)",
+        "input-bd": "var(--input-bd)",
+        "input-focus": "var(--input-focus)",
+        
+        /* === V5 CHART PALETTE === */
+        chart: {
+          1: "var(--chart-1)",
+          2: "var(--chart-2)",
+          3: "var(--chart-3)",
+          4: "var(--chart-4)",
+          5: "var(--chart-5)",
+          6: "var(--chart-6)",
+          7: "var(--chart-7)",
+          8: "var(--chart-8)",
+        },
+        
+        /* === V5 DIVIDER === */
+        divider: "var(--divider)",
+        
+        /* === V5 FOREGROUND LADDER (aliases) === */
+        fg: {
+          1: "var(--text-1)",
+          2: "var(--text-2)",
+          3: "var(--text-3)",
+          4: "var(--text-4)",
+        },
+        
         /* === FOCUS & OVERLAY === */
         "focus-ring": "hsl(var(--focus-ring))",
         overlay: "hsl(var(--overlay))",
