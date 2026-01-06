@@ -115,32 +115,32 @@ const SEVERITY_CONFIG: Record<DefectSeverity, {
   blocker: { 
     label: 'Blocker', 
     icon: Flame, 
-    barColor: 'bg-red-500',
-    badgeClass: 'bg-red-100 text-red-700 dark:bg-red-900/50 dark:text-red-400'
+    barColor: 'bg-[var(--sem-danger)]',
+    badgeClass: 'bg-[var(--sem-danger-bg)] text-[var(--sem-danger)] border-[var(--sem-danger-border)]'
   },
   critical: { 
     label: 'Critical', 
     icon: AlertCircle, 
-    barColor: 'bg-red-400',
-    badgeClass: 'bg-red-100 text-red-600 dark:bg-red-900/40 dark:text-red-400'
+    barColor: 'bg-[var(--sem-critical)]',
+    badgeClass: 'bg-[var(--sem-critical-bg)] text-[var(--sem-critical)] border-[var(--sem-critical-border)]'
   },
   major: { 
     label: 'Major', 
     icon: AlertTriangle, 
-    barColor: 'bg-amber-500',
-    badgeClass: 'bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-400'
+    barColor: 'bg-[var(--sem-warning)]',
+    badgeClass: 'bg-[var(--sem-warning-bg)] text-[var(--sem-warning)] border-[var(--sem-warning-border)]'
   },
   minor: { 
     label: 'Minor', 
     icon: Info, 
-    barColor: 'bg-blue-500',
-    badgeClass: 'bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-400'
+    barColor: 'bg-[var(--sem-info)]',
+    badgeClass: 'bg-[var(--sem-info-bg)] text-[var(--sem-info)] border-[var(--sem-info-border)]'
   },
   trivial: { 
     label: 'Trivial', 
     icon: Minus, 
-    barColor: 'bg-gray-400',
-    badgeClass: 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400'
+    barColor: 'bg-[var(--sem-medium)]',
+    badgeClass: 'bg-[var(--sem-medium-bg)] text-[var(--sem-medium)] border-[var(--status-muted-border)]'
   },
 };
 
@@ -148,19 +148,19 @@ const PRIORITY_CONFIG: Record<DefectPriority, {
   label: string;
   badgeClass: string;
 }> = {
-  p1: { label: 'P1', badgeClass: 'bg-red-100 text-red-700 dark:bg-red-900/50 dark:text-red-400' },
-  p2: { label: 'P2', badgeClass: 'bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-400' },
-  p3: { label: 'P3', badgeClass: 'bg-teal-100 text-teal-700 dark:bg-teal-900/50 dark:text-teal-400' },
-  p4: { label: 'P4', badgeClass: 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400' },
+  p1: { label: 'P1', badgeClass: 'bg-[var(--sem-danger-bg)] text-[var(--sem-danger)] border-[var(--sem-danger-border)]' },
+  p2: { label: 'P2', badgeClass: 'bg-[var(--sem-warning-bg)] text-[var(--sem-warning)] border-[var(--sem-warning-border)]' },
+  p3: { label: 'P3', badgeClass: 'bg-[var(--sem-success-bg)] text-[var(--sem-success)] border-[var(--sem-success-border)]' },
+  p4: { label: 'P4', badgeClass: 'bg-[var(--sem-medium-bg)] text-[var(--sem-medium)] border-[var(--status-muted-border)]' },
 };
 
 const STATUS_CONFIG: Record<DefectStatus, { label: string; badgeClass: string }> = {
-  open: { label: 'Open', badgeClass: 'bg-red-100 text-red-600 dark:bg-red-900/50 dark:text-red-400' },
-  in_progress: { label: 'In Progress', badgeClass: 'bg-blue-100 text-blue-600 dark:bg-blue-900/50 dark:text-blue-400' },
-  in_review: { label: 'In Review', badgeClass: 'bg-purple-100 text-purple-600 dark:bg-purple-900/50 dark:text-purple-400' },
-  verified: { label: 'Verified', badgeClass: 'bg-teal-100 text-teal-600 dark:bg-teal-900/50 dark:text-teal-400' },
-  closed: { label: 'Closed', badgeClass: 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400' },
-  wont_fix: { label: "Won't Fix", badgeClass: 'bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-500' },
+  open: { label: 'Open', badgeClass: 'bg-[var(--sem-danger-bg)] text-[var(--sem-danger)] border-[var(--sem-danger-border)]' },
+  in_progress: { label: 'In Progress', badgeClass: 'bg-[var(--sem-info-bg)] text-[var(--sem-info)] border-[var(--sem-info-border)]' },
+  in_review: { label: 'In Review', badgeClass: 'bg-[var(--accent-bg)] text-[var(--accent-text)] border-[var(--accent-border)]' },
+  verified: { label: 'Verified', badgeClass: 'bg-[var(--sem-success-bg)] text-[var(--sem-success)] border-[var(--sem-success-border)]' },
+  closed: { label: 'Closed', badgeClass: 'bg-[var(--sem-medium-bg)] text-[var(--sem-medium)] border-[var(--status-muted-border)]' },
+  wont_fix: { label: "Won't Fix", badgeClass: 'bg-[var(--sem-low-bg)] text-[var(--sem-low)] border-[var(--status-muted-border)]' },
 };
 
 const DATE_RANGE_OPTIONS = [
@@ -182,14 +182,14 @@ function getInitials(name?: string) {
 function getAgeIndicator(createdAt: string): { label: string; className: string } {
   const hours = differenceInHours(new Date(), new Date(createdAt));
   if (hours <= 24) {
-    return { label: `${hours}h open`, className: 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400' };
+    return { label: `${hours}h open`, className: 'bg-[var(--sem-medium-bg)] text-[var(--sem-medium)] border-[var(--status-muted-border)]' };
   } else if (hours <= 48) {
-    return { label: '48h open', className: 'bg-amber-100 text-amber-600 dark:bg-amber-900/50 dark:text-amber-400' };
+    return { label: '48h open', className: 'bg-[var(--sem-warning-bg)] text-[var(--sem-warning)] border-[var(--sem-warning-border)]' };
   } else if (hours <= 120) {
-    return { label: `${Math.round(hours)}h open`, className: 'bg-red-100 text-red-600 dark:bg-red-900/50 dark:text-red-400' };
+    return { label: `${Math.round(hours)}h open`, className: 'bg-[var(--sem-danger-bg)] text-[var(--sem-danger)] border-[var(--sem-danger-border)]' };
   } else {
     const days = Math.round(hours / 24);
-    return { label: `${days} days`, className: 'bg-red-100 text-red-600 dark:bg-red-900/50 dark:text-red-400' };
+    return { label: `${days} days`, className: 'bg-[var(--sem-danger-bg)] text-[var(--sem-danger)] border-[var(--sem-danger-border)]' };
   }
 }
 
