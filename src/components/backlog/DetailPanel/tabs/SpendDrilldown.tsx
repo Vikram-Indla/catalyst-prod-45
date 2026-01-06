@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { ChevronLeft, Info, TrendingUp, ExternalLink } from 'lucide-react';
 import { AcceptedStory } from '@/types/backlog.types';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { cn } from '@/lib/utils';
 
 interface SpendDrilldownProps {
   type: 'accepted' | 'forecasted' | 'estimated';
@@ -136,8 +137,10 @@ export function SpendDrilldown({ type, acceptedSpend, forecastedSpend, estimated
                     <td className="px-4 py-3 text-sm text-foreground">{story.title}</td>
                     <td className="px-4 py-3 text-sm text-muted-foreground">{story.team || 'None'}</td>
                     <td
-                      className="px-4 py-3 text-sm text-right font-semibold cursor-pointer relative"
-                      style={{ color: story.spend > 0 ? '#36B37E' : '#6B778C' }}
+                      className={cn(
+                        "px-4 py-3 text-sm text-right font-semibold cursor-pointer relative",
+                        story.spend > 0 ? "text-success" : "text-muted-foreground"
+                      )}
                       onMouseEnter={(e) => handleSpendClick(e, story)}
                       onMouseLeave={() => setHoveredStoryId(null)}
                     >

@@ -715,7 +715,7 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
       {/* Print Header */}
       <div className="hidden print:flex items-center justify-between px-6 py-4 border-b bg-white" style={{ borderColor: 'hsl(var(--roadmap-sandstone))' }}>
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-[10px] flex items-center justify-center text-white font-bold text-sm" style={{ background: 'linear-gradient(135deg, #2563eb, #60a5fa)' }}>
+          <div className="w-10 h-10 rounded-[10px] flex items-center justify-center text-primary-foreground font-bold text-sm bg-gradient-to-br from-primary to-primary/70">
             MIM
           </div>
           <div>

@@ -251,42 +251,32 @@ export function UserPicker({
                         onSelect={() => handleSelect(user.id)}
                         className={cn(
                           "cursor-pointer transition-colors py-3 px-4",
-                          isSelected(user.id) && "!bg-[rgba(37,99,235,0.08)]"
+                          isSelected(user.id) && "!bg-primary/10 border-l-[3px] border-l-primary"
                         )}
-                        style={{
-                          borderLeft: isSelected(user.id) ? '3px solid #2563eb' : '3px solid transparent'
-                        }}
                       >
                         <Check
                           className={cn(
-                            'mr-2 h-4 w-4 flex-shrink-0',
+                            'mr-2 h-4 w-4 flex-shrink-0 text-primary',
                             isSelected(user.id) ? 'opacity-100' : 'opacity-0'
                           )}
-                          style={{ color: '#2563eb' }}
                         />
                         <Avatar className="h-9 w-9 mr-3 flex-shrink-0">
                           <AvatarImage src={user.avatar_url || undefined} />
                           <AvatarFallback 
-                            className="text-xs font-semibold"
-                            style={{
-                              backgroundColor: 'rgba(37, 99, 235, 0.15)',
-                              color: '#2563eb'
-                            }}
+                            className="text-xs font-semibold bg-primary/15 text-primary"
                           >
                             {getInitials(user.full_name, user.email)}
                           </AvatarFallback>
                         </Avatar>
                         <div className="flex flex-col flex-1 min-w-0">
                           <span 
-                            className="text-sm font-medium truncate"
-                            style={{ color: 'var(--dialog-title-color, #f5f5f5)' }}
+                            className="text-sm font-medium truncate text-foreground"
                           >
                             {user.full_name || 'No name'}
                           </span>
                           {/* Email always muted for readability - NOT gold */}
                           <span 
-                            className="text-xs truncate"
-                            style={{ color: '#737373' }}
+                            className="text-xs truncate text-muted-foreground"
                           >
                             {user.email}
                           </span>

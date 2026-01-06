@@ -537,15 +537,10 @@ export function SnapshotDrawer({ isOpen, onClose, snapshotId, onSave }: Snapshot
         </SheetHeader>
 
         {/* Header Row */}
-        <div className="flex items-center gap-3 px-4 py-3" style={{ borderBottom: '1px solid #333333' }}>
+        <div className="flex items-center gap-3 px-4 py-3 border-b border-border">
           {/* ID */}
           <span 
-            className="px-2.5 py-1 rounded text-xs font-mono font-medium"
-            style={{
-              backgroundColor: '#242424',
-              border: '1px solid #404040',
-              color: '#60a5fa'
-            }}
+            className="px-2.5 py-1 rounded text-xs font-mono font-medium bg-muted border border-border text-primary"
           >
             {formatSnapshotId(snapshotId)}
           </span>
@@ -553,13 +548,13 @@ export function SnapshotDrawer({ isOpen, onClose, snapshotId, onSave }: Snapshot
           {/* Link */}
           <button 
             onClick={handleCopyLink}
-            className="p-1.5 rounded transition-colors hover:bg-[#333333]"
+            className="p-1.5 rounded transition-colors hover:bg-muted"
           >
-            <Link2 className="h-4 w-4" style={{ color: '#737373' }} />
+            <Link2 className="h-4 w-4 text-muted-foreground" />
           </button>
           
           {/* Title - truncated */}
-          <span className="flex-1 text-lg font-semibold truncate" style={{ color: '#f5f5f5' }}>
+          <span className="flex-1 text-lg font-semibold truncate text-foreground">
             {formData.name || 'Untitled Snapshot'}
           </span>
           
@@ -620,11 +615,10 @@ export function SnapshotDrawer({ isOpen, onClose, snapshotId, onSave }: Snapshot
 
         {/* Context Bar */}
         <div 
-          className="flex items-center gap-3 px-4 py-2.5 flex-wrap text-sm"
-          style={{ backgroundColor: '#1a1a1a', borderBottom: '1px solid #333333' }}
+          className="flex items-center gap-3 px-4 py-2.5 flex-wrap text-sm bg-muted/50 border-b border-border"
         >
           {/* Primary Theme */}
-          <span style={{ color: '#a3a3a3' }}>
+          <span className="text-muted-foreground">
             {selectedThemes.length > 0 
               ? themes.find(t => t.id === selectedThemes[0])?.name || 'Digital Maturity'
               : 'No Theme'
@@ -646,26 +640,26 @@ export function SnapshotDrawer({ isOpen, onClose, snapshotId, onSave }: Snapshot
           />
           
           {/* Date */}
-          <div className="flex items-center gap-1.5" style={{ color: '#a3a3a3' }}>
+          <div className="flex items-center gap-1.5 text-muted-foreground">
             <CalendarIcon className="h-4 w-4" />
             <span>{formData.end_date ? format(new Date(formData.end_date), 'MM/dd/yyyy') : '—'}</span>
           </div>
           
           {/* Quarters Count */}
-          <div className="flex items-center gap-1.5" style={{ color: '#a3a3a3' }}>
+          <div className="flex items-center gap-1.5 text-muted-foreground">
             <Layers className="h-4 w-4" />
             <span>{selectedQuarters.length} Quarters</span>
           </div>
           
           {/* Themes Count */}
-          <div className="flex items-center gap-1.5" style={{ color: '#a3a3a3' }}>
+          <div className="flex items-center gap-1.5 text-muted-foreground">
             <Settings className="h-4 w-4" />
             <span>{selectedThemes.length} Themes</span>
           </div>
         </div>
 
         {/* Progress Row - with tooltip */}
-        <div className="px-4 py-3" style={{ borderBottom: '1px solid #333333' }}>
+        <div className="px-4 py-3 border-b border-border">
           <ProgressWithTooltip
             entityType="snapshot"
             entityId={snapshotId}
@@ -675,7 +669,7 @@ export function SnapshotDrawer({ isOpen, onClose, snapshotId, onSave }: Snapshot
 
         {/* Tabs - with visible gold underline */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col overflow-hidden">
-          <div style={{ borderBottom: '1px solid #333333' }}>
+          <div className="border-b border-border">
             <div className="flex px-4">
               {[
                 { value: 'overview', label: 'Overview' },
@@ -686,14 +680,15 @@ export function SnapshotDrawer({ isOpen, onClose, snapshotId, onSave }: Snapshot
                 <button
                   key={tab.value}
                   onClick={() => setActiveTab(tab.value)}
-                  className="relative px-4 py-3 text-sm font-medium transition-colors"
-                  style={{ color: activeTab === tab.value ? '#f5f5f5' : '#a3a3a3' }}
+                  className={cn(
+                    "relative px-4 py-3 text-sm font-medium transition-colors",
+                    activeTab === tab.value ? "text-foreground" : "text-muted-foreground"
+                  )}
                 >
                   {tab.label}
                   {activeTab === tab.value && (
                     <div 
-                      className="absolute bottom-0 left-2 right-2 h-[3px] rounded-full"
-                      style={{ backgroundColor: '#3b82f6' }}
+                      className="absolute bottom-0 left-2 right-2 h-[3px] rounded-full bg-primary"
                     />
                   )}
                 </button>
@@ -706,54 +701,37 @@ export function SnapshotDrawer({ isOpen, onClose, snapshotId, onSave }: Snapshot
             <TabsContent value="overview" className="p-4 space-y-4 m-0">
               {/* Name */}
               <div className="space-y-2">
-                <label className="text-sm font-medium" style={{ color: '#a3a3a3' }}>
-                  Name <span style={{ color: '#3b82f6' }}>*</span>
+                <label className="text-sm font-medium text-muted-foreground">
+                  Name <span className="text-primary">*</span>
                 </label>
                 <input
                   value={formData.name}
                   onChange={(e) => handleFormChange('name', e.target.value)}
                   placeholder="Enter snapshot name"
-                  className="w-full px-4 py-3 rounded-lg text-sm"
-                  style={{
-                    backgroundColor: '#1a1a1a',
-                    border: '1px solid #333333',
-                    color: '#f5f5f5'
-                  }}
+                  className="w-full px-4 py-3 rounded-lg text-sm bg-muted border border-border text-foreground"
                 />
               </div>
 
               {/* Description */}
               <div className="space-y-2">
-                <label className="text-sm font-medium" style={{ color: '#a3a3a3' }}>Description</label>
+                <label className="text-sm font-medium text-muted-foreground">Description</label>
                 <textarea
                   value={formData.description}
                   onChange={(e) => handleFormChange('description', e.target.value)}
                   placeholder="Enter description..."
                   rows={4}
-                  className="w-full px-4 py-3 rounded-lg text-sm resize-none"
-                  style={{
-                    backgroundColor: '#1a1a1a',
-                    border: '1px solid #333333',
-                    color: '#f5f5f5'
-                  }}
+                  className="w-full px-4 py-3 rounded-lg text-sm resize-none bg-muted border border-border text-foreground"
                 />
               </div>
 
               {/* Status */}
               <div className="space-y-2">
-                <label className="text-sm font-medium" style={{ color: '#a3a3a3' }}>Status</label>
+                <label className="text-sm font-medium text-muted-foreground">Status</label>
                 <Select 
                   value={formData.status} 
                   onValueChange={(value) => handleFormChange('status', value)}
                 >
-                  <SelectTrigger 
-                    className="w-full"
-                    style={{
-                      backgroundColor: '#1a1a1a',
-                      border: '1px solid #333333',
-                      color: '#f5f5f5'
-                    }}
-                  >
+                  <SelectTrigger className="w-full bg-muted border border-border text-foreground">
                     <SelectValue placeholder="Select status" />
                   </SelectTrigger>
                   <SelectContent className="z-[400]">
@@ -770,18 +748,17 @@ export function SnapshotDrawer({ isOpen, onClose, snapshotId, onSave }: Snapshot
               <div className="grid grid-cols-2 gap-4">
                 {/* Start Date */}
                 <div className="space-y-2">
-                  <label className="text-sm font-medium" style={{ color: '#a3a3a3' }}>Start Date</label>
+                  <label className="text-sm font-medium text-muted-foreground">Start Date</label>
                   <Popover>
                     <PopoverTrigger asChild>
                       <button
-                        className="w-full flex items-center justify-start gap-2 px-4 py-3 rounded-lg text-sm text-left"
-                        style={{
-                          backgroundColor: '#1a1a1a',
-                          border: '1px solid #333333',
-                          color: formData.start_date ? '#f5f5f5' : '#737373'
-                        }}
+                        className={cn(
+                          "w-full flex items-center justify-start gap-2 px-4 py-3 rounded-lg text-sm text-left",
+                          "bg-muted border border-border",
+                          formData.start_date ? "text-foreground" : "text-muted-foreground"
+                        )}
                       >
-                        <CalendarIcon className="h-4 w-4" style={{ color: '#737373' }} />
+                        <CalendarIcon className="h-4 w-4 text-muted-foreground" />
                         {formData.start_date 
                           ? format(new Date(formData.start_date), 'MM/dd/yyyy')
                           : 'Pick a date'
@@ -802,18 +779,17 @@ export function SnapshotDrawer({ isOpen, onClose, snapshotId, onSave }: Snapshot
 
                 {/* End Date */}
                 <div className="space-y-2">
-                  <label className="text-sm font-medium" style={{ color: '#a3a3a3' }}>End Date</label>
+                  <label className="text-sm font-medium text-muted-foreground">End Date</label>
                   <Popover>
                     <PopoverTrigger asChild>
                       <button
-                        className="w-full flex items-center justify-start gap-2 px-4 py-3 rounded-lg text-sm text-left"
-                        style={{
-                          backgroundColor: '#1a1a1a',
-                          border: '1px solid #333333',
-                          color: formData.end_date ? '#f5f5f5' : '#737373'
-                        }}
+                        className={cn(
+                          "w-full flex items-center justify-start gap-2 px-4 py-3 rounded-lg text-sm text-left",
+                          "bg-muted border border-border",
+                          formData.end_date ? "text-foreground" : "text-muted-foreground"
+                        )}
                       >
-                        <CalendarIcon className="h-4 w-4" style={{ color: '#737373' }} />
+                        <CalendarIcon className="h-4 w-4 text-muted-foreground" />
                         {formData.end_date 
                           ? format(new Date(formData.end_date), 'MM/dd/yyyy')
                           : 'Pick a date'
@@ -835,7 +811,7 @@ export function SnapshotDrawer({ isOpen, onClose, snapshotId, onSave }: Snapshot
 
               {/* Owner */}
               <div className="space-y-2">
-                <label className="text-sm font-medium" style={{ color: '#a3a3a3' }}>Owner</label>
+                <label className="text-sm font-medium text-muted-foreground">Owner</label>
                 <UserPicker
                   value={formData.created_by}
                   onChange={(value) => handleFormChange('created_by', value)}
@@ -845,18 +821,13 @@ export function SnapshotDrawer({ isOpen, onClose, snapshotId, onSave }: Snapshot
 
               {/* Notes */}
               <div className="space-y-2">
-                <label className="text-sm font-medium" style={{ color: '#a3a3a3' }}>Notes</label>
+                <label className="text-sm font-medium text-muted-foreground">Notes</label>
                 <textarea
                   value={formData.notes}
                   onChange={(e) => handleFormChange('notes', e.target.value)}
                   placeholder="Add notes..."
                   rows={4}
-                  className="w-full px-4 py-3 rounded-lg text-sm resize-none"
-                  style={{
-                    backgroundColor: '#1a1a1a',
-                    border: '1px solid #333333',
-                    color: '#f5f5f5'
-                  }}
+                  className="w-full px-4 py-3 rounded-lg text-sm resize-none bg-muted border border-border text-foreground"
                 />
               </div>
             </TabsContent>
