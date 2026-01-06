@@ -10689,6 +10689,72 @@ export type Database = {
           },
         ]
       }
+      jira_sync_history: {
+        Row: {
+          completed_at: string | null
+          duration_ms: number | null
+          errors: Json | null
+          id: string
+          links_created: number | null
+          project_id: string
+          requirements_created: number | null
+          requirements_deleted: number | null
+          requirements_updated: number | null
+          started_at: string | null
+          status: string
+          sync_direction: string
+          sync_type: string
+          triggered_by: string | null
+        }
+        Insert: {
+          completed_at?: string | null
+          duration_ms?: number | null
+          errors?: Json | null
+          id?: string
+          links_created?: number | null
+          project_id: string
+          requirements_created?: number | null
+          requirements_deleted?: number | null
+          requirements_updated?: number | null
+          started_at?: string | null
+          status?: string
+          sync_direction: string
+          sync_type: string
+          triggered_by?: string | null
+        }
+        Update: {
+          completed_at?: string | null
+          duration_ms?: number | null
+          errors?: Json | null
+          id?: string
+          links_created?: number | null
+          project_id?: string
+          requirements_created?: number | null
+          requirements_deleted?: number | null
+          requirements_updated?: number | null
+          started_at?: string | null
+          status?: string
+          sync_direction?: string
+          sync_type?: string
+          triggered_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "jira_sync_history_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "jira_sync_history_triggered_by_fkey"
+            columns: ["triggered_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       jira_sync_logs: {
         Row: {
           completed_at: string | null
@@ -15092,6 +15158,162 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: []
+      }
+      requirement_test_links: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          id: string
+          link_type: string | null
+          notes: string | null
+          requirement_id: string
+          test_case_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          link_type?: string | null
+          notes?: string | null
+          requirement_id: string
+          test_case_id: string
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          link_type?: string | null
+          notes?: string | null
+          requirement_id?: string
+          test_case_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "requirement_test_links_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "requirement_test_links_requirement_id_fkey"
+            columns: ["requirement_id"]
+            isOneToOne: false
+            referencedRelation: "requirements"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "requirement_test_links_test_case_id_fkey"
+            columns: ["test_case_id"]
+            isOneToOne: false
+            referencedRelation: "tm_test_cases"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "requirement_test_links_test_case_id_fkey"
+            columns: ["test_case_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_test_cases_full"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      requirements: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          external_id: string | null
+          external_key: string | null
+          external_type: string | null
+          external_url: string | null
+          id: string
+          labels: string[] | null
+          last_synced_at: string | null
+          owner_id: string | null
+          parent_id: string | null
+          priority: Database["public"]["Enums"]["requirement_priority"] | null
+          project_id: string
+          release_version: string | null
+          requirement_key: string
+          sort_order: number | null
+          sprint: string | null
+          status: Database["public"]["Enums"]["requirement_status"]
+          sync_status: string | null
+          title: string
+          type: Database["public"]["Enums"]["requirement_type"]
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          external_id?: string | null
+          external_key?: string | null
+          external_type?: string | null
+          external_url?: string | null
+          id?: string
+          labels?: string[] | null
+          last_synced_at?: string | null
+          owner_id?: string | null
+          parent_id?: string | null
+          priority?: Database["public"]["Enums"]["requirement_priority"] | null
+          project_id: string
+          release_version?: string | null
+          requirement_key: string
+          sort_order?: number | null
+          sprint?: string | null
+          status?: Database["public"]["Enums"]["requirement_status"]
+          sync_status?: string | null
+          title: string
+          type?: Database["public"]["Enums"]["requirement_type"]
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          external_id?: string | null
+          external_key?: string | null
+          external_type?: string | null
+          external_url?: string | null
+          id?: string
+          labels?: string[] | null
+          last_synced_at?: string | null
+          owner_id?: string | null
+          parent_id?: string | null
+          priority?: Database["public"]["Enums"]["requirement_priority"] | null
+          project_id?: string
+          release_version?: string | null
+          requirement_key?: string
+          sort_order?: number | null
+          sprint?: string | null
+          status?: Database["public"]["Enums"]["requirement_status"]
+          sync_status?: string | null
+          title?: string
+          type?: Database["public"]["Enums"]["requirement_type"]
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "requirements_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "requirements_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "requirements"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "requirements_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       resource_allocations: {
         Row: {
@@ -23336,6 +23558,21 @@ export type Database = {
         | "trend_analysis"
         | "cycle_comparison"
         | "custom"
+      requirement_priority: "highest" | "high" | "medium" | "low" | "lowest"
+      requirement_status:
+        | "backlog"
+        | "todo"
+        | "in_progress"
+        | "in_review"
+        | "done"
+        | "cancelled"
+      requirement_type:
+        | "epic"
+        | "feature"
+        | "story"
+        | "task"
+        | "bug"
+        | "improvement"
       risk_level: "low" | "med" | "high"
       roam_status: "resolved" | "owned" | "accepted" | "mitigated"
       room_type:
@@ -23835,6 +24072,23 @@ export const Constants = {
         "trend_analysis",
         "cycle_comparison",
         "custom",
+      ],
+      requirement_priority: ["highest", "high", "medium", "low", "lowest"],
+      requirement_status: [
+        "backlog",
+        "todo",
+        "in_progress",
+        "in_review",
+        "done",
+        "cancelled",
+      ],
+      requirement_type: [
+        "epic",
+        "feature",
+        "story",
+        "task",
+        "bug",
+        "improvement",
       ],
       risk_level: ["low", "med", "high"],
       roam_status: ["resolved", "owned", "accepted", "mitigated"],
