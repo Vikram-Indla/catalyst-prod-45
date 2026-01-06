@@ -25,6 +25,7 @@ import {
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { GeneratedReportData, reportsService } from '../../services/reportsService';
+import { reportExportService } from '../../services/reportExportService';
 import { REPORT_TYPES } from '../../config/reportTypes';
 import { useToast } from '@/hooks/use-toast';
 import {
@@ -74,9 +75,52 @@ export function ReportViewer({ report, onClose, onEdit, onRefresh, isRefreshing 
     }
   };
 
-  const handleExport = (exportFormat: 'excel' | 'pdf') => {
-    toast({ title: 'Export Started', description: `Exporting report as ${exportFormat.toUpperCase()}...` });
-    // TODO: Implement actual export functionality
+  const handleExport = async (exportFormat: 'excel' | 'pdf') => {
+    const reportConfig = REPORT_TYPES.find(rt => rt.id === report.reportType);
+    const filename = `${reportConfig?.name || 'Report'}-${format(new Date(), 'yyyy-MM-dd')}`;
+    
+    // Build summary from report data
+    const summary: Record<string, any> = {};
+    if (report.data.totalRuns !== undefined) summary['Total Runs'] = report.data.totalRuns;
+    if (report.data.passRate !== undefined) summary['Pass Rate'] = `${report.data.passRate.toFixed(1)}%`;
+    if (report.data.progress !== undefined) summary['Progress'] = `${report.data.progress.toFixed(1)}%`;
+    if (report.data.statusCounts) {
+      Object.entries(report.data.statusCounts).forEach(([status, count]) => {
+        summary[status.charAt(0).toUpperCase() + status.slice(1)] = count;
+      });
+    }
+    
+    // Build data array for table export
+    let dataArray: any[] = [];
+    if (report.data.cases && Array.isArray(report.data.cases)) {
+      dataArray = report.data.cases;
+    } else if (report.data.defects && Array.isArray(report.data.defects)) {
+      dataArray = report.data.defects;
+    }
+    
+    const exportData = {
+      title: reportConfig?.name || 'Test Report',
+      subtitle: reportConfig?.description,
+      generatedAt: format(new Date(report.generatedAt), 'PPpp'),
+      summary,
+      data: dataArray,
+      chartElementId: 'report-chart',
+    };
+    
+    try {
+      toast({ title: 'Export Started', description: `Generating ${exportFormat.toUpperCase()} file...` });
+      
+      if (exportFormat === 'pdf') {
+        await reportExportService.exportToPDF(exportData, filename);
+      } else {
+        await reportExportService.exportToExcel(exportData, filename);
+      }
+      
+      toast({ title: 'Export Complete', description: `Report exported as ${exportFormat.toUpperCase()}` });
+    } catch (error) {
+      console.error('Export failed:', error);
+      toast({ title: 'Export Failed', description: 'Could not generate the export file', variant: 'destructive' });
+    }
   };
 
   const handleShare = async () => {
