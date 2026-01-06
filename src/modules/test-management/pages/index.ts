@@ -9,6 +9,7 @@ export { CycleDetailPage } from './CycleDetailPage';
 export { DefectsPage } from './DefectsPage';
 export { ReportsPage } from './ReportsPage';
 export { SettingsPage } from './SettingsPage';
+export { TMSettingsPage } from './TMSettingsPage';
 export { MyWorkPage } from './MyWorkPage';
 export { CommandCenterPage } from './CommandCenterPage';
 export { ExecutionRunnerPage } from './ExecutionRunnerPage';
