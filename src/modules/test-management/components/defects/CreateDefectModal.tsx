@@ -302,12 +302,15 @@ export function CreateDefectModal({
 
               <div className="space-y-2">
                 <Label>Assignee</Label>
-                <Select value={assigneeId} onValueChange={setAssigneeId}>
+                <Select 
+                  value={assigneeId || 'unassigned'} 
+                  onValueChange={(v) => setAssigneeId(v === 'unassigned' ? '' : v)}
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="Unassigned" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Unassigned</SelectItem>
+                    <SelectItem value="unassigned">Unassigned</SelectItem>
                     {teamMembers.map((member) => (
                       <SelectItem key={member.id} value={member.id}>
                         {member.full_name}
