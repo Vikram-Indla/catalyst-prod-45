@@ -264,7 +264,7 @@ export function getAgingTime(createdAt: string): string {
 // Row background helper for warning states (SEV1 or breached SLA)
 export function getIncidentRowBackground(severity: SeverityLevel, slaBreached: boolean): string {
   if (slaBreached || severity === 'SEV1') {
-    return 'rgba(239, 68, 68, 0.08)'; // Red at 8% opacity
+    return 'var(--danger-bg, rgba(239, 68, 68, 0.08))';
   }
   return 'transparent';
 }

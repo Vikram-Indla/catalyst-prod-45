@@ -1,13 +1,8 @@
 /**
  * TablePill — Incident table status/severity/SLA visuals (Catalyst-compliant)
  *
- * CATALYST PURE ONYX DESIGN SYSTEM
- * - Success: #22c55e (green)
- * - Warning: #f59e0b (amber)
- * - Danger: #ef4444 (red)
- * - Info: #3b82f6 (blue)
- * - Brand Gold: #c69c6d
- * - Muted: #8a8a8a
+ * CATALYST V5 DESIGN SYSTEM — Using CSS Variable Tokens
+ * All colors reference design system tokens for theme consistency
  */
 
 import { cn } from '@/lib/utils';
@@ -20,39 +15,39 @@ export interface TablePillProps {
   style?: React.CSSProperties;
 }
 
-// Catalyst Pure Onyx tokens
+// Catalyst V5 tokens — reference CSS variables for theme consistency
 const catalyst = {
-  // Status colors
-  success: '#22c55e',
-  successBg: 'rgba(34, 197, 94, 0.15)',
-  successBorder: 'rgba(34, 197, 94, 0.3)',
+  // Status colors (using CSS variables)
+  success: 'var(--success-fg, #22c55e)',
+  successBg: 'var(--success-bg, rgba(34, 197, 94, 0.12))',
+  successBorder: 'var(--success-bd, rgba(34, 197, 94, 0.22))',
   
-  warning: '#f59e0b',
-  warningBg: 'rgba(245, 158, 11, 0.15)',
-  warningBorder: 'rgba(245, 158, 11, 0.3)',
+  warning: 'var(--warning-fg, #f59e0b)',
+  warningBg: 'var(--warning-bg, rgba(245, 158, 11, 0.12))',
+  warningBorder: 'var(--warning-bd, rgba(245, 158, 11, 0.22))',
   
-  danger: '#ef4444',
-  dangerBg: 'rgba(239, 68, 68, 0.15)',
-  dangerBorder: 'rgba(239, 68, 68, 0.3)',
+  danger: 'var(--danger-fg, #ef4444)',
+  dangerBg: 'var(--danger-bg, rgba(239, 68, 68, 0.12))',
+  dangerBorder: 'var(--danger-bd, rgba(239, 68, 68, 0.22))',
   
-  info: '#3b82f6',
-  infoBg: 'rgba(59, 130, 246, 0.15)',
-  infoBorder: 'rgba(59, 130, 246, 0.3)',
+  info: 'var(--info-fg, #3b82f6)',
+  infoBg: 'var(--info-bg, rgba(59, 130, 246, 0.12))',
+  infoBorder: 'var(--info-bd, rgba(59, 130, 246, 0.22))',
   
-  // Brand
-  gold: '#c69c6d',
-  goldBg: 'rgba(198, 156, 109, 0.15)',
-  goldBorder: 'rgba(198, 156, 109, 0.3)',
+  // Brand (gold accent)
+  gold: 'var(--brand-gold, #c69c6d)',
+  goldBg: 'var(--accent-gold-soft, rgba(198, 156, 109, 0.14))',
+  goldBorder: 'var(--accent-border, rgba(198, 156, 109, 0.30))',
   
-  // Neutral
-  muted: '#8a8a8a',
-  mutedBg: '#2d2d2d',
-  mutedBorder: '#404040',
+  // Neutral (using CSS variables)
+  muted: 'var(--fg-3, #8a8a8a)',
+  mutedBg: 'var(--neutral-bg, rgba(255,255,255,0.06))',
+  mutedBorder: 'var(--neutral-bd, rgba(255,255,255,0.10))',
   
-  // Text
-  text1: '#f5f5f5',
-  text2: '#d4d4d4',
-  text4: '#8a8a8a',
+  // Text (using CSS variables)
+  text1: 'var(--fg-1, #f5f5f5)',
+  text2: 'var(--fg-2, #d4d4d4)',
+  text4: 'var(--fg-4, #8a8a8a)',
 } as const;
 
 export function TablePill({ children, className, style }: TablePillProps) {
