@@ -156,9 +156,7 @@ export default function StrategyRoomPage() {
             {/* Strategic Pulse Skeleton */}
             <SkeletonSection>
               <div className="flex flex-col lg:flex-row gap-3">
-                <div 
-                  className="lg:w-[240px] min-h-[120px] p-4 rounded-md flex-shrink-0 bg-muted border border-border"
-                >
+                <div className="lg:w-[240px] min-h-[120px] p-4 rounded-md flex-shrink-0 bg-muted/40 dark:bg-muted/20">
                   <div className="h-3 w-24 rounded mb-3 animate-pulse bg-muted-foreground/15" />
                   <div className="h-7 w-20 rounded mb-2 animate-pulse bg-muted-foreground/15" />
                   <div className="h-2.5 w-28 rounded animate-pulse bg-muted-foreground/15" />
@@ -167,7 +165,7 @@ export default function StrategyRoomPage() {
                   {[1, 2, 3, 4].map((i) => (
                     <div 
                       key={i} 
-                      className="p-3 rounded-md min-h-[56px] bg-muted border border-border"
+                      className="p-3 rounded-md min-h-[56px] bg-muted/40 dark:bg-muted/20"
                     >
                       <div className="h-2.5 w-14 rounded mb-2 animate-pulse bg-muted-foreground/15" />
                       <div className="h-5 w-10 rounded mb-1 animate-pulse bg-muted-foreground/15" />
@@ -270,10 +268,10 @@ export default function StrategyRoomPage() {
 
           {/* Section 5: Strategy Context — Collapsible accordion */}
           <Collapsible open={contextOpen} onOpenChange={setContextOpen}>
-            <section className="rounded-lg overflow-hidden bg-card border border-border">
+            <section className="rounded-lg overflow-hidden bg-card/50 dark:bg-card/30">
               <CollapsibleTrigger asChild>
                 <button
-                  className="w-full px-4 py-2.5 flex items-center justify-between transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
+                  className="w-full px-4 py-2.5 flex items-center justify-between transition-colors bg-muted/30 dark:bg-muted/10 hover:bg-muted/40 dark:hover:bg-muted/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
                 >
                   <div className="flex items-center gap-2">
                     <Compass size={14} className="text-primary" />
@@ -296,7 +294,7 @@ export default function StrategyRoomPage() {
                 </button>
               </CollapsibleTrigger>
               <CollapsibleContent>
-                <div className="border-t border-border">
+                <div className="border-t border-border/20 dark:border-border/10">
                   <StrategyContextCard snapshot={selectedSnapshot} onUpdate={refetchSnapshots} />
                 </div>
               </CollapsibleContent>
@@ -333,8 +331,8 @@ export default function StrategyRoomPage() {
 
 function SkeletonSection({ children, height }: { children?: React.ReactNode; height?: string }) {
   return (
-    <div className={cn("rounded-lg overflow-hidden bg-card border border-border", height)}>
-      <div className="px-4 py-2 border-b border-border/50">
+    <div className={cn("rounded-lg overflow-hidden bg-card/50 dark:bg-card/30", height)}>
+      <div className="px-4 py-2 bg-muted/30 dark:bg-muted/10">
         <div className="h-3 w-24 rounded animate-pulse bg-muted" />
       </div>
       {children ? (
@@ -348,8 +346,8 @@ function SkeletonSection({ children, height }: { children?: React.ReactNode; hei
 
 function SkeletonCard({ rows = 3 }: { rows?: number }) {
   return (
-    <div className="rounded-md overflow-hidden min-h-[140px] bg-muted border border-border">
-      <div className="px-3 py-2 flex items-center gap-2 border-b border-border">
+    <div className="rounded-md overflow-hidden min-h-[140px] bg-muted/40 dark:bg-muted/20">
+      <div className="px-3 py-2 flex items-center gap-2 bg-muted/20 dark:bg-muted/10">
         <div className="h-3 w-3 rounded animate-pulse bg-muted-foreground/20" />
         <div className="h-2.5 w-20 rounded animate-pulse bg-muted-foreground/20" />
       </div>

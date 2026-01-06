@@ -456,28 +456,21 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
   // Show skeleton only during initial load when no LKG data exists
   if (isLoading && !hasData) {
     return (
-      <section 
-        className="rounded-lg overflow-hidden"
-        style={{
-          backgroundColor: 'var(--surface-bg)',
-          border: '1px solid var(--border-default)',
-          boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
-        }}
-      >
-        <div className="px-4 py-2.5" style={{ borderBottom: '1px solid var(--border-subtle)' }}>
+      <section className="rounded-lg overflow-hidden bg-card/50 dark:bg-card/30">
+        <div className="px-4 py-2.5 bg-muted/30 dark:bg-muted/10">
           <Skeleton className="h-4 w-48" />
           <Skeleton className="h-3 w-64 mt-1" />
         </div>
-        <div className="py-1.5 px-3" style={{ backgroundColor: 'var(--surface-subtle)' }}>
+        <div className="py-1.5 px-3 bg-muted/20 dark:bg-muted/10">
           <div className="grid animate-pulse" style={{ gridTemplateColumns: '1fr 50px 120px 70px 50px 20px' }}>
             {[1, 2, 3, 4, 5, 6].map(i => (
-              <div key={i} className="h-2.5 w-10 rounded" style={{ backgroundColor: 'var(--muted)' }} />
+              <div key={i} className="h-2.5 w-10 rounded bg-muted/60 dark:bg-muted/40" />
             ))}
           </div>
         </div>
         <div className="p-2 space-y-1">
           {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="h-9 rounded animate-pulse" style={{ backgroundColor: 'var(--muted)' }} />
+            <div key={i} className="h-9 rounded animate-pulse bg-muted/40 dark:bg-muted/20" />
           ))}
         </div>
       </section>
@@ -485,19 +478,9 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
   }
 
   return (
-    <section 
-      className="rounded-lg overflow-hidden"
-      style={{
-        backgroundColor: 'var(--surface-bg)',
-        border: '1px solid var(--border-default-hex)',
-        boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
-      }}
-    >
-      {/* Header with Refreshing indicator */}
-      <div 
-        className="px-4 py-2.5 flex items-center justify-between"
-        style={{ borderBottom: '1px solid var(--border-subtle-hex)' }}
-      >
+    <section className="rounded-lg overflow-hidden bg-card/50 dark:bg-card/30">
+      {/* Header with Refreshing indicator - surface separation via background */}
+      <div className="px-4 py-2.5 flex items-center justify-between bg-muted/30 dark:bg-muted/10">
         <div className="flex items-center gap-2">
           <div>
             <h2 
@@ -517,13 +500,13 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
         <div className="flex items-center gap-2">
           {/* Stale data indicator - CATALYST STANDARD */}
           {showStaleIndicator && (
-            <span className="text-[11px] text-gray-500 dark:text-gray-400 italic">
+            <span className="text-[11px] text-muted-foreground italic">
               Data may be stale
             </span>
           )}
           {/* Refreshing indicator - CATALYST STANDARD */}
           {isRefreshing && (
-            <div className="text-[11px] text-gray-500 dark:text-gray-400 flex items-center gap-1.5">
+            <div className="text-[11px] text-muted-foreground flex items-center gap-1.5">
               <Loader2 size={12} className="animate-spin" />
               <span>Refreshing…</span>
             </div>
@@ -537,17 +520,14 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
         <div 
           className={cn(
             "transition-all duration-200",
-            selectedLayer ? "w-[55%]" : "w-full"
+            selectedLayer ? "w-[55%] border-r border-border/20 dark:border-border/10" : "w-full"
           )}
-          style={{ borderRight: selectedLayer ? '1px solid var(--border-subtle-hex)' : 'none' }}
         >
           {/* Sticky Table Header */}
           <div 
-            className="sticky top-0 z-10 grid items-center py-1.5 px-3"
+            className="sticky top-0 z-10 grid items-center py-1.5 px-3 bg-muted/20 dark:bg-muted/10"
             style={{
               gridTemplateColumns: '1fr 50px 120px 70px 50px 20px',
-              backgroundColor: 'var(--surface-subtle)',
-              borderBottom: '1px solid var(--border-default-hex)',
             }}
           >
             <div className={cn(TYPOGRAPHY.tableHeader)} style={{ color: 'var(--text-secondary-hex)' }}>
