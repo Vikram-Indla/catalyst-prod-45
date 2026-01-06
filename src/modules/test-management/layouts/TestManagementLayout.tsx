@@ -24,6 +24,9 @@ import {
   Play,
   Link2,
   User,
+  Layers,
+  Target,
+  GitBranch,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -43,23 +46,40 @@ import { TMGlobalSearch } from '../components/layout/TMGlobalSearch';
 import { useUIStore } from '../stores/uiStore';
 
 interface NavItem {
-  path: string;
+  path?: string;
   label: string;
-  icon: React.ElementType;
+  icon?: React.ElementType;
   badge?: number;
-  separator?: boolean;
+  type?: 'link' | 'separator';
 }
 
 const navItems: NavItem[] = [
-  { path: '/tests/command-center', label: 'Command Center', icon: LayoutDashboard },
-  { path: '/tests/my-work', label: 'My Work', icon: User, badge: 12 },
-  { path: '/tests/cases', label: 'Test Cases', icon: FileText, badge: 156 },
-  { path: '/tests/cycles', label: 'Test Cycles', icon: RefreshCw, badge: 8 },
-  { path: '/tests/execution', label: 'Execution', icon: Play },
-  { path: '/tests/defects', label: 'Defects', icon: Bug, badge: 23 },
-  { path: '/tests/requirements', label: 'Requirements', icon: Link2 },
-  { path: '/tests/reports', label: 'Reports', icon: BarChart3 },
-  { path: '/tests/settings', label: 'Settings', icon: Settings, separator: true },
+  { path: '/tests/command-center', label: 'Command Center', icon: LayoutDashboard, type: 'link' },
+  { path: '/tests/my-work', label: 'My Work', icon: User, badge: 12, type: 'link' },
+  
+  // Test Assets Section
+  { label: 'Test Assets', type: 'separator' },
+  { path: '/tests/cases', label: 'Test Cases', icon: FileText, badge: 156, type: 'link' },
+  { path: '/tests/sets', label: 'Test Sets', icon: Layers, type: 'link' },
+  
+  // Execution Section
+  { label: 'Execution', type: 'separator' },
+  { path: '/tests/cycles', label: 'Test Cycles', icon: RefreshCw, badge: 8, type: 'link' },
+  { path: '/tests/execution', label: 'Test Execution', icon: Play, type: 'link' },
+  
+  // Quality Section
+  { label: 'Quality', type: 'separator' },
+  { path: '/tests/defects', label: 'Defects', icon: Bug, badge: 23, type: 'link' },
+  { path: '/tests/requirements', label: 'Requirements', icon: Target, type: 'link' },
+  { path: '/tests/traceability', label: 'Traceability', icon: GitBranch, type: 'link' },
+  
+  // Analytics Section
+  { label: 'Analytics', type: 'separator' },
+  { path: '/tests/reports', label: 'Reports', icon: BarChart3, type: 'link' },
+  
+  // Admin Section
+  { label: 'Admin', type: 'separator' },
+  { path: '/tests/settings', label: 'Settings', icon: Settings, type: 'link' },
 ];
 
 export function TestManagementLayout() {
@@ -119,20 +139,30 @@ export function TestManagementLayout() {
 
       {/* Navigation Items */}
       <ScrollArea className="flex-1 py-2">
-        <nav className="flex flex-col gap-1 px-2">
+        <nav className="flex flex-col gap-0.5 px-2">
           {navItems.map((item, index) => {
-            const Icon = item.icon;
-            const isActive = location.pathname === item.path;
-            const showSeparator = item.separator && index > 0;
+            // Handle separator items
+            if (item.type === 'separator') {
+              if (collapsed) return null; // Hide separators when collapsed
+              return (
+                <div key={`sep-${index}`} className="mt-4 mb-2 first:mt-0">
+                  <span className="px-3 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/70">
+                    {item.label}
+                  </span>
+                </div>
+              );
+            }
+
+            const Icon = item.icon!;
+            const isActive = item.path ? location.pathname === item.path || location.pathname.startsWith(item.path + '/') : false;
 
             return (
               <React.Fragment key={item.path}>
-                {showSeparator && <div className="my-2 border-t border-border" />}
                 {collapsed ? (
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <NavLink
-                        to={item.path}
+                        to={item.path!}
                         className={cn(
                           'flex h-10 w-10 items-center justify-center rounded-md transition-colors mx-auto relative',
                           isActive
@@ -161,21 +191,21 @@ export function TestManagementLayout() {
                   </Tooltip>
                 ) : (
                   <NavLink
-                    to={item.path}
+                    to={item.path!}
                     className={cn(
-                      'flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium transition-colors',
+                      'flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors',
                       isActive
                         ? 'bg-primary text-primary-foreground'
                         : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
                     )}
                   >
-                    <Icon className="h-5 w-5 shrink-0" />
+                    <Icon className="h-4 w-4 shrink-0" />
                     <span className="flex-1">{item.label}</span>
                     {item.badge && (
                       <Badge
                         variant={isActive ? 'secondary' : 'outline'}
                         className={cn(
-                          'h-5 min-w-5 justify-center',
+                          'h-5 min-w-5 justify-center text-[10px]',
                           isActive && 'bg-primary-foreground/20 text-primary-foreground border-0'
                         )}
                       >

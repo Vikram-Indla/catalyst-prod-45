@@ -15,5 +15,7 @@ export { MyWorkPage } from './MyWorkPage';
 export { CommandCenterPage } from './CommandCenterPage';
 export { ExecutionRunnerPage } from './ExecutionRunnerPage';
 export { ExecutionDashboardPage } from './ExecutionDashboardPage';
+export { TestSetsPage } from './TestSetsPage';
+export { TraceabilityPage } from './TraceabilityPage';
 export { AnalyticsDashboardPage } from './AnalyticsDashboardPage';
 export { default as TMRequirementsPage } from './TMRequirementsPage';
