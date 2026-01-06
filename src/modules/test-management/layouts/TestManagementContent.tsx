@@ -1,48 +1,61 @@
 /**
  * Test Management Content Layout
  * Simple content wrapper - sidebar is provided by CatalystShell via TestManagementSidebar
+ * 
+ * CATALYST CONTRACT: Breadcrumb-only title format (TM / PageName)
  */
 
 import React from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 
-const getTMTitle = (pathname: string): string | null => {
+interface BreadcrumbTitle {
+  parent: string;
+  current: string;
+}
+
+const getTMBreadcrumb = (pathname: string): BreadcrumbTitle | null => {
   // Pages with their own toolbar/header don't need module header
   if (pathname.startsWith('/tests/cases')) return null;
   if (pathname.startsWith('/tests/command-center')) return null;
   
-  if (pathname.startsWith('/tests/my-work')) return 'My Work';
-  if (pathname.startsWith('/tests/cycles/')) return 'Cycle Details';
-  if (pathname.startsWith('/tests/cycles')) return 'Test Cycles';
-  if (pathname.startsWith('/tests/defects')) return 'Defects';
-  if (pathname.startsWith('/tests/reports')) return 'Reports';
-  if (pathname.startsWith('/tests/settings')) return 'Settings';
-  return 'Command Center';
+  const parent = 'TM';
+  
+  if (pathname.startsWith('/tests/my-work')) return { parent, current: 'My Work' };
+  if (pathname.startsWith('/tests/cycles/')) return { parent, current: 'Cycle Details' };
+  if (pathname.startsWith('/tests/cycles')) return { parent, current: 'Test Cycles' };
+  if (pathname.startsWith('/tests/defects')) return { parent, current: 'Defects' };
+  if (pathname.startsWith('/tests/reports')) return { parent, current: 'Reports' };
+  if (pathname.startsWith('/tests/settings')) return { parent, current: 'Settings' };
+  return { parent, current: 'Command Center' };
 };
 
 export function TestManagementContent() {
   const location = useLocation();
-  const title = getTMTitle(location.pathname);
+  const breadcrumb = getTMBreadcrumb(location.pathname);
 
   return (
     <div className="flex-1 h-full min-h-0 flex flex-col bg-surface-1">
-      {/* Module header row (52px) — only show if page doesn't have its own header */}
-      {title && (
+      {/* Breadcrumb title row (52px) — Catalyst Contract: PARENT / CURRENT format */}
+      {breadcrumb && (
         <header
-          className="flex items-center"
+          className="flex items-center border-b"
           style={{
             height: '52px',
-            borderBottom: '1px solid var(--divider)',
+            borderColor: 'var(--divider, hsl(var(--border)))',
           }}
         >
           <div className="px-6">
-            <h1 className="text-lg font-semibold text-text-primary">{title}</h1>
+            <h1 className="text-lg font-semibold text-text-primary">
+              <span className="text-muted-foreground">{breadcrumb.parent}</span>
+              <span className="text-muted-foreground mx-2">/</span>
+              <span>{breadcrumb.current}</span>
+            </h1>
           </div>
         </header>
       )}
 
       {/* Page content scroll region */}
-      <div className={`flex-1 min-h-0 overflow-auto ${title ? 'p-6' : ''}`}>
+      <div className={`flex-1 min-h-0 overflow-auto ${breadcrumb ? '' : ''}`}>
         <Outlet />
       </div>
     </div>
