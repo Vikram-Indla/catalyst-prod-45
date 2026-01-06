@@ -21677,6 +21677,45 @@ export type Database = {
           },
         ]
       }
+      tm_saved_reports: {
+        Row: {
+          created_at: string
+          id: string
+          is_shared: boolean | null
+          name: string
+          owner_id: string
+          parameters: Json
+          project_id: string | null
+          report_type: string
+          tags: string[] | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_shared?: boolean | null
+          name: string
+          owner_id: string
+          parameters?: Json
+          project_id?: string | null
+          report_type: string
+          tags?: string[] | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_shared?: boolean | null
+          name?: string
+          owner_id?: string
+          parameters?: Json
+          project_id?: string | null
+          report_type?: string
+          tags?: string[] | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       tm_set_cases: {
         Row: {
           added_at: string | null
