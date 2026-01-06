@@ -82,17 +82,7 @@ export const EFDesignerPage: React.FC = () => {
         <EFDWizard session={session} />
       ) : (
         <div className="flex-1 p-6">
-          <div className="w-full max-w-3xl mx-auto space-y-6">
-            <div className="flex justify-center">
-              <button
-                onClick={handleNewSession}
-                disabled={createSession.isPending}
-                className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 disabled:opacity-50"
-              >
-                {createSession.isPending && <Loader2 className="h-4 w-4 animate-spin" />}
-                Start New Session
-              </button>
-            </div>
+          <div className="w-full max-w-3xl mx-auto">
 
             {/* Recent Sessions */}
             {sessionsLoading ? (
