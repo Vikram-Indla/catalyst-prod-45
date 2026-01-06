@@ -370,10 +370,7 @@ export function AllocationBookingModal({
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-slate-700">
           <div className="flex items-center gap-4">
-            <div 
-              className="w-12 h-12 rounded-full flex items-center justify-center text-white text-lg font-bold"
-              style={{ backgroundColor: '#2563eb' }}
-            >
+            <div className="w-12 h-12 rounded-full flex items-center justify-center bg-primary text-primary-foreground text-lg font-bold">
               {initials}
             </div>
             <div>

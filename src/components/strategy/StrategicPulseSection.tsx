@@ -205,8 +205,8 @@ export function StrategicPulseSection({ snapshotId }: StrategicPulseSectionProps
                           "inline-flex items-center px-2.5 py-1 rounded font-semibold",
                           "text-[14px] leading-[18px]",
                           config.bgClass,
+                          isNoData ? '' : 'text-white dark:text-white',
                         )}
-                        style={{ color: isNoData ? 'inherit' : '#ffffff' }}
                       >
                         {config.label}
                       </span>
