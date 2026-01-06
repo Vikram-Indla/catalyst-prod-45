@@ -3021,3 +3021,322 @@
 [data-theme="dark"] .text-sky-800 {
   color: var(--sem-info) !important;
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   CATALYST V5 — FINAL GLOBAL ENFORCEMENT LAYER
+   Award-Grade Dark Mode: Bloomberg/Linear/Notion quality
+   This is the LAST resort override layer — catches everything else
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   BG-WHITE NEUTRALIZATION — Map to appropriate surface in dark mode
+   ═══════════════════════════════════════════════════════════════════════════ */
+.dark .bg-white,
+[data-theme="dark"] .bg-white {
+  background-color: var(--bg-1) !important;
+}
+
+/* BG-BLACK already OK, but ensure it uses surface token */
+.dark .bg-black,
+[data-theme="dark"] .bg-black {
+  background-color: var(--bg-app) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   CARD & PANEL SURFACE ENFORCEMENT
+   ═══════════════════════════════════════════════════════════════════════════ */
+.dark .bg-card,
+.dark .bg-muted,
+.dark .bg-background,
+[data-theme="dark"] .bg-card,
+[data-theme="dark"] .bg-muted,
+[data-theme="dark"] .bg-background {
+  background-color: var(--bg-1) !important;
+}
+
+/* Light-mode gray backgrounds → V5 surfaces */
+.dark .bg-gray-50,
+.dark .bg-gray-100,
+.dark .bg-slate-50,
+.dark .bg-slate-100,
+.dark .bg-zinc-50,
+.dark .bg-zinc-100,
+.dark .bg-neutral-50,
+.dark .bg-neutral-100,
+[data-theme="dark"] .bg-gray-50,
+[data-theme="dark"] .bg-gray-100,
+[data-theme="dark"] .bg-slate-50,
+[data-theme="dark"] .bg-slate-100,
+[data-theme="dark"] .bg-zinc-50,
+[data-theme="dark"] .bg-zinc-100,
+[data-theme="dark"] .bg-neutral-50,
+[data-theme="dark"] .bg-neutral-100 {
+  background-color: var(--bg-2) !important;
+}
+
+.dark .bg-gray-200,
+.dark .bg-gray-300,
+.dark .bg-slate-200,
+.dark .bg-slate-300,
+[data-theme="dark"] .bg-gray-200,
+[data-theme="dark"] .bg-gray-300,
+[data-theme="dark"] .bg-slate-200,
+[data-theme="dark"] .bg-slate-300 {
+  background-color: var(--bg-3) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SHADOW TOKEN ENFORCEMENT
+   Shadows must be visible but not harsh in dark mode
+   ═══════════════════════════════════════════════════════════════════════════ */
+.dark .shadow,
+.dark .shadow-sm,
+.dark .shadow-md,
+.dark .shadow-lg,
+.dark .shadow-xl,
+[data-theme="dark"] .shadow,
+[data-theme="dark"] .shadow-sm,
+[data-theme="dark"] .shadow-md,
+[data-theme="dark"] .shadow-lg,
+[data-theme="dark"] .shadow-xl {
+  --tw-shadow-color: rgba(0,0,0,0.5) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   TEXT-FOREGROUND & TEXT-MUTED-FOREGROUND ENFORCEMENT
+   ═══════════════════════════════════════════════════════════════════════════ */
+.dark .text-foreground,
+[data-theme="dark"] .text-foreground {
+  color: var(--text-1) !important;
+}
+
+.dark .text-muted-foreground,
+[data-theme="dark"] .text-muted-foreground {
+  color: var(--text-3) !important;
+}
+
+.dark .text-card-foreground,
+.dark .text-popover-foreground,
+[data-theme="dark"] .text-card-foreground,
+[data-theme="dark"] .text-popover-foreground {
+  color: var(--text-1) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   BORDER-BORDER TOKEN — Ultra subtle
+   ═══════════════════════════════════════════════════════════════════════════ */
+.dark .border-border,
+.dark .divide-border > * + *,
+[data-theme="dark"] .border-border,
+[data-theme="dark"] .divide-border > * + * {
+  border-color: var(--stroke-1) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ACCENT/BRAND BUTTON TEXT — Inverse text on primary buttons
+   ═══════════════════════════════════════════════════════════════════════════ */
+.dark .bg-primary,
+.dark .bg-brand-primary,
+.dark .bg-accent,
+[data-theme="dark"] .bg-primary,
+[data-theme="dark"] .bg-brand-primary,
+[data-theme="dark"] .bg-accent {
+  color: var(--text-inverse) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SCROLLBAR STYLING — Premium dark scrollbars
+   ═══════════════════════════════════════════════════════════════════════════ */
+.dark ::-webkit-scrollbar,
+[data-theme="dark"] ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.dark ::-webkit-scrollbar-track,
+[data-theme="dark"] ::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.dark ::-webkit-scrollbar-thumb,
+[data-theme="dark"] ::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.15);
+  border-radius: 4px;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover,
+[data-theme="dark"] ::-webkit-scrollbar-thumb:hover {
+  background: rgba(255,255,255,0.25);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   POPOVER/DROPDOWN/SELECT CONTENT — Elevated surfaces
+   ═══════════════════════════════════════════════════════════════════════════ */
+.dark .bg-popover,
+.dark [data-state="open"] > [data-radix-select-content],
+[data-theme="dark"] .bg-popover,
+[data-theme="dark"] [data-state="open"] > [data-radix-select-content] {
+  background-color: var(--bg-2) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   AVATAR/BADGE RING COLORS — Subtle in dark mode
+   ═══════════════════════════════════════════════════════════════════════════ */
+.dark .ring-background,
+.dark .ring-white,
+[data-theme="dark"] .ring-background,
+[data-theme="dark"] .ring-white {
+  --tw-ring-color: var(--bg-1) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   EMPTY STATE TEXT — Readable muted text
+   ═══════════════════════════════════════════════════════════════════════════ */
+.dark [class*="EmptyState"],
+.dark [class*="empty-state"],
+.dark .text-muted,
+[data-theme="dark"] [class*="EmptyState"],
+[data-theme="dark"] [class*="empty-state"],
+[data-theme="dark"] .text-muted {
+  color: var(--text-3) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   TOOLTIP STYLING — Elevated with good contrast
+   ═══════════════════════════════════════════════════════════════════════════ */
+.dark [role="tooltip"],
+.dark [data-radix-tooltip-content],
+[data-theme="dark"] [role="tooltip"],
+[data-theme="dark"] [data-radix-tooltip-content] {
+  background-color: var(--bg-3) !important;
+  color: var(--text-1) !important;
+  border-color: var(--stroke-1) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SWITCH/TOGGLE — Proper track and thumb colors
+   ═══════════════════════════════════════════════════════════════════════════ */
+.dark [role="switch"][data-state="unchecked"],
+[data-theme="dark"] [role="switch"][data-state="unchecked"] {
+  background-color: var(--bg-3) !important;
+}
+
+.dark [role="switch"][data-state="checked"],
+[data-theme="dark"] [role="switch"][data-state="checked"] {
+  background-color: hsl(var(--primary)) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   PROGRESS BAR — Semantic track colors
+   ═══════════════════════════════════════════════════════════════════════════ */
+.dark [role="progressbar"],
+.dark .progress-track,
+[data-theme="dark"] [role="progressbar"],
+[data-theme="dark"] .progress-track {
+  background-color: var(--bg-3) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SKELETON LOADING — Subtle pulse
+   ═══════════════════════════════════════════════════════════════════════════ */
+.dark .animate-pulse,
+.dark [class*="Skeleton"],
+[data-theme="dark"] .animate-pulse,
+[data-theme="dark"] [class*="Skeleton"] {
+  background-color: var(--bg-2) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ATLASKIT COMPONENT OVERRIDES — Dark mode compatibility
+   ═══════════════════════════════════════════════════════════════════════════ */
+.dark [data-ds--text-field],
+.dark [data-ds--button],
+.dark [data-ds--dropdown-menu],
+.dark [data-ds--modal],
+[data-theme="dark"] [data-ds--text-field],
+[data-theme="dark"] [data-ds--button],
+[data-theme="dark"] [data-ds--dropdown-menu],
+[data-theme="dark"] [data-ds--modal] {
+  background-color: var(--bg-1) !important;
+  color: var(--text-1) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   FINAL RGBA WHITE/BLACK OVERRIDE — Catch inline styles
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Catch border-[rgba(255,255,255,*)] patterns via attribute selector */
+.dark [style*="border-color: rgba(255"],
+.dark [style*="border-color: rgb(255"],
+.dark [style*="border: 1px solid rgba(255"],
+.dark [style*="border: 1px solid rgb(255"],
+.dark [style*="border: 1px solid #fff"],
+.dark [style*="border: 1px solid #FFF"],
+.dark [style*="border-color: #fff"],
+.dark [style*="border-color: #FFF"],
+.dark [style*="border-color: #ffffff"],
+.dark [style*="border-color: #FFFFFF"],
+[data-theme="dark"] [style*="border-color: rgba(255"],
+[data-theme="dark"] [style*="border-color: rgb(255"],
+[data-theme="dark"] [style*="border: 1px solid rgba(255"],
+[data-theme="dark"] [style*="border: 1px solid rgb(255"],
+[data-theme="dark"] [style*="border: 1px solid #fff"],
+[data-theme="dark"] [style*="border: 1px solid #FFF"],
+[data-theme="dark"] [style*="border-color: #fff"],
+[data-theme="dark"] [style*="border-color: #FFF"],
+[data-theme="dark"] [style*="border-color: #ffffff"],
+[data-theme="dark"] [style*="border-color: #FFFFFF"] {
+  border-color: var(--stroke-1) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   CATALYST V5 TOKEN REFERENCE SUMMARY
+   ═══════════════════════════════════════════════════════════════════════════
+   
+   SURFACES:
+   - --bg-app: #0E0F11 (deepest, app background)
+   - --bg-0: #111214 (base surface)
+   - --bg-1: #141518 (cards, panels)
+   - --bg-2: #181A1E (raised surfaces)
+   - --bg-3: #1D2026 (highest elevation, popovers)
+   
+   TEXT LADDER:
+   - --text-1: rgba(255,255,255,0.92) (primary text)
+   - --text-2: rgba(255,255,255,0.74) (secondary text)
+   - --text-3: rgba(255,255,255,0.56) (muted/placeholder)
+   - --text-4: rgba(255,255,255,0.40) (disabled)
+   - --text-inverse: #0a0a0a (on light/accent backgrounds)
+   
+   BORDERS/DIVIDERS:
+   - --stroke-1: rgba(255,255,255,0.06) (default, subtle)
+   - --stroke-2: rgba(255,255,255,0.10) (emphasized)
+   - --divider: rgba(255,255,255,0.04) (ultra subtle)
+   
+   INTERACTIVE:
+   - --ring: blue focus ring (hsl 217 91% 60%)
+   - --row-hover: rgba(255,255,255,0.04)
+   - --row-selected: rgba(59,130,246,0.08)
+   - --surface-hover: rgba(255,255,255,0.04)
+   
+   BRAND:
+   - --accent-gold: #C69C6D (Catalyst gold)
+   - --accent-gold-hover: #B8905F
+   - --sidebar-hover: rgba(92,124,92,0.08) (green tint)
+   - --sidebar-active: rgba(92,124,92,0.12) (green tint)
+   
+   SEMANTIC (Muted, Premium):
+   - --sem-danger: rgba(255,107,107,0.92) (coral)
+   - --sem-warning: rgba(255,196,107,0.92) (amber)
+   - --sem-success: rgba(92,124,92,0.92) (Catalyst green)
+   - --sem-info: rgba(96,165,250,0.92) (sky)
+   
+   CHART PALETTE:
+   - --chart-1: #3b82f6 (blue)
+   - --chart-2: #5c7c5c (green)
+   - --chart-3: #c69c6d (gold)
+   - --chart-4: #60a5fa (light blue)
+   - --chart-5: #8b7355 (bronze)
+   - --chart-6: #d4b896 (champagne)
+   - --chart-7: #ff6b6b (coral)
+   - --chart-8: #ffc46b (amber)
+   ═══════════════════════════════════════════════════════════════════════════ */
