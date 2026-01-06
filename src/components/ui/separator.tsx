@@ -3,6 +3,10 @@ import * as SeparatorPrimitive from "@radix-ui/react-separator";
 
 import { cn } from "@/lib/utils";
 
+/**
+ * Separator — Catalyst Dark-Mode Grammar
+ * Ultra-subtle in dark mode: rgba(255,255,255,0.04)
+ */
 const Separator = React.forwardRef<
   React.ElementRef<typeof SeparatorPrimitive.Root>,
   React.ComponentPropsWithoutRef<typeof SeparatorPrimitive.Root>
@@ -11,7 +15,15 @@ const Separator = React.forwardRef<
     ref={ref}
     decorative={decorative}
     orientation={orientation}
-    className={cn("shrink-0 bg-border/50 dark:bg-border/30", orientation === "horizontal" ? "h-[1px] w-full" : "h-full w-[1px]", className)}
+    className={cn(
+      "shrink-0",
+      // Light mode: visible but subtle
+      "bg-border/60",
+      // Dark mode: ultra-subtle, never bright
+      "dark:bg-white/[0.04]",
+      orientation === "horizontal" ? "h-[1px] w-full" : "h-full w-[1px]",
+      className
+    )}
     {...props}
   />
 ));
