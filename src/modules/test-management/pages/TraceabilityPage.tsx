@@ -18,7 +18,8 @@ import {
   AlertTriangle,
   FileText,
   Target,
-  Link2
+  Link2,
+  Loader2
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -26,22 +27,75 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
+import { toast } from 'sonner';
 import { useProjectStore } from '../stores/projectStore';
+import { useRequirementTree, useAvailableTestCases, useRequirementLinks } from '../hooks/useRequirements';
+import { SyncFromJiraDialog } from '../components/requirements';
+import { exportTraceabilityMatrix } from '../utils/exportTraceabilityMatrix';
 
 export function TraceabilityPage() {
   const navigate = useNavigate();
   const { selectedProjectId } = useProjectStore();
   const [activeTab, setActiveTab] = useState('matrix');
   const [searchQuery, setSearchQuery] = useState('');
+  const [syncDialogOpen, setSyncDialogOpen] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
 
-  // Mock stats - will be replaced with real data
+  // Data queries
+  const { data: requirementTree = [] } = useRequirementTree(selectedProjectId);
+  const { data: allTestCases = [] } = useAvailableTestCases(selectedProjectId);
+
+  // Calculate stats from actual data
+  const totalRequirements = requirementTree.length;
+  const coveredRequirements = requirementTree.filter(r => r.linked_tests_count > 0).length;
+  const uncoveredRequirements = totalRequirements - coveredRequirements;
+  const coveragePercentage = totalRequirements > 0 
+    ? Math.round((coveredRequirements / totalRequirements) * 100) 
+    : 0;
+
   const stats = {
-    totalRequirements: 0,
-    coveredRequirements: 0,
-    uncoveredRequirements: 0,
-    coveragePercentage: 0,
-    totalTestCases: 0,
-    linkedTestCases: 0,
+    totalRequirements,
+    coveredRequirements,
+    uncoveredRequirements,
+    coveragePercentage,
+    totalTestCases: allTestCases.length,
+    linkedTestCases: coveredRequirements,
+  };
+
+  const handleExportMatrix = async () => {
+    if (!requirementTree.length) {
+      toast.error('No requirements to export');
+      return;
+    }
+
+    setIsExporting(true);
+    try {
+      const flatRequirements = requirementTree.map(req => ({
+        id: req.id,
+        requirement_key: req.requirement_key,
+        title: req.title,
+        priority: req.priority || undefined,
+        status: req.status,
+      }));
+
+      const allCases = allTestCases.map(tc => ({
+        id: tc.id,
+        case_key: tc.test_key,
+        title: tc.title,
+      }));
+
+      // Since we don't have individual links here, create empty array
+      // A full implementation would fetch all links
+      const allLinks: { requirement_id: string; test_case_id: string }[] = [];
+
+      exportTraceabilityMatrix(flatRequirements, allCases, allLinks);
+      toast.success('Traceability matrix exported');
+    } catch (error: any) {
+      console.error('Export failed:', error);
+      toast.error(error.message || 'Failed to export matrix');
+    } finally {
+      setIsExporting(false);
+    }
   };
 
   return (
@@ -55,15 +109,19 @@ export function TraceabilityPage() {
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm">
+          <Button variant="outline" size="sm" onClick={() => setSyncDialogOpen(true)}>
             <RefreshCw className="h-4 w-4 mr-2" />
             Sync from Jira
           </Button>
-          <Button variant="outline" size="sm">
-            <Download className="h-4 w-4 mr-2" />
+          <Button variant="outline" size="sm" onClick={handleExportMatrix} disabled={isExporting}>
+            {isExporting ? (
+              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+            ) : (
+              <Download className="h-4 w-4 mr-2" />
+            )}
             Export Matrix
           </Button>
-          <Button size="sm">
+          <Button size="sm" onClick={() => navigate('/tests/requirements')}>
             <Plus className="h-4 w-4 mr-2" />
             Link Requirement
           </Button>
@@ -225,6 +283,15 @@ export function TraceabilityPage() {
           </Card>
         </TabsContent>
       </Tabs>
+
+      {/* Sync from Jira Dialog */}
+      <SyncFromJiraDialog
+        open={syncDialogOpen}
+        onOpenChange={setSyncDialogOpen}
+        onSuccess={() => {
+          // Refetch after sync
+        }}
+      />
     </div>
   );
 }

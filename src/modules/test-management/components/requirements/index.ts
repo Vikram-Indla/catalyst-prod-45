@@ -5,3 +5,4 @@ export { RequirementDetailPanel } from './RequirementDetailPanel';
 export { LinkedTestCasesTable } from './LinkedTestCasesTable';
 export { LinkTestCasesDialog } from './LinkTestCasesDialog';
 export { GapAnalysisView } from './GapAnalysisView';
+export { SyncFromJiraDialog } from './SyncFromJiraDialog';
