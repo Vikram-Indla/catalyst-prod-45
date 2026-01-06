@@ -354,24 +354,24 @@ export default function CreateIncidentPage() {
           <div className={cn(
             "flex items-center justify-between p-4 rounded-lg border-2 transition-colors",
             formData.is_major_incident 
-              ? "bg-red-50 border-red-300" 
-              : "bg-muted/30 border-border hover:border-red-200"
+              ? "bg-[var(--sem-danger-bg)] border-[var(--sem-danger-border)]" 
+              : "bg-muted/30 border-border hover:border-[var(--sem-danger-border)]"
           )}>
             <div className="flex items-center gap-3">
               <AlertTriangle className={cn(
                 "h-5 w-5",
-                formData.is_major_incident ? "text-red-600" : "text-muted-foreground"
+                formData.is_major_incident ? "text-[var(--sem-danger)]" : "text-muted-foreground"
               )} />
               <div>
                 <Label htmlFor="major-incident" className={cn(
                   "text-sm font-semibold",
-                  formData.is_major_incident ? "text-red-900" : "text-foreground"
+                  formData.is_major_incident ? "text-[var(--sem-danger)]" : "text-foreground"
                 )}>
                   Major Incident
                 </Label>
                 <p className={cn(
                   "text-xs mt-0.5",
-                  formData.is_major_incident ? "text-red-700" : "text-muted-foreground"
+                  formData.is_major_incident ? "text-[var(--sem-danger)]" : "text-muted-foreground"
                 )}>
                   Flag this as a major incident requiring immediate executive attention and escalation
                 </p>
@@ -439,11 +439,11 @@ export default function CreateIncidentPage() {
               <Label className="text-sm font-medium">Priority</Label>
               <div className="h-10 px-3 flex items-center gap-2 bg-muted/50 rounded-md border border-border">
                 <Badge variant="outline" className={cn(
-                  "text-xs font-semibold px-2",
-                  calculatedPriority === 'P1' && 'bg-red-100 text-red-800 border-red-200',
-                  calculatedPriority === 'P2' && 'bg-orange-100 text-orange-800 border-orange-200',
-                  calculatedPriority === 'P3' && 'bg-yellow-100 text-yellow-800 border-yellow-200',
-                  calculatedPriority === 'P4' && 'bg-blue-100 text-blue-800 border-blue-200',
+                  "text-xs font-semibold px-2 border",
+                  calculatedPriority === 'P1' && 'bg-[var(--sem-danger-bg)] text-[var(--sem-danger)] border-[var(--sem-danger-border)]',
+                  calculatedPriority === 'P2' && 'bg-[var(--sem-warning-bg)] text-[var(--sem-warning)] border-[var(--sem-warning-border)]',
+                  calculatedPriority === 'P3' && 'bg-[var(--sem-high-bg)] text-[var(--sem-high)] border-[var(--sem-warning-border)]',
+                  calculatedPriority === 'P4' && 'bg-[var(--sem-info-bg)] text-[var(--sem-info)] border-[var(--sem-info-border)]',
                 )}>
                   {calculatedPriority}
                 </Badge>

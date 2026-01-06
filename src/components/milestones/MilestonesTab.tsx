@@ -22,10 +22,10 @@ export interface MilestonesTabProps {
 
 const MILESTONE_STATES = [
   { value: 'pending', label: 'Pending', color: 'bg-muted text-muted-foreground' },
-  { value: 'on_track', label: 'On Track', color: 'bg-emerald-100 text-emerald-700' },
-  { value: 'at_risk', label: 'At Risk', color: 'bg-amber-100 text-amber-700' },
-  { value: 'completed', label: 'Completed', color: 'bg-blue-100 text-blue-700' },
-  { value: 'blocked', label: 'Blocked', color: 'bg-red-100 text-red-700' },
+  { value: 'on_track', label: 'On Track', color: 'bg-[var(--sem-success-bg)] text-[var(--sem-success)]' },
+  { value: 'at_risk', label: 'At Risk', color: 'bg-[var(--sem-warning-bg)] text-[var(--sem-warning)]' },
+  { value: 'completed', label: 'Completed', color: 'bg-[var(--sem-info-bg)] text-[var(--sem-info)]' },
+  { value: 'blocked', label: 'Blocked', color: 'bg-[var(--sem-danger-bg)] text-[var(--sem-danger)]' },
 ];
 
 const MILESTONE_CATEGORIES = [

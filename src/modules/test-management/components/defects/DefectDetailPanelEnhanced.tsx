@@ -68,27 +68,27 @@ const SEVERITY_CONFIG: Record<DefectSeverity, {
   icon: React.ElementType;
   badgeClass: string;
 }> = {
-  blocker: { label: 'Blocker', icon: Flame, badgeClass: 'bg-red-100 text-red-700 dark:bg-red-900/50 dark:text-red-400' },
-  critical: { label: 'Critical', icon: AlertCircle, badgeClass: 'bg-red-100 text-red-600 dark:bg-red-900/40 dark:text-red-400' },
-  major: { label: 'Major', icon: AlertTriangle, badgeClass: 'bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-400' },
-  minor: { label: 'Minor', icon: Info, badgeClass: 'bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-400' },
-  trivial: { label: 'Trivial', icon: Minus, badgeClass: 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400' },
+  blocker: { label: 'Blocker', icon: Flame, badgeClass: 'bg-[var(--sem-danger-bg)] text-[var(--sem-danger)] border-[var(--sem-danger-border)]' },
+  critical: { label: 'Critical', icon: AlertCircle, badgeClass: 'bg-[var(--sem-critical-bg)] text-[var(--sem-critical)] border-[var(--sem-critical-border)]' },
+  major: { label: 'Major', icon: AlertTriangle, badgeClass: 'bg-[var(--sem-warning-bg)] text-[var(--sem-warning)] border-[var(--sem-warning-border)]' },
+  minor: { label: 'Minor', icon: Info, badgeClass: 'bg-[var(--sem-info-bg)] text-[var(--sem-info)] border-[var(--sem-info-border)]' },
+  trivial: { label: 'Trivial', icon: Minus, badgeClass: 'bg-[var(--sem-medium-bg)] text-[var(--sem-medium)] border-[var(--status-muted-border)]' },
 };
 
 const PRIORITY_CONFIG: Record<DefectPriority, { label: string; badgeClass: string }> = {
-  p1: { label: 'P1 - High', badgeClass: 'bg-red-100 text-red-700 dark:bg-red-900/50 dark:text-red-400' },
-  p2: { label: 'P2 - Medium', badgeClass: 'bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-400' },
-  p3: { label: 'P3 - Low', badgeClass: 'bg-teal-100 text-teal-700 dark:bg-teal-900/50 dark:text-teal-400' },
-  p4: { label: 'P4 - Lowest', badgeClass: 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400' },
+  p1: { label: 'P1 - High', badgeClass: 'bg-[var(--sem-danger-bg)] text-[var(--sem-danger)] border-[var(--sem-danger-border)]' },
+  p2: { label: 'P2 - Medium', badgeClass: 'bg-[var(--sem-warning-bg)] text-[var(--sem-warning)] border-[var(--sem-warning-border)]' },
+  p3: { label: 'P3 - Low', badgeClass: 'bg-[var(--sem-success-bg)] text-[var(--sem-success)] border-[var(--sem-success-border)]' },
+  p4: { label: 'P4 - Lowest', badgeClass: 'bg-[var(--sem-medium-bg)] text-[var(--sem-medium)] border-[var(--status-muted-border)]' },
 };
 
 const STATUS_CONFIG: Record<DefectStatus, { label: string; badgeClass: string }> = {
-  open: { label: 'Open', badgeClass: 'bg-red-100 text-red-600 dark:bg-red-900/50 dark:text-red-400' },
-  in_progress: { label: 'In Progress', badgeClass: 'bg-blue-100 text-blue-600 dark:bg-blue-900/50 dark:text-blue-400' },
-  in_review: { label: 'In Review', badgeClass: 'bg-purple-100 text-purple-600 dark:bg-purple-900/50 dark:text-purple-400' },
-  verified: { label: 'Verified', badgeClass: 'bg-teal-100 text-teal-600 dark:bg-teal-900/50 dark:text-teal-400' },
-  closed: { label: 'Closed', badgeClass: 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400' },
-  wont_fix: { label: "Won't Fix", badgeClass: 'bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-500' },
+  open: { label: 'Open', badgeClass: 'bg-[var(--sem-danger-bg)] text-[var(--sem-danger)] border-[var(--sem-danger-border)]' },
+  in_progress: { label: 'In Progress', badgeClass: 'bg-[var(--sem-info-bg)] text-[var(--sem-info)] border-[var(--sem-info-border)]' },
+  in_review: { label: 'In Review', badgeClass: 'bg-[var(--accent-bg)] text-[var(--accent-text)] border-[var(--accent-border)]' },
+  verified: { label: 'Verified', badgeClass: 'bg-[var(--sem-success-bg)] text-[var(--sem-success)] border-[var(--sem-success-border)]' },
+  closed: { label: 'Closed', badgeClass: 'bg-[var(--sem-medium-bg)] text-[var(--sem-medium)] border-[var(--status-muted-border)]' },
+  wont_fix: { label: "Won't Fix", badgeClass: 'bg-[var(--sem-low-bg)] text-[var(--sem-low)] border-[var(--status-muted-border)]' },
 };
 
 // Mock repro steps

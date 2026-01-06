@@ -40,9 +40,9 @@ export function AuditHistoryTab({ data }: AuditHistoryTabProps) {
 
   const getActionColor = (action: string) => {
     switch (action) {
-      case 'CREATE': return 'text-green-600';
-      case 'UPDATE': return 'text-blue-600';
-      case 'DELETE': return 'text-red-600';
+      case 'CREATE': return 'text-[var(--sem-success)]';
+      case 'UPDATE': return 'text-[var(--sem-info)]';
+      case 'DELETE': return 'text-[var(--sem-danger)]';
       default: return 'text-muted-foreground';
     }
   };
