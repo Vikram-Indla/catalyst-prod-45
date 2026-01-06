@@ -293,6 +293,8 @@ import {
   CommandCenterPage,
   ExecutionRunnerPage,
   ExecutionDashboardPage,
+  TestSetsPage,
+  TraceabilityPage,
   AnalyticsDashboardPage,
   TMRequirementsPage
 } from "./modules/test-management";
@@ -721,11 +723,13 @@ const App = () => (
                 <Route path="command-center" element={<CommandCenterPage />} />
                 <Route path="my-work" element={<MyWorkPage />} />
                 <Route path="cases" element={<TestCasesPage />} />
+                <Route path="sets" element={<TestSetsPage />} />
                 <Route path="cycles" element={<TestCyclesPage />} />
                 <Route path="cycles/:cycleId" element={<CycleDetailPage />} />
                 <Route path="execution" element={<ExecutionDashboardPage />} />
                 <Route path="defects" element={<TMDefectsPage />} />
                 <Route path="requirements" element={<TMRequirementsPage />} />
+                <Route path="traceability" element={<TraceabilityPage />} />
                 <Route path="reports" element={<AnalyticsDashboardPage />} />
                 <Route path="settings" element={<TMSettingsPage />} />
               </Route>
