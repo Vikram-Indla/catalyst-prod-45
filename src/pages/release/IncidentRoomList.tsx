@@ -205,19 +205,19 @@ export default function IncidentRoomList() {
               {/* Summary Counts - Catalyst compliant */}
               <div className="hidden lg:flex items-center gap-3 text-xs mr-3">
                 <span className="flex items-center gap-1.5">
-                  <span className="h-2 w-2 rounded-full" style={{ backgroundColor: '#ef4444' }} />
-                  <span className="font-medium" style={{ color: '#d4d4d4' }}>{stats.critical}</span>
-                  <span style={{ color: '#8a8a8a' }}>critical</span>
+                  <span className="h-2 w-2 rounded-full bg-destructive" />
+                  <span className="font-medium text-foreground">{stats.critical}</span>
+                  <span className="text-muted-foreground">critical</span>
                 </span>
                 <span className="flex items-center gap-1.5">
-                  <span className="h-2 w-2 rounded-full" style={{ backgroundColor: '#3b82f6' }} />
-                  <span className="font-medium" style={{ color: '#d4d4d4' }}>{stats.open}</span>
-                  <span style={{ color: '#8a8a8a' }}>open</span>
+                  <span className="h-2 w-2 rounded-full bg-primary" />
+                  <span className="font-medium text-foreground">{stats.open}</span>
+                  <span className="text-muted-foreground">open</span>
                 </span>
                 <span className="flex items-center gap-1.5">
-                  <span className="h-2 w-2 rounded-full" style={{ backgroundColor: '#f59e0b' }} />
-                  <span className="font-medium" style={{ color: '#d4d4d4' }}>{stats.slaBreached}</span>
-                  <span style={{ color: '#8a8a8a' }}>SLA breached</span>
+                  <span className="h-2 w-2 rounded-full bg-warning" />
+                  <span className="font-medium text-foreground">{stats.slaBreached}</span>
+                  <span className="text-muted-foreground">SLA breached</span>
                 </span>
               </div>
 
