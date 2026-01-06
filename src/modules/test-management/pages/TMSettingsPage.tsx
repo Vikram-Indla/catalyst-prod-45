@@ -1,11 +1,13 @@
 /**
  * Settings Page - Module 5 Main Entry
  * Route: /tests/settings
+ * Matches Catalyst V5 reference design
  */
 
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { UserPlus } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { UserPlus, Search } from 'lucide-react';
 import {
   SettingsLayout,
   SettingsSidebar,
@@ -17,7 +19,6 @@ import {
   NotificationsSection,
   AuditLogSection,
   ApiWebhooksSection,
-  DangerZone,
   InviteMemberDialog,
 } from '../components/settings';
 import {
@@ -42,15 +43,32 @@ import {
   useWebhooks,
   useDeleteWebhook,
 } from '../hooks/useSettingsData';
-import type { SettingsTab, MemberRole, AuditLogFilters } from '../types/settings';
+import type { SettingsTab, AuditLogFilters } from '../types/settings';
 
 // Mock project ID - in real app, get from context/route
 const MOCK_PROJECT_ID = 'b7d14a3b-67c7-4df4-b56b-b21f68d7b8ce';
+
+// Tab metadata
+const tabMeta: Record<SettingsTab, { title: string; subtitle: string }> = {
+  general: { title: 'General Settings', subtitle: 'Configure project details and preferences' },
+  team: { title: 'Team Members', subtitle: 'Manage your team and their access permissions' },
+  roles: { title: 'Roles & Permissions', subtitle: 'Define what each role can do' },
+  security: { title: 'Security', subtitle: 'Configure security and access policies' },
+  'custom-fields': { title: 'Custom Fields', subtitle: 'Add custom data fields to entities' },
+  workflows: { title: 'Workflows', subtitle: 'Configure test workflow automations' },
+  templates: { title: 'Templates', subtitle: 'Manage test case and report templates' },
+  integrations: { title: 'Connected Apps', subtitle: 'Connect with external tools' },
+  notifications: { title: 'Notifications', subtitle: 'Configure notification preferences' },
+  api: { title: 'API & Webhooks', subtitle: 'Manage API access and webhooks' },
+  'audit-log': { title: 'Audit Log', subtitle: 'Track all changes and actions' },
+  'usage-billing': { title: 'Usage & Billing', subtitle: 'View usage statistics and billing' },
+};
 
 export function TMSettingsPage() {
   const [activeTab, setActiveTab] = useState<SettingsTab>('team');
   const [inviteDialogOpen, setInviteDialogOpen] = useState(false);
   const [auditFilters, setAuditFilters] = useState<AuditLogFilters>({});
+  const [searchQuery, setSearchQuery] = useState('');
 
   // Data hooks
   const { data: project, isLoading: projectLoading } = useProjectSettings(MOCK_PROJECT_ID);
@@ -76,30 +94,26 @@ export function TMSettingsPage() {
   const revokeApiKey = useRevokeApiKey();
   const deleteWebhook = useDeleteWebhook();
 
-  const getTabTitle = () => {
-    const titles: Record<SettingsTab, { title: string; subtitle: string }> = {
-      general: { title: 'General Settings', subtitle: 'Configure project details and preferences' },
-      team: { title: 'Team Members', subtitle: 'Manage your team and their access permissions' },
-      roles: { title: 'Roles & Permissions', subtitle: 'Define what each role can do' },
-      'custom-fields': { title: 'Custom Fields', subtitle: 'Add custom data fields to entities' },
-      integrations: { title: 'Integrations', subtitle: 'Connect with external tools' },
-      notifications: { title: 'Notifications', subtitle: 'Configure notification preferences' },
-      'audit-log': { title: 'Audit Log', subtitle: 'Track all changes and actions' },
-      api: { title: 'API & Webhooks', subtitle: 'Manage API access and webhooks' },
-      danger: { title: 'Danger Zone', subtitle: 'Irreversible and destructive actions' },
-    };
-    return titles[activeTab];
-  };
-
-  const { title, subtitle } = getTabTitle();
+  const { title, subtitle } = tabMeta[activeTab];
 
   const renderActions = () => {
     if (activeTab === 'team') {
       return (
-        <Button onClick={() => setInviteDialogOpen(true)}>
-          <UserPlus className="h-4 w-4 mr-2" />
-          Invite Member
-        </Button>
+        <div className="flex items-center gap-3">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Search members..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-9 w-60 h-9 bg-background"
+            />
+          </div>
+          <Button onClick={() => setInviteDialogOpen(true)} className="gap-2">
+            <UserPlus className="h-4 w-4" />
+            Invite Member
+          </Button>
+        </div>
       );
     }
     return null;
@@ -120,17 +134,27 @@ export function TMSettingsPage() {
         return (
           <TeamMembersSection
             members={members}
+            roles={roles}
             onUpdateMember={(memberId, role) =>
               updateMember.mutate({ memberId, updates: { role }, projectId: MOCK_PROJECT_ID })
             }
             onRemoveMember={(memberId) => removeMember.mutate({ memberId, projectId: MOCK_PROJECT_ID })}
             onResendInvite={() => {}}
+            onCancelInvite={(memberId) => removeMember.mutate({ memberId, projectId: MOCK_PROJECT_ID })}
             isLoading={membersLoading}
+            searchQuery={searchQuery}
+            onSearchChange={setSearchQuery}
           />
         );
       case 'roles':
         return (
           <RolesPermissions roles={roles} onCreateRole={() => {}} onUpdateRole={() => {}} />
+        );
+      case 'security':
+        return (
+          <div className="bg-background border border-border rounded-xl p-8 text-center text-muted-foreground">
+            <p>Security settings coming soon...</p>
+          </div>
         );
       case 'custom-fields':
         return (
@@ -140,6 +164,18 @@ export function TMSettingsPage() {
             onEditField={() => {}}
             onDeleteField={() => {}}
           />
+        );
+      case 'workflows':
+        return (
+          <div className="bg-background border border-border rounded-xl p-8 text-center text-muted-foreground">
+            <p>Workflow configuration coming soon...</p>
+          </div>
+        );
+      case 'templates':
+        return (
+          <div className="bg-background border border-border rounded-xl p-8 text-center text-muted-foreground">
+            <p>Template management coming soon...</p>
+          </div>
         );
       case 'integrations':
         return (
@@ -175,16 +211,11 @@ export function TMSettingsPage() {
             onToggleWebhook={() => {}}
           />
         );
-      case 'danger':
+      case 'usage-billing':
         return (
-          <DangerZone
-            projectName={project?.name || 'Project'}
-            isArchived={!!project?.archived_at}
-            onArchive={() => archiveProject.mutate(MOCK_PROJECT_ID)}
-            onRestore={() => {}}
-            onDelete={() => deleteProject.mutate(MOCK_PROJECT_ID)}
-            onTransfer={() => {}}
-          />
+          <div className="bg-background border border-border rounded-xl p-8 text-center text-muted-foreground">
+            <p>Usage & Billing information coming soon...</p>
+          </div>
         );
       default:
         return null;
