@@ -81,13 +81,9 @@ export const EFDesignerPage: React.FC = () => {
       {session ? (
         <EFDWizard session={session} />
       ) : (
-        <div className="flex-1 flex items-center justify-center p-6">
-          <div className="w-full max-w-3xl space-y-8">
-            <div className="text-center space-y-4">
-              <h2 className="text-xl font-semibold">Welcome to EF Designer</h2>
-              <p className="text-muted-foreground max-w-md mx-auto">
-                Create SAFe-compliant Epics and Features from your requirements documents or text.
-              </p>
+        <div className="flex-1 p-6">
+          <div className="w-full max-w-3xl mx-auto space-y-6">
+            <div className="flex justify-center">
               <button
                 onClick={handleNewSession}
                 disabled={createSession.isPending}
@@ -104,47 +100,42 @@ export const EFDesignerPage: React.FC = () => {
                 <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
               </div>
             ) : recentSessions && recentSessions.length > 0 ? (
-              <div className="space-y-4">
-                <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">
-                  Recent Sessions
-                </h3>
-                <div className="grid gap-3">
-                  {recentSessions.map((s: any) => (
-                    <button
-                      key={s.id}
-                      onClick={() => handleOpenSession(s.id)}
-                      className="w-full text-left p-4 rounded-lg border bg-card hover:bg-accent/50 transition-colors"
-                    >
-                      <div className="flex items-start justify-between gap-4">
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-1">
-                            <FileText className="h-4 w-4 text-muted-foreground flex-shrink-0" />
-                            <span className="font-medium truncate">
-                              {s.text_input ? s.text_input.slice(0, 60) + (s.text_input.length > 60 ? '...' : '') : 'Untitled Session'}
-                            </span>
-                          </div>
-                          <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                            <span className="flex items-center gap-1">
-                              {getStatusIcon(s.status)}
-                              {getStatusLabel(s.status)}
-                            </span>
-                            <span className="flex items-center gap-1">
-                              <Layers className="h-3 w-3" />
-                              {s.epics?.[0]?.count || 0} epics
-                            </span>
-                            <span className="flex items-center gap-1">
-                              <Box className="h-3 w-3" />
-                              {s.features?.[0]?.count || 0} features
-                            </span>
-                          </div>
+              <div className="grid gap-3">
+                {recentSessions.map((s: any) => (
+                  <button
+                    key={s.id}
+                    onClick={() => handleOpenSession(s.id)}
+                    className="w-full text-left p-4 rounded-lg border bg-card hover:bg-accent/50 transition-colors"
+                  >
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          <FileText className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                          <span className="font-medium truncate">
+                            {s.text_input ? s.text_input.slice(0, 60) + (s.text_input.length > 60 ? '...' : '') : 'Untitled Session'}
+                          </span>
                         </div>
-                        <span className="text-xs text-muted-foreground flex-shrink-0">
-                          {formatDistanceToNow(new Date(s.updated_at), { addSuffix: true })}
-                        </span>
+                        <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                          <span className="flex items-center gap-1">
+                            {getStatusIcon(s.status)}
+                            {getStatusLabel(s.status)}
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <Layers className="h-3 w-3" />
+                            {s.epics?.[0]?.count || 0} epics
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <Box className="h-3 w-3" />
+                            {s.features?.[0]?.count || 0} features
+                          </span>
+                        </div>
                       </div>
-                    </button>
-                  ))}
-                </div>
+                      <span className="text-xs text-muted-foreground flex-shrink-0">
+                        {formatDistanceToNow(new Date(s.updated_at), { addSuffix: true })}
+                      </span>
+                    </div>
+                  </button>
+                ))}
               </div>
             ) : null}
           </div>
