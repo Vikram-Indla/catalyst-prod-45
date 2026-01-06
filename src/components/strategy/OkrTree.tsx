@@ -337,30 +337,20 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
   // Skeleton only on first load when no LKG data exists
   if (isInitialLoading) {
     return (
-      <section 
-        className="rounded-lg overflow-hidden"
-        style={{
-          backgroundColor: 'var(--surface-bg)',
-          border: '1px solid var(--border-default)',
-          boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
-        }}
-      >
-        <div 
-          className="px-4 py-2"
-          style={{ borderBottom: '1px solid var(--border-subtle)' }}
-        >
-          <div className="h-4 w-20 rounded animate-pulse" style={{ backgroundColor: 'var(--muted)' }} />
+      <section className="rounded-lg overflow-hidden bg-card/50 dark:bg-card/30">
+        <div className="px-4 py-2 bg-muted/30 dark:bg-muted/10">
+          <div className="h-4 w-20 rounded animate-pulse bg-muted/60 dark:bg-muted/40" />
         </div>
-        <div className="py-1.5 px-3" style={{ backgroundColor: 'var(--surface-subtle)' }}>
+        <div className="py-1.5 px-3 bg-muted/20 dark:bg-muted/10">
           <div className="grid animate-pulse" style={{ gridTemplateColumns: '1fr 120px 44px 44px 90px' }}>
             {[1, 2, 3, 4, 5].map(i => (
-              <div key={i} className="h-2.5 w-10 rounded" style={{ backgroundColor: 'var(--muted)' }} />
+              <div key={i} className="h-2.5 w-10 rounded bg-muted/60 dark:bg-muted/40" />
             ))}
           </div>
         </div>
         <div className="p-2 space-y-1">
           {[1, 2, 3, 4, 5].map((i) => (
-            <div key={i} className="h-7 rounded animate-pulse" style={{ backgroundColor: 'var(--muted)', marginLeft: i % 2 === 0 ? '24px' : '0' }} />
+            <div key={i} className="h-7 rounded animate-pulse bg-muted/40 dark:bg-muted/20" style={{ marginLeft: i % 2 === 0 ? '24px' : '0' }} />
           ))}
         </div>
       </section>
@@ -368,19 +358,9 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
   }
 
   return (
-    <section 
-      className="rounded-lg overflow-hidden flex flex-col"
-      style={{
-        backgroundColor: 'var(--surface-bg)',
-        border: '1px solid var(--border-default)',
-        boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
-      }}
-    >
-      {/* Header */}
-      <div 
-        className="px-4 py-2 flex items-center justify-between flex-shrink-0"
-        style={{ borderBottom: '1px solid var(--border-subtle)' }}
-      >
+    <section className="rounded-lg overflow-hidden flex flex-col bg-card/50 dark:bg-card/30">
+      {/* Header - surface separation via background */}
+      <div className="px-4 py-2 flex items-center justify-between flex-shrink-0 bg-muted/30 dark:bg-muted/10">
         <div className="flex items-center gap-2">
           <h2 
             className={cn(TYPOGRAPHY.sectionTitle)}
@@ -390,13 +370,13 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
           </h2>
           {/* Stale data indicator - CATALYST STANDARD */}
           {showStaleIndicator && (
-            <span className="text-[11px] text-gray-500 dark:text-gray-400 italic">
+            <span className="text-[11px] text-muted-foreground italic">
               Data may be stale
             </span>
           )}
           {/* Refreshing indicator - CATALYST STANDARD */}
           {isRefreshing && (
-            <div className="text-[11px] text-gray-500 dark:text-gray-400 flex items-center gap-1.5">
+            <div className="text-[11px] text-muted-foreground flex items-center gap-1.5">
               <Loader2 size={12} className="animate-spin" />
               <span>Refreshing…</span>
             </div>
@@ -448,27 +428,21 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
           <Button 
             variant="ghost" 
             size="icon" 
-            className="h-6 w-6 rounded-md focus-visible:ring-2 focus-visible:ring-ring"
+            className="h-6 w-6 rounded-md focus-visible:ring-2 focus-visible:ring-ring bg-muted/40 dark:bg-muted/20 hover:bg-muted/60 dark:hover:bg-muted/30"
             onClick={() => navigate('/enterprise/okr-hub')}
             title="Open OKR Hub"
-            style={{ 
-              color: 'var(--text-secondary)',
-              backgroundColor: 'var(--surface-subtle)',
-              border: '1px solid var(--border-subtle)',
-            }}
+            style={{ color: 'var(--text-secondary)' }}
           >
             <Maximize2 className="h-3 w-3" />
           </Button>
         </div>
       </div>
 
-      {/* Sticky Column Headers */}
+      {/* Sticky Column Headers - surface separation via background */}
       <div
-        className="grid items-center py-1.5 sticky top-0 z-10 flex-shrink-0"
+        className="grid items-center py-1.5 sticky top-0 z-10 flex-shrink-0 bg-muted/20 dark:bg-muted/10"
         style={{
           gridTemplateColumns: '1fr 120px 44px 44px 90px',
-          backgroundColor: 'var(--surface-subtle)',
-          borderBottom: '1px solid var(--border-default)',
         }}
       >
         <div 

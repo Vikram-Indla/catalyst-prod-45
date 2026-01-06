@@ -112,17 +112,14 @@ export function StrategicPulseSection({ snapshotId }: StrategicPulseSectionProps
   // Skeleton only on first load - matches final layout dimensions
   if (isLoading && !hasData) {
     return (
-      <section 
-        className="rounded-lg overflow-hidden bg-card border border-border"
-        style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}
-      >
-        <div className="px-4 py-2.5 border-b border-border">
+      <section className="rounded-lg overflow-hidden bg-card/50 dark:bg-card/30">
+        <div className="px-4 py-2.5 bg-muted/30 dark:bg-muted/10">
           <Skeleton className="h-4 w-32" />
         </div>
         <div className="p-3">
           <div className="flex flex-col lg:flex-row gap-3">
             {/* Primary card skeleton */}
-            <div className="lg:w-[220px] flex-shrink-0 p-4 rounded-md bg-muted border border-border min-h-[120px]">
+            <div className="lg:w-[220px] flex-shrink-0 p-4 rounded-md bg-muted/40 dark:bg-muted/20 min-h-[120px]">
               <Skeleton className="h-4 w-28 mb-3" />
               <Skeleton className="h-8 w-24 mb-2" />
               <Skeleton className="h-4 w-32" />
@@ -130,7 +127,7 @@ export function StrategicPulseSection({ snapshotId }: StrategicPulseSectionProps
             {/* Secondary cards skeleton */}
             <div className="flex-1 grid grid-cols-2 lg:grid-cols-4 gap-2">
               {['s1', 's2', 's3', 's4'].map((key) => (
-                <div key={key} className="p-3 rounded-md bg-muted border border-border min-h-[100px]">
+                <div key={key} className="p-3 rounded-md bg-muted/40 dark:bg-muted/20 min-h-[100px]">
                   <Skeleton className="h-4 w-20 mb-2" />
                   <Skeleton className="h-8 w-14 mb-1" />
                   <Skeleton className="h-4 w-24" />
@@ -146,12 +143,9 @@ export function StrategicPulseSection({ snapshotId }: StrategicPulseSectionProps
   const isUpdating = isFetching && hasData;
 
   return (
-    <section 
-      className="rounded-lg overflow-hidden bg-card border border-border"
-      style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}
-    >
-      {/* Section Header */}
-      <div className="px-4 py-2.5 flex items-center justify-between border-b border-border">
+    <section className="rounded-lg overflow-hidden bg-card/50 dark:bg-card/30">
+      {/* Section Header - surface separation via background, not border */}
+      <div className="px-4 py-2.5 flex items-center justify-between bg-muted/30 dark:bg-muted/10">
         <div className="flex items-center gap-2">
           <Activity size={14} className="text-primary" />
           <h2 className={cn(TYPOGRAPHY.sectionTitle, TEXT_COLORS.primary)}>
@@ -161,13 +155,13 @@ export function StrategicPulseSection({ snapshotId }: StrategicPulseSectionProps
         <div className="flex items-center gap-2">
           {/* Stale data indicator - CATALYST STANDARD */}
           {showStaleIndicator && (
-            <span className="text-[11px] text-gray-500 dark:text-gray-400 italic">
+            <span className="text-[11px] text-muted-foreground italic">
               Data may be stale
             </span>
           )}
           {/* Refreshing indicator - CATALYST STANDARD: small spinner + text */}
           {isUpdating && (
-            <div className="text-[11px] text-gray-500 dark:text-gray-400 flex items-center gap-1.5">
+            <div className="text-[11px] text-muted-foreground flex items-center gap-1.5">
               <Loader2 size={12} className="animate-spin" />
               <span>Refreshing…</span>
             </div>
@@ -182,7 +176,7 @@ export function StrategicPulseSection({ snapshotId }: StrategicPulseSectionProps
             <Tooltip>
               <TooltipTrigger asChild>
                 <div 
-                  className="lg:w-[220px] flex-shrink-0 p-4 rounded-md flex flex-col justify-between bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 cursor-help"
+                  className="lg:w-[220px] flex-shrink-0 p-4 rounded-md flex flex-col justify-between bg-muted/40 dark:bg-muted/20 cursor-help"
                   style={{
                     borderLeftWidth: '4px',
                     borderLeftColor: isNoData 
@@ -231,7 +225,7 @@ export function StrategicPulseSection({ snapshotId }: StrategicPulseSectionProps
                   </div>
 
                   {/* Trend indicator */}
-                  <div className="flex items-center gap-1.5 mt-3 pt-2 border-t border-gray-200 dark:border-gray-700">
+                  <div className="flex items-center gap-1.5 mt-3 pt-2 border-t border-border/30 dark:border-border/20">
                     {isNoData ? (
                       <span className={cn(TYPOGRAPHY.subtext, 'font-medium', 'text-muted-foreground')}>
                         — · Add objectives to see trends
@@ -348,9 +342,9 @@ function CompactKPITile({
     <button
       onClick={onClick}
       className={cn(
-        "p-3 rounded-md text-left relative group w-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700",
-        "transition-[background-color,border-color] duration-150 ease-out",
-        "hover:bg-gray-100 dark:hover:bg-gray-800 hover:border-gray-300 dark:hover:border-gray-600",
+        "p-3 rounded-md text-left relative group w-full bg-muted/40 dark:bg-muted/20",
+        "transition-colors duration-150 ease-out",
+        "hover:bg-muted/60 dark:hover:bg-muted/30",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
       )}
       style={{
@@ -386,7 +380,7 @@ function CompactKPITile({
 
       {/* Progress bar - secondary signal */}
       {showProgress && (
-        <div className="w-full h-1.5 rounded-full mt-2.5 overflow-hidden bg-gray-200 dark:bg-gray-700">
+        <div className="w-full h-1.5 rounded-full mt-2.5 overflow-hidden bg-muted/60 dark:bg-muted/40">
           <div 
             className="h-full rounded-full bg-primary/80"
             style={{ width: `${progressValue}%` }}

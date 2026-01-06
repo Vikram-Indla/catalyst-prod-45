@@ -218,19 +218,9 @@ export function ExecutiveSummaryCard({ snapshotId }: ExecutiveSummaryCardProps) 
   const riskSubtext = openRisks > 0 ? 'Open risks to mitigate' : 'No open risks';
 
   return (
-    <section 
-      className="rounded-xl overflow-hidden"
-      style={{
-        backgroundColor: 'var(--surface-bg)',
-        border: '1px solid var(--border-default)',
-        boxShadow: 'var(--shadow-card)',
-      }}
-    >
-      {/* Header with section title pattern */}
-      <div 
-        className="px-5 py-3"
-        style={{ borderBottom: '1px solid var(--border-subtle)' }}
-      >
+    <section className="rounded-xl overflow-hidden bg-card/50 dark:bg-card/30">
+      {/* Header with section title pattern - surface separation via background */}
+      <div className="px-5 py-3 bg-muted/30 dark:bg-muted/10">
         <h2 
           className="text-[15px] font-semibold"
           style={{ color: 'var(--text-primary)' }}

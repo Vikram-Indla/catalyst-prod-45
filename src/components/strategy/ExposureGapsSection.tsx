@@ -103,17 +103,14 @@ export function ExposureGapsSection({ snapshotId }: ExposureGapsSectionProps) {
   // Skeleton only on first load
   if (isLoading && !hasData) {
     return (
-      <section 
-        className="rounded-lg overflow-hidden bg-card border border-border"
-        style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}
-      >
-        <div className="px-4 py-2.5 border-b border-border">
+      <section className="rounded-lg overflow-hidden bg-card/50 dark:bg-card/30">
+        <div className="px-4 py-2.5 bg-muted/30 dark:bg-muted/10">
           <Skeleton className="h-4 w-32" />
         </div>
         <div className="p-3">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
             {['c1', 'c2', 'c3'].map((key) => (
-              <div key={key} className="rounded-md p-3 bg-muted border border-border min-h-[150px]">
+              <div key={key} className="rounded-md p-3 bg-muted/40 dark:bg-muted/20 min-h-[150px]">
                 <Skeleton className="h-4 w-28 mb-4" />
                 <div className="space-y-2">
                   <Skeleton className="h-5 w-full" />
@@ -131,12 +128,9 @@ export function ExposureGapsSection({ snapshotId }: ExposureGapsSectionProps) {
   const isUpdating = isFetching && hasData;
 
   return (
-    <section 
-      className="rounded-lg overflow-hidden bg-card border border-border"
-      style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}
-    >
-      {/* Section Header */}
-      <div className="px-4 py-2.5 flex items-center justify-between border-b border-border">
+    <section className="rounded-lg overflow-hidden bg-card/50 dark:bg-card/30">
+      {/* Section Header - surface separation via background, not border */}
+      <div className="px-4 py-2.5 flex items-center justify-between bg-muted/30 dark:bg-muted/10">
         <div className="flex items-center gap-2">
           <Shield size={14} className="text-destructive" />
           <h2 className={cn(TYPOGRAPHY.sectionTitle, TEXT_COLORS.primary)}>
@@ -146,13 +140,13 @@ export function ExposureGapsSection({ snapshotId }: ExposureGapsSectionProps) {
         <div className="flex items-center gap-2">
           {/* Stale data indicator - CATALYST STANDARD */}
           {showStaleIndicator && (
-            <span className="text-[11px] text-gray-500 dark:text-gray-400 italic">
+            <span className="text-[11px] text-muted-foreground italic">
               Data may be stale
             </span>
           )}
           {/* Refreshing indicator - CATALYST STANDARD */}
           {isUpdating && (
-            <div className="text-[11px] text-gray-500 dark:text-gray-400 flex items-center gap-1.5">
+            <div className="text-[11px] text-muted-foreground flex items-center gap-1.5">
               <Loader2 size={12} className="animate-spin" />
               <span>Refreshing…</span>
             </div>
@@ -194,7 +188,7 @@ export function ExposureGapsSection({ snapshotId }: ExposureGapsSectionProps) {
             </div>
 
             {displayData.overdueRisks > 0 && (
-            <div className="pt-2 mt-2 border-t border-gray-200 dark:border-gray-700">
+            <div className="pt-2 mt-2 border-t border-border/30 dark:border-border/20">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-1.5">
                     <Clock size={14} className="text-destructive" />
@@ -229,7 +223,7 @@ export function ExposureGapsSection({ snapshotId }: ExposureGapsSectionProps) {
               />
             </div>
 
-            <div className="pt-2 mt-2 border-t border-gray-200 dark:border-gray-700">
+            <div className="pt-2 mt-2 border-t border-border/30 dark:border-border/20">
               <div className="flex items-center justify-between">
                 <span className={cn(TYPOGRAPHY.cardLabel, TEXT_COLORS.secondaryStrong)}>Total gaps</span>
                 <span className={cn(
@@ -284,9 +278,9 @@ interface CockpitCardProps {
 
 function CockpitCard({ title, icon, iconColor, children, cta }: CockpitCardProps) {
   return (
-    <div className="rounded-md overflow-hidden flex flex-col bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 min-h-[150px]">
-      {/* Card header */}
-      <div className="px-3 py-2.5 flex items-center gap-2 border-b border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-900">
+    <div className="rounded-md overflow-hidden flex flex-col bg-muted/40 dark:bg-muted/20 min-h-[150px]">
+      {/* Card header - surface separation via subtle background difference */}
+      <div className="px-3 py-2.5 flex items-center gap-2 bg-muted/20 dark:bg-muted/10">
         <span className={iconColor}>{icon}</span>
         <span className={cn(TYPOGRAPHY.sectionTitle, TEXT_COLORS.primary)}>
           {title}
@@ -353,7 +347,7 @@ function DataRow({ label, value, total = 0, variant = 'neutral', showBar }: Data
       
       {/* Bar - visually aligned with value, never overpowers */}
       {showBar && total > 0 && (
-        <div className="w-14 h-1.5 rounded-full overflow-hidden bg-gray-200 dark:bg-gray-700">
+        <div className="w-14 h-1.5 rounded-full overflow-hidden bg-muted/60 dark:bg-muted/40">
           <div 
             className={cn("h-full rounded-full", barColors[variant], variant !== 'neutral' ? 'opacity-80' : '')}
             style={{ width: `${barWidth}%` }}
