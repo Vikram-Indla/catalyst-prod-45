@@ -117,14 +117,13 @@ export function BoardCard({
           {/* Assignee Avatar */}
           {feature.assignee ? (
             <div
-              className="w-5 h-5 rounded-full flex items-center justify-center text-white text-[10px] font-medium"
-              style={{ background: '#2563eb' }}
+              className="w-5 h-5 rounded-full flex items-center justify-center bg-primary text-primary-foreground text-[10px] font-medium"
               title={feature.assignee.full_name}
             >
               {feature.assignee.full_name?.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() || '?'}
             </div>
           ) : (
-            <div className="w-5 h-5 rounded-full bg-gray-300 flex items-center justify-center text-white text-[10px]">
+            <div className="w-5 h-5 rounded-full bg-muted flex items-center justify-center text-muted-foreground text-[10px]">
               ?
             </div>
           )}

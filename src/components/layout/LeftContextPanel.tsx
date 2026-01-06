@@ -434,12 +434,12 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
                     />
                   )}
                   {CustomIcon ? (
-                    <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', color: active ? '#2563eb' : 'var(--icon-default)', flexShrink: 0 }}>
+                    <span className={cn("flex items-center justify-center shrink-0", active ? "text-primary" : "text-muted-foreground")}>
                       <CustomIcon className="w-5 h-5" />
                     </span>
                   ) : (
-                    <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', color: active ? '#2563eb' : 'var(--icon-default)', flexShrink: 0 }}>
-                      <LucideIcon style={{ width: '20px', height: '20px' }} />
+                    <span className={cn("flex items-center justify-center shrink-0", active ? "text-primary" : "text-muted-foreground")}>
+                      <LucideIcon className="w-5 h-5" />
                     </span>
                   )}
                   {expanded && <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', textAlign: 'left', flex: 1 }}>{item.label}</span>}

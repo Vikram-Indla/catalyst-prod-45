@@ -258,8 +258,7 @@ export function LinkObjectivePicker({
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-0.5">
                         <span 
-                          className="text-[9px] font-semibold px-1.5 py-0.5 rounded"
-                          style={{ backgroundColor: 'rgba(37, 99, 235, 0.15)', color: '#2563eb' }}
+                          className="text-[9px] font-semibold px-1.5 py-0.5 rounded bg-primary/15 text-primary"
                         >
                           OBJ
                         </span>

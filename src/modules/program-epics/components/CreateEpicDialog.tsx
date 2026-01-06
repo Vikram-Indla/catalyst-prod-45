@@ -541,8 +541,7 @@ export function CreateEpicDialog({
                                   )}
                                 />
                                 <span 
-                                  className="flex-1 text-sm font-medium"
-                                  style={{ color: 'var(--dialog-title-color, #f5f5f5)' }}
+                                  className="flex-1 text-sm font-medium text-popover-foreground"
                                 >
                                   {theme.name}
                                 </span>
@@ -643,8 +642,7 @@ export function CreateEpicDialog({
                                   {br.request_key}
                                 </span>
                                 <span 
-                                  className="truncate"
-                                  style={{ color: 'var(--dialog-title-color, #f5f5f5)' }}
+                                  className="truncate text-popover-foreground"
                                 >
                                   {br.title}
                                 </span>
@@ -652,12 +650,7 @@ export function CreateEpicDialog({
                               <div className="flex items-center gap-1 shrink-0 ml-2">
                                 {br.rank && (
                                   <span
-                                    className="px-2 py-0.5 rounded text-[10px] font-medium"
-                                    style={{
-                                      backgroundColor: 'rgba(13, 148, 136, 0.1)',
-                                      color: '#0d9488',
-                                      border: '1px solid rgba(13, 148, 136, 0.3)'
-                                    }}
+                                    className="px-2 py-0.5 rounded text-[10px] font-medium bg-success/10 text-success border border-success/30"
                                   >
                                     Rank #{br.rank}
                                   </span>
