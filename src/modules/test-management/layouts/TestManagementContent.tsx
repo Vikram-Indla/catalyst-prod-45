@@ -15,11 +15,11 @@ interface BreadcrumbTitle {
 
 const getTMBreadcrumb = (pathname: string): BreadcrumbTitle | null => {
   // Pages with their own toolbar/header don't need module header
-  if (pathname.startsWith('/tests/cases')) return null;
   if (pathname.startsWith('/tests/command-center')) return null;
   
   const parent = 'TM';
   
+  if (pathname.startsWith('/tests/cases')) return { parent, current: 'Test Cases' };
   if (pathname.startsWith('/tests/my-work')) return { parent, current: 'My Work' };
   if (pathname.startsWith('/tests/cycles/')) return { parent, current: 'Cycle Details' };
   if (pathname.startsWith('/tests/cycles')) return { parent, current: 'Test Cycles' };
