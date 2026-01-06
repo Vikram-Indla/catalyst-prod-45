@@ -3,14 +3,14 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 
 /**
- * CATALYST TABLE — Bloomberg/Linear Grade Dark Mode v3
+ * CATALYST TABLE — V5 No-Drift Award Grade
  * 
- * DARK MODE GRAMMAR (RENDER-LEVEL):
+ * DARK MODE GRAMMAR:
  * - NO outer container borders
  * - NO vertical column dividers
- * - Ultra-subtle row separators: rgba(255,255,255,0.035)
- * - Hover as primary row affordance
- * - Surface contrast for header separation
+ * - Ultra-subtle row separators: --divider token
+ * - Hover as primary row affordance: --hover token
+ * - Surface contrast for header: --bg-2
  */
 
 const Table = React.forwardRef<HTMLTableElement, React.HTMLAttributes<HTMLTableElement>>(
@@ -20,7 +20,7 @@ const Table = React.forwardRef<HTMLTableElement, React.HTMLAttributes<HTMLTableE
       // Light mode: white background with subtle border
       "bg-card border border-border/60",
       // Dark mode: NO outer border, flush with background
-      "dark:bg-transparent dark:border-0 dark:border-none"
+      "dark:bg-transparent dark:border-0"
     )}>
       <table ref={ref} className={cn("w-full caption-bottom text-sm", className)} {...props} />
     </div>
@@ -35,8 +35,8 @@ const TableHeader = React.forwardRef<HTMLTableSectionElement, React.HTMLAttribut
       className={cn(
         // Light mode: subtle header background with border
         "bg-muted/50 border-b border-border/60",
-        // Dark mode: slight surface lift, ultra-subtle separator
-        "dark:bg-[#1f1f1f] dark:border-b dark:border-white/[0.035]",
+        // Dark mode: --bg-2 surface, --divider separator
+        "dark:bg-[var(--bg-2)] dark:border-b dark:border-[var(--divider)]",
         className
       )} 
       {...props} 
@@ -66,8 +66,8 @@ const TableFooter = React.forwardRef<HTMLTableSectionElement, React.HTMLAttribut
       className={cn(
         "font-medium [&>tr]:last:border-b-0",
         "bg-muted/30 border-t border-border/60",
-        // Dark mode: subtle surface, ultra-subtle top border
-        "dark:bg-[#1f1f1f] dark:border-white/[0.035]",
+        // Dark mode: --bg-2 surface, --divider border
+        "dark:bg-[var(--bg-2)] dark:border-[var(--divider)]",
         className
       )} 
       {...props} 
@@ -78,8 +78,8 @@ TableFooter.displayName = "TableFooter";
 
 /**
  * Table Row — Bloomberg/Linear compliant
- * - Hover is primary affordance (surface lift)
- * - Ultra-subtle bottom separator
+ * - Hover as primary affordance (--hover token)
+ * - Ultra-subtle bottom separator (--divider)
  * - Selected uses brand accent
  */
 const TableRow = React.forwardRef<HTMLTableRowElement, React.HTMLAttributes<HTMLTableRowElement> & { selected?: boolean }>(
@@ -90,13 +90,13 @@ const TableRow = React.forwardRef<HTMLTableRowElement, React.HTMLAttributes<HTML
         "h-10 transition-colors",
         // Light mode: subtle border
         "border-b border-border/50",
-        // Dark mode: ultra-subtle separator (render-level enforced)
-        "dark:border-b dark:border-white/[0.035]",
-        // Hover: surface lift
-        "hover:bg-muted/50 dark:hover:bg-white/[0.04]",
+        // Dark mode: --divider separator, --hover state
+        "dark:border-b dark:border-[var(--divider)]",
+        // Hover: surface lift using --hover token
+        "hover:bg-muted/50 dark:hover:bg-[var(--hover)]",
         // Selected: brand accent
         selected && [
-          "bg-brand-primary/5 dark:bg-brand-primary/10",
+          "bg-brand-primary/5 dark:bg-[var(--row-selected)]",
           "border-l-2 border-l-brand-primary"
         ],
         className
@@ -111,6 +111,7 @@ TableRow.displayName = "TableRow";
 /**
  * Table Head — Column headers
  * - Dark mode: NO column dividers
+ * - Text uses --fg-2
  */
 const TableHead = React.forwardRef<HTMLTableCellElement, React.ThHTMLAttributes<HTMLTableCellElement>>(
   ({ className, ...props }, ref) => (
@@ -118,11 +119,11 @@ const TableHead = React.forwardRef<HTMLTableCellElement, React.ThHTMLAttributes<
       ref={ref}
       className={cn(
         "h-10 px-4 py-2 text-left align-middle font-semibold uppercase text-xs tracking-wide",
-        "text-muted-foreground",
+        "text-muted-foreground dark:text-[var(--fg-2)]",
         // Light mode: subtle column dividers
         "border-r border-border/30 last:border-r-0",
         // Dark mode: NO column dividers at all
-        "dark:border-r-0 dark:border-0",
+        "dark:border-r-0",
         "[&:has([role=checkbox])]:pr-0",
         className,
       )}
@@ -135,17 +136,18 @@ TableHead.displayName = "TableHead";
 /**
  * Table Cell — Body cells
  * - Dark mode: NO column dividers
+ * - Text uses --fg-1
  */
 const TableCell = React.forwardRef<HTMLTableCellElement, React.TdHTMLAttributes<HTMLTableCellElement>>(
   ({ className, ...props }, ref) => (
     <td 
       ref={ref} 
       className={cn(
-        "px-4 py-2 align-middle text-foreground",
+        "px-4 py-2 align-middle text-foreground dark:text-[var(--fg-1)]",
         // Light mode: subtle column dividers
         "border-r border-border/20 last:border-r-0",
         // Dark mode: NO column dividers at all
-        "dark:border-r-0 dark:border-0",
+        "dark:border-r-0",
         "[&:has([role=checkbox])]:pr-0",
         className
       )} 
@@ -160,7 +162,7 @@ const TableCaption = React.forwardRef<HTMLTableCaptionElement, React.HTMLAttribu
     <caption 
       ref={ref} 
       className={cn(
-        "mt-4 text-sm text-muted-foreground",
+        "mt-4 text-sm text-muted-foreground dark:text-[var(--fg-3)]",
         className
       )} 
       {...props} 
