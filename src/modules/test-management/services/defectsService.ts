@@ -4,6 +4,7 @@
  */
 
 import { supabase } from '@/integrations/supabase/client';
+import type { Json } from '@/integrations/supabase/types';
 import type {
   Defect,
   DefectComment,
@@ -22,7 +23,6 @@ import type {
   DefectStats,
   BulkDefectUpdate,
   BulkOperationResult,
-  DefectWorkflowStatus,
   DefectSeverity,
   DefectPriority,
 } from '../types/defects';
@@ -163,33 +163,35 @@ export async function fetchDefectByKey(key: string, projectId: string): Promise<
 }
 
 /**
- * Generate a unique defect ID
+ * Generate a unique defect ID using year-based sequence
  */
-async function generateDefectId(projectId: string): Promise<{ defect_id: string; defect_key: string }> {
-  // Get next sequence from defect_id_sequences table
+async function generateDefectId(): Promise<{ defect_id: string; defect_key: string }> {
+  const currentYear = new Date().getFullYear();
+  
+  // Get current sequence for this year
   const { data: seqData, error: seqError } = await supabase
     .from('defect_id_sequences')
-    .select('current_value')
-    .eq('project_id', projectId)
+    .select('last_sequence')
+    .eq('year', currentYear)
     .single();
 
   let nextVal = 1;
   
   if (seqError && seqError.code === 'PGRST116') {
-    // No sequence exists, create one
+    // No sequence exists for this year, create one
     await supabase.from('defect_id_sequences').insert({
-      project_id: projectId,
-      current_value: 1,
+      year: currentYear,
+      last_sequence: 1,
     });
   } else if (seqData) {
-    nextVal = (seqData.current_value || 0) + 1;
+    nextVal = (seqData.last_sequence || 0) + 1;
     await supabase
       .from('defect_id_sequences')
-      .update({ current_value: nextVal })
-      .eq('project_id', projectId);
+      .update({ last_sequence: nextVal })
+      .eq('year', currentYear);
   }
 
-  const defect_key = `DEF-${nextVal}`;
+  const defect_key = `DEF-${currentYear}-${String(nextVal).padStart(4, '0')}`;
   return { defect_id: defect_key, defect_key };
 }
 
@@ -197,21 +199,40 @@ async function generateDefectId(projectId: string): Promise<{ defect_id: string;
  * Create a new defect
  */
 export async function createDefect(input: CreateDefectInput, reporterId: string): Promise<Defect> {
-  const { defect_id, defect_key } = await generateDefectId(input.project_id);
+  const { defect_id, defect_key } = await generateDefectId();
+
+  const insertData = {
+    defect_id,
+    defect_key,
+    project_id: input.project_id,
+    title: input.title,
+    description: input.description ?? null,
+    expected_result: input.expected_result,
+    actual_result: input.actual_result,
+    severity: input.severity || 'major',
+    priority: input.priority || 'P3',
+    workflow_status: input.workflow_status || 'new',
+    environment: input.environment ?? null,
+    environment_details: (input.environment_details ?? null) as Json,
+    preconditions: input.preconditions ?? null,
+    steps_to_reproduce: (input.steps_to_reproduce ?? null) as Json,
+    assignee_id: input.assignee_id ?? null,
+    reporter_id: reporterId,
+    reported_by: reporterId,
+    test_case_id: input.test_case_id ?? null,
+    test_run_id: input.test_run_id ?? null,
+    step_number: input.step_number ?? null,
+    linked_story_id: input.linked_story_id ?? null,
+    linked_feature_id: input.linked_feature_id ?? null,
+    tags: input.tags || [],
+    due_date: input.due_date ?? null,
+    external_id: input.external_id ?? null,
+    external_url: input.external_url ?? null,
+  };
 
   const { data, error } = await supabase
     .from('defects')
-    .insert({
-      ...input,
-      defect_id,
-      defect_key,
-      reporter_id: reporterId,
-      reported_by: reporterId,
-      severity: input.severity || 'major',
-      priority: input.priority || 'P3',
-      workflow_status: input.workflow_status || 'new',
-      tags: input.tags || [],
-    })
+    .insert(insertData)
     .select(`
       *,
       assignee:profiles!defects_assignee_id_fkey(id, full_name, avatar_url),
@@ -227,7 +248,7 @@ export async function createDefect(input: CreateDefectInput, reporterId: string)
  * Update an existing defect
  */
 export async function updateDefect(input: UpdateDefectInput, userId: string): Promise<Defect> {
-  const { id, ...updates } = input;
+  const { id, ...rawUpdates } = input;
 
   // Fetch current defect for history tracking
   const { data: current } = await supabase
@@ -235,6 +256,16 @@ export async function updateDefect(input: UpdateDefectInput, userId: string): Pr
     .select('*')
     .eq('id', id)
     .single();
+
+  // Transform updates to match DB schema
+  const updates: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(rawUpdates)) {
+    if (key === 'environment_details' || key === 'steps_to_reproduce') {
+      updates[key] = value as Json;
+    } else {
+      updates[key] = value;
+    }
+  }
 
   // Update the defect
   const { data, error } = await supabase
@@ -258,10 +289,10 @@ export async function updateDefect(input: UpdateDefectInput, userId: string): Pr
       field_name: string;
       old_value: string | null;
       new_value: string | null;
-      changed_by: string;
+      actor_id: string;
     }> = [];
 
-    for (const [key, newValue] of Object.entries(updates)) {
+    for (const [key, newValue] of Object.entries(rawUpdates)) {
       const oldValue = (current as Record<string, unknown>)[key];
       if (JSON.stringify(oldValue) !== JSON.stringify(newValue)) {
         auditEntries.push({
@@ -270,7 +301,7 @@ export async function updateDefect(input: UpdateDefectInput, userId: string): Pr
           field_name: key,
           old_value: oldValue != null ? String(oldValue) : null,
           new_value: newValue != null ? String(newValue) : null,
-          changed_by: userId,
+          actor_id: userId,
         });
       }
     }
@@ -353,7 +384,9 @@ export async function createDefectComment(
   const { data, error } = await supabase
     .from('defect_comments')
     .insert({
-      ...input,
+      defect_id: input.defect_id,
+      content: input.content,
+      is_internal: input.is_internal ?? false,
       author_id: authorId,
     })
     .select(`
@@ -443,10 +476,10 @@ export async function fetchDefectAuditLog(defectId: string): Promise<DefectAudit
     .from('defect_audit_log')
     .select(`
       *,
-      user:profiles!defect_audit_log_changed_by_fkey(id, full_name, avatar_url)
+      user:profiles!defect_audit_log_actor_id_fkey(id, full_name, avatar_url)
     `)
     .eq('defect_id', defectId)
-    .order('changed_at', { ascending: false });
+    .order('acted_at', { ascending: false });
 
   if (error) throw error;
   return (data || []) as unknown as DefectAuditLog[];
@@ -480,7 +513,10 @@ export async function createDefectWorkItemLink(
   const { data, error } = await supabase
     .from('defect_work_item_links')
     .insert({
-      ...input,
+      defect_id: input.defect_id,
+      linked_item_type: input.work_item_type,
+      linked_item_id: input.work_item_id,
+      relationship_type: input.link_type,
       created_by: userId,
     })
     .select('*')
@@ -555,7 +591,7 @@ export async function fetchDefectStats(projectId: string): Promise<DefectStats> 
       by_priority[defect.priority as DefectPriority]++;
     }
 
-    const createdAt = new Date(defect.created_at);
+    const createdAt = new Date(defect.created_at || now);
     const ageDays = Math.floor((now.getTime() - createdAt.getTime()) / (1000 * 60 * 60 * 24));
 
     if (openStatuses.includes(status)) {
