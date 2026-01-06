@@ -15,6 +15,8 @@ import {
   FolderInput,
   Trash2,
   Download,
+  Upload,
+  RefreshCw,
   X,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -52,6 +54,9 @@ interface CasesToolbarProps {
   onBulkDelete: () => void;
   onBulkExport: () => void;
   onClearSelection: () => void;
+  onImport?: () => void;
+  onRefresh?: () => void;
+  isRefreshing?: boolean;
   priorities?: { id: string; name: string; color: string }[];
   caseTypes?: { id: string; name: string }[];
 }
@@ -76,6 +81,9 @@ export function CasesToolbar({
   onBulkDelete,
   onBulkExport,
   onClearSelection,
+  onImport,
+  onRefresh,
+  isRefreshing = false,
   priorities = [],
   caseTypes = [],
 }: CasesToolbarProps) {
@@ -295,6 +303,21 @@ export function CasesToolbar({
           <LayoutGrid className="h-4 w-4" />
         </Button>
       </div>
+
+      {/* Refresh Button */}
+      {onRefresh && (
+        <Button variant="ghost" size="icon" onClick={onRefresh} disabled={isRefreshing}>
+          <RefreshCw className={cn("h-4 w-4", isRefreshing && "animate-spin")} />
+        </Button>
+      )}
+
+      {/* Import Button */}
+      {onImport && (
+        <Button variant="outline" size="sm" onClick={onImport}>
+          <Upload className="h-4 w-4 mr-2" />
+          Import
+        </Button>
+      )}
 
       {/* New Case Button */}
       <Button onClick={onCreateCase} className="gap-2">

@@ -34,6 +34,8 @@ import {
   CasesDataTable,
   CaseDetailsPanel,
   CaseModal,
+  AddToCycleDialog,
+  ImportTestCasesDialog,
   type CasesFilters,
   type SortField,
   type SortDirection,
@@ -101,6 +103,9 @@ export function TestCasesPage() {
   const [editingCase, setEditingCase] = useState<any | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [caseToDelete, setCaseToDelete] = useState<any | null>(null);
+  const [addToCycleOpen, setAddToCycleOpen] = useState(false);
+  const [caseToAddToCycle, setCaseToAddToCycle] = useState<string | null>(null);
+  const [importDialogOpen, setImportDialogOpen] = useState(false);
 
   // Get project ID from URL or use default TM project
   const urlProjectId = searchParams.get('projectId');
@@ -201,8 +206,8 @@ export function TestCasesPage() {
   }, [caseToDelete, deleteCase, selectedCaseId, projectId]);
 
   const handleAddToCycle = useCallback((testCase: any) => {
-    // TODO: Open add to cycle modal
-    console.log('Add to cycle:', testCase.case_key);
+    setCaseToAddToCycle(testCase.id);
+    setAddToCycleOpen(true);
   }, []);
 
   const handleSaveCase = useCallback(
@@ -432,6 +437,7 @@ export function TestCasesPage() {
           onBulkDelete={handleBulkDelete}
           onBulkExport={handleBulkExport}
           onClearSelection={() => setSelectedIds(new Set())}
+          onImport={() => setImportDialogOpen(true)}
           priorities={prioritiesForUI}
           caseTypes={typesForUI}
         />
@@ -541,6 +547,28 @@ export function TestCasesPage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Add to Cycle Dialog */}
+      <AddToCycleDialog
+        open={addToCycleOpen}
+        onOpenChange={setAddToCycleOpen}
+        caseIds={caseToAddToCycle ? [caseToAddToCycle] : Array.from(selectedIds)}
+        projectId={projectId}
+        onSuccess={() => {
+          setCaseToAddToCycle(null);
+        }}
+      />
+
+      {/* Import Dialog */}
+      <ImportTestCasesDialog
+        open={importDialogOpen}
+        onOpenChange={setImportDialogOpen}
+        projectId={projectId}
+        folderId={selectedFolderId}
+        onSuccess={() => {
+          // Data will be refetched automatically via react-query
+        }}
+      />
     </div>
   );
 }
