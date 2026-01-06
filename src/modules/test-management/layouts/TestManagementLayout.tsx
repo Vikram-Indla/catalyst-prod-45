@@ -8,7 +8,7 @@ import React, { useState, useEffect } from 'react';
 import { Outlet, NavLink, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import {
-  Home,
+  LayoutDashboard,
   FileText,
   RefreshCw,
   Bug,
@@ -20,8 +20,10 @@ import {
   Bell,
   ChevronDown,
   Menu,
-  X,
   FlaskConical,
+  Play,
+  Link2,
+  User,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -49,10 +51,13 @@ interface NavItem {
 }
 
 const navItems: NavItem[] = [
-  { path: '/tests/my-work', label: 'My Work', icon: Home, badge: 12 },
+  { path: '/tests/command-center', label: 'Command Center', icon: LayoutDashboard },
+  { path: '/tests/my-work', label: 'My Work', icon: User, badge: 12 },
   { path: '/tests/cases', label: 'Test Cases', icon: FileText, badge: 156 },
   { path: '/tests/cycles', label: 'Test Cycles', icon: RefreshCw, badge: 8 },
+  { path: '/tests/execution', label: 'Execution', icon: Play },
   { path: '/tests/defects', label: 'Defects', icon: Bug, badge: 23 },
+  { path: '/tests/requirements', label: 'Requirements', icon: Link2 },
   { path: '/tests/reports', label: 'Reports', icon: BarChart3 },
   { path: '/tests/settings', label: 'Settings', icon: Settings, separator: true },
 ];
