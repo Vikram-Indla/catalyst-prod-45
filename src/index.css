@@ -173,6 +173,33 @@
     --sem-info-border: rgba(37, 99, 235, 0.25);
     --sem-critical-border: rgba(185, 28, 28, 0.30);
     
+    /* === NO-DRIFT TEXT LADDER (Light Mode) === */
+    --fg-1: rgba(0,0,0,0.92);              /* Primary text */
+    --fg-2: rgba(0,0,0,0.72);              /* Secondary text */
+    --fg-3: rgba(0,0,0,0.55);              /* Muted/hints */
+    --fg-4: rgba(0,0,0,0.38);              /* Disabled */
+    
+    /* === NO-DRIFT SEMANTIC TOKENS (Light Mode) === */
+    --info-fg: #2563eb;                    /* Blue-600 */
+    --info-bg: rgba(37, 99, 235, 0.08);
+    --info-bd: rgba(37, 99, 235, 0.22);
+    
+    --success-fg: #0d9488;                 /* Teal-600 */
+    --success-bg: rgba(13, 148, 136, 0.08);
+    --success-bd: rgba(13, 148, 136, 0.22);
+    
+    --warning-fg: #d97706;                 /* Amber-600 */
+    --warning-bg: rgba(217, 119, 6, 0.08);
+    --warning-bd: rgba(217, 119, 6, 0.22);
+    
+    --danger-fg: #dc2626;                  /* Red-600 */
+    --danger-bg: rgba(220, 38, 38, 0.08);
+    --danger-bd: rgba(220, 38, 38, 0.22);
+    
+    --neutral-fg: rgba(0,0,0,0.72);
+    --neutral-bg: rgba(0,0,0,0.06);
+    --neutral-bd: rgba(0,0,0,0.10);
+    
     /* === SHADOW TOKENS (as HSL base for shadows) === */
     --shadow-color: 0 0% 10%;            /* #1a1a1a */
     --shadow-elev-1: 0 1px 3px hsl(0 0% 0% / 0.05), 0 1px 2px hsl(0 0% 0% / 0.03);
