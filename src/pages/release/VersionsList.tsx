@@ -4,7 +4,6 @@ import { Search, Calendar, ChevronDown, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ProgressBar } from '@/components/release/ProgressBar';
 import { cn } from '@/lib/utils';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { useQuery } from '@tanstack/react-query';
@@ -80,8 +79,8 @@ export default function VersionsList() {
 
   return (
     <div className="h-full flex flex-col bg-background">
-      {/* Header */}
-      <div className="h-[72px] border-b border-border bg-card flex-shrink-0">
+      {/* Header - no bottom border, uses surface elevation */}
+      <div className="h-[72px] flex-shrink-0">
         <div className="h-full px-4 sm:px-6 flex items-center justify-between">
           <div className="min-w-0">
             <h1 className="text-xl sm:text-2xl font-semibold text-foreground truncate">Releases</h1>
@@ -89,7 +88,7 @@ export default function VersionsList() {
           </div>
           <div className="flex gap-3 flex-shrink-0">
             <Link to="/release/calendar">
-              <Button variant="outline" className="border-border text-muted-foreground gap-2">
+              <Button variant="ghost" className="text-muted-foreground hover:text-foreground hover:bg-muted/50 gap-2">
                 <Calendar className="w-4 h-4" />
                 Calendar
               </Button>
@@ -101,19 +100,19 @@ export default function VersionsList() {
         </div>
       </div>
 
-      {/* Toolbar */}
-      <div className="flex flex-wrap items-center gap-3 px-4 sm:px-6 py-3 bg-card border-b border-border">
+      {/* Toolbar - subtle separator via spacing, no harsh border */}
+      <div className="flex flex-wrap items-center gap-3 px-4 sm:px-6 py-3 border-b border-border/40">
         <div className="relative w-[200px]">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/70" />
           <Input
             placeholder="Search versions..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10 h-9 text-sm border-border focus-visible:ring-brand-primary"
+            className="pl-10 h-9 text-sm bg-muted/30 border-border/50 focus-visible:ring-brand-primary focus-visible:border-brand-primary"
           />
         </div>
         <Select value={statusFilter} onValueChange={setStatusFilter}>
-          <SelectTrigger className="w-[130px] h-9 text-sm border-border">
+          <SelectTrigger className="w-[130px] h-9 text-sm bg-muted/30 border-border/50">
             <SelectValue placeholder="All Status" />
           </SelectTrigger>
           <SelectContent>
@@ -124,7 +123,7 @@ export default function VersionsList() {
           </SelectContent>
         </Select>
         <Select value={monthFilter} onValueChange={setMonthFilter}>
-          <SelectTrigger className="w-[130px] h-9 text-sm border-border">
+          <SelectTrigger className="w-[130px] h-9 text-sm bg-muted/30 border-border/50">
             <SelectValue placeholder="All Months" />
           </SelectTrigger>
           <SelectContent>
@@ -146,15 +145,15 @@ export default function VersionsList() {
           <>
             {/* Unreleased Section */}
             <Collapsible open={unreleasedOpen} onOpenChange={setUnreleasedOpen}>
-              <CollapsibleTrigger className="w-full flex items-center gap-2 px-4 sm:px-6 py-2.5 bg-muted/50 border-b border-border hover:bg-muted/70 transition-colors">
-                {unreleasedOpen ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
-                <span className="text-sm font-semibold text-foreground">Unreleased</span>
-                <span className="px-1.5 py-0.5 rounded text-xs font-medium bg-amber-100 text-amber-700">
+              <CollapsibleTrigger className="w-full flex items-center gap-2 px-4 sm:px-6 py-2.5 bg-muted/30 border-b border-border/30 hover:bg-muted/50 transition-colors">
+                {unreleasedOpen ? <ChevronDown className="w-4 h-4 text-muted-foreground" /> : <ChevronRight className="w-4 h-4 text-muted-foreground" />}
+                <span className="text-sm font-medium text-foreground">Unreleased</span>
+                <span className="px-1.5 py-0.5 rounded text-xs font-medium bg-muted text-muted-foreground">
                   {unreleasedReleases.length}
                 </span>
               </CollapsibleTrigger>
               <CollapsibleContent>
-                <div className="divide-y divide-border">
+                <div className="divide-y divide-border/30">
                   {unreleasedReleases.map((release) => (
                     <ReleaseRow key={release.id} release={release} />
                   ))}
@@ -167,15 +166,15 @@ export default function VersionsList() {
 
             {/* Released Section */}
             <Collapsible open={releasedOpen} onOpenChange={setReleasedOpen}>
-              <CollapsibleTrigger className="w-full flex items-center gap-2 px-4 sm:px-6 py-2.5 bg-muted/50 border-b border-border hover:bg-muted/70 transition-colors">
-                {releasedOpen ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
-                <span className="text-sm font-semibold text-foreground">Released</span>
-                <span className="px-1.5 py-0.5 rounded text-xs font-medium bg-green-100 text-green-700">
+              <CollapsibleTrigger className="w-full flex items-center gap-2 px-4 sm:px-6 py-2.5 bg-muted/30 border-b border-border/30 hover:bg-muted/50 transition-colors">
+                {releasedOpen ? <ChevronDown className="w-4 h-4 text-muted-foreground" /> : <ChevronRight className="w-4 h-4 text-muted-foreground" />}
+                <span className="text-sm font-medium text-foreground">Released</span>
+                <span className="px-1.5 py-0.5 rounded text-xs font-medium bg-muted text-muted-foreground">
                   {releasedReleases.length}
                 </span>
               </CollapsibleTrigger>
               <CollapsibleContent>
-                <div className="divide-y divide-border">
+                <div className="divide-y divide-border/30">
                   {releasedReleases.map((release) => (
                     <ReleaseRow key={release.id} release={release} />
                   ))}
@@ -193,26 +192,29 @@ export default function VersionsList() {
 }
 
 function ReleaseRow({ release }: { release: Release }) {
+  // Dark-mode friendly status styles - quieter, less competing with content
   const statusStyles: Record<string, string> = {
-    unreleased: 'bg-blue-100 text-blue-700',
-    released: 'bg-green-100 text-green-700',
-    overdue: 'bg-red-100 text-red-700',
+    planned: 'bg-muted/80 text-muted-foreground border border-border/50',
+    unreleased: 'bg-muted/80 text-muted-foreground border border-border/50',
+    active: 'bg-brand-primary/10 text-brand-primary border border-brand-primary/30',
+    released: 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30',
+    overdue: 'bg-destructive/10 text-destructive border border-destructive/30',
   };
 
   return (
-    <div className="flex items-center gap-4 px-4 sm:px-6 py-3 bg-card hover:bg-muted/30 transition-colors">
+    <div className="flex items-center gap-4 px-4 sm:px-6 py-3 hover:bg-muted/20 transition-colors">
       {/* Name & Description */}
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
           <Link
             to={`/release/versions/${release.id}`}
-            className="text-sm font-semibold text-foreground hover:text-brand-primary transition-colors truncate"
+            className="text-sm font-medium text-foreground hover:text-brand-primary transition-colors truncate"
           >
             {release.name || release.version}
           </Link>
           <span className={cn(
-            "px-1.5 py-0.5 rounded text-[10px] font-semibold uppercase shrink-0",
-            statusStyles[release.status] || 'bg-gray-100 text-gray-700'
+            "px-1.5 py-0.5 rounded text-[10px] font-medium uppercase shrink-0",
+            statusStyles[release.status] || 'bg-muted/80 text-muted-foreground border border-border/50'
           )}>
             {release.status}
           </span>
@@ -223,7 +225,7 @@ function ReleaseRow({ release }: { release: Release }) {
       </div>
 
       {/* Date */}
-      <div className="w-[90px] shrink-0 text-xs text-muted-foreground hidden md:block">
+      <div className="w-[100px] shrink-0 text-xs text-muted-foreground hidden md:block">
         {release.release_date 
           ? new Date(release.release_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
           : 'No date set'
@@ -234,9 +236,9 @@ function ReleaseRow({ release }: { release: Release }) {
       <div className="flex gap-2 shrink-0">
         <Link to={`/release/versions/${release.id}`}>
           <Button
-            variant="outline"
+            variant="ghost"
             size="sm"
-            className="h-7 text-xs border-border text-muted-foreground hover:bg-brand-primary/10"
+            className="h-7 text-xs text-muted-foreground hover:text-foreground hover:bg-muted/50"
           >
             {release.status === 'released' ? 'View' : 'Edit'}
           </Button>
