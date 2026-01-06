@@ -68,13 +68,16 @@ function findViolations(): Violation[] {
     const classList = element.className;
     if (typeof classList !== 'string') return;
     
+    // Check if element is inside sidebar/aside (stricter rules)
+    const isInSidebar = element.closest('aside, [data-sidebar], .sidebar') !== null;
+    
     // Check class-based violations
     for (const [type, pattern] of Object.entries(VIOLATION_PATTERNS)) {
       const match = classList.match(pattern);
       if (match) {
         violations.push({
           element,
-          type: `class:${type}`,
+          type: isInSidebar ? `sidebar:${type}` : `class:${type}`,
           value: match[0],
           path: getElementPath(element),
         });
@@ -89,11 +92,24 @@ function findViolations(): Violation[] {
         if (match) {
           violations.push({
             element,
-            type: `inline:${type}`,
+            type: isInSidebar ? `sidebar-inline:${type}` : `inline:${type}`,
             value: match[0],
             path: getElementPath(element),
           });
         }
+      }
+    }
+    
+    // Extra sidebar-specific checks
+    if (isInSidebar) {
+      // Check for forbidden opacity classes
+      if (classList.match(/opacity-(10|20|30|40|50)\b/)) {
+        violations.push({
+          element,
+          type: 'sidebar:low-opacity',
+          value: classList.match(/opacity-\d+/)?.[0] || 'opacity class',
+          path: getElementPath(element),
+        });
       }
     }
   });
