@@ -11,8 +11,30 @@ export * from './useCycles';
 // Execution
 export * from './useExecution';
 
-// Defects
+// Defects (API-based)
 export * from './useDefects';
+
+// Defects (Supabase direct - new)
+export {
+  defectQueryKeys,
+  useDefectsList,
+  useDefectDetail,
+  useDefectByKey,
+  useDefectStats,
+  useDefectComments,
+  useDefectAttachments,
+  useDefectAuditLog,
+  useDefectWorkItemLinks,
+  useDefectColumnPreferences,
+  useBulkUpdateDefects,
+  useCreateDefectComment,
+  useUpdateDefectComment,
+  useDeleteDefectComment,
+  useDeleteDefectAttachment,
+  useCreateDefectWorkItemLink,
+  useDeleteDefectWorkItemLink,
+  useSaveDefectColumnPreferences,
+} from './useDefectsSupabase';
 
 // My Work
 export * from './useMyWork';

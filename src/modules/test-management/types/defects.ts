@@ -142,17 +142,17 @@ export interface DefectAuditLog {
   field_name: string | null;
   old_value: string | null;
   new_value: string | null;
-  changed_by: string;
-  changed_at: string;
+  actor_id: string;
+  acted_at: string;
   user?: UserProfile;
 }
 
 export interface DefectWorkItemLink {
   id: string;
   defect_id: string;
-  work_item_type: string;
-  work_item_id: string;
-  link_type: string;
+  linked_item_type: string;
+  linked_item_id: string;
+  relationship_type: string;
   created_at: string;
   created_by: string | null;
 }
