@@ -126,21 +126,26 @@ export function useCommandCenterKPIs() {
       const finalFailed = Math.max(failed, failedFromCycles);
       const finalExecuted = Math.max(executed, executedFromCycles);
 
+      // Calculate coverage: (test cases with at least one linked requirement / total test cases) * 100
+      const coverageValue = cases.length > 0 
+        ? Math.round((cases.filter(c => c.priority_id).length / cases.length) * 100) 
+        : 0;
+
       return {
-        totalAssigned: Math.max(cases.length, totalFromCycles, 847), // Fallback to demo value if no data
-        notRun: Math.max(notRun, 156),
-        inProgress: Math.max(inProgress, 23),
-        passedToday: Math.max(finalPassed, 89),
-        failedToday: Math.max(finalFailed, 12),
-        coverage: 78, // Would require more complex calculation
-        coverageGaps: 12,
-        passRate: finalExecuted > 0 ? Math.round((finalPassed / finalExecuted) * 100) : 89,
-        passRateTrend: 3,
-        openDefects: openDefects.length || 47,
-        criticalDefects: criticalDefects || 8,
-        majorDefects: majorDefects || 14,
-        minorDefects: minorDefects || 25,
-        blockers: blocked || blockedFromCycles || 3,
+        totalAssigned: Math.max(cases.length, totalFromCycles),
+        notRun: notRun,
+        inProgress: inProgress,
+        passedToday: finalPassed,
+        failedToday: finalFailed,
+        coverage: coverageValue,
+        coverageGaps: cases.length - cases.filter(c => c.priority_id).length,
+        passRate: finalExecuted > 0 ? Math.round((finalPassed / finalExecuted) * 100) : 0,
+        passRateTrend: 0, // Would need historical data to calculate
+        openDefects: openDefects.length,
+        criticalDefects: criticalDefects,
+        majorDefects: majorDefects,
+        minorDefects: minorDefects,
+        blockers: blocked || blockedFromCycles,
       };
     },
     staleTime: 30 * 1000,
@@ -164,36 +169,7 @@ export function useActiveCycles() {
 
       if (error) throw error;
       if (!cycles || cycles.length === 0) {
-        // Return demo data if no cycles exist
-        return [
-          {
-            id: 'demo-1',
-            key: 'CY-045',
-            name: 'Sprint 45 - Auth Module',
-            status: 'in_progress',
-            daysLeft: 2,
-            progress: { total: 50, passed: 35, failed: 4, blocked: 2, notRun: 9 },
-            percentage: 78,
-          },
-          {
-            id: 'demo-2',
-            key: 'CY-044',
-            name: 'Regression - v2.4',
-            status: 'in_progress',
-            daysLeft: 5,
-            progress: { total: 80, passed: 30, failed: 6, blocked: 0, notRun: 44 },
-            percentage: 45,
-          },
-          {
-            id: 'demo-3',
-            key: 'CY-043',
-            name: 'API Integration Tests',
-            status: 'planned',
-            daysLeft: 12,
-            progress: { total: 40, passed: 5, failed: 0, blocked: 0, notRun: 35 },
-            percentage: 12,
-          },
-        ];
+        return [];
       }
 
       return cycles.map(cycle => {
@@ -242,55 +218,7 @@ export function useActivityFeed(limit: number = 10) {
       if (error) throw error;
       
       if (!data || data.length === 0) {
-        // Return demo data if no activity exists
-        const now = new Date();
-        return [
-          {
-            id: 'demo-1',
-            user_name: 'Sarah Khan',
-            action_type: 'EXECUTED',
-            entity_type: 'case',
-            entity_key: 'TC-234',
-            entity_title: null,
-            created_at: now.toISOString(),
-          },
-          {
-            id: 'demo-2',
-            user_name: 'John Doe',
-            action_type: 'CREATED',
-            entity_type: 'defect',
-            entity_key: 'DEF-089',
-            entity_title: null,
-            created_at: new Date(now.getTime() - 2 * 60 * 1000).toISOString(),
-          },
-          {
-            id: 'demo-3',
-            user_name: 'Mike Ahmed',
-            action_type: 'COMPLETED',
-            entity_type: 'cycle',
-            entity_key: 'CY-042',
-            entity_title: null,
-            created_at: new Date(now.getTime() - 15 * 60 * 1000).toISOString(),
-          },
-          {
-            id: 'demo-4',
-            user_name: 'Lisa Wong',
-            action_type: 'UPDATED',
-            entity_type: 'case',
-            entity_key: 'TC-847',
-            entity_title: null,
-            created_at: new Date(now.getTime() - 32 * 60 * 1000).toISOString(),
-          },
-          {
-            id: 'demo-5',
-            user_name: 'Ahmed Rashid',
-            action_type: 'ADDED_CASES',
-            entity_type: 'cycle',
-            entity_key: 'CY-045',
-            entity_title: null,
-            created_at: new Date(now.getTime() - 60 * 60 * 1000).toISOString(),
-          },
-        ];
+        return [];
       }
 
       return data.map(item => ({
@@ -323,39 +251,7 @@ export function useMyWork() {
         .limit(10);
 
       if (!cases || cases.length === 0) {
-        // Return demo data
-        return [
-          {
-            id: 'demo-1',
-            key: 'TC-847',
-            title: 'User authentication flow validation',
-            status: 'UNDER_REVIEW',
-            statusColor: 'warning',
-            priority: 'CRITICAL',
-            cycleKey: 'CY-045',
-            updatedAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-          },
-          {
-            id: 'demo-2',
-            key: 'TC-845',
-            title: 'Payment gateway integration test',
-            status: 'PUBLISHED',
-            statusColor: 'success',
-            priority: 'HIGH',
-            cycleKey: 'CY-044',
-            updatedAt: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString(),
-          },
-          {
-            id: 'demo-3',
-            key: 'TC-842',
-            title: 'Dashboard widget load performance',
-            status: 'DRAFT',
-            statusColor: 'default',
-            priority: 'MEDIUM',
-            cycleKey: null,
-            updatedAt: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
-          },
-        ];
+        return [];
       }
 
       const getStatusColor = (status: string): 'success' | 'warning' | 'danger' | 'default' => {

@@ -4,6 +4,7 @@
  */
 
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { 
   ClipboardList, 
   Clock, 
@@ -269,16 +270,36 @@ function PriorityBadge({ priority }: { priority: string }) {
 // ============================================================
 
 export function CommandCenterPage() {
+  const navigate = useNavigate();
   const { data: kpis, isLoading: kpisLoading, refetch: refetchKPIs } = useCommandCenterKPIs();
   const { data: cycles, isLoading: cyclesLoading } = useActiveCycles();
   const { data: activities, isLoading: activitiesLoading, refetch: refetchActivity } = useActivityFeed();
   const { data: myWork, isLoading: myWorkLoading } = useMyWork();
 
   const [activeTab, setActiveTab] = useState<'cases' | 'cycles' | 'defects'>('cases');
+  const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
 
   const handleRefresh = () => {
     refetchKPIs();
     refetchActivity();
+  };
+
+  const handleExpandAll = () => {
+    if (myWork && myWork.length > 0) {
+      setExpandedRows(new Set(myWork.map(item => item.id)));
+    }
+  };
+
+  const handleCollapseAll = () => {
+    setExpandedRows(new Set());
+  };
+
+  const handleViewAllCycles = () => {
+    navigate('/test-management/cycles');
+  };
+
+  const handleViewAllActivity = () => {
+    navigate('/test-management/my-work');
   };
 
   if (kpisLoading) {
@@ -377,7 +398,10 @@ export function CommandCenterPage() {
         <div className="bg-surface-0 border border-border-default rounded-xl">
           <div className="flex items-center justify-between p-5 pb-3 border-b border-border-subtle">
             <h2 className="text-lg font-semibold text-text-primary">Active Cycles</h2>
-            <button className="text-sm text-brand-primary hover:underline flex items-center gap-1">
+            <button 
+              onClick={handleViewAllCycles}
+              className="text-sm text-brand-primary hover:underline flex items-center gap-1"
+            >
               View all <ChevronRight className="h-4 w-4" />
             </button>
           </div>
@@ -438,11 +462,17 @@ export function CommandCenterPage() {
                 <option>All Urgency</option>
               </select>
               <div className="flex items-center gap-2 ml-auto">
-                <button className="text-xs text-text-secondary hover:text-text-primary flex items-center gap-1">
+                <button 
+                  onClick={handleExpandAll}
+                  className="text-xs text-text-secondary hover:text-text-primary flex items-center gap-1"
+                >
                   <Maximize2 className="h-3 w-3" />
                   Expand All
                 </button>
-                <button className="text-xs text-text-secondary hover:text-text-primary flex items-center gap-1">
+                <button 
+                  onClick={handleCollapseAll}
+                  className="text-xs text-text-secondary hover:text-text-primary flex items-center gap-1"
+                >
                   <Minimize2 className="h-3 w-3" />
                   Collapse All
                 </button>
