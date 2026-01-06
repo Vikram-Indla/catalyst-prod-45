@@ -473,26 +473,20 @@ export function TMDefectsPage() {
         "flex-1 flex flex-col gap-0 transition-all duration-300 overflow-hidden",
         selectedDefect && "mr-[480px]"
       )}>
-        {/* Header */}
-        <div className="flex items-center justify-between p-4 bg-gradient-to-b from-background to-muted/30 border-b">
-          <div className="flex items-center gap-6">
-            <div>
-              <h1 className="text-xl font-bold">Defect Management</h1>
-              <p className="text-xs text-muted-foreground">Catalyst TM Project • Sprint 12 Regression</p>
+        {/* Header - Metrics and Actions only (title via breadcrumb) */}
+        <div className="flex items-center justify-between px-6 py-3 border-b">
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 px-3 py-1.5 bg-muted/50 rounded-lg">
+              <span className="text-lg font-bold text-red-500">{metrics.open}</span>
+              <span className="text-xs text-muted-foreground">Open</span>
             </div>
-            <div className="flex items-center gap-4 pl-6 border-l">
-              <div className="flex items-center gap-2 px-3 py-1.5 bg-muted/50 rounded-lg">
-                <span className="text-lg font-bold text-red-500">{metrics.open}</span>
-                <span className="text-xs text-muted-foreground">Open</span>
-              </div>
-              <div className="flex items-center gap-2 px-3 py-1.5 bg-muted/50 rounded-lg">
-                <span className="text-lg font-bold text-amber-500">{metrics.inProgress}</span>
-                <span className="text-xs text-muted-foreground">In Progress</span>
-              </div>
-              <div className="flex items-center gap-2 px-3 py-1.5 bg-muted/50 rounded-lg">
-                <span className="text-lg font-bold text-teal-500">{metrics.resolved}</span>
-                <span className="text-xs text-muted-foreground">Resolved</span>
-              </div>
+            <div className="flex items-center gap-2 px-3 py-1.5 bg-muted/50 rounded-lg">
+              <span className="text-lg font-bold text-amber-500">{metrics.inProgress}</span>
+              <span className="text-xs text-muted-foreground">In Progress</span>
+            </div>
+            <div className="flex items-center gap-2 px-3 py-1.5 bg-muted/50 rounded-lg">
+              <span className="text-lg font-bold text-teal-500">{metrics.resolved}</span>
+              <span className="text-xs text-muted-foreground">Resolved</span>
             </div>
           </div>
           <div className="flex items-center gap-3">
