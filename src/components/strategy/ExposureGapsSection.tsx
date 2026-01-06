@@ -254,7 +254,7 @@ export function ExposureGapsSection({ snapshotId }: ExposureGapsSectionProps) {
                 ))}
                 {attentionItems.length > 4 && (
                   <div className="text-center pt-1.5">
-                    <span className={cn(TYPOGRAPHY.microcopy, 'text-[#2563eb] dark:text-[#60a5fa] font-medium')}>
+                    <span className={cn(TYPOGRAPHY.microcopy, 'text-[var(--info-fg)] font-medium')}>
                       +{attentionItems.length - 4} more
                     </span>
                   </div>
@@ -298,10 +298,9 @@ function CockpitCard({ title, icon, iconColor, children, cta }: CockpitCardProps
             className={cn(
               TYPOGRAPHY.ctaButton, 
               "w-full h-8",
-              "text-[#2563eb] dark:text-[#60a5fa]",
+              "text-[var(--info-fg)]",
               "transition-[background-color,color] duration-150",
-              "hover:bg-[#2563eb]/10 dark:hover:bg-[#60a5fa]/10",
-              "hover:text-[#1d4ed8] dark:hover:text-[#93c5fd]",
+              "hover:bg-[var(--info-bg)]",
               "focus-visible:ring-1"
             )}
             onClick={cta.onClick}
@@ -370,11 +369,11 @@ function AttentionRow({ item, onClick }: { item: AttentionItem; onClick: () => v
     medium: 'bg-secondary-bronze',
   };
 
-  // Darker text colors for better visibility
+  // Use semantic token colors for visibility
   const reasonColors: Record<string, string> = {
-    critical: 'text-red-700 dark:text-red-400 font-medium',
-    high: 'text-amber-700 dark:text-amber-400 font-medium',
-    medium: 'text-amber-600 dark:text-amber-500',
+    critical: 'text-[var(--danger-fg)] font-medium',
+    high: 'text-[var(--warning-fg)] font-medium',
+    medium: 'text-[var(--warning-fg)]',
   };
 
   return (
