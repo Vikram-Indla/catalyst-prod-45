@@ -595,7 +595,7 @@ export default function CapacityPlannerPage() {
               {/* Cards View */}
               {filteredResources.length > 0 && resourceView === 'cards' && (
                 <motion.div
-                  key="cards"
+                  key={`cards-${searchQuery}-${departmentFilter}-${activeFilter}`}
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
@@ -617,7 +617,7 @@ export default function CapacityPlannerPage() {
               {/* Table View */}
               {filteredResources.length > 0 && resourceView === 'table' && (
                 <motion.div
-                  key="table"
+                  key={`table-${searchQuery}-${departmentFilter}-${activeFilter}`}
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
@@ -652,7 +652,7 @@ export default function CapacityPlannerPage() {
               {/* Timeline View - Enhanced Catalyst V5 Design */}
               {filteredResources.length > 0 && resourceView === 'timeline' && (
                 <motion.div
-                  key="timeline"
+                  key={`timeline-${searchQuery}-${departmentFilter}-${activeFilter}`}
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
@@ -677,7 +677,7 @@ export default function CapacityPlannerPage() {
               {/* Heatmap View */}
               {filteredResources.length > 0 && resourceView === 'heatmap' && (
                 <motion.div
-                  key="heatmap"
+                  key={`heatmap-${searchQuery}-${departmentFilter}-${activeFilter}`}
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
