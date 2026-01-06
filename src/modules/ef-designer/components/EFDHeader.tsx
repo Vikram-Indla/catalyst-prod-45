@@ -17,13 +17,10 @@ export const EFDHeader: React.FC<EFDHeaderProps> = ({ session, onNewSession, isC
   return (
     <div className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="flex items-center justify-between px-6 py-3">
-        <div>
-          <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
-            <span>PRODUCT</span>
-            <span>/</span>
-            <span>EF Designer</span>
-          </div>
-          <h1 className="text-xl font-semibold">Epic/Feature Designer</h1>
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <span>PRODUCT</span>
+          <span>/</span>
+          <span className="text-foreground font-medium">EF Designer</span>
         </div>
 
         <div className="flex items-center gap-4">
