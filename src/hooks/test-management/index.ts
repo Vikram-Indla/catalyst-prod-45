@@ -27,6 +27,8 @@ export {
   useCloneTestCase,
   useMoveTestCase,
   useBulkDeleteTestCases,
+  useBulkCopyTestCases,
+  useAddTestCasesToCycle,
 } from './useTestCases';
 
 // Test Cycles

@@ -216,9 +216,19 @@ export function StepsSection({
                           <Textarea
                             value={step.expected_result}
                             onChange={(e) => handleUpdateStep(step.id, 'expected_result', e.target.value)}
-                            placeholder="What should happen?"
-                            className="min-h-[80px] text-sm resize-y transition-all duration-150 focus:border-primary/50 focus:shadow-[0_0_0_3px_hsl(var(--primary)/0.1)]"
+                            placeholder="What should happen? (REQUIRED)"
+                            className={cn(
+                              "min-h-[80px] text-sm resize-y transition-all duration-150 focus:border-primary/50 focus:shadow-[0_0_0_3px_hsl(var(--primary)/0.1)]",
+                              step.action?.trim() && !step.expected_result?.trim()
+                                ? 'border-destructive bg-destructive/5 focus:border-destructive'
+                                : ''
+                            )}
                           />
+                          {step.action?.trim() && !step.expected_result?.trim() && (
+                            <span className="text-[10px] text-destructive mt-1 block">
+                              Required - Expected result must be defined
+                            </span>
+                          )}
                         </div>
                       </div>
 

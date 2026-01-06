@@ -19,12 +19,15 @@ import {
   useCloneTestCase,
   useMoveTestCase,
   useBulkDeleteTestCases,
+  useBulkCopyTestCases,
+  useAddTestCasesToCycle,
   useCreateFolder,
   useUpdateFolder,
   useDeleteFolder,
   type TMTestCase,
   type CaseStatus,
 } from '@/hooks/test-management';
+import { toast } from 'sonner';
 import {
   FolderTree,
   CasesToolbar,
@@ -142,6 +145,8 @@ export function TestCasesPage() {
   const cloneCase = useCloneTestCase();
   const moveCase = useMoveTestCase();
   const bulkDeleteCases = useBulkDeleteTestCases();
+  const bulkCopyCases = useBulkCopyTestCases();
+  const addToCycle = useAddTestCasesToCycle();
   const createFolder = useCreateFolder();
   const updateFolder = useUpdateFolder();
   const deleteFolder = useDeleteFolder();
@@ -266,19 +271,87 @@ export function TestCasesPage() {
   }, [selectedIds, bulkDeleteCases, selectedCaseId, projectId]);
 
   const handleBulkMove = useCallback(() => {
-    // TODO: Open move to folder modal
-    console.log('Move cases:', Array.from(selectedIds));
-  }, [selectedIds]);
+    // Move to selected folder (use currently selected folder as destination)
+    if (selectedIds.size > 0 && projectId && selectedFolderId) {
+      moveCase.mutate({ 
+        case_ids: Array.from(selectedIds), 
+        folder_id: selectedFolderId,
+        project_id: projectId 
+      }, {
+        onSuccess: () => {
+          setSelectedIds(new Set());
+          toast.success(`${selectedIds.size} test cases moved`);
+        },
+      });
+    } else if (selectedIds.size > 0) {
+      toast.info('Select a destination folder first, then use bulk move');
+    }
+  }, [selectedIds, moveCase, projectId, selectedFolderId]);
 
   const handleBulkCopy = useCallback(() => {
-    // TODO: Implement bulk copy
-    console.log('Copy cases:', Array.from(selectedIds));
-  }, [selectedIds]);
+    if (selectedIds.size > 0 && projectId) {
+      bulkCopyCases.mutate({ 
+        case_ids: Array.from(selectedIds), 
+        folder_id: selectedFolderId,
+        project_id: projectId 
+      }, {
+        onSuccess: () => {
+          setSelectedIds(new Set());
+        },
+      });
+    }
+  }, [selectedIds, bulkCopyCases, projectId, selectedFolderId]);
 
   const handleBulkExport = useCallback(() => {
-    // TODO: Implement export
-    console.log('Export cases:', Array.from(selectedIds));
-  }, [selectedIds]);
+    if (selectedIds.size === 0) return;
+    
+    // Generate CSV from selected test cases
+    const selectedCases = cases.filter(c => selectedIds.has(c.id));
+    
+    const csvHeaders = ['Key', 'Title', 'Status', 'Priority', 'Type', 'Folder', 'Created', 'Updated'];
+    const csvRows = selectedCases.map(tc => [
+      tc.case_key || '',
+      tc.title || '',
+      tc.status || '',
+      tc.priority?.name || '',
+      tc.type?.name || '',
+      tc.folder?.name || '',
+      tc.created_at ? new Date(tc.created_at).toLocaleDateString() : '',
+      tc.updated_at ? new Date(tc.updated_at).toLocaleDateString() : '',
+    ]);
+    
+    const csvContent = [
+      csvHeaders.join(','),
+      ...csvRows.map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(','))
+    ].join('\n');
+    
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    link.setAttribute('download', `test-cases-export-${new Date().toISOString().slice(0, 10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    
+    toast.success(`${selectedIds.size} test cases exported`);
+    setSelectedIds(new Set());
+  }, [selectedIds, cases]);
+
+  const handleAddSelectedToCycle = useCallback((cycleId: string) => {
+    if (selectedIds.size > 0 && projectId) {
+      addToCycle.mutate({ 
+        case_ids: Array.from(selectedIds), 
+        cycle_id: cycleId,
+        project_id: projectId 
+      }, {
+        onSuccess: () => {
+          setSelectedIds(new Set());
+        },
+      });
+    }
+  }, [selectedIds, addToCycle, projectId]);
 
   const handleCreateFolder = useCallback((parentId: string | null, name: string) => {
     if (!projectId) return;

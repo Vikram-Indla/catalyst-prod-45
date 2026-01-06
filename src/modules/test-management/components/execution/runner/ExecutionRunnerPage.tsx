@@ -8,6 +8,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { useTestCycle } from '../../../hooks/useCycles';
 import { useTestRun, useCreateRun, useUpdateStepResult, useCompleteRun, useBulkUpdateSteps } from '../../../hooks/useExecution';
+import { useCreateDefect } from '../../../hooks/useDefects';
 import { useExecutionTimer } from '../hooks/useExecutionTimer';
 import { useExecutionKeyboard } from '../hooks/useExecutionKeyboard';
 import { ExecutionHeader } from './ExecutionHeader';
@@ -41,6 +42,7 @@ export function ExecutionRunnerPage() {
   const updateStep = useUpdateStepResult();
   const completeRun = useCompleteRun();
   const bulkUpdate = useBulkUpdateSteps();
+  const createDefect = useCreateDefect();
 
   // Current scope and position
   const currentScope = scope?.find(s => s.id === currentScopeId);
@@ -274,8 +276,30 @@ export function ExecutionRunnerPage() {
         expectedResult={currentStep?.step?.expected_result}
         actualResult=""
         onSubmit={async (data) => {
-          console.log('Defect data:', data);
-          toast.success('Defect logged successfully');
+          try {
+            await createDefect.mutateAsync({
+              project_id: cycle?.project_id || '',
+              title: data.title,
+              description: `${data.description}\n\n**Steps to Reproduce:**\n${data.stepsToReproduce}\n\n**Expected Result:**\n${data.expectedResult}\n\n**Actual Result:**\n${data.actualResult}`,
+              severity: data.severity as any,
+              linked_run_id: activeRunId || undefined,
+              linked_step_id: currentStep?.step_id,
+            });
+            
+            toast.success('Defect created and linked to test execution');
+            setDefectDialogOpen(false);
+            
+            // Mark current step as failed
+            if (currentStepIndex !== null && activeRunId && currentStep) {
+              await updateStep.mutateAsync({
+                runId: activeRunId,
+                stepId: currentStep.step_id,
+                data: { status: 'failed' },
+              });
+            }
+          } catch (error: any) {
+            toast.error(`Failed to create defect: ${error.message}`);
+          }
         }}
       />
     </div>

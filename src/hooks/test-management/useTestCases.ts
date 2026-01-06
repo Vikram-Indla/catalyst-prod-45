@@ -513,3 +513,57 @@ export function useBulkDeleteTestCases() {
     },
   });
 }
+
+export function useBulkCopyTestCases() {
+  const queryClient = useQueryClient();
+  const cloneCase = useCloneTestCase();
+
+  return useMutation({
+    mutationFn: async (input: { case_ids: string[]; folder_id: string | null; project_id: string }): Promise<void> => {
+      // Use the clone mutation for each case (it handles steps properly)
+      for (const caseId of input.case_ids) {
+        await cloneCase.mutateAsync({ 
+          id: caseId, 
+          project_id: input.project_id,
+        } as any);
+      }
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['tm-cases', variables.project_id] });
+      queryClient.invalidateQueries({ queryKey: ['tm-folders-with-counts', variables.project_id] });
+      toast.success(`Copied ${variables.case_ids.length} case(s)`);
+    },
+    onError: (error: Error) => {
+      toast.error(`Failed to copy cases: ${error.message}`);
+    },
+  });
+}
+
+export function useAddTestCasesToCycle() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (input: { case_ids: string[]; cycle_id: string; project_id: string }): Promise<void> => {
+      // Create cycle scope entries for each test case
+      const scopeEntries = input.case_ids.map(caseId => ({
+        cycle_id: input.cycle_id,
+        test_case_id: caseId,
+        current_status: 'not_run' as const,
+      }));
+
+      const { error } = await supabase
+        .from('tm_cycle_scope')
+        .insert(scopeEntries);
+
+      if (error) throw error;
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['tm-cycles'] });
+      queryClient.invalidateQueries({ queryKey: ['tm-cycle', variables.cycle_id] });
+      toast.success(`Added ${variables.case_ids.length} case(s) to cycle`);
+    },
+    onError: (error: Error) => {
+      toast.error(`Failed to add cases to cycle: ${error.message}`);
+    },
+  });
+}
