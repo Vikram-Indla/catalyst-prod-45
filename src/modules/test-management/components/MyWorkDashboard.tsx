@@ -191,22 +191,6 @@ export function MyWorkDashboard() {
 
   return (
     <div className="flex flex-col h-full -mx-6">
-      {/* Header Actions (title is in module header) */}
-      <div className="flex items-center justify-end px-6 py-3">
-        <div className="flex items-center gap-2">
-          <span className="text-xs text-muted-foreground">
-            Last updated: {new Date(dataUpdatedAt).toLocaleTimeString()}
-          </span>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleManualRefresh}
-            disabled={isRefreshing}
-          >
-            <RefreshCw className={cn('h-4 w-4', isRefreshing && 'animate-spin')} />
-          </Button>
-        </div>
-      </div>
 
       {/* Summary Cards */}
       <MyWorkSummaryCards
