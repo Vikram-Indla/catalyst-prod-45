@@ -722,8 +722,7 @@ const App = () => (
                 <Route path="cycles" element={<TestCyclesPage />} />
                 <Route path="cycles/:cycleId" element={<CycleDetailPage />} />
                 <Route path="defects" element={<TMDefectsPage />} />
-                <Route path="reports" element={<TMReportsPage />} />
-                <Route path="analytics" element={<AnalyticsDashboardPage />} />
+                <Route path="reports" element={<AnalyticsDashboardPage />} />
                 <Route path="settings" element={<TMSettingsPage />} />
               </Route>
               
