@@ -704,10 +704,32 @@ export function TMDefectsPage() {
         }}
         defect={editingDefect}
         teamMembers={(teamMembers || []).map(m => ({ id: m.id, full_name: m.full_name }))}
-        onSubmit={(data) => {
-          toast.success(editingDefect ? 'Defect updated' : 'Defect created');
-          setCreateModalOpen(false);
-          setEditingDefect(null);
+        onSubmit={async (data) => {
+          try {
+            if (editingDefect) {
+              await updateDefectMutation.mutateAsync({
+                id: editingDefect.id,
+                project_id: projectId!,
+                title: data.title,
+                description: data.description,
+                severity: mapSeverityToTM(data.severity as DefectSeverity),
+                status: data.status ? mapStatusToTM(data.status as DefectStatus) : undefined,
+                assigned_to: data.assigned_to,
+              });
+            } else {
+              await createDefectMutation.mutateAsync({
+                project_id: projectId!,
+                title: data.title,
+                description: data.description,
+                severity: mapSeverityToTM(data.severity as DefectSeverity),
+                assigned_to: data.assigned_to,
+              });
+            }
+            setCreateModalOpen(false);
+            setEditingDefect(null);
+          } catch (error: any) {
+            toast.error(`Failed to ${editingDefect ? 'update' : 'create'} defect: ${error.message}`);
+          }
         }}
         isLoading={createDefectMutation.isPending || updateDefectMutation.isPending}
       />
