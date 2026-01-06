@@ -391,7 +391,7 @@ function CompactKPITile({
       {/* Subtle chevron on hover - discoverable but restrained */}
       <ChevronRight 
         size={14} 
-        className="absolute top-2.5 right-2.5 opacity-0 group-hover:opacity-60 transition-opacity duration-150 text-gray-500 dark:text-gray-400" 
+        className="absolute top-2.5 right-2.5 opacity-0 group-hover:opacity-60 transition-opacity duration-150 text-[var(--fg-3)]" 
       />
     </button>
   );

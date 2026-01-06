@@ -101,17 +101,17 @@ export const TYPOGRAPHY = {
 
 export const TEXT_COLORS = {
   // Primary content - highest contrast, always readable
-  // Explicit grey scale for guaranteed visibility
+  // Uses CSS variable tokens for guaranteed theme consistency
   // ⚠️ KPI VALUES MUST use this — NEVER muted
-  primary: 'text-gray-900 dark:text-gray-100',
+  primary: 'text-[var(--fg-1)]',
   
   // Secondary-strong - labels, descriptors that must be readable
   // Darker than muted, used for card labels, status text
-  secondaryStrong: 'text-gray-700 dark:text-gray-300',
+  secondaryStrong: 'text-[var(--fg-2)]',
   
   // Secondary/muted content - supporting text, still clearly readable
   // Medium grey for both light and dark modes
-  muted: 'text-gray-500 dark:text-gray-400',
+  muted: 'text-[var(--fg-3)]',
 } as const;
 
 // ─────────────────────────────────────────────────

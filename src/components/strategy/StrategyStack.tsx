@@ -133,17 +133,17 @@ function getCoverageStatus(coverage: number): { color: string; label: string; ba
   if (safeCoverage >= 70) return { 
     color: 'var(--progress-success)', 
     label: 'Healthy',
-    badgeClass: 'bg-[rgba(13,148,136,0.08)] text-[#0d9488] border border-[rgba(13,148,136,0.2)]'
+    badgeClass: 'bg-[var(--success-bg)] text-[var(--success-fg)] border border-[var(--success-bd)]'
   };
   if (safeCoverage >= 40) return { 
     color: 'var(--progress-warning)', 
     label: 'At Risk',
-    badgeClass: 'bg-[rgba(217,119,6,0.08)] text-[#d97706] border border-[rgba(217,119,6,0.2)]'
+    badgeClass: 'bg-[var(--warning-bg)] text-[var(--warning-fg)] border border-[var(--warning-bd)]'
   };
   return { 
     color: 'var(--progress-danger)', 
     label: 'Critical',
-    badgeClass: 'bg-[rgba(239,68,68,0.08)] text-[#ef4444] border border-[rgba(239,68,68,0.2)]'
+    badgeClass: 'bg-[var(--danger-bg)] text-[var(--danger-fg)] border border-[var(--danger-bd)]'
   };
 }
 
@@ -675,7 +675,7 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
                               className={cn(
                                 TYPOGRAPHY.countBadge, 
                                 'inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded',
-                                'bg-[rgba(217,119,6,0.08)] text-[#d97706] border border-[rgba(217,119,6,0.2)]'
+                                'bg-[var(--warning-bg)] text-[var(--warning-fg)] border border-[var(--warning-bd)]'
                               )}
                             >
                               <AlertTriangle size={10} />
