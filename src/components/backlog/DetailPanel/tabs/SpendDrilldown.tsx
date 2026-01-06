@@ -69,10 +69,10 @@ export function SpendDrilldown({ type, acceptedSpend, forecastedSpend, estimated
             </div>
             
             {/* Summary Card */}
-            <div className="flex flex-col items-center justify-center p-4 rounded-lg" style={{ backgroundColor: '#36B37E' }}>
-              <div className="text-3xl font-bold text-white">${amount.toLocaleString()}</div>
-              <div className="text-sm text-white mt-1">based on {acceptedCount} accepted stories</div>
-              <div className="text-sm text-white mt-2 flex items-center gap-1">
+            <div className="flex flex-col items-center justify-center p-4 rounded-lg bg-success">
+              <div className="text-3xl font-bold text-success-foreground">${amount.toLocaleString()}</div>
+              <div className="text-sm text-success-foreground mt-1">based on {acceptedCount} accepted stories</div>
+              <div className="text-sm text-success-foreground mt-2 flex items-center gap-1">
                 <TrendingUp className="w-4 h-4" />
                 ${amount.toLocaleString()} in PI-5
               </div>
@@ -156,8 +156,7 @@ export function SpendDrilldown({ type, acceptedSpend, forecastedSpend, estimated
         const story = stories.find(s => s.id === hoveredStoryId);
         return story?.teamSprintName && (
           <div
-            className="fixed w-[320px] p-5 rounded-lg shadow-2xl z-[1100] left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
-            style={{ backgroundColor: '#172B4D', color: 'white' }}
+            className="fixed w-[320px] p-5 rounded-lg shadow-2xl z-[1100] left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-popover text-popover-foreground"
             onMouseEnter={() => setHoveredStoryId(story.id)}
             onMouseLeave={() => setHoveredStoryId(null)}
           >

@@ -259,8 +259,8 @@ export function ExecutiveSummaryCard({ snapshotId }: ExecutiveSummaryCardProps) 
             onClick={() => navigate('/enterprise/okr-hub')}
             isLoading={okrLoading}
 accentColor="bronze"
-            iconBgColor="rgba(245, 158, 11, 0.1)"
-            icon={<AlertTriangle size={16} style={{ color: '#f59e0b' }} />}
+            iconBgColor="hsl(var(--warning) / 0.1)"
+            icon={<AlertTriangle size={16} className="text-warning" />}
           />
           {/* Alignment Gaps - Amber */}
           <KPITile
@@ -270,8 +270,8 @@ accentColor="bronze"
             onClick={() => navigate('/enterprise/strategic-backlog')}
             isLoading={countsLoading}
             accentColor="bronze"
-            iconBgColor="rgba(245, 158, 11, 0.1)"
-            icon={<Target size={16} style={{ color: '#f59e0b' }} />}
+            iconBgColor="hsl(var(--warning) / 0.1)"
+            icon={<Target size={16} className="text-warning" />}
           />
           {/* Risk Exposure - Muted Red */}
           <KPITile
@@ -281,8 +281,8 @@ accentColor="bronze"
             onClick={() => navigate('/enterprise/risks')}
             isLoading={risksLoading}
             accentColor="red"
-            iconBgColor="rgba(184, 92, 92, 0.1)"
-            icon={<Shield size={16} style={{ color: '#B85C5C' }} />}
+            iconBgColor="hsl(var(--destructive) / 0.1)"
+            icon={<Shield size={16} className="text-destructive" />}
           />
         </div>
       </div>

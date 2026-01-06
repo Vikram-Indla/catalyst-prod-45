@@ -19,28 +19,15 @@ export function RoadmapTodayMarker({ position }: RoadmapTodayMarkerProps) {
       {/* Diamond indicator at top */}
       <div className="absolute -top-1 -translate-x-1/2">
         <div 
-          className="w-3 h-3 rotate-45 shadow-sm"
-          style={{ 
-            backgroundColor: '#2563eb',
-            border: '2px solid var(--background)'
-          }}
+          className="w-3 h-3 rotate-45 shadow-sm bg-primary border-2 border-background"
         />
       </div>
       
       {/* Vertical line - Catalyst blue */}
-      <div 
-        className="w-0.5 h-full"
-        style={{ backgroundColor: '#2563eb' }}
-      />
+      <div className="w-0.5 h-full bg-primary" />
       
       {/* Today label */}
-      <div 
-        className="absolute top-6 -translate-x-1/2 px-2 py-0.5 text-[10px] font-semibold rounded whitespace-nowrap"
-        style={{
-          backgroundColor: '#2563eb',
-          color: '#ffffff'
-        }}
-      >
+      <div className="absolute top-6 -translate-x-1/2 px-2 py-0.5 text-[10px] font-semibold rounded whitespace-nowrap bg-primary text-primary-foreground">
         Today
       </div>
     </div>

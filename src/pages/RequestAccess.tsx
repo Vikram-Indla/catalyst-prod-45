@@ -768,11 +768,10 @@ export default function RequestAccess() {
             onClick={() => navigate('/auth')}
           >
             <span 
-              className="font-semibold whitespace-nowrap"
-              style={{ fontSize: '24px', lineHeight: '1', letterSpacing: '-0.02em' }}
+              className="font-semibold whitespace-nowrap text-2xl leading-none tracking-tight"
             >
-              <span style={{ color: '#24292F' }}>Cata</span>
-              <span style={{ color: '#c69c6d' }}>lyst</span>
+              <span className="text-foreground">Cata</span>
+              <span className="text-brand-gold">lyst</span>
             </span>
           </div>
           

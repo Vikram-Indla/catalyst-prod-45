@@ -711,7 +711,7 @@ export function DependencyDetailsDrawer({ open, onClose, dependencyId }: Depende
                 Dependencies
               </span>
               <span className="text-[10px]" style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}>/</span>
-              <span className="text-[11px] font-semibold font-mono" style={{ color: '#2563eb' }}>
+              <span className="text-[11px] font-semibold font-mono text-primary">
                 {isEdit ? `DEP-${dependencyId?.slice(0, 4).toUpperCase()}` : 'New'}
               </span>
               {isEdit && (

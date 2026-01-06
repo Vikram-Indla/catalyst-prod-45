@@ -1044,7 +1044,7 @@ export default function CapacityPlannerPage() {
                         <span className="text-xs text-muted-foreground">Target: 100%</span>
                       </div>
                       {isOver && (
-                        <div className="flex items-center gap-2 mt-2 text-xs" style={{ color: '#d97706' }}>
+                        <div className="flex items-center gap-2 mt-2 text-xs text-warning">
                           <AlertTriangle className="h-3.5 w-3.5" />
                           Over-allocated by {total - 100}%
                         </div>
@@ -3210,10 +3210,9 @@ function LevelingView({ resources, recommendations }: { resources: ResourceMetri
     <div className="space-y-5">
       {/* AI Banner - Blue Gradient */}
       <div 
-        className="flex items-center gap-4 p-5 rounded-xl text-white"
-        style={{ background: 'linear-gradient(135deg, #2563eb 0%, #3b82f6 50%, #60a5fa 100%)' }}
+        className="flex items-center gap-4 p-5 rounded-xl text-primary-foreground bg-gradient-to-r from-primary via-primary/90 to-primary/70"
       >
-        <div className="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center shrink-0">
+        <div className="w-12 h-12 rounded-xl bg-primary-foreground/20 flex items-center justify-center shrink-0">
           <Cloud className="h-6 w-6" />
         </div>
         <div className="flex-1">
@@ -3225,7 +3224,7 @@ function LevelingView({ resources, recommendations }: { resources: ResourceMetri
         <Button 
           variant="secondary" 
           size="sm" 
-          className="gap-2 bg-white text-[#2563eb] hover:bg-white/90 font-semibold"
+          className="gap-2 bg-primary-foreground text-primary hover:bg-primary-foreground/90 font-semibold"
         >
           <Play className="h-4 w-4" />
           Start Wizard

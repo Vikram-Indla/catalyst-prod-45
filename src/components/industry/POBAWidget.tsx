@@ -99,10 +99,7 @@ const POBAWidget: React.FC<POBAWidgetProps> = ({
             <Users className="w-4 h-4 text-gray-400" />
             <span>Select Resources</span>
             {selectedResources.length > 0 && (
-              <span
-                className="px-2 py-0.5 rounded-full text-xs font-bold text-white"
-                style={{ backgroundColor: "#2563eb" }}
-              >
+              <span className="px-2 py-0.5 rounded-full text-xs font-bold text-primary-foreground bg-primary">
                 {selectedResources.length}
               </span>
             )}
@@ -178,8 +175,7 @@ const POBAWidget: React.FC<POBAWidgetProps> = ({
 
                       {/* Mini Avatar */}
                       <div
-                        className="w-8 h-8 rounded-lg flex items-center justify-center text-white text-xs font-bold"
-                        style={{ backgroundColor: isProductOwner ? "#2563eb" : "#0d9488" }}
+                        className={`w-8 h-8 rounded-lg flex items-center justify-center text-white text-xs font-bold ${isProductOwner ? "bg-primary" : "bg-success"}`}
                       >
                         {resource.initials}
                       </div>
@@ -191,11 +187,7 @@ const POBAWidget: React.FC<POBAWidgetProps> = ({
 
                       {/* Role Badge */}
                       <span
-                        className="text-[9px] px-1.5 py-0.5 rounded-full font-semibold"
-                        style={{
-                          backgroundColor: isProductOwner ? "rgba(37,99,235,0.1)" : "rgba(13,148,136,0.1)",
-                          color: isProductOwner ? "#2563eb" : "#0d9488",
-                        }}
+                        className={`text-[9px] px-1.5 py-0.5 rounded-full font-semibold ${isProductOwner ? "bg-primary/10 text-primary" : "bg-success/10 text-success"}`}
                       >
                         {isProductOwner ? "PO" : "BA"}
                       </span>
@@ -208,8 +200,7 @@ const POBAWidget: React.FC<POBAWidgetProps> = ({
               <div className="p-3 border-t border-gray-100 bg-gray-50">
                 <button
                   onClick={applySelection}
-                  className="w-full py-2 text-sm font-semibold text-white rounded-lg transition-all hover:opacity-90 active:scale-[0.98]"
-                  style={{ backgroundColor: "#2563eb" }}
+                  className="w-full py-2 text-sm font-semibold text-primary-foreground bg-primary rounded-lg transition-all hover:opacity-90 active:scale-[0.98]"
                 >
                   Apply Selection
                 </button>
@@ -236,8 +227,7 @@ const POBAWidget: React.FC<POBAWidgetProps> = ({
               >
                 {/* Avatar */}
                 <div
-                  className="w-12 h-12 rounded-xl flex items-center justify-center text-white text-sm font-bold flex-shrink-0 shadow-sm"
-                  style={{ backgroundColor: isProductOwner ? "#2563eb" : "#0d9488" }}
+                  className={`w-12 h-12 rounded-xl flex items-center justify-center text-white text-sm font-bold flex-shrink-0 shadow-sm ${isProductOwner ? "bg-primary" : "bg-success"}`}
                 >
                   {resource.initials}
                 </div>
@@ -250,11 +240,7 @@ const POBAWidget: React.FC<POBAWidgetProps> = ({
                       {resource.name}
                     </span>
                     <span
-                      className="text-[10px] px-2 py-0.5 rounded-full font-semibold flex-shrink-0"
-                      style={{
-                        backgroundColor: isProductOwner ? "rgba(37,99,235,0.1)" : "rgba(13,148,136,0.1)",
-                        color: isProductOwner ? "#2563eb" : "#0d9488",
-                      }}
+                      className={`text-[10px] px-2 py-0.5 rounded-full font-semibold flex-shrink-0 ${isProductOwner ? "bg-primary/10 text-primary" : "bg-success/10 text-success"}`}
                     >
                       {isProductOwner ? "PO" : "BA"}
                     </span>
@@ -271,8 +257,8 @@ const POBAWidget: React.FC<POBAWidgetProps> = ({
                     <span className="text-gray-500">
                       Implement: <strong className="text-gray-700">{resource.implement}</strong>
                     </span>
-                    <span className="text-gray-500">
-                      Closed: <strong style={{ color: "#0d9488" }}>{resource.closed}</strong>
+                    <span className="text-muted-foreground">
+                      Closed: <strong className="text-success">{resource.closed}</strong>
                     </span>
                   </div>
                 </div>
@@ -283,8 +269,7 @@ const POBAWidget: React.FC<POBAWidgetProps> = ({
                     {/* Header */}
                     <div className="flex items-center gap-3 mb-3">
                       <div
-                        className="w-10 h-10 rounded-xl flex items-center justify-center text-white text-sm font-bold"
-                        style={{ backgroundColor: isProductOwner ? "#2563eb" : "#0d9488" }}
+                        className={`w-10 h-10 rounded-xl flex items-center justify-center text-white text-sm font-bold ${isProductOwner ? "bg-primary" : "bg-success"}`}
                       >
                         {resource.initials}
                       </div>
