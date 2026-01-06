@@ -362,144 +362,175 @@
   .dark,
   [data-theme="dark"] {
     /* ═══════════════════════════════════════════════════════════════
-       DARK MODE — Bloomberg/Linear Grade Surface-Based Hierarchy
-       No white dividers. Borders via rgba(255,255,255, 0.035-0.06).
-       Visual hierarchy through depth, not lines.
+       CATALYST V5 AWARD-GRADE DARK MODE
+       Bloomberg/Linear/Notion grade: Premium, calm, intentional
+       No pure black, no pure white for body text
        ═══════════════════════════════════════════════════════════════ */
-    --background: 0 0% 10%;              /* #1a1a1a - softer than pure black */
-    --foreground: 0 0% 96%;              /* #f5f5f5 */
     
-    --card: 0 0% 13%;                    /* #212121 - 4% lift from background */
-    --card-foreground: 0 0% 96%;
+    /* === CORE SURFACES (Premium dark, no pure black) === */
+    --bg-app: #0E0F11;                   /* Deepest app background */
+    --bg-0: #111214;                     /* Base surface */
+    --bg-1: #141518;                     /* Cards, panels */
+    --bg-2: #181A1E;                     /* Raised surfaces */
+    --bg-3: #1D2026;                     /* Highest elevation */
     
-    --popover: 0 0% 16%;                 /* #292929 - 6% lift for elevated surfaces */
-    --popover-foreground: 0 0% 96%;
+    /* Shadcn surface mappings */
+    --background: 220 10% 7%;            /* #0E0F11 - app background */
+    --foreground: 0 0% 92%;              /* rgba(255,255,255,0.92) */
+    
+    --card: 220 8% 9%;                   /* #141518 - cards */
+    --card-foreground: 0 0% 92%;
+    
+    --popover: 220 8% 11%;               /* #181A1E - elevated */
+    --popover-foreground: 0 0% 92%;
     
     --primary: 217 91% 60%;              /* #3b82f6 blue - brand primary */
-    --primary-foreground: 0 0% 100%;     /* white text on blue */
+    --primary-foreground: 0 0% 100%;     /* pure white on buttons only */
     
-    --secondary: 0 0% 13%;               /* #212121 - matches card */
-    --secondary-foreground: 0 0% 96%;
+    --secondary: 220 8% 9%;              /* #141518 - matches card */
+    --secondary-foreground: 0 0% 92%;
     
-    --muted: 0 0% 15%;                   /* #262626 */
-    --muted-foreground: 0 0% 70%;        /* #b3b3b3 - increased for better dark mode contrast */
+    --muted: 220 8% 12%;                 /* #1D2026 */
+    --muted-foreground: 0 0% 74%;        /* rgba(255,255,255,0.74) */
     
     --accent: 217 91% 60%;               /* blue accent */
     --accent-foreground: 0 0% 100%;
     
-    --destructive: 0 62% 60%;
+    --destructive: 0 65% 55%;
     --destructive-foreground: 0 0% 98%;
     
-    /* ═══════════════════════════════════════════════════════════════
-       CATALYST DARK MODE GRAMMAR — BORDER DISCIPLINE
-       Borders at rgba(255,255,255, 0.035-0.06) — never white, never bright
-       ═══════════════════════════════════════════════════════════════ */
-    --border: 0 0% 100% / 0.045;         /* rgba(255,255,255,0.045) - ultra subtle */
-    --input: 0 0% 100% / 0.06;           /* rgba(255,255,255,0.06) - slightly visible for inputs */
-    --ring: 217 91% 60%;                 /* blue focus ring */
+    /* === TEXT LADDER (No pure white for body text) === */
+    --text-1: rgba(255,255,255,0.92);    /* Primary text */
+    --text-2: rgba(255,255,255,0.74);    /* Secondary text */
+    --text-3: rgba(255,255,255,0.56);    /* Muted/meta text */
+    --text-4: rgba(255,255,255,0.40);    /* Disabled text */
+    --text-inverse: #0a0a0a;             /* Text on light backgrounds */
     
-    /* Sidebar dark - surface elevation, not borders */
-    --sidebar-background: 0 0% 11%;      /* #1c1c1c - slight lift from page */
+    /* HSL versions for Tailwind */
+    --text-primary: 0 0% 92%;            /* rgba(255,255,255,0.92) */
+    --text-secondary: 0 0% 74%;          /* rgba(255,255,255,0.74) */
+    --text-tertiary: 0 0% 56%;           /* rgba(255,255,255,0.56) */
+    --text-muted: 0 0% 56%;              /* rgba(255,255,255,0.56) */
+    
+    /* === STROKES/BORDERS (Near-invisible) === */
+    --stroke-1: rgba(255,255,255,0.06);  /* Default borders */
+    --stroke-2: rgba(255,255,255,0.10);  /* Emphasized borders */
+    
+    --border: 0 0% 100% / 0.06;          /* rgba(255,255,255,0.06) */
+    --input: 0 0% 100% / 0.08;           /* Slightly visible for inputs */
+    --ring: 217 91% 60%;                 /* Blue focus ring */
+    
+    /* === BRAND ACCENT (Catalyst Gold — used sparingly) === */
+    --accent-gold: #C69C6D;
+    --accent-gold-hover: #B8905F;
+    --accent-gold-soft: rgba(198,156,109,0.14);
+    
+    /* === SIDEBAR (Green tint for active states) === */
+    --sidebar-background: 220 10% 8%;    /* #111214 */
     --sidebar-foreground: 0 0% 90%;
     --sidebar-primary: 217 91% 60%;      /* blue */
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 217 91% 60%;
+    --sidebar-accent: 120 26% 42%;       /* #5C7C5C green */
     --sidebar-accent-foreground: 0 0% 100%;
-    --sidebar-border: 0 0% 100% / 0.04;  /* ultra subtle sidebar border */
+    --sidebar-border: 0 0% 100% / 0.04;
     --sidebar-ring: 217 91% 60%;
-
-    /* ═══════════════════════════════════════════════════════════════
-       CATALYST SEMANTIC TOKENS — DARK MODE
-       ═══════════════════════════════════════════════════════════════ */
+    --sidebar-hover: rgba(92,124,92,0.08); /* Green tint hover */
+    --sidebar-active: rgba(92,124,92,0.12); /* Green tint active */
     
-    /* === TEXT TOKENS === */
-    --text-primary: 0 0% 96%;            /* #f5f5f5 */
-    --text-secondary: 0 0% 64%;          /* #a3a3a3 */
-    --text-tertiary: 0 0% 45%;           /* #737373 */
-    --text-muted: 0 0% 45%;              /* #737373 */
-    --text-inverse: 0 0% 4%;             /* #0a0a0a */
-    
-    /* === SURFACE TOKENS — 4-8% contrast delta between levels === */
-    --surface-0: 0 0% 13%;               /* #212121 - cards, dialogs (4% above page) */
-    --surface-1: 0 0% 10%;               /* #1a1a1a - page background */
-    --surface-2: 0 0% 12%;               /* #1f1f1f - subtle sections */
-    --surface-3: 0 0% 16%;               /* #292929 - muted containers (6% above page) */
-    --surface-elevated: 0 0% 18%;        /* #2e2e2e - popovers, dropdowns (8% above page) */
+    /* === SURFACE TOKENS (Semantic aliases) === */
+    --surface-0: 220 8% 9%;              /* #141518 - cards, dialogs */
+    --surface-1: 220 10% 7%;             /* #0E0F11 - page background */
+    --surface-2: 220 8% 11%;             /* #181A1E - subtle sections */
+    --surface-3: 220 8% 13%;             /* #1D2026 - muted containers */
+    --surface-elevated: 220 8% 15%;      /* #242730 - popovers, dropdowns */
     --surface-overlay: 0 0% 0%;          /* black base for overlays */
     
-    /* === BORDER TOKENS — Ultra-subtle, never bright === */
-    /* Catalyst Dark Mode Grammar: Borders must be darker/subtler than text */
-    --border-subtle: 0 0% 100% / 0.035;  /* rgba(255,255,255,0.035) - barely visible */
-    --border-default: 0 0% 100% / 0.05;  /* rgba(255,255,255,0.05) - subtle separator */
-    --border-strong: 0 0% 100% / 0.08;   /* rgba(255,255,255,0.08) - for emphasis only */
+    /* === BORDER TOKENS — Near-invisible === */
+    --border-subtle: 0 0% 100% / 0.04;   /* rgba(255,255,255,0.04) - barely visible */
+    --border-default: 0 0% 100% / 0.06;  /* rgba(255,255,255,0.06) - subtle separator */
+    --border-strong: 0 0% 100% / 0.10;   /* rgba(255,255,255,0.10) - for emphasis only */
     --border-focus: 217 91% 60%;         /* blue - only for focus states */
     
     /* === BRAND/ACTION TOKENS === */
     --brand-primary: 217 91% 60%;        /* #3b82f6 */
     --brand-primary-hover: 217 91% 68%;  /* #60a5fa */
     --brand-primary-foreground: 0 0% 100%;
-    --brand-teal: 173 58% 50%;           /* #14b8a6 */
-    --brand-teal-hover: 173 58% 58%;
+    --brand-teal: 120 26% 42%;           /* #5C7C5C - Catalyst secondary green */
+    --brand-teal-hover: 120 26% 48%;
+    --brand-gold: 34 40% 60%;            /* #C69C6D - Catalyst gold */
+    --brand-gold-hover: 34 40% 52%;      /* #B8905F */
     
-    /* === STATE TOKENS === */
-    --success: 173 58% 50%;              /* #14b8a6 teal */
+    /* === SEMANTIC TOKENS (Premium muted, NOT neon) === */
+    --danger: rgba(255,107,107,0.92);
+    --danger-soft: rgba(255,107,107,0.14);
+    --warning: rgba(255,196,107,0.92);
+    --warning-soft: rgba(255,196,107,0.14);
+    --success: rgba(92,124,92,0.92);     /* Uses Catalyst secondary-green */
+    --success-soft: rgba(92,124,92,0.16);
+    --info: rgba(96,165,250,0.92);
+    --info-soft: rgba(96,165,250,0.14);
+    
+    /* HSL versions for Tailwind compatibility */
+    --success-hsl: 120 26% 42%;          /* #5C7C5C */
+    --warning-hsl: 38 100% 71%;          /* #FFC46B - muted amber */
+    --danger-hsl: 0 100% 71%;            /* #FF6B6B - muted coral */
+    --info-hsl: 217 91% 68%;             /* #60A5FA - muted sky */
+    
     --success-foreground: 0 0% 100%;
-    --success-bg: 173 58% 50%;
-    --success-border: 173 58% 50%;
+    --success-bg: 120 26% 42%;
+    --success-border: 120 26% 42%;
     
-    --warning: 38 92% 50%;               /* #f59e0b */
     --warning-foreground: 0 0% 100%;
-    --warning-bg: 38 92% 50%;
-    --warning-border: 38 92% 50%;
+    --warning-bg: 38 100% 71%;
+    --warning-border: 38 100% 71%;
     
-    --danger: 0 72% 65%;                 /* #f87171 */
     --danger-foreground: 0 0% 100%;
-    --danger-bg: 0 72% 65%;
-    --danger-border: 0 72% 65%;
+    --danger-bg: 0 100% 71%;
+    --danger-border: 0 100% 71%;
     
-    --info: 217 91% 60%;                 /* #3b82f6 */
     --info-foreground: 0 0% 100%;
-    --info-bg: 217 91% 60%;
-    --info-border: 217 91% 60%;
+    --info-bg: 217 91% 68%;
+    --info-border: 217 91% 68%;
     
     /* === FOCUS & OVERLAY TOKENS === */
     --focus-ring: 217 91% 60%;
     --overlay: 0 0% 0%;
     
-    /* === SHADOW TOKENS === */
+    /* === SHADOW TOKENS (Stronger for dark mode) === */
     --shadow-color: 0 0% 0%;
-    --shadow-elev-1: 0 1px 3px hsl(0 0% 0% / 0.30), 0 1px 2px hsl(0 0% 0% / 0.20);
-    --shadow-elev-2: 0 4px 12px hsl(0 0% 0% / 0.40), 0 2px 4px hsl(0 0% 0% / 0.30);
-    --shadow-elev-3: 0 8px 24px hsl(0 0% 0% / 0.50), 0 4px 8px hsl(0 0% 0% / 0.35);
-    --shadow-brand: 0 4px 12px hsl(217 91% 60% / 0.20);
+    --shadow-elev-1: 0 1px 3px hsl(0 0% 0% / 0.40), 0 1px 2px hsl(0 0% 0% / 0.30);
+    --shadow-elev-2: 0 4px 12px hsl(0 0% 0% / 0.50), 0 2px 4px hsl(0 0% 0% / 0.40);
+    --shadow-elev-3: 0 8px 24px hsl(0 0% 0% / 0.60), 0 4px 8px hsl(0 0% 0% / 0.45);
+    --shadow-brand: 0 4px 12px hsl(217 91% 60% / 0.25);
 
     /* ═══════════════════════════════════════════════════════════════
-       LEGACY HEX MAPPINGS — DARK MODE
+       LEGACY HEX MAPPINGS — DARK MODE (Updated to V5)
        These are HEX values for direct var() usage without hsl()
        ═══════════════════════════════════════════════════════════════ */
     
-    /* Legacy surface tokens (HEX for direct use) — 4-8% surface elevation */
-    --bg: #1a1a1a;
-    --bg-workspace: #1a1a1a;
-    --bg-cream: #1a1a1a;
-    --bg-card: #212121;                     /* 4% lift from page */
-    --bg-sidebar: #1c1c1c;
-    --surface-bg: #1a1a1a;
-    --surface-subtle: #1e1e1e;
-    --surface-hover: rgba(255, 255, 255, 0.04);  /* 4% white overlay for hover */
-    --surface-active: rgba(59, 130, 246, 0.15);
-    --surface-card: #212121;
-    --surface-muted: #262626;
+    /* Legacy surface tokens (HEX for direct use) — V5 surfaces */
+    --bg: #0E0F11;
+    --bg-workspace: #0E0F11;
+    --bg-cream: #0E0F11;
+    --bg-card: #141518;
+    --bg-sidebar: #111214;
+    --surface-bg: #0E0F11;
+    --surface-subtle: #141518;
+    --surface-hover: rgba(255, 255, 255, 0.04);
+    --surface-active: rgba(92, 124, 92, 0.12);   /* Green tint active */
+    --surface-card: #141518;
+    --surface-muted: #181A1E;
     
-    /* Legacy text tokens (HEX for direct use) */
-    --text-1: #f5f5f5;
-    --text-2: #d4d4d4;
-    --text-3: #b3b3b3;
-    --text-4: #8a8a8a;
-    --text-secondary-strong: #bfbfbf;
+    /* Legacy text tokens (HEX for direct use) — V5 text ladder */
+    --text-1-hex: rgba(255,255,255,0.92);
+    --text-2-hex: rgba(255,255,255,0.74);
+    --text-3-hex: rgba(255,255,255,0.56);
+    --text-4-hex: rgba(255,255,255,0.40);
+    --text-secondary-strong: rgba(255,255,255,0.74);
     
     /* Icon tokens (HEX) */
-    --icon-default: #b3b3b3;
+    --icon-default: rgba(255,255,255,0.74);
+    --icon-muted: rgba(255,255,255,0.56);
     --icon-muted: #8a8a8a;
     
     /* ═══════════════════════════════════════════════════════════════
@@ -587,66 +618,70 @@
     --table-empty-text: #a3a3a3;            /* text-secondary */
     
     /* ═══════════════════════════════════════════════════════════════
-       CATALYST V5 SEMANTIC COLOR SYSTEM — PREMIUM DARK MODE
+       CATALYST V5 SEMANTIC COLOR SYSTEM — AWARD-GRADE DARK MODE
        Bloomberg/Linear/Notion grade: Muted, calm, intentional
-       No neon colors. Semantic chips use tinted backgrounds.
+       Semantic meaning via chips/indicators; body text stays in text ladder
        ═══════════════════════════════════════════════════════════════ */
     
-    /* === SEMANTIC TEXT TOKENS (Premium, readable) === */
-    /* These replace neon text-red-400, text-orange-400, etc. */
-    --sem-danger: #e57373;              /* Muted coral - not neon red */
-    --sem-warning: #ffb74d;             /* Muted amber - not neon orange */
-    --sem-success: #4db6ac;             /* Muted teal - not neon green */
-    --sem-info: #64b5f6;                /* Muted sky - not neon blue */
-    --sem-critical: #ef9a9a;            /* Softer than danger for extreme states */
-    --sem-blocked: #e57373;             /* Same as danger */
-    --sem-overdue: #e57373;             /* Same as danger */
-    --sem-high: #ffb74d;                /* Warning tone for high priority */
-    --sem-medium: #90a4ae;              /* Neutral for medium priority */
-    --sem-low: #78909c;                 /* Muted gray-blue for low */
-    --sem-done: #4db6ac;                /* Success tone */
+    /* === SEMANTIC TEXT TOKENS (Premium, muted — NOT neon) === */
+    --sem-danger: rgba(255,107,107,0.92);      /* Muted coral */
+    --sem-warning: rgba(255,196,107,0.92);     /* Muted amber */
+    --sem-success: rgba(92,124,92,0.92);       /* Catalyst secondary-green */
+    --sem-info: rgba(96,165,250,0.92);         /* Muted sky */
+    --sem-critical: rgba(255,107,107,0.92);    /* Same as danger */
+    --sem-blocked: rgba(255,107,107,0.92);     /* Same as danger */
+    --sem-overdue: rgba(255,107,107,0.92);     /* Same as danger */
+    --sem-high: rgba(255,196,107,0.92);        /* Warning tone for high priority */
+    --sem-medium: rgba(255,255,255,0.56);      /* Uses text-3 */
+    --sem-low: rgba(255,255,255,0.40);         /* Uses text-4 */
+    --sem-done: rgba(92,124,92,0.92);          /* Success tone */
     
     /* === SEMANTIC BACKGROUND TOKENS (Tinted chips, subtle) === */
-    --sem-danger-bg: rgba(229, 115, 115, 0.12);
-    --sem-warning-bg: rgba(255, 183, 77, 0.12);
-    --sem-success-bg: rgba(77, 182, 172, 0.12);
-    --sem-info-bg: rgba(100, 181, 246, 0.12);
-    --sem-critical-bg: rgba(239, 154, 154, 0.15);
-    --sem-blocked-bg: rgba(229, 115, 115, 0.12);
-    --sem-overdue-bg: rgba(229, 115, 115, 0.12);
-    --sem-high-bg: rgba(255, 183, 77, 0.12);
-    --sem-medium-bg: rgba(144, 164, 174, 0.12);
-    --sem-low-bg: rgba(120, 144, 156, 0.12);
-    --sem-done-bg: rgba(77, 182, 172, 0.12);
+    --sem-danger-bg: rgba(255,107,107,0.14);
+    --sem-warning-bg: rgba(255,196,107,0.14);
+    --sem-success-bg: rgba(92,124,92,0.16);
+    --sem-info-bg: rgba(96,165,250,0.14);
+    --sem-critical-bg: rgba(255,107,107,0.16);
+    --sem-blocked-bg: rgba(255,107,107,0.14);
+    --sem-overdue-bg: rgba(255,107,107,0.14);
+    --sem-high-bg: rgba(255,196,107,0.14);
+    --sem-medium-bg: rgba(255,255,255,0.06);
+    --sem-low-bg: rgba(255,255,255,0.04);
+    --sem-done-bg: rgba(92,124,92,0.16);
     
     /* === SEMANTIC BORDER TOKENS (For chips with borders) === */
-    --sem-danger-border: rgba(229, 115, 115, 0.30);
-    --sem-warning-border: rgba(255, 183, 77, 0.30);
-    --sem-success-border: rgba(77, 182, 172, 0.30);
-    --sem-info-border: rgba(100, 181, 246, 0.30);
-    --sem-critical-border: rgba(239, 154, 154, 0.35);
+    --sem-danger-border: rgba(255,107,107,0.30);
+    --sem-warning-border: rgba(255,196,107,0.30);
+    --sem-success-border: rgba(92,124,92,0.35);
+    --sem-info-border: rgba(96,165,250,0.30);
+    --sem-critical-border: rgba(255,107,107,0.35);
+    
+    /* === BRAND ACCENT TOKENS (Catalyst Gold — used sparingly) === */
+    --accent-text: #C69C6D;
+    --accent-bg: rgba(198,156,109,0.14);
+    --accent-border: rgba(198,156,109,0.30);
     
     /* Link colors (HSL triplets for hsl() usage) */
     --link-color: 217 91% 70%;
     --link-color-hover: 217 91% 78%;
     
-    /* Status colors (HEX for direct use) - Premium muted versions */
-    --status-success: #4db6ac;
-    --status-success-light: #80cbc4;
-    --status-success-bg: rgba(77, 182, 172, 0.12);
-    --status-success-bg-hover: rgba(77, 182, 172, 0.18);
-    --status-success-border: rgba(77, 182, 172, 0.30);
+    /* Status colors (HEX for direct use) - V5 Premium versions */
+    --status-success: rgba(92,124,92,0.92);
+    --status-success-light: rgba(92,124,92,1);
+    --status-success-bg: rgba(92,124,92,0.16);
+    --status-success-bg-hover: rgba(92,124,92,0.22);
+    --status-success-border: rgba(92,124,92,0.35);
     
-    --status-warning: #ffb74d;
-    --status-warning-bg: rgba(255, 183, 77, 0.12);
-    --status-warning-border: rgba(255, 183, 77, 0.30);
+    --status-warning: rgba(255,196,107,0.92);
+    --status-warning-bg: rgba(255,196,107,0.14);
+    --status-warning-border: rgba(255,196,107,0.30);
     
-    --status-info: #64b5f6;
-    --status-info-bg: rgba(100, 181, 246, 0.12);
-    --status-info-border: rgba(100, 181, 246, 0.30);
+    --status-info: rgba(96,165,250,0.92);
+    --status-info-bg: rgba(96,165,250,0.14);
+    --status-info-border: rgba(96,165,250,0.30);
     
-    --status-muted: #90a4ae;
-    --status-muted-bg: rgba(144, 164, 174, 0.12);
+    --status-muted: rgba(255,255,255,0.56);
+    --status-muted-bg: rgba(255,255,255,0.06);
     --status-muted-border: rgba(144, 164, 174, 0.30);
     
     --status-danger: #e57373;
@@ -2320,4 +2355,185 @@
 [data-theme="dark"] svg.text-sky-400,
 [data-theme="dark"] svg.text-sky-500 {
   color: var(--sem-info) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   CATALYST V5 — TEXT-WHITE NEUTRALIZATION
+   Prevent pure white body text; use text ladder instead
+   Exception: text on primary buttons (--text-inverse allowed)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Neutralize text-white to text-1 (92% white) for body content */
+.dark .text-white:not(button *):not([class*="btn"] *):not([class*="Button"] *),
+[data-theme="dark"] .text-white:not(button *):not([class*="btn"] *):not([class*="Button"] *) {
+  color: var(--text-1) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   CATALYST V5 — GLOBAL TEXT LADDER ENFORCEMENT
+   All neutral grays map to proper text hierarchy
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* text-gray-100/200 → text-1 (primary) */
+.dark .text-gray-100,
+.dark .text-gray-200,
+.dark .text-slate-100,
+.dark .text-slate-200,
+[data-theme="dark"] .text-gray-100,
+[data-theme="dark"] .text-gray-200,
+[data-theme="dark"] .text-slate-100,
+[data-theme="dark"] .text-slate-200 {
+  color: var(--text-1) !important;
+}
+
+/* text-gray-300 → text-2 (secondary) */
+.dark .text-gray-300,
+.dark .text-slate-300,
+.dark .text-neutral-300,
+[data-theme="dark"] .text-gray-300,
+[data-theme="dark"] .text-slate-300,
+[data-theme="dark"] .text-neutral-300 {
+  color: var(--text-2) !important;
+}
+
+/* text-gray-400/500 → text-3 (muted) */
+.dark .text-gray-400,
+.dark .text-gray-500,
+.dark .text-slate-400,
+.dark .text-slate-500,
+.dark .text-neutral-400,
+.dark .text-neutral-500,
+[data-theme="dark"] .text-gray-400,
+[data-theme="dark"] .text-gray-500,
+[data-theme="dark"] .text-slate-400,
+[data-theme="dark"] .text-slate-500,
+[data-theme="dark"] .text-neutral-400,
+[data-theme="dark"] .text-neutral-500 {
+  color: var(--text-3) !important;
+}
+
+/* text-gray-600+ → text-4 (disabled) */
+.dark .text-gray-600,
+.dark .text-gray-700,
+.dark .text-slate-600,
+.dark .text-slate-700,
+[data-theme="dark"] .text-gray-600,
+[data-theme="dark"] .text-gray-700,
+[data-theme="dark"] .text-slate-600,
+[data-theme="dark"] .text-slate-700 {
+  color: var(--text-4) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   CATALYST V5 — SURFACE ENFORCEMENT
+   Ensure all bg-gray-* map to proper V5 surfaces
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* bg-gray-900/950 → bg-app */
+.dark .bg-gray-900,
+.dark .bg-gray-950,
+.dark .bg-slate-900,
+.dark .bg-slate-950,
+[data-theme="dark"] .bg-gray-900,
+[data-theme="dark"] .bg-gray-950,
+[data-theme="dark"] .bg-slate-900,
+[data-theme="dark"] .bg-slate-950 {
+  background-color: var(--bg-app) !important;
+}
+
+/* bg-gray-800 → bg-1 */
+.dark .bg-gray-800,
+.dark .bg-slate-800,
+[data-theme="dark"] .bg-gray-800,
+[data-theme="dark"] .bg-slate-800 {
+  background-color: var(--bg-1) !important;
+}
+
+/* bg-gray-700 → bg-2 */
+.dark .bg-gray-700,
+.dark .bg-slate-700,
+[data-theme="dark"] .bg-gray-700,
+[data-theme="dark"] .bg-slate-700 {
+  background-color: var(--bg-2) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   CATALYST V5 — BORDER ENFORCEMENT  
+   All gray borders map to stroke tokens
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.dark .border-gray-700,
+.dark .border-gray-800,
+.dark .border-slate-700,
+.dark .border-slate-800,
+[data-theme="dark"] .border-gray-700,
+[data-theme="dark"] .border-gray-800,
+[data-theme="dark"] .border-slate-700,
+[data-theme="dark"] .border-slate-800 {
+  border-color: var(--stroke-1) !important;
+}
+
+.dark .border-gray-600,
+.dark .border-slate-600,
+[data-theme="dark"] .border-gray-600,
+[data-theme="dark"] .border-slate-600 {
+  border-color: var(--stroke-2) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   CATALYST V5 — SEMANTIC CHIP ENFORCEMENT
+   Status pills/chips use semantic-soft backgrounds with semantic text
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* High priority → Warning chip */
+.dark [data-priority="high"],
+.dark [data-status="high"],
+[data-theme="dark"] [data-priority="high"],
+[data-theme="dark"] [data-status="high"] {
+  background-color: var(--sem-warning-bg) !important;
+  color: var(--sem-warning) !important;
+}
+
+/* Critical/Blocked → Danger chip */
+.dark [data-priority="critical"],
+.dark [data-status="critical"],
+.dark [data-status="blocked"],
+[data-theme="dark"] [data-priority="critical"],
+[data-theme="dark"] [data-status="critical"],
+[data-theme="dark"] [data-status="blocked"] {
+  background-color: var(--sem-danger-bg) !important;
+  color: var(--sem-danger) !important;
+}
+
+/* Done/Completed → Success chip */
+.dark [data-status="done"],
+.dark [data-status="completed"],
+.dark [data-status="approved"],
+[data-theme="dark"] [data-status="done"],
+[data-theme="dark"] [data-status="completed"],
+[data-theme="dark"] [data-status="approved"] {
+  background-color: var(--sem-success-bg) !important;
+  color: var(--sem-success) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   CATALYST V5 — SIDEBAR GREEN TINT (Preserved per brand spec)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.dark [class*="sidebar"] [class*="hover"],
+.dark [class*="Sidebar"] [class*="hover"],
+[data-theme="dark"] [class*="sidebar"] [class*="hover"],
+[data-theme="dark"] [class*="Sidebar"] [class*="hover"] {
+  background-color: var(--sidebar-hover) !important;
+}
+
+.dark [class*="sidebar"] [class*="active"],
+.dark [class*="sidebar"] [aria-current="page"],
+.dark [class*="Sidebar"] [class*="active"],
+.dark [class*="Sidebar"] [aria-current="page"],
+[data-theme="dark"] [class*="sidebar"] [class*="active"],
+[data-theme="dark"] [class*="sidebar"] [aria-current="page"],
+[data-theme="dark"] [class*="Sidebar"] [class*="active"],
+[data-theme="dark"] [class*="Sidebar"] [aria-current="page"] {
+  background-color: var(--sidebar-active) !important;
 }

@@ -31,13 +31,34 @@ export default {
          CATALYST V5 COLOR SYSTEM — All semantic tokens mapped
          ═══════════════════════════════════════════════════════════════ */
       colors: {
-        /* === SEMANTIC TEXT COLORS === */
+        /* ═══════════════════════════════════════════════════════════════
+           CATALYST V5 — AWARD-GRADE TOKEN SYSTEM
+           ═══════════════════════════════════════════════════════════════ */
+        
+        /* === V5 SURFACE TOKENS === */
+        "bg-app": "var(--bg-app)",
+        "bg-0": "var(--bg-0)",
+        "bg-1": "var(--bg-1)",
+        "bg-2": "var(--bg-2)",
+        "bg-3": "var(--bg-3)",
+        
+        /* === V5 TEXT LADDER === */
+        "text-1": "var(--text-1)",
+        "text-2": "var(--text-2)",
+        "text-3": "var(--text-3)",
+        "text-4": "var(--text-4)",
+        
+        /* === V5 STROKE TOKENS === */
+        "stroke-1": "var(--stroke-1)",
+        "stroke-2": "var(--stroke-2)",
+        
+        /* === SEMANTIC TEXT COLORS (HSL versions) === */
         text: {
           primary: "hsl(var(--text-primary))",
           secondary: "hsl(var(--text-secondary))",
           tertiary: "hsl(var(--text-tertiary))",
           muted: "hsl(var(--text-muted))",
-          inverse: "hsl(var(--text-inverse))",
+          inverse: "var(--text-inverse)",
         },
         
         /* === SEMANTIC SURFACE COLORS === */
@@ -48,7 +69,6 @@ export default {
           3: "hsl(var(--surface-3))",
           elevated: "hsl(var(--surface-elevated))",
           overlay: "hsl(var(--surface-overlay))",
-          // Legacy HEX vars (used directly via var())
           card: "var(--surface-card)",
           muted: "var(--surface-muted)",
           subtle: "var(--surface-subtle)",
@@ -70,6 +90,11 @@ export default {
         "brand-teal": {
           DEFAULT: "hsl(var(--brand-teal))",
           hover: "hsl(var(--brand-teal-hover))",
+        },
+        "brand-gold": {
+          DEFAULT: "var(--accent-gold)",
+          hover: "var(--accent-gold-hover)",
+          soft: "var(--accent-gold-soft)",
         },
         
         /* === STATE COLORS === */
