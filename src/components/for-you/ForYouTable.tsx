@@ -171,7 +171,7 @@ export function ForYouTable({
 
   if (groups.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-16 border border-border rounded-lg bg-surface-0">
+      <div className="flex flex-col items-center justify-center py-16 border border-border/30 dark:border-border/20 rounded-lg bg-surface-0">
         <div className="w-14 h-14 bg-surface-1 rounded-xl flex items-center justify-center mb-4">
           <span className="text-2xl">📋</span>
         </div>
@@ -188,7 +188,7 @@ export function ForYouTable({
       ref={tableRef}
       tabIndex={0}
       className={cn(
-        "border border-border rounded-lg overflow-hidden outline-none",
+        "border border-border/30 dark:border-border/20 rounded-lg overflow-hidden outline-none",
         "focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2"
       )}
     >
