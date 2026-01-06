@@ -336,6 +336,8 @@ export function useEnvironments(projectId: string | null) {
       return (data || []).map(e => e.name) as string[];
     },
     enabled: !!projectId,
+    staleTime: 60000, // 1 minute - environments rarely change
+    gcTime: 5 * 60 * 1000, // 5 minutes cache
   });
 }
 

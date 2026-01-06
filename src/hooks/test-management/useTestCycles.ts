@@ -131,7 +131,8 @@ export function useTestCycles(projectId: string | undefined, filters?: CycleFilt
         .from('tm_test_cycles')
         .select('*')
         .eq('project_id', projectId)
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: false })
+        .limit(100); // Add pagination limit
 
       // Apply filters
       if (filters?.status) {
@@ -161,6 +162,8 @@ export function useTestCycles(projectId: string | undefined, filters?: CycleFilt
       return (data || []).map(mapDbRowToTMCycle);
     },
     enabled: !!projectId,
+    staleTime: 30000, // 30 seconds - prevent unnecessary refetches
+    gcTime: 5 * 60 * 1000, // 5 minutes cache
   });
 }
 
