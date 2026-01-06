@@ -11,7 +11,7 @@ const Checkbox = React.forwardRef<
   <CheckboxPrimitive.Root
     ref={ref}
     className={cn(
-      "peer h-4 w-4 shrink-0 rounded-sm border border-input text-foreground ring-offset-background",
+      "peer h-4 w-4 shrink-0 rounded-sm border border-border/50 dark:border-border/30 text-foreground ring-offset-background",
       // NOTE: bg-background is globally overridden with !important in index.css;
       // so we only apply it in the unchecked state to avoid overriding checked styling.
       "data-[state=unchecked]:bg-background",

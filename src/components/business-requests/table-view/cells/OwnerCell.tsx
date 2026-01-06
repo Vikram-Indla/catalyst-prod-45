@@ -22,11 +22,11 @@ export function OwnerCell({ name }: OwnerCellProps) {
       <div className="flex items-center gap-2">
         <div className={cn(
           "w-7 h-7 rounded-full border-2 border-dashed flex items-center justify-center",
-          "border-gray-300 dark:border-gray-500"
+          "border-border/50 dark:border-border/30"
         )}>
-          <Plus className="h-3 w-3 text-gray-400 dark:text-gray-500" />
+          <Plus className="h-3 w-3 text-muted-foreground" />
         </div>
-        <span className="text-sm text-gray-400 dark:text-gray-500 italic">
+        <span className="text-sm text-muted-foreground italic">
           Unassigned
         </span>
       </div>
@@ -51,7 +51,7 @@ export function OwnerCell({ name }: OwnerCellProps) {
             </div>
             <span className={cn(
               "text-sm truncate max-w-[100px]",
-              "text-gray-900 dark:text-gray-100"
+              "text-foreground"
             )}>
               {name}
             </span>

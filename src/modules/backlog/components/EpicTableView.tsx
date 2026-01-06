@@ -480,7 +480,7 @@ export function EpicTableView({
                             onCheckedChange={() => toggleAll()}
                             className={cn(
                               "data-[state=checked]:bg-[var(--brand-gold)] data-[state=checked]:border-[var(--brand-gold)]",
-                              "border-gray-300 dark:border-gray-500 dark:bg-[#262626]"
+                              "border-border/50 dark:border-border/30 dark:bg-[#262626]"
                             )}
                           />
                         ) : (

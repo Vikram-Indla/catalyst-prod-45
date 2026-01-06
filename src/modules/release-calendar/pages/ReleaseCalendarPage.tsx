@@ -54,8 +54,8 @@ export default function ReleaseCalendarPage() {
     <div className="flex items-center justify-between w-full">
       <div className="flex items-center gap-3">
         <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v as ChangeCardStatus | 'all')}>
-          <SelectTrigger className="w-48 h-8 text-xs bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700">
-            <Filter className="w-3 h-3 mr-2 text-gray-500 dark:text-gray-400" />
+          <SelectTrigger className="w-48 h-8 text-xs bg-card border-border/50 dark:border-border/30">
+            <Filter className="w-3 h-3 mr-2 text-muted-foreground" />
             <SelectValue placeholder="Status" />
           </SelectTrigger>
           <SelectContent>
@@ -67,7 +67,7 @@ export default function ReleaseCalendarPage() {
         </Select>
         
         <Select value={approvedFilter} onValueChange={(v) => setApprovedFilter(v as ApprovedFilter)}>
-          <SelectTrigger className="w-36 h-8 text-xs bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700">
+          <SelectTrigger className="w-36 h-8 text-xs bg-card border-border/50 dark:border-border/30">
             <SelectValue placeholder="Approved" />
           </SelectTrigger>
           <SelectContent>
@@ -78,7 +78,7 @@ export default function ReleaseCalendarPage() {
         </Select>
         
         <Select value={complianceFilter} onValueChange={(v) => setComplianceFilter(v as ComplianceFilter)}>
-          <SelectTrigger className="w-40 h-8 text-xs bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700">
+          <SelectTrigger className="w-40 h-8 text-xs bg-card border-border/50 dark:border-border/30">
             <SelectValue placeholder="Compliance" />
           </SelectTrigger>
           <SelectContent>
@@ -94,7 +94,7 @@ export default function ReleaseCalendarPage() {
           variant="outline"
           size="sm"
           onClick={() => setSelectedDate(new Date().toISOString().split('T')[0])}
-          className="border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300"
+          className="border-border/50 dark:border-border/30 text-foreground"
         >
           <CalendarDays className="w-4 h-4 mr-2" />
           Plan Day
@@ -112,7 +112,7 @@ export default function ReleaseCalendarPage() {
   );
 
   return (
-    <div className="h-full flex flex-col bg-white dark:bg-[#0a0a0a]">
+    <div className="h-full flex flex-col bg-background">
       <PageHeader
         title="Release Calendar"
         toolbar={toolbar}
@@ -124,7 +124,7 @@ export default function ReleaseCalendarPage() {
           onValueChange={(v) => setActiveTab(v as typeof activeTab)}
           className="flex-1 flex flex-col"
         >
-          <div className="border-b border-gray-200 dark:border-gray-700 px-6">
+          <div className="border-b border-border/30 dark:border-border/20 px-6">
             <TabsList className="h-10 bg-transparent">
               <TabsTrigger 
                 value="calendar" 
@@ -224,9 +224,9 @@ export default function ReleaseCalendarPage() {
       
       {/* Create Change Dialog */}
       <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
-        <DialogContent className="max-w-lg bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700">
+        <DialogContent className="max-w-lg bg-card border-border/50 dark:border-border/30">
           <DialogHeader>
-            <DialogTitle className="text-gray-900 dark:text-gray-100">Create Change</DialogTitle>
+            <DialogTitle className="text-foreground">Create Change</DialogTitle>
           </DialogHeader>
           <CreateChangeForm 
             defaultDate={createForDate || undefined}
