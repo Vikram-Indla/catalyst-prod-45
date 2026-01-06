@@ -3446,6 +3446,124 @@
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
+   CATALYST V5 — TEXT-WHITE OPACITY OVERRIDE
+   Convert text-white/XX patterns to proper tokens
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* text-white/90+ → text-1 (primary) */
+.dark [class*="text-white\\/9"],
+.dark [class*="text-white\\/8"],
+[data-theme="dark"] [class*="text-white\\/9"],
+[data-theme="dark"] [class*="text-white\\/8"] {
+  color: var(--fg-1) !important;
+}
+
+/* text-white/70-80 → text-2 (secondary) */
+.dark [class*="text-white\\/7"],
+.dark [class*="text-white\\/6"],
+[data-theme="dark"] [class*="text-white\\/7"],
+[data-theme="dark"] [class*="text-white\\/6"] {
+  color: var(--fg-2) !important;
+}
+
+/* text-white/40-60 → text-3 (muted) - MINIMUM for readability */
+.dark [class*="text-white\\/5"],
+.dark [class*="text-white\\/4"],
+[data-theme="dark"] [class*="text-white\\/5"],
+[data-theme="dark"] [class*="text-white\\/4"] {
+  color: var(--fg-3) !important;
+}
+
+/* text-white/10-30 → text-4 (disabled only) */
+.dark [class*="text-white\\/3"],
+.dark [class*="text-white\\/2"],
+.dark [class*="text-white\\/1"],
+[data-theme="dark"] [class*="text-white\\/3"],
+[data-theme="dark"] [class*="text-white\\/2"],
+[data-theme="dark"] [class*="text-white\\/1"] {
+  color: var(--fg-4) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   CATALYST V5 — BG-WHITE OPACITY OVERRIDE
+   Convert bg-white/XX patterns to proper surface tokens
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.dark [class*="bg-white\\/"],
+[data-theme="dark"] [class*="bg-white\\/"] {
+  background-color: var(--hover) !important;
+}
+
+/* Specific hover patterns */
+.dark [class*="hover\\:bg-white\\/5"]:hover,
+.dark [class*="hover\\:bg-white\\/10"]:hover,
+[data-theme="dark"] [class*="hover\\:bg-white\\/5"]:hover,
+[data-theme="dark"] [class*="hover\\:bg-white\\/10"]:hover {
+  background-color: var(--hover) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   CATALYST V5 — BORDER-WHITE OVERRIDE
+   Never allow white borders in dark mode
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.dark [class*="border-white"],
+.dark [class*="ring-white"],
+[data-theme="dark"] [class*="border-white"],
+[data-theme="dark"] [class*="ring-white"] {
+  border-color: var(--border-subtle) !important;
+  --tw-ring-color: var(--border-subtle) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   LIGHT MODE — SEV/MUTED TEXT VISIBILITY FIX
+   Ensure SEV column, small stats, and muted labels are readable in light mode
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Boost muted text visibility in light mode */
+.text-muted-foreground {
+  color: hsl(0 0% 35%) !important;
+}
+
+/* SEV badge text must be readable */
+[class*="sev-"],
+[class*="severity-"],
+[data-severity] {
+  min-contrast: AA;
+}
+
+/* Light mode gray text boost (too light grays) */
+.text-gray-400,
+.text-slate-400,
+.text-zinc-400,
+.text-neutral-400 {
+  color: hsl(0 0% 45%) !important;
+}
+
+.text-gray-500,
+.text-slate-500,
+.text-zinc-500,
+.text-neutral-500 {
+  color: hsl(0 0% 38%) !important;
+}
+
+/* Table meta/stats in light mode */
+table .text-muted-foreground,
+table .text-gray-400,
+table .text-gray-500,
+[class*="Table"] .text-muted-foreground {
+  color: hsl(0 0% 35%) !important;
+}
+
+/* Badge/chip text readability in light mode */
+.badge,
+[class*="Badge"],
+[class*="Chip"],
+[class*="Pill"] {
+  font-weight: 500;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
    CATALYST V5 TOKEN REFERENCE SUMMARY
    ═══════════════════════════════════════════════════════════════════════════
    
