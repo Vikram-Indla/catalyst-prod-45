@@ -421,9 +421,49 @@ export type SettingsTab =
   | 'general'
   | 'team'
   | 'roles'
+  | 'security'
   | 'custom-fields'
+  | 'workflows'
+  | 'templates'
   | 'integrations'
   | 'notifications'
-  | 'audit-log'
   | 'api'
-  | 'danger';
+  | 'audit-log'
+  | 'usage-billing';
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Security Settings
+// ─────────────────────────────────────────────────────────────────────────────
+
+export interface SecuritySettings {
+  two_factor_required: boolean;
+  session_timeout_minutes: number;
+  ip_whitelist_enabled: boolean;
+  ip_whitelist: string[];
+  password_policy: {
+    min_length: number;
+    require_uppercase: boolean;
+    require_numbers: boolean;
+    require_symbols: boolean;
+  };
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Usage & Billing
+// ─────────────────────────────────────────────────────────────────────────────
+
+export interface UsageStats {
+  test_cases_count: number;
+  test_runs_count: number;
+  defects_count: number;
+  storage_used_mb: number;
+  api_calls_this_month: number;
+}
+
+export interface BillingInfo {
+  plan: 'free' | 'pro' | 'enterprise';
+  billing_cycle: 'monthly' | 'annual';
+  next_billing_date: string | null;
+  seats_used: number;
+  seats_available: number;
+}
