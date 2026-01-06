@@ -23,9 +23,9 @@ interface RoleDetailPermissionsModalProps {
 }
 
 const PERMISSION_LEVEL_STYLES: Record<string, string> = {
-  'Full': 'text-green-600 font-medium',
-  'View only': 'text-blue-600',
-  'Own only': 'text-amber-600',
+  'Full': 'text-[var(--sem-success)] font-medium',
+  'View only': 'text-[var(--sem-info)]',
+  'Own only': 'text-[var(--sem-warning)]',
   'None': 'text-muted-foreground',
 };
 

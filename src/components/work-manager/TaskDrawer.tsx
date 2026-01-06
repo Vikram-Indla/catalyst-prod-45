@@ -64,19 +64,19 @@ const recurrenceTypes: RecurrenceType[] = ['None', 'Daily', 'Weekly', 'Biweekly'
 
 // Status badge colors
 const statusColors: Record<TaskStatus, string> = {
-  'Backlog': 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300',
-  'Planned': 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300',
-  'In Progress': 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300',
-  'Waiting': 'bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300',
-  'Done': 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300',
+  'Backlog': 'bg-muted text-muted-foreground',
+  'Planned': 'bg-[var(--sem-info-bg)] text-[var(--sem-info)]',
+  'In Progress': 'bg-[var(--sem-warning-bg)] text-[var(--sem-warning)]',
+  'Waiting': 'bg-[var(--accent-bg)] text-[var(--accent-text)]',
+  'Done': 'bg-[var(--sem-success-bg)] text-[var(--sem-success)]',
 };
 
 // Priority colors
 const priorityColors: Record<Priority, { dot: string; text: string }> = {
-  'Low': { dot: 'bg-gray-400', text: 'text-gray-600' },
-  'Medium': { dot: 'bg-yellow-500', text: 'text-yellow-600' },
-  'High': { dot: 'bg-orange-500', text: 'text-orange-600' },
-  'Critical': { dot: 'bg-red-500', text: 'text-red-600' },
+  'Low': { dot: 'bg-[var(--sem-medium)]', text: 'text-[var(--sem-medium)]' },
+  'Medium': { dot: 'bg-[var(--sem-high)]', text: 'text-[var(--sem-high)]' },
+  'High': { dot: 'bg-[var(--sem-warning)]', text: 'text-[var(--sem-warning)]' },
+  'Critical': { dot: 'bg-[var(--sem-danger)]', text: 'text-[var(--sem-danger)]' },
 };
 
 // Team colors

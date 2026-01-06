@@ -38,9 +38,9 @@ export function PeopleRoster({
 
   const getStatusBadge = (status: 'over' | 'full' | 'under', label: string) => {
     const styles = {
-      over: 'bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300 border-red-300 dark:border-red-700',
-      full: 'bg-teal-100 dark:bg-teal-900/40 text-teal-700 dark:text-teal-300 border-teal-300 dark:border-teal-700',
-      under: 'bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300 border-amber-300 dark:border-amber-700',
+      over: 'bg-[var(--sem-danger-bg)] text-[var(--sem-danger)] border-[var(--sem-danger-border)]',
+      full: 'bg-[var(--sem-success-bg)] text-[var(--sem-success)] border-[var(--sem-success-border)]',
+      under: 'bg-[var(--sem-warning-bg)] text-[var(--sem-warning)] border-[var(--sem-warning-border)]',
     };
     return (
       <Badge variant="outline" className={cn("text-xs font-medium", styles[status])}>
@@ -125,9 +125,9 @@ export function PeopleRoster({
                 <td className="py-3 px-4 border-r border-border dark:border-[var(--border-subtle)]">
                   <span className={cn(
                     "text-sm font-medium",
-                    utilization > 100 ? "text-red-600 dark:text-red-400" : 
-                    utilization >= 80 ? "text-teal-600 dark:text-teal-400" : 
-                    "text-amber-600 dark:text-amber-400"
+                    utilization > 100 ? "text-[var(--sem-danger)]" : 
+                    utilization >= 80 ? "text-[var(--sem-success)]" : 
+                    "text-[var(--sem-warning)]"
                   )}>
                     {utilization}%
                   </span>

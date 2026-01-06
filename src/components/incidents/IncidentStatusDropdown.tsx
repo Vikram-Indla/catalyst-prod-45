@@ -19,14 +19,17 @@ interface IncidentStatusDropdownProps {
   onAssignToMe?: () => void;
 }
 
+/**
+ * Status config using Catalyst V5 semantic tokens - NO hardcoded colors
+ */
 const STATUS_CONFIG: Record<string, { label: string; bgColor: string; textColor: string }> = {
-  'open': { label: 'Open', bgColor: 'bg-blue-100', textColor: 'text-blue-700' },
-  'in-progress': { label: 'In Progress', bgColor: 'bg-orange-100', textColor: 'text-orange-700' },
-  'pending': { label: 'Pending', bgColor: 'bg-yellow-100', textColor: 'text-yellow-700' },
-  'resolved': { label: 'Resolved', bgColor: 'bg-green-100', textColor: 'text-green-700' },
-  'closed': { label: 'Closed', bgColor: 'bg-gray-100', textColor: 'text-gray-600' },
-  'reopened': { label: 'Reopened', bgColor: 'bg-red-100', textColor: 'text-red-700' },
-  'cancelled': { label: 'Cancelled', bgColor: 'bg-gray-200', textColor: 'text-gray-500' },
+  'open': { label: 'Open', bgColor: 'bg-[var(--sem-info-bg)]', textColor: 'text-[var(--sem-info)]' },
+  'in-progress': { label: 'In Progress', bgColor: 'bg-[var(--sem-warning-bg)]', textColor: 'text-[var(--sem-warning)]' },
+  'pending': { label: 'Pending', bgColor: 'bg-[var(--sem-high-bg)]', textColor: 'text-[var(--sem-high)]' },
+  'resolved': { label: 'Resolved', bgColor: 'bg-[var(--sem-success-bg)]', textColor: 'text-[var(--sem-success)]' },
+  'closed': { label: 'Closed', bgColor: 'bg-[var(--sem-medium-bg)]', textColor: 'text-[var(--sem-medium)]' },
+  'reopened': { label: 'Reopened', bgColor: 'bg-[var(--sem-danger-bg)]', textColor: 'text-[var(--sem-danger)]' },
+  'cancelled': { label: 'Cancelled', bgColor: 'bg-[var(--sem-low-bg)]', textColor: 'text-[var(--sem-low)]' },
 };
 
 // Define workflow transitions from each status
@@ -96,7 +99,7 @@ export function IncidentStatusDropdown({
           </PopoverTrigger>
           <PopoverContent 
             align="start" 
-            className="w-72 p-0 bg-white dark:bg-gray-900 border border-border shadow-lg rounded-md"
+            className="w-72 p-0 bg-popover border border-border shadow-lg rounded-md"
             sideOffset={4}
           >
             <div className="py-1">
@@ -111,8 +114,8 @@ export function IncidentStatusDropdown({
                     <ArrowRight className="w-4 h-4 text-muted-foreground" />
                     <span className={cn(
                       "text-xs font-semibold px-2 py-0.5 rounded-md",
-                      STATUS_CONFIG[transition.targetStatus]?.bgColor || 'bg-gray-100',
-                      STATUS_CONFIG[transition.targetStatus]?.textColor || 'text-gray-600'
+                      STATUS_CONFIG[transition.targetStatus]?.bgColor || 'bg-muted',
+                      STATUS_CONFIG[transition.targetStatus]?.textColor || 'text-muted-foreground'
                     )}>
                       {transition.targetLabel}
                     </span>
@@ -147,7 +150,7 @@ export function IncidentStatusDropdown({
       {onAssignToMe && (
         <button
           onClick={onAssignToMe}
-          className="text-sm text-[#2563eb] hover:text-[#1d4ed8] hover:underline transition-colors"
+          className="text-sm text-primary hover:text-primary/80 hover:underline transition-colors"
         >
           Assign to me
         </button>

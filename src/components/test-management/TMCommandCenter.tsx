@@ -333,16 +333,16 @@ function ActivityItem({ activity }: { activity: {
     .slice(0, 2) || '??';
 
   const bgColors: Record<string, string> = {
-    PASSED: 'bg-teal-100 text-teal-700',
-    FAILED: 'bg-red-100 text-red-700',
-    BLOCKED: 'bg-amber-100 text-amber-700',
-    CREATED: 'bg-blue-100 text-blue-700',
-    COMPLETED: 'bg-purple-100 text-purple-700',
-    UPDATED: 'bg-orange-100 text-orange-700',
-    ADDED_CASES: 'bg-cyan-100 text-cyan-700',
-    ASSIGNED: 'bg-indigo-100 text-indigo-700',
-    EXECUTED: 'bg-green-100 text-green-700',
-    DELETED: 'bg-gray-100 text-gray-700',
+    PASSED: 'bg-[var(--sem-success-bg)] text-[var(--sem-success)]',
+    FAILED: 'bg-[var(--sem-danger-bg)] text-[var(--sem-danger)]',
+    BLOCKED: 'bg-[var(--sem-warning-bg)] text-[var(--sem-warning)]',
+    CREATED: 'bg-[var(--sem-info-bg)] text-[var(--sem-info)]',
+    COMPLETED: 'bg-[var(--accent-bg)] text-[var(--accent-text)]',
+    UPDATED: 'bg-[var(--sem-high-bg)] text-[var(--sem-high)]',
+    ADDED_CASES: 'bg-[var(--sem-info-bg)] text-[var(--sem-info)]',
+    ASSIGNED: 'bg-[var(--sem-info-bg)] text-[var(--sem-info)]',
+    EXECUTED: 'bg-[var(--sem-success-bg)] text-[var(--sem-success)]',
+    DELETED: 'bg-[var(--sem-medium-bg)] text-[var(--sem-medium)]',
   };
 
   const actionLabels: Record<string, string> = {
@@ -387,10 +387,10 @@ function ActivityItem({ activity }: { activity: {
 // ============================================================
 function StatusBadge({ status, color }: { status: string; color: 'success' | 'warning' | 'danger' | 'default' }) {
   const colorClasses: Record<string, string> = {
-    success: 'bg-teal-100 text-teal-700',
-    warning: 'bg-amber-100 text-amber-700',
-    danger: 'bg-red-100 text-red-700',
-    default: 'bg-surface-3 text-muted-foreground',
+    success: 'bg-[var(--sem-success-bg)] text-[var(--sem-success)]',
+    warning: 'bg-[var(--sem-warning-bg)] text-[var(--sem-warning)]',
+    danger: 'bg-[var(--sem-danger-bg)] text-[var(--sem-danger)]',
+    default: 'bg-muted text-muted-foreground',
   };
 
   return (
@@ -563,22 +563,22 @@ export default function TMCommandCenter() {
               icon={Play} 
               value={kpis?.inProgress ?? 0} 
               label="In Progress" 
-              iconBg="bg-blue-50" 
-              iconColor="text-brand-primary" 
+              iconBg="bg-[var(--sem-info-bg)]" 
+              iconColor="text-[var(--sem-info)]" 
             />
             <KPICard 
               icon={CheckCircle} 
               value={kpis?.passedToday ?? 0} 
               label="Passed Today" 
-              iconBg="bg-teal-50" 
-              iconColor="text-success" 
+              iconBg="bg-[var(--sem-success-bg)]" 
+              iconColor="text-[var(--sem-success)]" 
             />
             <KPICard 
               icon={XCircle} 
               value={kpis?.failedToday ?? 0} 
               label="Failed Today" 
-              iconBg="bg-red-50" 
-              iconColor="text-danger" 
+              iconBg="bg-[var(--sem-danger-bg)]" 
+              iconColor="text-[var(--sem-danger)]" 
             />
           </>
         )}

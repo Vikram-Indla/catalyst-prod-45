@@ -15,25 +15,31 @@ interface IncidentHeaderProps {
   onSummaryChange: (value: string) => void;
 }
 
+/**
+ * Severity colors using Catalyst V5 semantic tokens
+ */
 const getSeverityColor = (severity: string) => {
   switch (severity) {
-    case 'SEV1': return 'bg-red-500';
-    case 'SEV2': return 'bg-orange-500';
-    case 'SEV3': return 'bg-yellow-500';
-    default: return 'bg-gray-400';
+    case 'SEV1': return 'bg-[var(--sem-danger)] text-[var(--text-inverse)]';
+    case 'SEV2': return 'bg-[var(--sem-warning)] text-[var(--text-inverse)]';
+    case 'SEV3': return 'bg-[var(--sem-high)] text-[var(--text-inverse)]';
+    default: return 'bg-muted text-muted-foreground';
   }
 };
 
+/**
+ * Status colors using Catalyst V5 semantic tokens
+ */
 const getStatusColor = (status: string) => {
   switch (status) {
-    case 'open': return { bg: 'bg-blue-100', text: 'text-blue-700' };
-    case 'in-progress': return { bg: 'bg-orange-100', text: 'text-orange-700' };
-    case 'pending': return { bg: 'bg-yellow-100', text: 'text-yellow-700' };
-    case 'resolved': return { bg: 'bg-green-100', text: 'text-green-700' };
-    case 'closed': return { bg: 'bg-gray-100', text: 'text-gray-700' };
-    case 'reopened': return { bg: 'bg-red-100', text: 'text-red-700' };
-    case 'cancelled': return { bg: 'bg-gray-200', text: 'text-gray-600' };
-    default: return { bg: 'bg-gray-100', text: 'text-gray-700' };
+    case 'open': return { bg: 'bg-[var(--sem-info-bg)]', text: 'text-[var(--sem-info)]' };
+    case 'in-progress': return { bg: 'bg-[var(--sem-warning-bg)]', text: 'text-[var(--sem-warning)]' };
+    case 'pending': return { bg: 'bg-[var(--sem-high-bg)]', text: 'text-[var(--sem-high)]' };
+    case 'resolved': return { bg: 'bg-[var(--sem-success-bg)]', text: 'text-[var(--sem-success)]' };
+    case 'closed': return { bg: 'bg-[var(--sem-medium-bg)]', text: 'text-[var(--sem-medium)]' };
+    case 'reopened': return { bg: 'bg-[var(--sem-danger-bg)]', text: 'text-[var(--sem-danger)]' };
+    case 'cancelled': return { bg: 'bg-[var(--sem-low-bg)]', text: 'text-[var(--sem-low)]' };
+    default: return { bg: 'bg-muted', text: 'text-muted-foreground' };
   }
 };
 
@@ -52,8 +58,8 @@ export function IncidentHeader({
     <div className="border-b border-border bg-card">
       {/* Edit Mode Banner */}
       {isEditMode && (
-        <div className="bg-amber-50 border-b border-amber-200 px-6 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-2 text-amber-800">
+        <div className="bg-[var(--sem-warning-bg)] border-b border-[var(--sem-warning-border)] px-6 py-3 flex items-center justify-between">
+          <div className="flex items-center gap-2 text-[var(--sem-warning)]">
             <Edit className="w-4 h-4" />
             <span className="text-sm font-medium">You are in edit mode. Changes are not saved until you click Save.</span>
           </div>
@@ -62,7 +68,7 @@ export function IncidentHeader({
               <X className="w-4 h-4 mr-1" />
               Cancel
             </Button>
-            <Button size="sm" onClick={onSave} className="h-8 bg-brand-primary hover:bg-brand-primary-hover text-white">
+            <Button size="sm" onClick={onSave} className="h-8 bg-primary hover:bg-primary/90 text-primary-foreground">
               <Save className="w-4 h-4 mr-1" />
               Save
             </Button>
@@ -73,17 +79,17 @@ export function IncidentHeader({
       {/* Incident Title - Fixed height for alignment */}
       <div className="h-[72px] px-6 flex flex-col justify-center">
         <div className="flex items-center gap-3 mb-1">
-          <Badge className="bg-brand-primary/10 text-brand-primary border-0 font-semibold text-xs">
+          <Badge className="bg-primary/10 text-primary border-0 font-semibold text-xs">
             {incident.id}
           </Badge>
-          <Badge className={cn(getSeverityColor(incident.severity || 'SEV3'), 'text-white border-0 font-semibold text-xs')}>
+          <Badge className={cn(getSeverityColor(incident.severity || 'SEV3'), 'border-0 font-semibold text-xs')}>
             {incident.severity || 'SEV3'}
           </Badge>
           <Badge className={cn(statusColors.bg, statusColors.text, 'border-0 font-medium capitalize text-xs')}>
             {incident.status.replace('-', ' ')}
           </Badge>
           {incident.isMajorIncident && (
-            <Badge className="bg-red-500 text-white border-0 font-semibold text-xs">
+            <Badge className="bg-[var(--sem-danger)] text-[var(--text-inverse)] border-0 font-semibold text-xs">
               🚨 Major Incident
             </Badge>
           )}
@@ -93,7 +99,7 @@ export function IncidentHeader({
           <Input
             value={editedSummary}
             onChange={(e) => onSummaryChange(e.target.value)}
-            className="text-lg font-semibold h-8 py-1 border-brand-primary focus:ring-brand-primary"
+            className="text-lg font-semibold h-8 py-1 border-primary focus:ring-primary"
             placeholder="Incident summary..."
           />
         ) : (

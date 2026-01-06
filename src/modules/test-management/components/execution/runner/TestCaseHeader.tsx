@@ -27,10 +27,10 @@ export function TestCaseHeader({ testCase, run }: TestCaseHeaderProps) {
   const runStatus = run?.status || 'not_run';
   const statusConfig: Record<string, { label: string; className: string }> = {
     not_run: { label: 'Not Started', className: 'bg-muted text-muted-foreground' },
-    in_progress: { label: 'Executing', className: 'bg-amber-100 text-amber-700 border-amber-300' },
-    passed: { label: 'Passed', className: 'bg-teal-100 text-teal-700 border-teal-300' },
+    in_progress: { label: 'Executing', className: 'bg-[var(--sem-warning-bg)] text-[var(--sem-warning)] border-[var(--sem-warning-border)]' },
+    passed: { label: 'Passed', className: 'bg-[var(--sem-success-bg)] text-[var(--sem-success)] border-[var(--sem-success-border)]' },
     failed: { label: 'Failed', className: 'bg-destructive/10 text-destructive border-destructive/30' },
-    blocked: { label: 'Blocked', className: 'bg-orange-100 text-orange-700 border-orange-300' },
+    blocked: { label: 'Blocked', className: 'bg-[var(--sem-high-bg)] text-[var(--sem-high)] border-[var(--sem-warning-border)]' },
     skipped: { label: 'Skipped', className: 'bg-muted text-muted-foreground' },
   };
 
@@ -40,7 +40,7 @@ export function TestCaseHeader({ testCase, run }: TestCaseHeaderProps) {
         {/* Left - Title Block */}
         <div className="flex-1">
           {/* Case Key Badge */}
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-teal-100 dark:bg-teal-900/30 rounded-lg text-xs font-bold text-teal-600 dark:text-teal-400 font-mono mb-2">
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-[var(--sem-success-bg)] rounded-lg text-xs font-bold text-[var(--sem-success)] font-mono mb-2">
             <CheckSquare className="h-3 w-3" />
             {testCase.case_key}
           </span>

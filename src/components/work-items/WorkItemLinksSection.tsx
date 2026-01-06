@@ -24,13 +24,13 @@ interface WorkItemLinksSectionProps {
 }
 
 const LINK_TYPE_COLORS: Record<string, string> = {
-  blocks: 'bg-red-100 text-red-700 border-red-200',
-  is_blocked_by: 'bg-red-100 text-red-700 border-red-200',
-  relates_to: 'bg-blue-100 text-blue-700 border-blue-200',
-  duplicates: 'bg-yellow-100 text-yellow-700 border-yellow-200',
-  is_duplicated_by: 'bg-yellow-100 text-yellow-700 border-yellow-200',
-  parent_of: 'bg-purple-100 text-purple-700 border-purple-200',
-  child_of: 'bg-purple-100 text-purple-700 border-purple-200',
+  blocks: 'bg-[var(--sem-danger-bg)] text-[var(--sem-danger)] border-[var(--sem-danger-border)]',
+  is_blocked_by: 'bg-[var(--sem-danger-bg)] text-[var(--sem-danger)] border-[var(--sem-danger-border)]',
+  relates_to: 'bg-[var(--sem-info-bg)] text-[var(--sem-info)] border-[var(--sem-info-border)]',
+  duplicates: 'bg-[var(--sem-warning-bg)] text-[var(--sem-warning)] border-[var(--sem-warning-border)]',
+  is_duplicated_by: 'bg-[var(--sem-warning-bg)] text-[var(--sem-warning)] border-[var(--sem-warning-border)]',
+  parent_of: 'bg-[var(--accent-bg)] text-[var(--accent-text)] border-[var(--accent-border)]',
+  child_of: 'bg-[var(--accent-bg)] text-[var(--accent-text)] border-[var(--accent-border)]',
 };
 
 export function WorkItemLinksSection({ workItemType, workItemId }: WorkItemLinksSectionProps) {
