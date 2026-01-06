@@ -539,12 +539,12 @@ export function CatalystEnterpriseTable<T extends { id: string }>({
     }
   };
 
-  // Render row content with Catalyst v5 styling
+  // Render row content with Catalyst v5 styling - Executive Dark Mode Compliant
   const renderRowContent = (row: T, rowIndex: number, dragHandleProps?: any, isDragging?: boolean) => (
     <>
-      {/* Drag handle column */}
+      {/* Drag handle column - NO visible divider in dark mode */}
       {enableDragDrop && (
-        <td className="py-3 px-2 w-8 border-r border-[var(--table-cell-divider)]" {...dragHandleProps}>
+        <td className="py-3 px-2 w-8" {...dragHandleProps}>
           <GripVertical 
             className={cn(
               "h-4 w-4 cursor-grab active:cursor-grabbing transition-colors",
@@ -555,9 +555,9 @@ export function CatalystEnterpriseTable<T extends { id: string }>({
           />
         </td>
       )}
-      {/* Checkbox with Catalyst v5 styling */}
+      {/* Checkbox - NO visible divider in dark mode */}
       {showCheckboxes && (
-        <td className="py-3 px-4 w-12 border-r border-[var(--table-cell-divider)]" onClick={(e) => e.stopPropagation()}>
+        <td className="py-3 px-4 w-12" onClick={(e) => e.stopPropagation()}>
           <input
             type="checkbox"
             checked={selectedRows.includes(row.id)}
@@ -577,14 +577,13 @@ export function CatalystEnterpriseTable<T extends { id: string }>({
           ? column.accessor(row) 
           : (row as any)[column.accessor];
         const isEditing = editingCell?.rowId === row.id && editingCell?.columnId === column.id;
-        const isLastColumn = colIndex === columns.length - 1 && !showActionsColumn;
 
         return (
           <td
             key={column.id}
             className={cn(
               "py-3 px-4 align-middle text-[var(--table-text-primary)]",
-              !isLastColumn && "border-r border-[var(--table-cell-divider)]",
+              // NO column dividers in dark mode - content clarity over borders
               column.width && `w-[${column.width}]`
             )}
             style={{ width: column.width }}
@@ -652,17 +651,24 @@ export function CatalystEnterpriseTable<T extends { id: string }>({
 
   const tableContent = (
     <TooltipProvider>
-      {/* Table container with Catalyst v5 surface tokens */}
+      {/* Table container - Executive Dark Mode: single subtle outer border only */}
       <div className={cn(
         "rounded-lg border overflow-hidden",
-        "bg-[var(--table-container-bg)] border-[var(--table-container-border)]",
+        "bg-[var(--table-container-bg)]",
+        // Light mode: subtle border
+        "border-[var(--table-container-border)]",
+        // Dark mode: very subtle border (darker than content, never bright)
+        "dark:border-[#262626]",
         "shadow-[var(--shadow-elev-1)]"
       )}>
-        {/* Request count header */}
+        {/* Request count header - subtle separation via background, minimal border */}
         <div className={cn(
-          "flex items-center justify-between px-4 py-2.5 border-b",
-          "border-[var(--table-header-border)]",
-          "bg-[var(--table-header-bg)]"
+          "flex items-center justify-between px-4 py-2.5",
+          // Light mode: border visible
+          "border-b border-[var(--table-header-border)]",
+          // Dark mode: ultra-subtle border
+          "dark:border-b dark:border-[#232323]",
+          "bg-[var(--table-header-bg)] dark:bg-[#1a1a1a]"
         )}>
           <span className="text-sm text-[var(--table-text-secondary)]">
             <span className="font-semibold text-[var(--table-text-primary)]">{processedData.length}</span> {processedData.length === 1 ? 'request' : 'requests'}
@@ -682,18 +688,20 @@ export function CatalystEnterpriseTable<T extends { id: string }>({
               {showActionsColumn && <col className="w-12" />}
             </colgroup>
             
-            {/* Header with Catalyst v5 styling */}
+            {/* Header - Dark mode: separation via darker surface, not bright borders */}
             <thead>
               <tr className={cn(
-                "border-b",
-                "bg-[var(--table-header-bg)]",
-                "border-[var(--table-header-border)]"
+                // Light mode: visible border
+                "border-b border-[var(--table-header-border)]",
+                // Dark mode: ultra-subtle or no border (rely on surface contrast)
+                "dark:border-b dark:border-[#232323]",
+                "bg-[var(--table-header-bg)] dark:bg-[#1a1a1a]"
               )}>
                 {enableDragDrop && (
-                  <th className="py-3 px-2 w-8 border-r border-[var(--table-cell-divider)]"></th>
+                  <th className="py-3 px-2 w-8"></th>
                 )}
                 {showCheckboxes && (
-                  <th className="py-3 px-4 w-12 text-center border-r border-[var(--table-cell-divider)]">
+                  <th className="py-3 px-4 w-12 text-center">
                     <input
                       type="checkbox"
                       checked={processedData.length > 0 && selectedRows.length === processedData.length}
@@ -707,15 +715,14 @@ export function CatalystEnterpriseTable<T extends { id: string }>({
                     />
                   </th>
                 )}
-                {columns.map((column, colIndex) => {
-                  const isLastColumn = colIndex === columns.length - 1 && !showActionsColumn;
+                {columns.map((column) => {
                   return (
                     <th 
                       key={column.id} 
                       className={cn(
                         "py-3 px-4 text-left cursor-pointer transition-colors",
-                        !isLastColumn && "border-r border-[var(--table-cell-divider)]",
-                        "hover:bg-[var(--table-row-hover)]"
+                        // NO column dividers in dark mode - content clarity over borders
+                        "hover:bg-[var(--table-row-hover)] dark:hover:bg-[#2a2a2a]"
                       )}
                       style={{ width: column.width }}
                     >
@@ -735,7 +742,7 @@ export function CatalystEnterpriseTable<T extends { id: string }>({
               </tr>
             </thead>
             
-            {/* Body with Catalyst v5 row styling */}
+            {/* Body - Executive Dark Mode: Row separation via surface contrast, ultra-subtle dividers */}
             {enableDragDrop ? (
               <Droppable droppableId={droppableId}>
                 {(provided) => (
@@ -755,15 +762,18 @@ export function CatalystEnterpriseTable<T extends { id: string }>({
                               onClick={() => handleRowClick(row)}
                               className={cn(
                                 "transition-colors cursor-pointer",
+                                // Light mode: subtle border
                                 "border-b border-[var(--table-row-border)]",
-                                // Alternating row backgrounds
+                                // Dark mode: ultra-subtle divider (barely visible, never white)
+                                "dark:border-b dark:border-[#232323]",
+                                // Alternating row backgrounds for row distinction
                                 rowIndex % 2 === 0 
                                   ? "bg-[var(--table-row-bg)]" 
-                                  : "bg-[var(--table-row-alt-bg)]",
-                                // Hover state - surface-3 in dark mode
-                                "hover:bg-[var(--table-row-hover)]",
-                                // Selected state - surface-elevated
-                                selectedRows.includes(row.id) && "bg-[var(--table-row-selected)] ring-1 ring-inset ring-[var(--brand-primary-hex)]/30",
+                                  : "bg-[var(--table-row-alt-bg)] dark:bg-[#1f1f1f]",
+                                // Hover: surface tint, NOT border highlight
+                                "hover:bg-[var(--table-row-hover)] dark:hover:bg-[#2a2a2a]",
+                                // Selected: surface elevation with subtle brand accent
+                                selectedRows.includes(row.id) && "bg-[var(--table-row-selected)] dark:bg-[#1f1f1f] ring-1 ring-inset ring-[var(--brand-primary-hex)]/30",
                                 // Dragging state
                                 snapshot.isDragging && "bg-[var(--selection-row-bg)] shadow-lg"
                               )}
@@ -789,15 +799,18 @@ export function CatalystEnterpriseTable<T extends { id: string }>({
                       onClick={() => handleRowClick(row)}
                       className={cn(
                         "transition-colors cursor-pointer",
+                        // Light mode: subtle border
                         "border-b border-[var(--table-row-border)]",
-                        // Alternating row backgrounds
+                        // Dark mode: ultra-subtle divider
+                        "dark:border-b dark:border-[#232323]",
+                        // Alternating backgrounds for row separation
                         rowIndex % 2 === 0 
                           ? "bg-[var(--table-row-bg)]" 
-                          : "bg-[var(--table-row-alt-bg)]",
-                        // Hover state - obvious per spec
-                        "hover:bg-[var(--table-row-hover)]",
-                        // Selected state
-                        selectedRows.includes(row.id) && "bg-[var(--table-row-selected)] ring-1 ring-inset ring-[var(--brand-primary-hex)]/30"
+                          : "bg-[var(--table-row-alt-bg)] dark:bg-[#1f1f1f]",
+                        // Hover: surface tint
+                        "hover:bg-[var(--table-row-hover)] dark:hover:bg-[#2a2a2a]",
+                        // Selected: surface elevation
+                        selectedRows.includes(row.id) && "bg-[var(--table-row-selected)] dark:bg-[#1f1f1f] ring-1 ring-inset ring-[var(--brand-primary-hex)]/30"
                       )}
                     >
                       {renderRowContent(row, rowIndex)}
