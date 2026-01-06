@@ -3,12 +3,14 @@
  * Refactored to use focused sub-components matching test-case-editor-final.html (9.5+ quality)
  */
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { cn } from '@/lib/utils';
-import { User, Clock } from 'lucide-react';
+import { User, Clock, Lock } from 'lucide-react';
+import { toast } from 'sonner';
 
 import {
   EditorHeader,
@@ -17,6 +19,9 @@ import {
   PreconditionsSection,
   StepsSection,
   ContextPanel,
+  QualityChecklist,
+  validateTestCaseForReady,
+  calculateQualityScore,
 } from './editor';
 
 import type { TestCase, TestStep, Folder, CaseStatus } from '../../api/types';
@@ -97,9 +102,22 @@ export function TestCaseEditor({
   const [activeContextTab, setActiveContextTab] = useState<'traceability' | 'properties' | 'ai' | 'history'>('traceability');
   const [isDirty, setIsDirty] = useState(false);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
+  const [linkedRequirements, setLinkedRequirements] = useState<string[]>([]);
 
-  // Mock data for demo
-  const qualityScore = testCase ? 85 : 0;
+  // Governance state
+  const isApproved = testCase?.status === 'approved';
+  const isEditable = !isApproved;
+
+  // Calculate quality score dynamically
+  const qualityScore = useMemo(() => calculateQualityScore(
+    title,
+    objective,
+    preconditions.map(p => p.text).join('\n'),
+    stepsList,
+    linkedRequirements,
+    priorityId
+  ), [title, objective, preconditions, stepsList, linkedRequirements, priorityId]);
+
   const executionHistory: ('pass' | 'fail')[] = testCase ? ['pass', 'pass', 'pass', 'fail', 'pass', 'pass'] : [];
   const collaborators = testCase ? [
     { id: '1', name: 'Ahmed Khan', initials: 'AK', color: 'bg-primary', isOnline: true },
@@ -159,7 +177,53 @@ export function TestCaseEditor({
     });
   }, []);
 
+  // Status change handler with governance validation
+  const handleStatusChange = useCallback((newStatus: CaseStatus) => {
+    if (!isEditable && newStatus !== 'deprecated') {
+      toast.error('Approved test cases cannot be modified. Create a new version.');
+      return;
+    }
+
+    // Validate Draft → Ready transition
+    if ((status === 'draft' && newStatus === 'ready') || newStatus === 'approved') {
+      const validation = validateTestCaseForReady(
+        title,
+        objective,
+        stepsList,
+        linkedRequirements
+      );
+      if (!validation.valid) {
+        toast.error(`Cannot change status:\n• ${validation.errors.join('\n• ')}`);
+        return;
+      }
+    }
+
+    setStatus(newStatus);
+    markDirty();
+  }, [isEditable, status, title, objective, stepsList, linkedRequirements, markDirty]);
+
   const handleSubmit = useCallback(() => {
+    // Validate expected results for all steps with actions
+    const stepsWithMissingExpected = stepsList.filter(
+      step => step.action?.trim() && !step.expected_result?.trim()
+    );
+
+    if (stepsWithMissingExpected.length > 0) {
+      toast.error(
+        `${stepsWithMissingExpected.length} step(s) missing expected results. All steps must have expected results defined.`
+      );
+      return;
+    }
+
+    // If trying to mark as Ready or Approved, additional validation
+    if (status === 'ready' || status === 'approved') {
+      const validation = validateTestCaseForReady(title, objective, stepsList, linkedRequirements);
+      if (!validation.valid) {
+        toast.error(`Cannot save as ${status}:\n• ${validation.errors.join('\n• ')}`);
+        return;
+      }
+    }
+
     const caseData = {
       project_id: projectId,
       title: title.trim(),
@@ -187,7 +251,7 @@ export function TestCaseEditor({
     setIsDirty(false);
   }, [
     projectId, title, objective, preconditions, status, priorityId,
-    typeId, folderId, estimatedTime, selectedLabels, stepsList, onSave,
+    typeId, folderId, estimatedTime, selectedLabels, stepsList, onSave, linkedRequirements,
   ]);
 
   // Keyboard shortcuts
@@ -239,13 +303,25 @@ export function TestCaseEditor({
           {/* Content */}
           <ScrollArea className="flex-1">
             <div className="max-w-[880px] mx-auto px-8 py-6">
+              {/* Approved Lock Banner */}
+              {isApproved && (
+                <Alert variant="default" className="mb-6 border-warning bg-warning/10">
+                  <Lock className="h-4 w-4 text-warning" />
+                  <AlertTitle className="text-warning">Locked Test Case</AlertTitle>
+                  <AlertDescription className="text-warning/80">
+                    This test case is approved and cannot be modified. Create a new version to make changes.
+                  </AlertDescription>
+                </Alert>
+              )}
+
               {/* Title */}
-              <div className="mb-6">
+              <div id="section-title" className="mb-6">
                 <Input
                   value={title}
                   onChange={(e) => { setTitle(e.target.value); markDirty(); }}
                   placeholder="Enter test case title..."
                   className="w-full text-2xl font-bold bg-transparent border-none shadow-none focus-visible:ring-0 p-0 h-auto placeholder:text-muted-foreground/50"
+                  disabled={!isEditable}
                 />
                 <div className="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
                   <span className="flex items-center gap-1">
@@ -261,27 +337,50 @@ export function TestCaseEditor({
               </div>
 
               {/* Objective Section */}
-              <ObjectiveSection
-                objective={objective}
-                onChange={(value) => { setObjective(value); markDirty(); }}
-                className="mb-5"
-              />
+              <div id="section-objective">
+                <ObjectiveSection
+                  objective={objective}
+                  onChange={(value) => { if (isEditable) { setObjective(value); markDirty(); }}}
+                  className="mb-5"
+                />
+              </div>
 
               {/* Preconditions Section */}
-              <PreconditionsSection
-                preconditions={preconditions}
-                onChange={(value) => { setPreconditions(value); markDirty(); }}
-                className="mb-5"
-              />
+              <div id="section-preconditions">
+                <PreconditionsSection
+                  preconditions={preconditions}
+                  onChange={(value) => { if (isEditable) { setPreconditions(value); markDirty(); }}}
+                  className="mb-5"
+                />
+              </div>
 
               {/* Steps Section */}
-              <StepsSection
-                steps={stepsList}
-                onChange={(value) => { setStepsList(value); markDirty(); }}
-                expandedSteps={expandedSteps}
-                onToggleStep={toggleStepExpand}
-                className="mb-5"
-              />
+              <div id="section-steps">
+                <StepsSection
+                  steps={stepsList}
+                  onChange={(value) => { if (isEditable) { setStepsList(value); markDirty(); }}}
+                  expandedSteps={expandedSteps}
+                  onToggleStep={toggleStepExpand}
+                  className="mb-5"
+                />
+              </div>
+
+              {/* Quality Checklist - Visible in editor */}
+              <div id="section-traceability" className="mt-6">
+                <QualityChecklist
+                  title={title}
+                  objective={objective}
+                  preconditions={preconditions.map(p => p.text).join('\n')}
+                  steps={stepsList}
+                  linkedRequirements={linkedRequirements}
+                  priority={priorityId}
+                  onScrollToSection={(section) => {
+                    document.getElementById(`section-${section}`)?.scrollIntoView({
+                      behavior: 'smooth'
+                    });
+                  }}
+                />
+              </div>
             </div>
           </ScrollArea>
         </div>
@@ -302,12 +401,12 @@ export function TestCaseEditor({
           caseTypes={caseTypes}
           folders={folders}
           labels={labels}
-          onStatusChange={(value) => { setStatus(value); markDirty(); }}
-          onPriorityChange={(value) => { setPriorityId(value); markDirty(); }}
-          onTypeChange={(value) => { setTypeId(value); markDirty(); }}
-          onFolderChange={(value) => { setFolderId(value); markDirty(); }}
-          onEstimatedTimeChange={(value) => { setEstimatedTime(value); markDirty(); }}
-          onLabelsChange={(value) => { setSelectedLabels(value); markDirty(); }}
+          onStatusChange={(value) => { handleStatusChange(value); }}
+          onPriorityChange={(value) => { if (isEditable) { setPriorityId(value); markDirty(); }}}
+          onTypeChange={(value) => { if (isEditable) { setTypeId(value); markDirty(); }}}
+          onFolderChange={(value) => { if (isEditable) { setFolderId(value); markDirty(); }}}
+          onEstimatedTimeChange={(value) => { if (isEditable) { setEstimatedTime(value); markDirty(); }}}
+          onLabelsChange={(value) => { if (isEditable) { setSelectedLabels(value); markDirty(); }}}
         />
       </main>
 
