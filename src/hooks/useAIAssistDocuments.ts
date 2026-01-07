@@ -5,6 +5,10 @@ import { logAuditEvent } from './useAIAssistDrafts';
 
 export type ExtractionStatus = 'pending' | 'processing' | 'completed' | 'failed';
 
+export type OcrQualityBand = 'high' | 'medium' | 'low';
+export type BilingualConfidence = 'high' | 'medium' | 'low';
+export type PrimaryLanguage = 'ar' | 'en' | 'mixed';
+
 export interface AIAssistDocument {
   id: string;
   draft_id: string;
@@ -21,6 +25,16 @@ export interface AIAssistDocument {
   uploaded_by: string | null;
   created_at: string;
   updated_at: string;
+  // New metadata fields
+  primary_language: PrimaryLanguage | null;
+  bilingual_confidence: BilingualConfidence | null;
+  pages_total: number | null;
+  ocr_avg_confidence: number | null;
+  ocr_quality_band: OcrQualityBand | null;
+  sections_detected_count: number | null;
+  canonical_text_hash: string | null;
+  extraction_warnings: string[] | null;
+  document_version: number | null;
 }
 
 export interface UploadDocumentInput {
