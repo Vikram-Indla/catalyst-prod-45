@@ -205,52 +205,79 @@ export type Database = {
       }
       ai_assist_documents: {
         Row: {
+          bilingual_confidence: string | null
+          canonical_text_hash: string | null
           created_at: string
+          document_version: number | null
           draft_id: string
           extracted_text: string | null
           extraction_status: string | null
+          extraction_warnings: Json | null
           file_name: string
           file_path: string
           file_sha256: string | null
           file_size: number
           id: string
           mime_type: string
+          ocr_avg_confidence: number | null
+          ocr_quality_band: string | null
           page_hashes: Json | null
+          pages_total: number | null
+          primary_language: string | null
           retention_until: string | null
+          sections_detected_count: number | null
           storage_bucket: string
           updated_at: string
           uploaded_by: string | null
         }
         Insert: {
+          bilingual_confidence?: string | null
+          canonical_text_hash?: string | null
           created_at?: string
+          document_version?: number | null
           draft_id: string
           extracted_text?: string | null
           extraction_status?: string | null
+          extraction_warnings?: Json | null
           file_name: string
           file_path: string
           file_sha256?: string | null
           file_size: number
           id?: string
           mime_type: string
+          ocr_avg_confidence?: number | null
+          ocr_quality_band?: string | null
           page_hashes?: Json | null
+          pages_total?: number | null
+          primary_language?: string | null
           retention_until?: string | null
+          sections_detected_count?: number | null
           storage_bucket?: string
           updated_at?: string
           uploaded_by?: string | null
         }
         Update: {
+          bilingual_confidence?: string | null
+          canonical_text_hash?: string | null
           created_at?: string
+          document_version?: number | null
           draft_id?: string
           extracted_text?: string | null
           extraction_status?: string | null
+          extraction_warnings?: Json | null
           file_name?: string
           file_path?: string
           file_sha256?: string | null
           file_size?: number
           id?: string
           mime_type?: string
+          ocr_avg_confidence?: number | null
+          ocr_quality_band?: string | null
           page_hashes?: Json | null
+          pages_total?: number | null
+          primary_language?: string | null
           retention_until?: string | null
+          sections_detected_count?: number | null
           storage_bucket?: string
           updated_at?: string
           uploaded_by?: string | null
@@ -277,6 +304,8 @@ export type Database = {
           id: string
           language: string
           prompt_pack_version: string | null
+          quality_gaps: Json | null
+          quality_mode: string | null
           quality_score: number | null
           sources_pack_version: string | null
           status: string
@@ -295,6 +324,8 @@ export type Database = {
           id?: string
           language?: string
           prompt_pack_version?: string | null
+          quality_gaps?: Json | null
+          quality_mode?: string | null
           quality_score?: number | null
           sources_pack_version?: string | null
           status?: string
@@ -313,6 +344,8 @@ export type Database = {
           id?: string
           language?: string
           prompt_pack_version?: string | null
+          quality_gaps?: Json | null
+          quality_mode?: string | null
           quality_score?: number | null
           sources_pack_version?: string | null
           status?: string

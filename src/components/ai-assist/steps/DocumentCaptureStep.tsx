@@ -1,17 +1,39 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useMemo, useEffect } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { Upload, FileText, Check, CheckCircle, Globe, ChevronRight, Loader2, RefreshCw, Eye, Lightbulb, AlertCircle, Lock, Shield, AlertTriangle, ChevronDown } from 'lucide-react';
+import { 
+  Upload, 
+  FileText, 
+  Check, 
+  CheckCircle, 
+  Globe, 
+  ChevronRight, 
+  Loader2, 
+  RefreshCw, 
+  Eye, 
+  Lightbulb, 
+  AlertCircle, 
+  Lock, 
+  Shield, 
+  AlertTriangle, 
+  ChevronDown,
+  Hash,
+  Maximize2
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Checkbox } from '@/components/ui/checkbox';
 import { cn } from '@/lib/utils';
 import { useAIAssistUpload } from '@/hooks/useAIAssistUpload';
 import { catalystToast } from '@/lib/catalystToast';
-import { formatDistanceToNow } from 'date-fns';
+import { formatDistanceToNow, format } from 'date-fns';
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
+import { DocumentPreviewModal } from '../DocumentPreviewModal';
+import { logAuditEvent } from '@/hooks/useAIAssistDrafts';
+import { supabase } from '@/integrations/supabase/client';
 
 interface Document {
   id: string;
@@ -21,13 +43,32 @@ interface Document {
   extraction_status: string | null;
   extracted_text: string | null;
   created_at: string;
-  page_count?: number;
+  uploaded_by?: string | null;
+  // New metadata fields
+  primary_language?: string | null;
+  bilingual_confidence?: string | null;
+  pages_total?: number | null;
+  ocr_avg_confidence?: number | null;
+  ocr_quality_band?: string | null;
+  sections_detected_count?: number | null;
+  canonical_text_hash?: string | null;
+  extraction_warnings?: string[] | null;
+  document_version?: number | null;
 }
 
 interface DocumentCaptureStepProps {
   draftId: string;
   documents: Document[];
   onUploadComplete?: () => void;
+  onCaptureGateChange?: (gateState: CaptureGateState) => void;
+}
+
+export interface CaptureGateState {
+  canContinue: boolean;
+  isHardWarn: boolean;
+  hasReviewedExtraction: boolean;
+  hasAcknowledgedWarn: boolean;
+  gaps: string[];
 }
 
 function formatFileSize(bytes: number): string {
@@ -44,17 +85,96 @@ function formatUploadTime(dateString: string): string {
   }
 }
 
-export function DocumentCaptureStep({ draftId, documents, onUploadComplete }: DocumentCaptureStepProps) {
+function formatUploadTimeFull(dateString: string): string {
+  try {
+    return format(new Date(dateString), "d MMM yyyy, HH:mm 'AST'");
+  } catch {
+    return 'Unknown';
+  }
+}
+
+function shortenHash(hash: string | null, length = 8): string {
+  if (!hash) return '—';
+  return hash.substring(0, length) + '...';
+}
+
+export function DocumentCaptureStep({ 
+  draftId, 
+  documents, 
+  onUploadComplete,
+  onCaptureGateChange 
+}: DocumentCaptureStepProps) {
   const upload = useAIAssistUpload();
   const [uploadProgress, setUploadProgress] = useState(0);
   const [showTechnicalDetails, setShowTechnicalDetails] = useState(false);
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [fullScreenPreview, setFullScreenPreview] = useState(false);
+  const [hasReviewedExtraction, setHasReviewedExtraction] = useState(false);
+  const [hasAcknowledgedWarn, setHasAcknowledgedWarn] = useState(false);
 
   const latestDoc = documents[0];
   const hasDocument = !!latestDoc;
 
+  // Compute extraction metadata
+  const extractionStatus = latestDoc?.extraction_status;
+  const sectionsCount = latestDoc?.sections_detected_count ?? 
+    (latestDoc?.extracted_text ? latestDoc.extracted_text.split('\n\n').filter(Boolean).length : 0);
+  const pagesTotal = latestDoc?.pages_total ?? Math.ceil((latestDoc?.file_size || 0) / 50000);
+  const ocrQualityBand = latestDoc?.ocr_quality_band ?? 'medium';
+  const ocrAvgConfidence = latestDoc?.ocr_avg_confidence ?? 0.85;
+  const primaryLanguage = latestDoc?.primary_language ?? 'ar';
+  const bilingualConfidence = latestDoc?.bilingual_confidence ?? 'low';
+  const canonicalHash = latestDoc?.canonical_text_hash;
+  const fileHash = latestDoc?.file_sha256;
+  const documentVersion = latestDoc?.document_version ?? 1;
+  const extractionWarnings = latestDoc?.extraction_warnings ?? [];
+
+  // Determine HARD_WARN state
+  const isHardWarn = useMemo(() => {
+    return (
+      sectionsCount === 0 ||
+      ocrQualityBand === 'low' ||
+      (extractionStatus !== 'completed' && extractionStatus !== 'done')
+    );
+  }, [sectionsCount, ocrQualityBand, extractionStatus]);
+
+  // Compute gaps for quality mode
+  const gaps = useMemo(() => {
+    const gapList: string[] = [];
+    if (sectionsCount === 0) gapList.push('No sections detected');
+    if (ocrQualityBand === 'low') gapList.push('Low OCR confidence');
+    if (extractionStatus !== 'completed' && extractionStatus !== 'done') {
+      gapList.push('Extraction incomplete/failed');
+    }
+    return gapList;
+  }, [sectionsCount, ocrQualityBand, extractionStatus]);
+
+  // Can continue logic
+  const canContinue = useMemo(() => {
+    if (!hasDocument) return false;
+    if (!isHardWarn) return true;
+    // HARD_WARN requires both preview review AND acknowledgment
+    return hasReviewedExtraction && hasAcknowledgedWarn;
+  }, [hasDocument, isHardWarn, hasReviewedExtraction, hasAcknowledgedWarn]);
+
+  // Notify parent of gate state changes
+  useEffect(() => {
+    onCaptureGateChange?.({
+      canContinue,
+      isHardWarn,
+      hasReviewedExtraction,
+      hasAcknowledgedWarn,
+      gaps,
+    });
+  }, [canContinue, isHardWarn, hasReviewedExtraction, hasAcknowledgedWarn, gaps, onCaptureGateChange]);
+
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     const file = acceptedFiles[0];
     if (!file) return;
+
+    // Reset gating state on new upload
+    setHasReviewedExtraction(false);
+    setHasAcknowledgedWarn(false);
 
     setUploadProgress(0);
     const interval = setInterval(() => {
@@ -85,23 +205,77 @@ export function DocumentCaptureStep({ draftId, documents, onUploadComplete }: Do
     disabled: upload.isPending,
   });
 
+  // Handle preview open - fires audit event
+  const handleOpenPreview = async () => {
+    setPreviewOpen(true);
+    if (!hasReviewedExtraction) {
+      const { data: userData } = await supabase.auth.getUser();
+      await logAuditEvent(draftId, null, 'extraction_reviewed' as any, userData.user?.id, {
+        document_id: latestDoc?.id,
+        document_version: documentVersion,
+      });
+    }
+  };
+
+  // Handle first view callback from modal
+  const handleFirstPreviewView = () => {
+    setHasReviewedExtraction(true);
+  };
+
+  // Handle acknowledgment checkbox
+  const handleAcknowledge = async (checked: boolean) => {
+    setHasAcknowledgedWarn(checked);
+    if (checked) {
+      const { data: userData } = await supabase.auth.getUser();
+      await logAuditEvent(draftId, null, 'quality_warn_acknowledged' as any, userData.user?.id, {
+        document_id: latestDoc?.id,
+        gaps,
+      });
+    }
+  };
+
+  // Determine quality level
+  const quality = sectionsCount === 0 ? 'warning' : sectionsCount <= 5 ? 'okay' : 'good';
+  const borderColor = quality === 'warning' 
+    ? 'border-[hsl(var(--warning))]' 
+    : quality === 'okay' 
+      ? 'border-[hsl(var(--info))]' 
+      : 'border-[hsl(var(--success))]';
+
+  // Get language display text
+  const getLanguageDisplay = () => {
+    const langNames: Record<string, string> = {
+      'ar': 'Arabic (RTL)',
+      'en': 'English',
+      'mixed': 'Arabic + English'
+    };
+    
+    const primary = langNames[primaryLanguage] || 'Arabic (RTL)';
+    
+    if (primaryLanguage === 'mixed' || bilingualConfidence === 'high' || bilingualConfidence === 'medium') {
+      return {
+        primary: 'Primary: Arabic (RTL)',
+        secondary: bilingualConfidence === 'high' 
+          ? 'Secondary: English' 
+          : 'Secondary: Limited (Low confidence)'
+      };
+    }
+    
+    return {
+      primary: `Primary: ${primary}`,
+      secondary: 'Secondary: None'
+    };
+  };
+
+  const langDisplay = getLanguageDisplay();
+
   // Show document card if uploaded
   if (hasDocument) {
-    const extractionComplete = latestDoc.extraction_status === 'completed';
-    const sectionsDetected = latestDoc.extracted_text ? latestDoc.extracted_text.split('\n\n').length : 0;
-    const pageCount = latestDoc.page_count || Math.ceil(latestDoc.file_size / 50000); // Estimate ~50KB per page
-    
-    // Determine quality level based on sections
-    const quality = sectionsDetected === 0 ? 'warning' : sectionsDetected <= 5 ? 'okay' : 'good';
-    const borderColor = quality === 'warning' 
-      ? 'border-[hsl(var(--warning))]' 
-      : quality === 'okay' 
-        ? 'border-[hsl(var(--info))]' 
-        : 'border-[hsl(var(--success))]';
+    const extractionComplete = extractionStatus === 'completed' || extractionStatus === 'done';
     
     return (
       <div className="space-y-4">
-        {/* Document card - dynamic state based on quality */}
+        {/* Document card */}
         <div className={cn(
           "bg-card border-2 rounded-xl p-6 transition-all duration-200 hover:shadow-md",
           borderColor
@@ -122,18 +296,34 @@ export function DocumentCaptureStep({ draftId, documents, onUploadComplete }: Do
             <div className="flex-1 min-w-0">
               <h3 className="text-base font-semibold truncate">{latestDoc.file_name}</h3>
               <p className="text-sm text-muted-foreground mt-0.5">
-                {pageCount} pages • {formatFileSize(latestDoc.file_size)} • Uploaded {formatUploadTime(latestDoc.created_at)}
+                {pagesTotal} pages • {formatFileSize(latestDoc.file_size)} • Uploaded {formatUploadTime(latestDoc.created_at)}
               </p>
 
-              {/* Progress bar */}
-              <div className="mt-4 h-2 bg-muted rounded-full overflow-hidden">
-                <div
-                  className={cn(
-                    "h-full rounded-full transition-all duration-500",
-                    quality === 'warning' ? "bg-[hsl(var(--warning))]" : "bg-[hsl(var(--success))]"
-                  )}
-                  style={{ width: extractionComplete ? '100%' : '75%' }}
-                />
+              {/* Detailed metadata row */}
+              <div className="mt-3 p-3 bg-muted/30 rounded-lg text-xs text-muted-foreground space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <span>Uploaded:</span>
+                  <span className="font-medium text-foreground">{formatUploadTimeFull(latestDoc.created_at)}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span>Version:</span>
+                  <span className="font-medium text-foreground">v{documentVersion}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span>Pages:</span>
+                  <span className="font-medium text-foreground">{pagesTotal}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span>OCR Quality:</span>
+                  <span className={cn(
+                    "font-medium",
+                    ocrQualityBand === 'high' && "text-[hsl(var(--success))]",
+                    ocrQualityBand === 'medium' && "text-[hsl(var(--info))]",
+                    ocrQualityBand === 'low' && "text-[hsl(var(--warning))]"
+                  )}>
+                    {ocrQualityBand.charAt(0).toUpperCase() + ocrQualityBand.slice(1)} ({Math.round(ocrAvgConfidence * 100)}%)
+                  </span>
+                </div>
               </div>
 
               {/* Status indicators */}
@@ -154,9 +344,9 @@ export function DocumentCaptureStep({ draftId, documents, onUploadComplete }: Do
             </div>
           </div>
 
-          {/* Metrics cards - only 2 now, SHA256 removed */}
-          <div className="grid grid-cols-2 gap-4 mt-6">
-            {/* Sections - with warning state */}
+          {/* Metrics cards - Sections, Language, Hashes */}
+          <div className="grid grid-cols-3 gap-4 mt-6">
+            {/* Card 1: Sections */}
             <div className={cn(
               "rounded-lg p-4 text-center transition-all duration-200 hover:shadow-sm",
               quality === 'warning' 
@@ -170,7 +360,7 @@ export function DocumentCaptureStep({ draftId, documents, onUploadComplete }: Do
                 <p className={cn(
                   "text-2xl font-bold",
                   quality === 'warning' && "text-[hsl(var(--warning))]"
-                )}>{sectionsDetected}</p>
+                )}>{sectionsCount}</p>
               </div>
               <p className={cn(
                 "text-xs mt-1",
@@ -187,64 +377,215 @@ export function DocumentCaptureStep({ draftId, documents, onUploadComplete }: Do
               )}
             </div>
             
-            {/* Language */}
+            {/* Card 2: Language */}
             <div className="bg-muted/50 rounded-lg p-4 text-center transition-all duration-200 hover:bg-muted hover:shadow-sm">
-              <div className="flex items-center justify-center gap-1">
+              <div className="flex items-center justify-center gap-1 mb-1">
                 <Globe className="h-4 w-4 text-muted-foreground" />
-                <p className="text-lg font-bold">AR/EN</p>
               </div>
-              <p className="text-xs text-muted-foreground mt-1">Language</p>
+              <p className="text-xs text-muted-foreground">{langDisplay.primary}</p>
+              <p className="text-xs text-muted-foreground/70 mt-0.5">{langDisplay.secondary}</p>
+            </div>
+
+            {/* Card 3: Hashes */}
+            <div className="bg-muted/50 rounded-lg p-4 transition-all duration-200 hover:bg-muted hover:shadow-sm">
+              <div className="flex items-center justify-center gap-1 mb-2">
+                <Hash className="h-4 w-4 text-muted-foreground" />
+              </div>
+              <div className="space-y-1.5 text-xs">
+                <div className="flex items-center justify-between">
+                  <span className="text-muted-foreground">File:</span>
+                  <code className="font-mono text-foreground">{shortenHash(fileHash)}</code>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-muted-foreground">Canonical:</span>
+                  {canonicalHash ? (
+                    <code className="font-mono text-foreground">{shortenHash(canonicalHash)}</code>
+                  ) : (
+                    <Badge variant="outline" className="text-[10px] px-1.5 py-0">Pending</Badge>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
 
           {/* Technical Details - Collapsible */}
-          {latestDoc.file_sha256 && (
-            <Collapsible open={showTechnicalDetails} onOpenChange={setShowTechnicalDetails} className="mt-4">
-              <CollapsibleTrigger className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors">
-                <ChevronDown className={cn(
-                  "h-3 w-3 transition-transform",
-                  showTechnicalDetails && "rotate-180"
-                )} />
-                Technical details
-              </CollapsibleTrigger>
-              <CollapsibleContent className="mt-2">
+          <Collapsible open={showTechnicalDetails} onOpenChange={setShowTechnicalDetails} className="mt-4">
+            <CollapsibleTrigger className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors">
+              <ChevronDown className={cn(
+                "h-3 w-3 transition-transform",
+                showTechnicalDetails && "rotate-180"
+              )} />
+              Technical details
+            </CollapsibleTrigger>
+            <CollapsibleContent className="mt-2 space-y-2">
+              {fileHash && (
                 <div className="bg-muted/50 rounded p-3 text-xs font-mono text-muted-foreground">
-                  <span className="text-muted-foreground/70">SHA-256: </span>
-                  <span className="break-all">{latestDoc.file_sha256}</span>
+                  <span className="text-muted-foreground/70">File Hash (SHA-256): </span>
+                  <span className="break-all">{fileHash}</span>
                 </div>
-              </CollapsibleContent>
-            </Collapsible>
-          )}
+              )}
+              {canonicalHash && (
+                <div className="bg-muted/50 rounded p-3 text-xs font-mono text-muted-foreground">
+                  <span className="text-muted-foreground/70">Canonical Text Hash: </span>
+                  <span className="break-all">{canonicalHash}</span>
+                </div>
+              )}
+              {extractionWarnings.length > 0 && (
+                <div className="bg-[hsl(var(--warning))]/10 rounded p-3 text-xs">
+                  <span className="text-[hsl(var(--warning))] font-medium">Extraction Warnings:</span>
+                  <ul className="mt-1 list-disc list-inside text-muted-foreground">
+                    {extractionWarnings.map((w, i) => <li key={i}>{w}</li>)}
+                  </ul>
+                </div>
+              )}
+            </CollapsibleContent>
+          </Collapsible>
 
           {/* Actions */}
           <div className="flex gap-3 mt-6">
-            <Button variant="outline" size="sm" className="gap-2 transition-all hover:border-primary hover:shadow-sm" {...getRootProps()}>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="gap-2 transition-all hover:border-primary hover:shadow-sm" 
+              {...getRootProps()}
+            >
               <input {...getInputProps()} />
               <RefreshCw className="h-4 w-4" />
               Replace Document
             </Button>
-            <Button variant="outline" size="sm" className="gap-2 transition-all hover:border-primary hover:shadow-sm">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="gap-2 transition-all hover:border-primary hover:shadow-sm"
+              onClick={handleOpenPreview}
+            >
               <Eye className="h-4 w-4" />
               Preview Text
+            </Button>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="gap-2 transition-all hover:border-primary hover:shadow-sm"
+              onClick={() => {
+                setFullScreenPreview(true);
+                handleOpenPreview();
+              }}
+            >
+              <Maximize2 className="h-4 w-4" />
+              Full Screen Preview
             </Button>
           </div>
         </div>
 
-        {/* Warning Banner for 0 Sections */}
+        {/* Warning Banner for 0 Sections or other quality issues */}
         {quality === 'warning' && (
           <div className="flex items-start gap-3 p-4 rounded-xl bg-[hsl(var(--warning))]/10 border border-[hsl(var(--warning))]/30">
             <AlertTriangle className="h-5 w-5 text-[hsl(var(--warning))] flex-shrink-0 mt-0.5" />
-            <div>
+            <div className="flex-1">
               <p className="text-sm font-medium text-[hsl(var(--warning))]">
-                No sections detected
+                No structural sections detected
               </p>
               <p className="text-xs text-muted-foreground mt-1">
-                This document has no detectable section headings. Analysis results may be limited. 
-                For best results, use documents with clear numbered sections (e.g., "1.0 Introduction", "2.0 Requirements").
+                Downstream analysis quality may be reduced. For best results, use documents with clear numbered sections (e.g., "1.0 Introduction", "2.0 Requirements").
               </p>
             </div>
           </div>
         )}
+
+        {/* HARD_WARN Gating Section */}
+        {isHardWarn && (
+          <div className="p-4 rounded-xl border border-[hsl(var(--warning))]/50 bg-card space-y-4">
+            <div className="flex items-center gap-2">
+              <AlertCircle className="h-5 w-5 text-[hsl(var(--warning))]" />
+              <h4 className="font-semibold text-sm">Quality Review Required</h4>
+            </div>
+            
+            <p className="text-xs text-muted-foreground">
+              This document has quality issues that may affect analysis. Before continuing, you must:
+            </p>
+
+            <div className="space-y-3">
+              {/* Step 1: Review extraction */}
+              <div className={cn(
+                "flex items-center gap-3 p-3 rounded-lg border",
+                hasReviewedExtraction 
+                  ? "border-[hsl(var(--success))]/30 bg-[hsl(var(--success))]/5" 
+                  : "border-border bg-muted/30"
+              )}>
+                <div className={cn(
+                  "w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold",
+                  hasReviewedExtraction 
+                    ? "bg-[hsl(var(--success))] text-white" 
+                    : "bg-muted text-muted-foreground"
+                )}>
+                  {hasReviewedExtraction ? <Check className="h-3.5 w-3.5" /> : '1'}
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm font-medium">Review extracted text</p>
+                  <p className="text-xs text-muted-foreground">Open Preview to verify extraction quality</p>
+                </div>
+                {!hasReviewedExtraction && (
+                  <Button size="sm" variant="outline" onClick={handleOpenPreview} className="shrink-0">
+                    Open Preview
+                  </Button>
+                )}
+              </div>
+
+              {/* Step 2: Acknowledge */}
+              <div className={cn(
+                "flex items-start gap-3 p-3 rounded-lg border",
+                hasAcknowledgedWarn 
+                  ? "border-[hsl(var(--success))]/30 bg-[hsl(var(--success))]/5" 
+                  : "border-border bg-muted/30",
+                !hasReviewedExtraction && "opacity-50 pointer-events-none"
+              )}>
+                <Checkbox 
+                  id="acknowledge-warn"
+                  checked={hasAcknowledgedWarn}
+                  onCheckedChange={handleAcknowledge}
+                  disabled={!hasReviewedExtraction}
+                  className="mt-0.5"
+                />
+                <label htmlFor="acknowledge-warn" className="flex-1 cursor-pointer">
+                  <p className="text-sm font-medium">Proceed in QUALITY-WARN mode</p>
+                  <p className="text-xs text-muted-foreground">
+                    I understand gaps will be recorded: {gaps.join(', ')}
+                  </p>
+                </label>
+              </div>
+            </div>
+
+            {/* Gap list */}
+            {gaps.length > 0 && (
+              <div className="mt-3 p-3 rounded bg-[hsl(var(--warning))]/10 border border-[hsl(var(--warning))]/20">
+                <p className="text-xs font-medium text-[hsl(var(--warning))] mb-2">Detected Gaps:</p>
+                <ul className="space-y-1">
+                  {gaps.map((gap, i) => (
+                    <li key={i} className="text-xs text-muted-foreground flex items-center gap-2">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[hsl(var(--warning))]" />
+                      {gap}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Preview Modal */}
+        <DocumentPreviewModal
+          open={previewOpen}
+          onClose={() => {
+            setPreviewOpen(false);
+            setFullScreenPreview(false);
+          }}
+          extractedText={latestDoc.extracted_text}
+          documentName={latestDoc.file_name}
+          pageCount={pagesTotal}
+          isFullScreen={fullScreenPreview}
+          onToggleFullScreen={() => setFullScreenPreview(!fullScreenPreview)}
+          onFirstView={handleFirstPreviewView}
+        />
       </div>
     );
   }
@@ -385,7 +726,6 @@ export function DocumentCaptureStep({ draftId, documents, onUploadComplete }: Do
           </div>
         </div>
       </div>
-
     </div>
   );
 }
