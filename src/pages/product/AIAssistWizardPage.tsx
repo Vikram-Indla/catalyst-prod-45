@@ -69,13 +69,81 @@ export default function AIAssistWizardPage() {
     }
   }, [draft]);
 
+  const currentStepConfig = WIZARD_STEPS.find(s => s.id === currentStep);
+  const latestDoc = documents?.[0];
+  const hasDocument = !!latestDoc;
+  const hasDocumentText = !!latestDoc?.extracted_text;
+
+  // Step completion requirements - determines which steps are actually complete
+  const getStepCompletionStatus = useCallback(() => {
+    const completed = new Set<number>();
+    
+    // Step 1: Document Capture - complete when document uploaded
+    if (hasDocument) {
+      completed.add(1);
+    }
+    
+    // Step 2: AI Analysis - complete when analysis ran (has extracted text)
+    if (hasDocumentText) {
+      completed.add(2);
+    }
+    
+    // Step 3: FR Processing - check if FR artifact exists
+    const hasFRs = artifacts?.some(a => a.artifact_type === 'functional_requirements');
+    if (hasFRs) {
+      completed.add(3);
+    }
+    
+    // Step 4: Compliance Gate - check if compliance artifact exists
+    const hasCompliance = artifacts?.some(a => a.artifact_type === 'compliance_report');
+    if (hasCompliance) {
+      completed.add(4);
+    }
+    
+    // Step 5: Clarification - check if open_questions artifact exists
+    const hasClarification = artifacts?.some(a => a.artifact_type === 'open_questions');
+    if (hasClarification) {
+      completed.add(5);
+    }
+    
+    // Step 6: BRD Generation - check if BRD artifact exists
+    const hasBRD = artifacts?.some(a => a.artifact_type === 'brd');
+    if (hasBRD) {
+      completed.add(6);
+    }
+    
+    // Step 7: BR Linking - check if link exists (from step_data)
+    const hasLinking = (draft?.step_data as Record<string, unknown>)?.linkedBrId;
+    if (hasLinking) {
+      completed.add(7);
+    }
+    
+    // Step 8: Epic Publishing - check if published
+    if (draft?.status === 'published') {
+      completed.add(8);
+    }
+    
+    return completed;
+  }, [hasDocument, hasDocumentText, artifacts, draft?.step_data, draft?.status]);
+
+  const completedSteps = getStepCompletionStatus();
+
+  // Can only navigate to completed steps or current step
+  const canAccessStep = useCallback((stepId: number) => {
+    return completedSteps.has(stepId) || stepId === currentStep;
+  }, [completedSteps, currentStep]);
+
   // Persist step changes to DB
   const handleStepChange = useCallback((newStep: number) => {
+    // Only allow navigation to accessible steps
+    if (!canAccessStep(newStep) && newStep > currentStep) {
+      return;
+    }
     setCurrentStep(newStep);
     if (draft?.id && newStep !== draft.current_step) {
       updateDraft.mutate({ id: draft.id, updates: { current_step: newStep } });
     }
-  }, [draft, updateDraft]);
+  }, [draft, updateDraft, canAccessStep, currentStep]);
 
   const handleDirChange = useCallback((rtl: boolean) => {
     setIsRtl(rtl);
@@ -84,29 +152,58 @@ export default function AIAssistWizardPage() {
     }
   }, [draft, updateDraft]);
 
-  const currentStepConfig = WIZARD_STEPS.find(s => s.id === currentStep);
-  const latestDoc = documents?.[0];
-  const hasDocumentText = !!latestDoc?.extracted_text;
-
   const handlePrevStep = () => {
     if (currentStep > 1) handleStepChange(currentStep - 1);
   };
 
   const handleNextStep = () => {
+    // Check if current step is complete before allowing next
+    const isCurrentStepComplete = completedSteps.has(currentStep);
+    
     if (currentStepConfig?.key === 'compliance' && !complianceContinueAllowed) {
       return;
     }
-    if (currentStep < 8) handleStepChange(currentStep + 1);
+    
+    // For step 1, require document before proceeding
+    if (currentStep === 1 && !hasDocument) {
+      return;
+    }
+    
+    if (currentStep < 8) {
+      handleStepChange(currentStep + 1);
+    }
   };
 
-  const isNextDisabled =
-    (currentStepConfig?.key === 'compliance' && !complianceContinueAllowed) ||
-    (currentStepConfig?.key === 'analysis' && !hasDocumentText);
+  // Determine if Continue is disabled
+  const getNextDisabledState = () => {
+    switch (currentStep) {
+      case 1:
+        return !hasDocument;
+      case 2:
+        return !hasDocumentText;
+      case 4:
+        return !complianceContinueAllowed;
+      default:
+        return false;
+    }
+  };
 
-  const nextDisabledReason =
-    currentStepConfig?.key === 'compliance' && !complianceContinueAllowed
-      ? 'Justification Required'
-      : undefined;
+  const isNextDisabled = getNextDisabledState();
+
+  const getNextDisabledReason = () => {
+    switch (currentStep) {
+      case 1:
+        return !hasDocument ? 'Upload Document' : undefined;
+      case 2:
+        return !hasDocumentText ? 'Run Analysis' : undefined;
+      case 4:
+        return !complianceContinueAllowed ? 'Justification Required' : undefined;
+      default:
+        return undefined;
+    }
+  };
+
+  const nextDisabledReason = getNextDisabledReason();
 
   // Transform artifacts for step components
   const transformedArtifacts = artifacts?.map(a => ({
@@ -216,6 +313,7 @@ export default function AIAssistWizardPage() {
         <HorizontalStepper
           steps={WIZARD_STEPS}
           currentStep={currentStep}
+          completedSteps={completedSteps}
           onStepClick={handleStepChange}
         />
       </div>
