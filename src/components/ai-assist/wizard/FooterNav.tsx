@@ -32,15 +32,16 @@ export function FooterNav({
   return (
     <footer className="sticky bottom-0 bg-card border-t border-border/50 px-6 py-4 flex items-center justify-between shadow-[0_-4px_12px_rgba(0,0,0,0.04)]">
       <div className="flex items-center gap-3">
-        <Button
-          variant="outline"
-          onClick={onPrevious}
-          disabled={isFirstStep}
-          className="gap-2"
-        >
-          <ChevronLeft className="h-4 w-4" />
-          Previous
-        </Button>
+        {!isFirstStep && (
+          <Button
+            variant="outline"
+            onClick={onPrevious}
+            className="gap-2"
+          >
+            <ChevronLeft className="h-4 w-4" />
+            Previous
+          </Button>
+        )}
       </div>
 
       <div className="flex items-center gap-3">
