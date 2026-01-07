@@ -331,8 +331,8 @@ export function CapacityAIDrawer({ isOpen, onClose }: CapacityAIDrawerProps) {
         {/* Header - Dark Executive Style */}
         <header className="flex items-center justify-between px-5 py-4 bg-[#1A1A1A]">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#C69C6D] to-[#8B7355] flex items-center justify-center shadow-lg">
-              <span className="text-white font-bold text-lg">C</span>
+            <div className="w-11 h-11 rounded-full bg-[#5C7C5C] flex items-center justify-center shadow-lg">
+              <Bot className="w-6 h-6 text-white" />
             </div>
             <div>
               <h2 className="text-[17px] font-bold text-white tracking-wide">Caty</h2>

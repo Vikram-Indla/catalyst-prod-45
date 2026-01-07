@@ -6,7 +6,7 @@
  */
 
 import React from 'react';
-import { Check, X, AlertTriangle, ExternalLink, Wrench, Shield, Radio, UserCog } from 'lucide-react';
+import { Check, X, AlertTriangle, ExternalLink, Wrench, Shield, Radio, UserCog, Bot } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export interface AIResponseData {
@@ -77,8 +77,8 @@ export function CapacityAIResponseCard({ data, onAction }: CapacityAIResponseCar
       <div className="px-4 py-3 border-b border-[#C8CCD0] dark:border-[#C8CCD0]/20 bg-[#1A1A1A] dark:bg-[#1A1A1A]">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#C69C6D] to-[#8B7355] flex items-center justify-center shadow-md">
-              <span className="text-white font-bold text-sm">C</span>
+            <div className="w-9 h-9 rounded-full bg-[#5C7C5C] flex items-center justify-center shadow-md">
+              <Bot className="w-5 h-5 text-white" />
             </div>
             <div>
               <h3 className="text-sm font-bold text-white tracking-wide">Caty</h3>
