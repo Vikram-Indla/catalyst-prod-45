@@ -10,7 +10,6 @@ import {
   Link2, 
   Activity,
   Building2,
-  UserCog,
   Briefcase,
   MapPin,
   Globe,
@@ -21,7 +20,6 @@ import {
   Bell,
   Palette,
   Import,
-  KeyRound,
   Package,
   BarChart3,
   Clock,
@@ -33,8 +31,6 @@ import { Plus } from 'lucide-react';
 type AdminSectionType = 
   | 'users'
   | 'roles-permissions'
-  | 'team-roles'
-  | 'system-roles'
   | 'programs' // formerly projects
   | 'portfolios' // formerly programs
   | 'departments'
@@ -82,20 +78,6 @@ const SECTION_CONFIG: Record<AdminSectionType, SectionConfig> = {
     title: 'No roles configured',
     subtitle: 'Create roles to manage user permissions across the platform.',
     ctaLabel: 'Create role',
-    showCta: true,
-  },
-  'team-roles': {
-    icon: UserCog,
-    title: 'No team roles defined',
-    subtitle: 'Define team roles like Scrum Master, Product Owner, or Developer.',
-    ctaLabel: 'Add team role',
-    showCta: true,
-  },
-  'system-roles': {
-    icon: KeyRound,
-    title: 'No system roles configured',
-    subtitle: 'System roles control access to administrative functions.',
-    ctaLabel: 'Add system role',
     showCta: true,
   },
   'programs': {
