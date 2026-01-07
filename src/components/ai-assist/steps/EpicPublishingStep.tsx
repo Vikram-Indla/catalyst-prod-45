@@ -1,31 +1,43 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { Send, CheckCircle2, ChevronDown, FileText, Link2, Zap, ExternalLink, Loader2 } from 'lucide-react';
+import { 
+  Rocket, CheckCircle2, ChevronDown, ChevronRight, FileText, Link2, Zap, 
+  ExternalLink, Loader2, Target, Calendar, Copy, Eye, BarChart3, 
+  Download, Users, Trophy, Layers
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { cn } from '@/lib/utils';
 import { catalystToast } from '@/lib/catalystToast';
 import { useArtifactByType } from '@/hooks/useAIAssistArtifacts';
 import { useAIAssistLinks } from '@/hooks/useAIAssistLinks';
 import { usePublishEpics, usePublishedEpics } from '@/hooks/useAIAssistPublish';
+import { useNavigate } from 'react-router-dom';
 
 interface Epic {
   id: string;
   title: string;
   description: string;
   frCount: number;
+  storyPoints: number;
   references: string[];
   priority: 'high' | 'medium' | 'low';
+  quarter: string;
   selected: boolean;
 }
 
 interface PublishedEpic {
   epicId: string;
+  publishedId: string;
   epicTitle: string;
-  backlogId: string;
+  description: string;
+  priority: 'high' | 'medium' | 'low';
+  frCount: number;
+  storyPoints: number;
+  quarter: string;
+  linkedBR: string | null;
 }
 
 export interface EpicPublishingStepProps {
@@ -33,12 +45,335 @@ export interface EpicPublishingStepProps {
   runId?: string;
 }
 
+// ============ CONFETTI COMPONENT ============
+function Confetti({ active }: { active: boolean }) {
+  if (!active) return null;
+  
+  const colors = ['hsl(var(--primary))', 'hsl(var(--success))', 'hsl(var(--warning))', 'hsl(var(--destructive))', '#8b5cf6', '#ec4899'];
+  const confettiPieces = useMemo(() => Array.from({ length: 50 }, (_, i) => ({
+    id: i,
+    left: Math.random() * 100,
+    delay: Math.random() * 0.5,
+    duration: 2 + Math.random() * 2,
+    color: colors[Math.floor(Math.random() * colors.length)],
+    size: 8 + Math.random() * 8,
+    rotation: Math.random() * 360,
+    isCircle: Math.random() > 0.5
+  })), []);
+  
+  return (
+    <div className="fixed inset-0 pointer-events-none overflow-hidden z-50">
+      {confettiPieces.map((piece) => (
+        <div
+          key={piece.id}
+          className="absolute animate-confetti-fall"
+          style={{
+            left: `${piece.left}%`,
+            top: '-20px',
+            width: piece.size,
+            height: piece.size,
+            backgroundColor: piece.color,
+            borderRadius: piece.isCircle ? '50%' : '2px',
+            animationDelay: `${piece.delay}s`,
+            animationDuration: `${piece.duration}s`,
+            transform: `rotate(${piece.rotation}deg)`
+          }}
+        />
+      ))}
+    </div>
+  );
+}
+
+// ============ EPIC CARD COMPONENT ============
+function EpicCard({ 
+  epic, 
+  index, 
+  isPublished,
+  isSelected,
+  onToggle
+}: { 
+  epic: Epic | PublishedEpic; 
+  index: number; 
+  isPublished: boolean;
+  isSelected?: boolean;
+  onToggle?: (id: string, checked: boolean) => void;
+}) {
+  const [isExpanded, setIsExpanded] = useState(false);
+  
+  const priorityConfig = {
+    high: { bg: 'bg-destructive/10', text: 'text-destructive', border: 'border-destructive/20' },
+    medium: { bg: 'bg-[hsl(var(--warning))]/10', text: 'text-[hsl(var(--warning))]', border: 'border-[hsl(var(--warning))]/20' },
+    low: { bg: 'bg-[hsl(var(--info))]/10', text: 'text-[hsl(var(--info))]', border: 'border-[hsl(var(--info))]/20' },
+  };
+  
+  const priority = priorityConfig[epic.priority] || priorityConfig.medium;
+  const epicId = 'epicId' in epic ? epic.epicId : epic.id;
+  const publishedId = 'publishedId' in epic ? epic.publishedId : null;
+  const frCount = epic.frCount;
+  const storyPoints = epic.storyPoints || 0;
+  const quarter = epic.quarter || '';
+  const linkedBR = 'linkedBR' in epic ? epic.linkedBR : null;
+  const title = 'epicTitle' in epic ? epic.epicTitle : epic.title;
+  const description = epic.description;
+  
+  return (
+    <div 
+      className={cn(
+        "rounded-2xl border-2 overflow-hidden transition-all duration-500",
+        isPublished 
+          ? "bg-gradient-to-br from-[hsl(var(--success))]/5 to-emerald-50 border-[hsl(var(--success))]/30" 
+          : "bg-card border-border hover:border-primary/30 hover:shadow-md"
+      )}
+      style={{ 
+        animationDelay: `${index * 0.1}s`,
+        animation: isPublished ? 'slideInUp 0.5s ease-out forwards' : 'none'
+      }}
+    >
+      {/* Header */}
+      <div className="p-5">
+        <div className="flex items-start justify-between gap-4">
+          <div className="flex items-start gap-4">
+            {/* Index/Status Badge */}
+            {!isPublished && onToggle && (
+              <Checkbox
+                checked={isSelected}
+                onCheckedChange={(checked) => onToggle(epicId, !!checked)}
+                className="mt-3"
+              />
+            )}
+            <div className={cn(
+              "w-12 h-12 rounded-xl flex items-center justify-center shrink-0 transition-all duration-500",
+              isPublished 
+                ? "bg-[hsl(var(--success))] text-white shadow-lg shadow-[hsl(var(--success))]/30" 
+                : "bg-muted text-muted-foreground"
+            )}>
+              {isPublished ? (
+                <CheckCircle2 className="w-6 h-6" />
+              ) : (
+                <span className="text-lg font-bold">{index + 1}</span>
+              )}
+            </div>
+            
+            {/* Epic Info */}
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <span className={cn(
+                  "px-2 py-0.5 rounded text-xs font-mono font-semibold",
+                  isPublished ? "bg-[hsl(var(--success))]/20 text-[hsl(var(--success))]" : "bg-muted text-muted-foreground"
+                )}>
+                  {isPublished && publishedId ? publishedId : epicId}
+                </span>
+                {isPublished && publishedId && (
+                  <span className="text-xs text-muted-foreground">← {epicId}</span>
+                )}
+              </div>
+              <h3 className="font-semibold text-foreground text-lg">{title}</h3>
+              <p className="text-sm text-muted-foreground mt-1 line-clamp-2">{description}</p>
+            </div>
+          </div>
+          
+          {/* Priority Badge */}
+          <Badge 
+            variant="outline" 
+            className={cn("shrink-0 uppercase", priority.bg, priority.text, priority.border)}
+          >
+            {epic.priority}
+          </Badge>
+        </div>
+        
+        {/* Metrics Row */}
+        <div className="flex items-center gap-4 mt-4 pt-4 border-t border-border">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <FileText className="w-4 h-4" />
+            <span>{frCount} FRs</span>
+          </div>
+          {storyPoints > 0 && (
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <Target className="w-4 h-4" />
+              <span>{storyPoints} points</span>
+            </div>
+          )}
+          {quarter && (
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <Calendar className="w-4 h-4" />
+              <span>{quarter}</span>
+            </div>
+          )}
+          {linkedBR && (
+            <div className="flex items-center gap-2 text-sm text-primary">
+              <Link2 className="w-4 h-4" />
+              <span>{linkedBR}</span>
+            </div>
+          )}
+        </div>
+      </div>
+      
+      {/* Published Actions */}
+      {isPublished && (
+        <div className="px-5 pb-5 flex items-center gap-2">
+          <Button 
+            size="sm" 
+            variant="outline" 
+            className="gap-2 border-[hsl(var(--success))]/30 text-[hsl(var(--success))] hover:bg-[hsl(var(--success))]/5"
+          >
+            <Eye className="w-4 h-4" />
+            View in Board
+          </Button>
+          <Button 
+            size="sm" 
+            variant="outline" 
+            className="gap-2"
+            onClick={() => {
+              navigator.clipboard.writeText(publishedId || epicId);
+              catalystToast.success('ID copied to clipboard');
+            }}
+          >
+            <Copy className="w-4 h-4" />
+            Copy ID
+          </Button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ============ SUCCESS SUMMARY COMPONENT ============
+function SuccessSummary({ stats }: { stats: { epics: number; features: number; frs: number; points: number } }) {
+  return (
+    <div className="p-8 rounded-3xl bg-gradient-to-br from-[hsl(var(--success))] via-[hsl(var(--success))] to-emerald-600 text-white mb-8 relative overflow-hidden">
+      {/* Background decoration */}
+      <div className="absolute inset-0 opacity-10">
+        <div className="absolute top-0 right-0 w-64 h-64 rounded-full bg-white blur-3xl transform translate-x-1/2 -translate-y-1/2" />
+        <div className="absolute bottom-0 left-0 w-64 h-64 rounded-full bg-white blur-3xl transform -translate-x-1/2 translate-y-1/2" />
+      </div>
+      
+      <div className="relative">
+        {/* Header */}
+        <div className="flex items-center gap-4 mb-8">
+          <div className="w-16 h-16 rounded-2xl bg-white/20 backdrop-blur flex items-center justify-center">
+            <Trophy className="w-8 h-8 text-white" />
+          </div>
+          <div>
+            <h2 className="text-2xl font-bold">Successfully Published!</h2>
+            <p className="text-white/80">Your requirements are now live in the program board</p>
+          </div>
+        </div>
+        
+        {/* Stats Grid */}
+        <div className="grid grid-cols-4 gap-4">
+          <div className="p-4 rounded-2xl bg-white/10 backdrop-blur">
+            <div className="text-4xl font-bold mb-1">{stats.epics}</div>
+            <div className="text-sm text-white/80">Epics Created</div>
+          </div>
+          <div className="p-4 rounded-2xl bg-white/10 backdrop-blur">
+            <div className="text-4xl font-bold mb-1">{stats.features}</div>
+            <div className="text-sm text-white/80">Features</div>
+          </div>
+          <div className="p-4 rounded-2xl bg-white/10 backdrop-blur">
+            <div className="text-4xl font-bold mb-1">{stats.frs}</div>
+            <div className="text-sm text-white/80">Requirements</div>
+          </div>
+          <div className="p-4 rounded-2xl bg-white/10 backdrop-blur">
+            <div className="text-4xl font-bold mb-1">{stats.points}</div>
+            <div className="text-sm text-white/80">Story Points</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ============ NEXT ACTIONS COMPONENT ============
+function NextActions() {
+  const navigate = useNavigate();
+  
+  const actions = [
+    { 
+      icon: Layers, 
+      title: 'View in Program Board', 
+      desc: 'See epics in roadmap context',
+      primary: true,
+      href: '/program-board'
+    },
+    { 
+      icon: Users, 
+      title: 'Assign Teams', 
+      desc: 'Set ownership for each epic',
+      primary: false,
+      href: '/team-management'
+    },
+    { 
+      icon: BarChart3, 
+      title: 'View Analytics', 
+      desc: 'Compliance and quality metrics',
+      primary: false,
+      href: '/analytics'
+    },
+    { 
+      icon: Download, 
+      title: 'Export Report', 
+      desc: 'Download full BRD package',
+      primary: false,
+      href: '#'
+    },
+  ];
+  
+  return (
+    <div className="mb-8">
+      <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
+        <Zap className="w-5 h-5 text-[hsl(var(--warning))]" />
+        What's Next
+      </h3>
+      <div className="grid grid-cols-4 gap-4">
+        {actions.map((action, index) => {
+          const Icon = action.icon;
+          return (
+            <button
+              key={index}
+              onClick={() => action.href !== '#' && navigate(action.href)}
+              className={cn(
+                "p-5 rounded-2xl border-2 transition-all duration-200 group text-left",
+                action.primary 
+                  ? "bg-primary border-primary text-primary-foreground hover:bg-primary/90" 
+                  : "bg-card border-border hover:border-primary/30 hover:shadow-md"
+              )}
+            >
+              <Icon className={cn(
+                "w-6 h-6 mb-3",
+                action.primary ? "text-primary-foreground" : "text-muted-foreground group-hover:text-primary"
+              )} />
+              <div className={cn(
+                "font-semibold mb-1",
+                action.primary ? "text-primary-foreground" : "text-foreground"
+              )}>
+                {action.title}
+              </div>
+              <div className={cn(
+                "text-sm",
+                action.primary ? "text-primary-foreground/80" : "text-muted-foreground"
+              )}>
+                {action.desc}
+              </div>
+              <ChevronRight className={cn(
+                "w-5 h-5 mt-3 transition-transform group-hover:translate-x-1",
+                action.primary ? "text-primary-foreground" : "text-muted-foreground/50"
+              )} />
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+// ============ MAIN COMPONENT ============
 export function EpicPublishingStep({
   draftId,
   runId
 }: EpicPublishingStepProps) {
-  const [expandedEpic, setExpandedEpic] = useState<string | null>(null);
+  const navigate = useNavigate();
   const [selectedEpicIds, setSelectedEpicIds] = useState<Set<string>>(new Set());
+  const [showConfetti, setShowConfetti] = useState(false);
   
   // Fetch epics artifact
   const { data: epicsArtifact, isLoading: isLoadingEpics } = useArtifactByType(runId, 'epics');
@@ -60,7 +395,6 @@ export function EpicPublishingStep({
     const currentQuarter = Math.ceil((now.getMonth() + 1) / 3);
     const quarters: string[] = [];
     
-    // Generate 4 quarters starting from current
     for (let i = 0; i < 4; i++) {
       const q = ((currentQuarter - 1 + i) % 4) + 1;
       const year = currentYear + Math.floor((currentQuarter - 1 + i) / 4);
@@ -71,7 +405,6 @@ export function EpicPublishingStep({
 
   const [publishOptions, setPublishOptions] = useState({
     targetQuarter: availableQuarters[0] || '',
-    publishMode: 'generate_publish',
     createFeatures: true,
     linkToBR: !!linkedBRKey
   });
@@ -80,12 +413,6 @@ export function EpicPublishingStep({
   useEffect(() => {
     setPublishOptions(prev => ({ ...prev, linkToBR: !!linkedBRKey }));
   }, [linkedBRKey]);
-
-  const priorityColors = {
-    high: 'bg-destructive/10 text-destructive border-destructive/20',
-    medium: 'bg-[hsl(var(--warning))]/10 text-[hsl(var(--warning))] border-[hsl(var(--warning))]/20',
-    low: 'bg-muted text-muted-foreground border-border'
-  };
 
   // Parse epics from artifact
   const epics: Epic[] = useMemo(() => {
@@ -97,8 +424,11 @@ export function EpicPublishingStep({
       description?: string;
       fr_count?: number;
       frCount?: number;
+      story_points?: number;
+      storyPoints?: number;
       references?: string[];
       priority?: string;
+      quarter?: string;
     }> };
     
     if (!content.epics || !Array.isArray(content.epics)) return [];
@@ -108,11 +438,13 @@ export function EpicPublishingStep({
       title: e.title || 'Untitled Epic',
       description: e.description || '',
       frCount: e.fr_count ?? e.frCount ?? 0,
+      storyPoints: e.story_points ?? e.storyPoints ?? 0,
       references: e.references || [],
       priority: (e.priority?.toLowerCase() as 'high' | 'medium' | 'low') || 'medium',
+      quarter: e.quarter || publishOptions.targetQuarter,
       selected: true
     }));
-  }, [epicsArtifact]);
+  }, [epicsArtifact, publishOptions.targetQuarter]);
 
   // Initialize selection when epics load
   useEffect(() => {
@@ -124,14 +456,26 @@ export function EpicPublishingStep({
   // Transform published epics for display
   const publishedEpics: PublishedEpic[] = useMemo(() => {
     return publishedEpicsData.map(pe => {
-      const pubData = pe.published_data as { title?: string } | null;
+      const pubData = pe.published_data as { 
+        title?: string; 
+        source_id?: string;
+        description?: string;
+        quarter?: string;
+        epic_key?: string;
+      } | null;
       return {
-        epicId: pe.id.slice(0, 8).toUpperCase(),
+        epicId: pubData?.source_id || pe.id.slice(0, 8).toUpperCase(),
+        publishedId: pubData?.epic_key || pe.epic_id || `EPB-${pe.id.slice(0, 8)}`,
         epicTitle: pubData?.title || 'Published Epic',
-        backlogId: pe.epic_id || `EPB-${pe.id.slice(0, 8)}`
+        description: pubData?.description || '',
+        priority: 'medium' as const,
+        frCount: 0,
+        storyPoints: 0,
+        quarter: pubData?.quarter || '',
+        linkedBR: linkedBRKey || null
       };
     });
-  }, [publishedEpicsData]);
+  }, [publishedEpicsData, linkedBRKey]);
 
   const displayEpics = epics.map(e => ({
     ...e,
@@ -140,6 +484,7 @@ export function EpicPublishingStep({
 
   const selectedEpics = displayEpics.filter(e => e.selected);
   const totalFRs = displayEpics.reduce((sum, e) => sum + e.frCount, 0);
+  const totalPoints = displayEpics.reduce((sum, e) => sum + e.storyPoints, 0);
 
   const handleEpicToggle = (epicId: string, selected: boolean) => {
     setSelectedEpicIds(prev => {
@@ -180,6 +525,8 @@ export function EpicPublishingStep({
       },
       {
         onSuccess: () => {
+          setShowConfetti(true);
+          setTimeout(() => setShowConfetti(false), 4000);
           catalystToast.success('Epics Published!', `${selectedEpics.length} epics created in ${publishOptions.targetQuarter} backlog`);
         }
       }
@@ -189,7 +536,14 @@ export function EpicPublishingStep({
   const isGenerating = isLoadingEpics;
   const isPublishing = publishMutation.isPending;
 
-  // Generating state
+  const stats = {
+    epics: publishedEpics.length,
+    features: publishedEpics.length * 2, // Estimate
+    frs: totalFRs,
+    points: totalPoints
+  };
+
+  // ============ GENERATING STATE ============
   if (isGenerating) {
     return (
       <div className="space-y-6">
@@ -209,74 +563,57 @@ export function EpicPublishingStep({
     );
   }
 
-  // Published success state with celebration
+  // ============ PUBLISHED SUCCESS STATE ============
   if (publishedEpics.length > 0) {
     return (
-      <div className="relative text-center py-16 overflow-hidden">
-        {/* CSS Confetti particles */}
-        <div className="absolute inset-0 pointer-events-none overflow-hidden">
-          {[...Array(20)].map((_, i) => (
-            <div
-              key={i}
-              className="confetti-particle"
-              style={{
-                left: `${Math.random() * 100}%`,
-                backgroundColor: ['#0d9488', '#2563eb', '#f59e0b', '#ec4899'][i % 4],
-                animationDelay: `${Math.random() * 0.5}s`,
-                borderRadius: i % 2 === 0 ? '50%' : '0',
-              }}
-            />
-          ))}
-        </div>
-
-        {/* Celebration icon with pulse animation */}
-        <div className="w-24 h-24 mx-auto mb-6 bg-[hsl(var(--success))] rounded-full flex items-center justify-center shadow-lg shadow-[hsl(var(--success))]/25 celebration-pulse">
-          <CheckCircle2 className="w-12 h-12 text-white check-draw" />
-        </div>
+      <div className="relative">
+        <Confetti active={showConfetti} />
         
-        <h2 className="text-2xl font-bold text-foreground mb-2">
-          Successfully Published! 🎉
-        </h2>
-        <p className="text-muted-foreground mb-8">
-          {publishedEpics.length} Epics are now live in the Program Board
-        </p>
+        {/* Success Summary */}
+        <SuccessSummary stats={stats} />
         
-        {/* Published epics list with stagger animation */}
-        <div className="max-w-sm mx-auto space-y-2 mb-8">
-          {publishedEpics.map((epic, index) => (
-            <div
-              key={epic.epicId}
-              className="stagger-item p-3 bg-[hsl(var(--success))]/10 rounded-lg flex items-center gap-3 text-sm border border-[hsl(var(--success))]/20"
-              style={{ animationDelay: `${index * 100}ms` }}
-            >
-              <CheckCircle2 className="w-4 h-4 text-[hsl(var(--success))]" />
-              <span className="font-mono">{epic.epicId}</span>
-              <span className="text-muted-foreground">→</span>
-              <span className="font-mono text-[hsl(var(--success))]">{epic.backlogId}</span>
-            </div>
-          ))}
+        {/* Next Actions */}
+        <NextActions />
+        
+        {/* Published Epics */}
+        <div>
+          <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
+            <CheckCircle2 className="w-5 h-5 text-[hsl(var(--success))]" />
+            Published Epics
+          </h3>
+          <div className="space-y-4">
+            {publishedEpics.map((epic, index) => (
+              <EpicCard 
+                key={epic.epicId} 
+                epic={epic} 
+                index={index} 
+                isPublished={true} 
+              />
+            ))}
+          </div>
         </div>
         
-        <div className="flex gap-4 justify-center">
-          <Button size="lg" className="gap-2 bg-[hsl(var(--success))] hover:bg-[hsl(var(--success))]/90">
-            <ExternalLink className="w-4 h-4" />
-            View in Program Board
-          </Button>
-          <Button variant="outline" size="lg">
-            Return to Drafts
+        {/* Return Home */}
+        <div className="mt-8 text-center">
+          <Button 
+            variant="outline" 
+            size="lg"
+            onClick={() => navigate('/product/ai-assist')}
+          >
+            Start New AI Assist Draft
           </Button>
         </div>
       </div>
     );
   }
 
-  // Empty state
+  // ============ EMPTY STATE ============
   if (displayEpics.length === 0) {
     return (
       <div className="space-y-6">
         <div className="bg-card border border-border rounded-xl p-12 text-center">
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-muted mb-6">
-            <Send className="h-8 w-8 text-muted-foreground" />
+            <Rocket className="h-8 w-8 text-muted-foreground" />
           </div>
           
           <h3 className="text-lg font-semibold mb-2">No Epics Generated</h3>
@@ -288,19 +625,46 @@ export function EpicPublishingStep({
     );
   }
 
-  // Main state with epics
+  // ============ PRE-PUBLISH STATE ============
   return (
     <div className="space-y-6">
-      {/* Configuration Section - AT TOP */}
-      <div className="bg-card border border-border rounded-xl p-4">
-        <div className="grid grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label className="text-sm font-medium">Target Quarter</Label>
+      <Confetti active={showConfetti} />
+      
+      {/* Header */}
+      <div className="text-center mb-8">
+        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium mb-4">
+          <Rocket className="w-4 h-4" />
+          Step 8 of 8 • Final Step
+        </div>
+        <h1 className="text-2xl font-bold text-foreground mb-2">
+          Publish Epics to Program Board
+        </h1>
+        <p className="text-muted-foreground">
+          Review your epics and publish them to start execution
+        </p>
+      </div>
+      
+      {/* Summary Bar */}
+      <div className="p-4 rounded-2xl bg-primary/5 border border-primary/20 flex items-center justify-between">
+        <div className="flex items-center gap-6">
+          <div className="flex items-center gap-2">
+            <Layers className="w-5 h-5 text-primary" />
+            <span className="font-semibold text-primary">{displayEpics.length} Epics</span>
+          </div>
+          <div className="text-sm text-muted-foreground">
+            {totalFRs} FRs • {totalPoints} Story Points
+          </div>
+        </div>
+        
+        {/* Configuration */}
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
+            <Label className="text-sm text-muted-foreground">Target:</Label>
             <Select 
               value={publishOptions.targetQuarter}
               onValueChange={(v) => setPublishOptions(prev => ({ ...prev, targetQuarter: v }))}
             >
-              <SelectTrigger className="focus:ring-2 focus:ring-primary/20 focus:border-primary">
+              <SelectTrigger className="w-28 h-8">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -310,122 +674,45 @@ export function EpicPublishingStep({
               </SelectContent>
             </Select>
           </div>
-          <div className="space-y-2">
-            <Label className="text-sm font-medium">Publish Mode</Label>
-            <Select 
-              value={publishOptions.publishMode}
-              onValueChange={(v) => setPublishOptions(prev => ({ ...prev, publishMode: v }))}
-            >
-              <SelectTrigger className="focus:ring-2 focus:ring-primary/20 focus:border-primary">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="preview">Generate Only (Preview)</SelectItem>
-                <SelectItem value="generate_publish">Generate & Publish</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+          
+          <Button
+            onClick={handlePublish}
+            disabled={isPublishing || selectedEpics.length === 0}
+            className="gap-2 bg-primary hover:bg-primary/90 shadow-lg shadow-primary/30"
+          >
+            {isPublishing ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Publishing...
+              </>
+            ) : (
+              <>
+                <Rocket className="w-4 h-4" />
+                Publish {selectedEpics.length} Epics
+              </>
+            )}
+          </Button>
         </div>
       </div>
-
-      {/* Epic Preview */}
-      <div className="bg-card border border-border rounded-xl overflow-hidden">
-        <div className="p-4 border-b border-border flex items-center justify-between">
-          <div>
-            <h4 className="font-semibold">Epic Preview</h4>
-            <p className="text-sm text-muted-foreground">
-              {displayEpics.length} Epics Generated from {totalFRs} Functional Requirements
-            </p>
-          </div>
+      
+      {/* Selection Controls */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <span className="text-sm text-muted-foreground">
+            {selectedEpics.length} of {displayEpics.length} selected
+          </span>
           <div className="flex items-center gap-2">
-            <Button variant="ghost" size="sm" onClick={handleSelectAll} className="transition-all hover:bg-primary/10">
+            <Button variant="ghost" size="sm" onClick={handleSelectAll}>
               Select All
             </Button>
-            <Button variant="ghost" size="sm" onClick={handleDeselectAll} className="transition-all hover:bg-primary/10">
+            <Button variant="ghost" size="sm" onClick={handleDeselectAll}>
               Deselect All
             </Button>
           </div>
         </div>
-
-        <div className="divide-y divide-border">
-          {displayEpics.map((epic) => (
-            <Collapsible
-              key={epic.id}
-              open={expandedEpic === epic.id}
-              onOpenChange={(open) => setExpandedEpic(open ? epic.id : null)}
-            >
-              <div className="p-4 transition-all duration-200 hover:bg-muted/50">
-                <div className="flex items-start gap-3">
-                  <Checkbox
-                    checked={epic.selected}
-                    onCheckedChange={(checked) => handleEpicToggle(epic.id, !!checked)}
-                    className="mt-1"
-                  />
-                  <div className="flex-1">
-                    <CollapsibleTrigger asChild>
-                      <button className="w-full text-start hover:opacity-80 transition-opacity">
-                        <div className="flex items-center gap-2 mb-1">
-                          <Badge variant="outline" className="font-mono text-xs">
-                            {epic.id}
-                          </Badge>
-                          <span className="font-medium">{epic.title}</span>
-                        </div>
-                        <p className="text-sm text-muted-foreground line-clamp-1">
-                          {epic.description}
-                        </p>
-                        <div className="flex items-center gap-3 mt-2">
-                          <Badge variant="secondary" className="text-xs gap-1">
-                            <FileText className="h-3 w-3" />
-                            {epic.frCount} FRs
-                          </Badge>
-                          <Badge variant="secondary" className="text-xs gap-1">
-                            <Link2 className="h-3 w-3" />
-                            {epic.references.length} refs
-                          </Badge>
-                          <Badge 
-                            variant="outline" 
-                            className={cn('text-xs capitalize', priorityColors[epic.priority])}
-                          >
-                            {epic.priority}
-                          </Badge>
-                        </div>
-                      </button>
-                    </CollapsibleTrigger>
-
-                    <CollapsibleContent>
-                      <div className="mt-4 pt-4 border-t border-border space-y-3">
-                        <div className="text-sm text-muted-foreground">
-                          <span className="font-medium text-foreground">References: </span>
-                          {epic.references.length > 0 ? epic.references.join(', ') : '—'}
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Button size="sm" variant="outline" className="transition-all hover:border-primary">Edit</Button>
-                          <Button size="sm" variant="ghost">View FRs</Button>
-                          <Button size="sm" variant="ghost" className="text-destructive hover:text-destructive hover:bg-destructive/10">
-                            Remove from publish
-                          </Button>
-                        </div>
-                      </div>
-                    </CollapsibleContent>
-                  </div>
-                  <ChevronDown className={cn(
-                    "h-4 w-4 text-muted-foreground transition-transform",
-                    expandedEpic === epic.id && "rotate-180"
-                  )} />
-                </div>
-              </div>
-            </Collapsible>
-          ))}
-        </div>
-      </div>
-
-      {/* Publish Action */}
-      <div className="bg-card border border-primary/30 rounded-xl p-6">
-        <p className="text-sm mb-4">
-          Ready to publish <strong>{selectedEpics.length}</strong> epics to Program Board backlog
-        </p>
-
-        <div className="space-y-3 mb-6">
+        
+        {/* Options */}
+        <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
             <Checkbox
               id="createFeatures"
@@ -435,7 +722,7 @@ export function EpicPublishingStep({
               }
             />
             <Label htmlFor="createFeatures" className="text-sm cursor-pointer">
-              Also create child features from FRs
+              Create child features
             </Label>
           </div>
           {linkedBRKey && (
@@ -448,31 +735,25 @@ export function EpicPublishingStep({
                 }
               />
               <Label htmlFor="linkToBR" className="text-sm cursor-pointer">
-                Link to Business Request {linkedBRKey}
+                Link to {linkedBRKey}
               </Label>
             </div>
           )}
         </div>
-
-        {/* Button says "Publish X Epics" */}
-        <Button 
-          className="w-full gap-2 bg-[hsl(var(--success))] hover:bg-[hsl(var(--success))]/90" 
-          size="lg"
-          onClick={handlePublish}
-          disabled={isPublishing || selectedEpics.length === 0}
-        >
-          {isPublishing ? (
-            <>
-              <Loader2 className="h-4 w-4 animate-spin" />
-              Publishing...
-            </>
-          ) : (
-            <>
-              <Send className="h-4 w-4" />
-              Publish {selectedEpics.length} Epics to Backlog
-            </>
-          )}
-        </Button>
+      </div>
+      
+      {/* Epics List */}
+      <div className="space-y-4">
+        {displayEpics.map((epic, index) => (
+          <EpicCard 
+            key={epic.id} 
+            epic={{...epic, quarter: publishOptions.targetQuarter, linkedBR: publishOptions.linkToBR ? linkedBRKey : null} as any}
+            index={index} 
+            isPublished={false}
+            isSelected={epic.selected}
+            onToggle={handleEpicToggle}
+          />
+        ))}
       </div>
     </div>
   );
