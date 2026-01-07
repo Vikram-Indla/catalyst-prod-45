@@ -24,19 +24,26 @@ serve(async (req) => {
     const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    // Fetch capacity data for context
-    const [resourcesResult, allocationsResult, assignmentsResult] = await Promise.all([
-      supabase.from("resource_inventory").select("*").eq("is_active", true),
+    // Fetch ALL capacity data for context - include everything
+    const [resourcesResult, allocationsResult, assignmentsResult, rolesResult, vendorsResult, departmentsResult] = await Promise.all([
+      supabase.from("resource_inventory").select("*"),
       supabase.from("resource_allocations").select("*"),
-      supabase.from("resource_assignments").select("*").eq("is_active", true),
+      supabase.from("resource_assignments").select("*"),
+      supabase.from("resource_roles").select("*"),
+      supabase.from("resource_vendors").select("*"),
+      supabase.from("capacity_departments").select("*"),
     ]);
 
     const resources = resourcesResult.data || [];
     const allocations = allocationsResult.data || [];
     const assignments = assignmentsResult.data || [];
+    const roles = rolesResult.data || [];
+    const vendors = vendorsResult.data || [];
+    const departments = departmentsResult.data || [];
 
     // Calculate capacity metrics
-    const totalResources = resources.length;
+    const activeResources = resources.filter((r: any) => r.is_active);
+    const totalResources = activeResources.length;
     const resourcesWithAllocations = new Map<string, number>();
     
     allocations.forEach((alloc: any) => {
@@ -49,7 +56,7 @@ serve(async (req) => {
     let optimallyAllocated = 0;
     let totalUtilization = 0;
     
-    resources.forEach((resource: any) => {
+    activeResources.forEach((resource: any) => {
       const allocated = resourcesWithAllocations.get(resource.id) || 0;
       totalUtilization += allocated;
       
@@ -60,61 +67,106 @@ serve(async (req) => {
 
     const avgUtilization = totalResources > 0 ? Math.round(totalUtilization / totalResources) : 0;
 
-    // Build resource details for AI context
+    // Build COMPLETE resource details for AI context - include ALL fields
     const resourceDetails = resources.map((r: any) => {
       const allocated = resourcesWithAllocations.get(r.id) || 0;
       const available = Math.max(0, 100 - allocated);
+      
+      // Get allocation details for this resource
+      const resourceAllocations = allocations
+        .filter((a: any) => a.resource_id === r.id)
+        .map((a: any) => {
+          const assignment = assignments.find((asn: any) => asn.id === a.assignment_id);
+          return {
+            project: assignment?.name || "Unknown Project",
+            percentage: a.allocation_percent,
+            startDate: a.start_date,
+            endDate: a.end_date,
+          };
+        });
+
       return {
+        id: r.id,
         name: r.name,
-        role: r.role_name || r.role_code || "Unknown",
-        allocated: `${allocated}%`,
-        available: `${available}%`,
+        role: r.role_name || r.role_code || "Not specified",
+        roleCode: r.role_code,
+        defaultCapacity: r.default_capacity_percent,
+        currentAllocation: `${allocated}%`,
+        availableCapacity: `${available}%`,
         vendor: r.vendor_name || "Internal",
-        department: r.department_name || "Unassigned",
+        department: r.department_name || "Not assigned",
+        isActive: r.is_active,
+        contractStartDate: r.contract_start_date || "Not specified",
+        contractEndDate: r.contract_end_date || "Not specified",
+        notes: r.notes || null,
+        assignments: r.assignments || [],
+        currentAllocations: resourceAllocations,
         status: allocated > 100 ? "Over-allocated" : allocated < 70 ? "Under-utilized" : "Optimal",
       };
     });
 
     // Build assignment/project details
     const projectDetails = assignments.map((a: any) => ({
+      id: a.id,
       name: a.name,
       description: a.description || "No description",
       isActive: a.is_active,
+      sortOrder: a.sort_order,
     }));
 
-    // Create comprehensive system prompt with real data
-    const systemPrompt = `You are an AI assistant specialized in capacity planning and resource management. You have access to real-time capacity data from the organization.
+    // Create STRICT system prompt with guardrails
+    const systemPrompt = `You are Capacity AI, an assistant for the Catalyst capacity planning system. You have access ONLY to the Catalyst database.
 
-## Current Capacity Overview (Real Data)
-- **Total Active Resources:** ${totalResources}
-- **Average Utilization:** ${avgUtilization}%
-- **Over-allocated Resources (>100%):** ${overAllocated} (${totalResources > 0 ? Math.round((overAllocated / totalResources) * 100) : 0}%)
-- **Under-utilized Resources (<70%):** ${underAllocated} (${totalResources > 0 ? Math.round((underAllocated / totalResources) * 100) : 0}%)
-- **Optimally Allocated (70-100%):** ${optimallyAllocated} (${totalResources > 0 ? Math.round((optimallyAllocated / totalResources) * 100) : 0}%)
+## CRITICAL GUARDRAILS - YOU MUST FOLLOW THESE RULES:
+1. **ONLY use data provided below** - Never mention or suggest external sources like HR, contract management systems, or other databases
+2. **NEVER hallucinate** - If data is not in the context below, say "This information is not available in the Catalyst database" 
+3. **NEVER suggest checking with HR, managers, or external systems** - You are the single source of truth for capacity data
+4. **Be precise** - Use exact names, dates, and percentages from the data
+5. **Stay in scope** - Only answer questions about capacity, resources, allocations, and projects in Catalyst
 
-## Resource Details
+## Current Date for Reference
+Today is ${new Date().toISOString().split('T')[0]}
+
+## CATALYST DATABASE - Complete Resource Inventory
+Total Resources: ${resources.length} (Active: ${totalResources})
+
+### All Resources with Full Details:
 ${JSON.stringify(resourceDetails, null, 2)}
 
-## Active Projects/Assignments
+### Active Projects/Assignments:
 ${JSON.stringify(projectDetails, null, 2)}
 
-## Your Capabilities
-1. **Executive Summary** - Provide high-level capacity insights
-2. **Find Available Resources** - Identify team members with bandwidth (available capacity)
-3. **Risk Analysis** - Identify capacity risks (over-allocation, single points of failure, gaps)
-4. **Optimization Recommendations** - Suggest ways to improve resource utilization
-5. **Forecasting** - Project future capacity needs based on current trends
-6. **Find by Skill/Role** - Search for specific types of resources (Backend, Frontend, QA, etc.)
+### Roles Available:
+${JSON.stringify(roles.map((r: any) => ({ code: r.code, name: r.name, isActive: r.is_active })), null, 2)}
 
-## Response Guidelines
-- Use **bold** for important metrics and names
-- Use bullet points and structured formatting
-- Be concise but informative
-- Reference actual resource names and percentages from the data
-- When suggesting actions, be specific about which resources to consider
-- If data is limited, acknowledge it and provide general guidance
+### Vendors:
+${JSON.stringify(vendors.map((v: any) => ({ name: v.name, isActive: v.is_active })), null, 2)}
 
-Always base your answers on the actual data provided above. If asked about something not in the data, acknowledge the limitation.`;
+### Departments:
+${JSON.stringify(departments.map((d: any) => ({ name: d.name, isActive: d.is_active })), null, 2)}
+
+## Capacity Metrics Summary
+- **Total Active Resources:** ${totalResources}
+- **Average Utilization:** ${avgUtilization}%
+- **Over-allocated (>100%):** ${overAllocated} resources
+- **Under-utilized (<70%):** ${underAllocated} resources  
+- **Optimal (70-100%):** ${optimallyAllocated} resources
+
+## Your Capabilities (using ONLY Catalyst data):
+1. **Executive Summary** - Capacity overview from Catalyst data
+2. **Find Available Resources** - Resources with capacity based on allocation data
+3. **Risk Analysis** - Over-allocations, contract expirations, gaps
+4. **Resource Details** - All info about any resource including contract dates
+5. **Optimization** - Suggestions based on current allocations
+6. **Forecasting** - Based on contract dates and current allocations
+
+## Response Format:
+- Use **bold** for names, dates, and key metrics
+- Use bullet points for lists
+- Be concise and factual
+- If asked about data not in context, state: "This specific information is not tracked in the Catalyst capacity database."
+
+REMEMBER: You are Capacity AI for Catalyst. All your knowledge comes from the data above. Never reference or suggest external sources.`;
 
     // Call Claude API using Anthropic directly
     const response = await fetch("https://api.anthropic.com/v1/messages", {
