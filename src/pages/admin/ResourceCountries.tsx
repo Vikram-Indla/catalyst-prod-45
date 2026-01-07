@@ -10,6 +10,16 @@ import { supabase } from '@/integrations/supabase/client';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { toast } from 'sonner';
 
+// Convert ISO country code to flag emoji
+const getFlagEmoji = (countryCode: string | null) => {
+  if (!countryCode || countryCode.length !== 2) return null;
+  const codePoints = countryCode
+    .toUpperCase()
+    .split('')
+    .map(char => 127397 + char.charCodeAt(0));
+  return String.fromCodePoint(...codePoints);
+};
+
 interface LinkedRecord {
   full_name: string;
 }
@@ -149,8 +159,8 @@ export default function ResourceCountriesPage() {
                 </td>
                 <td className="px-4 py-3">
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center">
-                      <Globe className="h-4 w-4 text-blue-500" />
+                    <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center text-xl">
+                      {getFlagEmoji(country.code) || <Globe className="h-4 w-4 text-blue-500" />}
                     </div>
                     <span className="text-sm font-medium text-foreground">{country.name}</span>
                   </div>
