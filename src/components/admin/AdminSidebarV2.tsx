@@ -45,6 +45,9 @@ const adminPockets = [
       { label: 'Roles & Permissions', path: '/admin/roles-permissions' },
       { label: 'Resource Departments', path: '/admin/capacity-departments' },
       { label: 'Resource Assignments', path: '/admin/resource-assignments' },
+      { label: 'Resource Locations', path: '/admin/resource-locations' },
+      { label: 'Resource Countries', path: '/admin/resource-countries' },
+      { label: 'Resource Vendors', path: '/admin/resource-vendors' },
     ],
   },
   {

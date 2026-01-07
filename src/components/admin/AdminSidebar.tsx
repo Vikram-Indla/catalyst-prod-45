@@ -62,6 +62,9 @@ const adminSections = [
       { label: 'Roles & Permissions', path: '/admin/roles-permissions', icon: Shield },
       { label: 'Resource Departments', path: '/admin/capacity-departments', icon: Building2 },
       { label: 'Resource Assignments', path: '/admin/resource-assignments', icon: Users },
+      { label: 'Resource Locations', path: '/admin/resource-locations', icon: Building2 },
+      { label: 'Resource Countries', path: '/admin/resource-countries', icon: Building2 },
+      { label: 'Resource Vendors', path: '/admin/resource-vendors', icon: Building2 },
     ],
   },
   {
