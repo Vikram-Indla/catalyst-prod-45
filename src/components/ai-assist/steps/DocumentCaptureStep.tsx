@@ -1,9 +1,10 @@
 import React, { useCallback, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { Upload, FileText, Check, Hash, Globe, ArrowRight, Loader2, RefreshCw, Eye, Lightbulb, AlertCircle } from 'lucide-react';
+import { Upload, FileText, Check, Hash, Globe, ChevronRight, Loader2, RefreshCw, Eye, Lightbulb, AlertCircle, Lock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useAIAssistUpload } from '@/hooks/useAIAssistUpload';
+import { toast } from 'sonner';
 
 interface Document {
   id: string;
@@ -46,7 +47,10 @@ export function DocumentCaptureStep({ draftId, documents, onUploadComplete }: Do
     try {
       await upload.mutateAsync({ draftId, file });
       setUploadProgress(100);
+      toast.success('Document uploaded successfully!');
       onUploadComplete?.();
+    } catch (error) {
+      toast.error('Upload failed. Please try again.');
     } finally {
       clearInterval(interval);
       setTimeout(() => setUploadProgress(0), 1000);
@@ -72,7 +76,7 @@ export function DocumentCaptureStep({ draftId, documents, onUploadComplete }: Do
     return (
       <div className="space-y-6">
         {/* Document card - success state */}
-        <div className="bg-card border-2 border-[hsl(var(--success))] rounded-xl p-6">
+        <div className="bg-card border-2 border-[hsl(var(--success))] rounded-xl p-6 transition-all duration-200 hover:shadow-md">
           <div className="flex gap-5">
             {/* File icon */}
             <div className="w-14 h-14 bg-[hsl(var(--success))]/10 rounded-lg flex items-center justify-center flex-shrink-0">
@@ -111,18 +115,18 @@ export function DocumentCaptureStep({ draftId, documents, onUploadComplete }: Do
 
           {/* Metrics cards */}
           <div className="grid grid-cols-3 gap-4 mt-6">
-            <div className="bg-muted/50 rounded-lg p-4 text-center">
+            <div className="bg-muted/50 rounded-lg p-4 text-center transition-all duration-200 hover:bg-muted hover:shadow-sm">
               <p className="text-2xl font-bold">{sectionsDetected}</p>
               <p className="text-xs text-muted-foreground uppercase tracking-wide mt-1">Sections detected</p>
             </div>
-            <div className="bg-muted/50 rounded-lg p-4 text-center">
+            <div className="bg-muted/50 rounded-lg p-4 text-center transition-all duration-200 hover:bg-muted hover:shadow-sm">
               <div className="flex items-center justify-center gap-1">
                 <Globe className="h-4 w-4 text-muted-foreground" />
                 <p className="text-lg font-bold">AR/EN</p>
               </div>
               <p className="text-xs text-muted-foreground uppercase tracking-wide mt-1">Bilingual detected</p>
             </div>
-            <div className="bg-muted/50 rounded-lg p-4 text-center">
+            <div className="bg-muted/50 rounded-lg p-4 text-center transition-all duration-200 hover:bg-muted hover:shadow-sm">
               <div className="flex items-center justify-center gap-1">
                 <Hash className="h-4 w-4 text-muted-foreground" />
                 <code className="text-sm font-bold">
@@ -135,12 +139,12 @@ export function DocumentCaptureStep({ draftId, documents, onUploadComplete }: Do
 
           {/* Actions */}
           <div className="flex gap-3 mt-6">
-            <Button variant="outline" size="sm" className="gap-2" {...getRootProps()}>
+            <Button variant="outline" size="sm" className="gap-2 transition-all hover:border-primary hover:shadow-sm" {...getRootProps()}>
               <input {...getInputProps()} />
               <RefreshCw className="h-4 w-4" />
               Replace Document
             </Button>
-            <Button variant="outline" size="sm" className="gap-2">
+            <Button variant="outline" size="sm" className="gap-2 transition-all hover:border-primary hover:shadow-sm">
               <Eye className="h-4 w-4" />
               Preview Text
             </Button>
@@ -150,105 +154,145 @@ export function DocumentCaptureStep({ draftId, documents, onUploadComplete }: Do
     );
   }
 
-  // Upload zone - empty state
+  // Upload zone - empty state with HERO styling
   return (
-    <div className="space-y-6">
-      {/* Hero upload zone */}
-      <div
-        {...getRootProps()}
-        className={cn(
-          "border-2 border-dashed rounded-xl p-12 text-center cursor-pointer transition-all duration-200",
-          "bg-muted/50 hover:border-primary hover:bg-primary/5",
-          isDragActive && "border-primary bg-primary/10",
+    <div className="space-y-8">
+      {/* Hero upload zone with gradient border on hover */}
+      <div className="relative group cursor-pointer" {...getRootProps()}>
+        {/* Animated gradient border on hover */}
+        <div className="absolute -inset-1 bg-gradient-to-r from-primary via-[hsl(var(--success))] to-primary rounded-2xl opacity-0 group-hover:opacity-100 blur-sm transition-all duration-500" />
+        
+        <div className={cn(
+          "relative bg-gradient-to-br from-card via-card to-primary/5 border-2 border-dashed rounded-2xl p-12 md:p-16 text-center transition-all duration-300",
+          "border-muted-foreground/30 group-hover:border-primary",
+          isDragActive && "border-primary bg-primary/10 border-solid",
           isDragReject && "border-[hsl(var(--danger))] bg-[hsl(var(--danger))]/5",
           upload.isPending && "opacity-50 pointer-events-none"
-        )}
-      >
-        <input {...getInputProps()} />
-
-        <div className={cn(
-          "w-16 h-16 mx-auto mb-5 rounded-full flex items-center justify-center transition-all",
-          isDragActive ? "bg-primary/20 text-primary scale-110" : "bg-muted text-muted-foreground",
-          isDragReject && "bg-[hsl(var(--danger))]/20 text-[hsl(var(--danger))]"
         )}>
+          <input {...getInputProps()} />
+
+          {/* Large icon with animation */}
+          <div className={cn(
+            "w-20 h-20 mx-auto mb-6 rounded-2xl flex items-center justify-center transition-all duration-300",
+            isDragActive ? "bg-primary/20 scale-110" : "bg-primary/10 group-hover:scale-110 group-hover:bg-primary/20",
+            isDragReject && "bg-[hsl(var(--danger))]/20"
+          )}>
+            {upload.isPending ? (
+              <Loader2 className="h-10 w-10 text-primary animate-spin" />
+            ) : isDragReject ? (
+              <AlertCircle className="h-10 w-10 text-[hsl(var(--danger))]" />
+            ) : (
+              <Upload className="h-10 w-10 text-primary" />
+            )}
+          </div>
+
           {upload.isPending ? (
-            <Loader2 className="h-8 w-8 animate-spin" />
+            <>
+              <h3 className="text-xl font-semibold text-foreground mb-2">Uploading...</h3>
+              <div className="w-48 h-2 bg-muted rounded-full mx-auto mt-3 overflow-hidden">
+                <div
+                  className="h-full bg-gradient-to-r from-primary to-[hsl(var(--success))] rounded-full transition-all"
+                  style={{ width: `${uploadProgress}%` }}
+                />
+              </div>
+            </>
           ) : isDragReject ? (
-            <AlertCircle className="h-8 w-8" />
+            <>
+              <h3 className="text-xl font-semibold text-[hsl(var(--danger))] mb-2">Invalid file type</h3>
+              <p className="text-muted-foreground">Please upload PDF or DOCX files only</p>
+            </>
+          ) : isDragActive ? (
+            <h3 className="text-xl font-semibold text-primary">Drop your file here</h3>
           ) : (
-            <Upload className="h-8 w-8" />
+            <>
+              <h3 className="text-xl font-semibold text-foreground mb-2">
+                Drop your requirements document here
+              </h3>
+              <p className="text-muted-foreground mb-4">or click to browse</p>
+              
+              {/* File type pills */}
+              <div className="flex items-center justify-center gap-3 flex-wrap">
+                <span className="px-3 py-1.5 bg-muted rounded-full text-xs font-medium text-muted-foreground">PDF</span>
+                <span className="px-3 py-1.5 bg-muted rounded-full text-xs font-medium text-muted-foreground">DOCX</span>
+                <span className="w-1 h-1 bg-muted-foreground/30 rounded-full" />
+                <span className="text-xs text-muted-foreground">Max 50MB</span>
+                <span className="w-1 h-1 bg-muted-foreground/30 rounded-full" />
+                <span className="text-xs text-muted-foreground">Arabic/English</span>
+              </div>
+            </>
           )}
         </div>
-
-        {upload.isPending ? (
-          <>
-            <p className="text-lg font-semibold">Uploading...</p>
-            <div className="w-48 h-2 bg-muted rounded-full mx-auto mt-3 overflow-hidden">
-              <div
-                className="h-full bg-primary rounded-full transition-all"
-                style={{ width: `${uploadProgress}%` }}
-              />
-            </div>
-          </>
-        ) : isDragReject ? (
-          <>
-            <p className="text-lg font-semibold text-[hsl(var(--danger))]">Invalid file type</p>
-            <p className="text-sm text-muted-foreground mt-2">Please upload PDF or DOCX files only</p>
-          </>
-        ) : isDragActive ? (
-          <p className="text-lg font-semibold text-primary">Drop your file here</p>
-        ) : (
-          <>
-            <p className="text-lg font-semibold">Drop your requirements document here</p>
-            <p className="text-sm text-muted-foreground mt-2">or click to browse</p>
-            <div className="mt-6 pt-6 border-t border-border/50">
-              <p className="text-xs text-muted-foreground">PDF, DOCX • Max 50MB • Arabic/English</p>
-            </div>
-          </>
-        )}
       </div>
 
-      {/* What happens next */}
-      <div className="bg-muted/50 rounded-xl p-6">
-        <p className="text-sm font-medium mb-4 text-center">What happens next</p>
-        <div className="flex items-center justify-center gap-4">
-          <div className="flex flex-col items-center gap-2 p-4 bg-card rounded-lg shadow-sm">
-            <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-              <Upload className="h-5 w-5 text-primary" />
+      {/* What happens next - FULLY VISIBLE */}
+      <div className="p-6 bg-gradient-to-r from-muted/50 to-primary/5 rounded-xl border border-border/50">
+        <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-6 text-center">
+          What happens next
+        </h4>
+        
+        <div className="flex items-center justify-center gap-3">
+          {/* Upload Step */}
+          <div className="flex flex-col items-center p-4 bg-card rounded-xl shadow-sm border border-border w-28 transition-all hover:shadow-md hover:-translate-y-0.5">
+            <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mb-2">
+              <Upload className="w-6 h-6 text-primary" />
             </div>
-            <span className="text-xs text-muted-foreground">Upload</span>
+            <span className="text-xs font-medium text-foreground">Upload</span>
           </div>
-          <ArrowRight className="h-5 w-5 text-muted-foreground" />
-          <div className="flex flex-col items-center gap-2 p-4 bg-card rounded-lg shadow-sm">
-            <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-              <FileText className="h-5 w-5 text-primary" />
-            </div>
-            <span className="text-xs text-muted-foreground">Extract Text</span>
+          
+          {/* Arrow */}
+          <div className="flex items-center text-muted-foreground/50">
+            <div className="w-6 h-0.5 bg-border" />
+            <ChevronRight className="w-4 h-4" />
           </div>
-          <ArrowRight className="h-5 w-5 text-muted-foreground" />
-          <div className="flex flex-col items-center gap-2 p-4 bg-card rounded-lg shadow-sm">
-            <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-              <Hash className="h-5 w-5 text-primary" />
+          
+          {/* Extract Step */}
+          <div className="flex flex-col items-center p-4 bg-card rounded-xl shadow-sm border border-border w-28 transition-all hover:shadow-md hover:-translate-y-0.5">
+            <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mb-2">
+              <FileText className="w-6 h-6 text-primary" />
             </div>
-            <span className="text-xs text-muted-foreground">Hash & Store</span>
+            <span className="text-xs font-medium text-foreground">Extract</span>
+          </div>
+          
+          {/* Arrow */}
+          <div className="flex items-center text-muted-foreground/50">
+            <div className="w-6 h-0.5 bg-border" />
+            <ChevronRight className="w-4 h-4" />
+          </div>
+          
+          {/* Hash Step */}
+          <div className="flex flex-col items-center p-4 bg-card rounded-xl shadow-sm border border-border w-28 transition-all hover:shadow-md hover:-translate-y-0.5">
+            <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mb-2">
+              <Lock className="w-6 h-6 text-primary" />
+            </div>
+            <span className="text-xs font-medium text-foreground">Hash & Store</span>
           </div>
         </div>
-        <p className="text-xs text-muted-foreground text-center mt-4">
-          Your document will be securely processed and hashed for deterministic replay and audit compliance.
-        </p>
       </div>
 
-      {/* Tips */}
-      <div className="bg-muted/30 rounded-lg p-4 border-l-4 border-primary">
-        <p className="text-sm font-semibold flex items-center gap-2 mb-2">
-          <Lightbulb className="h-4 w-4 text-primary" />
-          Tips for best results
-        </p>
-        <ul className="space-y-1.5 text-sm text-muted-foreground">
-          <li className="flex items-center gap-2">• Clear functional requirements</li>
-          <li className="flex items-center gap-2">• Section headings</li>
-          <li className="flex items-center gap-2">• Arabic or English content</li>
-        </ul>
+      {/* Tips Section */}
+      <div className="p-4 bg-primary/5 border-l-4 border-primary rounded-r-lg">
+        <div className="flex gap-3">
+          <Lightbulb className="w-5 h-5 text-primary flex-shrink-0" />
+          <div>
+            <h4 className="text-sm font-semibold text-foreground mb-2">
+              Best results when your document includes:
+            </h4>
+            <ul className="text-sm text-muted-foreground space-y-1">
+              <li className="flex items-center gap-2">
+                <Check className="w-3.5 h-3.5 text-[hsl(var(--success))]" />
+                Clear functional requirements with numbered sections
+              </li>
+              <li className="flex items-center gap-2">
+                <Check className="w-3.5 h-3.5 text-[hsl(var(--success))]" />
+                Arabic or English content (bilingual supported)
+              </li>
+              <li className="flex items-center gap-2">
+                <Check className="w-3.5 h-3.5 text-[hsl(var(--success))]" />
+                Section headings for automatic organization
+              </li>
+            </ul>
+          </div>
+        </div>
       </div>
     </div>
   );

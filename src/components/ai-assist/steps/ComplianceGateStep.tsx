@@ -1,14 +1,14 @@
-import React, { useState } from 'react';
-import { Shield, CheckCircle2, AlertTriangle, XCircle, ChevronDown, FileText, Calendar, User } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Shield, CheckCircle2, AlertTriangle, XCircle, ChevronDown, FileText, Lock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Progress } from '@/components/ui/progress';
 import { cn } from '@/lib/utils';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { toast } from 'sonner';
 
 interface ControlItem {
   id: string;
@@ -49,6 +49,48 @@ interface JustificationData {
   reviewDate: string;
 }
 
+// Radial progress component
+function RadialProgress({ score, size = 128, strokeWidth = 12 }: { score: number; size?: number; strokeWidth?: number }) {
+  const radius = (size - strokeWidth) / 2;
+  const circumference = 2 * Math.PI * radius;
+  const strokeDashoffset = circumference - (score / 100) * circumference;
+  const color = score >= 80 ? 'hsl(var(--success))' : score >= 60 ? 'hsl(var(--warning))' : 'hsl(var(--destructive))';
+
+  return (
+    <div className="relative" style={{ width: size, height: size }}>
+      <svg className="-rotate-90" viewBox={`0 0 ${size} ${size}`} width={size} height={size}>
+        {/* Background circle */}
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={radius}
+          fill="none"
+          stroke="hsl(var(--muted))"
+          strokeWidth={strokeWidth}
+        />
+        {/* Progress circle */}
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={radius}
+          fill="none"
+          stroke={color}
+          strokeWidth={strokeWidth}
+          strokeLinecap="round"
+          strokeDasharray={circumference}
+          strokeDashoffset={strokeDashoffset}
+          className="transition-all duration-1000"
+        />
+      </svg>
+      {/* Center text */}
+      <div className="absolute inset-0 flex flex-col items-center justify-center">
+        <span className="text-4xl font-bold">{score}</span>
+        <span className="text-sm text-muted-foreground">/100</span>
+      </div>
+    </div>
+  );
+}
+
 export function ComplianceGateStep({
   verdict = 'conditional',
   totalScore = 72,
@@ -58,8 +100,9 @@ export function ComplianceGateStep({
   onJustificationSubmit,
   onContinueAllowed
 }: ComplianceGateStepProps) {
-  const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
-  const [showJustificationForm, setShowJustificationForm] = useState(false);
+  // Open categories by default
+  const [openCategories, setOpenCategories] = useState<string[]>(['dga', 'nca']);
+  const [showJustificationForm, setShowJustificationForm] = useState(verdict === 'conditional');
   const [justificationData, setJustificationData] = useState<JustificationData>({
     justification: '',
     decisionOwner: '',
@@ -68,6 +111,21 @@ export function ComplianceGateStep({
     reviewDate: ''
   });
 
+  // Auto-expand justification form when conditional
+  useEffect(() => {
+    if (verdict === 'conditional') {
+      setShowJustificationForm(true);
+    }
+  }, [verdict]);
+
+  const toggleCategory = (categoryId: string) => {
+    setOpenCategories(prev => 
+      prev.includes(categoryId) 
+        ? prev.filter(id => id !== categoryId)
+        : [...prev, categoryId]
+    );
+  };
+
   const getVerdictConfig = () => {
     switch (verdict) {
       case 'pass':
@@ -75,16 +133,18 @@ export function ComplianceGateStep({
           icon: CheckCircle2,
           title: 'Full Compliance',
           description: 'Your draft meets all DGA and NCA requirements.',
-          bgClass: 'bg-success/10 border-success/30',
-          iconClass: 'text-success'
+          bgClass: 'bg-[hsl(var(--success))]/10 border-[hsl(var(--success))]/30',
+          iconClass: 'text-[hsl(var(--success))]',
+          badgeClass: 'bg-[hsl(var(--success))]/10 text-[hsl(var(--success))]'
         };
       case 'conditional':
         return {
           icon: AlertTriangle,
           title: 'Conditional Pass — Justification Required',
           description: 'Your draft meets most requirements but has gaps in compliance controls. Record justification to proceed.',
-          bgClass: 'bg-warning/10 border-warning/30',
-          iconClass: 'text-warning'
+          bgClass: 'bg-[hsl(var(--warning))]/10 border-[hsl(var(--warning))]/30',
+          iconClass: 'text-[hsl(var(--warning))]',
+          badgeClass: 'bg-[hsl(var(--warning))]/10 text-[hsl(var(--warning))]'
         };
       case 'fail':
         return {
@@ -92,7 +152,8 @@ export function ComplianceGateStep({
           title: 'Does Not Meet Requirements',
           description: 'Critical compliance gaps identified. Review and address before proceeding.',
           bgClass: 'bg-destructive/10 border-destructive/30',
-          iconClass: 'text-destructive'
+          iconClass: 'text-destructive',
+          badgeClass: 'bg-destructive/10 text-destructive'
         };
     }
   };
@@ -107,6 +168,7 @@ export function ComplianceGateStep({
     if (onContinueAllowed) {
       onContinueAllowed(true);
     }
+    toast.success('Justification recorded successfully');
     setShowJustificationForm(false);
   };
 
@@ -143,7 +205,7 @@ export function ComplianceGateStep({
     <div className="space-y-6">
       {/* Verdict Banner */}
       <div className={cn(
-        "border rounded-xl p-6 flex items-start gap-4",
+        "border rounded-xl p-6 flex items-start gap-4 transition-all duration-200",
         verdictConfig.bgClass
       )}>
         <VerdictIcon className={cn("h-6 w-6 flex-shrink-0 mt-0.5", verdictConfig.iconClass)} />
@@ -153,19 +215,14 @@ export function ComplianceGateStep({
         </div>
       </div>
 
-      {/* Score Overview */}
+      {/* Score Overview with Radial Progress */}
       <div className="grid grid-cols-3 gap-4">
-        <div className="bg-card border border-border rounded-xl p-6 text-center">
-          <div className="text-4xl font-bold text-foreground mb-1">{totalScore}</div>
-          <div className="text-sm text-muted-foreground">/100</div>
-          <p className="text-xs text-muted-foreground mt-2">Total Score</p>
-          <Badge variant="outline" className={cn(
-            "mt-2",
-            verdict === 'pass' && "bg-success/10 text-success",
-            verdict === 'conditional' && "bg-warning/10 text-warning",
-            verdict === 'fail' && "bg-destructive/10 text-destructive"
-          )}>
-            {verdict === 'pass' ? 'Compliant' : verdict === 'conditional' ? 'Conditional' : 'Non-Compliant'}
+        {/* Total Score with radial chart */}
+        <div className="bg-card border border-border rounded-xl p-6 flex flex-col items-center transition-all duration-200 hover:shadow-md hover:-translate-y-0.5">
+          <RadialProgress score={totalScore} />
+          <h3 className="font-semibold text-foreground mt-4">Total Score</h3>
+          <Badge variant="outline" className={cn("mt-2", verdictConfig.badgeClass)}>
+            {verdict === 'pass' ? '✓ Compliant' : verdict === 'conditional' ? '⚠ Conditional' : '✗ Non-Compliant'}
           </Badge>
         </div>
 
@@ -173,20 +230,17 @@ export function ComplianceGateStep({
           const percentage = Math.round((cat.totalScore / cat.maxScore) * 100);
           const isPassing = percentage >= 80;
           return (
-            <div key={cat.id} className="bg-card border border-border rounded-xl p-6 text-center">
-              <div className="text-4xl font-bold text-foreground mb-1">
-                {cat.totalScore}/{cat.maxScore}
-              </div>
-              <div className="text-sm text-muted-foreground">{percentage}%</div>
-              <p className="text-xs text-muted-foreground mt-2">{cat.name}</p>
+            <div key={cat.id} className="bg-card border border-border rounded-xl p-6 flex flex-col items-center transition-all duration-200 hover:shadow-md hover:-translate-y-0.5">
+              <RadialProgress score={percentage} />
+              <h3 className="font-semibold text-foreground mt-4">{cat.name}</h3>
               <Badge variant="outline" className={cn(
                 "mt-2",
-                isPassing ? "bg-success/10 text-success" : "bg-warning/10 text-warning"
+                isPassing ? "bg-[hsl(var(--success))]/10 text-[hsl(var(--success))]" : "bg-[hsl(var(--warning))]/10 text-[hsl(var(--warning))]"
               )}>
                 {isPassing ? (
-                  <><CheckCircle2 className="h-3 w-3 me-1" /> Compliant</>
+                  <><CheckCircle2 className="h-3 w-3 me-1" /> {cat.passing}/{cat.total} Passing</>
                 ) : (
-                  <><AlertTriangle className="h-3 w-3 me-1" /> Gaps Identified</>
+                  <><AlertTriangle className="h-3 w-3 me-1" /> {cat.passing}/{cat.total} Passing</>
                 )}
               </Badge>
             </div>
@@ -194,198 +248,180 @@ export function ComplianceGateStep({
         })}
       </div>
 
-      {/* Control Breakdown */}
+      {/* Control Breakdown - EXPANDED by default */}
       <div className="space-y-3">
         <h4 className="text-sm font-semibold">Control Breakdown</h4>
         
-        {displayCategories.map((category) => (
-          <Collapsible
-            key={category.id}
-            open={expandedCategory === category.id}
-            onOpenChange={(open) => setExpandedCategory(open ? category.id : null)}
-          >
-            <div className="bg-card border border-border rounded-xl overflow-hidden">
-              <CollapsibleTrigger asChild>
-                <button className="w-full p-4 flex items-center justify-between hover:bg-muted/50 transition-colors">
-                  <div className="flex items-center gap-3">
-                    <Shield className="h-4 w-4 text-muted-foreground" />
-                    <span className="font-medium">{category.name}</span>
-                    <Badge variant="secondary" className="text-xs">
-                      {category.passing}/{category.total} Passing
-                    </Badge>
-                  </div>
-                  <div className="flex items-center gap-4">
-                    <div className="text-sm text-muted-foreground">
-                      {category.totalScore}/{category.maxScore}
+        {displayCategories.map((category) => {
+          const isPassing = Math.round((category.totalScore / category.maxScore) * 100) >= 80;
+          const isOpen = openCategories.includes(category.id);
+          
+          return (
+            <Collapsible
+              key={category.id}
+              open={isOpen}
+              onOpenChange={() => toggleCategory(category.id)}
+            >
+              <div className={cn(
+                "bg-card border rounded-xl overflow-hidden transition-all duration-200",
+                !isPassing && "border-[hsl(var(--warning))]/30"
+              )}>
+                <CollapsibleTrigger asChild>
+                  <button className={cn(
+                    "w-full p-4 flex items-center justify-between transition-colors",
+                    isPassing ? "bg-[hsl(var(--success))]/5 hover:bg-[hsl(var(--success))]/10" : "bg-[hsl(var(--warning))]/5 hover:bg-[hsl(var(--warning))]/10"
+                  )}>
+                    <div className="flex items-center gap-3">
+                      <Shield className={cn("h-5 w-5", isPassing ? "text-[hsl(var(--success))]" : "text-[hsl(var(--warning))]")} />
+                      <span className="font-semibold">{category.name}</span>
+                      <Badge variant={isPassing ? "default" : "secondary"} className={cn(
+                        isPassing ? "bg-[hsl(var(--success))]/10 text-[hsl(var(--success))]" : "bg-[hsl(var(--warning))]/10 text-[hsl(var(--warning))]"
+                      )}>
+                        {category.passing}/{category.total} Passing
+                      </Badge>
                     </div>
-                    <ChevronDown className={cn(
-                      "h-4 w-4 text-muted-foreground transition-transform",
-                      expandedCategory === category.id && "rotate-180"
-                    )} />
-                  </div>
-                </button>
-              </CollapsibleTrigger>
+                    <div className="flex items-center gap-4">
+                      <span className={cn("font-bold", isPassing ? "text-[hsl(var(--success))]" : "text-[hsl(var(--warning))]")}>
+                        {category.totalScore}/{category.maxScore}
+                      </span>
+                      <ChevronDown className={cn(
+                        "h-4 w-4 text-muted-foreground transition-transform",
+                        isOpen && "rotate-180"
+                      )} />
+                    </div>
+                  </button>
+                </CollapsibleTrigger>
 
-              <CollapsibleContent>
-                <div className="px-4 pb-4 border-t border-border">
-                  <div className="pt-4 space-y-3">
+                <CollapsibleContent>
+                  <div className="px-4 pb-4 border-t border-border divide-y divide-border">
                     {category.items.map((item) => (
-                      <div key={item.id} className="flex items-start gap-3 p-3 bg-muted/30 rounded-lg">
-                        {item.status === 'pass' && (
-                          <CheckCircle2 className="h-4 w-4 text-success flex-shrink-0 mt-0.5" />
-                        )}
-                        {item.status === 'warning' && (
-                          <AlertTriangle className="h-4 w-4 text-warning flex-shrink-0 mt-0.5" />
-                        )}
-                        {item.status === 'fail' && (
-                          <XCircle className="h-4 w-4 text-destructive flex-shrink-0 mt-0.5" />
-                        )}
-                        <div className="flex-1">
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-2">
-                              <span className="font-mono text-xs text-muted-foreground">{item.id}</span>
-                              <span className="text-sm font-medium">{item.name}</span>
-                            </div>
-                            <span className="text-sm font-medium">{item.score}/{item.maxScore}</span>
-                          </div>
-                          {item.gaps && item.gaps.length > 0 && (
-                            <div className="mt-2 space-y-1">
-                              {item.gaps.map((gap, idx) => (
-                                <p key={idx} className="text-xs text-muted-foreground ps-4 border-s-2 border-destructive/30">
-                                  {gap}
-                                </p>
-                              ))}
-                              {item.status === 'fail' && (
-                                <Button 
-                                  size="sm" 
-                                  variant="outline" 
-                                  className="mt-2 gap-1 text-xs"
-                                  onClick={() => setShowJustificationForm(true)}
-                                >
-                                  <FileText className="h-3 w-3" />
-                                  Add Justification
-                                </Button>
-                              )}
-                            </div>
+                      <div key={item.id} className="py-4">
+                        <div className="flex items-center gap-4">
+                          {item.status === 'pass' && (
+                            <CheckCircle2 className="h-5 w-5 text-[hsl(var(--success))] flex-shrink-0" />
                           )}
+                          {item.status === 'warning' && (
+                            <AlertTriangle className="h-5 w-5 text-[hsl(var(--warning))] flex-shrink-0" />
+                          )}
+                          {item.status === 'fail' && (
+                            <XCircle className="h-5 w-5 text-destructive flex-shrink-0" />
+                          )}
+                          <div className="flex-1">
+                            <div className="font-medium">{item.name}</div>
+                            <div className="text-xs text-muted-foreground font-mono">{item.id}</div>
+                          </div>
+                          <span className="font-semibold">{item.score}/{item.maxScore}</span>
                         </div>
+                        
+                        {/* GAP detail - ALWAYS VISIBLE for failing controls */}
+                        {item.gaps && item.gaps.length > 0 && (
+                          <div className="mt-3 ms-9 p-3 bg-destructive/5 border border-destructive/20 rounded-lg">
+                            <div className="text-xs font-semibold text-destructive uppercase mb-1">Gap</div>
+                            {item.gaps.map((gap, idx) => (
+                              <p key={idx} className="text-sm text-destructive/80">{gap}</p>
+                            ))}
+                          </div>
+                        )}
                       </div>
                     ))}
                   </div>
-                </div>
-              </CollapsibleContent>
-            </div>
-          </Collapsible>
-        ))}
+                </CollapsibleContent>
+              </div>
+            </Collapsible>
+          );
+        })}
       </div>
 
-      {/* Justification Form */}
-      {justificationRequired && !justificationRecorded && (
-        <Collapsible open={showJustificationForm} onOpenChange={setShowJustificationForm}>
-          <div className="bg-card border border-warning/30 rounded-xl overflow-hidden">
-            <CollapsibleTrigger asChild>
-              <button className="w-full p-4 flex items-center justify-between hover:bg-muted/50 transition-colors">
-                <div className="flex items-center gap-3">
-                  <FileText className="h-4 w-4 text-warning" />
-                  <span className="font-medium">Justification Form</span>
-                </div>
-                <ChevronDown className={cn(
-                  "h-4 w-4 text-muted-foreground transition-transform",
-                  showJustificationForm && "rotate-180"
-                )} />
-              </button>
-            </CollapsibleTrigger>
-
-            <CollapsibleContent>
-              <div className="px-4 pb-4 border-t border-border">
-                <div className="pt-4 space-y-4">
-                  <div className="p-3 bg-warning/5 rounded-lg border border-warning/20">
-                    <p className="text-sm text-muted-foreground">
-                      <strong>Why is justification required?</strong> You scored below 80% on NCA controls. 
-                      To proceed, document the reason and mitigation plan for audit.
-                    </p>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="justification">Justification *</Label>
-                    <Textarea
-                      id="justification"
-                      placeholder="Explain the compliance gap and mitigation plan..."
-                      value={justificationData.justification}
-                      onChange={(e) => setJustificationData(prev => ({ ...prev, justification: e.target.value }))}
-                      rows={4}
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="decisionOwner">Decision Owner *</Label>
-                      <Input
-                        id="decisionOwner"
-                        placeholder="e.g. Dr. Mohammed Al-Faisal"
-                        value={justificationData.decisionOwner}
-                        onChange={(e) => setJustificationData(prev => ({ ...prev, decisionOwner: e.target.value }))}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="decisionDate">Decision Date *</Label>
-                      <Input
-                        id="decisionDate"
-                        type="date"
-                        value={justificationData.decisionDate}
-                        onChange={(e) => setJustificationData(prev => ({ ...prev, decisionDate: e.target.value }))}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="riskType">Risk Type *</Label>
-                      <Select 
-                        value={justificationData.riskType}
-                        onValueChange={(value) => setJustificationData(prev => ({ ...prev, riskType: value }))}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select risk type" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="mitigation">Mitigation Plan</SelectItem>
-                          <SelectItem value="accepted">Accepted Risk</SelectItem>
-                          <SelectItem value="deferred">Deferred Action</SelectItem>
-                          <SelectItem value="transferred">Risk Transfer</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="reviewDate">Review Date *</Label>
-                      <Input
-                        id="reviewDate"
-                        type="date"
-                        value={justificationData.reviewDate}
-                        onChange={(e) => setJustificationData(prev => ({ ...prev, reviewDate: e.target.value }))}
-                      />
-                    </div>
-                  </div>
-
-                  <Button 
-                    className="w-full gap-2" 
-                    onClick={handleSubmitJustification}
-                    disabled={!justificationData.justification || !justificationData.decisionOwner || !justificationData.riskType || !justificationData.reviewDate}
-                  >
-                    <Shield className="h-4 w-4" />
-                    Record Justification for Audit
-                  </Button>
-                </div>
-              </div>
-            </CollapsibleContent>
+      {/* Justification Form - VISIBLE by default when conditional */}
+      {justificationRequired && !justificationRecorded && verdict === 'conditional' && (
+        <div className="bg-card border-2 border-[hsl(var(--warning))]/50 rounded-xl overflow-hidden">
+          <div className="p-4 bg-[hsl(var(--warning))]/10 border-b border-[hsl(var(--warning))]/20 flex items-center gap-3">
+            <AlertTriangle className="w-6 h-6 text-[hsl(var(--warning))]" />
+            <div>
+              <h3 className="font-semibold text-foreground">Justification Required</h3>
+              <p className="text-sm text-muted-foreground">Record why you're proceeding despite gaps</p>
+            </div>
           </div>
-        </Collapsible>
+          
+          {/* Form fields - VISIBLE by default */}
+          <div className="p-6 space-y-4">
+            <div>
+              <Label htmlFor="justification">Justification *</Label>
+              <Textarea
+                id="justification"
+                className="mt-2 min-h-[100px] focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                placeholder="Explain why you're proceeding despite compliance gaps..."
+                value={justificationData.justification}
+                onChange={(e) => setJustificationData(prev => ({ ...prev, justification: e.target.value }))}
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="decisionOwner">Decision Owner *</Label>
+                <Input
+                  id="decisionOwner"
+                  className="mt-2 focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                  placeholder="Full name"
+                  value={justificationData.decisionOwner}
+                  onChange={(e) => setJustificationData(prev => ({ ...prev, decisionOwner: e.target.value }))}
+                />
+              </div>
+              <div>
+                <Label htmlFor="decisionDate">Decision Date *</Label>
+                <Input
+                  id="decisionDate"
+                  type="date"
+                  className="mt-2 focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                  value={justificationData.decisionDate}
+                  onChange={(e) => setJustificationData(prev => ({ ...prev, decisionDate: e.target.value }))}
+                />
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="riskType">Risk Type *</Label>
+                <Select 
+                  value={justificationData.riskType}
+                  onValueChange={(value) => setJustificationData(prev => ({ ...prev, riskType: value }))}
+                >
+                  <SelectTrigger className="mt-2 focus:ring-2 focus:ring-primary/20 focus:border-primary">
+                    <SelectValue placeholder="Select" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="temp">Temporary Accept</SelectItem>
+                    <SelectItem value="mitigate">Mitigation Plan</SelectItem>
+                    <SelectItem value="exception">Approved Exception</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label htmlFor="reviewDate">Review Date *</Label>
+                <Input
+                  id="reviewDate"
+                  type="date"
+                  className="mt-2 focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                  value={justificationData.reviewDate}
+                  onChange={(e) => setJustificationData(prev => ({ ...prev, reviewDate: e.target.value }))}
+                />
+              </div>
+            </div>
+            <Button 
+              className="w-full gap-2" 
+              size="lg"
+              onClick={handleSubmitJustification}
+              disabled={!justificationData.justification || !justificationData.decisionOwner || !justificationData.riskType || !justificationData.reviewDate}
+            >
+              <Lock className="w-4 h-4" />
+              Record Justification
+            </Button>
+          </div>
+        </div>
       )}
 
       {/* Success state when justification recorded */}
       {justificationRecorded && (
-        <div className="bg-success/10 border border-success/30 rounded-xl p-4 flex items-center gap-3">
-          <CheckCircle2 className="h-5 w-5 text-success" />
+        <div className="bg-[hsl(var(--success))]/10 border border-[hsl(var(--success))]/30 rounded-xl p-4 flex items-center gap-3">
+          <CheckCircle2 className="h-5 w-5 text-[hsl(var(--success))]" />
           <div>
             <p className="font-medium text-sm">Justification Recorded</p>
             <p className="text-xs text-muted-foreground">You may now continue to the next step.</p>

@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { cn } from '@/lib/utils';
+import { toast } from 'sonner';
 
 interface Epic {
   id: string;
@@ -65,12 +66,9 @@ export function EpicPublishingStep({
     linkToBR: !!linkedBRKey
   });
 
-  const selectedEpics = epics.filter(e => e.selected);
-  const totalFRs = epics.reduce((sum, e) => sum + e.frCount, 0);
-
   const priorityColors = {
     high: 'bg-destructive/10 text-destructive border-destructive/20',
-    medium: 'bg-warning/10 text-warning border-warning/20',
+    medium: 'bg-[hsl(var(--warning))]/10 text-[hsl(var(--warning))] border-[hsl(var(--warning))]/20',
     low: 'bg-muted text-muted-foreground border-border'
   };
 
@@ -105,11 +103,15 @@ export function EpicPublishingStep({
     }
   ];
 
+  const selectedEpics = displayEpics.filter(e => e.selected);
+  const totalFRs = displayEpics.reduce((sum, e) => sum + e.frCount, 0);
+
   const handlePublish = () => {
     onPublish?.({
       ...publishOptions,
       selectedEpicIds: displayEpics.filter(e => e.selected).map(e => e.id)
     });
+    toast.success(`Publishing ${selectedEpics.length} epics...`);
   };
 
   // Generating state
@@ -132,55 +134,41 @@ export function EpicPublishingStep({
     );
   }
 
-  // Published success state
+  // Published success state with celebration
   if (publishedEpics.length > 0) {
     return (
-      <div className="space-y-6">
-        {/* Success Banner */}
-        <div className="bg-success/10 border border-success/30 rounded-xl p-8 text-center">
-          <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-success/20 mb-6">
-            <PartyPopper className="h-10 w-10 text-success" />
-          </div>
-          
-          <h3 className="text-xl font-semibold mb-2">Successfully Published!</h3>
-          <p className="text-sm text-muted-foreground mb-6">
-            {publishedEpics.length} Epics are now live in the Program Board backlog
-          </p>
-
-          {/* Published Epics List */}
-          <div className="bg-card border border-border rounded-xl p-4 max-w-md mx-auto mb-6 text-start">
-            {publishedEpics.map((epic) => (
-              <div key={epic.epicId} className="flex items-center gap-2 py-2 border-b border-border last:border-0">
-                <CheckCircle2 className="h-4 w-4 text-success flex-shrink-0" />
-                <span className="text-sm flex-1">{epic.epicTitle}</span>
-                <Badge variant="outline" className="font-mono text-xs">
-                  → {epic.backlogId}
-                </Badge>
-              </div>
-            ))}
-          </div>
-
-          <div className="flex items-center justify-center gap-3">
-            <Button variant="outline" className="gap-2">
-              <ExternalLink className="h-4 w-4" />
-              View in Program Board
-            </Button>
-            <Button variant="outline" className="gap-2">
-              <Download className="h-4 w-4" />
-              Download Summary PDF
-            </Button>
-          </div>
+      <div className="text-center py-16">
+        {/* Celebration icon */}
+        <div className="w-24 h-24 mx-auto mb-6 bg-[hsl(var(--success))] rounded-full flex items-center justify-center shadow-lg shadow-[hsl(var(--success))]/25">
+          <CheckCircle2 className="w-12 h-12 text-white" />
         </div>
-
-        {/* Completion Card */}
-        <div className="bg-card border border-success/30 rounded-xl p-6 text-center">
-          <CheckCircle2 className="h-8 w-8 text-success mx-auto mb-3" />
-          <h4 className="font-semibold mb-2">Draft Completed</h4>
-          <p className="text-sm text-muted-foreground mb-4">
-            All steps have been completed successfully.
-          </p>
-          <Button variant="outline">
-            Return to Drafts List
+        
+        <h2 className="text-2xl font-bold text-foreground mb-2">
+          Successfully Published! 🎉
+        </h2>
+        <p className="text-muted-foreground mb-8">
+          {publishedEpics.length} Epics are now live in the Program Board
+        </p>
+        
+        {/* Published epics list */}
+        <div className="max-w-sm mx-auto space-y-2 mb-8">
+          {publishedEpics.map(epic => (
+            <div key={epic.epicId} className="p-3 bg-[hsl(var(--success))]/10 rounded-lg flex items-center gap-3 text-sm">
+              <CheckCircle2 className="w-4 h-4 text-[hsl(var(--success))]" />
+              <span className="font-mono">{epic.epicId}</span>
+              <span className="text-muted-foreground">→</span>
+              <span className="font-mono text-[hsl(var(--success))]">{epic.backlogId}</span>
+            </div>
+          ))}
+        </div>
+        
+        <div className="flex gap-4 justify-center">
+          <Button size="lg" className="gap-2">
+            <ExternalLink className="w-4 h-4" />
+            View in Program Board
+          </Button>
+          <Button variant="outline" size="lg">
+            Return to Drafts
           </Button>
         </div>
       </div>
@@ -213,16 +201,16 @@ export function EpicPublishingStep({
   // Main state with epics
   return (
     <div className="space-y-6">
-      {/* Publishing Config */}
+      {/* Configuration Section - AT TOP */}
       <div className="bg-card border border-border rounded-xl p-4">
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label>Target Quarter</Label>
+            <Label className="text-sm font-medium">Target Quarter</Label>
             <Select 
               value={publishOptions.targetQuarter}
               onValueChange={(v) => setPublishOptions(prev => ({ ...prev, targetQuarter: v }))}
             >
-              <SelectTrigger>
+              <SelectTrigger className="focus:ring-2 focus:ring-primary/20 focus:border-primary">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -234,17 +222,17 @@ export function EpicPublishingStep({
             </Select>
           </div>
           <div className="space-y-2">
-            <Label>Publish Mode</Label>
+            <Label className="text-sm font-medium">Publish Mode</Label>
             <Select 
               value={publishOptions.publishMode}
               onValueChange={(v) => setPublishOptions(prev => ({ ...prev, publishMode: v }))}
             >
-              <SelectTrigger>
+              <SelectTrigger className="focus:ring-2 focus:ring-primary/20 focus:border-primary">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
+                <SelectItem value="preview">Generate Only (Preview)</SelectItem>
                 <SelectItem value="generate_publish">Generate & Publish</SelectItem>
-                <SelectItem value="draft_only">Draft Only</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -261,10 +249,10 @@ export function EpicPublishingStep({
             </p>
           </div>
           <div className="flex items-center gap-2">
-            <Button variant="ghost" size="sm" onClick={onSelectAll}>
+            <Button variant="ghost" size="sm" onClick={onSelectAll} className="transition-all hover:bg-primary/10">
               Select All
             </Button>
-            <Button variant="ghost" size="sm" onClick={onDeselectAll}>
+            <Button variant="ghost" size="sm" onClick={onDeselectAll} className="transition-all hover:bg-primary/10">
               Deselect All
             </Button>
           </div>
@@ -277,7 +265,7 @@ export function EpicPublishingStep({
               open={expandedEpic === epic.id}
               onOpenChange={(open) => setExpandedEpic(open ? epic.id : null)}
             >
-              <div className="p-4">
+              <div className="p-4 transition-all duration-200 hover:bg-muted/50">
                 <div className="flex items-start gap-3">
                   <Checkbox
                     checked={epic.selected}
@@ -319,9 +307,9 @@ export function EpicPublishingStep({
                       <div className="mt-4 pt-4 border-t border-border space-y-3">
                         <p className="text-sm">{epic.description}</p>
                         <div className="flex items-center gap-2">
-                          <Button size="sm" variant="outline">Edit</Button>
+                          <Button size="sm" variant="outline" className="transition-all hover:border-primary">Edit</Button>
                           <Button size="sm" variant="ghost">View FRs</Button>
-                          <Button size="sm" variant="ghost" className="text-destructive hover:text-destructive">
+                          <Button size="sm" variant="ghost" className="text-destructive hover:text-destructive hover:bg-destructive/10">
                             Remove from publish
                           </Button>
                         </div>
@@ -374,8 +362,9 @@ export function EpicPublishingStep({
           )}
         </div>
 
+        {/* Button says "Publish X Epics" */}
         <Button 
-          className="w-full gap-2" 
+          className="w-full gap-2 bg-[hsl(var(--success))] hover:bg-[hsl(var(--success))]/90" 
           size="lg"
           onClick={handlePublish}
           disabled={isPublishing || selectedEpics.length === 0}
