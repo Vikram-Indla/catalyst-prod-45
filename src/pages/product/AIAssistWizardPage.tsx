@@ -10,7 +10,7 @@ import { useLatestArtifactsForDraft } from '@/hooks/useAIAssistArtifacts';
 import { TopBar } from '@/components/ai-assist/wizard/TopBar';
 import { HorizontalStepper, WizardStep } from '@/components/ai-assist/wizard/HorizontalStepper';
 import { FooterNav } from '@/components/ai-assist/wizard/FooterNav';
-import { RunDetailsDrawer } from '@/components/ai-assist/wizard/RunDetailsDrawer';
+import { ContextualSidebar } from '@/components/ai-assist/wizard/ContextualSidebar';
 import { DocumentCaptureStep } from '@/components/ai-assist/steps/DocumentCaptureStep';
 import { AIAnalysisStep } from '@/components/ai-assist/steps/AIAnalysisStep';
 import { FRProcessingStep } from '@/components/ai-assist/steps/FRProcessingStep';
@@ -358,10 +358,11 @@ export default function AIAssistWizardPage() {
         onNext={handleNextStep}
       />
 
-      {/* Run Details Drawer */}
-      <RunDetailsDrawer
+      {/* Contextual Sidebar */}
+      <ContextualSidebar
         open={isDrawerOpen}
         onClose={() => setIsDrawerOpen(false)}
+        currentStep={currentStep}
         latestRun={latestRun ? {
           id: latestRun.id,
           run_number: latestRun.run_number,
