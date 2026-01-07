@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { Upload, FileText, Check, Hash, Globe, ChevronRight, Loader2, RefreshCw, Eye, Lightbulb, AlertCircle, Lock } from 'lucide-react';
+import { Upload, FileText, Check, CheckCircle, Hash, Globe, ChevronRight, Loader2, RefreshCw, Eye, Lightbulb, AlertCircle, Lock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useAIAssistUpload } from '@/hooks/useAIAssistUpload';
@@ -270,24 +270,24 @@ export function DocumentCaptureStep({ draftId, documents, onUploadComplete }: Do
       </div>
 
       {/* Tips Section */}
-      <div className="p-4 bg-primary/5 border-l-4 border-primary rounded-r-lg">
-        <div className="flex gap-3">
-          <Lightbulb className="w-5 h-5 text-primary flex-shrink-0" />
+      <div className="mt-6 p-4 bg-primary/5 border-l-4 border-primary rounded-r-xl">
+        <div className="flex items-start gap-3">
+          <Lightbulb className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
           <div>
             <h4 className="text-sm font-semibold text-foreground mb-2">
               Best results when your document includes:
             </h4>
             <ul className="text-sm text-muted-foreground space-y-1">
               <li className="flex items-center gap-2">
-                <Check className="w-3.5 h-3.5 text-[hsl(var(--success))]" />
+                <CheckCircle className="w-3.5 h-3.5 text-[hsl(var(--success))]" />
                 Clear functional requirements with numbered sections
               </li>
               <li className="flex items-center gap-2">
-                <Check className="w-3.5 h-3.5 text-[hsl(var(--success))]" />
+                <CheckCircle className="w-3.5 h-3.5 text-[hsl(var(--success))]" />
                 Arabic or English content (bilingual supported)
               </li>
               <li className="flex items-center gap-2">
-                <Check className="w-3.5 h-3.5 text-[hsl(var(--success))]" />
+                <CheckCircle className="w-3.5 h-3.5 text-[hsl(var(--success))]" />
                 Section headings for automatic organization
               </li>
             </ul>
