@@ -4710,6 +4710,22 @@ button,
   animation: confetti-fall 2s ease-out forwards;
 }
 
+.animate-confetti-fall {
+  animation: confetti-fall 2s ease-out forwards;
+}
+
+/* === SLIDE IN UP (for published epics) === */
+@keyframes slideInUp {
+  0% {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
 /* === PROCESSING SPINNER RING === */
 @keyframes spinner-ring {
   0% { transform: rotate(0deg); }
