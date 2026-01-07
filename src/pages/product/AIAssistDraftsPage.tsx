@@ -69,14 +69,10 @@ export default function AIAssistDraftsPage() {
     return matchesSearch && matchesStatus;
   });
 
-  const handleRowClick = (draft: Draft) => {
-    setSelectedDraft(draft);
-    setDrawerOpen(true);
-  };
-
   const handleOpenWizard = (draftId: string) => {
     navigate(`/product/ai-assist/${draftId}`);
   };
+
 
   const formatDate = (dateStr: string | null) => {
     if (!dateStr) return '—';
@@ -123,15 +119,15 @@ export default function AIAssistDraftsPage() {
         <div className="flex items-center gap-2">
           <Filter className="h-4 w-4 text-muted-foreground" />
           <div className="flex gap-1">
-            {(['all', 'draft', 'in_progress', 'complete', 'blocked'] as const).map((status) => (
+            {(['all', 'draft', 'in_progress', 'review', 'approved'] as const).map((status) => (
               <Button
                 key={status}
                 variant={statusFilter === status ? 'default' : 'ghost'}
                 size="sm"
-                onClick={() => setStatusFilter(status)}
+                onClick={() => setStatusFilter(status as DraftStatus | 'all')}
                 className="text-xs"
               >
-                {status === 'all' ? 'All' : STATUS_CONFIG[status].label}
+                {status === 'all' ? 'All' : (STATUS_CONFIG[status]?.label || status)}
               </Button>
             ))}
           </div>
@@ -277,89 +273,4 @@ export default function AIAssistDraftsPage() {
     </div>
   );
 }
-                    <p className="text-sm text-muted-foreground mt-1">{selectedDraft.titleEn}</p>
-                  )}
-                </div>
 
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <h4 className="text-sm font-medium text-muted-foreground mb-1">Status</h4>
-                    <Badge variant={STATUS_CONFIG[selectedDraft.status].variant} className="gap-1">
-                      {STATUS_CONFIG[selectedDraft.status].icon}
-                      {STATUS_CONFIG[selectedDraft.status].label}
-                    </Badge>
-                  </div>
-                  <div>
-                    <h4 className="text-sm font-medium text-muted-foreground mb-1">Language</h4>
-                    <p className="text-sm uppercase">{selectedDraft.language}</p>
-                  </div>
-                </div>
-
-                <div>
-                  <h4 className="text-sm font-medium text-muted-foreground mb-1">Current Step</h4>
-                  <p className="text-sm">
-                    Step {selectedDraft.currentStep} of 8: {WIZARD_STEPS.find(s => s.id === selectedDraft.currentStep)?.name}
-                  </p>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <h4 className="text-sm font-medium text-muted-foreground mb-1">Prompt Pack</h4>
-                    <p className="text-sm font-mono">{selectedDraft.promptPack}</p>
-                  </div>
-                  <div>
-                    <h4 className="text-sm font-medium text-muted-foreground mb-1">Sources Pack</h4>
-                    <p className="text-sm font-mono">{selectedDraft.sourcesPack}</p>
-                  </div>
-                </div>
-
-                {selectedDraft.canonicalHash && (
-                  <div>
-                    <h4 className="text-sm font-medium text-muted-foreground mb-1">Canonical Hash</h4>
-                    <p className="text-sm font-mono">{selectedDraft.canonicalHash}</p>
-                  </div>
-                )}
-
-                {selectedDraft.complianceVerdict && (
-                  <div>
-                    <h4 className="text-sm font-medium text-muted-foreground mb-1">Compliance Verdict</h4>
-                    <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs border ${VERDICT_CONFIG[selectedDraft.complianceVerdict].className}`}>
-                      {VERDICT_CONFIG[selectedDraft.complianceVerdict].label}
-                    </span>
-                  </div>
-                )}
-
-                {selectedDraft.qualityScore !== null && (
-                  <div>
-                    <h4 className="text-sm font-medium text-muted-foreground mb-1">Quality Score</h4>
-                    <div className="flex items-center gap-2">
-                      <div className="flex-1 h-2 bg-[var(--bg-3)] rounded-full overflow-hidden">
-                        <div 
-                          className={`h-full rounded-full ${
-                            selectedDraft.qualityScore >= 80 ? 'bg-[hsl(var(--success))]' :
-                            selectedDraft.qualityScore >= 60 ? 'bg-[hsl(var(--warning))]' :
-                            'bg-[hsl(var(--danger))]'
-                          }`}
-                          style={{ width: `${selectedDraft.qualityScore}%` }}
-                        />
-                      </div>
-                      <span className="text-sm font-medium">{selectedDraft.qualityScore}%</span>
-                    </div>
-                  </div>
-                )}
-
-                <Button 
-                  className="w-full mt-4" 
-                  onClick={() => handleOpenWizard(selectedDraft.id)}
-                >
-                  {selectedDraft.status === 'draft' ? 'Start Wizard' : 'Resume Wizard'}
-                  <ChevronRight className="h-4 w-4 ml-2" />
-                </Button>
-              </div>
-            </>
-          )}
-        </SheetContent>
-      </Sheet>
-    </div>
-  );
-}
