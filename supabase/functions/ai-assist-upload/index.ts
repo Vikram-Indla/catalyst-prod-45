@@ -12,6 +12,85 @@ async function computeSHA256(data: ArrayBuffer): Promise<string> {
   return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
+/**
+ * Parse PDF page count from binary data.
+ * Uses regex to find /Type /Page entries (authoritative count from PDF structure).
+ * This is the AUTHORITATIVE page count - not OCR tiles.
+ */
+function parsePdfPageCount(arrayBuffer: ArrayBuffer): { 
+  pageCount: number | null; 
+  error: string | null;
+  pdfInfo: Record<string, unknown> | null;
+} {
+  try {
+    const bytes = new Uint8Array(arrayBuffer);
+    
+    // Check PDF header
+    const header = new TextDecoder().decode(bytes.slice(0, 8));
+    if (!header.startsWith('%PDF-')) {
+      return { pageCount: null, error: 'Not a valid PDF file (missing %PDF- header)', pdfInfo: null };
+    }
+
+    // Extract PDF version
+    const versionMatch = header.match(/%PDF-(\d+\.\d+)/);
+    const pdfVersion = versionMatch ? versionMatch[1] : 'unknown';
+
+    // Convert to string for regex parsing (only need structure, not full content)
+    // For large PDFs, we search in chunks to find page count
+    const text = new TextDecoder('latin1').decode(bytes);
+    
+    // Method 1: Look for /Count in the Pages dictionary (most reliable)
+    // Pattern: /Type /Pages ... /Count <number>
+    const pagesMatch = text.match(/\/Type\s*\/Pages[^>]*\/Count\s+(\d+)/);
+    if (pagesMatch) {
+      const count = parseInt(pagesMatch[1], 10);
+      if (count >= 1 && count <= 100000) { // Sanity check
+        return { 
+          pageCount: count, 
+          error: null, 
+          pdfInfo: { version: pdfVersion, method: 'pages_count' } 
+        };
+      }
+    }
+
+    // Method 2: Count /Type /Page entries (individual pages)
+    const pageMatches = text.match(/\/Type\s*\/Page[^s]/g);
+    if (pageMatches && pageMatches.length > 0) {
+      return { 
+        pageCount: pageMatches.length, 
+        error: null, 
+        pdfInfo: { version: pdfVersion, method: 'page_objects' } 
+      };
+    }
+
+    // Method 3: Look for /N in linearized PDFs
+    const linearizedMatch = text.match(/\/Linearized[^>]*\/N\s+(\d+)/);
+    if (linearizedMatch) {
+      const count = parseInt(linearizedMatch[1], 10);
+      if (count >= 1) {
+        return { 
+          pageCount: count, 
+          error: null, 
+          pdfInfo: { version: pdfVersion, method: 'linearized', linearized: true } 
+        };
+      }
+    }
+
+    // Fallback: Could not determine page count
+    return { 
+      pageCount: null, 
+      error: 'Could not parse page count from PDF structure', 
+      pdfInfo: { version: pdfVersion, method: 'failed' } 
+    };
+  } catch (err) {
+    return { 
+      pageCount: null, 
+      error: `PDF parsing error: ${err instanceof Error ? err.message : String(err)}`, 
+      pdfInfo: null 
+    };
+  }
+}
+
 serve(async (req) => {
   // Handle CORS preflight
   if (req.method === 'OPTIONS') {
@@ -72,6 +151,22 @@ serve(async (req) => {
     const arrayBuffer = await file.arrayBuffer();
     const fileSha256 = await computeSHA256(arrayBuffer);
 
+    // ================================================================
+    // AUTHORITATIVE PDF STATS - Compute BEFORE any OCR processing
+    // ================================================================
+    let pdfPageCount: number | null = null;
+    let pdfParseError: string | null = null;
+    let pdfInfo: Record<string, unknown> | null = null;
+
+    if (file.type === 'application/pdf') {
+      const parseResult = parsePdfPageCount(arrayBuffer);
+      pdfPageCount = parseResult.pageCount;
+      pdfParseError = parseResult.error;
+      pdfInfo = parseResult.pdfInfo;
+      
+      console.log(`[ai-assist-upload] PDF parsed: pageCount=${pdfPageCount}, error=${pdfParseError}`);
+    }
+
     // Check for existing document with same hash for this draft (content_changed detection)
     const { data: existingDocs } = await supabase
       .from('ai_assist_documents')
@@ -108,7 +203,7 @@ serve(async (req) => {
     const retentionDate = new Date();
     retentionDate.setFullYear(retentionDate.getFullYear() + 2);
 
-    // Create document record
+    // Create document record with AUTHORITATIVE PDF stats
     const { data: docData, error: docError } = await supabase
       .from('ai_assist_documents')
       .insert({
@@ -123,6 +218,18 @@ serve(async (req) => {
         extraction_status: 'pending',
         retention_until: retentionDate.toISOString(),
         page_hashes: [],
+        // NEW: Authoritative PDF stats (not OCR)
+        pdf_page_count: pdfPageCount,
+        pdf_bytes: file.size,
+        pdf_media_type: file.type,
+        pdf_info_json: pdfInfo,
+        pdf_parsed_at: new Date().toISOString(),
+        pdf_parse_error: pdfParseError,
+        // Set legacy pages_total to authoritative count for backwards compatibility
+        pages_total: pdfPageCount,
+        // Initialize status fields
+        canonical_status: 'pending',
+        sectioning_status: 'pending',
       })
       .select()
       .single();
@@ -135,7 +242,7 @@ serve(async (req) => {
       });
     }
 
-    // Log upload audit event
+    // Log upload audit event with PDF stats
     await supabase.from('ai_assist_audit_events').insert({
       draft_id: draftId,
       event_type: 'upload',
@@ -146,6 +253,8 @@ serve(async (req) => {
         file_name: file.name,
         file_size: file.size,
         mime_type: file.type,
+        pdf_page_count: pdfPageCount,
+        pdf_parse_error: pdfParseError,
       },
     });
 
@@ -167,6 +276,10 @@ serve(async (req) => {
       success: true,
       document: docData,
       content_changed: contentChanged,
+      pdf_stats: {
+        page_count: pdfPageCount,
+        parse_error: pdfParseError,
+      },
     }), {
       status: 200,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
