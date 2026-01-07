@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { 
   ChevronRight,
@@ -14,14 +14,21 @@ import {
   Link,
   Send,
   Clock,
-  Hash,
   Cpu,
-  User
+  User,
+  Loader2,
+  RefreshCw
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
+import { Skeleton } from '@/components/ui/skeleton';
+import { useAIAssistDraft, useUpdateDraft } from '@/hooks/useAIAssistDrafts';
+import { useLatestRun, useAIAssistRuns } from '@/hooks/useAIAssistRuns';
+import { useAIAssistAuditEvents } from '@/hooks/useAIAssistDrafts';
+import { useAIAssistDocuments } from '@/hooks/useAIAssistDocuments';
+import { useLatestArtifactsForDraft } from '@/hooks/useAIAssistArtifacts';
 
 // 8-step wizard configuration
 const WIZARD_STEPS = [
@@ -35,32 +42,45 @@ const WIZARD_STEPS = [
   { id: 8, name: 'Epic Publishing', description: 'Publish to backlog', icon: Send, key: 'publish' },
 ];
 
-// Mock run health data
-const MOCK_RUN_HEALTH = {
-  canonicalHash: 'a8f3e2b1c4d9f7a3',
-  documentVersion: '1.2.0',
-  promptPackVersion: 'dga-v2.1',
-  sourcesPackVersion: 'nca-2025',
-  modelUsed: 'gemini-2.5-pro',
-  lastRunAt: '2026-01-07T10:30:00Z',
-  auditEvents: [
-    { id: 1, event: 'Document uploaded', timestamp: '2026-01-07T10:00:00Z', actor: 'Ahmed Al-Rashid' },
-    { id: 2, event: 'AI analysis started', timestamp: '2026-01-07T10:05:00Z', actor: 'System' },
-    { id: 3, event: 'Evidence extraction complete', timestamp: '2026-01-07T10:15:00Z', actor: 'System' },
-    { id: 4, event: 'FR processing initiated', timestamp: '2026-01-07T10:20:00Z', actor: 'System' },
-    { id: 5, event: 'Compliance check started', timestamp: '2026-01-07T10:30:00Z', actor: 'System' },
-  ],
-};
-
-// Step content placeholders
-const StepContent: Record<string, React.ReactNode> = {
-  capture: (
+// Step content components
+function DocumentCaptureStep({ documents }: { documents: ReturnType<typeof useAIAssistDocuments>['data'] }) {
+  const uploadedDocs = documents || [];
+  
+  return (
     <div className="space-y-6">
       <div className="border-2 border-dashed border-[var(--border-default)] rounded-lg p-12 text-center hover:border-[hsl(var(--info))] hover:bg-[hsl(var(--info))]/5 transition-colors cursor-pointer">
         <Upload className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
         <p className="text-sm text-muted-foreground mb-2">Drop your requirements document here</p>
         <p className="text-xs text-muted-foreground">Supports PDF, DOCX • Max 50MB</p>
       </div>
+      
+      {uploadedDocs.length > 0 && (
+        <div className="border border-[var(--border-subtle)] rounded-lg divide-y divide-[var(--border-subtle)]">
+          {uploadedDocs.map((doc) => (
+            <div key={doc.id} className="p-4 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <FileText className="h-4 w-4 text-muted-foreground" />
+                <div>
+                  <p className="text-sm font-medium">{doc.file_name}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {(doc.file_size / 1024).toFixed(1)} KB • {doc.extraction_status || 'pending'}
+                  </p>
+                </div>
+              </div>
+              <span className={cn(
+                "text-xs px-2 py-1 rounded",
+                doc.extraction_status === 'completed' && "bg-[hsl(var(--success))]/10 text-[hsl(var(--success))]",
+                doc.extraction_status === 'processing' && "bg-[hsl(var(--info))]/10 text-[hsl(var(--info))]",
+                doc.extraction_status === 'failed' && "bg-[hsl(var(--danger))]/10 text-[hsl(var(--danger))]",
+                (!doc.extraction_status || doc.extraction_status === 'pending') && "bg-muted text-muted-foreground"
+              )}>
+                {doc.extraction_status || 'pending'}
+              </span>
+            </div>
+          ))}
+        </div>
+      )}
+      
       <div className="bg-[var(--bg-2)] rounded-lg p-4">
         <p className="text-sm font-medium mb-2">Document Requirements</p>
         <ul className="text-xs text-muted-foreground space-y-1">
@@ -70,8 +90,25 @@ const StepContent: Record<string, React.ReactNode> = {
         </ul>
       </div>
     </div>
-  ),
-  analysis: (
+  );
+}
+
+function AIAnalysisStep({ artifacts }: { artifacts: ReturnType<typeof useLatestArtifactsForDraft>['data'] }) {
+  const evidenceArtifact = artifacts?.find(a => a.artifact_type === 'evidence');
+  const glossaryArtifact = artifacts?.find(a => a.artifact_type === 'glossary');
+  const memoArtifact = artifacts?.find(a => a.artifact_type === 'memo');
+
+  const getCount = (artifact: typeof evidenceArtifact) => {
+    if (!artifact?.content_json) return '—';
+    if (Array.isArray(artifact.content_json)) return artifact.content_json.length.toString();
+    if (typeof artifact.content_json === 'object' && artifact.content_json !== null) {
+      const items = (artifact.content_json as Record<string, unknown>).items;
+      if (Array.isArray(items)) return items.length.toString();
+    }
+    return '—';
+  };
+
+  return (
     <div className="space-y-6">
       <div className="bg-[var(--bg-2)] rounded-lg p-6 text-center">
         <Brain className="h-12 w-12 mx-auto mb-4 text-[hsl(var(--info))] animate-pulse" />
@@ -82,21 +119,27 @@ const StepContent: Record<string, React.ReactNode> = {
       </div>
       <div className="grid grid-cols-3 gap-4">
         <div className="bg-[var(--bg-2)] rounded-lg p-4 text-center">
-          <p className="text-2xl font-bold text-[hsl(var(--info))]">—</p>
+          <p className="text-2xl font-bold text-[hsl(var(--info))]">{getCount(evidenceArtifact)}</p>
           <p className="text-xs text-muted-foreground mt-1">Evidence Items</p>
         </div>
         <div className="bg-[var(--bg-2)] rounded-lg p-4 text-center">
-          <p className="text-2xl font-bold text-[hsl(var(--info))]">—</p>
+          <p className="text-2xl font-bold text-[hsl(var(--info))]">{getCount(glossaryArtifact)}</p>
           <p className="text-xs text-muted-foreground mt-1">Glossary Terms</p>
         </div>
         <div className="bg-[var(--bg-2)] rounded-lg p-4 text-center">
-          <p className="text-2xl font-bold text-[hsl(var(--info))]">—</p>
+          <p className="text-2xl font-bold text-[hsl(var(--info))]">{getCount(memoArtifact)}</p>
           <p className="text-xs text-muted-foreground mt-1">Memo Sections</p>
         </div>
       </div>
     </div>
-  ),
-  fr: (
+  );
+}
+
+function FRProcessingStep({ artifacts }: { artifacts: ReturnType<typeof useLatestArtifactsForDraft>['data'] }) {
+  const frArtifact = artifacts?.find(a => a.artifact_type === 'functional_requirements');
+  const hasData = !!frArtifact;
+
+  return (
     <div className="space-y-6">
       <div className="bg-[var(--bg-2)] rounded-lg p-6">
         <FileCheck className="h-8 w-8 mb-4 text-[hsl(var(--info))]" />
@@ -108,7 +151,12 @@ const StepContent: Record<string, React.ReactNode> = {
       <div className="border border-[var(--border-subtle)] rounded-lg divide-y divide-[var(--border-subtle)]">
         <div className="p-4 flex items-center justify-between">
           <span className="text-sm">FR extraction</span>
-          <span className="text-xs text-muted-foreground">Pending</span>
+          <span className={cn(
+            "text-xs",
+            hasData ? "text-[hsl(var(--success))]" : "text-muted-foreground"
+          )}>
+            {hasData ? 'Completed' : 'Pending'}
+          </span>
         </div>
         <div className="p-4 flex items-center justify-between">
           <span className="text-sm">Traceability mapping</span>
@@ -120,8 +168,14 @@ const StepContent: Record<string, React.ReactNode> = {
         </div>
       </div>
     </div>
-  ),
-  compliance: (
+  );
+}
+
+function ComplianceGateStep({ artifacts }: { artifacts: ReturnType<typeof useLatestArtifactsForDraft>['data'] }) {
+  const complianceArtifact = artifacts?.find(a => a.artifact_type === 'compliance_report');
+  const scores = complianceArtifact?.content_json as { dga_score?: number; nca_score?: number } | null;
+
+  return (
     <div className="space-y-6">
       <div className="bg-[hsl(var(--warning))]/10 border border-[hsl(var(--warning))]/20 rounded-lg p-4 flex items-center gap-3">
         <Shield className="h-6 w-6 text-[hsl(var(--warning))]" />
@@ -133,16 +187,22 @@ const StepContent: Record<string, React.ReactNode> = {
       <div className="grid grid-cols-2 gap-4">
         <div className="bg-[var(--bg-2)] rounded-lg p-4">
           <p className="text-xs text-muted-foreground mb-2">DGA Score</p>
-          <p className="text-3xl font-bold">—</p>
+          <p className="text-3xl font-bold">{scores?.dga_score ?? '—'}</p>
         </div>
         <div className="bg-[var(--bg-2)] rounded-lg p-4">
           <p className="text-xs text-muted-foreground mb-2">NCA Score</p>
-          <p className="text-3xl font-bold">—</p>
+          <p className="text-3xl font-bold">{scores?.nca_score ?? '—'}</p>
         </div>
       </div>
     </div>
-  ),
-  clarification: (
+  );
+}
+
+function ClarificationStep({ artifacts }: { artifacts: ReturnType<typeof useLatestArtifactsForDraft>['data'] }) {
+  const oqArtifact = artifacts?.find(a => a.artifact_type === 'open_questions');
+  const questions = oqArtifact?.content_json as { questions?: Array<{ ar: string; en: string }> } | null;
+
+  return (
     <div className="space-y-6">
       <div className="bg-[var(--bg-2)] rounded-lg p-6">
         <HelpCircle className="h-8 w-8 mb-4 text-[hsl(var(--info))]" />
@@ -151,12 +211,29 @@ const StepContent: Record<string, React.ReactNode> = {
           Generate bilingual clarification questions (AR/EN) for stakeholder review.
         </p>
       </div>
-      <div className="text-center text-muted-foreground text-sm py-8">
-        No open questions generated yet.
-      </div>
+      {questions?.questions && questions.questions.length > 0 ? (
+        <div className="space-y-2">
+          {questions.questions.map((q, idx) => (
+            <div key={idx} className="border border-[var(--border-subtle)] rounded-lg p-3">
+              <p className="text-sm mb-1" dir="rtl">{q.ar}</p>
+              <p className="text-xs text-muted-foreground">{q.en}</p>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="text-center text-muted-foreground text-sm py-8">
+          No open questions generated yet.
+        </div>
+      )}
     </div>
-  ),
-  brd: (
+  );
+}
+
+function BRDGenerationStep({ artifacts }: { artifacts: ReturnType<typeof useLatestArtifactsForDraft>['data'] }) {
+  const brdArtifact = artifacts?.find(a => a.artifact_type === 'brd');
+  const hasBrd = !!brdArtifact;
+
+  return (
     <div className="space-y-6">
       <div className="bg-[var(--bg-2)] rounded-lg p-6">
         <FileText className="h-8 w-8 mb-4 text-[hsl(var(--info))]" />
@@ -166,13 +243,16 @@ const StepContent: Record<string, React.ReactNode> = {
         </p>
       </div>
       <div className="flex gap-2">
-        <Button variant="outline" size="sm" disabled>Preview PDF</Button>
-        <Button variant="outline" size="sm" disabled>Preview DOCX</Button>
-        <Button variant="outline" size="sm" disabled>Preview Markdown</Button>
+        <Button variant="outline" size="sm" disabled={!hasBrd}>Preview PDF</Button>
+        <Button variant="outline" size="sm" disabled={!hasBrd}>Preview DOCX</Button>
+        <Button variant="outline" size="sm" disabled={!hasBrd}>Preview Markdown</Button>
       </div>
     </div>
-  ),
-  linking: (
+  );
+}
+
+function BRLinkingStep() {
+  return (
     <div className="space-y-6">
       <div className="bg-[var(--bg-2)] rounded-lg p-6">
         <Link className="h-8 w-8 mb-4 text-[hsl(var(--info))]" />
@@ -185,8 +265,11 @@ const StepContent: Record<string, React.ReactNode> = {
         Complete previous steps to enable BR linking.
       </div>
     </div>
-  ),
-  publish: (
+  );
+}
+
+function EpicPublishingStep() {
+  return (
     <div className="space-y-6">
       <div className="bg-[var(--bg-2)] rounded-lg p-6">
         <Send className="h-8 w-8 mb-4 text-[hsl(var(--info))]" />
@@ -199,31 +282,118 @@ const StepContent: Record<string, React.ReactNode> = {
         Publish Epics to Backlog
       </Button>
     </div>
-  ),
-};
+  );
+}
 
 export default function AIAssistWizardPage() {
   const { draftId } = useParams<{ draftId: string }>();
   const navigate = useNavigate();
+  
+  // Fetch draft data from Supabase
+  const { data: draft, isLoading: draftLoading, error: draftError } = useAIAssistDraft(draftId);
+  const { data: latestRun } = useLatestRun(draft?.id);
+  const { data: auditEvents = [], isLoading: auditLoading } = useAIAssistAuditEvents(draft?.id);
+  const { data: documents = [] } = useAIAssistDocuments(draft?.id);
+  const { data: artifacts = [] } = useLatestArtifactsForDraft(draft?.id);
+  
+  const updateDraft = useUpdateDraft();
+  
+  // Local state synced with DB
   const [currentStep, setCurrentStep] = useState(1);
-  const [isRtl, setIsRtl] = useState(true); // Default RTL for Arabic drafts
+  const [isRtl, setIsRtl] = useState(true);
+
+  // Sync state from draft when loaded
+  useEffect(() => {
+    if (draft) {
+      setCurrentStep(draft.current_step);
+      setIsRtl(draft.dir === 'rtl');
+    }
+  }, [draft]);
+
+  // Persist step changes to DB
+  const handleStepChange = useCallback((newStep: number) => {
+    setCurrentStep(newStep);
+    if (draft?.id && newStep !== draft.current_step) {
+      updateDraft.mutate({ id: draft.id, updates: { current_step: newStep } });
+    }
+  }, [draft, updateDraft]);
+
+  const handleDirChange = useCallback((rtl: boolean) => {
+    setIsRtl(rtl);
+    if (draft?.id) {
+      updateDraft.mutate({ id: draft.id, updates: { dir: rtl ? 'rtl' : 'ltr' } });
+    }
+  }, [draft, updateDraft]);
 
   const currentStepConfig = WIZARD_STEPS.find(s => s.id === currentStep);
 
   const handlePrevStep = () => {
-    if (currentStep > 1) setCurrentStep(currentStep - 1);
+    if (currentStep > 1) handleStepChange(currentStep - 1);
   };
 
   const handleNextStep = () => {
-    if (currentStep < 8) setCurrentStep(currentStep + 1);
+    if (currentStep < 8) handleStepChange(currentStep + 1);
   };
 
-  const formatTime = (dateStr: string) => {
+  const formatEventTime = (dateStr: string) => {
     return new Date(dateStr).toLocaleTimeString('en-US', {
       hour: '2-digit',
       minute: '2-digit',
     });
   };
+
+  const formatEventType = (eventType: string) => {
+    return eventType
+      .replace(/_/g, ' ')
+      .replace(/\b\w/g, l => l.toUpperCase());
+  };
+
+  // Render step content based on current step
+  const renderStepContent = () => {
+    switch (currentStepConfig?.key) {
+      case 'capture':
+        return <DocumentCaptureStep documents={documents} />;
+      case 'analysis':
+        return <AIAnalysisStep artifacts={artifacts} />;
+      case 'fr':
+        return <FRProcessingStep artifacts={artifacts} />;
+      case 'compliance':
+        return <ComplianceGateStep artifacts={artifacts} />;
+      case 'clarification':
+        return <ClarificationStep artifacts={artifacts} />;
+      case 'brd':
+        return <BRDGenerationStep artifacts={artifacts} />;
+      case 'linking':
+        return <BRLinkingStep />;
+      case 'publish':
+        return <EpicPublishingStep />;
+      default:
+        return null;
+    }
+  };
+
+  // Loading state
+  if (draftLoading) {
+    return (
+      <div className="flex flex-col h-full items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+        <p className="text-sm text-muted-foreground mt-2">Loading draft...</p>
+      </div>
+    );
+  }
+
+  // Error state
+  if (draftError || !draft) {
+    return (
+      <div className="flex flex-col h-full items-center justify-center">
+        <AlertCircle className="h-12 w-12 text-[hsl(var(--danger))] mb-4" />
+        <p className="text-sm text-muted-foreground mb-4">Draft not found or could not be loaded.</p>
+        <Button variant="outline" onClick={() => navigate('/product/ai-assist')}>
+          Back to Drafts
+        </Button>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col h-full" dir={isRtl ? 'rtl' : 'ltr'}>
@@ -234,7 +404,7 @@ export default function AIAssistWizardPage() {
           <ChevronRight className="h-4 w-4 text-muted-foreground" />
           <span className="text-muted-foreground">AI Assist</span>
           <ChevronRight className="h-4 w-4 text-muted-foreground" />
-          <span className="text-muted-foreground">Draft {draftId}</span>
+          <span className="text-muted-foreground font-mono">{draft.draft_key}</span>
           <ChevronRight className="h-4 w-4 text-muted-foreground" />
           <span className="font-medium">Step: {currentStepConfig?.name}</span>
         </div>
@@ -244,7 +414,7 @@ export default function AIAssistWizardPage() {
             <Switch
               id="rtl-toggle"
               checked={isRtl}
-              onCheckedChange={setIsRtl}
+              onCheckedChange={handleDirChange}
             />
           </div>
           <Button variant="outline" size="sm" onClick={() => navigate('/product/ai-assist')}>
@@ -264,13 +434,12 @@ export default function AIAssistWizardPage() {
             {WIZARD_STEPS.map((step, idx) => {
               const isActive = step.id === currentStep;
               const isComplete = step.id < currentStep;
-              const isBlocked = false; // Could add logic here
               const StepIcon = step.icon;
 
               return (
                 <React.Fragment key={step.id}>
                   <button
-                    onClick={() => setCurrentStep(step.id)}
+                    onClick={() => handleStepChange(step.id)}
                     className={cn(
                       "w-full flex items-start gap-3 p-3 rounded-md text-left transition-colors",
                       isActive && "bg-[hsl(var(--info))]/10",
@@ -281,8 +450,7 @@ export default function AIAssistWizardPage() {
                       "w-7 h-7 rounded-full flex items-center justify-center text-xs font-semibold flex-shrink-0 border-2 transition-colors",
                       isComplete && "bg-[hsl(var(--success))] border-[hsl(var(--success))] text-white",
                       isActive && "bg-[hsl(var(--info))] border-[hsl(var(--info))] text-white",
-                      isBlocked && "bg-[hsl(var(--danger))]/10 border-[hsl(var(--danger))] text-[hsl(var(--danger))]",
-                      !isComplete && !isActive && !isBlocked && "bg-[var(--bg-2)] border-[var(--border-default)] text-muted-foreground"
+                      !isComplete && !isActive && "bg-[var(--bg-2)] border-[var(--border-default)] text-muted-foreground"
                     )}>
                       {isComplete ? <Check className="h-3.5 w-3.5" /> : step.id}
                     </div>
@@ -318,7 +486,7 @@ export default function AIAssistWizardPage() {
             <span className="text-xs text-muted-foreground">Step {currentStep} of 8</span>
           </div>
           <div className="flex-1 p-5 overflow-y-auto">
-            {currentStepConfig && StepContent[currentStepConfig.key]}
+            {renderStepContent()}
           </div>
           <div className="px-5 py-4 border-t border-[var(--border-subtle)] flex items-center justify-between">
             <Button
@@ -349,58 +517,91 @@ export default function AIAssistWizardPage() {
             </h3>
           </div>
           <div className="flex-1 p-4 overflow-y-auto space-y-4">
-            <div>
-              <p className="text-xs text-muted-foreground mb-1">Canonical Hash</p>
-              <p className="text-xs font-mono break-all">{MOCK_RUN_HEALTH.canonicalHash}</p>
-            </div>
-            <div>
-              <p className="text-xs text-muted-foreground mb-1">Document Version</p>
-              <p className="text-xs font-mono">{MOCK_RUN_HEALTH.documentVersion}</p>
-            </div>
-            <div>
-              <p className="text-xs text-muted-foreground mb-1">Prompt Pack</p>
-              <p className="text-xs font-mono">{MOCK_RUN_HEALTH.promptPackVersion}</p>
-            </div>
-            <div>
-              <p className="text-xs text-muted-foreground mb-1">Sources Pack</p>
-              <p className="text-xs font-mono">{MOCK_RUN_HEALTH.sourcesPackVersion}</p>
-            </div>
-            <div>
-              <p className="text-xs text-muted-foreground mb-1">AI Model</p>
-              <div className="flex items-center gap-2">
-                <Cpu className="h-3 w-3 text-muted-foreground" />
-                <p className="text-xs font-mono">{MOCK_RUN_HEALTH.modelUsed}</p>
+            {latestRun ? (
+              <>
+                <div>
+                  <p className="text-xs text-muted-foreground mb-1">Canonical Hash</p>
+                  <p className="text-xs font-mono break-all">{latestRun.canonical_text_hash || '—'}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground mb-1">Run Number</p>
+                  <p className="text-xs font-mono">#{latestRun.run_number}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground mb-1">Prompt Pack</p>
+                  <p className="text-xs font-mono">{latestRun.prompt_pack_version || '—'}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground mb-1">Sources Pack</p>
+                  <p className="text-xs font-mono">{latestRun.sources_pack_version || '—'}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground mb-1">AI Model</p>
+                  <div className="flex items-center gap-2">
+                    <Cpu className="h-3 w-3 text-muted-foreground" />
+                    <p className="text-xs font-mono">{latestRun.model_id}</p>
+                  </div>
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground mb-1">Status</p>
+                  <span className={cn(
+                    "text-xs px-2 py-1 rounded",
+                    latestRun.status === 'completed' && "bg-[hsl(var(--success))]/10 text-[hsl(var(--success))]",
+                    latestRun.status === 'running' && "bg-[hsl(var(--info))]/10 text-[hsl(var(--info))]",
+                    latestRun.status === 'failed' && "bg-[hsl(var(--danger))]/10 text-[hsl(var(--danger))]",
+                    latestRun.status === 'pending' && "bg-muted text-muted-foreground"
+                  )}>
+                    {latestRun.status}
+                  </span>
+                </div>
+                {latestRun.started_at && (
+                  <div>
+                    <p className="text-xs text-muted-foreground mb-1">Started At</p>
+                    <div className="flex items-center gap-2">
+                      <Clock className="h-3 w-3 text-muted-foreground" />
+                      <p className="text-xs">{new Date(latestRun.started_at).toLocaleString()}</p>
+                    </div>
+                  </div>
+                )}
+              </>
+            ) : (
+              <div className="text-center text-muted-foreground text-xs py-4">
+                <RefreshCw className="h-6 w-6 mx-auto mb-2 opacity-50" />
+                No runs yet
               </div>
-            </div>
-            <div>
-              <p className="text-xs text-muted-foreground mb-1">Last Run</p>
-              <div className="flex items-center gap-2">
-                <Clock className="h-3 w-3 text-muted-foreground" />
-                <p className="text-xs">{new Date(MOCK_RUN_HEALTH.lastRunAt).toLocaleString()}</p>
-              </div>
-            </div>
+            )}
 
-            {/* Audit Mini Timeline */}
+            {/* Audit Timeline */}
             <div className="pt-4 border-t border-[var(--border-subtle)]">
               <h4 className="text-xs font-semibold text-muted-foreground uppercase mb-3">
                 Audit Timeline
               </h4>
-              <div className="space-y-3">
-                {MOCK_RUN_HEALTH.auditEvents.map((event) => (
-                  <div key={event.id} className="flex gap-2">
-                    <div className="w-2 h-2 rounded-full bg-[hsl(var(--info))] mt-1.5 flex-shrink-0" />
-                    <div className="flex-1 min-w-0">
-                      <p className="text-xs truncate">{event.event}</p>
-                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                        <User className="h-3 w-3" />
-                        <span className="truncate">{event.actor}</span>
-                        <span>•</span>
-                        <span>{formatTime(event.timestamp)}</span>
+              {auditLoading ? (
+                <div className="space-y-3">
+                  {[1, 2, 3].map((i) => (
+                    <Skeleton key={i} className="h-10 w-full" />
+                  ))}
+                </div>
+              ) : auditEvents.length > 0 ? (
+                <div className="space-y-3 max-h-64 overflow-y-auto">
+                  {auditEvents.slice(0, 20).map((event) => (
+                    <div key={event.id} className="flex gap-2">
+                      <div className="w-2 h-2 rounded-full bg-[hsl(var(--info))] mt-1.5 flex-shrink-0" />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs truncate">{formatEventType(event.event_type)}</p>
+                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                          <Clock className="h-3 w-3" />
+                          <span>{formatEventTime(event.created_at)}</span>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center text-muted-foreground text-xs py-4">
+                  No audit events yet
+                </div>
+              )}
             </div>
           </div>
         </div>
