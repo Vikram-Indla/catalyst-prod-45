@@ -124,6 +124,9 @@ import Programs from "./pages/admin/Programs";
 import Departments from "./pages/admin/Departments";
 const CapacityDepartmentsPage = lazy(() => import("./pages/admin/CapacityDepartments"));
 const ResourceAssignmentsPage = lazy(() => import("./pages/admin/ResourceAssignments"));
+const ResourceLocationsPage = lazy(() => import("./pages/admin/ResourceLocations"));
+const ResourceCountriesPage = lazy(() => import("./pages/admin/ResourceCountries"));
+const ResourceVendorsPage = lazy(() => import("./pages/admin/ResourceVendors"));
 import BusinessOwnersAdmin from "./pages/admin/BusinessOwners";
 import BusinessProcesses from "./pages/admin/BusinessProcesses";
 import Portfolios from "./pages/admin/Portfolios";
@@ -823,6 +826,9 @@ const App = () => (
                 <Route path="departments" element={<Departments />} />
                 <Route path="capacity-departments" element={<Suspense fallback={<div>Loading...</div>}><CapacityDepartmentsPage /></Suspense>} />
                 <Route path="resource-assignments" element={<Suspense fallback={<div>Loading...</div>}><ResourceAssignmentsPage /></Suspense>} />
+                <Route path="resource-locations" element={<Suspense fallback={<div>Loading...</div>}><ResourceLocationsPage /></Suspense>} />
+                <Route path="resource-countries" element={<Suspense fallback={<div>Loading...</div>}><ResourceCountriesPage /></Suspense>} />
+                <Route path="resource-vendors" element={<Suspense fallback={<div>Loading...</div>}><ResourceVendorsPage /></Suspense>} />
                 <Route path="business-owners" element={<BusinessOwnersAdmin />} />
                 <Route path="business-processes" element={<BusinessProcesses />} />
                 <Route path="business/ProcessStep" element={<ProcessSteps />} />
