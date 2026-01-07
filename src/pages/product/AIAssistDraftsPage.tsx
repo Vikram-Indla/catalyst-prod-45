@@ -315,7 +315,7 @@ export default function AIAssistDraftsPage() {
 
                       {/* Status with emoji */}
                       <td className="px-4 py-3">
-                        <Badge className={cn("gap-1 text-xs font-medium", statusConfig.className)}>
+                        <Badge variant="secondary" className={cn("gap-1 text-xs font-medium border-0", statusConfig.className)}>
                           <span>{statusConfig.emoji}</span>
                           {statusConfig.label}
                         </Badge>
@@ -323,24 +323,23 @@ export default function AIAssistDraftsPage() {
 
                       {/* Progress with visual dots + bar */}
                       <td className="px-4 py-3">
-                        <div className="space-y-1">
-                          <div className="flex items-center gap-0.5">
+                        <div className="space-y-1.5">
+                          <div className="flex items-center gap-1">
                             {Array.from({ length: 8 }).map((_, i) => (
                               <div
                                 key={i}
                                 className={cn(
                                   "w-2 h-2 rounded-full transition-colors",
                                   i < completedSteps && "bg-[hsl(var(--success))]",
-                                  i === completedSteps && "bg-primary ring-2 ring-primary/30",
-                                  i > completedSteps && "bg-muted-foreground/20"
+                                  i >= completedSteps && "bg-muted-foreground/20"
                                 )}
                               />
                             ))}
-                            <span className="text-xs text-muted-foreground ml-1.5">
+                            <span className="text-xs text-muted-foreground ml-1.5 tabular-nums">
                               {completedSteps}/8
                             </span>
                           </div>
-                          <div className="w-20 h-1 bg-muted rounded-full overflow-hidden">
+                          <div className="w-24 h-1.5 bg-muted rounded-full overflow-hidden">
                             <div 
                               className="h-full bg-[hsl(var(--success))] rounded-full transition-all"
                               style={{ width: `${(completedSteps / 8) * 100}%` }}
@@ -373,7 +372,12 @@ export default function AIAssistDraftsPage() {
                             </span>
                           </div>
                         ) : (
-                          <span className="text-xs text-muted-foreground/50 italic">Run analysis</span>
+                          <button 
+                            onClick={(e) => { e.stopPropagation(); handleOpenWizard(draft.id, e); }}
+                            className="text-xs text-primary hover:underline font-medium"
+                          >
+                            Run analysis →
+                          </button>
                         )}
                       </td>
 
@@ -402,7 +406,12 @@ export default function AIAssistDraftsPage() {
                             </div>
                           </div>
                         ) : (
-                          <span className="text-xs text-muted-foreground/50 italic">Run analysis</span>
+                          <button 
+                            onClick={(e) => { e.stopPropagation(); handleOpenWizard(draft.id, e); }}
+                            className="text-xs text-primary hover:underline font-medium"
+                          >
+                            Run analysis →
+                          </button>
                         )}
                       </td>
 
