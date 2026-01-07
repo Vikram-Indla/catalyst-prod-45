@@ -59,3 +59,15 @@ verify_jwt = false
 
 [functions.ai-narrative-report]
 verify_jwt = false
+
+[functions.ai-assist-compliance]
+verify_jwt = false
+
+[functions.ai-assist-publish]
+verify_jwt = false
+
+[functions.ai-assist-upload]
+verify_jwt = false
+
+[functions.ai-assist-summary]
+verify_jwt = false

@@ -12,7 +12,9 @@ export type ArtifactType =
   | 'justification'
   | 'open_questions' 
   | 'brd' 
-  | 'epics';
+  | 'epics'
+  | 'summary'
+  | 'summary_pdf';
 
 export interface AIAssistArtifact {
   id: string;
