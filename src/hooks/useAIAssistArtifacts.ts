@@ -19,17 +19,23 @@ export type ArtifactType =
 export interface AIAssistArtifact {
   id: string;
   run_id: string;
+  draft_id: string;
   artifact_type: ArtifactType;
+  artifact_key: string;
   content_json: Json | null;
   content_html: string | null;
   content_hash: string | null;
   version: number;
+  is_latest: boolean;
+  supersedes_artifact_id: string | null;
   created_at: string;
 }
 
 export interface CreateArtifactInput {
   run_id: string;
   artifact_type: ArtifactType;
+  artifact_key?: string; // Auto-populated from artifact_type if not provided
+  draft_id?: string; // Auto-populated from run if not provided
   content_json?: Json;
   content_html?: string;
   content_hash?: string;
@@ -144,6 +150,8 @@ export function useCreateArtifact() {
         .insert({
           run_id: input.run_id,
           artifact_type: input.artifact_type,
+          artifact_key: input.artifact_key || input.artifact_type,
+          draft_id: input.draft_id, // Will be auto-populated by trigger if null
           content_json: input.content_json,
           content_html: input.content_html,
           content_hash: input.content_hash,

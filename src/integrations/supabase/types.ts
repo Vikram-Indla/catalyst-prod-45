@@ -119,33 +119,45 @@ export type Database = {
       }
       ai_assist_artifacts: {
         Row: {
+          artifact_key: string
           artifact_type: string
           content_hash: string | null
           content_html: string | null
           content_json: Json | null
           created_at: string
+          draft_id: string | null
           id: string
+          is_latest: boolean
           run_id: string
+          supersedes_artifact_id: string | null
           version: number
         }
         Insert: {
+          artifact_key: string
           artifact_type: string
           content_hash?: string | null
           content_html?: string | null
           content_json?: Json | null
           created_at?: string
+          draft_id?: string | null
           id?: string
+          is_latest?: boolean
           run_id: string
+          supersedes_artifact_id?: string | null
           version?: number
         }
         Update: {
+          artifact_key?: string
           artifact_type?: string
           content_hash?: string | null
           content_html?: string | null
           content_json?: Json | null
           created_at?: string
+          draft_id?: string | null
           id?: string
+          is_latest?: boolean
           run_id?: string
+          supersedes_artifact_id?: string | null
           version?: number
         }
         Relationships: [
@@ -154,6 +166,20 @@ export type Database = {
             columns: ["run_id"]
             isOneToOne: false
             referencedRelation: "ai_assist_runs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ai_assist_artifacts_supersedes_artifact_id_fkey"
+            columns: ["supersedes_artifact_id"]
+            isOneToOne: false
+            referencedRelation: "ai_assist_artifacts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_ai_artifacts_draft"
+            columns: ["draft_id"]
+            isOneToOne: false
+            referencedRelation: "ai_assist_drafts"
             referencedColumns: ["id"]
           },
         ]
