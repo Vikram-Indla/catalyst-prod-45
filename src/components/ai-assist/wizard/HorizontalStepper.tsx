@@ -20,13 +20,17 @@ interface HorizontalStepperProps {
 }
 
 export function HorizontalStepper({ steps, currentStep, completedSteps, onStepClick }: HorizontalStepperProps) {
-  // Can only access completed steps or current step
+  // Highest completed step determines what's accessible
+  const highestCompletedStep = completedSteps.size > 0 ? Math.max(...Array.from(completedSteps)) : 0;
+  
+  // Can only access completed steps or the NEXT step after highest completed (if any completed)
+  // Or step 1 if nothing is completed
   const canAccessStep = (stepId: number) => {
-    return completedSteps.has(stepId) || stepId === currentStep;
+    if (completedSteps.has(stepId)) return true; // Can always revisit completed steps
+    if (stepId === 1) return true; // Step 1 always accessible
+    if (stepId === highestCompletedStep + 1) return true; // Can access next step after last completed
+    return false;
   };
-
-  // Get the highest accessible step (for determining locked state)
-  const highestAccessibleStep = Math.max(currentStep, ...Array.from(completedSteps));
 
   return (
     <TooltipProvider>
@@ -35,7 +39,6 @@ export function HorizontalStepper({ steps, currentStep, completedSteps, onStepCl
           {steps.map((step, idx) => {
             const isComplete = completedSteps.has(step.id);
             const isActive = step.id === currentStep;
-            const isLocked = step.id > highestAccessibleStep + 1 || (!isComplete && !isActive);
             const isAccessible = canAccessStep(step.id);
 
             return (

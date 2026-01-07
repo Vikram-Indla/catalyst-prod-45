@@ -128,22 +128,28 @@ export default function AIAssistWizardPage() {
 
   const completedSteps = getStepCompletionStatus();
 
-  // Can only navigate to completed steps or current step
+  // Highest completed step determines max accessible step
+  const highestCompletedStep = completedSteps.size > 0 ? Math.max(...Array.from(completedSteps)) : 0;
+  
+  // Can only navigate to completed steps or the next step after highest completed
   const canAccessStep = useCallback((stepId: number) => {
-    return completedSteps.has(stepId) || stepId === currentStep;
-  }, [completedSteps, currentStep]);
+    if (completedSteps.has(stepId)) return true;
+    if (stepId === 1) return true;
+    if (stepId === highestCompletedStep + 1) return true;
+    return false;
+  }, [completedSteps, highestCompletedStep]);
 
   // Persist step changes to DB
   const handleStepChange = useCallback((newStep: number) => {
     // Only allow navigation to accessible steps
-    if (!canAccessStep(newStep) && newStep > currentStep) {
+    if (!canAccessStep(newStep)) {
       return;
     }
     setCurrentStep(newStep);
     if (draft?.id && newStep !== draft.current_step) {
       updateDraft.mutate({ id: draft.id, updates: { current_step: newStep } });
     }
-  }, [draft, updateDraft, canAccessStep, currentStep]);
+  }, [draft, updateDraft, canAccessStep]);
 
   const handleDirChange = useCallback((rtl: boolean) => {
     setIsRtl(rtl);
