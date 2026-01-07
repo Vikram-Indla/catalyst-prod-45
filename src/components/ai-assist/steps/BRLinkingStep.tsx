@@ -16,7 +16,9 @@ interface BusinessRequest {
   quarter: string;
 }
 
-interface BRLinkingStepProps {
+export interface BRLinkingStepProps {
+  draftId?: string;
+  runId?: string;
   linkedBR?: BusinessRequest | null;
   recentRequests?: BusinessRequest[];
   searchResults?: BusinessRequest[];

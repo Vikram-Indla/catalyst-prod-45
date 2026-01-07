@@ -24,7 +24,9 @@ interface PublishedEpic {
   backlogId: string;
 }
 
-interface EpicPublishingStepProps {
+export interface EpicPublishingStepProps {
+  draftId?: string;
+  runId?: string;
   isGenerating?: boolean;
   isPublishing?: boolean;
   epics?: Epic[];

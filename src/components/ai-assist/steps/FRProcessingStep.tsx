@@ -16,7 +16,9 @@ interface FunctionalRequirement {
   validated: boolean;
 }
 
-interface FRProcessingStepProps {
+export interface FRProcessingStepProps {
+  draftId?: string;
+  runId?: string;
   isProcessing?: boolean;
   progress?: number;
   currentTask?: string;
