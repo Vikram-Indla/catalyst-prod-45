@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import { SuperAdminGuard } from '@/components/admin/SuperAdminGuard';
 import { Button } from '@/components/ui/button';
-import { Plus, RefreshCw } from 'lucide-react';
+import { Plus, RefreshCw, Upload } from 'lucide-react';
 import { ResponsivePageContainer, ResponsivePageHeader } from '@/components/layout/ResponsivePageContainer';
 import { UsersTable } from '@/components/admin/users/UsersTable';
 import { UsersStatsCards } from '@/components/admin/users/UsersStatsCards';
 import { ResourceModal } from '@/components/shared/ResourceModal';
+import { UsersImportDialog } from '@/components/admin/users/UsersImportDialog';
 import { useUsers } from '@/hooks/useUsers';
 
 /**
@@ -14,6 +15,7 @@ import { useUsers } from '@/hooks/useUsers';
  */
 export default function Users() {
   const [isAddUserModalOpen, setIsAddUserModalOpen] = useState(false);
+  const [isImportDialogOpen, setIsImportDialogOpen] = useState(false);
   const { data: users, isLoading, refetch, isFetching } = useUsers();
 
   return (
@@ -31,6 +33,13 @@ export default function Users() {
               >
                 <RefreshCw className="h-4 w-4 mr-2" />
                 Refresh
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => setIsImportDialogOpen(true)}
+              >
+                <Upload className="h-4 w-4 mr-2" />
+                Import CSV
               </Button>
               <Button
                 className="bg-brand-primary hover:bg-brand-primary-hover"
@@ -60,6 +69,12 @@ export default function Users() {
           onClose={() => setIsAddUserModalOpen(false)}
           mode="create"
           context="admin"
+        />
+
+        {/* Import Dialog */}
+        <UsersImportDialog
+          isOpen={isImportDialogOpen}
+          onClose={() => setIsImportDialogOpen(false)}
         />
       </ResponsivePageContainer>
     </SuperAdminGuard>
