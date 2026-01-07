@@ -1,231 +1,52 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { 
-  ChevronRight,
-  ChevronLeft,
-  Check,
-  AlertCircle,
-  Upload,
-  Brain,
-  FileCheck,
-  Shield,
-  HelpCircle,
-  FileText,
-  Link,
-  Send,
-  Clock,
-  Loader2
-} from 'lucide-react';
+import { Loader2, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
-import { Switch } from '@/components/ui/switch';
-import { Label } from '@/components/ui/label';
-import { Skeleton } from '@/components/ui/skeleton';
 import { useAIAssistDraft, useUpdateDraft } from '@/hooks/useAIAssistDrafts';
 import { useLatestRun } from '@/hooks/useAIAssistRuns';
 import { useAIAssistAuditEvents } from '@/hooks/useAIAssistDrafts';
 import { useAIAssistDocuments } from '@/hooks/useAIAssistDocuments';
 import { useLatestArtifactsForDraft } from '@/hooks/useAIAssistArtifacts';
-import { DocumentUploader } from '@/components/ai-assist/DocumentUploader';
-import { DeterminismPanel } from '@/components/ai-assist/DeterminismPanel';
-import { ComplianceGate } from '@/components/ai-assist/ComplianceGate';
-import { BRLinking } from '@/components/ai-assist/BRLinking';
-import { EpicPublishing } from '@/components/ai-assist/EpicPublishing';
-import { RunSummary } from '@/components/ai-assist/RunSummary';
+import { TopBar } from '@/components/ai-assist/wizard/TopBar';
+import { HorizontalStepper, WizardStep } from '@/components/ai-assist/wizard/HorizontalStepper';
+import { FooterNav } from '@/components/ai-assist/wizard/FooterNav';
+import { RunDetailsDrawer } from '@/components/ai-assist/wizard/RunDetailsDrawer';
+import { DocumentCaptureStep } from '@/components/ai-assist/steps/DocumentCaptureStep';
+import { AIAnalysisStep } from '@/components/ai-assist/steps/AIAnalysisStep';
+import { FRProcessingStep } from '@/components/ai-assist/steps/FRProcessingStep';
+import { ComplianceGateStep } from '@/components/ai-assist/steps/ComplianceGateStep';
+import { ClarificationStep } from '@/components/ai-assist/steps/ClarificationStep';
+import { BRDGenerationStep } from '@/components/ai-assist/steps/BRDGenerationStep';
+import { BRLinkingStep } from '@/components/ai-assist/steps/BRLinkingStep';
+import { EpicPublishingStep } from '@/components/ai-assist/steps/EpicPublishingStep';
+import { 
+  Upload, 
+  Brain, 
+  FileCheck, 
+  Shield, 
+  HelpCircle, 
+  FileText, 
+  Link, 
+  Send 
+} from 'lucide-react';
 
 // 8-step wizard configuration
-const WIZARD_STEPS = [
-  { id: 1, name: 'Document Capture', description: 'Upload requirements document', icon: Upload, key: 'capture' },
-  { id: 2, name: 'AI Analysis', description: 'Extract evidence & insights', icon: Brain, key: 'analysis' },
-  { id: 3, name: 'FR Processing', description: 'Transform to functional requirements', icon: FileCheck, key: 'fr' },
-  { id: 4, name: 'Compliance Gate', description: 'DGA/NCA validation', icon: Shield, key: 'compliance' },
-  { id: 5, name: 'Clarification', description: 'Generate open questions', icon: HelpCircle, key: 'clarification' },
-  { id: 6, name: 'BRD Generation', description: 'Produce final document', icon: FileText, key: 'brd' },
-  { id: 7, name: 'BR Linking', description: 'Connect to business requests', icon: Link, key: 'linking' },
-  { id: 8, name: 'Epic Publishing', description: 'Publish to backlog', icon: Send, key: 'publish' },
+const WIZARD_STEPS: WizardStep[] = [
+  { id: 1, name: 'Document Capture', shortName: 'Capture', description: 'Upload requirements document', icon: Upload, key: 'capture' },
+  { id: 2, name: 'AI Analysis', shortName: 'Analysis', description: 'Extract evidence & insights', icon: Brain, key: 'analysis' },
+  { id: 3, name: 'FR Processing', shortName: 'FRs', description: 'Transform to functional requirements', icon: FileCheck, key: 'fr' },
+  { id: 4, name: 'Compliance Gate', shortName: 'Compliance', description: 'DGA/NCA validation', icon: Shield, key: 'compliance' },
+  { id: 5, name: 'Clarification', shortName: 'Questions', description: 'Generate open questions', icon: HelpCircle, key: 'clarification' },
+  { id: 6, name: 'BRD Generation', shortName: 'BRD', description: 'Produce final document', icon: FileText, key: 'brd' },
+  { id: 7, name: 'BR Linking', shortName: 'Linking', description: 'Connect to business requests', icon: Link, key: 'linking' },
+  { id: 8, name: 'Epic Publishing', shortName: 'Publish', description: 'Publish to backlog', icon: Send, key: 'publish' },
 ];
-
-// Step content components - DocumentCaptureStep now uses the dedicated DocumentUploader component
-function DocumentCaptureStepWrapper({ draftId, documents }: { draftId: string; documents: ReturnType<typeof useAIAssistDocuments>['data'] }) {
-  return <DocumentUploader draftId={draftId} documents={documents || []} />;
-}
-
-function AIAnalysisStep({ artifacts }: { artifacts: ReturnType<typeof useLatestArtifactsForDraft>['data'] }) {
-  const evidenceArtifact = artifacts?.find(a => a.artifact_type === 'evidence');
-  const glossaryArtifact = artifacts?.find(a => a.artifact_type === 'glossary');
-  const memoArtifact = artifacts?.find(a => a.artifact_type === 'memo');
-
-  const getCount = (artifact: typeof evidenceArtifact) => {
-    if (!artifact?.content_json) return '—';
-    if (Array.isArray(artifact.content_json)) return artifact.content_json.length.toString();
-    if (typeof artifact.content_json === 'object' && artifact.content_json !== null) {
-      const items = (artifact.content_json as Record<string, unknown>).items;
-      if (Array.isArray(items)) return items.length.toString();
-    }
-    return '—';
-  };
-
-  return (
-    <div className="space-y-6">
-      <div className="bg-[var(--bg-2)] rounded-lg p-6 text-center">
-        <Brain className="h-12 w-12 mx-auto mb-4 text-[hsl(var(--info))] animate-pulse" />
-        <p className="text-sm font-medium mb-2">AI Analysis Engine</p>
-        <p className="text-xs text-muted-foreground">
-          Extracts evidence, generates glossary, creates deep memo from your document.
-        </p>
-      </div>
-      <div className="grid grid-cols-3 gap-4">
-        <div className="bg-[var(--bg-2)] rounded-lg p-4 text-center">
-          <p className="text-2xl font-bold text-[hsl(var(--info))]">{getCount(evidenceArtifact)}</p>
-          <p className="text-xs text-muted-foreground mt-1">Evidence Items</p>
-        </div>
-        <div className="bg-[var(--bg-2)] rounded-lg p-4 text-center">
-          <p className="text-2xl font-bold text-[hsl(var(--info))]">{getCount(glossaryArtifact)}</p>
-          <p className="text-xs text-muted-foreground mt-1">Glossary Terms</p>
-        </div>
-        <div className="bg-[var(--bg-2)] rounded-lg p-4 text-center">
-          <p className="text-2xl font-bold text-[hsl(var(--info))]">{getCount(memoArtifact)}</p>
-          <p className="text-xs text-muted-foreground mt-1">Memo Sections</p>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function FRProcessingStep({ artifacts }: { artifacts: ReturnType<typeof useLatestArtifactsForDraft>['data'] }) {
-  const frArtifact = artifacts?.find(a => a.artifact_type === 'functional_requirements');
-  const hasData = !!frArtifact;
-
-  return (
-    <div className="space-y-6">
-      <div className="bg-[var(--bg-2)] rounded-lg p-6">
-        <FileCheck className="h-8 w-8 mb-4 text-[hsl(var(--info))]" />
-        <p className="text-sm font-medium mb-2">Functional Requirements Processing</p>
-        <p className="text-xs text-muted-foreground">
-          Transform extracted evidence into structured FRs with full traceability.
-        </p>
-      </div>
-      <div className="border border-[var(--border-subtle)] rounded-lg divide-y divide-[var(--border-subtle)]">
-        <div className="p-4 flex items-center justify-between">
-          <span className="text-sm">FR extraction</span>
-          <span className={cn(
-            "text-xs",
-            hasData ? "text-[hsl(var(--success))]" : "text-muted-foreground"
-          )}>
-            {hasData ? 'Completed' : 'Pending'}
-          </span>
-        </div>
-        <div className="p-4 flex items-center justify-between">
-          <span className="text-sm">Traceability mapping</span>
-          <span className="text-xs text-muted-foreground">Pending</span>
-        </div>
-        <div className="p-4 flex items-center justify-between">
-          <span className="text-sm">Priority assignment</span>
-          <span className="text-xs text-muted-foreground">Pending</span>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-
-function ComplianceGateStepWrapper({ 
-  draftId, 
-  runId,
-  onContinueAllowed 
-}: { 
-  draftId: string; 
-  runId: string | undefined;
-  onContinueAllowed: (allowed: boolean) => void;
-}) {
-  return (
-    <ComplianceGate 
-      draftId={draftId} 
-      runId={runId} 
-      onContinueAllowed={onContinueAllowed}
-    />
-  );
-}
-
-function ClarificationStep({ artifacts }: { artifacts: ReturnType<typeof useLatestArtifactsForDraft>['data'] }) {
-  const oqArtifact = artifacts?.find(a => a.artifact_type === 'open_questions');
-  const questions = oqArtifact?.content_json as { questions?: Array<{ ar: string; en: string }> } | null;
-
-  return (
-    <div className="space-y-6">
-      <div className="bg-[var(--bg-2)] rounded-lg p-6">
-        <HelpCircle className="h-8 w-8 mb-4 text-[hsl(var(--info))]" />
-        <p className="text-sm font-medium mb-2">Open Questions</p>
-        <p className="text-xs text-muted-foreground">
-          Generate bilingual clarification questions (AR/EN) for stakeholder review.
-        </p>
-      </div>
-      {questions?.questions && questions.questions.length > 0 ? (
-        <div className="space-y-2">
-          {questions.questions.map((q, idx) => (
-            <div key={idx} className="border border-[var(--border-subtle)] rounded-lg p-3">
-              <p className="text-sm mb-1" dir="rtl">{q.ar}</p>
-              <p className="text-xs text-muted-foreground">{q.en}</p>
-            </div>
-          ))}
-        </div>
-      ) : (
-        <div className="text-center text-muted-foreground text-sm py-8">
-          No open questions generated yet.
-        </div>
-      )}
-    </div>
-  );
-}
-
-function BRDGenerationStep({ artifacts }: { artifacts: ReturnType<typeof useLatestArtifactsForDraft>['data'] }) {
-  const brdArtifact = artifacts?.find(a => a.artifact_type === 'brd');
-  const hasBrd = !!brdArtifact;
-
-  return (
-    <div className="space-y-6">
-      <div className="bg-[var(--bg-2)] rounded-lg p-6">
-        <FileText className="h-8 w-8 mb-4 text-[hsl(var(--info))]" />
-        <p className="text-sm font-medium mb-2">BRD Generation</p>
-        <p className="text-xs text-muted-foreground">
-          Produce structured Business Requirements Document with GAP register.
-        </p>
-      </div>
-      <div className="flex gap-2">
-        <Button variant="outline" size="sm" disabled={!hasBrd}>Preview PDF</Button>
-        <Button variant="outline" size="sm" disabled={!hasBrd}>Preview DOCX</Button>
-        <Button variant="outline" size="sm" disabled={!hasBrd}>Preview Markdown</Button>
-      </div>
-    </div>
-  );
-}
-
-function BRLinkingStepWrapper({ draftId, runId }: { draftId: string; runId?: string }) {
-  return <BRLinking draftId={draftId} runId={runId} />;
-}
-
-function EpicPublishingStepWrapper({ 
-  draftId, 
-  runId,
-  artifacts 
-}: { 
-  draftId: string; 
-  runId?: string;
-  artifacts: ReturnType<typeof useLatestArtifactsForDraft>['data'];
-}) {
-  return (
-    <div className="space-y-8">
-      <EpicPublishing draftId={draftId} runId={runId} artifacts={artifacts || []} />
-      <RunSummary draftId={draftId} runId={runId} />
-    </div>
-  );
-}
 
 export default function AIAssistWizardPage() {
   const { draftId } = useParams<{ draftId: string }>();
   const navigate = useNavigate();
   
-  // Fetch draft data from Supabase
+  // Fetch draft data
   const { data: draft, isLoading: draftLoading, error: draftError } = useAIAssistDraft(draftId);
   const { data: latestRun } = useLatestRun(draft?.id);
   const { data: auditEvents = [], isLoading: auditLoading } = useAIAssistAuditEvents(draft?.id);
@@ -234,10 +55,11 @@ export default function AIAssistWizardPage() {
   
   const updateDraft = useUpdateDraft();
   
-  // Local state synced with DB
+  // Local state
   const [currentStep, setCurrentStep] = useState(1);
   const [isRtl, setIsRtl] = useState(true);
   const [complianceContinueAllowed, setComplianceContinueAllowed] = useState(true);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   // Sync state from draft when loaded
   useEffect(() => {
@@ -269,54 +91,67 @@ export default function AIAssistWizardPage() {
   };
 
   const handleNextStep = () => {
-    // Block navigation if on compliance step and not allowed
     if (currentStepConfig?.key === 'compliance' && !complianceContinueAllowed) {
       return;
     }
     if (currentStep < 8) handleStepChange(currentStep + 1);
   };
 
-  // Determine if next button should be disabled
   const isNextDisabled = currentStepConfig?.key === 'compliance' && !complianceContinueAllowed;
+  const nextDisabledReason = isNextDisabled ? 'Justification Required' : undefined;
 
-  const formatEventTime = (dateStr: string) => {
-    return new Date(dateStr).toLocaleTimeString('en-US', {
-      hour: '2-digit',
-      minute: '2-digit',
-    });
-  };
+  // Transform artifacts for step components
+  const transformedArtifacts = artifacts?.map(a => ({
+    artifact_type: a.artifact_type,
+    content_json: a.content_json
+  })) || [];
 
-  const formatEventType = (eventType: string) => {
-    return eventType
-      .replace(/_/g, ' ')
-      .replace(/\b\w/g, l => l.toUpperCase());
-  };
+  // Transform audit events for drawer
+  const transformedAuditEvents = auditEvents.map(e => ({
+    id: e.id,
+    event_type: e.event_type,
+    created_at: e.created_at,
+    payload_json: typeof e.payload_json === 'object' && e.payload_json !== null 
+      ? e.payload_json as Record<string, unknown> 
+      : null
+  }));
+
+  // Transform documents for DocumentCaptureStep
+  const transformedDocuments = documents?.map(d => ({
+    id: d.id,
+    file_name: d.file_name,
+    file_size: d.file_size,
+    file_sha256: d.file_sha256,
+    extraction_status: d.extraction_status,
+    extracted_text: d.extracted_text,
+    created_at: d.created_at
+  })) || [];
 
   // Render step content based on current step
   const renderStepContent = () => {
+    if (!draft?.id) return null;
+    
     switch (currentStepConfig?.key) {
       case 'capture':
-        return draft?.id ? <DocumentCaptureStepWrapper draftId={draft.id} documents={documents} /> : null;
+        return <DocumentCaptureStep draftId={draft.id} documents={transformedDocuments} />;
       case 'analysis':
-        return <AIAnalysisStep artifacts={artifacts} />;
+        return <AIAnalysisStep artifacts={transformedArtifacts} />;
       case 'fr':
-        return <FRProcessingStep artifacts={artifacts} />;
+        return <FRProcessingStep />;
       case 'compliance':
-        return draft?.id ? (
-          <ComplianceGateStepWrapper 
-            draftId={draft.id} 
-            runId={latestRun?.id}
+        return (
+          <ComplianceGateStep 
             onContinueAllowed={setComplianceContinueAllowed}
           />
-        ) : null;
+        );
       case 'clarification':
-        return <ClarificationStep artifacts={artifacts} />;
+        return <ClarificationStep />;
       case 'brd':
-        return <BRDGenerationStep artifacts={artifacts} />;
+        return <BRDGenerationStep />;
       case 'linking':
-        return draft?.id ? <BRLinkingStepWrapper draftId={draft.id} runId={latestRun?.id} /> : null;
+        return <BRLinkingStep />;
       case 'publish':
-        return draft?.id ? <EpicPublishingStepWrapper draftId={draft.id} runId={latestRun?.id} artifacts={artifacts} /> : null;
+        return <EpicPublishingStep />;
       default:
         return null;
     }
@@ -336,7 +171,7 @@ export default function AIAssistWizardPage() {
   if (draftError || !draft) {
     return (
       <div className="flex flex-col h-full items-center justify-center">
-        <AlertCircle className="h-12 w-12 text-[hsl(var(--danger))] mb-4" />
+        <AlertCircle className="h-12 w-12 text-destructive mb-4" />
         <p className="text-sm text-muted-foreground mb-4">Draft not found or could not be loaded.</p>
         <Button variant="outline" onClick={() => navigate('/product/ai-assist')}>
           Back to Drafts
@@ -346,167 +181,82 @@ export default function AIAssistWizardPage() {
   }
 
   return (
-    <div className="flex flex-col h-full" dir={isRtl ? 'rtl' : 'ltr'}>
-      {/* Header */}
-      <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--border-subtle)]">
-        <div className="flex items-center gap-2 text-sm">
-          <span className="text-muted-foreground">Product</span>
-          <ChevronRight className="h-4 w-4 text-muted-foreground" />
-          <span className="text-muted-foreground">AI Assist</span>
-          <ChevronRight className="h-4 w-4 text-muted-foreground" />
-          <span className="text-muted-foreground font-mono">{draft.draft_key}</span>
-          <ChevronRight className="h-4 w-4 text-muted-foreground" />
-          <span className="font-medium">Step: {currentStepConfig?.name}</span>
-        </div>
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2">
-            <Label htmlFor="rtl-toggle" className="text-xs text-muted-foreground">RTL</Label>
-            <Switch
-              id="rtl-toggle"
-              checked={isRtl}
-              onCheckedChange={handleDirChange}
-            />
-          </div>
-          <Button variant="outline" size="sm" onClick={() => navigate('/product/ai-assist')}>
-            Back to Drafts
-          </Button>
-        </div>
+    <div className="flex flex-col h-full bg-background" dir={isRtl ? 'rtl' : 'ltr'}>
+      {/* Top Bar */}
+      <TopBar
+        draftKey={draft.draft_key}
+        currentStepName={currentStepConfig?.name || ''}
+        currentStepNumber={currentStep}
+        totalSteps={WIZARD_STEPS.length}
+        isRtl={isRtl}
+        onRtlChange={handleDirChange}
+        onBack={() => navigate('/product/ai-assist')}
+        onOpenDrawer={() => setIsDrawerOpen(true)}
+      />
+
+      {/* Horizontal Stepper */}
+      <div className="border-b border-border/50 bg-card px-6 py-3">
+        <HorizontalStepper
+          steps={WIZARD_STEPS}
+          currentStep={currentStep}
+          onStepClick={handleStepChange}
+        />
       </div>
 
-      {/* 3-column layout */}
-      <div className="flex-1 grid grid-cols-[220px_1fr_280px] gap-5 p-5 bg-[var(--bg-1)] overflow-hidden">
-        {/* Left: Stepper */}
-        <div className="bg-[var(--bg-0)] border border-[var(--border-subtle)] rounded-lg p-4 overflow-y-auto">
-          <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-4 pb-3 border-b border-[var(--border-subtle)]">
-            Wizard Steps
-          </h3>
-          <div className="space-y-1">
-            {WIZARD_STEPS.map((step, idx) => {
-              const isActive = step.id === currentStep;
-              const isComplete = step.id < currentStep;
-              const StepIcon = step.icon;
-
-              return (
-                <React.Fragment key={step.id}>
-                  <button
-                    onClick={() => handleStepChange(step.id)}
-                    className={cn(
-                      "w-full flex items-start gap-3 p-3 rounded-md text-left transition-colors",
-                      isActive && "bg-[hsl(var(--info))]/10",
-                      !isActive && "hover:bg-[var(--row-hover)]"
-                    )}
-                  >
-                    <div className={cn(
-                      "w-7 h-7 rounded-full flex items-center justify-center text-xs font-semibold flex-shrink-0 border-2 transition-colors",
-                      isComplete && "bg-[hsl(var(--success))] border-[hsl(var(--success))] text-white",
-                      isActive && "bg-[hsl(var(--info))] border-[hsl(var(--info))] text-white",
-                      !isComplete && !isActive && "bg-[var(--bg-2)] border-[var(--border-default)] text-muted-foreground"
-                    )}>
-                      {isComplete ? <Check className="h-3.5 w-3.5" /> : step.id}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className={cn(
-                        "text-sm font-medium truncate",
-                        (isActive || isComplete) ? "text-foreground" : "text-muted-foreground"
-                      )}>
-                        {step.name}
-                      </p>
-                      <p className="text-xs text-muted-foreground truncate">{step.description}</p>
-                    </div>
-                  </button>
-                  {idx < WIZARD_STEPS.length - 1 && (
-                    <div className={cn(
-                      "w-0.5 h-6 ms-[13px]",
-                      isComplete ? "bg-[hsl(var(--success))]" : "bg-[var(--border-default)]"
-                    )} />
-                  )}
-                </React.Fragment>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Center: Step Content */}
-        <div className="bg-[var(--bg-0)] border border-[var(--border-subtle)] rounded-lg flex flex-col overflow-hidden">
-          <div className="px-5 py-4 border-b border-[var(--border-subtle)] flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              {currentStepConfig && <currentStepConfig.icon className="h-5 w-5 text-[hsl(var(--info))]" />}
-              <h2 className="text-base font-semibold">{currentStepConfig?.name}</h2>
-            </div>
-            <span className="text-xs text-muted-foreground">Step {currentStep} of 8</span>
-          </div>
-          <div className="flex-1 p-5 overflow-y-auto">
-            {renderStepContent()}
-          </div>
-          <div className="px-5 py-4 border-t border-[var(--border-subtle)] flex items-center justify-between">
-            <Button
-              variant="outline"
-              onClick={handlePrevStep}
-              disabled={currentStep === 1}
-              className="gap-2"
-            >
-              <ChevronLeft className="h-4 w-4" />
-              Previous
-            </Button>
-            <Button
-              onClick={handleNextStep}
-              disabled={currentStep === 8 || isNextDisabled}
-              className="gap-2"
-            >
-              {isNextDisabled ? 'Justification Required' : 'Next'}
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-          </div>
-        </div>
-
-        {/* Right: Determinism & Audit Panel */}
-        <div className="bg-[var(--bg-0)] border border-[var(--border-subtle)] rounded-lg flex flex-col overflow-hidden">
-          <div className="px-4 py-3 border-b border-[var(--border-subtle)]">
-            <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-              Determinism
-            </h3>
-          </div>
-          <div className="flex-1 p-4 overflow-y-auto space-y-4">
-            <DeterminismPanel 
-              latestRun={latestRun} 
-              latestDocument={documents?.[0]} 
-            />
-
-            {/* Audit Timeline */}
-            <div className="pt-4 border-t border-[var(--border-subtle)]">
-              <h4 className="text-xs font-semibold text-muted-foreground uppercase mb-3">
-                Audit Timeline
-              </h4>
-              {auditLoading ? (
-                <div className="space-y-3">
-                  {[1, 2, 3].map((i) => (
-                    <Skeleton key={i} className="h-10 w-full" />
-                  ))}
-                </div>
-              ) : auditEvents.length > 0 ? (
-                <div className="space-y-3 max-h-64 overflow-y-auto">
-                  {auditEvents.slice(0, 20).map((event) => (
-                    <div key={event.id} className="flex gap-2">
-                      <div className="w-2 h-2 rounded-full bg-[hsl(var(--info))] mt-1.5 flex-shrink-0" />
-                      <div className="flex-1 min-w-0">
-                        <p className="text-xs truncate">{formatEventType(event.event_type)}</p>
-                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                          <Clock className="h-3 w-3" />
-                          <span>{formatEventTime(event.created_at)}</span>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center text-muted-foreground text-xs py-4">
-                  No audit events yet
+      {/* Main Content Area */}
+      <main className="flex-1 overflow-y-auto p-6">
+        <div className="max-w-4xl mx-auto">
+          {/* Step Header */}
+          <div className="mb-6">
+            <div className="flex items-center gap-3 mb-2">
+              {currentStepConfig && (
+                <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                  <currentStepConfig.icon className="h-5 w-5 text-primary" />
                 </div>
               )}
+              <div>
+                <h1 className="text-xl font-semibold">{currentStepConfig?.name}</h1>
+                <p className="text-sm text-muted-foreground">{currentStepConfig?.description}</p>
+              </div>
             </div>
           </div>
+
+          {/* Step Content */}
+          {renderStepContent()}
         </div>
-      </div>
+      </main>
+
+      {/* Footer Navigation */}
+      <FooterNav
+        currentStep={currentStep}
+        totalSteps={WIZARD_STEPS.length}
+        canGoNext={currentStep < WIZARD_STEPS.length}
+        isNextDisabled={isNextDisabled}
+        nextDisabledReason={nextDisabledReason}
+        onPrevious={handlePrevStep}
+        onNext={handleNextStep}
+      />
+
+      {/* Run Details Drawer */}
+      <RunDetailsDrawer
+        open={isDrawerOpen}
+        onClose={() => setIsDrawerOpen(false)}
+        latestRun={latestRun ? {
+          id: latestRun.id,
+          run_number: latestRun.run_number,
+          status: latestRun.status,
+          started_at: latestRun.started_at,
+          completed_at: latestRun.completed_at,
+          canonical_text_hash: latestRun.canonical_text_hash,
+          model_id: latestRun.model_id,
+          temperature: latestRun.temperature,
+          top_p: latestRun.top_p,
+          prompt_pack_version: latestRun.prompt_pack_version,
+          sources_pack_version: latestRun.sources_pack_version
+        } : null}
+        auditEvents={transformedAuditEvents}
+        isAuditLoading={auditLoading}
+      />
     </div>
   );
 }
