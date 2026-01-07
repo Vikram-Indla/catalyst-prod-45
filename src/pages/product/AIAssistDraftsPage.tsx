@@ -12,12 +12,14 @@ import {
   AlertCircle,
   PauseCircle,
   Hash,
-  Globe
+  Globe,
+  Loader2
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
+import { useAIAssistDrafts, useCreateDraft, type AIAssistDraft, type DraftStatus } from '@/hooks/useAIAssistDrafts';
 
 // Wizard steps for reference
 const WIZARD_STEPS = [
@@ -31,143 +33,38 @@ const WIZARD_STEPS = [
   { id: 8, name: 'Epic Publishing', key: 'publish' },
 ];
 
-const SEED_DRAFTS: Draft[] = [
-  {
-    id: 'DFT-001',
-    title: 'نظام إدارة المشاريع الحكومية',
-    titleEn: 'Government Project Management System',
-    language: 'ar',
-    status: 'in_progress' as DraftStatus,
-    currentStep: 4,
-    lastRun: '2026-01-07T10:30:00Z',
-    canonicalHash: 'a8f3e2b1',
-    promptPack: 'dga-v2.1',
-    sourcesPack: 'nca-2025',
-    complianceVerdict: 'conditional' as ComplianceVerdict,
-    qualityScore: 78,
-    updatedAt: '2026-01-07T11:45:00Z',
-  },
-  {
-    id: 'DFT-002',
-    title: 'منصة التحول الرقمي',
-    titleEn: 'Digital Transformation Platform',
-    language: 'ar',
-    status: 'complete',
-    currentStep: 8,
-    lastRun: '2026-01-06T14:20:00Z',
-    canonicalHash: 'c4d9f7a3',
-    promptPack: 'dga-v2.1',
-    sourcesPack: 'nca-2025',
-    complianceVerdict: 'compliant',
-    qualityScore: 94,
-    updatedAt: '2026-01-06T16:30:00Z',
-  },
-  {
-    id: 'DFT-003',
-    title: 'Enterprise Resource Planning Module',
-    titleEn: 'Enterprise Resource Planning Module',
-    language: 'en',
-    status: 'blocked',
-    currentStep: 5,
-    lastRun: '2026-01-05T09:15:00Z',
-    canonicalHash: 'e7b2c8d4',
-    promptPack: 'dga-v2.0',
-    sourcesPack: 'nca-2024',
-    complianceVerdict: 'non_compliant',
-    qualityScore: 45,
-    updatedAt: '2026-01-05T11:00:00Z',
-  },
-  {
-    id: 'DFT-004',
-    title: 'نظام إدارة الموارد البشرية',
-    titleEn: 'HR Management System',
-    language: 'ar',
-    status: 'draft',
-    currentStep: 1,
-    lastRun: null,
-    canonicalHash: null,
-    promptPack: 'dga-v2.1',
-    sourcesPack: 'nca-2025',
-    complianceVerdict: null,
-    qualityScore: null,
-    updatedAt: '2026-01-07T08:00:00Z',
-  },
-  {
-    id: 'DFT-005',
-    title: 'Customer Portal Integration',
-    titleEn: 'Customer Portal Integration',
-    language: 'en',
-    status: 'in_progress',
-    currentStep: 3,
-    lastRun: '2026-01-07T07:45:00Z',
-    canonicalHash: 'f1a5b9c2',
-    promptPack: 'dga-v2.1',
-    sourcesPack: 'nca-2025',
-    complianceVerdict: null,
-    qualityScore: 67,
-    updatedAt: '2026-01-07T09:30:00Z',
-  },
-  {
-    id: 'DFT-006',
-    title: 'نظام التقارير التنفيذية',
-    titleEn: 'Executive Reporting System',
-    language: 'ar',
-    status: 'complete',
-    currentStep: 8,
-    lastRun: '2026-01-04T13:00:00Z',
-    canonicalHash: 'd3e8f6a7',
-    promptPack: 'dga-v2.0',
-    sourcesPack: 'nca-2024',
-    complianceVerdict: 'compliant',
-    qualityScore: 89,
-    updatedAt: '2026-01-04T15:20:00Z',
-  },
-];
+type ComplianceVerdict = 'pass' | 'fail' | 'pending' | 'na' | null;
 
-type DraftStatus = 'draft' | 'in_progress' | 'complete' | 'blocked';
-type ComplianceVerdict = 'compliant' | 'conditional' | 'non_compliant' | null;
-
-const STATUS_CONFIG: Record<DraftStatus, { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline'; icon: React.ReactNode }> = {
+const STATUS_CONFIG: Record<string, { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline'; icon: React.ReactNode }> = {
   draft: { label: 'Draft', variant: 'secondary', icon: <FileText className="h-3 w-3" /> },
   in_progress: { label: 'In Progress', variant: 'default', icon: <Clock className="h-3 w-3" /> },
-  complete: { label: 'Complete', variant: 'outline', icon: <CheckCircle className="h-3 w-3" /> },
-  blocked: { label: 'Blocked', variant: 'destructive', icon: <PauseCircle className="h-3 w-3" /> },
+  review: { label: 'Review', variant: 'outline', icon: <AlertCircle className="h-3 w-3" /> },
+  approved: { label: 'Approved', variant: 'outline', icon: <CheckCircle className="h-3 w-3" /> },
+  published: { label: 'Published', variant: 'outline', icon: <CheckCircle className="h-3 w-3" /> },
+  archived: { label: 'Archived', variant: 'destructive', icon: <PauseCircle className="h-3 w-3" /> },
 };
 
 const VERDICT_CONFIG: Record<string, { label: string; className: string }> = {
-  compliant: { label: 'Compliant', className: 'bg-[hsl(var(--success))]/10 text-[hsl(var(--success))] border-[hsl(var(--success))]/20' },
-  conditional: { label: 'Conditional', className: 'bg-[hsl(var(--warning))]/10 text-[hsl(var(--warning))] border-[hsl(var(--warning))]/20' },
-  non_compliant: { label: 'Non-Compliant', className: 'bg-[hsl(var(--danger))]/10 text-[hsl(var(--danger))] border-[hsl(var(--danger))]/20' },
+  pass: { label: 'Compliant', className: 'bg-[hsl(var(--success))]/10 text-[hsl(var(--success))] border-[hsl(var(--success))]/20' },
+  pending: { label: 'Pending', className: 'bg-[hsl(var(--warning))]/10 text-[hsl(var(--warning))] border-[hsl(var(--warning))]/20' },
+  fail: { label: 'Non-Compliant', className: 'bg-[hsl(var(--danger))]/10 text-[hsl(var(--danger))] border-[hsl(var(--danger))]/20' },
+  na: { label: 'N/A', className: 'bg-muted text-muted-foreground border-muted' },
 };
-
-interface Draft {
-  id: string;
-  title: string;
-  titleEn: string;
-  language: string;
-  status: DraftStatus;
-  currentStep: number;
-  lastRun: string | null;
-  canonicalHash: string | null;
-  promptPack: string;
-  sourcesPack: string;
-  complianceVerdict: ComplianceVerdict;
-  qualityScore: number | null;
-  updatedAt: string;
-}
 
 export default function AIAssistDraftsPage() {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<DraftStatus | 'all'>('all');
-  const [selectedDraft, setSelectedDraft] = useState<Draft | null>(null);
+  const [selectedDraft, setSelectedDraft] = useState<AIAssistDraft | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
 
-  const filteredDrafts = SEED_DRAFTS.filter((draft) => {
+  const { data: drafts = [], isLoading } = useAIAssistDrafts();
+  const createDraft = useCreateDraft();
+
+  const filteredDrafts = drafts.filter((draft) => {
     const matchesSearch = 
       draft.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      draft.titleEn.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      draft.id.toLowerCase().includes(searchQuery.toLowerCase());
+      draft.draft_key.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesStatus = statusFilter === 'all' || draft.status === statusFilter;
     return matchesSearch && matchesStatus;
   });
@@ -202,8 +99,12 @@ export default function AIAssistDraftsPage() {
           <ChevronRight className="h-4 w-4 text-muted-foreground" />
           <span className="font-medium">Drafts</span>
         </div>
-        <Button onClick={() => navigate('/product/ai-assist/new')} className="gap-2">
-          <Plus className="h-4 w-4" />
+        <Button 
+          onClick={() => createDraft.mutate({ title: 'New Draft' }, { onSuccess: (d) => navigate(`/product/ai-assist/${d.id}`) })}
+          disabled={createDraft.isPending}
+          className="gap-2"
+        >
+          {createDraft.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
           New Draft
         </Button>
       </div>
@@ -239,6 +140,16 @@ export default function AIAssistDraftsPage() {
 
       {/* Table */}
       <div className="flex-1 overflow-auto">
+        {isLoading ? (
+          <div className="flex items-center justify-center h-48">
+            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+          </div>
+        ) : filteredDrafts.length === 0 ? (
+          <div className="flex flex-col items-center justify-center h-48 text-muted-foreground">
+            <Bot className="h-12 w-12 mb-4 opacity-50" />
+            <p>No drafts found</p>
+          </div>
+        ) : (
         <table className="w-full text-sm">
           <thead className="sticky top-0 bg-[var(--bg-2)] border-b border-[var(--border-subtle)]">
             <tr>
@@ -247,10 +158,7 @@ export default function AIAssistDraftsPage() {
               <th className="text-left px-4 py-3 font-medium text-muted-foreground text-xs uppercase tracking-wide">Lang</th>
               <th className="text-left px-4 py-3 font-medium text-muted-foreground text-xs uppercase tracking-wide">Status</th>
               <th className="text-left px-4 py-3 font-medium text-muted-foreground text-xs uppercase tracking-wide">Current Step</th>
-              <th className="text-left px-4 py-3 font-medium text-muted-foreground text-xs uppercase tracking-wide">Last Run</th>
-              <th className="text-left px-4 py-3 font-medium text-muted-foreground text-xs uppercase tracking-wide">Hash</th>
               <th className="text-left px-4 py-3 font-medium text-muted-foreground text-xs uppercase tracking-wide">Prompt Pack</th>
-              <th className="text-left px-4 py-3 font-medium text-muted-foreground text-xs uppercase tracking-wide">Sources</th>
               <th className="text-left px-4 py-3 font-medium text-muted-foreground text-xs uppercase tracking-wide">Compliance</th>
               <th className="text-left px-4 py-3 font-medium text-muted-foreground text-xs uppercase tracking-wide">Quality</th>
               <th className="text-left px-4 py-3 font-medium text-muted-foreground text-xs uppercase tracking-wide">Updated</th>
@@ -258,24 +166,24 @@ export default function AIAssistDraftsPage() {
           </thead>
           <tbody>
             {filteredDrafts.map((draft) => {
-              const statusConfig = STATUS_CONFIG[draft.status];
-              const verdictConfig = draft.complianceVerdict ? VERDICT_CONFIG[draft.complianceVerdict] : null;
-              const currentStepName = WIZARD_STEPS.find(s => s.id === draft.currentStep)?.name || '—';
+              const statusConfig = STATUS_CONFIG[draft.status] || STATUS_CONFIG.draft;
+              const verdictConfig = draft.compliance_verdict ? VERDICT_CONFIG[draft.compliance_verdict] : null;
+              const currentStepName = WIZARD_STEPS.find(s => s.id === draft.current_step)?.name || '—';
 
               return (
                 <tr
                   key={draft.id}
-                  onClick={() => handleRowClick(draft)}
+                  onClick={() => { setSelectedDraft(draft); setDrawerOpen(true); }}
                   className="border-b border-[var(--border-subtle)] hover:bg-[var(--row-hover)] cursor-pointer transition-colors"
                 >
                   <td className="px-4 py-3 font-mono text-xs sticky left-0 bg-inherit z-10">
                     <div className="flex items-center gap-2">
                       <Bot className="h-4 w-4 text-[hsl(var(--info))]" />
-                      {draft.id}
+                      {draft.draft_key}
                     </div>
                   </td>
                   <td className="px-4 py-3 max-w-[200px] truncate" title={draft.title}>
-                    {draft.language === 'ar' ? draft.title : draft.titleEn}
+                    {draft.title}
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-1">
@@ -290,22 +198,10 @@ export default function AIAssistDraftsPage() {
                     </Badge>
                   </td>
                   <td className="px-4 py-3 text-xs">
-                    <span className="text-muted-foreground">{draft.currentStep}/8:</span>{' '}
+                    <span className="text-muted-foreground">{draft.current_step}/8:</span>{' '}
                     {currentStepName}
                   </td>
-                  <td className="px-4 py-3 text-xs text-muted-foreground">
-                    {formatDate(draft.lastRun)}
-                  </td>
-                  <td className="px-4 py-3 font-mono text-xs">
-                    {draft.canonicalHash ? (
-                      <span className="flex items-center gap-1">
-                        <Hash className="h-3 w-3 text-muted-foreground" />
-                        {draft.canonicalHash}
-                      </span>
-                    ) : '—'}
-                  </td>
-                  <td className="px-4 py-3 font-mono text-xs">{draft.promptPack}</td>
-                  <td className="px-4 py-3 font-mono text-xs">{draft.sourcesPack}</td>
+                  <td className="px-4 py-3 font-mono text-xs">{draft.prompt_pack_version || '—'}</td>
                   <td className="px-4 py-3">
                     {verdictConfig ? (
                       <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs border ${verdictConfig.className}`}>
@@ -314,24 +210,25 @@ export default function AIAssistDraftsPage() {
                     ) : '—'}
                   </td>
                   <td className="px-4 py-3">
-                    {draft.qualityScore !== null ? (
+                    {draft.quality_score !== null ? (
                       <span className={`font-medium ${
-                        draft.qualityScore >= 80 ? 'text-[hsl(var(--success))]' :
-                        draft.qualityScore >= 60 ? 'text-[hsl(var(--warning))]' :
+                        draft.quality_score >= 80 ? 'text-[hsl(var(--success))]' :
+                        draft.quality_score >= 60 ? 'text-[hsl(var(--warning))]' :
                         'text-[hsl(var(--danger))]'
                       }`}>
-                        {draft.qualityScore}%
+                        {draft.quality_score}%
                       </span>
                     ) : '—'}
                   </td>
                   <td className="px-4 py-3 text-xs text-muted-foreground">
-                    {formatDate(draft.updatedAt)}
+                    {new Date(draft.updated_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
                   </td>
                 </tr>
               );
             })}
           </tbody>
         </table>
+        )}
       </div>
 
       {/* Drawer for draft details */}
@@ -342,16 +239,44 @@ export default function AIAssistDraftsPage() {
               <SheetHeader>
                 <SheetTitle className="flex items-center gap-2">
                   <Bot className="h-5 w-5 text-[hsl(var(--info))]" />
-                  {selectedDraft.id}
+                  {selectedDraft.draft_key}
                 </SheetTitle>
               </SheetHeader>
               <div className="mt-6 space-y-6">
                 <div>
                   <h4 className="text-sm font-medium text-muted-foreground mb-1">Title</h4>
-                  <p className="text-sm" dir={selectedDraft.language === 'ar' ? 'rtl' : 'ltr'}>
+                  <p className="text-sm" dir={selectedDraft.dir}>
                     {selectedDraft.title}
                   </p>
-                  {selectedDraft.language === 'ar' && (
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <h4 className="text-sm font-medium text-muted-foreground mb-1">Status</h4>
+                    <Badge variant={(STATUS_CONFIG[selectedDraft.status] || STATUS_CONFIG.draft).variant} className="gap-1">
+                      {(STATUS_CONFIG[selectedDraft.status] || STATUS_CONFIG.draft).icon}
+                      {(STATUS_CONFIG[selectedDraft.status] || STATUS_CONFIG.draft).label}
+                    </Badge>
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-medium text-muted-foreground mb-1">Language</h4>
+                    <p className="text-sm uppercase">{selectedDraft.language}</p>
+                  </div>
+                </div>
+                <div>
+                  <h4 className="text-sm font-medium text-muted-foreground mb-1">Current Step</h4>
+                  <p className="text-sm">Step {selectedDraft.current_step} of 8: {WIZARD_STEPS.find(s => s.id === selectedDraft.current_step)?.name}</p>
+                </div>
+                <Button className="w-full" onClick={() => navigate(`/product/ai-assist/${selectedDraft.id}`)}>
+                  Open Wizard
+                </Button>
+              </div>
+            </>
+          )}
+        </SheetContent>
+      </Sheet>
+    </div>
+  );
+}
                     <p className="text-sm text-muted-foreground mt-1">{selectedDraft.titleEn}</p>
                   )}
                 </div>
