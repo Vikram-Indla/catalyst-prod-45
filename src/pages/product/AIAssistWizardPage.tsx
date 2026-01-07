@@ -31,6 +31,7 @@ import { DeterminismPanel } from '@/components/ai-assist/DeterminismPanel';
 import { ComplianceGate } from '@/components/ai-assist/ComplianceGate';
 import { BRLinking } from '@/components/ai-assist/BRLinking';
 import { EpicPublishing } from '@/components/ai-assist/EpicPublishing';
+import { RunSummary } from '@/components/ai-assist/RunSummary';
 
 // 8-step wizard configuration
 const WIZARD_STEPS = [
@@ -212,7 +213,12 @@ function EpicPublishingStepWrapper({
   runId?: string;
   artifacts: ReturnType<typeof useLatestArtifactsForDraft>['data'];
 }) {
-  return <EpicPublishing draftId={draftId} runId={runId} artifacts={artifacts || []} />;
+  return (
+    <div className="space-y-8">
+      <EpicPublishing draftId={draftId} runId={runId} artifacts={artifacts || []} />
+      <RunSummary draftId={draftId} runId={runId} />
+    </div>
+  );
 }
 
 export default function AIAssistWizardPage() {
