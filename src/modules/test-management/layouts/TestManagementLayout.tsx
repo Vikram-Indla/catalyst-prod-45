@@ -130,7 +130,7 @@ export function TestManagementLayout() {
           'flex items-center gap-2',
           collapsed && 'justify-center w-full'
         )}>
-          <FlaskConical className="h-5 w-5 text-primary shrink-0" />
+          <FlaskConical className="h-5 w-5 text-foreground shrink-0" />
           {!collapsed && (
             <span className="font-semibold text-foreground">Tests</span>
           )}
@@ -166,13 +166,13 @@ export function TestManagementLayout() {
                         className={cn(
                           'flex h-10 w-10 items-center justify-center rounded-md transition-colors mx-auto relative',
                           isActive
-                            ? 'bg-primary text-primary-foreground'
+                            ? 'bg-accent text-foreground font-semibold'
                             : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
                         )}
                       >
                         <Icon className="h-5 w-5" />
                         {item.badge && !isActive && (
-                          <span className="absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary text-[10px] font-medium text-primary-foreground px-1">
+                          <span className="absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-muted text-[10px] font-medium text-muted-foreground border border-border px-1">
                             {item.badge > 99 ? '99+' : item.badge}
                           </span>
                         )}
@@ -193,9 +193,9 @@ export function TestManagementLayout() {
                   <NavLink
                     to={item.path!}
                     className={cn(
-                      'flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors',
+                      'flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors',
                       isActive
-                        ? 'bg-primary text-primary-foreground'
+                        ? 'bg-accent text-foreground font-semibold'
                         : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
                     )}
                   >
@@ -203,11 +203,8 @@ export function TestManagementLayout() {
                     <span className="flex-1">{item.label}</span>
                     {item.badge && (
                       <Badge
-                        variant={isActive ? 'secondary' : 'outline'}
-                        className={cn(
-                          'h-5 min-w-5 justify-center text-[10px]',
-                          isActive && 'bg-primary-foreground/20 text-primary-foreground border-0'
-                        )}
+                        variant="outline"
+                        className="h-5 min-w-5 justify-center text-[10px] border-border text-muted-foreground"
                       >
                         {item.badge > 99 ? '99+' : item.badge}
                       </Badge>
