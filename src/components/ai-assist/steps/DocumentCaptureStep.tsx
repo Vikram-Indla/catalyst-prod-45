@@ -157,24 +157,24 @@ export function DocumentCaptureStep({ draftId, documents, onUploadComplete }: Do
   // Upload zone - empty state with HERO styling
   return (
     <div className="space-y-8">
-      {/* Hero upload zone with gradient border on hover */}
+      {/* Hero upload zone with animated gradient border on hover */}
       <div className="relative group cursor-pointer" {...getRootProps()}>
         {/* Animated gradient border on hover */}
-        <div className="absolute -inset-1 bg-gradient-to-r from-primary via-[hsl(var(--success))] to-primary rounded-2xl opacity-0 group-hover:opacity-100 blur-sm transition-all duration-500" />
+        <div className="absolute -inset-0.5 bg-gradient-to-r from-primary via-[hsl(var(--success))] to-primary rounded-2xl opacity-0 group-hover:opacity-100 blur transition-all duration-500 animate-pulse" />
         
         <div className={cn(
-          "relative bg-gradient-to-br from-card via-card to-primary/5 border-2 border-dashed rounded-2xl p-12 md:p-16 text-center transition-all duration-300",
-          "border-muted-foreground/30 group-hover:border-primary",
-          isDragActive && "border-primary bg-primary/10 border-solid",
+          "relative bg-gradient-to-br from-card to-primary/5 border-2 border-dashed rounded-2xl p-16 text-center transition-all duration-300",
+          "border-muted-foreground/20 group-hover:border-primary group-hover:shadow-xl group-hover:shadow-primary/10",
+          isDragActive && "border-primary bg-primary/10 border-solid shadow-xl shadow-primary/20",
           isDragReject && "border-[hsl(var(--danger))] bg-[hsl(var(--danger))]/5",
           upload.isPending && "opacity-50 pointer-events-none"
         )}>
           <input {...getInputProps()} />
 
-          {/* Large icon with animation */}
+          {/* Large animated icon */}
           <div className={cn(
-            "w-20 h-20 mx-auto mb-6 rounded-2xl flex items-center justify-center transition-all duration-300",
-            isDragActive ? "bg-primary/20 scale-110" : "bg-primary/10 group-hover:scale-110 group-hover:bg-primary/20",
+            "w-20 h-20 mx-auto mb-6 rounded-2xl flex items-center justify-center transition-transform duration-300",
+            isDragActive ? "bg-primary/20 scale-110" : "bg-primary/10 group-hover:scale-110",
             isDragReject && "bg-[hsl(var(--danger))]/20"
           )}>
             {upload.isPending ? (
@@ -182,7 +182,7 @@ export function DocumentCaptureStep({ draftId, documents, onUploadComplete }: Do
             ) : isDragReject ? (
               <AlertCircle className="h-10 w-10 text-[hsl(var(--danger))]" />
             ) : (
-              <Upload className="h-10 w-10 text-primary" />
+              <Upload className="h-10 w-10 text-primary group-hover:animate-bounce" />
             )}
           </div>
 
@@ -208,15 +208,15 @@ export function DocumentCaptureStep({ draftId, documents, onUploadComplete }: Do
               <h3 className="text-xl font-semibold text-foreground mb-2">
                 Drop your requirements document here
               </h3>
-              <p className="text-muted-foreground mb-4">or click to browse</p>
+              <p className="text-muted-foreground mb-1">or click to browse</p>
               
               {/* File type pills */}
-              <div className="flex items-center justify-center gap-3 flex-wrap">
-                <span className="px-3 py-1.5 bg-muted rounded-full text-xs font-medium text-muted-foreground">PDF</span>
-                <span className="px-3 py-1.5 bg-muted rounded-full text-xs font-medium text-muted-foreground">DOCX</span>
-                <span className="w-1 h-1 bg-muted-foreground/30 rounded-full" />
+              <div className="flex items-center justify-center gap-2 mt-4">
+                <span className="px-3 py-1 bg-muted rounded-full text-xs font-medium text-muted-foreground">PDF</span>
+                <span className="px-3 py-1 bg-muted rounded-full text-xs font-medium text-muted-foreground">DOCX</span>
+                <span className="text-muted-foreground/50">•</span>
                 <span className="text-xs text-muted-foreground">Max 50MB</span>
-                <span className="w-1 h-1 bg-muted-foreground/30 rounded-full" />
+                <span className="text-muted-foreground/50">•</span>
                 <span className="text-xs text-muted-foreground">Arabic/English</span>
               </div>
             </>
