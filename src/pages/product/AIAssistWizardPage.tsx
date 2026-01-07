@@ -145,7 +145,14 @@ export default function AIAssistWizardPage() {
       case 'analysis':
         return <AIAnalysisStep draftId={draft.id} runId={latestRun?.id} />;
       case 'fr':
-        return <FRProcessingStep draftId={draft.id} runId={latestRun?.id} />;
+        return (
+          <FRProcessingStep 
+            draftId={draft.id} 
+            runId={latestRun?.id}
+            evidenceCount={latestDoc?.extracted_text ? latestDoc.extracted_text.split('\n').filter(Boolean).length : 0}
+            documentName={latestDoc?.file_name}
+          />
+        );
       case 'compliance':
         return (
           <ComplianceGateStep 
