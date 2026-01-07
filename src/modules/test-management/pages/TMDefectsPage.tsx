@@ -6,6 +6,7 @@
 
 import React, { useState, useMemo, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { useWorkspaceAccess } from '@/hooks/useWorkspaceAccess';
 import { 
   Bug, 
   Plus, 
@@ -92,7 +93,7 @@ const DEFAULT_FILTERS: DefectFilters = {
 
 export function TMDefectsPage() {
   const [searchParams] = useSearchParams();
-  
+  const { projects, projectsLoading } = useWorkspaceAccess();
   // View state
   const [viewMode, setViewMode] = useState<'list' | 'board'>('list');
   const [showFilters, setShowFilters] = useState(true);
@@ -118,9 +119,15 @@ export function TMDefectsPage() {
   const [page, setPage] = useState(1);
   const [limit] = useState(50);
   
-  // Get project ID from URL
-  const projectId = searchParams.get('projectId') || 'default-project';
-  
+  // Resolve project from URL or first accessible workspace project
+  const urlProjectId = searchParams.get('projectId');
+  const activeProject = useMemo(() => {
+    if (!projects || projects.length === 0) return null;
+    if (urlProjectId) return projects.find(p => p.id === urlProjectId) || null;
+    return projects.find(p => p.canAccess) || projects[0] || null;
+  }, [projects, urlProjectId]);
+  const projectId = activeProject?.id ?? null;
+  const queriesEnabled = !!projectId && !projectsLoading;
   // Column preferences
   const {
     columns,
@@ -132,7 +139,7 @@ export function TMDefectsPage() {
   
   // Build API filters from component filters
   const apiFilters = useMemo(() => ({
-    project_id: projectId,
+    project_id: projectId || undefined,
     workflow_status: filters.statuses.length > 0 ? filters.statuses : undefined,
     severity: filters.severities.length > 0 ? filters.severities : undefined,
     priority: filters.priorities.length > 0 ? filters.priorities : undefined,
@@ -154,11 +161,11 @@ export function TMDefectsPage() {
       page, 
       limit, 
       sort: { field: sortColumn as keyof DefectWithRelations, direction: sortDirection } 
-    }
+    },
+    queriesEnabled
   );
   
-  // Fetch stats
-  const { data: statsData, isLoading: statsLoading } = useDefectStats(projectId);
+  const { data: statsData, isLoading: statsLoading } = useDefectStats(projectId || '', queriesEnabled);
   
   // Mutations
   const deleteDefectMutation = useDeleteDefect();
