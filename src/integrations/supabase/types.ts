@@ -117,6 +117,348 @@ export type Database = {
         }
         Relationships: []
       }
+      ai_assist_artifacts: {
+        Row: {
+          artifact_type: string
+          content_hash: string | null
+          content_html: string | null
+          content_json: Json | null
+          created_at: string
+          id: string
+          run_id: string
+          version: number
+        }
+        Insert: {
+          artifact_type: string
+          content_hash?: string | null
+          content_html?: string | null
+          content_json?: Json | null
+          created_at?: string
+          id?: string
+          run_id: string
+          version?: number
+        }
+        Update: {
+          artifact_type?: string
+          content_hash?: string | null
+          content_html?: string | null
+          content_json?: Json | null
+          created_at?: string
+          id?: string
+          run_id?: string
+          version?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_assist_artifacts_run_id_fkey"
+            columns: ["run_id"]
+            isOneToOne: false
+            referencedRelation: "ai_assist_runs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ai_assist_audit_events: {
+        Row: {
+          actor_user_id: string | null
+          created_at: string
+          draft_id: string
+          event_type: string
+          id: string
+          payload_json: Json | null
+          run_id: string | null
+        }
+        Insert: {
+          actor_user_id?: string | null
+          created_at?: string
+          draft_id: string
+          event_type: string
+          id?: string
+          payload_json?: Json | null
+          run_id?: string | null
+        }
+        Update: {
+          actor_user_id?: string | null
+          created_at?: string
+          draft_id?: string
+          event_type?: string
+          id?: string
+          payload_json?: Json | null
+          run_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_assist_audit_events_draft_id_fkey"
+            columns: ["draft_id"]
+            isOneToOne: false
+            referencedRelation: "ai_assist_drafts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ai_assist_audit_events_run_id_fkey"
+            columns: ["run_id"]
+            isOneToOne: false
+            referencedRelation: "ai_assist_runs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ai_assist_documents: {
+        Row: {
+          created_at: string
+          draft_id: string
+          extracted_text: string | null
+          extraction_status: string | null
+          file_name: string
+          file_path: string
+          file_size: number
+          id: string
+          mime_type: string
+          retention_until: string | null
+          storage_bucket: string
+          updated_at: string
+          uploaded_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          draft_id: string
+          extracted_text?: string | null
+          extraction_status?: string | null
+          file_name: string
+          file_path: string
+          file_size: number
+          id?: string
+          mime_type: string
+          retention_until?: string | null
+          storage_bucket?: string
+          updated_at?: string
+          uploaded_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          draft_id?: string
+          extracted_text?: string | null
+          extraction_status?: string | null
+          file_name?: string
+          file_path?: string
+          file_size?: number
+          id?: string
+          mime_type?: string
+          retention_until?: string | null
+          storage_bucket?: string
+          updated_at?: string
+          uploaded_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_assist_documents_draft_id_fkey"
+            columns: ["draft_id"]
+            isOneToOne: false
+            referencedRelation: "ai_assist_drafts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ai_assist_drafts: {
+        Row: {
+          compliance_verdict: string | null
+          created_at: string
+          created_by: string | null
+          current_step: number
+          deleted_at: string | null
+          dir: string
+          draft_key: string
+          id: string
+          language: string
+          prompt_pack_version: string | null
+          quality_score: number | null
+          sources_pack_version: string | null
+          status: string
+          step_data: Json | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          compliance_verdict?: string | null
+          created_at?: string
+          created_by?: string | null
+          current_step?: number
+          deleted_at?: string | null
+          dir?: string
+          draft_key: string
+          id?: string
+          language?: string
+          prompt_pack_version?: string | null
+          quality_score?: number | null
+          sources_pack_version?: string | null
+          status?: string
+          step_data?: Json | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          compliance_verdict?: string | null
+          created_at?: string
+          created_by?: string | null
+          current_step?: number
+          deleted_at?: string | null
+          dir?: string
+          draft_key?: string
+          id?: string
+          language?: string
+          prompt_pack_version?: string | null
+          quality_score?: number | null
+          sources_pack_version?: string | null
+          status?: string
+          step_data?: Json | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      ai_assist_links: {
+        Row: {
+          draft_id: string
+          id: string
+          linked_at: string
+          linked_by: string | null
+          request_key: string
+        }
+        Insert: {
+          draft_id: string
+          id?: string
+          linked_at?: string
+          linked_by?: string | null
+          request_key: string
+        }
+        Update: {
+          draft_id?: string
+          id?: string
+          linked_at?: string
+          linked_by?: string | null
+          request_key?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_assist_links_draft_id_fkey"
+            columns: ["draft_id"]
+            isOneToOne: false
+            referencedRelation: "ai_assist_drafts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ai_assist_published_epics: {
+        Row: {
+          draft_id: string
+          epic_id: string | null
+          id: string
+          published_at: string
+          published_by: string | null
+          published_data: Json
+          run_id: string
+        }
+        Insert: {
+          draft_id: string
+          epic_id?: string | null
+          id?: string
+          published_at?: string
+          published_by?: string | null
+          published_data: Json
+          run_id: string
+        }
+        Update: {
+          draft_id?: string
+          epic_id?: string | null
+          id?: string
+          published_at?: string
+          published_by?: string | null
+          published_data?: Json
+          run_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_assist_published_epics_draft_id_fkey"
+            columns: ["draft_id"]
+            isOneToOne: false
+            referencedRelation: "ai_assist_drafts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ai_assist_published_epics_epic_id_fkey"
+            columns: ["epic_id"]
+            isOneToOne: false
+            referencedRelation: "epics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ai_assist_published_epics_run_id_fkey"
+            columns: ["run_id"]
+            isOneToOne: false
+            referencedRelation: "ai_assist_runs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ai_assist_runs: {
+        Row: {
+          canonical_text_hash: string | null
+          completed_at: string | null
+          created_at: string
+          draft_id: string
+          error_message: string | null
+          id: string
+          model_id: string
+          prompt_pack_version: string | null
+          run_number: number
+          sources_pack_version: string | null
+          started_at: string | null
+          status: string
+          temperature: number
+          top_p: number
+        }
+        Insert: {
+          canonical_text_hash?: string | null
+          completed_at?: string | null
+          created_at?: string
+          draft_id: string
+          error_message?: string | null
+          id?: string
+          model_id?: string
+          prompt_pack_version?: string | null
+          run_number: number
+          sources_pack_version?: string | null
+          started_at?: string | null
+          status?: string
+          temperature?: number
+          top_p?: number
+        }
+        Update: {
+          canonical_text_hash?: string | null
+          completed_at?: string | null
+          created_at?: string
+          draft_id?: string
+          error_message?: string | null
+          id?: string
+          model_id?: string
+          prompt_pack_version?: string | null
+          run_number?: number
+          sources_pack_version?: string | null
+          started_at?: string | null
+          status?: string
+          temperature?: number
+          top_p?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_assist_runs_draft_id_fkey"
+            columns: ["draft_id"]
+            isOneToOne: false
+            referencedRelation: "ai_assist_drafts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       ai_integration_settings: {
         Row: {
           api_key_encrypted: string | null
