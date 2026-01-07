@@ -13,6 +13,8 @@ export { DefectDetailPanel } from './DefectDetailPanel';
 export { DefectDetailPanelEnhanced } from './DefectDetailPanelEnhanced';
 export { CreateDefectModal } from './CreateDefectModal';
 export { CreateDefectDialogEnterprise } from './CreateDefectDialogEnterprise';
+export { WorkItemLinker } from './WorkItemLinker';
+export { DefectFileUploader } from './DefectFileUploader';
 
 // New enterprise components
 export { DefectsTableView, DEFAULT_DEFECT_COLUMNS } from './DefectsTableView';

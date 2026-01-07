@@ -95,10 +95,12 @@ export const DEVICE_OPTIONS = [
 ] as const;
 
 export const ENVIRONMENT_OPTIONS = [
-  { value: 'development', label: 'Development' },
-  { value: 'staging', label: 'Staging' },
-  { value: 'uat', label: 'UAT' },
   { value: 'production', label: 'Production' },
+  { value: 'staging', label: 'Staging' },
+  { value: 'qa', label: 'QA' },
+  { value: 'beta', label: 'Beta' },
+  { value: 'development', label: 'Development' },
+  { value: 'uat', label: 'UAT' },
 ] as const;
 
 export const COMPONENTS = [
