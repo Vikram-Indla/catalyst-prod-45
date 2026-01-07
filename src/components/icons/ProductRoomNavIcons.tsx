@@ -1,4 +1,5 @@
 import React, { CSSProperties } from 'react';
+import { AIAssistIcon } from './AIAssistIcon';
 
 interface IconProps {
   className?: string;
@@ -77,4 +78,5 @@ export const PRODUCT_ROOM_NAV_ICONS: Record<string, React.FC<IconProps>> = {
   'Product Roadmap': ProductRoadmapIcon,
   'Product Capacity': ProductCapacityIcon,
   'EF Designer': EFDesignerIcon,
+  'AI Assist': AIAssistIcon,
 };

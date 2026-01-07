@@ -226,6 +226,8 @@ import IndustryComingSoon from "./pages/enterprise/IndustryComingSoon";
 import DemandSummaryPage from "./pages/enterprise/DemandSummaryPage";
 import ProductRoomPage from "./pages/ProductRoomPage";
 import CapacityPlanningPage from "./pages/CapacityPlanningPage";
+import AIAssistDraftsPage from "./pages/product/AIAssistDraftsPage";
+import AIAssistWizardPage from "./pages/product/AIAssistWizardPage";
 import ExecutiveRoadmapPage from "./pages/enterprise/ExecutiveRoadmapPage";
 import CatalystDemandKanban from "./modules/kanban/pages/CatalystDemandKanban";
 import CatalystDemandList from "./modules/product-backlog/pages/CatalystDemandList";
@@ -415,6 +417,8 @@ const App = () => (
 <Route path="/product/:productId/room" element={<ProductRoomPage />} />
 <Route path="/product/capacity" element={<CapacityPlanningPage />} />
 <Route path="/product/ef-designer" element={<EFDesignerPage />} />
+<Route path="/product/ai-assist" element={<AIAssistDraftsPage />} />
+<Route path="/product/ai-assist/:draftId" element={<AIAssistWizardPage />} />
               
               {/* Enterprise More Items */}
               <Route path="/enterprise/ideation" element={<EnterpriseComingSoon />} />
