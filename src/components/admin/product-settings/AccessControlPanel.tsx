@@ -124,12 +124,10 @@ export function AccessControlPanel() {
             View and manage Product module permissions through System Roles.
           </p>
         </div>
-        <Link to="/admin/system-roles">
-          <Button variant="outline">
-            <ExternalLink className="h-4 w-4 mr-2" />
-            Manage System Roles
-          </Button>
-        </Link>
+        <Button variant="outline" disabled>
+          <ExternalLink className="h-4 w-4 mr-2" />
+          View Roles
+        </Button>
       </div>
 
       {/* Stats Cards */}
@@ -218,11 +216,9 @@ export function AccessControlPanel() {
                   {role.description}
                 </p>
               </div>
-              <Link to={`/admin/system-roles?role=${role.role}`}>
-                <Button variant="outline" size="sm">
-                  View Details
-                </Button>
-              </Link>
+              <Button variant="outline" size="sm" disabled>
+                View Details
+              </Button>
             </div>
             <div className="p-4 bg-card">
               <p className="text-xs font-medium text-muted-foreground mb-2 uppercase tracking-wider">

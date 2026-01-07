@@ -60,8 +60,6 @@ const adminSections = [
     items: [
       { label: 'Users', path: '/admin/users', icon: Users },
       { label: 'Roles & Permissions', path: '/admin/roles-permissions', icon: Shield },
-      { label: 'Team Roles', path: '/admin/team-roles', icon: Users },
-      { label: 'System Roles', path: '/admin/system-roles', icon: Shield },
     ],
   },
   {

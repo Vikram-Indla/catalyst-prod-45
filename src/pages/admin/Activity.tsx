@@ -165,9 +165,6 @@ export default function Activity() {
                 <a href="/admin/users">Manage Users</a>
               </Button>
               <Button variant="outline" className="w-full justify-start" asChild>
-                <a href="/admin/system-roles">System Roles</a>
-              </Button>
-              <Button variant="outline" className="w-full justify-start" asChild>
                 <a href="/admin/announcements">Announcements</a>
               </Button>
             </CardContent>

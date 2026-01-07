@@ -118,8 +118,6 @@ import GeneralSettings from "./pages/admin/GeneralSettings";
 import SecuritySettings from "./pages/admin/SecuritySettings";
 import Announcements from "./pages/admin/Announcements";
 import Users from "./pages/admin/Users";
-import TeamRoles from "./pages/admin/TeamRoles";
-import SystemRoles from "./pages/admin/SystemRoles";
 import RolesPermissions from "./pages/admin/RolesPermissions";
 import ThemeGroups from "./pages/admin/ThemeGroups";
 import Programs from "./pages/admin/Programs";
@@ -819,8 +817,6 @@ const App = () => (
                 <Route path="announcements" element={<Announcements />} />
                 <Route path="users" element={<Users />} />
                 <Route path="roles-permissions" element={<RolesPermissions />} />
-                <Route path="team-roles" element={<TeamRoles />} />
-                <Route path="system-roles" element={<SystemRoles />} />
                 <Route path="theme-groups" element={<ThemeGroups />} />
                 <Route path="programs" element={<Programs />} />
                 <Route path="portfolios" element={<Portfolios />} />

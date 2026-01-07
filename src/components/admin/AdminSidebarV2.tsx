@@ -43,8 +43,6 @@ const adminPockets = [
     children: [
       { label: 'Users', path: '/admin/users' },
       { label: 'Roles & Permissions', path: '/admin/roles-permissions' },
-      { label: 'Team Roles', path: '/admin/team-roles' },
-      { label: 'System Roles', path: '/admin/system-roles' },
     ],
   },
   {
