@@ -71,3 +71,6 @@ verify_jwt = false
 
 [functions.ai-assist-summary]
 verify_jwt = false
+
+[functions.ai-assist-analyze]
+verify_jwt = false
