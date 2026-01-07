@@ -54,7 +54,7 @@ export function useAIAssistDrafts() {
       const { data, error } = await supabase
         .from('ai_assist_drafts')
         .select('*')
-        .is('deleted_at', null)
+        .eq('is_deleted', false)
         .order('updated_at', { ascending: false });
 
       if (error) throw error;
@@ -74,7 +74,7 @@ export function useAIAssistDraft(draftIdOrKey: string | undefined) {
       let query = supabase
         .from('ai_assist_drafts')
         .select('*')
-        .is('deleted_at', null);
+        .eq('is_deleted', false);
 
       // Check if it looks like a UUID or a draft_key (AID-XXXX)
       if (draftIdOrKey.startsWith('AID-')) {
@@ -178,12 +178,12 @@ export function useDeleteDraft() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ id, draftKey, reason }: DeleteDraftInput): Promise<void> => {
+    mutationFn: async ({ id, draftKey, reason }: DeleteDraftInput): Promise<{ id: string; draftKey: string }> => {
       const { data: userData } = await supabase.auth.getUser();
       const userId = userData.user?.id;
       const deletedAt = new Date().toISOString();
 
-      // First check if draft is already deleted
+      // First check if draft is already deleted (bypass RLS filter by checking specific fields)
       const { data: existingDraft, error: checkError } = await supabase
         .from('ai_assist_drafts')
         .select('id, is_deleted, deleted_at')
@@ -191,17 +191,17 @@ export function useDeleteDraft() {
         .maybeSingle();
 
       if (checkError) {
-        console.error('[AI Assist] Delete failed - check error', { draft_id: id, error: checkError });
+        console.error('[AI Assist] Delete failed - check error', { draft_id: id, draft_key: draftKey, error: checkError });
         throw new Error(`Failed to check draft status: ${checkError.message}`);
       }
 
       if (!existingDraft) {
-        console.error('[AI Assist] Delete failed - draft not found', { draft_id: id });
+        console.error('[AI Assist] Delete failed - draft not found', { draft_id: id, draft_key: draftKey });
         throw new Error('Draft not found');
       }
 
       if (existingDraft.is_deleted || existingDraft.deleted_at) {
-        console.info('[AI Assist] Draft already deleted', { draft_id: id });
+        console.info('[AI Assist] Draft already deleted', { draft_id: id, draft_key: draftKey });
         throw new Error('Draft already deleted');
       }
 
@@ -216,7 +216,7 @@ export function useDeleteDraft() {
         .eq('id', id);
 
       if (updateError) {
-        console.error('[AI Assist] Delete failed', { draft_id: id, error: updateError });
+        console.error('[AI Assist] Delete failed', { draft_id: id, draft_key: draftKey, error: updateError });
         throw new Error(`Failed to delete draft: ${updateError.message}`);
       }
 
@@ -230,13 +230,39 @@ export function useDeleteDraft() {
       });
 
       console.info('[AI Assist] Draft deleted successfully', { draft_id: id, draft_key: draftKey });
+      return { id, draftKey };
     },
-    onSuccess: () => {
+    onMutate: async ({ id }) => {
+      // Cancel any outgoing refetches
+      await queryClient.cancelQueries({ queryKey: ['ai-assist-drafts'] });
+      
+      // Snapshot the previous value
+      const previousDrafts = queryClient.getQueryData<AIAssistDraft[]>(['ai-assist-drafts']);
+      
+      // Optimistically remove the draft from the list
+      if (previousDrafts) {
+        queryClient.setQueryData<AIAssistDraft[]>(
+          ['ai-assist-drafts'],
+          previousDrafts.filter(draft => draft.id !== id)
+        );
+      }
+      
+      return { previousDrafts };
+    },
+    onSuccess: (data) => {
+      // Invalidate to ensure consistency
       queryClient.invalidateQueries({ queryKey: ['ai-assist-drafts'] });
+      queryClient.invalidateQueries({ queryKey: ['ai-assist-draft', data.id] });
+      queryClient.invalidateQueries({ queryKey: ['ai-assist-draft', data.draftKey] });
       toast.success('Draft deleted');
     },
-    onError: (error) => {
+    onError: (error, variables, context) => {
+      // Rollback on error
+      if (context?.previousDrafts) {
+        queryClient.setQueryData(['ai-assist-drafts'], context.previousDrafts);
+      }
       const message = error instanceof Error ? error.message : 'Unknown error';
+      console.error('[AI Assist] Delete failed', { draft_id: variables.id, draft_key: variables.draftKey, error: message });
       toast.error(`Delete failed: ${message}`);
     },
   });
