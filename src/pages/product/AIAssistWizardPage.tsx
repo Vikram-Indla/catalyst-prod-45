@@ -85,6 +85,8 @@ export default function AIAssistWizardPage() {
   }, [draft, updateDraft]);
 
   const currentStepConfig = WIZARD_STEPS.find(s => s.id === currentStep);
+  const latestDoc = documents?.[0];
+  const hasDocumentText = !!latestDoc?.extracted_text;
 
   const handlePrevStep = () => {
     if (currentStep > 1) handleStepChange(currentStep - 1);
@@ -97,8 +99,14 @@ export default function AIAssistWizardPage() {
     if (currentStep < 8) handleStepChange(currentStep + 1);
   };
 
-  const isNextDisabled = currentStepConfig?.key === 'compliance' && !complianceContinueAllowed;
-  const nextDisabledReason = isNextDisabled ? 'Justification Required' : undefined;
+  const isNextDisabled =
+    (currentStepConfig?.key === 'compliance' && !complianceContinueAllowed) ||
+    (currentStepConfig?.key === 'analysis' && !hasDocumentText);
+
+  const nextDisabledReason =
+    currentStepConfig?.key === 'compliance' && !complianceContinueAllowed
+      ? 'Justification Required'
+      : undefined;
 
   // Transform artifacts for step components
   const transformedArtifacts = artifacts?.map(a => ({
