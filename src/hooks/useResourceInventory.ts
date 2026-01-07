@@ -10,6 +10,11 @@ export interface ResourceRole {
   created_at: string;
 }
 
+export interface ResourceAssignment {
+  id: string;
+  name: string;
+}
+
 export interface ResourceInventoryItem {
   id: string;
   name: string;
@@ -20,8 +25,12 @@ export interface ResourceInventoryItem {
   notes: string | null;
   created_at: string;
   updated_at: string;
-  department?: string | null;
-  department_id?: string | null;
+  department_name: string | null;
+  assignments: ResourceAssignment[];
+  vendor_name: string | null;
+  contract_start_date: string | null;
+  contract_end_date: string | null;
+  profile_id: string | null;
 }
 
 export function useResourceRoles() {
@@ -51,26 +60,11 @@ export function useResourceInventory() {
 
       if (error) throw error;
       
-      // Fetch departments and profiles to map department names
-      const { data: profiles } = await supabase
-        .from('profiles')
-        .select('id, department_id');
-      
-      const { data: departments } = await supabase
-        .from('capacity_departments')
-        .select('id, name');
-      
-      const deptMap = new Map(departments?.map(d => [d.id, d.name]) || []);
-      const profileDeptMap = new Map(profiles?.map(p => [p.id, p.department_id]) || []);
-      
-      return (data || []).map(item => {
-        const deptId = profileDeptMap.get(item.profile_id);
-        return {
-          ...item,
-          department_id: deptId || null,
-          department: deptId ? deptMap.get(deptId) || null : null,
-        };
-      }) as ResourceInventoryItem[];
+      // Map data directly - all fields now in resource_inventory
+      return (data || []).map(item => ({
+        ...item,
+        assignments: (item.assignments as unknown as ResourceAssignment[] | null) || [],
+      })) as ResourceInventoryItem[];
     },
   });
 }

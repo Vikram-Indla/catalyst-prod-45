@@ -1956,75 +1956,6 @@ export type Database = {
         }
         Relationships: []
       }
-      capacity_bookings: {
-        Row: {
-          booking_type: string
-          business_request_id: string | null
-          created_at: string
-          created_by: string | null
-          end_date: string
-          id: string
-          kickoff_date: string | null
-          priority: string | null
-          quarter: string | null
-          rank: number | null
-          resource_id: string
-          start_date: string
-          status: string | null
-          summary: string | null
-          updated_at: string
-        }
-        Insert: {
-          booking_type: string
-          business_request_id?: string | null
-          created_at?: string
-          created_by?: string | null
-          end_date: string
-          id?: string
-          kickoff_date?: string | null
-          priority?: string | null
-          quarter?: string | null
-          rank?: number | null
-          resource_id: string
-          start_date: string
-          status?: string | null
-          summary?: string | null
-          updated_at?: string
-        }
-        Update: {
-          booking_type?: string
-          business_request_id?: string | null
-          created_at?: string
-          created_by?: string | null
-          end_date?: string
-          id?: string
-          kickoff_date?: string | null
-          priority?: string | null
-          quarter?: string | null
-          rank?: number | null
-          resource_id?: string
-          start_date?: string
-          status?: string | null
-          summary?: string | null
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "capacity_bookings_business_request_id_fkey"
-            columns: ["business_request_id"]
-            isOneToOne: false
-            referencedRelation: "business_requests"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "capacity_bookings_resource_id_fkey"
-            columns: ["resource_id"]
-            isOneToOne: false
-            referencedRelation: "resource_inventory"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       capacity_departments: {
         Row: {
           color: string | null
@@ -17011,10 +16942,12 @@ export type Database = {
       resource_inventory: {
         Row: {
           assignment_id: string | null
+          assignments: Json | null
           contract_end_date: string | null
           contract_start_date: string | null
           created_at: string | null
           default_capacity_percent: number | null
+          department_name: string | null
           id: string
           is_active: boolean | null
           name: string
@@ -17027,10 +16960,12 @@ export type Database = {
         }
         Insert: {
           assignment_id?: string | null
+          assignments?: Json | null
           contract_end_date?: string | null
           contract_start_date?: string | null
           created_at?: string | null
           default_capacity_percent?: number | null
+          department_name?: string | null
           id?: string
           is_active?: boolean | null
           name: string
@@ -17043,10 +16978,12 @@ export type Database = {
         }
         Update: {
           assignment_id?: string | null
+          assignments?: Json | null
           contract_end_date?: string | null
           contract_start_date?: string | null
           created_at?: string | null
           default_capacity_percent?: number | null
+          department_name?: string | null
           id?: string
           is_active?: boolean | null
           name?: string
