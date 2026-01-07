@@ -5,10 +5,10 @@
  */
 
 export const catalystTokens = {
-  // Brand - Neutral authority
+  // Brand - Catalyst V5 Blue
   brand: {
-    primary: 'hsl(var(--foreground))',
-    primaryHover: 'hsl(var(--muted-foreground))',
+    primary: '#2563eb',
+    primaryHover: '#3b82f6',
   },
 
   // Semantic Status
@@ -104,12 +104,12 @@ export const catalystTokens = {
   },
 } as const;
 
-// Timeline bar colors by product - Neutral grayscale
+// Timeline bar colors by product - Catalyst V5 palette
 export const PRODUCT_COLORS: Record<string, string> = {
-  MINI: 'hsl(var(--foreground))',
-  SEN: 'hsl(var(--muted-foreground))',
-  ENT: 'hsl(var(--muted-foreground) / 0.7)',
-  UNA: 'hsl(var(--muted-foreground) / 0.4)',
+  MINI: '#2563eb',  // Primary blue
+  SEN: '#0d9488',   // Teal/Success
+  ENT: '#71717a',   // Neutral gray
+  UNA: '#52525b',   // Muted gray
 };
 
 // Get color for a product, with fallback
@@ -118,12 +118,12 @@ export function getProductColor(productCode: string | null): string {
   return PRODUCT_COLORS[productCode] || catalystTokens.brand.primary;
 }
 
-// Timeline grid colors - Neutral
+// Timeline grid colors - Catalyst V5
 export const TIMELINE_COLORS = {
-  gridLine: 'hsl(var(--border) / 0.5)',
-  gridLineDark: 'hsl(var(--border) / 0.5)',
-  todayLine: 'hsl(var(--foreground))',
-  milestoneMarker: 'hsl(var(--foreground))',
-  barDefault: 'hsl(var(--foreground))',
-  barHover: 'hsl(var(--muted-foreground))',
+  gridLine: 'rgba(255, 255, 255, 0.06)',
+  gridLineDark: 'rgba(255, 255, 255, 0.06)',
+  todayLine: '#ef4444',      // Danger red
+  milestoneMarker: '#2563eb', // Primary blue
+  barDefault: '#2563eb',      // Primary blue
+  barHover: '#3b82f6',        // Primary hover
 };

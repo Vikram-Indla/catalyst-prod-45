@@ -130,7 +130,7 @@ export function TestManagementLayout() {
           'flex items-center gap-2',
           collapsed && 'justify-center w-full'
         )}>
-          <FlaskConical className="h-5 w-5 text-foreground shrink-0" />
+          <FlaskConical className="h-5 w-5 text-primary shrink-0" />
           {!collapsed && (
             <span className="font-semibold text-foreground">Tests</span>
           )}
@@ -166,8 +166,8 @@ export function TestManagementLayout() {
                         className={cn(
                           'flex h-10 w-10 items-center justify-center rounded-md transition-colors mx-auto relative',
                           isActive
-                            ? 'bg-accent text-foreground font-semibold'
-                            : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
+                            ? 'bg-primary/10 text-primary'
+                            : 'text-muted-foreground hover:bg-muted hover:text-foreground'
                         )}
                       >
                         <Icon className="h-5 w-5" />
@@ -193,10 +193,10 @@ export function TestManagementLayout() {
                   <NavLink
                     to={item.path!}
                     className={cn(
-                      'flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors',
+                      'flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors',
                       isActive
-                        ? 'bg-accent text-foreground font-semibold'
-                        : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
+                        ? 'bg-primary/10 text-primary'
+                        : 'text-muted-foreground hover:bg-muted hover:text-foreground'
                     )}
                   >
                     <Icon className="h-4 w-4 shrink-0" />
