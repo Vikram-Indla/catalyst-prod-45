@@ -49,6 +49,7 @@ import {
   DefectMetricsHeader,
   CreateDefectDialogEnterprise,
   DefectDetailPanelEnhanced,
+  DefectsBoardView,
   DEFAULT_DEFECT_COLUMNS,
   type ColumnConfig,
   type DefectFilters,
@@ -450,13 +451,22 @@ export function TMDefectsPage() {
               onColumnResize={handleColumnResize}
             />
           ) : (
-            <div className="flex items-center justify-center h-full text-muted-foreground">
-              <div className="text-center">
-                <LayoutGrid className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                <p className="text-lg font-medium">Board View</p>
-                <p className="text-sm">Coming soon...</p>
-              </div>
-            </div>
+            <DefectsBoardView
+              defects={defects}
+              isLoading={isLoading}
+              onDefectClick={handleRowClick}
+              onStatusChange={async (defectId, newStatus) => {
+                try {
+                  await updateDefectMutation.mutateAsync({
+                    id: defectId,
+                    workflow_status: newStatus,
+                  });
+                  toast.success(`Status updated to ${newStatus.replace('_', ' ')}`);
+                } catch (error) {
+                  toast.error('Failed to update status');
+                }
+              }}
+            />
           )}
           
           {/* Pagination */}

@@ -2882,6 +2882,65 @@ export type Database = {
           },
         ]
       }
+      defect_history: {
+        Row: {
+          changed_by: string
+          created_at: string
+          defect_id: string
+          field_name: string
+          id: string
+          new_value: string | null
+          old_value: string | null
+        }
+        Insert: {
+          changed_by: string
+          created_at?: string
+          defect_id: string
+          field_name: string
+          id?: string
+          new_value?: string | null
+          old_value?: string | null
+        }
+        Update: {
+          changed_by?: string
+          created_at?: string
+          defect_id?: string
+          field_name?: string
+          id?: string
+          new_value?: string | null
+          old_value?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "defect_history_changed_by_fkey"
+            columns: ["changed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "defect_history_changed_by_fkey"
+            columns: ["changed_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "defect_history_changed_by_fkey"
+            columns: ["changed_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "defect_history_defect_id_fkey"
+            columns: ["defect_id"]
+            isOneToOne: false
+            referencedRelation: "tm_defects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       defect_id_sequences: {
         Row: {
           last_sequence: number
@@ -2899,6 +2958,65 @@ export type Database = {
           year?: number
         }
         Relationships: []
+      }
+      defect_links: {
+        Row: {
+          created_at: string
+          created_by: string
+          defect_id: string
+          id: string
+          link_type: string
+          linked_id: string
+          linked_type: string
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          defect_id: string
+          id?: string
+          link_type: string
+          linked_id: string
+          linked_type: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          defect_id?: string
+          id?: string
+          link_type?: string
+          linked_id?: string
+          linked_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "defect_links_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "defect_links_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "defect_links_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "defect_links_defect_id_fkey"
+            columns: ["defect_id"]
+            isOneToOne: false
+            referencedRelation: "tm_defects"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       defect_work_item_links: {
         Row: {
