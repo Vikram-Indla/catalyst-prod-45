@@ -2,10 +2,10 @@ import React, { useCallback, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { Upload, FileText, Check, CheckCircle, Hash, Globe, ChevronRight, Loader2, RefreshCw, Eye, Lightbulb, AlertCircle, Lock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { useAIAssistUpload } from '@/hooks/useAIAssistUpload';
 import { toast } from 'sonner';
-
 interface Document {
   id: string;
   file_name: string;
@@ -156,15 +156,15 @@ export function DocumentCaptureStep({ draftId, documents, onUploadComplete }: Do
 
   // Upload zone - empty state with HERO styling
   return (
-    <div className="space-y-8">
+    <div className="space-y-5">
       {/* Hero upload zone with animated gradient border on hover */}
       <div className="relative group cursor-pointer" {...getRootProps()}>
         {/* Animated gradient border on hover */}
         <div className="absolute -inset-0.5 bg-gradient-to-r from-primary via-[hsl(var(--success))] to-primary rounded-2xl opacity-0 group-hover:opacity-100 blur transition-all duration-500" />
         
         <div className={cn(
-          "relative bg-gradient-to-br from-card to-primary/5 border-2 border-dashed rounded-2xl p-10 text-center transition-all duration-300",
-          "border-muted-foreground/30 group-hover:border-primary group-hover:shadow-xl group-hover:shadow-primary/10",
+          "relative bg-gradient-to-br from-card to-primary/5 border-2 border-dashed rounded-2xl py-8 px-10 text-center transition-all duration-300",
+          "border-muted-foreground/40 group-hover:border-primary group-hover:shadow-xl group-hover:shadow-primary/10",
           isDragActive && "border-primary bg-primary/10 border-solid shadow-xl shadow-primary/20",
           isDragReject && "border-[hsl(var(--danger))] bg-[hsl(var(--danger))]/5",
           upload.isPending && "opacity-50 pointer-events-none"
@@ -173,8 +173,8 @@ export function DocumentCaptureStep({ draftId, documents, onUploadComplete }: Do
 
           {/* Large animated icon */}
           <div className={cn(
-            "w-16 h-16 mx-auto mb-5 rounded-xl flex items-center justify-center transition-transform duration-300",
-            isDragActive ? "bg-primary/20 scale-110" : "bg-primary/10 group-hover:scale-110",
+            "w-14 h-14 mx-auto mb-4 rounded-xl flex items-center justify-center transition-all duration-300",
+            isDragActive ? "bg-primary/20 scale-110" : "bg-primary/10 group-hover:scale-110 group-hover:shadow-lg",
             isDragReject && "bg-[hsl(var(--danger))]/20"
           )}>
             {upload.isPending ? (
@@ -210,13 +210,13 @@ export function DocumentCaptureStep({ draftId, documents, onUploadComplete }: Do
               </h3>
               <p className="text-muted-foreground mb-1">or click to browse</p>
               
-              {/* File type pills */}
-              <div className="flex items-center justify-center gap-2 mt-4">
-                <span className="px-3 py-1 bg-muted rounded-full text-xs font-medium text-muted-foreground">PDF</span>
-                <span className="px-3 py-1 bg-muted rounded-full text-xs font-medium text-muted-foreground">DOCX</span>
-                <span className="text-muted-foreground/50">•</span>
+              {/* File type badges */}
+              <div className="flex items-center justify-center gap-2 mt-3">
+                <Badge variant="secondary" className="text-xs font-medium">PDF</Badge>
+                <Badge variant="secondary" className="text-xs font-medium">DOCX</Badge>
+                <span className="text-muted-foreground/60">•</span>
                 <span className="text-xs text-muted-foreground">Max 50MB</span>
-                <span className="text-muted-foreground/50">•</span>
+                <span className="text-muted-foreground/60">•</span>
                 <span className="text-xs text-muted-foreground">Arabic/English</span>
               </div>
             </>
@@ -225,8 +225,8 @@ export function DocumentCaptureStep({ draftId, documents, onUploadComplete }: Do
       </div>
 
       {/* What happens next - PROMINENT */}
-      <div className="mt-6 p-5 bg-gradient-to-r from-muted/50 to-primary/5 rounded-xl border border-border">
-        <h4 className="text-sm font-semibold text-muted-foreground tracking-wide mb-4 text-center">
+      <div className="mt-5 p-4 bg-gradient-to-r from-muted/50 to-primary/5 rounded-xl border border-border">
+        <h4 className="text-sm font-semibold text-muted-foreground tracking-wide mb-3 text-center">
           What happens next
         </h4>
         
@@ -241,8 +241,8 @@ export function DocumentCaptureStep({ draftId, documents, onUploadComplete }: Do
           
           {/* Arrow */}
           <div className="flex items-center">
-            <div className="w-8 h-0.5 bg-border" />
-            <ChevronRight className="w-4 h-4 text-muted-foreground/50 -ml-1" />
+            <div className="w-6 h-0.5 bg-muted-foreground/30" />
+            <ChevronRight className="w-5 h-5 text-muted-foreground -ml-1" />
           </div>
           
           {/* Step 2 */}
@@ -255,8 +255,8 @@ export function DocumentCaptureStep({ draftId, documents, onUploadComplete }: Do
           
           {/* Arrow */}
           <div className="flex items-center">
-            <div className="w-8 h-0.5 bg-border" />
-            <ChevronRight className="w-4 h-4 text-muted-foreground/50 -ml-1" />
+            <div className="w-6 h-0.5 bg-muted-foreground/30" />
+            <ChevronRight className="w-5 h-5 text-muted-foreground -ml-1" />
           </div>
           
           {/* Step 3 */}
