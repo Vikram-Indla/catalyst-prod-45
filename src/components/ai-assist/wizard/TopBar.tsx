@@ -54,18 +54,6 @@ export function TopBar({
         {/* Language Switcher with Flags */}
         <div className="flex items-center gap-2 border-r border-border pr-3">
           <button
-            onClick={() => handleLanguageChange('en')}
-            className={cn(
-              "text-lg transition-opacity hover:opacity-100",
-              !isRtl ? "opacity-100" : "opacity-50"
-            )}
-            title="English"
-            aria-label="Switch to English"
-          >
-            🇬🇧
-          </button>
-          <span className="text-muted-foreground/50">|</span>
-          <button
             onClick={() => handleLanguageChange('ar')}
             className={cn(
               "text-lg transition-opacity hover:opacity-100",
@@ -75,6 +63,18 @@ export function TopBar({
             aria-label="Switch to Arabic"
           >
             🇸🇦
+          </button>
+          <span className="text-muted-foreground/50">|</span>
+          <button
+            onClick={() => handleLanguageChange('en')}
+            className={cn(
+              "text-lg transition-opacity hover:opacity-100",
+              !isRtl ? "opacity-100" : "opacity-50"
+            )}
+            title="English"
+            aria-label="Switch to English"
+          >
+            🇬🇧
           </button>
         </div>
 

@@ -222,7 +222,11 @@ export function DocumentCaptureStep({ draftId, documents, onUploadComplete }: Do
               </div>
 
               {/* Tips inside upload zone */}
-              <div className="mt-5 pt-4 border-t border-border/50">
+              <div className="mt-5 pt-4 border-t border-dashed border-border/50">
+                <p className="text-xs text-muted-foreground/70 mb-2 flex items-center justify-center gap-1.5">
+                  <Lightbulb className="w-3.5 h-3.5" />
+                  Best results with:
+                </p>
                 <div className="flex items-center justify-center gap-6 text-xs text-muted-foreground">
                   <span className="flex items-center gap-1.5">
                     <CheckCircle className="w-3.5 h-3.5 text-[hsl(var(--success))]" />
@@ -259,9 +263,9 @@ export function DocumentCaptureStep({ draftId, documents, onUploadComplete }: Do
           </div>
           
           {/* Arrow */}
-          <div className="flex items-center">
-            <div className="w-6 h-0.5 bg-muted-foreground/30" />
-            <ChevronRight className="w-5 h-5 text-muted-foreground -ml-1" />
+          <div className="flex items-center text-primary/60">
+            <div className="w-8 h-0.5 bg-primary/40" />
+            <ChevronRight className="w-5 h-5 -ml-1" />
           </div>
           
           {/* Step 2 */}
@@ -273,9 +277,9 @@ export function DocumentCaptureStep({ draftId, documents, onUploadComplete }: Do
           </div>
           
           {/* Arrow */}
-          <div className="flex items-center">
-            <div className="w-6 h-0.5 bg-muted-foreground/30" />
-            <ChevronRight className="w-5 h-5 text-muted-foreground -ml-1" />
+          <div className="flex items-center text-primary/60">
+            <div className="w-8 h-0.5 bg-primary/40" />
+            <ChevronRight className="w-5 h-5 -ml-1" />
           </div>
           
           {/* Step 3 */}
