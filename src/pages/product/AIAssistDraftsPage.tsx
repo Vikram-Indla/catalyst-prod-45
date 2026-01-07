@@ -260,7 +260,7 @@ export default function AIAssistDraftsPage() {
                     <tr
                       key={draft.id}
                       onClick={() => { setSelectedDraft(draft); setDrawerOpen(true); }}
-                      className="border-b border-border hover:bg-muted/50 cursor-pointer transition-colors group"
+                      className="border-b border-border hover:bg-accent/50 cursor-pointer transition-colors group"
                     >
                       {/* Draft ID with copy */}
                       <td className="px-4 py-3">
@@ -329,9 +329,9 @@ export default function AIAssistDraftsPage() {
                               <div
                                 key={i}
                                 className={cn(
-                                  "w-2 h-2 rounded-full transition-colors",
+                                  "w-2.5 h-2.5 rounded-full transition-all",
                                   i < completedSteps && "bg-[hsl(var(--success))]",
-                                  i === completedSteps && "bg-primary ring-2 ring-primary/30",
+                                  i === completedSteps && "bg-primary ring-2 ring-primary/30 ring-offset-1 ring-offset-background",
                                   i > completedSteps && "bg-muted-foreground/20"
                                 )}
                               />
