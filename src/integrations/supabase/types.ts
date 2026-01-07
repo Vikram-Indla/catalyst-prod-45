@@ -117,6 +117,50 @@ export type Database = {
         }
         Relationships: []
       }
+      ai_assist_approvals: {
+        Row: {
+          approver_user_id: string
+          comment: string | null
+          created_at: string
+          decided_at: string | null
+          draft_id: string
+          id: string
+          reason_json: Json | null
+          requested_by: string | null
+          status: string
+        }
+        Insert: {
+          approver_user_id: string
+          comment?: string | null
+          created_at?: string
+          decided_at?: string | null
+          draft_id: string
+          id?: string
+          reason_json?: Json | null
+          requested_by?: string | null
+          status?: string
+        }
+        Update: {
+          approver_user_id?: string
+          comment?: string | null
+          created_at?: string
+          decided_at?: string | null
+          draft_id?: string
+          id?: string
+          reason_json?: Json | null
+          requested_by?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_assist_approvals_draft_id_fkey"
+            columns: ["draft_id"]
+            isOneToOne: false
+            referencedRelation: "ai_assist_drafts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       ai_assist_artifacts: {
         Row: {
           artifact_key: string
@@ -127,7 +171,9 @@ export type Database = {
           created_at: string
           draft_id: string | null
           id: string
+          run_fingerprint_sha256: string | null
           run_id: string
+          source_map_json: Json | null
           supersedes_artifact_id: string | null
           version: number
         }
@@ -140,7 +186,9 @@ export type Database = {
           created_at?: string
           draft_id?: string | null
           id?: string
+          run_fingerprint_sha256?: string | null
           run_id: string
+          source_map_json?: Json | null
           supersedes_artifact_id?: string | null
           version?: number
         }
@@ -153,7 +201,9 @@ export type Database = {
           created_at?: string
           draft_id?: string | null
           id?: string
+          run_fingerprint_sha256?: string | null
           run_id?: string
+          source_map_json?: Json | null
           supersedes_artifact_id?: string | null
           version?: number
         }
@@ -368,6 +418,9 @@ export type Database = {
       }
       ai_assist_drafts: {
         Row: {
+          approval_reason_json: Json | null
+          approval_status: string
+          approver_user_id: string | null
           compliance_verdict: string | null
           created_at: string
           created_by: string | null
@@ -376,9 +429,12 @@ export type Database = {
           deleted_by: string | null
           dir: string
           draft_key: string
+          exemptions_count: number
           id: string
           is_deleted: boolean
           language: string
+          manual_text_used: boolean
+          open_questions_count: number
           prompt_pack_version: string | null
           quality_gaps: Json | null
           quality_mode: string | null
@@ -390,6 +446,9 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          approval_reason_json?: Json | null
+          approval_status?: string
+          approver_user_id?: string | null
           compliance_verdict?: string | null
           created_at?: string
           created_by?: string | null
@@ -398,9 +457,12 @@ export type Database = {
           deleted_by?: string | null
           dir?: string
           draft_key: string
+          exemptions_count?: number
           id?: string
           is_deleted?: boolean
           language?: string
+          manual_text_used?: boolean
+          open_questions_count?: number
           prompt_pack_version?: string | null
           quality_gaps?: Json | null
           quality_mode?: string | null
@@ -412,6 +474,9 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          approval_reason_json?: Json | null
+          approval_status?: string
+          approver_user_id?: string | null
           compliance_verdict?: string | null
           created_at?: string
           created_by?: string | null
@@ -420,9 +485,12 @@ export type Database = {
           deleted_by?: string | null
           dir?: string
           draft_key?: string
+          exemptions_count?: number
           id?: string
           is_deleted?: boolean
           language?: string
+          manual_text_used?: boolean
+          open_questions_count?: number
           prompt_pack_version?: string | null
           quality_gaps?: Json | null
           quality_mode?: string | null
@@ -434,6 +502,72 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      ai_assist_exemptions: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          description_ar: string | null
+          description_en: string
+          draft_id: string
+          exemption_type: string
+          id: string
+          impact_ar: string | null
+          impact_en: string | null
+          mitigation_ar: string | null
+          mitigation_en: string | null
+          page_from: number | null
+          page_to: number | null
+          run_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          description_ar?: string | null
+          description_en: string
+          draft_id: string
+          exemption_type: string
+          id?: string
+          impact_ar?: string | null
+          impact_en?: string | null
+          mitigation_ar?: string | null
+          mitigation_en?: string | null
+          page_from?: number | null
+          page_to?: number | null
+          run_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          description_ar?: string | null
+          description_en?: string
+          draft_id?: string
+          exemption_type?: string
+          id?: string
+          impact_ar?: string | null
+          impact_en?: string | null
+          mitigation_ar?: string | null
+          mitigation_en?: string | null
+          page_from?: number | null
+          page_to?: number | null
+          run_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_assist_exemptions_draft_id_fkey"
+            columns: ["draft_id"]
+            isOneToOne: false
+            referencedRelation: "ai_assist_drafts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ai_assist_exemptions_run_id_fkey"
+            columns: ["run_id"]
+            isOneToOne: false
+            referencedRelation: "ai_assist_runs"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       ai_assist_links: {
         Row: {
@@ -523,52 +657,74 @@ export type Database = {
         Row: {
           canonical_text_hash: string | null
           completed_at: string | null
+          compliance_catalog_version: string | null
           created_at: string
+          deterministic_reuse_of_run_id: string | null
           draft_id: string
           error_message: string | null
+          extraction_version: string | null
           id: string
           model_id: string
           prompt_pack_version: string | null
+          run_fingerprint_sha256: string | null
           run_number: number
           sources_pack_version: string | null
           started_at: string | null
           status: string
+          system_instructions_hash: string | null
           temperature: number
           top_p: number
         }
         Insert: {
           canonical_text_hash?: string | null
           completed_at?: string | null
+          compliance_catalog_version?: string | null
           created_at?: string
+          deterministic_reuse_of_run_id?: string | null
           draft_id: string
           error_message?: string | null
+          extraction_version?: string | null
           id?: string
           model_id?: string
           prompt_pack_version?: string | null
+          run_fingerprint_sha256?: string | null
           run_number: number
           sources_pack_version?: string | null
           started_at?: string | null
           status?: string
+          system_instructions_hash?: string | null
           temperature?: number
           top_p?: number
         }
         Update: {
           canonical_text_hash?: string | null
           completed_at?: string | null
+          compliance_catalog_version?: string | null
           created_at?: string
+          deterministic_reuse_of_run_id?: string | null
           draft_id?: string
           error_message?: string | null
+          extraction_version?: string | null
           id?: string
           model_id?: string
           prompt_pack_version?: string | null
+          run_fingerprint_sha256?: string | null
           run_number?: number
           sources_pack_version?: string | null
           started_at?: string | null
           status?: string
+          system_instructions_hash?: string | null
           temperature?: number
           top_p?: number
         }
         Relationships: [
+          {
+            foreignKeyName: "ai_assist_runs_deterministic_reuse_of_run_id_fkey"
+            columns: ["deterministic_reuse_of_run_id"]
+            isOneToOne: false
+            referencedRelation: "ai_assist_runs"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "ai_assist_runs_draft_id_fkey"
             columns: ["draft_id"]
