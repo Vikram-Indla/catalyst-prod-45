@@ -25,7 +25,7 @@ export interface AIAssistDocument {
   uploaded_by: string | null;
   created_at: string;
   updated_at: string;
-  // New metadata fields
+  // Metadata fields
   primary_language: PrimaryLanguage | null;
   bilingual_confidence: BilingualConfidence | null;
   pages_total: number | null;
@@ -35,6 +35,22 @@ export interface AIAssistDocument {
   canonical_text_hash: string | null;
   extraction_warnings: string[] | null;
   document_version: number | null;
+  // JOB-151: Authoritative PDF stats
+  pdf_page_count: number | null;
+  pdf_bytes: number | null;
+  pdf_parse_error: string | null;
+  pdf_info_json: Record<string, unknown> | null;
+  // JOB-151: OCR processing stats
+  ocr_images_processed: number | null;
+  ocr_pages_attempted: number | null;
+  ocr_confidence_min: number | null;
+  ocr_tiling_mode: string | null;
+  ocr_engine: string | null;
+  ocr_completed_at: string | null;
+  // Pipeline status
+  canonical_status: string | null;
+  sectioning_status: string | null;
+  pipeline_error_json: Record<string, unknown> | null;
 }
 
 export interface UploadDocumentInput {
