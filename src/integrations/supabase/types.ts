@@ -15318,6 +15318,7 @@ export type Database = {
           approved_by: string | null
           avatar_url: string | null
           contract_end_date: string | null
+          contract_start_date: string | null
           country: string | null
           country_code: string | null
           country_flag_svg_url: string | null
@@ -15351,6 +15352,7 @@ export type Database = {
           approved_by?: string | null
           avatar_url?: string | null
           contract_end_date?: string | null
+          contract_start_date?: string | null
           country?: string | null
           country_code?: string | null
           country_flag_svg_url?: string | null
@@ -15384,6 +15386,7 @@ export type Database = {
           approved_by?: string | null
           avatar_url?: string | null
           contract_end_date?: string | null
+          contract_start_date?: string | null
           country?: string | null
           country_code?: string | null
           country_flag_svg_url?: string | null

@@ -71,7 +71,7 @@ export function useUsers() {
       // Fetch all profiles with approval and vendor fields
       const { data: profiles, error: profilesError } = await supabase
         .from('profiles')
-        .select('*, approval_status, requested_at, approved_at, rejected_at, rejection_reason, signup_attempts_count, vendor, contract_end_date, country, country_code, country_flag_svg_url, location')
+        .select('*, approval_status, requested_at, approved_at, rejected_at, rejection_reason, signup_attempts_count, vendor, contract_start_date, contract_end_date, country, country_code, country_flag_svg_url, location')
         .order('vendor', { ascending: true, nullsFirst: false })
         .order('full_name', { ascending: true });
 
@@ -135,8 +135,8 @@ export function useUsers() {
           ...profile,
           roles,
           business_lines: [...new Set(allBusinessLines)],
-          // Contract dates from resource_inventory take precedence
-          contract_start_date: inventory?.contract_start_date || null,
+          // Contract dates from resource_inventory take precedence, fallback to profiles
+          contract_start_date: inventory?.contract_start_date || profile.contract_start_date || null,
           contract_end_date: inventory?.contract_end_date || profile.contract_end_date || null,
           vendor_name: inventory?.vendor_name || null,
         } as UserProfile;
