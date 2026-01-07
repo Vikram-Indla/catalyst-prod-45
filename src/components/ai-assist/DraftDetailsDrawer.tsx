@@ -13,7 +13,7 @@ import {
 import { cn } from '@/lib/utils';
 import { useAIAssistDocuments, type AIAssistDocument } from '@/hooks/useAIAssistDocuments';
 import { useDeleteDraft, type AIAssistDraft } from '@/hooks/useAIAssistDrafts';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { formatDistanceToNow, format } from 'date-fns';
 
 // Wizard steps for reference
@@ -79,11 +79,11 @@ export function DraftDetailsDrawer({ open, onOpenChange, draft }: DraftDetailsDr
   };
   
   const handleExport = () => {
-    toast.success('Export functionality coming soon');
+    catalystToast.info('Coming Soon', 'Export functionality is in development');
   };
   
   const handleDuplicate = () => {
-    toast.success('Duplicate functionality coming soon');
+    catalystToast.info('Coming Soon', 'Duplicate functionality is in development');
   };
   
   const handleDelete = () => {

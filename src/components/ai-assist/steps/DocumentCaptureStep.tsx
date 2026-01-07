@@ -1,11 +1,12 @@
 import React, { useCallback, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { Upload, FileText, Check, CheckCircle, Hash, Globe, ChevronRight, Loader2, RefreshCw, Eye, Lightbulb, AlertCircle, Lock } from 'lucide-react';
+import { Upload, FileText, Check, CheckCircle, Hash, Globe, ChevronRight, Loader2, RefreshCw, Eye, Lightbulb, AlertCircle, Lock, PartyPopper } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { useAIAssistUpload } from '@/hooks/useAIAssistUpload';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
+
 interface Document {
   id: string;
   file_name: string;
@@ -47,10 +48,10 @@ export function DocumentCaptureStep({ draftId, documents, onUploadComplete }: Do
     try {
       await upload.mutateAsync({ draftId, file });
       setUploadProgress(100);
-      toast.success('Document uploaded successfully!');
+      catalystToast.success('Document Uploaded!', `${file.name} is ready for analysis`);
       onUploadComplete?.();
     } catch (error) {
-      toast.error('Upload failed. Please try again.');
+      catalystToast.error('Upload Failed', 'Please try again with a valid PDF or DOCX file');
     } finally {
       clearInterval(interval);
       setTimeout(() => setUploadProgress(0), 1000);

@@ -7,7 +7,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 export interface BRDGenerationStepProps {
   draftId?: string;
@@ -96,7 +96,7 @@ export function BRDGenerationStep({
 
   const handleExport = (format: 'pdf' | 'docx' | 'html') => {
     onExport?.(format);
-    toast.success(`Exporting as ${format.toUpperCase()}...`);
+    catalystToast.success('Export Started', `Generating ${format.toUpperCase()} document...`);
   };
 
   // Generating state

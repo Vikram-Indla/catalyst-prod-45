@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils';
 import { useLatestArtifactsForDraft } from '@/hooks/useAIAssistArtifacts';
 import { useAIAssistDocuments } from '@/hooks/useAIAssistDocuments';
 import { useAIAssistAnalyze } from '@/hooks/useAIAssistAnalyze';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 export interface AIAnalysisStepProps {
   draftId: string;
@@ -128,7 +128,7 @@ export function AIAnalysisStep({ draftId, runId, onAnalysisComplete, onGoToStep 
 
   const handleStartAnalysis = async () => {
     if (!runId || !latestDoc?.extracted_text) {
-      toast.error('No document text available for analysis');
+      catalystToast.error('Analysis Blocked', 'No document text available for analysis');
       return;
     }
 
@@ -149,7 +149,7 @@ export function AIAnalysisStep({ draftId, runId, onAnalysisComplete, onGoToStep 
         analysisType: 'glossary',
       });
 
-      toast.success('Analysis complete!');
+      catalystToast.success('Analysis Complete!', 'Evidence extracted and glossary built');
       onAnalysisComplete?.();
     }
   };

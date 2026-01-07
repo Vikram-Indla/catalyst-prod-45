@@ -4608,3 +4608,215 @@ select:focus-visible,
   border-color: hsl(var(--primary)) !important;
   box-shadow: 0 0 0 3px hsl(var(--primary) / 0.1) !important;
 }
+
+/* ════════════════════════════════════════════════════════════════════════════
+   CATALYST V5 — MICRO-INTERACTIONS (Final 10% Polish)
+   Award-winning tactile feedback for buttons, cards, and checkboxes
+   ════════════════════════════════════════════════════════════════════════════ */
+
+/* === BUTTON PRESS FEEDBACK === */
+button:not(:disabled):active,
+[role="button"]:not(:disabled):active,
+.btn:not(:disabled):active {
+  transform: scale(0.97);
+  transition: transform 100ms ease;
+}
+
+/* Ensure transition is set for smooth release */
+button,
+[role="button"],
+.btn {
+  transition: all 150ms ease;
+}
+
+/* === CARD HOVER LIFT === */
+.card-lift {
+  transition: all 200ms ease;
+}
+
+.card-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px -5px hsl(var(--shadow-color) / 0.1);
+}
+
+/* === CHECKBOX ANIMATION === */
+[data-state="checked"] {
+  animation: checkmark-pop 200ms ease-out;
+}
+
+@keyframes checkmark-pop {
+  0% { transform: scale(0.8); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+/* === BADGE HOVER GLOW === */
+.badge-glow {
+  transition: all 200ms ease;
+}
+
+.badge-glow:hover {
+  box-shadow: 0 0 12px hsl(var(--primary) / 0.3);
+}
+
+/* === SKELETON SHIMMER ANIMATION === */
+@keyframes skeleton-shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.skeleton-shimmer {
+  background: linear-gradient(
+    90deg,
+    hsl(var(--muted)) 0%,
+    hsl(var(--muted-foreground) / 0.1) 50%,
+    hsl(var(--muted)) 100%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s ease-in-out infinite;
+}
+
+/* === COUNT-UP NUMBER ANIMATION === */
+@keyframes count-up-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+.count-up-active {
+  animation: count-up-pulse 300ms ease-out;
+}
+
+/* === SUCCESS CELEBRATION PULSE === */
+@keyframes celebration-pulse {
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.05); opacity: 0.9; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.celebration-pulse {
+  animation: celebration-pulse 600ms ease-out;
+}
+
+/* === CONFETTI PARTICLES (CSS-only) === */
+@keyframes confetti-fall {
+  0% { transform: translateY(-100%) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+}
+
+.confetti-particle {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  animation: confetti-fall 2s ease-out forwards;
+}
+
+/* === PROCESSING SPINNER RING === */
+@keyframes spinner-ring {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.spinner-ring {
+  animation: spinner-ring 1.5s linear infinite;
+}
+
+/* === STEP PROGRESS FILL === */
+@keyframes progress-fill {
+  from { width: 0%; }
+  to { width: var(--progress-width, 100%); }
+}
+
+.progress-animate {
+  animation: progress-fill 500ms ease-out forwards;
+}
+
+/* === STAGGER LIST ITEM ANIMATION === */
+@keyframes stagger-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.stagger-item {
+  opacity: 0;
+  animation: stagger-in 300ms ease-out forwards;
+}
+
+.stagger-item:nth-child(1) { animation-delay: 0ms; }
+.stagger-item:nth-child(2) { animation-delay: 50ms; }
+.stagger-item:nth-child(3) { animation-delay: 100ms; }
+.stagger-item:nth-child(4) { animation-delay: 150ms; }
+.stagger-item:nth-child(5) { animation-delay: 200ms; }
+.stagger-item:nth-child(6) { animation-delay: 250ms; }
+.stagger-item:nth-child(7) { animation-delay: 300ms; }
+.stagger-item:nth-child(8) { animation-delay: 350ms; }
+
+/* === ICON CONTAINER PULSE (for loading states) === */
+@keyframes icon-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(0.95); }
+}
+
+.icon-pulse {
+  animation: icon-pulse 1.5s ease-in-out infinite;
+}
+
+/* === SUCCESS CHECK DRAW === */
+@keyframes check-draw {
+  0% { stroke-dashoffset: 100; }
+  100% { stroke-dashoffset: 0; }
+}
+
+.check-draw path {
+  stroke-dasharray: 100;
+  animation: check-draw 400ms ease-out forwards;
+}
+
+/* === SMOOTH ACCORDION TRANSITION === */
+[data-state="open"] [data-radix-collapsible-content] {
+  animation: accordion-down 200ms ease-out;
+}
+
+[data-state="closed"] [data-radix-collapsible-content] {
+  animation: accordion-up 200ms ease-out;
+}
+
+/* === FOCUS VISIBLE ENHANCEMENT === */
+*:focus-visible {
+  outline: 2px solid hsl(var(--primary));
+  outline-offset: 2px;
+}
+
+*:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* === TOOLTIP FADE IN === */
+@keyframes tooltip-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+[data-radix-popper-content-wrapper] {
+  animation: tooltip-in 150ms ease-out;
+}
+
+/* === ROW HIGHLIGHT ON SELECT === */
+.row-highlight {
+  transition: background-color 200ms ease;
+}
+
+.row-highlight[data-selected="true"] {
+  background-color: hsl(var(--primary) / 0.08);
+}
