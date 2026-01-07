@@ -1,5 +1,5 @@
 import React from 'react';
-import { ChevronLeft, ChevronRight, Save, Loader2 } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
@@ -24,52 +24,51 @@ export function FooterNav({
   isSaving,
   onPrevious,
   onNext,
-  onSave
 }: FooterNavProps) {
   const isFirstStep = currentStep === 1;
   const isLastStep = currentStep === totalSteps;
 
   return (
     <footer className="sticky bottom-0 bg-card border-t border-border/50 px-6 py-4 flex items-center justify-between shadow-[0_-4px_12px_rgba(0,0,0,0.04)]">
-      <div className="flex items-center gap-3">
-        {!isFirstStep && (
-          <Button
-            variant="outline"
-            onClick={onPrevious}
-            className="gap-2"
-          >
-            <ChevronLeft className="h-4 w-4" />
-            Previous
-          </Button>
-        )}
-      </div>
-
-      <div className="flex items-center gap-3">
-        {onSave && (
-          <Button
-            variant="outline"
-            onClick={onSave}
-            disabled={isSaving}
-            className="gap-2"
-          >
-            {isSaving ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              <Save className="h-4 w-4" />
-            )}
-            Save Draft
-          </Button>
-        )}
-
+      {/* Left side - Previous button */}
+      <div className="flex items-center">
         <Button
-          onClick={onNext}
-          disabled={isLastStep || isNextDisabled}
+          variant="outline"
+          onClick={onPrevious}
+          disabled={isFirstStep}
           className={cn(
-            "gap-2 min-w-[140px]",
-            isNextDisabled && !!nextDisabledReason && "bg-[hsl(var(--warning))] hover:bg-[hsl(var(--warning))]/90"
+            "gap-2 min-w-[120px]",
+            isFirstStep && "opacity-0 pointer-events-none"
           )}
         >
-          {isNextDisabled && nextDisabledReason ? (
+          <ChevronLeft className="h-4 w-4" />
+          Previous
+        </Button>
+      </div>
+
+      {/* Center - Step indicator for mobile */}
+      <div className="flex md:hidden items-center">
+        <span className="text-sm text-muted-foreground tabular-nums">
+          {currentStep} / {totalSteps}
+        </span>
+      </div>
+
+      {/* Right side - Continue button */}
+      <div className="flex items-center">
+        <Button
+          onClick={onNext}
+          disabled={isLastStep || isNextDisabled || isSaving}
+          className={cn(
+            "gap-2 min-w-[140px]",
+            isNextDisabled && !!nextDisabledReason && "bg-[hsl(var(--warning))] hover:bg-[hsl(var(--warning))]/90 text-[hsl(var(--warning-foreground))]"
+          )}
+        >
+          {isSaving ? (
+            <>
+              <Loader2 className="h-4 w-4 animate-spin" />
+              Saving...
+            </>
+          ) : isNextDisabled && nextDisabledReason ? (
             nextDisabledReason
           ) : (
             <>
