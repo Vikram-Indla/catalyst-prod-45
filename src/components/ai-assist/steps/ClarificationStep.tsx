@@ -60,7 +60,7 @@ export function ClarificationStep({
     return (
       <div className="space-y-6">
         <div className="bg-card border border-border rounded-xl p-12 text-center">
-          <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-success/10 mb-6">
+          <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-success/10 mb-6 animate-pulse">
             <Sparkles className="h-10 w-10 text-success" />
           </div>
           
