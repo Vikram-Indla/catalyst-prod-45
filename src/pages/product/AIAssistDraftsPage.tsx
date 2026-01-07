@@ -11,14 +11,13 @@ import {
   CheckCircle,
   AlertCircle,
   PauseCircle,
-  Hash,
   Globe,
   Loader2
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
+import { DraftDetailsDrawer } from '@/components/ai-assist/DraftDetailsDrawer';
 import { useAIAssistDrafts, useCreateDraft, type AIAssistDraft, type DraftStatus } from '@/hooks/useAIAssistDrafts';
 
 // Wizard steps for reference
@@ -228,48 +227,11 @@ export default function AIAssistDraftsPage() {
       </div>
 
       {/* Drawer for draft details */}
-      <Sheet open={drawerOpen} onOpenChange={setDrawerOpen}>
-        <SheetContent className="w-[400px] sm:w-[540px]">
-          {selectedDraft && (
-            <>
-              <SheetHeader>
-                <SheetTitle className="flex items-center gap-2">
-                  <Bot className="h-5 w-5 text-[hsl(var(--info))]" />
-                  {selectedDraft.draft_key}
-                </SheetTitle>
-              </SheetHeader>
-              <div className="mt-6 space-y-6">
-                <div>
-                  <h4 className="text-sm font-medium text-muted-foreground mb-1">Title</h4>
-                  <p className="text-sm" dir={selectedDraft.dir}>
-                    {selectedDraft.title}
-                  </p>
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <h4 className="text-sm font-medium text-muted-foreground mb-1">Status</h4>
-                    <Badge variant={(STATUS_CONFIG[selectedDraft.status] || STATUS_CONFIG.draft).variant} className="gap-1">
-                      {(STATUS_CONFIG[selectedDraft.status] || STATUS_CONFIG.draft).icon}
-                      {(STATUS_CONFIG[selectedDraft.status] || STATUS_CONFIG.draft).label}
-                    </Badge>
-                  </div>
-                  <div>
-                    <h4 className="text-sm font-medium text-muted-foreground mb-1">Language</h4>
-                    <p className="text-sm uppercase">{selectedDraft.language}</p>
-                  </div>
-                </div>
-                <div>
-                  <h4 className="text-sm font-medium text-muted-foreground mb-1">Current Step</h4>
-                  <p className="text-sm">Step {selectedDraft.current_step} of 8: {WIZARD_STEPS.find(s => s.id === selectedDraft.current_step)?.name}</p>
-                </div>
-                <Button className="w-full" onClick={() => navigate(`/product/ai-assist/${selectedDraft.id}`)}>
-                  Open Wizard
-                </Button>
-              </div>
-            </>
-          )}
-        </SheetContent>
-      </Sheet>
+      <DraftDetailsDrawer
+        open={drawerOpen}
+        onOpenChange={setDrawerOpen}
+        draft={selectedDraft}
+      />
     </div>
   );
 }
