@@ -51,7 +51,7 @@ export function HorizontalStepper({ steps, currentStep, completedSteps, onStepCl
                       className={cn(
                         "flex items-center gap-2 group transition-all",
                         "focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 rounded-lg px-2 py-1",
-                        !isAccessible && "cursor-not-allowed opacity-60"
+                        !isAccessible && "cursor-not-allowed"
                       )}
                     >
                       {/* Step circle */}
@@ -60,13 +60,14 @@ export function HorizontalStepper({ steps, currentStep, completedSteps, onStepCl
                           "w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold transition-all duration-200 flex-shrink-0",
                           isComplete && "bg-[hsl(var(--success))] text-white",
                           isActive && !isComplete && "bg-primary text-primary-foreground ring-4 ring-primary/20",
-                          !isComplete && !isActive && "bg-muted border-2 border-border text-muted-foreground"
+                          !isComplete && !isActive && isAccessible && "bg-muted border-2 border-border text-muted-foreground",
+                          !isAccessible && "bg-muted/50 border border-border/50 text-muted-foreground/40"
                         )}
                       >
                         {isComplete ? (
                           <Check className="h-4 w-4" />
                         ) : !isAccessible ? (
-                          <Lock className="h-3.5 w-3.5" />
+                          <Lock className="h-3 w-3" />
                         ) : (
                           step.id
                         )}
@@ -78,7 +79,8 @@ export function HorizontalStepper({ steps, currentStep, completedSteps, onStepCl
                           "text-xs font-medium hidden lg:block transition-colors",
                           isComplete && "text-[hsl(var(--success))]",
                           isActive && !isComplete && "text-foreground font-semibold",
-                          !isComplete && !isActive && "text-muted-foreground"
+                          !isComplete && !isActive && isAccessible && "text-muted-foreground",
+                          !isAccessible && "text-muted-foreground/40"
                         )}
                       >
                         {step.shortName}
