@@ -1,14 +1,14 @@
-import React, { useState } from 'react';
-import { FileText, Download, FileIcon, Eye, CheckCircle2, AlertTriangle, Loader2, Code } from 'lucide-react';
+import React, { useState, useCallback } from 'react';
+import { FileText, Download, FileIcon, Eye, CheckCircle2, AlertTriangle, Loader2, Code, X, Maximize2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { cn } from '@/lib/utils';
 import { catalystToast } from '@/lib/catalystToast';
-
 export interface BRDGenerationStepProps {
   draftId?: string;
   runId?: string;
@@ -44,11 +44,24 @@ export function BRDGenerationStep({
   brdPreview,
   onExport
 }: BRDGenerationStepProps) {
+  const [isFullScreenOpen, setIsFullScreenOpen] = useState(false);
   const [exportOptions, setExportOptions] = useState({
     includeEvidence: true,
     includeCompliance: true,
     arabicOnly: false
   });
+
+  const handleFullScreenClick = useCallback(() => {
+    console.info('[AI Assist] Full Screen Preview clicked');
+    setIsFullScreenOpen(true);
+  }, []);
+
+  const handleFullScreenOpenChange = useCallback((open: boolean) => {
+    if (open) {
+      console.info('[AI Assist] Full Screen modal opened');
+    }
+    setIsFullScreenOpen(open);
+  }, []);
 
   const defaultPreview = {
     titleAr: 'وثيقة متطلبات العمل',
@@ -214,7 +227,13 @@ export function BRDGenerationStep({
             <Eye className="h-4 w-4" />
             BRD Preview
           </h4>
-          <Button variant="ghost" size="sm" className="transition-all hover:bg-primary/10">
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            className="transition-all hover:bg-primary/10 gap-2 relative z-10"
+            onClick={handleFullScreenClick}
+          >
+            <Maximize2 className="h-4 w-4" />
             Full Screen Preview
           </Button>
         </div>
@@ -331,6 +350,91 @@ export function BRDGenerationStep({
           </div>
         </div>
       </div>
+
+      {/* Full Screen Preview Modal */}
+      <Dialog open={isFullScreenOpen} onOpenChange={handleFullScreenOpenChange}>
+        <DialogContent className="max-w-4xl w-[95vw] h-[90vh] flex flex-col p-0 gap-0">
+          <DialogHeader className="p-4 border-b border-border flex-shrink-0">
+            <div className="flex items-center justify-between">
+              <DialogTitle className="flex items-center gap-2">
+                <FileText className="h-5 w-5" />
+                Business Requirements Document
+              </DialogTitle>
+            </div>
+          </DialogHeader>
+          
+          <ScrollArea className="flex-1">
+            <div className="p-8 bg-muted/20 min-h-full">
+              <div className="max-w-2xl mx-auto bg-card border border-border rounded-lg shadow-lg p-12">
+                {/* Document Header */}
+                <div className="text-center mb-8">
+                  <p className="text-2xl font-semibold mb-2" dir="rtl">{preview.titleAr}</p>
+                  <p className="text-lg text-muted-foreground">{preview.titleEn}</p>
+                </div>
+                
+                <hr className="my-6" />
+
+                {/* Table of Contents */}
+                <div className="space-y-4">
+                  <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+                    Table of Contents
+                  </h2>
+                  <div className="space-y-3">
+                    {preview.sections?.map((section, idx) => (
+                      <div key={idx} className="flex items-center gap-3 py-2 border-b border-border/50 last:border-0">
+                        {section.includes('⚠️') ? (
+                          <AlertTriangle className="h-4 w-4 text-[hsl(var(--warning))] flex-shrink-0" />
+                        ) : (
+                          <CheckCircle2 className="h-4 w-4 text-[hsl(var(--success))] flex-shrink-0" />
+                        )}
+                        <span className="text-sm">{section.replace('⚠️', '')}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Summary Stats */}
+                <div className="mt-8 pt-6 border-t border-border">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="bg-muted/50 rounded-lg p-4 text-center">
+                      <div className="text-2xl font-bold text-foreground">{preview.frCount}</div>
+                      <div className="text-xs text-muted-foreground">Functional Requirements</div>
+                    </div>
+                    <div className="bg-muted/50 rounded-lg p-4 text-center">
+                      <div className="text-2xl font-bold text-foreground">{preview.nfrCount}</div>
+                      <div className="text-xs text-muted-foreground">Non-Functional Requirements</div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Quality Metrics */}
+                <div className="mt-6 grid grid-cols-2 gap-4">
+                  <div className="bg-[hsl(var(--success))]/5 border border-[hsl(var(--success))]/20 rounded-lg p-4 text-center">
+                    <div className="text-xl font-bold text-[hsl(var(--success))]">{(qualityScore / 10).toFixed(1)}</div>
+                    <div className="text-xs text-muted-foreground">Quality Score</div>
+                  </div>
+                  <div className="bg-[hsl(var(--success))]/5 border border-[hsl(var(--success))]/20 rounded-lg p-4 text-center">
+                    <div className="text-xl font-bold text-[hsl(var(--success))]">{traceabilityScore}%</div>
+                    <div className="text-xs text-muted-foreground">Traceability</div>
+                  </div>
+                </div>
+
+                {/* Mode Badge */}
+                {preview.hasGapRegister && (
+                  <div className="mt-6 p-4 bg-[hsl(var(--warning))]/10 border border-[hsl(var(--warning))]/30 rounded-lg">
+                    <div className="flex items-center gap-2">
+                      <AlertTriangle className="h-4 w-4 text-[hsl(var(--warning))]" />
+                      <span className="text-sm font-medium text-[hsl(var(--warning))]">
+                        This document includes a GAP register due to compliance gaps
+                      </span>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </ScrollArea>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
