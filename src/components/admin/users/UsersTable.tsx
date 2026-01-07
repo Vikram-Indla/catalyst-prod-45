@@ -284,11 +284,11 @@ export function UsersTable({ users, isLoading }: UsersTableProps) {
               <tr className="border-b bg-muted/30">
                 <th className="text-left py-3 px-4 text-xs font-medium text-muted-foreground">Name</th>
                 <th className="text-left py-3 px-4 text-xs font-medium text-muted-foreground">Vendor</th>
-                <th className="text-left py-3 px-4 text-xs font-medium text-muted-foreground">Start Date</th>
-                <th className="text-left py-3 px-4 text-xs font-medium text-muted-foreground">End Date</th>
+                <th className="text-left py-3 px-4 text-xs font-medium text-muted-foreground">Contract Start Date</th>
+                <th className="text-left py-3 px-4 text-xs font-medium text-muted-foreground">Contract End Date</th>
                 <th className="text-left py-3 px-4 text-xs font-medium text-muted-foreground">Location</th>
                 <th className="text-left py-3 px-4 text-xs font-medium text-muted-foreground">Country</th>
-                <th className="text-left py-3 px-4 text-xs font-medium text-muted-foreground">Role(s)</th>
+                <th className="text-left py-3 px-4 text-xs font-medium text-muted-foreground">Role</th>
                 <th className="text-left py-3 px-4 text-xs font-medium text-muted-foreground">Approval</th>
                 <th className="text-left py-3 px-4 text-xs font-medium text-muted-foreground">Status</th>
                 <th className="text-right py-3 px-4 text-xs font-medium text-muted-foreground">Actions</th>
