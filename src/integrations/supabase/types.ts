@@ -229,6 +229,7 @@ export type Database = {
       ai_assist_documents: {
         Row: {
           bilingual_confidence: string | null
+          canonical_status: string | null
           canonical_text_hash: string | null
           created_at: string
           document_version: number | null
@@ -243,11 +244,27 @@ export type Database = {
           id: string
           mime_type: string
           ocr_avg_confidence: number | null
+          ocr_completed_at: string | null
+          ocr_confidence_min: number | null
+          ocr_engine: string | null
+          ocr_images_processed: number | null
+          ocr_job_id: string | null
+          ocr_pages_attempted: number | null
           ocr_quality_band: string | null
+          ocr_tiling_mode: string | null
           page_hashes: Json | null
           pages_total: number | null
+          pdf_bytes: number | null
+          pdf_info_json: Json | null
+          pdf_media_type: string | null
+          pdf_page_count: number | null
+          pdf_parse_error: string | null
+          pdf_parsed_at: string | null
+          pipeline_error_json: Json | null
           primary_language: string | null
+          recomputed_at: string | null
           retention_until: string | null
+          sectioning_status: string | null
           sections_detected_count: number | null
           storage_bucket: string
           updated_at: string
@@ -255,6 +272,7 @@ export type Database = {
         }
         Insert: {
           bilingual_confidence?: string | null
+          canonical_status?: string | null
           canonical_text_hash?: string | null
           created_at?: string
           document_version?: number | null
@@ -269,11 +287,27 @@ export type Database = {
           id?: string
           mime_type: string
           ocr_avg_confidence?: number | null
+          ocr_completed_at?: string | null
+          ocr_confidence_min?: number | null
+          ocr_engine?: string | null
+          ocr_images_processed?: number | null
+          ocr_job_id?: string | null
+          ocr_pages_attempted?: number | null
           ocr_quality_band?: string | null
+          ocr_tiling_mode?: string | null
           page_hashes?: Json | null
           pages_total?: number | null
+          pdf_bytes?: number | null
+          pdf_info_json?: Json | null
+          pdf_media_type?: string | null
+          pdf_page_count?: number | null
+          pdf_parse_error?: string | null
+          pdf_parsed_at?: string | null
+          pipeline_error_json?: Json | null
           primary_language?: string | null
+          recomputed_at?: string | null
           retention_until?: string | null
+          sectioning_status?: string | null
           sections_detected_count?: number | null
           storage_bucket?: string
           updated_at?: string
@@ -281,6 +315,7 @@ export type Database = {
         }
         Update: {
           bilingual_confidence?: string | null
+          canonical_status?: string | null
           canonical_text_hash?: string | null
           created_at?: string
           document_version?: number | null
@@ -295,11 +330,27 @@ export type Database = {
           id?: string
           mime_type?: string
           ocr_avg_confidence?: number | null
+          ocr_completed_at?: string | null
+          ocr_confidence_min?: number | null
+          ocr_engine?: string | null
+          ocr_images_processed?: number | null
+          ocr_job_id?: string | null
+          ocr_pages_attempted?: number | null
           ocr_quality_band?: string | null
+          ocr_tiling_mode?: string | null
           page_hashes?: Json | null
           pages_total?: number | null
+          pdf_bytes?: number | null
+          pdf_info_json?: Json | null
+          pdf_media_type?: string | null
+          pdf_page_count?: number | null
+          pdf_parse_error?: string | null
+          pdf_parsed_at?: string | null
+          pipeline_error_json?: Json | null
           primary_language?: string | null
+          recomputed_at?: string | null
           retention_until?: string | null
+          sectioning_status?: string | null
           sections_detected_count?: number | null
           storage_bucket?: string
           updated_at?: string

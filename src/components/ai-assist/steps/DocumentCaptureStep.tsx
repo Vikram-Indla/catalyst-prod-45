@@ -44,16 +44,32 @@ interface Document {
   extracted_text: string | null;
   created_at: string;
   uploaded_by?: string | null;
-  // New metadata fields
+  // Metadata fields
   primary_language?: string | null;
   bilingual_confidence?: string | null;
-  pages_total?: number | null;
+  pages_total?: number | null; // DEPRECATED: Use pdf_page_count instead
   ocr_avg_confidence?: number | null;
   ocr_quality_band?: string | null;
   sections_detected_count?: number | null;
   canonical_text_hash?: string | null;
   extraction_warnings?: string[] | null;
   document_version?: number | null;
+  // NEW: Authoritative PDF stats (JOB-151)
+  pdf_page_count?: number | null;
+  pdf_bytes?: number | null;
+  pdf_parse_error?: string | null;
+  pdf_info_json?: Record<string, unknown> | null;
+  // NEW: OCR processing stats (separate from PDF stats)
+  ocr_images_processed?: number | null;
+  ocr_pages_attempted?: number | null;
+  ocr_confidence_min?: number | null;
+  ocr_tiling_mode?: string | null;
+  ocr_engine?: string | null;
+  ocr_completed_at?: string | null;
+  // NEW: Pipeline status
+  canonical_status?: string | null;
+  sectioning_status?: string | null;
+  pipeline_error_json?: Record<string, unknown> | null;
 }
 
 interface DocumentCaptureStepProps {
@@ -119,9 +135,27 @@ export function DocumentCaptureStep({
   const extractionStatus = latestDoc?.extraction_status;
   const sectionsCount = latestDoc?.sections_detected_count ?? 
     (latestDoc?.extracted_text ? latestDoc.extracted_text.split('\n\n').filter(Boolean).length : 0);
-  const pagesTotal = latestDoc?.pages_total ?? Math.ceil((latestDoc?.file_size || 0) / 50000);
+  
+  // JOB-151: Use AUTHORITATIVE pdf_page_count, NOT OCR-derived counts
+  // Fallback chain: pdf_page_count -> pages_total (legacy) -> "Unknown"
+  const pdfPageCount = latestDoc?.pdf_page_count;
+  const pagesTotal = pdfPageCount ?? latestDoc?.pages_total ?? null;
+  const hasValidPageCount = pagesTotal !== null && pagesTotal >= 1;
+  const pdfParseError = latestDoc?.pdf_parse_error;
+  
+  // OCR stats (separate from PDF page count)
+  const ocrImagesProcessed = latestDoc?.ocr_images_processed;
+  const ocrPagesAttempted = latestDoc?.ocr_pages_attempted;
+  const ocrTilingMode = latestDoc?.ocr_tiling_mode ?? 'none';
   const ocrQualityBand = latestDoc?.ocr_quality_band ?? 'medium';
   const ocrAvgConfidence = latestDoc?.ocr_avg_confidence ?? 0.85;
+  const ocrConfidenceMin = latestDoc?.ocr_confidence_min;
+  const ocrEngine = latestDoc?.ocr_engine;
+  
+  // Pipeline status
+  const canonicalStatus = latestDoc?.canonical_status ?? 'pending';
+  const sectioningStatus = latestDoc?.sectioning_status ?? 'pending';
+  
   const primaryLanguage = latestDoc?.primary_language ?? 'ar';
   const bilingualConfidence = latestDoc?.bilingual_confidence ?? 'low';
   const canonicalHash = latestDoc?.canonical_text_hash;
@@ -296,7 +330,7 @@ export function DocumentCaptureStep({
             <div className="flex-1 min-w-0">
               <h3 className="text-base font-semibold truncate">{latestDoc.file_name}</h3>
               <p className="text-sm text-muted-foreground mt-0.5">
-                {pagesTotal} pages • {formatFileSize(latestDoc.file_size)} • Uploaded {formatUploadTime(latestDoc.created_at)}
+                {hasValidPageCount ? `${pagesTotal} pages` : 'Pages: Unknown'} • {formatFileSize(latestDoc.file_size)} • Uploaded {formatUploadTime(latestDoc.created_at)}
               </p>
 
               {/* Detailed metadata row */}
@@ -311,7 +345,15 @@ export function DocumentCaptureStep({
                 </div>
                 <div className="flex items-center justify-between">
                   <span>Pages:</span>
-                  <span className="font-medium text-foreground">{pagesTotal}</span>
+                  {hasValidPageCount ? (
+                    <span className="font-medium text-foreground">{pagesTotal}</span>
+                  ) : (
+                    <span className="font-medium text-[hsl(var(--warning))] flex items-center gap-1">
+                      <AlertTriangle className="h-3 w-3" />
+                      Unknown
+                      {pdfParseError && <span className="text-muted-foreground">({pdfParseError})</span>}
+                    </span>
+                  )}
                 </div>
                 <div className="flex items-center justify-between">
                   <span>OCR Quality:</span>
@@ -408,7 +450,7 @@ export function DocumentCaptureStep({
             </div>
           </div>
 
-          {/* Technical Details - Collapsible */}
+          {/* Technical Details - Collapsible (JOB-151: OCR stats shown here, NOT as "Pages") */}
           <Collapsible open={showTechnicalDetails} onOpenChange={setShowTechnicalDetails} className="mt-4">
             <CollapsibleTrigger className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors">
               <ChevronDown className={cn(
@@ -418,6 +460,86 @@ export function DocumentCaptureStep({
               Technical details
             </CollapsibleTrigger>
             <CollapsibleContent className="mt-2 space-y-2">
+              {/* Pipeline Status */}
+              <div className="bg-muted/50 rounded p-3 text-xs">
+                <span className="text-muted-foreground/70 font-medium">Pipeline Status</span>
+                <div className="mt-2 grid grid-cols-2 gap-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-muted-foreground">Canonical:</span>
+                    <Badge 
+                      variant="outline" 
+                      className={cn(
+                        "text-[10px] px-1.5 py-0",
+                        canonicalStatus === 'complete' && "border-[hsl(var(--success))]/50 text-[hsl(var(--success))]",
+                        canonicalStatus === 'failed' && "border-destructive/50 text-destructive",
+                        canonicalStatus === 'running' && "border-primary/50 text-primary"
+                      )}
+                    >
+                      {canonicalStatus === 'complete' ? 'Ready' : canonicalStatus}
+                    </Badge>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-muted-foreground">Sectioning:</span>
+                    <Badge 
+                      variant="outline" 
+                      className={cn(
+                        "text-[10px] px-1.5 py-0",
+                        sectioningStatus === 'complete' && "border-[hsl(var(--success))]/50 text-[hsl(var(--success))]",
+                        sectioningStatus === 'failed' && "border-destructive/50 text-destructive",
+                        sectioningStatus === 'running' && "border-primary/50 text-primary"
+                      )}
+                    >
+                      {sectioningStatus === 'complete' ? 'Done' : sectioningStatus}
+                    </Badge>
+                  </div>
+                </div>
+              </div>
+
+              {/* OCR Processing Stats (separate from PDF page count) */}
+              {(ocrImagesProcessed !== null || ocrPagesAttempted !== null || ocrTilingMode !== 'none') && (
+                <div className="bg-[hsl(var(--info))]/5 border border-[hsl(var(--info))]/20 rounded p-3 text-xs">
+                  <span className="text-[hsl(var(--info))] font-medium">OCR Processing</span>
+                  <div className="mt-2 space-y-1.5 text-muted-foreground">
+                    {ocrImagesProcessed !== null && (
+                      <div className="flex items-center justify-between">
+                        <span>Images Processed:</span>
+                        <span className="font-mono text-foreground">{ocrImagesProcessed}</span>
+                      </div>
+                    )}
+                    {ocrPagesAttempted !== null && (
+                      <div className="flex items-center justify-between">
+                        <span>Pages Attempted:</span>
+                        <span className="font-mono text-foreground">{ocrPagesAttempted}</span>
+                      </div>
+                    )}
+                    {ocrTilingMode && ocrTilingMode !== 'none' && (
+                      <div className="flex items-center justify-between">
+                        <span>Tiling Mode:</span>
+                        <span className="font-mono text-foreground">{ocrTilingMode}</span>
+                      </div>
+                    )}
+                    {ocrConfidenceMin !== null && ocrConfidenceMin !== undefined && (
+                      <div className="flex items-center justify-between">
+                        <span>Min Confidence:</span>
+                        <span className="font-mono text-foreground">{Math.round(ocrConfidenceMin * 100)}%</span>
+                      </div>
+                    )}
+                    {ocrEngine && (
+                      <div className="flex items-center justify-between">
+                        <span>Engine:</span>
+                        <span className="font-mono text-foreground">{ocrEngine}</span>
+                      </div>
+                    )}
+                  </div>
+                  {/* Explain discrepancy if OCR images > PDF pages */}
+                  {ocrImagesProcessed !== null && hasValidPageCount && ocrImagesProcessed > (pagesTotal ?? 0) && (
+                    <p className="mt-2 text-[10px] text-muted-foreground/80 italic">
+                      Note: OCR images ({ocrImagesProcessed}) &gt; PDF pages ({pagesTotal}) due to tiling for better text extraction.
+                    </p>
+                  )}
+                </div>
+              )}
+
               {fileHash && (
                 <div className="bg-muted/50 rounded p-3 text-xs font-mono text-muted-foreground">
                   <span className="text-muted-foreground/70">File Hash (SHA-256): </span>
@@ -436,6 +558,12 @@ export function DocumentCaptureStep({
                   <ul className="mt-1 list-disc list-inside text-muted-foreground">
                     {extractionWarnings.map((w, i) => <li key={i}>{w}</li>)}
                   </ul>
+                </div>
+              )}
+              {pdfParseError && (
+                <div className="bg-destructive/10 rounded p-3 text-xs">
+                  <span className="text-destructive font-medium">PDF Parse Error:</span>
+                  <p className="mt-1 text-muted-foreground">{pdfParseError}</p>
                 </div>
               )}
             </CollapsibleContent>
