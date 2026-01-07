@@ -86,43 +86,30 @@
     --brand-teal-hover: 173 58% 33%;     /* #0f766e */
     
     /* ═══════════════════════════════════════════════════════════════
-       CATALYST V5 NEUTRAL AUTHORITY — State Tokens
-       Expressive colors BANNED. All states use NEUTRAL grayscale.
-       Catalyst Gold ONLY for critical attention.
+       CATALYST V5 CANONICAL — Semantic State Tokens (Light Mode)
+       Using official V5 semantic colors: Blue/Teal/Orange/Red
        ═══════════════════════════════════════════════════════════════ */
     
-    /* Neutral state base (replaces success/warning/danger/info) */
-    --state-neutral-primary: 0 0% 25%;      /* #404040 */
-    --state-neutral-secondary: 0 0% 32%;    /* #525252 */
-    --state-neutral-muted: 0 0% 45%;        /* #737373 */
-    --state-neutral-bg: 0 0% 4%;            /* Near-black for bg */
-    --state-neutral-border: 0 0% 20%;       /* Subtle border */
-    
-    /* Catalyst Gold accent (ONLY for critical attention) */
-    --state-gold: 34 40% 60%;               /* #c69c6d */
-    --state-gold-bg: 34 40% 60%;
-    --state-gold-border: 34 40% 60%;
-    
-    /* Legacy compatibility - ALL mapped to neutral */
-    --success: 0 0% 32%;                    /* Neutral (was teal) */
+    /* V5 CANONICAL SEMANTIC COLORS */
+    --success: 173 58% 39%;                /* #0d9488 teal */
     --success-foreground: 0 0% 100%;
-    --success-bg: 0 0% 25%;
-    --success-border: 0 0% 25%;
+    --success-bg: 173 58% 39%;
+    --success-border: 173 58% 39%;
     
-    --warning: 0 0% 45%;                    /* Neutral (was orange) */
+    --warning: 38 92% 50%;                 /* #d97706 orange */
     --warning-foreground: 0 0% 100%;
-    --warning-bg: 0 0% 45%;
-    --warning-border: 0 0% 45%;
+    --warning-bg: 38 92% 50%;
+    --warning-border: 38 92% 50%;
     
-    --danger: 0 0% 25%;                     /* Neutral (was red) */
+    --danger: 0 84% 60%;                   /* #ef4444 red */
     --danger-foreground: 0 0% 100%;
-    --danger-bg: 0 0% 25%;
-    --danger-border: 0 0% 25%;
+    --danger-bg: 0 84% 60%;
+    --danger-border: 0 84% 60%;
     
-    --info: 0 0% 32%;                       /* Neutral (was blue) */
+    --info: 217 91% 53%;                   /* #2563eb blue */
     --info-foreground: 0 0% 100%;
-    --info-bg: 0 0% 32%;
-    --info-border: 0 0% 32%;
+    --info-bg: 217 91% 53%;
+    --info-border: 217 91% 53%;
     
     /* === FOCUS & OVERLAY TOKENS === */
     --focus-ring: 217 91% 60%;           /* #3b82f6 */
@@ -151,67 +138,66 @@
     --shadow-2: 0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04);
     
     /* ═══════════════════════════════════════════════════════════════
-       CATALYST V5 NEUTRAL AUTHORITY — Chart Palette
-       NO expressive colors (purple/green/red/yellow)
-       Neutral grayscale with Catalyst Gold accent only
+       CATALYST V5 CANONICAL — Chart Palette (Light Mode)
+       Semantic colors for semantic series, neutral for default
        ═══════════════════════════════════════════════════════════════ */
-    --chart-neutral-1: #404040;            /* Dark neutral */
-    --chart-neutral-2: #525252;            /* Primary neutral */
-    --chart-neutral-3: #6b7280;            /* Mid neutral */
-    --chart-neutral-4: #9ca3af;            /* Light neutral */
-    --chart-neutral-5: #c8ccd0;            /* Very light neutral */
-    --chart-neutral-6: #e5e7eb;            /* Pale neutral */
-    --chart-gold: #c69c6d;                 /* Catalyst Gold accent ONLY */
-    --chart-gold-muted: #8b7355;           /* Muted gold */
+    --chart-passed: #0d9488;               /* Teal for success/passed */
+    --chart-failed: #ef4444;               /* Red for danger/failed */
+    --chart-blocked: #d97706;              /* Orange for warning/blocked */
+    --chart-active: #2563eb;               /* Blue for in-progress */
+    --chart-neutral-1: #404040;
+    --chart-neutral-2: #525252;
+    --chart-neutral-3: #6b7280;
+    --chart-neutral-4: #9ca3af;
+    --chart-neutral-5: #c8ccd0;
+    --chart-neutral-6: #e5e7eb;
     
-    /* Legacy chart aliases (mapped to neutral) */
-    --chart-1: var(--chart-neutral-2);
-    --chart-2: var(--chart-neutral-3);
-    --chart-3: var(--chart-gold);
-    --chart-4: var(--chart-neutral-4);
-    --chart-5: var(--chart-gold-muted);
-    --chart-6: var(--chart-neutral-5);
-    --chart-7: var(--chart-neutral-1);
-    --chart-8: var(--chart-neutral-6);
+    --chart-1: var(--chart-active);        /* Blue primary */
+    --chart-2: var(--chart-passed);        /* Teal success */
+    --chart-3: var(--chart-failed);        /* Red danger */
+    --chart-4: var(--chart-blocked);       /* Orange warning */
+    --chart-5: var(--chart-neutral-2);
+    --chart-6: var(--chart-neutral-3);
+    --chart-7: var(--chart-neutral-4);
+    --chart-8: var(--chart-neutral-5);
     
     /* ═══════════════════════════════════════════════════════════════
-       CATALYST V5 NEUTRAL AUTHORITY — Semantic Tokens (Light Mode)
-       ALL EXPRESSIVE COLORS BANNED: No purple/green/red/yellow
-       Use neutral grayscale + Catalyst Gold ONLY
+       CATALYST V5 CANONICAL — Semantic Tokens (Light Mode)
+       Using official V5 semantic colors: Blue/Teal/Orange/Red
        ═══════════════════════════════════════════════════════════════ */
     
-    /* Semantic tokens → ALL NEUTRAL (Light Mode) */
-    --sem-danger: #404040;                 /* Neutral (was red) */
-    --sem-warning: #525252;                /* Neutral (was amber) */
-    --sem-success: #404040;                /* Neutral (was teal) */
-    --sem-info: #404040;                   /* Neutral (was blue) */
-    --sem-critical: #c69c6d;               /* Catalyst Gold ONLY for critical */
-    --sem-blocked: #404040;                /* Neutral */
-    --sem-overdue: #404040;                /* Neutral */
-    --sem-high: #525252;                   /* Neutral */
-    --sem-medium: #6b7280;                 /* Gray-500 */
-    --sem-low: #9ca3af;                    /* Gray-400 */
-    --sem-done: #404040;                   /* Neutral (was teal) */
+    /* Semantic tokens → V5 CANONICAL (Light Mode) */
+    --sem-danger: #dc2626;                 /* Red-600 */
+    --sem-warning: #d97706;                /* Amber-600 */
+    --sem-success: #0d9488;                /* Teal-600 */
+    --sem-info: #2563eb;                   /* Blue-600 */
+    --sem-critical: #dc2626;               /* Red-600 */
+    --sem-blocked: #d97706;                /* Orange */
+    --sem-overdue: #dc2626;                /* Red */
+    --sem-high: #dc2626;                   /* Red */
+    --sem-medium: #d97706;                 /* Orange */
+    --sem-low: #6b7280;                    /* Gray-500 */
+    --sem-done: #0d9488;                   /* Teal */
     
-    /* Backgrounds → Neutral */
-    --sem-danger-bg: rgba(64, 64, 64, 0.08);
-    --sem-warning-bg: rgba(82, 82, 82, 0.08);
-    --sem-success-bg: rgba(64, 64, 64, 0.08);
-    --sem-info-bg: rgba(64, 64, 64, 0.08);
-    --sem-critical-bg: rgba(198, 156, 109, 0.12);   /* Gold bg */
-    --sem-blocked-bg: rgba(64, 64, 64, 0.08);
-    --sem-overdue-bg: rgba(64, 64, 64, 0.08);
-    --sem-high-bg: rgba(82, 82, 82, 0.08);
-    --sem-medium-bg: rgba(107, 114, 128, 0.08);
-    --sem-low-bg: rgba(156, 163, 175, 0.08);
-    --sem-done-bg: rgba(64, 64, 64, 0.08);
+    /* Backgrounds → Semantic colors with alpha */
+    --sem-danger-bg: rgba(220, 38, 38, 0.08);
+    --sem-warning-bg: rgba(217, 119, 6, 0.08);
+    --sem-success-bg: rgba(13, 148, 136, 0.08);
+    --sem-info-bg: rgba(37, 99, 235, 0.08);
+    --sem-critical-bg: rgba(220, 38, 38, 0.08);
+    --sem-blocked-bg: rgba(217, 119, 6, 0.08);
+    --sem-overdue-bg: rgba(220, 38, 38, 0.08);
+    --sem-high-bg: rgba(220, 38, 38, 0.08);
+    --sem-medium-bg: rgba(217, 119, 6, 0.08);
+    --sem-low-bg: rgba(107, 114, 128, 0.08);
+    --sem-done-bg: rgba(13, 148, 136, 0.08);
     
-    /* Borders → Neutral */
-    --sem-danger-border: rgba(64, 64, 64, 0.18);
-    --sem-warning-border: rgba(82, 82, 82, 0.18);
-    --sem-success-border: rgba(64, 64, 64, 0.18);
-    --sem-info-border: rgba(64, 64, 64, 0.18);
-    --sem-critical-border: rgba(198, 156, 109, 0.30);   /* Gold border */
+    /* Borders → Semantic colors with alpha */
+    --sem-danger-border: rgba(220, 38, 38, 0.18);
+    --sem-warning-border: rgba(217, 119, 6, 0.18);
+    --sem-success-border: rgba(13, 148, 136, 0.18);
+    --sem-info-border: rgba(37, 99, 235, 0.18);
+    --sem-critical-border: rgba(220, 38, 38, 0.18);
     
     /* === NO-DRIFT TEXT LADDER (Light Mode) === */
     --fg-1: rgba(0,0,0,0.92);              /* Primary text */
@@ -219,31 +205,22 @@
     --fg-3: rgba(0,0,0,0.55);              /* Muted/hints */
     --fg-4: rgba(0,0,0,0.38);              /* Disabled */
     
-    /* === NO-DRIFT SEMANTIC TOKENS (Light Mode) === */
-    /* ═══════════════════════════════════════════════════════════════
-       CATALYST V5 NEUTRAL AUTHORITY — NO-DRIFT Semantic Tokens (Light)
-       ALL states use NEUTRAL grayscale. Gold for critical ONLY.
-       ═══════════════════════════════════════════════════════════════ */
-    --info-fg: #404040;                    /* Neutral (was blue) */
-    --info-bg: rgba(64, 64, 64, 0.08);
-    --info-bd: rgba(64, 64, 64, 0.15);
+    /* === V5 CANONICAL — NO-DRIFT Semantic Tokens (Light Mode) === */
+    --info-fg: #2563eb;                    /* Blue-600 */
+    --info-bg: rgba(37, 99, 235, 0.08);
+    --info-bd: rgba(37, 99, 235, 0.15);
     
-    --success-fg: #404040;                 /* Neutral (was teal) */
-    --success-bg: rgba(64, 64, 64, 0.08);
-    --success-bd: rgba(64, 64, 64, 0.15);
+    --success-fg: #0d9488;                 /* Teal-600 */
+    --success-bg: rgba(13, 148, 136, 0.08);
+    --success-bd: rgba(13, 148, 136, 0.15);
     
-    --warning-fg: #525252;                 /* Neutral (was amber) */
-    --warning-bg: rgba(82, 82, 82, 0.08);
-    --warning-bd: rgba(82, 82, 82, 0.15);
+    --warning-fg: #d97706;                 /* Amber-600 */
+    --warning-bg: rgba(217, 119, 6, 0.08);
+    --warning-bd: rgba(217, 119, 6, 0.15);
     
-    --danger-fg: #404040;                  /* Neutral (was red) */
-    --danger-bg: rgba(64, 64, 64, 0.08);
-    --danger-bd: rgba(64, 64, 64, 0.15);
-    
-    /* Catalyst Gold - ONLY for critical attention */
-    --gold-fg: #c69c6d;
-    --gold-bg: rgba(198, 156, 109, 0.12);
-    --gold-bd: rgba(198, 156, 109, 0.25);
+    --danger-fg: #dc2626;                  /* Red-600 */
+    --danger-bg: rgba(220, 38, 38, 0.08);
+    --danger-bd: rgba(220, 38, 38, 0.15);
     
     --neutral-fg: rgba(0,0,0,0.72);
     --neutral-bg: rgba(0,0,0,0.06);
@@ -554,33 +531,28 @@
     --row-active: rgba(255,255,255,0.12);
     
     /* ═══════════════════════════════════════════════════════════════
-       CATALYST V5 NEUTRAL AUTHORITY — Dark Mode Semantic Tokens
-       ALL EXPRESSIVE COLORS BANNED. Neutral grayscale only.
-       Catalyst Gold for CRITICAL attention ONLY.
+       CATALYST V5 CANONICAL — Dark Mode Semantic Tokens
+       Using official V5 semantic colors: Blue/Teal/Orange/Red
        ═══════════════════════════════════════════════════════════════ */
     
-    /* Neutral state tokens (replaces all expressive colors) */
-    --info-fg: rgba(255,255,255,0.72);     /* Neutral (was blue) */
-    --info-bg: rgba(255,255,255,0.06);
-    --info-bd: rgba(255,255,255,0.12);
+    /* V5 CANONICAL SEMANTIC COLORS (NOT neutral) */
+    --info-fg: #60a5fa;                    /* Blue-400 */
+    --info-bg: rgba(37, 99, 235, 0.12);
+    --info-bd: rgba(37, 99, 235, 0.25);
     
-    --success-fg: rgba(255,255,255,0.72);  /* Neutral (was teal) */
-    --success-bg: rgba(255,255,255,0.06);
-    --success-bd: rgba(255,255,255,0.12);
+    --success-fg: #2dd4bf;                 /* Teal-400 */
+    --success-bg: rgba(13, 148, 136, 0.12);
+    --success-bd: rgba(13, 148, 136, 0.25);
     
-    --warning-fg: rgba(255,255,255,0.60);  /* Neutral (was amber) */
-    --warning-bg: rgba(255,255,255,0.05);
-    --warning-bd: rgba(255,255,255,0.10);
+    --warning-fg: #fbbf24;                 /* Amber-400 */
+    --warning-bg: rgba(217, 119, 6, 0.12);
+    --warning-bd: rgba(217, 119, 6, 0.25);
     
-    --danger-fg: rgba(255,255,255,0.72);   /* Neutral (was red) */
-    --danger-bg: rgba(255,255,255,0.06);
-    --danger-bd: rgba(255,255,255,0.12);
+    --danger-fg: #f87171;                  /* Red-400 */
+    --danger-bg: rgba(239, 68, 68, 0.12);
+    --danger-bd: rgba(239, 68, 68, 0.25);
     
-    /* Catalyst Gold - ONLY for critical attention */
-    --gold-fg: rgba(198,156,109,0.95);
-    --gold-bg: rgba(198,156,109,0.14);
-    --gold-bd: rgba(198,156,109,0.28);
-    
+    /* Neutral fallback (for non-semantic use) */
     --neutral-fg: rgba(255,255,255,0.72);
     --neutral-bg: rgba(255,255,255,0.06);
     --neutral-bd: rgba(255,255,255,0.10);
@@ -592,72 +564,72 @@
     --shadow-elev-1: var(--shadow-1);
     --shadow-elev-2: var(--shadow-2);
     --shadow-elev-3: 0 1px 0 rgba(255,255,255,0.05), 0 20px 50px rgba(0,0,0,0.65);
-    --shadow-brand: 0 4px 12px hsl(34 40% 60% / 0.25);  /* Gold shadow */
+    --shadow-brand: 0 4px 12px hsl(217 91% 60% / 0.25);  /* Blue brand shadow */
     
-    /* === SEMANTIC TOKEN ALIASES (NEUTRAL AUTHORITY) === */
-    --sem-info: var(--neutral-fg);
-    --sem-info-bg: var(--neutral-bg);
-    --sem-info-border: var(--neutral-bd);
+    /* === SEMANTIC TOKEN ALIASES (V5 CANONICAL) === */
+    --sem-info: var(--info-fg);
+    --sem-info-bg: var(--info-bg);
+    --sem-info-border: var(--info-bd);
     
-    --sem-success: var(--neutral-fg);
-    --sem-success-bg: var(--neutral-bg);
-    --sem-success-border: var(--neutral-bd);
+    --sem-success: var(--success-fg);
+    --sem-success-bg: var(--success-bg);
+    --sem-success-border: var(--success-bd);
     
-    --sem-warning: var(--neutral-fg);
-    --sem-warning-bg: var(--neutral-bg);
-    --sem-warning-border: var(--neutral-bd);
+    --sem-warning: var(--warning-fg);
+    --sem-warning-bg: var(--warning-bg);
+    --sem-warning-border: var(--warning-bd);
     
-    --sem-danger: var(--neutral-fg);
-    --sem-danger-bg: var(--neutral-bg);
-    --sem-danger-border: var(--neutral-bd);
+    --sem-danger: var(--danger-fg);
+    --sem-danger-bg: var(--danger-bg);
+    --sem-danger-border: var(--danger-bd);
     
-    /* CRITICAL uses Catalyst Gold ONLY */
-    --sem-critical: var(--gold-fg);
-    --sem-critical-bg: var(--gold-bg);
-    --sem-critical-border: var(--gold-bd);
+    /* CRITICAL uses Danger Red */
+    --sem-critical: var(--danger-fg);
+    --sem-critical-bg: var(--danger-bg);
+    --sem-critical-border: var(--danger-bd);
     
-    --sem-blocked: var(--neutral-fg);
-    --sem-blocked-bg: var(--neutral-bg);
-    --sem-overdue: var(--neutral-fg);
-    --sem-overdue-bg: var(--neutral-bg);
+    --sem-blocked: var(--warning-fg);      /* Orange for blocked */
+    --sem-blocked-bg: var(--warning-bg);
+    --sem-overdue: var(--danger-fg);       /* Red for overdue */
+    --sem-overdue-bg: var(--danger-bg);
     
-    --sem-high: var(--neutral-fg);
-    --sem-high-bg: var(--neutral-bg);
-    --sem-medium: var(--fg-3);
-    --sem-medium-bg: var(--neutral-bg);
-    --sem-low: var(--fg-4);
-    --sem-low-bg: rgba(255,255,255,0.04);
-    --sem-done: var(--neutral-fg);
-    --sem-done-bg: var(--neutral-bg);
+    --sem-high: var(--danger-fg);          /* Red for high priority */
+    --sem-high-bg: var(--danger-bg);
+    --sem-medium: var(--warning-fg);       /* Orange for medium */
+    --sem-medium-bg: var(--warning-bg);
+    --sem-low: var(--neutral-fg);          /* Neutral for low */
+    --sem-low-bg: var(--neutral-bg);
+    --sem-done: var(--success-fg);         /* Teal for done */
+    --sem-done-bg: var(--success-bg);
     
-    /* === BRAND ACCENT (Gold — used sparingly) === */
-    --accent-gold: var(--brand-gold);
-    --accent-gold-hover: var(--brand-gold-hover);
-    --accent-gold-soft: rgba(198,156,109,0.14);
-    --accent-text: var(--brand-gold);
-    --accent-bg: rgba(198,156,109,0.14);
-    --accent-border: rgba(198,156,109,0.30);
+    /* === BRAND ACCENT (Blue primary) === */
+    --accent-primary: #2563eb;
+    --accent-primary-hover: #3b82f6;
+    --accent-primary-soft: rgba(37, 99, 235, 0.14);
+    --accent-text: #3b82f6;
+    --accent-bg: rgba(37, 99, 235, 0.14);
+    --accent-border: rgba(37, 99, 235, 0.30);
     
-    /* === SIDEBAR (Green tint for active — immutable) === */
+    /* === SIDEBAR (Blue primary accent) === */
     --sidebar-background: 216 10% 8%;
     --sidebar-foreground: 0 0% 90%;
     --sidebar-primary: 217 91% 60%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 120 26% 42%;       /* #5C7C5C */
+    --sidebar-accent: 217 91% 60%;         /* Blue primary */
     --sidebar-accent-foreground: 0 0% 100%;
     --sidebar-border: 0 0% 100% / 0.04;
     --sidebar-ring: 217 91% 60%;
-    --sidebar-hover: rgba(92,124,92,0.08);  /* Green tint hover */
-    --sidebar-active: rgba(92,124,92,0.12); /* Green tint active */
+    --sidebar-hover: rgba(37, 99, 235, 0.08);   /* Blue tint hover */
+    --sidebar-active: rgba(37, 99, 235, 0.12);  /* Blue tint active */
     
-    /* === HSL FALLBACKS (for shadcn) === */
-    --success: 152 56% 55%;
+    /* === HSL FALLBACKS (for shadcn) - V5 CANONICAL === */
+    --success: 173 58% 39%;                /* #0d9488 teal */
     --success-foreground: 0 0% 100%;
-    --warning: 38 92% 65%;
+    --warning: 38 92% 50%;                 /* #d97706 orange */
     --warning-foreground: 0 0% 100%;
-    --danger: 0 100% 71%;
+    --danger: 0 84% 60%;                   /* #ef4444 red */
     --danger-foreground: 0 0% 100%;
-    --info: 217 91% 74%;
+    --info: 217 91% 60%;                   /* #2563eb blue */
     --info-foreground: 0 0% 100%;
     
     /* === SURFACE TOKEN ALIASES === */
@@ -674,44 +646,46 @@
     --input-focus: var(--gold-fg);         /* Gold focus in dark mode */
     
     /* ═══════════════════════════════════════════════════════════════
-       CATALYST V5 NEUTRAL AUTHORITY — Chart Palette (Dark Mode)
-       NO expressive colors. Neutral grayscale + Catalyst Gold ONLY.
+       CATALYST V5 CANONICAL — Chart Palette (Dark Mode)
+       Semantic colors for semantic series, neutral for default
        ═══════════════════════════════════════════════════════════════ */
+    --chart-passed: #0d9488;               /* Teal for success/passed */
+    --chart-failed: #ef4444;               /* Red for danger/failed */
+    --chart-blocked: #d97706;              /* Orange for warning/blocked */
+    --chart-active: #2563eb;               /* Blue for in-progress */
     --chart-neutral-1: rgba(255,255,255,0.85);
     --chart-neutral-2: rgba(255,255,255,0.72);
     --chart-neutral-3: rgba(255,255,255,0.55);
     --chart-neutral-4: rgba(255,255,255,0.40);
     --chart-neutral-5: rgba(255,255,255,0.28);
     --chart-neutral-6: rgba(255,255,255,0.18);
-    --chart-gold: rgba(198,156,109,0.95);
-    --chart-gold-muted: rgba(139,115,85,0.85);
     
-    --chart-1: var(--chart-neutral-2);
-    --chart-2: var(--chart-neutral-3);
-    --chart-3: var(--chart-gold);
-    --chart-4: var(--chart-neutral-4);
-    --chart-5: var(--chart-gold-muted);
-    --chart-6: var(--chart-neutral-5);
-    --chart-7: var(--chart-neutral-1);
-    --chart-8: var(--chart-neutral-6);
+    --chart-1: var(--chart-active);        /* Blue primary */
+    --chart-2: var(--chart-passed);        /* Teal success */
+    --chart-3: var(--chart-failed);        /* Red danger */
+    --chart-4: var(--chart-blocked);       /* Orange warning */
+    --chart-5: var(--chart-neutral-2);
+    --chart-6: var(--chart-neutral-3);
+    --chart-7: var(--chart-neutral-4);
+    --chart-8: var(--chart-neutral-5);
     
-    /* === LINK COLORS (Catalyst Gold accent) === */
-    --link-color: 34 40% 65%;              /* Gold link */
-    --link-color-hover: 34 40% 75%;        /* Lighter gold on hover */
+    /* === LINK COLORS (Blue primary) === */
+    --link-color: 217 91% 60%;             /* Blue link */
+    --link-color-hover: 217 91% 70%;       /* Lighter blue on hover */
     
-    /* === STATUS ALIASES (use semantic tokens) === */
-    --status-success: var(--success-fg);
-    --status-success-bg: var(--success-bg);
-    --status-success-border: var(--success-bd);
-    --status-warning: var(--warning-fg);
-    --status-warning-bg: var(--warning-bg);
-    --status-warning-border: var(--warning-bd);
-    --status-info: var(--info-fg);
-    --status-info-bg: var(--info-bg);
-    --status-info-border: var(--info-bd);
-    --status-danger: var(--danger-fg);
-    --status-danger-bg: var(--danger-bg);
-    --status-danger-border: var(--danger-bd);
+    /* === STATUS ALIASES (V5 CANONICAL semantic colors) === */
+    --status-success: #0d9488;             /* Teal */
+    --status-success-bg: rgba(13, 148, 136, 0.12);
+    --status-success-border: rgba(13, 148, 136, 0.25);
+    --status-warning: #d97706;             /* Orange */
+    --status-warning-bg: rgba(217, 119, 6, 0.12);
+    --status-warning-border: rgba(217, 119, 6, 0.25);
+    --status-info: #2563eb;                /* Blue */
+    --status-info-bg: rgba(37, 99, 235, 0.12);
+    --status-info-border: rgba(37, 99, 235, 0.25);
+    --status-danger: #ef4444;              /* Red */
+    --status-danger-bg: rgba(239, 68, 68, 0.12);
+    --status-danger-border: rgba(239, 68, 68, 0.25);
     --status-muted: var(--fg-3);
     --status-muted-bg: var(--neutral-bg);
     --status-muted-border: var(--neutral-bd);
