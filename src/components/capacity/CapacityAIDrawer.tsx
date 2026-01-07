@@ -1,19 +1,21 @@
 /**
- * Capacity AI Drawer - Chat-based AI assistant for capacity planning
- * Uses Claude Anthropic API for real AI responses with streaming
+ * Capacity AI Drawer - Enterprise AI assistant for capacity planning
+ * Uses Claude Anthropic API with structured executive response cards
  */
 
 import { useState, useRef, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import { X, Send, Bot, RotateCcw } from 'lucide-react';
 import { Input } from '@/components/ui/input';
-import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { CapacityAIResponseCard, AIResponseData } from './CapacityAIResponseCard';
+import { useNavigate } from 'react-router-dom';
 
 interface Message {
   id: string;
   role: 'assistant' | 'user';
   content: string;
+  structuredData?: AIResponseData;
   timestamp: Date;
 }
 
@@ -26,7 +28,7 @@ const QUICK_ACTIONS = [
   { id: 'summary', label: 'Summary' },
   { id: 'available', label: 'Available' },
   { id: 'risks', label: 'Risks' },
-  { id: 'find-backend', label: 'Find Backend' },
+  { id: 'contracts', label: 'Contracts' },
   { id: 'optimize', label: 'Optimize' },
   { id: 'forecast', label: 'Forecast' },
 ];
@@ -34,7 +36,17 @@ const QUICK_ACTIONS = [
 const INITIAL_MESSAGE: Message = {
   id: '1',
   role: 'assistant',
-  content: 'I can help you analyze capacity, find resources, and optimize workloads using your real capacity data.\n\nTry: "Executive summary" or "Find available developers"',
+  content: '',
+  structuredData: {
+    directAnswer: {
+      value: 'Ready to analyze your capacity data',
+      status: 'success',
+    },
+    context: [
+      { label: 'Data Source', value: 'Catalyst Database' },
+      { label: 'Mode', value: 'Structured Responses Only' },
+    ],
+  },
   timestamp: new Date(),
 };
 
@@ -45,6 +57,7 @@ export function CapacityAIDrawer({ isOpen, onClose }: CapacityAIDrawerProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const handleClearChat = () => {
     setMessages([{ ...INITIAL_MESSAGE, id: Date.now().toString(), timestamp: new Date() }]);
@@ -72,6 +85,50 @@ export function CapacityAIDrawer({ isOpen, onClose }: CapacityAIDrawerProps) {
     return () => document.removeEventListener('keydown', handleEscape);
   }, [isOpen, onClose]);
 
+  const handleAction = (action: string) => {
+    if (action === 'open-user') {
+      navigate('/admin/users');
+      onClose();
+    } else if (action === 'fix-data') {
+      navigate('/admin/users');
+      onClose();
+    }
+  };
+
+  const parseStructuredResponse = (content: string): AIResponseData | null => {
+    try {
+      // Try to parse as JSON directly
+      const cleaned = content.trim();
+      
+      // Handle markdown code blocks
+      let jsonStr = cleaned;
+      if (cleaned.startsWith('```')) {
+        const match = cleaned.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
+        if (match) {
+          jsonStr = match[1];
+        }
+      }
+      
+      const parsed = JSON.parse(jsonStr);
+      
+      // Validate structure
+      if (parsed.directAnswer && typeof parsed.directAnswer.value === 'string') {
+        return {
+          directAnswer: {
+            value: parsed.directAnswer.value,
+            status: parsed.directAnswer.status || 'success',
+          },
+          context: Array.isArray(parsed.context) ? parsed.context.slice(0, 6) : undefined,
+          systemNote: parsed.systemNote || undefined,
+          actions: Array.isArray(parsed.actions) ? parsed.actions : undefined,
+        };
+      }
+    } catch (e) {
+      // Not valid JSON - return null
+    }
+    return null;
+  };
+
   const handleSend = async (text: string) => {
     if (!text.trim() || isLoading) return;
 
@@ -91,8 +148,10 @@ export function CapacityAIDrawer({ isOpen, onClose }: CapacityAIDrawerProps) {
       .filter(m => m.id !== '1') // Skip initial greeting
       .map(m => ({
         role: m.role,
-        content: m.content,
+        content: m.content || (m.structuredData ? JSON.stringify(m.structuredData) : ''),
       }));
+
+    const assistantMessageId = (Date.now() + 1).toString();
 
     try {
       const response = await fetch(
@@ -116,7 +175,6 @@ export function CapacityAIDrawer({ isOpen, onClose }: CapacityAIDrawerProps) {
       const reader = response.body?.getReader();
       const decoder = new TextDecoder();
       let assistantContent = '';
-      const assistantMessageId = (Date.now() + 1).toString();
 
       // Add empty assistant message that we'll update
       setMessages((prev) => [
@@ -140,7 +198,7 @@ export function CapacityAIDrawer({ isOpen, onClose }: CapacityAIDrawerProps) {
           
           // Parse SSE events from Anthropic
           const lines = buffer.split('\n');
-          buffer = lines.pop() || ''; // Keep incomplete line in buffer
+          buffer = lines.pop() || '';
 
           for (const line of lines) {
             if (line.startsWith('data: ')) {
@@ -150,13 +208,20 @@ export function CapacityAIDrawer({ isOpen, onClose }: CapacityAIDrawerProps) {
               try {
                 const parsed = JSON.parse(jsonStr);
                 
-                // Handle different event types from Anthropic
                 if (parsed.type === 'content_block_delta' && parsed.delta?.text) {
                   assistantContent += parsed.delta.text;
+                  
+                  // Try to parse structured response
+                  const structuredData = parseStructuredResponse(assistantContent);
+                  
                   setMessages((prev) =>
                     prev.map((m) =>
                       m.id === assistantMessageId
-                        ? { ...m, content: assistantContent }
+                        ? { 
+                            ...m, 
+                            content: assistantContent,
+                            structuredData: structuredData || undefined,
+                          }
                         : m
                     )
                   );
@@ -164,23 +229,31 @@ export function CapacityAIDrawer({ isOpen, onClose }: CapacityAIDrawerProps) {
               } catch {
                 // Ignore parse errors for incomplete JSON
               }
-            } else if (line.startsWith('event: ')) {
-              // Handle event types if needed
             }
           }
         }
       }
 
-      // If no content was streamed, set a fallback
-      if (!assistantContent) {
-        setMessages((prev) =>
-          prev.map((m) =>
-            m.id === assistantMessageId
-              ? { ...m, content: 'I apologize, but I could not generate a response. Please try again.' }
-              : m
-          )
-        );
-      }
+      // Final parse attempt
+      const finalStructured = parseStructuredResponse(assistantContent);
+      setMessages((prev) =>
+        prev.map((m) =>
+          m.id === assistantMessageId
+            ? { 
+                ...m, 
+                content: assistantContent,
+                structuredData: finalStructured || {
+                  directAnswer: {
+                    value: 'Response parsing error',
+                    status: 'warning' as const,
+                  },
+                  systemNote: assistantContent || 'Unable to parse structured response',
+                },
+              }
+            : m
+        )
+      );
+
     } catch (error) {
       console.error('Capacity AI error:', error);
       
@@ -190,8 +263,23 @@ export function CapacityAIDrawer({ isOpen, onClose }: CapacityAIDrawerProps) {
         variant: 'destructive',
       });
 
-      // Remove the empty assistant message on error
-      setMessages((prev) => prev.filter((m) => m.content !== ''));
+      // Add error message
+      setMessages((prev) => [
+        ...prev.filter(m => m.id !== assistantMessageId),
+        {
+          id: assistantMessageId,
+          role: 'assistant',
+          content: '',
+          structuredData: {
+            directAnswer: {
+              value: 'Connection Error',
+              status: 'error',
+            },
+            systemNote: error instanceof Error ? error.message : 'Failed to connect to AI service',
+          },
+          timestamp: new Date(),
+        },
+      ]);
     } finally {
       setIsLoading(false);
     }
@@ -199,12 +287,12 @@ export function CapacityAIDrawer({ isOpen, onClose }: CapacityAIDrawerProps) {
 
   const handleQuickAction = (actionId: string) => {
     const actionLabels: Record<string, string> = {
-      'summary': 'Give me an executive summary of our current capacity',
-      'available': 'Show me resources with available capacity',
-      'risks': 'What are the capacity risks I should be aware of?',
-      'find-backend': 'Find available backend developers',
-      'optimize': 'How can I optimize our team utilization?',
-      'forecast': 'Forecast our capacity needs for the next month',
+      'summary': 'Give me an executive summary of current capacity utilization',
+      'available': 'List all resources with available capacity under 80% allocation',
+      'risks': 'What are the capacity risks? Show over-allocated resources',
+      'contracts': 'Show resources with contracts ending in the next 90 days',
+      'optimize': 'How can I optimize team utilization?',
+      'forecast': 'Forecast capacity needs for the next quarter',
     };
     handleSend(actionLabels[actionId] || actionId);
   };
@@ -227,22 +315,21 @@ export function CapacityAIDrawer({ isOpen, onClose }: CapacityAIDrawerProps) {
       {/* Drawer Panel */}
       <aside
         className={cn(
-          "fixed top-0 right-0 w-[420px] max-w-[90vw] h-screen z-[100]",
-          "flex flex-col bg-[hsl(var(--card))] border-l border-[hsl(var(--border))]",
+          "fixed top-0 right-0 w-[480px] max-w-[90vw] h-screen z-[100]",
+          "flex flex-col bg-white dark:bg-[#1A1A1A] border-l border-[#C8CCD0] dark:border-[#1A1A1A]/50",
           "transition-transform duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]",
           isOpen ? "translate-x-0" : "translate-x-full"
         )}
       >
-        {/* Blue Gradient Header */}
-        <header className="flex items-center justify-between px-5 py-4 bg-gradient-to-r from-[#2563eb] to-[#1d4ed8]">
+        {/* Header - Dark Executive Style */}
+        <header className="flex items-center justify-between px-5 py-4 bg-[#1A1A1A]">
           <div className="flex items-center gap-3">
-            {/* AI Icon */}
-            <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-sm">
-              <Bot className="w-5 h-5 text-white" />
+            <div className="w-10 h-10 bg-[#C69C6D]/20 rounded-xl flex items-center justify-center">
+              <Bot className="w-5 h-5 text-[#C69C6D]" />
             </div>
             <div>
-              <h2 className="text-[15px] font-semibold text-white">Capacity AI</h2>
-              <p className="text-[12px] text-white/70">Powered by Claude</p>
+              <h2 className="text-[15px] font-semibold text-white tracking-wide">CAPACITY AI</h2>
+              <p className="text-[11px] text-[#C8CCD0]/60 uppercase tracking-wider">Executive Assistant</p>
             </div>
           </div>
 
@@ -250,13 +337,13 @@ export function CapacityAIDrawer({ isOpen, onClose }: CapacityAIDrawerProps) {
             <button
               onClick={handleClearChat}
               title="Clear conversation"
-              className="w-8 h-8 bg-white/10 rounded-lg flex items-center justify-center text-white/70 hover:bg-white/20 hover:text-white transition-colors"
+              className="w-8 h-8 bg-white/5 rounded-lg flex items-center justify-center text-[#C8CCD0]/60 hover:bg-white/10 hover:text-white transition-colors"
             >
               <RotateCcw className="w-4 h-4" />
             </button>
             <button
               onClick={onClose}
-              className="w-8 h-8 bg-white/10 rounded-lg flex items-center justify-center text-white/70 hover:bg-white/20 hover:text-white transition-colors"
+              className="w-8 h-8 bg-white/5 rounded-lg flex items-center justify-center text-[#C8CCD0]/60 hover:bg-white/10 hover:text-white transition-colors"
             >
               <X className="w-4 h-4" />
             </button>
@@ -264,54 +351,36 @@ export function CapacityAIDrawer({ isOpen, onClose }: CapacityAIDrawerProps) {
         </header>
 
         {/* Messages Area */}
-        <div className="flex-1 overflow-y-auto p-5 space-y-4">
+        <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-[#C8CCD0]/5 dark:bg-[#1A1A1A]/50">
           {messages.map((message) => (
-            <div
-              key={message.id}
-              className={cn(
-                "rounded-xl p-4",
-                message.role === 'assistant'
-                  ? "bg-[hsl(var(--muted))] mr-4"
-                  : "bg-[#2563eb]/10 ml-4 border border-[#2563eb]/20"
-              )}
-            >
-              {message.role === 'assistant' && (
-                <p className="text-[13px] font-semibold text-[hsl(var(--foreground))] mb-2">
-                  Capacity AI
-                </p>
-              )}
-              <div className="text-[13px] text-[hsl(var(--foreground))] leading-relaxed whitespace-pre-wrap">
-                {message.content.split('\n').map((line, i) => {
-                  // Handle bold text with **text**
-                  const boldPattern = /\*\*(.*?)\*\*/g;
-                  const parts = line.split(boldPattern);
-                  
-                  return (
-                    <p key={i} className={line === '' ? 'h-2' : undefined}>
-                      {parts.map((part, j) => 
-                        j % 2 === 1 ? (
-                          <strong key={j} className="font-semibold">{part}</strong>
-                        ) : (
-                          <span key={j}>{part}</span>
-                        )
-                      )}
-                    </p>
-                  );
-                })}
-              </div>
+            <div key={message.id}>
+              {message.role === 'user' ? (
+                <div className="ml-8 p-3 rounded-lg bg-[#1A1A1A] dark:bg-[#1A1A1A] text-white text-sm">
+                  {message.content}
+                </div>
+              ) : message.structuredData ? (
+                <CapacityAIResponseCard 
+                  data={message.structuredData} 
+                  onAction={handleAction}
+                />
+              ) : message.content ? (
+                <div className="mr-4 p-3 rounded-lg bg-white dark:bg-[#1A1A1A]/80 border border-[#C8CCD0]/30 text-sm">
+                  {message.content}
+                </div>
+              ) : null}
             </div>
           ))}
 
           {/* Loading indicator */}
-          {isLoading && messages[messages.length - 1]?.content === '' && (
-            <div className="bg-[hsl(var(--muted))] rounded-xl p-4 mr-4">
-              <p className="text-[13px] font-semibold text-[hsl(var(--foreground))] mb-2">
-                Capacity AI
-              </p>
-              <div className="flex gap-1">
-                <span className="w-2 h-2 bg-[#2563eb] rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                <span className="w-2 h-2 bg-[#2563eb] rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                <span className="w-2 h-2 bg-[#2563eb] rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+          {isLoading && messages[messages.length - 1]?.content === '' && !messages[messages.length - 1]?.structuredData && (
+            <div className="p-4 rounded-lg border border-[#C8CCD0]/30 bg-white dark:bg-[#1A1A1A]">
+              <div className="flex items-center gap-3">
+                <div className="flex gap-1">
+                  <span className="w-2 h-2 bg-[#C69C6D] rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                  <span className="w-2 h-2 bg-[#C69C6D] rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                  <span className="w-2 h-2 bg-[#C69C6D] rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                </div>
+                <span className="text-sm text-[#8B7355]">Querying Catalyst database...</span>
               </div>
             </div>
           )}
@@ -320,7 +389,7 @@ export function CapacityAIDrawer({ isOpen, onClose }: CapacityAIDrawerProps) {
         </div>
 
         {/* Quick Actions */}
-        <div className="px-5 py-3 border-t border-[hsl(var(--border))]">
+        <div className="px-4 py-3 border-t border-[#C8CCD0]/30 dark:border-[#C8CCD0]/10 bg-white dark:bg-[#1A1A1A]">
           <div className="flex flex-wrap gap-2">
             {QUICK_ACTIONS.map((action) => (
               <button
@@ -328,9 +397,10 @@ export function CapacityAIDrawer({ isOpen, onClose }: CapacityAIDrawerProps) {
                 onClick={() => handleQuickAction(action.id)}
                 disabled={isLoading}
                 className={cn(
-                  "px-3 py-1.5 text-[12px] font-medium rounded-full border transition-colors",
-                  "border-[hsl(var(--border))] bg-[hsl(var(--card))] text-[hsl(var(--foreground))]",
-                  "hover:bg-[hsl(var(--muted))] hover:border-[hsl(var(--foreground))/20]",
+                  "px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wider rounded border transition-colors",
+                  "border-[#C8CCD0]/50 bg-transparent text-[#1A1A1A] dark:text-[#C8CCD0]",
+                  "hover:bg-[#1A1A1A] hover:text-white hover:border-[#1A1A1A]",
+                  "dark:hover:bg-[#C69C6D]/20 dark:hover:border-[#C69C6D]/50",
                   "disabled:opacity-50 disabled:cursor-not-allowed"
                 )}
               >
@@ -341,24 +411,24 @@ export function CapacityAIDrawer({ isOpen, onClose }: CapacityAIDrawerProps) {
         </div>
 
         {/* Input Area */}
-        <form onSubmit={handleSubmit} className="px-5 py-4 border-t border-[hsl(var(--border))]">
+        <form onSubmit={handleSubmit} className="px-4 py-4 border-t border-[#C8CCD0]/30 dark:border-[#C8CCD0]/10 bg-white dark:bg-[#1A1A1A]">
           <div className="relative">
             <Input
               ref={inputRef}
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
-              placeholder="Ask about capacity..."
+              placeholder="Query capacity data..."
               disabled={isLoading}
-              className="pr-12 h-11 text-[13px] rounded-full border-[#2563eb]/30 focus:border-[#2563eb] focus-visible:ring-[#2563eb]/20"
+              className="pr-12 h-11 text-sm bg-[#C8CCD0]/10 dark:bg-[#1A1A1A] border-[#C8CCD0]/30 dark:border-[#C8CCD0]/20 focus:border-[#C69C6D] focus-visible:ring-[#C69C6D]/20 rounded-lg"
             />
             <button
               type="submit"
               disabled={!inputValue.trim() || isLoading}
               className={cn(
-                "absolute right-1 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full flex items-center justify-center transition-colors",
+                "absolute right-1.5 top-1/2 -translate-y-1/2 w-8 h-8 rounded-md flex items-center justify-center transition-colors",
                 inputValue.trim() && !isLoading
-                  ? "bg-[#2563eb] text-white hover:bg-[#1d4ed8]"
-                  : "bg-[hsl(var(--muted))] text-[hsl(var(--muted-foreground))]"
+                  ? "bg-[#1A1A1A] text-white hover:bg-[#C69C6D] dark:bg-[#C69C6D] dark:hover:bg-[#C69C6D]/80"
+                  : "bg-[#C8CCD0]/20 text-[#C8CCD0]"
               )}
             >
               <Send className="w-4 h-4" />
