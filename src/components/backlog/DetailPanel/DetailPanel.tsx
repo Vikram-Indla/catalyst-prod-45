@@ -70,17 +70,17 @@ export function DetailPanel({
 
   return (
     <>
-      {/* Overlay */}
+      {/* Overlay - uses semantic overlay token */}
       <div
-        className={`fixed inset-0 bg-[rgba(9,30,66,0.54)] z-[900] transition-opacity duration-300 ${
+        className={`fixed inset-0 bg-[var(--surface-overlay)]/50 z-[900] transition-opacity duration-300 ${
           isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
         }`}
         onClick={onClose}
       />
 
-      {/* Panel */}
+      {/* Panel - uses semantic surface and shadow tokens */}
       <div
-        className={`fixed top-0 right-0 bottom-0 w-full sm:w-[720px] bg-background shadow-[-4px_0_24px_rgba(0,0,0,0.15)] z-[1000] flex flex-col transition-transform duration-300 ${
+        className={`fixed top-0 right-0 bottom-0 w-full sm:w-[720px] bg-background shadow-elev-3 z-[1000] flex flex-col transition-transform duration-300 ${
           isOpen ? 'translate-x-0' : 'translate-x-full'
         }`}
       >

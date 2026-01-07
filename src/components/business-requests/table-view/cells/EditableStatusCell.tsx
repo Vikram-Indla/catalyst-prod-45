@@ -1,5 +1,6 @@
 /**
  * EditableStatusCell — Inline editable status cell with dropdown picker
+ * Uses Catalyst V5 semantic tokens for guaranteed dark/light mode compliance
  */
 
 import { useState } from 'react';
@@ -11,7 +12,7 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
-import { STATUS_CONFIG } from './StatusCell';
+import { getStatusConfig, getStatusClasses, getStatusDotClass } from '@/lib/catalyst-tokens';
 
 interface EditableStatusCellProps {
   status: string;
@@ -26,8 +27,9 @@ export function EditableStatusCell({ status, requestId, onSave, disabled = false
   
   const { data: processSteps = [] } = useActiveDemandProcessSteps();
 
-  const normalizedStatus = status?.toLowerCase().replace(/\s+/g, '_').replace(/-/g, '_') || 'new';
-  const config = STATUS_CONFIG[normalizedStatus] || STATUS_CONFIG[status?.toLowerCase()] || STATUS_CONFIG.new_request;
+  const config = getStatusConfig(status);
+  const statusClasses = getStatusClasses(config.type);
+  const dotClass = getStatusDotClass(config.type);
 
   const handleSelect = async (selectedValue: string) => {
     if (disabled || isSaving || selectedValue === status) return;
@@ -45,17 +47,12 @@ export function EditableStatusCell({ status, requestId, onSave, disabled = false
 
   const statusDisplay = (
     <span className={cn(
-      "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full",
+      "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border",
       "text-xs font-medium cursor-pointer transition-opacity",
-      config.lightClass,
-      config.darkClass,
+      statusClasses,
       !disabled && "hover:opacity-80"
     )}>
-      <span className={cn(
-        "w-1.5 h-1.5 rounded-full",
-        config.dotLight,
-        config.dotDark
-      )} />
+      <span className={cn("w-1.5 h-1.5 rounded-full", dotClass)} />
       {config.label}
     </span>
   );
@@ -81,7 +78,10 @@ export function EditableStatusCell({ status, requestId, onSave, disabled = false
       >
         <div className="max-h-60 overflow-y-auto py-1">
           {processSteps.map((step) => {
-            const stepConfig = STATUS_CONFIG[step.value] || STATUS_CONFIG.new_request;
+            const stepConfig = getStatusConfig(step.value);
+            const stepClasses = getStatusClasses(stepConfig.type);
+            const stepDotClass = getStatusDotClass(stepConfig.type);
+            const normalizedStatus = status?.toLowerCase().replace(/\s+/g, '_').replace(/-/g, '_') || 'new';
             const isSelected = normalizedStatus === step.value;
             
             return (
@@ -96,19 +96,14 @@ export function EditableStatusCell({ status, requestId, onSave, disabled = false
                 disabled={isSaving}
               >
                 <span className={cn(
-                  "inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-medium",
-                  stepConfig.lightClass,
-                  stepConfig.darkClass
+                  "inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-medium border",
+                  stepClasses
                 )}>
-                  <span className={cn(
-                    "w-1.5 h-1.5 rounded-full",
-                    stepConfig.dotLight,
-                    stepConfig.dotDark
-                  )} />
+                  <span className={cn("w-1.5 h-1.5 rounded-full", stepDotClass)} />
                   {step.label}
                 </span>
                 {isSelected && (
-                  <Check className="h-4 w-4 text-brand-primary flex-shrink-0" />
+                  <Check className="h-4 w-4 text-[var(--info-fg)] flex-shrink-0" />
                 )}
               </button>
             );

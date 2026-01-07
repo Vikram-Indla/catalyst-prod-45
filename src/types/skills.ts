@@ -118,40 +118,40 @@ export const PROFICIENCY_LEVELS: Record<SkillProficiencyLevel, {
     label: 'Awareness',
     label_ar: 'وعي',
     value: 1,
-    color: '#6b7280',
-    bgColor: 'rgba(107, 114, 128, 0.2)',
+    color: 'var(--neutral-fg)',
+    bgColor: 'var(--neutral-bg)',
     description: 'Basic knowledge, no practical experience'
   },
   beginner: {
     label: 'Beginner',
     label_ar: 'مبتدئ',
     value: 2,
-    color: '#8b5cf6',
-    bgColor: 'rgba(139, 92, 246, 0.15)',
+    color: 'var(--info-fg)',
+    bgColor: 'var(--info-bg)',
     description: 'Limited experience, needs guidance'
   },
   intermediate: {
     label: 'Intermediate',
     label_ar: 'متوسط',
     value: 3,
-    color: '#f59e0b',
-    bgColor: 'rgba(245, 158, 11, 0.15)',
+    color: 'var(--warning-fg)',
+    bgColor: 'var(--warning-bg)',
     description: 'Competent, works independently'
   },
   advanced: {
     label: 'Advanced',
     label_ar: 'متقدم',
     value: 4,
-    color: '#3b82f6',
-    bgColor: 'rgba(59, 130, 246, 0.15)',
+    color: 'var(--info-fg)',
+    bgColor: 'var(--info-bg)',
     description: 'Highly proficient, can mentor others'
   },
   expert: {
     label: 'Expert',
     label_ar: 'خبير',
     value: 5,
-    color: '#0d9488',
-    bgColor: 'rgba(13, 148, 136, 0.15)',
+    color: 'var(--success-fg)',
+    bgColor: 'var(--success-bg)',
     description: 'Industry-leading expertise'
   }
 };

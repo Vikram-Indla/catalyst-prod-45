@@ -368,9 +368,9 @@ export function EpicListView({ programId }: EpicListViewProps) {
                                   className={cn(
                                     "transition-colors cursor-pointer",
                                     isHovered && !isSelected && !isDetailOpen && "bg-muted/50",
-                                    isSelected && "bg-[#2563eb]/10",
-                                    isDetailOpen && "bg-[#2563eb]/10",
-                                    snapshot.isDragging && "bg-[#2563eb]/20 shadow-lg"
+                                    isSelected && "bg-[var(--row-selected)]",
+                                    isDetailOpen && "bg-[var(--row-selected)]",
+                                    snapshot.isDragging && "bg-[var(--row-active)] shadow-lg"
                                   )}
                                   onClick={() => handleRowClick(epic)}
                                   onMouseEnter={() => setHoveredRow(epic.id)}

@@ -48,6 +48,7 @@ export function Logo({
   }
 
   // Wordmark logo with proper brand colors
+  // Logo is the ONLY place brand gold appears - uses CSS variables
   if (showWordmark) {
     return (
       <div className={cn("flex items-center", className)}>
@@ -55,20 +56,16 @@ export function Logo({
           "font-extrabold tracking-tight",
           textSizes[size]
         )}>
-          {/* "Cata" in black (light) or white (dark) */}
+          {/* "Cata" in primary text color */}
           <span className={cn(
             variant === "light" 
-              ? "text-white" 
-              : "text-[#0a0a0a] dark:text-white"
+              ? "text-[var(--text-inverse)]" 
+              : "text-[var(--fg-1)]"
           )}>
             Cata
           </span>
           {/* "lyst" in brand gold - ONLY place gold appears in UI */}
-          <span className={cn(
-            variant === "light"
-              ? "text-[#d4b896]"
-              : "text-[#c69c6d] dark:text-[#d4b896]"
-          )}>
+          <span className="text-[var(--brand-gold)]">
             lyst
           </span>
         </span>
