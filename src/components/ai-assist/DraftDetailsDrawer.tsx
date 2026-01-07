@@ -104,9 +104,9 @@ export function DraftDetailsDrawer({ open, onOpenChange, draft }: DraftDetailsDr
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="w-[400px] sm:w-[540px] overflow-y-auto">
+      <SheetContent className="w-[400px] sm:w-[540px] flex flex-col h-full p-0">
         {/* Header */}
-        <SheetHeader className="pb-4 border-b border-border">
+        <SheetHeader className="p-6 pb-4 border-b border-border flex-shrink-0">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
               <Bot className="w-5 h-5 text-primary" />
@@ -118,7 +118,8 @@ export function DraftDetailsDrawer({ open, onOpenChange, draft }: DraftDetailsDr
           </div>
         </SheetHeader>
         
-        <div className="py-6 space-y-6">
+        {/* Scrollable content area */}
+        <div className="flex-1 overflow-y-auto p-6 space-y-6">
           {/* ═══════════════════════════════════════════════════════════
              SECTION 1: DOCUMENT INFO
              ═══════════════════════════════════════════════════════════ */}
