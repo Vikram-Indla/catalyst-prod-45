@@ -85,7 +85,7 @@ export function BRDGenerationStep({
         };
       case 'final_warn':
         return {
-          label: 'FINAL_WARN',
+          label: '⚠️ Warning',
           description: 'Includes GAP register due to compliance gaps',
           bgClass: 'bg-[hsl(var(--warning))]/10 text-[hsl(var(--warning))]'
         };
