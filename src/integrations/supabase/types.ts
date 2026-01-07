@@ -127,7 +127,6 @@ export type Database = {
           created_at: string
           draft_id: string | null
           id: string
-          is_latest: boolean
           run_id: string
           supersedes_artifact_id: string | null
           version: number
@@ -141,7 +140,6 @@ export type Database = {
           created_at?: string
           draft_id?: string | null
           id?: string
-          is_latest?: boolean
           run_id: string
           supersedes_artifact_id?: string | null
           version?: number
@@ -155,7 +153,6 @@ export type Database = {
           created_at?: string
           draft_id?: string | null
           id?: string
-          is_latest?: boolean
           run_id?: string
           supersedes_artifact_id?: string | null
           version?: number
