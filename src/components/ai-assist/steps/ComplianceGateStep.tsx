@@ -29,7 +29,9 @@ interface ComplianceCategory {
   total: number;
 }
 
-interface ComplianceGateStepProps {
+export interface ComplianceGateStepProps {
+  draftId?: string;
+  runId?: string;
   verdict?: 'pass' | 'conditional' | 'fail';
   totalScore?: number;
   categories?: ComplianceCategory[];

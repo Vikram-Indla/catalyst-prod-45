@@ -135,23 +135,25 @@ export default function AIAssistWizardPage() {
       case 'capture':
         return <DocumentCaptureStep draftId={draft.id} documents={transformedDocuments} />;
       case 'analysis':
-        return <AIAnalysisStep artifacts={transformedArtifacts} />;
+        return <AIAnalysisStep draftId={draft.id} runId={latestRun?.id} />;
       case 'fr':
-        return <FRProcessingStep />;
+        return <FRProcessingStep draftId={draft.id} runId={latestRun?.id} />;
       case 'compliance':
         return (
           <ComplianceGateStep 
+            draftId={draft.id}
+            runId={latestRun?.id}
             onContinueAllowed={setComplianceContinueAllowed}
           />
         );
       case 'clarification':
-        return <ClarificationStep />;
+        return <ClarificationStep draftId={draft.id} runId={latestRun?.id} />;
       case 'brd':
-        return <BRDGenerationStep />;
+        return <BRDGenerationStep draftId={draft.id} runId={latestRun?.id} />;
       case 'linking':
-        return <BRLinkingStep />;
+        return <BRLinkingStep draftId={draft.id} runId={latestRun?.id} />;
       case 'publish':
-        return <EpicPublishingStep />;
+        return <EpicPublishingStep draftId={draft.id} runId={latestRun?.id} />;
       default:
         return null;
     }

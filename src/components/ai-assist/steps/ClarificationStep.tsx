@@ -18,7 +18,9 @@ interface Question {
   skipped?: boolean;
 }
 
-interface ClarificationStepProps {
+export interface ClarificationStepProps {
+  draftId?: string;
+  runId?: string;
   questions?: Question[];
   onAnswerSave?: (questionId: string, answer: string) => void;
   onSkip?: (questionId: string) => void;

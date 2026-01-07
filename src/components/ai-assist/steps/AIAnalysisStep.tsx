@@ -4,14 +4,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
+import { useLatestArtifactsForDraft } from '@/hooks/useAIAssistArtifacts';
 
-interface Artifact {
-  artifact_type: string;
-  content_json: unknown;
-}
-
-interface AIAnalysisStepProps {
-  artifacts: Artifact[];
+export interface AIAnalysisStepProps {
+  draftId: string;
+  runId?: string;
   isProcessing?: boolean;
   progress?: number;
 }
@@ -75,9 +72,11 @@ function GlossaryTerm({ term }: { term: { term_en: string; term_ar?: string; def
   );
 }
 
-export function AIAnalysisStep({ artifacts, isProcessing = false, progress = 0 }: AIAnalysisStepProps) {
+export function AIAnalysisStep({ draftId, runId, isProcessing = false, progress = 0 }: AIAnalysisStepProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState('evidence');
+  
+  const { data: artifacts = [] } = useLatestArtifactsForDraft(draftId);
 
   const evidenceArtifact = artifacts.find(a => a.artifact_type === 'evidence');
   const glossaryArtifact = artifacts.find(a => a.artifact_type === 'glossary');
