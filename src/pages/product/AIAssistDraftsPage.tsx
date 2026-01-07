@@ -331,7 +331,8 @@ export default function AIAssistDraftsPage() {
                                 className={cn(
                                   "w-2 h-2 rounded-full transition-colors",
                                   i < completedSteps && "bg-[hsl(var(--success))]",
-                                  i >= completedSteps && "bg-muted-foreground/20"
+                                  i === completedSteps && "bg-primary ring-2 ring-primary/30",
+                                  i > completedSteps && "bg-muted-foreground/20"
                                 )}
                               />
                             ))}
