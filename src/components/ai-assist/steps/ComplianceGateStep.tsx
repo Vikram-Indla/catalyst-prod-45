@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 interface ControlItem {
   id: string;
@@ -168,7 +168,7 @@ export function ComplianceGateStep({
     if (onContinueAllowed) {
       onContinueAllowed(true);
     }
-    toast.success('Justification recorded successfully');
+    catalystToast.success('Justification Recorded', 'Risk acceptance has been documented for audit');
     setShowJustificationForm(false);
   };
 

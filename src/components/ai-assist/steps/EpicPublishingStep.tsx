@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { cn } from '@/lib/utils';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 interface Epic {
   id: string;
@@ -111,7 +111,7 @@ export function EpicPublishingStep({
       ...publishOptions,
       selectedEpicIds: displayEpics.filter(e => e.selected).map(e => e.id)
     });
-    toast.success(`Publishing ${selectedEpics.length} epics...`);
+    catalystToast.success('Epics Published!', `${selectedEpics.length} epics created in ${publishOptions.targetQuarter} backlog`);
   };
 
   // Generating state
@@ -137,10 +137,26 @@ export function EpicPublishingStep({
   // Published success state with celebration
   if (publishedEpics.length > 0) {
     return (
-      <div className="text-center py-16">
-        {/* Celebration icon */}
-        <div className="w-24 h-24 mx-auto mb-6 bg-[hsl(var(--success))] rounded-full flex items-center justify-center shadow-lg shadow-[hsl(var(--success))]/25">
-          <CheckCircle2 className="w-12 h-12 text-white" />
+      <div className="relative text-center py-16 overflow-hidden">
+        {/* CSS Confetti particles */}
+        <div className="absolute inset-0 pointer-events-none overflow-hidden">
+          {[...Array(20)].map((_, i) => (
+            <div
+              key={i}
+              className="confetti-particle"
+              style={{
+                left: `${Math.random() * 100}%`,
+                backgroundColor: ['#0d9488', '#2563eb', '#f59e0b', '#ec4899'][i % 4],
+                animationDelay: `${Math.random() * 0.5}s`,
+                borderRadius: i % 2 === 0 ? '50%' : '0',
+              }}
+            />
+          ))}
+        </div>
+
+        {/* Celebration icon with pulse animation */}
+        <div className="w-24 h-24 mx-auto mb-6 bg-[hsl(var(--success))] rounded-full flex items-center justify-center shadow-lg shadow-[hsl(var(--success))]/25 celebration-pulse">
+          <CheckCircle2 className="w-12 h-12 text-white check-draw" />
         </div>
         
         <h2 className="text-2xl font-bold text-foreground mb-2">
@@ -150,10 +166,14 @@ export function EpicPublishingStep({
           {publishedEpics.length} Epics are now live in the Program Board
         </p>
         
-        {/* Published epics list */}
+        {/* Published epics list with stagger animation */}
         <div className="max-w-sm mx-auto space-y-2 mb-8">
-          {publishedEpics.map(epic => (
-            <div key={epic.epicId} className="p-3 bg-[hsl(var(--success))]/10 rounded-lg flex items-center gap-3 text-sm">
+          {publishedEpics.map((epic, index) => (
+            <div
+              key={epic.epicId}
+              className="stagger-item p-3 bg-[hsl(var(--success))]/10 rounded-lg flex items-center gap-3 text-sm border border-[hsl(var(--success))]/20"
+              style={{ animationDelay: `${index * 100}ms` }}
+            >
               <CheckCircle2 className="w-4 h-4 text-[hsl(var(--success))]" />
               <span className="font-mono">{epic.epicId}</span>
               <span className="text-muted-foreground">→</span>
@@ -163,7 +183,7 @@ export function EpicPublishingStep({
         </div>
         
         <div className="flex gap-4 justify-center">
-          <Button size="lg" className="gap-2">
+          <Button size="lg" className="gap-2 bg-[hsl(var(--success))] hover:bg-[hsl(var(--success))]/90">
             <ExternalLink className="w-4 h-4" />
             View in Program Board
           </Button>
