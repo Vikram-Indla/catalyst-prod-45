@@ -10,27 +10,16 @@ import {
   Clock,
   CheckCircle,
   AlertCircle,
-  PauseCircle,
   Loader2,
   Copy,
   Play,
-  MoreHorizontal,
-  Download,
   Trash2,
-  Files,
   AlertTriangle,
   XCircle
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 import {
   Tooltip,
   TooltipContent,
@@ -452,51 +441,35 @@ export default function AIAssistDraftsPage() {
                         </Tooltip>
                       </td>
 
-                      {/* Actions */}
+                      {/* Actions - Play + Delete only */}
                       <td className="px-4 py-3">
                         <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-8 w-8"
-                            onClick={(e) => handleOpenWizard(draft.id, e)}
-                          >
-                            <Play className="h-4 w-4" />
-                          </Button>
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
                               <Button
                                 variant="ghost"
                                 size="icon"
                                 className="h-8 w-8"
-                                onClick={(e) => e.stopPropagation()}
+                                onClick={(e) => handleOpenWizard(draft.id, e)}
                               >
-                                <MoreHorizontal className="h-4 w-4" />
+                                <Play className="h-4 w-4 text-primary" />
                               </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                              <DropdownMenuItem onClick={(e) => handleOpenWizard(draft.id, e as unknown as React.MouseEvent)}>
-                                <Play className="h-4 w-4 mr-2" />
-                                Open Wizard
-                              </DropdownMenuItem>
-                              <DropdownMenuItem>
-                                <Files className="h-4 w-4 mr-2" />
-                                Duplicate
-                              </DropdownMenuItem>
-                              <DropdownMenuItem>
-                                <Download className="h-4 w-4 mr-2" />
-                                Export
-                              </DropdownMenuItem>
-                              <DropdownMenuSeparator />
-                              <DropdownMenuItem 
-                                className="text-destructive"
-                                onClick={(e) => handleDeleteClick(draft, e as unknown as React.MouseEvent)}
+                            </TooltipTrigger>
+                            <TooltipContent>Open Wizard</TooltipContent>
+                          </Tooltip>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8"
+                                onClick={(e) => handleDeleteClick(draft, e)}
                               >
-                                <Trash2 className="h-4 w-4 mr-2" />
-                                Delete
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
+                                <Trash2 className="h-4 w-4 text-red-500 hover:text-red-600" />
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>Delete Draft</TooltipContent>
+                          </Tooltip>
                         </div>
                       </td>
                     </tr>
