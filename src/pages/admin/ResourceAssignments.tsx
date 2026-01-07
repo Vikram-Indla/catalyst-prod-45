@@ -4,14 +4,74 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
-import { Plus, Pencil, Trash2, GripVertical, Briefcase } from 'lucide-react';
+import { Plus, Pencil, Trash2, GripVertical, Briefcase, AlertTriangle } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
+import { supabase } from '@/integrations/supabase/client';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { toast } from 'sonner';
+import { useQueryClient } from '@tanstack/react-query';
+
+interface LinkedRecord {
+  resource_name: string;
+  table_source: 'allocation' | 'inventory';
+}
 
 export default function ResourceAssignmentsPage() {
-  const { allAssignments, isLoadingAll, createAssignment, updateAssignment, deleteAssignment } = useResourceAssignments();
+  const queryClient = useQueryClient();
+  const { allAssignments, isLoadingAll, createAssignment, updateAssignment } = useResourceAssignments();
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [editingAssignment, setEditingAssignment] = useState<ResourceAssignment | null>(null);
   const [formData, setFormData] = useState({ name: '', description: '' });
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [assignmentToDelete, setAssignmentToDelete] = useState<ResourceAssignment | null>(null);
+  const [linkedRecords, setLinkedRecords] = useState<LinkedRecord[]>([]);
+  const [isCheckingLinks, setIsCheckingLinks] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const checkLinkedRecords = async (assignmentId: string) => {
+    setIsCheckingLinks(true);
+    const records: LinkedRecord[] = [];
+
+    // Check resource_allocations
+    const { data: allocations } = await supabase
+      .from('resource_allocations')
+      .select(`
+        id,
+        resource_inventory!inner(name)
+      `)
+      .eq('assignment_id', assignmentId);
+
+    if (allocations && allocations.length > 0) {
+      allocations.forEach((alloc: any) => {
+        records.push({
+          resource_name: alloc.resource_inventory?.name || 'Unknown Resource',
+          table_source: 'allocation',
+        });
+      });
+    }
+
+    // Check resource_inventory
+    const { data: inventory } = await supabase
+      .from('resource_inventory')
+      .select('id, name')
+      .eq('assignment_id', assignmentId);
+
+    if (inventory && inventory.length > 0) {
+      inventory.forEach((inv: any) => {
+        // Don't add duplicates
+        if (!records.find(r => r.resource_name === inv.name && r.table_source === 'inventory')) {
+          records.push({
+            resource_name: inv.name || 'Unknown Resource',
+            table_source: 'inventory',
+          });
+        }
+      });
+    }
+
+    setLinkedRecords(records);
+    setIsCheckingLinks(false);
+    return records;
+  };
 
   const handleCreate = async () => {
     if (!formData.name.trim()) return;
@@ -30,9 +90,42 @@ export default function ResourceAssignmentsPage() {
     setFormData({ name: '', description: '' });
   };
 
-  const handleDelete = async (id: string) => {
-    if (confirm('Are you sure you want to remove this assignment?')) {
-      await deleteAssignment.mutateAsync(id);
+  const handleDeleteClick = async (assignment: ResourceAssignment) => {
+    setAssignmentToDelete(assignment);
+    await checkLinkedRecords(assignment.id);
+    setDeleteModalOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!assignmentToDelete) return;
+    
+    setIsDeleting(true);
+    
+    // Double-check there are no linked records
+    const records = await checkLinkedRecords(assignmentToDelete.id);
+    if (records.length > 0) {
+      setLinkedRecords(records);
+      setIsDeleting(false);
+      return;
+    }
+
+    // Actually delete (hard delete)
+    const { error } = await supabase
+      .from('resource_assignments')
+      .delete()
+      .eq('id', assignmentToDelete.id);
+
+    setIsDeleting(false);
+
+    if (error) {
+      toast.error(`Failed to delete: ${error.message}`);
+    } else {
+      toast.success('Assignment deleted successfully');
+      queryClient.invalidateQueries({ queryKey: ['resource-assignments'] });
+      queryClient.invalidateQueries({ queryKey: ['resource-assignments-all'] });
+      setDeleteModalOpen(false);
+      setAssignmentToDelete(null);
+      setLinkedRecords([]);
     }
   };
 
@@ -125,7 +218,7 @@ export default function ResourceAssignmentsPage() {
                       <Pencil className="h-4 w-4" />
                     </button>
                     <button
-                      onClick={() => handleDelete(assignment.id)}
+                      onClick={() => handleDeleteClick(assignment)}
                       className="w-8 h-8 rounded flex items-center justify-center text-muted-foreground hover:bg-[#dc2626]/10 hover:text-[#dc2626] transition-colors"
                     >
                       <Trash2 className="h-4 w-4" />
@@ -215,6 +308,83 @@ export default function ResourceAssignmentsPage() {
             >
               {updateAssignment.isPending ? 'Saving...' : 'Save'}
             </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Confirmation Modal */}
+      <Dialog open={deleteModalOpen} onOpenChange={(open) => {
+        if (!open) {
+          setDeleteModalOpen(false);
+          setAssignmentToDelete(null);
+          setLinkedRecords([]);
+        }
+      }}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              {linkedRecords.length > 0 ? (
+                <>
+                  <AlertTriangle className="h-5 w-5 text-amber-500" />
+                  Cannot Delete Assignment
+                </>
+              ) : (
+                'Delete Assignment'
+              )}
+            </DialogTitle>
+          </DialogHeader>
+          
+          {isCheckingLinks ? (
+            <div className="py-8 text-center text-muted-foreground">
+              Checking for linked records...
+            </div>
+          ) : linkedRecords.length > 0 ? (
+            <div className="space-y-4 py-4">
+              <p className="text-sm text-muted-foreground">
+                The assignment <strong>"{assignmentToDelete?.name}"</strong> cannot be deleted because it has {linkedRecords.length} linked resource{linkedRecords.length > 1 ? 's' : ''}:
+              </p>
+              <ScrollArea className="h-[200px] rounded-md border p-3">
+                <div className="space-y-2">
+                  {linkedRecords.map((record, index) => (
+                    <div key={index} className="flex items-center gap-2 text-sm py-1.5 px-2 bg-muted/50 rounded">
+                      <Briefcase className="h-4 w-4 text-muted-foreground shrink-0" />
+                      <span className="font-medium">{record.resource_name}</span>
+                      <span className="text-xs text-muted-foreground ml-auto">
+                        ({record.table_source === 'allocation' ? 'Allocation' : 'Assigned'})
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </ScrollArea>
+              <p className="text-xs text-muted-foreground">
+                Please reassign or remove these resources from this assignment before deleting.
+              </p>
+            </div>
+          ) : (
+            <div className="py-4">
+              <p className="text-sm text-muted-foreground">
+                Are you sure you want to delete <strong>"{assignmentToDelete?.name}"</strong>? This action cannot be undone.
+              </p>
+            </div>
+          )}
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => {
+              setDeleteModalOpen(false);
+              setAssignmentToDelete(null);
+              setLinkedRecords([]);
+            }}>
+              {linkedRecords.length > 0 ? 'Close' : 'Cancel'}
+            </Button>
+            {linkedRecords.length === 0 && (
+              <Button 
+                variant="destructive"
+                onClick={handleConfirmDelete}
+                disabled={isDeleting}
+              >
+                {isDeleting ? 'Deleting...' : 'Delete'}
+              </Button>
+            )}
           </DialogFooter>
         </DialogContent>
       </Dialog>
