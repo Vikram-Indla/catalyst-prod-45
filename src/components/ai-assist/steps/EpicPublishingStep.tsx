@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Send, CheckCircle2, ChevronDown, FileText, Link2, Zap, ExternalLink, Loader2, PartyPopper, Download } from 'lucide-react';
+import React, { useState, useMemo, useEffect } from 'react';
+import { Send, CheckCircle2, ChevronDown, FileText, Link2, Zap, ExternalLink, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -8,6 +8,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { cn } from '@/lib/utils';
 import { catalystToast } from '@/lib/catalystToast';
+import { useArtifactByType } from '@/hooks/useAIAssistArtifacts';
+import { useAIAssistLinks } from '@/hooks/useAIAssistLinks';
+import { usePublishEpics, usePublishedEpics } from '@/hooks/useAIAssistPublish';
 
 interface Epic {
   id: string;
@@ -28,43 +31,55 @@ interface PublishedEpic {
 export interface EpicPublishingStepProps {
   draftId?: string;
   runId?: string;
-  isGenerating?: boolean;
-  isPublishing?: boolean;
-  epics?: Epic[];
-  publishedEpics?: PublishedEpic[];
-  linkedBRKey?: string;
-  onEpicToggle?: (epicId: string, selected: boolean) => void;
-  onSelectAll?: () => void;
-  onDeselectAll?: () => void;
-  onPublish?: (options: PublishOptions) => void;
-}
-
-interface PublishOptions {
-  targetQuarter: string;
-  publishMode: string;
-  createFeatures: boolean;
-  linkToBR: boolean;
-  selectedEpicIds: string[];
 }
 
 export function EpicPublishingStep({
-  isGenerating = false,
-  isPublishing = false,
-  epics = [],
-  publishedEpics = [],
-  linkedBRKey,
-  onEpicToggle,
-  onSelectAll,
-  onDeselectAll,
-  onPublish
+  draftId,
+  runId
 }: EpicPublishingStepProps) {
   const [expandedEpic, setExpandedEpic] = useState<string | null>(null);
+  const [selectedEpicIds, setSelectedEpicIds] = useState<Set<string>>(new Set());
+  
+  // Fetch epics artifact
+  const { data: epicsArtifact, isLoading: isLoadingEpics } = useArtifactByType(runId, 'epics');
+  
+  // Fetch linked BR
+  const { data: links = [] } = useAIAssistLinks(draftId);
+  const linkedBRKey = links[0]?.request_key;
+  
+  // Fetch already published epics
+  const { data: publishedEpicsData = [] } = usePublishedEpics(draftId);
+  
+  // Publish mutation
+  const publishMutation = usePublishEpics();
+
+  // Generate dynamic quarters based on current date
+  const availableQuarters = useMemo(() => {
+    const now = new Date();
+    const currentYear = now.getFullYear();
+    const currentQuarter = Math.ceil((now.getMonth() + 1) / 3);
+    const quarters: string[] = [];
+    
+    // Generate 4 quarters starting from current
+    for (let i = 0; i < 4; i++) {
+      const q = ((currentQuarter - 1 + i) % 4) + 1;
+      const year = currentYear + Math.floor((currentQuarter - 1 + i) / 4);
+      quarters.push(`Q${q} ${year}`);
+    }
+    return quarters;
+  }, []);
+
   const [publishOptions, setPublishOptions] = useState({
-    targetQuarter: 'Q2 2026',
+    targetQuarter: availableQuarters[0] || '',
     publishMode: 'generate_publish',
     createFeatures: true,
     linkToBR: !!linkedBRKey
   });
+
+  // Update linkToBR when linkedBRKey changes
+  useEffect(() => {
+    setPublishOptions(prev => ({ ...prev, linkToBR: !!linkedBRKey }));
+  }, [linkedBRKey]);
 
   const priorityColors = {
     high: 'bg-destructive/10 text-destructive border-destructive/20',
@@ -72,47 +87,107 @@ export function EpicPublishingStep({
     low: 'bg-muted text-muted-foreground border-border'
   };
 
-  // Mock epics if none provided
-  const displayEpics = epics.length > 0 ? epics : [
-    {
-      id: 'EPIC-001',
-      title: 'Multi-Currency Procurement Module',
-      description: 'Enable procurement transactions in multiple currencies with real-time conversion rates.',
-      frCount: 5,
-      references: ['P01', 'P03'],
-      priority: 'high' as const,
+  // Parse epics from artifact
+  const epics: Epic[] = useMemo(() => {
+    if (!epicsArtifact?.content_json) return [];
+    
+    const content = epicsArtifact.content_json as { epics?: Array<{
+      id?: string;
+      title?: string;
+      description?: string;
+      fr_count?: number;
+      frCount?: number;
+      references?: string[];
+      priority?: string;
+    }> };
+    
+    if (!content.epics || !Array.isArray(content.epics)) return [];
+    
+    return content.epics.map((e, idx) => ({
+      id: e.id || `EPIC-${String(idx + 1).padStart(3, '0')}`,
+      title: e.title || 'Untitled Epic',
+      description: e.description || '',
+      frCount: e.fr_count ?? e.frCount ?? 0,
+      references: e.references || [],
+      priority: (e.priority?.toLowerCase() as 'high' | 'medium' | 'low') || 'medium',
       selected: true
-    },
-    {
-      id: 'EPIC-002',
-      title: 'SADAD Payment Integration',
-      description: 'Integrate with SADAD payment gateway for supplier payments.',
-      frCount: 4,
-      references: ['P02'],
-      priority: 'high' as const,
-      selected: true
-    },
-    {
-      id: 'EPIC-003',
-      title: 'Vendor Management Portal',
-      description: 'Self-service portal for vendors to manage profiles and submit invoices.',
-      frCount: 6,
-      references: ['P04', 'P05'],
-      priority: 'medium' as const,
-      selected: true
+    }));
+  }, [epicsArtifact]);
+
+  // Initialize selection when epics load
+  useEffect(() => {
+    if (epics.length > 0 && selectedEpicIds.size === 0) {
+      setSelectedEpicIds(new Set(epics.map(e => e.id)));
     }
-  ];
+  }, [epics, selectedEpicIds.size]);
+
+  // Transform published epics for display
+  const publishedEpics: PublishedEpic[] = useMemo(() => {
+    return publishedEpicsData.map(pe => {
+      const pubData = pe.published_data as { title?: string } | null;
+      return {
+        epicId: pe.id.slice(0, 8).toUpperCase(),
+        epicTitle: pubData?.title || 'Published Epic',
+        backlogId: pe.epic_id || `EPB-${pe.id.slice(0, 8)}`
+      };
+    });
+  }, [publishedEpicsData]);
+
+  const displayEpics = epics.map(e => ({
+    ...e,
+    selected: selectedEpicIds.has(e.id)
+  }));
 
   const selectedEpics = displayEpics.filter(e => e.selected);
   const totalFRs = displayEpics.reduce((sum, e) => sum + e.frCount, 0);
 
-  const handlePublish = () => {
-    onPublish?.({
-      ...publishOptions,
-      selectedEpicIds: displayEpics.filter(e => e.selected).map(e => e.id)
+  const handleEpicToggle = (epicId: string, selected: boolean) => {
+    setSelectedEpicIds(prev => {
+      const newSet = new Set(prev);
+      if (selected) {
+        newSet.add(epicId);
+      } else {
+        newSet.delete(epicId);
+      }
+      return newSet;
     });
-    catalystToast.success('Epics Published!', `${selectedEpics.length} epics created in ${publishOptions.targetQuarter} backlog`);
   };
+
+  const handleSelectAll = () => {
+    setSelectedEpicIds(new Set(epics.map(e => e.id)));
+  };
+
+  const handleDeselectAll = () => {
+    setSelectedEpicIds(new Set());
+  };
+
+  const handlePublish = async () => {
+    if (!draftId || !runId) return;
+    
+    const epicData = selectedEpics.map(e => ({
+      id: e.id,
+      name: e.title,
+      description: e.description,
+    }));
+
+    publishMutation.mutate(
+      {
+        draftId,
+        runId,
+        epics: epicData,
+        quarter: publishOptions.targetQuarter,
+        linkedBrId: publishOptions.linkToBR ? linkedBRKey : undefined
+      },
+      {
+        onSuccess: () => {
+          catalystToast.success('Epics Published!', `${selectedEpics.length} epics created in ${publishOptions.targetQuarter} backlog`);
+        }
+      }
+    );
+  };
+
+  const isGenerating = isLoadingEpics;
+  const isPublishing = publishMutation.isPending;
 
   // Generating state
   if (isGenerating) {
@@ -123,9 +198,9 @@ export function EpicPublishingStep({
             <Zap className="h-8 w-8 text-primary animate-pulse" />
           </div>
           
-          <h3 className="text-lg font-semibold mb-2">Generating Epics</h3>
+          <h3 className="text-lg font-semibold mb-2">Loading Epics</h3>
           <p className="text-sm text-muted-foreground mb-6">
-            Transforming functional requirements into structured epics...
+            Retrieving generated epics from analysis...
           </p>
 
           <Loader2 className="h-6 w-6 animate-spin mx-auto text-primary" />
@@ -208,11 +283,6 @@ export function EpicPublishingStep({
           <p className="text-sm text-muted-foreground mb-6 max-w-md mx-auto">
             Complete the previous steps to generate epics from your functional requirements.
           </p>
-
-          <Button className="gap-2">
-            <Zap className="h-4 w-4" />
-            Generate Epics
-          </Button>
         </div>
       </div>
     );
@@ -234,10 +304,9 @@ export function EpicPublishingStep({
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="Q1 2026">Q1 2026</SelectItem>
-                <SelectItem value="Q2 2026">Q2 2026</SelectItem>
-                <SelectItem value="Q3 2026">Q3 2026</SelectItem>
-                <SelectItem value="Q4 2026">Q4 2026</SelectItem>
+                {availableQuarters.map((q) => (
+                  <SelectItem key={q} value={q}>{q}</SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
@@ -269,10 +338,10 @@ export function EpicPublishingStep({
             </p>
           </div>
           <div className="flex items-center gap-2">
-            <Button variant="ghost" size="sm" onClick={onSelectAll} className="transition-all hover:bg-primary/10">
+            <Button variant="ghost" size="sm" onClick={handleSelectAll} className="transition-all hover:bg-primary/10">
               Select All
             </Button>
-            <Button variant="ghost" size="sm" onClick={onDeselectAll} className="transition-all hover:bg-primary/10">
+            <Button variant="ghost" size="sm" onClick={handleDeselectAll} className="transition-all hover:bg-primary/10">
               Deselect All
             </Button>
           </div>
@@ -289,7 +358,7 @@ export function EpicPublishingStep({
                 <div className="flex items-start gap-3">
                   <Checkbox
                     checked={epic.selected}
-                    onCheckedChange={(checked) => onEpicToggle?.(epic.id, !!checked)}
+                    onCheckedChange={(checked) => handleEpicToggle(epic.id, !!checked)}
                     className="mt-1"
                   />
                   <div className="flex-1">
@@ -327,7 +396,7 @@ export function EpicPublishingStep({
                       <div className="mt-4 pt-4 border-t border-border space-y-3">
                         <div className="text-sm text-muted-foreground">
                           <span className="font-medium text-foreground">References: </span>
-                          {epic.references.join(', ')}
+                          {epic.references.length > 0 ? epic.references.join(', ') : '—'}
                         </div>
                         <div className="flex items-center gap-2">
                           <Button size="sm" variant="outline" className="transition-all hover:border-primary">Edit</Button>

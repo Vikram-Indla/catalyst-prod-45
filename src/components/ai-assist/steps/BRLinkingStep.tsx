@@ -1,10 +1,14 @@
-import React, { useState } from 'react';
-import { Link2, Search, CheckCircle2, ExternalLink, Plus, Unlink, Building2, User, Calendar } from 'lucide-react';
+import React, { useState, useMemo } from 'react';
+import { Link2, Search, CheckCircle2, ExternalLink, Plus, Unlink, Building2, User, Calendar, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
+import { useBusinessRequests } from '@/hooks/useBusinessRequests';
+import { useAIAssistLinks, useLinkToBusinessRequest, useUnlinkFromBusinessRequest } from '@/hooks/useAIAssistLinks';
+import { catalystToast } from '@/lib/catalystToast';
+import { useDebounce } from '@/hooks/useDebounce';
 
 interface BusinessRequest {
   id: string;
@@ -12,55 +16,69 @@ interface BusinessRequest {
   titleAr?: string;
   titleEn: string;
   status: 'open' | 'in_progress' | 'closed';
-  owner: string;
-  quarter: string;
+  owner?: string;
+  quarter?: string;
 }
 
 export interface BRLinkingStepProps {
   draftId?: string;
   runId?: string;
-  linkedBR?: BusinessRequest | null;
-  recentRequests?: BusinessRequest[];
-  searchResults?: BusinessRequest[];
-  onSearch?: (query: string) => void;
-  onLink?: (brId: string) => void;
-  onUnlink?: () => void;
   onCreateNew?: () => void;
 }
 
 export function BRLinkingStep({
-  linkedBR = null,
-  recentRequests = [],
-  searchResults = [],
-  onSearch,
-  onLink,
-  onUnlink,
+  draftId,
   onCreateNew
 }: BRLinkingStepProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState<'existing' | 'new'>('existing');
+  const debouncedSearch = useDebounce(searchQuery, 300);
 
-  // Mock recent requests if none provided
-  const displayRequests = recentRequests.length > 0 ? recentRequests : [
-    {
-      id: '1',
-      key: 'BR-2024-0892',
-      titleAr: 'نظام إدارة المشتريات - المرحلة الأولى',
-      titleEn: 'Procurement System - Phase 1',
-      status: 'open' as const,
-      owner: 'Ahmed M.',
-      quarter: 'Q2 2026'
-    },
-    {
-      id: '2',
-      key: 'BR-2024-0756',
-      titleAr: 'تحديث النظام القديم',
-      titleEn: 'Legacy System Modernization',
-      status: 'closed' as const,
-      owner: 'Sara K.',
-      quarter: 'Q1 2025'
+  // Fetch real business requests
+  const { data: businessRequests = [], isLoading: isLoadingBRs } = useBusinessRequests(debouncedSearch);
+  
+  // Fetch existing links for this draft
+  const { data: links = [], isLoading: isLoadingLinks } = useAIAssistLinks(draftId);
+  const linkMutation = useLinkToBusinessRequest();
+  const unlinkMutation = useUnlinkFromBusinessRequest();
+
+  // Transform business requests to component format
+  const displayRequests: BusinessRequest[] = useMemo(() => {
+    return businessRequests.map(br => ({
+      id: br.id,
+      key: br.request_key || `BR-${br.id.slice(0, 8)}`,
+      titleAr: br.title, // Use title as Arabic since that's likely the main language
+      titleEn: br.title,
+      status: mapProcessStepToStatus(br.process_step),
+      owner: br.requestor_name || br.business_owner || undefined,
+      quarter: br.planned_quarter?.[0] || undefined
+    }));
+  }, [businessRequests]);
+
+  // Get linked BR if exists
+  const linkedBR: BusinessRequest | null = useMemo(() => {
+    if (links.length === 0) return null;
+    const link = links[0];
+    const matchedBR = businessRequests.find(br => br.request_key === link.request_key);
+    if (matchedBR) {
+      return {
+        id: matchedBR.id,
+        key: matchedBR.request_key || link.request_key,
+        titleAr: matchedBR.title,
+        titleEn: matchedBR.title,
+        status: mapProcessStepToStatus(matchedBR.process_step),
+        owner: matchedBR.requestor_name || matchedBR.business_owner || undefined,
+        quarter: matchedBR.planned_quarter?.[0] || undefined
+      };
     }
-  ];
+    // If BR not found in list, return basic info
+    return {
+      id: link.id,
+      key: link.request_key,
+      titleEn: link.request_key,
+      status: 'open' as const
+    };
+  }, [links, businessRequests]);
 
   const getStatusConfig = (status: BusinessRequest['status']) => {
     switch (status) {
@@ -75,8 +93,36 @@ export function BRLinkingStep({
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
-    onSearch?.(e.target.value);
   };
+
+  const handleLink = (brId: string) => {
+    const br = displayRequests.find(r => r.id === brId);
+    if (!br || !draftId) return;
+    
+    linkMutation.mutate(
+      { draftId, requestKey: br.key },
+      {
+        onSuccess: () => {
+          catalystToast.success('Successfully Linked!', `Connected to ${br.key}`);
+        }
+      }
+    );
+  };
+
+  const handleUnlink = () => {
+    if (links.length > 0 && draftId) {
+      unlinkMutation.mutate(
+        { linkId: links[0].id, draftId },
+        {
+          onSuccess: () => {
+            catalystToast.info('Link Removed', 'Business Request unlinked');
+          }
+        }
+      );
+    }
+  };
+
+  const isLoading = isLoadingBRs || isLoadingLinks;
 
   // Linked state
   if (linkedBR) {
@@ -116,14 +162,18 @@ export function BRLinkingStep({
               <Badge className={cn("text-xs", getStatusConfig(linkedBR.status).className)}>
                 {getStatusConfig(linkedBR.status).label}
               </Badge>
-              <Badge variant="secondary" className="text-xs gap-1">
-                <User className="h-3 w-3" />
-                {linkedBR.owner}
-              </Badge>
-              <Badge variant="secondary" className="text-xs gap-1">
-                <Calendar className="h-3 w-3" />
-                {linkedBR.quarter}
-              </Badge>
+              {linkedBR.owner && (
+                <Badge variant="secondary" className="text-xs gap-1">
+                  <User className="h-3 w-3" />
+                  {linkedBR.owner}
+                </Badge>
+              )}
+              {linkedBR.quarter && (
+                <Badge variant="secondary" className="text-xs gap-1">
+                  <Calendar className="h-3 w-3" />
+                  {linkedBR.quarter}
+                </Badge>
+              )}
             </div>
 
             <div className="flex items-center gap-2">
@@ -135,9 +185,14 @@ export function BRLinkingStep({
                 variant="ghost" 
                 size="sm" 
                 className="gap-1 text-destructive hover:text-destructive"
-                onClick={onUnlink}
+                onClick={handleUnlink}
+                disabled={unlinkMutation.isPending}
               >
-                <Unlink className="h-3 w-3" />
+                {unlinkMutation.isPending ? (
+                  <Loader2 className="h-3 w-3 animate-spin" />
+                ) : (
+                  <Unlink className="h-3 w-3" />
+                )}
                 Unlink
               </Button>
             </div>
@@ -212,55 +267,76 @@ export function BRLinkingStep({
               {searchQuery ? 'Search Results' : 'Recent business requests'}
             </p>
 
-            {(searchQuery ? searchResults : displayRequests).map((br) => (
-              <div
-                key={br.id}
-                className="bg-card border border-border rounded-xl p-4 cursor-pointer transition-all duration-200 hover:border-primary hover:shadow-md hover:-translate-y-0.5"
-              >
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Badge variant="outline" className="font-mono text-xs">
-                        {br.key}
-                      </Badge>
-                    </div>
-                    {br.titleAr && (
-                      <p className="font-medium mb-1" dir="rtl">{br.titleAr}</p>
-                    )}
-                    <p className="text-sm text-muted-foreground">{br.titleEn}</p>
-
-                    <div className="flex flex-wrap gap-2 mt-3">
-                      <Badge className={cn("text-xs", getStatusConfig(br.status).className)}>
-                        {getStatusConfig(br.status).label}
-                      </Badge>
-                      <span className="text-xs text-muted-foreground flex items-center gap-1">
-                        <User className="h-3 w-3" />
-                        {br.owner}
-                      </span>
-                      <span className="text-xs text-muted-foreground flex items-center gap-1">
-                        <Calendar className="h-3 w-3" />
-                        {br.quarter}
-                      </span>
-                    </div>
-                  </div>
-
-                  <Button 
-                    size="sm" 
-                    variant="outline"
-                    onClick={() => onLink?.(br.id)}
-                    className="ms-4 gap-1"
-                  >
-                    <Link2 className="h-3 w-3" />
-                    Link
-                  </Button>
+            {isLoading ? (
+              <div className="flex items-center justify-center py-12">
+                <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+              </div>
+            ) : displayRequests.length === 0 ? (
+              <div className="text-center py-12">
+                <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-muted mb-4">
+                  <Search className="h-6 w-6 text-muted-foreground" />
                 </div>
+                <h4 className="font-medium mb-2">
+                  {searchQuery ? `No results for "${searchQuery}"` : 'No business requests available'}
+                </h4>
+                <p className="text-sm text-muted-foreground">
+                  {searchQuery ? 'Try a different search term' : 'Create a new Business Request to link'}
+                </p>
               </div>
-            ))}
+            ) : (
+              displayRequests.slice(0, 10).map((br) => (
+                <div
+                  key={br.id}
+                  className="bg-card border border-border rounded-xl p-4 cursor-pointer transition-all duration-200 hover:border-primary hover:shadow-md hover:-translate-y-0.5"
+                >
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Badge variant="outline" className="font-mono text-xs">
+                          {br.key}
+                        </Badge>
+                      </div>
+                      {br.titleAr && (
+                        <p className="font-medium mb-1" dir="rtl">{br.titleAr}</p>
+                      )}
+                      <p className="text-sm text-muted-foreground">{br.titleEn}</p>
 
-            {searchQuery && searchResults.length === 0 && (
-              <div className="text-center py-8 text-sm text-muted-foreground">
-                No Business Requests found matching "{searchQuery}"
-              </div>
+                      <div className="flex flex-wrap gap-2 mt-3">
+                        <Badge className={cn("text-xs", getStatusConfig(br.status).className)}>
+                          {getStatusConfig(br.status).label}
+                        </Badge>
+                        {br.owner && (
+                          <span className="text-xs text-muted-foreground flex items-center gap-1">
+                            <User className="h-3 w-3" />
+                            {br.owner}
+                          </span>
+                        )}
+                        {br.quarter && (
+                          <span className="text-xs text-muted-foreground flex items-center gap-1">
+                            <Calendar className="h-3 w-3" />
+                            {br.quarter}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    <Button 
+                      size="sm" 
+                      variant="outline"
+                      onClick={() => handleLink(br.id)}
+                      disabled={linkMutation.isPending}
+                      className="ms-4 gap-1"
+                    >
+                      {linkMutation.isPending ? (
+                        <Loader2 className="h-3 w-3 animate-spin" />
+                      ) : (
+                        <Link2 className="h-3 w-3" />
+                      )}
+                      Link
+                    </Button>
+                  </div>
+                </div>
+              ))
             )}
           </div>
         </TabsContent>
@@ -283,4 +359,16 @@ export function BRLinkingStep({
       </Tabs>
     </div>
   );
+}
+
+// Helper to map process_step to status
+function mapProcessStepToStatus(processStep: string | null | undefined): 'open' | 'in_progress' | 'closed' {
+  if (!processStep) return 'open';
+  
+  const closedSteps = ['completed', 'closed', 'cancelled', 'rejected'];
+  const inProgressSteps = ['in_development', 'in_review', 'implementation', 'testing', 'deployment'];
+  
+  if (closedSteps.includes(processStep.toLowerCase())) return 'closed';
+  if (inProgressSteps.includes(processStep.toLowerCase())) return 'in_progress';
+  return 'open';
 }
