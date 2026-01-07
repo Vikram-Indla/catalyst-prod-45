@@ -160,7 +160,7 @@ export function DocumentCaptureStep({ draftId, documents, onUploadComplete }: Do
       {/* Hero upload zone with animated gradient border on hover */}
       <div className="relative group cursor-pointer" {...getRootProps()}>
         {/* Animated gradient border on hover */}
-        <div className="absolute -inset-0.5 bg-gradient-to-r from-primary via-[hsl(var(--success))] to-primary rounded-2xl opacity-0 group-hover:opacity-100 blur transition-all duration-500 animate-pulse" />
+        <div className="absolute -inset-0.5 bg-gradient-to-r from-primary via-[hsl(var(--success))] to-primary rounded-2xl opacity-0 group-hover:opacity-100 blur transition-all duration-500" />
         
         <div className={cn(
           "relative bg-gradient-to-br from-card to-primary/5 border-2 border-dashed rounded-2xl p-16 text-center transition-all duration-300",
