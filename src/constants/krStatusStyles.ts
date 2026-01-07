@@ -1,90 +1,86 @@
 /**
- * KR Status Style Map - Single source of truth for all KR milestone styling
- * Used by both legend and roadmap markers
+ * KR Status Style Map - Token-compliant single source of truth
+ * Uses Catalyst V5 semantic tokens for guaranteed dark/light mode compliance
  * 
- * AUTHORITATIVE COLOR MAPPING:
- * - Complete/On Track: Teal #0d9488 (filled)
- * - Current/In Progress: Teal #0d9488 (outline + white fill)
- * - Pending/Planned: Gray #9ca3af (outline)
- * - Overdue/Blocked: Red #ef4444 (filled)
- * - Not Started: Grey #c8ccd0 (muted)
- * - At Risk/Today Line: Amber #f59e0b (solid line)
+ * IMPORTANT: All colors are CSS variables, not hex values
  */
 
+import { KR_STATUS, INDICATOR } from '@/lib/catalyst-tokens';
+
 export const KR_STATUS_STYLES = {
-  // Complete / On Track - Teal filled
+  // Complete / On Track - Success semantic
   complete: {
     label: 'Complete',
-    color: '#0d9488',
+    color: 'var(--success-fg)',
     filled: true,
   },
   'on-track': {
-    label: 'Complete',
-    color: '#0d9488',
+    label: 'On Track',
+    color: 'var(--success-fg)',
     filled: true,
   },
   
-  // Current / In Progress - Teal outline + white fill
+  // Current / In Progress - Success outline
   current: {
     label: 'Current',
-    color: '#0d9488',
+    color: 'var(--success-fg)',
     filled: false,
-    fillColor: '#ffffff',
+    fillColor: 'var(--bg-0)',
   },
   'in-progress': {
-    label: 'Current',
-    color: '#0d9488',
+    label: 'In Progress',
+    color: 'var(--success-fg)',
     filled: false,
-    fillColor: '#ffffff',
+    fillColor: 'var(--bg-0)',
   },
   
-  // Pending / Planned - Gray outline
+  // Pending / Planned - Neutral outline
   pending: {
     label: 'Pending',
-    color: '#9ca3af',
+    color: 'var(--neutral-fg)',
     filled: false,
-    fillColor: '#ffffff',
+    fillColor: 'var(--bg-0)',
   },
   planned: {
-    label: 'Pending',
-    color: '#9ca3af',
+    label: 'Planned',
+    color: 'var(--neutral-fg)',
     filled: false,
-    fillColor: '#ffffff',
+    fillColor: 'var(--bg-0)',
   },
   
-  // Not Started - Grey muted
+  // Not Started - Neutral muted
   'not-started': {
-    label: 'Pending',
-    color: '#9ca3af',
+    label: 'Not Started',
+    color: 'var(--neutral-fg)',
     filled: false,
-    fillColor: '#ffffff',
+    fillColor: 'var(--bg-0)',
   },
   
-  // Overdue / Blocked - Terracotta filled
+  // Overdue / Blocked - Danger semantic
   overdue: {
     label: 'Overdue',
-    color: '#c75a4a',
+    color: 'var(--danger-fg)',
     filled: true,
   },
   blocked: {
-    label: 'Overdue',
-    color: '#c75a4a',
+    label: 'Blocked',
+    color: 'var(--danger-fg)',
     filled: true,
   },
   
-  // At Risk - Amber (for indicators)
+  // At Risk - Warning semantic
   'at-risk': {
     label: 'At Risk',
-    color: '#f59e0b',
+    color: 'var(--warning-fg)',
     filled: true,
   },
 } as const;
 
-// Today line color - Blue
-export const TODAY_LINE_COLOR = '#2563eb';
+// Today line color - Info semantic token
+export const TODAY_LINE_COLOR = 'var(--info-fg)';
 
-// Progress bar color - Blue
-export const PROGRESS_BAR_COLOR = '#2563eb';
+// Progress bar color - Info semantic token
+export const PROGRESS_BAR_COLOR = 'var(--info-fg)';
 
 // Normalize status strings to canonical keys
 export function normalizeKRStatus(status: string): keyof typeof KR_STATUS_STYLES {

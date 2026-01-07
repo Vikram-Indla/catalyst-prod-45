@@ -249,35 +249,39 @@ export interface StateBadgeConfig {
   fillCount: number;  // 1-6 squares filled
 }
 
+/**
+ * State badge config using Catalyst V5 semantic tokens
+ * Colors are CSS variables for guaranteed dark/light mode compliance
+ */
 export const STATE_BADGE_CONFIG: Record<WorkItemState, StateBadgeConfig> = {
   not_started: {
     label: 'NOT STARTED',
-    backgroundColor: '#f3f4f6',
-    textColor: '#6b7280',
+    backgroundColor: 'var(--neutral-bg)',
+    textColor: 'var(--neutral-fg)',
     fillCount: 1,
   },
   in_progress: {
     label: 'IN PROGRESS',
-    backgroundColor: '#dbeafe',
-    textColor: '#2563eb',
+    backgroundColor: 'var(--info-bg)',
+    textColor: 'var(--info-fg)',
     fillCount: 3,
   },
   accepted: {
     label: 'ACCEPTED',
-    backgroundColor: '#ccfbf1',
-    textColor: '#0d9488',
+    backgroundColor: 'var(--success-bg)',
+    textColor: 'var(--success-fg)',
     fillCount: 6,
   },
   blocked: {
     label: 'BLOCKED',
-    backgroundColor: '#fee2e2',
-    textColor: '#dc2626',
+    backgroundColor: 'var(--danger-bg)',
+    textColor: 'var(--danger-fg)',
     fillCount: 2,
   },
   done: {
     label: 'DONE',
-    backgroundColor: '#ccfbf1',
-    textColor: '#0d9488',
+    backgroundColor: 'var(--success-bg)',
+    textColor: 'var(--success-fg)',
     fillCount: 6,
   },
 };
@@ -286,20 +290,23 @@ export const STATE_BADGE_CONFIG: Record<WorkItemState, StateBadgeConfig> = {
 // BAR COLORS
 // ============================================
 
+/**
+ * Bar colors using Catalyst V5 semantic tokens
+ */
 export const BAR_COLORS: Record<WorkItemState, string> = {
-  not_started: '#FF8B00',  // Orange
-  in_progress: '#2563eb',  // Blue
-  accepted: '#0d9488',     // Teal
-  blocked: '#FF5630',      // Red
-  done: '#0d9488',         // Teal
+  not_started: 'var(--warning-fg)',  // Warning for pending
+  in_progress: 'var(--info-fg)',     // Info/Blue for active
+  accepted: 'var(--success-fg)',     // Success/Teal for complete
+  blocked: 'var(--danger-fg)',       // Danger/Red for blocked
+  done: 'var(--success-fg)',         // Success/Teal for done
 };
 
 export const BAR_TYPE_COLORS: Record<WorkItemType, string> = {
-  theme: '#2563eb',   // Blue (brand primary)
-  epic: '#3b82f6',    // Blue-500
-  feature: '#0d9488', // Teal
-  capability: '#f59e0b', // Amber
-  story: '#0d9488',   // Teal
+  theme: 'var(--info-fg)',      // Blue (brand primary)
+  epic: 'var(--info-fg)',       // Blue
+  feature: 'var(--success-fg)', // Teal
+  capability: 'var(--warning-fg)', // Amber
+  story: 'var(--success-fg)',   // Teal
 };
 
 // ============================================
