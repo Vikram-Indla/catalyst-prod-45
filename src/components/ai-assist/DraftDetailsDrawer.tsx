@@ -299,7 +299,7 @@ export function DraftDetailsDrawer({ open, onOpenChange, draft }: DraftDetailsDr
                   Language
                 </div>
                 <span className="text-sm font-medium">
-                  {draft.language === 'ar' ? 'Arabic' : draft.language === 'en' ? 'English' : 'Mixed'}
+                  {draft.language?.toUpperCase() || 'EN'}
                 </span>
               </div>
               
