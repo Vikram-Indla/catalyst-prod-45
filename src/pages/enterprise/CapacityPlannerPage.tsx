@@ -49,7 +49,7 @@ import { SleekCapacityHeader, PrimaryView, ResourceViewMode, ProjectViewMode } f
 import { CompactGroupHeader } from '@/components/capacity/CompactGroupHeader';
 import { CompactResourceCard } from '@/components/capacity/CompactResourceCard';
 import { CapacityHeatmap } from '@/components/capacity-heatmap';
-import { FindAvailabilityPanel } from '@/components/capacity/FindAvailabilityPanel';
+
 import { ProjectStaffingView } from '@/components/capacity/ProjectStaffingView';
 import { GroupedTableView } from '@/components/capacity/GroupedTableView';
 import { ScaleWarningBanner } from '@/components/capacity/ScaleWarningBanner';
@@ -531,22 +531,6 @@ export default function CapacityPlannerPage() {
 
         {/* Main Content */}
         <div className="flex-1 flex flex-col min-h-0 px-6 py-6 bg-surface-2 dark:bg-surface-1">
-          {/* V2.1: Find Availability Panel - shown only in table view */}
-          {primaryView === 'resources' && resourceView === 'table' && (
-            <div className="mb-4">
-              <FindAvailabilityPanel
-                resources={filteredResources}
-                allocations={allocations}
-                onBookResource={(resourceId, criteria) => {
-                  const resource = filteredResources.find(r => r.id === resourceId);
-                  if (resource) {
-                    setAllocationModalResource(resource);
-                    setAllocationModalOpen(true);
-                  }
-                }}
-              />
-            </div>
-          )}
 
           {/* Resources Primary View */}
           {primaryView === 'resources' && (
