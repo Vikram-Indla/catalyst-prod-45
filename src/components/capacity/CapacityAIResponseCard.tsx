@@ -76,9 +76,15 @@ export function CapacityAIResponseCard({ data, onAction }: CapacityAIResponseCar
       {/* Header */}
       <div className="px-4 py-3 border-b border-[#C8CCD0] dark:border-[#C8CCD0]/20 bg-[#1A1A1A] dark:bg-[#1A1A1A]">
         <div className="flex items-center justify-between">
-          <h3 className="text-sm font-semibold text-white tracking-wide">
-            CAPACITY AI
-          </h3>
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#C69C6D] to-[#8B7355] flex items-center justify-center shadow-md">
+              <span className="text-white font-bold text-sm">C</span>
+            </div>
+            <div>
+              <h3 className="text-sm font-bold text-white tracking-wide">Caty</h3>
+              <p className="text-[9px] text-[#C69C6D] uppercase tracking-widest">Capacity AI</p>
+            </div>
+          </div>
           <div className="flex items-center gap-2">
             <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider bg-[#5C7C5C]/20 text-[#5C7C5C] rounded">
               <Shield className="w-3 h-3" />

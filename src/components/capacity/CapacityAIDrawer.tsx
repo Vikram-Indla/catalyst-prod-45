@@ -331,12 +331,12 @@ export function CapacityAIDrawer({ isOpen, onClose }: CapacityAIDrawerProps) {
         {/* Header - Dark Executive Style */}
         <header className="flex items-center justify-between px-5 py-4 bg-[#1A1A1A]">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-[#C69C6D]/20 rounded-xl flex items-center justify-center">
-              <Bot className="w-5 h-5 text-[#C69C6D]" />
+            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#C69C6D] to-[#8B7355] flex items-center justify-center shadow-lg">
+              <span className="text-white font-bold text-lg">C</span>
             </div>
             <div>
-              <h2 className="text-[15px] font-semibold text-white tracking-wide">CAPACITY AI</h2>
-              <p className="text-[11px] text-[#C8CCD0]/60 uppercase tracking-wider">Executive Assistant</p>
+              <h2 className="text-[17px] font-bold text-white tracking-wide">Caty</h2>
+              <p className="text-[10px] text-[#C69C6D] uppercase tracking-widest">Capacity AI Assistant</p>
             </div>
           </div>
 
