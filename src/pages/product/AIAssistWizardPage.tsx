@@ -59,6 +59,7 @@ export default function AIAssistWizardPage() {
   const [currentStep, setCurrentStep] = useState(1);
   const [isRtl, setIsRtl] = useState(true);
   const [complianceContinueAllowed, setComplianceContinueAllowed] = useState(true);
+  const [captureGateState, setCaptureGateState] = useState({ canContinue: false, isHardWarn: false, hasReviewedExtraction: false, hasAcknowledgedWarn: false, gaps: [] as string[] });
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   // Sync state from draft when loaded
@@ -184,7 +185,8 @@ export default function AIAssistWizardPage() {
   const getNextDisabledState = () => {
     switch (currentStep) {
       case 1:
-        return !hasDocument;
+        // Use gating state for Step 1
+        return !captureGateState.canContinue;
       case 2:
         return !hasDocumentText;
       case 4:
@@ -199,7 +201,10 @@ export default function AIAssistWizardPage() {
   const getNextDisabledReason = () => {
     switch (currentStep) {
       case 1:
-        return !hasDocument ? 'Upload Document' : undefined;
+        if (!hasDocument) return 'Upload Document';
+        if (captureGateState.isHardWarn && !captureGateState.hasReviewedExtraction) return 'Review Extraction';
+        if (captureGateState.isHardWarn && !captureGateState.hasAcknowledgedWarn) return 'Acknowledge Quality Gaps';
+        return undefined;
       case 2:
         return !hasDocumentText ? 'Run Analysis' : undefined;
       case 4:
@@ -244,7 +249,7 @@ export default function AIAssistWizardPage() {
     
     switch (currentStepConfig?.key) {
       case 'capture':
-        return <DocumentCaptureStep draftId={draft.id} documents={transformedDocuments} />;
+        return <DocumentCaptureStep draftId={draft.id} documents={transformedDocuments} onCaptureGateChange={setCaptureGateState} />;
       case 'analysis':
         return <AIAnalysisStep draftId={draft.id} runId={latestRun?.id} />;
       case 'fr':
