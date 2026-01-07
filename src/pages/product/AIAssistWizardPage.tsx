@@ -29,6 +29,8 @@ import { useLatestArtifactsForDraft } from '@/hooks/useAIAssistArtifacts';
 import { DocumentUploader } from '@/components/ai-assist/DocumentUploader';
 import { DeterminismPanel } from '@/components/ai-assist/DeterminismPanel';
 import { ComplianceGate } from '@/components/ai-assist/ComplianceGate';
+import { BRLinking } from '@/components/ai-assist/BRLinking';
+import { EpicPublishing } from '@/components/ai-assist/EpicPublishing';
 
 // 8-step wizard configuration
 const WIZARD_STEPS = [
@@ -197,38 +199,20 @@ function BRDGenerationStep({ artifacts }: { artifacts: ReturnType<typeof useLate
   );
 }
 
-function BRLinkingStep() {
-  return (
-    <div className="space-y-6">
-      <div className="bg-[var(--bg-2)] rounded-lg p-6">
-        <Link className="h-8 w-8 mb-4 text-[hsl(var(--info))]" />
-        <p className="text-sm font-medium mb-2">Business Request Linking</p>
-        <p className="text-xs text-muted-foreground">
-          Connect to existing Business Requests or create new ones.
-        </p>
-      </div>
-      <div className="text-center text-muted-foreground text-sm py-8">
-        Complete previous steps to enable BR linking.
-      </div>
-    </div>
-  );
+function BRLinkingStepWrapper({ draftId, runId }: { draftId: string; runId?: string }) {
+  return <BRLinking draftId={draftId} runId={runId} />;
 }
 
-function EpicPublishingStep() {
-  return (
-    <div className="space-y-6">
-      <div className="bg-[var(--bg-2)] rounded-lg p-6">
-        <Send className="h-8 w-8 mb-4 text-[hsl(var(--info))]" />
-        <p className="text-sm font-medium mb-2">Epic Publishing</p>
-        <p className="text-xs text-muted-foreground">
-          Generate and publish Epics to the product backlog.
-        </p>
-      </div>
-      <Button disabled className="w-full">
-        Publish Epics to Backlog
-      </Button>
-    </div>
-  );
+function EpicPublishingStepWrapper({ 
+  draftId, 
+  runId,
+  artifacts 
+}: { 
+  draftId: string; 
+  runId?: string;
+  artifacts: ReturnType<typeof useLatestArtifactsForDraft>['data'];
+}) {
+  return <EpicPublishing draftId={draftId} runId={runId} artifacts={artifacts || []} />;
 }
 
 export default function AIAssistWizardPage() {
@@ -324,9 +308,9 @@ export default function AIAssistWizardPage() {
       case 'brd':
         return <BRDGenerationStep artifacts={artifacts} />;
       case 'linking':
-        return <BRLinkingStep />;
+        return draft?.id ? <BRLinkingStepWrapper draftId={draft.id} runId={latestRun?.id} /> : null;
       case 'publish':
-        return <EpicPublishingStep />;
+        return draft?.id ? <EpicPublishingStepWrapper draftId={draft.id} runId={latestRun?.id} artifacts={artifacts} /> : null;
       default:
         return null;
     }
