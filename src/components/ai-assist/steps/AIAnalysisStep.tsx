@@ -5,12 +5,14 @@ import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
 import { useLatestArtifactsForDraft } from '@/hooks/useAIAssistArtifacts';
+import { useAIAssistDocuments } from '@/hooks/useAIAssistDocuments';
+import { useAIAssistAnalyze } from '@/hooks/useAIAssistAnalyze';
+import { toast } from 'sonner';
 
 export interface AIAnalysisStepProps {
   draftId: string;
   runId?: string;
-  isProcessing?: boolean;
-  progress?: number;
+  onAnalysisComplete?: () => void;
 }
 
 interface ProcessingStep {
@@ -72,27 +74,84 @@ function GlossaryTerm({ term }: { term: { term_en: string; term_ar?: string; def
   );
 }
 
-export function AIAnalysisStep({ draftId, runId, isProcessing = false, progress = 0 }: AIAnalysisStepProps) {
+export function AIAnalysisStep({ draftId, runId, onAnalysisComplete }: AIAnalysisStepProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState('evidence');
   
-  const { data: artifacts = [] } = useLatestArtifactsForDraft(draftId);
+  const { data: artifacts = [], refetch: refetchArtifacts } = useLatestArtifactsForDraft(draftId);
+  const { data: documents = [] } = useAIAssistDocuments(draftId);
+  const { runAnalysis, isAnalyzing, progress, currentTask } = useAIAssistAnalyze({
+    onSuccess: () => {
+      refetchArtifacts();
+    },
+  });
 
   const evidenceArtifact = artifacts.find(a => a.artifact_type === 'evidence');
   const glossaryArtifact = artifacts.find(a => a.artifact_type === 'glossary');
   const memoArtifact = artifacts.find(a => a.artifact_type === 'memo');
 
-  const evidenceItems = (evidenceArtifact?.content_json as { items?: Array<{ text_en: string; text_ar?: string; page?: string; lines?: string; confidence?: number }> })?.items || [];
-  const glossaryTerms = (glossaryArtifact?.content_json as { terms?: Array<{ term_en: string; term_ar?: string; definition?: string }> })?.terms || [];
+  // Support both evidence formats
+  const evidenceData = evidenceArtifact?.content_json as { 
+    items?: Array<{ text_en: string; text_ar?: string; page?: string; lines?: string; confidence?: number }>;
+    evidence?: Array<{ id: string; statement: string; source_ref?: string; confidence?: string; category?: string }>;
+  } | undefined;
+  
+  const evidenceItems = evidenceData?.items || 
+    (evidenceData?.evidence?.map((e, idx) => ({
+      text_en: e.statement,
+      page: e.source_ref?.split(' ')[0] || String(idx + 1),
+      confidence: e.confidence === 'high' ? 0.95 : e.confidence === 'medium' ? 0.8 : 0.6,
+    })) || []);
+
+  const glossaryData = glossaryArtifact?.content_json as { 
+    terms?: Array<{ term_en?: string; term?: string; term_ar?: string; definition?: string }>;
+  } | undefined;
+  
+  const glossaryTerms = glossaryData?.terms?.map(t => ({
+    term_en: t.term_en || t.term || '',
+    term_ar: t.term_ar,
+    definition: t.definition,
+  })) || [];
+
   const memoSections = (memoArtifact?.content_json as { sections?: Array<{ title: string; content: string }> })?.sections || [];
 
   const hasData = evidenceItems.length > 0 || glossaryTerms.length > 0 || memoSections.length > 0;
+  const latestDoc = documents[0];
+  const hasDocument = !!latestDoc?.extracted_text;
+
+  const handleStartAnalysis = async () => {
+    if (!runId || !latestDoc?.extracted_text) {
+      toast.error('No document text available for analysis');
+      return;
+    }
+
+    // Run evidence analysis first
+    const evidenceResult = await runAnalysis({
+      draftId,
+      runId,
+      documentText: latestDoc.extracted_text,
+      analysisType: 'evidence',
+    });
+
+    if (evidenceResult) {
+      // Then run glossary analysis
+      await runAnalysis({
+        draftId,
+        runId,
+        documentText: latestDoc.extracted_text,
+        analysisType: 'glossary',
+      });
+
+      toast.success('Analysis complete!');
+      onAnalysisComplete?.();
+    }
+  };
 
   // Processing state
-  if (isProcessing) {
+  if (isAnalyzing) {
     const steps: ProcessingStep[] = [
       { id: 'parse', label: 'Document parsed', status: progress > 10 ? 'done' : 'active', duration: '2s' },
-      { id: 'lang', label: 'Language detected: Arabic/English', status: progress > 20 ? 'done' : progress > 10 ? 'active' : 'pending', duration: '1s' },
+      { id: 'lang', label: 'Language detected', status: progress > 20 ? 'done' : progress > 10 ? 'active' : 'pending', duration: '1s' },
       { id: 'evidence', label: 'Extracting evidence...', status: progress > 60 ? 'done' : progress > 20 ? 'active' : 'pending', duration: progress > 60 ? '15s' : '—' },
       { id: 'glossary', label: 'Building glossary', status: progress > 80 ? 'done' : progress > 60 ? 'active' : 'pending' },
       { id: 'memo', label: 'Generating deep memo', status: progress > 95 ? 'done' : progress > 80 ? 'active' : 'pending' },
@@ -106,7 +165,7 @@ export function AIAnalysisStep({ draftId, runId, isProcessing = false, progress 
         
         <h3 className="text-xl font-semibold mb-2">AI Analysis in Progress</h3>
         <p className="text-sm text-muted-foreground mb-8">
-          Currently: Extracting evidence from pages 4-7...
+          {currentTask || 'Processing...'}
         </p>
 
         {/* Progress bar */}
@@ -139,10 +198,6 @@ export function AIAnalysisStep({ draftId, runId, isProcessing = false, progress 
             </div>
           ))}
         </div>
-
-        <Button variant="outline" size="sm" className="mt-8">
-          Cancel
-        </Button>
       </div>
     );
   }
@@ -258,10 +313,19 @@ export function AIAnalysisStep({ draftId, runId, isProcessing = false, progress 
         <p className="text-sm text-muted-foreground max-w-md mx-auto">
           Extracts evidence, generates glossary, and creates a deep memo from your document.
         </p>
-        <Button className="mt-6 gap-2">
+        <Button 
+          className="mt-6 gap-2" 
+          onClick={handleStartAnalysis}
+          disabled={!hasDocument || !runId}
+        >
           <Brain className="h-4 w-4" />
           Start Analysis
         </Button>
+        {!hasDocument && (
+          <p className="text-xs text-muted-foreground mt-2">
+            Upload a document in the previous step first
+          </p>
+        )}
       </div>
 
       {/* Preview metrics */}
