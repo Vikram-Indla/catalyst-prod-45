@@ -175,8 +175,8 @@ export function BRLinkingStep({
           Connect this AI Assist draft to a Business Request for full traceability in the portfolio system.
         </p>
         <div className="flex items-center gap-2 mt-2">
-          <Badge variant="outline" className="text-xs">
-            ⚪ Not Linked
+          <Badge variant="outline" className="text-xs border-amber-300 text-amber-600 bg-amber-50">
+            ⚠️ Not Linked
           </Badge>
         </div>
       </div>
@@ -208,14 +208,14 @@ export function BRLinkingStep({
 
           {/* Results or Recent */}
           <div className="space-y-3">
-            <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-              {searchQuery ? 'Search Results' : 'Recent Business Requests'}
+            <p className="text-xs font-medium text-muted-foreground tracking-wider">
+              {searchQuery ? 'Search Results' : 'Recent business requests'}
             </p>
 
             {(searchQuery ? searchResults : displayRequests).map((br) => (
               <div
                 key={br.id}
-                className="bg-card border border-border rounded-xl p-4 hover:border-primary/50 transition-colors"
+                className="bg-card border border-border rounded-xl p-4 cursor-pointer transition-all duration-200 hover:border-primary hover:shadow-md hover:-translate-y-0.5"
               >
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
