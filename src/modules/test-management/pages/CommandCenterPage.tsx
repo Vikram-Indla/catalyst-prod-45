@@ -1,6 +1,7 @@
 /**
  * Test Management Command Center
  * Enterprise-grade dashboard for QA leadership and test managers
+ * Catalyst V5 Theme: Neutral authority, no expressive colors
  */
 
 import { useState } from 'react';
@@ -28,23 +29,21 @@ import {
 import { cn } from '@/lib/utils';
 
 // ============================================================
-// SUB-COMPONENTS
+// SUB-COMPONENTS - Catalyst V5 Neutral Theme
 // ============================================================
 
 interface KPICardProps {
   icon: React.ElementType;
   value: number | string;
   label: string;
-  iconBg?: string;
-  iconColor?: string;
 }
 
-function KPICard({ icon: Icon, value, label, iconBg = 'bg-surface-2', iconColor = 'text-text-tertiary' }: KPICardProps) {
+function KPICard({ icon: Icon, value, label }: KPICardProps) {
   return (
     <div className="bg-surface-0 border border-border-default rounded-xl p-5 hover:border-border-strong transition-colors">
       <div className="flex items-start gap-4">
-        <div className={cn('w-10 h-10 rounded-lg flex items-center justify-center', iconBg)}>
-          <Icon className={cn('h-5 w-5', iconColor)} />
+        <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-surface-2">
+          <Icon className="h-5 w-5 text-text-tertiary" />
         </div>
         <div className="flex-1">
           <p className="text-3xl font-semibold text-text-primary tracking-tight">{value}</p>
@@ -60,10 +59,8 @@ interface SecondaryKPIProps {
   value: number;
   suffix?: string;
   sublabel?: string;
-  sublabelColor?: string;
   progressValue?: number;
-  progressColor?: string;
-  segments?: { color: string; width: number }[];
+  segments?: { width: number }[];
   children?: React.ReactNode;
 }
 
@@ -72,9 +69,7 @@ function SecondaryKPI({
   value,
   suffix = '%',
   sublabel,
-  sublabelColor = 'text-text-secondary',
   progressValue,
-  progressColor = 'bg-brand-primary',
   segments,
   children,
 }: SecondaryKPIProps) {
@@ -82,9 +77,9 @@ function SecondaryKPI({
     <div className="bg-surface-0 border border-border-default rounded-xl p-5">
       <div className="flex items-center justify-between mb-2">
         <span className="text-sm font-medium text-text-secondary">{label}</span>
-        {sublabel && <span className={cn('text-xs', sublabelColor)}>{sublabel}</span>}
+        {sublabel && <span className="text-xs text-text-tertiary">{sublabel}</span>}
       </div>
-      <p className={cn('text-2xl font-semibold mb-3', value >= 80 ? 'text-success' : 'text-text-primary')}>
+      <p className="text-2xl font-semibold text-text-primary mb-3">
         {value}{suffix}
       </p>
       <div className="h-2 bg-surface-2 rounded-full overflow-hidden">
@@ -93,14 +88,14 @@ function SecondaryKPI({
             {segments.map((seg, i) => (
               <div
                 key={i}
-                className={cn('h-full transition-all', seg.color)}
-                style={{ width: `${seg.width}%` }}
+                className="h-full transition-all bg-text-tertiary"
+                style={{ width: `${seg.width}%`, opacity: 1 - (i * 0.25) }}
               />
             ))}
           </div>
         ) : (
           <div
-            className={cn('h-full rounded-full transition-all', progressColor)}
+            className="h-full rounded-full transition-all bg-text-tertiary"
             style={{ width: `${progressValue ?? value}%` }}
           />
         )}
@@ -130,13 +125,13 @@ function DefectsKPI({
     <div className="bg-surface-0 border border-border-default rounded-xl p-5">
       <div className="flex items-center justify-between mb-2">
         <span className="text-sm font-medium text-text-secondary">Open Defects</span>
-        <span className="text-xs text-danger font-medium">{criticalDefects} critical</span>
+        <span className="text-xs text-text-tertiary font-medium">{criticalDefects} critical</span>
       </div>
-      <p className="text-2xl font-semibold text-warning mb-3">{openDefects}</p>
+      <p className="text-2xl font-semibold text-text-primary mb-3">{openDefects}</p>
       <div className="h-2 bg-surface-2 rounded-full overflow-hidden flex">
-        <div className="h-full bg-danger transition-all" style={{ width: `${critPct}%` }} />
-        <div className="h-full bg-warning transition-all" style={{ width: `${majorPct}%` }} />
-        <div className="h-full bg-brand-primary transition-all" style={{ width: `${minorPct}%` }} />
+        <div className="h-full bg-text-primary transition-all" style={{ width: `${critPct}%` }} />
+        <div className="h-full bg-text-secondary transition-all" style={{ width: `${majorPct}%` }} />
+        <div className="h-full bg-text-tertiary transition-all" style={{ width: `${minorPct}%` }} />
       </div>
       <div className="flex items-center gap-4 mt-3 text-xs text-text-secondary">
         <span>Critical: {criticalDefects}</span>
@@ -148,14 +143,28 @@ function DefectsKPI({
 }
 
 function BlockerCard({ count }: { count: number }) {
+  // Catalyst Gold accent ONLY for critical attention
+  const hasBlockers = count > 0;
+  
   return (
-    <div className="bg-surface-0 border border-danger/30 rounded-xl p-5">
+    <div className={cn(
+      "bg-surface-0 border rounded-xl p-5",
+      hasBlockers ? "border-gold-bd" : "border-border-default"
+    )}>
       <div className="flex items-center justify-between mb-2">
         <span className="text-sm font-medium text-text-secondary">Blockers</span>
-        <AlertTriangle className="h-4 w-4 text-danger" />
+        <AlertTriangle className={cn(
+          "h-4 w-4",
+          hasBlockers ? "text-gold-fg" : "text-text-tertiary"
+        )} />
       </div>
-      <p className="text-2xl font-semibold text-danger">{count}</p>
-      <p className="text-xs text-danger mt-1">Requires immediate action</p>
+      <p className={cn(
+        "text-2xl font-semibold",
+        hasBlockers ? "text-gold-fg" : "text-text-primary"
+      )}>{count}</p>
+      {hasBlockers && (
+        <p className="text-xs text-gold-fg mt-1">Requires immediate action</p>
+      )}
     </div>
   );
 }
@@ -169,12 +178,9 @@ function CycleCard({ cycle }: { cycle: any }) {
   return (
     <div className="p-4 hover:bg-surface-1 rounded-lg transition-colors border-b border-border-subtle last:border-0">
       <div className="flex items-center justify-between mb-1">
-        <span className="text-sm font-medium text-brand-primary">{cycle.key}</span>
+        <span className="text-sm font-medium text-text-primary">{cycle.key}</span>
         {cycle.daysLeft !== null && (
-          <span className={cn(
-            'text-xs font-medium',
-            cycle.daysLeft <= 2 ? 'text-danger' : 'text-text-secondary'
-          )}>
+          <span className="text-xs font-medium text-text-secondary">
             {cycle.daysLeft}d left
           </span>
         )}
@@ -182,9 +188,10 @@ function CycleCard({ cycle }: { cycle: any }) {
       <p className="text-sm font-medium text-text-primary mb-3">{cycle.name}</p>
       <div className="flex items-center gap-2">
         <div className="flex-1 h-2 bg-surface-2 rounded-full overflow-hidden flex">
-          <div className="h-full bg-success transition-all" style={{ width: `${passedPct}%` }} />
-          <div className="h-full bg-danger transition-all" style={{ width: `${failedPct}%` }} />
-          <div className="h-full bg-warning transition-all" style={{ width: `${blockedPct}%` }} />
+          {/* Neutral grayscale segments - darker = more progress */}
+          <div className="h-full bg-text-primary transition-all" style={{ width: `${passedPct}%` }} />
+          <div className="h-full bg-text-secondary transition-all" style={{ width: `${failedPct}%` }} />
+          <div className="h-full bg-text-tertiary transition-all" style={{ width: `${blockedPct}%` }} />
         </div>
         <span className="text-xs font-medium text-text-secondary w-10 text-right">{cycle.percentage}%</span>
       </div>
@@ -196,31 +203,20 @@ function ActivityItem({ activity, isFirst }: { activity: any; isFirst?: boolean 
   const initials = activity.user_name?.split(' ').map((n: string) => n[0]).join('').toUpperCase() || '??';
   const timeAgo = formatDistanceToNow(new Date(activity.created_at), { addSuffix: true });
 
-  const bgColors: Record<string, string> = {
-    EXECUTED: 'bg-success/10 text-success',
-    CREATED: 'bg-danger/10 text-danger',
-    COMPLETED: 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400',
-    UPDATED: 'bg-warning/10 text-warning',
-    ADDED_CASES: 'bg-info/10 text-info',
-  };
-
   return (
     <div className="py-3 border-b border-border-subtle last:border-0">
       <div className="flex items-start gap-3">
-        <div className={cn(
-          'w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium flex-shrink-0',
-          bgColors[activity.action_type] || 'bg-surface-2 text-text-secondary'
-        )}>
+        <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium flex-shrink-0 bg-surface-2 text-text-secondary">
           {initials}
         </div>
         <div className="flex-1 min-w-0">
           <p className="text-sm text-text-primary">
             <span className="font-medium">{activity.user_name}</span>
             <span className="text-text-secondary"> {activity.action_type.toLowerCase().replace('_', ' ')} </span>
-            <span className="font-medium text-brand-primary">{activity.entity_key}</span>
+            <span className="font-medium text-text-primary">{activity.entity_key}</span>
           </p>
-          <p className="text-xs text-text-secondary mt-0.5 flex items-center gap-1.5">
-            {isFirst && <Circle className="h-2 w-2 fill-success text-success" />}
+          <p className="text-xs text-text-tertiary mt-0.5 flex items-center gap-1.5">
+            {isFirst && <Circle className="h-2 w-2 fill-text-secondary text-text-secondary" />}
             {isFirst ? 'Just now' : timeAgo}
           </p>
         </div>
@@ -229,36 +225,22 @@ function ActivityItem({ activity, isFirst }: { activity: any; isFirst?: boolean 
   );
 }
 
-function StatusBadge({ status, statusColor }: { status: string; statusColor: string }) {
-  const colorMap: Record<string, string> = {
-    success: 'bg-success/10 text-success border-success/20',
-    warning: 'bg-warning/10 text-warning border-warning/20',
-    danger: 'bg-danger/10 text-danger border-danger/20',
-    default: 'bg-surface-2 text-text-secondary border-border-default',
-  };
-
+function StatusBadge({ status }: { status: string }) {
   return (
-    <span className={cn(
-      'inline-flex items-center px-2 py-0.5 rounded text-xs font-medium border',
-      colorMap[statusColor] || colorMap.default
-    )}>
+    <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium border bg-surface-2 text-text-secondary border-border-default">
       {status.replace('_', ' ')}
     </span>
   );
 }
 
 function PriorityBadge({ priority }: { priority: string }) {
-  const colorMap: Record<string, string> = {
-    CRITICAL: 'border-danger text-danger',
-    HIGH: 'border-warning text-warning',
-    MEDIUM: 'border-border-strong text-text-secondary',
-    LOW: 'border-border-default text-text-tertiary',
-  };
-
+  // Only CRITICAL uses Catalyst Gold accent
+  const isCritical = priority === 'CRITICAL';
+  
   return (
     <span className={cn(
       'inline-flex items-center px-2 py-0.5 rounded text-xs font-medium border bg-transparent',
-      colorMap[priority] || colorMap.MEDIUM
+      isCritical ? 'border-gold-bd text-gold-fg' : 'border-border-default text-text-secondary'
     )}>
       {priority}
     </span>
@@ -318,30 +300,26 @@ export function CommandCenterPage() {
   return (
     <div className="p-6 space-y-6 bg-background min-h-screen">
 
-      {/* Primary KPIs */}
+      {/* Primary KPIs - All neutral icons */}
       <div className="grid grid-cols-5 gap-4">
-        <KPICard icon={ClipboardList} value={kpis?.totalAssigned || 0} label="Total Assigned" iconBg="bg-purple-100 dark:bg-purple-900/30" iconColor="text-purple-600 dark:text-purple-400" />
-        <KPICard icon={Clock} value={kpis?.notRun || 0} label="Not Run" iconBg="bg-surface-2" iconColor="text-text-tertiary" />
-        <KPICard icon={PlayCircle} value={kpis?.inProgress || 0} label="In Progress" iconBg="bg-info/10" iconColor="text-info" />
-        <KPICard icon={CheckCircle} value={kpis?.passedToday || 0} label="Passed Today" iconBg="bg-success/10" iconColor="text-success" />
-        <KPICard icon={XCircle} value={kpis?.failedToday || 0} label="Failed Today" iconBg="bg-danger/10" iconColor="text-danger" />
+        <KPICard icon={ClipboardList} value={kpis?.totalAssigned || 0} label="Total Assigned" />
+        <KPICard icon={Clock} value={kpis?.notRun || 0} label="Not Run" />
+        <KPICard icon={PlayCircle} value={kpis?.inProgress || 0} label="In Progress" />
+        <KPICard icon={CheckCircle} value={kpis?.passedToday || 0} label="Passed Today" />
+        <KPICard icon={XCircle} value={kpis?.failedToday || 0} label="Failed Today" />
       </div>
 
-      {/* Secondary KPIs */}
+      {/* Secondary KPIs - Neutral progress bars */}
       <div className="grid grid-cols-4 gap-4">
         <SecondaryKPI 
           label="Coverage" 
           value={kpis?.coverage || 0} 
           sublabel={`${kpis?.coverageGaps || 0} gaps`}
-          sublabelColor="text-warning"
-          progressColor="bg-brand-primary"
         />
         <SecondaryKPI 
           label="Pass Rate" 
           value={kpis?.passRate || 0} 
           sublabel={`↑${kpis?.passRateTrend || 0}%`}
-          sublabelColor="text-success"
-          progressColor="bg-success"
         />
         <DefectsKPI 
           openDefects={kpis?.openDefects || 0}
@@ -354,7 +332,7 @@ export function CommandCenterPage() {
 
       {/* Main Grid */}
       <div className="grid grid-cols-3 gap-6">
-        {/* Chart Placeholder */}
+        {/* Chart - Neutral grayscale bars */}
         <div className="col-span-2 bg-surface-0 border border-border-default rounded-xl p-5">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-lg font-semibold text-text-primary">Execution Trend</h2>
@@ -367,12 +345,14 @@ export function CommandCenterPage() {
           <div className="flex items-end gap-2 h-48">
             {[85, 110, 65, 135, 100, 80, 155, 120, 105, 145, 90, 115, 125, 140].map((h, i) => (
               <div key={i} className="flex-1 flex flex-col gap-0.5">
+                {/* Primary bar - neutral dark */}
                 <div 
-                  className="bg-success rounded-t transition-all" 
+                  className="bg-text-secondary rounded-t transition-all" 
                   style={{ height: `${h * 0.7}px` }} 
                 />
+                {/* Secondary bar - neutral light */}
                 <div 
-                  className="bg-danger rounded-b transition-all" 
+                  className="bg-text-disabled rounded-b transition-all" 
                   style={{ height: `${Math.random() * 20 + 10}px` }} 
                 />
               </div>
@@ -380,15 +360,15 @@ export function CommandCenterPage() {
           </div>
           <div className="flex items-center justify-center gap-6 mt-4">
             <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded-full bg-success" />
+              <div className="w-3 h-3 rounded-full bg-text-secondary" />
               <span className="text-xs text-text-secondary">Passed</span>
             </div>
             <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded-full bg-danger" />
+              <div className="w-3 h-3 rounded-full bg-text-disabled" />
               <span className="text-xs text-text-secondary">Failed</span>
             </div>
             <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded-full bg-warning" />
+              <div className="w-3 h-3 rounded-full bg-text-tertiary" />
               <span className="text-xs text-text-secondary">Blocked</span>
             </div>
           </div>
@@ -400,7 +380,7 @@ export function CommandCenterPage() {
             <h2 className="text-lg font-semibold text-text-primary">Active Cycles</h2>
             <button 
               onClick={handleViewAllCycles}
-              className="text-sm text-brand-primary hover:underline flex items-center gap-1"
+              className="text-sm text-text-secondary hover:text-text-primary flex items-center gap-1 transition-colors"
             >
               View all <ChevronRight className="h-4 w-4" />
             </button>
@@ -429,7 +409,7 @@ export function CommandCenterPage() {
                   onClick={() => setActiveTab('cases')}
                   className={cn(
                     'px-3 py-1.5 text-xs font-medium rounded-lg transition-colors',
-                    activeTab === 'cases' ? 'bg-brand-primary/10 text-brand-primary' : 'text-text-secondary hover:bg-surface-1'
+                    activeTab === 'cases' ? 'bg-surface-0 text-text-primary shadow-sm' : 'text-text-secondary hover:bg-surface-1'
                   )}
                 >
                   Cases {myWork?.length || 0}
@@ -438,7 +418,7 @@ export function CommandCenterPage() {
                   onClick={() => setActiveTab('cycles')}
                   className={cn(
                     'px-3 py-1.5 text-xs font-medium rounded-lg transition-colors',
-                    activeTab === 'cycles' ? 'bg-brand-primary/10 text-brand-primary' : 'text-text-secondary hover:bg-surface-1'
+                    activeTab === 'cycles' ? 'bg-surface-0 text-text-primary shadow-sm' : 'text-text-secondary hover:bg-surface-1'
                   )}
                 >
                   Cycles 0
@@ -447,7 +427,7 @@ export function CommandCenterPage() {
                   onClick={() => setActiveTab('defects')}
                   className={cn(
                     'px-3 py-1.5 text-xs font-medium rounded-lg transition-colors',
-                    activeTab === 'defects' ? 'bg-brand-primary/10 text-brand-primary' : 'text-text-secondary hover:bg-surface-1'
+                    activeTab === 'defects' ? 'bg-surface-0 text-text-primary shadow-sm' : 'text-text-secondary hover:bg-surface-1'
                   )}
                 >
                   Defects 0
@@ -499,9 +479,9 @@ export function CommandCenterPage() {
               <tbody>
                 {myWork?.map(item => (
                   <tr key={item.id} className="border-b border-border-subtle hover:bg-surface-1 transition-colors">
-                    <td className="px-5 py-3 text-sm font-medium text-brand-primary">{item.key}</td>
+                    <td className="px-5 py-3 text-sm font-medium text-text-primary">{item.key}</td>
                     <td className="px-5 py-3 text-sm text-text-primary max-w-xs truncate">{item.title}</td>
-                    <td className="px-5 py-3"><StatusBadge status={item.status} statusColor={item.statusColor} /></td>
+                    <td className="px-5 py-3"><StatusBadge status={item.status} /></td>
                     <td className="px-5 py-3"><PriorityBadge priority={item.priority} /></td>
                     <td className="px-5 py-3 text-sm text-text-secondary">{item.cycleKey || '—'}</td>
                     <td className="px-5 py-3 text-sm text-text-secondary">
@@ -519,7 +499,7 @@ export function CommandCenterPage() {
           <div className="flex items-center justify-between p-5 pb-3 border-b border-border-subtle">
             <div className="flex items-center gap-2">
               <h2 className="text-lg font-semibold text-text-primary">Recent Activity</h2>
-              <Circle className="h-2 w-2 fill-success text-success" />
+              <Circle className="h-2 w-2 fill-text-tertiary text-text-tertiary" />
             </div>
             <button onClick={() => refetchActivity()} className="p-1.5 hover:bg-surface-2 rounded-lg transition-all">
               <RefreshCw className="h-4 w-4 text-text-secondary" />
