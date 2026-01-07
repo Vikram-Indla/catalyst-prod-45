@@ -1,8 +1,7 @@
 import React from 'react';
-import { ChevronLeft, FileText, Info, HelpCircle, Settings } from 'lucide-react';
+import { ChevronLeft, FileText, Info, HelpCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Switch } from '@/components/ui/switch';
-import { Label } from '@/components/ui/label';
+import { cn } from '@/lib/utils';
 
 interface TopBarProps {
   draftKey: string;
@@ -25,6 +24,10 @@ export function TopBar({
   onBack,
   onOpenDrawer
 }: TopBarProps) {
+  const handleLanguageChange = (lang: 'en' | 'ar') => {
+    onRtlChange(lang === 'ar');
+  };
+
   return (
     <header className="h-14 bg-card border-b border-border/50 flex items-center justify-between px-6 sticky top-0 z-30 shadow-sm">
       {/* Left section */}
@@ -36,7 +39,7 @@ export function TopBar({
           className="gap-2 text-muted-foreground hover:text-foreground"
         >
           <ChevronLeft className="h-4 w-4" />
-          Back to Drafts
+          {isRtl ? 'رجوع للمسودات' : 'Back to Drafts'}
         </Button>
 
         <div className="flex items-center gap-2 px-3 py-1.5 bg-primary/10 rounded-lg">
@@ -45,20 +48,45 @@ export function TopBar({
         </div>
 
         <div className="text-sm text-muted-foreground">
-          <strong className="text-foreground">Step {currentStepNumber} of {totalSteps}</strong>: {currentStepName}
+          {isRtl ? (
+            <>
+              <strong className="text-foreground">الخطوة {currentStepNumber} من {totalSteps}</strong>: {currentStepName}
+            </>
+          ) : (
+            <>
+              <strong className="text-foreground">Step {currentStepNumber} of {totalSteps}</strong>: {currentStepName}
+            </>
+          )}
         </div>
       </div>
 
       {/* Right section */}
       <div className="flex items-center gap-3">
+        {/* Language Switcher with Flags */}
         <div className="flex items-center gap-2 border-r border-border pr-3">
-          <Label htmlFor="rtl-toggle" className="text-xs text-muted-foreground">RTL</Label>
-          <Switch
-            id="rtl-toggle"
-            checked={isRtl}
-            onCheckedChange={onRtlChange}
-            className="scale-90"
-          />
+          <button
+            onClick={() => handleLanguageChange('en')}
+            className={cn(
+              "text-lg transition-opacity hover:opacity-100",
+              !isRtl ? "opacity-100" : "opacity-50"
+            )}
+            title="English"
+            aria-label="Switch to English"
+          >
+            🇬🇧
+          </button>
+          <span className="text-muted-foreground/50">|</span>
+          <button
+            onClick={() => handleLanguageChange('ar')}
+            className={cn(
+              "text-lg transition-opacity hover:opacity-100",
+              isRtl ? "opacity-100" : "opacity-50"
+            )}
+            title="العربية"
+            aria-label="Switch to Arabic"
+          >
+            🇸🇦
+          </button>
         </div>
 
         <Button
@@ -66,12 +94,12 @@ export function TopBar({
           size="icon"
           onClick={onOpenDrawer}
           className="h-9 w-9"
-          title="Run Details"
+          title={isRtl ? 'تفاصيل التشغيل' : 'Run Details'}
         >
           <Info className="h-[18px] w-[18px]" />
         </Button>
 
-        <Button variant="ghost" size="icon" className="h-9 w-9" title="Help">
+        <Button variant="ghost" size="icon" className="h-9 w-9" title={isRtl ? 'مساعدة' : 'Help'}>
           <HelpCircle className="h-[18px] w-[18px]" />
         </Button>
       </div>
