@@ -224,44 +224,44 @@ export function DocumentCaptureStep({ draftId, documents, onUploadComplete }: Do
         </div>
       </div>
 
-      {/* What happens next - FULLY VISIBLE */}
-      <div className="p-6 bg-gradient-to-r from-muted/50 to-primary/5 rounded-xl border border-border/50">
-        <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-6 text-center">
+      {/* What happens next - PROMINENT */}
+      <div className="mt-8 p-6 bg-gradient-to-r from-muted/50 to-primary/5 rounded-xl border border-border">
+        <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-4 text-center">
           What happens next
         </h4>
         
-        <div className="flex items-center justify-center gap-3">
-          {/* Upload Step */}
-          <div className="flex flex-col items-center p-4 bg-card rounded-xl shadow-sm border border-border w-28 transition-all hover:shadow-md hover:-translate-y-0.5">
-            <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mb-2">
+        <div className="flex items-center justify-center gap-4">
+          {/* Step 1 */}
+          <div className="flex flex-col items-center gap-2 p-4 bg-card rounded-xl shadow-sm border border-border w-28 transition-all hover:shadow-md hover:-translate-y-0.5">
+            <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center">
               <Upload className="w-6 h-6 text-primary" />
             </div>
             <span className="text-xs font-medium text-foreground">Upload</span>
           </div>
           
           {/* Arrow */}
-          <div className="flex items-center text-muted-foreground/50">
-            <div className="w-6 h-0.5 bg-border" />
-            <ChevronRight className="w-4 h-4" />
+          <div className="flex items-center">
+            <div className="w-8 h-0.5 bg-border" />
+            <ChevronRight className="w-4 h-4 text-muted-foreground/50 -ml-1" />
           </div>
           
-          {/* Extract Step */}
-          <div className="flex flex-col items-center p-4 bg-card rounded-xl shadow-sm border border-border w-28 transition-all hover:shadow-md hover:-translate-y-0.5">
-            <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mb-2">
+          {/* Step 2 */}
+          <div className="flex flex-col items-center gap-2 p-4 bg-card rounded-xl shadow-sm border border-border w-28 transition-all hover:shadow-md hover:-translate-y-0.5">
+            <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center">
               <FileText className="w-6 h-6 text-primary" />
             </div>
             <span className="text-xs font-medium text-foreground">Extract</span>
           </div>
           
           {/* Arrow */}
-          <div className="flex items-center text-muted-foreground/50">
-            <div className="w-6 h-0.5 bg-border" />
-            <ChevronRight className="w-4 h-4" />
+          <div className="flex items-center">
+            <div className="w-8 h-0.5 bg-border" />
+            <ChevronRight className="w-4 h-4 text-muted-foreground/50 -ml-1" />
           </div>
           
-          {/* Hash Step */}
-          <div className="flex flex-col items-center p-4 bg-card rounded-xl shadow-sm border border-border w-28 transition-all hover:shadow-md hover:-translate-y-0.5">
-            <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mb-2">
+          {/* Step 3 */}
+          <div className="flex flex-col items-center gap-2 p-4 bg-card rounded-xl shadow-sm border border-border w-28 transition-all hover:shadow-md hover:-translate-y-0.5">
+            <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center">
               <Lock className="w-6 h-6 text-primary" />
             </div>
             <span className="text-xs font-medium text-foreground">Hash & Store</span>
