@@ -7,7 +7,7 @@ import { useLatestRun } from '@/hooks/useAIAssistRuns';
 import { useAIAssistAuditEvents } from '@/hooks/useAIAssistDrafts';
 import { useAIAssistDocuments } from '@/hooks/useAIAssistDocuments';
 import { useLatestArtifactsForDraft } from '@/hooks/useAIAssistArtifacts';
-import { TopBar } from '@/components/ai-assist/wizard/TopBar';
+import { WizardTopBar } from '@/components/ai-assist/wizard/WizardTopBar';
 import { HorizontalStepper, WizardStep } from '@/components/ai-assist/wizard/HorizontalStepper';
 import { FooterNav } from '@/components/ai-assist/wizard/FooterNav';
 import { ContextualSidebar } from '@/components/ai-assist/wizard/ContextualSidebar';
@@ -61,12 +61,14 @@ export default function AIAssistWizardPage() {
   const [complianceContinueAllowed, setComplianceContinueAllowed] = useState(true);
   const [captureGateState, setCaptureGateState] = useState({ canContinue: false, isHardWarn: false, hasReviewedExtraction: false, hasAcknowledgedWarn: false, gaps: [] as string[] });
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [lastSaved, setLastSaved] = useState<Date | null>(null);
 
   // Sync state from draft when loaded
   useEffect(() => {
     if (draft) {
       setCurrentStep(draft.current_step);
       setIsRtl(draft.dir === 'rtl');
+      setLastSaved(new Date(draft.updated_at));
     }
   }, [draft]);
 
@@ -148,14 +150,20 @@ export default function AIAssistWizardPage() {
     }
     setCurrentStep(newStep);
     if (draft?.id && newStep !== draft.current_step) {
-      updateDraft.mutate({ id: draft.id, updates: { current_step: newStep } });
+      updateDraft.mutate(
+        { id: draft.id, updates: { current_step: newStep } },
+        { onSuccess: () => setLastSaved(new Date()) }
+      );
     }
   }, [draft, updateDraft, canAccessStep]);
 
   const handleDirChange = useCallback((rtl: boolean) => {
     setIsRtl(rtl);
     if (draft?.id) {
-      updateDraft.mutate({ id: draft.id, updates: { dir: rtl ? 'rtl' : 'ltr' } });
+      updateDraft.mutate(
+        { id: draft.id, updates: { dir: rtl ? 'rtl' : 'ltr' } },
+        { onSuccess: () => setLastSaved(new Date()) }
+      );
     }
   }, [draft, updateDraft]);
 
@@ -165,8 +173,6 @@ export default function AIAssistWizardPage() {
 
   const handleNextStep = () => {
     // Check if current step is complete before allowing next
-    const isCurrentStepComplete = completedSteps.has(currentStep);
-    
     if (currentStepConfig?.key === 'compliance' && !complianceContinueAllowed) {
       return;
     }
@@ -216,10 +222,15 @@ export default function AIAssistWizardPage() {
 
   const nextDisabledReason = getNextDisabledReason();
 
-  // Transform artifacts for step components
-  const transformedArtifacts = artifacts?.map(a => ({
-    artifact_type: a.artifact_type,
-    content_json: a.content_json
+  // Transform documents for DocumentCaptureStep
+  const transformedDocuments = documents?.map(d => ({
+    id: d.id,
+    file_name: d.file_name,
+    file_size: d.file_size,
+    file_sha256: d.file_sha256,
+    extraction_status: d.extraction_status,
+    extracted_text: d.extracted_text,
+    created_at: d.created_at
   })) || [];
 
   // Transform audit events for drawer
@@ -231,17 +242,6 @@ export default function AIAssistWizardPage() {
       ? e.payload_json as Record<string, unknown> 
       : null
   }));
-
-  // Transform documents for DocumentCaptureStep
-  const transformedDocuments = documents?.map(d => ({
-    id: d.id,
-    file_name: d.file_name,
-    file_size: d.file_size,
-    file_sha256: d.file_sha256,
-    extraction_status: d.extraction_status,
-    extracted_text: d.extracted_text,
-    created_at: d.created_at
-  })) || [];
 
   // Render step content based on current step
   const renderStepContent = () => {
@@ -307,20 +307,20 @@ export default function AIAssistWizardPage() {
 
   return (
     <div className="flex flex-col h-full bg-background" dir={isRtl ? 'rtl' : 'ltr'}>
-      {/* Top Bar */}
-      <TopBar
+      {/* New Wizard TopBar */}
+      <WizardTopBar
         draftKey={draft.draft_key}
-        currentStepName={currentStepConfig?.name || ''}
-        currentStepNumber={currentStep}
-        totalSteps={WIZARD_STEPS.length}
+        documentName={latestDoc?.file_name || null}
         isRtl={isRtl}
         onRtlChange={handleDirChange}
-        onBack={() => navigate('/product/ai-assist')}
+        onClose={() => navigate('/product/ai-assist')}
         onOpenDrawer={() => setIsDrawerOpen(true)}
+        isSaving={updateDraft.isPending}
+        lastSaved={lastSaved}
       />
 
-      {/* Horizontal Stepper */}
-      <div className="border-b border-border/50 bg-card px-6 py-3">
+      {/* Horizontal Stepper - with connector lines */}
+      <div className="border-b border-border/50 bg-card">
         <HorizontalStepper
           steps={WIZARD_STEPS}
           currentStep={currentStep}
@@ -359,6 +359,7 @@ export default function AIAssistWizardPage() {
         canGoNext={currentStep < WIZARD_STEPS.length}
         isNextDisabled={isNextDisabled}
         nextDisabledReason={nextDisabledReason}
+        isSaving={updateDraft.isPending}
         onPrevious={handlePrevStep}
         onNext={handleNextStep}
       />
