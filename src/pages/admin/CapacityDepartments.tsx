@@ -4,14 +4,28 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
-import { Plus, Pencil, Trash2, GripVertical } from 'lucide-react';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
+import { Plus, Pencil, Trash2, GripVertical, AlertTriangle } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
+
+interface LinkedResource {
+  id: string;
+  full_name: string;
+}
 
 export default function CapacityDepartmentsPage() {
   const { departments, isLoading, createDepartment, updateDepartment, deleteDepartment } = useCapacityDepartments();
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [editingDepartment, setEditingDepartment] = useState<CapacityDepartment | null>(null);
   const [formData, setFormData] = useState({ name: '', description: '', color: '#0d9488' });
+  
+  // Delete modal state
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [departmentToDelete, setDepartmentToDelete] = useState<CapacityDepartment | null>(null);
+  const [linkedResources, setLinkedResources] = useState<LinkedResource[]>([]);
+  const [checkingLinks, setCheckingLinks] = useState(false);
 
   const handleCreate = async () => {
     if (!formData.name.trim()) return;
@@ -30,10 +44,40 @@ export default function CapacityDepartmentsPage() {
     setFormData({ name: '', description: '', color: '#0d9488' });
   };
 
-  const handleDelete = async (id: string) => {
-    if (confirm('Are you sure you want to remove this department?')) {
-      await deleteDepartment.mutateAsync(id);
+  const checkLinkedRecords = async (departmentId: string) => {
+    setCheckingLinks(true);
+    try {
+      // Check profiles linked to this department
+      const { data: profiles, error } = await supabase
+        .from('profiles')
+        .select('id, full_name')
+        .eq('department_id', departmentId);
+
+      if (error) throw error;
+      return profiles || [];
+    } catch (error) {
+      console.error('Error checking linked records:', error);
+      toast.error('Failed to check linked records');
+      return [];
+    } finally {
+      setCheckingLinks(false);
     }
+  };
+
+  const handleDeleteClick = async (dept: CapacityDepartment) => {
+    setDepartmentToDelete(dept);
+    const linked = await checkLinkedRecords(dept.id);
+    setLinkedResources(linked);
+    setDeleteModalOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!departmentToDelete || linkedResources.length > 0) return;
+    
+    await deleteDepartment.mutateAsync(departmentToDelete.id);
+    setDeleteModalOpen(false);
+    setDepartmentToDelete(null);
+    setLinkedResources([]);
   };
 
   const openEdit = (dept: CapacityDepartment) => {
@@ -118,8 +162,8 @@ export default function CapacityDepartmentsPage() {
                       <Pencil className="h-4 w-4" />
                     </button>
                     <button
-                      onClick={() => handleDelete(dept.id)}
-                      className="w-8 h-8 rounded flex items-center justify-center text-muted-foreground hover:bg-[#dc2626]/10 hover:text-[#dc2626] transition-colors"
+                      onClick={() => handleDeleteClick(dept)}
+                      className="w-8 h-8 rounded flex items-center justify-center text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors"
                     >
                       <Trash2 className="h-4 w-4" />
                     </button>
@@ -243,6 +287,62 @@ export default function CapacityDepartmentsPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Delete Confirmation Modal */}
+      <AlertDialog open={deleteModalOpen} onOpenChange={setDeleteModalOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
+              {linkedResources.length > 0 ? (
+                <>
+                  <AlertTriangle className="h-5 w-5 text-amber-500" />
+                  Cannot Delete Department
+                </>
+              ) : (
+                'Delete Department'
+              )}
+            </AlertDialogTitle>
+            <AlertDialogDescription asChild>
+              <div>
+                {checkingLinks ? (
+                  <p>Checking for linked records...</p>
+                ) : linkedResources.length > 0 ? (
+                  <div className="space-y-3">
+                    <p>
+                      The department <strong>"{departmentToDelete?.name}"</strong> cannot be deleted because it has {linkedResources.length} linked resource(s):
+                    </p>
+                    <div className="max-h-40 overflow-y-auto border border-border rounded-md divide-y divide-border">
+                      {linkedResources.map((resource) => (
+                        <div key={resource.id} className="px-3 py-2 text-sm">
+                          {resource.full_name || 'Unnamed Resource'}
+                        </div>
+                      ))}
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      Please reassign or remove these resources before deleting this department.
+                    </p>
+                  </div>
+                ) : (
+                  <p>
+                    Are you sure you want to delete <strong>"{departmentToDelete?.name}"</strong>? This action cannot be undone.
+                  </p>
+                )}
+              </div>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            {linkedResources.length === 0 && !checkingLinks && (
+              <AlertDialogAction
+                onClick={handleConfirmDelete}
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              >
+                Delete
+              </AlertDialogAction>
+            )}
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
