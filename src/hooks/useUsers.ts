@@ -23,7 +23,9 @@ export interface UserProfile {
   business_lines: string[];
   // Vendor/Contract metadata
   vendor: string | null;
+  contract_start_date: string | null;
   contract_end_date: string | null;
+  vendor_name: string | null;  // From resource_inventory
   country: string | null;
   country_code: string | null;
   country_flag_svg_url: string | null;
@@ -75,6 +77,18 @@ export function useUsers() {
 
       if (profilesError) throw profilesError;
 
+      // Fetch resource_inventory for contract dates (authoritative source)
+      const { data: resourceInventory } = await supabase
+        .from('resource_inventory')
+        .select('profile_id, contract_start_date, contract_end_date, vendor_name');
+      
+      // Create lookup map by profile_id
+      const inventoryByProfileId = new Map(
+        (resourceInventory || [])
+          .filter(r => r.profile_id)
+          .map(r => [r.profile_id, r])
+      );
+
       // Fetch all user_product_roles with role info
       const { data: userRoles, error: rolesError } = await supabase
         .from('user_product_roles')
@@ -115,16 +129,22 @@ export function useUsers() {
       return (profiles || []).map((profile) => {
         const roles = userRolesMap[profile.id] || [];
         const allBusinessLines = roles.flatMap((r) => r.business_lines);
+        // Get contract dates from resource_inventory (primary source)
+        const inventory = inventoryByProfileId.get(profile.id);
         return {
           ...profile,
           roles,
           business_lines: [...new Set(allBusinessLines)],
+          // Contract dates from resource_inventory take precedence
+          contract_start_date: inventory?.contract_start_date || null,
+          contract_end_date: inventory?.contract_end_date || profile.contract_end_date || null,
+          vendor_name: inventory?.vendor_name || null,
         } as UserProfile;
       });
     },
   });
 
-  // Keep users list fresh when profiles / roles change (admin screen expects realtime-ish sync)
+  // Keep users list fresh when profiles / roles / resource_inventory change (admin screen expects realtime-ish sync)
   useEffect(() => {
     const channel = supabase
       .channel('admin-users-sync')
@@ -141,6 +161,11 @@ export function useUsers() {
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'product_roles' },
+        () => queryClient.invalidateQueries({ queryKey: ['users-list'] })
+      )
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'resource_inventory' },
         () => queryClient.invalidateQueries({ queryKey: ['users-list'] })
       )
       .subscribe();

@@ -284,6 +284,7 @@ export function UsersTable({ users, isLoading }: UsersTableProps) {
               <tr className="border-b bg-muted/30">
                 <th className="text-left py-3 px-4 text-xs font-medium text-muted-foreground">Name</th>
                 <th className="text-left py-3 px-4 text-xs font-medium text-muted-foreground">Vendor</th>
+                <th className="text-left py-3 px-4 text-xs font-medium text-muted-foreground">Start Date</th>
                 <th className="text-left py-3 px-4 text-xs font-medium text-muted-foreground">End Date</th>
                 <th className="text-left py-3 px-4 text-xs font-medium text-muted-foreground">Location</th>
                 <th className="text-left py-3 px-4 text-xs font-medium text-muted-foreground">Country</th>
@@ -314,6 +315,11 @@ export function UsersTable({ users, isLoading }: UsersTableProps) {
                   <td className="py-3 px-4">
                     <div className="text-sm">
                       {user.vendor || <span className="text-muted-foreground">-</span>}
+                    </div>
+                  </td>
+                  <td className="py-3 px-4">
+                    <div className="text-sm">
+                      {formatContractEndDate(user.contract_start_date)}
                     </div>
                   </td>
                   <td className="py-3 px-4">
