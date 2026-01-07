@@ -1,28 +1,32 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Shield, CheckCircle2, AlertTriangle, XCircle, ChevronDown, FileText, Lock, Loader2 } from 'lucide-react';
+import { 
+  Shield, CheckCircle, AlertTriangle, XCircle, ChevronDown, 
+  Lock, Unlock, Loader2, User, Calendar, FileText, Target,
+  BarChart3, AlertOctagon, MessageSquare
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { catalystToast } from '@/lib/catalystToast';
 import { useComplianceReport, useJustification, type ComplianceRow, type Verdict } from '@/hooks/useComplianceGate';
 import { Skeleton } from '@/components/ui/skeleton';
+
 interface ControlItem {
   id: string;
   name: string;
   score: number;
   maxScore: number;
   status: 'pass' | 'warning' | 'fail';
-  gaps?: string[];
+  gaps?: Array<{ severity: 'high' | 'medium' | 'low'; title: string; description: string }>;
 }
 
 interface ComplianceCategory {
   id: string;
   name: string;
+  code: string;
   items: ControlItem[];
   totalScore: number;
   maxScore: number;
@@ -43,30 +47,46 @@ export interface ComplianceGateStepProps {
 }
 
 interface JustificationData {
+  decision: string;
   justification: string;
   decisionOwner: string;
-  decisionDate: string;
-  riskType: string;
   reviewDate: string;
 }
 
-// Radial progress component
-function RadialProgress({ score, size = 128, strokeWidth = 12 }: { score: number; size?: number; strokeWidth?: number }) {
+// Animated Radial Progress Chart
+function RadialProgress({ 
+  score, 
+  size = 120, 
+  strokeWidth = 10, 
+  status 
+}: { 
+  score: number; 
+  size?: number; 
+  strokeWidth?: number; 
+  status: 'compliant' | 'conditional' | 'non_compliant';
+}) {
   const radius = (size - strokeWidth) / 2;
-  const circumference = 2 * Math.PI * radius;
-  const strokeDashoffset = circumference - (score / 100) * circumference;
-  const color = score >= 80 ? 'hsl(var(--success))' : score >= 60 ? 'hsl(var(--warning))' : 'hsl(var(--destructive))';
-
+  const circumference = radius * 2 * Math.PI;
+  const offset = circumference - (score / 100) * circumference;
+  
+  const getColors = () => {
+    if (status === 'compliant') return { stroke: 'hsl(var(--success))', bg: 'hsl(var(--success) / 0.15)', text: 'text-[hsl(var(--success))]' };
+    if (status === 'conditional') return { stroke: 'hsl(var(--warning))', bg: 'hsl(var(--warning) / 0.15)', text: 'text-[hsl(var(--warning))]' };
+    return { stroke: 'hsl(var(--danger))', bg: 'hsl(var(--danger) / 0.15)', text: 'text-[hsl(var(--danger))]' };
+  };
+  
+  const colors = getColors();
+  
   return (
-    <div className="relative" style={{ width: size, height: size }}>
-      <svg className="-rotate-90" viewBox={`0 0 ${size} ${size}`} width={size} height={size}>
+    <div className="relative inline-flex items-center justify-center">
+      <svg width={size} height={size} className="transform -rotate-90">
         {/* Background circle */}
         <circle
           cx={size / 2}
           cy={size / 2}
           r={radius}
           fill="none"
-          stroke="hsl(var(--muted))"
+          stroke={colors.bg}
           strokeWidth={strokeWidth}
         />
         {/* Progress circle */}
@@ -75,19 +95,310 @@ function RadialProgress({ score, size = 128, strokeWidth = 12 }: { score: number
           cy={size / 2}
           r={radius}
           fill="none"
-          stroke={color}
+          stroke={colors.stroke}
           strokeWidth={strokeWidth}
           strokeLinecap="round"
           strokeDasharray={circumference}
-          strokeDashoffset={strokeDashoffset}
-          className="transition-all duration-1000"
+          strokeDashoffset={offset}
+          className="transition-all duration-1000 ease-out"
         />
       </svg>
-      {/* Center text */}
+      {/* Center content */}
       <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <span className="text-4xl font-bold">{score}</span>
-        <span className="text-sm text-muted-foreground">/100</span>
+        <span className={cn("text-3xl font-bold", colors.text)}>
+          {score}%
+        </span>
+        <span className="text-xs text-muted-foreground uppercase tracking-wide">Score</span>
       </div>
+    </div>
+  );
+}
+
+// Status Badge Component
+function StatusBadge({ status }: { status: 'compliant' | 'conditional' | 'non_compliant' }) {
+  const config = {
+    compliant: { 
+      bgClass: 'bg-[hsl(var(--success))]/15', 
+      textClass: 'text-[hsl(var(--success))]', 
+      icon: CheckCircle,
+      label: 'Compliant',
+      borderClass: 'border-[hsl(var(--success))]/30'
+    },
+    conditional: { 
+      bgClass: 'bg-[hsl(var(--warning))]/15', 
+      textClass: 'text-[hsl(var(--warning))]', 
+      icon: AlertTriangle,
+      label: 'Conditional',
+      borderClass: 'border-[hsl(var(--warning))]/30'
+    },
+    non_compliant: { 
+      bgClass: 'bg-[hsl(var(--danger))]/15', 
+      textClass: 'text-[hsl(var(--danger))]', 
+      icon: XCircle,
+      label: 'Non-Compliant',
+      borderClass: 'border-[hsl(var(--danger))]/30'
+    },
+  };
+  
+  const { bgClass, textClass, icon: Icon, label, borderClass } = config[status] || config.conditional;
+  
+  return (
+    <div className={cn("inline-flex items-center gap-2 px-4 py-2 rounded-xl border", bgClass, textClass, borderClass)}>
+      <Icon className="w-5 h-5" />
+      <span className="font-semibold">{label}</span>
+    </div>
+  );
+}
+
+// Standard Card with Pass/Fail
+function StandardCard({ 
+  standard, 
+  isExpanded, 
+  onToggle 
+}: { 
+  standard: ComplianceCategory; 
+  isExpanded: boolean; 
+  onToggle: () => void;
+}) {
+  const percentage = Math.round((standard.totalScore / standard.maxScore) * 100);
+  const isPassing = percentage >= 80;
+  
+  return (
+    <div className={cn(
+      "rounded-2xl border-2 overflow-hidden transition-all duration-300",
+      isPassing 
+        ? "border-[hsl(var(--success))]/30 bg-gradient-to-br from-[hsl(var(--success))]/5 to-[hsl(var(--success))]/10" 
+        : "border-[hsl(var(--warning))]/30 bg-gradient-to-br from-[hsl(var(--warning))]/5 to-[hsl(var(--warning))]/10"
+    )}>
+      {/* Header */}
+      <button
+        onClick={onToggle}
+        className="w-full p-5 flex items-center justify-between hover:bg-background/50 transition-colors"
+      >
+        <div className="flex items-center gap-4">
+          <div className={cn(
+            "w-12 h-12 rounded-xl flex items-center justify-center shadow-lg",
+            isPassing 
+              ? "bg-[hsl(var(--success))] text-white shadow-[hsl(var(--success))]/30" 
+              : "bg-[hsl(var(--warning))] text-white shadow-[hsl(var(--warning))]/30"
+          )}>
+            {isPassing ? <CheckCircle className="w-6 h-6" /> : <AlertTriangle className="w-6 h-6" />}
+          </div>
+          
+          <div className="text-left">
+            <h3 className="font-semibold text-foreground text-lg">{standard.name}</h3>
+            <p className="text-sm text-muted-foreground">{standard.code}</p>
+          </div>
+        </div>
+        
+        <div className="flex items-center gap-6">
+          <div className="text-right">
+            <div className={cn(
+              "text-2xl font-bold",
+              isPassing ? "text-[hsl(var(--success))]" : "text-[hsl(var(--warning))]"
+            )}>
+              {percentage}%
+            </div>
+            <div className="text-xs text-muted-foreground">
+              Threshold: 80%
+            </div>
+          </div>
+          
+          <ChevronDown className={cn(
+            "w-5 h-5 text-muted-foreground transition-transform duration-300",
+            isExpanded && "rotate-180"
+          )} />
+        </div>
+      </button>
+      
+      {/* Expanded Content */}
+      {isExpanded && (
+        <div className="px-5 pb-5 border-t border-border/50">
+          {/* Criteria Grid */}
+          <div className="mt-4 grid grid-cols-2 gap-3">
+            {standard.items.map((item) => (
+              <div 
+                key={item.id}
+                className={cn(
+                  "p-3 rounded-xl border flex items-center gap-3 bg-card",
+                  item.status === 'pass' ? "border-[hsl(var(--success))]/30" : "border-[hsl(var(--danger))]/30"
+                )}
+              >
+                {item.status === 'pass' ? (
+                  <CheckCircle className="w-5 h-5 text-[hsl(var(--success))] shrink-0" />
+                ) : (
+                  <XCircle className="w-5 h-5 text-[hsl(var(--danger))] shrink-0" />
+                )}
+                <span className="text-sm text-foreground">{item.name}</span>
+              </div>
+            ))}
+          </div>
+          
+          {/* Gap Details */}
+          {standard.items.some(i => i.gaps && i.gaps.length > 0) && (
+            <div className="mt-4">
+              <h4 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
+                <AlertOctagon className="w-4 h-4 text-[hsl(var(--warning))]" />
+                Gaps Identified ({standard.items.flatMap(i => i.gaps || []).length})
+              </h4>
+              <div className="space-y-2">
+                {standard.items.flatMap(item => item.gaps || []).map((gap, index) => (
+                  <div 
+                    key={index}
+                    className="p-3 rounded-xl bg-card border border-[hsl(var(--warning))]/30 flex items-start gap-3"
+                  >
+                    <div className={cn(
+                      "px-2 py-1 rounded-lg text-xs font-bold uppercase shrink-0",
+                      gap.severity === 'high' && "bg-[hsl(var(--danger))]/15 text-[hsl(var(--danger))]",
+                      gap.severity === 'medium' && "bg-[hsl(var(--warning))]/15 text-[hsl(var(--warning))]",
+                      gap.severity === 'low' && "bg-[hsl(var(--warning))]/10 text-[hsl(var(--warning))]"
+                    )}>
+                      {gap.severity}
+                    </div>
+                    <div>
+                      <p className="text-sm text-foreground font-medium">{gap.title}</p>
+                      <p className="text-xs text-muted-foreground mt-1">{gap.description}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// Justification Form
+function JustificationForm({ 
+  gapCount,
+  onSubmit 
+}: { 
+  gapCount: number;
+  onSubmit: (data: JustificationData) => void;
+}) {
+  const [formData, setFormData] = useState<JustificationData>({
+    decision: '',
+    justification: '',
+    decisionOwner: '',
+    reviewDate: ''
+  });
+  
+  const decisions = [
+    { id: 'proceed_with_gaps', label: 'Proceed with Gaps', desc: 'Accept gaps and continue', icon: Unlock },
+    { id: 'request_waiver', label: 'Request Waiver', desc: 'Submit for approval', icon: FileText },
+    { id: 'remediate', label: 'Remediate First', desc: 'Fix gaps before proceeding', icon: Target },
+  ];
+  
+  const isValid = formData.decision && formData.justification.length >= 50 && formData.decisionOwner;
+  
+  return (
+    <div className="p-6 rounded-2xl bg-card border-2 border-[hsl(var(--warning))]/30 shadow-lg shadow-[hsl(var(--warning))]/5">
+      <div className="flex items-center gap-3 mb-6">
+        <div className="w-12 h-12 rounded-xl bg-[hsl(var(--warning))]/15 flex items-center justify-center">
+          <MessageSquare className="w-6 h-6 text-[hsl(var(--warning))]" />
+        </div>
+        <div>
+          <h3 className="text-lg font-semibold text-foreground">Justification Required</h3>
+          <p className="text-sm text-muted-foreground">Document your decision to proceed with {gapCount} gap(s)</p>
+        </div>
+      </div>
+      
+      {/* Decision Options */}
+      <div className="grid grid-cols-3 gap-3 mb-6">
+        {decisions.map((decision) => {
+          const Icon = decision.icon;
+          const isSelected = formData.decision === decision.id;
+          
+          return (
+            <button
+              key={decision.id}
+              type="button"
+              onClick={() => setFormData({ ...formData, decision: decision.id })}
+              className={cn(
+                "p-4 rounded-xl border-2 text-left transition-all duration-200",
+                isSelected 
+                  ? "border-primary bg-primary/5 shadow-md" 
+                  : "border-border hover:border-primary/30 hover:bg-muted/50"
+              )}
+            >
+              <Icon className={cn("w-5 h-5 mb-2", isSelected ? "text-primary" : "text-muted-foreground")} />
+              <div className={cn("font-semibold", isSelected ? "text-primary" : "text-foreground")}>
+                {decision.label}
+              </div>
+              <div className="text-xs text-muted-foreground mt-1">{decision.desc}</div>
+            </button>
+          );
+        })}
+      </div>
+      
+      {/* Justification Text */}
+      <div className="mb-4">
+        <Label className="block text-sm font-medium text-foreground mb-2">
+          Justification <span className="text-[hsl(var(--danger))]">*</span>
+        </Label>
+        <Textarea
+          value={formData.justification}
+          onChange={(e) => setFormData({ ...formData, justification: e.target.value })}
+          placeholder="Explain the rationale for proceeding with identified gaps..."
+          rows={4}
+          className="w-full resize-none"
+        />
+        <div className="flex justify-between mt-2">
+          <span className="text-xs text-muted-foreground">Minimum 50 characters</span>
+          <span className={cn(
+            "text-xs",
+            formData.justification.length >= 50 ? "text-[hsl(var(--success))]" : "text-muted-foreground"
+          )}>
+            {formData.justification.length}/500
+          </span>
+        </div>
+      </div>
+      
+      {/* Owner and Review Date */}
+      <div className="grid grid-cols-2 gap-4 mb-6">
+        <div>
+          <Label className="block text-sm font-medium text-foreground mb-2">
+            Decision Owner <span className="text-[hsl(var(--danger))]">*</span>
+          </Label>
+          <div className="relative">
+            <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+            <Input
+              type="text"
+              value={formData.decisionOwner}
+              onChange={(e) => setFormData({ ...formData, decisionOwner: e.target.value })}
+              placeholder="Full name"
+              className="pl-11"
+            />
+          </div>
+        </div>
+        <div>
+          <Label className="block text-sm font-medium text-foreground mb-2">
+            Review Date
+          </Label>
+          <div className="relative">
+            <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+            <Input
+              type="date"
+              value={formData.reviewDate}
+              onChange={(e) => setFormData({ ...formData, reviewDate: e.target.value })}
+              className="pl-11"
+            />
+          </div>
+        </div>
+      </div>
+      
+      {/* Submit Button */}
+      <Button
+        onClick={() => onSubmit(formData)}
+        disabled={!isValid}
+        className="w-full gap-2"
+        size="lg"
+      >
+        <Lock className="w-5 h-5" />
+        Record Decision & Unlock Gate
+      </Button>
     </div>
   );
 }
@@ -107,13 +418,16 @@ export function ComplianceGateStep({
   const { data: complianceData, isLoading: isLoadingCompliance } = useComplianceReport(draftId);
   const { data: existingJustification, isLoading: isLoadingJustification } = useJustification(draftId);
   
+  // State
+  const [expandedStandard, setExpandedStandard] = useState<string | null>(null);
+  const [gateUnlocked, setGateUnlocked] = useState(false);
+  
   // Derive values from real data or props
   const hasRealData = !!complianceData?.report;
   
   // Transform real compliance data to UI format
   const displayData = useMemo(() => {
     if (!hasRealData || !complianceData?.report) {
-      // No real data - check if we have prop categories
       if (propCategories.length > 0) {
         return {
           verdict: propVerdict || 'conditional' as const,
@@ -122,13 +436,11 @@ export function ComplianceGateStep({
           justificationRecorded: propJustificationRecorded
         };
       }
-      // No data at all - show empty state
       return null;
     }
     
     const { matrix, scores } = complianceData.report;
     
-    // Transform ComplianceRow[] to UI categories
     const dgaRows = matrix.rows.filter(r => r.framework === 'DGA');
     const ncaRows = matrix.rows.filter(r => r.framework === 'NCA');
     
@@ -141,6 +453,12 @@ export function ComplianceGateStep({
         };
         const { score, max } = coverageToScore[row.coverage] || { score: 0, max: 12 };
         
+        const gaps: ControlItem['gaps'] = row.coverage !== 'covered' ? [{
+          severity: row.coverage === 'not_specified' ? 'high' : 'medium',
+          title: `${row.control_name} Gap`,
+          description: `Missing evidence for ${row.control_name}`
+        }] : undefined;
+        
         return {
           id: row.control_id,
           name: row.control_name,
@@ -148,7 +466,7 @@ export function ComplianceGateStep({
           maxScore: max,
           status: row.coverage === 'covered' ? 'pass' as const : 
                   row.coverage === 'partial' ? 'warning' as const : 'fail' as const,
-          gaps: row.coverage !== 'covered' ? [`Missing: ${row.control_name} evidence`] : undefined
+          gaps
         };
       });
     };
@@ -171,7 +489,8 @@ export function ComplianceGateStep({
     if (dgaItems.length > 0) {
       categories.push({
         id: 'dga',
-        name: 'DGA Controls',
+        name: 'DGA Data Standards',
+        code: 'DGA-DS-2024',
         items: dgaItems,
         ...dgaStats
       });
@@ -181,12 +500,12 @@ export function ComplianceGateStep({
       categories.push({
         id: 'nca',
         name: 'NCA Controls',
+        code: 'NCA-2024',
         items: ncaItems,
         ...ncaStats
       });
     }
     
-    // Map API verdict to UI verdict
     const verdictMap: Record<Verdict, 'pass' | 'conditional' | 'fail'> = {
       'COMPLIANT': 'pass',
       'CONDITIONAL': 'conditional',
@@ -204,78 +523,35 @@ export function ComplianceGateStep({
   const verdict = displayData?.verdict || 'conditional';
   const totalScore = displayData?.totalScore || 0;
   const displayCategories = displayData?.categories || [];
-  const justificationRecorded = displayData?.justificationRecorded || false;
+  const justificationRecorded = displayData?.justificationRecorded || gateUnlocked;
   
-  // Open categories by default
-  const [openCategories, setOpenCategories] = useState<string[]>(['dga', 'nca']);
-  const [showJustificationForm, setShowJustificationForm] = useState(verdict === 'conditional');
-  const [justificationData, setJustificationData] = useState<JustificationData>({
-    justification: '',
-    decisionOwner: '',
-    decisionDate: new Date().toISOString().split('T')[0],
-    riskType: '',
-    reviewDate: ''
-  });
+  const passingCount = displayCategories.filter(c => Math.round((c.totalScore / c.maxScore) * 100) >= 80).length;
+  const totalGaps = displayCategories.flatMap(c => c.items.flatMap(i => i.gaps || [])).length;
+  
+  // Map verdict to status type
+  const statusMap: Record<string, 'compliant' | 'conditional' | 'non_compliant'> = {
+    pass: 'compliant',
+    conditional: 'conditional',
+    fail: 'non_compliant'
+  };
+  const complianceStatus = statusMap[verdict] || 'conditional';
 
-  // Auto-expand justification form when conditional
+  // Sync gate state with justification
   useEffect(() => {
-    if (verdict === 'conditional') {
-      setShowJustificationForm(true);
+    if (verdict === 'pass' || justificationRecorded) {
+      setGateUnlocked(true);
+      onContinueAllowed?.(true);
+    } else {
+      setGateUnlocked(false);
+      onContinueAllowed?.(false);
     }
-  }, [verdict]);
+  }, [verdict, justificationRecorded, onContinueAllowed]);
 
-  const toggleCategory = (categoryId: string) => {
-    setOpenCategories(prev => 
-      prev.includes(categoryId) 
-        ? prev.filter(id => id !== categoryId)
-        : [...prev, categoryId]
-    );
-  };
-
-  const getVerdictConfig = () => {
-    switch (verdict) {
-      case 'pass':
-        return {
-          icon: CheckCircle2,
-          title: 'Full Compliance',
-          description: 'Your draft meets all DGA and NCA requirements.',
-          bgClass: 'bg-[hsl(var(--success))]/10 border-[hsl(var(--success))]/30',
-          iconClass: 'text-[hsl(var(--success))]',
-          badgeClass: 'bg-[hsl(var(--success))]/10 text-[hsl(var(--success))]'
-        };
-      case 'conditional':
-        return {
-          icon: AlertTriangle,
-          title: 'Conditional Pass — Justification Required',
-          description: 'Your draft meets most requirements but has gaps in compliance controls. Record justification to proceed.',
-          bgClass: 'bg-[hsl(var(--warning))]/10 border-[hsl(var(--warning))]/30',
-          iconClass: 'text-[hsl(var(--warning))]',
-          badgeClass: 'bg-[hsl(var(--warning))]/10 text-[hsl(var(--warning))]'
-        };
-      case 'fail':
-        return {
-          icon: XCircle,
-          title: 'Does Not Meet Requirements',
-          description: 'Critical compliance gaps identified. Review and address before proceeding.',
-          bgClass: 'bg-destructive/10 border-destructive/30',
-          iconClass: 'text-destructive',
-          badgeClass: 'bg-destructive/10 text-destructive'
-        };
-    }
-  };
-
-  const verdictConfig = getVerdictConfig();
-  const VerdictIcon = verdictConfig.icon;
-
-  const handleSubmitJustification = () => {
-    if (onJustificationSubmit) {
-      onJustificationSubmit(justificationData);
-    }
-    if (onContinueAllowed) {
-      onContinueAllowed(true);
-    }
+  const handleJustificationSubmit = (data: JustificationData) => {
+    onJustificationSubmit?.(data);
+    setGateUnlocked(true);
+    onContinueAllowed?.(true);
     catalystToast.success('Justification Recorded', 'Risk acceptance has been documented for audit');
-    setShowJustificationForm(false);
   };
 
   // Loading state
@@ -291,13 +567,12 @@ export function ComplianceGateStep({
         <div className="space-y-3">
           <Skeleton className="h-6 w-40" />
           <Skeleton className="h-32 rounded-xl" />
-          <Skeleton className="h-32 rounded-xl" />
         </div>
       </div>
     );
   }
   
-  // Empty state - no compliance data yet
+  // Empty state
   if (!displayData || displayCategories.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-16 text-center">
@@ -313,230 +588,112 @@ export function ComplianceGateStep({
   }
 
   return (
-    <div className="space-y-6">
-      {/* Verdict Banner */}
-      <div className={cn(
-        "border rounded-xl p-6 flex items-start gap-4 transition-all duration-200",
-        verdictConfig.bgClass
-      )}>
-        <VerdictIcon className={cn("h-6 w-6 flex-shrink-0 mt-0.5", verdictConfig.iconClass)} />
-        <div>
-          <h3 className="font-semibold text-lg">{verdictConfig.title}</h3>
-          <p className="text-sm text-muted-foreground mt-1">{verdictConfig.description}</p>
-        </div>
-      </div>
-
-      {/* Score Overview with Radial Progress */}
-      <div className="grid grid-cols-3 gap-4">
-        {/* Total Score with radial chart */}
-        <div className="bg-card border border-border rounded-xl p-6 flex flex-col items-center transition-all duration-200 hover:shadow-md hover:-translate-y-0.5">
-          <RadialProgress score={totalScore} />
-          <h3 className="font-semibold text-foreground mt-4">Total Score</h3>
-          <Badge variant="outline" className={cn("mt-2", verdictConfig.badgeClass)}>
-            {verdict === 'pass' ? '✓ Compliant' : verdict === 'conditional' ? '⚠ Conditional' : '✗ Non-Compliant'}
-          </Badge>
-        </div>
-
-        {displayCategories.slice(0, 2).map((cat) => {
-          const percentage = Math.round((cat.totalScore / cat.maxScore) * 100);
-          const isPassing = percentage >= 80;
-          return (
-            <div key={cat.id} className="bg-card border border-border rounded-xl p-6 flex flex-col items-center transition-all duration-200 hover:shadow-md hover:-translate-y-0.5">
-              <RadialProgress score={percentage} />
-              <h3 className="font-semibold text-foreground mt-4">{cat.name}</h3>
-              <Badge variant="outline" className={cn(
-                "mt-2",
-                isPassing ? "bg-[hsl(var(--success))]/10 text-[hsl(var(--success))]" : "bg-[hsl(var(--warning))]/10 text-[hsl(var(--warning))]"
-              )}>
-                {isPassing ? (
-                  <><CheckCircle2 className="h-3 w-3 me-1" /> {cat.passing}/{cat.total} Compliant</>
-                ) : (
-                  <><AlertTriangle className="h-3 w-3 me-1" /> {cat.passing}/{cat.total} Fully Compliant</>
-                )}
-              </Badge>
-            </div>
-          );
-        })}
-      </div>
-
-      {/* Control Breakdown - EXPANDED by default */}
-      <div className="space-y-3">
-        <h4 className="text-sm font-semibold">Control Breakdown</h4>
-        
-        {displayCategories.map((category) => {
-          const isPassing = Math.round((category.totalScore / category.maxScore) * 100) >= 80;
-          const isOpen = openCategories.includes(category.id);
-          
-          return (
-            <Collapsible
-              key={category.id}
-              open={isOpen}
-              onOpenChange={() => toggleCategory(category.id)}
-            >
-              <div className={cn(
-                "bg-card border rounded-xl overflow-hidden transition-all duration-200",
-                !isPassing && "border-[hsl(var(--warning))]/30"
-              )}>
-                <CollapsibleTrigger asChild>
-                  <button className={cn(
-                    "w-full p-4 flex items-center justify-between transition-colors",
-                    isPassing ? "bg-[hsl(var(--success))]/5 hover:bg-[hsl(var(--success))]/10" : "bg-[hsl(var(--warning))]/5 hover:bg-[hsl(var(--warning))]/10"
-                  )}>
-                    <div className="flex items-center gap-3">
-                      <Shield className={cn("h-5 w-5", isPassing ? "text-[hsl(var(--success))]" : "text-[hsl(var(--warning))]")} />
-                      <span className="font-semibold">{category.name}</span>
-                      <Badge variant={isPassing ? "default" : "secondary"} className={cn(
-                        isPassing ? "bg-[hsl(var(--success))]/10 text-[hsl(var(--success))]" : "bg-[hsl(var(--warning))]/10 text-[hsl(var(--warning))]"
-                      )}>
-                        {category.passing}/{category.total} Fully Compliant
-                      </Badge>
-                    </div>
-                    <div className="flex items-center gap-4">
-                      <span className={cn("font-bold", isPassing ? "text-[hsl(var(--success))]" : "text-[hsl(var(--warning))]")}>
-                        {category.totalScore}/{category.maxScore}
-                      </span>
-                      <ChevronDown className={cn(
-                        "h-4 w-4 text-muted-foreground transition-transform",
-                        isOpen && "rotate-180"
-                      )} />
-                    </div>
-                  </button>
-                </CollapsibleTrigger>
-
-                <CollapsibleContent>
-                  <div className="px-4 pb-4 border-t border-border divide-y divide-border">
-                    {category.items.map((item) => (
-                      <div key={item.id} className="py-4">
-                        <div className="flex items-center gap-4">
-                          {item.status === 'pass' && (
-                            <CheckCircle2 className="h-5 w-5 text-[hsl(var(--success))] flex-shrink-0" />
-                          )}
-                          {item.status === 'warning' && (
-                            <AlertTriangle className="h-5 w-5 text-[hsl(var(--warning))] flex-shrink-0" />
-                          )}
-                          {item.status === 'fail' && (
-                            <XCircle className="h-5 w-5 text-destructive flex-shrink-0" />
-                          )}
-                          <div className="flex-1">
-                            <div className="font-medium">{item.name}</div>
-                            <div className="text-xs text-muted-foreground font-mono">{item.id}</div>
-                          </div>
-                          <span className="font-semibold">{item.score}/{item.maxScore}</span>
-                        </div>
-                        
-                        {/* GAP detail - ALWAYS VISIBLE for failing controls */}
-                        {item.gaps && item.gaps.length > 0 && (
-                          <div className="mt-3 ms-9 p-3 bg-destructive/5 border border-destructive/20 rounded-lg">
-                            <div className="text-xs font-semibold text-destructive uppercase mb-1">Gap</div>
-                            {item.gaps.map((gap, idx) => (
-                              <p key={idx} className="text-sm text-destructive/80">{gap}</p>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                </CollapsibleContent>
-              </div>
-            </Collapsible>
-          );
-        })}
-      </div>
-
-      {/* Justification Form - VISIBLE by default when conditional */}
-      {justificationRequired && !justificationRecorded && verdict === 'conditional' && (
-        <div className="bg-card border-2 border-[hsl(var(--warning))]/50 rounded-xl overflow-hidden">
-          <div className="p-4 bg-[hsl(var(--warning))]/10 border-b border-[hsl(var(--warning))]/20 flex items-center gap-3">
-            <AlertTriangle className="w-6 h-6 text-[hsl(var(--warning))]" />
-            <div>
-              <h3 className="font-semibold text-foreground">Justification Required</h3>
-              <p className="text-sm text-muted-foreground">Record why you're proceeding despite {displayCategories.flatMap(c => c.items.filter(i => i.gaps && i.gaps.length > 0)).length} compliance gap(s)</p>
-            </div>
+    <div className="space-y-8">
+      {/* Summary Cards */}
+      <div className="grid grid-cols-3 gap-6">
+        {/* Overall Score */}
+        <div className="p-6 rounded-2xl bg-card border border-border shadow-sm flex items-center gap-6">
+          <RadialProgress 
+            score={totalScore} 
+            status={complianceStatus}
+          />
+          <div>
+            <h3 className="text-sm font-medium text-muted-foreground mb-2">Overall Status</h3>
+            <StatusBadge status={complianceStatus} />
           </div>
-          
-          {/* Form fields - VISIBLE by default */}
-          <div className="p-6 space-y-4">
+        </div>
+        
+        {/* Standards Summary */}
+        <div className="p-6 rounded-2xl bg-card border border-border shadow-sm">
+          <h3 className="text-sm font-medium text-muted-foreground mb-4">Standards Checked</h3>
+          <div className="flex items-end gap-4">
             <div>
-              <Label htmlFor="justification">Justification *</Label>
-              <Textarea
-                id="justification"
-                className="mt-2 min-h-[100px] focus:ring-2 focus:ring-primary/20 focus:border-primary"
-                placeholder="Explain why you're proceeding despite compliance gaps..."
-                value={justificationData.justification}
-                onChange={(e) => setJustificationData(prev => ({ ...prev, justification: e.target.value }))}
+              <div className="text-4xl font-bold text-foreground">
+                {passingCount}/{displayCategories.length}
+              </div>
+              <div className="text-sm text-muted-foreground">Passing</div>
+            </div>
+            <div className="flex-1 h-3 bg-muted rounded-full overflow-hidden">
+              <div 
+                className="h-full bg-gradient-to-r from-[hsl(var(--success))] to-[hsl(var(--success))]/80 rounded-full transition-all duration-500"
+                style={{ width: `${(passingCount / displayCategories.length) * 100}%` }}
               />
             </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="decisionOwner">Decision Owner *</Label>
-                <Input
-                  id="decisionOwner"
-                  className="mt-2 focus:ring-2 focus:ring-primary/20 focus:border-primary"
-                  placeholder="Full name"
-                  value={justificationData.decisionOwner}
-                  onChange={(e) => setJustificationData(prev => ({ ...prev, decisionOwner: e.target.value }))}
-                />
-              </div>
-              <div>
-                <Label htmlFor="decisionDate">Decision Date *</Label>
-                <Input
-                  id="decisionDate"
-                  type="date"
-                  className="mt-2 focus:ring-2 focus:ring-primary/20 focus:border-primary"
-                  value={justificationData.decisionDate}
-                  onChange={(e) => setJustificationData(prev => ({ ...prev, decisionDate: e.target.value }))}
-                />
-              </div>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="riskType">Risk Type *</Label>
-                <Select 
-                  value={justificationData.riskType}
-                  onValueChange={(value) => setJustificationData(prev => ({ ...prev, riskType: value }))}
-                >
-                  <SelectTrigger className="mt-2 focus:ring-2 focus:ring-primary/20 focus:border-primary">
-                    <SelectValue placeholder="Select" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="temp">Temporary Accept</SelectItem>
-                    <SelectItem value="mitigate">Mitigation Plan</SelectItem>
-                    <SelectItem value="exception">Approved Exception</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <Label htmlFor="reviewDate">Review Date *</Label>
-                <Input
-                  id="reviewDate"
-                  type="date"
-                  className="mt-2 focus:ring-2 focus:ring-primary/20 focus:border-primary"
-                  value={justificationData.reviewDate}
-                  onChange={(e) => setJustificationData(prev => ({ ...prev, reviewDate: e.target.value }))}
-                />
-              </div>
-            </div>
-            <Button 
-              className="w-full gap-2" 
-              size="lg"
-              onClick={handleSubmitJustification}
-              disabled={!justificationData.justification || !justificationData.decisionOwner || !justificationData.riskType || !justificationData.reviewDate}
-            >
-              <Lock className="w-4 h-4" />
-              Record Justification
-            </Button>
           </div>
         </div>
-      )}
-
-      {/* Success state when justification recorded */}
-      {justificationRecorded && (
-        <div className="bg-[hsl(var(--success))]/10 border border-[hsl(var(--success))]/30 rounded-xl p-4 flex items-center gap-3">
-          <CheckCircle2 className="h-5 w-5 text-[hsl(var(--success))]" />
-          <div>
-            <p className="font-medium text-sm">Justification Recorded</p>
-            <p className="text-xs text-muted-foreground">You may now continue to the next step.</p>
+        
+        {/* Gate Status */}
+        <div className={cn(
+          "p-6 rounded-2xl border-2 flex items-center gap-4 transition-all duration-500",
+          gateUnlocked 
+            ? "bg-gradient-to-br from-[hsl(var(--success))]/5 to-[hsl(var(--success))]/10 border-[hsl(var(--success))]/30" 
+            : "bg-gradient-to-br from-[hsl(var(--warning))]/5 to-[hsl(var(--warning))]/10 border-[hsl(var(--warning))]/30"
+        )}>
+          <div className={cn(
+            "w-14 h-14 rounded-2xl flex items-center justify-center transition-all duration-500 shadow-lg",
+            gateUnlocked 
+              ? "bg-[hsl(var(--success))] shadow-[hsl(var(--success))]/30" 
+              : "bg-[hsl(var(--warning))] shadow-[hsl(var(--warning))]/30"
+          )}>
+            {gateUnlocked ? (
+              <Unlock className="w-7 h-7 text-white" />
+            ) : (
+              <Lock className="w-7 h-7 text-white" />
+            )}
           </div>
+          <div>
+            <h3 className={cn(
+              "font-semibold text-lg",
+              gateUnlocked ? "text-[hsl(var(--success))]" : "text-[hsl(var(--warning))]"
+            )}>
+              {gateUnlocked ? 'Gate Unlocked' : 'Gate Locked'}
+            </h3>
+            <p className={cn(
+              "text-sm",
+              gateUnlocked ? "text-[hsl(var(--success))]/80" : "text-[hsl(var(--warning))]/80"
+            )}>
+              {gateUnlocked ? 'Ready to proceed' : 'Justification required'}
+            </p>
+          </div>
+        </div>
+      </div>
+      
+      {/* Standards Detail */}
+      <div>
+        <h2 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
+          <BarChart3 className="w-5 h-5 text-primary" />
+          Compliance Standards
+        </h2>
+        <div className="space-y-4">
+          {displayCategories.map((standard) => (
+            <StandardCard
+              key={standard.id}
+              standard={standard}
+              isExpanded={expandedStandard === standard.id}
+              onToggle={() => setExpandedStandard(
+                expandedStandard === standard.id ? null : standard.id
+              )}
+            />
+          ))}
+        </div>
+      </div>
+      
+      {/* Justification Form (only show if not unlocked and has gaps) */}
+      {!gateUnlocked && verdict !== 'pass' && justificationRequired && (
+        <JustificationForm 
+          gapCount={totalGaps}
+          onSubmit={handleJustificationSubmit} 
+        />
+      )}
+      
+      {/* Success State */}
+      {gateUnlocked && verdict !== 'pass' && (
+        <div className="p-6 rounded-2xl bg-gradient-to-br from-[hsl(var(--success))]/5 to-[hsl(var(--success))]/10 border-2 border-[hsl(var(--success))]/30 text-center">
+          <div className="w-16 h-16 mx-auto rounded-2xl bg-[hsl(var(--success))] flex items-center justify-center mb-4 shadow-lg shadow-[hsl(var(--success))]/30">
+            <CheckCircle className="w-8 h-8 text-white" />
+          </div>
+          <h3 className="text-xl font-semibold text-[hsl(var(--success))] mb-2">Compliance Gate Cleared</h3>
+          <p className="text-[hsl(var(--success))]/80">Your justification has been recorded. You may now proceed.</p>
         </div>
       )}
     </div>
