@@ -47,17 +47,6 @@ export function TopBar({
           <span className="text-sm font-semibold text-primary">{draftKey}</span>
         </div>
 
-        <div className="text-sm text-muted-foreground">
-          {isRtl ? (
-            <>
-              <strong className="text-foreground">الخطوة {currentStepNumber} من {totalSteps}</strong>: {currentStepName}
-            </>
-          ) : (
-            <>
-              <strong className="text-foreground">Step {currentStepNumber} of {totalSteps}</strong>: {currentStepName}
-            </>
-          )}
-        </div>
       </div>
 
       {/* Right section */}
