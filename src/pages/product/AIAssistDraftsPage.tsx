@@ -38,6 +38,7 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { DraftDetailsDrawer } from '@/components/ai-assist/DraftDetailsDrawer';
+import { DeleteDraftModal } from '@/components/ai-assist/DeleteDraftModal';
 import { useAIAssistDrafts, useCreateDraft, useDeleteDraft, type AIAssistDraft, type DraftStatus } from '@/hooks/useAIAssistDrafts';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
@@ -109,6 +110,10 @@ export default function AIAssistDraftsPage() {
   const [statusFilter, setStatusFilter] = useState<DraftStatus | 'all'>('all');
   const [selectedDraft, setSelectedDraft] = useState<AIAssistDraft | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  
+  // Delete modal state
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [draftToDelete, setDraftToDelete] = useState<AIAssistDraft | null>(null);
 
   const { data: drafts = [], isLoading } = useAIAssistDrafts();
   const createDraft = useCreateDraft();
@@ -139,9 +144,20 @@ export default function AIAssistDraftsPage() {
     toast.success('Draft ID copied');
   };
 
-  const handleDelete = (id: string, e: React.MouseEvent) => {
+  const handleDeleteClick = (draft: AIAssistDraft, e: React.MouseEvent) => {
     e.stopPropagation();
-    deleteDraft.mutate(id);
+    setDraftToDelete(draft);
+    setDeleteModalOpen(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!draftToDelete) return;
+    await deleteDraft.mutateAsync({ 
+      id: draftToDelete.id, 
+      draftKey: draftToDelete.draft_key 
+    });
+    setDeleteModalOpen(false);
+    setDraftToDelete(null);
   };
 
   return (
@@ -474,7 +490,7 @@ export default function AIAssistDraftsPage() {
                               <DropdownMenuSeparator />
                               <DropdownMenuItem 
                                 className="text-destructive"
-                                onClick={(e) => handleDelete(draft.id, e as unknown as React.MouseEvent)}
+                                onClick={(e) => handleDeleteClick(draft, e as unknown as React.MouseEvent)}
                               >
                                 <Trash2 className="h-4 w-4 mr-2" />
                                 Delete
@@ -496,6 +512,15 @@ export default function AIAssistDraftsPage() {
           open={drawerOpen}
           onOpenChange={setDrawerOpen}
           draft={selectedDraft}
+        />
+
+        {/* Delete confirmation modal */}
+        <DeleteDraftModal
+          open={deleteModalOpen}
+          onOpenChange={setDeleteModalOpen}
+          draftKey={draftToDelete?.draft_key || ''}
+          onConfirm={handleDeleteConfirm}
+          isPending={deleteDraft.isPending}
         />
       </div>
     </TooltipProvider>
