@@ -97,11 +97,13 @@ export function useUploadDocument() {
 
       if (error) throw error;
 
-      // Log audit event
-      await logAuditEvent(input.draft_id, null, 'upload', userId, { 
+      // Log audit event - document_uploaded
+      await logAuditEvent(input.draft_id, null, 'document_uploaded', userId, { 
         file_name: input.file_name,
         file_size: input.file_size,
         mime_type: input.mime_type,
+        storage_path: input.file_path,
+        version: data.document_version || 1,
       });
 
       return data as AIAssistDocument;
@@ -155,9 +157,17 @@ export function useUpdateDocumentExtraction() {
 
       // Log audit event for extraction
       if (status === 'completed') {
-        await logAuditEvent(draftId, null, 'extract', userId, { 
+        await logAuditEvent(draftId, null, 'extraction_completed', userId, { 
           document_id: documentId,
           text_length: extractedText?.length || 0,
+          canonical_text_hash: data.canonical_text_hash,
+          ocr_avg_confidence: data.ocr_avg_confidence,
+          sections_count: data.sections_detected_count,
+          primary_language: data.primary_language,
+        });
+      } else if (status === 'processing') {
+        await logAuditEvent(draftId, null, 'extraction_started', userId, { 
+          document_id: documentId,
         });
       }
 
@@ -191,6 +201,99 @@ export function useDeleteDocument() {
     },
     onError: (error) => {
       toast.error('Failed to delete document: ' + error.message);
+    },
+  });
+}
+
+// Replace a document - logs replacement audit and invalidates steps 2-8
+export function useReplaceDocument() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ 
+      draftId, 
+      oldDocumentId,
+      oldVersion,
+      newDocument 
+    }: { 
+      draftId: string;
+      oldDocumentId: string;
+      oldVersion: number;
+      newDocument: UploadDocumentInput;
+    }): Promise<AIAssistDocument> => {
+      const { data: userData } = await supabase.auth.getUser();
+      const userId = userData.user?.id;
+
+      // Get old document hash for audit
+      const { data: oldDoc } = await supabase
+        .from('ai_assist_documents')
+        .select('file_sha256')
+        .eq('id', oldDocumentId)
+        .single();
+
+      // Soft-delete old document
+      await supabase
+        .from('ai_assist_documents')
+        .update({ extraction_status: 'failed' }) // Mark as replaced
+        .eq('id', oldDocumentId);
+
+      // Calculate new version
+      const newVersion = (oldVersion || 1) + 1;
+
+      // Calculate retention date
+      const retentionDate = new Date();
+      retentionDate.setFullYear(retentionDate.getFullYear() + 2);
+
+      // Create new document
+      const { data, error } = await supabase
+        .from('ai_assist_documents')
+        .insert({
+          draft_id: draftId,
+          file_name: newDocument.file_name,
+          file_path: newDocument.file_path,
+          file_size: newDocument.file_size,
+          mime_type: newDocument.mime_type,
+          storage_bucket: newDocument.storage_bucket || 'ai-assist-documents',
+          uploaded_by: userId,
+          extraction_status: 'pending',
+          retention_until: retentionDate.toISOString(),
+          document_version: newVersion,
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      // Log document_replaced audit event
+      await logAuditEvent(draftId, null, 'document_replaced', userId, { 
+        old_version: oldVersion,
+        new_version: newVersion,
+        old_file_sha: oldDoc?.file_sha256,
+        new_file_name: newDocument.file_name,
+      });
+
+      // Reset draft steps 2-8 via step_data update
+      await supabase
+        .from('ai_assist_drafts')
+        .update({
+          current_step: 1,
+          step_data: {
+            completedSteps: [],
+            lastCompletedStep: null,
+          },
+        })
+        .eq('id', draftId);
+
+      return data as AIAssistDocument;
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ['ai-assist-documents', data.draft_id] });
+      queryClient.invalidateQueries({ queryKey: ['ai-assist-draft', data.draft_id] });
+      queryClient.invalidateQueries({ queryKey: ['ai-assist-drafts'] });
+      toast.success('Document replaced - previous analysis invalidated');
+    },
+    onError: (error) => {
+      toast.error('Failed to replace document: ' + error.message);
     },
   });
 }

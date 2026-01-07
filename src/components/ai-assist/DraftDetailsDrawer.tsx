@@ -3,30 +3,19 @@ import { useNavigate } from 'react-router-dom';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
 import { Skeleton } from '@/components/ui/skeleton';
 import { 
   FileText, Check, AlertTriangle, Link2, Clock, 
-  Download, Trash2, Copy, ArrowRight, User, Bot,
-  Globe, CheckCircle, XCircle, Upload, Calendar
+  Download, Trash2, Copy, ArrowRight, Bot,
+  Globe, CheckCircle, XCircle, Upload, Calendar,
+  AlertCircle
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAIAssistDocuments, type AIAssistDocument } from '@/hooks/useAIAssistDocuments';
 import { useDeleteDraft, type AIAssistDraft } from '@/hooks/useAIAssistDrafts';
 import { catalystToast } from '@/lib/catalystToast';
 import { formatDistanceToNow, format } from 'date-fns';
-
-// Wizard steps for reference
-const WIZARD_STEPS = [
-  { id: 1, name: 'Document Capture', key: 'capture' },
-  { id: 2, name: 'AI Analysis', key: 'analysis' },
-  { id: 3, name: 'FR Processing', key: 'fr' },
-  { id: 4, name: 'Compliance Gate', key: 'compliance' },
-  { id: 5, name: 'Clarification', key: 'clarification' },
-  { id: 6, name: 'BRD Generation', key: 'brd' },
-  { id: 7, name: 'BR Linking', key: 'linking' },
-  { id: 8, name: 'Epic Publishing', key: 'publish' },
-];
+import { validateDraftState, getContinueButtonState, type DraftState, WIZARD_STEPS } from '@/lib/ai-assist-state-machine';
 
 interface DraftDetailsDrawerProps {
   open: boolean;
@@ -42,25 +31,37 @@ export function DraftDetailsDrawer({ open, onOpenChange, draft }: DraftDetailsDr
   const { data: documents = [], isLoading: documentsLoading } = useAIAssistDocuments(draft?.id);
   const latestDoc = documents[0];
   
+  // Validate and compute derived state
+  const validationResult = validateDraftState(draft, documents, []);
+  const draftState = validationResult.correctedState as DraftState;
+  
   if (!draft) return null;
   
   const totalSteps = 8;
-  // current_step is 1-indexed - if user is ON step 8, they've completed steps 1-7
-  const currentStep = draft.current_step || 1;
-  const completedSteps = Math.max(0, Math.min(currentStep - 1, totalSteps));
+  // Use validated state instead of raw draft values
+  const completedSteps = draftState.completedSteps?.length || 0;
   const progressPercent = (completedSteps / totalSteps) * 100;
+  const currentStep = draftState.currentStep || 1;
   const currentStepName = WIZARD_STEPS.find(s => s.id === currentStep)?.name || 'Unknown';
-  const lastCompletedStepName = completedSteps > 0 
-    ? WIZARD_STEPS.find(s => s.id === completedSteps)?.name 
+  const lastCompletedStepName = draftState.lastCompletedStep 
+    ? WIZARD_STEPS.find(s => s.id === draftState.lastCompletedStep)?.name 
     : null;
   
   // Parse step_data for metrics (if available)
   const stepData = draft.step_data as Record<string, unknown> || {};
-  const metrics = {
+  
+  // Metrics should be empty/zero if no document
+  const hasDocument = draftState.hasDocument;
+  const metrics = hasDocument ? {
     evidence: stepData.evidenceCount as number | undefined,
     frs: stepData.frCount as number | undefined,
     compliance: draft.quality_score,
     epics: stepData.epicCount as number | undefined,
+  } : {
+    evidence: undefined,
+    frs: undefined,
+    compliance: undefined,
+    epics: undefined,
   };
   
   // Get linked BR from step_data
@@ -73,7 +74,14 @@ export function DraftDetailsDrawer({ open, onOpenChange, draft }: DraftDetailsDr
     return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
   };
   
+  // Get continue button state from state machine
+  const continueState = getContinueButtonState(draftState);
+  
   const handleContinue = () => {
+    if (!continueState.enabled) {
+      catalystToast.warning('Cannot Continue', continueState.reason || 'Prerequisites not met');
+      return;
+    }
     onOpenChange(false);
     navigate(`/product/ai-assist/${draft.id}`);
   };
@@ -94,12 +102,6 @@ export function DraftDetailsDrawer({ open, onOpenChange, draft }: DraftDetailsDr
         }
       });
     }
-  };
-  
-  const getButtonText = () => {
-    if (completedSteps === 0) return 'Start Wizard';
-    if (completedSteps >= totalSteps) return 'Review & Publish';
-    return `Continue to Step ${draft.current_step}`;
   };
 
   return (
@@ -359,13 +361,24 @@ export function DraftDetailsDrawer({ open, onOpenChange, draft }: DraftDetailsDr
           {/* ═══════════════════════════════════════════════════════════
              SECTION 6: PRIMARY ACTION
              ═══════════════════════════════════════════════════════════ */}
-          <div className="pt-2">
+          <div className="pt-2 space-y-2">
+            {/* Blocked warning */}
+            {draftState.isBlocked && (
+              <div className="flex items-center gap-2 p-3 rounded-lg bg-[hsl(var(--warning))]/10 border border-[hsl(var(--warning))]/30">
+                <AlertCircle className="w-4 h-4 text-[hsl(var(--warning))] flex-shrink-0" />
+                <span className="text-sm text-[hsl(var(--warning))]">
+                  {draftState.blockReason || 'Prerequisites not met'}
+                </span>
+              </div>
+            )}
+            
             <Button 
               size="lg" 
               className="w-full gap-2"
               onClick={handleContinue}
+              disabled={!continueState.enabled}
             >
-              {getButtonText()}
+              {continueState.label}
               <ArrowRight className="w-4 h-4" />
             </Button>
           </div>
