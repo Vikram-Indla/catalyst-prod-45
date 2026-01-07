@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
@@ -16,6 +16,7 @@ import { useDeleteDraft, type AIAssistDraft } from '@/hooks/useAIAssistDrafts';
 import { catalystToast } from '@/lib/catalystToast';
 import { formatDistanceToNow, format } from 'date-fns';
 import { validateDraftState, getContinueButtonState, type DraftState, WIZARD_STEPS } from '@/lib/ai-assist-state-machine';
+import { DeleteDraftModal } from '@/components/ai-assist/DeleteDraftModal';
 
 interface DraftDetailsDrawerProps {
   open: boolean;
@@ -26,6 +27,7 @@ interface DraftDetailsDrawerProps {
 export function DraftDetailsDrawer({ open, onOpenChange, draft }: DraftDetailsDrawerProps) {
   const navigate = useNavigate();
   const deleteDraft = useDeleteDraft();
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   
   // Fetch documents for this draft
   const { data: documents = [], isLoading: documentsLoading } = useAIAssistDocuments(draft?.id);
@@ -94,14 +96,17 @@ export function DraftDetailsDrawer({ open, onOpenChange, draft }: DraftDetailsDr
     catalystToast.info('Coming Soon', 'Duplicate functionality is in development');
   };
   
-  const handleDelete = () => {
-    if (window.confirm('Are you sure you want to delete this draft?')) {
-      deleteDraft.mutate(draft.id, {
-        onSuccess: () => {
-          onOpenChange(false);
-        }
-      });
-    }
+  const handleDeleteClick = () => {
+    setDeleteModalOpen(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    await deleteDraft.mutateAsync({ 
+      id: draft.id, 
+      draftKey: draft.draft_key 
+    });
+    setDeleteModalOpen(false);
+    onOpenChange(false);
   };
 
   return (
@@ -411,7 +416,7 @@ export function DraftDetailsDrawer({ open, onOpenChange, draft }: DraftDetailsDr
               variant="outline" 
               size="sm" 
               className="gap-1.5 text-[hsl(var(--danger))] hover:text-[hsl(var(--danger))] hover:bg-[hsl(var(--danger))]/10"
-              onClick={handleDelete}
+              onClick={handleDeleteClick}
               disabled={deleteDraft.isPending}
             >
               <Trash2 className="w-4 h-4" />
@@ -420,6 +425,15 @@ export function DraftDetailsDrawer({ open, onOpenChange, draft }: DraftDetailsDr
           </div>
         </div>
       </SheetContent>
+
+      {/* Delete confirmation modal */}
+      <DeleteDraftModal
+        open={deleteModalOpen}
+        onOpenChange={setDeleteModalOpen}
+        draftKey={draft.draft_key}
+        onConfirm={handleDeleteConfirm}
+        isPending={deleteDraft.isPending}
+      />
     </Sheet>
   );
 }

@@ -167,32 +167,77 @@ export function useUpdateDraft() {
   });
 }
 
-// Soft delete a draft (admin only)
+// Soft delete a draft with full audit trail
+export interface DeleteDraftInput {
+  id: string;
+  draftKey: string;
+  reason?: string;
+}
+
 export function useDeleteDraft() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (id: string): Promise<void> => {
+    mutationFn: async ({ id, draftKey, reason }: DeleteDraftInput): Promise<void> => {
       const { data: userData } = await supabase.auth.getUser();
       const userId = userData.user?.id;
+      const deletedAt = new Date().toISOString();
 
-      // Soft delete
-      const { error } = await supabase
+      // First check if draft is already deleted
+      const { data: existingDraft, error: checkError } = await supabase
         .from('ai_assist_drafts')
-        .update({ deleted_at: new Date().toISOString() })
+        .select('id, is_deleted, deleted_at')
+        .eq('id', id)
+        .maybeSingle();
+
+      if (checkError) {
+        console.error('[AI Assist] Delete failed - check error', { draft_id: id, error: checkError });
+        throw new Error(`Failed to check draft status: ${checkError.message}`);
+      }
+
+      if (!existingDraft) {
+        console.error('[AI Assist] Delete failed - draft not found', { draft_id: id });
+        throw new Error('Draft not found');
+      }
+
+      if (existingDraft.is_deleted || existingDraft.deleted_at) {
+        console.info('[AI Assist] Draft already deleted', { draft_id: id });
+        throw new Error('Draft already deleted');
+      }
+
+      // Perform soft delete - set all soft delete fields
+      const { error: updateError } = await supabase
+        .from('ai_assist_drafts')
+        .update({ 
+          deleted_at: deletedAt,
+          is_deleted: true,
+          deleted_by: userId,
+        })
         .eq('id', id);
 
-      if (error) throw error;
+      if (updateError) {
+        console.error('[AI Assist] Delete failed', { draft_id: id, error: updateError });
+        throw new Error(`Failed to delete draft: ${updateError.message}`);
+      }
 
-      // Log audit event
-      await logAuditEvent(id, null, 'admin_deleted', userId, { deleted_at: new Date().toISOString() });
+      // Log immutable audit event
+      await logAuditEvent(id, null, 'draft_deleted', userId, { 
+        draft_id: id,
+        draft_key: draftKey,
+        actor_user_id: userId,
+        deleted_at: deletedAt,
+        reason_optional: reason || null,
+      });
+
+      console.info('[AI Assist] Draft deleted successfully', { draft_id: id, draft_key: draftKey });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['ai-assist-drafts'] });
-      toast.success('Draft deleted successfully');
+      toast.success('Draft deleted');
     },
     onError: (error) => {
-      toast.error('Failed to delete draft: ' + error.message);
+      const message = error instanceof Error ? error.message : 'Unknown error';
+      toast.error(`Delete failed: ${message}`);
     },
   });
 }
@@ -202,6 +247,7 @@ export type AuditEventType =
   | 'draft_created'
   | 'draft_opened'
   | 'draft_updated'
+  | 'draft_deleted'
   | 'document_uploaded'
   | 'document_replaced'
   | 'extraction_started'

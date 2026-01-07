@@ -299,9 +299,11 @@ export type Database = {
           created_by: string | null
           current_step: number
           deleted_at: string | null
+          deleted_by: string | null
           dir: string
           draft_key: string
           id: string
+          is_deleted: boolean
           language: string
           prompt_pack_version: string | null
           quality_gaps: Json | null
@@ -319,9 +321,11 @@ export type Database = {
           created_by?: string | null
           current_step?: number
           deleted_at?: string | null
+          deleted_by?: string | null
           dir?: string
           draft_key: string
           id?: string
+          is_deleted?: boolean
           language?: string
           prompt_pack_version?: string | null
           quality_gaps?: Json | null
@@ -339,9 +343,11 @@ export type Database = {
           created_by?: string | null
           current_step?: number
           deleted_at?: string | null
+          deleted_by?: string | null
           dir?: string
           draft_key?: string
           id?: string
+          is_deleted?: boolean
           language?: string
           prompt_pack_version?: string | null
           quality_gaps?: Json | null
