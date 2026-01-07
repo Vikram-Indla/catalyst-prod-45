@@ -17,7 +17,10 @@ export interface CapacityResource {
   avatar_url?: string;
   created_at: string;
   updated_at: string;
+  // Contract date fields (from resource_inventory - realtime subscribed)
+  contract_start_date?: string | null;
   contract_end_date?: string | null;
+  vendor_name?: string | null;
   // Computed
   allocation?: number;
   assignments?: CapacityAssignment[];
