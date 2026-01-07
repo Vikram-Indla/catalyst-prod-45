@@ -1,10 +1,15 @@
 import React, { useCallback, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { Upload, FileText, X, Loader2, CheckCircle, AlertCircle } from 'lucide-react';
+import { Upload, FileText, Loader2, CheckCircle, AlertCircle, AlertTriangle, ChevronDown, ChevronUp, Shield } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
 import { useAIAssistUpload } from '@/hooks/useAIAssistUpload';
+import { formatDistanceToNow } from 'date-fns';
 import type { AIAssistDocument } from '@/hooks/useAIAssistDocuments';
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 
 interface DocumentUploaderProps {
   draftId: string;
@@ -15,6 +20,7 @@ interface DocumentUploaderProps {
 export function DocumentUploader({ draftId, documents, onUploadComplete }: DocumentUploaderProps) {
   const upload = useAIAssistUpload();
   const [uploadProgress, setUploadProgress] = useState<string | null>(null);
+  const [showTechnicalDetails, setShowTechnicalDetails] = useState(false);
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     if (acceptedFiles.length === 0) return;
@@ -49,6 +55,35 @@ export function DocumentUploader({ draftId, documents, onUploadComplete }: Docum
     return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
   };
 
+  const formatUploadTime = (dateString: string) => {
+    try {
+      return formatDistanceToNow(new Date(dateString), { addSuffix: true });
+    } catch {
+      return 'just now';
+    }
+  };
+
+  // Determine document quality based on extracted sections
+  const getDocumentQuality = (doc: AIAssistDocument) => {
+    // Parse page_hashes to get section count if available
+    const pageHashes = doc.page_hashes as { sections?: number; pages?: number } | null;
+    const sectionCount = pageHashes?.sections ?? 0;
+    const pageCount = pageHashes?.pages ?? 0;
+    
+    if (sectionCount === 0) return 'warning';
+    if (sectionCount <= 5) return 'okay';
+    return 'good';
+  };
+
+  const getQualityBorderColor = (quality: string) => {
+    switch (quality) {
+      case 'good': return 'border-[hsl(var(--success))]';
+      case 'okay': return 'border-[hsl(var(--info))]';
+      case 'warning': return 'border-[hsl(var(--warning))]';
+      default: return 'border-border';
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Drop Zone */}
@@ -68,7 +103,7 @@ export function DocumentUploader({ draftId, documents, onUploadComplete }: Docum
           <>
             <Loader2 className="h-12 w-12 mx-auto mb-4 text-[hsl(var(--info))] animate-spin" />
             <p className="text-sm text-muted-foreground mb-2">{uploadProgress || 'Uploading...'}</p>
-            <p className="text-xs text-muted-foreground">Computing SHA-256 hash...</p>
+            <p className="text-xs text-muted-foreground">Verifying document...</p>
           </>
         ) : isDragReject ? (
           <>
@@ -92,50 +127,128 @@ export function DocumentUploader({ draftId, documents, onUploadComplete }: Docum
 
       {/* Uploaded Documents List */}
       {documents.length > 0 && (
-        <div className="border border-[var(--border-subtle)] rounded-lg divide-y divide-[var(--border-subtle)]">
-          <div className="px-4 py-2 bg-[var(--bg-2)]">
-            <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-              Uploaded Documents ({documents.length})
-            </p>
-          </div>
-          {documents.map((doc) => (
-            <div key={doc.id} className="p-4 flex items-center justify-between">
-              <div className="flex items-center gap-3 min-w-0">
-                <FileText className="h-5 w-5 text-muted-foreground flex-shrink-0" />
-                <div className="min-w-0">
-                  <p className="text-sm font-medium truncate">{doc.file_name}</p>
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                    <span>{formatFileSize(doc.file_size)}</span>
-                    <span>•</span>
-                    <span className="font-mono truncate max-w-[120px]" title={doc.file_sha256 || undefined}>
-                      SHA: {doc.file_sha256?.slice(0, 8) || '—'}...
-                    </span>
+        <div className="space-y-4">
+          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+            Uploaded Documents ({documents.length})
+          </p>
+          
+          {documents.map((doc) => {
+            const quality = getDocumentQuality(doc);
+            const pageHashes = doc.page_hashes as { sections?: number; pages?: number; bilingual?: boolean } | null;
+            const sectionCount = pageHashes?.sections ?? 0;
+            const pageCount = pageHashes?.pages ?? 0;
+            const isBilingual = pageHashes?.bilingual ?? false;
+            
+            return (
+              <div key={doc.id} className="space-y-3">
+                {/* Main Document Card */}
+                <div className={cn(
+                  "border-2 rounded-lg p-4 transition-colors",
+                  getQualityBorderColor(quality)
+                )}>
+                  <div className="flex items-start gap-3">
+                    <FileText className={cn(
+                      "h-8 w-8 flex-shrink-0 mt-0.5",
+                      quality === 'good' && "text-[hsl(var(--success))]",
+                      quality === 'okay' && "text-[hsl(var(--info))]",
+                      quality === 'warning' && "text-[hsl(var(--warning))]"
+                    )} />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium truncate">{doc.file_name}</p>
+                      <p className="text-xs text-muted-foreground mt-0.5">
+                        {pageCount > 0 && `${pageCount} pages • `}
+                        {formatFileSize(doc.file_size)} • Uploaded {formatUploadTime(doc.created_at)}
+                      </p>
+                      
+                      {/* Status Badges */}
+                      <div className="flex flex-wrap items-center gap-2 mt-3">
+                        {/* Sections Badge */}
+                        <div className={cn(
+                          "inline-flex items-center gap-1.5 text-xs px-2 py-1 rounded-md",
+                          quality === 'warning' 
+                            ? "bg-[hsl(var(--warning))]/10 text-[hsl(var(--warning))]"
+                            : "bg-muted text-muted-foreground"
+                        )}>
+                          {quality === 'warning' && <AlertTriangle className="h-3 w-3" />}
+                          <span>Sections: {sectionCount}</span>
+                        </div>
+                        
+                        {/* Language Badge */}
+                        <div className="inline-flex items-center gap-1.5 text-xs px-2 py-1 rounded-md bg-muted text-muted-foreground">
+                          <span>Language: {isBilingual ? 'Bilingual' : 'Single'}</span>
+                        </div>
+                        
+                        {/* Verification Badge */}
+                        {doc.file_sha256 && (
+                          <div className="inline-flex items-center gap-1.5 text-xs px-2 py-1 rounded-md bg-[hsl(var(--success))]/10 text-[hsl(var(--success))]">
+                            <Shield className="h-3 w-3" />
+                            <span>Verified</span>
+                          </div>
+                        )}
+                        
+                        {/* Extraction Status */}
+                        <div className={cn(
+                          "inline-flex items-center gap-1.5 text-xs px-2 py-1 rounded-md",
+                          doc.extraction_status === 'completed' && "bg-[hsl(var(--success))]/10 text-[hsl(var(--success))]",
+                          doc.extraction_status === 'processing' && "bg-[hsl(var(--info))]/10 text-[hsl(var(--info))]",
+                          doc.extraction_status === 'failed' && "bg-[hsl(var(--danger))]/10 text-[hsl(var(--danger))]",
+                          (!doc.extraction_status || doc.extraction_status === 'pending') && "bg-muted text-muted-foreground"
+                        )}>
+                          {doc.extraction_status === 'completed' && <CheckCircle className="h-3 w-3" />}
+                          {doc.extraction_status === 'processing' && <Loader2 className="h-3 w-3 animate-spin" />}
+                          {doc.extraction_status === 'failed' && <AlertCircle className="h-3 w-3" />}
+                          <span className="capitalize">{doc.extraction_status || 'pending'}</span>
+                        </div>
+                      </div>
+                    </div>
                   </div>
+                  
+                  {/* Technical Details (Collapsible) */}
+                  {doc.file_sha256 && (
+                    <Collapsible open={showTechnicalDetails} onOpenChange={setShowTechnicalDetails}>
+                      <CollapsibleTrigger className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground mt-3 transition-colors">
+                        {showTechnicalDetails ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
+                        Technical details
+                      </CollapsibleTrigger>
+                      <CollapsibleContent className="mt-2">
+                        <div className="bg-muted/50 rounded p-2 text-xs font-mono text-muted-foreground">
+                          <span className="text-muted-foreground/70">SHA-256: </span>
+                          <span className="break-all">{doc.file_sha256}</span>
+                        </div>
+                      </CollapsibleContent>
+                    </Collapsible>
+                  )}
                 </div>
+                
+                {/* Warning Banner for 0 Sections */}
+                {quality === 'warning' && (
+                  <div className="flex items-start gap-3 p-3 rounded-lg bg-[hsl(var(--warning))]/10 border border-[hsl(var(--warning))]/30">
+                    <AlertTriangle className="h-5 w-5 text-[hsl(var(--warning))] flex-shrink-0 mt-0.5" />
+                    <div>
+                      <p className="text-sm font-medium text-[hsl(var(--warning))]">
+                        No sections detected
+                      </p>
+                      <p className="text-xs text-muted-foreground mt-0.5">
+                        This document has no detectable section headings. Analysis results may be limited. 
+                        For best results, use documents with clear numbered sections.
+                      </p>
+                    </div>
+                  </div>
+                )}
               </div>
-              <span className={cn(
-                "text-xs px-2 py-1 rounded flex-shrink-0",
-                doc.extraction_status === 'completed' && "bg-[hsl(var(--success))]/10 text-[hsl(var(--success))]",
-                doc.extraction_status === 'processing' && "bg-[hsl(var(--info))]/10 text-[hsl(var(--info))]",
-                doc.extraction_status === 'failed' && "bg-[hsl(var(--danger))]/10 text-[hsl(var(--danger))]",
-                (!doc.extraction_status || doc.extraction_status === 'pending') && "bg-muted text-muted-foreground"
-              )}>
-                {doc.extraction_status === 'completed' && <CheckCircle className="h-3 w-3 mr-1 inline" />}
-                {doc.extraction_status || 'pending'}
-              </span>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
 
       {/* Requirements Info */}
       <div className="bg-[var(--bg-2)] rounded-lg p-4">
-        <p className="text-sm font-medium mb-2">Document Requirements</p>
+        <p className="text-sm font-medium mb-2">Document requirements</p>
         <ul className="text-xs text-muted-foreground space-y-1">
           <li>• Must contain clear functional requirements</li>
           <li>• Arabic or English language supported</li>
           <li>• Recommended: Include section headings</li>
-          <li>• File hash computed for deterministic replay</li>
+          <li>• Documents are verified for integrity</li>
         </ul>
       </div>
     </div>
