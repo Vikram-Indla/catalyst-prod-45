@@ -30,10 +30,10 @@ export function useCapacityData() {
         .eq('is_active', true);
       const assignmentTypeMap = new Map(resourceAssignments?.map((a) => [a.id, a.name]) || []);
       
-      // Fetch resource_inventory using profile_id for reliable matching
+      // Fetch resource_inventory using profile_id for reliable matching (includes contract dates)
       const { data: resourceInventory } = await supabase
         .from('resource_inventory')
-        .select('id, name, assignment_id, profile_id, default_capacity_percent');
+        .select('id, name, assignment_id, profile_id, default_capacity_percent, contract_start_date, contract_end_date, vendor_name');
       
       // Fetch product roles for role display (same source as /admin/users)
       const [{ data: userProductRoles }, { data: productRoles }] = await Promise.all([
@@ -98,7 +98,10 @@ export function useCapacityData() {
           avatar_url: p.avatar_url,
           created_at: p.created_at,
           updated_at: p.updated_at,
-          contract_end_date: (p as any).contract_end_date || null,
+          // Use contract dates from resource_inventory (primary source) or profiles (fallback)
+          contract_start_date: (inventory as any)?.contract_start_date || null,
+          contract_end_date: (inventory as any)?.contract_end_date || (p as any).contract_end_date || null,
+          vendor_name: (inventory as any)?.vendor_name || null,
         };
       }) as CapacityResource[];
     },

@@ -16733,6 +16733,8 @@ export type Database = {
       resource_inventory: {
         Row: {
           assignment_id: string | null
+          contract_end_date: string | null
+          contract_start_date: string | null
           created_at: string | null
           default_capacity_percent: number | null
           id: string
@@ -16743,9 +16745,12 @@ export type Database = {
           role_code: string | null
           role_name: string | null
           updated_at: string | null
+          vendor_name: string | null
         }
         Insert: {
           assignment_id?: string | null
+          contract_end_date?: string | null
+          contract_start_date?: string | null
           created_at?: string | null
           default_capacity_percent?: number | null
           id?: string
@@ -16756,9 +16761,12 @@ export type Database = {
           role_code?: string | null
           role_name?: string | null
           updated_at?: string | null
+          vendor_name?: string | null
         }
         Update: {
           assignment_id?: string | null
+          contract_end_date?: string | null
+          contract_start_date?: string | null
           created_at?: string | null
           default_capacity_percent?: number | null
           id?: string
@@ -16769,6 +16777,7 @@ export type Database = {
           role_code?: string | null
           role_name?: string | null
           updated_at?: string | null
+          vendor_name?: string | null
         }
         Relationships: [
           {
