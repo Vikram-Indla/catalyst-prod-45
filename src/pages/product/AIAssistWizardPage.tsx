@@ -28,6 +28,7 @@ import { useAIAssistDocuments } from '@/hooks/useAIAssistDocuments';
 import { useLatestArtifactsForDraft } from '@/hooks/useAIAssistArtifacts';
 import { DocumentUploader } from '@/components/ai-assist/DocumentUploader';
 import { DeterminismPanel } from '@/components/ai-assist/DeterminismPanel';
+import { ComplianceGate } from '@/components/ai-assist/ComplianceGate';
 
 // 8-step wizard configuration
 const WIZARD_STEPS = [
@@ -124,30 +125,22 @@ function FRProcessingStep({ artifacts }: { artifacts: ReturnType<typeof useLates
   );
 }
 
-function ComplianceGateStep({ artifacts }: { artifacts: ReturnType<typeof useLatestArtifactsForDraft>['data'] }) {
-  const complianceArtifact = artifacts?.find(a => a.artifact_type === 'compliance_report');
-  const scores = complianceArtifact?.content_json as { dga_score?: number; nca_score?: number } | null;
 
+function ComplianceGateStepWrapper({ 
+  draftId, 
+  runId,
+  onContinueAllowed 
+}: { 
+  draftId: string; 
+  runId: string | undefined;
+  onContinueAllowed: (allowed: boolean) => void;
+}) {
   return (
-    <div className="space-y-6">
-      <div className="bg-[hsl(var(--warning))]/10 border border-[hsl(var(--warning))]/20 rounded-lg p-4 flex items-center gap-3">
-        <Shield className="h-6 w-6 text-[hsl(var(--warning))]" />
-        <div>
-          <p className="text-sm font-medium text-[hsl(var(--warning))]">Compliance Gate</p>
-          <p className="text-xs text-muted-foreground">DGA/NCA automated scoring</p>
-        </div>
-      </div>
-      <div className="grid grid-cols-2 gap-4">
-        <div className="bg-[var(--bg-2)] rounded-lg p-4">
-          <p className="text-xs text-muted-foreground mb-2">DGA Score</p>
-          <p className="text-3xl font-bold">{scores?.dga_score ?? '—'}</p>
-        </div>
-        <div className="bg-[var(--bg-2)] rounded-lg p-4">
-          <p className="text-xs text-muted-foreground mb-2">NCA Score</p>
-          <p className="text-3xl font-bold">{scores?.nca_score ?? '—'}</p>
-        </div>
-      </div>
-    </div>
+    <ComplianceGate 
+      draftId={draftId} 
+      runId={runId} 
+      onContinueAllowed={onContinueAllowed}
+    />
   );
 }
 
@@ -254,6 +247,7 @@ export default function AIAssistWizardPage() {
   // Local state synced with DB
   const [currentStep, setCurrentStep] = useState(1);
   const [isRtl, setIsRtl] = useState(true);
+  const [complianceContinueAllowed, setComplianceContinueAllowed] = useState(true);
 
   // Sync state from draft when loaded
   useEffect(() => {
@@ -285,8 +279,15 @@ export default function AIAssistWizardPage() {
   };
 
   const handleNextStep = () => {
+    // Block navigation if on compliance step and not allowed
+    if (currentStepConfig?.key === 'compliance' && !complianceContinueAllowed) {
+      return;
+    }
     if (currentStep < 8) handleStepChange(currentStep + 1);
   };
+
+  // Determine if next button should be disabled
+  const isNextDisabled = currentStepConfig?.key === 'compliance' && !complianceContinueAllowed;
 
   const formatEventTime = (dateStr: string) => {
     return new Date(dateStr).toLocaleTimeString('en-US', {
@@ -311,7 +312,13 @@ export default function AIAssistWizardPage() {
       case 'fr':
         return <FRProcessingStep artifacts={artifacts} />;
       case 'compliance':
-        return <ComplianceGateStep artifacts={artifacts} />;
+        return draft?.id ? (
+          <ComplianceGateStepWrapper 
+            draftId={draft.id} 
+            runId={latestRun?.id}
+            onContinueAllowed={setComplianceContinueAllowed}
+          />
+        ) : null;
       case 'clarification':
         return <ClarificationStep artifacts={artifacts} />;
       case 'brd':
@@ -453,10 +460,10 @@ export default function AIAssistWizardPage() {
             </Button>
             <Button
               onClick={handleNextStep}
-              disabled={currentStep === 8}
+              disabled={currentStep === 8 || isNextDisabled}
               className="gap-2"
             >
-              Next
+              {isNextDisabled ? 'Justification Required' : 'Next'}
               <ChevronRight className="h-4 w-4" />
             </Button>
           </div>

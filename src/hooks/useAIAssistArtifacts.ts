@@ -9,6 +9,7 @@ export type ArtifactType =
   | 'memo' 
   | 'functional_requirements' 
   | 'compliance_report' 
+  | 'justification'
   | 'open_questions' 
   | 'brd' 
   | 'epics';
