@@ -1,11 +1,17 @@
 import React, { useCallback, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { Upload, FileText, Check, CheckCircle, Hash, Globe, ChevronRight, Loader2, RefreshCw, Eye, Lightbulb, AlertCircle, Lock, PartyPopper } from 'lucide-react';
+import { Upload, FileText, Check, CheckCircle, Globe, ChevronRight, Loader2, RefreshCw, Eye, Lightbulb, AlertCircle, Lock, Shield, AlertTriangle, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { useAIAssistUpload } from '@/hooks/useAIAssistUpload';
 import { catalystToast } from '@/lib/catalystToast';
+import { formatDistanceToNow } from 'date-fns';
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 
 interface Document {
   id: string;
@@ -15,6 +21,7 @@ interface Document {
   extraction_status: string | null;
   extracted_text: string | null;
   created_at: string;
+  page_count?: number;
 }
 
 interface DocumentCaptureStepProps {
@@ -29,9 +36,18 @@ function formatFileSize(bytes: number): string {
   return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
 }
 
+function formatUploadTime(dateString: string): string {
+  try {
+    return formatDistanceToNow(new Date(dateString), { addSuffix: true });
+  } catch {
+    return 'just now';
+  }
+}
+
 export function DocumentCaptureStep({ draftId, documents, onUploadComplete }: DocumentCaptureStepProps) {
   const upload = useAIAssistUpload();
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [showTechnicalDetails, setShowTechnicalDetails] = useState(false);
 
   const latestDoc = documents[0];
   const hasDocument = !!latestDoc;
@@ -73,39 +89,63 @@ export function DocumentCaptureStep({ draftId, documents, onUploadComplete }: Do
   if (hasDocument) {
     const extractionComplete = latestDoc.extraction_status === 'completed';
     const sectionsDetected = latestDoc.extracted_text ? latestDoc.extracted_text.split('\n\n').length : 0;
+    const pageCount = latestDoc.page_count || Math.ceil(latestDoc.file_size / 50000); // Estimate ~50KB per page
+    
+    // Determine quality level based on sections
+    const quality = sectionsDetected === 0 ? 'warning' : sectionsDetected <= 5 ? 'okay' : 'good';
+    const borderColor = quality === 'warning' 
+      ? 'border-[hsl(var(--warning))]' 
+      : quality === 'okay' 
+        ? 'border-[hsl(var(--info))]' 
+        : 'border-[hsl(var(--success))]';
     
     return (
-      <div className="space-y-6">
-        {/* Document card - success state */}
-        <div className="bg-card border-2 border-[hsl(var(--success))] rounded-xl p-6 transition-all duration-200 hover:shadow-md">
+      <div className="space-y-4">
+        {/* Document card - dynamic state based on quality */}
+        <div className={cn(
+          "bg-card border-2 rounded-xl p-6 transition-all duration-200 hover:shadow-md",
+          borderColor
+        )}>
           <div className="flex gap-5">
             {/* File icon */}
-            <div className="w-14 h-14 bg-[hsl(var(--success))]/10 rounded-lg flex items-center justify-center flex-shrink-0">
-              <FileText className="h-7 w-7 text-[hsl(var(--success))]" />
+            <div className={cn(
+              "w-14 h-14 rounded-lg flex items-center justify-center flex-shrink-0",
+              quality === 'warning' ? "bg-[hsl(var(--warning))]/10" : "bg-[hsl(var(--success))]/10"
+            )}>
+              <FileText className={cn(
+                "h-7 w-7",
+                quality === 'warning' ? "text-[hsl(var(--warning))]" : "text-[hsl(var(--success))]"
+              )} />
             </div>
 
             {/* File info */}
             <div className="flex-1 min-w-0">
               <h3 className="text-base font-semibold truncate">{latestDoc.file_name}</h3>
               <p className="text-sm text-muted-foreground mt-0.5">
-                {formatFileSize(latestDoc.file_size)} • Uploaded just now
+                {pageCount} pages • {formatFileSize(latestDoc.file_size)} • Uploaded {formatUploadTime(latestDoc.created_at)}
               </p>
 
               {/* Progress bar */}
               <div className="mt-4 h-2 bg-muted rounded-full overflow-hidden">
                 <div
-                  className="h-full bg-[hsl(var(--success))] rounded-full transition-all duration-500"
+                  className={cn(
+                    "h-full rounded-full transition-all duration-500",
+                    quality === 'warning' ? "bg-[hsl(var(--warning))]" : "bg-[hsl(var(--success))]"
+                  )}
                   style={{ width: extractionComplete ? '100%' : '75%' }}
                 />
               </div>
 
               {/* Status indicators */}
-              <div className="flex gap-4 mt-3 text-xs font-medium text-[hsl(var(--success))]">
+              <div className={cn(
+                "flex gap-4 mt-3 text-xs font-medium",
+                quality === 'warning' ? "text-[hsl(var(--warning))]" : "text-[hsl(var(--success))]"
+              )}>
                 <span className="flex items-center gap-1">
                   <Check className="h-3.5 w-3.5" /> Text extracted
                 </span>
                 <span className="flex items-center gap-1">
-                  <Check className="h-3.5 w-3.5" /> Hash computed
+                  <Shield className="h-3.5 w-3.5" /> Verified
                 </span>
                 <span className="flex items-center gap-1">
                   <Check className="h-3.5 w-3.5" /> Stored
@@ -114,29 +154,67 @@ export function DocumentCaptureStep({ draftId, documents, onUploadComplete }: Do
             </div>
           </div>
 
-          {/* Metrics cards */}
-          <div className="grid grid-cols-3 gap-4 mt-6">
-            <div className="bg-muted/50 rounded-lg p-4 text-center transition-all duration-200 hover:bg-muted hover:shadow-sm">
-              <p className="text-2xl font-bold">{sectionsDetected}</p>
-              <p className="text-xs text-muted-foreground uppercase tracking-wide mt-1">Sections detected</p>
+          {/* Metrics cards - only 2 now, SHA256 removed */}
+          <div className="grid grid-cols-2 gap-4 mt-6">
+            {/* Sections - with warning state */}
+            <div className={cn(
+              "rounded-lg p-4 text-center transition-all duration-200 hover:shadow-sm",
+              quality === 'warning' 
+                ? "bg-[hsl(var(--warning))]/10 border border-[hsl(var(--warning))]/30" 
+                : "bg-muted/50 hover:bg-muted"
+            )}>
+              <div className="flex items-center justify-center gap-2">
+                {quality === 'warning' && (
+                  <AlertTriangle className="h-5 w-5 text-[hsl(var(--warning))]" />
+                )}
+                <p className={cn(
+                  "text-2xl font-bold",
+                  quality === 'warning' && "text-[hsl(var(--warning))]"
+                )}>{sectionsDetected}</p>
+              </div>
+              <p className={cn(
+                "text-xs mt-1",
+                quality === 'warning' 
+                  ? "text-[hsl(var(--warning))]" 
+                  : "text-muted-foreground"
+              )}>
+                Sections
+              </p>
+              {quality === 'warning' && (
+                <p className="text-xs text-[hsl(var(--warning))]/80 mt-1">
+                  May affect analysis quality
+                </p>
+              )}
             </div>
+            
+            {/* Language */}
             <div className="bg-muted/50 rounded-lg p-4 text-center transition-all duration-200 hover:bg-muted hover:shadow-sm">
               <div className="flex items-center justify-center gap-1">
                 <Globe className="h-4 w-4 text-muted-foreground" />
                 <p className="text-lg font-bold">AR/EN</p>
               </div>
-              <p className="text-xs text-muted-foreground uppercase tracking-wide mt-1">Bilingual detected</p>
-            </div>
-            <div className="bg-muted/50 rounded-lg p-4 text-center transition-all duration-200 hover:bg-muted hover:shadow-sm">
-              <div className="flex items-center justify-center gap-1">
-                <Hash className="h-4 w-4 text-muted-foreground" />
-                <code className="text-sm font-bold">
-                  {latestDoc.file_sha256?.substring(0, 8) || '—'}...
-                </code>
-              </div>
-              <p className="text-xs text-muted-foreground uppercase tracking-wide mt-1">SHA256</p>
+              <p className="text-xs text-muted-foreground mt-1">Language</p>
             </div>
           </div>
+
+          {/* Technical Details - Collapsible */}
+          {latestDoc.file_sha256 && (
+            <Collapsible open={showTechnicalDetails} onOpenChange={setShowTechnicalDetails} className="mt-4">
+              <CollapsibleTrigger className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors">
+                <ChevronDown className={cn(
+                  "h-3 w-3 transition-transform",
+                  showTechnicalDetails && "rotate-180"
+                )} />
+                Technical details
+              </CollapsibleTrigger>
+              <CollapsibleContent className="mt-2">
+                <div className="bg-muted/50 rounded p-3 text-xs font-mono text-muted-foreground">
+                  <span className="text-muted-foreground/70">SHA-256: </span>
+                  <span className="break-all">{latestDoc.file_sha256}</span>
+                </div>
+              </CollapsibleContent>
+            </Collapsible>
+          )}
 
           {/* Actions */}
           <div className="flex gap-3 mt-6">
@@ -151,6 +229,22 @@ export function DocumentCaptureStep({ draftId, documents, onUploadComplete }: Do
             </Button>
           </div>
         </div>
+
+        {/* Warning Banner for 0 Sections */}
+        {quality === 'warning' && (
+          <div className="flex items-start gap-3 p-4 rounded-xl bg-[hsl(var(--warning))]/10 border border-[hsl(var(--warning))]/30">
+            <AlertTriangle className="h-5 w-5 text-[hsl(var(--warning))] flex-shrink-0 mt-0.5" />
+            <div>
+              <p className="text-sm font-medium text-[hsl(var(--warning))]">
+                No sections detected
+              </p>
+              <p className="text-xs text-muted-foreground mt-1">
+                This document has no detectable section headings. Analysis results may be limited. 
+                For best results, use documents with clear numbered sections (e.g., "1.0 Introduction", "2.0 Requirements").
+              </p>
+            </div>
+          </div>
+        )}
       </div>
     );
   }
