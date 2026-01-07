@@ -236,16 +236,16 @@ export default function AIAssistDraftsPage() {
             <table className="w-full text-sm">
               <thead className="sticky top-0 bg-background border-b border-border z-10">
                 <tr>
-                  <th className="text-left px-4 py-3 font-medium text-muted-foreground text-xs uppercase tracking-wide">Draft ID</th>
-                  <th className="text-left px-4 py-3 font-medium text-muted-foreground text-xs uppercase tracking-wide">Document</th>
-                  <th className="text-left px-4 py-3 font-medium text-muted-foreground text-xs uppercase tracking-wide">Lang</th>
-                  <th className="text-left px-4 py-3 font-medium text-muted-foreground text-xs uppercase tracking-wide">Status</th>
-                  <th className="text-left px-4 py-3 font-medium text-muted-foreground text-xs uppercase tracking-wide">Progress</th>
-                  <th className="text-left px-4 py-3 font-medium text-muted-foreground text-xs uppercase tracking-wide">Pack</th>
-                  <th className="text-left px-4 py-3 font-medium text-muted-foreground text-xs uppercase tracking-wide">Compliance</th>
-                  <th className="text-left px-4 py-3 font-medium text-muted-foreground text-xs uppercase tracking-wide">Quality</th>
-                  <th className="text-left px-4 py-3 font-medium text-muted-foreground text-xs uppercase tracking-wide">Updated</th>
-                  <th className="text-right px-4 py-3 font-medium text-muted-foreground text-xs uppercase tracking-wide w-24"></th>
+                  <th className="text-left px-4 py-3 text-xs font-medium text-muted-foreground">Draft ID</th>
+                  <th className="text-left px-4 py-3 text-xs font-medium text-muted-foreground">Document</th>
+                  <th className="text-left px-4 py-3 text-xs font-medium text-muted-foreground">Lang</th>
+                  <th className="text-left px-4 py-3 text-xs font-medium text-muted-foreground">Status</th>
+                  <th className="text-left px-4 py-3 text-xs font-medium text-muted-foreground">Progress</th>
+                  <th className="text-left px-4 py-3 text-xs font-medium text-muted-foreground">Pack</th>
+                  <th className="text-left px-4 py-3 text-xs font-medium text-muted-foreground">Compliance</th>
+                  <th className="text-left px-4 py-3 text-xs font-medium text-muted-foreground">Quality</th>
+                  <th className="text-left px-4 py-3 text-xs font-medium text-muted-foreground">Updated</th>
+                  <th className="text-right px-4 py-3 w-24"></th>
                 </tr>
               </thead>
               <tbody>
@@ -281,17 +281,27 @@ export default function AIAssistDraftsPage() {
                       {/* Document/Title */}
                       <td className="px-4 py-3 max-w-[240px]">
                         <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center flex-shrink-0">
-                            <FileText className="h-4 w-4 text-muted-foreground" />
-                          </div>
-                          <div className="min-w-0">
-                            <div className="font-medium text-sm truncate">
-                              {draft.title || 'Untitled Draft'}
-                            </div>
-                            <div className="text-xs text-muted-foreground truncate">
-                              {draft.title === 'New Draft' ? 'No document uploaded' : 'Document attached'}
-                            </div>
-                          </div>
+                          {draft.title === 'New Draft' || !draft.title ? (
+                            <>
+                              <div className="w-8 h-8 rounded-lg bg-amber-50 dark:bg-amber-900/20 flex items-center justify-center flex-shrink-0">
+                                <AlertTriangle className="h-4 w-4 text-amber-500" />
+                              </div>
+                              <div className="min-w-0">
+                                <div className="font-medium text-sm truncate">Untitled Draft</div>
+                                <div className="text-xs text-amber-600 dark:text-amber-400 truncate">⚠️ No document uploaded</div>
+                              </div>
+                            </>
+                          ) : (
+                            <>
+                              <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center flex-shrink-0">
+                                <FileText className="h-4 w-4 text-muted-foreground" />
+                              </div>
+                              <div className="min-w-0">
+                                <div className="font-medium text-sm truncate">{draft.title}</div>
+                                <div className="text-xs text-muted-foreground truncate">Document attached</div>
+                              </div>
+                            </>
+                          )}
                         </div>
                       </td>
 
@@ -299,7 +309,7 @@ export default function AIAssistDraftsPage() {
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-1.5">
                           <span className="text-base">{draft.language === 'ar' ? '🇸🇦' : '🇬🇧'}</span>
-                          <span className="text-xs text-muted-foreground uppercase">{draft.language}</span>
+                          <span className="text-xs text-muted-foreground">{draft.language === 'ar' ? 'Arabic' : 'English'}</span>
                         </div>
                       </td>
 
@@ -311,26 +321,30 @@ export default function AIAssistDraftsPage() {
                         </Badge>
                       </td>
 
-                      {/* Progress with visual dots */}
+                      {/* Progress with visual dots + bar */}
                       <td className="px-4 py-3">
-                        <div className="space-y-1.5">
-                          <div className="flex items-center gap-1">
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-0.5">
                             {Array.from({ length: 8 }).map((_, i) => (
                               <div
                                 key={i}
                                 className={cn(
                                   "w-2 h-2 rounded-full transition-colors",
-                                  i < completedSteps 
-                                    ? "bg-primary" 
-                                    : i === completedSteps 
-                                      ? "bg-primary/50 ring-2 ring-primary/30" 
-                                      : "bg-muted"
+                                  i < completedSteps && "bg-[hsl(var(--success))]",
+                                  i === completedSteps && "bg-primary ring-2 ring-primary/30",
+                                  i > completedSteps && "bg-muted-foreground/20"
                                 )}
                               />
                             ))}
-                            <span className="text-xs text-muted-foreground ml-1">
+                            <span className="text-xs text-muted-foreground ml-1.5">
                               {completedSteps}/8
                             </span>
+                          </div>
+                          <div className="w-20 h-1 bg-muted rounded-full overflow-hidden">
+                            <div 
+                              className="h-full bg-[hsl(var(--success))] rounded-full transition-all"
+                              style={{ width: `${(completedSteps / 8) * 100}%` }}
+                            />
                           </div>
                           <div className="text-xs text-muted-foreground truncate max-w-[140px]">
                             {currentStepName}
@@ -345,7 +359,7 @@ export default function AIAssistDraftsPage() {
                             {draft.prompt_pack_version}
                           </code>
                         ) : (
-                          <span className="text-xs text-muted-foreground">—</span>
+                          <span className="text-xs text-muted-foreground/50 italic">Not configured</span>
                         )}
                       </td>
 
@@ -359,7 +373,7 @@ export default function AIAssistDraftsPage() {
                             </span>
                           </div>
                         ) : (
-                          <span className="text-xs text-muted-foreground">Pending</span>
+                          <span className="text-xs text-muted-foreground/50 italic">Run analysis</span>
                         )}
                       </td>
 
@@ -388,7 +402,7 @@ export default function AIAssistDraftsPage() {
                             </div>
                           </div>
                         ) : (
-                          <span className="text-xs text-muted-foreground">—</span>
+                          <span className="text-xs text-muted-foreground/50 italic">Run analysis</span>
                         )}
                       </td>
 
