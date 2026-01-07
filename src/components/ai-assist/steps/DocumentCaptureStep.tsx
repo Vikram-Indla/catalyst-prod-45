@@ -219,6 +219,24 @@ export function DocumentCaptureStep({ draftId, documents, onUploadComplete }: Do
                 <span className="text-muted-foreground/60">•</span>
                 <span className="text-xs text-muted-foreground">Arabic/English</span>
               </div>
+
+              {/* Tips inside upload zone */}
+              <div className="mt-5 pt-4 border-t border-border/50">
+                <div className="flex items-center justify-center gap-6 text-xs text-muted-foreground">
+                  <span className="flex items-center gap-1.5">
+                    <CheckCircle className="w-3.5 h-3.5 text-[hsl(var(--success))]" />
+                    Numbered sections
+                  </span>
+                  <span className="flex items-center gap-1.5">
+                    <CheckCircle className="w-3.5 h-3.5 text-[hsl(var(--success))]" />
+                    Section headings
+                  </span>
+                  <span className="flex items-center gap-1.5">
+                    <CheckCircle className="w-3.5 h-3.5 text-[hsl(var(--success))]" />
+                    Bilingual support
+                  </span>
+                </div>
+              </div>
             </>
           )}
         </div>
@@ -269,31 +287,6 @@ export function DocumentCaptureStep({ draftId, documents, onUploadComplete }: Do
         </div>
       </div>
 
-      {/* Tips Section */}
-      <div className="mt-6 p-4 bg-primary/5 border-l-4 border-primary rounded-r-xl">
-        <div className="flex items-start gap-3">
-          <Lightbulb className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-          <div>
-            <h4 className="text-sm font-semibold text-foreground mb-2">
-              Best results when your document includes:
-            </h4>
-            <ul className="text-sm text-muted-foreground space-y-1">
-              <li className="flex items-center gap-2">
-                <CheckCircle className="w-3.5 h-3.5 text-[hsl(var(--success))]" />
-                Clear functional requirements with numbered sections
-              </li>
-              <li className="flex items-center gap-2">
-                <CheckCircle className="w-3.5 h-3.5 text-[hsl(var(--success))]" />
-                Arabic or English content (bilingual supported)
-              </li>
-              <li className="flex items-center gap-2">
-                <CheckCircle className="w-3.5 h-3.5 text-[hsl(var(--success))]" />
-                Section headings for automatic organization
-              </li>
-            </ul>
-          </div>
-        </div>
-      </div>
     </div>
   );
 }
