@@ -238,9 +238,9 @@ export function ComplianceGateStep({
                 isPassing ? "bg-[hsl(var(--success))]/10 text-[hsl(var(--success))]" : "bg-[hsl(var(--warning))]/10 text-[hsl(var(--warning))]"
               )}>
                 {isPassing ? (
-                  <><CheckCircle2 className="h-3 w-3 me-1" /> {cat.passing}/{cat.total} Passing</>
+                  <><CheckCircle2 className="h-3 w-3 me-1" /> {cat.passing}/{cat.total} Compliant</>
                 ) : (
-                  <><AlertTriangle className="h-3 w-3 me-1" /> {cat.passing}/{cat.total} Passing</>
+                  <><AlertTriangle className="h-3 w-3 me-1" /> {cat.passing}/{cat.total} Fully Compliant</>
                 )}
               </Badge>
             </div>
@@ -277,7 +277,7 @@ export function ComplianceGateStep({
                       <Badge variant={isPassing ? "default" : "secondary"} className={cn(
                         isPassing ? "bg-[hsl(var(--success))]/10 text-[hsl(var(--success))]" : "bg-[hsl(var(--warning))]/10 text-[hsl(var(--warning))]"
                       )}>
-                        {category.passing}/{category.total} Passing
+                        {category.passing}/{category.total} Fully Compliant
                       </Badge>
                     </div>
                     <div className="flex items-center gap-4">
@@ -339,7 +339,7 @@ export function ComplianceGateStep({
             <AlertTriangle className="w-6 h-6 text-[hsl(var(--warning))]" />
             <div>
               <h3 className="font-semibold text-foreground">Justification Required</h3>
-              <p className="text-sm text-muted-foreground">Record why you're proceeding despite gaps</p>
+              <p className="text-sm text-muted-foreground">Record why you're proceeding despite {displayCategories.flatMap(c => c.items.filter(i => i.gaps && i.gaps.length > 0)).length} compliance gap(s)</p>
             </div>
           </div>
           
