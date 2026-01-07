@@ -74,3 +74,6 @@ verify_jwt = false
 
 [functions.ai-assist-analyze]
 verify_jwt = false
+
+[functions.capacity-ai]
+verify_jwt = false
