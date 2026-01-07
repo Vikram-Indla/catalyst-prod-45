@@ -13,6 +13,8 @@ export interface AIAssistDocument {
   file_size: number;
   mime_type: string;
   storage_bucket: string;
+  file_sha256: string | null;
+  page_hashes: unknown[] | null;
   extracted_text: string | null;
   extraction_status: ExtractionStatus | null;
   retention_until: string | null;

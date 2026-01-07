@@ -14,10 +14,7 @@ import {
   Link,
   Send,
   Clock,
-  Cpu,
-  User,
-  Loader2,
-  RefreshCw
+  Loader2
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -25,10 +22,12 @@ import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useAIAssistDraft, useUpdateDraft } from '@/hooks/useAIAssistDrafts';
-import { useLatestRun, useAIAssistRuns } from '@/hooks/useAIAssistRuns';
+import { useLatestRun } from '@/hooks/useAIAssistRuns';
 import { useAIAssistAuditEvents } from '@/hooks/useAIAssistDrafts';
 import { useAIAssistDocuments } from '@/hooks/useAIAssistDocuments';
 import { useLatestArtifactsForDraft } from '@/hooks/useAIAssistArtifacts';
+import { DocumentUploader } from '@/components/ai-assist/DocumentUploader';
+import { DeterminismPanel } from '@/components/ai-assist/DeterminismPanel';
 
 // 8-step wizard configuration
 const WIZARD_STEPS = [
@@ -42,55 +41,9 @@ const WIZARD_STEPS = [
   { id: 8, name: 'Epic Publishing', description: 'Publish to backlog', icon: Send, key: 'publish' },
 ];
 
-// Step content components
-function DocumentCaptureStep({ documents }: { documents: ReturnType<typeof useAIAssistDocuments>['data'] }) {
-  const uploadedDocs = documents || [];
-  
-  return (
-    <div className="space-y-6">
-      <div className="border-2 border-dashed border-[var(--border-default)] rounded-lg p-12 text-center hover:border-[hsl(var(--info))] hover:bg-[hsl(var(--info))]/5 transition-colors cursor-pointer">
-        <Upload className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-        <p className="text-sm text-muted-foreground mb-2">Drop your requirements document here</p>
-        <p className="text-xs text-muted-foreground">Supports PDF, DOCX • Max 50MB</p>
-      </div>
-      
-      {uploadedDocs.length > 0 && (
-        <div className="border border-[var(--border-subtle)] rounded-lg divide-y divide-[var(--border-subtle)]">
-          {uploadedDocs.map((doc) => (
-            <div key={doc.id} className="p-4 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <FileText className="h-4 w-4 text-muted-foreground" />
-                <div>
-                  <p className="text-sm font-medium">{doc.file_name}</p>
-                  <p className="text-xs text-muted-foreground">
-                    {(doc.file_size / 1024).toFixed(1)} KB • {doc.extraction_status || 'pending'}
-                  </p>
-                </div>
-              </div>
-              <span className={cn(
-                "text-xs px-2 py-1 rounded",
-                doc.extraction_status === 'completed' && "bg-[hsl(var(--success))]/10 text-[hsl(var(--success))]",
-                doc.extraction_status === 'processing' && "bg-[hsl(var(--info))]/10 text-[hsl(var(--info))]",
-                doc.extraction_status === 'failed' && "bg-[hsl(var(--danger))]/10 text-[hsl(var(--danger))]",
-                (!doc.extraction_status || doc.extraction_status === 'pending') && "bg-muted text-muted-foreground"
-              )}>
-                {doc.extraction_status || 'pending'}
-              </span>
-            </div>
-          ))}
-        </div>
-      )}
-      
-      <div className="bg-[var(--bg-2)] rounded-lg p-4">
-        <p className="text-sm font-medium mb-2">Document Requirements</p>
-        <ul className="text-xs text-muted-foreground space-y-1">
-          <li>• Must contain clear functional requirements</li>
-          <li>• Arabic or English language supported</li>
-          <li>• Recommended: Include section headings</li>
-        </ul>
-      </div>
-    </div>
-  );
+// Step content components - DocumentCaptureStep now uses the dedicated DocumentUploader component
+function DocumentCaptureStepWrapper({ draftId, documents }: { draftId: string; documents: ReturnType<typeof useAIAssistDocuments>['data'] }) {
+  return <DocumentUploader draftId={draftId} documents={documents || []} />;
 }
 
 function AIAnalysisStep({ artifacts }: { artifacts: ReturnType<typeof useLatestArtifactsForDraft>['data'] }) {
@@ -352,7 +305,7 @@ export default function AIAssistWizardPage() {
   const renderStepContent = () => {
     switch (currentStepConfig?.key) {
       case 'capture':
-        return <DocumentCaptureStep documents={documents} />;
+        return draft?.id ? <DocumentCaptureStepWrapper draftId={draft.id} documents={documents} /> : null;
       case 'analysis':
         return <AIAnalysisStep artifacts={artifacts} />;
       case 'fr':
@@ -509,67 +462,18 @@ export default function AIAssistWizardPage() {
           </div>
         </div>
 
-        {/* Right: Run Health Panel */}
+        {/* Right: Determinism & Audit Panel */}
         <div className="bg-[var(--bg-0)] border border-[var(--border-subtle)] rounded-lg flex flex-col overflow-hidden">
           <div className="px-4 py-3 border-b border-[var(--border-subtle)]">
             <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-              Run Health
+              Determinism
             </h3>
           </div>
           <div className="flex-1 p-4 overflow-y-auto space-y-4">
-            {latestRun ? (
-              <>
-                <div>
-                  <p className="text-xs text-muted-foreground mb-1">Canonical Hash</p>
-                  <p className="text-xs font-mono break-all">{latestRun.canonical_text_hash || '—'}</p>
-                </div>
-                <div>
-                  <p className="text-xs text-muted-foreground mb-1">Run Number</p>
-                  <p className="text-xs font-mono">#{latestRun.run_number}</p>
-                </div>
-                <div>
-                  <p className="text-xs text-muted-foreground mb-1">Prompt Pack</p>
-                  <p className="text-xs font-mono">{latestRun.prompt_pack_version || '—'}</p>
-                </div>
-                <div>
-                  <p className="text-xs text-muted-foreground mb-1">Sources Pack</p>
-                  <p className="text-xs font-mono">{latestRun.sources_pack_version || '—'}</p>
-                </div>
-                <div>
-                  <p className="text-xs text-muted-foreground mb-1">AI Model</p>
-                  <div className="flex items-center gap-2">
-                    <Cpu className="h-3 w-3 text-muted-foreground" />
-                    <p className="text-xs font-mono">{latestRun.model_id}</p>
-                  </div>
-                </div>
-                <div>
-                  <p className="text-xs text-muted-foreground mb-1">Status</p>
-                  <span className={cn(
-                    "text-xs px-2 py-1 rounded",
-                    latestRun.status === 'completed' && "bg-[hsl(var(--success))]/10 text-[hsl(var(--success))]",
-                    latestRun.status === 'running' && "bg-[hsl(var(--info))]/10 text-[hsl(var(--info))]",
-                    latestRun.status === 'failed' && "bg-[hsl(var(--danger))]/10 text-[hsl(var(--danger))]",
-                    latestRun.status === 'pending' && "bg-muted text-muted-foreground"
-                  )}>
-                    {latestRun.status}
-                  </span>
-                </div>
-                {latestRun.started_at && (
-                  <div>
-                    <p className="text-xs text-muted-foreground mb-1">Started At</p>
-                    <div className="flex items-center gap-2">
-                      <Clock className="h-3 w-3 text-muted-foreground" />
-                      <p className="text-xs">{new Date(latestRun.started_at).toLocaleString()}</p>
-                    </div>
-                  </div>
-                )}
-              </>
-            ) : (
-              <div className="text-center text-muted-foreground text-xs py-4">
-                <RefreshCw className="h-6 w-6 mx-auto mb-2 opacity-50" />
-                No runs yet
-              </div>
-            )}
+            <DeterminismPanel 
+              latestRun={latestRun} 
+              latestDocument={documents?.[0]} 
+            />
 
             {/* Audit Timeline */}
             <div className="pt-4 border-t border-[var(--border-subtle)]">

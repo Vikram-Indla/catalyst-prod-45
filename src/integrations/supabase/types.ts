@@ -211,9 +211,11 @@ export type Database = {
           extraction_status: string | null
           file_name: string
           file_path: string
+          file_sha256: string | null
           file_size: number
           id: string
           mime_type: string
+          page_hashes: Json | null
           retention_until: string | null
           storage_bucket: string
           updated_at: string
@@ -226,9 +228,11 @@ export type Database = {
           extraction_status?: string | null
           file_name: string
           file_path: string
+          file_sha256?: string | null
           file_size: number
           id?: string
           mime_type: string
+          page_hashes?: Json | null
           retention_until?: string | null
           storage_bucket?: string
           updated_at?: string
@@ -241,9 +245,11 @@ export type Database = {
           extraction_status?: string | null
           file_name?: string
           file_path?: string
+          file_sha256?: string | null
           file_size?: number
           id?: string
           mime_type?: string
+          page_hashes?: Json | null
           retention_until?: string | null
           storage_bucket?: string
           updated_at?: string
