@@ -146,9 +146,9 @@ export default function AIAssistDraftsPage() {
 
   return (
     <TooltipProvider>
-      <div className="flex flex-col h-full">
+      <div className="flex flex-col h-full min-h-0 overflow-hidden">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-border">
+        <div className="flex-shrink-0 flex items-center justify-between px-6 py-4 border-b border-border">
           <div className="flex items-center gap-2 text-sm">
             <span className="text-muted-foreground">Product</span>
             <ChevronRight className="h-4 w-4 text-muted-foreground" />
@@ -167,7 +167,7 @@ export default function AIAssistDraftsPage() {
         </div>
 
         {/* Filters */}
-        <div className="flex items-center gap-4 px-6 py-3 border-b border-border bg-muted/30">
+        <div className="flex-shrink-0 flex items-center gap-4 px-6 py-3 border-b border-border bg-muted/30">
           <div className="relative flex-1 max-w-md">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
