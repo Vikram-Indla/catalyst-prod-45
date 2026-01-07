@@ -1,12 +1,14 @@
 /**
  * Capacity AI Drawer - Chat-based AI assistant for capacity planning
- * Matches the exact design from the reference screenshot
+ * Uses Claude Anthropic API for real AI responses with streaming
  */
 
 import { useState, useRef, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import { X, Send, Bot, RotateCcw } from 'lucide-react';
 import { Input } from '@/components/ui/input';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
 
 interface Message {
   id: string;
@@ -29,55 +31,25 @@ const QUICK_ACTIONS = [
   { id: 'forecast', label: 'Forecast' },
 ];
 
-// Mock AI responses for different queries
-const getMockResponse = (query: string): string => {
-  const lowerQuery = query.toLowerCase();
-  
-  if (lowerQuery.includes('summary') || lowerQuery.includes('executive')) {
-    return `**Capacity Summary**\n\n• **Total Resources:** 24 team members\n• **Average Utilization:** 78%\n• **Over-allocated:** 3 resources (12.5%)\n• **Under-utilized:** 5 resources (20.8%)\n\n**Key Insights:**\n- Delivery team is running at 92% capacity\n- Product team has 15% available bandwidth\n- 2 critical projects need additional backend resources`;
-  }
-  
-  if (lowerQuery.includes('available')) {
-    return `**Available Resources**\n\n1. **Sarah Chen** - Frontend Developer\n   • Current: 60% allocated\n   • Available: 40% (16 hrs/week)\n\n2. **Mike Johnson** - DevOps Engineer\n   • Current: 50% allocated\n   • Available: 50% (20 hrs/week)\n\n3. **Emma Wilson** - QA Analyst\n   • Current: 45% allocated\n   • Available: 55% (22 hrs/week)\n\n*Would you like me to suggest assignments for these resources?*`;
-  }
-  
-  if (lowerQuery.includes('risks') || lowerQuery.includes('risk')) {
-    return `**Capacity Risks Identified**\n\n🔴 **Critical:**\n- Backend team over-allocated by 15% for next sprint\n- No backup for David (Sr. Architect) - single point of failure\n\n🟠 **High:**\n- Mobile team has 3 concurrent deadlines next week\n- QA capacity gap for Project Alpha release\n\n🟡 **Medium:**\n- 2 resources on PTO next month during critical phase\n\n*Shall I suggest mitigation strategies?*`;
-  }
-  
-  if (lowerQuery.includes('backend') || lowerQuery.includes('find')) {
-    return `**Backend Developers Available**\n\n1. **Alex Kumar** - Backend Developer\n   • Skills: Node.js, Python, PostgreSQL\n   • Available: 30% capacity\n   • Recommended for: API development\n\n2. **James Park** - Sr Backend Developer\n   • Skills: Java, Kubernetes, AWS\n   • Available: 25% capacity\n   • Recommended for: Infrastructure work\n\n*Would you like me to create an assignment proposal?*`;
-  }
-  
-  if (lowerQuery.includes('optimize') || lowerQuery.includes('optimization')) {
-    return `**Optimization Recommendations**\n\n1. **Rebalance Project Beta Team**\n   - Move 20% of Tom's allocation from Project Alpha\n   - Expected improvement: +15% velocity\n\n2. **Cross-train QA Resources**\n   - Emma can support mobile testing\n   - Reduces bottleneck risk by 40%\n\n3. **Stagger Sprint Starts**\n   - Offset by 3 days between teams\n   - Reduces peak load conflicts\n\n*Want me to apply any of these optimizations?*`;
-  }
-  
-  if (lowerQuery.includes('forecast')) {
-    return `**Capacity Forecast (Next 4 Weeks)**\n\n📊 **Week 1:** 82% utilized (Optimal)\n📊 **Week 2:** 91% utilized (At Risk)\n📊 **Week 3:** 95% utilized (Critical)\n📊 **Week 4:** 78% utilized (Optimal)\n\n**Projected Issues:**\n- Week 2-3: Backend team needs +2 contractors\n- Week 3: QA bottleneck expected\n\n**Recommendations:**\n- Bring in contract resources by Week 2\n- Shift non-critical work to Week 4\n\n*Need a detailed breakdown by team?*`;
-  }
-  
-  return `I can help you with capacity planning. Here are some things I can do:\n\n• **Executive Summary** - Get a high-level view of team capacity\n• **Find Available Resources** - Identify team members with bandwidth\n• **Risk Analysis** - Spot potential capacity issues\n• **Optimization** - Get recommendations to improve utilization\n• **Forecasting** - Project future capacity needs\n\n*What would you like to explore?*`;
-};
-
 const INITIAL_MESSAGE: Message = {
   id: '1',
   role: 'assistant',
-  content: 'I can help you analyze capacity, find resources, and optimize workloads.\n\nTry: "Executive summary" or "Optimize team"',
+  content: 'I can help you analyze capacity, find resources, and optimize workloads using your real capacity data.\n\nTry: "Executive summary" or "Find available developers"',
   timestamp: new Date(),
 };
 
 export function CapacityAIDrawer({ isOpen, onClose }: CapacityAIDrawerProps) {
   const [messages, setMessages] = useState<Message[]>([INITIAL_MESSAGE]);
+  const [inputValue, setInputValue] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const { toast } = useToast();
 
   const handleClearChat = () => {
     setMessages([{ ...INITIAL_MESSAGE, id: Date.now().toString(), timestamp: new Date() }]);
     setInputValue('');
   };
-  const [inputValue, setInputValue] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
 
   // Scroll to bottom when messages change
   useEffect(() => {
@@ -114,27 +86,125 @@ export function CapacityAIDrawer({ isOpen, onClose }: CapacityAIDrawerProps) {
     setInputValue('');
     setIsLoading(true);
 
-    // Simulate AI response delay
-    setTimeout(() => {
-      const aiResponse: Message = {
-        id: (Date.now() + 1).toString(),
-        role: 'assistant',
-        content: getMockResponse(text),
-        timestamp: new Date(),
-      };
-      setMessages((prev) => [...prev, aiResponse]);
+    // Build conversation history for AI
+    const conversationHistory = [...messages, userMessage]
+      .filter(m => m.id !== '1') // Skip initial greeting
+      .map(m => ({
+        role: m.role,
+        content: m.content,
+      }));
+
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/capacity-ai`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+          },
+          body: JSON.stringify({ messages: conversationHistory }),
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || 'Failed to get AI response');
+      }
+
+      // Handle streaming response
+      const reader = response.body?.getReader();
+      const decoder = new TextDecoder();
+      let assistantContent = '';
+      const assistantMessageId = (Date.now() + 1).toString();
+
+      // Add empty assistant message that we'll update
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: assistantMessageId,
+          role: 'assistant',
+          content: '',
+          timestamp: new Date(),
+        },
+      ]);
+
+      if (reader) {
+        let buffer = '';
+        
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+
+          buffer += decoder.decode(value, { stream: true });
+          
+          // Parse SSE events from Anthropic
+          const lines = buffer.split('\n');
+          buffer = lines.pop() || ''; // Keep incomplete line in buffer
+
+          for (const line of lines) {
+            if (line.startsWith('data: ')) {
+              const jsonStr = line.slice(6).trim();
+              if (jsonStr === '[DONE]') continue;
+              
+              try {
+                const parsed = JSON.parse(jsonStr);
+                
+                // Handle different event types from Anthropic
+                if (parsed.type === 'content_block_delta' && parsed.delta?.text) {
+                  assistantContent += parsed.delta.text;
+                  setMessages((prev) =>
+                    prev.map((m) =>
+                      m.id === assistantMessageId
+                        ? { ...m, content: assistantContent }
+                        : m
+                    )
+                  );
+                }
+              } catch {
+                // Ignore parse errors for incomplete JSON
+              }
+            } else if (line.startsWith('event: ')) {
+              // Handle event types if needed
+            }
+          }
+        }
+      }
+
+      // If no content was streamed, set a fallback
+      if (!assistantContent) {
+        setMessages((prev) =>
+          prev.map((m) =>
+            m.id === assistantMessageId
+              ? { ...m, content: 'I apologize, but I could not generate a response. Please try again.' }
+              : m
+          )
+        );
+      }
+    } catch (error) {
+      console.error('Capacity AI error:', error);
+      
+      toast({
+        title: 'AI Error',
+        description: error instanceof Error ? error.message : 'Failed to get AI response',
+        variant: 'destructive',
+      });
+
+      // Remove the empty assistant message on error
+      setMessages((prev) => prev.filter((m) => m.content !== ''));
+    } finally {
       setIsLoading(false);
-    }, 800);
+    }
   };
 
   const handleQuickAction = (actionId: string) => {
     const actionLabels: Record<string, string> = {
-      'summary': 'Give me an executive summary of capacity',
-      'available': 'Show me available resources',
-      'risks': 'What are the capacity risks?',
+      'summary': 'Give me an executive summary of our current capacity',
+      'available': 'Show me resources with available capacity',
+      'risks': 'What are the capacity risks I should be aware of?',
       'find-backend': 'Find available backend developers',
-      'optimize': 'How can I optimize the team?',
-      'forecast': 'Forecast capacity for next month',
+      'optimize': 'How can I optimize our team utilization?',
+      'forecast': 'Forecast our capacity needs for the next month',
     };
     handleSend(actionLabels[actionId] || actionId);
   };
@@ -172,7 +242,7 @@ export function CapacityAIDrawer({ isOpen, onClose }: CapacityAIDrawerProps) {
             </div>
             <div>
               <h2 className="text-[15px] font-semibold text-white">Capacity AI</h2>
-              <p className="text-[12px] text-white/70">Planning & optimization assistant</p>
+              <p className="text-[12px] text-white/70">Powered by Claude</p>
             </div>
           </div>
 
@@ -212,7 +282,7 @@ export function CapacityAIDrawer({ isOpen, onClose }: CapacityAIDrawerProps) {
               )}
               <div className="text-[13px] text-[hsl(var(--foreground))] leading-relaxed whitespace-pre-wrap">
                 {message.content.split('\n').map((line, i) => {
-                  // Handle bold text
+                  // Handle bold text with **text**
                   const boldPattern = /\*\*(.*?)\*\*/g;
                   const parts = line.split(boldPattern);
                   
@@ -233,7 +303,7 @@ export function CapacityAIDrawer({ isOpen, onClose }: CapacityAIDrawerProps) {
           ))}
 
           {/* Loading indicator */}
-          {isLoading && (
+          {isLoading && messages[messages.length - 1]?.content === '' && (
             <div className="bg-[hsl(var(--muted))] rounded-xl p-4 mr-4">
               <p className="text-[13px] font-semibold text-[hsl(var(--foreground))] mb-2">
                 Capacity AI
