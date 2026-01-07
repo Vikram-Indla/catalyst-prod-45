@@ -170,7 +170,7 @@ import ThemeAuditProbe from "./pages/ThemeAuditProbe";
 import ValueStreamView from "./pages/ValueStreamView";
 import UserProfile from "./pages/UserProfile";
 import NotFound from "./pages/NotFound";
-import EFDesignerPage from "./modules/ef-designer/pages/EFDesignerPage";
+
 import ProgramDirectory from "./pages/ProgramDirectory";
 import ProjectDirectory from "./pages/ProjectDirectory";
 import ProjectSettingsPage from "./pages/ProjectSettingsPage";
@@ -416,7 +416,7 @@ const App = () => (
 <Route path="/product/room" element={<ProductRoomPage />} />
 <Route path="/product/:productId/room" element={<ProductRoomPage />} />
 <Route path="/product/capacity" element={<CapacityPlanningPage />} />
-<Route path="/product/ef-designer" element={<EFDesignerPage />} />
+
 <Route path="/product/ai-assist" element={<AIAssistDraftsPage />} />
 <Route path="/product/ai-assist/:draftId" element={<AIAssistWizardPage />} />
               
