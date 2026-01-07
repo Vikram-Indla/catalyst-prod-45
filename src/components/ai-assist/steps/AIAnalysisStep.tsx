@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Brain, Check, Circle, Loader2, Search, Filter, BookOpen, MessageSquare, FileText } from 'lucide-react';
+import { Brain, Check, Circle, Loader2, Search, Filter, BookOpen, MessageSquare, FileText, FileQuestion, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -13,6 +13,7 @@ export interface AIAnalysisStepProps {
   draftId: string;
   runId?: string;
   onAnalysisComplete?: () => void;
+  onGoToStep?: (step: number) => void;
 }
 
 interface ProcessingStep {
@@ -25,7 +26,7 @@ interface ProcessingStep {
 // Evidence item component
 function EvidenceItem({ evidence, index }: { evidence: { text_en: string; text_ar?: string; page?: string; lines?: string; confidence?: number }; index: number }) {
   return (
-    <div className="bg-muted/50 rounded-lg p-4 space-y-3">
+    <div className="bg-muted/50 rounded-lg p-4 space-y-3 transition-all duration-200 hover:bg-muted hover:shadow-sm">
       <div className="flex items-center justify-between">
         <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-primary/10 text-primary text-xs font-semibold rounded font-mono">
           P{evidence.page || '01'} L{evidence.lines || `${(index * 5 + 1).toString().padStart(3, '0')}`}
@@ -60,7 +61,7 @@ function EvidenceItem({ evidence, index }: { evidence: { text_en: string; text_a
 // Glossary term component
 function GlossaryTerm({ term }: { term: { term_en: string; term_ar?: string; definition?: string } }) {
   return (
-    <div className="bg-muted/50 rounded-lg p-3 space-y-2">
+    <div className="bg-muted/50 rounded-lg p-3 space-y-2 transition-all duration-200 hover:bg-muted hover:shadow-sm">
       <div className="flex items-center gap-2">
         <span className="font-semibold text-sm">{term.term_en}</span>
         {term.term_ar && (
@@ -74,12 +75,17 @@ function GlossaryTerm({ term }: { term: { term_en: string; term_ar?: string; def
   );
 }
 
-export function AIAnalysisStep({ draftId, runId, onAnalysisComplete }: AIAnalysisStepProps) {
+// Skeleton loader component
+function Skeleton({ className }: { className?: string }) {
+  return <div className={cn("animate-pulse bg-muted rounded", className)} />;
+}
+
+export function AIAnalysisStep({ draftId, runId, onAnalysisComplete, onGoToStep }: AIAnalysisStepProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState('evidence');
   
-  const { data: artifacts = [], refetch: refetchArtifacts } = useLatestArtifactsForDraft(draftId);
-  const { data: documents = [] } = useAIAssistDocuments(draftId);
+  const { data: artifacts = [], refetch: refetchArtifacts, isLoading: artifactsLoading } = useLatestArtifactsForDraft(draftId);
+  const { data: documents = [], isLoading: docsLoading } = useAIAssistDocuments(draftId);
   const { runAnalysis, isAnalyzing, progress, currentTask } = useAIAssistAnalyze({
     onSuccess: () => {
       refetchArtifacts();
@@ -118,6 +124,7 @@ export function AIAnalysisStep({ draftId, runId, onAnalysisComplete }: AIAnalysi
   const hasData = evidenceItems.length > 0 || glossaryTerms.length > 0 || memoSections.length > 0;
   const latestDoc = documents[0];
   const hasDocument = !!latestDoc?.extracted_text;
+  const isLoading = artifactsLoading || docsLoading;
 
   const handleStartAnalysis = async () => {
     if (!runId || !latestDoc?.extracted_text) {
@@ -147,7 +154,47 @@ export function AIAnalysisStep({ draftId, runId, onAnalysisComplete }: AIAnalysi
     }
   };
 
-  // Processing state
+  // Loading skeleton state
+  if (isLoading) {
+    return (
+      <div className="space-y-6">
+        <div className="grid grid-cols-3 gap-4">
+          {[1, 2, 3].map(i => (
+            <div key={i} className="bg-card border border-border rounded-xl p-5">
+              <Skeleton className="h-10 w-16 mx-auto mb-2" />
+              <Skeleton className="h-4 w-24 mx-auto" />
+            </div>
+          ))}
+        </div>
+        <Skeleton className="h-64 w-full" />
+      </div>
+    );
+  }
+
+  // Document required state
+  if (!hasDocument && !hasData) {
+    return (
+      <div className="text-center py-16">
+        <div className="w-20 h-20 mx-auto mb-6 bg-muted rounded-2xl flex items-center justify-center">
+          <FileQuestion className="w-10 h-10 text-muted-foreground" />
+        </div>
+        
+        <h3 className="text-xl font-semibold text-foreground mb-2">
+          Document Required
+        </h3>
+        <p className="text-muted-foreground mb-6 max-w-sm mx-auto">
+          Upload a requirements document in Step 1 before running analysis.
+        </p>
+        
+        <Button variant="outline" onClick={() => onGoToStep?.(0)} className="gap-2">
+          <ArrowLeft className="w-4 h-4" />
+          Go to Document Capture
+        </Button>
+      </div>
+    );
+  }
+
+  // Processing state with live progress
   if (isAnalyzing) {
     const steps: ProcessingStep[] = [
       { id: 'parse', label: 'Document parsed', status: progress > 10 ? 'done' : 'active', duration: '2s' },
@@ -158,43 +205,61 @@ export function AIAnalysisStep({ draftId, runId, onAnalysisComplete }: AIAnalysi
     ];
 
     return (
-      <div className="bg-card border border-border rounded-xl p-10 text-center">
-        <div className="w-16 h-16 mx-auto mb-6 text-primary animate-pulse">
-          <Brain className="h-16 w-16" />
+      <div className="text-center py-12">
+        {/* Animated icon */}
+        <div className="relative w-24 h-24 mx-auto mb-6">
+          <div className="absolute inset-0 bg-primary/20 rounded-full animate-ping" style={{ animationDuration: '2s' }} />
+          <div className="relative w-24 h-24 bg-primary rounded-2xl flex items-center justify-center shadow-lg shadow-primary/25">
+            <Brain className="w-12 h-12 text-primary-foreground animate-pulse" />
+          </div>
         </div>
         
-        <h3 className="text-xl font-semibold mb-2">AI Analysis in Progress</h3>
-        <p className="text-sm text-muted-foreground mb-8">
+        <h3 className="text-xl font-semibold text-foreground mb-2">
+          Analyzing Document...
+        </h3>
+        <p className="text-sm text-muted-foreground mb-6">
           {currentTask || 'Processing...'}
         </p>
 
         {/* Progress bar */}
-        <div className="max-w-md mx-auto mb-8">
-          <div className="h-2 bg-muted rounded-full overflow-hidden mb-2">
-            <div
+        <div className="max-w-md mx-auto mb-6">
+          <div className="flex justify-between text-xs text-muted-foreground mb-2">
+            <span>Processing</span>
+            <span>{progress}%</span>
+          </div>
+          <div className="h-2 bg-muted rounded-full overflow-hidden">
+            <div 
               className="h-full bg-gradient-to-r from-primary to-[hsl(var(--success))] rounded-full transition-all duration-500"
               style={{ width: `${progress}%` }}
             />
           </div>
-          <p className="text-sm text-muted-foreground">{progress}%</p>
         </div>
 
-        {/* Processing steps */}
-        <div className="max-w-xs mx-auto text-left space-y-3">
+        {/* Step breakdown */}
+        <div className="max-w-xs mx-auto text-left space-y-2">
           {steps.map((step) => (
-            <div key={step.id} className="flex items-center gap-3 py-2 border-b border-border/50 last:border-0">
-              <div className={cn(
-                "w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0",
-                step.status === 'done' && "bg-[hsl(var(--success))] text-white",
-                step.status === 'active' && "bg-primary text-white animate-pulse",
-                step.status === 'pending' && "bg-muted text-muted-foreground"
+            <div key={step.id} className="flex items-center gap-3 text-sm">
+              {step.status === 'done' ? (
+                <div className="w-5 h-5 rounded-full bg-[hsl(var(--success))] flex items-center justify-center">
+                  <Check className="w-3 h-3 text-white" />
+                </div>
+              ) : step.status === 'active' ? (
+                <div className="w-5 h-5 rounded-full bg-primary flex items-center justify-center">
+                  <Loader2 className="w-3 h-3 text-white animate-spin" />
+                </div>
+              ) : (
+                <div className="w-5 h-5 rounded-full bg-muted flex items-center justify-center">
+                  <Circle className="w-3 h-3 text-muted-foreground" />
+                </div>
+              )}
+              <span className={cn(
+                step.status === 'done' ? 'text-[hsl(var(--success))]' : 
+                step.status === 'active' ? 'text-foreground font-medium' : 
+                'text-muted-foreground'
               )}>
-                {step.status === 'done' && <Check className="h-3 w-3" />}
-                {step.status === 'active' && <Loader2 className="h-3 w-3 animate-spin" />}
-                {step.status === 'pending' && <Circle className="h-3 w-3" />}
-              </div>
-              <span className="flex-1 text-sm">{step.label}</span>
-              <span className="text-xs text-muted-foreground">{step.duration || '—'}</span>
+                {step.label}
+              </span>
+              <span className="ml-auto text-xs text-muted-foreground">{step.duration || '—'}</span>
             </div>
           ))}
         </div>
@@ -206,13 +271,13 @@ export function AIAnalysisStep({ draftId, runId, onAnalysisComplete }: AIAnalysi
   if (hasData) {
     return (
       <div className="space-y-6">
-        {/* Summary cards */}
+        {/* Summary cards with hover states */}
         <div className="grid grid-cols-3 gap-4">
           <button
             onClick={() => setActiveTab('evidence')}
             className={cn(
-              "bg-card border rounded-xl p-5 text-center transition-all hover:shadow-md hover:-translate-y-0.5",
-              activeTab === 'evidence' ? 'border-primary shadow-md' : 'border-border'
+              "bg-card border rounded-xl p-5 text-center transition-all duration-200 hover:shadow-md hover:-translate-y-0.5",
+              activeTab === 'evidence' ? 'border-primary shadow-md' : 'border-border hover:border-primary'
             )}
           >
             <p className="text-4xl font-bold">{evidenceItems.length}</p>
@@ -223,8 +288,8 @@ export function AIAnalysisStep({ draftId, runId, onAnalysisComplete }: AIAnalysi
           <button
             onClick={() => setActiveTab('glossary')}
             className={cn(
-              "bg-card border rounded-xl p-5 text-center transition-all hover:shadow-md hover:-translate-y-0.5",
-              activeTab === 'glossary' ? 'border-primary shadow-md' : 'border-border'
+              "bg-card border rounded-xl p-5 text-center transition-all duration-200 hover:shadow-md hover:-translate-y-0.5",
+              activeTab === 'glossary' ? 'border-primary shadow-md' : 'border-border hover:border-primary'
             )}
           >
             <p className="text-4xl font-bold">{glossaryTerms.length}</p>
@@ -235,8 +300,8 @@ export function AIAnalysisStep({ draftId, runId, onAnalysisComplete }: AIAnalysi
           <button
             onClick={() => setActiveTab('memo')}
             className={cn(
-              "bg-card border rounded-xl p-5 text-center transition-all hover:shadow-md hover:-translate-y-0.5",
-              activeTab === 'memo' ? 'border-primary shadow-md' : 'border-border'
+              "bg-card border rounded-xl p-5 text-center transition-all duration-200 hover:shadow-md hover:-translate-y-0.5",
+              activeTab === 'memo' ? 'border-primary shadow-md' : 'border-border hover:border-primary'
             )}
           >
             <p className="text-4xl font-bold">{memoSections.length}</p>
@@ -270,10 +335,10 @@ export function AIAnalysisStep({ draftId, runId, onAnalysisComplete }: AIAnalysi
                   placeholder="Search..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-9 w-48"
+                  className="pl-9 w-48 focus:ring-2 focus:ring-primary/20 focus:border-primary"
                 />
               </div>
-              <Button variant="outline" size="icon" className="h-9 w-9">
+              <Button variant="outline" size="icon" className="h-9 w-9 transition-all hover:border-primary hover:shadow-sm">
                 <Filter className="h-4 w-4" />
               </Button>
             </div>
@@ -293,7 +358,7 @@ export function AIAnalysisStep({ draftId, runId, onAnalysisComplete }: AIAnalysi
 
           <TabsContent value="memo" className="space-y-4 max-h-96 overflow-y-auto">
             {memoSections.map((section, idx) => (
-              <div key={idx} className="bg-muted/50 rounded-lg p-4">
+              <div key={idx} className="bg-muted/50 rounded-lg p-4 transition-all duration-200 hover:bg-muted hover:shadow-sm">
                 <h4 className="font-semibold mb-2">{section.title}</h4>
                 <p className="text-sm text-muted-foreground">{section.content}</p>
               </div>
@@ -304,43 +369,43 @@ export function AIAnalysisStep({ draftId, runId, onAnalysisComplete }: AIAnalysi
     );
   }
 
-  // Empty/pending state
+  // Empty/pending state - ready to run
   return (
     <div className="space-y-6">
       <div className="bg-muted/50 rounded-xl p-8 text-center">
-        <Brain className="h-12 w-12 mx-auto mb-4 text-primary opacity-60" />
+        <div className="w-16 h-16 mx-auto mb-4 bg-primary/10 rounded-2xl flex items-center justify-center">
+          <Brain className="h-8 w-8 text-primary" />
+        </div>
         <h3 className="text-lg font-semibold mb-2">AI Analysis Engine</h3>
-        <p className="text-sm text-muted-foreground max-w-md mx-auto">
+        <p className="text-sm text-muted-foreground max-w-md mx-auto mb-6">
           Extracts evidence, generates glossary, and creates a deep memo from your document.
         </p>
         <Button 
-          className="mt-6 gap-2" 
+          className="gap-2" 
           onClick={handleStartAnalysis}
           disabled={!hasDocument || !runId}
         >
           <Brain className="h-4 w-4" />
           Start Analysis
         </Button>
-        {!hasDocument && (
-          <p className="text-xs text-muted-foreground mt-2">
-            Upload a document in the previous step first
-          </p>
-        )}
       </div>
 
-      {/* Preview metrics */}
+      {/* Preview metrics - show 0 instead of dashes */}
       <div className="grid grid-cols-3 gap-4">
-        <div className="bg-muted/30 rounded-lg p-4 text-center">
-          <p className="text-2xl font-bold text-muted-foreground">—</p>
-          <p className="text-xs text-muted-foreground mt-1">Evidence Items</p>
+        <div className="bg-card border border-border rounded-xl p-5 text-center opacity-50">
+          <p className="text-3xl font-bold text-muted-foreground">0</p>
+          <p className="text-sm text-muted-foreground mt-1">Evidence Items</p>
+          <p className="text-xs text-muted-foreground mt-2">Run analysis to populate</p>
         </div>
-        <div className="bg-muted/30 rounded-lg p-4 text-center">
-          <p className="text-2xl font-bold text-muted-foreground">—</p>
-          <p className="text-xs text-muted-foreground mt-1">Glossary Terms</p>
+        <div className="bg-card border border-border rounded-xl p-5 text-center opacity-50">
+          <p className="text-3xl font-bold text-muted-foreground">0</p>
+          <p className="text-sm text-muted-foreground mt-1">Glossary Terms</p>
+          <p className="text-xs text-muted-foreground mt-2">Run analysis to populate</p>
         </div>
-        <div className="bg-muted/30 rounded-lg p-4 text-center">
-          <p className="text-2xl font-bold text-muted-foreground">—</p>
-          <p className="text-xs text-muted-foreground mt-1">Memo Sections</p>
+        <div className="bg-card border border-border rounded-xl p-5 text-center opacity-50">
+          <p className="text-3xl font-bold text-muted-foreground">0</p>
+          <p className="text-sm text-muted-foreground mt-1">Memo Sections</p>
+          <p className="text-xs text-muted-foreground mt-2">Run analysis to populate</p>
         </div>
       </div>
     </div>

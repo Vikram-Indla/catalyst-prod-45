@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FileText, Download, FileIcon, Eye, CheckCircle2, AlertTriangle, Loader2 } from 'lucide-react';
+import { FileText, Download, FileIcon, Eye, CheckCircle2, AlertTriangle, Loader2, Code } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
@@ -7,6 +7,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
+import { toast } from 'sonner';
 
 export interface BRDGenerationStepProps {
   draftId?: string;
@@ -26,6 +27,11 @@ export interface BRDGenerationStepProps {
     hasGapRegister?: boolean;
   };
   onExport?: (format: 'pdf' | 'docx' | 'html') => void;
+}
+
+// Skeleton loader
+function Skeleton({ className }: { className?: string }) {
+  return <div className={cn("animate-pulse bg-muted rounded", className)} />;
 }
 
 export function BRDGenerationStep({
@@ -75,18 +81,23 @@ export function BRDGenerationStep({
         return {
           label: 'FINAL',
           description: 'Ready for submission',
-          bgClass: 'bg-success/10 text-success'
+          bgClass: 'bg-[hsl(var(--success))]/10 text-[hsl(var(--success))]'
         };
       case 'final_warn':
         return {
           label: 'FINAL_WARN',
           description: 'Includes GAP register due to compliance gaps',
-          bgClass: 'bg-warning/10 text-warning'
+          bgClass: 'bg-[hsl(var(--warning))]/10 text-[hsl(var(--warning))]'
         };
     }
   };
 
   const modeConfig = getModeConfig();
+
+  const handleExport = (format: 'pdf' | 'docx' | 'html') => {
+    onExport?.(format);
+    toast.success(`Exporting as ${format.toUpperCase()}...`);
+  };
 
   // Generating state
   if (isGenerating) {
@@ -119,7 +130,7 @@ export function BRDGenerationStep({
             ].map((task, idx) => (
               <div key={idx} className="flex items-center gap-3 text-sm">
                 {task.done ? (
-                  <CheckCircle2 className="h-4 w-4 text-success" />
+                  <CheckCircle2 className="h-4 w-4 text-[hsl(var(--success))]" />
                 ) : progress > idx * 25 ? (
                   <Loader2 className="h-4 w-4 text-primary animate-spin" />
                 ) : (
@@ -164,27 +175,27 @@ export function BRDGenerationStep({
   // Results state with preview
   return (
     <div className="space-y-6">
-      {/* Score Overview */}
+      {/* Quality Metrics Cards - ABOVE preview */}
       <div className="grid grid-cols-2 gap-4">
-        <div className="bg-card border border-border rounded-xl p-6">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-sm text-muted-foreground">Quality Score</span>
-            <span className="text-2xl font-bold">{qualityScore}/100</span>
+        <div className="bg-card border border-border rounded-xl p-6 text-center transition-all duration-200 hover:shadow-md hover:-translate-y-0.5">
+          <div className="text-4xl font-bold text-[hsl(var(--success))] mb-1">{(qualityScore / 10).toFixed(1)}</div>
+          <div className="text-sm text-muted-foreground mb-3">Quality Score</div>
+          <div className="h-2 bg-muted rounded-full overflow-hidden">
+            <div 
+              className="h-full bg-[hsl(var(--success))] rounded-full transition-all duration-500" 
+              style={{ width: `${qualityScore}%` }} 
+            />
           </div>
-          <Progress value={qualityScore} className="h-2" />
-          <p className="text-xs text-muted-foreground mt-2">
-            Based on completeness, clarity, and consistency
-          </p>
         </div>
-        <div className="bg-card border border-border rounded-xl p-6">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-sm text-muted-foreground">Traceability</span>
-            <span className="text-2xl font-bold">{traceabilityScore}/100</span>
+        <div className="bg-card border border-border rounded-xl p-6 text-center transition-all duration-200 hover:shadow-md hover:-translate-y-0.5">
+          <div className="text-4xl font-bold text-[hsl(var(--success))] mb-1">{traceabilityScore}%</div>
+          <div className="text-sm text-muted-foreground mb-3">Traceability</div>
+          <div className="h-2 bg-muted rounded-full overflow-hidden">
+            <div 
+              className="h-full bg-[hsl(var(--success))] rounded-full transition-all duration-500" 
+              style={{ width: `${traceabilityScore}%` }} 
+            />
           </div>
-          <Progress value={traceabilityScore} className="h-2" />
-          <p className="text-xs text-muted-foreground mt-2">
-            Evidence links to source document
-          </p>
         </div>
       </div>
 
@@ -197,13 +208,13 @@ export function BRDGenerationStep({
       </div>
 
       {/* BRD Preview */}
-      <div className="bg-card border border-border rounded-xl overflow-hidden">
+      <div className="bg-card border border-border rounded-xl overflow-hidden transition-all duration-200 hover:shadow-md">
         <div className="p-4 border-b border-border flex items-center justify-between">
           <h4 className="font-semibold flex items-center gap-2">
             <Eye className="h-4 w-4" />
             BRD Preview
           </h4>
-          <Button variant="ghost" size="sm">
+          <Button variant="ghost" size="sm" className="transition-all hover:bg-primary/10">
             Full Screen Preview
           </Button>
         </div>
@@ -223,7 +234,7 @@ export function BRDGenerationStep({
                 {preview.sections?.map((section, idx) => (
                   <p key={idx} className="text-sm flex items-center gap-2">
                     {section.includes('⚠️') ? (
-                      <AlertTriangle className="h-3 w-3 text-warning" />
+                      <AlertTriangle className="h-3 w-3 text-[hsl(var(--warning))]" />
                     ) : (
                       <CheckCircle2 className="h-3 w-3 text-muted-foreground" />
                     )}
@@ -242,33 +253,46 @@ export function BRDGenerationStep({
         </ScrollArea>
       </div>
 
-      {/* Export Options */}
+      {/* Export Options - BELOW preview with visual cards */}
+      <div className="grid grid-cols-3 gap-4">
+        <button
+          onClick={() => handleExport('pdf')}
+          className="bg-card border border-border rounded-xl p-6 text-center cursor-pointer transition-all duration-200 hover:border-primary hover:shadow-md hover:-translate-y-0.5 group"
+        >
+          <div className="w-12 h-12 mx-auto mb-3 bg-destructive/10 rounded-xl flex items-center justify-center transition-colors group-hover:bg-destructive/20">
+            <FileText className="w-6 h-6 text-destructive" />
+          </div>
+          <div className="font-medium">Export PDF</div>
+          <div className="text-xs text-muted-foreground mt-1">Print-ready format</div>
+        </button>
+        
+        <button
+          onClick={() => handleExport('docx')}
+          className="bg-card border border-border rounded-xl p-6 text-center cursor-pointer transition-all duration-200 hover:border-primary hover:shadow-md hover:-translate-y-0.5 group"
+        >
+          <div className="w-12 h-12 mx-auto mb-3 bg-primary/10 rounded-xl flex items-center justify-center transition-colors group-hover:bg-primary/20">
+            <FileIcon className="w-6 h-6 text-primary" />
+          </div>
+          <div className="font-medium">Export DOCX</div>
+          <div className="text-xs text-muted-foreground mt-1">Editable document</div>
+        </button>
+        
+        <button
+          onClick={() => handleExport('html')}
+          className="bg-card border border-border rounded-xl p-6 text-center cursor-pointer transition-all duration-200 hover:border-primary hover:shadow-md hover:-translate-y-0.5 group"
+        >
+          <div className="w-12 h-12 mx-auto mb-3 bg-muted rounded-xl flex items-center justify-center transition-colors group-hover:bg-muted/80">
+            <Code className="w-6 h-6 text-muted-foreground" />
+          </div>
+          <div className="font-medium">Export HTML</div>
+          <div className="text-xs text-muted-foreground mt-1">Web format</div>
+        </button>
+      </div>
+
+      {/* Export checkboxes */}
       <div className="bg-card border border-border rounded-xl p-6">
         <h4 className="font-semibold mb-4">Export Options</h4>
-        
-        <div className="grid grid-cols-3 gap-4 mb-6">
-          {[
-            { format: 'pdf' as const, icon: FileIcon, label: 'PDF', description: 'Portable document' },
-            { format: 'docx' as const, icon: FileText, label: 'DOCX', description: 'Editable Word doc' },
-            { format: 'html' as const, icon: FileIcon, label: 'HTML', description: 'Web format' }
-          ].map((opt) => (
-            <button
-              key={opt.format}
-              onClick={() => onExport?.(opt.format)}
-              className="flex flex-col items-center gap-2 p-4 border border-border rounded-xl hover:bg-muted/50 hover:border-primary/50 transition-colors"
-            >
-              <opt.icon className="h-8 w-8 text-primary" />
-              <span className="font-medium text-sm">{opt.label}</span>
-              <span className="text-xs text-muted-foreground">{opt.description}</span>
-              <Button size="sm" className="mt-2 gap-1">
-                <Download className="h-3 w-3" />
-                Export
-              </Button>
-            </button>
-          ))}
-        </div>
-
-        <div className="space-y-3 pt-4 border-t border-border">
+        <div className="space-y-3">
           <div className="flex items-center gap-2">
             <Checkbox
               id="includeEvidence"
