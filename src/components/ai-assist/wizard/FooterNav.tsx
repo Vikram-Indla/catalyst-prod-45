@@ -65,7 +65,7 @@ export function FooterNav({
           disabled={isLastStep || isNextDisabled}
           className={cn(
             "gap-2 min-w-[140px]",
-            isNextDisabled && "bg-[hsl(var(--warning))] hover:bg-[hsl(var(--warning))]/90"
+            isNextDisabled && !!nextDisabledReason && "bg-[hsl(var(--warning))] hover:bg-[hsl(var(--warning))]/90"
           )}
         >
           {isNextDisabled && nextDisabledReason ? (

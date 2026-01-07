@@ -194,16 +194,16 @@ export function AIAnalysisStep({ draftId, runId, onAnalysisComplete, onGoToStep 
         {/* Preview of what AI will extract */}
         <div className="mt-10 pt-8 border-t border-border">
           <p className="text-sm text-muted-foreground mb-4">Once you upload a document, AI will extract:</p>
-          <div className="flex justify-center gap-8">
-            <div className="text-center">
+          <div className="grid grid-cols-3 gap-4 max-w-lg mx-auto">
+            <div className="p-4 bg-muted/30 border border-border rounded-lg text-center">
               <div className="text-2xl font-bold text-muted-foreground/40">—</div>
               <div className="text-xs text-muted-foreground mt-1">Evidence Items</div>
             </div>
-            <div className="text-center">
+            <div className="p-4 bg-muted/30 border border-border rounded-lg text-center">
               <div className="text-2xl font-bold text-muted-foreground/40">—</div>
               <div className="text-xs text-muted-foreground mt-1">Glossary Terms</div>
             </div>
-            <div className="text-center">
+            <div className="p-4 bg-muted/30 border border-border rounded-lg text-center">
               <div className="text-2xl font-bold text-muted-foreground/40">—</div>
               <div className="text-xs text-muted-foreground mt-1">Memo Sections</div>
             </div>
