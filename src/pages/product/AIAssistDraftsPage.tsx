@@ -11,14 +11,36 @@ import {
   CheckCircle,
   AlertCircle,
   PauseCircle,
-  Globe,
-  Loader2
+  Loader2,
+  Copy,
+  Play,
+  MoreHorizontal,
+  Download,
+  Trash2,
+  Files,
+  AlertTriangle,
+  XCircle
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 import { DraftDetailsDrawer } from '@/components/ai-assist/DraftDetailsDrawer';
-import { useAIAssistDrafts, useCreateDraft, type AIAssistDraft, type DraftStatus } from '@/hooks/useAIAssistDrafts';
+import { useAIAssistDrafts, useCreateDraft, useDeleteDraft, type AIAssistDraft, type DraftStatus } from '@/hooks/useAIAssistDrafts';
+import { toast } from 'sonner';
+import { cn } from '@/lib/utils';
 
 // Wizard steps for reference
 const WIZARD_STEPS = [
@@ -32,23 +54,54 @@ const WIZARD_STEPS = [
   { id: 8, name: 'Epic Publishing', key: 'publish' },
 ];
 
-type ComplianceVerdict = 'pass' | 'fail' | 'pending' | 'na' | null;
-
-const STATUS_CONFIG: Record<string, { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline'; icon: React.ReactNode }> = {
-  draft: { label: 'Draft', variant: 'secondary', icon: <FileText className="h-3 w-3" /> },
-  in_progress: { label: 'In Progress', variant: 'default', icon: <Clock className="h-3 w-3" /> },
-  review: { label: 'Review', variant: 'outline', icon: <AlertCircle className="h-3 w-3" /> },
-  approved: { label: 'Approved', variant: 'outline', icon: <CheckCircle className="h-3 w-3" /> },
-  published: { label: 'Published', variant: 'outline', icon: <CheckCircle className="h-3 w-3" /> },
-  archived: { label: 'Archived', variant: 'destructive', icon: <PauseCircle className="h-3 w-3" /> },
+const STATUS_CONFIG: Record<string, { label: string; emoji: string; className: string }> = {
+  draft: { label: 'Draft', emoji: '📝', className: 'bg-muted text-muted-foreground' },
+  in_progress: { label: 'In Progress', emoji: '🔄', className: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' },
+  review: { label: 'Review', emoji: '👁️', className: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400' },
+  approved: { label: 'Approved', emoji: '✅', className: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' },
+  published: { label: 'Published', emoji: '🚀', className: 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400' },
+  archived: { label: 'Archived', emoji: '📦', className: 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400' },
 };
 
-const VERDICT_CONFIG: Record<string, { label: string; className: string }> = {
-  pass: { label: 'Compliant', className: 'bg-[hsl(var(--success))]/10 text-[hsl(var(--success))] border-[hsl(var(--success))]/20' },
-  pending: { label: 'Pending', className: 'bg-[hsl(var(--warning))]/10 text-[hsl(var(--warning))] border-[hsl(var(--warning))]/20' },
-  fail: { label: 'Non-Compliant', className: 'bg-[hsl(var(--danger))]/10 text-[hsl(var(--danger))] border-[hsl(var(--danger))]/20' },
-  na: { label: 'N/A', className: 'bg-muted text-muted-foreground border-muted' },
+const VERDICT_CONFIG: Record<string, { label: string; icon: React.ReactNode; className: string }> = {
+  pass: { label: 'Compliant', icon: <CheckCircle className="h-3.5 w-3.5" />, className: 'text-[hsl(var(--success))]' },
+  pending: { label: 'Pending', icon: <Clock className="h-3.5 w-3.5" />, className: 'text-[hsl(var(--warning))]' },
+  fail: { label: 'Failed', icon: <XCircle className="h-3.5 w-3.5" />, className: 'text-[hsl(var(--danger))]' },
+  na: { label: 'N/A', icon: <AlertCircle className="h-3.5 w-3.5" />, className: 'text-muted-foreground' },
 };
+
+// Format relative time
+function formatRelativeTime(dateStr: string): string {
+  const date = new Date(dateStr);
+  const now = new Date();
+  const diffMs = now.getTime() - date.getTime();
+  const diffMins = Math.floor(diffMs / 60000);
+  const diffHours = Math.floor(diffMs / 3600000);
+  const diffDays = Math.floor(diffMs / 86400000);
+
+  if (diffMins < 1) return 'Just now';
+  if (diffMins < 60) return `${diffMins}m ago`;
+  if (diffHours < 24) return `${diffHours}h ago`;
+  if (diffDays < 7) return `${diffDays}d ago`;
+  
+  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
+
+function formatAbsoluteDate(dateStr: string): string {
+  return new Date(dateStr).toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+}
+
+function formatFileSize(bytes: number): string {
+  if (bytes < 1024) return bytes + ' B';
+  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+  return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+}
 
 export default function AIAssistDraftsPage() {
   const navigate = useNavigate();
@@ -59,6 +112,7 @@ export default function AIAssistDraftsPage() {
 
   const { data: drafts = [], isLoading } = useAIAssistDrafts();
   const createDraft = useCreateDraft();
+  const deleteDraft = useDeleteDraft();
 
   const filteredDrafts = drafts.filter((draft) => {
     const matchesSearch = 
@@ -68,171 +122,352 @@ export default function AIAssistDraftsPage() {
     return matchesSearch && matchesStatus;
   });
 
-  const handleOpenWizard = (draftId: string) => {
+  // Count drafts by status
+  const statusCounts = drafts.reduce((acc, draft) => {
+    acc[draft.status] = (acc[draft.status] || 0) + 1;
+    return acc;
+  }, {} as Record<string, number>);
+
+  const handleOpenWizard = (draftId: string, e?: React.MouseEvent) => {
+    e?.stopPropagation();
     navigate(`/product/ai-assist/${draftId}`);
   };
 
+  const handleCopyId = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    navigator.clipboard.writeText(id);
+    toast.success('Draft ID copied');
+  };
 
-  const formatDate = (dateStr: string | null) => {
-    if (!dateStr) return '—';
-    return new Date(dateStr).toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
+  const handleDelete = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    deleteDraft.mutate(id);
   };
 
   return (
-    <div className="flex flex-col h-full">
-      {/* Header */}
-      <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--border-subtle)]">
-        <div className="flex items-center gap-2 text-sm">
-          <span className="text-muted-foreground">Product</span>
-          <ChevronRight className="h-4 w-4 text-muted-foreground" />
-          <span className="text-muted-foreground">AI Assist</span>
-          <ChevronRight className="h-4 w-4 text-muted-foreground" />
-          <span className="font-medium">Drafts</span>
+    <TooltipProvider>
+      <div className="flex flex-col h-full">
+        {/* Header */}
+        <div className="flex items-center justify-between px-6 py-4 border-b border-border">
+          <div className="flex items-center gap-2 text-sm">
+            <span className="text-muted-foreground">Product</span>
+            <ChevronRight className="h-4 w-4 text-muted-foreground" />
+            <span className="text-muted-foreground">AI Assist</span>
+            <ChevronRight className="h-4 w-4 text-muted-foreground" />
+            <span className="font-medium">Drafts</span>
+          </div>
+          <Button 
+            onClick={() => createDraft.mutate({ title: 'New Draft' }, { onSuccess: (d) => navigate(`/product/ai-assist/${d.id}`) })}
+            disabled={createDraft.isPending}
+            className="gap-2"
+          >
+            {createDraft.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
+            New Draft
+          </Button>
         </div>
-        <Button 
-          onClick={() => createDraft.mutate({ title: 'New Draft' }, { onSuccess: (d) => navigate(`/product/ai-assist/${d.id}`) })}
-          disabled={createDraft.isPending}
-          className="gap-2"
-        >
-          {createDraft.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
-          New Draft
-        </Button>
-      </div>
 
-      {/* Filters */}
-      <div className="flex items-center gap-4 px-6 py-3 border-b border-[var(--border-subtle)] bg-[var(--bg-1)]">
-        <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Search drafts..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-9"
-          />
+        {/* Filters */}
+        <div className="flex items-center gap-4 px-6 py-3 border-b border-border bg-muted/30">
+          <div className="relative flex-1 max-w-md">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Search drafts..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-9"
+            />
+          </div>
+          <div className="flex items-center gap-2">
+            <Filter className="h-4 w-4 text-muted-foreground" />
+            <div className="flex gap-1">
+              {(['all', 'draft', 'in_progress', 'review', 'approved'] as const).map((status) => {
+                const count = status === 'all' ? drafts.length : (statusCounts[status] || 0);
+                return (
+                  <Button
+                    key={status}
+                    variant={statusFilter === status ? 'default' : 'ghost'}
+                    size="sm"
+                    onClick={() => setStatusFilter(status as DraftStatus | 'all')}
+                    className="text-xs gap-1.5"
+                  >
+                    {status === 'all' ? 'All' : (STATUS_CONFIG[status]?.label || status)}
+                    {count > 0 && (
+                      <span className={cn(
+                        "px-1.5 py-0.5 rounded-full text-[10px] font-medium",
+                        statusFilter === status 
+                          ? "bg-primary-foreground/20 text-primary-foreground" 
+                          : "bg-muted text-muted-foreground"
+                      )}>
+                        {count}
+                      </span>
+                    )}
+                  </Button>
+                );
+              })}
+            </div>
+          </div>
         </div>
-        <div className="flex items-center gap-2">
-          <Filter className="h-4 w-4 text-muted-foreground" />
-          <div className="flex gap-1">
-            {(['all', 'draft', 'in_progress', 'review', 'approved'] as const).map((status) => (
-              <Button
-                key={status}
-                variant={statusFilter === status ? 'default' : 'ghost'}
-                size="sm"
-                onClick={() => setStatusFilter(status as DraftStatus | 'all')}
-                className="text-xs"
+
+        {/* Table */}
+        <div className="flex-1 overflow-auto">
+          {isLoading ? (
+            <div className="flex items-center justify-center h-48">
+              <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+            </div>
+          ) : filteredDrafts.length === 0 ? (
+            <div className="flex flex-col items-center justify-center h-64 text-center px-4">
+              <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mb-4">
+                <Bot className="h-8 w-8 text-primary" />
+              </div>
+              <h3 className="text-lg font-semibold mb-2">No drafts yet</h3>
+              <p className="text-muted-foreground text-sm max-w-md mb-6">
+                Create your first AI Assist draft to start transforming requirements into structured BRDs.
+              </p>
+              <Button 
+                onClick={() => createDraft.mutate({ title: 'New Draft' }, { onSuccess: (d) => navigate(`/product/ai-assist/${d.id}`) })}
+                disabled={createDraft.isPending}
+                className="gap-2"
               >
-                {status === 'all' ? 'All' : (STATUS_CONFIG[status]?.label || status)}
+                <Plus className="h-4 w-4" />
+                New Draft
               </Button>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* Table */}
-      <div className="flex-1 overflow-auto">
-        {isLoading ? (
-          <div className="flex items-center justify-center h-48">
-            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-          </div>
-        ) : filteredDrafts.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-48 text-muted-foreground">
-            <Bot className="h-12 w-12 mb-4 opacity-50" />
-            <p>No drafts found</p>
-          </div>
-        ) : (
-        <table className="w-full text-sm">
-          <thead className="sticky top-0 bg-[var(--bg-2)] border-b border-[var(--border-subtle)]">
-            <tr>
-              <th className="text-left px-4 py-3 font-medium text-muted-foreground text-xs uppercase tracking-wide sticky left-0 bg-[var(--bg-2)] z-10">Draft ID</th>
-              <th className="text-left px-4 py-3 font-medium text-muted-foreground text-xs uppercase tracking-wide">Title</th>
-              <th className="text-left px-4 py-3 font-medium text-muted-foreground text-xs uppercase tracking-wide">Lang</th>
-              <th className="text-left px-4 py-3 font-medium text-muted-foreground text-xs uppercase tracking-wide">Status</th>
-              <th className="text-left px-4 py-3 font-medium text-muted-foreground text-xs uppercase tracking-wide">Current Step</th>
-              <th className="text-left px-4 py-3 font-medium text-muted-foreground text-xs uppercase tracking-wide">Prompt Pack</th>
-              <th className="text-left px-4 py-3 font-medium text-muted-foreground text-xs uppercase tracking-wide">Compliance</th>
-              <th className="text-left px-4 py-3 font-medium text-muted-foreground text-xs uppercase tracking-wide">Quality</th>
-              <th className="text-left px-4 py-3 font-medium text-muted-foreground text-xs uppercase tracking-wide">Updated</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredDrafts.map((draft) => {
-              const statusConfig = STATUS_CONFIG[draft.status] || STATUS_CONFIG.draft;
-              const verdictConfig = draft.compliance_verdict ? VERDICT_CONFIG[draft.compliance_verdict] : null;
-              const currentStepName = WIZARD_STEPS.find(s => s.id === draft.current_step)?.name || '—';
-
-              return (
-                <tr
-                  key={draft.id}
-                  onClick={() => { setSelectedDraft(draft); setDrawerOpen(true); }}
-                  className="border-b border-[var(--border-subtle)] hover:bg-[var(--row-hover)] cursor-pointer transition-colors"
-                >
-                  <td className="px-4 py-3 font-mono text-xs sticky left-0 bg-inherit z-10">
-                    <div className="flex items-center gap-2">
-                      <Bot className="h-4 w-4 text-[hsl(var(--info))]" />
-                      {draft.draft_key}
-                    </div>
-                  </td>
-                  <td className="px-4 py-3 max-w-[200px] truncate" title={draft.title}>
-                    {draft.title}
-                  </td>
-                  <td className="px-4 py-3">
-                    <div className="flex items-center gap-1">
-                      <Globe className="h-3 w-3 text-muted-foreground" />
-                      <span className="uppercase text-xs">{draft.language}</span>
-                    </div>
-                  </td>
-                  <td className="px-4 py-3">
-                    <Badge variant={statusConfig.variant} className="gap-1 text-xs">
-                      {statusConfig.icon}
-                      {statusConfig.label}
-                    </Badge>
-                  </td>
-                  <td className="px-4 py-3 text-xs">
-                    <span className="text-muted-foreground">{draft.current_step}/8:</span>{' '}
-                    {currentStepName}
-                  </td>
-                  <td className="px-4 py-3 font-mono text-xs">{draft.prompt_pack_version || '—'}</td>
-                  <td className="px-4 py-3">
-                    {verdictConfig ? (
-                      <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs border ${verdictConfig.className}`}>
-                        {verdictConfig.label}
-                      </span>
-                    ) : '—'}
-                  </td>
-                  <td className="px-4 py-3">
-                    {draft.quality_score !== null ? (
-                      <span className={`font-medium ${
-                        draft.quality_score >= 80 ? 'text-[hsl(var(--success))]' :
-                        draft.quality_score >= 60 ? 'text-[hsl(var(--warning))]' :
-                        'text-[hsl(var(--danger))]'
-                      }`}>
-                        {draft.quality_score}%
-                      </span>
-                    ) : '—'}
-                  </td>
-                  <td className="px-4 py-3 text-xs text-muted-foreground">
-                    {new Date(draft.updated_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
-                  </td>
+            </div>
+          ) : (
+            <table className="w-full text-sm">
+              <thead className="sticky top-0 bg-background border-b border-border z-10">
+                <tr>
+                  <th className="text-left px-4 py-3 font-medium text-muted-foreground text-xs uppercase tracking-wide">Draft ID</th>
+                  <th className="text-left px-4 py-3 font-medium text-muted-foreground text-xs uppercase tracking-wide">Document</th>
+                  <th className="text-left px-4 py-3 font-medium text-muted-foreground text-xs uppercase tracking-wide">Lang</th>
+                  <th className="text-left px-4 py-3 font-medium text-muted-foreground text-xs uppercase tracking-wide">Status</th>
+                  <th className="text-left px-4 py-3 font-medium text-muted-foreground text-xs uppercase tracking-wide">Progress</th>
+                  <th className="text-left px-4 py-3 font-medium text-muted-foreground text-xs uppercase tracking-wide">Pack</th>
+                  <th className="text-left px-4 py-3 font-medium text-muted-foreground text-xs uppercase tracking-wide">Compliance</th>
+                  <th className="text-left px-4 py-3 font-medium text-muted-foreground text-xs uppercase tracking-wide">Quality</th>
+                  <th className="text-left px-4 py-3 font-medium text-muted-foreground text-xs uppercase tracking-wide">Updated</th>
+                  <th className="text-right px-4 py-3 font-medium text-muted-foreground text-xs uppercase tracking-wide w-24"></th>
                 </tr>
-              );
-            })}
-          </tbody>
-        </table>
-        )}
-      </div>
+              </thead>
+              <tbody>
+                {filteredDrafts.map((draft) => {
+                  const statusConfig = STATUS_CONFIG[draft.status] || STATUS_CONFIG.draft;
+                  const verdictConfig = draft.compliance_verdict ? VERDICT_CONFIG[draft.compliance_verdict] : null;
+                  const currentStep = draft.current_step || 1;
+                  const completedSteps = Math.max(0, currentStep - 1);
+                  const currentStepName = WIZARD_STEPS.find(s => s.id === currentStep)?.name || 'Unknown';
 
-      {/* Drawer for draft details */}
-      <DraftDetailsDrawer
-        open={drawerOpen}
-        onOpenChange={setDrawerOpen}
-        draft={selectedDraft}
-      />
-    </div>
+                  return (
+                    <tr
+                      key={draft.id}
+                      onClick={() => { setSelectedDraft(draft); setDrawerOpen(true); }}
+                      className="border-b border-border hover:bg-muted/50 cursor-pointer transition-colors group"
+                    >
+                      {/* Draft ID with copy */}
+                      <td className="px-4 py-3">
+                        <div className="flex items-center gap-2">
+                          <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                            <Bot className="h-3.5 w-3.5 text-primary" />
+                          </div>
+                          <code className="text-xs font-mono text-foreground">{draft.draft_key}</code>
+                          <button
+                            onClick={(e) => handleCopyId(draft.draft_key, e)}
+                            className="opacity-0 group-hover:opacity-100 transition-opacity p-1 hover:bg-muted rounded"
+                          >
+                            <Copy className="h-3 w-3 text-muted-foreground" />
+                          </button>
+                        </div>
+                      </td>
+
+                      {/* Document/Title */}
+                      <td className="px-4 py-3 max-w-[240px]">
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center flex-shrink-0">
+                            <FileText className="h-4 w-4 text-muted-foreground" />
+                          </div>
+                          <div className="min-w-0">
+                            <div className="font-medium text-sm truncate">
+                              {draft.title || 'Untitled Draft'}
+                            </div>
+                            <div className="text-xs text-muted-foreground truncate">
+                              {draft.title === 'New Draft' ? 'No document uploaded' : 'Document attached'}
+                            </div>
+                          </div>
+                        </div>
+                      </td>
+
+                      {/* Language with flag */}
+                      <td className="px-4 py-3">
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-base">{draft.language === 'ar' ? '🇸🇦' : '🇬🇧'}</span>
+                          <span className="text-xs text-muted-foreground uppercase">{draft.language}</span>
+                        </div>
+                      </td>
+
+                      {/* Status with emoji */}
+                      <td className="px-4 py-3">
+                        <Badge className={cn("gap-1 text-xs font-medium", statusConfig.className)}>
+                          <span>{statusConfig.emoji}</span>
+                          {statusConfig.label}
+                        </Badge>
+                      </td>
+
+                      {/* Progress with visual dots */}
+                      <td className="px-4 py-3">
+                        <div className="space-y-1.5">
+                          <div className="flex items-center gap-1">
+                            {Array.from({ length: 8 }).map((_, i) => (
+                              <div
+                                key={i}
+                                className={cn(
+                                  "w-2 h-2 rounded-full transition-colors",
+                                  i < completedSteps 
+                                    ? "bg-primary" 
+                                    : i === completedSteps 
+                                      ? "bg-primary/50 ring-2 ring-primary/30" 
+                                      : "bg-muted"
+                                )}
+                              />
+                            ))}
+                            <span className="text-xs text-muted-foreground ml-1">
+                              {completedSteps}/8
+                            </span>
+                          </div>
+                          <div className="text-xs text-muted-foreground truncate max-w-[140px]">
+                            {currentStepName}
+                          </div>
+                        </div>
+                      </td>
+
+                      {/* Prompt Pack */}
+                      <td className="px-4 py-3">
+                        {draft.prompt_pack_version ? (
+                          <code className="text-xs px-1.5 py-0.5 bg-muted rounded font-mono">
+                            {draft.prompt_pack_version}
+                          </code>
+                        ) : (
+                          <span className="text-xs text-muted-foreground">—</span>
+                        )}
+                      </td>
+
+                      {/* Compliance with score bar */}
+                      <td className="px-4 py-3">
+                        {verdictConfig ? (
+                          <div className="flex items-center gap-1.5">
+                            <span className={verdictConfig.className}>{verdictConfig.icon}</span>
+                            <span className={cn("text-xs font-medium", verdictConfig.className)}>
+                              {verdictConfig.label}
+                            </span>
+                          </div>
+                        ) : (
+                          <span className="text-xs text-muted-foreground">Pending</span>
+                        )}
+                      </td>
+
+                      {/* Quality with mini bar */}
+                      <td className="px-4 py-3">
+                        {draft.quality_score !== null ? (
+                          <div className="flex items-center gap-2">
+                            <span className={cn(
+                              "text-sm font-semibold tabular-nums",
+                              draft.quality_score >= 80 ? 'text-[hsl(var(--success))]' :
+                              draft.quality_score >= 60 ? 'text-[hsl(var(--warning))]' :
+                              'text-[hsl(var(--danger))]'
+                            )}>
+                              {draft.quality_score}
+                            </span>
+                            <div className="w-12 h-1.5 bg-muted rounded-full overflow-hidden">
+                              <div 
+                                className={cn(
+                                  "h-full rounded-full transition-all",
+                                  draft.quality_score >= 80 ? 'bg-[hsl(var(--success))]' :
+                                  draft.quality_score >= 60 ? 'bg-[hsl(var(--warning))]' :
+                                  'bg-[hsl(var(--danger))]'
+                                )}
+                                style={{ width: `${draft.quality_score}%` }}
+                              />
+                            </div>
+                          </div>
+                        ) : (
+                          <span className="text-xs text-muted-foreground">—</span>
+                        )}
+                      </td>
+
+                      {/* Updated - relative time */}
+                      <td className="px-4 py-3">
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <span className="text-xs text-muted-foreground cursor-default">
+                              {formatRelativeTime(draft.updated_at)}
+                            </span>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            {formatAbsoluteDate(draft.updated_at)}
+                          </TooltipContent>
+                        </Tooltip>
+                      </td>
+
+                      {/* Actions */}
+                      <td className="px-4 py-3">
+                        <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8"
+                            onClick={(e) => handleOpenWizard(draft.id, e)}
+                          >
+                            <Play className="h-4 w-4" />
+                          </Button>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8"
+                                onClick={(e) => e.stopPropagation()}
+                              >
+                                <MoreHorizontal className="h-4 w-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuItem onClick={(e) => handleOpenWizard(draft.id, e as unknown as React.MouseEvent)}>
+                                <Play className="h-4 w-4 mr-2" />
+                                Open Wizard
+                              </DropdownMenuItem>
+                              <DropdownMenuItem>
+                                <Files className="h-4 w-4 mr-2" />
+                                Duplicate
+                              </DropdownMenuItem>
+                              <DropdownMenuItem>
+                                <Download className="h-4 w-4 mr-2" />
+                                Export
+                              </DropdownMenuItem>
+                              <DropdownMenuSeparator />
+                              <DropdownMenuItem 
+                                className="text-destructive"
+                                onClick={(e) => handleDelete(draft.id, e as unknown as React.MouseEvent)}
+                              >
+                                <Trash2 className="h-4 w-4 mr-2" />
+                                Delete
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          )}
+        </div>
+
+        {/* Drawer for draft details */}
+        <DraftDetailsDrawer
+          open={drawerOpen}
+          onOpenChange={setDrawerOpen}
+          draft={selectedDraft}
+        />
+      </div>
+    </TooltipProvider>
   );
 }
-
