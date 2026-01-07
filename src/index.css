@@ -4576,3 +4576,35 @@ table .text-gray-500,
 .dark .dark\:hover\:text-neutral-300:hover {
   color: var(--fg-1) !important;
 }
+
+/* ════════════════════════════════════════════════════════════════════════════
+   CATALYST V5 — INTERACTIVE CARD EFFECTS
+   Card hover states with primary accent
+   ════════════════════════════════════════════════════════════════════════════ */
+
+.card-interactive,
+[data-card-hover] {
+  transition: all 200ms ease;
+}
+
+.card-interactive:hover,
+[data-card-hover]:hover {
+  border-color: hsl(var(--primary));
+  box-shadow: 0 4px 12px hsl(var(--primary) / 0.1);
+  transform: translateY(-2px);
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   CATALYST V5 — INPUT FOCUS STATES
+   Enhanced focus ring for inputs, textareas, selects
+   ════════════════════════════════════════════════════════════════════════════ */
+
+.input-focus-ring:focus,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible,
+[data-slot="control"]:focus-within {
+  outline: none;
+  border-color: hsl(var(--primary)) !important;
+  box-shadow: 0 0 0 3px hsl(var(--primary) / 0.1) !important;
+}
