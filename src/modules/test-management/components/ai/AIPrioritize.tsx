@@ -384,12 +384,12 @@ export function AIPrioritize({
                               className={cn(
                                 'font-mono mb-1',
                                 pCase.priority_score > 80
-                                  ? 'bg-red-500'
+                                  ? 'bg-[hsl(var(--danger))]'
                                   : pCase.priority_score > 60
-                                  ? 'bg-orange-500'
+                                  ? 'bg-[hsl(var(--warning))]'
                                   : pCase.priority_score > 40
-                                  ? 'bg-yellow-500'
-                                  : 'bg-gray-500',
+                                  ? 'bg-[hsl(var(--info))]'
+                                  : 'bg-muted-foreground/60',
                                 'text-white'
                               )}
                             >

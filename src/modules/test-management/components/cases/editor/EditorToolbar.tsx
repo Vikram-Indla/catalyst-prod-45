@@ -107,16 +107,16 @@ export function EditorToolbar({ onAIAssist, onPreview, onFullscreen }: EditorToo
           onClick={onAIAssist}
           className={cn(
             'inline-flex items-center gap-1.5 px-3 py-1.5',
-            'bg-gradient-to-r from-primary/10 to-purple-500/10',
+            'bg-gradient-to-r from-primary/10 to-primary/5',
             'border border-primary/20 rounded-lg',
             'text-xs font-medium text-primary',
             'cursor-pointer transition-all duration-150',
-            'hover:from-primary/20 hover:to-purple-500/20',
+            'hover:from-primary/20 hover:to-primary/10',
             'hover:border-primary/30 hover:shadow-[0_0_20px_hsl(var(--primary)/0.15)]',
             'hover:-translate-y-px'
           )}
         >
-          <div className="flex items-center justify-center w-[18px] h-[18px] bg-gradient-to-br from-primary to-purple-500 rounded text-white">
+          <div className="flex items-center justify-center w-[18px] h-[18px] bg-primary rounded text-white">
             <Sparkles className="h-3 w-3" />
           </div>
           AI Assist

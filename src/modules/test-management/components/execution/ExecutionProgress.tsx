@@ -19,13 +19,14 @@ interface ExecutionProgressProps {
   onStepClick: (index: number) => void;
 }
 
+// Catalyst V5 semantic colors
 const STATUS_COLORS: Record<ExecutionStatus, string> = {
-  not_run: 'bg-slate-300 dark:bg-slate-600',
-  in_progress: 'bg-blue-500',
-  passed: 'bg-green-500',
-  failed: 'bg-red-500',
-  blocked: 'bg-orange-500',
-  skipped: 'bg-gray-400',
+  not_run: 'bg-muted-foreground/40',
+  in_progress: 'bg-[hsl(var(--info))]',
+  passed: 'bg-[hsl(var(--success))]',
+  failed: 'bg-[hsl(var(--danger))]',
+  blocked: 'bg-[hsl(var(--warning))]',
+  skipped: 'bg-muted-foreground/30',
 };
 
 export function ExecutionProgress({
@@ -53,19 +54,19 @@ export function ExecutionProgress({
         <div className="flex items-center gap-3 text-xs">
           {passedCount > 0 && (
             <span className="flex items-center gap-1">
-              <span className="w-2 h-2 rounded-full bg-green-500" />
+              <span className="w-2 h-2 rounded-full bg-[hsl(var(--success))]" />
               {passedCount} passed
             </span>
           )}
           {failedCount > 0 && (
             <span className="flex items-center gap-1">
-              <span className="w-2 h-2 rounded-full bg-red-500" />
+              <span className="w-2 h-2 rounded-full bg-[hsl(var(--danger))]" />
               {failedCount} failed
             </span>
           )}
           {blockedCount > 0 && (
             <span className="flex items-center gap-1">
-              <span className="w-2 h-2 rounded-full bg-orange-500" />
+              <span className="w-2 h-2 rounded-full bg-[hsl(var(--warning))]" />
               {blockedCount} blocked
             </span>
           )}

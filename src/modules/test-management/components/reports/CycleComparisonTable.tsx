@@ -13,11 +13,12 @@ interface CycleComparisonTableProps {
   className?: string;
 }
 
+// Catalyst V5 semantic colors
 const statusColors: Record<string, string> = {
-  completed: 'bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-400',
-  in_progress: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
-  active: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
-  planned: 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-400',
+  completed: 'bg-success/20 text-success-foreground',
+  in_progress: 'bg-info/20 text-info-foreground',
+  active: 'bg-info/20 text-info-foreground',
+  planned: 'bg-muted text-muted-foreground',
 };
 
 export function CycleComparisonTable({ cycles, className }: CycleComparisonTableProps) {
@@ -120,10 +121,10 @@ function MiniStackedBar({ passed, failed, blocked, skipped, total }: MiniStacked
 
   return (
     <div className="flex h-1.5 w-24 rounded-full overflow-hidden">
-      <div className="bg-teal-500" style={{ width: `${passedPct}%` }} />
-      <div className="bg-red-500" style={{ width: `${failedPct}%` }} />
-      <div className="bg-orange-500" style={{ width: `${blockedPct}%` }} />
-      <div className="bg-gray-400" style={{ width: `${skippedPct}%` }} />
+      <div className="bg-[hsl(var(--success))]" style={{ width: `${passedPct}%` }} />
+      <div className="bg-[hsl(var(--danger))]" style={{ width: `${failedPct}%` }} />
+      <div className="bg-[hsl(var(--warning))]" style={{ width: `${blockedPct}%` }} />
+      <div className="bg-muted-foreground/40" style={{ width: `${skippedPct}%` }} />
     </div>
   );
 }
