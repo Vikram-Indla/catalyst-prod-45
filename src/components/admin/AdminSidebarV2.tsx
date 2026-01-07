@@ -44,6 +44,7 @@ const adminPockets = [
       { label: 'Users', path: '/admin/users' },
       { label: 'Roles & Permissions', path: '/admin/roles-permissions' },
       { label: 'Resource Departments', path: '/admin/capacity-departments' },
+      { label: 'Resource Assignments', path: '/admin/resource-assignments' },
     ],
   },
   {
@@ -68,7 +69,6 @@ const adminPockets = [
       { label: 'Projects', path: '/admin/programs' },
       { label: 'Programs', path: '/admin/portfolios' },
       { label: 'Departments', path: '/admin/departments' },
-      { label: 'Resource Assignments', path: '/admin/resource-assignments' },
       { label: 'Business Owners', path: '/admin/business-owners' },
       { label: 'Business Processes', path: '/admin/business-processes' },
       { label: 'Product Lines', path: '/admin/product-settings' },
