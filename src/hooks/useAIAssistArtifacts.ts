@@ -3,30 +3,35 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import type { Json } from '@/integrations/supabase/types';
 
+// Artifact types allowed by database check constraint
 export type ArtifactType = 
-  | 'evidence' 
-  | 'glossary' 
-  | 'memo' 
-  | 'functional_requirements' 
-  | 'compliance_report' 
-  | 'justification'
-  | 'open_questions' 
-  | 'brd' 
+  | 'epic'
   | 'epics'
+  | 'feature'
+  | 'story'
+  | 'acceptance_criteria'
   | 'summary'
-  | 'summary_pdf';
+  | 'summary_pdf'
+  | 'compliance_report'
+  | 'quality_report'
+  | 'evidence'
+  | 'glossary'
+  | 'memo'
+  | 'functional_requirements'
+  | 'justification'
+  | 'open_questions'
+  | 'brd';
 
 export interface AIAssistArtifact {
   id: string;
   run_id: string;
-  draft_id: string;
+  draft_id: string | null;
   artifact_type: ArtifactType;
   artifact_key: string;
   content_json: Json | null;
   content_html: string | null;
   content_hash: string | null;
   version: number;
-  is_latest: boolean;
   supersedes_artifact_id: string | null;
   created_at: string;
 }
