@@ -520,7 +520,7 @@ export function CreateDefectDialogEnterprise({
                         checked={form.watch('is_security_issue')}
                         onCheckedChange={(c) => form.setValue('is_security_issue', !!c)}
                       />
-                      <Shield className="h-4 w-4 text-purple-500" />
+                      <Shield className="h-4 w-4" style={{ color: 'var(--danger-fg)' }} />
                       <span className="text-sm">Security Issue</span>
                     </label>
                     <label className="flex items-center gap-2 cursor-pointer">
@@ -528,7 +528,7 @@ export function CreateDefectDialogEnterprise({
                         checked={form.watch('customer_reported')}
                         onCheckedChange={(c) => form.setValue('customer_reported', !!c)}
                       />
-                      <Users className="h-4 w-4 text-blue-500" />
+                      <Users className="h-4 w-4" style={{ color: 'var(--info-fg)' }} />
                       <span className="text-sm">Customer Reported</span>
                     </label>
                   </div>

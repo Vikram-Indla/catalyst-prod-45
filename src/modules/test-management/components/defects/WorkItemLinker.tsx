@@ -33,12 +33,13 @@ interface WorkItemLinkerProps {
   projectId?: string | null;
 }
 
+// V5 Semantic Colors - no purple allowed
 const TYPE_CONFIG: Record<string, { color: string; label: string }> = {
-  epic: { color: 'bg-purple-500', label: 'Epic' },
-  feature: { color: 'bg-blue-500', label: 'Feature' },
-  story: { color: 'bg-green-500', label: 'Story' },
-  test_case: { color: 'bg-teal-500', label: 'Test Case' },
-  test_execution: { color: 'bg-orange-500', label: 'Execution' },
+  epic: { color: 'bg-[hsl(var(--info))]', label: 'Epic' },
+  feature: { color: 'bg-[hsl(var(--info))]/70', label: 'Feature' },
+  story: { color: 'bg-[hsl(var(--success))]', label: 'Story' },
+  test_case: { color: 'bg-[hsl(var(--success))]/70', label: 'Test Case' },
+  test_execution: { color: 'bg-[hsl(var(--warning))]', label: 'Execution' },
 };
 
 const LINK_TYPES = [
