@@ -305,7 +305,10 @@ export function EpicPublishingStep({
 
                     <CollapsibleContent>
                       <div className="mt-4 pt-4 border-t border-border space-y-3">
-                        <p className="text-sm">{epic.description}</p>
+                        <div className="text-sm text-muted-foreground">
+                          <span className="font-medium text-foreground">References: </span>
+                          {epic.references.join(', ')}
+                        </div>
                         <div className="flex items-center gap-2">
                           <Button size="sm" variant="outline" className="transition-all hover:border-primary">Edit</Button>
                           <Button size="sm" variant="ghost">View FRs</Button>
