@@ -174,9 +174,9 @@ export function AIAnalysisStep({ draftId, runId, onAnalysisComplete, onGoToStep 
   // Document required state
   if (!hasDocument && !hasData) {
     return (
-      <div className="text-center py-16">
-        <div className="w-20 h-20 mx-auto mb-6 bg-muted rounded-2xl flex items-center justify-center">
-          <FileQuestion className="w-10 h-10 text-muted-foreground" />
+      <div className="text-center py-12">
+        <div className="w-20 h-20 mx-auto mb-6 bg-amber-50 dark:bg-amber-950/30 rounded-2xl flex items-center justify-center">
+          <FileQuestion className="w-10 h-10 text-amber-500" />
         </div>
         
         <h3 className="text-xl font-semibold text-foreground mb-2">
@@ -190,6 +190,25 @@ export function AIAnalysisStep({ draftId, runId, onAnalysisComplete, onGoToStep 
           <ArrowLeft className="w-4 h-4" />
           Go to Document Capture
         </Button>
+
+        {/* Preview of what AI will extract */}
+        <div className="mt-10 pt-8 border-t border-border">
+          <p className="text-sm text-muted-foreground mb-4">Once you upload a document, AI will extract:</p>
+          <div className="flex justify-center gap-8">
+            <div className="text-center">
+              <div className="text-2xl font-bold text-muted-foreground/40">—</div>
+              <div className="text-xs text-muted-foreground mt-1">Evidence Items</div>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl font-bold text-muted-foreground/40">—</div>
+              <div className="text-xs text-muted-foreground mt-1">Glossary Terms</div>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl font-bold text-muted-foreground/40">—</div>
+              <div className="text-xs text-muted-foreground mt-1">Memo Sections</div>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
