@@ -197,10 +197,20 @@ export function useDeleteDraft() {
   });
 }
 
-// Audit event logging
+// Audit event logging - all required events per JOB-139
 export type AuditEventType =
-  | 'upload'
-  | 'extract'
+  | 'draft_created'
+  | 'draft_opened'
+  | 'draft_updated'
+  | 'document_uploaded'
+  | 'document_replaced'
+  | 'extraction_started'
+  | 'extraction_completed'
+  | 'extraction_reviewed'
+  | 'quality_warn_acknowledged'
+  | 'step_completed'
+  | 'state_corrected'
+  | 'continue_blocked'
   | 'run_started'
   | 'run_completed'
   | 'content_changed'
@@ -211,9 +221,10 @@ export type AuditEventType =
   | 'epics_published'
   | 'export_pdf'
   | 'admin_deleted'
-  | 'draft_created'
-  | 'draft_updated'
-  | 'step_changed';
+  | 'step_changed'
+  // Legacy - keep for backwards compat
+  | 'upload'
+  | 'extract';
 
 export async function logAuditEvent(
   draftId: string,
