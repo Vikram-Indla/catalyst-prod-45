@@ -45,9 +45,11 @@ export function DraftDetailsDrawer({ open, onOpenChange, draft }: DraftDetailsDr
   if (!draft) return null;
   
   const totalSteps = 8;
-  const completedSteps = draft.current_step - 1; // Current step is the one user is ON, so completed = current - 1
+  // current_step is 1-indexed - if user is ON step 8, they've completed steps 1-7
+  const currentStep = draft.current_step || 1;
+  const completedSteps = Math.max(0, Math.min(currentStep - 1, totalSteps));
   const progressPercent = (completedSteps / totalSteps) * 100;
-  const currentStepName = WIZARD_STEPS.find(s => s.id === draft.current_step)?.name || 'Unknown';
+  const currentStepName = WIZARD_STEPS.find(s => s.id === currentStep)?.name || 'Unknown';
   const lastCompletedStepName = completedSteps > 0 
     ? WIZARD_STEPS.find(s => s.id === completedSteps)?.name 
     : null;
