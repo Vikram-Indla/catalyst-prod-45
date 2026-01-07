@@ -1,47 +1,54 @@
 /**
  * Defect Configuration - Enterprise-grade defect tracking options
+ * 
+ * Catalyst V5 Semantic Colors:
+ * - Danger (red): blocker, critical, failed
+ * - Warning (orange): major, high priority, at risk
+ * - Info (blue): minor, in progress
+ * - Success (teal): verified, closed
+ * - Neutral: trivial, low priority, deferred
  */
 
 export const DEFECT_TYPES = [
-  { value: 'bug', label: 'Bug', icon: 'Bug', color: 'red' },
-  { value: 'ui_issue', label: 'UI Issue', icon: 'Layout', color: 'orange' },
-  { value: 'performance', label: 'Performance', icon: 'Zap', color: 'yellow' },
-  { value: 'security', label: 'Security', icon: 'Shield', color: 'purple' },
-  { value: 'data_issue', label: 'Data Issue', icon: 'Database', color: 'blue' },
-  { value: 'integration', label: 'Integration', icon: 'Link', color: 'cyan' },
-  { value: 'crash', label: 'Crash/Hang', icon: 'AlertTriangle', color: 'red' },
-  { value: 'usability', label: 'Usability', icon: 'Users', color: 'green' },
+  { value: 'bug', label: 'Bug', icon: 'Bug', color: 'danger' },
+  { value: 'ui_issue', label: 'UI Issue', icon: 'Layout', color: 'warning' },
+  { value: 'performance', label: 'Performance', icon: 'Zap', color: 'warning' },
+  { value: 'security', label: 'Security', icon: 'Shield', color: 'danger' },
+  { value: 'data_issue', label: 'Data Issue', icon: 'Database', color: 'info' },
+  { value: 'integration', label: 'Integration', icon: 'Link', color: 'info' },
+  { value: 'crash', label: 'Crash/Hang', icon: 'AlertTriangle', color: 'danger' },
+  { value: 'usability', label: 'Usability', icon: 'Users', color: 'muted' },
 ] as const;
 
 export const SEVERITY_LEVELS = [
-  { value: 'blocker', label: 'Blocker', color: 'bg-red-700', description: 'System down, data loss' },
-  { value: 'critical', label: 'Critical', color: 'bg-red-600', description: 'Major feature broken' },
-  { value: 'major', label: 'Major', color: 'bg-orange-500', description: 'Feature impaired' },
-  { value: 'minor', label: 'Minor', color: 'bg-blue-500', description: 'Minor inconvenience' },
-  { value: 'trivial', label: 'Trivial', color: 'bg-gray-400', description: 'Cosmetic issue' },
+  { value: 'blocker', label: 'Blocker', color: 'bg-[hsl(var(--danger))]', description: 'System down, data loss' },
+  { value: 'critical', label: 'Critical', color: 'bg-[hsl(var(--danger))]/80', description: 'Major feature broken' },
+  { value: 'major', label: 'Major', color: 'bg-[hsl(var(--warning))]', description: 'Feature impaired' },
+  { value: 'minor', label: 'Minor', color: 'bg-[hsl(var(--info))]', description: 'Minor inconvenience' },
+  { value: 'trivial', label: 'Trivial', color: 'bg-muted-foreground/50', description: 'Cosmetic issue' },
 ] as const;
 
 export const PRIORITY_LEVELS = [
-  { value: 'blocker', label: 'P0 - Blocker', color: 'bg-red-700', description: 'Must fix immediately' },
-  { value: 'critical', label: 'P1 - Critical', color: 'bg-red-500', description: 'Fix in current sprint' },
-  { value: 'high', label: 'P2 - High', color: 'bg-orange-500', description: 'Fix soon' },
-  { value: 'medium', label: 'P3 - Medium', color: 'bg-yellow-500', description: 'Normal priority' },
-  { value: 'low', label: 'P4 - Low', color: 'bg-gray-400', description: 'Fix when possible' },
+  { value: 'blocker', label: 'P0 - Blocker', color: 'bg-[hsl(var(--danger))]', description: 'Must fix immediately' },
+  { value: 'critical', label: 'P1 - Critical', color: 'bg-[hsl(var(--danger))]/80', description: 'Fix in current sprint' },
+  { value: 'high', label: 'P2 - High', color: 'bg-[hsl(var(--warning))]', description: 'Fix soon' },
+  { value: 'medium', label: 'P3 - Medium', color: 'bg-[hsl(var(--warning))]/60', description: 'Normal priority' },
+  { value: 'low', label: 'P4 - Low', color: 'bg-muted-foreground/50', description: 'Fix when possible' },
 ] as const;
 
 export const STATUS_OPTIONS = [
-  { value: 'new', label: 'New', color: 'bg-gray-500' },
-  { value: 'open', label: 'Open', color: 'bg-blue-500' },
-  { value: 'in_progress', label: 'In Progress', color: 'bg-yellow-500' },
-  { value: 'in_review', label: 'In Review', color: 'bg-purple-500' },
-  { value: 'ready_for_test', label: 'Ready for Test', color: 'bg-cyan-500' },
-  { value: 'in_testing', label: 'In Testing', color: 'bg-indigo-500' },
-  { value: 'verified', label: 'Verified', color: 'bg-green-500' },
-  { value: 'closed', label: 'Closed', color: 'bg-green-700' },
-  { value: 'reopened', label: 'Reopened', color: 'bg-orange-600' },
-  { value: 'deferred', label: 'Deferred', color: 'bg-gray-400' },
-  { value: 'wont_fix', label: "Won't Fix", color: 'bg-gray-600' },
-  { value: 'duplicate', label: 'Duplicate', color: 'bg-gray-500' },
+  { value: 'new', label: 'New', color: 'bg-muted-foreground/60' },
+  { value: 'open', label: 'Open', color: 'bg-[hsl(var(--info))]' },
+  { value: 'in_progress', label: 'In Progress', color: 'bg-[hsl(var(--info))]/80' },
+  { value: 'in_review', label: 'In Review', color: 'bg-[hsl(var(--info))]/60' },
+  { value: 'ready_for_test', label: 'Ready for Test', color: 'bg-[hsl(var(--info))]/50' },
+  { value: 'in_testing', label: 'In Testing', color: 'bg-[hsl(var(--info))]/70' },
+  { value: 'verified', label: 'Verified', color: 'bg-[hsl(var(--success))]' },
+  { value: 'closed', label: 'Closed', color: 'bg-[hsl(var(--success))]/80' },
+  { value: 'reopened', label: 'Reopened', color: 'bg-[hsl(var(--warning))]' },
+  { value: 'deferred', label: 'Deferred', color: 'bg-muted-foreground/40' },
+  { value: 'wont_fix', label: "Won't Fix", color: 'bg-muted-foreground/50' },
+  { value: 'duplicate', label: 'Duplicate', color: 'bg-muted-foreground/40' },
 ] as const;
 
 export const FREQUENCY_OPTIONS = [

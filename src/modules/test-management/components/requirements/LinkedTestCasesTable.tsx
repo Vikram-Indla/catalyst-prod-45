@@ -21,19 +21,20 @@ interface LinkedTestCasesTableProps {
   isLoading?: boolean;
 }
 
+// Catalyst V5 semantic colors
 const PRIORITY_CONFIG: Record<string, { label: string; className: string }> = {
-  highest: { label: 'Highest', className: 'bg-red-100 text-red-600' },
-  high: { label: 'High', className: 'bg-red-100 text-red-600' },
-  medium: { label: 'Medium', className: 'bg-amber-100 text-amber-600' },
-  low: { label: 'Low', className: 'bg-teal-100 text-teal-600' },
-  lowest: { label: 'Lowest', className: 'bg-slate-100 text-slate-600' },
+  highest: { label: 'Highest', className: 'bg-danger/20 text-danger-foreground' },
+  high: { label: 'High', className: 'bg-danger/15 text-danger-foreground' },
+  medium: { label: 'Medium', className: 'bg-warning/20 text-warning-foreground' },
+  low: { label: 'Low', className: 'bg-success/20 text-success-foreground' },
+  lowest: { label: 'Lowest', className: 'bg-muted text-muted-foreground' },
 };
 
 const STATUS_CONFIG: Record<string, { label: string; dotClass: string }> = {
-  passed: { label: 'Passed', dotClass: 'bg-teal-500' },
-  failed: { label: 'Failed', dotClass: 'bg-red-500' },
-  blocked: { label: 'Blocked', dotClass: 'bg-amber-500' },
-  not_run: { label: 'Not Run', dotClass: 'bg-slate-300' },
+  passed: { label: 'Passed', dotClass: 'bg-[hsl(var(--success))]' },
+  failed: { label: 'Failed', dotClass: 'bg-[hsl(var(--danger))]' },
+  blocked: { label: 'Blocked', dotClass: 'bg-[hsl(var(--warning))]' },
+  not_run: { label: 'Not Run', dotClass: 'bg-muted-foreground/40' },
 };
 
 export function LinkedTestCasesTable({

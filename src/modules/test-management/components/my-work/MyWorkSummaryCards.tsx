@@ -56,8 +56,8 @@ export function MyWorkSummaryCards({
       label: 'Not Run',
       value: notRun,
       icon: CircleDashed,
-      colorClass: 'text-slate-600',
-      bgClass: 'bg-slate-100 dark:bg-slate-900',
+      colorClass: 'text-muted-foreground',
+      bgClass: 'bg-muted',
       status: 'not_run',
     },
     {
@@ -65,8 +65,8 @@ export function MyWorkSummaryCards({
       label: 'In Progress',
       value: inProgress,
       icon: Play,
-      colorClass: 'text-blue-600',
-      bgClass: 'bg-blue-50 dark:bg-blue-950',
+      colorClass: 'text-info-foreground',
+      bgClass: 'bg-info/20',
       status: 'in_progress',
     },
     {
@@ -74,8 +74,8 @@ export function MyWorkSummaryCards({
       label: 'Passed Today',
       value: passed,
       icon: CheckCircle2,
-      colorClass: 'text-green-600',
-      bgClass: 'bg-green-50 dark:bg-green-950',
+      colorClass: 'text-success-foreground',
+      bgClass: 'bg-success/20',
       status: 'passed',
     },
     {
@@ -83,8 +83,8 @@ export function MyWorkSummaryCards({
       label: 'Failed Today',
       value: failed,
       icon: XCircle,
-      colorClass: 'text-red-600',
-      bgClass: 'bg-red-50 dark:bg-red-950',
+      colorClass: 'text-danger-foreground',
+      bgClass: 'bg-danger/20',
       status: 'failed',
     },
   ];

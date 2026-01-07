@@ -106,11 +106,12 @@ interface StatItemProps {
   color: 'teal' | 'red' | 'orange' | 'gray';
 }
 
+// Catalyst V5 semantic colors
 const colorClasses = {
-  teal: 'bg-teal-500',
-  red: 'bg-red-500',
-  orange: 'bg-orange-500',
-  gray: 'bg-gray-400',
+  teal: 'bg-[hsl(var(--success))]',
+  red: 'bg-[hsl(var(--danger))]',
+  orange: 'bg-[hsl(var(--warning))]',
+  gray: 'bg-muted-foreground/40',
 };
 
 function StatItem({ icon: Icon, label, value, color }: StatItemProps) {

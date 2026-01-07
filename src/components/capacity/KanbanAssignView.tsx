@@ -13,31 +13,31 @@ import type { ResourceMetric } from '@/modules/capacity-planner';
 import type { ResourceAssignment } from '@/modules/capacity-planner/hooks/useResourceAssignments';
 import { useResourceAllocations, type ResourceAllocation } from '@/modules/capacity-planner/hooks/useResourceAllocations';
 
-// Assignment Avatar Colors - Catalyst V5 compliant
+// Assignment Avatar Colors - Catalyst V5 compliant (uses only V5 palette)
 const assignmentColors: Record<string, { bg: string; text: string }> = {
   'Senaei BAU': { bg: 'bg-[#2563eb]', text: 'text-white' },
   'Innovation Platform': { bg: 'bg-[#1d4ed8]', text: 'text-white' },
   'Inspection Program': { bg: 'bg-[#0d9488]', text: 'text-white' },
   'International Operations': { bg: 'bg-[#0f766e]', text: 'text-white' },
-  'MIM Website': { bg: 'bg-[#4f8a4f]', text: 'text-white' },
-  'Senaei OPS': { bg: 'bg-[#3d6b3d]', text: 'text-white' },
-  'Sectorial Services': { bg: 'bg-[#8b7355]', text: 'text-white' },
-  'Tahommena': { bg: 'bg-[#6b5842]', text: 'text-white' },
+  'MIM Website': { bg: 'bg-[#2563eb]', text: 'text-white' },
+  'Senaei OPS': { bg: 'bg-[#1e40af]', text: 'text-white' },
+  'Sectorial Services': { bg: 'bg-[#71717a]', text: 'text-white' },
+  'Tahommena': { bg: 'bg-[#52525b]', text: 'text-white' },
   'Data Platform': { bg: 'bg-[#3b82f6]', text: 'text-white' },
-  'Unassigned': { bg: 'bg-[#9ca3af]', text: 'text-white' },
+  'Unassigned': { bg: 'bg-[#71717a]', text: 'text-white' },
 };
 
-// Color palette for dynamic assignment matching
+// Color palette for dynamic assignment matching - V5 compliant (no banned colors)
 const colorPalette = [
-  { bg: '#2563eb', text: 'white', name: 'Blue' },
-  { bg: '#1d4ed8', text: 'white', name: 'Blue Dark' },
-  { bg: '#3b82f6', text: 'white', name: 'Blue Light' },
-  { bg: '#0d9488', text: 'white', name: 'Teal' },
-  { bg: '#0f766e', text: 'white', name: 'Teal Dark' },
-  { bg: '#4f8a4f', text: 'white', name: 'Olive' },
-  { bg: '#3d6b3d', text: 'white', name: 'Olive Dark' },
-  { bg: '#8b7355', text: 'white', name: 'Bronze' },
-  { bg: '#6b5842', text: 'white', name: 'Bronze Dark' },
+  { bg: '#2563eb', text: 'white', name: 'Primary' },
+  { bg: '#1d4ed8', text: 'white', name: 'Primary Dark' },
+  { bg: '#3b82f6', text: 'white', name: 'Primary Light' },
+  { bg: '#0d9488', text: 'white', name: 'Success' },
+  { bg: '#0f766e', text: 'white', name: 'Success Dark' },
+  { bg: '#71717a', text: 'white', name: 'Neutral' },
+  { bg: '#52525b', text: 'white', name: 'Neutral Dark' },
+  { bg: '#3f3f46', text: 'white', name: 'Neutral Darker' },
+  { bg: '#27272a', text: 'white', name: 'Neutral Darkest' },
 ];
 
 // Get color for an assignment - uses hash for consistent color assignment
@@ -62,11 +62,11 @@ const getAssignmentColor = (name: string): { bg: string; text: string } => {
   return { bg: `bg-[${color.bg}]`, text: 'text-white' };
 };
 
-// Department colors - Catalyst V5 compliant
+// Department colors - Catalyst V5 compliant (no banned colors)
 const departmentColors: Record<string, { bg: string; text: string }> = {
-  Product: { bg: 'bg-[#d4b896]', text: 'text-[#4a3f35]' },
+  Product: { bg: 'bg-[#2563eb]', text: 'text-white' },
   Delivery: { bg: 'bg-[#0d9488]', text: 'text-white' },
-  Support: { bg: 'bg-[#4d8b4d]', text: 'text-white' },
+  Support: { bg: 'bg-[#71717a]', text: 'text-white' },
   default: { bg: 'bg-muted', text: 'text-muted-foreground' },
 };
 

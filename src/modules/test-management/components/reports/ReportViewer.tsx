@@ -173,11 +173,11 @@ export function ReportViewer({ report, onClose, onEdit, onRefresh, isRefreshing 
                 <div className="flex gap-4 flex-wrap">
                   {Object.entries(data.statusCounts || {}).map(([status, count]) => (
                     <div key={status} className="flex items-center gap-2">
-                      {status === 'passed' && <CheckCircle2 className="h-4 w-4 text-green-500" />}
-                      {status === 'failed' && <XCircle className="h-4 w-4 text-red-500" />}
-                      {status === 'blocked' && <AlertTriangle className="h-4 w-4 text-orange-500" />}
-                      {status === 'not_run' && <Clock className="h-4 w-4 text-gray-500" />}
-                      {!['passed', 'failed', 'blocked', 'not_run'].includes(status) && <Clock className="h-4 w-4 text-gray-500" />}
+                      {status === 'passed' && <CheckCircle2 className="h-4 w-4 text-success-foreground" />}
+                      {status === 'failed' && <XCircle className="h-4 w-4 text-danger-foreground" />}
+                      {status === 'blocked' && <AlertTriangle className="h-4 w-4 text-warning-foreground" />}
+                      {status === 'not_run' && <Clock className="h-4 w-4 text-muted-foreground" />}
+                      {!['passed', 'failed', 'blocked', 'not_run'].includes(status) && <Clock className="h-4 w-4 text-muted-foreground" />}
                       <span className="capitalize">{status.replace('_', ' ')}: {count as number}</span>
                     </div>
                   ))}

@@ -111,26 +111,26 @@ export function AIDuplicateCheck({
   const getSeverityColor = (severity: string) => {
     switch (severity) {
       case 'critical':
-        return 'bg-red-500';
+        return 'bg-[hsl(var(--danger))]';
       case 'major':
-        return 'bg-orange-500';
+        return 'bg-[hsl(var(--warning))]';
       case 'minor':
-        return 'bg-yellow-500';
+        return 'bg-[hsl(var(--info))]';
       default:
-        return 'bg-gray-500';
+        return 'bg-muted-foreground/60';
     }
   };
 
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'open':
-        return 'bg-blue-100 text-blue-700';
+        return 'bg-info/20 text-info-foreground';
       case 'resolved':
-        return 'bg-green-100 text-green-700';
+        return 'bg-success/20 text-success-foreground';
       case 'closed':
-        return 'bg-gray-100 text-gray-700';
+        return 'bg-muted text-muted-foreground';
       default:
-        return 'bg-gray-100 text-gray-700';
+        return 'bg-muted text-muted-foreground';
     }
   };
 
