@@ -154,17 +154,20 @@ export function ContextualSidebar({
   const stepTips = STEP_TIPS[currentStep] || STEP_TIPS[1];
   const StepIcon = stepTips.icon;
 
-  const formatEventType = (eventType: string) => {
-    // More user-friendly event names
+  const formatEventType = (eventType: string, payload?: Record<string, unknown> | null) => {
+    // More user-friendly event names with context
     const friendlyNames: Record<string, string> = {
-      'step_changed': 'Moved to step',
+      'step_changed': payload?.step_name ? `Moved to ${payload.step_name}` : 'Navigated to step',
       'document_uploaded': 'Document uploaded',
+      'document_replaced': 'Document replaced',
       'analysis_started': 'AI analysis started',
       'analysis_completed': 'AI analysis completed',
       'fr_generated': 'Requirements generated',
       'compliance_checked': 'Compliance check ran',
       'brd_generated': 'BRD generated',
       'epic_published': 'Epic published',
+      'draft_created': 'Draft created',
+      'draft_updated': 'Draft updated',
     };
     return friendlyNames[eventType] || eventType.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
   };
@@ -182,8 +185,15 @@ export function ContextualSidebar({
     }
   };
 
-  // For steps 1 (capture), don't show run details - just tips
+  // For steps 1 (capture), don't show run details or activity - just tips
   const showRunDetails = currentStep >= 2 && latestRun;
+  const showActivityTab = currentStep >= 2;
+
+  // Filter out noisy/duplicate events
+  const meaningfulEvents = auditEvents.filter(e => 
+    !['step_changed'].includes(e.event_type) || 
+    (e.payload_json as Record<string, unknown>)?.step_name
+  );
 
   return (
     <>
@@ -213,148 +223,177 @@ export function ContextualSidebar({
 
         {/* Body */}
         <div className="flex-1 overflow-y-auto">
-          <Tabs defaultValue="tips" className="h-full flex flex-col">
-            <div className="border-b border-border px-5 py-2">
-              <TabsList className="w-full bg-muted/50">
-                <TabsTrigger value="tips" className="flex-1 gap-1.5">
-                  <Lightbulb className="h-3.5 w-3.5" />
-                  Tips
-                </TabsTrigger>
-                {showRunDetails && (
-                  <TabsTrigger value="run" className="flex-1 gap-1.5">
-                    <Cpu className="h-3.5 w-3.5" />
-                    Run
-                  </TabsTrigger>
-                )}
-                <TabsTrigger value="activity" className="flex-1 gap-1.5">
-                  <Clock className="h-3.5 w-3.5" />
-                  Activity
-                </TabsTrigger>
-              </TabsList>
+          {/* For Step 1, show tips only - no tabs */}
+          {currentStep === 1 ? (
+            <div className="p-5 space-y-4">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                  <StepIcon className="h-5 w-5 text-primary" />
+                </div>
+                <div>
+                  <h4 className="font-semibold text-sm">{stepTips.title}</h4>
+                  <p className="text-xs text-muted-foreground">Step {currentStep} of 8</p>
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                {stepTips.tips.map((tip, idx) => (
+                  <div key={idx} className="flex gap-3 p-3 bg-muted/30 rounded-lg">
+                    <CheckCircle className="h-4 w-4 text-[hsl(var(--success))] flex-shrink-0 mt-0.5" />
+                    <p className="text-sm text-foreground">{tip}</p>
+                  </div>
+                ))}
+              </div>
             </div>
+          ) : (
+            /* For Steps 2+, show tabs */
+            <Tabs defaultValue="tips" className="h-full flex flex-col">
+              <div className="border-b border-border px-5 py-2">
+                <TabsList className="w-full bg-muted/50">
+                  <TabsTrigger value="tips" className="flex-1 gap-1.5">
+                    <Lightbulb className="h-3.5 w-3.5" />
+                    Tips
+                  </TabsTrigger>
+                  {showRunDetails && (
+                    <TabsTrigger value="run" className="flex-1 gap-1.5">
+                      <Cpu className="h-3.5 w-3.5" />
+                      Run
+                    </TabsTrigger>
+                  )}
+                  {showActivityTab && (
+                    <TabsTrigger value="activity" className="flex-1 gap-1.5">
+                      <Clock className="h-3.5 w-3.5" />
+                      Activity
+                    </TabsTrigger>
+                  )}
+                </TabsList>
+              </div>
 
-            <div className="flex-1 overflow-y-auto p-5">
-              {/* Tips Tab - Contextual for current step */}
-              <TabsContent value="tips" className="mt-0 space-y-4">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                    <StepIcon className="h-5 w-5 text-primary" />
-                  </div>
-                  <div>
-                    <h4 className="font-semibold text-sm">{stepTips.title}</h4>
-                    <p className="text-xs text-muted-foreground">Step {currentStep} of 8</p>
-                  </div>
-                </div>
-
-                <div className="space-y-3">
-                  {stepTips.tips.map((tip, idx) => (
-                    <div key={idx} className="flex gap-3 p-3 bg-muted/30 rounded-lg">
-                      <CheckCircle className="h-4 w-4 text-[hsl(var(--success))] flex-shrink-0 mt-0.5" />
-                      <p className="text-sm text-foreground">{tip}</p>
+              <div className="flex-1 overflow-y-auto p-5">
+                {/* Tips Tab - Contextual for current step */}
+                <TabsContent value="tips" className="mt-0 space-y-4">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                      <StepIcon className="h-5 w-5 text-primary" />
                     </div>
-                  ))}
-                </div>
-              </TabsContent>
-
-              {/* Run Details Tab - Only for steps 2+ */}
-              {showRunDetails && (
-                <TabsContent value="run" className="mt-0 space-y-4">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-medium uppercase text-muted-foreground tracking-wide">Run Status</span>
-                    <Badge variant="outline" className={cn("capitalize", getStatusColor(latestRun.status))}>
-                      {latestRun.status === 'completed' && <CheckCircle className="h-3 w-3 mr-1" />}
-                      {latestRun.status === 'running' && <RefreshCw className="h-3 w-3 mr-1 animate-spin" />}
-                      {latestRun.status === 'failed' && <AlertCircle className="h-3 w-3 mr-1" />}
-                      {latestRun.status}
-                    </Badge>
+                    <div>
+                      <h4 className="font-semibold text-sm">{stepTips.title}</h4>
+                      <p className="text-xs text-muted-foreground">Step {currentStep} of 8</p>
+                    </div>
                   </div>
 
                   <div className="space-y-3">
-                    <div className="flex items-center justify-between py-2 border-b border-border/50">
-                      <span className="text-sm text-muted-foreground">Run Number</span>
-                      <span className="text-sm font-medium font-mono">#{latestRun.run_number}</span>
-                    </div>
-
-                    {latestRun.started_at && (
-                      <div className="flex items-center justify-between py-2 border-b border-border/50">
-                        <span className="text-sm text-muted-foreground">Started</span>
-                        <span className="text-sm font-medium">{formatTime(latestRun.started_at)}</span>
+                    {stepTips.tips.map((tip, idx) => (
+                      <div key={idx} className="flex gap-3 p-3 bg-muted/30 rounded-lg">
+                        <CheckCircle className="h-4 w-4 text-[hsl(var(--success))] flex-shrink-0 mt-0.5" />
+                        <p className="text-sm text-foreground">{tip}</p>
                       </div>
-                    )}
-
-                    {latestRun.canonical_text_hash && (
-                      <div className="flex items-center justify-between py-2 border-b border-border/50">
-                        <span className="text-sm text-muted-foreground flex items-center gap-1.5">
-                          <Hash className="h-3.5 w-3.5" />
-                          Document Hash
-                        </span>
-                        <code className="text-xs font-mono bg-muted px-2 py-1 rounded">
-                          {latestRun.canonical_text_hash.substring(0, 8)}...
-                        </code>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* AI Configuration */}
-                  <div className="space-y-3 mt-4">
-                    <span className="text-xs font-medium uppercase text-muted-foreground tracking-wide flex items-center gap-1.5">
-                      <Cpu className="h-3.5 w-3.5" />
-                      AI Configuration
-                    </span>
-
-                    <div className="bg-muted/50 rounded-lg p-4 space-y-3">
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm text-muted-foreground">Model</span>
-                        <span className="text-sm font-medium font-mono">{latestRun.model_id}</span>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm text-muted-foreground">Temperature</span>
-                        <span className="text-sm font-medium font-mono">{latestRun.temperature}</span>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm text-muted-foreground">Top P</span>
-                        <span className="text-sm font-medium font-mono">{latestRun.top_p}</span>
-                      </div>
-                    </div>
+                    ))}
                   </div>
                 </TabsContent>
-              )}
 
-              {/* Activity Tab */}
-              <TabsContent value="activity" className="mt-0 space-y-4">
-                <span className="text-xs font-medium uppercase text-muted-foreground tracking-wide flex items-center gap-1.5">
-                  <Clock className="h-3.5 w-3.5" />
-                  Recent Activity
-                </span>
+                {/* Run Details Tab - Only for steps 2+ */}
+                {showRunDetails && (
+                  <TabsContent value="run" className="mt-0 space-y-4">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-medium uppercase text-muted-foreground tracking-wide">Run Status</span>
+                      <Badge variant="outline" className={cn("capitalize", getStatusColor(latestRun.status))}>
+                        {latestRun.status === 'completed' && <CheckCircle className="h-3 w-3 mr-1" />}
+                        {latestRun.status === 'running' && <RefreshCw className="h-3 w-3 mr-1 animate-spin" />}
+                        {latestRun.status === 'failed' && <AlertCircle className="h-3 w-3 mr-1" />}
+                        {latestRun.status}
+                      </Badge>
+                    </div>
 
-                {isAuditLoading ? (
-                  <div className="space-y-3">
-                    {[1, 2, 3].map((i) => (
-                      <div key={i} className="h-12 bg-muted/50 rounded animate-pulse" />
-                    ))}
-                  </div>
-                ) : auditEvents.length > 0 ? (
-                  <div className="space-y-2 max-h-96 overflow-y-auto">
-                    {auditEvents.slice(0, 20).map((event) => (
-                      <div key={event.id} className="flex gap-3 py-2">
-                        <div className="w-2 h-2 rounded-full bg-primary mt-1.5 flex-shrink-0" />
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm truncate">{formatEventType(event.event_type)}</p>
-                          <p className="text-xs text-muted-foreground">{formatTime(event.created_at)}</p>
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between py-2 border-b border-border/50">
+                        <span className="text-sm text-muted-foreground">Run Number</span>
+                        <span className="text-sm font-medium font-mono">#{latestRun.run_number}</span>
+                      </div>
+
+                      {latestRun.started_at && (
+                        <div className="flex items-center justify-between py-2 border-b border-border/50">
+                          <span className="text-sm text-muted-foreground">Started</span>
+                          <span className="text-sm font-medium">{formatTime(latestRun.started_at)}</span>
+                        </div>
+                      )}
+
+                      {latestRun.canonical_text_hash && (
+                        <div className="flex items-center justify-between py-2 border-b border-border/50">
+                          <span className="text-sm text-muted-foreground flex items-center gap-1.5">
+                            <Hash className="h-3.5 w-3.5" />
+                            Document Hash
+                          </span>
+                          <code className="text-xs font-mono bg-muted px-2 py-1 rounded">
+                            {latestRun.canonical_text_hash.substring(0, 8)}...
+                          </code>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* AI Configuration */}
+                    <div className="space-y-3 mt-4">
+                      <span className="text-xs font-medium uppercase text-muted-foreground tracking-wide flex items-center gap-1.5">
+                        <Cpu className="h-3.5 w-3.5" />
+                        AI Configuration
+                      </span>
+
+                      <div className="bg-muted/50 rounded-lg p-4 space-y-3">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm text-muted-foreground">Model</span>
+                          <span className="text-sm font-medium font-mono">{latestRun.model_id}</span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm text-muted-foreground">Temperature</span>
+                          <span className="text-sm font-medium font-mono">{latestRun.temperature}</span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm text-muted-foreground">Top P</span>
+                          <span className="text-sm font-medium font-mono">{latestRun.top_p}</span>
                         </div>
                       </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="text-center py-6 text-muted-foreground bg-muted/30 rounded-lg">
-                    <Clock className="h-8 w-8 mx-auto mb-2 opacity-40" />
-                    <p className="text-sm">No activity yet</p>
-                    <p className="text-xs mt-1">Actions will appear here</p>
-                  </div>
+                    </div>
+                  </TabsContent>
                 )}
-              </TabsContent>
-            </div>
-          </Tabs>
+
+                {/* Activity Tab - Only for steps 2+ */}
+                {showActivityTab && (
+                  <TabsContent value="activity" className="mt-0 space-y-4">
+                    <span className="text-xs font-medium uppercase text-muted-foreground tracking-wide flex items-center gap-1.5">
+                      <Clock className="h-3.5 w-3.5" />
+                      Recent Activity
+                    </span>
+
+                    {isAuditLoading ? (
+                      <div className="space-y-3">
+                        {[1, 2, 3].map((i) => (
+                          <div key={i} className="h-12 bg-muted/50 rounded animate-pulse" />
+                        ))}
+                      </div>
+                    ) : meaningfulEvents.length > 0 ? (
+                      <div className="space-y-2 max-h-96 overflow-y-auto">
+                        {meaningfulEvents.slice(0, 20).map((event) => (
+                          <div key={event.id} className="flex gap-3 py-2">
+                            <div className="w-2 h-2 rounded-full bg-primary mt-1.5 flex-shrink-0" />
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm truncate">{formatEventType(event.event_type, event.payload_json)}</p>
+                              <p className="text-xs text-muted-foreground">{formatTime(event.created_at)}</p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-center py-6 text-muted-foreground bg-muted/30 rounded-lg">
+                        <Clock className="h-8 w-8 mx-auto mb-2 opacity-40" />
+                        <p className="text-sm">No activity yet</p>
+                        <p className="text-xs mt-1">Actions will appear here</p>
+                      </div>
+                    )}
+                  </TabsContent>
+                )}
+              </div>
+            </Tabs>
+          )}
         </div>
       </div>
     </>
