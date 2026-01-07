@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FileCheck, CheckCircle2, Clock, ChevronDown, ChevronRight, Link2, Tag, Zap, Loader2 } from 'lucide-react';
+import { FileCheck, CheckCircle2, Clock, ChevronDown, ChevronRight, Link2, Tag, Zap, Loader2, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
@@ -23,13 +23,17 @@ export interface FRProcessingStepProps {
   progress?: number;
   currentTask?: string;
   requirements?: FunctionalRequirement[];
+  evidenceCount?: number;
+  documentName?: string;
 }
 
 export function FRProcessingStep({
   isProcessing = false,
   progress = 0,
   currentTask = '',
-  requirements = []
+  requirements = [],
+  evidenceCount = 0,
+  documentName
 }: FRProcessingStepProps) {
   const [expandedFR, setExpandedFR] = useState<string | null>(null);
   const [filter, setFilter] = useState<'all' | 'validated' | 'pending'>('all');
@@ -113,11 +117,22 @@ export function FRProcessingStep({
     return (
       <div className="space-y-6">
         <div className="bg-card border border-border rounded-xl p-12 text-center">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-muted mb-6">
-            <FileCheck className="h-8 w-8 text-muted-foreground" />
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-6">
+            <Sparkles className="h-8 w-8 text-primary" />
           </div>
           
           <h3 className="text-lg font-semibold mb-2">Ready to Process</h3>
+          
+          {/* Source context */}
+          {evidenceCount > 0 && (
+            <p className="text-sm text-muted-foreground mb-4">
+              <span className="font-medium text-foreground">{evidenceCount} evidence items</span>
+              {documentName && (
+                <> from <span className="font-medium text-foreground">{documentName}</span></>
+              )}
+            </p>
+          )}
+          
           <p className="text-sm text-muted-foreground mb-6 max-w-md mx-auto">
             Transform extracted evidence into structured functional requirements with full traceability to source documents.
           </p>
@@ -128,17 +143,20 @@ export function FRProcessingStep({
           </Button>
 
           <div className="mt-8 grid grid-cols-3 gap-4 max-w-lg mx-auto">
-            <div className="text-center p-4 bg-muted/50 rounded-lg">
+            <div className="p-4 bg-muted/30 border border-border rounded-lg text-center">
               <FileCheck className="h-5 w-5 mx-auto mb-2 text-primary" />
-              <p className="text-xs text-muted-foreground">Extract</p>
+              <div className="text-xl font-bold text-muted-foreground/40 mb-1">—</div>
+              <p className="text-xs text-muted-foreground">FRs</p>
             </div>
-            <div className="text-center p-4 bg-muted/50 rounded-lg">
+            <div className="p-4 bg-muted/30 border border-border rounded-lg text-center">
               <Tag className="h-5 w-5 mx-auto mb-2 text-primary" />
-              <p className="text-xs text-muted-foreground">Classify</p>
+              <div className="text-xl font-bold text-muted-foreground/40 mb-1">—</div>
+              <p className="text-xs text-muted-foreground">Types</p>
             </div>
-            <div className="text-center p-4 bg-muted/50 rounded-lg">
+            <div className="p-4 bg-muted/30 border border-border rounded-lg text-center">
               <Link2 className="h-5 w-5 mx-auto mb-2 text-primary" />
-              <p className="text-xs text-muted-foreground">Map</p>
+              <div className="text-xl font-bold text-muted-foreground/40 mb-1">—</div>
+              <p className="text-xs text-muted-foreground">Sources</p>
             </div>
           </div>
         </div>
