@@ -174,7 +174,7 @@ export default function AIAssistDraftsPage() {
               placeholder="Search drafts..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-9"
+              className="pl-9 placeholder:text-foreground/50"
             />
           </div>
           <div className="flex items-center gap-2">
@@ -315,7 +315,13 @@ export default function AIAssistDraftsPage() {
 
                       {/* Status with emoji */}
                       <td className="px-4 py-3">
-                        <Badge variant="secondary" className={cn("gap-1 text-xs font-medium border-0", statusConfig.className)}>
+                        <Badge
+                          variant="secondary"
+                          className={cn(
+                            "gap-1 text-xs font-medium rounded-full shadow-sm ring-1 ring-border/40",
+                            statusConfig.className
+                          )}
+                        >
                           <span>{statusConfig.emoji}</span>
                           {statusConfig.label}
                         </Badge>
@@ -340,7 +346,7 @@ export default function AIAssistDraftsPage() {
                               {completedSteps}/8
                             </span>
                           </div>
-                          <div className="w-24 h-1.5 bg-muted rounded-full overflow-hidden">
+                          <div className="w-24 h-2 bg-muted-foreground/15 rounded-full overflow-hidden">
                             <div 
                               className="h-full bg-[hsl(var(--success))] rounded-full transition-all"
                               style={{ width: `${(completedSteps / 8) * 100}%` }}
