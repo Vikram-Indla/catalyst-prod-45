@@ -163,8 +163,8 @@ export function DocumentCaptureStep({ draftId, documents, onUploadComplete }: Do
         <div className="absolute -inset-0.5 bg-gradient-to-r from-primary via-[hsl(var(--success))] to-primary rounded-2xl opacity-0 group-hover:opacity-100 blur transition-all duration-500" />
         
         <div className={cn(
-          "relative bg-gradient-to-br from-card to-primary/5 border-2 border-dashed rounded-2xl p-16 text-center transition-all duration-300",
-          "border-muted-foreground/20 group-hover:border-primary group-hover:shadow-xl group-hover:shadow-primary/10",
+          "relative bg-gradient-to-br from-card to-primary/5 border-2 border-dashed rounded-2xl p-10 text-center transition-all duration-300",
+          "border-muted-foreground/30 group-hover:border-primary group-hover:shadow-xl group-hover:shadow-primary/10",
           isDragActive && "border-primary bg-primary/10 border-solid shadow-xl shadow-primary/20",
           isDragReject && "border-[hsl(var(--danger))] bg-[hsl(var(--danger))]/5",
           upload.isPending && "opacity-50 pointer-events-none"
@@ -173,7 +173,7 @@ export function DocumentCaptureStep({ draftId, documents, onUploadComplete }: Do
 
           {/* Large animated icon */}
           <div className={cn(
-            "w-20 h-20 mx-auto mb-6 rounded-2xl flex items-center justify-center transition-transform duration-300",
+            "w-16 h-16 mx-auto mb-5 rounded-xl flex items-center justify-center transition-transform duration-300",
             isDragActive ? "bg-primary/20 scale-110" : "bg-primary/10 group-hover:scale-110",
             isDragReject && "bg-[hsl(var(--danger))]/20"
           )}>
@@ -225,8 +225,8 @@ export function DocumentCaptureStep({ draftId, documents, onUploadComplete }: Do
       </div>
 
       {/* What happens next - PROMINENT */}
-      <div className="mt-8 p-6 bg-gradient-to-r from-muted/50 to-primary/5 rounded-xl border border-border">
-        <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-4 text-center">
+      <div className="mt-6 p-5 bg-gradient-to-r from-muted/50 to-primary/5 rounded-xl border border-border">
+        <h4 className="text-sm font-semibold text-muted-foreground tracking-wide mb-4 text-center">
           What happens next
         </h4>
         
