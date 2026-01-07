@@ -55,7 +55,7 @@ const WIZARD_STEPS = [
 ];
 
 const STATUS_CONFIG: Record<string, { label: string; emoji: string; className: string }> = {
-  draft: { label: 'Draft', emoji: '📝', className: 'bg-muted text-muted-foreground' },
+  draft: { label: 'Draft', emoji: '📝', className: 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300' },
   in_progress: { label: 'In Progress', emoji: '🔄', className: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' },
   review: { label: 'Review', emoji: '👁️', className: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400' },
   approved: { label: 'Approved', emoji: '✅', className: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' },
