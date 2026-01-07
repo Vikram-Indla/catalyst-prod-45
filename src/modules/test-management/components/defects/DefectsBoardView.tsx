@@ -45,38 +45,38 @@ const BOARD_COLUMNS: BoardColumn[] = [
   { 
     id: 'new', 
     label: 'New', 
-    colorClass: 'text-[var(--sem-danger)]',
-    headerBg: 'bg-[var(--sem-danger-bg)]'
+    colorClass: 'text-[var(--danger-fg)]',
+    headerBg: 'bg-[var(--danger-bg)]'
   },
   { 
     id: 'open', 
     label: 'Open', 
-    colorClass: 'text-[var(--sem-danger)]',
-    headerBg: 'bg-[var(--sem-danger-bg)]'
+    colorClass: 'text-[var(--warning-fg)]',
+    headerBg: 'bg-[var(--warning-bg)]'
   },
   { 
     id: 'in_progress', 
     label: 'In Progress', 
-    colorClass: 'text-[var(--sem-info)]',
-    headerBg: 'bg-[var(--sem-info-bg)]'
+    colorClass: 'text-[var(--info-fg)]',
+    headerBg: 'bg-[var(--info-bg)]'
   },
   { 
     id: 'in_review', 
     label: 'In Review', 
-    colorClass: 'text-[var(--accent-text,hsl(var(--primary)))]',
+    colorClass: 'text-primary',
     headerBg: 'bg-primary/10'
   },
   { 
     id: 'resolved', 
     label: 'Resolved', 
-    colorClass: 'text-[var(--sem-success)]',
-    headerBg: 'bg-[var(--sem-success-bg)]'
+    colorClass: 'text-[var(--success-fg)]',
+    headerBg: 'bg-[var(--success-bg)]'
   },
   { 
     id: 'closed', 
     label: 'Closed', 
-    colorClass: 'text-[var(--sem-medium)]',
-    headerBg: 'bg-[var(--sem-medium-bg)]'
+    colorClass: 'text-muted-foreground',
+    headerBg: 'bg-muted/50'
   },
 ];
 
