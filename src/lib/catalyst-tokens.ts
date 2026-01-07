@@ -1,17 +1,21 @@
 /**
- * CATALYST V5 DESIGN TOKEN SYSTEM
- * ================================
- * Single source of truth for all semantic tokens
+ * CATALYST V5 NEUTRAL AUTHORITY — DESIGN TOKEN SYSTEM
+ * =====================================================
  * 
- * RULES:
- * 1. All colors MUST be CSS variables from index.css
- * 2. NO hex, rgb, rgba values allowed
- * 3. Components MUST use these token utilities
- * 4. Dark mode is handled automatically via CSS variables
+ * ALL EXPRESSIVE COLORS BANNED:
+ * - No purple, green, red, yellow
+ * - No success/warning/danger color fills
+ * - Status expressed by text labels, position, grouping
+ * 
+ * ONLY ALLOWED:
+ * - Neutral grayscale for all UI
+ * - Catalyst Gold ONLY for critical attention
+ * 
+ * All colors MUST be CSS variables from index.css
  */
 
 // ============================================================================
-// SURFACE TOKENS - Use for backgrounds
+// SURFACE TOKENS - Neutral elevation ladder
 // ============================================================================
 export const SURFACE = {
   app: 'var(--bg-app)',
@@ -29,7 +33,7 @@ export const SURFACE = {
 } as const;
 
 // ============================================================================
-// TEXT TOKENS - Use for text colors
+// TEXT TOKENS - Neutral foreground ladder
 // ============================================================================
 export const TEXT = {
   primary: 'var(--fg-1)',
@@ -40,50 +44,67 @@ export const TEXT = {
 } as const;
 
 // ============================================================================
-// BORDER TOKENS - Use for borders and dividers
+// BORDER TOKENS - Subtle neutral borders
 // ============================================================================
 export const BORDER = {
   subtle: 'var(--border-subtle)',
   default: 'var(--divider)',
   strong: 'var(--border-strong)',
-  focus: 'var(--input-focus)',
+  focus: 'var(--gold-fg)',  // Gold focus ring
 } as const;
 
 // ============================================================================
-// SEMANTIC STATE TOKENS - Use for status indicators
+// NEUTRAL STATE TOKENS - No expressive colors
+// All states use neutral grayscale. Gold for critical ONLY.
 // ============================================================================
 export const STATE = {
+  // All mapped to neutral
   info: {
-    fg: 'var(--info-fg)',
-    bg: 'var(--info-bg)',
-    border: 'var(--info-bd)',
+    fg: 'var(--neutral-fg)',
+    bg: 'var(--neutral-bg)',
+    border: 'var(--neutral-bd)',
   },
   success: {
-    fg: 'var(--success-fg)',
-    bg: 'var(--success-bg)',
-    border: 'var(--success-bd)',
+    fg: 'var(--neutral-fg)',
+    bg: 'var(--neutral-bg)',
+    border: 'var(--neutral-bd)',
   },
   warning: {
-    fg: 'var(--warning-fg)',
-    bg: 'var(--warning-bg)',
-    border: 'var(--warning-bd)',
+    fg: 'var(--neutral-fg)',
+    bg: 'var(--neutral-bg)',
+    border: 'var(--neutral-bd)',
   },
   danger: {
-    fg: 'var(--danger-fg)',
-    bg: 'var(--danger-bg)',
-    border: 'var(--danger-bd)',
+    fg: 'var(--neutral-fg)',
+    bg: 'var(--neutral-bg)',
+    border: 'var(--neutral-bd)',
   },
   neutral: {
     fg: 'var(--neutral-fg)',
     bg: 'var(--neutral-bg)',
     border: 'var(--neutral-bd)',
   },
+  // Catalyst Gold - ONLY for critical attention
+  critical: {
+    fg: 'var(--gold-fg)',
+    bg: 'var(--gold-bg)',
+    border: 'var(--gold-bd)',
+  },
 } as const;
 
 // ============================================================================
-// CHART TOKENS - Use for data visualization
+// CHART TOKENS - Neutral grayscale + Gold accent
 // ============================================================================
 export const CHART = {
+  neutral1: 'var(--chart-neutral-1)',
+  neutral2: 'var(--chart-neutral-2)',
+  neutral3: 'var(--chart-neutral-3)',
+  neutral4: 'var(--chart-neutral-4)',
+  neutral5: 'var(--chart-neutral-5)',
+  neutral6: 'var(--chart-neutral-6)',
+  gold: 'var(--chart-gold)',
+  goldMuted: 'var(--chart-gold-muted)',
+  // Legacy aliases
   1: 'var(--chart-1)',
   2: 'var(--chart-2)',
   3: 'var(--chart-3)',
@@ -95,7 +116,7 @@ export const CHART = {
 } as const;
 
 // ============================================================================
-// SHADOW TOKENS - Use for elevation
+// SHADOW TOKENS - Neutral elevation
 // ============================================================================
 export const SHADOW = {
   1: 'var(--shadow-1)',
@@ -107,10 +128,10 @@ export const SHADOW = {
 } as const;
 
 // ============================================================================
-// STATUS CONFIGURATION - Token-compliant status styling
-// Maps status keys to semantic tokens
+// STATUS CONFIGURATION - Neutral-only status styling
+// Status meaning comes from LABELS and POSITION, not color
 // ============================================================================
-export type StatusType = 'info' | 'success' | 'warning' | 'danger' | 'neutral';
+export type StatusType = 'info' | 'success' | 'warning' | 'danger' | 'neutral' | 'critical';
 
 export interface StatusConfig {
   label: string;
@@ -118,72 +139,59 @@ export interface StatusConfig {
 }
 
 /**
- * Get Tailwind classes for status styling using semantic tokens
+ * Get Tailwind classes for status styling - ALL NEUTRAL
+ * Only 'critical' uses Catalyst Gold
  */
 export function getStatusClasses(type: StatusType): string {
-  const classMap: Record<StatusType, string> = {
-    info: 'bg-[var(--info-bg)] text-[var(--info-fg)] border-[var(--info-bd)]',
-    success: 'bg-[var(--success-bg)] text-[var(--success-fg)] border-[var(--success-bd)]',
-    warning: 'bg-[var(--warning-bg)] text-[var(--warning-fg)] border-[var(--warning-bd)]',
-    danger: 'bg-[var(--danger-bg)] text-[var(--danger-fg)] border-[var(--danger-bd)]',
-    neutral: 'bg-[var(--neutral-bg)] text-[var(--neutral-fg)] border-[var(--neutral-bd)]',
-  };
-  return classMap[type];
+  if (type === 'critical') {
+    return 'bg-[var(--gold-bg)] text-[var(--gold-fg)] border-[var(--gold-bd)]';
+  }
+  return 'bg-[var(--neutral-bg)] text-[var(--neutral-fg)] border-[var(--neutral-bd)]';
 }
 
 /**
- * Get dot color class for status indicators
+ * Get dot color class for status indicators - NEUTRAL
+ * Only 'critical' uses Gold dot
  */
 export function getStatusDotClass(type: StatusType): string {
-  const classMap: Record<StatusType, string> = {
-    info: 'bg-[var(--info-fg)]',
-    success: 'bg-[var(--success-fg)]',
-    warning: 'bg-[var(--warning-fg)]',
-    danger: 'bg-[var(--danger-fg)]',
-    neutral: 'bg-[var(--neutral-fg)]',
-  };
-  return classMap[type];
+  if (type === 'critical') {
+    return 'bg-[var(--gold-fg)]';
+  }
+  return 'bg-[var(--fg-3)]';
 }
 
 // ============================================================================
-// PROCESS STEP STATUS MAPPING - Maps status strings to semantic types
+// PROCESS STEP STATUS MAPPING - All neutral
 // ============================================================================
 export const PROCESS_STATUS_MAP: Record<string, StatusConfig> = {
-  // Info/Blue - New, In Progress
-  new: { label: 'New', type: 'info' },
-  new_request: { label: 'New Request', type: 'info' },
-  new_demand: { label: 'New Demand', type: 'info' },
-  'in-progress': { label: 'In Progress', type: 'info' },
-  in_progress: { label: 'In Progress', type: 'info' },
-  implement: { label: 'Implement', type: 'info' },
-  implementing: { label: 'Implementing', type: 'info' },
-  funnel: { label: 'Funnel', type: 'info' },
-  
-  // Warning/Amber - Review, On Hold
-  scored: { label: 'Scored', type: 'warning' },
-  in_review: { label: 'In Review', type: 'warning' },
-  'ea-review': { label: 'EA Review', type: 'warning' },
-  ea_review: { label: 'EA Review', type: 'warning' },
-  analyse: { label: 'Analyse', type: 'warning' },
-  analysis: { label: 'Analysis', type: 'warning' },
-  budget_review: { label: 'Budget Review', type: 'warning' },
-  on_hold: { label: 'On Hold', type: 'warning' },
-  'on-hold': { label: 'On Hold', type: 'warning' },
-  
-  // Success/Teal - Ready, Approved, Completed
-  ready: { label: 'Ready', type: 'success' },
-  ready_to_implement: { label: 'Ready to Implement', type: 'success' },
-  approved: { label: 'Approved', type: 'success' },
-  completed: { label: 'Completed', type: 'success' },
-  closed: { label: 'Closed', type: 'success' },
-  done: { label: 'Done', type: 'success' },
-  
-  // Danger/Red - Blocked, Rejected
-  blocked: { label: 'Blocked', type: 'danger' },
-  rejected: { label: 'Rejected', type: 'danger' },
-  cancelled: { label: 'Cancelled', type: 'danger' },
-  
-  // Neutral/Gray - Draft, Backlog
+  // All statuses map to neutral - meaning comes from labels
+  new: { label: 'New', type: 'neutral' },
+  new_request: { label: 'New Request', type: 'neutral' },
+  new_demand: { label: 'New Demand', type: 'neutral' },
+  'in-progress': { label: 'In Progress', type: 'neutral' },
+  in_progress: { label: 'In Progress', type: 'neutral' },
+  implement: { label: 'Implement', type: 'neutral' },
+  implementing: { label: 'Implementing', type: 'neutral' },
+  funnel: { label: 'Funnel', type: 'neutral' },
+  scored: { label: 'Scored', type: 'neutral' },
+  in_review: { label: 'In Review', type: 'neutral' },
+  'ea-review': { label: 'EA Review', type: 'neutral' },
+  ea_review: { label: 'EA Review', type: 'neutral' },
+  analyse: { label: 'Analyse', type: 'neutral' },
+  analysis: { label: 'Analysis', type: 'neutral' },
+  budget_review: { label: 'Budget Review', type: 'neutral' },
+  on_hold: { label: 'On Hold', type: 'neutral' },
+  'on-hold': { label: 'On Hold', type: 'neutral' },
+  ready: { label: 'Ready', type: 'neutral' },
+  ready_to_implement: { label: 'Ready to Implement', type: 'neutral' },
+  approved: { label: 'Approved', type: 'neutral' },
+  completed: { label: 'Completed', type: 'neutral' },
+  closed: { label: 'Closed', type: 'neutral' },
+  done: { label: 'Done', type: 'neutral' },
+  // Only blocked uses critical (Gold) - requires attention
+  blocked: { label: 'Blocked', type: 'critical' },
+  rejected: { label: 'Rejected', type: 'neutral' },
+  cancelled: { label: 'Cancelled', type: 'neutral' },
   backlog: { label: 'Backlog', type: 'neutral' },
   draft: { label: 'Draft', type: 'neutral' },
 };
@@ -197,81 +205,83 @@ export function getStatusConfig(status: string): StatusConfig {
 }
 
 // ============================================================================
-// KR/MILESTONE STATUS TOKENS - For roadmap and OKR views
+// KR/MILESTONE STATUS TOKENS - Neutral Authority
 // ============================================================================
 export const KR_STATUS = {
   complete: {
     label: 'Complete',
-    fg: 'var(--success-fg)',
-    bg: 'var(--success-bg)',
-    filled: true,
+    fg: 'var(--fg-2)',
+    bg: 'var(--neutral-bg)',
+    filled: false,
   },
   'on-track': {
     label: 'On Track',
-    fg: 'var(--success-fg)',
-    bg: 'var(--success-bg)',
-    filled: true,
+    fg: 'var(--fg-2)',
+    bg: 'var(--neutral-bg)',
+    filled: false,
   },
   current: {
     label: 'Current',
-    fg: 'var(--success-fg)',
-    bg: 'var(--bg-0)',
+    fg: 'var(--fg-1)',
+    bg: 'var(--bg-3)',
     filled: false,
   },
   'in-progress': {
     label: 'In Progress',
-    fg: 'var(--success-fg)',
+    fg: 'var(--fg-2)',
     bg: 'var(--bg-0)',
     filled: false,
   },
   pending: {
     label: 'Pending',
-    fg: 'var(--neutral-fg)',
+    fg: 'var(--fg-3)',
     bg: 'var(--bg-0)',
     filled: false,
   },
   planned: {
     label: 'Planned',
-    fg: 'var(--neutral-fg)',
+    fg: 'var(--fg-3)',
     bg: 'var(--bg-0)',
     filled: false,
   },
   'not-started': {
     label: 'Not Started',
-    fg: 'var(--neutral-fg)',
+    fg: 'var(--fg-4)',
     bg: 'var(--bg-0)',
     filled: false,
   },
+  // Critical states use Gold
   overdue: {
     label: 'Overdue',
-    fg: 'var(--danger-fg)',
-    bg: 'var(--danger-bg)',
+    fg: 'var(--gold-fg)',
+    bg: 'var(--gold-bg)',
     filled: true,
   },
   blocked: {
     label: 'Blocked',
-    fg: 'var(--danger-fg)',
-    bg: 'var(--danger-bg)',
+    fg: 'var(--gold-fg)',
+    bg: 'var(--gold-bg)',
     filled: true,
   },
   'at-risk': {
     label: 'At Risk',
-    fg: 'var(--warning-fg)',
-    bg: 'var(--warning-bg)',
+    fg: 'var(--gold-fg)',
+    bg: 'var(--gold-bg)',
     filled: true,
   },
 } as const;
 
-// Brand accent colors (use sparingly)
+// Brand accent - Catalyst Gold ONLY
 export const BRAND = {
-  primary: 'var(--brand-primary-hex)',
-  primaryHover: 'var(--brand-primary-hover-hex)',
-  gold: 'var(--brand-gold)',
+  gold: 'var(--gold-fg)',
+  goldBg: 'var(--gold-bg)',
+  goldBorder: 'var(--gold-bd)',
   goldHover: 'var(--brand-gold-hover)',
 } as const;
 
-// Today line and progress indicators
+// Indicators - Neutral
 export const INDICATOR = {
-  todayLine: 'var(--info-fg)',
-  progressBar: 'var(--info-fg)',
+  todayLine: 'var(--fg-3)',
+  progressBar: 'var(--fg-3)',
+  goldAccent: 'var(--gold-fg)',
 } as const;

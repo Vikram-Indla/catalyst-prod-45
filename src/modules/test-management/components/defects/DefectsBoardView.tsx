@@ -1,7 +1,7 @@
 /**
  * Defects Board View - Kanban-style board for defects
+ * CATALYST V5 NEUTRAL AUTHORITY: All neutral grayscale, no expressive colors
  * Uses @hello-pangea/dnd for drag-and-drop
- * Uses Catalyst V5 semantic tokens - NO hardcoded colors
  */
 
 import React, { useMemo, useCallback } from 'react';
@@ -33,50 +33,53 @@ interface DefectsBoardViewProps {
 interface BoardColumn {
   id: DefectWorkflowStatus;
   label: string;
-  colorClass: string;
+  /** Neutral text class - no expressive colors */
+  textClass: string;
+  /** Neutral header bg - elevation based, no color */
   headerBg: string;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Column Configuration
+// Column Configuration - NEUTRAL AUTHORITY
+// No expressive colors - status expressed by text labels and position
 // ─────────────────────────────────────────────────────────────────────────────
 
 const BOARD_COLUMNS: BoardColumn[] = [
   { 
     id: 'new', 
     label: 'New', 
-    colorClass: 'text-[var(--danger-fg)]',
-    headerBg: 'bg-[var(--danger-bg)]'
+    textClass: 'text-[var(--fg-1)] font-semibold',
+    headerBg: 'bg-[var(--bg-3)]'
   },
   { 
     id: 'open', 
     label: 'Open', 
-    colorClass: 'text-[var(--warning-fg)]',
-    headerBg: 'bg-[var(--warning-bg)]'
+    textClass: 'text-[var(--fg-2)]',
+    headerBg: 'bg-[var(--bg-3)]'
   },
   { 
     id: 'in_progress', 
     label: 'In Progress', 
-    colorClass: 'text-[var(--info-fg)]',
-    headerBg: 'bg-[var(--info-bg)]'
+    textClass: 'text-[var(--fg-2)]',
+    headerBg: 'bg-[var(--bg-3)]'
   },
   { 
     id: 'in_review', 
     label: 'In Review', 
-    colorClass: 'text-primary',
-    headerBg: 'bg-primary/10'
+    textClass: 'text-[var(--fg-2)]',
+    headerBg: 'bg-[var(--bg-3)]'
   },
   { 
     id: 'resolved', 
     label: 'Resolved', 
-    colorClass: 'text-[var(--success-fg)]',
-    headerBg: 'bg-[var(--success-bg)]'
+    textClass: 'text-[var(--fg-3)]',
+    headerBg: 'bg-[var(--bg-2)]'
   },
   { 
     id: 'closed', 
     label: 'Closed', 
-    colorClass: 'text-muted-foreground',
-    headerBg: 'bg-muted/50'
+    textClass: 'text-[var(--fg-4)]',
+    headerBg: 'bg-[var(--bg-2)]'
   },
 ];
 
@@ -140,14 +143,14 @@ export function DefectsBoardView({
         {BOARD_COLUMNS.map(column => (
           <div
             key={column.id}
-            className="flex-shrink-0 w-[280px] bg-muted/30 rounded-lg animate-pulse"
+            className="flex-shrink-0 w-[280px] bg-[var(--bg-2)] rounded-lg animate-pulse"
           >
-            <div className="p-3 border-b">
-              <div className="h-5 bg-muted rounded w-24" />
+            <div className="p-3 border-b border-[var(--divider)]">
+              <div className="h-5 bg-[var(--bg-3)] rounded w-24" />
             </div>
             <div className="p-3 space-y-3">
               {[1, 2, 3].map(i => (
-                <div key={i} className="h-24 bg-muted rounded" />
+                <div key={i} className="h-24 bg-[var(--bg-3)] rounded" />
               ))}
             </div>
           </div>
@@ -173,7 +176,8 @@ export function DefectsBoardView({
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Board Defect Card Component (inline for type compatibility)
+// Board Defect Card Component - NEUTRAL AUTHORITY
+// Icons inherit currentColor, no expressive fills
 // ─────────────────────────────────────────────────────────────────────────────
 
 interface BoardDefectCardProps {
@@ -203,17 +207,17 @@ function BoardDefectCard({ defect, onClick, isDragging }: BoardDefectCardProps) 
   return (
     <div
       className={cn(
-        "bg-card border rounded-lg p-3 cursor-pointer transition-all border-l-4",
+        "bg-[var(--bg-card)] border border-[var(--divider)] rounded-lg p-3 cursor-pointer transition-all border-l-4",
         severityConfig.railClass,
         isDragging 
-          ? "shadow-lg ring-2 ring-primary/20 rotate-2" 
-          : "hover:shadow-md hover:border-primary/30"
+          ? "shadow-lg ring-2 ring-[var(--gold-fg)]/20 rotate-2" 
+          : "hover:shadow-md hover:border-[var(--fg-4)]"
       )}
       onClick={onClick}
     >
       {/* Key & Severity */}
       <div className="flex items-center justify-between mb-2">
-        <span className="font-mono text-xs text-primary">{defect.defect_key}</span>
+        <span className="font-mono text-xs text-[var(--fg-2)]">{defect.defect_key}</span>
         <Badge className={cn('text-[10px] gap-0.5 px-1.5 py-0 border', severityConfig.chipClass)}>
           <SeverityIcon className="h-2.5 w-2.5" />
           {severityConfig.label}
@@ -221,7 +225,7 @@ function BoardDefectCard({ defect, onClick, isDragging }: BoardDefectCardProps) 
       </div>
 
       {/* Title */}
-      <p className="text-sm font-medium line-clamp-2 mb-2">{defect.title}</p>
+      <p className="text-sm font-medium text-[var(--fg-1)] line-clamp-2 mb-2">{defect.title}</p>
 
       {/* Footer */}
       <div className="flex items-center justify-between">
@@ -229,20 +233,20 @@ function BoardDefectCard({ defect, onClick, isDragging }: BoardDefectCardProps) 
           <div className="flex items-center gap-1.5">
             <Avatar className="h-5 w-5">
               <AvatarImage src={defect.assignee.avatar_url || undefined} />
-              <AvatarFallback className="text-[9px]">
+              <AvatarFallback className="text-[9px] bg-[var(--bg-3)] text-[var(--fg-3)]">
                 {getInitials(defect.assignee.full_name)}
               </AvatarFallback>
             </Avatar>
-            <span className="text-xs text-muted-foreground truncate max-w-[80px]">
+            <span className="text-xs text-[var(--fg-3)] truncate max-w-[80px]">
               {defect.assignee.full_name?.split(' ')[0]}
             </span>
           </div>
         ) : (
-          <span className="text-xs text-muted-foreground italic">Unassigned</span>
+          <span className="text-xs text-[var(--fg-4)] italic">Unassigned</span>
         )}
 
         {defect.test_run_id && (
-          <Link2 className="h-3.5 w-3.5 text-muted-foreground" />
+          <Link2 className="h-3.5 w-3.5 text-[var(--fg-4)]" />
         )}
       </div>
     </div>
@@ -250,7 +254,8 @@ function BoardDefectCard({ defect, onClick, isDragging }: BoardDefectCardProps) 
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Board Column Component
+// Board Column Component - NEUTRAL AUTHORITY
+// Elevation-based separation, no color fills
 // ─────────────────────────────────────────────────────────────────────────────
 
 interface BoardColumnProps {
@@ -261,19 +266,19 @@ interface BoardColumnProps {
 
 function BoardColumnComponent({ column, defects, onDefectClick }: BoardColumnProps) {
   return (
-    <div className="flex-shrink-0 w-[280px] flex flex-col bg-muted/20 rounded-lg border border-border/50">
-      {/* Column Header */}
+    <div className="flex-shrink-0 w-[280px] flex flex-col bg-[var(--bg-1)] rounded-lg border border-[var(--divider)]">
+      {/* Column Header - Neutral elevation, no color */}
       <div className={cn(
-        "flex items-center justify-between p-3 rounded-t-lg border-b",
+        "flex items-center justify-between p-3 rounded-t-lg border-b border-[var(--divider)]",
         column.headerBg
       )}>
         <div className="flex items-center gap-2">
-          <span className={cn("font-medium text-sm", column.colorClass)}>
+          <span className={cn("text-sm", column.textClass)}>
             {column.label}
           </span>
           <Badge 
             variant="secondary" 
-            className="h-5 px-1.5 text-[10px] font-medium"
+            className="h-5 px-1.5 text-[10px] font-medium bg-[var(--bg-4)] text-[var(--fg-3)] border-0"
           >
             {defects.length}
           </Badge>
@@ -289,11 +294,11 @@ function BoardColumnComponent({ column, defects, onDefectClick }: BoardColumnPro
               {...provided.droppableProps}
               className={cn(
                 "p-2 space-y-2 min-h-[200px] transition-colors",
-                snapshot.isDraggingOver && "bg-primary/5"
+                snapshot.isDraggingOver && "bg-[var(--row-hover)]"
               )}
             >
               {defects.length === 0 ? (
-                <div className="flex items-center justify-center h-20 text-muted-foreground text-xs">
+                <div className="flex items-center justify-center h-20 text-[var(--fg-4)] text-xs">
                   No defects
                 </div>
               ) : (

@@ -1,16 +1,18 @@
 /**
  * ═══════════════════════════════════════════════════════════════════════════════
- * CATALYST V5 SEMANTIC TOKEN UTILITIES
+ * CATALYST V5 NEUTRAL AUTHORITY — SEMANTIC TOKEN UTILITIES
  * ═══════════════════════════════════════════════════════════════════════════════
  * 
- * Centralized semantic color mappings that use CSS variables exclusively.
- * Components should ONLY import from here for severity/status/priority colors.
+ * ALL EXPRESSIVE COLORS BANNED: No purple, green, red, yellow
+ * Status is expressed by: text labels, position, grouping — NOT color
+ * Catalyst Gold ONLY for critical attention
  * 
  * NO HARDCODED COLORS ALLOWED - all values reference CSS variables from index.css
  */
 
 // ─────────────────────────────────────────────────────────────────────────────
 // SEVERITY TOKENS (for defects, issues, alerts)
+// ALL NEUTRAL — Catalyst Gold for critical ONLY
 // ─────────────────────────────────────────────────────────────────────────────
 
 export type SemanticSeverity = 'blocker' | 'critical' | 'major' | 'minor' | 'trivial';
@@ -29,51 +31,56 @@ export interface SeverityConfig {
   chipClass: string;
 }
 
+/**
+ * NEUTRAL AUTHORITY: All severities use neutral grayscale
+ * ONLY blocker/critical uses Catalyst Gold
+ */
 export const SEVERITY_TOKENS: Record<SemanticSeverity, SeverityConfig> = {
   blocker: {
     label: 'Blocker',
-    bgClass: 'bg-[var(--sem-danger-bg)]',
-    textClass: 'text-[var(--sem-danger)]',
-    borderClass: 'border-[var(--sem-danger-border)]',
-    railClass: 'border-l-[var(--sem-danger)]',
-    chipClass: 'bg-[var(--sem-danger-bg)] text-[var(--sem-danger)] border-[var(--sem-danger-border)]',
+    bgClass: 'bg-[var(--gold-bg)]',
+    textClass: 'text-[var(--gold-fg)]',
+    borderClass: 'border-[var(--gold-bd)]',
+    railClass: 'border-l-[var(--gold-fg)]',
+    chipClass: 'bg-[var(--gold-bg)] text-[var(--gold-fg)] border-[var(--gold-bd)]',
   },
   critical: {
     label: 'Critical',
-    bgClass: 'bg-[var(--sem-critical-bg)]',
-    textClass: 'text-[var(--sem-critical)]',
-    borderClass: 'border-[var(--sem-critical-border)]',
-    railClass: 'border-l-[var(--sem-critical)]',
-    chipClass: 'bg-[var(--sem-critical-bg)] text-[var(--sem-critical)] border-[var(--sem-critical-border)]',
+    bgClass: 'bg-[var(--gold-bg)]',
+    textClass: 'text-[var(--gold-fg)]',
+    borderClass: 'border-[var(--gold-bd)]',
+    railClass: 'border-l-[var(--gold-fg)]',
+    chipClass: 'bg-[var(--gold-bg)] text-[var(--gold-fg)] border-[var(--gold-bd)]',
   },
   major: {
     label: 'Major',
-    bgClass: 'bg-[var(--sem-warning-bg)]',
-    textClass: 'text-[var(--sem-warning)]',
-    borderClass: 'border-[var(--sem-warning-border)]',
-    railClass: 'border-l-[var(--sem-warning)]',
-    chipClass: 'bg-[var(--sem-warning-bg)] text-[var(--sem-warning)] border-[var(--sem-warning-border)]',
+    bgClass: 'bg-[var(--neutral-bg)]',
+    textClass: 'text-[var(--neutral-fg)]',
+    borderClass: 'border-[var(--neutral-bd)]',
+    railClass: 'border-l-[var(--fg-2)]',
+    chipClass: 'bg-[var(--neutral-bg)] text-[var(--neutral-fg)] border-[var(--neutral-bd)]',
   },
   minor: {
     label: 'Minor',
-    bgClass: 'bg-[var(--sem-info-bg)]',
-    textClass: 'text-[var(--sem-info)]',
-    borderClass: 'border-[var(--sem-info-border)]',
-    railClass: 'border-l-[var(--sem-info)]',
-    chipClass: 'bg-[var(--sem-info-bg)] text-[var(--sem-info)] border-[var(--sem-info-border)]',
+    bgClass: 'bg-[var(--neutral-bg)]',
+    textClass: 'text-[var(--fg-3)]',
+    borderClass: 'border-[var(--neutral-bd)]',
+    railClass: 'border-l-[var(--fg-3)]',
+    chipClass: 'bg-[var(--neutral-bg)] text-[var(--fg-3)] border-[var(--neutral-bd)]',
   },
   trivial: {
     label: 'Trivial',
-    bgClass: 'bg-[var(--sem-medium-bg)]',
-    textClass: 'text-[var(--sem-medium)]',
-    borderClass: 'border-[var(--status-muted-border)]',
-    railClass: 'border-l-muted-foreground',
-    chipClass: 'bg-[var(--sem-medium-bg)] text-[var(--sem-medium)] border-[var(--status-muted-border)]',
+    bgClass: 'bg-[var(--neutral-bg)]',
+    textClass: 'text-[var(--fg-4)]',
+    borderClass: 'border-[var(--neutral-bd)]',
+    railClass: 'border-l-[var(--fg-4)]',
+    chipClass: 'bg-[var(--neutral-bg)] text-[var(--fg-4)] border-[var(--neutral-bd)]',
   },
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
 // PRIORITY TOKENS (P1-P4)
+// ALL NEUTRAL — Catalyst Gold for P1 ONLY
 // ─────────────────────────────────────────────────────────────────────────────
 
 export type SemanticPriority = 'p1' | 'p2' | 'p3' | 'p4';
@@ -86,27 +93,29 @@ export interface PriorityConfig {
 export const PRIORITY_TOKENS: Record<SemanticPriority, PriorityConfig> = {
   p1: {
     label: 'P1',
-    chipClass: 'bg-[var(--sem-danger-bg)] text-[var(--sem-danger)] border-[var(--sem-danger-border)]',
+    chipClass: 'bg-[var(--gold-bg)] text-[var(--gold-fg)] border-[var(--gold-bd)]',
   },
   p2: {
     label: 'P2',
-    chipClass: 'bg-[var(--sem-warning-bg)] text-[var(--sem-warning)] border-[var(--sem-warning-border)]',
+    chipClass: 'bg-[var(--neutral-bg)] text-[var(--neutral-fg)] border-[var(--neutral-bd)]',
   },
   p3: {
     label: 'P3',
-    chipClass: 'bg-[var(--sem-success-bg)] text-[var(--sem-success)] border-[var(--sem-success-border)]',
+    chipClass: 'bg-[var(--neutral-bg)] text-[var(--fg-3)] border-[var(--neutral-bd)]',
   },
   p4: {
     label: 'P4',
-    chipClass: 'bg-[var(--sem-medium-bg)] text-[var(--sem-medium)] border-[var(--status-muted-border)]',
+    chipClass: 'bg-[var(--neutral-bg)] text-[var(--fg-4)] border-[var(--neutral-bd)]',
   },
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
 // STATUS TOKENS (workflow states)
+// ALL NEUTRAL — Status expressed by text labels, NOT color
 // ─────────────────────────────────────────────────────────────────────────────
 
 export type SemanticStatus = 
+  | 'new'
   | 'open' 
   | 'in_progress' 
   | 'in_review' 
@@ -122,60 +131,72 @@ export interface StatusConfig {
   chipClass: string;
 }
 
+/**
+ * NEUTRAL AUTHORITY: All statuses use neutral tokens
+ * Status meaning comes from LABELS and POSITION, not color
+ */
 export const STATUS_TOKENS: Record<SemanticStatus, StatusConfig> = {
+  new: {
+    label: 'New',
+    chipClass: 'bg-[var(--neutral-bg)] text-[var(--fg-1)] border-[var(--neutral-bd)] font-medium',
+  },
   open: {
     label: 'Open',
-    chipClass: 'bg-[var(--sem-danger-bg)] text-[var(--sem-danger)] border-[var(--sem-danger-border)]',
+    chipClass: 'bg-[var(--neutral-bg)] text-[var(--neutral-fg)] border-[var(--neutral-bd)]',
   },
   in_progress: {
     label: 'In Progress',
-    chipClass: 'bg-[var(--sem-info-bg)] text-[var(--sem-info)] border-[var(--sem-info-border)]',
+    chipClass: 'bg-[var(--neutral-bg)] text-[var(--neutral-fg)] border-[var(--neutral-bd)]',
   },
   in_review: {
     label: 'In Review',
-    chipClass: 'bg-[var(--accent-bg)] text-[var(--accent-text)] border-[var(--accent-border)]',
+    chipClass: 'bg-[var(--neutral-bg)] text-[var(--neutral-fg)] border-[var(--neutral-bd)]',
   },
   verified: {
     label: 'Verified',
-    chipClass: 'bg-[var(--sem-success-bg)] text-[var(--sem-success)] border-[var(--sem-success-border)]',
+    chipClass: 'bg-[var(--neutral-bg)] text-[var(--neutral-fg)] border-[var(--neutral-bd)]',
   },
   resolved: {
     label: 'Resolved',
-    chipClass: 'bg-[var(--sem-success-bg)] text-[var(--sem-success)] border-[var(--sem-success-border)]',
+    chipClass: 'bg-[var(--neutral-bg)] text-[var(--fg-2)] border-[var(--neutral-bd)]',
   },
   closed: {
     label: 'Closed',
-    chipClass: 'bg-[var(--sem-medium-bg)] text-[var(--sem-medium)] border-[var(--status-muted-border)]',
+    chipClass: 'bg-[var(--neutral-bg)] text-[var(--fg-3)] border-[var(--neutral-bd)]',
   },
   wont_fix: {
     label: "Won't Fix",
-    chipClass: 'bg-[var(--sem-medium-bg)] text-[var(--sem-low)] border-[var(--status-muted-border)]',
+    chipClass: 'bg-[var(--neutral-bg)] text-[var(--fg-4)] border-[var(--neutral-bd)]',
   },
   blocked: {
     label: 'Blocked',
-    chipClass: 'bg-[var(--sem-blocked-bg)] text-[var(--sem-blocked)] border-[var(--sem-danger-border)]',
+    chipClass: 'bg-[var(--gold-bg)] text-[var(--gold-fg)] border-[var(--gold-bd)]',
   },
   done: {
     label: 'Done',
-    chipClass: 'bg-[var(--sem-done-bg)] text-[var(--sem-done)] border-[var(--sem-success-border)]',
+    chipClass: 'bg-[var(--neutral-bg)] text-[var(--fg-2)] border-[var(--neutral-bd)]',
   },
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
 // HEALTH TOKENS
+// ALL NEUTRAL — No emotional color cues
 // ─────────────────────────────────────────────────────────────────────────────
 
 export type SemanticHealth = 'green' | 'yellow' | 'red';
 
-export const HEALTH_TOKENS: Record<SemanticHealth, { chipClass: string }> = {
+export const HEALTH_TOKENS: Record<SemanticHealth, { chipClass: string; label: string }> = {
   green: {
-    chipClass: 'bg-[var(--sem-success-bg)] text-[var(--sem-success)] border-[var(--sem-success-border)]',
+    label: 'On Track',
+    chipClass: 'bg-[var(--neutral-bg)] text-[var(--fg-2)] border-[var(--neutral-bd)]',
   },
   yellow: {
-    chipClass: 'bg-[var(--sem-warning-bg)] text-[var(--sem-warning)] border-[var(--sem-warning-border)]',
+    label: 'At Risk',
+    chipClass: 'bg-[var(--neutral-bg)] text-[var(--neutral-fg)] border-[var(--neutral-bd)]',
   },
   red: {
-    chipClass: 'bg-[var(--sem-danger-bg)] text-[var(--sem-danger)] border-[var(--sem-danger-border)]',
+    label: 'Off Track',
+    chipClass: 'bg-[var(--gold-bg)] text-[var(--gold-fg)] border-[var(--gold-bd)]',
   },
 };
 
@@ -196,7 +217,7 @@ export function getSeverityClasses(severity: SemanticSeverity | string): string 
  */
 export function getSeverityRailClass(severity: SemanticSeverity | string): string {
   const normalized = severity.toLowerCase() as SemanticSeverity;
-  return SEVERITY_TOKENS[normalized]?.railClass ?? 'border-l-muted-foreground';
+  return SEVERITY_TOKENS[normalized]?.railClass ?? 'border-l-[var(--fg-4)]';
 }
 
 /**
@@ -222,4 +243,13 @@ export function getHealthClasses(health: SemanticHealth | string | null): string
   if (!health) return '';
   const normalized = health.toLowerCase() as SemanticHealth;
   return HEALTH_TOKENS[normalized]?.chipClass ?? '';
+}
+
+/**
+ * Get health label (replaces color with text)
+ */
+export function getHealthLabel(health: SemanticHealth | string | null): string {
+  if (!health) return '';
+  const normalized = health.toLowerCase() as SemanticHealth;
+  return HEALTH_TOKENS[normalized]?.label ?? health;
 }
