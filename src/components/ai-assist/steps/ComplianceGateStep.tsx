@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Shield, CheckCircle2, AlertTriangle, XCircle, ChevronDown, FileText, Lock } from 'lucide-react';
+import React, { useState, useEffect, useMemo } from 'react';
+import { Shield, CheckCircle2, AlertTriangle, XCircle, ChevronDown, FileText, Lock, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
@@ -9,7 +9,8 @@ import { cn } from '@/lib/utils';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { catalystToast } from '@/lib/catalystToast';
-
+import { useComplianceReport, useJustification, type ComplianceRow, type Verdict } from '@/hooks/useComplianceGate';
+import { Skeleton } from '@/components/ui/skeleton';
 interface ControlItem {
   id: string;
   name: string;
@@ -92,14 +93,119 @@ function RadialProgress({ score, size = 128, strokeWidth = 12 }: { score: number
 }
 
 export function ComplianceGateStep({
-  verdict = 'conditional',
-  totalScore = 72,
-  categories = [],
+  draftId,
+  runId,
+  verdict: propVerdict,
+  totalScore: propTotalScore,
+  categories: propCategories = [],
   justificationRequired = true,
-  justificationRecorded = false,
+  justificationRecorded: propJustificationRecorded = false,
   onJustificationSubmit,
   onContinueAllowed
 }: ComplianceGateStepProps) {
+  // Fetch real compliance data
+  const { data: complianceData, isLoading: isLoadingCompliance } = useComplianceReport(draftId);
+  const { data: existingJustification, isLoading: isLoadingJustification } = useJustification(draftId);
+  
+  // Derive values from real data or props
+  const hasRealData = !!complianceData?.report;
+  
+  // Transform real compliance data to UI format
+  const displayData = useMemo(() => {
+    if (!hasRealData || !complianceData?.report) {
+      // No real data - check if we have prop categories
+      if (propCategories.length > 0) {
+        return {
+          verdict: propVerdict || 'conditional' as const,
+          totalScore: propTotalScore || 0,
+          categories: propCategories,
+          justificationRecorded: propJustificationRecorded
+        };
+      }
+      // No data at all - show empty state
+      return null;
+    }
+    
+    const { matrix, scores } = complianceData.report;
+    
+    // Transform ComplianceRow[] to UI categories
+    const dgaRows = matrix.rows.filter(r => r.framework === 'DGA');
+    const ncaRows = matrix.rows.filter(r => r.framework === 'NCA');
+    
+    const transformRows = (rows: ComplianceRow[]): ControlItem[] => {
+      return rows.map(row => {
+        const coverageToScore: Record<string, { score: number; max: number }> = {
+          'covered': { score: 12, max: 12 },
+          'partial': { score: 6, max: 12 },
+          'not_specified': { score: 0, max: 12 }
+        };
+        const { score, max } = coverageToScore[row.coverage] || { score: 0, max: 12 };
+        
+        return {
+          id: row.control_id,
+          name: row.control_name,
+          score,
+          maxScore: max,
+          status: row.coverage === 'covered' ? 'pass' as const : 
+                  row.coverage === 'partial' ? 'warning' as const : 'fail' as const,
+          gaps: row.coverage !== 'covered' ? [`Missing: ${row.control_name} evidence`] : undefined
+        };
+      });
+    };
+    
+    const dgaItems = transformRows(dgaRows);
+    const ncaItems = transformRows(ncaRows);
+    
+    const calcCategoryScore = (items: ControlItem[]) => ({
+      totalScore: items.reduce((sum, i) => sum + i.score, 0),
+      maxScore: items.reduce((sum, i) => sum + i.maxScore, 0),
+      passing: items.filter(i => i.status === 'pass').length,
+      total: items.length
+    });
+    
+    const dgaStats = calcCategoryScore(dgaItems);
+    const ncaStats = calcCategoryScore(ncaItems);
+    
+    const categories: ComplianceCategory[] = [];
+    
+    if (dgaItems.length > 0) {
+      categories.push({
+        id: 'dga',
+        name: 'DGA Controls',
+        items: dgaItems,
+        ...dgaStats
+      });
+    }
+    
+    if (ncaItems.length > 0) {
+      categories.push({
+        id: 'nca',
+        name: 'NCA Controls',
+        items: ncaItems,
+        ...ncaStats
+      });
+    }
+    
+    // Map API verdict to UI verdict
+    const verdictMap: Record<Verdict, 'pass' | 'conditional' | 'fail'> = {
+      'COMPLIANT': 'pass',
+      'CONDITIONAL': 'conditional',
+      'NON_COMPLIANT': 'fail'
+    };
+    
+    return {
+      verdict: verdictMap[scores.verdict] || 'conditional',
+      totalScore: Math.round(scores.weighted_score),
+      categories,
+      justificationRecorded: !!existingJustification
+    };
+  }, [complianceData, hasRealData, propCategories, propVerdict, propTotalScore, propJustificationRecorded, existingJustification]);
+
+  const verdict = displayData?.verdict || 'conditional';
+  const totalScore = displayData?.totalScore || 0;
+  const displayCategories = displayData?.categories || [];
+  const justificationRecorded = displayData?.justificationRecorded || false;
+  
   // Open categories by default
   const [openCategories, setOpenCategories] = useState<string[]>(['dga', 'nca']);
   const [showJustificationForm, setShowJustificationForm] = useState(verdict === 'conditional');
@@ -172,34 +278,39 @@ export function ComplianceGateStep({
     setShowJustificationForm(false);
   };
 
-  // Mock categories if none provided
-  const displayCategories = categories.length > 0 ? categories : [
-    {
-      id: 'dga',
-      name: 'DGA Controls',
-      items: [
-        { id: 'DGA-DS-001', name: 'Digital Service Standards', score: 12, maxScore: 12, status: 'pass' as const },
-        { id: 'DGA-DS-002', name: 'Accessibility Requirements', score: 10, maxScore: 12, status: 'pass' as const },
-        { id: 'DGA-INT-001', name: 'Government Integration', score: 14, maxScore: 14, status: 'pass' as const }
-      ],
-      totalScore: 36,
-      maxScore: 38,
-      passing: 3,
-      total: 3
-    },
-    {
-      id: 'nca',
-      name: 'NCA Controls',
-      items: [
-        { id: 'NCA-ECC-001', name: 'Essential Cybersecurity', score: 18, maxScore: 25, status: 'warning' as const, gaps: ['Missing: Security logging evidence'] },
-        { id: 'NCA-CCC-001', name: 'Cloud Computing Controls', score: 6, maxScore: 15, status: 'fail' as const, gaps: ['Missing: Data residency documentation', 'Missing: Cloud provider certification'] }
-      ],
-      totalScore: 24,
-      maxScore: 40,
-      passing: 0,
-      total: 2
-    }
-  ];
+  // Loading state
+  if (isLoadingCompliance || isLoadingJustification) {
+    return (
+      <div className="space-y-6">
+        <Skeleton className="h-24 w-full rounded-xl" />
+        <div className="grid grid-cols-3 gap-4">
+          <Skeleton className="h-48 rounded-xl" />
+          <Skeleton className="h-48 rounded-xl" />
+          <Skeleton className="h-48 rounded-xl" />
+        </div>
+        <div className="space-y-3">
+          <Skeleton className="h-6 w-40" />
+          <Skeleton className="h-32 rounded-xl" />
+          <Skeleton className="h-32 rounded-xl" />
+        </div>
+      </div>
+    );
+  }
+  
+  // Empty state - no compliance data yet
+  if (!displayData || displayCategories.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center py-16 text-center">
+        <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mb-4">
+          <Shield className="w-8 h-8 text-muted-foreground" />
+        </div>
+        <h3 className="text-lg font-semibold mb-2">No Compliance Data</h3>
+        <p className="text-sm text-muted-foreground max-w-md">
+          Compliance analysis has not been run yet. Complete the previous steps to generate compliance data.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
