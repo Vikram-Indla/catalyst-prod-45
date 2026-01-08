@@ -30,9 +30,15 @@ interface Assignment {
   color?: string;
 }
 
+interface ResourceInfo {
+  id: string;
+  department?: string;
+}
+
 interface ProjectStaffingViewProps {
   assignments: Assignment[];
   allocations: ResourceAllocation[];
+  filteredResourceIds?: Set<string>;
   onAssignResource?: (assignmentId: string) => void;
   className?: string;
 }
@@ -49,13 +55,22 @@ interface ProjectWithStaffing {
 export function ProjectStaffingView({
   assignments,
   allocations,
+  filteredResourceIds,
   onAssignResource,
   className
 }: ProjectStaffingViewProps) {
+  // Filter allocations by department if a filter is applied
+  const filteredAllocations = useMemo(() => {
+    if (!filteredResourceIds || filteredResourceIds.size === 0) {
+      return allocations;
+    }
+    return allocations.filter(a => a.profile_id && filteredResourceIds.has(a.profile_id));
+  }, [allocations, filteredResourceIds]);
+
   // Calculate staffing metrics for each project
   const projectsWithStaffing = useMemo((): ProjectWithStaffing[] => {
     return assignments.map(project => {
-      const projectAllocations = allocations.filter(a => a.assignment_name === project.name);
+      const projectAllocations = filteredAllocations.filter(a => a.assignment_name === project.name);
       const totalAssigned = projectAllocations.reduce((sum, a) => sum + a.allocation_percent, 0);
       const requiredCapacity = 100; // Default requirement, could be configurable
       const gap = Math.max(0, requiredCapacity - totalAssigned);
@@ -78,7 +93,7 @@ export function ProjectStaffingView({
         status
       };
     });
-  }, [assignments, allocations]);
+  }, [assignments, filteredAllocations]);
 
   // Count by status
   const statusCounts = useMemo(() => {
