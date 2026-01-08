@@ -13,6 +13,7 @@ import { getAssignmentColor } from '@/lib/catalyst-colors';
 
 interface ResourceAllocation {
   id?: string;
+  resource_id?: string;  // resource_inventory.id
   profile_id?: string;
   profile_name?: string;
   resource_name?: string;  // Also support this field from hook
@@ -60,11 +61,12 @@ export function ProjectStaffingView({
   className
 }: ProjectStaffingViewProps) {
   // Filter allocations by department if a filter is applied
+  // filteredResourceIds contains resource_inventory.id values, so we filter by resource_id
   const filteredAllocations = useMemo(() => {
     if (!filteredResourceIds || filteredResourceIds.size === 0) {
       return allocations;
     }
-    return allocations.filter(a => a.profile_id && filteredResourceIds.has(a.profile_id));
+    return allocations.filter(a => a.resource_id && filteredResourceIds.has(a.resource_id));
   }, [allocations, filteredResourceIds]);
 
   // Calculate staffing metrics for each project
