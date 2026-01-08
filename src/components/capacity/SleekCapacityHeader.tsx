@@ -7,7 +7,7 @@ import { useState, useEffect } from 'react';
 import { 
   Search, Download, Plus, Filter, ChevronDown, Clock, 
   LayoutGrid, Table2, CalendarDays, Grid3X3, 
-  Presentation, Briefcase, Users, Layers
+  Presentation, Briefcase, Users, Layers, FileText
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -23,7 +23,7 @@ import { cn } from '@/lib/utils';
 import { CATALYST, getUtilizationColor } from '@/lib/catalyst-colors';
 import { formatDistanceToNow } from 'date-fns';
 
-export type PrimaryView = 'resources' | 'projects';
+export type PrimaryView = 'resources' | 'projects' | 'contracts';
 export type ResourceViewMode = 'cards' | 'table' | 'timeline' | 'heatmap';
 export type ProjectViewMode = 'cards' | 'timeline';
 
@@ -150,6 +150,15 @@ export function SleekCapacityHeader({
       onClick: () => {
         onPrimaryViewChange?.('resources');
         onResourceViewChange?.('heatmap');
+      }
+    },
+    { 
+      id: 'contracts', 
+      label: 'Contracts', 
+      icon: FileText,
+      isActive: primaryView === 'contracts',
+      onClick: () => {
+        onPrimaryViewChange?.('contracts');
       }
     },
   ];
