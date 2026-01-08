@@ -4,6 +4,7 @@
  */
 
 import { cn } from '@/lib/utils';
+import { format } from 'date-fns';
 import type { ContractResourceWithStatus } from '@/types/contract-horizon';
 
 interface ResourceCardProps {
@@ -48,7 +49,7 @@ export function ResourceCard({ resource, onClick }: ResourceCardProps) {
       {/* Footer */}
       <div className="flex items-center gap-1.5">
         <span className="text-[12px] font-semibold text-foreground/80">
-          {String(endDate.getMonth() + 1).padStart(2, '0')}-{String(endDate.getDate()).padStart(2, '0')}
+          {format(endDate, 'd MMM')}
         </span>
         <span className="w-[3px] h-[3px] rounded-full bg-muted-foreground" />
         <span 
