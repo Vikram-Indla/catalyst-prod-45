@@ -203,11 +203,16 @@ export default function CapacityPlannerPage() {
     const map = new Map<string, number>();
 
     allocations.forEach((a) => {
-      if (!a.profile_id) return;
       const allocStart = new Date(a.start_date);
       const allocEnd = new Date(a.end_date);
       if (allocStart <= now && allocEnd >= now) {
-        map.set(a.profile_id, (map.get(a.profile_id) || 0) + a.allocation_percent);
+        // Map by both profile_id and resource_id for complete coverage
+        if (a.profile_id) {
+          map.set(a.profile_id, (map.get(a.profile_id) || 0) + a.allocation_percent);
+        }
+        if (a.resource_id) {
+          map.set(a.resource_id, (map.get(a.resource_id) || 0) + a.allocation_percent);
+        }
       }
     });
 
@@ -1576,15 +1581,23 @@ function CardsView({
   onEditResource: (id: string) => void;
 }) {
   // Helper to get allocations for a specific resource
-  const getResourceAllocations = (resourceId: string) => {
-    return allocations.filter(a => a.profile_id === resourceId);
+  // Match by profile_id OR resource_id since some resources don't have linked profiles
+  const getResourceAllocations = (resourceId: string, resourceInventoryId?: string) => {
+    return allocations.filter(a => 
+      a.profile_id === resourceId || 
+      a.resource_id === resourceId ||
+      (resourceInventoryId && a.resource_id === resourceInventoryId)
+    );
   };
 
   // Helper to calculate total allocation from actual allocations - only for CURRENT period
-  const getTotalAllocationForResource = (resourceId: string): number => {
+  const getTotalAllocationForResource = (resourceId: string, resourceInventoryId?: string): number => {
     const now = new Date();
     const resourceAllocations = allocations.filter(a => {
-      if (a.profile_id !== resourceId) return false;
+      const matchesResource = a.profile_id === resourceId || 
+        a.resource_id === resourceId ||
+        (resourceInventoryId && a.resource_id === resourceInventoryId);
+      if (!matchesResource) return false;
       // Only count allocations that are active NOW (overlap with today)
       const allocStart = new Date(a.start_date);
       const allocEnd = new Date(a.end_date);
@@ -1647,8 +1660,8 @@ function CardsView({
                     role={resource.role || 'Team Member'}
                     department={resource.department}
                     assignmentName={assignmentName}
-                    totalAllocation={getTotalAllocationForResource(resource.id)}
-                    allocations={getResourceAllocations(resource.id)}
+                    totalAllocation={getTotalAllocationForResource(resource.id, (resource as any).resourceInventoryId)}
+                    allocations={getResourceAllocations(resource.id, (resource as any).resourceInventoryId)}
                     onOpen360={() => onResourceClick(resource)}
                     onEdit={() => onEditResource(resource.id)}
                   />
@@ -1748,8 +1761,8 @@ function CardsView({
                       role={resource.role || 'Team Member'}
                       department={resource.department}
                       assignmentName={resource.assignmentName}
-                      totalAllocation={getTotalAllocationForResource(resource.id)}
-                      allocations={getResourceAllocations(resource.id)}
+                      totalAllocation={getTotalAllocationForResource(resource.id, (resource as any).resourceInventoryId)}
+                      allocations={getResourceAllocations(resource.id, (resource as any).resourceInventoryId)}
                       onOpen360={() => onResourceClick(resource)}
                       onEdit={() => onEditResource(resource.id)}
                     />
@@ -1773,8 +1786,8 @@ function CardsView({
           role={resource.role || 'Team Member'}
           department={resource.department}
           assignmentName={resource.assignmentName}
-          totalAllocation={getTotalAllocationForResource(resource.id)}
-          allocations={getResourceAllocations(resource.id)}
+          totalAllocation={getTotalAllocationForResource(resource.id, (resource as any).resourceInventoryId)}
+          allocations={getResourceAllocations(resource.id, (resource as any).resourceInventoryId)}
           onOpen360={() => onResourceClick(resource)}
           onEdit={() => onEditResource(resource.id)}
         />
