@@ -552,13 +552,13 @@ export function CatyChatWidget() {
         // Query resource_inventory (source of truth) and join with profiles for names
         const { data: deptResources } = await supabase
           .from('resource_inventory')
-          .select('id, profile_id, name, contract_end_date, vendor_name, role_name')
+          .select('id, profile_id, name, contract_end_date, vendor_name, role_name, department_id, capacity_departments(name)')
           .eq('department_id', dept.id)
           .order('contract_end_date', { ascending: true })
           .limit(15);
 
         if (deptResources && deptResources.length > 0) {
-          // Get profile names for these resources (only when we actually have profile_ids)
+          // Get profile names + vendor for these resources (only when we actually have profile_ids)
           const profileIds = deptResources
             .map(r => r.profile_id)
             .filter((id): id is string => typeof id === 'string' && id.length > 0);
@@ -567,18 +567,18 @@ export function CatyChatWidget() {
             ? (
                 await supabase
                   .from('profiles')
-                  .select('id, full_name')
+                  .select('id, full_name, vendor')
                   .in('id', profileIds)
               ).data
             : [];
 
-          const profileMap = new Map((profiles || []).map(p => [p.id, p.full_name]));
+          const profileMap = new Map((profiles || []).map(p => [p.id, { name: p.full_name, vendor: p.vendor }]));
 
           const results = deptResources.map(r => {
             // Priority: profile full_name > resource_inventory.name > role_name > fallback
             let displayName = 'Unnamed Resource';
-            if (r.profile_id && profileMap.get(r.profile_id)) {
-              displayName = profileMap.get(r.profile_id) as string;
+            if (r.profile_id && profileMap.get(r.profile_id)?.name) {
+              displayName = profileMap.get(r.profile_id)!.name as string;
             } else if (r.name && r.name.trim() !== '') {
               displayName = r.name;
             } else if (r.role_name && r.role_name.trim() !== '') {
@@ -586,10 +586,13 @@ export function CatyChatWidget() {
             } else {
               displayName = `Resource ${String(r.id).slice(0, 8)}`;
             }
-            
+
+            const profileVendor = r.profile_id ? profileMap.get(r.profile_id)?.vendor : null;
+            const vendor = r.vendor_name || profileVendor || 'N/A';
+
             return {
               name: displayName,
-              vendor: r.vendor_name || 'N/A',
+              vendor,
               contractEnd: r.contract_end_date,
             };
           });
