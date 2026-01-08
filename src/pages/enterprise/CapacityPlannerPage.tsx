@@ -195,7 +195,8 @@ export default function CapacityPlannerPage() {
   };
 
   const openResourceDrawer = (resource: ResourceMetric) => {
-    setResource360Id(resource.id);
+    // Use resourceInventoryId for the drawer since it queries resource_inventory table
+    setResource360Id((resource as any).resourceInventoryId || resource.id);
   };
 
   const currentAllocationByResourceId = useMemo(() => {
