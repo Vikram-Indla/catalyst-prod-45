@@ -249,36 +249,108 @@ export function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
       const firstSelectedRole = productRoles?.find(r => r.id === firstSelectedRoleId);
       const jobRoleName = firstSelectedRole?.name || null;
 
-      // Update profile fields
-      const { error: profileError } = await supabase
+      // Determine whether this row is a real profile user or an imported (resource_inventory-only) user.
+      // Imported users appear in the list with user.id = resource_inventory.id.
+      const { data: profileRow, error: profileLookupError } = await supabase
         .from('profiles')
-        .update({
-          full_name: formData.full_name || null,
-          email: formData.email.toLowerCase().trim() || null,
-          vendor: formData.vendor || null,
-          location: formData.location || null,
-          country: countryInfo?.name || formData.country || null,
-          country_code: countryInfo?.code || selectedCountry?.code || null,
-          country_flag_svg_url: countryInfo?.svg || null,
-          contract_start_date: formData.contract_start_date || null,
-          contract_end_date: formData.contract_end_date || null,
-          department_id: selectedDepartment?.id || null,
-          updated_at: new Date().toISOString(),
-        })
-        .eq('id', user.id);
-
-      if (profileError) throw profileError;
-      
-      // Update or create resource_inventory record
-      const { data: inventoryRecord } = await supabase
-        .from('resource_inventory')
         .select('id')
-        .eq('profile_id', user.id)
+        .eq('id', user.id)
         .maybeSingle();
-      
-      if (inventoryRecord) {
-        // Update existing record - don't update assignments (managed via Book Resource Allocation)
-        const { error: inventoryError } = await supabase
+
+      if (profileLookupError) throw profileLookupError;
+
+      if (profileRow?.id) {
+        // Update profile fields
+        const { error: profileError } = await supabase
+          .from('profiles')
+          .update({
+            full_name: formData.full_name || null,
+            email: formData.email.toLowerCase().trim() || null,
+            vendor: formData.vendor || null,
+            location: formData.location || null,
+            country: countryInfo?.name || formData.country || null,
+            country_code: countryInfo?.code || selectedCountry?.code || null,
+            country_flag_svg_url: countryInfo?.svg || null,
+            contract_start_date: formData.contract_start_date || null,
+            contract_end_date: formData.contract_end_date || null,
+            department_id: selectedDepartment?.id || null,
+            updated_at: new Date().toISOString(),
+          })
+          .eq('id', user.id);
+
+        if (profileError) throw profileError;
+
+        // Update or create resource_inventory record (linked by profile_id)
+        const { data: inventoryRecord } = await supabase
+          .from('resource_inventory')
+          .select('id')
+          .eq('profile_id', user.id)
+          .maybeSingle();
+
+        if (inventoryRecord) {
+          // Update existing record - don't update assignments (managed via Book Resource Allocation)
+          const { error: inventoryError } = await supabase
+            .from('resource_inventory')
+            .update({
+              name: formData.full_name || null,
+              vendor_id: selectedVendor?.id || null,
+              vendor_name: formData.vendor || null,
+              location_id: selectedLocation?.id || null,
+              country_id: selectedCountry?.id || null,
+              department_id: selectedDepartment?.id || null,
+              department_name: selectedDepartment?.name || null,
+              role_name: jobRoleName,
+              contract_start_date: formData.contract_start_date || null,
+              contract_end_date: formData.contract_end_date || null,
+              updated_at: new Date().toISOString(),
+            })
+            .eq('id', inventoryRecord.id);
+
+          if (inventoryError) throw inventoryError;
+        } else {
+          // Create new resource_inventory record for this user - don't set assignments
+          const { error: insertError } = await supabase.from('resource_inventory').insert({
+            profile_id: user.id,
+            name: formData.full_name || null,
+            vendor_id: selectedVendor?.id || null,
+            vendor_name: formData.vendor || null,
+            location_id: selectedLocation?.id || null,
+            country_id: selectedCountry?.id || null,
+            department_id: selectedDepartment?.id || null,
+            department_name: selectedDepartment?.name || null,
+            role_name: jobRoleName,
+            contract_start_date: formData.contract_start_date || null,
+            contract_end_date: formData.contract_end_date || null,
+            is_active: true,
+          });
+
+          if (insertError) throw insertError;
+        }
+
+        // Update roles - delete existing and insert new
+        const { error: deleteRolesError } = await supabase
+          .from('user_product_roles')
+          .delete()
+          .eq('user_id', user.id);
+
+        if (deleteRolesError) throw deleteRolesError;
+
+        if (selectedRoleIds.length > 0) {
+          const roleInserts = selectedRoleIds.map((roleId) => ({
+            user_id: user.id,
+            role_id: roleId,
+            business_lines: [],
+          }));
+
+          const { error: insertRolesError } = await supabase
+            .from('user_product_roles')
+            .insert(roleInserts);
+
+          if (insertRolesError) throw insertRolesError;
+        }
+      } else {
+        // Imported / inventory-only user: update the resource_inventory row directly.
+        const { error: inventoryOnlyUpdateError } = await supabase
           .from('resource_inventory')
           .update({
             name: formData.full_name || null,
@@ -293,51 +365,9 @@ export function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
             contract_end_date: formData.contract_end_date || null,
             updated_at: new Date().toISOString(),
           })
-          .eq('id', inventoryRecord.id);
-        
-        if (inventoryError) throw inventoryError;
-      } else {
-        // Create new resource_inventory record for this user - don't set assignments
-        const { error: insertError } = await supabase
-          .from('resource_inventory')
-          .insert({
-            profile_id: user.id,
-            name: formData.full_name || null,
-            vendor_id: selectedVendor?.id || null,
-            vendor_name: formData.vendor || null,
-            location_id: selectedLocation?.id || null,
-            country_id: selectedCountry?.id || null,
-            department_id: selectedDepartment?.id || null,
-            department_name: selectedDepartment?.name || null,
-            role_name: jobRoleName,
-            contract_start_date: formData.contract_start_date || null,
-            contract_end_date: formData.contract_end_date || null,
-            is_active: true,
-          });
-        
-        if (insertError) throw insertError;
-      }
+          .eq('id', user.id);
 
-      // Update roles - delete existing and insert new
-      const { error: deleteRolesError } = await supabase
-        .from('user_product_roles')
-        .delete()
-        .eq('user_id', user.id);
-
-      if (deleteRolesError) throw deleteRolesError;
-
-      if (selectedRoleIds.length > 0) {
-        const roleInserts = selectedRoleIds.map(roleId => ({
-          user_id: user.id,
-          role_id: roleId,
-          business_lines: [],
-        }));
-
-        const { error: insertRolesError } = await supabase
-          .from('user_product_roles')
-          .insert(roleInserts);
-
-        if (insertRolesError) throw insertRolesError;
+        if (inventoryOnlyUpdateError) throw inventoryOnlyUpdateError;
       }
 
       // Log the update
