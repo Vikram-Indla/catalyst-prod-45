@@ -344,7 +344,7 @@ export function CatyChatWidget() {
     if (lowerQuery.includes('critical')) {
       const { data: criticalResources } = await supabase
         .from('resource_inventory')
-        .select('id, profile_id, name, contract_end_date, vendor_name, role_name')
+        .select('id, profile_id, name, contract_end_date, vendor_name, role_name, department_id, capacity_departments(name)')
         .lte('contract_end_date', thirtyDays.toISOString())
         .gte('contract_end_date', now.toISOString())
         .not('contract_end_date', 'is', null)
@@ -379,9 +379,16 @@ export function CatyChatWidget() {
           }
           return `Resource ${String(r.id).slice(0, 8)}`;
         };
+
+        const getDeptOrVendor = (r: any) => {
+          const deptName = r.capacity_departments?.name;
+          if (deptName) return deptName;
+          if (r.vendor_name) return r.vendor_name;
+          return 'N/A';
+        };
         
         return `**${criticalResources.length} Critical Resources (ending within 30 days):**\n\n${criticalResources.map(r => 
-          `• **${getDisplayName(r)}** (${r.vendor_name || 'N/A'}) — ${formatContractDate(r.contract_end_date)}`
+          `• **${getDisplayName(r)}** (${getDeptOrVendor(r)}) — ${formatContractDate(r.contract_end_date)}`
         ).join('\n')}`;
       }
       return `**No critical resources found** (contracts ending within 30 days)`;
@@ -391,7 +398,7 @@ export function CatyChatWidget() {
     if (lowerQuery.includes('warning')) {
       const { data: warningResources } = await supabase
         .from('resource_inventory')
-        .select('id, profile_id, name, contract_end_date, vendor_name, role_name')
+        .select('id, profile_id, name, contract_end_date, vendor_name, role_name, department_id, capacity_departments(name)')
         .gt('contract_end_date', thirtyDays.toISOString())
         .lte('contract_end_date', ninetyDays.toISOString())
         .order('contract_end_date', { ascending: true })
@@ -425,9 +432,16 @@ export function CatyChatWidget() {
           }
           return `Resource ${String(r.id).slice(0, 8)}`;
         };
+
+        const getDeptOrVendor = (r: any) => {
+          const deptName = r.capacity_departments?.name;
+          if (deptName) return deptName;
+          if (r.vendor_name) return r.vendor_name;
+          return 'N/A';
+        };
         
         return `**${warningResources.length} Warning Resources (ending in 30-90 days):**\n\n${warningResources.map(r => 
-          `• **${getDisplayName(r)}** (${r.vendor_name || 'N/A'}) — ${formatContractDate(r.contract_end_date)}`
+          `• **${getDisplayName(r)}** (${getDeptOrVendor(r)}) — ${formatContractDate(r.contract_end_date)}`
         ).join('\n')}`;
       }
       return `**No warning resources found** (contracts ending in 30-90 days)`;
@@ -440,7 +454,7 @@ export function CatyChatWidget() {
       
       const { data: monthResources } = await supabase
         .from('resource_inventory')
-        .select('id, profile_id, name, contract_end_date, vendor_name, role_name')
+        .select('id, profile_id, name, contract_end_date, vendor_name, role_name, department_id, capacity_departments(name)')
         .gte('contract_end_date', startOfMonth.toISOString())
         .lte('contract_end_date', endOfMonth.toISOString())
         .order('contract_end_date', { ascending: true });
@@ -474,9 +488,16 @@ export function CatyChatWidget() {
           }
           return `Resource ${String(r.id).slice(0, 8)}`;
         };
+
+        const getDeptOrVendor = (r: any) => {
+          const deptName = r.capacity_departments?.name;
+          if (deptName) return deptName;
+          if (r.vendor_name) return r.vendor_name;
+          return 'N/A';
+        };
         
         return `**Contracts expiring this month (${monthName}):**\n\n${monthResources.map(r => 
-          `• **${getDisplayName(r)}** (${r.vendor_name || 'N/A'}) — ${formatContractDate(r.contract_end_date)}`
+          `• **${getDisplayName(r)}** (${getDeptOrVendor(r)}) — ${formatContractDate(r.contract_end_date)}`
         ).join('\n')}`;
       }
       return `**No contracts expiring this month (${monthName})**`;
