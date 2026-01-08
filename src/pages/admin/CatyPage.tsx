@@ -8,7 +8,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAiGovernance, useAiGovernanceAdmin } from '@/hooks/useAiGovernance';
 import { testPhraseMatcher } from '@/lib/ai/governed-query-planner';
-import { AdminLayout } from '@/components/admin/AdminLayout';
+// AdminLayout is used as a route wrapper, not imported here
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -41,8 +41,7 @@ export default function CatyPage() {
   const [activeTab, setActiveTab] = useState('contracts');
   
   return (
-    <AdminLayout>
-      <div className="space-y-6">
+    <div className="p-6 space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -105,7 +104,6 @@ export default function CatyPage() {
           </TabsContent>
         </Tabs>
       </div>
-    </AdminLayout>
   );
 }
 
