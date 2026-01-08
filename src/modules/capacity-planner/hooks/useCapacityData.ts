@@ -201,6 +201,8 @@ export function useCapacityData() {
       // Reference tables
       .on('postgres_changes', { event: '*', schema: 'public', table: 'capacity_departments' }, invalidateResources)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'resource_vendors' }, invalidateResources)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'resource_countries' }, invalidateResources)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'resource_locations' }, invalidateResources)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'resource_assignments' }, () => {
         invalidateResources();
         queryClient.invalidateQueries({ queryKey: ['resource-assignments'] });
