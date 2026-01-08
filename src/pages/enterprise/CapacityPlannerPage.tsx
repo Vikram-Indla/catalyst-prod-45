@@ -1,5 +1,6 @@
 import { useEffect, useState, useMemo, useCallback } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { PageChrome } from '@/components/layout/PageChrome';
 import { Input } from '@/components/ui/input';
@@ -63,6 +64,8 @@ import { CapacityPlannerSkeleton } from '@/components/capacity/CapacityPlannerSk
 import { UndoRedoProvider } from '@/contexts/UndoRedoContext';
 import { RESOURCE_COLUMN_WIDTH, WEEK_COLUMN_WIDTH, MONTH_COLUMN_WIDTH, QUARTER_COLUMN_WIDTH } from '@/lib/capacity/timeline-columns';
 import { useResourceProfiles } from '@/hooks/useResourceProfiles';
+import { useCapacityViewStore } from '@/stores/capacityViewStore';
+import { CapacityPresentationShell } from '@/components/capacity/CapacityPresentationShell';
 
 // Department colors - Catalyst V5 compliant
 const departmentColors: Record<string, { bg: string; text: string; badge: string }> = {
@@ -83,6 +86,8 @@ const projectColors = [
 
 export default function CapacityPlannerPage() {
   const queryClient = useQueryClient();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
 
   const { metrics, projects, resources, assignments, isLoading, isFetching, isError, error, refetch } = useCapacityData();
   const [isRetrying, setIsRetrying] = useState(false);
@@ -95,18 +100,118 @@ export default function CapacityPlannerPage() {
   // Edit resource state
   const [editResourceId, setEditResourceId] = useState<string | null>(null);
 
-  // View state - V2.1 architecture
-  const [primaryView, setPrimaryView] = useState<PrimaryView>('resources');
-  const [resourceView, setResourceView] = useState<ResourceViewMode>('table');
-  const [projectView, setProjectView] = useState<ProjectViewMode>('cards');
+  // Capacity View Store - source of truth for view state
+  const capacityStore = useCapacityViewStore();
+
+  // View state - synced with store
+  const [primaryView, setPrimaryViewLocal] = useState<PrimaryView>(capacityStore.primaryView);
+  const [resourceView, setResourceViewLocal] = useState<ResourceViewMode>(capacityStore.resourceView);
+  const [projectView, setProjectViewLocal] = useState<ProjectViewMode>(capacityStore.projectView);
   const [currentView, setCurrentView] = useState<ViewType>('cards');
-  const [period, setPeriod] = useState<PeriodType>('monthly');
-  const [groupBy, setGroupBy] = useState<GroupByType>('none');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [departmentFilter, setDepartmentFilter] = useState<'all' | 'delivery' | 'product' | 'support'>('all'); // Default to All Tracks
-  const [activeFilter, setActiveFilter] = useState<'all' | 'available' | 'atCapacity' | 'over'>('all');
-  const [isCollapsed, setIsCollapsed] = useState(false);
-  const [compactMode, setCompactMode] = useState(false);
+  const [period, setPeriodLocal] = useState<PeriodType>(capacityStore.timeline.period);
+  const [groupBy, setGroupByLocal] = useState<GroupByType>(capacityStore.filters.groupBy);
+  const [searchQuery, setSearchQueryLocal] = useState(capacityStore.filters.searchQuery);
+  const [departmentFilter, setDepartmentFilterLocal] = useState<'all' | 'delivery' | 'product' | 'support'>(capacityStore.filters.departmentFilter);
+  const [activeFilter, setActiveFilterLocal] = useState<'all' | 'available' | 'atCapacity' | 'over'>(capacityStore.filters.activeFilter);
+  const [isCollapsed, setIsCollapsedLocal] = useState(capacityStore.ui.isCollapsed);
+  const [compactMode, setCompactModeLocal] = useState(capacityStore.ui.compactMode);
+  
+  // Presentation mode from URL or store
+  const [presentationMode, setPresentationModeLocal] = useState(false);
+
+  // Sync local state changes to store
+  const setPrimaryView = useCallback((view: PrimaryView) => {
+    setPrimaryViewLocal(view);
+    capacityStore.setPrimaryView(view);
+  }, [capacityStore]);
+
+  const setResourceView = useCallback((view: ResourceViewMode) => {
+    setResourceViewLocal(view);
+    capacityStore.setResourceView(view);
+  }, [capacityStore]);
+
+  const setProjectView = useCallback((view: ProjectViewMode) => {
+    setProjectViewLocal(view);
+    capacityStore.setProjectView(view);
+  }, [capacityStore]);
+
+  const setPeriod = useCallback((p: PeriodType) => {
+    setPeriodLocal(p);
+    capacityStore.setPeriod(p);
+  }, [capacityStore]);
+
+  const setGroupBy = useCallback((g: GroupByType) => {
+    setGroupByLocal(g);
+    capacityStore.setGroupBy(g);
+  }, [capacityStore]);
+
+  const setSearchQuery = useCallback((q: string) => {
+    setSearchQueryLocal(q);
+    capacityStore.setSearchQuery(q);
+  }, [capacityStore]);
+
+  const setDepartmentFilter = useCallback((f: 'all' | 'delivery' | 'product' | 'support') => {
+    setDepartmentFilterLocal(f);
+    capacityStore.setDepartmentFilter(f);
+  }, [capacityStore]);
+
+  const setActiveFilter = useCallback((f: 'all' | 'available' | 'atCapacity' | 'over') => {
+    setActiveFilterLocal(f);
+    capacityStore.setActiveFilter(f);
+  }, [capacityStore]);
+
+  const setIsCollapsed = useCallback((c: boolean) => {
+    setIsCollapsedLocal(c);
+    capacityStore.setIsCollapsed(c);
+  }, [capacityStore]);
+
+  const setCompactMode = useCallback((c: boolean) => {
+    setCompactModeLocal(c);
+    capacityStore.setCompactMode(c);
+  }, [capacityStore]);
+
+  const setPresentationMode = useCallback((mode: boolean) => {
+    setPresentationModeLocal(mode);
+    capacityStore.setPresentationMode(mode);
+    
+    // Update URL when entering/exiting presentation mode
+    if (mode) {
+      const serialized = capacityStore.getSerializedState();
+      setSearchParams({ mode: 'present', state: serialized });
+    } else {
+      // Remove presentation params from URL
+      setSearchParams({});
+    }
+  }, [capacityStore, setSearchParams]);
+
+  // Handle URL-based presentation mode on mount
+  useEffect(() => {
+    const mode = searchParams.get('mode');
+    const state = searchParams.get('state');
+    
+    if (mode === 'present' && state) {
+      // Restore state from URL before first render
+      const restored = capacityStore.restoreFromSerializedState(state);
+      if (restored) {
+        // Sync local state from store
+        const storeState = capacityStore.getStateSnapshot();
+        setPrimaryViewLocal(storeState.primaryView);
+        setResourceViewLocal(storeState.resourceView);
+        setProjectViewLocal(storeState.projectView);
+        setPeriodLocal(storeState.timeline.period);
+        setGroupByLocal(storeState.filters.groupBy);
+        setSearchQueryLocal(storeState.filters.searchQuery);
+        setDepartmentFilterLocal(storeState.filters.departmentFilter);
+        setActiveFilterLocal(storeState.filters.activeFilter);
+        setIsCollapsedLocal(storeState.ui.isCollapsed);
+        setCompactModeLocal(storeState.ui.compactMode);
+        setPresentationModeLocal(true);
+      } else {
+        // Invalid state, just enter presentation with current defaults
+        setPresentationModeLocal(true);
+      }
+    }
+  }, []); // Only run on mount
   
   // Modal state
   const [resourceModalOpen, setResourceModalOpen] = useState(false);
@@ -119,7 +224,6 @@ export default function CapacityPlannerPage() {
   const [resourcesToDelete, setResourcesToDelete] = useState<ResourceMetric[]>([]);
   const [bulkEditOpen, setBulkEditOpen] = useState(false);
   const [resourcesToBulkEdit, setResourcesToBulkEdit] = useState<ResourceMetric[]>([]);
-  const [presentationMode, setPresentationMode] = useState(false);
   
   // Allocation booking modal state
   const [allocationModalOpen, setAllocationModalOpen] = useState(false);
@@ -1395,81 +1499,15 @@ export default function CapacityPlannerPage() {
 
         {/* Presentation Mode Fullscreen Overlay */}
         {presentationMode && (
-          <div className="fixed inset-0 z-[9999] bg-background">
-            {/* Top bar with Logo, Tabs, Exit */}
-            <div className="absolute top-0 left-0 right-0 z-[10000] flex items-center justify-between px-6 py-3 bg-background border-b">
-              {/* Logo - Left */}
-              <Logo variant="dark" size="md" />
-
-              {/* Center section: Tabs + Group By */}
-              <div className="flex items-center gap-3">
-                {/* View Tabs */}
-                <div className="flex items-center gap-1 bg-muted rounded-lg p-1">
-                  <button
-                    onClick={() => setCurrentView('cards')}
-                    className={cn(
-                      "px-3 py-1.5 text-sm font-medium rounded-md transition-colors",
-                      currentView === 'cards' 
-                        ? "bg-background text-foreground shadow-sm" 
-                        : "text-muted-foreground hover:text-foreground"
-                    )}
-                  >
-                    Cards
-                  </button>
-                  <button
-                    onClick={() => setCurrentView('table')}
-                    className={cn(
-                      "px-3 py-1.5 text-sm font-medium rounded-md transition-colors",
-                      currentView === 'table' 
-                        ? "bg-background text-foreground shadow-sm" 
-                        : "text-muted-foreground hover:text-foreground"
-                    )}
-                  >
-                    Table
-                  </button>
-                  <button
-                    onClick={() => setCurrentView('timeline')}
-                    className={cn(
-                      "px-3 py-1.5 text-sm font-medium rounded-md transition-colors",
-                      currentView === 'timeline' 
-                        ? "bg-background text-foreground shadow-sm" 
-                        : "text-muted-foreground hover:text-foreground"
-                    )}
-                  >
-                    Timeline
-                  </button>
-                </div>
-
-                {/* Group By Dropdown */}
-                <div className="flex items-center gap-2">
-                  <span className="text-sm text-muted-foreground">Group By</span>
-                  <Select value={groupBy} onValueChange={(v) => setGroupBy(v as GroupByType)}>
-                    <SelectTrigger className="h-8 w-[130px] text-sm bg-background">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent className="bg-background z-[10001]">
-                      <SelectItem value="none">None</SelectItem>
-                      <SelectItem value="assignment">Assignment</SelectItem>
-                      <SelectItem value="department">Department</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-
-              {/* Exit - Right - Teal color */}
-              <Button 
-                size="sm" 
-                onClick={() => setPresentationMode(false)} 
-                className="gap-1.5 h-8 px-3 bg-[#0d9488] hover:bg-[#0f766e] text-white"
-              >
-                <X className="h-3.5 w-3.5" />
-                Exit
-              </Button>
-            </div>
-
-            {/* Content area */}
-            <div className="h-full w-full overflow-auto pt-14 px-2 pb-2">
-              {currentView === 'cards' && (
+          <CapacityPresentationShell
+            onExit={() => setPresentationMode(false)}
+            onExport={handleExport}
+          >
+            <div className="h-full w-full p-4">
+              {/* Render the EXACT current view based on primaryView and resourceView state */}
+              
+              {/* Resources Primary View */}
+              {primaryView === 'resources' && resourceView === 'cards' && (
                 <CardsView
                   resources={activeResources}
                   groupedByAssignment={groupedByAssignment}
@@ -1482,7 +1520,8 @@ export default function CapacityPlannerPage() {
                   onEditResource={() => {}}
                 />
               )}
-              {currentView === 'table' && (
+              
+              {primaryView === 'resources' && resourceView === 'table' && (
                 <TableView 
                   resources={filteredResources}
                   projects={projects}
@@ -1497,7 +1536,8 @@ export default function CapacityPlannerPage() {
                   onBulkEdit={() => {}}
                 />
               )}
-              {currentView === 'timeline' && (
+              
+              {primaryView === 'resources' && resourceView === 'timeline' && (
                 <EnhancedTimelineView 
                   resources={activeResources.map(r => ({
                     id: r.id,
@@ -1528,8 +1568,29 @@ export default function CapacityPlannerPage() {
                   )}
                 />
               )}
+              
+              {primaryView === 'resources' && resourceView === 'heatmap' && (
+                <CapacityHeatmap 
+                  departmentFilter={departmentFilter === 'all' ? undefined : departmentFilter}
+                />
+              )}
+              
+              {/* Projects Primary View */}
+              {primaryView === 'projects' && (
+                <ProjectStaffingView
+                  assignments={resourceAssignments}
+                  allocations={allocations}
+                  filteredResourceIds={new Set(activeResources.map(r => r.id))}
+                  onAssignResource={() => {}}
+                />
+              )}
+              
+              {/* Contracts Primary View */}
+              {primaryView === 'contracts' && (
+                <ContractHorizonView />
+              )}
             </div>
-          </div>
+          </CapacityPresentationShell>
         )}
       </div>
     </PageChrome>
