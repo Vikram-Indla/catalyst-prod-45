@@ -225,35 +225,44 @@ export function CatyChatWidget() {
       let profilesQuery = supabase
         .from('profiles')
         .select('id, full_name, vendor, contract_end_date, contract_start_date, department_id, country, location');
-      
+
       if (filter?.nameSearch) {
         profilesQuery = profilesQuery.ilike('full_name', `%${filter.nameSearch}%`);
       }
       if (filter?.limit) {
         profilesQuery = profilesQuery.limit(filter.limit);
       }
-      
-      const { data: profiles } = await profilesQuery;
-      
-      // Fetch resource_inventory for authoritative contract dates
-      const { data: resourceInventory } = await supabase
-        .from('resource_inventory')
-        .select('profile_id, contract_start_date, contract_end_date, vendor_name, role_name');
-      
+
+      const [{ data: profiles }, { data: resourceInventory }, { data: resourceVendors }] = await Promise.all([
+        profilesQuery,
+        supabase
+          .from('resource_inventory')
+          .select('profile_id, contract_start_date, contract_end_date, vendor_id, vendor_name, role_name'),
+        supabase.from('resource_vendors').select('id, name').eq('is_active', true),
+      ]);
+
+      const vendorMap = new Map((resourceVendors || []).map((v) => [v.id, v.name]));
+
       const inventoryByProfileId = new Map(
         (resourceInventory || [])
-          .filter(r => r.profile_id)
-          .map(r => [r.profile_id, r])
+          .filter(
+            (r): r is typeof r & { profile_id: string } =>
+              typeof r.profile_id === 'string' && r.profile_id.length > 0
+          )
+          .map((r) => {
+            const resolvedVendorName = r.vendor_id ? vendorMap.get(r.vendor_id) || r.vendor_name : r.vendor_name;
+            return [r.profile_id, { ...r, resolvedVendorName }];
+          })
       );
-      
-      return (profiles || []).map(p => {
+
+      return (profiles || []).map((p) => {
         const inventory = inventoryByProfileId.get(p.id);
         return {
           ...p,
           // resource_inventory takes precedence (authoritative source)
           contract_start_date: inventory?.contract_start_date || p.contract_start_date,
           contract_end_date: inventory?.contract_end_date || p.contract_end_date,
-          vendor: inventory?.vendor_name || p.vendor,
+          vendor: inventory?.resolvedVendorName || p.vendor,
           role_name: inventory?.role_name || null,
         };
       });
@@ -541,16 +550,22 @@ export function CatyChatWidget() {
     
     // Renewals
     if (lowerQuery.includes('renewal')) {
-      const { data: renewalResults } = await supabase
-        .from('profiles')
-        .select('full_name, vendor, contract_end_date')
-        .lte('contract_end_date', ninetyDays.toISOString())
-        .gte('contract_end_date', now.toISOString())
-        .not('contract_end_date', 'is', null)
-        .order('contract_end_date', { ascending: true })
-        .limit(10);
-      
-      if (renewalResults && renewalResults.length > 0) {
+      const merged = await fetchMergedResources();
+
+      const renewalResults = (merged || [])
+        .filter((r) => {
+          if (!r.contract_end_date) return false;
+          const end = new Date(r.contract_end_date);
+          return end >= now && end <= ninetyDays;
+        })
+        .sort((a, b) => {
+          const aEnd = a.contract_end_date ? new Date(a.contract_end_date).getTime() : 0;
+          const bEnd = b.contract_end_date ? new Date(b.contract_end_date).getTime() : 0;
+          return aEnd - bEnd;
+        })
+        .slice(0, 10);
+
+      if (renewalResults.length > 0) {
         return `**Priority Contract Renewals (next 90 days):**\n\n${renewalResults.map(r => 
           `• **${r.full_name}** (${r.vendor || 'N/A'}) — ends ${formatContractDate(r.contract_end_date)}`
         ).join('\n')}`;
@@ -624,14 +639,16 @@ export function CatyChatWidget() {
     }
     
     // Try to search by name as fallback
-    const words = query.split(' ').filter(w => w.length > 2 && !['show', 'find', 'what', 'when', 'about', 'the', 'resources'].includes(w.toLowerCase()));
+    const words = query
+      .split(' ')
+      .filter(
+        (w) =>
+          w.length > 2 && !['show', 'find', 'what', 'when', 'about', 'the', 'resources'].includes(w.toLowerCase())
+      );
+
     for (const word of words) {
-      const { data: searchResults } = await supabase
-        .from('profiles')
-        .select('full_name, vendor, contract_end_date')
-        .ilike('full_name', `%${word}%`)
-        .limit(5);
-      
+      const searchResults = await fetchMergedResources({ nameSearch: word, limit: 5 });
+
       if (searchResults && searchResults.length > 0) {
         return `**Found resources matching "${word}":**\n\n${searchResults.map(r => 
           `• **${r.full_name}** (${r.vendor || 'N/A'}) — Contract ends ${r.contract_end_date ? formatContractDate(r.contract_end_date) : 'Not set'}`
