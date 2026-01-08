@@ -18,8 +18,8 @@ import type {
 const TODAY = new Date('2026-01-08');
 
 function getStatus(daysRemaining: number): ContractStatus {
-  if (daysRemaining <= 90) return 'critical';
-  if (daysRemaining <= 180) return 'warning';
+  if (daysRemaining <= 60) return 'critical';
+  if (daysRemaining <= 90) return 'warning';
   return 'safe';
 }
 
@@ -69,18 +69,24 @@ export function useContractHorizon() {
 
       if (error) throw error;
 
-      return (data || []).map((r: any) => ({
-        id: r.id,
-        name: r.name || 'Unknown',
-        role: r.role_name || 'Team Member',
-        department: r.department_name || 'Unassigned',
-        vendor: r.vendor_name || 'Unknown',
-        country: 'Saudi Arabia', // Default since country_id needs lookup
-        location: r.location_id ? 'Off-shore' : 'On-site',
-        contractStart: r.contract_start_date || '2026-01-01',
-        contractEnd: r.contract_end_date,
-        profileId: r.profile_id
-      })) as ContractResource[];
+      // Filter out management roles and map to contract resources
+      return (data || [])
+        .filter((r: any) => {
+          const role = (r.role_name || '').toLowerCase();
+          return !role.includes('management') && !role.includes('manager');
+        })
+        .map((r: any) => ({
+          id: r.id,
+          name: r.name || 'Unknown',
+          role: r.role_name || 'Team Member',
+          department: r.department_name || 'Unassigned',
+          vendor: r.vendor_name || 'Unknown',
+          country: 'Saudi Arabia',
+          location: r.location_id ? 'Off-shore' : 'On-site',
+          contractStart: r.contract_start_date || '2026-01-01',
+          contractEnd: r.contract_end_date,
+          profileId: r.profile_id
+        })) as ContractResource[];
     }
   });
 
