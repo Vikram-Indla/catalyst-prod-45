@@ -414,15 +414,35 @@ export function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
         }
       }
 
-      // Log the update
+      // Log the update with detailed field changes
       const { data: { user: currentUser } } = await supabase.auth.getUser();
-      await supabase.from('auth_audit_log').insert({
-        user_id: user.id,
-        event_type: 'user_profile_updated',
-        actor_id: currentUser?.id,
-        event_details: { fields_updated: Object.keys(formData) },
-        created_at: new Date().toISOString(),
-      });
+      
+      // Compute changed fields diff
+      const changedFields: string[] = [];
+      if (formData.full_name !== initialFormData.full_name) changedFields.push('full_name');
+      if (formData.email !== initialFormData.email) changedFields.push('email');
+      if (formData.vendor !== initialFormData.vendor) changedFields.push('vendor');
+      if (formData.location !== initialFormData.location) changedFields.push('location');
+      if (formData.country !== initialFormData.country) changedFields.push('country');
+      if (formData.department !== initialFormData.department) changedFields.push('department');
+      if (formData.contract_start_date !== initialFormData.contract_start_date) changedFields.push('contract_start_date');
+      if (formData.contract_end_date !== initialFormData.contract_end_date) changedFields.push('contract_end_date');
+      if (JSON.stringify([...selectedRoleIds].sort()) !== JSON.stringify([...initialRoleIds].sort())) changedFields.push('roles');
+      if ((selectedAssignmentId || '') !== (initialAssignmentId || '')) changedFields.push('assignment');
+      
+      if (changedFields.length > 0) {
+        await supabase.from('auth_audit_log').insert({
+          user_id: user.id,
+          event_type: 'user_profile_updated',
+          actor_id: currentUser?.id,
+          event_details: { 
+            route: '/admin/users',
+            fields_updated: changedFields,
+            timestamp: new Date().toISOString(),
+          },
+          created_at: new Date().toISOString(),
+        });
+      }
 
       return true;
     },
@@ -479,11 +499,13 @@ export function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
         );
       });
 
-      // Also invalidate for a fresh fetch
+      // Invalidate ALL resource-related caches for full consistency across views
       queryClient.invalidateQueries({ queryKey: ['users-list'] });
+      queryClient.invalidateQueries({ queryKey: ['user-inventory', user?.id] });
       queryClient.invalidateQueries({ queryKey: ['resource-inventory'] });
       queryClient.invalidateQueries({ queryKey: ['capacity-planner-resources'] });
       queryClient.invalidateQueries({ queryKey: ['capacity-planner-assignments'] });
+      queryClient.invalidateQueries({ queryKey: ['resource-allocations'] });
 
       setInitialFormData(formData);
       setInitialRoleIds(selectedRoleIds);

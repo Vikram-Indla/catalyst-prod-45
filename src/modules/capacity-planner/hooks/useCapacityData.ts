@@ -163,59 +163,42 @@ export function useCapacityData() {
     },
   });
 
-  // Real-time subscriptions
+  // Real-time subscriptions - Unified sync with /admin/users
   useEffect(() => {
-    const assignmentsChannel = supabase
-      .channel('capacity-assignments-changes')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'assignments' }, () => {
-        queryClient.invalidateQueries({ queryKey: ['capacity-planner-assignments'] });
-      })
-      .subscribe();
+    const invalidateResources = () => {
+      queryClient.invalidateQueries({ queryKey: ['capacity-planner-resources'] });
+    };
 
-    const profilesChannel = supabase
-      .channel('capacity-profiles-changes')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' }, () => {
-        queryClient.invalidateQueries({ queryKey: ['capacity-planner-resources'] });
+    const channel = supabase
+      .channel('capacity-unified-sync')
+      // Core resource tables (same as /admin/users)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' }, invalidateResources)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'resource_inventory' }, invalidateResources)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'user_product_roles' }, invalidateResources)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'resource_allocations' }, () => {
+        invalidateResources();
+        queryClient.invalidateQueries({ queryKey: ['resource-allocations'] });
       })
-      .subscribe();
-
-    const resourceInventoryChannel = supabase
-      .channel('capacity-resource-inventory-changes')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'resource_inventory' }, () => {
-        queryClient.invalidateQueries({ queryKey: ['capacity-planner-resources'] });
-      })
-      .subscribe();
-
-    const resourceAssignmentsChannel = supabase
-      .channel('capacity-resource-assignments-changes')
+      // Reference tables
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'capacity_departments' }, invalidateResources)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'resource_vendors' }, invalidateResources)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'resource_assignments' }, () => {
-        queryClient.invalidateQueries({ queryKey: ['capacity-planner-resources'] });
+        invalidateResources();
         queryClient.invalidateQueries({ queryKey: ['resource-assignments'] });
         queryClient.invalidateQueries({ queryKey: ['resource-assignments-all'] });
       })
-      .subscribe();
-
-    const userProductRolesChannel = supabase
-      .channel('capacity-user-product-roles-changes')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'user_product_roles' }, () => {
-        queryClient.invalidateQueries({ queryKey: ['capacity-planner-resources'] });
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'product_roles' }, invalidateResources)
+      // Assignments and scenarios
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'assignments' }, () => {
+        queryClient.invalidateQueries({ queryKey: ['capacity-planner-assignments'] });
       })
-      .subscribe();
-
-    const scenariosChannel = supabase
-      .channel('capacity-scenarios-changes')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'capacity_scenarios' }, () => {
         queryClient.invalidateQueries({ queryKey: ['capacity-planner-scenarios'] });
       })
       .subscribe();
 
     return () => {
-      supabase.removeChannel(assignmentsChannel);
-      supabase.removeChannel(profilesChannel);
-      supabase.removeChannel(resourceInventoryChannel);
-      supabase.removeChannel(resourceAssignmentsChannel);
-      supabase.removeChannel(userProductRolesChannel);
-      supabase.removeChannel(scenariosChannel);
+      supabase.removeChannel(channel);
     };
   }, [queryClient]);
 
