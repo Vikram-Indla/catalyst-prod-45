@@ -220,6 +220,15 @@ export default function CapacityPlannerPage() {
     return map;
   }, [allocations]);
 
+  // Helper to check if a resource's contract has expired
+  const isContractExpired = (resource: ResourceMetric): boolean => {
+    if (!resource.contract_end_date) return false;
+    const contractEnd = new Date(resource.contract_end_date);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return contractEnd < today;
+  };
+
   const filteredResources = useMemo(() => {
     return metrics.resources.filter((r) => {
       // Exclude management and admin roles - they are overheads, not capacity planned
@@ -267,6 +276,11 @@ export default function CapacityPlannerPage() {
     currentAllocationByResourceId,
   ]);
 
+  // Filtered resources excluding expired contracts - used for Allocations, Gantt, Projects tabs
+  const activeResources = useMemo(() => {
+    return filteredResources.filter(r => !isContractExpired(r));
+  }, [filteredResources]);
+
   // Get unique departments for filter dropdown
   const uniqueDepartments = useMemo(() => {
     const depts = new Set(metrics.resources.map(r => r.department).filter(Boolean));
@@ -274,6 +288,7 @@ export default function CapacityPlannerPage() {
   }, [metrics.resources]);
 
   // Group resources by assignment type - using resource_allocations table for multi-assignment support
+  // Uses activeResources (excludes expired contracts) for Allocations/Gantt views
   const groupedByAssignment = useMemo(() => {
     const groups: Record<string, ResourceMetric[]> = {};
     
@@ -293,8 +308,8 @@ export default function CapacityPlannerPage() {
       allocationsByProfileId.set(alloc.profile_id, existing);
     });
     
-    // Populate with resources - a resource can appear in multiple groups if they have split allocations
-    filteredResources.forEach((r) => {
+    // Populate with ACTIVE resources only (excludes expired contracts)
+    activeResources.forEach((r) => {
       const resourceAllocations = allocationsByProfileId.get(r.id) || [];
       
       if (resourceAllocations.length > 0) {
@@ -312,9 +327,9 @@ export default function CapacityPlannerPage() {
       }
     });
     return groups;
-  }, [filteredResources, resourceAssignments, allocations]);
+  }, [activeResources, resourceAssignments, allocations]);
 
-  // Group resources by department
+  // Group resources by department - uses activeResources (excludes expired contracts)
   const groupedByDepartment = useMemo(() => {
     const groups: Record<string, ResourceMetric[]> = {};
     
@@ -325,14 +340,14 @@ export default function CapacityPlannerPage() {
     // Always have Unassigned lane
     groups['Unassigned'] = [];
     
-    // Populate with resources
-    filteredResources.forEach((r) => {
+    // Populate with ACTIVE resources only (excludes expired contracts)
+    activeResources.forEach((r) => {
       const deptName = r.department || 'Unassigned';
       if (!groups[deptName]) groups[deptName] = [];
       groups[deptName].push(r);
     });
     return groups;
-  }, [filteredResources, departments]);
+  }, [activeResources, departments]);
 
   // Handle moving a resource to a different assignment via drag-and-drop
   const handleMoveResource = (resourceId: string, fromAssignment: string, toAssignment: string, allocation?: number) => {
@@ -603,8 +618,9 @@ export default function CapacityPlannerPage() {
           {/* Resources Primary View */}
           {primaryView === 'resources' && (
             <AnimatePresence mode="wait">
-              {/* Empty State */}
-              {filteredResources.length === 0 && (
+              {/* Empty State - show based on view type: table uses filteredResources, others use activeResources */}
+              {((resourceView === 'table' && filteredResources.length === 0) || 
+                (resourceView !== 'table' && activeResources.length === 0)) && (
                 <motion.div 
                   key="empty"
                   initial={{ opacity: 0, y: 10 }}
@@ -620,7 +636,9 @@ export default function CapacityPlannerPage() {
                     No resources found
                   </h3>
                   <p className="text-muted-foreground text-center max-w-sm mb-6">
-                    No resources match your current filters. Try adjusting your search criteria or clearing filters.
+                    {resourceView === 'table' 
+                      ? 'No resources match your current filters. Try adjusting your search criteria or clearing filters.'
+                      : 'No active resources found. Resources with expired contracts are only visible in the Resources and Contracts tabs.'}
                   </p>
                   <div className="flex gap-3">
                     <Button 
@@ -644,8 +662,8 @@ export default function CapacityPlannerPage() {
                 </motion.div>
               )}
 
-              {/* Cards View */}
-              {filteredResources.length > 0 && resourceView === 'cards' && (
+              {/* Cards View (Allocations) - uses activeResources (excludes expired contracts) */}
+              {activeResources.length > 0 && resourceView === 'cards' && (
                 <motion.div
                   key={`cards-${searchQuery}-${departmentFilter}-${activeFilter}`}
                   initial={{ opacity: 0, y: 10 }}
@@ -654,7 +672,7 @@ export default function CapacityPlannerPage() {
                   transition={{ duration: 0.2 }}
                 >
                   <CardsView 
-                    resources={filteredResources} 
+                    resources={activeResources} 
                     groupedByAssignment={groupedByAssignment}
                     groupedByDepartment={groupedByDepartment}
                     groupBy={groupBy}
@@ -701,8 +719,8 @@ export default function CapacityPlannerPage() {
                   />
                 </motion.div>
               )}
-              {/* Timeline View - Enhanced Catalyst V5 Design */}
-              {filteredResources.length > 0 && resourceView === 'timeline' && (
+              {/* Timeline View (Gantt) - uses activeResources (excludes expired contracts) */}
+              {activeResources.length > 0 && resourceView === 'timeline' && (
                 <motion.div
                   key={`timeline-${searchQuery}-${departmentFilter}-${activeFilter}`}
                   initial={{ opacity: 0, y: 10 }}
@@ -711,7 +729,7 @@ export default function CapacityPlannerPage() {
                   transition={{ duration: 0.2 }}
                 >
                   <EnhancedTimelineView 
-                    resources={filteredResources.map(r => ({
+                    resources={activeResources.map(r => ({
                       id: r.id,
                       name: r.name,
                       role: r.role,
@@ -768,7 +786,7 @@ export default function CapacityPlannerPage() {
               <ProjectStaffingView
                 assignments={resourceAssignments}
                 allocations={allocations}
-                filteredResourceIds={new Set(filteredResources.map(r => r.id))}
+                filteredResourceIds={new Set(activeResources.map(r => r.id))}
                 onAssignResource={(assignmentId) => {
                   // Open find availability with project context
                   setResourceModalOpen(true);
@@ -1436,7 +1454,7 @@ export default function CapacityPlannerPage() {
             <div className="h-full w-full overflow-auto pt-14 px-2 pb-2">
               {currentView === 'cards' && (
                 <CardsView
-                  resources={filteredResources}
+                  resources={activeResources}
                   groupedByAssignment={groupedByAssignment}
                   groupedByDepartment={groupedByDepartment}
                   groupBy={groupBy}
@@ -1464,7 +1482,7 @@ export default function CapacityPlannerPage() {
               )}
               {currentView === 'timeline' && (
                 <EnhancedTimelineView 
-                  resources={filteredResources.map(r => ({
+                  resources={activeResources.map(r => ({
                     id: r.id,
                     name: r.name,
                     role: r.role,
