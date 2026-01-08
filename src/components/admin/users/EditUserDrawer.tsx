@@ -43,6 +43,8 @@ export function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
     location: '',
     country: '',
     assignment: '',
+    job_role: '',
+    department: '',
     contract_end_date: '',
   });
   const [selectedRoleIds, setSelectedRoleIds] = useState<string[]>([]);
@@ -116,6 +118,34 @@ export function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
     },
   });
 
+  // Fetch job roles from resource_roles table
+  const { data: jobRoles = [] } = useQuery({
+    queryKey: ['resource-roles'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('resource_roles')
+        .select('code, name')
+        .eq('is_active', true)
+        .order('sort_order');
+      if (error) throw error;
+      return data || [];
+    },
+  });
+
+  // Fetch departments from capacity_departments table
+  const { data: departments = [] } = useQuery({
+    queryKey: ['capacity-departments'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('capacity_departments')
+        .select('id, name')
+        .eq('is_active', true)
+        .order('sort_order');
+      if (error) throw error;
+      return data || [];
+    },
+  });
+
   // Set up realtime subscriptions for all reference tables
   useEffect(() => {
     const channel = supabase
@@ -131,6 +161,12 @@ export function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
       })
       .on('postgres_changes', { event: '*', schema: 'public', table: 'resource_assignments' }, () => {
         queryClient.invalidateQueries({ queryKey: ['resource-assignments'] });
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'resource_roles' }, () => {
+        queryClient.invalidateQueries({ queryKey: ['resource-roles'] });
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'capacity_departments' }, () => {
+        queryClient.invalidateQueries({ queryKey: ['capacity-departments'] });
       })
       .subscribe();
 
@@ -149,6 +185,8 @@ export function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
         location: user.location || '',
         country: user.country || '',
         assignment: user.assignment_name || '',
+        job_role: user.job_role || '',
+        department: user.department_name || '',
         contract_end_date: user.contract_end_date ? format(new Date(user.contract_end_date), 'yyyy-MM-dd') : '',
       });
       setSelectedRoleIds(user.roles.map(r => r.role_id));
@@ -168,6 +206,8 @@ export function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
       const selectedLocation = locations.find(l => l.name === formData.location);
       const selectedCountry = countries.find(c => c.name === formData.country);
       const selectedAssignment = assignments.find(a => a.name === formData.assignment);
+      const selectedJobRole = jobRoles.find(r => r.name === formData.job_role);
+      const selectedDepartment = departments.find(d => d.name === formData.department);
 
       // Update profile fields
       const { error: profileError } = await supabase
@@ -181,6 +221,7 @@ export function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
           country_code: countryInfo?.code || selectedCountry?.code || null,
           country_flag_svg_url: countryInfo?.svg || null,
           contract_end_date: formData.contract_end_date || null,
+          department_id: selectedDepartment?.id || null,
           updated_at: new Date().toISOString(),
         })
         .eq('id', user.id);
@@ -205,6 +246,9 @@ export function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
             location_id: selectedLocation?.id || null,
             country_id: selectedCountry?.id || null,
             assignment_id: selectedAssignment?.id || null,
+            department_id: selectedDepartment?.id || null,
+            department_name: formData.department || null,
+            role_name: formData.job_role || null,
             contract_end_date: formData.contract_end_date || null,
             updated_at: new Date().toISOString(),
           })
@@ -223,6 +267,9 @@ export function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
             location_id: selectedLocation?.id || null,
             country_id: selectedCountry?.id || null,
             assignment_id: selectedAssignment?.id || null,
+            department_id: selectedDepartment?.id || null,
+            department_name: formData.department || null,
+            role_name: formData.job_role || null,
             contract_end_date: formData.contract_end_date || null,
             is_active: true,
           });
@@ -331,6 +378,42 @@ export function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
                   onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
                   placeholder="Enter email address"
                 />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="job_role">Job Role</Label>
+                <Select
+                  value={formData.job_role || '__none__'}
+                  onValueChange={(value) => setFormData(prev => ({ ...prev, job_role: value === '__none__' ? '' : value }))}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select job role" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="__none__">Not specified</SelectItem>
+                    {jobRoles.map((role) => (
+                      <SelectItem key={role.code} value={role.name}>{role.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="department">Department</Label>
+                <Select
+                  value={formData.department || '__none__'}
+                  onValueChange={(value) => setFormData(prev => ({ ...prev, department: value === '__none__' ? '' : value }))}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select department" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="__none__">Not specified</SelectItem>
+                    {departments.map((dept) => (
+                      <SelectItem key={dept.id} value={dept.name}>{dept.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             </div>
 
