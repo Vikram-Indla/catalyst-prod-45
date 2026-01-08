@@ -31,21 +31,33 @@ function getAssignmentColor(name: string | null | undefined): string {
   return ASSIGNMENT_COLORS[name] || CATALYST_COLORS.primary;
 }
 
-// Fetch resources with utilization data - ALIGNED with Cards/Table views
+// Fetch resources with utilization data - SOURCE: resource_inventory (single source of truth)
 export function useCapacityHeatmapData(monthCount = 12) {
   const queryClient = useQueryClient();
 
   const query = useQuery({
     queryKey: ['capacity-heatmap-resources', monthCount],
     queryFn: async () => {
-      // === STEP 1: Fetch profiles with department info (same as useCapacityData) ===
-      const { data: profiles, error: profilesError } = await supabase
+      // === STEP 1: Fetch all resources from resource_inventory (72 records) ===
+      const { data: resourceInventory, error: riError } = await supabase
+        .from('resource_inventory')
+        .select('*')
+        .order('name');
+      if (riError) throw riError;
+
+      // === STEP 2: Fetch departments to map names ===
+      const { data: departments } = await supabase
+        .from('capacity_departments')
+        .select('id, name');
+      const deptMap = new Map(departments?.map(d => [d.id, d.name]) || []);
+
+      // === STEP 3: Fetch profiles for avatar, email, country info (enrichment only) ===
+      const { data: profiles } = await supabase
         .from('profiles')
         .select(`
           id,
           full_name,
           email,
-          role,
           department_id,
           contract_end_date,
           country,
@@ -54,18 +66,11 @@ export function useCapacityHeatmapData(monthCount = 12) {
           location,
           vendor,
           avatar_url
-        `)
-        .order('full_name');
+        `);
+      const profileMap = new Map(profiles?.map(p => [p.id, p]) || []);
+      const profileByName = new Map(profiles?.map(p => [p.full_name?.toLowerCase(), p]) || []);
 
-      if (profilesError) throw profilesError;
-
-      // Fetch departments to map names
-      const { data: departments } = await supabase
-        .from('capacity_departments')
-        .select('id, name');
-      const deptMap = new Map(departments?.map(d => [d.id, d.name]) || []);
-
-      // Fetch product roles for role display (same as Cards/Table)
+      // === STEP 4: Fetch product roles for role display ===
       const [{ data: userProductRoles }, { data: productRoles }] = await Promise.all([
         supabase.from('user_product_roles').select('user_id, role_id'),
         supabase.from('product_roles').select('id, name'),
@@ -83,7 +88,7 @@ export function useCapacityHeatmapData(monthCount = 12) {
         }
       });
 
-      // === STEP 2: Fetch resource_allocations with date ranges ===
+      // === STEP 5: Fetch resource_allocations with date ranges ===
       const { data: allocationsData, error: allocError } = await supabase
         .from('resource_allocations')
         .select(`
@@ -93,15 +98,14 @@ export function useCapacityHeatmapData(monthCount = 12) {
           allocation_percent,
           start_date,
           end_date,
-          resource_inventory!inner(profile_id, name),
           resource_assignments(name)
         `)
         .order('start_date');
 
       if (allocError) throw allocError;
 
-      // Build allocation map by profile_id
-      const allocationsByProfileId = new Map<string, Array<{
+      // Build allocation map by resource_inventory ID
+      const allocationsByResourceId = new Map<string, Array<{
         id: string;
         percent: number;
         startDate: string;
@@ -110,10 +114,7 @@ export function useCapacityHeatmapData(monthCount = 12) {
       }>>();
 
       (allocationsData || []).forEach((alloc: any) => {
-        const profileId = alloc.resource_inventory?.profile_id;
-        if (!profileId) return;
-        
-        const existing = allocationsByProfileId.get(profileId) || [];
+        const existing = allocationsByResourceId.get(alloc.resource_id) || [];
         existing.push({
           id: alloc.id,
           percent: alloc.allocation_percent || 0,
@@ -121,21 +122,21 @@ export function useCapacityHeatmapData(monthCount = 12) {
           endDate: alloc.end_date,
           assignmentName: alloc.resource_assignments?.name || 'Unassigned',
         });
-        allocationsByProfileId.set(profileId, existing);
+        allocationsByResourceId.set(alloc.resource_id, existing);
       });
 
-      // === STEP 3: Generate months array for 2026 (year shown in UI) ===
+      // === STEP 6: Generate months array for 2026 (year shown in UI) ===
       const baseYear = 2026;
       const months = Array.from({ length: monthCount }, (_, i) =>
         new Date(baseYear, i, 1)
       );
 
-      // === STEP 4: Map profiles to HeatmapResource format ===
-      // Apply SAME exclusion rules as Cards/Table
-      const resources: HeatmapResource[] = (profiles || [])
-        .filter((profile) => {
-          // Get role from product roles (same as Cards/Table)
-          const roleName = userRoleMap.get(profile.id) || 'No role';
+      // === STEP 7: Map resource_inventory to HeatmapResource format ===
+      const resources: HeatmapResource[] = (resourceInventory || [])
+        .filter((ri) => {
+          // Get role from profile's product roles if linked
+          const profile = ri.profile_id ? profileMap.get(ri.profile_id) : profileByName.get(ri.name?.toLowerCase());
+          const roleName = profile ? (userRoleMap.get(profile.id) || ri.role_name || 'No role') : (ri.role_name || 'No role');
           const roleLower = roleName.toLowerCase();
           
           // Exclude management and admin roles (same as CapacityPlannerPage line 200-204)
@@ -144,21 +145,24 @@ export function useCapacityHeatmapData(monthCount = 12) {
           
           return !isManagement && !isSuperAdmin;
         })
-        .map((profile) => {
-          const departmentName = profile.department_id ? deptMap.get(profile.department_id) || 'Unassigned' : 'Unassigned';
-          const roleName = userRoleMap.get(profile.id) || 'No role';
+        .map((ri) => {
+          // Get linked profile for enrichment
+          const profile = ri.profile_id ? profileMap.get(ri.profile_id) : profileByName.get(ri.name?.toLowerCase());
+          const departmentId = profile?.department_id || ri.department_id;
+          const departmentName = departmentId ? deptMap.get(departmentId) || 'Unassigned' : 'Unassigned';
+          const roleName = profile ? (userRoleMap.get(profile.id) || ri.role_name || 'No role') : (ri.role_name || 'No role');
           
           // Calculate contract status for this resource
-          const contractStatus = getContractStatus(profile.contract_end_date);
+          const contractStatus = getContractStatus(ri.contract_end_date);
           
-          // Get allocations for this profile
-          const profileAllocations = allocationsByProfileId.get(profile.id) || [];
+          // Get allocations for this resource_inventory ID
+          const resourceAllocations = allocationsByResourceId.get(ri.id) || [];
           
           // Generate monthly utilization based on actual dated allocations
           const monthlyUtilization: MonthlyUtilization[] = months.map((month) => {
             // Check if this month is after contract end (locked)
-            const isLockedMonth = profile.contract_end_date && 
-              new Date(profile.contract_end_date) < month;
+            const isLockedMonth = ri.contract_end_date && 
+              new Date(ri.contract_end_date) < month;
             
             // If month is locked (past contract end), show 0% locked
             if (isLockedMonth) {
@@ -178,7 +182,7 @@ export function useCapacityHeatmapData(monthCount = 12) {
             const monthStart = new Date(month.getFullYear(), month.getMonth(), 1);
             const monthEnd = new Date(month.getFullYear(), month.getMonth() + 1, 0);
             
-            profileAllocations.forEach((alloc, allocIdx) => {
+            resourceAllocations.forEach((alloc, allocIdx) => {
               const allocStart = new Date(alloc.startDate);
               const allocEnd = new Date(alloc.endDate);
               
@@ -232,10 +236,11 @@ export function useCapacityHeatmapData(monthCount = 12) {
             : 'stable';
           
           return {
-            id: profile.id,
-            name: profile.full_name || 'Unknown',
-            initials: getInitials(profile.full_name || 'UN'),
-            email: profile.email || '',
+            id: ri.profile_id || ri.id, // Use profile_id if linked, otherwise resource_inventory id
+            resourceInventoryId: ri.id,
+            name: ri.name || 'Unknown',
+            initials: getInitials(ri.name || 'UN'),
+            email: profile?.email || '',
             role: roleName,
             department: departmentName,
             team: departmentName,
@@ -245,15 +250,15 @@ export function useCapacityHeatmapData(monthCount = 12) {
             trendPercentage: Math.abs(Math.round(secondHalfAvg - firstHalfAvg)),
             hasConflicts: conflicts > 0,
             conflictCount: conflicts,
-            // Profile fields
-            contractEndDate: profile.contract_end_date,
+            // Profile fields (enriched from profiles table when available)
+            contractEndDate: ri.contract_end_date,
             contractStatus,
-            country: profile.country,
-            countryCode: profile.country_code,
-            countryFlagUrl: profile.country_flag_svg_url,
-            location: profile.location,
-            vendor: profile.vendor,
-            avatarUrl: profile.avatar_url,
+            country: profile?.country || null,
+            countryCode: profile?.country_code || null,
+            countryFlagUrl: profile?.country_flag_svg_url || null,
+            location: profile?.location || null,
+            vendor: profile?.vendor || ri.vendor_name || null,
+            avatarUrl: profile?.avatar_url || null,
           };
         });
       
@@ -271,6 +276,13 @@ export function useCapacityHeatmapData(monthCount = 12) {
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'resource_allocations' },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ['capacity-heatmap-resources'] });
+        }
+      )
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'resource_inventory' },
         () => {
           queryClient.invalidateQueries({ queryKey: ['capacity-heatmap-resources'] });
         }

@@ -6,36 +6,39 @@ import type { CapacityResource, CapacityAssignment, CapacityProject, CapacitySce
 export function useCapacityData() {
   const queryClient = useQueryClient();
 
-  // Fetch all resources from profiles table with assignment_id from resource_inventory
+  // Fetch all resources from resource_inventory table (single source of truth)
   const { data: resources = [], isLoading: resourcesLoading, isFetching: resourcesFetching, isError: resourcesError, error: resourcesErrorObj, refetch: refetchResources } = useQuery({
     queryKey: ['capacity-planner-resources'],
     staleTime: 30000, // Reduce unnecessary refetches during DnD
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('id, full_name, email, role, avatar_url, created_at, updated_at, department_id, contract_end_date')
-        .order('full_name');
-      if (error) throw error;
+      // STEP 1: Fetch all resources from resource_inventory (72 records)
+      const { data: resourceInventory, error: riError } = await supabase
+        .from('resource_inventory')
+        .select('*')
+        .order('name');
+      if (riError) throw riError;
       
-      // Fetch departments to map names
+      // STEP 2: Fetch departments to map names
       const { data: departments } = await supabase
         .from('capacity_departments')
         .select('id, name');
       const deptMap = new Map(departments?.map(d => [d.id, d.name]) || []);
       
-      // Fetch resource assignments to map names (matches resource_inventory.assignment_id FK)
+      // STEP 3: Fetch resource assignments to map names
       const { data: resourceAssignments } = await supabase
         .from('resource_assignments')
         .select('id, name')
         .eq('is_active', true);
       const assignmentTypeMap = new Map(resourceAssignments?.map((a) => [a.id, a.name]) || []);
       
-      // Fetch resource_inventory using profile_id for reliable matching (includes contract dates)
-      const { data: resourceInventory } = await supabase
-        .from('resource_inventory')
-        .select('id, name, assignment_id, profile_id, default_capacity_percent, contract_start_date, contract_end_date, vendor_name');
+      // STEP 4: Fetch profiles for avatar, email, etc (enrichment only)
+      const { data: profiles } = await supabase
+        .from('profiles')
+        .select('id, full_name, email, avatar_url, department_id');
+      const profileMap = new Map(profiles?.map(p => [p.id, p]) || []);
+      const profileByName = new Map(profiles?.map(p => [p.full_name?.toLowerCase(), p]) || []);
       
-      // Fetch product roles for role display (same source as /admin/users)
+      // STEP 5: Fetch product roles for role display
       const [{ data: userProductRoles }, { data: productRoles }] = await Promise.all([
         supabase.from('user_product_roles').select('user_id, role_id'),
         supabase.from('product_roles').select('id, name'),
@@ -53,55 +56,55 @@ export function useCapacityData() {
         }
       });
       
-      // Fetch resource_allocations with resource_inventory join for profile mapping
+      // STEP 6: Fetch resource_allocations for current allocation
       const now = new Date().toISOString().split('T')[0];
       const { data: allocationsData } = await supabase
         .from('resource_allocations')
-        .select('resource_id, allocation_percent, start_date, end_date, resource_inventory!inner(profile_id)')
+        .select('resource_id, allocation_percent, start_date, end_date')
         .lte('start_date', now)
         .gte('end_date', now);
       
-      // Calculate current allocation per profile from time-boxed allocations
-      const currentAllocationByProfile = new Map<string, number>();
+      // Calculate current allocation per resource_inventory ID
+      const currentAllocationByResourceId = new Map<string, number>();
       (allocationsData || []).forEach((alloc: any) => {
-        const profileId = alloc.resource_inventory?.profile_id;
-        if (profileId) {
-          const current = currentAllocationByProfile.get(profileId) || 0;
-          currentAllocationByProfile.set(profileId, current + alloc.allocation_percent);
-        }
+        const current = currentAllocationByResourceId.get(alloc.resource_id) || 0;
+        currentAllocationByResourceId.set(alloc.resource_id, current + alloc.allocation_percent);
       });
       
-      // Create maps for both profile_id and name-based lookup (fallback)
-      const inventoryByProfileId = new Map(resourceInventory?.filter(r => r.profile_id).map(r => [r.profile_id, r]) || []);
-      const inventoryByName = new Map(resourceInventory?.map(r => [r.name?.toLowerCase(), r]) || []);
-      
-      return (data || []).map(p => {
-        const fullName = p.full_name || p.email || 'Unknown';
-        // Try profile_id match first, then fall back to name match
-        const inventory = inventoryByProfileId.get(p.id) || inventoryByName.get(fullName.toLowerCase());
-        const assignmentId = inventory?.assignment_id || null;
-        const assignmentName = assignmentId ? assignmentTypeMap.get(assignmentId) || null : null;
-        // Use dynamic allocation from time-boxed resource_allocations (not static default_capacity_percent)
-        const defaultCapacity = currentAllocationByProfile.get(p.id) ?? 0;
-        // Use product role if available (same as /admin/users); otherwise show placeholder
-        const roleName = userRoleMap.get(p.id) || 'No role';
+      // STEP 7: Map resource_inventory to CapacityResource format
+      return (resourceInventory || []).map(ri => {
+        // Try to find linked profile by profile_id or name
+        const profile = ri.profile_id 
+          ? profileMap.get(ri.profile_id) 
+          : profileByName.get(ri.name?.toLowerCase());
+        
+        const assignmentName = ri.assignment_id ? assignmentTypeMap.get(ri.assignment_id) || null : null;
+        const defaultCapacity = currentAllocationByResourceId.get(ri.id) ?? 0;
+        
+        // Get role from profile's product roles
+        const roleName = profile ? (userRoleMap.get(profile.id) || 'No role') : (ri.role_name || 'No role');
+        
+        // Get department from profile or resource_inventory
+        const departmentId = profile?.department_id || ri.department_id;
+        const departmentName = departmentId ? deptMap.get(departmentId) || 'Unassigned' : 'Unassigned';
+        
         return {
-          id: p.id,
-          name: fullName,
-          email: p.email || '',
+          id: ri.profile_id || ri.id, // Use profile_id if linked, otherwise resource_inventory id
+          resourceInventoryId: ri.id, // Always keep track of ri.id
+          name: ri.name || 'Unknown',
+          email: profile?.email || '',
           role: roleName,
-          department: p.department_id ? deptMap.get(p.department_id) || 'Unassigned' : 'Unassigned',
-          department_id: p.department_id,
-          assignment_id: assignmentId,
+          department: departmentName,
+          department_id: departmentId,
+          assignment_id: ri.assignment_id,
           assignmentName: assignmentName,
           defaultCapacity: defaultCapacity,
-          avatar_url: p.avatar_url,
-          created_at: p.created_at,
-          updated_at: p.updated_at,
-          // Use contract dates from resource_inventory (primary source) or profiles (fallback)
-          contract_start_date: (inventory as any)?.contract_start_date || null,
-          contract_end_date: (inventory as any)?.contract_end_date || (p as any).contract_end_date || null,
-          vendor_name: (inventory as any)?.vendor_name || null,
+          avatar_url: profile?.avatar_url || null,
+          created_at: ri.created_at,
+          updated_at: ri.updated_at,
+          contract_start_date: ri.contract_start_date || null,
+          contract_end_date: ri.contract_end_date || null,
+          vendor_name: ri.vendor_name || null,
         };
       }) as CapacityResource[];
     },
