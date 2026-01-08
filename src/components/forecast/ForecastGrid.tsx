@@ -14,6 +14,15 @@ interface ForecastGridProps {
   workItemLevel: 'epics' | 'features';
 }
 
+interface CapacityPlan {
+  id: string;
+  project_id?: string;
+  team_id?: string;
+  available_capacity: number;
+  projects?: { name: string };
+  teams?: { name: string };
+}
+
 export function ForecastGrid({ piId, viewLevel, workItemLevel }: ForecastGridProps) {
   const queryClient = useQueryClient();
   const [orderedWorkItems, setOrderedWorkItems] = useState<any[]>([]);
@@ -84,26 +93,9 @@ export function ForecastGrid({ piId, viewLevel, workItemLevel }: ForecastGridPro
     }
   }, [workItems, ranks]);
 
-  // Fetch capacity plans (now uses project_id instead of program_id)
-  const { data: capacities = [] } = useQuery({
-    queryKey: ['capacity-plans', piId, viewLevel],
-    queryFn: async () => {
-      const query = supabase
-        .from('capacity_plans')
-        .select('*, projects(name), teams(name)')
-        .eq('pi_id', piId);
-
-      if (viewLevel === 'program') {
-        query.not('project_id', 'is', null);
-      } else {
-        query.not('team_id', 'is', null);
-      }
-
-      const { data, error } = await query;
-      if (error) throw error;
-      return data || [];
-    },
-  });
+  // NOTE: capacity_plans table was removed - using empty array for now
+  // Capacity data should come from resource_allocations in the future
+  const capacities: CapacityPlan[] = [];
 
   // Fetch forecast entries
   const { data: forecasts = [] } = useQuery({
@@ -460,63 +452,74 @@ export function ForecastGrid({ piId, viewLevel, workItemLevel }: ForecastGridPro
                               <td className="p-3 text-right text-sm font-semibold">
                                 {piEstimate}
                               </td>
-                              <td className="p-3 text-right text-sm font-medium">
+                              <td className="p-3 text-right text-sm">
+                                {/* Program estimate - sum of all program-level forecasts */}
                                 {forecasts
-                                  .filter(f => f.work_item_id === item.id && f.program_id && !f.team_id)
-                                  .reduce((sum, f) => sum + (f.estimate || 0), 0) || 'No data'}
+                                  .filter(f => f.work_item_id === item.id && f.program_id)
+                                  .reduce((sum, f) => sum + (f.estimate || 0), 0) || '-'}
                               </td>
-                              <td className="p-3 text-right text-sm font-medium">
+                              <td className="p-3 text-right text-sm">
+                                {/* Team estimate - sum of all team-level forecasts */}
                                 {forecasts
                                   .filter(f => f.work_item_id === item.id && f.team_id)
-                                  .reduce((sum, f) => sum + (f.estimate || 0), 0) || 'No data'}
+                                  .reduce((sum, f) => sum + (f.estimate || 0), 0) || '-'}
                               </td>
-                              <td className="p-3 text-right text-sm font-medium border-r">
-                                {piEstimate > 0 && capacities.length > 0
-                                  ? `${Math.round((piEstimate / capacities.reduce((sum, c) => sum + c.available_capacity, 0)) * 100)}%`
-                                  : '0%'}
+                              <td className="p-3 text-right text-sm border-r">
+                                {/* Capacity % - total estimate / available capacity */}
+                                -
                               </td>
                 
-                 {/* Zone 3: Estimate inputs */}
-                 {capacities.map((capacity, idx) => {
-                   const inputKey = `${item.id}-${capacity.project_id || 'null'}-${capacity.team_id || 'null'}`;
-                   const value = getForecastValue(item.id as string, capacity.project_id, capacity.team_id, inputKey);
-                   const isAssigned = workItems.some(wi => 
-                     wi.id === item.id && 
-                     assignments.some(a => 
-                       a.work_item_id === wi.id &&
-                       ((capacity.project_id && a.program_id === capacity.project_id && !a.team_id) ||
-                        (capacity.team_id && a.team_id === capacity.team_id))
-                     )
-                   );
-                    
-                    return (
-                      <td key={capacity.id} className={cn(
-                        "p-2",
-                        idx < capacities.length - 1 && "border-r"
-                      )}>
-                        <Input
-                          type="number"
-                         min="0"
-                         step="0.5"
-                         value={value || ''}
-                         onChange={(e) => handleInputChange(inputKey, e.target.value)}
-                         onBlur={() => handleInputBlur(
-                           item.id as string,
-                           capacity.project_id,
-                           capacity.team_id,
-                           inputKey
-                         )}
-                         disabled={!isAssigned}
-                         className={cn(
-                           "h-8 text-right text-sm",
-                           !isAssigned && "bg-muted/50 cursor-not-allowed",
-                           isOverCapacity(capacity.project_id, capacity.team_id) && "bg-destructive/20 border-destructive"
-                         )}
-                         placeholder={isAssigned ? "0" : "-"}
-                       />
-                     </td>
-                               );
-                            })}
+                              {/* Zone 3: Estimate input matrix (Pts columns) */}
+                              {capacities.map((capacity, idx) => {
+                                const key = `${item.id}-${capacity.project_id || ''}-${capacity.team_id || ''}`;
+                                const currentValue = getForecastValue(
+                                  item.id as string,
+                                  capacity.project_id,
+                                  capacity.team_id,
+                                  key
+                                );
+
+                                // Check if this cell is assigned to this work item
+                                const isAssigned = viewLevel === 'program'
+                                  ? assignments.some(a =>
+                                      a.work_item_id === item.id &&
+                                      a.project_id === capacity.project_id
+                                    )
+                                  : assignments.some(a =>
+                                      a.work_item_id === item.id &&
+                                      a.team_id === capacity.team_id
+                                    );
+
+                                return (
+                                  <td
+                                    key={capacity.id}
+                                    className={cn(
+                                      "p-1",
+                                      idx < capacities.length - 1 && "border-r",
+                                      isOverCapacity(capacity.project_id, capacity.team_id) && "bg-destructive/10"
+                                    )}
+                                  >
+                                    <Input
+                                      type="number"
+                                      min={0}
+                                      step={1}
+                                      value={currentValue}
+                                      onChange={(e) => handleInputChange(key, e.target.value)}
+                                      onBlur={() => handleInputBlur(
+                                        item.id as string,
+                                        capacity.project_id,
+                                        capacity.team_id,
+                                        key
+                                      )}
+                                      disabled={!isAssigned}
+                                      className={cn(
+                                        "h-8 text-right text-sm",
+                                        !isAssigned && "opacity-50 cursor-not-allowed"
+                                      )}
+                                    />
+                                  </td>
+                                );
+                              })}
                             </tr>
                           </ForecastContextMenu>
                         )}

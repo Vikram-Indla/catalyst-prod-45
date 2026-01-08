@@ -14,45 +14,50 @@ export function useCapacityWarnings(piId: string, programId?: string) {
   return useQuery({
     queryKey: ['capacity-warnings', piId, programId],
     queryFn: async () => {
-      // Fetch capacity plans for the PI
-      let capacityQuery = supabase
-        .from('capacity_plans')
-        .select('team_id, available_capacity, teams(id, name)')
-        .eq('pi_id', piId);
-
-      if (programId) {
-        capacityQuery = capacityQuery.eq('project_id', programId);
-      }
-
-      const { data: capacities, error: capacityError } = await capacityQuery;
-      if (capacityError) throw capacityError;
-
-      // Fetch forecast allocations for the PI
-      const { data: forecasts, error: forecastError } = await supabase
-        .from('forecast_entries')
-        .select('team_id, estimate')
-        .eq('pi_id', piId);
-
-      if (forecastError) throw forecastError;
-
-      // Calculate warnings
+      // NOTE: capacity_plans table was removed as unused
+      // Using resource_allocations instead for capacity warnings
       const warnings: CapacityWarning[] = [];
+      
+      // Fetch resource allocations for the given period
+      const { data: allocations, error } = await supabase
+        .from('resource_allocations')
+        .select(`
+          id,
+          allocation_percentage,
+          resource:resource_inventory(
+            id,
+            full_name,
+            department:capacity_departments(name)
+          )
+        `);
 
-      capacities?.forEach(cap => {
-        const teamForecasts = forecasts?.filter(f => f.team_id === cap.team_id) || [];
-        const allocated = teamForecasts.reduce((sum, f) => sum + (f.estimate || 0), 0);
-        const capacity = cap.available_capacity;
-        const overallocation = allocated - capacity;
-        const percentUsed = capacity > 0 ? (allocated / capacity) * 100 : 0;
+      if (error) throw error;
 
-        if (overallocation > 0 || percentUsed > 80) {
+      // Group by resource and calculate overallocation
+      const resourceMap = new Map<string, { allocated: number; name: string }>();
+      
+      allocations?.forEach(alloc => {
+        const resourceId = (alloc.resource as any)?.id;
+        const resourceName = (alloc.resource as any)?.full_name || 'Unknown';
+        const percentage = alloc.allocation_percentage || 0;
+        
+        if (resourceId) {
+          const existing = resourceMap.get(resourceId) || { allocated: 0, name: resourceName };
+          existing.allocated += percentage;
+          resourceMap.set(resourceId, existing);
+        }
+      });
+
+      // Create warnings for overallocated resources
+      resourceMap.forEach((data, resourceId) => {
+        if (data.allocated > 100) {
           warnings.push({
-            teamId: cap.team_id!,
-            teamName: (cap.teams as any)?.name || 'Unknown Team',
-            allocated,
-            capacity,
-            overallocation,
-            percentUsed,
+            teamId: resourceId,
+            teamName: data.name,
+            allocated: data.allocated,
+            capacity: 100,
+            overallocation: data.allocated - 100,
+            percentUsed: data.allocated,
           });
         }
       });

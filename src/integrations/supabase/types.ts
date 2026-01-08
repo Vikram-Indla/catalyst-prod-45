@@ -1872,90 +1872,6 @@ export type Database = {
         }
         Relationships: []
       }
-      capacity_allocations: {
-        Row: {
-          actual_capacity_points: number | null
-          capacity_points: number | null
-          created_at: string | null
-          id: string
-          iteration_id: string
-          load_factor: number | null
-          locked_baseline: boolean | null
-          team_id: string
-          updated_at: string | null
-          velocity_baseline: number | null
-        }
-        Insert: {
-          actual_capacity_points?: number | null
-          capacity_points?: number | null
-          created_at?: string | null
-          id?: string
-          iteration_id: string
-          load_factor?: number | null
-          locked_baseline?: boolean | null
-          team_id: string
-          updated_at?: string | null
-          velocity_baseline?: number | null
-        }
-        Update: {
-          actual_capacity_points?: number | null
-          capacity_points?: number | null
-          created_at?: string | null
-          id?: string
-          iteration_id?: string
-          load_factor?: number | null
-          locked_baseline?: boolean | null
-          team_id?: string
-          updated_at?: string | null
-          velocity_baseline?: number | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "capacity_allocations_iteration_id_fkey"
-            columns: ["iteration_id"]
-            isOneToOne: false
-            referencedRelation: "iterations"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "capacity_allocations_team_id_fkey"
-            columns: ["team_id"]
-            isOneToOne: false
-            referencedRelation: "teams"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      capacity_assignment_types: {
-        Row: {
-          created_at: string
-          description: string | null
-          id: string
-          is_active: boolean
-          name: string
-          sort_order: number
-          updated_at: string
-        }
-        Insert: {
-          created_at?: string
-          description?: string | null
-          id?: string
-          is_active?: boolean
-          name: string
-          sort_order?: number
-          updated_at?: string
-        }
-        Update: {
-          created_at?: string
-          description?: string | null
-          id?: string
-          is_active?: boolean
-          name?: string
-          sort_order?: number
-          updated_at?: string
-        }
-        Relationships: []
-      }
       capacity_departments: {
         Row: {
           color: string | null
@@ -1988,61 +1904,6 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: []
-      }
-      capacity_plans: {
-        Row: {
-          available_capacity: number
-          created_at: string | null
-          id: string
-          pi_id: string
-          project_id: string | null
-          team_id: string | null
-          unit: string
-          updated_at: string | null
-        }
-        Insert: {
-          available_capacity?: number
-          created_at?: string | null
-          id?: string
-          pi_id: string
-          project_id?: string | null
-          team_id?: string | null
-          unit?: string
-          updated_at?: string | null
-        }
-        Update: {
-          available_capacity?: number
-          created_at?: string | null
-          id?: string
-          pi_id?: string
-          project_id?: string | null
-          team_id?: string | null
-          unit?: string
-          updated_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "capacity_plans_pi_id_fkey"
-            columns: ["pi_id"]
-            isOneToOne: false
-            referencedRelation: "program_increments"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "capacity_plans_program_id_fkey"
-            columns: ["project_id"]
-            isOneToOne: false
-            referencedRelation: "projects"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "capacity_plans_team_id_fkey"
-            columns: ["team_id"]
-            isOneToOne: false
-            referencedRelation: "teams"
-            referencedColumns: ["id"]
-          },
-        ]
       }
       capacity_scenarios: {
         Row: {
@@ -2140,39 +2001,6 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
-      }
-      capacity_view_config: {
-        Row: {
-          created_at: string
-          group_by: string | null
-          id: string
-          resource_ids: string[] | null
-          time_span: string | null
-          updated_at: string
-          user_id: string
-          view_mode: string | null
-        }
-        Insert: {
-          created_at?: string
-          group_by?: string | null
-          id?: string
-          resource_ids?: string[] | null
-          time_span?: string | null
-          updated_at?: string
-          user_id: string
-          view_mode?: string | null
-        }
-        Update: {
-          created_at?: string
-          group_by?: string | null
-          id?: string
-          resource_ids?: string[] | null
-          time_span?: string | null
-          updated_at?: string
-          user_id?: string
-          view_mode?: string | null
-        }
-        Relationships: []
       }
       certifications: {
         Row: {
