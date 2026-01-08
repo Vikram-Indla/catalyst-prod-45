@@ -718,6 +718,7 @@ export default function CapacityPlannerPage() {
               <ProjectStaffingView
                 assignments={resourceAssignments}
                 allocations={allocations}
+                filteredResourceIds={new Set(filteredResources.map(r => r.id))}
                 onAssignResource={(assignmentId) => {
                   // Open find availability with project context
                   setResourceModalOpen(true);
