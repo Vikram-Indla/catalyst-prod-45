@@ -36,7 +36,7 @@ import { ResetPasswordDialog } from './ResetPasswordDialog';
 import { BulkUpdateDrawer } from './BulkUpdateDrawer';
 import { EditUserDrawer } from './EditUserDrawer';
 import { useIsSuperAdmin } from '@/hooks/useUsers';
-import { formatContractEndDate } from '@/lib/countryLookup';
+import { formatContractEndDate, getCountryInfo } from '@/lib/countryLookup';
 
 interface UsersTableProps {
   users: UserProfile[];
@@ -377,13 +377,18 @@ export function UsersTable({ users, isLoading }: UsersTableProps) {
                   </td>
                   <td className="py-3 px-3">
                     <div className="flex items-center gap-1">
-                      {user.country_flag_svg_url && (
-                        <img 
-                          src={user.country_flag_svg_url} 
-                          alt={user.country || ''} 
-                          className="h-3 w-5 object-cover rounded-sm"
-                        />
-                      )}
+                      {(() => {
+                        // Try user's flag URL first, then fallback to country lookup
+                        const flagUrl = user.country_flag_svg_url || 
+                          (user.country ? getCountryInfo(user.country)?.svg : null);
+                        return flagUrl ? (
+                          <img 
+                            src={flagUrl} 
+                            alt={user.country || ''} 
+                            className="h-3 w-5 object-cover rounded-sm"
+                          />
+                        ) : null;
+                      })()}
                       <span className="text-sm">
                         {user.country || <span className="text-muted-foreground">-</span>}
                       </span>
