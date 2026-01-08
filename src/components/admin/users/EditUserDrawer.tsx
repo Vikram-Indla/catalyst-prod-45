@@ -382,9 +382,43 @@ export function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
 
       return true;
     },
-    onSuccess: async () => {
-      // Refetch to ensure the list is updated before closing
-      await queryClient.refetchQueries({ queryKey: ['users-list'] });
+    onSuccess: () => {
+      // Update cached list immediately so the table reflects the change without waiting for a full refetch
+      queryClient.setQueryData(['users-list'], (prev: unknown) => {
+        if (!Array.isArray(prev)) return prev;
+
+        // Build updated user snapshot from the form
+        const updatedEmail = formData.email.toLowerCase().trim() || null;
+        const updatedUserId = user?.id;
+        if (!updatedUserId) return prev;
+
+        // Resolve department name (User List shows department_name)
+        const updatedDepartmentName = formData.department || null;
+
+        // Resolve job role label from selected role (User List shows job_role)
+        const firstSelectedRoleId = selectedRoleIds[0];
+        const firstSelectedRole = productRoles?.find((r) => r.id === firstSelectedRoleId);
+        const updatedJobRole = firstSelectedRole?.name || null;
+
+        return (prev as UserProfile[]).map((u) =>
+          u.id === updatedUserId
+            ? {
+                ...u,
+                full_name: formData.full_name || null,
+                email: updatedEmail,
+                vendor: formData.vendor || null,
+                location: formData.location || null,
+                country: formData.country || null,
+                contract_start_date: formData.contract_start_date || null,
+                contract_end_date: formData.contract_end_date || null,
+                department_name: updatedDepartmentName,
+                job_role: updatedJobRole,
+              }
+            : u
+        );
+      });
+
+      queryClient.invalidateQueries({ queryKey: ['users-list'] });
       toast.success('User updated successfully');
       onClose();
     },
