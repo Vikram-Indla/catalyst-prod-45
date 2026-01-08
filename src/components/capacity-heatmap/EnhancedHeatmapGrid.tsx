@@ -145,10 +145,10 @@ export const EnhancedHeatmapGrid = memo(function EnhancedHeatmapGrid({
                   </span>
                 </div>
                 <div className="flex">
-                  {quarter.months.map((month) => (
+                {quarter.months.map((month) => (
                     <div
                       key={month.getTime()}
-                      className="w-14 flex-shrink-0 text-center py-2 text-[10px] font-medium text-muted-foreground uppercase border-r border-border last:border-r-0"
+                      className="w-[70px] flex-shrink-0 text-center py-2 text-[10px] font-semibold text-muted-foreground uppercase border-r border-border/50 last:border-r-0"
                     >
                       {formatMonth(month)}
                     </div>
@@ -299,7 +299,7 @@ const EnhancedResourceRow = memo(function EnhancedResourceRow({
                 u.month.getFullYear() === month.getFullYear()
               );
               
-              if (!util) return <div key={month.getTime()} className="w-14 h-10" />;
+              if (!util) return <div key={month.getTime()} className="w-[70px] h-16" />;
               
               const isSelected = selectedCells.some(
                 c => c.resourceId === resource.id && c.month.getTime() === util.month.getTime()
@@ -375,34 +375,50 @@ const EnhancedHeatmapCell = memo(function EnhancedHeatmapCell({
   if (isLocked) {
     return (
       <div 
-        className="w-14 h-10 flex items-center justify-center border-r border-border last:border-r-0"
+        className="w-[70px] h-16 flex items-center justify-center border-r border-border/50 last:border-r-0"
         style={{
-          background: 'repeating-linear-gradient(45deg, hsl(var(--muted)), hsl(var(--muted)) 4px, hsl(var(--muted-foreground)/0.1) 4px, hsl(var(--muted-foreground)/0.1) 8px)',
+          background: 'repeating-linear-gradient(45deg, hsl(var(--muted)/0.5), hsl(var(--muted)/0.5) 4px, hsl(var(--muted-foreground)/0.08) 4px, hsl(var(--muted-foreground)/0.08) 8px)',
         }}
       >
-        <span className="text-[10px] text-muted-foreground">🔒</span>
+        <span className="text-sm text-muted-foreground/60">🔒</span>
       </div>
     );
   }
   
-  // Available cell (0%) styling
+  // Determine cell color based on utilization - Catalyst blue scale
   const isAvailable = utilization.percentage === 0;
+  const isFullyAllocated = utilization.percentage >= 80 && utilization.percentage <= 100;
+  const isPartiallyAllocated = utilization.percentage > 0 && utilization.percentage < 80;
+  const isOverAllocated = utilization.percentage > 100;
+  
+  // Color scheme matching screenshot - blue for allocated, green for available
+  let bgColor = 'hsl(var(--muted)/0.3)';
+  let textColor = 'hsl(var(--muted-foreground))';
+  
+  if (isOverAllocated) {
+    bgColor = `${CATALYST_COLORS.danger}25`;
+    textColor = CATALYST_COLORS.danger;
+  } else if (isFullyAllocated) {
+    bgColor = `${CATALYST_COLORS.primary}30`;
+    textColor = CATALYST_COLORS.primary;
+  } else if (isPartiallyAllocated) {
+    bgColor = `${CATALYST_COLORS.primary}20`;
+    textColor = CATALYST_COLORS.primary;
+  } else if (isAvailable) {
+    bgColor = `${CATALYST_COLORS.teal}15`;
+    textColor = CATALYST_COLORS.teal;
+  }
   
   return (
     <Tooltip delayDuration={200}>
       <TooltipTrigger asChild>
         <motion.div
           className={cn(
-            "w-14 h-10 flex items-center justify-center cursor-pointer border-r border-border last:border-r-0 relative",
+            "w-[70px] h-16 flex flex-col items-center justify-center cursor-pointer border-r border-border/30 last:border-r-0 relative transition-all",
             isSelected && "ring-2 ring-primary ring-inset",
             isHovered && "ring-1 ring-primary/50 ring-inset",
           )}
-          style={{
-            backgroundColor: isAvailable 
-              ? `${CATALYST_COLORS.teal}20` 
-              : colors.bg,
-            borderColor: isAvailable ? CATALYST_COLORS.teal : undefined,
-          }}
+          style={{ backgroundColor: bgColor }}
           onClick={onClick}
           onMouseEnter={() => setHoveredCell({ resourceId, month: utilization.month })}
           onMouseLeave={() => setHoveredCell(null)}
@@ -410,25 +426,20 @@ const EnhancedHeatmapCell = memo(function EnhancedHeatmapCell({
           whileTap={{ scale: 0.98 }}
         >
           <span 
-            className={cn(
-              "text-xs font-semibold tabular-nums",
-              isAvailable && "text-muted-foreground"
-            )}
-            style={{ color: isAvailable ? CATALYST_COLORS.teal : colors.text }}
+            className="text-sm font-bold tabular-nums"
+            style={{ color: textColor }}
           >
-            {utilization.percentage > 0 ? utilization.percentage : '0'}
+            {utilization.percentage}
           </span>
           
           {/* Conflict indicator */}
           {utilization.isConflict && (
             <motion.span
-              className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full text-[7px] font-bold flex items-center justify-center text-white"
+              className="absolute top-1 right-1 w-2 h-2 rounded-full"
               style={{ backgroundColor: CATALYST_COLORS.danger }}
               animate={{ scale: [1, 1.15, 1] }}
               transition={{ duration: 0.6, repeat: Infinity }}
-            >
-              !
-            </motion.span>
+            />
           )}
         </motion.div>
       </TooltipTrigger>
