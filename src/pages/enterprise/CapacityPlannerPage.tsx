@@ -1831,10 +1831,8 @@ function TableView({ resources, projects, groupBy, groupedByAssignment, groupedB
   // Sort resources by vendor first, then assignment name from allocations
   const sortedResources = useMemo(() => {
     return [...resources].sort((a, b) => {
-      const aProfile = getProfile(a.id);
-      const bProfile = getProfile(b.id);
-      const aVendor = aProfile?.vendor || '';
-      const bVendor = bProfile?.vendor || '';
+      const aVendor = a.vendor_name || '';
+      const bVendor = b.vendor_name || '';
       
       // First sort by vendor (empty vendors at the end)
       if (!aVendor && bVendor) return 1;
@@ -1850,7 +1848,7 @@ function TableView({ resources, projects, groupBy, groupedByAssignment, groupedB
       if (bName === 'Unassigned' && aName !== 'Unassigned') return -1;
       return aName.localeCompare(bName);
     });
-  }, [resources, getProfile, getAssignmentNamesForResource]);
+  }, [resources, getAssignmentNamesForResource]);
 
   // If the table data changes (e.g., after edits, filtering, or refetch),
   // drop any selections that no longer exist in the current dataset.
@@ -1919,10 +1917,7 @@ function TableView({ resources, projects, groupBy, groupedByAssignment, groupedB
     {
       id: 'vendor',
       header: 'Vendor',
-      accessor: (row: ResourceMetric) => {
-        const profile = getProfile(row.id);
-        return profile?.vendor || '';
-      },
+      accessor: (row: ResourceMetric) => row.vendor_name || '',
       width: '120px',
       sortable: true,
       filterable: true,
@@ -1930,14 +1925,12 @@ function TableView({ resources, projects, groupBy, groupedByAssignment, groupedB
         // Build unique vendor options from resources
         const uniqueVendors = new Set<string>();
         resources.forEach(r => {
-          const profile = getProfile(r.id);
-          if (profile?.vendor) uniqueVendors.add(profile.vendor);
+          if (r.vendor_name) uniqueVendors.add(r.vendor_name);
         });
         return Array.from(uniqueVendors).sort().map(v => ({ value: v, label: v }));
       })(),
       render: (_: any, row: ResourceMetric) => {
-        const profile = getProfile(row.id);
-        const vendor = profile?.vendor;
+        const vendor = row.vendor_name;
         if (!vendor) {
           return <span className="text-xs text-muted-foreground">-</span>;
         }
@@ -2023,16 +2016,11 @@ function TableView({ resources, projects, groupBy, groupedByAssignment, groupedB
     {
       id: 'contractEndDate',
       header: 'Contract End',
-      accessor: (row: ResourceMetric) => {
-        const profile = getProfile(row.id);
-        return profile?.contract_end_date || null;
-      },
+      accessor: (row: ResourceMetric) => row.contract_end_date || null,
       width: '130px',
       sortable: true,
       render: (_: any, row: ResourceMetric) => {
-        const profile = getProfile(row.id);
-        const contractStatus = profile?.contractStatus;
-        const endDate = profile?.contract_end_date;
+        const endDate = row.contract_end_date;
         
         if (!endDate) {
           return <span className="text-xs text-muted-foreground">Permanent</span>;
@@ -2055,15 +2043,18 @@ function TableView({ resources, projects, groupBy, groupedByAssignment, groupedB
             ? 'Expires today' 
             : `Expired ${Math.abs(daysRemaining)} days ago`;
         
+        // Calculate status based on days remaining
+        const status = daysRemaining <= 0 ? 'expired' : daysRemaining < 30 ? 'critical' : daysRemaining < 60 ? 'warning' : 'healthy';
+        
         return (
           <Tooltip>
             <TooltipTrigger asChild>
               <span className={cn(
                 "text-xs font-medium px-2 py-1 rounded cursor-help",
-                contractStatus?.status === 'critical' && 'bg-red-100 text-[#be123c]',
-                contractStatus?.status === 'warning' && 'bg-amber-100 text-[#ca8a04]',
-                contractStatus?.status === 'healthy' && 'bg-teal-100 text-[#0d9488]',
-                contractStatus?.status === 'expired' && 'bg-muted text-muted-foreground'
+                status === 'critical' && 'bg-red-100 text-[#be123c]',
+                status === 'warning' && 'bg-amber-100 text-[#ca8a04]',
+                status === 'healthy' && 'bg-teal-100 text-[#0d9488]',
+                status === 'expired' && 'bg-muted text-muted-foreground'
               )}>
                 {formatted}
               </span>

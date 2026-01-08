@@ -31,6 +31,12 @@ export function useCapacityData() {
         .eq('is_active', true);
       const assignmentTypeMap = new Map(resourceAssignments?.map((a) => [a.id, a.name]) || []);
       
+      // STEP 3b: Fetch resource vendors to map names
+      const { data: resourceVendors } = await supabase
+        .from('resource_vendors')
+        .select('id, name');
+      const vendorMap = new Map(resourceVendors?.map(v => [v.id, v.name]) || []);
+      
       // STEP 4: Fetch profiles for avatar, email, etc (enrichment only)
       const { data: profiles } = await supabase
         .from('profiles')
@@ -104,7 +110,7 @@ export function useCapacityData() {
           updated_at: ri.updated_at,
           contract_start_date: ri.contract_start_date || null,
           contract_end_date: ri.contract_end_date || null,
-          vendor_name: ri.vendor_name || null,
+          vendor_name: ri.vendor_id ? vendorMap.get(ri.vendor_id) || ri.vendor_name || null : ri.vendor_name || null,
         };
       }) as CapacityResource[];
     },

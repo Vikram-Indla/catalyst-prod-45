@@ -51,6 +51,12 @@ export function useCapacityHeatmapData(monthCount = 12) {
         .select('id, name');
       const deptMap = new Map(departments?.map(d => [d.id, d.name]) || []);
 
+      // === STEP 2b: Fetch vendors to map names ===
+      const { data: resourceVendors } = await supabase
+        .from('resource_vendors')
+        .select('id, name');
+      const vendorMap = new Map(resourceVendors?.map(v => [v.id, v.name]) || []);
+
       // === STEP 3: Fetch profiles for avatar, email, country info (enrichment only) ===
       const { data: profiles } = await supabase
         .from('profiles')
@@ -257,7 +263,7 @@ export function useCapacityHeatmapData(monthCount = 12) {
             countryCode: profile?.country_code || null,
             countryFlagUrl: profile?.country_flag_svg_url || null,
             location: profile?.location || null,
-            vendor: profile?.vendor || ri.vendor_name || null,
+            vendor: ri.vendor_id ? vendorMap.get(ri.vendor_id) || profile?.vendor || ri.vendor_name || null : profile?.vendor || ri.vendor_name || null,
             avatarUrl: profile?.avatar_url || null,
           };
         });
