@@ -216,8 +216,10 @@ export function CapacityPresentationShell({
       </div>
 
       {/* Content Area */}
-      <div className="flex-1 overflow-auto bg-muted/30">
-        {children}
+      <div className="flex-1 overflow-auto bg-muted/30 flex flex-col">
+        <div className="flex-1 min-h-0 flex flex-col">
+          {children}
+        </div>
       </div>
 
       {/* Keyboard hint */}
