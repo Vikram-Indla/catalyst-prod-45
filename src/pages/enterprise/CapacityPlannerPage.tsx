@@ -51,6 +51,7 @@ import { CompactResourceCard } from '@/components/capacity/CompactResourceCard';
 import { CapacityHeatmap } from '@/components/capacity-heatmap';
 
 import { ProjectStaffingView } from '@/components/capacity/ProjectStaffingView';
+import { ContractHorizonView } from '@/components/contract-horizon';
 import { GroupedTableView } from '@/components/capacity/GroupedTableView';
 import { ScaleWarningBanner } from '@/components/capacity/ScaleWarningBanner';
 import { VirtualizedCardsView } from '@/components/capacity/VirtualizedCardsView';
@@ -724,6 +725,19 @@ export default function CapacityPlannerPage() {
                   setResourceModalOpen(true);
                 }}
               />
+            </motion.div>
+          )}
+
+          {/* Contracts Primary View */}
+          {primaryView === 'contracts' && (
+            <motion.div
+              key="contracts"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.2 }}
+            >
+              <ContractHorizonView />
             </motion.div>
           )}
         </div>
