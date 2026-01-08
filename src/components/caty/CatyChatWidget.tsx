@@ -2,6 +2,9 @@ import { useState, useEffect } from 'react';
 import { X, RotateCw, Send } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { CatyOrb } from './CatyOrb';
+import { useAuth } from '@/lib/auth';
+import { supabase } from '@/integrations/supabase/client';
+import { useQuery } from '@tanstack/react-query';
 
 interface DepartmentData {
   id: string;
@@ -20,14 +23,12 @@ interface CatyChatWidgetProps {
   warningCount?: number;
   totalCount?: number;
   departments?: DepartmentData[];
-  userName?: string;
 }
 
 export function CatyChatWidget({
   criticalCount = 8,
   warningCount = 6,
   totalCount = 67,
-  userName = 'there',
   departments = [
     { id: 'delivery', name: 'Delivery', shortName: 'D', count: 34, critical: 5, warning: 3, insight: 'Ahmed Yousry, Hasan Elsherby +3 others ending by Mar 30', color: '#2563eb', bgColor: 'bg-blue-600' },
     { id: 'product', name: 'Product', shortName: 'P', count: 14, critical: 1, warning: 2, insight: 'Alouf Aldrees contract ended Jan 11', color: '#7c3aed', bgColor: 'bg-violet-600' },
@@ -37,6 +38,33 @@ export function CatyChatWidget({
 }: CatyChatWidgetProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [inputValue, setInputValue] = useState('');
+  const { user } = useAuth();
+
+  // Fetch user profile for first name
+  const { data: profile } = useQuery({
+    queryKey: ['user-profile', user?.id],
+    queryFn: async () => {
+      if (!user?.id) return null;
+      const { data } = await supabase
+        .from('profiles')
+        .select('full_name')
+        .eq('id', user.id)
+        .single();
+      return data;
+    },
+    enabled: !!user?.id,
+  });
+
+  // Get user's first name
+  const getUserFirstName = () => {
+    if (profile?.full_name) {
+      return profile.full_name.split(' ')[0];
+    }
+    if (user?.email) {
+      return user.email.split('@')[0];
+    }
+    return 'there';
+  };
 
   // Get greeting based on time
   const getGreeting = () => {
@@ -114,30 +142,25 @@ export function CatyChatWidget({
           isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
         )}
         style={{ 
-          background: 'rgba(0, 0, 0, 0.5)',
+          background: 'rgba(0, 0, 0, 0.3)',
           backdropFilter: 'blur(4px)'
         }}
         onClick={() => setIsOpen(false)}
       />
 
-      {/* Chat Panel */}
+      {/* Chat Panel - Light Mode Default */}
       <div 
         className={cn(
           "fixed top-0 right-0 bottom-0 z-[1001] w-full sm:w-[380px] md:w-[420px]",
           "flex flex-col transition-transform duration-400 ease-[cubic-bezier(0.16,1,0.3,1)]",
+          "bg-background border-l border-border shadow-2xl",
           isOpen ? "translate-x-0" : "translate-x-full"
         )}
-        style={{
-          background: 'rgba(15, 23, 42, 0.95)',
-          backdropFilter: 'blur(40px)',
-          borderLeft: '1px solid rgba(255, 255, 255, 0.1)',
-          boxShadow: '-20px 0 60px rgba(0, 0, 0, 0.3)'
-        }}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Header */}
+        {/* Header - Thinner */}
         <div 
-          className="relative px-6 py-5 overflow-hidden"
+          className="relative px-4 py-3 overflow-hidden"
           style={{
             background: 'linear-gradient(135deg, #3d9a98 0%, #4dada8 50%, #5eaaa8 100%)'
           }}
@@ -154,148 +177,119 @@ export function CatyChatWidget({
           />
           
           <div className="relative flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <CatyOrb size="md" showStatusDot />
+            <div className="flex items-center gap-3">
+              <CatyOrb size="sm" showStatusDot showParticles={false} />
               <div>
-                <h2 className="text-xl font-bold text-white tracking-tight">Caty</h2>
-                <div className="flex items-center gap-2 text-[13px] text-white/80">
+                <h2 className="text-lg font-bold text-white tracking-tight">Caty</h2>
+                <div className="flex items-center gap-1.5 text-[12px] text-white/80">
                   <span className="w-1.5 h-1.5 bg-green-400 rounded-full" />
                   <span>Online · Capacity AI</span>
                 </div>
               </div>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5">
               <button 
-                className="w-10 h-10 rounded-xl flex items-center justify-center text-white/80 hover:text-white hover:bg-white/20 transition-all hover:-translate-y-0.5"
+                className="w-8 h-8 rounded-lg flex items-center justify-center text-white/80 hover:text-white hover:bg-white/20 transition-all"
                 style={{ 
                   background: 'rgba(255,255,255,0.1)',
                   border: '1px solid rgba(255,255,255,0.1)'
                 }}
               >
-                <RotateCw className="w-4 h-4" />
+                <RotateCw className="w-3.5 h-3.5" />
               </button>
               <button 
                 onClick={() => setIsOpen(false)}
-                className="w-10 h-10 rounded-xl flex items-center justify-center text-white/80 hover:text-white hover:bg-white/20 transition-all hover:-translate-y-0.5"
+                className="w-8 h-8 rounded-lg flex items-center justify-center text-white/80 hover:text-white hover:bg-white/20 transition-all"
                 style={{ 
                   background: 'rgba(255,255,255,0.1)',
                   border: '1px solid rgba(255,255,255,0.1)'
                 }}
                 aria-label="Close chat"
               >
-                <X className="w-4 h-4" />
+                <X className="w-3.5 h-3.5" />
               </button>
             </div>
           </div>
         </div>
 
-        {/* Chat Body */}
-        <div className="flex-1 overflow-y-auto p-5">
+        {/* Chat Body - Light Mode */}
+        <div className="flex-1 overflow-y-auto p-4 bg-muted/30">
           {/* Greeting Message */}
-          <div className="flex gap-3.5 animate-[message-in_0.5s_cubic-bezier(0.16,1,0.3,1)]">
+          <div className="flex gap-3 animate-[message-in_0.5s_cubic-bezier(0.16,1,0.3,1)]">
             <CatyOrb size="sm" showParticles={false} showStatusDot={false} />
             
-            <div 
-              className="flex-1 p-5 rounded-[6px_20px_20px_20px]"
-              style={{
-                background: 'linear-gradient(135deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.6))',
-                border: '1px solid rgba(255, 255, 255, 0.1)',
-                backdropFilter: 'blur(20px)'
-              }}
-            >
-              <h3 className="text-xl font-bold text-white tracking-tight mb-1">
-                {getGreeting()}, {userName}! 👋
+            <div className="flex-1 p-4 rounded-[6px_16px_16px_16px] bg-card border border-border shadow-sm">
+              <h3 className="text-lg font-bold text-foreground tracking-tight mb-0.5">
+                {getGreeting()}, {getUserFirstName()}! 👋
               </h3>
-              <p className="text-sm text-slate-400 mb-5">
-                Here's your capacity snapshot
+              <p className="text-sm text-muted-foreground mb-4">
+                Here&apos;s your capacity snapshot
               </p>
 
               {/* KPI Cards */}
-              <div className="grid grid-cols-3 gap-2.5 mb-5">
-                <div 
-                  className="relative rounded-[14px] p-3.5 text-center cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:shadow-lg overflow-hidden"
-                  style={{
-                    background: 'rgba(30, 41, 59, 0.6)',
-                    border: '1px solid rgba(255, 255, 255, 0.1)'
-                  }}
-                >
-                  <div className="absolute top-0 left-0 right-0 h-[3px] rounded-t-[14px] bg-gradient-to-r from-red-500 to-red-400" />
-                  <span className="text-lg block mb-1.5">⚠️</span>
-                  <div className="text-[26px] font-extrabold text-red-500 tracking-tight leading-none mb-1">{criticalCount}</div>
-                  <div className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Critical</div>
+              <div className="grid grid-cols-3 gap-2 mb-4">
+                <div className="relative rounded-xl p-3 text-center cursor-pointer transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md overflow-hidden bg-card border border-border">
+                  <div className="absolute top-0 left-0 right-0 h-[3px] rounded-t-xl bg-gradient-to-r from-red-500 to-red-400" />
+                  <span className="text-base block mb-1">⚠️</span>
+                  <div className="text-2xl font-extrabold text-red-500 tracking-tight leading-none mb-0.5">{criticalCount}</div>
+                  <div className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Critical</div>
                 </div>
 
-                <div 
-                  className="relative rounded-[14px] p-3.5 text-center cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:shadow-lg overflow-hidden"
-                  style={{
-                    background: 'rgba(30, 41, 59, 0.6)',
-                    border: '1px solid rgba(255, 255, 255, 0.1)'
-                  }}
-                >
-                  <div className="absolute top-0 left-0 right-0 h-[3px] rounded-t-[14px] bg-gradient-to-r from-amber-600 to-amber-500" />
-                  <span className="text-lg block mb-1.5">⏰</span>
-                  <div className="text-[26px] font-extrabold text-amber-600 tracking-tight leading-none mb-1">{warningCount}</div>
-                  <div className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Warning</div>
+                <div className="relative rounded-xl p-3 text-center cursor-pointer transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md overflow-hidden bg-card border border-border">
+                  <div className="absolute top-0 left-0 right-0 h-[3px] rounded-t-xl bg-gradient-to-r from-amber-600 to-amber-500" />
+                  <span className="text-base block mb-1">⏰</span>
+                  <div className="text-2xl font-extrabold text-amber-600 tracking-tight leading-none mb-0.5">{warningCount}</div>
+                  <div className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Warning</div>
                 </div>
 
-                <div 
-                  className="relative rounded-[14px] p-3.5 text-center cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:shadow-lg overflow-hidden"
-                  style={{
-                    background: 'rgba(30, 41, 59, 0.6)',
-                    border: '1px solid rgba(255, 255, 255, 0.1)'
-                  }}
-                >
-                  <div className="absolute top-0 left-0 right-0 h-[3px] rounded-t-[14px] bg-gradient-to-r from-teal-500 to-teal-400" />
-                  <span className="text-lg block mb-1.5">👥</span>
-                  <div className="text-[26px] font-extrabold text-teal-500 tracking-tight leading-none mb-1">{totalCount}</div>
-                  <div className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Total</div>
+                <div className="relative rounded-xl p-3 text-center cursor-pointer transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md overflow-hidden bg-card border border-border">
+                  <div className="absolute top-0 left-0 right-0 h-[3px] rounded-t-xl bg-gradient-to-r from-teal-500 to-teal-400" />
+                  <span className="text-base block mb-1">👥</span>
+                  <div className="text-2xl font-extrabold text-teal-600 tracking-tight leading-none mb-0.5">{totalCount}</div>
+                  <div className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Total</div>
                 </div>
               </div>
 
               {/* Department Breakdown */}
-              <div className="mt-4">
-                <div className="text-[11px] font-semibold text-slate-500 uppercase tracking-widest mb-3">
+              <div className="mt-3">
+                <div className="text-[11px] font-semibold text-muted-foreground uppercase tracking-widest mb-2">
                   By Department
                 </div>
                 
-                <div className="space-y-2.5">
+                <div className="space-y-2">
                   {departments.map((dept) => (
                     <div 
                       key={dept.id}
-                      className="rounded-xl p-3 cursor-pointer transition-all duration-250 hover:translate-x-1 hover:shadow-md"
-                      style={{
-                        background: 'rgba(30, 41, 59, 0.6)',
-                        border: '1px solid rgba(255, 255, 255, 0.1)',
-                        borderLeft: `3px solid ${dept.color}`
-                      }}
+                      className="rounded-lg p-2.5 cursor-pointer transition-all duration-250 hover:translate-x-0.5 hover:shadow-sm bg-card border border-border"
+                      style={{ borderLeft: `3px solid ${dept.color}` }}
                     >
-                      <div className="flex items-center gap-2.5 mb-2">
+                      <div className="flex items-center gap-2 mb-1.5">
                         <div 
-                          className="w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold text-white"
+                          className="w-7 h-7 rounded-md flex items-center justify-center text-xs font-bold text-white"
                           style={{ background: dept.color }}
                         >
                           {dept.shortName}
                         </div>
-                        <div className="flex-1">
-                          <div className="text-sm font-semibold text-white">{dept.name}</div>
-                          <div className="text-[11px] text-slate-500">{dept.count} resources</div>
+                        <div className="flex-1 min-w-0">
+                          <div className="text-sm font-semibold text-foreground">{dept.name}</div>
+                          <div className="text-[11px] text-muted-foreground">{dept.count} resources</div>
                         </div>
                         {dept.critical > 0 ? (
-                          <div className="text-[11px] font-semibold px-2 py-1 rounded-md bg-red-500/15 text-red-500">
+                          <div className="text-[11px] font-semibold px-2 py-0.5 rounded-md bg-red-500/10 text-red-600 shrink-0">
                             {dept.critical} critical
                           </div>
                         ) : dept.warning > 0 ? (
-                          <div className="text-[11px] font-semibold px-2 py-1 rounded-md bg-amber-600/15 text-amber-600">
+                          <div className="text-[11px] font-semibold px-2 py-0.5 rounded-md bg-amber-500/10 text-amber-600 shrink-0">
                             {dept.warning} warning
                           </div>
                         ) : (
-                          <div className="text-[11px] font-semibold px-2 py-1 rounded-md bg-teal-500/15 text-teal-500">
+                          <div className="text-[11px] font-semibold px-2 py-0.5 rounded-md bg-teal-500/10 text-teal-600 shrink-0">
                             All safe
                           </div>
                         )}
                       </div>
-                      <div className="text-xs text-slate-400 leading-relaxed pl-[42px]">
+                      <div className="text-xs text-muted-foreground leading-relaxed pl-9">
                         {dept.insight}
                       </div>
                     </div>
@@ -304,20 +298,16 @@ export function CatyChatWidget({
               </div>
 
               {/* Suggestions */}
-              <div className="mt-5 pt-4 border-t border-white/10">
-                <div className="text-[11px] font-semibold text-slate-500 uppercase tracking-widest mb-3">
+              <div className="mt-4 pt-3 border-t border-border">
+                <div className="text-[11px] font-semibold text-muted-foreground uppercase tracking-widest mb-2">
                   Ask me about
                 </div>
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-1.5">
                   {suggestions.map((suggestion) => (
                     <button
                       key={suggestion}
                       onClick={() => handleSuggestionClick(suggestion)}
-                      className="px-3.5 py-2.5 text-xs font-medium text-slate-400 rounded-full transition-all duration-200 hover:border-teal-500 hover:text-teal-500 hover:bg-teal-500/10"
-                      style={{
-                        background: 'rgba(30, 41, 59, 0.6)',
-                        border: '1px solid rgba(255, 255, 255, 0.1)'
-                      }}
+                      className="px-3 py-2 text-xs font-medium text-muted-foreground rounded-full transition-all duration-200 hover:border-teal-500 hover:text-teal-600 hover:bg-teal-500/10 bg-card border border-border"
                     >
                       {suggestion}
                     </button>
@@ -328,36 +318,24 @@ export function CatyChatWidget({
           </div>
         </div>
 
-        {/* Input Area */}
-        <div 
-          className="p-4 pb-6"
-          style={{
-            background: 'rgba(15, 23, 42, 0.95)',
-            borderTop: '1px solid rgba(255, 255, 255, 0.1)'
-          }}
-        >
-          <div 
-            className="flex items-center gap-3 rounded-2xl p-1.5 pl-4 transition-all duration-250 focus-within:border-teal-500 focus-within:shadow-[0_0_0_4px_rgba(20,184,166,0.15)]"
-            style={{
-              background: 'rgba(30, 41, 59, 0.6)',
-              border: '1px solid rgba(255, 255, 255, 0.1)'
-            }}
-          >
+        {/* Input Area - Light Mode */}
+        <div className="p-3 pb-4 bg-background border-t border-border">
+          <div className="flex items-center gap-2 rounded-xl p-1 pl-3 transition-all duration-250 focus-within:ring-2 focus-within:ring-teal-500/20 focus-within:border-teal-500 bg-muted/50 border border-border">
             <input
               type="text"
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
-              placeholder="Ask about capacity..."
-              className="flex-1 bg-transparent border-none text-sm text-white outline-none placeholder:text-slate-500"
+              placeholder="Ask Caty about capacity..."
+              className="flex-1 bg-transparent border-none text-sm text-foreground outline-none placeholder:text-muted-foreground"
             />
             <button 
-              className="w-11 h-11 rounded-xl flex items-center justify-center text-white transition-all duration-250 hover:scale-105"
+              className="w-10 h-10 rounded-lg flex items-center justify-center text-white transition-all duration-250 hover:scale-105"
               style={{
                 background: 'linear-gradient(135deg, #14b8a6, #06b6d4)',
                 boxShadow: '0 4px 12px rgba(20, 184, 166, 0.3)'
               }}
             >
-              <Send className="w-5 h-5" />
+              <Send className="w-4 h-4" />
             </button>
           </div>
         </div>
