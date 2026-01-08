@@ -197,31 +197,64 @@ export default function CapacityPlannerPage() {
     setResource360Id(resource.id);
   };
 
+  const currentAllocationByResourceId = useMemo(() => {
+    const now = new Date();
+    const map = new Map<string, number>();
+
+    allocations.forEach((a) => {
+      if (!a.profile_id) return;
+      const allocStart = new Date(a.start_date);
+      const allocEnd = new Date(a.end_date);
+      if (allocStart <= now && allocEnd >= now) {
+        map.set(a.profile_id, (map.get(a.profile_id) || 0) + a.allocation_percent);
+      }
+    });
+
+    return map;
+  }, [allocations]);
+
   const filteredResources = useMemo(() => {
     return metrics.resources.filter((r) => {
       // Exclude management and admin roles - they are overheads, not capacity planned
       const roleLower = r.role?.toLowerCase() || '';
       const isManagement = roleLower.includes('management');
-      const isSuperAdmin = roleLower.includes('super admin') || roleLower.includes('superadmin') || roleLower === 'admin';
+      const isSuperAdmin =
+        roleLower.includes('super admin') ||
+        roleLower.includes('superadmin') ||
+        roleLower === 'admin';
       if (isManagement || isSuperAdmin) return false;
-      
-      const matchesSearch = r.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+
+      const matchesSearch =
+        r.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         r.role?.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesDepartment = departmentFilter === 'all' || r.department?.toLowerCase() === departmentFilter;
-      
-      // Apply allocation filter
+      const matchesDepartment =
+        departmentFilter === 'all' || r.department?.toLowerCase() === departmentFilter;
+
+      // Apply the SAME utilization rules used by the header summary:
+      // - Available: < 80%
+      // - At capacity: 80% - 100%
+      // - Over-allocated: > 100%
+      const currentAllocation =
+        currentAllocationByResourceId.get(r.id) ?? (r.allocation || 0);
+
       let matchesFilter = true;
       if (activeFilter === 'available') {
-        matchesFilter = (r.allocation || 0) < 100;
+        matchesFilter = currentAllocation < 80;
       } else if (activeFilter === 'atCapacity') {
-        matchesFilter = (r.allocation || 0) === 100;
+        matchesFilter = currentAllocation >= 80 && currentAllocation <= 100;
       } else if (activeFilter === 'over') {
-        matchesFilter = (r.allocation || 0) > 100;
+        matchesFilter = currentAllocation > 100;
       }
-      
+
       return matchesSearch && matchesDepartment && matchesFilter;
     });
-  }, [metrics.resources, searchQuery, departmentFilter, activeFilter]);
+  }, [
+    metrics.resources,
+    searchQuery,
+    departmentFilter,
+    activeFilter,
+    currentAllocationByResourceId,
+  ]);
 
   // Get unique departments for filter dropdown
   const uniqueDepartments = useMemo(() => {
