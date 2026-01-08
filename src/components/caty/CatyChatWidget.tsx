@@ -432,19 +432,35 @@ export function CatyChatWidget() {
       return `**No urgent renewals needed**`;
     }
 
-    // Department specific query
+    // Department specific query - use resource_inventory as source of truth
     for (const dept of stats.departments) {
       if (lowerQuery.includes(dept.name.toLowerCase())) {
-        const { data: deptResults } = await supabase
-          .from('profiles')
-          .select('full_name, vendor, contract_end_date')
+        // Query resource_inventory (source of truth) and join with profiles for names
+        const { data: deptResources } = await supabase
+          .from('resource_inventory')
+          .select('id, profile_id, contract_end_date, vendor_name, role_name')
           .eq('department_id', dept.id)
           .order('contract_end_date', { ascending: true })
-          .limit(10);
+          .limit(15);
 
-        if (deptResults && deptResults.length > 0) {
-          return `**${dept.name} Department (${dept.count} resources):**\n\n${deptResults.map(r => 
-            `• **${r.full_name}** (${r.vendor || 'N/A'}) — ${r.contract_end_date ? formatContractDate(r.contract_end_date) : 'No contract date'}`
+        if (deptResources && deptResources.length > 0) {
+          // Get profile names for these resources
+          const profileIds = deptResources.map(r => r.profile_id).filter(Boolean);
+          const { data: profiles } = await supabase
+            .from('profiles')
+            .select('id, full_name')
+            .in('id', profileIds);
+          
+          const profileMap = new Map((profiles || []).map(p => [p.id, p.full_name]));
+          
+          const results = deptResources.map(r => ({
+            name: r.profile_id ? (profileMap.get(r.profile_id) || 'Unknown') : 'Unnamed Resource',
+            vendor: r.vendor_name || 'N/A',
+            contractEnd: r.contract_end_date,
+          }));
+
+          return `**${dept.name} Department (${dept.count} resources):**\n\n${results.map(r => 
+            `• **${r.name}** (${r.vendor}) — ${r.contractEnd ? formatContractDate(r.contractEnd) : 'No contract date'}`
           ).join('\n')}`;
         }
         return `**No resources found in ${dept.name} department**`;
