@@ -340,59 +340,83 @@ export function CatyChatWidget() {
       }
     }
     
-    // Critical resources query
+    // Critical resources query - use resource_inventory as source of truth
     if (lowerQuery.includes('critical')) {
-      const { data: criticalResults } = await supabase
-        .from('profiles')
-        .select('full_name, vendor, contract_end_date')
+      const { data: criticalResources } = await supabase
+        .from('resource_inventory')
+        .select('id, profile_id, contract_end_date, vendor_name, role_name')
         .lte('contract_end_date', thirtyDays.toISOString())
         .gte('contract_end_date', now.toISOString())
         .not('contract_end_date', 'is', null)
         .order('contract_end_date', { ascending: true })
         .limit(15);
       
-      if (criticalResults && criticalResults.length > 0) {
-        return `**${criticalResults.length} Critical Resources (ending within 30 days):**\n\n${criticalResults.map(r => 
-          `• **${r.full_name}** (${r.vendor || 'N/A'}) — ${formatContractDate(r.contract_end_date)}`
+      if (criticalResources && criticalResources.length > 0) {
+        const profileIds = criticalResources.map(r => r.profile_id).filter(Boolean);
+        const { data: profiles } = await supabase
+          .from('profiles')
+          .select('id, full_name')
+          .in('id', profileIds);
+        
+        const profileMap = new Map((profiles || []).map(p => [p.id, p.full_name]));
+        
+        return `**${criticalResources.length} Critical Resources (ending within 30 days):**\n\n${criticalResources.map(r => 
+          `• **${r.profile_id ? (profileMap.get(r.profile_id) || 'Unknown') : 'Unnamed'}** (${r.vendor_name || 'N/A'}) — ${formatContractDate(r.contract_end_date)}`
         ).join('\n')}`;
       }
       return `**No critical resources found** (contracts ending within 30 days)`;
     }
     
-    // Warning resources query  
+    // Warning resources query - use resource_inventory as source of truth
     if (lowerQuery.includes('warning')) {
-      const { data: warningResults } = await supabase
-        .from('profiles')
-        .select('full_name, vendor, contract_end_date')
+      const { data: warningResources } = await supabase
+        .from('resource_inventory')
+        .select('id, profile_id, contract_end_date, vendor_name, role_name')
         .gt('contract_end_date', thirtyDays.toISOString())
         .lte('contract_end_date', ninetyDays.toISOString())
         .order('contract_end_date', { ascending: true })
         .limit(15);
       
-      if (warningResults && warningResults.length > 0) {
-        return `**${warningResults.length} Warning Resources (ending in 30-90 days):**\n\n${warningResults.map(r => 
-          `• **${r.full_name}** (${r.vendor || 'N/A'}) — ${formatContractDate(r.contract_end_date)}`
+      if (warningResources && warningResources.length > 0) {
+        const profileIds = warningResources.map(r => r.profile_id).filter(Boolean);
+        const { data: profiles } = await supabase
+          .from('profiles')
+          .select('id, full_name')
+          .in('id', profileIds);
+        
+        const profileMap = new Map((profiles || []).map(p => [p.id, p.full_name]));
+        
+        return `**${warningResources.length} Warning Resources (ending in 30-90 days):**\n\n${warningResources.map(r => 
+          `• **${r.profile_id ? (profileMap.get(r.profile_id) || 'Unknown') : 'Unnamed'}** (${r.vendor_name || 'N/A'}) — ${formatContractDate(r.contract_end_date)}`
         ).join('\n')}`;
       }
       return `**No warning resources found** (contracts ending in 30-90 days)`;
     }
     
-    // This month query
+    // This month query - use resource_inventory as source of truth
     if (lowerQuery.includes('expiring this month') || lowerQuery.includes('this month')) {
       const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
       const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
       
-      const { data: monthResults } = await supabase
-        .from('profiles')
-        .select('full_name, vendor, contract_end_date')
+      const { data: monthResources } = await supabase
+        .from('resource_inventory')
+        .select('id, profile_id, contract_end_date, vendor_name')
         .gte('contract_end_date', startOfMonth.toISOString())
         .lte('contract_end_date', endOfMonth.toISOString())
         .order('contract_end_date', { ascending: true });
       
       const monthName = now.toLocaleDateString('en-US', { month: 'long' });
-      if (monthResults && monthResults.length > 0) {
-        return `**Contracts expiring this month (${monthName}):**\n\n${monthResults.map(r => 
-          `• **${r.full_name}** (${r.vendor || 'N/A'}) — ${formatContractDate(r.contract_end_date)}`
+      if (monthResources && monthResources.length > 0) {
+        const profileIds = monthResources.map(r => r.profile_id).filter(Boolean);
+        const { data: profiles } = await supabase
+          .from('profiles')
+          .select('id, full_name')
+          .in('id', profileIds);
+        
+        const profileMap = new Map((profiles || []).map(p => [p.id, p.full_name]));
+        
+        return `**Contracts expiring this month (${monthName}):**\n\n${monthResources.map(r => 
+          `• **${r.profile_id ? (profileMap.get(r.profile_id) || 'Unknown') : 'Unnamed'}** (${r.vendor_name || 'N/A'}) — ${formatContractDate(r.contract_end_date)}`
         ).join('\n')}`;
       }
       return `**No contracts expiring this month (${monthName})**`;
