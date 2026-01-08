@@ -16803,17 +16803,21 @@ export type Database = {
           assignments: Json | null
           contract_end_date: string | null
           contract_start_date: string | null
+          country_id: string | null
           created_at: string | null
           default_capacity_percent: number | null
+          department_id: string | null
           department_name: string | null
           id: string
           is_active: boolean | null
+          location_id: string | null
           name: string
           notes: string | null
           profile_id: string | null
           role_code: string | null
           role_name: string | null
           updated_at: string | null
+          vendor_id: string | null
           vendor_name: string | null
         }
         Insert: {
@@ -16821,17 +16825,21 @@ export type Database = {
           assignments?: Json | null
           contract_end_date?: string | null
           contract_start_date?: string | null
+          country_id?: string | null
           created_at?: string | null
           default_capacity_percent?: number | null
+          department_id?: string | null
           department_name?: string | null
           id?: string
           is_active?: boolean | null
+          location_id?: string | null
           name: string
           notes?: string | null
           profile_id?: string | null
           role_code?: string | null
           role_name?: string | null
           updated_at?: string | null
+          vendor_id?: string | null
           vendor_name?: string | null
         }
         Update: {
@@ -16839,17 +16847,21 @@ export type Database = {
           assignments?: Json | null
           contract_end_date?: string | null
           contract_start_date?: string | null
+          country_id?: string | null
           created_at?: string | null
           default_capacity_percent?: number | null
+          department_id?: string | null
           department_name?: string | null
           id?: string
           is_active?: boolean | null
+          location_id?: string | null
           name?: string
           notes?: string | null
           profile_id?: string | null
           role_code?: string | null
           role_name?: string | null
           updated_at?: string | null
+          vendor_id?: string | null
           vendor_name?: string | null
         }
         Relationships: [
@@ -16858,6 +16870,34 @@ export type Database = {
             columns: ["assignment_id"]
             isOneToOne: false
             referencedRelation: "resource_assignments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "resource_inventory_country_id_fkey"
+            columns: ["country_id"]
+            isOneToOne: false
+            referencedRelation: "resource_countries"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "resource_inventory_department_id_fkey"
+            columns: ["department_id"]
+            isOneToOne: false
+            referencedRelation: "capacity_departments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "resource_inventory_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "resource_locations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "resource_inventory_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "resource_vendors"
             referencedColumns: ["id"]
           },
         ]
