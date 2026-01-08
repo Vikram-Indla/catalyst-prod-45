@@ -734,6 +734,110 @@ export type Database = {
           },
         ]
       }
+      ai_contracts: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          domain: string
+          id: string
+          is_active: boolean | null
+          name: string
+          updated_at: string | null
+          updated_by: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          domain: string
+          id?: string
+          is_active?: boolean | null
+          name: string
+          updated_at?: string | null
+          updated_by?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          domain?: string
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          updated_at?: string | null
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
+      ai_feedback: {
+        Row: {
+          chosen_mapping: Json | null
+          corrected_mapping: Json | null
+          created_at: string | null
+          id: string
+          question: string
+          user_id: string | null
+        }
+        Insert: {
+          chosen_mapping?: Json | null
+          corrected_mapping?: Json | null
+          created_at?: string | null
+          id?: string
+          question: string
+          user_id?: string | null
+        }
+        Update: {
+          chosen_mapping?: Json | null
+          corrected_mapping?: Json | null
+          created_at?: string | null
+          id?: string
+          question?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      ai_governance_audit_log: {
+        Row: {
+          action: string
+          actor_id: string | null
+          contract_id: string | null
+          created_at: string | null
+          diff: Json | null
+          id: string
+          object_id: string | null
+          object_type: string
+        }
+        Insert: {
+          action: string
+          actor_id?: string | null
+          contract_id?: string | null
+          created_at?: string | null
+          diff?: Json | null
+          id?: string
+          object_id?: string | null
+          object_type: string
+        }
+        Update: {
+          action?: string
+          actor_id?: string | null
+          contract_id?: string | null
+          created_at?: string | null
+          diff?: Json | null
+          id?: string
+          object_id?: string | null
+          object_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_governance_audit_log_contract_id_fkey"
+            columns: ["contract_id"]
+            isOneToOne: false
+            referencedRelation: "ai_contracts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       ai_integration_settings: {
         Row: {
           api_key_encrypted: string | null
@@ -799,6 +903,173 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "v_resource_profile"
             referencedColumns: ["profile_id"]
+          },
+        ]
+      }
+      ai_policies: {
+        Row: {
+          contract_id: string
+          created_at: string | null
+          id: string
+          is_active: boolean | null
+          policy_key: string
+          policy_value: Json | null
+          updated_at: string | null
+        }
+        Insert: {
+          contract_id: string
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          policy_key: string
+          policy_value?: Json | null
+          updated_at?: string | null
+        }
+        Update: {
+          contract_id?: string
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          policy_key?: string
+          policy_value?: Json | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_policies_contract_id_fkey"
+            columns: ["contract_id"]
+            isOneToOne: false
+            referencedRelation: "ai_contracts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ai_route_scopes: {
+        Row: {
+          allowed_intents: string[] | null
+          contract_id: string
+          created_at: string | null
+          id: string
+          is_active: boolean | null
+          route: string
+          updated_at: string | null
+        }
+        Insert: {
+          allowed_intents?: string[] | null
+          contract_id: string
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          route: string
+          updated_at?: string | null
+        }
+        Update: {
+          allowed_intents?: string[] | null
+          contract_id?: string
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          route?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_route_scopes_contract_id_fkey"
+            columns: ["contract_id"]
+            isOneToOne: false
+            referencedRelation: "ai_contracts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ai_semantic_dictionary: {
+        Row: {
+          canonical_concept: string
+          contract_id: string
+          created_at: string | null
+          id: string
+          is_active: boolean | null
+          resolution: Json | null
+          synonyms: string[] | null
+          threshold: number | null
+          ui_label: string
+          updated_at: string | null
+        }
+        Insert: {
+          canonical_concept: string
+          contract_id: string
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          resolution?: Json | null
+          synonyms?: string[] | null
+          threshold?: number | null
+          ui_label: string
+          updated_at?: string | null
+        }
+        Update: {
+          canonical_concept?: string
+          contract_id?: string
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          resolution?: Json | null
+          synonyms?: string[] | null
+          threshold?: number | null
+          ui_label?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_semantic_dictionary_contract_id_fkey"
+            columns: ["contract_id"]
+            isOneToOne: false
+            referencedRelation: "ai_contracts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ai_table_allowlist: {
+        Row: {
+          allowed_columns: string[] | null
+          contract_id: string
+          created_at: string | null
+          id: string
+          is_active: boolean | null
+          join_keys: Json | null
+          pii_level: string | null
+          table_name: string
+          updated_at: string | null
+        }
+        Insert: {
+          allowed_columns?: string[] | null
+          contract_id: string
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          join_keys?: Json | null
+          pii_level?: string | null
+          table_name: string
+          updated_at?: string | null
+        }
+        Update: {
+          allowed_columns?: string[] | null
+          contract_id?: string
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          join_keys?: Json | null
+          pii_level?: string | null
+          table_name?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_table_allowlist_contract_id_fkey"
+            columns: ["contract_id"]
+            isOneToOne: false
+            referencedRelation: "ai_contracts"
+            referencedColumns: ["id"]
           },
         ]
       }
