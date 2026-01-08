@@ -143,16 +143,6 @@ export function SleekCapacityHeader({
       }
     },
     { 
-      id: 'heatmap', 
-      label: 'Heatmap', 
-      icon: Grid3X3,
-      isActive: primaryView === 'resources' && resourceView === 'heatmap',
-      onClick: () => {
-        onPrimaryViewChange?.('resources');
-        onResourceViewChange?.('heatmap');
-      }
-    },
-    { 
       id: 'contracts', 
       label: 'Contracts', 
       icon: FileText,
