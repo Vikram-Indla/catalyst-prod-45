@@ -42,7 +42,6 @@ export function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
     vendor: '',
     location: '',
     country: '',
-    job_role: '',
     department: '',
     contract_start_date: '',
     contract_end_date: '',
@@ -119,20 +118,6 @@ export function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
     },
   });
 
-  // Fetch job roles from resource_roles table
-  const { data: jobRoles = [] } = useQuery({
-    queryKey: ['resource-roles'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('resource_roles')
-        .select('code, name')
-        .eq('is_active', true)
-        .order('sort_order');
-      if (error) throw error;
-      return data || [];
-    },
-  });
-
   // Fetch departments from capacity_departments table
   const { data: departments = [] } = useQuery({
     queryKey: ['capacity-departments'],
@@ -163,11 +148,11 @@ export function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
       .on('postgres_changes', { event: '*', schema: 'public', table: 'resource_assignments' }, () => {
         queryClient.invalidateQueries({ queryKey: ['resource-assignments'] });
       })
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'resource_roles' }, () => {
-        queryClient.invalidateQueries({ queryKey: ['resource-roles'] });
-      })
       .on('postgres_changes', { event: '*', schema: 'public', table: 'capacity_departments' }, () => {
         queryClient.invalidateQueries({ queryKey: ['capacity-departments'] });
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'product_roles' }, () => {
+        queryClient.invalidateQueries({ queryKey: ['product-roles'] });
       })
       .subscribe();
 
@@ -204,7 +189,6 @@ export function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
         vendor: user.vendor || '',
         location: user.location || '',
         country: user.country || '',
-        job_role: user.job_role || '',
         department: user.department_name || '',
         contract_start_date: isPermanent 
           ? `${currentYear}-01-01` 
@@ -258,8 +242,12 @@ export function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
       const selectedVendor = vendors.find(v => v.name === formData.vendor);
       const selectedLocation = locations.find(l => l.name === formData.location);
       const selectedCountry = countries.find(c => c.name === formData.country);
-      const selectedJobRole = jobRoles.find(r => r.name === formData.job_role);
       const selectedDepartment = departments.find(d => d.name === formData.department);
+      
+      // Get the first selected role name to use as job_role
+      const firstSelectedRoleId = selectedRoleIds[0];
+      const firstSelectedRole = productRoles?.find(r => r.id === firstSelectedRoleId);
+      const jobRoleName = firstSelectedRole?.name || null;
 
       // Update profile fields
       const { error: profileError } = await supabase
@@ -299,8 +287,8 @@ export function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
             location_id: selectedLocation?.id || null,
             country_id: selectedCountry?.id || null,
             department_id: selectedDepartment?.id || null,
-            department_name: formData.department || null,
-            role_name: formData.job_role || null,
+            department_name: selectedDepartment?.name || null,
+            role_name: jobRoleName,
             contract_start_date: formData.contract_start_date || null,
             contract_end_date: formData.contract_end_date || null,
             updated_at: new Date().toISOString(),
@@ -320,8 +308,8 @@ export function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
             location_id: selectedLocation?.id || null,
             country_id: selectedCountry?.id || null,
             department_id: selectedDepartment?.id || null,
-            department_name: formData.department || null,
-            role_name: formData.job_role || null,
+            department_name: selectedDepartment?.name || null,
+            role_name: jobRoleName,
             contract_start_date: formData.contract_start_date || null,
             contract_end_date: formData.contract_end_date || null,
             is_active: true,
@@ -434,24 +422,6 @@ export function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="job_role">Job Role</Label>
-                <Select
-                  value={formData.job_role || '__none__'}
-                  onValueChange={(value) => setFormData(prev => ({ ...prev, job_role: value === '__none__' ? '' : value }))}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select job role" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="__none__">Not specified</SelectItem>
-                    {jobRoles.map((role) => (
-                      <SelectItem key={role.code} value={role.name}>{role.name}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
                 <Label htmlFor="department">Department</Label>
                 <Select
                   value={formData.department || '__none__'}
@@ -472,10 +442,11 @@ export function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
 
             <Separator />
 
-            {/* Roles Section */}
+            {/* Job Role Section - syncs to user list */}
             <div className="space-y-4">
               <h3 className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-                Roles
+                <Briefcase className="h-4 w-4" />
+                Job Role
               </h3>
               <div className="flex flex-wrap gap-2">
                 {productRoles?.map((role) => (
