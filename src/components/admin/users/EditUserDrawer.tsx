@@ -47,17 +47,19 @@ export function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
     contract_end_date: '',
   });
   const [selectedRoleIds, setSelectedRoleIds] = useState<string[]>([]);
-  const [selectedAssignmentIds, setSelectedAssignmentIds] = useState<string[]>([]);
+  const [selectedAssignmentId, setSelectedAssignmentId] = useState<string>('');
   
   // Track initial values for dirty checking
   const [initialFormData, setInitialFormData] = useState(formData);
   const [initialRoleIds, setInitialRoleIds] = useState<string[]>([]);
+  const [initialAssignmentId, setInitialAssignmentId] = useState<string>('');
   const [fieldErrors, setFieldErrors] = useState<{ full_name?: string; email?: string; department?: string }>({});
   
   // Compute isDirty (avoid mutating state arrays)
   const isDirty =
     JSON.stringify(formData) !== JSON.stringify(initialFormData) ||
-    JSON.stringify([...selectedRoleIds].sort()) !== JSON.stringify([...initialRoleIds].sort());
+    JSON.stringify([...selectedRoleIds].sort()) !== JSON.stringify([...initialRoleIds].sort()) ||
+    (selectedAssignmentId || '') !== (initialAssignmentId || '');
 
   // Fetch available roles
   const { data: productRoles } = useQuery({
@@ -171,16 +173,24 @@ export function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
     };
   }, [queryClient]);
 
-  // Fetch user's assignments from resource_inventory
+  // Fetch user's resource_inventory record (for assignment_id + contract dates)
   const { data: userInventory } = useQuery({
     queryKey: ['user-inventory', user?.id],
     queryFn: async () => {
       if (!user?.id) return null;
-      const { data, error } = await supabase
+
+      // If the user has an email, it's a real profile user and resource_inventory is linked by profile_id.
+      // Otherwise it's an imported inventory-only row, linked by resource_inventory.id.
+      const isProfileUser = !!user.email;
+
+      const base = supabase
         .from('resource_inventory')
-        .select('id, assignments, contract_start_date, contract_end_date')
-        .eq('profile_id', user.id)
-        .maybeSingle();
+        .select('id, profile_id, assignment_id, contract_start_date, contract_end_date');
+
+      const { data, error } = isProfileUser
+        ? await base.eq('profile_id', user.id).maybeSingle()
+        : await base.eq('id', user.id).maybeSingle();
+
       if (error) throw error;
       return data;
     },
@@ -217,13 +227,11 @@ export function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
     }
   }, [user]);
 
-  // Set assignments from inventory data
+  // Set assignment from inventory data (resource_inventory.assignment_id)
   useEffect(() => {
-    if (userInventory?.assignments && Array.isArray(userInventory.assignments)) {
-      setSelectedAssignmentIds(userInventory.assignments as string[]);
-    } else {
-      setSelectedAssignmentIds([]);
-    }
+    const nextAssignmentId = (userInventory as any)?.assignment_id || '';
+    setSelectedAssignmentId(nextAssignmentId);
+    setInitialAssignmentId(nextAssignmentId);
   }, [userInventory]);
 
   // Auto-set contract dates when vendor changes to "Permanent"
@@ -310,33 +318,34 @@ export function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
 
         if (inventoryLookupError) throw inventoryLookupError;
 
-        if (inventoryRecord?.id) {
-          // Update existing record - don't update assignments (managed via Book Resource Allocation)
-          const { data: updatedInventory, error: inventoryError } = await supabase
-            .from('resource_inventory')
-            .update({
-              name: formData.full_name || null,
-              vendor_id: selectedVendor?.id || null,
-              vendor_name: formData.vendor || null,
-              location_id: selectedLocation?.id || null,
-              country_id: selectedCountry?.id || null,
-              department_id: selectedDepartment?.id || null,
-              department_name: selectedDepartment?.name || null,
-              role_name: jobRoleName,
-              contract_start_date: formData.contract_start_date || null,
-              contract_end_date: formData.contract_end_date || null,
-              updated_at: new Date().toISOString(),
-            })
-            .eq('id', inventoryRecord.id)
-            .select('id')
-            .maybeSingle();
+          if (inventoryRecord?.id) {
+            // Update existing record
+            const { data: updatedInventory, error: inventoryError } = await supabase
+              .from('resource_inventory')
+              .update({
+                name: formData.full_name || null,
+                vendor_id: selectedVendor?.id || null,
+                vendor_name: formData.vendor || null,
+                location_id: selectedLocation?.id || null,
+                country_id: selectedCountry?.id || null,
+                department_id: selectedDepartment?.id || null,
+                department_name: selectedDepartment?.name || null,
+                role_name: jobRoleName,
+                assignment_id: selectedAssignmentId || null,
+                contract_start_date: formData.contract_start_date || null,
+                contract_end_date: formData.contract_end_date || null,
+                updated_at: new Date().toISOString(),
+              })
+              .eq('id', inventoryRecord.id)
+              .select('id')
+              .maybeSingle();
 
           if (inventoryError) throw inventoryError;
           if (!updatedInventory?.id) {
             throw new Error('Resource inventory record not found or you do not have permission to update it.');
           }
         } else {
-          // Create new resource_inventory record for this user - don't set assignments
+          // Create new resource_inventory record for this user
           const { error: insertError } = await supabase.from('resource_inventory').insert({
             profile_id: user.id,
             name: formData.full_name || null,
@@ -347,6 +356,7 @@ export function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
             department_id: selectedDepartment?.id || null,
             department_name: selectedDepartment?.name || null,
             role_name: jobRoleName,
+            assignment_id: selectedAssignmentId || null,
             contract_start_date: formData.contract_start_date || null,
             contract_end_date: formData.contract_end_date || null,
             is_active: true,
@@ -389,6 +399,7 @@ export function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
             department_id: selectedDepartment?.id || null,
             department_name: selectedDepartment?.name || null,
             role_name: jobRoleName,
+            assignment_id: selectedAssignmentId || null,
             contract_start_date: formData.contract_start_date || null,
             contract_end_date: formData.contract_end_date || null,
             updated_at: new Date().toISOString(),
@@ -439,6 +450,10 @@ export function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
         const selectedDepartment = departments.find(d => d.name === formData.department);
         const updatedDepartmentName = selectedDepartment?.name || null;
 
+        // Resolve assignment name
+        const selectedAssignment = assignments.find((a) => a.id === selectedAssignmentId);
+        const updatedAssignmentName = selectedAssignment?.name || null;
+
         // Resolve job role label from selected role
         const firstSelectedRoleId = selectedRoleIds[0];
         const firstSelectedRole = productRoles?.find((r) => r.id === firstSelectedRoleId);
@@ -456,6 +471,7 @@ export function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
                 contract_start_date: formData.contract_start_date || null,
                 contract_end_date: formData.contract_end_date || null,
                 department_name: updatedDepartmentName,
+                assignment_name: updatedAssignmentName,
                 job_role: updatedJobRole,
                 roles: updatedRoles,
               }
@@ -471,6 +487,7 @@ export function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
 
       setInitialFormData(formData);
       setInitialRoleIds(selectedRoleIds);
+      setInitialAssignmentId(selectedAssignmentId || '');
       setFieldErrors({});
 
       toast.success('User updated successfully');
@@ -688,30 +705,31 @@ export function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
 
             <Separator />
 
-            {/* Assignments Section - Read-only display */}
+            {/* Assignment Section */}
             <div className="space-y-4">
               <h3 className="text-sm font-medium text-muted-foreground flex items-center gap-2">
                 <Briefcase className="h-4 w-4" />
-                Assignments
+                Assignment
               </h3>
 
               <div className="space-y-2">
-                <div className="flex flex-wrap gap-2">
-                  {selectedAssignmentIds.length > 0 ? (
-                    selectedAssignmentIds.map((assignmentId) => {
-                      const assignment = assignments.find(a => a.id === assignmentId);
-                      return assignment ? (
-                        <Badge key={assignmentId} variant="secondary">
-                          {assignment.name}
-                        </Badge>
-                      ) : null;
-                    })
-                  ) : (
-                    <p className="text-xs text-muted-foreground">
-                      No assignments. Use "Book Resource Allocation" in Capacity Planner to assign.
-                    </p>
-                  )}
-                </div>
+                <Label htmlFor="assignment">Assignment</Label>
+                <Select
+                  value={selectedAssignmentId || '__none__'}
+                  onValueChange={(value) => setSelectedAssignmentId(value === '__none__' ? '' : value)}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select assignment" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="__none__">Not specified</SelectItem>
+                    {assignments.map((a) => (
+                      <SelectItem key={a.id} value={a.id}>
+                        {a.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             </div>
 
