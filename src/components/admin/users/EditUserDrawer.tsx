@@ -289,7 +289,7 @@ export function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
         .maybeSingle();
       
       if (inventoryRecord) {
-        // Update existing record
+        // Update existing record - don't update assignments (managed via Book Resource Allocation)
         const { error: inventoryError } = await supabase
           .from('resource_inventory')
           .update({
@@ -298,7 +298,6 @@ export function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
             vendor_name: formData.vendor || null,
             location_id: selectedLocation?.id || null,
             country_id: selectedCountry?.id || null,
-            assignments: selectedAssignmentIds.length > 0 ? selectedAssignmentIds : null,
             department_id: selectedDepartment?.id || null,
             department_name: formData.department || null,
             role_name: formData.job_role || null,
@@ -310,7 +309,7 @@ export function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
         
         if (inventoryError) throw inventoryError;
       } else {
-        // Create new resource_inventory record for this user
+        // Create new resource_inventory record for this user - don't set assignments
         const { error: insertError } = await supabase
           .from('resource_inventory')
           .insert({
@@ -320,7 +319,6 @@ export function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
             vendor_name: formData.vendor || null,
             location_id: selectedLocation?.id || null,
             country_id: selectedCountry?.id || null,
-            assignments: selectedAssignmentIds.length > 0 ? selectedAssignmentIds : null,
             department_id: selectedDepartment?.id || null,
             department_name: formData.department || null,
             role_name: formData.job_role || null,
@@ -548,7 +546,7 @@ export function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
 
             <Separator />
 
-            {/* Assignment Section - Multi-select */}
+            {/* Assignments Section - Read-only display */}
             <div className="space-y-4">
               <h3 className="text-sm font-medium text-muted-foreground flex items-center gap-2">
                 <Briefcase className="h-4 w-4" />
@@ -556,29 +554,22 @@ export function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
               </h3>
 
               <div className="space-y-2">
-                <Label>Assignments (select multiple)</Label>
                 <div className="flex flex-wrap gap-2">
-                  {assignments.map((a) => (
-                    <Badge
-                      key={a.id}
-                      variant={selectedAssignmentIds.includes(a.id) ? "default" : "outline"}
-                      className="cursor-pointer transition-colors"
-                      onClick={() => {
-                        setSelectedAssignmentIds(prev =>
-                          prev.includes(a.id)
-                            ? prev.filter(id => id !== a.id)
-                            : [...prev, a.id]
-                        );
-                      }}
-                    >
-                      {selectedAssignmentIds.includes(a.id) && '✓ '}
-                      {a.name}
-                    </Badge>
-                  ))}
+                  {selectedAssignmentIds.length > 0 ? (
+                    selectedAssignmentIds.map((assignmentId) => {
+                      const assignment = assignments.find(a => a.id === assignmentId);
+                      return assignment ? (
+                        <Badge key={assignmentId} variant="secondary">
+                          {assignment.name}
+                        </Badge>
+                      ) : null;
+                    })
+                  ) : (
+                    <p className="text-xs text-muted-foreground">
+                      No assignments. Use "Book Resource Allocation" in Capacity Planner to assign.
+                    </p>
+                  )}
                 </div>
-                {selectedAssignmentIds.length === 0 && (
-                  <p className="text-xs text-muted-foreground">Click on an assignment to add it</p>
-                )}
               </div>
             </div>
 
