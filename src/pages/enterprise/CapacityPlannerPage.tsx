@@ -237,19 +237,23 @@ export default function CapacityPlannerPage() {
       const matchesDepartment =
         departmentFilter === 'all' || r.department?.toLowerCase() === departmentFilter;
 
-      // Apply the SAME utilization rules used by the header summary:
-      // - Available: < 80%
-      // - At capacity: 80% - 100%
-      // - Over-allocated: > 100%
+      // Use the SAME status logic as useCapacityData.ts summary:
+      // - available: allocation === 0
+      // - healthy: 0 < allocation <= 80
+      // - at_capacity: 80 < allocation <= 100
+      // - over_allocated: allocation > 100
       const currentAllocation =
         currentAllocationByResourceId.get(r.id) ?? (r.allocation || 0);
 
       let matchesFilter = true;
       if (activeFilter === 'available') {
-        matchesFilter = currentAllocation < 80;
+        // Available = 0% allocation (exactly matches summary count)
+        matchesFilter = currentAllocation === 0;
       } else if (activeFilter === 'atCapacity') {
-        matchesFilter = currentAllocation >= 80 && currentAllocation <= 100;
+        // At Capacity = 80-100% (matches summary: status === 'at_capacity')
+        matchesFilter = currentAllocation > 80 && currentAllocation <= 100;
       } else if (activeFilter === 'over') {
+        // Over-allocated = >100%
         matchesFilter = currentAllocation > 100;
       }
 
@@ -397,47 +401,66 @@ export default function CapacityPlannerPage() {
     );
   }, [allocations]);
 
-  // Calculate dynamic summary stats from filtered resources based on time-boxed allocations
-  const filteredSummary = useMemo(() => {
+  // Calculate BASE summary stats from ALL resources (not filtered by status)
+  // This ensures the header stat chips always show the full counts, not filtered counts
+  const baseSummary = useMemo(() => {
     const now = new Date();
     let available = 0;
     let atCapacity = 0;
     let over = 0;
     let totalUtilization = 0;
 
-    filteredResources.forEach(resource => {
-      // Get current active allocations for this resource
-      const resourceAllocations = allocations.filter(a => {
-        if (a.profile_id !== resource.id) return false;
-        const allocStart = new Date(a.start_date);
-        const allocEnd = new Date(a.end_date);
-        return allocStart <= now && allocEnd >= now;
-      });
-      
-      const currentAllocation = resourceAllocations.reduce((sum, a) => sum + a.allocation_percent, 0);
-      totalUtilization += Math.min(currentAllocation, 100);
+    // Filter only by search and department, NOT by activeFilter (status)
+    const baseResources = metrics.resources.filter((r) => {
+      // Exclude management and admin roles
+      const roleLower = r.role?.toLowerCase() || '';
+      const isManagement = roleLower.includes('management');
+      const isSuperAdmin =
+        roleLower.includes('super admin') ||
+        roleLower.includes('superadmin') ||
+        roleLower === 'admin';
+      if (isManagement || isSuperAdmin) return false;
 
-      if (currentAllocation > 100) {
-        over++;
-      } else if (currentAllocation >= 80) {
-        atCapacity++;
-      } else {
-        available++;
-      }
+      const matchesSearch =
+        r.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        r.role?.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesDepartment =
+        departmentFilter === 'all' || r.department?.toLowerCase() === departmentFilter;
+
+      return matchesSearch && matchesDepartment;
     });
 
-    const utilizationPercentage = filteredResources.length > 0 
-      ? Math.round(totalUtilization / filteredResources.length) 
+    baseResources.forEach(resource => {
+      // Use the same allocation calculation as filteredResources
+      const currentAllocation = currentAllocationByResourceId.get(resource.id) ?? (resource.allocation || 0);
+      totalUtilization += Math.min(currentAllocation, 100);
+
+      // Use the SAME thresholds as the filter logic:
+      // - available: allocation === 0
+      // - atCapacity: 80 < allocation <= 100
+      // - over: allocation > 100
+      if (currentAllocation > 100) {
+        over++;
+      } else if (currentAllocation > 80) {
+        atCapacity++;
+      } else if (currentAllocation === 0) {
+        available++;
+      }
+      // Note: resources with 0 < allocation <= 80 are "healthy" (not shown as a filter option)
+    });
+
+    const utilizationPercentage = baseResources.length > 0 
+      ? Math.round(totalUtilization / baseResources.length) 
       : 0;
 
     return {
-      total: filteredResources.length,
+      total: baseResources.length,
       available,
       atCapacity,
       over,
       utilizationPercentage,
     };
-  }, [filteredResources, allocations]);
+  }, [metrics.resources, searchQuery, departmentFilter, currentAllocationByResourceId]);
 
   // Handle retry for error state
   const handleRetry = useCallback(async () => {
@@ -529,11 +552,11 @@ export default function CapacityPlannerPage() {
         {/* Header - Enterprise Grade */}
         <SleekCapacityHeader
           summary={{
-            total: filteredSummary.total,
-            available: filteredSummary.available,
-            atCapacity: filteredSummary.atCapacity,
-            over: filteredSummary.over,
-            utilizationPercentage: filteredSummary.utilizationPercentage,
+            total: baseSummary.total,
+            available: baseSummary.available,
+            atCapacity: baseSummary.atCapacity,
+            over: baseSummary.over,
+            utilizationPercentage: baseSummary.utilizationPercentage,
           }}
           primaryView={primaryView}
           resourceView={resourceView}
