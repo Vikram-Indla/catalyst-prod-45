@@ -106,15 +106,15 @@ export function DepartmentRow({ stats, isExpanded, onToggle, onResourceClick }: 
         <div className="p-5 border-r border-border bg-card">
           <div className="space-y-0">
             <div className="flex justify-between items-center py-3 border-b border-border">
-              <span className="text-[12px] font-medium text-muted-foreground">Critical (≤90d)</span>
+              <span className="text-[12px] font-medium text-muted-foreground">Critical (≤60d)</span>
               <span className="text-[18px] font-extrabold tracking-[-0.02em] text-[#ef4444]">{stats.critical}</span>
             </div>
             <div className="flex justify-between items-center py-3 border-b border-border">
-              <span className="text-[12px] font-medium text-muted-foreground">Warning (90-180d)</span>
+              <span className="text-[12px] font-medium text-muted-foreground">Warning (60-90d)</span>
               <span className="text-[18px] font-extrabold tracking-[-0.02em] text-[#d97706]">{stats.warning}</span>
             </div>
             <div className="flex justify-between items-center py-3">
-              <span className="text-[12px] font-medium text-muted-foreground">Safe (180d+)</span>
+              <span className="text-[12px] font-medium text-muted-foreground">Safe (90d+)</span>
               <span className="text-[18px] font-extrabold tracking-[-0.02em] text-foreground">{stats.safe}</span>
             </div>
           </div>
