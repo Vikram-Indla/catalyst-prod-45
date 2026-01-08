@@ -249,30 +249,22 @@ export function useUsers() {
     },
   });
 
-  // Keep users list fresh when profiles / roles / resource_inventory change (admin screen expects realtime-ish sync)
+  // Keep users list fresh when profiles / roles / resource_inventory / reference tables change
+  // This ensures real-time sync across all frontend instances
   useEffect(() => {
+    const invalidate = () => queryClient.invalidateQueries({ queryKey: ['users-list'] });
+    
     const channel = supabase
       .channel('admin-users-sync')
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'profiles' },
-        () => queryClient.invalidateQueries({ queryKey: ['users-list'] })
-      )
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'user_product_roles' },
-        () => queryClient.invalidateQueries({ queryKey: ['users-list'] })
-      )
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'product_roles' },
-        () => queryClient.invalidateQueries({ queryKey: ['users-list'] })
-      )
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'resource_inventory' },
-        () => queryClient.invalidateQueries({ queryKey: ['users-list'] })
-      )
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' }, invalidate)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'user_product_roles' }, invalidate)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'product_roles' }, invalidate)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'resource_inventory' }, invalidate)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'capacity_departments' }, invalidate)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'resource_vendors' }, invalidate)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'resource_locations' }, invalidate)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'resource_countries' }, invalidate)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'resource_assignments' }, invalidate)
       .subscribe();
 
     return () => {

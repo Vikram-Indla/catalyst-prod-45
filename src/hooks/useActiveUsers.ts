@@ -16,22 +16,13 @@ export interface ActiveUser {
 export function useActiveUsers() {
   const queryClient = useQueryClient();
 
-  // Set up real-time subscription
+  // Set up real-time subscription for profiles changes
   useEffect(() => {
+    const invalidate = () => queryClient.invalidateQueries({ queryKey: ['active-users'] });
+    
     const channel = supabase
-      .channel('profiles-changes')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'profiles',
-        },
-        () => {
-          // Invalidate query to refetch on any profile change
-          queryClient.invalidateQueries({ queryKey: ['active-users'] });
-        }
-      )
+      .channel('active-users-sync')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' }, invalidate)
       .subscribe();
 
     return () => {

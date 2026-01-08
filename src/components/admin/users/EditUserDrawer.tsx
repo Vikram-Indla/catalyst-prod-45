@@ -352,8 +352,9 @@ export function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
 
       return true;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['users-list'] });
+    onSuccess: async () => {
+      // Refetch to ensure the list is updated before closing
+      await queryClient.refetchQueries({ queryKey: ['users-list'] });
       toast.success('User updated successfully');
       onClose();
     },
