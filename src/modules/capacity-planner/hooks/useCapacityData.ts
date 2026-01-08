@@ -92,8 +92,8 @@ export function useCapacityData() {
         const profileId = ri.profile_id || profile?.id;
         const roleName = profileId ? (userRoleMap.get(profileId) || ri.role_name || 'No role') : (ri.role_name || 'No role');
         
-        // Get department from profile or resource_inventory
-        const departmentId = profile?.department_id || ri.department_id;
+        // Get department from resource_inventory (source of truth) with fallback to profile
+        const departmentId = ri.department_id || profile?.department_id;
         const departmentName = departmentId ? deptMap.get(departmentId) || 'Unassigned' : 'Unassigned';
         
         return {
