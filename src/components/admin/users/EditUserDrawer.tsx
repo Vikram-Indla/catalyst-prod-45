@@ -187,7 +187,7 @@ export function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
 
       if (profileError) throw profileError;
       
-      // Update resource_inventory if the user has a linked record
+      // Update or create resource_inventory record
       const { data: inventoryRecord } = await supabase
         .from('resource_inventory')
         .select('id')
@@ -195,9 +195,11 @@ export function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
         .maybeSingle();
       
       if (inventoryRecord) {
+        // Update existing record
         const { error: inventoryError } = await supabase
           .from('resource_inventory')
           .update({
+            name: formData.full_name || null,
             vendor_id: selectedVendor?.id || null,
             vendor_name: formData.vendor || null,
             location_id: selectedLocation?.id || null,
@@ -209,6 +211,23 @@ export function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
           .eq('id', inventoryRecord.id);
         
         if (inventoryError) throw inventoryError;
+      } else {
+        // Create new resource_inventory record for this user
+        const { error: insertError } = await supabase
+          .from('resource_inventory')
+          .insert({
+            profile_id: user.id,
+            name: formData.full_name || null,
+            vendor_id: selectedVendor?.id || null,
+            vendor_name: formData.vendor || null,
+            location_id: selectedLocation?.id || null,
+            country_id: selectedCountry?.id || null,
+            assignment_id: selectedAssignment?.id || null,
+            contract_end_date: formData.contract_end_date || null,
+            is_active: true,
+          });
+        
+        if (insertError) throw insertError;
       }
 
       // Update roles - delete existing and insert new
