@@ -1503,7 +1503,7 @@ export default function CapacityPlannerPage() {
             onExit={() => setPresentationMode(false)}
             onExport={handleExport}
           >
-            <div className="h-full w-full p-4">
+            <div className="h-full w-full p-4 flex flex-col">
               {/* Render the EXACT current view based on primaryView and resourceView state */}
               
               {/* Resources Primary View */}
@@ -1538,35 +1538,38 @@ export default function CapacityPlannerPage() {
               )}
               
               {primaryView === 'resources' && resourceView === 'timeline' && (
-                <EnhancedTimelineView 
-                  resources={activeResources.map(r => ({
-                    id: r.id,
-                    name: r.name,
-                    role: r.role,
-                    department: r.department,
-                    allocation: r.allocation,
-                    contractEndDate: (r as any).contract_end_date || (r as any).contractEndDate || null,
-                    assignmentName: r.assignmentName,
-                  }))} 
-                  allocations={allocations}
-                  year={2026}
-                  onEditResource={() => {}}
-                  groupBy={groupBy}
-                  groupedByAssignment={Object.fromEntries(
-                    Object.entries(groupedByAssignment).map(([key, resources]) => [
-                      key,
-                      resources.map(r => ({
-                        id: r.id,
-                        name: r.name,
-                        role: r.role,
-                        department: r.department,
-                        allocation: r.allocation,
-                        contractEndDate: (r as any).contract_end_date || (r as any).contractEndDate || null,
-                        assignmentName: r.assignmentName,
-                      }))
-                    ])
-                  )}
-                />
+                <div className="flex-1 min-h-0 flex flex-col">
+                  <EnhancedTimelineView 
+                    resources={activeResources.map(r => ({
+                      id: r.id,
+                      name: r.name,
+                      role: r.role,
+                      department: r.department,
+                      allocation: r.allocation,
+                      contractEndDate: (r as any).contract_end_date || (r as any).contractEndDate || null,
+                      assignmentName: r.assignmentName,
+                    }))} 
+                    allocations={allocations}
+                    year={2026}
+                    onEditResource={() => {}}
+                    groupBy={groupBy}
+                    groupedByAssignment={Object.fromEntries(
+                      Object.entries(groupedByAssignment).map(([key, resources]) => [
+                        key,
+                        resources.map(r => ({
+                          id: r.id,
+                          name: r.name,
+                          role: r.role,
+                          department: r.department,
+                          allocation: r.allocation,
+                          contractEndDate: (r as any).contract_end_date || (r as any).contractEndDate || null,
+                          assignmentName: r.assignmentName,
+                        }))
+                      ])
+                    )}
+                    className="flex-1"
+                  />
+                </div>
               )}
               
               {primaryView === 'resources' && resourceView === 'heatmap' && (
