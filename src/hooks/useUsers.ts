@@ -189,7 +189,7 @@ export function useUsers() {
           business_lines: [...new Set(allBusinessLines)],
           contract_start_date: inventory?.contract_start_date || profile.contract_start_date || null,
           contract_end_date: inventory?.contract_end_date || profile.contract_end_date || null,
-          vendor_name: inventory?.resolved_vendor_name || inventory?.vendor_name || null,
+          vendor_name: inventory?.resolved_vendor_name || inventory?.vendor_name || profile.vendor || null,
           vendor: inventory?.resolved_vendor_name || profile.vendor || null,
           department_name: inventory?.department_name || null,
           assignment_name: inventory?.assignment_name || null,
