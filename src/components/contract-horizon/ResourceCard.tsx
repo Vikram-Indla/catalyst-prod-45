@@ -14,7 +14,6 @@ interface ResourceCardProps {
 
 export function ResourceCard({ resource, onClick }: ResourceCardProps) {
   const endDate = new Date(resource.contractEnd);
-  const monthsRemaining = Math.ceil(resource.daysRemaining / 30);
   
   return (
     <div
@@ -52,15 +51,8 @@ export function ResourceCard({ resource, onClick }: ResourceCardProps) {
           {format(endDate, 'd MMM')}
         </span>
         <span className="w-[3px] h-[3px] rounded-full bg-muted-foreground" />
-        <span 
-          className={cn(
-            "text-[10px] font-bold px-2 py-0.5 rounded border",
-            resource.status === 'critical' && "bg-red-50 text-[#dc2626] border-red-200 dark:bg-red-500/15 dark:text-red-300 dark:border-red-500/30",
-            resource.status === 'warning' && "bg-amber-50 text-[#d97706] border-amber-200 dark:bg-amber-500/15 dark:text-amber-300 dark:border-amber-500/30",
-            resource.status === 'safe' && "bg-teal-50 text-[#0d9488] border-teal-200 dark:bg-teal-500/15 dark:text-teal-300 dark:border-teal-500/30"
-          )}
-        >
-          {monthsRemaining} mo
+        <span className="text-[11px] font-medium text-muted-foreground truncate max-w-[80px]">
+          {resource.vendor}
         </span>
       </div>
     </div>
