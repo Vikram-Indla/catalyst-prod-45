@@ -247,7 +247,7 @@ export default function CapacityPlannerPage() {
         r.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         r.role?.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesDepartment =
-        departmentFilter === 'all' || r.department?.toLowerCase() === departmentFilter;
+        departmentFilter === 'all' || r.department?.toLowerCase().includes(departmentFilter);
 
       // Use the SAME status logic as useCapacityData.ts summary:
       // - available: allocation === 0
