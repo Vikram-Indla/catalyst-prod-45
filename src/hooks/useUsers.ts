@@ -235,11 +235,11 @@ export function useUsers() {
           } as UserProfile;
         });
 
-      // Combine both lists and sort
+      // Combine both lists and sort by department, then name
       const allUsers = [...profileUsers, ...unlinkedInventory].sort((a, b) => {
-        const vendorA = a.vendor || '';
-        const vendorB = b.vendor || '';
-        if (vendorA !== vendorB) return vendorA.localeCompare(vendorB);
+        const deptA = a.department_name || '';
+        const deptB = b.department_name || '';
+        if (deptA !== deptB) return deptA.localeCompare(deptB);
         const nameA = a.full_name || '';
         const nameB = b.full_name || '';
         return nameA.localeCompare(nameB);
