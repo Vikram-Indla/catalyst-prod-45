@@ -408,7 +408,7 @@ export function CatyChatWidget({
                       className="rounded-lg p-2.5 cursor-pointer transition-all duration-250 hover:translate-x-0.5 hover:shadow-sm bg-card border border-border"
                       style={{ borderLeft: `3px solid ${dept.color}` }}
                     >
-                      <div className="flex items-center gap-2 mb-1.5">
+                      <div className="flex items-center gap-2">
                         <div 
                           className="w-7 h-7 rounded-md flex items-center justify-center text-xs font-bold text-white"
                           style={{ background: dept.color }}
@@ -432,9 +432,6 @@ export function CatyChatWidget({
                             All safe
                           </div>
                         )}
-                      </div>
-                      <div className="text-xs text-muted-foreground leading-relaxed pl-9">
-                        {dept.insight}
                       </div>
                     </div>
                   ))}
