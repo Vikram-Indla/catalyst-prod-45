@@ -265,7 +265,8 @@ export function SleekCapacityHeader({
         <div className="w-56" />
       </div>
 
-      {/* ROW 3: Stats + Filters + Utilization (dedicated row with breathing room) */}
+      {/* ROW 3: Stats + Filters + Utilization (hidden for contracts view) */}
+      {primaryView !== 'contracts' && (
       <div className="flex items-center justify-between px-5 py-2.5 bg-muted/50 dark:bg-[var(--surface-2)] border-b border-border/30 dark:border-[var(--border-subtle)]">
         {/* Left: Clickable Stat Chips */}
         <div className="flex items-center gap-2">
@@ -411,6 +412,7 @@ export function SleekCapacityHeader({
           <UtilizationBadge value={summary.utilizationPercentage} />
         </div>
       </div>
+      )}
     </div>
   );
 }
