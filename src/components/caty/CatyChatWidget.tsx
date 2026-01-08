@@ -367,13 +367,21 @@ export function CatyChatWidget() {
 
         const profileMap = new Map((profiles || []).map(p => [p.id, p.full_name]));
 
-        const displayName = (r: any) =>
-          r.profile_id
-            ? (profileMap.get(r.profile_id) || r.name || r.role_name || 'Unknown')
-            : (r.name || r.role_name || `Resource ${String(r.id).slice(0, 8)}`);
+        const getDisplayName = (r: any) => {
+          if (r.profile_id && profileMap.get(r.profile_id)) {
+            return profileMap.get(r.profile_id) as string;
+          }
+          if (r.name && r.name.trim() !== '') {
+            return r.name;
+          }
+          if (r.role_name && r.role_name.trim() !== '') {
+            return r.role_name;
+          }
+          return `Resource ${String(r.id).slice(0, 8)}`;
+        };
         
         return `**${criticalResources.length} Critical Resources (ending within 30 days):**\n\n${criticalResources.map(r => 
-          `• **${displayName(r)}** (${r.vendor_name || 'N/A'}) — ${formatContractDate(r.contract_end_date)}`
+          `• **${getDisplayName(r)}** (${r.vendor_name || 'N/A'}) — ${formatContractDate(r.contract_end_date)}`
         ).join('\n')}`;
       }
       return `**No critical resources found** (contracts ending within 30 days)`;
@@ -405,13 +413,21 @@ export function CatyChatWidget() {
 
         const profileMap = new Map((profiles || []).map(p => [p.id, p.full_name]));
 
-        const displayName = (r: any) =>
-          r.profile_id
-            ? (profileMap.get(r.profile_id) || r.name || r.role_name || 'Unknown')
-            : (r.name || r.role_name || `Resource ${String(r.id).slice(0, 8)}`);
+        const getDisplayName = (r: any) => {
+          if (r.profile_id && profileMap.get(r.profile_id)) {
+            return profileMap.get(r.profile_id) as string;
+          }
+          if (r.name && r.name.trim() !== '') {
+            return r.name;
+          }
+          if (r.role_name && r.role_name.trim() !== '') {
+            return r.role_name;
+          }
+          return `Resource ${String(r.id).slice(0, 8)}`;
+        };
         
         return `**${warningResources.length} Warning Resources (ending in 30-90 days):**\n\n${warningResources.map(r => 
-          `• **${displayName(r)}** (${r.vendor_name || 'N/A'}) — ${formatContractDate(r.contract_end_date)}`
+          `• **${getDisplayName(r)}** (${r.vendor_name || 'N/A'}) — ${formatContractDate(r.contract_end_date)}`
         ).join('\n')}`;
       }
       return `**No warning resources found** (contracts ending in 30-90 days)`;
@@ -446,13 +462,21 @@ export function CatyChatWidget() {
 
         const profileMap = new Map((profiles || []).map(p => [p.id, p.full_name]));
 
-        const displayName = (r: any) =>
-          r.profile_id
-            ? (profileMap.get(r.profile_id) || r.name || r.role_name || 'Unknown')
-            : (r.name || r.role_name || `Resource ${String(r.id).slice(0, 8)}`);
+        const getDisplayName = (r: any) => {
+          if (r.profile_id && profileMap.get(r.profile_id)) {
+            return profileMap.get(r.profile_id) as string;
+          }
+          if (r.name && r.name.trim() !== '') {
+            return r.name;
+          }
+          if (r.role_name && r.role_name.trim() !== '') {
+            return r.role_name;
+          }
+          return `Resource ${String(r.id).slice(0, 8)}`;
+        };
         
         return `**Contracts expiring this month (${monthName}):**\n\n${monthResources.map(r => 
-          `• **${displayName(r)}** (${r.vendor_name || 'N/A'}) — ${formatContractDate(r.contract_end_date)}`
+          `• **${getDisplayName(r)}** (${r.vendor_name || 'N/A'}) — ${formatContractDate(r.contract_end_date)}`
         ).join('\n')}`;
       }
       return `**No contracts expiring this month (${monthName})**`;
@@ -520,13 +544,25 @@ export function CatyChatWidget() {
 
           const profileMap = new Map((profiles || []).map(p => [p.id, p.full_name]));
 
-          const results = deptResources.map(r => ({
-            name: r.profile_id
-              ? (profileMap.get(r.profile_id) || r.name || r.role_name || 'Unknown')
-              : (r.name || r.role_name || `Resource ${String(r.id).slice(0, 8)}`),
-            vendor: r.vendor_name || 'N/A',
-            contractEnd: r.contract_end_date,
-          }));
+          const results = deptResources.map(r => {
+            // Priority: profile full_name > resource_inventory.name > role_name > fallback
+            let displayName = 'Unnamed Resource';
+            if (r.profile_id && profileMap.get(r.profile_id)) {
+              displayName = profileMap.get(r.profile_id) as string;
+            } else if (r.name && r.name.trim() !== '') {
+              displayName = r.name;
+            } else if (r.role_name && r.role_name.trim() !== '') {
+              displayName = r.role_name;
+            } else {
+              displayName = `Resource ${String(r.id).slice(0, 8)}`;
+            }
+            
+            return {
+              name: displayName,
+              vendor: r.vendor_name || 'N/A',
+              contractEnd: r.contract_end_date,
+            };
+          });
 
           return `**${dept.name} Department (${dept.count} resources):**\n\n${results.map(r => 
             `• **${r.name}** (${r.vendor}) — ${r.contractEnd ? formatContractDate(r.contractEnd) : 'No contract date'}`
