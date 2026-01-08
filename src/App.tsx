@@ -12,6 +12,7 @@ import { ProtectedRoute } from "./components/ProtectedRoute";
 import { CatalystShell } from "./components/layout/CatalystShell";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { CatalystLoginPage } from "./components/auth/login";
+import { CatyChatWidget } from "./components/caty";
 // Jira test pages removed - AtlasKit migration complete
 import BrowsePage from "./pages/BrowsePage";
 import DependencyMapsPage from "./pages/reports/DependencyMapsPage";
@@ -890,6 +891,7 @@ const App = () => (
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
             </Routes>
+              <CatyChatWidget />
           </BrowserRouter>
         </TooltipProvider>
       </CatalystToastProvider>
