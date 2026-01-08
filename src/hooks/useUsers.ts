@@ -30,6 +30,10 @@ export interface UserProfile {
   country_code: string | null;
   country_flag_svg_url: string | null;
   location: string | null;
+  // Additional capacity planning fields from resource_inventory
+  department_name: string | null;
+  assignment_name: string | null;
+  job_role: string | null;  // Job title/role from resource_inventory (e.g. ".NET Developer")
 }
 
 // Derive display status from approval_status
@@ -77,16 +81,56 @@ export function useUsers() {
 
       if (profilesError) throw profilesError;
 
-      // Fetch resource_inventory for contract dates (authoritative source)
+      // Fetch resource_inventory with FK joins to reference tables
       const { data: resourceInventory } = await supabase
         .from('resource_inventory')
-        .select('profile_id, contract_start_date, contract_end_date, vendor_name');
+        .select(`
+          profile_id, 
+          contract_start_date, 
+          contract_end_date, 
+          vendor_name,
+          role_name,
+          assignment_id,
+          department_id,
+          vendor_id,
+          country_id,
+          location_id
+        `);
       
-      // Create lookup map by profile_id
+      // Fetch reference tables for lookups
+      const [
+        { data: resourceAssignments },
+        { data: capacityDepartments },
+        { data: resourceVendors },
+        { data: resourceCountries },
+        { data: resourceLocations },
+      ] = await Promise.all([
+        supabase.from('resource_assignments').select('id, name').eq('is_active', true),
+        supabase.from('capacity_departments').select('id, name').eq('is_active', true),
+        supabase.from('resource_vendors').select('id, name').eq('is_active', true),
+        supabase.from('resource_countries').select('id, name, code').eq('is_active', true),
+        supabase.from('resource_locations').select('id, name').eq('is_active', true),
+      ]);
+
+      // Create lookup maps
+      const assignmentMap = new Map((resourceAssignments || []).map(a => [a.id, a.name]));
+      const departmentMap = new Map((capacityDepartments || []).map(d => [d.id, d.name]));
+      const vendorMap = new Map((resourceVendors || []).map(v => [v.id, v.name]));
+      const countryMap = new Map((resourceCountries || []).map(c => [c.id, { name: c.name, code: c.code }]));
+      const locationMap = new Map((resourceLocations || []).map(l => [l.id, l.name]));
+
+      // Create lookup map by profile_id with resolved names
       const inventoryByProfileId = new Map(
         (resourceInventory || [])
           .filter(r => r.profile_id)
-          .map(r => [r.profile_id, r])
+          .map(r => [r.profile_id, {
+            ...r,
+            assignment_name: r.assignment_id ? assignmentMap.get(r.assignment_id) : null,
+            department_name: r.department_id ? departmentMap.get(r.department_id) : null,
+            resolved_vendor_name: r.vendor_id ? vendorMap.get(r.vendor_id) : r.vendor_name,
+            resolved_country: r.country_id ? countryMap.get(r.country_id) : null,
+            resolved_location: r.location_id ? locationMap.get(r.location_id) : null,
+          }])
       );
 
       // Fetch all user_product_roles with role info
@@ -129,7 +173,7 @@ export function useUsers() {
       return (profiles || []).map((profile) => {
         const roles = userRolesMap[profile.id] || [];
         const allBusinessLines = roles.flatMap((r) => r.business_lines);
-        // Get contract dates from resource_inventory (primary source)
+        // Get enriched data from resource_inventory
         const inventory = inventoryByProfileId.get(profile.id);
         return {
           ...profile,
@@ -138,7 +182,16 @@ export function useUsers() {
           // Contract dates from resource_inventory take precedence, fallback to profiles
           contract_start_date: inventory?.contract_start_date || profile.contract_start_date || null,
           contract_end_date: inventory?.contract_end_date || profile.contract_end_date || null,
-          vendor_name: inventory?.vendor_name || null,
+          // Resolved names from reference tables
+          vendor_name: inventory?.resolved_vendor_name || inventory?.vendor_name || null,
+          vendor: inventory?.resolved_vendor_name || profile.vendor || null,
+          department_name: inventory?.department_name || null,
+          assignment_name: inventory?.assignment_name || null,
+          job_role: inventory?.role_name || null,
+          // Country/location from resource_inventory or profiles
+          country: inventory?.resolved_country?.name || profile.country || null,
+          country_code: inventory?.resolved_country?.code || profile.country_code || null,
+          location: inventory?.resolved_location || profile.location || null,
         } as UserProfile;
       });
     },

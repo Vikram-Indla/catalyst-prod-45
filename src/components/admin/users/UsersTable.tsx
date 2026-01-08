@@ -52,6 +52,8 @@ export function UsersTable({ users, isLoading }: UsersTableProps) {
   const [vendorFilter, setVendorFilter] = useState('all');
   const [countryFilter, setCountryFilter] = useState('all');
   const [locationFilter, setLocationFilter] = useState('all');
+  const [departmentFilter, setDepartmentFilter] = useState('all');
+  const [assignmentFilter, setAssignmentFilter] = useState('all');
   const [userToDelete, setUserToDelete] = useState<UserProfile | null>(null);
   const [userToReject, setUserToReject] = useState<UserProfile | null>(null);
   const [resetPasswordUser, setResetPasswordUser] = useState<UserProfile | null>(null);
@@ -64,18 +66,19 @@ export function UsersTable({ users, isLoading }: UsersTableProps) {
   const disableUser = useDisableUser();
   const { data: isSuperAdmin } = useIsSuperAdmin();
 
-  // Get unique roles for filter dropdown
+  // Get unique values for filter dropdowns
   const allRoles = [...new Set(users.flatMap(u => u.roles.map(r => r.role_name)))];
-  
-  // Get unique vendors and countries from actual data
   const uniqueVendors = [...new Set(users.map(u => u.vendor).filter(Boolean))];
   const uniqueCountries = [...new Set(users.map(u => u.country).filter(Boolean))];
   const uniqueLocations = [...new Set(users.map(u => u.location).filter(Boolean))];
+  const uniqueDepartments = [...new Set(users.map(u => u.department_name).filter(Boolean))];
+  const uniqueAssignments = [...new Set(users.map(u => u.assignment_name).filter(Boolean))];
 
   const filteredUsers = users.filter(user => {
     const matchesSearch = 
       (user.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ?? false) ||
-      (user.email?.toLowerCase().includes(searchTerm.toLowerCase()) ?? false);
+      (user.email?.toLowerCase().includes(searchTerm.toLowerCase()) ?? false) ||
+      (user.job_role?.toLowerCase().includes(searchTerm.toLowerCase()) ?? false);
     
     const matchesRole = roleFilter === 'all' || 
       user.roles.some(r => r.role_name === roleFilter);
@@ -85,8 +88,10 @@ export function UsersTable({ users, isLoading }: UsersTableProps) {
     const matchesVendor = vendorFilter === 'all' || user.vendor === vendorFilter;
     const matchesCountry = countryFilter === 'all' || user.country === countryFilter;
     const matchesLocation = locationFilter === 'all' || user.location === locationFilter;
+    const matchesDepartment = departmentFilter === 'all' || user.department_name === departmentFilter;
+    const matchesAssignment = assignmentFilter === 'all' || user.assignment_name === assignmentFilter;
     
-    return matchesSearch && matchesRole && matchesApproval && matchesVendor && matchesCountry && matchesLocation;
+    return matchesSearch && matchesRole && matchesApproval && matchesVendor && matchesCountry && matchesLocation && matchesDepartment && matchesAssignment;
   });
 
   const formatLastLogin = (lastLogin: string | null) => {
@@ -240,8 +245,30 @@ export function UsersTable({ users, isLoading }: UsersTableProps) {
           </Select>
         </div>
 
-        {/* Filters - Row 2 (Vendor/Country/Location) */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 mb-4">
+        {/* Filters - Row 2 (Department/Assignment/Vendor/Country/Location) */}
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 mb-4 flex-wrap">
+          <Select value={departmentFilter} onValueChange={setDepartmentFilter}>
+            <SelectTrigger className="w-full sm:w-[140px]">
+              <SelectValue placeholder="Department" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Depts</SelectItem>
+              {uniqueDepartments.map(dept => (
+                <SelectItem key={dept} value={dept!}>{dept}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Select value={assignmentFilter} onValueChange={setAssignmentFilter}>
+            <SelectTrigger className="w-full sm:w-[160px]">
+              <SelectValue placeholder="Assignment" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Assignments</SelectItem>
+              {uniqueAssignments.map(asn => (
+                <SelectItem key={asn} value={asn!}>{asn}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
           <Select value={vendorFilter} onValueChange={setVendorFilter}>
             <SelectTrigger className="w-full sm:w-[140px]">
               <SelectValue placeholder="Vendor" />
@@ -278,56 +305,91 @@ export function UsersTable({ users, isLoading }: UsersTableProps) {
         </div>
 
         {/* Table */}
-        <ResponsiveTableWrapper minWidth={1100}>
+        <ResponsiveTableWrapper minWidth={1400}>
           <table className="w-full">
             <thead>
               <tr className="border-b bg-muted/30">
-                <th className="text-left py-3 px-4 text-xs font-medium text-muted-foreground">Name</th>
-                <th className="text-left py-3 px-4 text-xs font-medium text-muted-foreground">Vendor</th>
-                <th className="text-left py-3 px-4 text-xs font-medium text-muted-foreground">Contract Start Date</th>
-                <th className="text-left py-3 px-4 text-xs font-medium text-muted-foreground">Contract End Date</th>
-                <th className="text-left py-3 px-4 text-xs font-medium text-muted-foreground">Location</th>
-                <th className="text-left py-3 px-4 text-xs font-medium text-muted-foreground">Country</th>
-                <th className="text-left py-3 px-4 text-xs font-medium text-muted-foreground">Role</th>
-                <th className="text-left py-3 px-4 text-xs font-medium text-muted-foreground">Approval</th>
-                <th className="text-left py-3 px-4 text-xs font-medium text-muted-foreground">Status</th>
-                <th className="text-right py-3 px-4 text-xs font-medium text-muted-foreground">Actions</th>
+                <th className="text-left py-3 px-3 text-xs font-medium text-muted-foreground">Name</th>
+                <th className="text-left py-3 px-3 text-xs font-medium text-muted-foreground">Job Role</th>
+                <th className="text-left py-3 px-3 text-xs font-medium text-muted-foreground">Department</th>
+                <th className="text-left py-3 px-3 text-xs font-medium text-muted-foreground">Assignment</th>
+                <th className="text-left py-3 px-3 text-xs font-medium text-muted-foreground">Contract Start</th>
+                <th className="text-left py-3 px-3 text-xs font-medium text-muted-foreground">Contract End</th>
+                <th className="text-left py-3 px-3 text-xs font-medium text-muted-foreground">Vendor</th>
+                <th className="text-left py-3 px-3 text-xs font-medium text-muted-foreground">Country</th>
+                <th className="text-left py-3 px-3 text-xs font-medium text-muted-foreground">Location</th>
+                <th className="text-right py-3 px-3 text-xs font-medium text-muted-foreground">Actions</th>
               </tr>
             </thead>
             <tbody>
               {filteredUsers.map((user) => (
                 <tr key={user.id} className="border-b last:border-b-0 hover:bg-muted/20 transition-colors">
-                  <td className="py-3 px-4">
+                  <td className="py-3 px-3">
                     <div className="flex items-center gap-3">
                       <button
                         onClick={() => setEditUser(user)}
-                        className="h-8 w-8 rounded-full bg-brand-primary/20 flex items-center justify-center text-xs font-medium text-brand-primary hover:bg-brand-primary/30 transition-colors cursor-pointer"
+                        className="h-8 w-8 rounded-full bg-brand-primary/20 flex items-center justify-center text-xs font-medium text-brand-primary hover:bg-brand-primary/30 transition-colors cursor-pointer flex-shrink-0"
                         title="Edit user"
                       >
                         {getInitials(user.full_name)}
                       </button>
-                      <div>
-                        <div className="text-sm font-medium">{user.full_name || 'Unknown'}</div>
-                        <div className="text-xs text-muted-foreground">{user.email}</div>
+                      <div className="min-w-0">
+                        <div className="text-sm font-medium truncate">{user.full_name || 'Unknown'}</div>
+                        <div className="text-xs text-muted-foreground truncate">{user.email}</div>
                       </div>
                     </div>
                   </td>
-                  <td className="py-3 px-4">
+                  <td className="py-3 px-3">
                     <div className="text-sm">
-                      {user.vendor || <span className="text-muted-foreground">-</span>}
+                      {user.job_role || <span className="text-muted-foreground">-</span>}
                     </div>
                   </td>
-                  <td className="py-3 px-4">
+                  <td className="py-3 px-3">
+                    <div className="text-sm">
+                      {user.department_name ? (
+                        <Badge variant="outline" className="text-xs">
+                          {user.department_name}
+                        </Badge>
+                      ) : (
+                        <span className="text-muted-foreground">-</span>
+                      )}
+                    </div>
+                  </td>
+                  <td className="py-3 px-3">
+                    <div className="text-sm">
+                      {user.assignment_name || <span className="text-muted-foreground">-</span>}
+                    </div>
+                  </td>
+                  <td className="py-3 px-3">
                     <div className="text-sm">
                       {formatContractEndDate(user.contract_start_date)}
                     </div>
                   </td>
-                  <td className="py-3 px-4">
+                  <td className="py-3 px-3">
                     <div className="text-sm">
                       {formatContractEndDate(user.contract_end_date)}
                     </div>
                   </td>
-                  <td className="py-3 px-4">
+                  <td className="py-3 px-3">
+                    <div className="text-sm">
+                      {user.vendor || <span className="text-muted-foreground">-</span>}
+                    </div>
+                  </td>
+                  <td className="py-3 px-3">
+                    <div className="flex items-center gap-1">
+                      {user.country_flag_svg_url && (
+                        <img 
+                          src={user.country_flag_svg_url} 
+                          alt={user.country || ''} 
+                          className="h-3 w-5 object-cover rounded-sm"
+                        />
+                      )}
+                      <span className="text-sm">
+                        {user.country || <span className="text-muted-foreground">-</span>}
+                      </span>
+                    </div>
+                  </td>
+                  <td className="py-3 px-3">
                     <div className="text-sm">
                       {user.location ? (
                         <Badge variant="outline" className="text-xs">
@@ -338,40 +400,7 @@ export function UsersTable({ users, isLoading }: UsersTableProps) {
                       )}
                     </div>
                   </td>
-                  <td className="py-3 px-4">
-                    <div className="flex items-center gap-2">
-                      {user.country_flag_svg_url && (
-                        <img 
-                          src={user.country_flag_svg_url} 
-                          alt={user.country || ''} 
-                          className="h-4 w-6 object-cover rounded-sm"
-                        />
-                      )}
-                      <span className="text-sm">
-                        {user.country || <span className="text-muted-foreground">-</span>}
-                      </span>
-                    </div>
-                  </td>
-                  <td className="py-3 px-4">
-                    <div className="text-sm">
-                      {user.roles.length > 0 
-                        ? user.roles.map(r => r.role_name).join(', ')
-                        : <span className="text-muted-foreground">No roles</span>
-                      }
-                    </div>
-                  </td>
-                  <td className="py-3 px-4">
-                    {getApprovalBadge(user.approval_status)}
-                  </td>
-                  <td className="py-3 px-4">
-                    <Badge 
-                      variant="secondary" 
-                      className={cn("text-xs", getStatusBadgeClass(getDisplayStatus(user.approval_status)))}
-                    >
-                      {getDisplayStatus(user.approval_status)}
-                    </Badge>
-                  </td>
-                  <td className="py-3 px-4">
+                  <td className="py-3 px-3">
                     <div className="flex items-center justify-end gap-2">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
