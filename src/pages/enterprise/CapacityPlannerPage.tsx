@@ -387,8 +387,13 @@ export default function CapacityPlannerPage() {
   }, []);
 
   // Get allocations for a specific resource
-  const getResourceAllocations = useCallback((resourceId: string): ResourceAllocation[] => {
-    return allocations.filter(a => a.profile_id === resourceId);
+  // Match by both profile_id OR resource_id to handle resources without linked profiles
+  const getResourceAllocations = useCallback((resourceId: string, resourceInventoryId?: string): ResourceAllocation[] => {
+    return allocations.filter(a => 
+      a.profile_id === resourceId || 
+      a.resource_id === resourceId ||
+      (resourceInventoryId && a.resource_id === resourceInventoryId)
+    );
   }, [allocations]);
 
   // Calculate dynamic summary stats from filtered resources based on time-boxed allocations
@@ -1290,12 +1295,12 @@ export default function CapacityPlannerPage() {
             setAllocationModalResource(null);
           }}
           resource={allocationModalResource}
-          existingAllocations={allocationModalResource ? getResourceAllocations(allocationModalResource.id) : []}
+          existingAllocations={allocationModalResource ? getResourceAllocations(allocationModalResource.id, (allocationModalResource as any).resourceInventoryId) : []}
           resourceAssignments={resourceAssignments.map(a => ({ id: a.id, name: a.name || '' }))}
           departments={departments}
           onSave={handleSaveAllocations}
           onUpdateDepartment={handleUpdateDepartment}
-          mode={allocationModalResource && getResourceAllocations(allocationModalResource.id).length > 0 ? 'edit' : 'add'}
+          mode={allocationModalResource && getResourceAllocations(allocationModalResource.id, (allocationModalResource as any).resourceInventoryId).length > 0 ? 'edit' : 'add'}
         />
 
         <div className="fixed bottom-6 right-6 z-50">
