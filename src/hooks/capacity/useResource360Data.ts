@@ -13,25 +13,34 @@ export function useResource360Data(resourceId: string | null) {
     queryFn: async () => {
       if (!resourceId) return null;
       
-      const { data, error } = await supabase
+      // First fetch the resource_inventory record
+      const { data: resourceData, error: resourceError } = await supabase
         .from('resource_inventory')
-        .select(`
-          id, name, role_name, department_name, profile_id,
-          profiles:profile_id(avatar_url, email)
-        `)
+        .select('id, name, role_name, department_name, profile_id')
         .eq('id', resourceId)
         .single();
       
-      if (error) throw error;
+      if (resourceError) throw resourceError;
+      
+      // Fetch profile data separately if profile_id exists
+      let profileData: { avatar_url?: string; email?: string } | null = null;
+      if (resourceData.profile_id) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('avatar_url, email')
+          .eq('id', resourceData.profile_id)
+          .single();
+        profileData = profile;
+      }
       
       return {
-        id: data.id,
-        profile_id: data.profile_id,
-        name: data.name || 'Unknown',
-        email: (data.profiles as any)?.email || '',
-        role: data.role_name || 'Team Member',
-        department: data.department_name || 'Unassigned',
-        avatar_url: (data.profiles as any)?.avatar_url,
+        id: resourceData.id,
+        profile_id: resourceData.profile_id,
+        name: resourceData.name || 'Unknown',
+        email: profileData?.email || '',
+        role: resourceData.role_name || 'Team Member',
+        department: resourceData.department_name || 'Unassigned',
+        avatar_url: profileData?.avatar_url,
         currentAllocation: 0,
         availableCapacity: 100,
       } as Resource360Data;
