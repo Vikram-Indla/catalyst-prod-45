@@ -52,11 +52,12 @@ export function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
   // Track initial values for dirty checking
   const [initialFormData, setInitialFormData] = useState(formData);
   const [initialRoleIds, setInitialRoleIds] = useState<string[]>([]);
+  const [fieldErrors, setFieldErrors] = useState<{ full_name?: string; email?: string; department?: string }>({});
   
-  // Compute isDirty
-  const isDirty = 
+  // Compute isDirty (avoid mutating state arrays)
+  const isDirty =
     JSON.stringify(formData) !== JSON.stringify(initialFormData) ||
-    JSON.stringify(selectedRoleIds.sort()) !== JSON.stringify(initialRoleIds.sort());
+    JSON.stringify([...selectedRoleIds].sort()) !== JSON.stringify([...initialRoleIds].sort());
 
   // Fetch available roles
   const { data: productRoles } = useQuery({
@@ -465,27 +466,54 @@ export function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
       // Also invalidate for a fresh fetch
       queryClient.invalidateQueries({ queryKey: ['users-list'] });
       queryClient.invalidateQueries({ queryKey: ['resource-inventory'] });
-      
+      queryClient.invalidateQueries({ queryKey: ['capacity-planner-resources'] });
+      queryClient.invalidateQueries({ queryKey: ['capacity-planner-assignments'] });
+
+      setInitialFormData(formData);
+      setInitialRoleIds(selectedRoleIds);
+      setFieldErrors({});
+
       toast.success('User updated successfully');
       onClose();
     },
     onError: (error) => {
       console.error('Failed to update user:', error);
-      const message = (error as Error).message || 'Unknown error';
-      
-      // Check for common RLS/permission errors
-      if (message.includes('permission') || message.includes('policy') || message.includes('RLS')) {
-        toast.error('Permission denied: You do not have admin privileges to update this user.');
-      } else if (message.includes('not found')) {
-        toast.error('User record not found. The user may have been deleted.');
-      } else {
-        toast.error('Failed to update user: ' + message);
+
+      const err: any = error;
+      const code: string | undefined = err?.code;
+      const message: string = err?.message || (error as Error)?.message || 'Unknown error';
+
+      // Field-level mapping for common DB errors
+      if (code === '23505') {
+        // Unique constraint violations
+        if (message.includes('profiles_email_key')) {
+          setFieldErrors((prev) => ({ ...prev, email: 'Email is already in use.' }));
+        }
+        if (message.includes('resource_inventory_name_key')) {
+          setFieldErrors((prev) => ({ ...prev, full_name: 'Name already exists.' }));
+        }
       }
+
+      if (message.includes('permission') || message.includes('policy') || message.includes('RLS')) {
+        toast.error('Permission denied: You do not have access to update this user.');
+        return;
+      }
+
+      toast.error(message);
     },
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    setFieldErrors({});
+
+    const email = formData.email.trim();
+    if (email && !/^\S+@\S+\.\S+$/.test(email)) {
+      setFieldErrors({ email: 'Enter a valid email address.' });
+      toast.error('Enter a valid email address.');
+      return;
+    }
+
     updateUser.mutate();
   };
 
@@ -526,9 +554,17 @@ export function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
                 <Input
                   id="full_name"
                   value={formData.full_name}
-                  onChange={(e) => setFormData(prev => ({ ...prev, full_name: e.target.value }))}
+                  aria-invalid={!!fieldErrors.full_name}
+                  className={fieldErrors.full_name ? 'border-destructive focus-visible:ring-destructive' : ''}
+                  onChange={(e) => {
+                    setFormData((prev) => ({ ...prev, full_name: e.target.value }));
+                    if (fieldErrors.full_name) setFieldErrors((prev) => ({ ...prev, full_name: undefined }));
+                  }}
                   placeholder="Enter full name"
                 />
+                {fieldErrors.full_name ? (
+                  <p className="text-xs text-destructive">{fieldErrors.full_name}</p>
+                ) : null}
               </div>
 
               <div className="space-y-2">
@@ -537,18 +573,29 @@ export function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
                   id="email"
                   type="email"
                   value={formData.email}
-                  onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+                  aria-invalid={!!fieldErrors.email}
+                  className={fieldErrors.email ? 'border-destructive focus-visible:ring-destructive' : ''}
+                  onChange={(e) => {
+                    setFormData((prev) => ({ ...prev, email: e.target.value }));
+                    if (fieldErrors.email) setFieldErrors((prev) => ({ ...prev, email: undefined }));
+                  }}
                   placeholder="Enter email address"
                 />
+                {fieldErrors.email ? (
+                  <p className="text-xs text-destructive">{fieldErrors.email}</p>
+                ) : null}
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="department">Department</Label>
                 <Select
                   value={formData.department || '__none__'}
-                  onValueChange={(value) => setFormData(prev => ({ ...prev, department: value === '__none__' ? '' : value }))}
+                  onValueChange={(value) => {
+                    setFormData((prev) => ({ ...prev, department: value === '__none__' ? '' : value }));
+                    if (fieldErrors.department) setFieldErrors((prev) => ({ ...prev, department: undefined }));
+                  }}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className={fieldErrors.department ? 'border-destructive focus-visible:ring-destructive' : ''}>
                     <SelectValue placeholder="Select department" />
                   </SelectTrigger>
                   <SelectContent>
@@ -558,6 +605,9 @@ export function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
                     ))}
                   </SelectContent>
                 </Select>
+                {fieldErrors.department ? (
+                  <p className="text-xs text-destructive">{fieldErrors.department}</p>
+                ) : null}
               </div>
             </div>
 
