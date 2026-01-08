@@ -66,11 +66,16 @@ export function DraggableAllocationBar({
   const totalDays = (timelineEndDate.getTime() - timelineStartDate.getTime()) / (1000 * 60 * 60 * 24);
   const pixelsPerDay = totalWidth / totalDays;
   
-  // Calculate initial position
+  // Calculate initial position - CLAMP to visible timeline range
   const startDate = new Date(allocation.start_date);
   const endDate = new Date(allocation.end_date);
-  const startDays = Math.max(0, (startDate.getTime() - timelineStartDate.getTime()) / (1000 * 60 * 60 * 24));
-  const durationDays = (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24);
+  
+  // Clamp dates to the visible timeline range
+  const visibleStartDate = startDate < timelineStartDate ? timelineStartDate : startDate;
+  const visibleEndDate = endDate > timelineEndDate ? timelineEndDate : endDate;
+  
+  const startDays = Math.max(0, (visibleStartDate.getTime() - timelineStartDate.getTime()) / (1000 * 60 * 60 * 24));
+  const durationDays = Math.max(0, (visibleEndDate.getTime() - visibleStartDate.getTime()) / (1000 * 60 * 60 * 24));
   
   const initialLeft = startDays * pixelsPerDay;
   const initialWidth = durationDays * pixelsPerDay;
