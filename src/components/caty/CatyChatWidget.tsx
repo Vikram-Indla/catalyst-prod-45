@@ -344,7 +344,7 @@ export function CatyChatWidget() {
     if (lowerQuery.includes('critical')) {
       const { data: criticalResources } = await supabase
         .from('resource_inventory')
-        .select('id, profile_id, name, contract_end_date, vendor_name, role_name, department_id, capacity_departments(name)')
+        .select('id, profile_id, name, contract_end_date, vendor_id, vendor_name, role_name, department_id, capacity_departments(name)')
         .lte('contract_end_date', thirtyDays.toISOString())
         .gte('contract_end_date', now.toISOString())
         .not('contract_end_date', 'is', null)
@@ -365,7 +365,12 @@ export function CatyChatWidget() {
             ).data
           : [];
 
+        const { data: resourceVendors } = await supabase
+          .from('resource_vendors')
+          .select('id, name');
+
         const profileMap = new Map((profiles || []).map(p => [p.id, { name: p.full_name, vendor: p.vendor }]));
+        const vendorMap = new Map((resourceVendors || []).map(v => [v.id, v.name]));
 
         const getDisplayName = (r: any) => {
           if (r.profile_id && profileMap.get(r.profile_id)?.name) {
@@ -380,20 +385,17 @@ export function CatyChatWidget() {
           return `Resource ${String(r.id).slice(0, 8)}`;
         };
 
-        const getVendorOrDept = (r: any) => {
-          // First try resource_inventory.vendor_name
+        const getVendorLabel = (r: any) => {
+          const byId = r.vendor_id ? vendorMap.get(r.vendor_id) : null;
+          if (byId) return byId;
           if (r.vendor_name) return r.vendor_name;
-          // Then try profiles.vendor
           const profileVendor = r.profile_id ? profileMap.get(r.profile_id)?.vendor : null;
           if (profileVendor) return profileVendor;
-          // Fallback to department
-          const deptName = r.capacity_departments?.name;
-          if (deptName) return deptName;
           return 'N/A';
         };
         
         return `**${criticalResources.length} Critical Resources (ending within 30 days):**\n\n${criticalResources.map(r => 
-          `• **${getDisplayName(r)}** (${getVendorOrDept(r)}) — ${formatContractDate(r.contract_end_date)}`
+          `• **${getDisplayName(r)}** (${getVendorLabel(r)}) — ${formatContractDate(r.contract_end_date)}`
         ).join('\n')}`;
       }
       return `**No critical resources found** (contracts ending within 30 days)`;
@@ -403,7 +405,7 @@ export function CatyChatWidget() {
     if (lowerQuery.includes('warning')) {
       const { data: warningResources } = await supabase
         .from('resource_inventory')
-        .select('id, profile_id, name, contract_end_date, vendor_name, role_name, department_id, capacity_departments(name)')
+        .select('id, profile_id, name, contract_end_date, vendor_id, vendor_name, role_name, department_id, capacity_departments(name)')
         .gt('contract_end_date', thirtyDays.toISOString())
         .lte('contract_end_date', ninetyDays.toISOString())
         .order('contract_end_date', { ascending: true })
@@ -423,7 +425,12 @@ export function CatyChatWidget() {
             ).data
           : [];
 
+        const { data: resourceVendors } = await supabase
+          .from('resource_vendors')
+          .select('id, name');
+
         const profileMap = new Map((profiles || []).map(p => [p.id, { name: p.full_name, vendor: p.vendor }]));
+        const vendorMap = new Map((resourceVendors || []).map(v => [v.id, v.name]));
 
         const getDisplayName = (r: any) => {
           if (r.profile_id && profileMap.get(r.profile_id)?.name) {
@@ -438,17 +445,17 @@ export function CatyChatWidget() {
           return `Resource ${String(r.id).slice(0, 8)}`;
         };
 
-        const getVendorOrDept = (r: any) => {
+        const getVendorLabel = (r: any) => {
+          const byId = r.vendor_id ? vendorMap.get(r.vendor_id) : null;
+          if (byId) return byId;
           if (r.vendor_name) return r.vendor_name;
           const profileVendor = r.profile_id ? profileMap.get(r.profile_id)?.vendor : null;
           if (profileVendor) return profileVendor;
-          const deptName = r.capacity_departments?.name;
-          if (deptName) return deptName;
           return 'N/A';
         };
         
         return `**${warningResources.length} Warning Resources (ending in 30-90 days):**\n\n${warningResources.map(r => 
-          `• **${getDisplayName(r)}** (${getVendorOrDept(r)}) — ${formatContractDate(r.contract_end_date)}`
+          `• **${getDisplayName(r)}** (${getVendorLabel(r)}) — ${formatContractDate(r.contract_end_date)}`
         ).join('\n')}`;
       }
       return `**No warning resources found** (contracts ending in 30-90 days)`;
@@ -461,7 +468,7 @@ export function CatyChatWidget() {
       
       const { data: monthResources } = await supabase
         .from('resource_inventory')
-        .select('id, profile_id, name, contract_end_date, vendor_name, role_name, department_id, capacity_departments(name)')
+        .select('id, profile_id, name, contract_end_date, vendor_id, vendor_name, role_name, department_id, capacity_departments(name)')
         .gte('contract_end_date', startOfMonth.toISOString())
         .lte('contract_end_date', endOfMonth.toISOString())
         .order('contract_end_date', { ascending: true });
@@ -481,7 +488,12 @@ export function CatyChatWidget() {
             ).data
           : [];
 
+        const { data: resourceVendors } = await supabase
+          .from('resource_vendors')
+          .select('id, name');
+
         const profileMap = new Map((profiles || []).map(p => [p.id, { name: p.full_name, vendor: p.vendor }]));
+        const vendorMap = new Map((resourceVendors || []).map(v => [v.id, v.name]));
 
         const getDisplayName = (r: any) => {
           if (r.profile_id && profileMap.get(r.profile_id)?.name) {
@@ -496,17 +508,17 @@ export function CatyChatWidget() {
           return `Resource ${String(r.id).slice(0, 8)}`;
         };
 
-        const getVendorOrDept = (r: any) => {
+        const getVendorLabel = (r: any) => {
+          const byId = r.vendor_id ? vendorMap.get(r.vendor_id) : null;
+          if (byId) return byId;
           if (r.vendor_name) return r.vendor_name;
           const profileVendor = r.profile_id ? profileMap.get(r.profile_id)?.vendor : null;
           if (profileVendor) return profileVendor;
-          const deptName = r.capacity_departments?.name;
-          if (deptName) return deptName;
           return 'N/A';
         };
         
         return `**Contracts expiring this month (${monthName}):**\n\n${monthResources.map(r => 
-          `• **${getDisplayName(r)}** (${getVendorOrDept(r)}) — ${formatContractDate(r.contract_end_date)}`
+          `• **${getDisplayName(r)}** (${getVendorLabel(r)}) — ${formatContractDate(r.contract_end_date)}`
         ).join('\n')}`;
       }
       return `**No contracts expiring this month (${monthName})**`;
@@ -552,7 +564,7 @@ export function CatyChatWidget() {
         // Query resource_inventory (source of truth) and join with profiles for names
         const { data: deptResources } = await supabase
           .from('resource_inventory')
-          .select('id, profile_id, name, contract_end_date, vendor_name, role_name, department_id, capacity_departments(name)')
+          .select('id, profile_id, name, contract_end_date, vendor_id, vendor_name, role_name, department_id, capacity_departments(name)')
           .eq('department_id', dept.id)
           .order('contract_end_date', { ascending: true })
           .limit(15);
@@ -572,7 +584,12 @@ export function CatyChatWidget() {
               ).data
             : [];
 
+          const { data: resourceVendors } = await supabase
+            .from('resource_vendors')
+            .select('id, name');
+
           const profileMap = new Map((profiles || []).map(p => [p.id, { name: p.full_name, vendor: p.vendor }]));
+          const vendorMap = new Map((resourceVendors || []).map(v => [v.id, v.name]));
 
           const results = deptResources.map(r => {
             // Priority: profile full_name > resource_inventory.name > role_name > fallback
@@ -587,8 +604,9 @@ export function CatyChatWidget() {
               displayName = `Resource ${String(r.id).slice(0, 8)}`;
             }
 
+            const vendorFromId = r.vendor_id ? vendorMap.get(r.vendor_id) : null;
             const profileVendor = r.profile_id ? profileMap.get(r.profile_id)?.vendor : null;
-            const vendor = r.vendor_name || profileVendor || 'N/A';
+            const vendor = vendorFromId || r.vendor_name || profileVendor || 'N/A';
 
             return {
               name: displayName,
