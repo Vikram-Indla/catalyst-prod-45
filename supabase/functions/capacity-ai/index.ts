@@ -25,13 +25,27 @@ serve(async (req) => {
     const supabase = createClient(supabaseUrl, supabaseKey);
 
     // Fetch ALL capacity data for context - include everything
-    const [resourcesResult, allocationsResult, assignmentsResult, rolesResult, vendorsResult, departmentsResult] = await Promise.all([
+    const [
+      resourcesResult, 
+      allocationsResult, 
+      assignmentsResult, 
+      rolesResult, 
+      vendorsResult, 
+      departmentsResult,
+      profilesResult,
+      userProductRolesResult,
+      productRolesResult,
+    ] = await Promise.all([
       supabase.from("resource_inventory").select("*"),
       supabase.from("resource_allocations").select("*"),
       supabase.from("resource_assignments").select("*"),
       supabase.from("resource_roles").select("*"),
       supabase.from("resource_vendors").select("*"),
       supabase.from("capacity_departments").select("*"),
+      // User management tables (same as /admin/users)
+      supabase.from("profiles").select("id, full_name, email, role, avatar_url, department_id, vendor, contract_start_date, contract_end_date, country, location"),
+      supabase.from("user_product_roles").select("id, user_id, role_id, business_lines"),
+      supabase.from("product_roles").select("id, name, code"),
     ]);
 
     const resources = resourcesResult.data || [];
@@ -40,6 +54,44 @@ serve(async (req) => {
     const roles = rolesResult.data || [];
     const vendors = vendorsResult.data || [];
     const departments = departmentsResult.data || [];
+    const profiles = profilesResult.data || [];
+    const userProductRoles = userProductRolesResult.data || [];
+    const productRoles = productRolesResult.data || [];
+
+    // Build role lookup maps
+    const roleIdToName = new Map(productRoles.map((r: any) => [r.id, { name: r.name, code: r.code }]));
+    const userRolesMap = new Map<string, { roleName: string; roleCode: string; businessLines: string[] }[]>();
+    userProductRoles.forEach((upr: any) => {
+      const roleInfo = roleIdToName.get(upr.role_id);
+      if (roleInfo) {
+        const existing = userRolesMap.get(upr.user_id) || [];
+        existing.push({ roleName: roleInfo.name, roleCode: roleInfo.code, businessLines: upr.business_lines || [] });
+        userRolesMap.set(upr.user_id, existing);
+      }
+    });
+
+    // Build department lookup
+    const deptIdToName = new Map(departments.map((d: any) => [d.id, d.name]));
+
+    // Build user profiles with roles (enriched user data for AI context)
+    const userDetails = profiles.map((p: any) => {
+      const userRoles = userRolesMap.get(p.id) || [];
+      const deptName = p.department_id ? deptIdToName.get(p.department_id) : null;
+      return {
+        id: p.id,
+        name: p.full_name || p.email || "Unknown",
+        email: p.email,
+        department: deptName || "Not assigned",
+        vendor: p.vendor || "Internal",
+        country: p.country || null,
+        location: p.location || null,
+        contractStartDate: p.contract_start_date || null,
+        contractEndDate: p.contract_end_date || null,
+        roles: userRoles.length > 0 ? userRoles.map(r => r.roleName).join(", ") : "No roles assigned",
+        roleDetails: userRoles,
+        hasNoRoles: userRoles.length === 0,
+      };
+    });
 
     // Calculate capacity metrics
     const activeResources = resources.filter((r: any) => r.is_active);
@@ -114,15 +166,25 @@ serve(async (req) => {
       sortOrder: a.sort_order,
     }));
 
+    // Calculate user stats
+    const usersWithNoRoles = userDetails.filter((u: any) => u.hasNoRoles).length;
+    const usersWithExpiringContracts = userDetails.filter((u: any) => {
+      if (!u.contractEndDate) return false;
+      const endDate = new Date(u.contractEndDate);
+      const now = new Date();
+      const daysUntilExpiry = Math.ceil((endDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+      return daysUntilExpiry > 0 && daysUntilExpiry <= 90;
+    }).length;
+
     // Create STRICT system prompt with STRUCTURED JSON RESPONSE format
-    const systemPrompt = `You are Capacity AI, an enterprise assistant for the Catalyst capacity planning system.
+    const systemPrompt = `You are CATI (Capacity AI), an enterprise assistant for the Catalyst capacity planning and user management system.
 
 ## CRITICAL RULES - YOU MUST FOLLOW:
 1. **ONLY use data provided below** - Never mention external sources
 2. **NEVER hallucinate** - If data is missing, indicate status as "warning" or "error"
 3. **NEVER suggest checking with HR, managers, or external systems**
 4. **Be precise** - Use exact names, dates, and percentages from the data
-5. **Stay in scope** - Only answer about capacity, resources, allocations in Catalyst
+5. **Stay in scope** - Answer about capacity, resources, allocations, AND user management in Catalyst
 
 ## RESPONSE FORMAT - YOU MUST RESPOND WITH THIS EXACT JSON STRUCTURE:
 {
@@ -136,7 +198,8 @@ serve(async (req) => {
   ],
   "systemNote": "<Only include if data is missing or needs attention>",
   "actions": [
-    {"label": "Open User", "type": "primary", "action": "open-user"}
+    {"label": "Open Users", "type": "primary", "action": "open-user"},
+    {"label": "Fix Data", "type": "secondary", "action": "fix-data"}
   ]
 }
 
@@ -145,7 +208,7 @@ serve(async (req) => {
 - directAnswer.status: "success" = data found, "warning" = partial/needs attention, "error" = not found
 - context: Maximum 6 label→value pairs for supporting details
 - systemNote: ONLY if data is missing or incomplete
-- actions: Include "Open User" for person queries
+- actions: Include "Open Users" for user queries, "Fix Data" for data quality issues
 
 ## Current Date: ${new Date().toISOString().split('T')[0]}
 
@@ -158,13 +221,22 @@ serve(async (req) => {
 - Under-utilized (<70%): ${underAllocated}
 - Optimal (70-100%): ${optimallyAllocated}
 
-### All Resources with Complete Details:
+### User Management Summary:
+- Total Users: ${userDetails.length}
+- Users with No Roles Assigned: ${usersWithNoRoles}
+- Users with Contracts Expiring in 90 Days: ${usersWithExpiringContracts}
+
+### All Users with Roles & Details (from Admin Users):
+${JSON.stringify(userDetails, null, 2)}
+
+### All Resources with Complete Details (from Capacity Planner):
 ${JSON.stringify(resourceDetails, null, 2)}
 
 ### Active Projects/Assignments:
 ${JSON.stringify(projectDetails, null, 2)}
 
-### Roles: ${JSON.stringify(roles.map((r: any) => ({ code: r.code, name: r.name })))}
+### Available Roles: ${JSON.stringify(productRoles.map((r: any) => ({ code: r.code, name: r.name })))}
+### Resource Roles: ${JSON.stringify(roles.map((r: any) => ({ code: r.code, name: r.name })))}
 ### Vendors: ${JSON.stringify(vendors.map((v: any) => ({ name: v.name })))}
 ### Departments: ${JSON.stringify(departments.map((d: any) => ({ name: d.name })))}
 
