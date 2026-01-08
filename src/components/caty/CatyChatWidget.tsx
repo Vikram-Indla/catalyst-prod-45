@@ -92,15 +92,15 @@ export function CatyChatWidget() {
         deptStats[r.department_id].count++;
       }
 
-      // Check contract end dates
+      // Check contract end dates (future-looking windows)
       if (r.contract_end_date) {
         const endDate = new Date(r.contract_end_date);
-        if (endDate <= thirtyDays) {
+        if (endDate >= now && endDate <= thirtyDays) {
           critical++;
           if (r.department_id && deptStats[r.department_id]) {
             deptStats[r.department_id].critical++;
           }
-        } else if (endDate <= ninetyDays) {
+        } else if (endDate > thirtyDays && endDate <= ninetyDays) {
           warning++;
           if (r.department_id && deptStats[r.department_id]) {
             deptStats[r.department_id].warning++;
@@ -344,7 +344,7 @@ export function CatyChatWidget() {
     if (lowerQuery.includes('critical')) {
       const { data: criticalResources } = await supabase
         .from('resource_inventory')
-        .select('id, profile_id, contract_end_date, vendor_name, role_name')
+        .select('id, profile_id, name, contract_end_date, vendor_name, role_name')
         .lte('contract_end_date', thirtyDays.toISOString())
         .gte('contract_end_date', now.toISOString())
         .not('contract_end_date', 'is', null)
@@ -352,16 +352,28 @@ export function CatyChatWidget() {
         .limit(15);
       
       if (criticalResources && criticalResources.length > 0) {
-        const profileIds = criticalResources.map(r => r.profile_id).filter(Boolean);
-        const { data: profiles } = await supabase
-          .from('profiles')
-          .select('id, full_name')
-          .in('id', profileIds);
-        
+        const profileIds = criticalResources
+          .map(r => r.profile_id)
+          .filter((id): id is string => typeof id === 'string' && id.length > 0);
+
+        const profiles = profileIds.length
+          ? (
+              await supabase
+                .from('profiles')
+                .select('id, full_name')
+                .in('id', profileIds)
+            ).data
+          : [];
+
         const profileMap = new Map((profiles || []).map(p => [p.id, p.full_name]));
+
+        const displayName = (r: any) =>
+          r.profile_id
+            ? (profileMap.get(r.profile_id) || r.name || r.role_name || 'Unknown')
+            : (r.name || r.role_name || `Resource ${String(r.id).slice(0, 8)}`);
         
         return `**${criticalResources.length} Critical Resources (ending within 30 days):**\n\n${criticalResources.map(r => 
-          `• **${r.profile_id ? (profileMap.get(r.profile_id) || 'Unknown') : 'Unnamed'}** (${r.vendor_name || 'N/A'}) — ${formatContractDate(r.contract_end_date)}`
+          `• **${displayName(r)}** (${r.vendor_name || 'N/A'}) — ${formatContractDate(r.contract_end_date)}`
         ).join('\n')}`;
       }
       return `**No critical resources found** (contracts ending within 30 days)`;
@@ -371,23 +383,35 @@ export function CatyChatWidget() {
     if (lowerQuery.includes('warning')) {
       const { data: warningResources } = await supabase
         .from('resource_inventory')
-        .select('id, profile_id, contract_end_date, vendor_name, role_name')
+        .select('id, profile_id, name, contract_end_date, vendor_name, role_name')
         .gt('contract_end_date', thirtyDays.toISOString())
         .lte('contract_end_date', ninetyDays.toISOString())
         .order('contract_end_date', { ascending: true })
         .limit(15);
       
       if (warningResources && warningResources.length > 0) {
-        const profileIds = warningResources.map(r => r.profile_id).filter(Boolean);
-        const { data: profiles } = await supabase
-          .from('profiles')
-          .select('id, full_name')
-          .in('id', profileIds);
-        
+        const profileIds = warningResources
+          .map(r => r.profile_id)
+          .filter((id): id is string => typeof id === 'string' && id.length > 0);
+
+        const profiles = profileIds.length
+          ? (
+              await supabase
+                .from('profiles')
+                .select('id, full_name')
+                .in('id', profileIds)
+            ).data
+          : [];
+
         const profileMap = new Map((profiles || []).map(p => [p.id, p.full_name]));
+
+        const displayName = (r: any) =>
+          r.profile_id
+            ? (profileMap.get(r.profile_id) || r.name || r.role_name || 'Unknown')
+            : (r.name || r.role_name || `Resource ${String(r.id).slice(0, 8)}`);
         
         return `**${warningResources.length} Warning Resources (ending in 30-90 days):**\n\n${warningResources.map(r => 
-          `• **${r.profile_id ? (profileMap.get(r.profile_id) || 'Unknown') : 'Unnamed'}** (${r.vendor_name || 'N/A'}) — ${formatContractDate(r.contract_end_date)}`
+          `• **${displayName(r)}** (${r.vendor_name || 'N/A'}) — ${formatContractDate(r.contract_end_date)}`
         ).join('\n')}`;
       }
       return `**No warning resources found** (contracts ending in 30-90 days)`;
@@ -400,23 +424,35 @@ export function CatyChatWidget() {
       
       const { data: monthResources } = await supabase
         .from('resource_inventory')
-        .select('id, profile_id, contract_end_date, vendor_name')
+        .select('id, profile_id, name, contract_end_date, vendor_name, role_name')
         .gte('contract_end_date', startOfMonth.toISOString())
         .lte('contract_end_date', endOfMonth.toISOString())
         .order('contract_end_date', { ascending: true });
       
       const monthName = now.toLocaleDateString('en-US', { month: 'long' });
       if (monthResources && monthResources.length > 0) {
-        const profileIds = monthResources.map(r => r.profile_id).filter(Boolean);
-        const { data: profiles } = await supabase
-          .from('profiles')
-          .select('id, full_name')
-          .in('id', profileIds);
-        
+        const profileIds = monthResources
+          .map(r => r.profile_id)
+          .filter((id): id is string => typeof id === 'string' && id.length > 0);
+
+        const profiles = profileIds.length
+          ? (
+              await supabase
+                .from('profiles')
+                .select('id, full_name')
+                .in('id', profileIds)
+            ).data
+          : [];
+
         const profileMap = new Map((profiles || []).map(p => [p.id, p.full_name]));
+
+        const displayName = (r: any) =>
+          r.profile_id
+            ? (profileMap.get(r.profile_id) || r.name || r.role_name || 'Unknown')
+            : (r.name || r.role_name || `Resource ${String(r.id).slice(0, 8)}`);
         
         return `**Contracts expiring this month (${monthName}):**\n\n${monthResources.map(r => 
-          `• **${r.profile_id ? (profileMap.get(r.profile_id) || 'Unknown') : 'Unnamed'}** (${r.vendor_name || 'N/A'}) — ${formatContractDate(r.contract_end_date)}`
+          `• **${displayName(r)}** (${r.vendor_name || 'N/A'}) — ${formatContractDate(r.contract_end_date)}`
         ).join('\n')}`;
       }
       return `**No contracts expiring this month (${monthName})**`;
@@ -462,23 +498,32 @@ export function CatyChatWidget() {
         // Query resource_inventory (source of truth) and join with profiles for names
         const { data: deptResources } = await supabase
           .from('resource_inventory')
-          .select('id, profile_id, contract_end_date, vendor_name, role_name')
+          .select('id, profile_id, name, contract_end_date, vendor_name, role_name')
           .eq('department_id', dept.id)
           .order('contract_end_date', { ascending: true })
           .limit(15);
 
         if (deptResources && deptResources.length > 0) {
-          // Get profile names for these resources
-          const profileIds = deptResources.map(r => r.profile_id).filter(Boolean);
-          const { data: profiles } = await supabase
-            .from('profiles')
-            .select('id, full_name')
-            .in('id', profileIds);
-          
+          // Get profile names for these resources (only when we actually have profile_ids)
+          const profileIds = deptResources
+            .map(r => r.profile_id)
+            .filter((id): id is string => typeof id === 'string' && id.length > 0);
+
+          const profiles = profileIds.length
+            ? (
+                await supabase
+                  .from('profiles')
+                  .select('id, full_name')
+                  .in('id', profileIds)
+              ).data
+            : [];
+
           const profileMap = new Map((profiles || []).map(p => [p.id, p.full_name]));
-          
+
           const results = deptResources.map(r => ({
-            name: r.profile_id ? (profileMap.get(r.profile_id) || 'Unknown') : 'Unnamed Resource',
+            name: r.profile_id
+              ? (profileMap.get(r.profile_id) || r.name || r.role_name || 'Unknown')
+              : (r.name || r.role_name || `Resource ${String(r.id).slice(0, 8)}`),
             vendor: r.vendor_name || 'N/A',
             contractEnd: r.contract_end_date,
           }));
