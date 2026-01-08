@@ -21,6 +21,10 @@ export interface CapacityResource {
   contract_start_date?: string | null;
   contract_end_date?: string | null;
   vendor_name?: string | null;
+  // Country and location fields (from resource_inventory)
+  country?: string | null;
+  country_code?: string | null;
+  location?: string | null;
   // Computed
   allocation?: number;
   assignments?: CapacityAssignment[];

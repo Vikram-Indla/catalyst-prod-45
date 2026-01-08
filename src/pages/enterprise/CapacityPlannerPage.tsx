@@ -2028,6 +2028,16 @@ function TableView({ resources, projects, groupBy, groupedByAssignment, groupedB
         const profile = getProfile(row.id);
         const contractStatus = profile?.contractStatus?.status || 'permanent';
         
+        // Use resource data (from resource_inventory) with fallback to profile
+        const countryCode = row.country_code || profile?.country_code;
+        const countryName = row.country || profile?.country;
+        const locationName = row.location || profile?.location;
+        
+        // Generate flag URL from country code if available
+        const flagUrl = countryCode 
+          ? `https://flagcdn.com/w40/${countryCode.toLowerCase()}.png`
+          : profile?.country_flag_svg_url;
+        
         return (
           <div className="flex items-center gap-3">
             <div 
@@ -2043,25 +2053,25 @@ function TableView({ resources, projects, groupBy, groupedByAssignment, groupedB
             <div className="flex flex-col">
               <div className="flex items-center gap-1.5">
                 <span className="font-medium text-sm text-[#0a0a0a] dark:text-foreground">{value}</span>
-                {profile?.country_flag_svg_url && (
+                {flagUrl && (
                   <img 
-                    src={profile.country_flag_svg_url} 
-                    alt={profile.country || ''} 
+                    src={flagUrl} 
+                    alt={countryName || ''} 
                     className="w-4 h-3 object-cover rounded-sm"
-                    title={profile.country || ''}
+                    title={countryName || ''}
                   />
                 )}
               </div>
-              {profile?.location && (
+              {locationName && (
                 <span 
                   className={cn(
                     "text-[9px] font-medium px-1 py-0.5 rounded",
-                    profile.location.toLowerCase().includes('onsite') || profile.location.toLowerCase().includes('riyadh')
+                    locationName.toLowerCase().includes('onsite') || locationName.toLowerCase().includes('riyadh')
                       ? "bg-[#0d9488]/10 text-[#0d9488]" 
                       : "bg-[#2563eb]/10 text-[#2563eb]"
                   )}
                 >
-                  {profile.location}
+                  {locationName}
                 </span>
               )}
             </div>
