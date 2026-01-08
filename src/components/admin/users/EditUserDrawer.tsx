@@ -260,8 +260,8 @@ export function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
       if (profileLookupError) throw profileLookupError;
 
       if (profileRow?.id) {
-        // Update profile fields
-        const { error: profileError } = await supabase
+        // Update profile fields (and ensure an actual row was updated)
+        const { data: updatedProfile, error: profileError } = await supabase
           .from('profiles')
           .update({
             full_name: formData.full_name || null,
@@ -276,20 +276,27 @@ export function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
             department_id: selectedDepartment?.id || null,
             updated_at: new Date().toISOString(),
           })
-          .eq('id', user.id);
+          .eq('id', user.id)
+          .select('id')
+          .maybeSingle();
 
         if (profileError) throw profileError;
+        if (!updatedProfile?.id) {
+          throw new Error('Profile not found or you do not have permission to update it.');
+        }
 
         // Update or create resource_inventory record (linked by profile_id)
-        const { data: inventoryRecord } = await supabase
+        const { data: inventoryRecord, error: inventoryLookupError } = await supabase
           .from('resource_inventory')
           .select('id')
           .eq('profile_id', user.id)
           .maybeSingle();
 
-        if (inventoryRecord) {
+        if (inventoryLookupError) throw inventoryLookupError;
+
+        if (inventoryRecord?.id) {
           // Update existing record - don't update assignments (managed via Book Resource Allocation)
-          const { error: inventoryError } = await supabase
+          const { data: updatedInventory, error: inventoryError } = await supabase
             .from('resource_inventory')
             .update({
               name: formData.full_name || null,
@@ -304,9 +311,14 @@ export function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
               contract_end_date: formData.contract_end_date || null,
               updated_at: new Date().toISOString(),
             })
-            .eq('id', inventoryRecord.id);
+            .eq('id', inventoryRecord.id)
+            .select('id')
+            .maybeSingle();
 
           if (inventoryError) throw inventoryError;
+          if (!updatedInventory?.id) {
+            throw new Error('Resource inventory record not found or you do not have permission to update it.');
+          }
         } else {
           // Create new resource_inventory record for this user - don't set assignments
           const { error: insertError } = await supabase.from('resource_inventory').insert({
@@ -350,7 +362,7 @@ export function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
         }
       } else {
         // Imported / inventory-only user: update the resource_inventory row directly.
-        const { error: inventoryOnlyUpdateError } = await supabase
+        const { data: updatedInventoryOnly, error: inventoryOnlyUpdateError } = await supabase
           .from('resource_inventory')
           .update({
             name: formData.full_name || null,
@@ -365,9 +377,14 @@ export function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
             contract_end_date: formData.contract_end_date || null,
             updated_at: new Date().toISOString(),
           })
-          .eq('id', user.id);
+          .eq('id', user.id)
+          .select('id')
+          .maybeSingle();
 
         if (inventoryOnlyUpdateError) throw inventoryOnlyUpdateError;
+        if (!updatedInventoryOnly?.id) {
+          throw new Error('Resource inventory record not found or you do not have permission to update it.');
+        }
       }
 
       // Log the update
