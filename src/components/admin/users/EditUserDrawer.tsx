@@ -48,6 +48,15 @@ export function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
   });
   const [selectedRoleIds, setSelectedRoleIds] = useState<string[]>([]);
   const [selectedAssignmentIds, setSelectedAssignmentIds] = useState<string[]>([]);
+  
+  // Track initial values for dirty checking
+  const [initialFormData, setInitialFormData] = useState(formData);
+  const [initialRoleIds, setInitialRoleIds] = useState<string[]>([]);
+  
+  // Compute isDirty
+  const isDirty = 
+    JSON.stringify(formData) !== JSON.stringify(initialFormData) ||
+    JSON.stringify(selectedRoleIds.sort()) !== JSON.stringify(initialRoleIds.sort());
 
   // Fetch available roles
   const { data: productRoles } = useQuery({
@@ -183,7 +192,7 @@ export function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
       const currentYear = new Date().getFullYear();
       const isPermanent = user.vendor?.toLowerCase() === 'permanent' || user.vendor?.toLowerCase() === 'permenant';
       
-      setFormData({
+      const newFormData = {
         full_name: user.full_name || '',
         email: user.email || '',
         vendor: user.vendor || '',
@@ -196,8 +205,14 @@ export function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
         contract_end_date: isPermanent 
           ? `${currentYear}-12-31` 
           : (user.contract_end_date ? format(new Date(user.contract_end_date), 'yyyy-MM-dd') : ''),
-      });
-      setSelectedRoleIds(user.roles.map(r => r.role_id));
+      };
+      
+      const newRoleIds = user.roles.map(r => r.role_id);
+      
+      setFormData(newFormData);
+      setInitialFormData(newFormData);
+      setSelectedRoleIds(newRoleIds);
+      setInitialRoleIds(newRoleIds);
     }
   }, [user]);
 
@@ -400,19 +415,30 @@ export function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
       return true;
     },
     onSuccess: () => {
+      // Build updated roles array for cache
+      const updatedRoles = selectedRoleIds.map(roleId => {
+        const role = productRoles?.find(r => r.id === roleId);
+        return {
+          id: roleId,
+          role_id: roleId,
+          role_name: role?.name || '',
+          role_code: role?.code || '',
+          business_lines: [],
+        };
+      });
+
       // Update cached list immediately so the table reflects the change without waiting for a full refetch
       queryClient.setQueryData(['users-list'], (prev: unknown) => {
         if (!Array.isArray(prev)) return prev;
 
-        // Build updated user snapshot from the form
-        const updatedEmail = formData.email.toLowerCase().trim() || null;
         const updatedUserId = user?.id;
         if (!updatedUserId) return prev;
 
-        // Resolve department name (User List shows department_name)
-        const updatedDepartmentName = formData.department || null;
+        // Resolve department name
+        const selectedDepartment = departments.find(d => d.name === formData.department);
+        const updatedDepartmentName = selectedDepartment?.name || null;
 
-        // Resolve job role label from selected role (User List shows job_role)
+        // Resolve job role label from selected role
         const firstSelectedRoleId = selectedRoleIds[0];
         const firstSelectedRole = productRoles?.find((r) => r.id === firstSelectedRoleId);
         const updatedJobRole = firstSelectedRole?.name || null;
@@ -422,7 +448,7 @@ export function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
             ? {
                 ...u,
                 full_name: formData.full_name || null,
-                email: updatedEmail,
+                email: formData.email.toLowerCase().trim() || null,
                 vendor: formData.vendor || null,
                 location: formData.location || null,
                 country: formData.country || null,
@@ -430,18 +456,31 @@ export function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
                 contract_end_date: formData.contract_end_date || null,
                 department_name: updatedDepartmentName,
                 job_role: updatedJobRole,
+                roles: updatedRoles,
               }
             : u
         );
       });
 
+      // Also invalidate for a fresh fetch
       queryClient.invalidateQueries({ queryKey: ['users-list'] });
+      queryClient.invalidateQueries({ queryKey: ['resource-inventory'] });
+      
       toast.success('User updated successfully');
       onClose();
     },
     onError: (error) => {
       console.error('Failed to update user:', error);
-      toast.error('Failed to update user: ' + (error as Error).message);
+      const message = (error as Error).message || 'Unknown error';
+      
+      // Check for common RLS/permission errors
+      if (message.includes('permission') || message.includes('policy') || message.includes('RLS')) {
+        toast.error('Permission denied: You do not have admin privileges to update this user.');
+      } else if (message.includes('not found')) {
+        toast.error('User record not found. The user may have been deleted.');
+      } else {
+        toast.error('Failed to update user: ' + message);
+      }
     },
   });
 
@@ -682,7 +721,7 @@ export function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
           <Button 
             type="submit" 
             form="edit-user-form"
-            disabled={updateUser.isPending} 
+            disabled={updateUser.isPending || !isDirty} 
             className="bg-brand-primary hover:bg-brand-primary-hover"
           >
             {updateUser.isPending ? (
