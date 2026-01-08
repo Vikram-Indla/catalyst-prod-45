@@ -42,7 +42,7 @@ export function ContractHorizonView() {
   });
 
   return (
-    <div className="p-6">
+    <div className="px-6 pb-6">
       {/* Critical Alert */}
       <CriticalAlert 
         criticalCount={summary.critical}
