@@ -230,6 +230,9 @@ export default function CapacityPlannerPage() {
   };
 
   const filteredResources = useMemo(() => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
     return metrics.resources.filter((r) => {
       // Exclude management and admin roles - they are overheads, not capacity planned
       const roleLower = r.role?.toLowerCase() || '';
@@ -254,16 +257,19 @@ export default function CapacityPlannerPage() {
       const currentAllocation =
         currentAllocationByResourceId.get(r.id) ?? (r.allocation || 0);
 
+      // Check if contract is expired
+      const hasExpiredContract = r.contract_end_date && new Date(r.contract_end_date) < today;
+
       let matchesFilter = true;
       if (activeFilter === 'available') {
-        // Available = 0% allocation (exactly matches summary count)
-        matchesFilter = currentAllocation === 0;
+        // Available = 0% allocation AND not expired (matches summary count)
+        matchesFilter = currentAllocation === 0 && !hasExpiredContract;
       } else if (activeFilter === 'atCapacity') {
-        // At Capacity = 80-100% (matches summary: status === 'at_capacity')
-        matchesFilter = currentAllocation > 80 && currentAllocation <= 100;
+        // At Capacity = 80-100% AND not expired
+        matchesFilter = currentAllocation > 80 && currentAllocation <= 100 && !hasExpiredContract;
       } else if (activeFilter === 'over') {
-        // Over-allocated = >100%
-        matchesFilter = currentAllocation > 100;
+        // Over-allocated = >100% AND not expired
+        matchesFilter = currentAllocation > 100 && !hasExpiredContract;
       }
 
       return matchesSearch && matchesDepartment && matchesFilter;
@@ -418,14 +424,19 @@ export default function CapacityPlannerPage() {
 
   // Calculate BASE summary stats from ALL resources (not filtered by status)
   // This ensures the header stat chips always show the full counts, not filtered counts
+  // IMPORTANT: Excludes expired contracts from counts
   const baseSummary = useMemo(() => {
     const now = new Date();
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
     let available = 0;
     let atCapacity = 0;
     let over = 0;
     let totalUtilization = 0;
 
     // Filter only by search and department, NOT by activeFilter (status)
+    // Also exclude expired contracts from summary counts
     const baseResources = metrics.resources.filter((r) => {
       // Exclude management and admin roles
       const roleLower = r.role?.toLowerCase() || '';
@@ -435,6 +446,12 @@ export default function CapacityPlannerPage() {
         roleLower.includes('superadmin') ||
         roleLower === 'admin';
       if (isManagement || isSuperAdmin) return false;
+
+      // Exclude expired contracts from summary counts
+      if (r.contract_end_date) {
+        const contractEnd = new Date(r.contract_end_date);
+        if (contractEnd < today) return false;
+      }
 
       const matchesSearch =
         r.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
