@@ -38,7 +38,7 @@ export function ResourceDrawer({ resource, onClose }: ResourceDrawerProps) {
       />
       
       {/* Drawer */}
-      <div className="fixed top-0 right-0 bottom-0 w-[400px] bg-card z-50 flex flex-col shadow-[-8px_0_32px_rgba(0,0,0,0.15)] animate-in slide-in-from-right duration-350">
+      <div className="fixed top-0 right-0 bottom-0 w-[400px] max-w-[90vw] bg-card z-50 flex flex-col shadow-2xl animate-in slide-in-from-right duration-300">
         {/* Header */}
         <div className="p-6 border-b border-border flex gap-4 bg-muted/50">
           {/* Avatar */}
