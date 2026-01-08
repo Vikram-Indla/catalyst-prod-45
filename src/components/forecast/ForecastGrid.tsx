@@ -483,7 +483,7 @@ export function ForecastGrid({ piId, viewLevel, workItemLevel }: ForecastGridPro
                                 const isAssigned = viewLevel === 'program'
                                   ? assignments.some(a =>
                                       a.work_item_id === item.id &&
-                                      a.project_id === capacity.project_id
+                                      a.program_id === capacity.project_id
                                     )
                                   : assignments.some(a =>
                                       a.work_item_id === item.id &&

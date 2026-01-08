@@ -23,11 +23,11 @@ export function useCapacityWarnings(piId: string, programId?: string) {
         .from('resource_allocations')
         .select(`
           id,
-          allocation_percentage,
-          resource:resource_inventory(
+          allocation_percent,
+          resource_id,
+          resource_inventory(
             id,
-            full_name,
-            department:capacity_departments(name)
+            full_name
           )
         `);
 
@@ -37,9 +37,10 @@ export function useCapacityWarnings(piId: string, programId?: string) {
       const resourceMap = new Map<string, { allocated: number; name: string }>();
       
       allocations?.forEach(alloc => {
-        const resourceId = (alloc.resource as any)?.id;
-        const resourceName = (alloc.resource as any)?.full_name || 'Unknown';
-        const percentage = alloc.allocation_percentage || 0;
+        const resourceId = alloc.resource_id;
+        const resourceData = alloc.resource_inventory as any;
+        const resourceName = resourceData?.full_name || 'Unknown';
+        const percentage = alloc.allocation_percent || 0;
         
         if (resourceId) {
           const existing = resourceMap.get(resourceId) || { allocated: 0, name: resourceName };

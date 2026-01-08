@@ -16,11 +16,12 @@ export default function ForecastSelfTest() {
     },
   });
 
-  const { data: capacityPlans } = useQuery({
-    queryKey: ['test-capacity'],
+  // NOTE: capacity_plans table was removed - using resource_allocations instead
+  const { data: resourceAllocations } = useQuery({
+    queryKey: ['test-resource-allocations'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('capacity_plans')
+        .from('resource_allocations')
         .select('*')
         .limit(1);
       return data;
@@ -56,9 +57,9 @@ export default function ForecastSelfTest() {
       message: pis && pis.length > 0 ? `${pis.length} PI(s) found` : 'No PIs found',
     },
     {
-      name: 'Seed data - Capacity Plans',
-      status: capacityPlans && capacityPlans.length > 0 ? 'pass' : 'fail',
-      message: capacityPlans && capacityPlans.length > 0 ? `${capacityPlans.length} capacity plan(s) found` : 'No capacity plans found',
+      name: 'Seed data - Resource Allocations',
+      status: resourceAllocations && resourceAllocations.length > 0 ? 'pass' : 'fail',
+      message: resourceAllocations && resourceAllocations.length > 0 ? `${resourceAllocations.length} allocation(s) found` : 'No allocations found',
     },
     {
       name: 'Seed data - Work Item Assignments',
