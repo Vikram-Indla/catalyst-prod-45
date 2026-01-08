@@ -58,6 +58,18 @@ export function useContractHorizon() {
     }
   });
 
+  // Fetch vendors
+  const { data: vendors = [] } = useQuery({
+    queryKey: ['resource-vendors'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('resource_vendors')
+        .select('id, name');
+      if (error) throw error;
+      return data || [];
+    }
+  });
+
   // Create department lookup map
   const departmentMap = useMemo(() => {
     const map: Record<string, string> = {};
@@ -67,9 +79,18 @@ export function useContractHorizon() {
     return map;
   }, [departments]);
 
+  // Create vendor lookup map
+  const vendorMap = useMemo(() => {
+    const map: Record<string, string> = {};
+    vendors.forEach((v: any) => {
+      map[v.id] = v.name;
+    });
+    return map;
+  }, [vendors]);
+
   // Fetch resources from resource_inventory
   const { data: rawResources = [], isLoading } = useQuery({
-    queryKey: ['contract-horizon-resources', departmentMap],
+    queryKey: ['contract-horizon-resources', departmentMap, vendorMap],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('resource_inventory')
@@ -78,6 +99,7 @@ export function useContractHorizon() {
           name,
           role_name,
           department_id,
+          vendor_id,
           vendor_name,
           contract_start_date,
           contract_end_date,
@@ -101,7 +123,7 @@ export function useContractHorizon() {
           name: r.name || 'Unknown',
           role: r.role_name || 'Team Member',
           department: departmentMap[r.department_id] || 'Unassigned',
-          vendor: r.vendor_name || 'Unknown',
+          vendor: r.vendor_id ? vendorMap[r.vendor_id] || r.vendor_name || 'Unknown' : r.vendor_name || 'Unknown',
           country: 'Saudi Arabia',
           location: r.location_id ? 'Off-shore' : 'On-site',
           contractStart: r.contract_start_date || '2026-01-01',
@@ -109,7 +131,7 @@ export function useContractHorizon() {
           profileId: r.profile_id
         })) as ContractResource[];
     },
-    enabled: departments.length > 0
+    enabled: departments.length > 0 && vendors.length > 0
   });
 
   // Process resources with computed status
