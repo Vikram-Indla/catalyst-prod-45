@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { X, RotateCw, Send } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { CatyOrb } from './CatyOrb';
@@ -6,16 +6,14 @@ import { useAuth } from '@/lib/auth';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
 
-interface DepartmentData {
+interface DepartmentStats {
   id: string;
   name: string;
   shortName: string;
   count: number;
   critical: number;
   warning: number;
-  insight: string;
   color: string;
-  bgColor: string;
 }
 
 interface ChatMessage {
@@ -25,12 +23,20 @@ interface ChatMessage {
   timestamp: Date;
 }
 
-interface CatyChatWidgetProps {
-  criticalCount?: number;
-  warningCount?: number;
-  totalCount?: number;
-  departments?: DepartmentData[];
+interface CapacityStats {
+  total: number;
+  critical: number;
+  warning: number;
+  departments: DepartmentStats[];
 }
+
+// Department colors
+const DEPT_COLORS: Record<string, string> = {
+  'Delivery': '#2563eb',
+  'Product': '#7c3aed',
+  'Operations': '#ea580c',
+  'Technical Support': '#0d9488',
+};
 
 // Helper to format date
 const formatContractDate = (dateStr: string | null) => {
@@ -39,23 +45,105 @@ const formatContractDate = (dateStr: string | null) => {
   return date.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' });
 };
 
-export function CatyChatWidget({
-  criticalCount = 8,
-  warningCount = 6,
-  totalCount = 67,
-  departments = [
-    { id: 'delivery', name: 'Delivery', shortName: 'D', count: 34, critical: 5, warning: 3, insight: 'Ahmed Yousry, Hasan Elsherby +3 others contracts ending by Mar 30', color: '#2563eb', bgColor: 'bg-blue-600' },
-    { id: 'product', name: 'Product', shortName: 'P', count: 14, critical: 1, warning: 2, insight: 'Alouf Aldrees contract ending Jan 11', color: '#7c3aed', bgColor: 'bg-violet-600' },
-    { id: 'operations', name: 'Operations', shortName: 'O', count: 12, critical: 2, warning: 1, insight: 'Mahmoud Mesbah contract expired, Abdulmajeed AlJabari ending Jan 9', color: '#ea580c', bgColor: 'bg-orange-600' },
-    { id: 'support', name: 'Technical Support', shortName: 'T', count: 7, critical: 0, warning: 1, insight: 'Abdulrahman AlRajhi contract ending Mar 29', color: '#0d9488', bgColor: 'bg-teal-600' },
-  ]
-}: CatyChatWidgetProps) {
+export function CatyChatWidget() {
   const [isOpen, setIsOpen] = useState(false);
   const [inputValue, setInputValue] = useState('');
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isTyping, setIsTyping] = useState(false);
+  const [stats, setStats] = useState<CapacityStats>({ total: 0, critical: 0, warning: 0, departments: [] });
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { user } = useAuth();
+
+  // Fetch capacity stats from database
+  const fetchCapacityStats = useCallback(async () => {
+    const now = new Date();
+    const thirtyDays = new Date(now);
+    thirtyDays.setDate(thirtyDays.getDate() + 30);
+    const ninetyDays = new Date(now);
+    ninetyDays.setDate(ninetyDays.getDate() + 90);
+
+    // Fetch all profiles with contract data
+    const { data: profiles } = await supabase
+      .from('profiles')
+      .select('id, full_name, department_id, contract_end_date, vendor');
+
+    // Fetch departments
+    const { data: departments } = await supabase
+      .from('capacity_departments')
+      .select('id, name')
+      .order('sort_order');
+
+    if (!profiles || !departments) return;
+
+    // Calculate stats
+    let critical = 0;
+    let warning = 0;
+    const deptStats: Record<string, { count: number; critical: number; warning: number }> = {};
+
+    // Initialize department stats
+    departments.forEach(d => {
+      deptStats[d.id] = { count: 0, critical: 0, warning: 0 };
+    });
+
+    profiles.forEach(p => {
+      if (p.department_id && deptStats[p.department_id]) {
+        deptStats[p.department_id].count++;
+      }
+
+      if (p.contract_end_date) {
+        const endDate = new Date(p.contract_end_date);
+        if (endDate <= thirtyDays) {
+          critical++;
+          if (p.department_id && deptStats[p.department_id]) {
+            deptStats[p.department_id].critical++;
+          }
+        } else if (endDate <= ninetyDays) {
+          warning++;
+          if (p.department_id && deptStats[p.department_id]) {
+            deptStats[p.department_id].warning++;
+          }
+        }
+      }
+    });
+
+    const departmentList: DepartmentStats[] = departments.map(d => ({
+      id: d.id,
+      name: d.name,
+      shortName: d.name.charAt(0),
+      count: deptStats[d.id]?.count || 0,
+      critical: deptStats[d.id]?.critical || 0,
+      warning: deptStats[d.id]?.warning || 0,
+      color: DEPT_COLORS[d.name] || '#6b7280',
+    }));
+
+    setStats({
+      total: profiles.length,
+      critical,
+      warning,
+      departments: departmentList,
+    });
+  }, []);
+
+  // Initial fetch and real-time subscription
+  useEffect(() => {
+    fetchCapacityStats();
+
+    // Subscribe to real-time changes on profiles table
+    const channel = supabase
+      .channel('caty-capacity-updates')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'profiles' },
+        () => {
+          fetchCapacityStats();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [fetchCapacityStats]);
 
   // Fetch user profile for first name
   const { data: profile } = useQuery({
@@ -66,7 +154,7 @@ export function CatyChatWidget({
         .from('profiles')
         .select('full_name')
         .eq('id', user.id)
-        .single();
+        .maybeSingle();
       return data;
     },
     enabled: !!user?.id,
@@ -109,49 +197,54 @@ export function CatyChatWidget({
 
   const suggestions = [
     "Whose contract is expiring this month?",
-    "Available resources",
+    "Show critical resources",
     "Contract renewals"
   ];
 
   // Query database for response - async
   const generateResponseAsync = async (query: string): Promise<string> => {
     const lowerQuery = query.toLowerCase();
-    
+    const now = new Date();
+    const thirtyDays = new Date(now);
+    thirtyDays.setDate(thirtyDays.getDate() + 30);
+    const ninetyDays = new Date(now);
+    ninetyDays.setDate(ninetyDays.getDate() + 90);
+
     // Check if query mentions a specific person's name
-    const nameMatch = query.match(/(?:when is|what about|show me|find)\s+(.+?)(?:'s)?\s*(?:contract|expir|ending|status)?/i);
+    const nameMatch = query.match(/(?:when is|what about|show me|find|search)\s+(.+?)(?:'s)?\s*(?:contract|expir|ending|status)?/i);
     if (nameMatch) {
       const searchName = nameMatch[1].trim();
-      const { data: personResults } = await supabase
-        .from('profiles')
-        .select('full_name, vendor, contract_end_date, contract_start_date')
-        .ilike('full_name', `%${searchName}%`)
-        .limit(5);
-      
-      if (personResults && personResults.length > 0) {
-        if (personResults.length === 1) {
-          const p = personResults[0];
-          const endDate = p.contract_end_date ? formatContractDate(p.contract_end_date) : 'Not set';
-          return `**${p.full_name}**\n\n• **Vendor:** ${p.vendor || 'N/A'}\n• **Contract End Date:** ${endDate}\n• **Contract Start Date:** ${p.contract_start_date ? formatContractDate(p.contract_start_date) : 'N/A'}`;
-        } else {
-          return `**Found ${personResults.length} matching resources:**\n\n${personResults.map(p => 
-            `• **${p.full_name}** (${p.vendor || 'N/A'}) — Contract ends ${p.contract_end_date ? formatContractDate(p.contract_end_date) : 'Not set'}`
-          ).join('\n')}`;
+      if (searchName.length >= 2) {
+        const { data: personResults } = await supabase
+          .from('profiles')
+          .select('full_name, vendor, contract_end_date, contract_start_date, department_id')
+          .ilike('full_name', `%${searchName}%`)
+          .limit(5);
+        
+        if (personResults && personResults.length > 0) {
+          if (personResults.length === 1) {
+            const p = personResults[0];
+            const endDate = p.contract_end_date ? formatContractDate(p.contract_end_date) : 'Not set';
+            return `**${p.full_name}**\n\n• **Vendor:** ${p.vendor || 'N/A'}\n• **Contract End Date:** ${endDate}\n• **Contract Start Date:** ${p.contract_start_date ? formatContractDate(p.contract_start_date) : 'N/A'}`;
+          } else {
+            return `**Found ${personResults.length} matching resources:**\n\n${personResults.map(p => 
+              `• **${p.full_name}** (${p.vendor || 'N/A'}) — Contract ends ${p.contract_end_date ? formatContractDate(p.contract_end_date) : 'Not set'}`
+            ).join('\n')}`;
+          }
         }
       }
     }
     
     // Critical resources query
-    if (lowerQuery.includes('critical') || lowerQuery.match(/\b8\b.*critical/)) {
-      const thirtyDaysFromNow = new Date();
-      thirtyDaysFromNow.setDate(thirtyDaysFromNow.getDate() + 30);
-      
+    if (lowerQuery.includes('critical')) {
       const { data: criticalResults } = await supabase
         .from('profiles')
         .select('full_name, vendor, contract_end_date')
-        .lte('contract_end_date', thirtyDaysFromNow.toISOString())
+        .lte('contract_end_date', thirtyDays.toISOString())
+        .gte('contract_end_date', now.toISOString())
         .not('contract_end_date', 'is', null)
         .order('contract_end_date', { ascending: true })
-        .limit(10);
+        .limit(15);
       
       if (criticalResults && criticalResults.length > 0) {
         return `**${criticalResults.length} Critical Resources (ending within 30 days):**\n\n${criticalResults.map(r => 
@@ -163,18 +256,13 @@ export function CatyChatWidget({
     
     // Warning resources query  
     if (lowerQuery.includes('warning')) {
-      const thirtyDays = new Date();
-      thirtyDays.setDate(thirtyDays.getDate() + 30);
-      const ninetyDays = new Date();
-      ninetyDays.setDate(ninetyDays.getDate() + 90);
-      
       const { data: warningResults } = await supabase
         .from('profiles')
         .select('full_name, vendor, contract_end_date')
         .gt('contract_end_date', thirtyDays.toISOString())
         .lte('contract_end_date', ninetyDays.toISOString())
         .order('contract_end_date', { ascending: true })
-        .limit(10);
+        .limit(15);
       
       if (warningResults && warningResults.length > 0) {
         return `**${warningResults.length} Warning Resources (ending in 30-90 days):**\n\n${warningResults.map(r => 
@@ -186,7 +274,6 @@ export function CatyChatWidget({
     
     // This month query
     if (lowerQuery.includes('expiring this month') || lowerQuery.includes('this month')) {
-      const now = new Date();
       const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
       const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
       
@@ -207,52 +294,66 @@ export function CatyChatWidget({
     }
     
     // Total/all resources
-    if (lowerQuery.includes('total') || lowerQuery.includes('all resources')) {
-      return `**Total Resources: ${totalCount}**\n\n**By Department:**\n${departments.map(d => `• **${d.name}**: ${d.count} resources (${d.critical} critical, ${d.warning} warning)`).join('\n')}`;
+    if (lowerQuery.includes('total') || lowerQuery.includes('all resources') || lowerQuery.includes('breakdown')) {
+      return `**Total Resources: ${stats.total}**\n\n**By Department:**\n${stats.departments.map(d => `• **${d.name}**: ${d.count} resources (${d.critical} critical, ${d.warning} warning)`).join('\n')}`;
     }
     
-    // Available resources
-    if (lowerQuery.includes('available')) {
-      const ninetyDays = new Date();
-      ninetyDays.setDate(ninetyDays.getDate() + 90);
-      
-      const { data: availableResults, count } = await supabase
+    // Available/healthy resources
+    if (lowerQuery.includes('available') || lowerQuery.includes('healthy')) {
+      const { count } = await supabase
         .from('profiles')
-        .select('full_name, vendor, contract_end_date', { count: 'exact' })
+        .select('id', { count: 'exact', head: true })
         .gt('contract_end_date', ninetyDays.toISOString());
       
-      return `**Available Resources:**\n\nCurrently, there are **${count || 0} healthy** resources with contracts extending beyond 90 days.\n\n**By Department:**\n${departments.map(d => `• **${d.name}**: ${d.count - d.critical - d.warning} available`).join('\n')}`;
+      return `**Available Resources:**\n\nCurrently, there are **${count || 0} healthy** resources with contracts extending beyond 90 days.\n\n**By Department:**\n${stats.departments.map(d => `• **${d.name}**: ${d.count - d.critical - d.warning} available`).join('\n')}`;
     }
     
     // Renewals
     if (lowerQuery.includes('renewal')) {
-      const thirtyDays = new Date();
-      thirtyDays.setDate(thirtyDays.getDate() + 30);
-      
       const { data: renewalResults } = await supabase
         .from('profiles')
         .select('full_name, vendor, contract_end_date')
-        .lte('contract_end_date', thirtyDays.toISOString())
+        .lte('contract_end_date', ninetyDays.toISOString())
+        .gte('contract_end_date', now.toISOString())
         .not('contract_end_date', 'is', null)
         .order('contract_end_date', { ascending: true })
-        .limit(5);
+        .limit(10);
       
       if (renewalResults && renewalResults.length > 0) {
-        return `**Priority Contract Renewals:**\n\n${renewalResults.map(r => 
+        return `**Priority Contract Renewals (next 90 days):**\n\n${renewalResults.map(r => 
           `• **${r.full_name}** (${r.vendor || 'N/A'}) — ends ${formatContractDate(r.contract_end_date)}`
         ).join('\n')}`;
       }
       return `**No urgent renewals needed**`;
     }
+
+    // Department specific query
+    for (const dept of stats.departments) {
+      if (lowerQuery.includes(dept.name.toLowerCase())) {
+        const { data: deptResults } = await supabase
+          .from('profiles')
+          .select('full_name, vendor, contract_end_date')
+          .eq('department_id', dept.id)
+          .order('contract_end_date', { ascending: true })
+          .limit(10);
+
+        if (deptResults && deptResults.length > 0) {
+          return `**${dept.name} Department (${dept.count} resources):**\n\n${deptResults.map(r => 
+            `• **${r.full_name}** (${r.vendor || 'N/A'}) — ${r.contract_end_date ? formatContractDate(r.contract_end_date) : 'No contract date'}`
+          ).join('\n')}`;
+        }
+        return `**No resources found in ${dept.name} department**`;
+      }
+    }
     
     // Try to search by name as fallback
-    const words = query.split(' ').filter(w => w.length > 2);
+    const words = query.split(' ').filter(w => w.length > 2 && !['show', 'find', 'what', 'when', 'about', 'the', 'resources'].includes(w.toLowerCase()));
     for (const word of words) {
       const { data: searchResults } = await supabase
         .from('profiles')
         .select('full_name, vendor, contract_end_date')
         .ilike('full_name', `%${word}%`)
-        .limit(3);
+        .limit(5);
       
       if (searchResults && searchResults.length > 0) {
         return `**Found resources matching "${word}":**\n\n${searchResults.map(r => 
@@ -261,13 +362,12 @@ export function CatyChatWidget({
       }
     }
     
-    return `I can help you with capacity insights. Try asking about:\n• A specific person (e.g., "When is Nada's contract expiring?")\n• Critical resources\n• Warning resources\n• Contract renewals\n• Available resources`;
+    return `I can help you with capacity insights. Try asking about:\n• A specific person (e.g., "When is Nada's contract expiring?")\n• Critical resources (contracts ending in 30 days)\n• Warning resources (contracts ending in 30-90 days)\n• Contract renewals\n• Department breakdown`;
   };
 
   const handleSubmit = async (query: string) => {
     if (!query.trim()) return;
     
-    // Add user message
     const userMessage: ChatMessage = {
       id: Date.now().toString(),
       type: 'user',
@@ -279,7 +379,6 @@ export function CatyChatWidget({
     setIsTyping(true);
     
     try {
-      // Query real database
       const response = await generateResponseAsync(query);
       const assistantMessage: ChatMessage = {
         id: (Date.now() + 1).toString(),
@@ -289,6 +388,7 @@ export function CatyChatWidget({
       };
       setMessages(prev => [...prev, assistantMessage]);
     } catch (error) {
+      console.error('Caty error:', error);
       const errorMessage: ChatMessage = {
         id: (Date.now() + 1).toString(),
         type: 'assistant',
@@ -307,11 +407,15 @@ export function CatyChatWidget({
 
   const handleKpiClick = (type: 'critical' | 'warning' | 'total') => {
     const queries = {
-      critical: `Show me the ${criticalCount} critical resources`,
-      warning: `Show me the ${warningCount} warning resources`,
-      total: `Show me all ${totalCount} resources breakdown`
+      critical: 'Show critical resources',
+      warning: 'Show warning resources',
+      total: 'Show all resources breakdown'
     };
     handleSubmit(queries[type]);
+  };
+
+  const handleDeptClick = (deptName: string) => {
+    handleSubmit(`Show ${deptName} department resources`);
   };
 
   const handleSend = () => {
@@ -327,12 +431,11 @@ export function CatyChatWidget({
 
   const handleRefresh = () => {
     setMessages([]);
+    fetchCapacityStats();
   };
 
-  // Render message content with markdown-like formatting
   const renderMessageContent = (content: string) => {
     return content.split('\n').map((line, i) => {
-      // Bold text
       const formattedLine = line.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
       return (
         <span 
@@ -363,7 +466,6 @@ export function CatyChatWidget({
         }}
         aria-label="Open Caty AI Assistant"
       >
-        {/* Mini face */}
         <div className="flex flex-col items-center gap-1">
           <div className="flex gap-2">
             <div className="w-[5px] h-[7px] bg-white rounded-[2px]" style={{ boxShadow: '0 0 6px rgba(255,255,255,0.8)' }} />
@@ -372,13 +474,12 @@ export function CatyChatWidget({
           <div className="w-3 h-1.5 border-b-2 border-white rounded-b-full" />
         </div>
 
-        {/* Notification badge */}
-        {criticalCount > 0 && (
+        {stats.critical > 0 && (
           <div 
             className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center text-white text-[11px] font-bold"
             style={{ boxShadow: '0 2px 8px rgba(239, 68, 68, 0.5)' }}
           >
-            {criticalCount}
+            {stats.critical}
           </div>
         )}
       </button>
@@ -396,7 +497,7 @@ export function CatyChatWidget({
         onClick={() => setIsOpen(false)}
       />
 
-      {/* Chat Panel - Light Mode Default */}
+      {/* Chat Panel */}
       <div 
         className={cn(
           "fixed top-0 right-0 bottom-0 z-[1001] w-full sm:w-[380px] md:w-[420px]",
@@ -406,14 +507,13 @@ export function CatyChatWidget({
         )}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Header - Thinner */}
+        {/* Header */}
         <div 
           className="relative px-4 py-3 overflow-hidden shrink-0"
           style={{
             background: 'linear-gradient(135deg, #3d9a98 0%, #4dada8 50%, #5eaaa8 100%)'
           }}
         >
-          {/* Light overlay */}
           <div 
             className="absolute inset-0 pointer-events-none"
             style={{
@@ -464,7 +564,7 @@ export function CatyChatWidget({
 
         {/* Chat Body */}
         <div className="flex-1 overflow-y-auto p-4 bg-muted/30">
-          {/* Greeting Message - No redundant avatar */}
+          {/* Greeting Message */}
           <div className="animate-[message-in_0.5s_cubic-bezier(0.16,1,0.3,1)]">
             <div className="p-4 rounded-xl bg-card border border-border shadow-sm">
               <h3 className="text-lg font-bold text-foreground tracking-tight mb-0.5">
@@ -474,7 +574,7 @@ export function CatyChatWidget({
                 Here&apos;s your capacity snapshot
               </p>
 
-              {/* KPI Cards - Clickable */}
+              {/* KPI Cards */}
               <div className="grid grid-cols-3 gap-2 mb-4">
                 <button 
                   onClick={() => handleKpiClick('critical')}
@@ -482,7 +582,7 @@ export function CatyChatWidget({
                 >
                   <div className="absolute top-0 left-0 right-0 h-[3px] rounded-t-xl bg-gradient-to-r from-red-500 to-red-400" />
                   <span className="text-base block mb-1">⚠️</span>
-                  <div className="text-2xl font-extrabold text-red-500 tracking-tight leading-none mb-0.5">{criticalCount}</div>
+                  <div className="text-2xl font-extrabold text-red-500 tracking-tight leading-none mb-0.5">{stats.critical}</div>
                   <div className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Critical</div>
                 </button>
 
@@ -492,7 +592,7 @@ export function CatyChatWidget({
                 >
                   <div className="absolute top-0 left-0 right-0 h-[3px] rounded-t-xl bg-gradient-to-r from-amber-600 to-amber-500" />
                   <span className="text-base block mb-1">⏰</span>
-                  <div className="text-2xl font-extrabold text-amber-600 tracking-tight leading-none mb-0.5">{warningCount}</div>
+                  <div className="text-2xl font-extrabold text-amber-600 tracking-tight leading-none mb-0.5">{stats.warning}</div>
                   <div className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Warning</div>
                 </button>
 
@@ -502,7 +602,7 @@ export function CatyChatWidget({
                 >
                   <div className="absolute top-0 left-0 right-0 h-[3px] rounded-t-xl bg-gradient-to-r from-teal-500 to-teal-400" />
                   <span className="text-base block mb-1">👥</span>
-                  <div className="text-2xl font-extrabold text-teal-600 tracking-tight leading-none mb-0.5">{totalCount}</div>
+                  <div className="text-2xl font-extrabold text-teal-600 tracking-tight leading-none mb-0.5">{stats.total}</div>
                   <div className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Total</div>
                 </button>
               </div>
@@ -514,10 +614,11 @@ export function CatyChatWidget({
                 </div>
                 
                 <div className="space-y-2">
-                  {departments.map((dept) => (
-                    <div 
+                  {stats.departments.map((dept) => (
+                    <button 
                       key={dept.id}
-                      className="rounded-lg p-2.5 cursor-pointer transition-all duration-250 hover:translate-x-0.5 hover:shadow-sm bg-card border border-border"
+                      onClick={() => handleDeptClick(dept.name)}
+                      className="w-full rounded-lg p-2.5 cursor-pointer transition-all duration-250 hover:translate-x-0.5 hover:shadow-sm bg-card border border-border text-left"
                       style={{ borderLeft: `3px solid ${dept.color}` }}
                     >
                       <div className="flex items-center gap-2">
@@ -545,7 +646,7 @@ export function CatyChatWidget({
                           </div>
                         )}
                       </div>
-                    </div>
+                    </button>
                   ))}
                 </div>
               </div>
@@ -595,9 +696,8 @@ export function CatyChatWidget({
           <div ref={messagesEndRef} />
         </div>
 
-        {/* Input Area with Suggestions */}
+        {/* Input Area */}
         <div className="p-3 pb-4 bg-background border-t border-border shrink-0">
-          {/* Quick Suggestions - closer to input */}
           <div className="mb-2">
             <div className="flex flex-wrap gap-1.5">
               {suggestions.map((suggestion) => (
@@ -612,7 +712,6 @@ export function CatyChatWidget({
             </div>
           </div>
           
-          {/* Input field - more prominent */}
           <div className="flex items-center gap-2 rounded-xl bg-card border-2 border-border p-1.5 pl-4 focus-within:border-teal-500 transition-colors">
             <input
               type="text"
@@ -637,7 +736,7 @@ export function CatyChatWidget({
         </div>
       </div>
 
-      {/* Global styles for animations */}
+      {/* Global styles */}
       <style>{`
         @keyframes fab-breathe {
           0%, 100% { box-shadow: 0 4px 20px rgba(20, 184, 166, 0.4), 0 0 60px rgba(20, 184, 166, 0.3); }
