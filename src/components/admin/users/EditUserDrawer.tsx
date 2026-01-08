@@ -42,12 +42,13 @@ export function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
     vendor: '',
     location: '',
     country: '',
-    assignment: '',
     job_role: '',
     department: '',
+    contract_start_date: '',
     contract_end_date: '',
   });
   const [selectedRoleIds, setSelectedRoleIds] = useState<string[]>([]);
+  const [selectedAssignmentIds, setSelectedAssignmentIds] = useState<string[]>([]);
 
   // Fetch available roles
   const { data: productRoles } = useQuery({
@@ -175,23 +176,75 @@ export function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
     };
   }, [queryClient]);
 
+  // Fetch user's assignments from resource_inventory
+  const { data: userInventory } = useQuery({
+    queryKey: ['user-inventory', user?.id],
+    queryFn: async () => {
+      if (!user?.id) return null;
+      const { data, error } = await supabase
+        .from('resource_inventory')
+        .select('id, assignments, contract_start_date, contract_end_date')
+        .eq('profile_id', user.id)
+        .maybeSingle();
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!user?.id,
+  });
+
   // Reset form when user changes
   useEffect(() => {
     if (user) {
+      const currentYear = new Date().getFullYear();
+      const isPermanent = user.vendor?.toLowerCase() === 'permanent' || user.vendor?.toLowerCase() === 'permenant';
+      
       setFormData({
         full_name: user.full_name || '',
         email: user.email || '',
         vendor: user.vendor || '',
         location: user.location || '',
         country: user.country || '',
-        assignment: user.assignment_name || '',
         job_role: user.job_role || '',
         department: user.department_name || '',
-        contract_end_date: user.contract_end_date ? format(new Date(user.contract_end_date), 'yyyy-MM-dd') : '',
+        contract_start_date: isPermanent 
+          ? `${currentYear}-01-01` 
+          : (user.contract_start_date ? format(new Date(user.contract_start_date), 'yyyy-MM-dd') : ''),
+        contract_end_date: isPermanent 
+          ? `${currentYear}-12-31` 
+          : (user.contract_end_date ? format(new Date(user.contract_end_date), 'yyyy-MM-dd') : ''),
       });
       setSelectedRoleIds(user.roles.map(r => r.role_id));
     }
   }, [user]);
+
+  // Set assignments from inventory data
+  useEffect(() => {
+    if (userInventory?.assignments && Array.isArray(userInventory.assignments)) {
+      setSelectedAssignmentIds(userInventory.assignments as string[]);
+    } else {
+      setSelectedAssignmentIds([]);
+    }
+  }, [userInventory]);
+
+  // Auto-set contract dates when vendor changes to "Permanent"
+  const handleVendorChange = (value: string) => {
+    const isPermanent = value.toLowerCase() === 'permanent' || value.toLowerCase() === 'permenant';
+    const currentYear = new Date().getFullYear();
+    
+    if (isPermanent) {
+      setFormData(prev => ({
+        ...prev,
+        vendor: value === '__none__' ? '' : value,
+        contract_start_date: `${currentYear}-01-01`,
+        contract_end_date: `${currentYear}-12-31`,
+      }));
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        vendor: value === '__none__' ? '' : value,
+      }));
+    }
+  };
 
   // Update user mutation
   const updateUser = useMutation({
@@ -205,7 +258,6 @@ export function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
       const selectedVendor = vendors.find(v => v.name === formData.vendor);
       const selectedLocation = locations.find(l => l.name === formData.location);
       const selectedCountry = countries.find(c => c.name === formData.country);
-      const selectedAssignment = assignments.find(a => a.name === formData.assignment);
       const selectedJobRole = jobRoles.find(r => r.name === formData.job_role);
       const selectedDepartment = departments.find(d => d.name === formData.department);
 
@@ -220,6 +272,7 @@ export function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
           country: countryInfo?.name || formData.country || null,
           country_code: countryInfo?.code || selectedCountry?.code || null,
           country_flag_svg_url: countryInfo?.svg || null,
+          contract_start_date: formData.contract_start_date || null,
           contract_end_date: formData.contract_end_date || null,
           department_id: selectedDepartment?.id || null,
           updated_at: new Date().toISOString(),
@@ -245,10 +298,11 @@ export function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
             vendor_name: formData.vendor || null,
             location_id: selectedLocation?.id || null,
             country_id: selectedCountry?.id || null,
-            assignment_id: selectedAssignment?.id || null,
+            assignments: selectedAssignmentIds.length > 0 ? selectedAssignmentIds : null,
             department_id: selectedDepartment?.id || null,
             department_name: formData.department || null,
             role_name: formData.job_role || null,
+            contract_start_date: formData.contract_start_date || null,
             contract_end_date: formData.contract_end_date || null,
             updated_at: new Date().toISOString(),
           })
@@ -266,10 +320,11 @@ export function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
             vendor_name: formData.vendor || null,
             location_id: selectedLocation?.id || null,
             country_id: selectedCountry?.id || null,
-            assignment_id: selectedAssignment?.id || null,
+            assignments: selectedAssignmentIds.length > 0 ? selectedAssignmentIds : null,
             department_id: selectedDepartment?.id || null,
             department_name: formData.department || null,
             role_name: formData.job_role || null,
+            contract_start_date: formData.contract_start_date || null,
             contract_end_date: formData.contract_end_date || null,
             is_active: true,
           });
@@ -455,7 +510,7 @@ export function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
                 <Label htmlFor="vendor">Vendor</Label>
                 <Select
                   value={formData.vendor || '__none__'}
-                  onValueChange={(value) => setFormData(prev => ({ ...prev, vendor: value === '__none__' ? '' : value }))}
+                  onValueChange={handleVendorChange}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select vendor" />
@@ -469,42 +524,61 @@ export function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
                 </Select>
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="contract_end_date">Contract End Date</Label>
-                <Input
-                  id="contract_end_date"
-                  type="date"
-                  value={formData.contract_end_date}
-                  onChange={(e) => setFormData(prev => ({ ...prev, contract_end_date: e.target.value }))}
-                />
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="contract_start_date">Contract Start Date</Label>
+                  <Input
+                    id="contract_start_date"
+                    type="date"
+                    value={formData.contract_start_date}
+                    onChange={(e) => setFormData(prev => ({ ...prev, contract_start_date: e.target.value }))}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="contract_end_date">Contract End Date</Label>
+                  <Input
+                    id="contract_end_date"
+                    type="date"
+                    value={formData.contract_end_date}
+                    onChange={(e) => setFormData(prev => ({ ...prev, contract_end_date: e.target.value }))}
+                  />
+                </div>
               </div>
             </div>
 
             <Separator />
 
-            {/* Assignment Section */}
+            {/* Assignment Section - Multi-select */}
             <div className="space-y-4">
               <h3 className="text-sm font-medium text-muted-foreground flex items-center gap-2">
                 <Briefcase className="h-4 w-4" />
-                Assignment
+                Assignments
               </h3>
 
               <div className="space-y-2">
-                <Label htmlFor="assignment">Assignment</Label>
-                <Select
-                  value={formData.assignment || '__none__'}
-                  onValueChange={(value) => setFormData(prev => ({ ...prev, assignment: value === '__none__' ? '' : value }))}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select assignment" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="__none__">Not assigned</SelectItem>
-                    {assignments.map((a) => (
-                      <SelectItem key={a.id} value={a.name}>{a.name}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Label>Assignments (select multiple)</Label>
+                <div className="flex flex-wrap gap-2">
+                  {assignments.map((a) => (
+                    <Badge
+                      key={a.id}
+                      variant={selectedAssignmentIds.includes(a.id) ? "default" : "outline"}
+                      className="cursor-pointer transition-colors"
+                      onClick={() => {
+                        setSelectedAssignmentIds(prev =>
+                          prev.includes(a.id)
+                            ? prev.filter(id => id !== a.id)
+                            : [...prev, a.id]
+                        );
+                      }}
+                    >
+                      {selectedAssignmentIds.includes(a.id) && '✓ '}
+                      {a.name}
+                    </Badge>
+                  ))}
+                </div>
+                {selectedAssignmentIds.length === 0 && (
+                  <p className="text-xs text-muted-foreground">Click on an assignment to add it</p>
+                )}
               </div>
             </div>
 
