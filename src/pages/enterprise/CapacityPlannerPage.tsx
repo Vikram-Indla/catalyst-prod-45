@@ -102,7 +102,7 @@ export default function CapacityPlannerPage() {
   const [period, setPeriod] = useState<PeriodType>('monthly');
   const [groupBy, setGroupBy] = useState<GroupByType>('none');
   const [searchQuery, setSearchQuery] = useState('');
-  const [departmentFilter, setDepartmentFilter] = useState<'all' | 'delivery' | 'product' | 'support'>('delivery'); // Default to Delivery Only
+  const [departmentFilter, setDepartmentFilter] = useState<'all' | 'delivery' | 'product' | 'support'>('all'); // Default to All Tracks
   const [activeFilter, setActiveFilter] = useState<'all' | 'available' | 'atCapacity' | 'over'>('all');
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [compactMode, setCompactMode] = useState(false);
