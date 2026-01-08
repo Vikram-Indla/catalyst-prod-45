@@ -54,7 +54,7 @@ export function CatyChatWidget() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { user } = useAuth();
 
-  // Fetch capacity stats from database
+  // Fetch capacity stats from database - aligned with /admin/users data source
   const fetchCapacityStats = useCallback(async () => {
     const now = new Date();
     const thirtyDays = new Date(now);
@@ -67,6 +67,18 @@ export function CatyChatWidget() {
       .from('profiles')
       .select('id, full_name, department_id, contract_end_date, vendor');
 
+    // Fetch resource_inventory (authoritative source for contract dates per /admin/users)
+    const { data: resourceInventory } = await supabase
+      .from('resource_inventory')
+      .select('profile_id, contract_start_date, contract_end_date, vendor_name, role_name');
+
+    // Create lookup map by profile_id
+    const inventoryByProfileId = new Map(
+      (resourceInventory || [])
+        .filter(r => r.profile_id)
+        .map(r => [r.profile_id, r])
+    );
+
     // Fetch departments
     const { data: departments } = await supabase
       .from('capacity_departments')
@@ -75,7 +87,7 @@ export function CatyChatWidget() {
 
     if (!profiles || !departments) return;
 
-    // Calculate stats
+    // Calculate stats using merged data (resource_inventory takes precedence)
     let critical = 0;
     let warning = 0;
     const deptStats: Record<string, { count: number; critical: number; warning: number }> = {};
@@ -90,8 +102,12 @@ export function CatyChatWidget() {
         deptStats[p.department_id].count++;
       }
 
-      if (p.contract_end_date) {
-        const endDate = new Date(p.contract_end_date);
+      // Use resource_inventory contract_end_date if available, fallback to profiles
+      const inventory = inventoryByProfileId.get(p.id);
+      const contractEndDate = inventory?.contract_end_date || p.contract_end_date;
+
+      if (contractEndDate) {
+        const endDate = new Date(contractEndDate);
         if (endDate <= thirtyDays) {
           critical++;
           if (p.department_id && deptStats[p.department_id]) {
@@ -124,16 +140,23 @@ export function CatyChatWidget() {
     });
   }, []);
 
-  // Initial fetch and real-time subscription
+  // Initial fetch and real-time subscription to both profiles AND resource_inventory
   useEffect(() => {
     fetchCapacityStats();
 
-    // Subscribe to real-time changes on profiles table
+    // Subscribe to real-time changes on profiles AND resource_inventory tables
     const channel = supabase
       .channel('caty-capacity-updates')
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'profiles' },
+        () => {
+          fetchCapacityStats();
+        }
+      )
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'resource_inventory' },
         () => {
           fetchCapacityStats();
         }
@@ -210,6 +233,45 @@ export function CatyChatWidget() {
     const ninetyDays = new Date(now);
     ninetyDays.setDate(ninetyDays.getDate() + 90);
 
+    // Helper: Fetch merged resource data (profiles + resource_inventory) - same logic as /admin/users
+    const fetchMergedResources = async (filter?: { nameSearch?: string; limit?: number }) => {
+      let profilesQuery = supabase
+        .from('profiles')
+        .select('id, full_name, vendor, contract_end_date, contract_start_date, department_id, country, location');
+      
+      if (filter?.nameSearch) {
+        profilesQuery = profilesQuery.ilike('full_name', `%${filter.nameSearch}%`);
+      }
+      if (filter?.limit) {
+        profilesQuery = profilesQuery.limit(filter.limit);
+      }
+      
+      const { data: profiles } = await profilesQuery;
+      
+      // Fetch resource_inventory for authoritative contract dates
+      const { data: resourceInventory } = await supabase
+        .from('resource_inventory')
+        .select('profile_id, contract_start_date, contract_end_date, vendor_name, role_name');
+      
+      const inventoryByProfileId = new Map(
+        (resourceInventory || [])
+          .filter(r => r.profile_id)
+          .map(r => [r.profile_id, r])
+      );
+      
+      return (profiles || []).map(p => {
+        const inventory = inventoryByProfileId.get(p.id);
+        return {
+          ...p,
+          // resource_inventory takes precedence (authoritative source)
+          contract_start_date: inventory?.contract_start_date || p.contract_start_date,
+          contract_end_date: inventory?.contract_end_date || p.contract_end_date,
+          vendor: inventory?.vendor_name || p.vendor,
+          role_name: inventory?.role_name || null,
+        };
+      });
+    };
+
     // Extract person name from various query patterns
     const extractName = (q: string): string | null => {
       // Pattern: "Which country [Name] is from?" or "Where is [Name] from?"
@@ -232,17 +294,16 @@ export function CatyChatWidget() {
     
     // Check if query is about contract
     const isContractQuery = lowerQuery.includes('contract') || lowerQuery.includes('expir') || lowerQuery.includes('ending');
+    
+    // Check if query is about role
+    const isRoleQuery = lowerQuery.includes('role') || lowerQuery.includes('position') || lowerQuery.includes('job');
 
     const searchName = extractName(query);
     
     if (searchName && searchName.length >= 2) {
-      const { data: personResults } = await supabase
-        .from('profiles')
-        .select('full_name, vendor, contract_end_date, contract_start_date, department_id, country, location')
-        .ilike('full_name', `%${searchName}%`)
-        .limit(5);
+      const personResults = await fetchMergedResources({ nameSearch: searchName, limit: 5 });
       
-      if (personResults && personResults.length > 0) {
+      if (personResults.length > 0) {
         // If asking about country specifically
         if (isCountryQuery) {
           if (personResults.length === 1) {
@@ -255,12 +316,24 @@ export function CatyChatWidget() {
           }
         }
         
+        // If asking about role specifically
+        if (isRoleQuery) {
+          if (personResults.length === 1) {
+            const p = personResults[0];
+            return `**${p.full_name}**'s role is **${p.role_name || 'Not assigned'}**.`;
+          } else {
+            return `**Found ${personResults.length} people matching "${searchName}":**\n\n${personResults.map(p => 
+              `• **${p.full_name}** — ${p.role_name || 'No role'}`
+            ).join('\n')}`;
+          }
+        }
+        
         // If asking about contract specifically
         if (isContractQuery || personResults.length === 1) {
           if (personResults.length === 1) {
             const p = personResults[0];
             const endDate = p.contract_end_date ? formatContractDate(p.contract_end_date) : 'Not set';
-            return `**${p.full_name}**\n\n• **Vendor:** ${p.vendor || 'N/A'}\n• **Contract End Date:** ${endDate}\n• **Contract Start Date:** ${p.contract_start_date ? formatContractDate(p.contract_start_date) : 'N/A'}`;
+            return `**${p.full_name}**\n\n• **Vendor:** ${p.vendor || 'N/A'}\n• **Role:** ${p.role_name || 'N/A'}\n• **Contract End Date:** ${endDate}\n• **Contract Start Date:** ${p.contract_start_date ? formatContractDate(p.contract_start_date) : 'N/A'}`;
           } else {
             return `**Found ${personResults.length} people matching "${searchName}":**\n\n${personResults.map(p => 
               `• **${p.full_name}** (${p.vendor || 'N/A'}) — Contract ends ${p.contract_end_date ? formatContractDate(p.contract_end_date) : 'Not set'}`
@@ -271,10 +344,10 @@ export function CatyChatWidget() {
         // General person info
         if (personResults.length === 1) {
           const p = personResults[0];
-          return `**${p.full_name}**\n\n• **Vendor:** ${p.vendor || 'N/A'}\n• **Country:** ${p.country || 'N/A'}\n• **Contract End:** ${p.contract_end_date ? formatContractDate(p.contract_end_date) : 'Not set'}`;
+          return `**${p.full_name}**\n\n• **Vendor:** ${p.vendor || 'N/A'}\n• **Role:** ${p.role_name || 'N/A'}\n• **Country:** ${p.country || 'N/A'}\n• **Contract End:** ${p.contract_end_date ? formatContractDate(p.contract_end_date) : 'Not set'}`;
         } else {
           return `**Found ${personResults.length} people matching "${searchName}":**\n\n${personResults.map(p => 
-            `• **${p.full_name}** (${p.vendor || 'N/A'}) — ${p.country || 'N/A'}`
+            `• **${p.full_name}** (${p.vendor || 'N/A'}) — ${p.role_name || 'N/A'}`
           ).join('\n')}`;
         }
       }
