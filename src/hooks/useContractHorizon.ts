@@ -56,13 +56,14 @@ export function useContractHorizon() {
           id,
           name,
           role_name,
-          department_name,
+          department_id,
           vendor_name,
           contract_start_date,
           contract_end_date,
           profile_id,
           country_id,
-          location_id
+          location_id,
+          capacity_departments:department_id(name)
         `)
         .not('contract_end_date', 'is', null)
         .gte('contract_end_date', TODAY.toISOString().split('T')[0]);
@@ -79,7 +80,7 @@ export function useContractHorizon() {
           id: r.id,
           name: r.name || 'Unknown',
           role: r.role_name || 'Team Member',
-          department: r.department_name || 'Unassigned',
+          department: (r.capacity_departments as any)?.name || 'Unassigned',
           vendor: r.vendor_name || 'Unknown',
           country: 'Saudi Arabia',
           location: r.location_id ? 'Off-shore' : 'On-site',
