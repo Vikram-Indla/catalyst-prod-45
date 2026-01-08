@@ -55,6 +55,7 @@ export function CatyChatWidget() {
   const { user } = useAuth();
 
   // Fetch capacity stats from database - aligned with /admin/users data source
+  // IMPORTANT: Use resource_inventory as the source of truth (72 resources), NOT profiles (37)
   const fetchCapacityStats = useCallback(async () => {
     const now = new Date();
     const thirtyDays = new Date(now);
@@ -62,22 +63,10 @@ export function CatyChatWidget() {
     const ninetyDays = new Date(now);
     ninetyDays.setDate(ninetyDays.getDate() + 90);
 
-    // Fetch all profiles with contract data
-    const { data: profiles } = await supabase
-      .from('profiles')
-      .select('id, full_name, department_id, contract_end_date, vendor');
-
-    // Fetch resource_inventory (authoritative source for contract dates per /admin/users)
+    // Fetch resource_inventory - this is the authoritative source for /admin/users
     const { data: resourceInventory } = await supabase
       .from('resource_inventory')
-      .select('profile_id, contract_start_date, contract_end_date, vendor_name, role_name');
-
-    // Create lookup map by profile_id
-    const inventoryByProfileId = new Map(
-      (resourceInventory || [])
-        .filter(r => r.profile_id)
-        .map(r => [r.profile_id, r])
-    );
+      .select('id, profile_id, department_id, contract_start_date, contract_end_date, vendor_id');
 
     // Fetch departments
     const { data: departments } = await supabase
@@ -85,9 +74,9 @@ export function CatyChatWidget() {
       .select('id, name')
       .order('sort_order');
 
-    if (!profiles || !departments) return;
+    if (!resourceInventory || !departments) return;
 
-    // Calculate stats using merged data (resource_inventory takes precedence)
+    // Calculate stats from resource_inventory (source of truth)
     let critical = 0;
     let warning = 0;
     const deptStats: Record<string, { count: number; critical: number; warning: number }> = {};
@@ -97,26 +86,24 @@ export function CatyChatWidget() {
       deptStats[d.id] = { count: 0, critical: 0, warning: 0 };
     });
 
-    profiles.forEach(p => {
-      if (p.department_id && deptStats[p.department_id]) {
-        deptStats[p.department_id].count++;
+    resourceInventory.forEach(r => {
+      // Count by department
+      if (r.department_id && deptStats[r.department_id]) {
+        deptStats[r.department_id].count++;
       }
 
-      // Use resource_inventory contract_end_date if available, fallback to profiles
-      const inventory = inventoryByProfileId.get(p.id);
-      const contractEndDate = inventory?.contract_end_date || p.contract_end_date;
-
-      if (contractEndDate) {
-        const endDate = new Date(contractEndDate);
+      // Check contract end dates
+      if (r.contract_end_date) {
+        const endDate = new Date(r.contract_end_date);
         if (endDate <= thirtyDays) {
           critical++;
-          if (p.department_id && deptStats[p.department_id]) {
-            deptStats[p.department_id].critical++;
+          if (r.department_id && deptStats[r.department_id]) {
+            deptStats[r.department_id].critical++;
           }
         } else if (endDate <= ninetyDays) {
           warning++;
-          if (p.department_id && deptStats[p.department_id]) {
-            deptStats[p.department_id].warning++;
+          if (r.department_id && deptStats[r.department_id]) {
+            deptStats[r.department_id].warning++;
           }
         }
       }
@@ -133,7 +120,7 @@ export function CatyChatWidget() {
     }));
 
     setStats({
-      total: profiles.length,
+      total: resourceInventory.length, // Use resource_inventory count (72), not profiles (37)
       critical,
       warning,
       departments: departmentList,
