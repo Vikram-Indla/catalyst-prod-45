@@ -220,9 +220,17 @@ export function useAiGovernanceAdmin() {
   // Contracts CRUD
   const createContract = useMutation({
     mutationFn: async (contract: Partial<AiContract>) => {
+      const insertData = {
+        name: contract.name!,
+        domain: contract.domain!,
+        description: contract.description,
+        is_active: contract.is_active ?? true,
+        created_by: contract.created_by,
+        updated_by: contract.updated_by,
+      };
       const { data, error } = await supabase
         .from('ai_contracts')
-        .insert(contract)
+        .insert(insertData)
         .select()
         .single();
       if (error) throw error;
@@ -251,9 +259,15 @@ export function useAiGovernanceAdmin() {
   // Route Scopes CRUD
   const createRouteScope = useMutation({
     mutationFn: async (scope: Partial<AiRouteScope>) => {
+      const insertData = {
+        contract_id: scope.contract_id!,
+        route: scope.route!,
+        allowed_intents: scope.allowed_intents ?? [],
+        is_active: scope.is_active ?? true,
+      };
       const { data, error } = await supabase
         .from('ai_route_scopes')
-        .insert(scope)
+        .insert(insertData)
         .select()
         .single();
       if (error) throw error;
@@ -292,9 +306,17 @@ export function useAiGovernanceAdmin() {
   // Table Allowlist CRUD
   const createTableEntry = useMutation({
     mutationFn: async (entry: Partial<AiTableAllowlist>) => {
+      const insertData = {
+        contract_id: entry.contract_id!,
+        table_name: entry.table_name!,
+        allowed_columns: entry.allowed_columns ?? [],
+        join_keys: entry.join_keys ?? {},
+        pii_level: entry.pii_level ?? 'none',
+        is_active: entry.is_active ?? true,
+      };
       const { data, error } = await supabase
         .from('ai_table_allowlist')
-        .insert(entry)
+        .insert(insertData)
         .select()
         .single();
       if (error) throw error;
@@ -333,12 +355,26 @@ export function useAiGovernanceAdmin() {
   // Semantic Dictionary CRUD
   const createSemanticEntry = useMutation({
     mutationFn: async (entry: Partial<AiSemanticDictionary>) => {
+      const insertData: {
+        contract_id: string;
+        canonical_concept: string;
+        ui_label: string;
+        synonyms: string[];
+        resolution: unknown;
+        threshold: number;
+        is_active: boolean;
+      } = {
+        contract_id: entry.contract_id!,
+        canonical_concept: entry.canonical_concept!,
+        ui_label: entry.ui_label!,
+        synonyms: entry.synonyms ?? [],
+        resolution: (entry.resolution ?? []) as unknown,
+        threshold: entry.threshold ?? 0.78,
+        is_active: entry.is_active ?? true,
+      };
       const { data, error } = await supabase
         .from('ai_semantic_dictionary')
-        .insert({
-          ...entry,
-          resolution: JSON.stringify(entry.resolution)
-        })
+        .insert(insertData as any)
         .select()
         .single();
       if (error) throw error;
