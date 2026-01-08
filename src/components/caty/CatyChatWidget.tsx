@@ -348,13 +348,11 @@ export function CatyChatWidget({
           </div>
         </div>
 
-        {/* Chat Body - Light Mode */}
+        {/* Chat Body */}
         <div className="flex-1 overflow-y-auto p-4 bg-muted/30">
-          {/* Greeting Message */}
-          <div className="flex gap-3 animate-[message-in_0.5s_cubic-bezier(0.16,1,0.3,1)]">
-            <CatyOrb size="sm" showParticles={false} showStatusDot={false} />
-            
-            <div className="flex-1 p-4 rounded-[6px_16px_16px_16px] bg-card border border-border shadow-sm">
+          {/* Greeting Message - No redundant avatar */}
+          <div className="animate-[message-in_0.5s_cubic-bezier(0.16,1,0.3,1)]">
+            <div className="p-4 rounded-xl bg-card border border-border shadow-sm">
               <h3 className="text-lg font-bold text-foreground tracking-tight mb-0.5">
                 {getGreeting()}, {getUserFirstName()}! 👋
               </h3>
@@ -437,24 +435,6 @@ export function CatyChatWidget({
                   ))}
                 </div>
               </div>
-
-              {/* Suggestions */}
-              <div className="mt-4 pt-3 border-t border-border">
-                <div className="text-[11px] font-semibold text-muted-foreground uppercase tracking-widest mb-2">
-                  Ask me about
-                </div>
-                <div className="flex flex-wrap gap-1.5">
-                  {suggestions.map((suggestion) => (
-                    <button
-                      key={suggestion}
-                      onClick={() => handleSuggestionClick(suggestion)}
-                      className="px-3 py-2 text-xs font-medium text-muted-foreground rounded-full transition-all duration-200 hover:border-teal-500 hover:text-teal-600 hover:bg-teal-500/10 bg-card border border-border"
-                    >
-                      {suggestion}
-                    </button>
-                  ))}
-                </div>
-              </div>
             </div>
           </div>
 
@@ -463,20 +443,16 @@ export function CatyChatWidget({
             <div 
               key={message.id} 
               className={cn(
-                "flex gap-3 mt-4 animate-[message-in_0.3s_cubic-bezier(0.16,1,0.3,1)]",
-                message.type === 'user' && "flex-row-reverse"
+                "mt-3 animate-[message-in_0.3s_cubic-bezier(0.16,1,0.3,1)]",
+                message.type === 'user' && "flex justify-end"
               )}
             >
-              {message.type === 'assistant' && (
-                <CatyOrb size="sm" showParticles={false} showStatusDot={false} />
-              )}
-              
               <div 
                 className={cn(
-                  "flex-1 p-3 shadow-sm max-w-[85%]",
+                  "p-3 shadow-sm",
                   message.type === 'user' 
-                    ? "rounded-[16px_6px_16px_16px] bg-teal-600 text-white ml-auto" 
-                    : "rounded-[6px_16px_16px_16px] bg-card border border-border"
+                    ? "rounded-xl bg-teal-600 text-white max-w-[85%]" 
+                    : "rounded-xl bg-card border border-border"
                 )}
               >
                 <div className={cn(
@@ -491,9 +467,8 @@ export function CatyChatWidget({
 
           {/* Typing indicator */}
           {isTyping && (
-            <div className="flex gap-3 mt-4 animate-[message-in_0.3s_cubic-bezier(0.16,1,0.3,1)]">
-              <CatyOrb size="sm" showParticles={false} showStatusDot={false} />
-              <div className="p-3 rounded-[6px_16px_16px_16px] bg-card border border-border">
+            <div className="mt-3 animate-[message-in_0.3s_cubic-bezier(0.16,1,0.3,1)]">
+              <div className="p-3 rounded-xl bg-card border border-border inline-block">
                 <div className="flex gap-1">
                   <span className="w-2 h-2 bg-muted-foreground/50 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
                   <span className="w-2 h-2 bg-muted-foreground/50 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
@@ -506,20 +481,37 @@ export function CatyChatWidget({
           <div ref={messagesEndRef} />
         </div>
 
-        {/* Input Area - Fixed border issue */}
+        {/* Input Area with Suggestions */}
         <div className="p-3 pb-4 bg-background border-t border-border shrink-0">
-          <div className="flex items-center gap-2 rounded-xl bg-muted/50 p-1 pl-3">
+          {/* Quick Suggestions - closer to input */}
+          <div className="mb-2">
+            <div className="flex flex-wrap gap-1.5">
+              {suggestions.map((suggestion) => (
+                <button
+                  key={suggestion}
+                  onClick={() => handleSuggestionClick(suggestion)}
+                  className="px-2.5 py-1.5 text-xs font-medium text-muted-foreground rounded-full transition-all duration-200 hover:border-teal-500 hover:text-teal-600 hover:bg-teal-500/10 bg-muted/50 border border-border"
+                >
+                  {suggestion}
+                </button>
+              ))}
+            </div>
+          </div>
+          
+          {/* Input field - more prominent */}
+          <div className="flex items-center gap-2 rounded-xl bg-card border-2 border-border p-1.5 pl-4 focus-within:border-teal-500 transition-colors">
             <input
               type="text"
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder="Ask Caty about capacity..."
-              className="flex-1 bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground border-none focus:outline-none focus:ring-0"
+              className="flex-1 bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground"
             />
             <button 
               onClick={handleSend}
-              className="w-10 h-10 rounded-lg flex items-center justify-center text-white transition-all duration-250 hover:scale-105 shrink-0"
+              disabled={!inputValue.trim()}
+              className="w-10 h-10 rounded-lg flex items-center justify-center text-white transition-all duration-250 hover:scale-105 shrink-0 disabled:opacity-50 disabled:hover:scale-100"
               style={{
                 background: 'linear-gradient(135deg, #14b8a6, #06b6d4)',
                 boxShadow: '0 4px 12px rgba(20, 184, 166, 0.3)'
