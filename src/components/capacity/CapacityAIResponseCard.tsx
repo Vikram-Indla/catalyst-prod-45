@@ -6,7 +6,7 @@
  */
 
 import React from 'react';
-import { Check, X, AlertTriangle, ExternalLink, Wrench, Shield, Radio, UserCog, Bot } from 'lucide-react';
+import { Check, X, AlertTriangle, ExternalLink, Wrench } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export interface AIResponseData {
@@ -73,35 +73,6 @@ export function CapacityAIResponseCard({ data, onAction }: CapacityAIResponseCar
 
   return (
     <div className="w-full rounded-lg overflow-hidden border border-[#C8CCD0] dark:border-[#1A1A1A]/50 bg-white dark:bg-[#1A1A1A]">
-      {/* Header */}
-      <div className="px-4 py-3 border-b border-[#C8CCD0] dark:border-[#C8CCD0]/20 bg-[#1A1A1A] dark:bg-[#1A1A1A]">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-full bg-[#5C7C5C] flex items-center justify-center shadow-md">
-              <Bot className="w-5 h-5 text-white" />
-            </div>
-            <div>
-              <h3 className="text-sm font-bold text-white tracking-wide">Caty</h3>
-              <p className="text-[9px] text-[#C69C6D] uppercase tracking-widest">Capacity AI</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider bg-[#5C7C5C]/20 text-[#5C7C5C] rounded">
-              <Shield className="w-3 h-3" />
-              Verified
-            </span>
-            <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider bg-[#C69C6D]/20 text-[#C69C6D] rounded">
-              <Radio className="w-3 h-3" />
-              Live
-            </span>
-            <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider bg-[#8B7355]/20 text-[#8B7355] rounded">
-              <UserCog className="w-3 h-3" />
-              Admin-backed
-            </span>
-          </div>
-        </div>
-      </div>
-
       {/* Direct Answer Section */}
       <div className={`px-4 py-4 ${statusStyles.bg} border-l-4 ${statusStyles.border}`}>
         <div className="flex items-start gap-3">

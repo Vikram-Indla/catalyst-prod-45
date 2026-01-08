@@ -5,11 +5,12 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { cn } from '@/lib/utils';
-import { X, Send, Bot, RotateCcw } from 'lucide-react';
+import { X, Send, Bot, RotateCcw, Shield, Radio, UserCog } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { CapacityAIResponseCard, AIResponseData } from './CapacityAIResponseCard';
 import { useNavigate } from 'react-router-dom';
+import { supabase } from '@/integrations/supabase/client';
 
 interface Message {
   id: string;
@@ -33,25 +34,33 @@ const QUICK_ACTIONS = [
   { id: 'forecast', label: 'Forecast' },
 ];
 
-const INITIAL_MESSAGE: Message = {
+const getTimeBasedGreeting = () => {
+  const hour = new Date().getHours();
+  if (hour < 12) return 'Good morning';
+  if (hour < 17) return 'Good afternoon';
+  return 'Good evening';
+};
+
+const getInitialMessage = (userName: string): Message => ({
   id: '1',
   role: 'assistant',
   content: '',
   structuredData: {
     directAnswer: {
-      value: 'Ready to analyze your capacity data',
+      value: `${getTimeBasedGreeting()}, ${userName}!`,
       status: 'success',
     },
     context: [
+      { label: 'Status', value: 'Ready to analyze your capacity data' },
       { label: 'Data Source', value: 'Catalyst Database' },
-      { label: 'Mode', value: 'Structured Responses Only' },
     ],
   },
   timestamp: new Date(),
-};
+});
 
 export function CapacityAIDrawer({ isOpen, onClose }: CapacityAIDrawerProps) {
-  const [messages, setMessages] = useState<Message[]>([INITIAL_MESSAGE]);
+  const [userName, setUserName] = useState('there');
+  const [messages, setMessages] = useState<Message[]>([getInitialMessage('there')]);
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -59,8 +68,24 @@ export function CapacityAIDrawer({ isOpen, onClose }: CapacityAIDrawerProps) {
   const { toast } = useToast();
   const navigate = useNavigate();
 
+  // Fetch logged-in user's name
+  useEffect(() => {
+    const fetchUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const name = user.user_metadata?.full_name || 
+                     user.user_metadata?.name || 
+                     user.email?.split('@')[0] || 
+                     'there';
+        setUserName(name);
+        setMessages([getInitialMessage(name)]);
+      }
+    };
+    fetchUser();
+  }, []);
+
   const handleClearChat = () => {
-    setMessages([{ ...INITIAL_MESSAGE, id: Date.now().toString(), timestamp: new Date() }]);
+    setMessages([{ ...getInitialMessage(userName), id: Date.now().toString(), timestamp: new Date() }]);
     setInputValue('');
   };
 
