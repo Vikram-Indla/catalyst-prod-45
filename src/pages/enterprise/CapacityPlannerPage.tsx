@@ -700,6 +700,21 @@ export default function CapacityPlannerPage() {
                     allocations={allocations}
                     year={2026}
                     onEditResource={handleOpenAllocationModal}
+                    groupBy={groupBy}
+                    groupedByAssignment={Object.fromEntries(
+                      Object.entries(groupedByAssignment).map(([key, resources]) => [
+                        key,
+                        resources.map(r => ({
+                          id: r.id,
+                          name: r.name,
+                          role: r.role,
+                          department: r.department,
+                          allocation: r.allocation,
+                          contractEndDate: (r as any).contract_end_date || (r as any).contractEndDate || null,
+                          assignmentName: r.assignmentName,
+                        }))
+                      ])
+                    )}
                   />
                 </motion.div>
               )}
@@ -1438,6 +1453,21 @@ export default function CapacityPlannerPage() {
                   allocations={allocations}
                   year={2026}
                   onEditResource={() => {}}
+                  groupBy={groupBy}
+                  groupedByAssignment={Object.fromEntries(
+                    Object.entries(groupedByAssignment).map(([key, resources]) => [
+                      key,
+                      resources.map(r => ({
+                        id: r.id,
+                        name: r.name,
+                        role: r.role,
+                        department: r.department,
+                        allocation: r.allocation,
+                        contractEndDate: (r as any).contract_end_date || (r as any).contractEndDate || null,
+                        assignmentName: r.assignmentName,
+                      }))
+                    ])
+                  )}
                 />
               )}
             </div>

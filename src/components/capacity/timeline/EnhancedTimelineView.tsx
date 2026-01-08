@@ -43,12 +43,16 @@ interface TimelinePeriod {
   isCurrent: boolean;
 }
 
+type GroupByType = 'none' | 'assignment' | 'department';
+
 interface EnhancedTimelineViewProps {
   resources: ResourceMetric[];
   allocations?: ResourceAllocation[];
   year?: number;
   onEditResource?: (id: string) => void;
   className?: string;
+  groupBy?: GroupByType;
+  groupedByAssignment?: Record<string, ResourceMetric[]>;
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -225,6 +229,8 @@ export function EnhancedTimelineView({
   year = 2026,
   onEditResource,
   className,
+  groupBy = 'none',
+  groupedByAssignment = {},
 }: EnhancedTimelineViewProps) {
   
   // Generate months for timeline (full year Jan-Dec)
@@ -364,119 +370,252 @@ export function EnhancedTimelineView({
           </div>
         </div>
 
-      {/* Body */}
-      <div className={styles.timelineBody}>
-        {resources.map((resource) => {
-          const resourceAllocations = allocationsByResource.get(resource.id) || [];
-          const contractInfo = getContractStatus(resource.contractEndDate);
-          const contractMarkerLeft = getContractMarkerPosition(resource.contractEndDate);
-          
-          const isRowCritical = contractInfo.status === 'critical';
-          const hasNoAllocations = resourceAllocations.length === 0;
-
-          return (
-            <div
-              key={resource.id}
-              className={cn(
-                styles.timelineRow,
-                isRowCritical && styles.rowCritical,
-                hasNoAllocations && styles.rowAvailable
-              )}
-            >
-              {/* Resource Column */}
-              <div className={styles.resourceColumn}>
-                <ResourceAvatar
-                  initials={getInitials(resource.name)}
-                  contractEndDate={resource.contractEndDate}
-                />
-                <div className={styles.resourceInfo}>
-                  <div className={styles.textResourceName}>{resource.name}</div>
-                  <div className={styles.textResourceRole}>{resource.role || 'Team Member'}</div>
+      {/* Body - Grouped or Ungrouped */}
+      {groupBy === 'assignment' && Object.keys(groupedByAssignment).length > 0 ? (
+        // Grouped by Assignment
+        <div className="space-y-4">
+          {Object.entries(groupedByAssignment).map(([assignmentName, groupResources]) => (
+            <div key={assignmentName} className="border border-border rounded-lg overflow-hidden bg-card">
+              {/* Group Header */}
+              <div className="px-4 py-3 bg-muted/50 border-b border-border flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <span className="font-semibold text-sm text-foreground">{assignmentName}</span>
+                  <span className="text-xs text-muted-foreground">
+                    {groupResources.length} resource{groupResources.length !== 1 ? 's' : ''}
+                  </span>
                 </div>
               </div>
-
-              {/* Timeline Cells */}
-              <div className={styles.timelineCells}>
-                {/* Month grid cells */}
-                {months.map(month => {
-                  const hasAlloc = hasAllocationInMonth(resource.id, month);
-                  const isLocked = isMonthLocked(resource.contractEndDate, month);
+              {/* Group Timeline */}
+              <div className={styles.timelineBody}>
+                {groupResources.map((resource) => {
+                  const resourceAllocations = allocationsByResource.get(resource.id) || [];
+                  const contractInfo = getContractStatus(resource.contractEndDate);
+                  const contractMarkerLeft = getContractMarkerPosition(resource.contractEndDate);
                   
+                  const isRowCritical = contractInfo.status === 'critical';
+                  const hasNoAllocations = resourceAllocations.length === 0;
+
                   return (
                     <div
-                      key={month.key}
+                      key={resource.id}
                       className={cn(
-                        styles.timelineCell,
-                        month.isCurrent && styles.timelineCellCurrent
+                        styles.timelineRow,
+                        isRowCritical && styles.rowCritical,
+                        hasNoAllocations && styles.rowAvailable
                       )}
                     >
-                      {/* Show available cell only if no allocation and not locked */}
-                      {!hasAlloc && !isLocked && (
-                        <AvailableCell onClick={() => onEditResource?.(resource.id)} />
-                      )}
+                      {/* Resource Column */}
+                      <div className={styles.resourceColumn}>
+                        <ResourceAvatar
+                          initials={getInitials(resource.name)}
+                          contractEndDate={resource.contractEndDate}
+                        />
+                        <div className={styles.resourceInfo}>
+                          <div className={styles.textResourceName}>{resource.name}</div>
+                          <div className={styles.textResourceRole}>{resource.role || 'Team Member'}</div>
+                        </div>
+                      </div>
+
+                      {/* Timeline Cells */}
+                      <div className={styles.timelineCells}>
+                        {/* Month grid cells */}
+                        {months.map(month => {
+                          const hasAlloc = hasAllocationInMonth(resource.id, month);
+                          const isLocked = isMonthLocked(resource.contractEndDate, month);
+                          
+                          return (
+                            <div
+                              key={month.key}
+                              className={cn(
+                                styles.timelineCell,
+                                month.isCurrent && styles.timelineCellCurrent
+                              )}
+                            >
+                              {/* Show available cell only if no allocation and not locked */}
+                              {!hasAlloc && !isLocked && (
+                                <AvailableCell onClick={() => onEditResource?.(resource.id)} />
+                              )}
+                            </div>
+                          );
+                        })}
+
+                        {/* Allocation Bars - Draggable */}
+                        {resourceAllocations.map((alloc, idx) => {
+                          return (
+                            <DraggableAllocationBar
+                              key={alloc.id || idx}
+                              allocation={{
+                                id: alloc.id,
+                                start_date: alloc.start_date,
+                                end_date: alloc.end_date,
+                                allocation_percent: alloc.allocation_percent,
+                                assignment_name: alloc.assignment_name,
+                                profile_id: alloc.profile_id,
+                              }}
+                              timelineStartDate={timelineStartDate}
+                              timelineEndDate={timelineEndDate}
+                              totalWidth={totalWidth}
+                              rowIndex={idx}
+                              totalBars={resourceAllocations.length}
+                              onDragStart={() => setIsDraggingAny(true)}
+                              onDragEnd={() => setIsDraggingAny(false)}
+                              onClick={() => onEditResource?.(resource.id)}
+                            />
+                          );
+                        })}
+
+                        {/* Contract End Marker */}
+                        {contractMarkerLeft !== null && 
+                         contractInfo.status !== 'permanent' && 
+                         contractInfo.status !== 'expired' && (
+                          <ContractMarker
+                            leftPx={contractMarkerLeft}
+                            status={contractInfo.status as 'healthy' | 'warning' | 'critical'}
+                            date={resource.contractEndDate!}
+                          />
+                        )}
+
+                        {/* Locked Zone with Contract End Date */}
+                        {contractMarkerLeft !== null && resource.contractEndDate && (
+                          <div
+                            className={styles.lockedZone}
+                            style={{
+                              left: contractMarkerLeft,
+                              right: 0,
+                            }}
+                          >
+                            <div className={styles.lockedZoneBadge}>
+                              Contract ends {new Date(resource.contractEndDate).toLocaleDateString('en-US', { 
+                                month: 'short', 
+                                day: 'numeric',
+                                year: 'numeric'
+                              })}
+                            </div>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   );
                 })}
-
-                {/* Allocation Bars - Draggable */}
-                {resourceAllocations.map((alloc, idx) => {
-                  return (
-                    <DraggableAllocationBar
-                      key={alloc.id || idx}
-                      allocation={{
-                        id: alloc.id,
-                        start_date: alloc.start_date,
-                        end_date: alloc.end_date,
-                        allocation_percent: alloc.allocation_percent,
-                        assignment_name: alloc.assignment_name,
-                        profile_id: alloc.profile_id,
-                      }}
-                      timelineStartDate={timelineStartDate}
-                      timelineEndDate={timelineEndDate}
-                      totalWidth={totalWidth}
-                      rowIndex={idx}
-                      totalBars={resourceAllocations.length}
-                      onDragStart={() => setIsDraggingAny(true)}
-                      onDragEnd={() => setIsDraggingAny(false)}
-                      onClick={() => onEditResource?.(resource.id)}
-                    />
-                  );
-                })}
-
-                {/* Contract End Marker */}
-                {contractMarkerLeft !== null && 
-                 contractInfo.status !== 'permanent' && 
-                 contractInfo.status !== 'expired' && (
-                  <ContractMarker
-                    leftPx={contractMarkerLeft}
-                    status={contractInfo.status as 'healthy' | 'warning' | 'critical'}
-                    date={resource.contractEndDate!}
-                  />
-                )}
-
-                {/* Locked Zone with Contract End Date */}
-                {contractMarkerLeft !== null && resource.contractEndDate && (
-                  <div
-                    className={styles.lockedZone}
-                    style={{
-                      left: contractMarkerLeft,
-                      right: 0,
-                    }}
-                  >
-                    <div className={styles.lockedZoneBadge}>
-                      Contract ends {new Date(resource.contractEndDate).toLocaleDateString('en-US', { 
-                        month: 'short', 
-                        day: 'numeric',
-                        year: 'numeric'
-                      })}
-                    </div>
-                  </div>
-                )}
               </div>
             </div>
-          );
-        })}
-      </div>
+          ))}
+        </div>
+      ) : (
+        // No grouping - flat list
+        <div className={styles.timelineBody}>
+          {resources.map((resource) => {
+            const resourceAllocations = allocationsByResource.get(resource.id) || [];
+            const contractInfo = getContractStatus(resource.contractEndDate);
+            const contractMarkerLeft = getContractMarkerPosition(resource.contractEndDate);
+            
+            const isRowCritical = contractInfo.status === 'critical';
+            const hasNoAllocations = resourceAllocations.length === 0;
+
+            return (
+              <div
+                key={resource.id}
+                className={cn(
+                  styles.timelineRow,
+                  isRowCritical && styles.rowCritical,
+                  hasNoAllocations && styles.rowAvailable
+                )}
+              >
+                {/* Resource Column */}
+                <div className={styles.resourceColumn}>
+                  <ResourceAvatar
+                    initials={getInitials(resource.name)}
+                    contractEndDate={resource.contractEndDate}
+                  />
+                  <div className={styles.resourceInfo}>
+                    <div className={styles.textResourceName}>{resource.name}</div>
+                    <div className={styles.textResourceRole}>{resource.role || 'Team Member'}</div>
+                  </div>
+                </div>
+
+                {/* Timeline Cells */}
+                <div className={styles.timelineCells}>
+                  {/* Month grid cells */}
+                  {months.map(month => {
+                    const hasAlloc = hasAllocationInMonth(resource.id, month);
+                    const isLocked = isMonthLocked(resource.contractEndDate, month);
+                    
+                    return (
+                      <div
+                        key={month.key}
+                        className={cn(
+                          styles.timelineCell,
+                          month.isCurrent && styles.timelineCellCurrent
+                        )}
+                      >
+                        {/* Show available cell only if no allocation and not locked */}
+                        {!hasAlloc && !isLocked && (
+                          <AvailableCell onClick={() => onEditResource?.(resource.id)} />
+                        )}
+                      </div>
+                    );
+                  })}
+
+                  {/* Allocation Bars - Draggable */}
+                  {resourceAllocations.map((alloc, idx) => {
+                    return (
+                      <DraggableAllocationBar
+                        key={alloc.id || idx}
+                        allocation={{
+                          id: alloc.id,
+                          start_date: alloc.start_date,
+                          end_date: alloc.end_date,
+                          allocation_percent: alloc.allocation_percent,
+                          assignment_name: alloc.assignment_name,
+                          profile_id: alloc.profile_id,
+                        }}
+                        timelineStartDate={timelineStartDate}
+                        timelineEndDate={timelineEndDate}
+                        totalWidth={totalWidth}
+                        rowIndex={idx}
+                        totalBars={resourceAllocations.length}
+                        onDragStart={() => setIsDraggingAny(true)}
+                        onDragEnd={() => setIsDraggingAny(false)}
+                        onClick={() => onEditResource?.(resource.id)}
+                      />
+                    );
+                  })}
+
+                  {/* Contract End Marker */}
+                  {contractMarkerLeft !== null && 
+                   contractInfo.status !== 'permanent' && 
+                   contractInfo.status !== 'expired' && (
+                    <ContractMarker
+                      leftPx={contractMarkerLeft}
+                      status={contractInfo.status as 'healthy' | 'warning' | 'critical'}
+                      date={resource.contractEndDate!}
+                    />
+                  )}
+
+                  {/* Locked Zone with Contract End Date */}
+                  {contractMarkerLeft !== null && resource.contractEndDate && (
+                    <div
+                      className={styles.lockedZone}
+                      style={{
+                        left: contractMarkerLeft,
+                        right: 0,
+                      }}
+                    >
+                      <div className={styles.lockedZoneBadge}>
+                        Contract ends {new Date(resource.contractEndDate).toLocaleDateString('en-US', { 
+                          month: 'short', 
+                          day: 'numeric',
+                          year: 'numeric'
+                        })}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
 
       {/* Legend */}
       <div className={styles.legend}>
