@@ -97,14 +97,19 @@ export function ProjectStaffingView({
     });
   }, [assignments, filteredAllocations]);
 
-  // Count by status
+  // Filter to only show projects with assigned resources
+  const projectsWithResources = useMemo(() => {
+    return projectsWithStaffing.filter(p => p.allocations.length > 0);
+  }, [projectsWithStaffing]);
+
+  // Count by status - only for projects with resources
   const statusCounts = useMemo(() => {
     return {
-      staffed: projectsWithStaffing.filter(p => p.status === 'staffed').length,
-      partial: projectsWithStaffing.filter(p => p.status === 'partial').length,
-      understaffed: projectsWithStaffing.filter(p => p.status === 'understaffed').length
+      staffed: projectsWithResources.filter(p => p.status === 'staffed').length,
+      partial: projectsWithResources.filter(p => p.status === 'partial').length,
+      understaffed: projectsWithResources.filter(p => p.status === 'understaffed').length
     };
-  }, [projectsWithStaffing]);
+  }, [projectsWithResources]);
 
   return (
     <div className={cn("space-y-4", className)}>
@@ -112,7 +117,7 @@ export function ProjectStaffingView({
       <div className="flex items-center gap-4 p-4 bg-muted/30 rounded-lg">
         <div className="flex items-center gap-2">
           <span className="text-sm text-muted-foreground">Projects:</span>
-          <span className="font-semibold">{projectsWithStaffing.length}</span>
+          <span className="font-semibold">{projectsWithResources.length}</span>
         </div>
         <div className="w-px h-6 bg-border" />
         <div className="flex items-center gap-2">
@@ -129,9 +134,9 @@ export function ProjectStaffingView({
         </div>
       </div>
 
-      {/* Project Cards */}
+      {/* Project Cards - Only show projects with assigned resources */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        {projectsWithStaffing.map(({ project, allocations: projectAllocations, totalAssigned, requiredCapacity, gap, status }) => (
+        {projectsWithResources.map(({ project, allocations: projectAllocations, totalAssigned, requiredCapacity, gap, status }) => (
           <ProjectStaffingCard
             key={project.id}
             project={project}
@@ -145,11 +150,11 @@ export function ProjectStaffingView({
         ))}
       </div>
 
-      {projectsWithStaffing.length === 0 && (
+      {projectsWithResources.length === 0 && (
         <div className="text-center py-12 bg-card rounded-lg border border-border">
-          <p className="text-muted-foreground">No projects found</p>
+          <p className="text-muted-foreground">No projects with assigned resources</p>
           <p className="text-sm text-muted-foreground mt-1">
-            Create assignments to see project staffing
+            Assign resources to projects to see staffing
           </p>
         </div>
       )}
