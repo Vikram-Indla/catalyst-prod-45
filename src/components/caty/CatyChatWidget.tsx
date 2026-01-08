@@ -30,10 +30,10 @@ export function CatyChatWidget({
   warningCount = 6,
   totalCount = 67,
   departments = [
-    { id: 'delivery', name: 'Delivery', shortName: 'D', count: 34, critical: 5, warning: 3, insight: 'Ahmed Yousry, Hasan Elsherby +3 others ending by Mar 30', color: '#2563eb', bgColor: 'bg-blue-600' },
-    { id: 'product', name: 'Product', shortName: 'P', count: 14, critical: 1, warning: 2, insight: 'Alouf Aldrees contract ended Jan 11', color: '#7c3aed', bgColor: 'bg-violet-600' },
-    { id: 'operations', name: 'Operations', shortName: 'O', count: 12, critical: 2, warning: 1, insight: 'Mahmoud Mesbah expired, Abdulmajeed AlJabari ending Jan 9', color: '#ea580c', bgColor: 'bg-orange-600' },
-    { id: 'support', name: 'Technical Support', shortName: 'T', count: 7, critical: 0, warning: 1, insight: 'Abdulrahman AlRajhi ending Mar 29', color: '#0d9488', bgColor: 'bg-teal-600' },
+    { id: 'delivery', name: 'Delivery', shortName: 'D', count: 34, critical: 5, warning: 3, insight: 'Ahmed Yousry, Hasan Elsherby +3 others contracts ending by Mar 30', color: '#2563eb', bgColor: 'bg-blue-600' },
+    { id: 'product', name: 'Product', shortName: 'P', count: 14, critical: 1, warning: 2, insight: 'Alouf Aldrees contract ending Jan 11', color: '#7c3aed', bgColor: 'bg-violet-600' },
+    { id: 'operations', name: 'Operations', shortName: 'O', count: 12, critical: 2, warning: 1, insight: 'Mahmoud Mesbah contract expired, Abdulmajeed AlJabari ending Jan 9', color: '#ea580c', bgColor: 'bg-orange-600' },
+    { id: 'support', name: 'Technical Support', shortName: 'T', count: 7, critical: 0, warning: 1, insight: 'Abdulrahman AlRajhi contract ending Mar 29', color: '#0d9488', bgColor: 'bg-teal-600' },
   ]
 }: CatyChatWidgetProps) {
   const [isOpen, setIsOpen] = useState(false);
@@ -86,14 +86,28 @@ export function CatyChatWidget({
   }, [isOpen]);
 
   const suggestions = [
-    "Who's expiring this month?",
-    "Show Delivery risks",
+    "Whose contract is expiring this month?",
     "Available resources",
     "Contract renewals"
   ];
 
   const handleSuggestionClick = (suggestion: string) => {
     setInputValue(suggestion);
+    // TODO: Auto-send the suggestion to AI backend
+  };
+
+  const handleSend = () => {
+    if (!inputValue.trim()) return;
+    // TODO: Send to AI backend
+    console.log('Sending:', inputValue);
+    setInputValue('');
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSend();
+    }
   };
 
   return (
@@ -325,10 +339,12 @@ export function CatyChatWidget({
               type="text"
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
+              onKeyDown={handleKeyDown}
               placeholder="Ask Caty about capacity..."
               className="flex-1 bg-transparent border-none text-sm text-foreground outline-none placeholder:text-muted-foreground"
             />
             <button 
+              onClick={handleSend}
               className="w-10 h-10 rounded-lg flex items-center justify-center text-white transition-all duration-250 hover:scale-105"
               style={{
                 background: 'linear-gradient(135deg, #14b8a6, #06b6d4)',
