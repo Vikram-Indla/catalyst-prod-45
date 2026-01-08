@@ -81,17 +81,20 @@ export function useUsers() {
 
       if (profilesError) throw profilesError;
 
-      // Fetch resource_inventory with FK joins to reference tables
+      // Fetch ALL resource_inventory records (including those without profile_id)
       const { data: resourceInventory } = await supabase
         .from('resource_inventory')
         .select(`
+          id,
           profile_id, 
+          name,
           contract_start_date, 
           contract_end_date, 
           vendor_name,
           role_name,
           assignment_id,
           department_id,
+          department_name,
           vendor_id,
           country_id,
           location_id
@@ -119,7 +122,7 @@ export function useUsers() {
       const countryMap = new Map((resourceCountries || []).map(c => [c.id, { name: c.name, code: c.code }]));
       const locationMap = new Map((resourceLocations || []).map(l => [l.id, l.name]));
 
-      // Create lookup map by profile_id with resolved names
+      // Create lookup map by profile_id with resolved names (for linked records)
       const inventoryByProfileId = new Map(
         (resourceInventory || [])
           .filter(r => r.profile_id)
@@ -170,30 +173,79 @@ export function useUsers() {
         return acc;
       }, {} as Record<string, UserRoleInfo[]>);
 
-      return (profiles || []).map((profile) => {
+      // Get profile IDs that are already linked
+      const linkedProfileIds = new Set(
+        (resourceInventory || []).filter(r => r.profile_id).map(r => r.profile_id)
+      );
+
+      // Build user list from profiles
+      const profileUsers = (profiles || []).map((profile) => {
         const roles = userRolesMap[profile.id] || [];
         const allBusinessLines = roles.flatMap((r) => r.business_lines);
-        // Get enriched data from resource_inventory
         const inventory = inventoryByProfileId.get(profile.id);
         return {
           ...profile,
           roles,
           business_lines: [...new Set(allBusinessLines)],
-          // Contract dates from resource_inventory take precedence, fallback to profiles
           contract_start_date: inventory?.contract_start_date || profile.contract_start_date || null,
           contract_end_date: inventory?.contract_end_date || profile.contract_end_date || null,
-          // Resolved names from reference tables
           vendor_name: inventory?.resolved_vendor_name || inventory?.vendor_name || null,
           vendor: inventory?.resolved_vendor_name || profile.vendor || null,
           department_name: inventory?.department_name || null,
           assignment_name: inventory?.assignment_name || null,
           job_role: inventory?.role_name || null,
-          // Country/location from resource_inventory or profiles
           country: inventory?.resolved_country?.name || profile.country || null,
           country_code: inventory?.resolved_country?.code || profile.country_code || null,
           location: inventory?.resolved_location || profile.location || null,
         } as UserProfile;
       });
+
+      // Build user list from unlinked resource_inventory records
+      const unlinkedInventory = (resourceInventory || [])
+        .filter(r => !r.profile_id)
+        .map(r => {
+          const resolvedCountry = r.country_id ? countryMap.get(r.country_id) : null;
+          return {
+            id: r.id, // Use inventory id as the user id
+            email: null, // No email stored in resource_inventory
+            full_name: r.name || null,
+            avatar_url: null,
+            approval_status: 'APPROVED' as ApprovalStatus, // Imported users are active
+            requested_at: null,
+            approved_at: null,
+            rejected_at: null,
+            rejection_reason: null,
+            signup_attempts_count: null,
+            last_login: null,
+            created_at: null,
+            updated_at: null,
+            roles: [],
+            business_lines: [],
+            vendor: r.vendor_id ? vendorMap.get(r.vendor_id) || r.vendor_name : r.vendor_name,
+            contract_start_date: r.contract_start_date || null,
+            contract_end_date: r.contract_end_date || null,
+            vendor_name: r.vendor_id ? vendorMap.get(r.vendor_id) || r.vendor_name : r.vendor_name,
+            country: resolvedCountry?.name || null,
+            country_code: resolvedCountry?.code || null,
+            country_flag_svg_url: null,
+            location: r.location_id ? locationMap.get(r.location_id) || null : null,
+            department_name: r.department_id ? departmentMap.get(r.department_id) || null : null,
+            assignment_name: r.assignment_id ? assignmentMap.get(r.assignment_id) || null : null,
+            job_role: r.role_name || null,
+          } as UserProfile;
+        });
+
+      // Combine both lists and sort
+      const allUsers = [...profileUsers, ...unlinkedInventory].sort((a, b) => {
+        const vendorA = a.vendor || '';
+        const vendorB = b.vendor || '';
+        if (vendorA !== vendorB) return vendorA.localeCompare(vendorB);
+        const nameA = a.full_name || '';
+        const nameB = b.full_name || '';
+        return nameA.localeCompare(nameB);
+      });
+
+      return allUsers;
     },
   });
 
