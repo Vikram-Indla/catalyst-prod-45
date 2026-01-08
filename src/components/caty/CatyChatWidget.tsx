@@ -32,26 +32,12 @@ interface CatyChatWidgetProps {
   departments?: DepartmentData[];
 }
 
-// Mock data for responses
-const CRITICAL_RESOURCES = [
-  { name: 'Mahmoud Mesbah', dept: 'Operations', date: 'Jan 5', status: 'Contract expired' },
-  { name: 'Abdulmajeed AlJabari', dept: 'Operations', date: 'Jan 9', status: 'Contract ending' },
-  { name: 'Alouf Aldrees', dept: 'Product', date: 'Jan 11', status: 'Contract ending' },
-  { name: 'Abdulrahman Alghizzy', dept: 'Delivery', date: 'Mar 29', status: 'Contract ending' },
-  { name: 'Mahmoud Gameel', dept: 'Delivery', date: 'Mar 29', status: 'Contract ending' },
-  { name: 'Abdulrahman AlRajhi', dept: 'Tech Support', date: 'Mar 29', status: 'Contract ending' },
-  { name: 'Ahmed Yousry', dept: 'Delivery', date: 'Mar 30', status: 'Contract ending' },
-  { name: 'Hasan Elsherby', dept: 'Delivery', date: 'Mar 30', status: 'Contract ending' },
-];
-
-const WARNING_RESOURCES = [
-  { name: 'Mohammed Alaa', dept: 'Delivery', date: 'Apr 15', status: 'Contract ending' },
-  { name: 'Sameh Faridis', dept: 'Operations', date: 'Apr 5', status: 'Contract ending' },
-  { name: 'Fahad AlMutairi', dept: 'Product', date: 'May 20', status: 'Contract ending' },
-  { name: 'Omar Hassan', dept: 'Delivery', date: 'Jun 1', status: 'Contract ending' },
-  { name: 'Khalid Ibrahim', dept: 'Product', date: 'Jun 15', status: 'Contract ending' },
-  { name: 'Yasser Ahmed', dept: 'Delivery', date: 'Jul 10', status: 'Contract ending' },
-];
+// Helper to format date
+const formatContractDate = (dateStr: string | null) => {
+  if (!dateStr) return 'No date set';
+  const date = new Date(dateStr);
+  return date.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' });
+};
 
 export function CatyChatWidget({
   criticalCount = 8,
@@ -127,39 +113,158 @@ export function CatyChatWidget({
     "Contract renewals"
   ];
 
-  // Generate response based on query
-  const generateResponse = (query: string): string => {
+  // Query database for response - async
+  const generateResponseAsync = async (query: string): Promise<string> => {
     const lowerQuery = query.toLowerCase();
     
-    if (lowerQuery.includes('critical') || lowerQuery.includes('8')) {
-      return `**${criticalCount} Critical Resources:**\n\n${CRITICAL_RESOURCES.map(r => `• **${r.name}** (${r.dept}) — ${r.status} ${r.date}`).join('\n')}`;
+    // Check if query mentions a specific person's name
+    const nameMatch = query.match(/(?:when is|what about|show me|find)\s+(.+?)(?:'s)?\s*(?:contract|expir|ending|status)?/i);
+    if (nameMatch) {
+      const searchName = nameMatch[1].trim();
+      const { data: personResults } = await supabase
+        .from('profiles')
+        .select('full_name, vendor, contract_end_date, contract_start_date')
+        .ilike('full_name', `%${searchName}%`)
+        .limit(5);
+      
+      if (personResults && personResults.length > 0) {
+        if (personResults.length === 1) {
+          const p = personResults[0];
+          const endDate = p.contract_end_date ? formatContractDate(p.contract_end_date) : 'Not set';
+          return `**${p.full_name}**\n\n• **Vendor:** ${p.vendor || 'N/A'}\n• **Contract End Date:** ${endDate}\n• **Contract Start Date:** ${p.contract_start_date ? formatContractDate(p.contract_start_date) : 'N/A'}`;
+        } else {
+          return `**Found ${personResults.length} matching resources:**\n\n${personResults.map(p => 
+            `• **${p.full_name}** (${p.vendor || 'N/A'}) — Contract ends ${p.contract_end_date ? formatContractDate(p.contract_end_date) : 'Not set'}`
+          ).join('\n')}`;
+        }
+      }
     }
     
-    if (lowerQuery.includes('warning') || lowerQuery.includes('6')) {
-      return `**${warningCount} Warning Resources:**\n\n${WARNING_RESOURCES.map(r => `• **${r.name}** (${r.dept}) — ${r.status} ${r.date}`).join('\n')}`;
+    // Critical resources query
+    if (lowerQuery.includes('critical') || lowerQuery.match(/\b8\b.*critical/)) {
+      const thirtyDaysFromNow = new Date();
+      thirtyDaysFromNow.setDate(thirtyDaysFromNow.getDate() + 30);
+      
+      const { data: criticalResults } = await supabase
+        .from('profiles')
+        .select('full_name, vendor, contract_end_date')
+        .lte('contract_end_date', thirtyDaysFromNow.toISOString())
+        .not('contract_end_date', 'is', null)
+        .order('contract_end_date', { ascending: true })
+        .limit(10);
+      
+      if (criticalResults && criticalResults.length > 0) {
+        return `**${criticalResults.length} Critical Resources (ending within 30 days):**\n\n${criticalResults.map(r => 
+          `• **${r.full_name}** (${r.vendor || 'N/A'}) — ${formatContractDate(r.contract_end_date)}`
+        ).join('\n')}`;
+      }
+      return `**No critical resources found** (contracts ending within 30 days)`;
     }
     
-    if (lowerQuery.includes('total') || lowerQuery.includes('67') || lowerQuery.includes('all resources')) {
+    // Warning resources query  
+    if (lowerQuery.includes('warning')) {
+      const thirtyDays = new Date();
+      thirtyDays.setDate(thirtyDays.getDate() + 30);
+      const ninetyDays = new Date();
+      ninetyDays.setDate(ninetyDays.getDate() + 90);
+      
+      const { data: warningResults } = await supabase
+        .from('profiles')
+        .select('full_name, vendor, contract_end_date')
+        .gt('contract_end_date', thirtyDays.toISOString())
+        .lte('contract_end_date', ninetyDays.toISOString())
+        .order('contract_end_date', { ascending: true })
+        .limit(10);
+      
+      if (warningResults && warningResults.length > 0) {
+        return `**${warningResults.length} Warning Resources (ending in 30-90 days):**\n\n${warningResults.map(r => 
+          `• **${r.full_name}** (${r.vendor || 'N/A'}) — ${formatContractDate(r.contract_end_date)}`
+        ).join('\n')}`;
+      }
+      return `**No warning resources found** (contracts ending in 30-90 days)`;
+    }
+    
+    // This month query
+    if (lowerQuery.includes('expiring this month') || lowerQuery.includes('this month')) {
+      const now = new Date();
+      const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+      const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+      
+      const { data: monthResults } = await supabase
+        .from('profiles')
+        .select('full_name, vendor, contract_end_date')
+        .gte('contract_end_date', startOfMonth.toISOString())
+        .lte('contract_end_date', endOfMonth.toISOString())
+        .order('contract_end_date', { ascending: true });
+      
+      const monthName = now.toLocaleDateString('en-US', { month: 'long' });
+      if (monthResults && monthResults.length > 0) {
+        return `**Contracts expiring this month (${monthName}):**\n\n${monthResults.map(r => 
+          `• **${r.full_name}** (${r.vendor || 'N/A'}) — ${formatContractDate(r.contract_end_date)}`
+        ).join('\n')}`;
+      }
+      return `**No contracts expiring this month (${monthName})**`;
+    }
+    
+    // Total/all resources
+    if (lowerQuery.includes('total') || lowerQuery.includes('all resources')) {
       return `**Total Resources: ${totalCount}**\n\n**By Department:**\n${departments.map(d => `• **${d.name}**: ${d.count} resources (${d.critical} critical, ${d.warning} warning)`).join('\n')}`;
     }
     
-    if (lowerQuery.includes('expiring this month') || lowerQuery.includes('this month')) {
-      const thisMonthResources = CRITICAL_RESOURCES.filter(r => r.date.includes('Jan'));
-      return `**Contracts expiring this month (January):**\n\n${thisMonthResources.map(r => `• **${r.name}** (${r.dept}) — ${r.status} ${r.date}`).join('\n')}`;
-    }
-    
+    // Available resources
     if (lowerQuery.includes('available')) {
-      return `**Available Resources:**\n\nCurrently, there are **${totalCount - criticalCount - warningCount} healthy** resources with contracts extending beyond 6 months.\n\n**By Department:**\n${departments.map(d => `• **${d.name}**: ${d.count - d.critical - d.warning} available`).join('\n')}`;
+      const ninetyDays = new Date();
+      ninetyDays.setDate(ninetyDays.getDate() + 90);
+      
+      const { data: availableResults, count } = await supabase
+        .from('profiles')
+        .select('full_name, vendor, contract_end_date', { count: 'exact' })
+        .gt('contract_end_date', ninetyDays.toISOString());
+      
+      return `**Available Resources:**\n\nCurrently, there are **${count || 0} healthy** resources with contracts extending beyond 90 days.\n\n**By Department:**\n${departments.map(d => `• **${d.name}**: ${d.count - d.critical - d.warning} available`).join('\n')}`;
     }
     
+    // Renewals
     if (lowerQuery.includes('renewal')) {
-      return `**Contract Renewals Summary:**\n\n• **Immediate (< 30 days):** 3 renewals needed\n• **Upcoming (30-90 days):** 5 renewals pending\n• **Planned (90-180 days):** 6 renewals scheduled\n\n**Priority Renewals:**\n${CRITICAL_RESOURCES.slice(0, 3).map(r => `• **${r.name}** — ${r.status} ${r.date}`).join('\n')}`;
+      const thirtyDays = new Date();
+      thirtyDays.setDate(thirtyDays.getDate() + 30);
+      
+      const { data: renewalResults } = await supabase
+        .from('profiles')
+        .select('full_name, vendor, contract_end_date')
+        .lte('contract_end_date', thirtyDays.toISOString())
+        .not('contract_end_date', 'is', null)
+        .order('contract_end_date', { ascending: true })
+        .limit(5);
+      
+      if (renewalResults && renewalResults.length > 0) {
+        return `**Priority Contract Renewals:**\n\n${renewalResults.map(r => 
+          `• **${r.full_name}** (${r.vendor || 'N/A'}) — ends ${formatContractDate(r.contract_end_date)}`
+        ).join('\n')}`;
+      }
+      return `**No urgent renewals needed**`;
     }
     
-    return `I can help you with capacity insights. Try asking about:\n• Critical resources\n• Warning resources\n• Contract renewals\n• Available resources`;
+    // Try to search by name as fallback
+    const words = query.split(' ').filter(w => w.length > 2);
+    for (const word of words) {
+      const { data: searchResults } = await supabase
+        .from('profiles')
+        .select('full_name, vendor, contract_end_date')
+        .ilike('full_name', `%${word}%`)
+        .limit(3);
+      
+      if (searchResults && searchResults.length > 0) {
+        return `**Found resources matching "${word}":**\n\n${searchResults.map(r => 
+          `• **${r.full_name}** (${r.vendor || 'N/A'}) — Contract ends ${r.contract_end_date ? formatContractDate(r.contract_end_date) : 'Not set'}`
+        ).join('\n')}`;
+      }
+    }
+    
+    return `I can help you with capacity insights. Try asking about:\n• A specific person (e.g., "When is Nada's contract expiring?")\n• Critical resources\n• Warning resources\n• Contract renewals\n• Available resources`;
   };
 
-  const handleSubmit = (query: string) => {
+  const handleSubmit = async (query: string) => {
     if (!query.trim()) return;
     
     // Add user message
@@ -173,9 +278,9 @@ export function CatyChatWidget({
     setInputValue('');
     setIsTyping(true);
     
-    // Simulate AI response delay
-    setTimeout(() => {
-      const response = generateResponse(query);
+    try {
+      // Query real database
+      const response = await generateResponseAsync(query);
       const assistantMessage: ChatMessage = {
         id: (Date.now() + 1).toString(),
         type: 'assistant',
@@ -183,8 +288,17 @@ export function CatyChatWidget({
         timestamp: new Date()
       };
       setMessages(prev => [...prev, assistantMessage]);
+    } catch (error) {
+      const errorMessage: ChatMessage = {
+        id: (Date.now() + 1).toString(),
+        type: 'assistant',
+        content: 'Sorry, I encountered an error fetching the data. Please try again.',
+        timestamp: new Date()
+      };
+      setMessages(prev => [...prev, errorMessage]);
+    } finally {
       setIsTyping(false);
-    }, 800);
+    }
   };
 
   const handleSuggestionClick = (suggestion: string) => {
