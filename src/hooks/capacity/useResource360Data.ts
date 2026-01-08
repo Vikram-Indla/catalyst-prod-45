@@ -7,17 +7,17 @@ import type { Resource360Data, WorkItemAssignment, HierarchyNode, SunburstNode, 
 export function useResource360Data(resourceId: string | null) {
   const queryClient = useQueryClient();
 
-  // Fetch resource profile
+  // Fetch resource from resource_inventory table
   const { data: resource, isLoading: resourceLoading } = useQuery({
     queryKey: ['resource-360-profile', resourceId],
     queryFn: async () => {
       if (!resourceId) return null;
       
       const { data, error } = await supabase
-        .from('profiles')
+        .from('resource_inventory')
         .select(`
-          id, full_name, email, role, avatar_url, department_id,
-          capacity_departments:department_id(name)
+          id, name, role_name, department_name, profile_id,
+          profiles:profile_id(avatar_url, email)
         `)
         .eq('id', resourceId)
         .single();
@@ -26,11 +26,12 @@ export function useResource360Data(resourceId: string | null) {
       
       return {
         id: data.id,
-        name: data.full_name || 'Unknown',
-        email: data.email || '',
-        role: data.role || 'Team Member',
-        department: (data.capacity_departments as any)?.name || 'Unassigned',
-        avatar_url: data.avatar_url,
+        profile_id: data.profile_id,
+        name: data.name || 'Unknown',
+        email: (data.profiles as any)?.email || '',
+        role: data.role_name || 'Team Member',
+        department: data.department_name || 'Unassigned',
+        avatar_url: (data.profiles as any)?.avatar_url,
         currentAllocation: 0,
         availableCapacity: 100,
       } as Resource360Data;
@@ -38,11 +39,14 @@ export function useResource360Data(resourceId: string | null) {
     enabled: !!resourceId,
   });
 
-  // Fetch work items assigned to this resource
+  // Get the profile_id from resource for fetching work items
+  const profileId = resource?.profile_id;
+
+  // Fetch work items assigned to this resource (using profile_id since work items are linked to profiles)
   const { data: workItems = [], isLoading: workItemsLoading } = useQuery({
-    queryKey: ['resource-360-work-items', resourceId],
+    queryKey: ['resource-360-work-items', resourceId, profileId],
     queryFn: async () => {
-      if (!resourceId) return [];
+      if (!profileId) return [];
 
       const items: WorkItemAssignment[] = [];
 
@@ -58,7 +62,7 @@ export function useResource360Data(resourceId: string | null) {
           ),
           release:release_id(version)
         `)
-        .eq('owner_id', resourceId);
+        .eq('owner_id', profileId);
 
       stories?.forEach((story: any) => {
         const isCompleted = story.status === 'Done' || story.status === 'Closed';
@@ -91,7 +95,7 @@ export function useResource360Data(resourceId: string | null) {
           ),
           release:release_id(version)
         `)
-        .eq('owner_id', resourceId);
+        .eq('owner_id', profileId);
 
       features?.forEach((feature: any) => {
         const isCompleted = feature.status === 'Done' || feature.status === 'Closed';
@@ -120,7 +124,7 @@ export function useResource360Data(resourceId: string | null) {
           id, item_id, title, status, owner_id,
           project:project_id(id, name)
         `)
-        .eq('owner_id', resourceId);
+        .eq('owner_id', profileId);
 
       epics?.forEach((epic: any) => {
         const isCompleted = epic.status === 'Done' || epic.status === 'Closed';
@@ -142,7 +146,7 @@ export function useResource360Data(resourceId: string | null) {
           id, defect_id, title, workflow_status, assignee_id,
           project:project_id(id, name)
         `)
-        .eq('assignee_id', resourceId);
+        .eq('assignee_id', profileId);
 
       defects?.forEach((defect: any) => {
         const isCompleted = defect.workflow_status === 'Closed' || defect.workflow_status === 'Resolved';
@@ -159,7 +163,7 @@ export function useResource360Data(resourceId: string | null) {
 
       return items;
     },
-    enabled: !!resourceId,
+    enabled: !!profileId,
   });
 
   // Build hierarchy tree from work items
@@ -307,34 +311,34 @@ export function useResource360Data(resourceId: string | null) {
     };
   }, [workItems, resource]);
 
-  // Real-time subscription
+  // Real-time subscription (use profileId for work item subscriptions)
   useEffect(() => {
-    if (!resourceId) return;
+    if (!profileId) return;
 
     const channel = supabase
       .channel(`resource-360-${resourceId}`)
       .on('postgres_changes', 
-        { event: '*', schema: 'public', table: 'stories', filter: `owner_id=eq.${resourceId}` },
-        () => queryClient.invalidateQueries({ queryKey: ['resource-360-work-items', resourceId] })
+        { event: '*', schema: 'public', table: 'stories', filter: `owner_id=eq.${profileId}` },
+        () => queryClient.invalidateQueries({ queryKey: ['resource-360-work-items', resourceId, profileId] })
       )
       .on('postgres_changes',
-        { event: '*', schema: 'public', table: 'features', filter: `owner_id=eq.${resourceId}` },
-        () => queryClient.invalidateQueries({ queryKey: ['resource-360-work-items', resourceId] })
+        { event: '*', schema: 'public', table: 'features', filter: `owner_id=eq.${profileId}` },
+        () => queryClient.invalidateQueries({ queryKey: ['resource-360-work-items', resourceId, profileId] })
       )
       .on('postgres_changes',
-        { event: '*', schema: 'public', table: 'epics', filter: `owner_id=eq.${resourceId}` },
-        () => queryClient.invalidateQueries({ queryKey: ['resource-360-work-items', resourceId] })
+        { event: '*', schema: 'public', table: 'epics', filter: `owner_id=eq.${profileId}` },
+        () => queryClient.invalidateQueries({ queryKey: ['resource-360-work-items', resourceId, profileId] })
       )
       .on('postgres_changes',
-        { event: '*', schema: 'public', table: 'defects', filter: `assignee_id=eq.${resourceId}` },
-        () => queryClient.invalidateQueries({ queryKey: ['resource-360-work-items', resourceId] })
+        { event: '*', schema: 'public', table: 'defects', filter: `assignee_id=eq.${profileId}` },
+        () => queryClient.invalidateQueries({ queryKey: ['resource-360-work-items', resourceId, profileId] })
       )
       .subscribe();
 
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [resourceId, queryClient]);
+  }, [resourceId, profileId, queryClient]);
 
   const currentItems = workItems.filter(w => w.status === 'current' || w.status === 'future');
   const pastItems = workItems.filter(w => w.status === 'completed' || w.status === 'cancelled');
