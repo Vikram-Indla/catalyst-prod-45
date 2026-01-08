@@ -87,8 +87,10 @@ export function useCapacityData() {
         const assignmentName = ri.assignment_id ? assignmentTypeMap.get(ri.assignment_id) || null : null;
         const defaultCapacity = currentAllocationByResourceId.get(ri.id) ?? 0;
         
-        // Get role from profile's product roles
-        const roleName = profile ? (userRoleMap.get(profile.id) || 'No role') : (ri.role_name || 'No role');
+        // Get role from profile's product roles using profile_id (which is the user_id in user_product_roles)
+        // Priority: user_product_roles -> ri.role_name -> 'No role'
+        const profileId = ri.profile_id || profile?.id;
+        const roleName = profileId ? (userRoleMap.get(profileId) || ri.role_name || 'No role') : (ri.role_name || 'No role');
         
         // Get department from profile or resource_inventory
         const departmentId = profile?.department_id || ri.department_id;
