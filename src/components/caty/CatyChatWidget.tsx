@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { X, RotateCw, Send } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { CatyOrb } from './CatyOrb';
@@ -18,12 +18,40 @@ interface DepartmentData {
   bgColor: string;
 }
 
+interface ChatMessage {
+  id: string;
+  type: 'user' | 'assistant';
+  content: string;
+  timestamp: Date;
+}
+
 interface CatyChatWidgetProps {
   criticalCount?: number;
   warningCount?: number;
   totalCount?: number;
   departments?: DepartmentData[];
 }
+
+// Mock data for responses
+const CRITICAL_RESOURCES = [
+  { name: 'Mahmoud Mesbah', dept: 'Operations', date: 'Jan 5', status: 'Contract expired' },
+  { name: 'Abdulmajeed AlJabari', dept: 'Operations', date: 'Jan 9', status: 'Contract ending' },
+  { name: 'Alouf Aldrees', dept: 'Product', date: 'Jan 11', status: 'Contract ending' },
+  { name: 'Abdulrahman Alghizzy', dept: 'Delivery', date: 'Mar 29', status: 'Contract ending' },
+  { name: 'Mahmoud Gameel', dept: 'Delivery', date: 'Mar 29', status: 'Contract ending' },
+  { name: 'Abdulrahman AlRajhi', dept: 'Tech Support', date: 'Mar 29', status: 'Contract ending' },
+  { name: 'Ahmed Yousry', dept: 'Delivery', date: 'Mar 30', status: 'Contract ending' },
+  { name: 'Hasan Elsherby', dept: 'Delivery', date: 'Mar 30', status: 'Contract ending' },
+];
+
+const WARNING_RESOURCES = [
+  { name: 'Mohammed Alaa', dept: 'Delivery', date: 'Apr 15', status: 'Contract ending' },
+  { name: 'Sameh Faridis', dept: 'Operations', date: 'Apr 5', status: 'Contract ending' },
+  { name: 'Fahad AlMutairi', dept: 'Product', date: 'May 20', status: 'Contract ending' },
+  { name: 'Omar Hassan', dept: 'Delivery', date: 'Jun 1', status: 'Contract ending' },
+  { name: 'Khalid Ibrahim', dept: 'Product', date: 'Jun 15', status: 'Contract ending' },
+  { name: 'Yasser Ahmed', dept: 'Delivery', date: 'Jul 10', status: 'Contract ending' },
+];
 
 export function CatyChatWidget({
   criticalCount = 8,
@@ -38,6 +66,9 @@ export function CatyChatWidget({
 }: CatyChatWidgetProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [inputValue, setInputValue] = useState('');
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [isTyping, setIsTyping] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
   const { user } = useAuth();
 
   // Fetch user profile for first name
@@ -74,6 +105,11 @@ export function CatyChatWidget({
     return 'Good evening';
   };
 
+  // Scroll to bottom when new messages
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
+
   // Handle escape key
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
@@ -91,16 +127,81 @@ export function CatyChatWidget({
     "Contract renewals"
   ];
 
+  // Generate response based on query
+  const generateResponse = (query: string): string => {
+    const lowerQuery = query.toLowerCase();
+    
+    if (lowerQuery.includes('critical') || lowerQuery.includes('8')) {
+      return `**${criticalCount} Critical Resources:**\n\n${CRITICAL_RESOURCES.map(r => `• **${r.name}** (${r.dept}) — ${r.status} ${r.date}`).join('\n')}`;
+    }
+    
+    if (lowerQuery.includes('warning') || lowerQuery.includes('6')) {
+      return `**${warningCount} Warning Resources:**\n\n${WARNING_RESOURCES.map(r => `• **${r.name}** (${r.dept}) — ${r.status} ${r.date}`).join('\n')}`;
+    }
+    
+    if (lowerQuery.includes('total') || lowerQuery.includes('67') || lowerQuery.includes('all resources')) {
+      return `**Total Resources: ${totalCount}**\n\n**By Department:**\n${departments.map(d => `• **${d.name}**: ${d.count} resources (${d.critical} critical, ${d.warning} warning)`).join('\n')}`;
+    }
+    
+    if (lowerQuery.includes('expiring this month') || lowerQuery.includes('this month')) {
+      const thisMonthResources = CRITICAL_RESOURCES.filter(r => r.date.includes('Jan'));
+      return `**Contracts expiring this month (January):**\n\n${thisMonthResources.map(r => `• **${r.name}** (${r.dept}) — ${r.status} ${r.date}`).join('\n')}`;
+    }
+    
+    if (lowerQuery.includes('available')) {
+      return `**Available Resources:**\n\nCurrently, there are **${totalCount - criticalCount - warningCount} healthy** resources with contracts extending beyond 6 months.\n\n**By Department:**\n${departments.map(d => `• **${d.name}**: ${d.count - d.critical - d.warning} available`).join('\n')}`;
+    }
+    
+    if (lowerQuery.includes('renewal')) {
+      return `**Contract Renewals Summary:**\n\n• **Immediate (< 30 days):** 3 renewals needed\n• **Upcoming (30-90 days):** 5 renewals pending\n• **Planned (90-180 days):** 6 renewals scheduled\n\n**Priority Renewals:**\n${CRITICAL_RESOURCES.slice(0, 3).map(r => `• **${r.name}** — ${r.status} ${r.date}`).join('\n')}`;
+    }
+    
+    return `I can help you with capacity insights. Try asking about:\n• Critical resources\n• Warning resources\n• Contract renewals\n• Available resources`;
+  };
+
+  const handleSubmit = (query: string) => {
+    if (!query.trim()) return;
+    
+    // Add user message
+    const userMessage: ChatMessage = {
+      id: Date.now().toString(),
+      type: 'user',
+      content: query,
+      timestamp: new Date()
+    };
+    setMessages(prev => [...prev, userMessage]);
+    setInputValue('');
+    setIsTyping(true);
+    
+    // Simulate AI response delay
+    setTimeout(() => {
+      const response = generateResponse(query);
+      const assistantMessage: ChatMessage = {
+        id: (Date.now() + 1).toString(),
+        type: 'assistant',
+        content: response,
+        timestamp: new Date()
+      };
+      setMessages(prev => [...prev, assistantMessage]);
+      setIsTyping(false);
+    }, 800);
+  };
+
   const handleSuggestionClick = (suggestion: string) => {
-    setInputValue(suggestion);
-    // TODO: Auto-send the suggestion to AI backend
+    handleSubmit(suggestion);
+  };
+
+  const handleKpiClick = (type: 'critical' | 'warning' | 'total') => {
+    const queries = {
+      critical: `Show me the ${criticalCount} critical resources`,
+      warning: `Show me the ${warningCount} warning resources`,
+      total: `Show me all ${totalCount} resources breakdown`
+    };
+    handleSubmit(queries[type]);
   };
 
   const handleSend = () => {
-    if (!inputValue.trim()) return;
-    // TODO: Send to AI backend
-    console.log('Sending:', inputValue);
-    setInputValue('');
+    handleSubmit(inputValue);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -108,6 +209,25 @@ export function CatyChatWidget({
       e.preventDefault();
       handleSend();
     }
+  };
+
+  const handleRefresh = () => {
+    setMessages([]);
+  };
+
+  // Render message content with markdown-like formatting
+  const renderMessageContent = (content: string) => {
+    return content.split('\n').map((line, i) => {
+      // Bold text
+      const formattedLine = line.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+      return (
+        <span 
+          key={i} 
+          className="block"
+          dangerouslySetInnerHTML={{ __html: formattedLine }}
+        />
+      );
+    });
   };
 
   return (
@@ -174,7 +294,7 @@ export function CatyChatWidget({
       >
         {/* Header - Thinner */}
         <div 
-          className="relative px-4 py-3 overflow-hidden"
+          className="relative px-4 py-3 overflow-hidden shrink-0"
           style={{
             background: 'linear-gradient(135deg, #3d9a98 0%, #4dada8 50%, #5eaaa8 100%)'
           }}
@@ -204,6 +324,7 @@ export function CatyChatWidget({
 
             <div className="flex items-center gap-1.5">
               <button 
+                onClick={handleRefresh}
                 className="w-8 h-8 rounded-lg flex items-center justify-center text-white/80 hover:text-white hover:bg-white/20 transition-all"
                 style={{ 
                   background: 'rgba(255,255,255,0.1)',
@@ -241,28 +362,37 @@ export function CatyChatWidget({
                 Here&apos;s your capacity snapshot
               </p>
 
-              {/* KPI Cards */}
+              {/* KPI Cards - Clickable */}
               <div className="grid grid-cols-3 gap-2 mb-4">
-                <div className="relative rounded-xl p-3 text-center cursor-pointer transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md overflow-hidden bg-card border border-border">
+                <button 
+                  onClick={() => handleKpiClick('critical')}
+                  className="relative rounded-xl p-3 text-center cursor-pointer transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md overflow-hidden bg-card border border-border text-left"
+                >
                   <div className="absolute top-0 left-0 right-0 h-[3px] rounded-t-xl bg-gradient-to-r from-red-500 to-red-400" />
                   <span className="text-base block mb-1">⚠️</span>
                   <div className="text-2xl font-extrabold text-red-500 tracking-tight leading-none mb-0.5">{criticalCount}</div>
                   <div className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Critical</div>
-                </div>
+                </button>
 
-                <div className="relative rounded-xl p-3 text-center cursor-pointer transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md overflow-hidden bg-card border border-border">
+                <button 
+                  onClick={() => handleKpiClick('warning')}
+                  className="relative rounded-xl p-3 text-center cursor-pointer transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md overflow-hidden bg-card border border-border text-left"
+                >
                   <div className="absolute top-0 left-0 right-0 h-[3px] rounded-t-xl bg-gradient-to-r from-amber-600 to-amber-500" />
                   <span className="text-base block mb-1">⏰</span>
                   <div className="text-2xl font-extrabold text-amber-600 tracking-tight leading-none mb-0.5">{warningCount}</div>
                   <div className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Warning</div>
-                </div>
+                </button>
 
-                <div className="relative rounded-xl p-3 text-center cursor-pointer transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md overflow-hidden bg-card border border-border">
+                <button 
+                  onClick={() => handleKpiClick('total')}
+                  className="relative rounded-xl p-3 text-center cursor-pointer transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md overflow-hidden bg-card border border-border text-left"
+                >
                   <div className="absolute top-0 left-0 right-0 h-[3px] rounded-t-xl bg-gradient-to-r from-teal-500 to-teal-400" />
                   <span className="text-base block mb-1">👥</span>
                   <div className="text-2xl font-extrabold text-teal-600 tracking-tight leading-none mb-0.5">{totalCount}</div>
                   <div className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Total</div>
-                </div>
+                </button>
               </div>
 
               {/* Department Breakdown */}
@@ -330,22 +460,69 @@ export function CatyChatWidget({
               </div>
             </div>
           </div>
+
+          {/* Chat Messages */}
+          {messages.map((message) => (
+            <div 
+              key={message.id} 
+              className={cn(
+                "flex gap-3 mt-4 animate-[message-in_0.3s_cubic-bezier(0.16,1,0.3,1)]",
+                message.type === 'user' && "flex-row-reverse"
+              )}
+            >
+              {message.type === 'assistant' && (
+                <CatyOrb size="sm" showParticles={false} showStatusDot={false} />
+              )}
+              
+              <div 
+                className={cn(
+                  "flex-1 p-3 shadow-sm max-w-[85%]",
+                  message.type === 'user' 
+                    ? "rounded-[16px_6px_16px_16px] bg-teal-600 text-white ml-auto" 
+                    : "rounded-[6px_16px_16px_16px] bg-card border border-border"
+                )}
+              >
+                <div className={cn(
+                  "text-sm leading-relaxed",
+                  message.type === 'user' ? "text-white" : "text-foreground"
+                )}>
+                  {renderMessageContent(message.content)}
+                </div>
+              </div>
+            </div>
+          ))}
+
+          {/* Typing indicator */}
+          {isTyping && (
+            <div className="flex gap-3 mt-4 animate-[message-in_0.3s_cubic-bezier(0.16,1,0.3,1)]">
+              <CatyOrb size="sm" showParticles={false} showStatusDot={false} />
+              <div className="p-3 rounded-[6px_16px_16px_16px] bg-card border border-border">
+                <div className="flex gap-1">
+                  <span className="w-2 h-2 bg-muted-foreground/50 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                  <span className="w-2 h-2 bg-muted-foreground/50 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                  <span className="w-2 h-2 bg-muted-foreground/50 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                </div>
+              </div>
+            </div>
+          )}
+          
+          <div ref={messagesEndRef} />
         </div>
 
-        {/* Input Area - Light Mode */}
-        <div className="p-3 pb-4 bg-background border-t border-border">
-          <div className="flex items-center gap-2 rounded-xl p-1 pl-3 transition-all duration-250 focus-within:ring-2 focus-within:ring-teal-500/20 focus-within:border-teal-500 bg-muted/50 border border-border">
+        {/* Input Area - Fixed border issue */}
+        <div className="p-3 pb-4 bg-background border-t border-border shrink-0">
+          <div className="flex items-center gap-2 rounded-xl bg-muted/50 p-1 pl-3">
             <input
               type="text"
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder="Ask Caty about capacity..."
-              className="flex-1 bg-transparent border-none text-sm text-foreground outline-none placeholder:text-muted-foreground"
+              className="flex-1 bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground border-none focus:outline-none focus:ring-0"
             />
             <button 
               onClick={handleSend}
-              className="w-10 h-10 rounded-lg flex items-center justify-center text-white transition-all duration-250 hover:scale-105"
+              className="w-10 h-10 rounded-lg flex items-center justify-center text-white transition-all duration-250 hover:scale-105 shrink-0"
               style={{
                 background: 'linear-gradient(135deg, #14b8a6, #06b6d4)',
                 boxShadow: '0 4px 12px rgba(20, 184, 166, 0.3)'
