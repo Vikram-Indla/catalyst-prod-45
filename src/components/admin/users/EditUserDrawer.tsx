@@ -20,12 +20,12 @@ import {
 } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, Save, X, User, Building, MapPin, Globe, Calendar } from 'lucide-react';
-import { UserProfile, useUpdateUserEmail } from '@/hooks/useUsers';
+import { Loader2, Save, X, User, Building, MapPin, Briefcase } from 'lucide-react';
+import { UserProfile } from '@/hooks/useUsers';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { VENDORS, LOCATIONS, COUNTRIES, getCountryInfo } from '@/lib/countryLookup';
+import { getCountryInfo } from '@/lib/countryLookup';
 import { format } from 'date-fns';
 
 interface EditUserDrawerProps {
@@ -42,6 +42,7 @@ export function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
     vendor: '',
     location: '',
     country: '',
+    assignment: '',
     contract_end_date: '',
   });
   const [selectedRoleIds, setSelectedRoleIds] = useState<string[]>([]);
@@ -59,6 +60,85 @@ export function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
     },
   });
 
+  // Fetch vendors from resource_vendors table with realtime subscription
+  const { data: vendors = [] } = useQuery({
+    queryKey: ['resource-vendors'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('resource_vendors')
+        .select('id, name')
+        .eq('is_active', true)
+        .order('sort_order');
+      if (error) throw error;
+      return data || [];
+    },
+  });
+
+  // Fetch locations from resource_locations table with realtime subscription
+  const { data: locations = [] } = useQuery({
+    queryKey: ['resource-locations'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('resource_locations')
+        .select('id, name')
+        .eq('is_active', true)
+        .order('sort_order');
+      if (error) throw error;
+      return data || [];
+    },
+  });
+
+  // Fetch countries from resource_countries table with realtime subscription
+  const { data: countries = [] } = useQuery({
+    queryKey: ['resource-countries'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('resource_countries')
+        .select('id, name, code')
+        .eq('is_active', true)
+        .order('sort_order');
+      if (error) throw error;
+      return data || [];
+    },
+  });
+
+  // Fetch assignments from resource_assignments table with realtime subscription
+  const { data: assignments = [] } = useQuery({
+    queryKey: ['resource-assignments'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('resource_assignments')
+        .select('id, name')
+        .eq('is_active', true)
+        .order('sort_order');
+      if (error) throw error;
+      return data || [];
+    },
+  });
+
+  // Set up realtime subscriptions for all reference tables
+  useEffect(() => {
+    const channel = supabase
+      .channel('edit-user-refs')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'resource_vendors' }, () => {
+        queryClient.invalidateQueries({ queryKey: ['resource-vendors'] });
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'resource_locations' }, () => {
+        queryClient.invalidateQueries({ queryKey: ['resource-locations'] });
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'resource_countries' }, () => {
+        queryClient.invalidateQueries({ queryKey: ['resource-countries'] });
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'resource_assignments' }, () => {
+        queryClient.invalidateQueries({ queryKey: ['resource-assignments'] });
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [queryClient]);
+
   // Reset form when user changes
   useEffect(() => {
     if (user) {
@@ -68,6 +148,7 @@ export function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
         vendor: user.vendor || '',
         location: user.location || '',
         country: user.country || '',
+        assignment: user.assignment_name || '',
         contract_end_date: user.contract_end_date ? format(new Date(user.contract_end_date), 'yyyy-MM-dd') : '',
       });
       setSelectedRoleIds(user.roles.map(r => r.role_id));
@@ -81,6 +162,12 @@ export function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
 
       // Get country info for code and flag
       const countryInfo = formData.country ? getCountryInfo(formData.country) : null;
+      
+      // Find IDs for the selected values
+      const selectedVendor = vendors.find(v => v.name === formData.vendor);
+      const selectedLocation = locations.find(l => l.name === formData.location);
+      const selectedCountry = countries.find(c => c.name === formData.country);
+      const selectedAssignment = assignments.find(a => a.name === formData.assignment);
 
       // Update profile fields
       const { error: profileError } = await supabase
@@ -91,7 +178,7 @@ export function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
           vendor: formData.vendor || null,
           location: formData.location || null,
           country: countryInfo?.name || formData.country || null,
-          country_code: countryInfo?.code || null,
+          country_code: countryInfo?.code || selectedCountry?.code || null,
           country_flag_svg_url: countryInfo?.svg || null,
           contract_end_date: formData.contract_end_date || null,
           updated_at: new Date().toISOString(),
@@ -99,6 +186,30 @@ export function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
         .eq('id', user.id);
 
       if (profileError) throw profileError;
+      
+      // Update resource_inventory if the user has a linked record
+      const { data: inventoryRecord } = await supabase
+        .from('resource_inventory')
+        .select('id')
+        .eq('profile_id', user.id)
+        .maybeSingle();
+      
+      if (inventoryRecord) {
+        const { error: inventoryError } = await supabase
+          .from('resource_inventory')
+          .update({
+            vendor_id: selectedVendor?.id || null,
+            vendor_name: formData.vendor || null,
+            location_id: selectedLocation?.id || null,
+            country_id: selectedCountry?.id || null,
+            assignment_id: selectedAssignment?.id || null,
+            contract_end_date: formData.contract_end_date || null,
+            updated_at: new Date().toISOString(),
+          })
+          .eq('id', inventoryRecord.id);
+        
+        if (inventoryError) throw inventoryError;
+      }
 
       // Update roles - delete existing and insert new
       const { error: deleteRolesError } = await supabase
@@ -249,8 +360,8 @@ export function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="__none__">No vendor</SelectItem>
-                    {VENDORS.map((v) => (
-                      <SelectItem key={v} value={v}>{v}</SelectItem>
+                    {vendors.map((v) => (
+                      <SelectItem key={v.id} value={v.name}>{v.name}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -264,6 +375,34 @@ export function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
                   value={formData.contract_end_date}
                   onChange={(e) => setFormData(prev => ({ ...prev, contract_end_date: e.target.value }))}
                 />
+              </div>
+            </div>
+
+            <Separator />
+
+            {/* Assignment Section */}
+            <div className="space-y-4">
+              <h3 className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+                <Briefcase className="h-4 w-4" />
+                Assignment
+              </h3>
+
+              <div className="space-y-2">
+                <Label htmlFor="assignment">Assignment</Label>
+                <Select
+                  value={formData.assignment || '__none__'}
+                  onValueChange={(value) => setFormData(prev => ({ ...prev, assignment: value === '__none__' ? '' : value }))}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select assignment" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="__none__">Not assigned</SelectItem>
+                    {assignments.map((a) => (
+                      <SelectItem key={a.id} value={a.name}>{a.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             </div>
 
@@ -287,8 +426,8 @@ export function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="__none__">Not specified</SelectItem>
-                    {LOCATIONS.map((loc) => (
-                      <SelectItem key={loc} value={loc}>{loc}</SelectItem>
+                    {locations.map((loc) => (
+                      <SelectItem key={loc.id} value={loc.name}>{loc.name}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -305,13 +444,8 @@ export function EditUserDrawer({ isOpen, onClose, user }: EditUserDrawerProps) {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="__none__">Not specified</SelectItem>
-                    {COUNTRIES.map((c) => (
-                      <SelectItem key={c.code} value={c.name}>
-                        <span className="flex items-center gap-2">
-                          <img src={c.svg} alt={c.name} className="h-3 w-5 object-cover rounded-sm" />
-                          {c.name}
-                        </span>
-                      </SelectItem>
+                    {countries.map((c) => (
+                      <SelectItem key={c.id} value={c.name}>{c.name}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
