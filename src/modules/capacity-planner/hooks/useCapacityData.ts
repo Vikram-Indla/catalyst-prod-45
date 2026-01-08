@@ -37,6 +37,18 @@ export function useCapacityData() {
         .select('id, name');
       const vendorMap = new Map(resourceVendors?.map(v => [v.id, v.name]) || []);
       
+      // STEP 3c: Fetch resource countries to map names and flags
+      const { data: resourceCountries } = await supabase
+        .from('resource_countries')
+        .select('id, name, code');
+      const countryMap = new Map(resourceCountries?.map(c => [c.id, { name: c.name, code: c.code }]) || []);
+      
+      // STEP 3d: Fetch resource locations to map names
+      const { data: resourceLocations } = await supabase
+        .from('resource_locations')
+        .select('id, name');
+      const locationMap = new Map(resourceLocations?.map(l => [l.id, l.name]) || []);
+      
       // STEP 4: Fetch profiles for avatar, email, etc (enrichment only)
       const { data: profiles } = await supabase
         .from('profiles')
@@ -96,6 +108,10 @@ export function useCapacityData() {
         const departmentId = ri.department_id || profile?.department_id;
         const departmentName = departmentId ? deptMap.get(departmentId) || 'Unassigned' : 'Unassigned';
         
+        // Get country and location from resource_inventory
+        const countryData = ri.country_id ? countryMap.get(ri.country_id) : null;
+        const locationName = ri.location_id ? locationMap.get(ri.location_id) : null;
+        
         return {
           id: ri.profile_id || ri.id, // Use profile_id if linked, otherwise resource_inventory id
           resourceInventoryId: ri.id, // Always keep track of ri.id
@@ -113,6 +129,9 @@ export function useCapacityData() {
           contract_start_date: ri.contract_start_date || null,
           contract_end_date: ri.contract_end_date || null,
           vendor_name: ri.vendor_id ? vendorMap.get(ri.vendor_id) || ri.vendor_name || null : ri.vendor_name || null,
+          country: countryData?.name || null,
+          country_code: countryData?.code || null,
+          location: locationName || null,
         };
       }) as CapacityResource[];
     },
