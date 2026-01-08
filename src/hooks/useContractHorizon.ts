@@ -46,9 +46,30 @@ export function useContractHorizon() {
   const [expandedDepartments, setExpandedDepartments] = useState<Set<string>>(new Set(['Delivery']));
   const [selectedResource, setSelectedResource] = useState<ContractResourceWithStatus | null>(null);
 
+  // Fetch departments first
+  const { data: departments = [] } = useQuery({
+    queryKey: ['capacity-departments'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('capacity_departments')
+        .select('id, name');
+      if (error) throw error;
+      return data || [];
+    }
+  });
+
+  // Create department lookup map
+  const departmentMap = useMemo(() => {
+    const map: Record<string, string> = {};
+    departments.forEach((d: any) => {
+      map[d.id] = d.name;
+    });
+    return map;
+  }, [departments]);
+
   // Fetch resources from resource_inventory
   const { data: rawResources = [], isLoading } = useQuery({
-    queryKey: ['contract-horizon-resources'],
+    queryKey: ['contract-horizon-resources', departmentMap],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('resource_inventory')
@@ -62,8 +83,7 @@ export function useContractHorizon() {
           contract_end_date,
           profile_id,
           country_id,
-          location_id,
-          capacity_departments:department_id(name)
+          location_id
         `)
         .not('contract_end_date', 'is', null)
         .gte('contract_end_date', TODAY.toISOString().split('T')[0]);
@@ -80,7 +100,7 @@ export function useContractHorizon() {
           id: r.id,
           name: r.name || 'Unknown',
           role: r.role_name || 'Team Member',
-          department: (r.capacity_departments as any)?.name || 'Unassigned',
+          department: departmentMap[r.department_id] || 'Unassigned',
           vendor: r.vendor_name || 'Unknown',
           country: 'Saudi Arabia',
           location: r.location_id ? 'Off-shore' : 'On-site',
@@ -88,7 +108,8 @@ export function useContractHorizon() {
           contractEnd: r.contract_end_date,
           profileId: r.profile_id
         })) as ContractResource[];
-    }
+    },
+    enabled: departments.length > 0
   });
 
   // Process resources with computed status
