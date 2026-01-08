@@ -210,27 +210,72 @@ export function CatyChatWidget() {
     const ninetyDays = new Date(now);
     ninetyDays.setDate(ninetyDays.getDate() + 90);
 
-    // Check if query mentions a specific person's name
-    const nameMatch = query.match(/(?:when is|what about|show me|find|search)\s+(.+?)(?:'s)?\s*(?:contract|expir|ending|status)?/i);
-    if (nameMatch) {
-      const searchName = nameMatch[1].trim();
-      if (searchName.length >= 2) {
-        const { data: personResults } = await supabase
-          .from('profiles')
-          .select('full_name, vendor, contract_end_date, contract_start_date, department_id')
-          .ilike('full_name', `%${searchName}%`)
-          .limit(5);
+    // Extract person name from various query patterns
+    const extractName = (q: string): string | null => {
+      // Pattern: "Which country [Name] is from?" or "Where is [Name] from?"
+      const countryPattern = q.match(/(?:which country|where)\s+(?:is\s+)?(.+?)\s+(?:is\s+)?from/i);
+      if (countryPattern) return countryPattern[1].trim();
+      
+      // Pattern: "When is [Name]'s contract expiring?"
+      const contractPattern = q.match(/(?:when is|what about|show me|find|search|tell me about)\s+(.+?)(?:'s)?\s*(?:contract|expir|ending|status)?/i);
+      if (contractPattern) return contractPattern[1].trim();
+      
+      // Pattern: "[Name]'s contract" or just "[Name]"
+      const possessivePattern = q.match(/^(.+?)'s\s+/i);
+      if (possessivePattern) return possessivePattern[1].trim();
+      
+      return null;
+    };
+
+    // Check if query is about country/location
+    const isCountryQuery = lowerQuery.includes('country') || lowerQuery.includes('where') && lowerQuery.includes('from');
+    
+    // Check if query is about contract
+    const isContractQuery = lowerQuery.includes('contract') || lowerQuery.includes('expir') || lowerQuery.includes('ending');
+
+    const searchName = extractName(query);
+    
+    if (searchName && searchName.length >= 2) {
+      const { data: personResults } = await supabase
+        .from('profiles')
+        .select('full_name, vendor, contract_end_date, contract_start_date, department_id, country, location')
+        .ilike('full_name', `%${searchName}%`)
+        .limit(5);
+      
+      if (personResults && personResults.length > 0) {
+        // If asking about country specifically
+        if (isCountryQuery) {
+          if (personResults.length === 1) {
+            const p = personResults[0];
+            return `**${p.full_name}** is from **${p.country || 'Unknown country'}**${p.location ? ` (${p.location})` : ''}.`;
+          } else {
+            return `**Found ${personResults.length} people matching "${searchName}":**\n\n${personResults.map(p => 
+              `• **${p.full_name}** — ${p.country || 'Unknown country'}${p.location ? ` (${p.location})` : ''}`
+            ).join('\n')}`;
+          }
+        }
         
-        if (personResults && personResults.length > 0) {
+        // If asking about contract specifically
+        if (isContractQuery || personResults.length === 1) {
           if (personResults.length === 1) {
             const p = personResults[0];
             const endDate = p.contract_end_date ? formatContractDate(p.contract_end_date) : 'Not set';
             return `**${p.full_name}**\n\n• **Vendor:** ${p.vendor || 'N/A'}\n• **Contract End Date:** ${endDate}\n• **Contract Start Date:** ${p.contract_start_date ? formatContractDate(p.contract_start_date) : 'N/A'}`;
           } else {
-            return `**Found ${personResults.length} matching resources:**\n\n${personResults.map(p => 
+            return `**Found ${personResults.length} people matching "${searchName}":**\n\n${personResults.map(p => 
               `• **${p.full_name}** (${p.vendor || 'N/A'}) — Contract ends ${p.contract_end_date ? formatContractDate(p.contract_end_date) : 'Not set'}`
             ).join('\n')}`;
           }
+        }
+        
+        // General person info
+        if (personResults.length === 1) {
+          const p = personResults[0];
+          return `**${p.full_name}**\n\n• **Vendor:** ${p.vendor || 'N/A'}\n• **Country:** ${p.country || 'N/A'}\n• **Contract End:** ${p.contract_end_date ? formatContractDate(p.contract_end_date) : 'Not set'}`;
+        } else {
+          return `**Found ${personResults.length} people matching "${searchName}":**\n\n${personResults.map(p => 
+            `• **${p.full_name}** (${p.vendor || 'N/A'}) — ${p.country || 'N/A'}`
+          ).join('\n')}`;
         }
       }
     }
