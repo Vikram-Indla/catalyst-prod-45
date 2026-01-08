@@ -5,6 +5,7 @@
 
 export interface Resource360Data {
   id: string;
+  profile_id?: string;
   name: string;
   email: string;
   role: string;
