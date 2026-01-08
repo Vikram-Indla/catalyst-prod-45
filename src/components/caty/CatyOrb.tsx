@@ -33,12 +33,12 @@ export function CatyOrb({
       <div 
         className="w-full h-full rounded-full relative animate-[orb-breathe_4s_ease-in-out_infinite]"
         style={{
-          background: 'linear-gradient(135deg, #1a6b69 0%, #0d5452 50%, #063f3e 100%)',
+          background: 'linear-gradient(135deg, #5eaaa8 0%, #3d9a98 50%, #2d8a88 100%)',
           boxShadow: `
-            0 4px 20px rgba(0,0,0,0.3),
-            inset 0 -8px 20px rgba(0,0,0,0.25),
-            inset 0 8px 20px rgba(255,255,255,0.15),
-            0 0 0 2px rgba(255,255,255,0.2)
+            0 4px 20px rgba(20, 184, 166, 0.4),
+            inset 0 -8px 20px rgba(0,0,0,0.2),
+            inset 0 8px 20px rgba(255,255,255,0.3),
+            0 0 0 2px rgba(255,255,255,0.3)
           `
         }}
       >
@@ -69,7 +69,7 @@ export function CatyOrb({
                 }}
               >
                 <div 
-                  className="absolute bg-[#0d5452] rounded-full animate-[look-around_6s_ease-in-out_infinite]"
+                  className="absolute bg-[#2d8a88] rounded-full animate-[look-around_6s_ease-in-out_infinite]"
                   style={{
                     bottom: 2,
                     left: '50%',
@@ -88,7 +88,7 @@ export function CatyOrb({
                 }}
               >
                 <div 
-                  className="absolute bg-[#0d5452] rounded-full animate-[look-around_6s_ease-in-out_infinite]"
+                  className="absolute bg-[#2d8a88] rounded-full animate-[look-around_6s_ease-in-out_infinite]"
                   style={{
                     bottom: 2,
                     left: '50%',
@@ -136,7 +136,7 @@ export function CatyOrb({
         <div 
           className="absolute bottom-0 right-0 w-3.5 h-3.5 bg-green-500 rounded-full animate-[status-pulse_2s_ease-in-out_infinite]"
           style={{
-            border: '3px solid #1a6b69',
+            border: '3px solid #3d9a98',
             boxShadow: '0 0 8px #22c55e'
           }}
         />
