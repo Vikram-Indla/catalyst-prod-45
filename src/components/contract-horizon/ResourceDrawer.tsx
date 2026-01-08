@@ -33,12 +33,11 @@ export function ResourceDrawer({ resource, onClose }: ResourceDrawerProps) {
     <>
       {/* Overlay */}
       <div 
-        className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 animate-in fade-in duration-300"
+        className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[1000] animate-in fade-in duration-300"
         onClick={onClose}
       />
-      
       {/* Drawer */}
-      <div className="fixed top-0 right-0 bottom-0 w-[400px] max-w-[90vw] bg-card z-50 flex flex-col shadow-2xl animate-in slide-in-from-right duration-300">
+      <div className="fixed top-0 right-0 bottom-0 w-[400px] max-w-[90vw] bg-card z-[1001] flex flex-col shadow-2xl animate-in slide-in-from-right duration-300">
         {/* Header */}
         <div className="p-6 border-b border-border flex gap-4 bg-muted/50">
           {/* Avatar */}
