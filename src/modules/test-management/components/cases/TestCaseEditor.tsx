@@ -882,9 +882,38 @@ export function TestCaseEditor({
           </div>
 
           {/* ═══════════════════════════════════════════════════════════════════════ */}
+          {/* LINKED ITEMS */}
+          {/* ═══════════════════════════════════════════════════════════════════════ */}
+          <div className="mb-6 border border-border rounded-lg bg-background overflow-hidden">
+            <div className="flex items-center justify-between px-4 py-3 bg-muted/50 border-b border-border">
+              <div className="flex items-center gap-2">
+                <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                  Linked Items
+                </h3>
+                <Badge variant="secondary" className="h-5 px-1.5 text-[10px]">
+                  0
+                </Badge>
+              </div>
+              <button
+                className="text-xs font-medium text-primary hover:text-primary/80 flex items-center gap-1"
+              >
+                <Plus className="h-3 w-3" />
+                Link
+              </button>
+            </div>
+            <div className="p-4">
+              <div className="text-center py-6 text-muted-foreground text-sm">
+                <LinkIcon className="h-8 w-8 mx-auto mb-2 opacity-30" />
+                <p>No linked items</p>
+                <p className="text-xs mt-1">Link to Stories, Features, Epics, or Defects</p>
+              </div>
+            </div>
+          </div>
+
+          {/* ═══════════════════════════════════════════════════════════════════════ */}
           {/* ADDITIONAL FIELDS ROW */}
           {/* ═══════════════════════════════════════════════════════════════════════ */}
-          <div className="grid grid-cols-3 gap-4 mb-6">
+          <div className="grid grid-cols-2 gap-4 mb-6">
             {/* Attachments */}
             <div className="p-4 border border-border rounded-lg bg-background">
               <div className="flex items-center gap-2 mb-2">
@@ -914,20 +943,6 @@ export function TestCaseEditor({
                   })
                 )}
               </div>
-            </div>
-
-            {/* References */}
-            <div className="p-4 border border-border rounded-lg bg-background">
-              <div className="flex items-center gap-2 mb-2">
-                <LinkIcon className="h-4 w-4 text-muted-foreground" />
-                <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">References</span>
-              </div>
-              <Input
-                value={references}
-                onChange={(e) => { setReferences(e.target.value); markDirty(); }}
-                placeholder="REQ-123, JIRA-456..."
-                className="text-sm"
-              />
             </div>
           </div>
 
