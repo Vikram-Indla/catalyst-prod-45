@@ -23620,6 +23620,7 @@ export type Database = {
           ai_generated_at: string | null
           ai_generation_prompt: string | null
           ai_model: string | null
+          assigned_to: string | null
           automation_id: string | null
           automation_status: string | null
           case_key: string
@@ -23648,6 +23649,7 @@ export type Database = {
           ai_generated_at?: string | null
           ai_generation_prompt?: string | null
           ai_model?: string | null
+          assigned_to?: string | null
           automation_id?: string | null
           automation_status?: string | null
           case_key: string
@@ -23676,6 +23678,7 @@ export type Database = {
           ai_generated_at?: string | null
           ai_generation_prompt?: string | null
           ai_model?: string | null
+          assigned_to?: string | null
           automation_id?: string | null
           automation_status?: string | null
           case_key?: string
@@ -23701,6 +23704,34 @@ export type Database = {
           version?: number | null
         }
         Relationships: [
+          {
+            foreignKeyName: "tm_test_cases_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_test_cases_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "tm_test_cases_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_test_cases_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "v_resource_profile"
+            referencedColumns: ["profile_id"]
+          },
           {
             foreignKeyName: "tm_test_cases_case_type_id_fkey"
             columns: ["case_type_id"]

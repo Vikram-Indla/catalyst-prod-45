@@ -38,7 +38,8 @@ export function useTestCases(projectId: string | undefined, filters?: CaseFilter
           priority:tm_case_priorities(*),
           type:tm_case_types(*),
           folder:tm_folders(id, name, path),
-          created_by_profile:profiles!tm_test_cases_created_by_fkey(id, full_name, avatar_url)
+          created_by_profile:profiles!tm_test_cases_created_by_fkey(id, full_name, avatar_url),
+          assigned_user:profiles!tm_test_cases_assigned_to_fkey(id, full_name, avatar_url)
         `, { count: 'exact' })
         .eq('project_id', projectId)
         .order('updated_at', { ascending: false });
@@ -70,6 +71,21 @@ export function useTestCases(projectId: string | undefined, filters?: CaseFilter
 
       if (filters?.search) {
         query = query.or(`title.ilike.%${filters.search}%,case_key.ilike.%${filters.search}%`);
+      }
+
+      // Assigned To filter
+      if (filters?.assigned_to) {
+        if (filters.assigned_to === 'me') {
+          // This will be resolved on the client side, but we'll get the current user
+          const { data: { user } } = await supabase.auth.getUser();
+          if (user?.id) {
+            query = query.eq('assigned_to', user.id);
+          }
+        } else if (filters.assigned_to === 'unassigned') {
+          query = query.is('assigned_to', null);
+        } else {
+          query = query.eq('assigned_to', filters.assigned_to);
+        }
       }
 
       const page = filters?.page || 1;
@@ -256,6 +272,7 @@ export function useCreateTestCase(options?: { silent?: boolean }) {
           case_type_id: input.type_id || DEFAULT_TYPE_ID,
           version: 1,
           created_by: user.id,
+          assigned_to: user.id, // Default assigned to creator
           is_ai_generated: input.is_ai_generated || false,
           ai_generation_prompt: input.ai_generation_prompt || null,
           ai_model: input.ai_model || null,
