@@ -213,8 +213,9 @@ async function generateCaseKey(projectId: string): Promise<string> {
   return `${prefix}-${String(nextNum).padStart(3, '0')}`;
 }
 
-export function useCreateTestCase() {
+export function useCreateTestCase(options?: { silent?: boolean }) {
   const queryClient = useQueryClient();
+  const silent = options?.silent ?? false;
 
   return useMutation({
     mutationFn: async (input: CreateCaseInput & { project_id: string }): Promise<TMTestCase> => {
@@ -283,7 +284,9 @@ export function useCreateTestCase() {
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['tm-cases', data.project_id] });
       queryClient.invalidateQueries({ queryKey: ['tm-folders-with-counts', data.project_id] });
-      catalystToast.success('Test case created');
+      if (!silent) {
+        catalystToast.success('Test case created');
+      }
     },
     onError: (error: Error) => {
       catalystToast.error('Failed to create test case', error.message);
