@@ -9,7 +9,7 @@ interface CatalystCheckboxProps extends Omit<InputHTMLAttributes<HTMLInputElemen
 export const CatalystCheckbox = forwardRef<HTMLInputElement, CatalystCheckboxProps>(
   ({ label, className, ...props }, ref) => {
     return (
-      <label className="flex items-start gap-2 cursor-pointer">
+      <label className="flex items-start gap-2 cursor-pointer group">
         <div className="relative mt-0.5">
           <input
             ref={ref}
@@ -19,25 +19,28 @@ export const CatalystCheckbox = forwardRef<HTMLInputElement, CatalystCheckboxPro
           />
           <div 
             className={cn(
-              "w-4 h-4 rounded-sm border-2",
+              "w-4 h-4 rounded-sm border-2 flex items-center justify-center",
               "transition-all duration-150",
-              "peer-checked:bg-brand-primary peer-checked:border-brand-primary",
-              "peer-focus:ring-2 peer-focus:ring-brand-primary/20",
+              // Catalyst V5: Visible border in both light and dark modes
+              "border-[hsl(var(--border-default))] dark:border-[rgba(255,255,255,0.35)]",
+              "bg-transparent",
+              // Checked state
+              "peer-checked:bg-primary peer-checked:border-primary",
+              // Focus state
+              "peer-focus:ring-2 peer-focus:ring-primary/30 peer-focus:ring-offset-1 dark:peer-focus:ring-offset-[hsl(var(--background))]",
+              // Hover state
+              "group-hover:border-primary/70 dark:group-hover:border-[rgba(255,255,255,0.5)]",
               className
             )}
-            style={{ 
-              borderColor: 'var(--input-border)',
-              backgroundColor: 'var(--input-bg)'
-            }}
           >
             <Check 
-              className="w-3 h-3 text-white absolute top-0.5 left-0.5 opacity-0 peer-checked:opacity-100 transition-opacity" 
+              className="w-3 h-3 text-primary-foreground opacity-0 peer-checked:opacity-100 transition-opacity" 
               strokeWidth={3}
             />
           </div>
         </div>
         {label && (
-          <span className="text-[13px] leading-snug" style={{ color: 'var(--text-2)' }}>
+          <span className="text-[13px] leading-snug text-muted-foreground dark:text-[rgba(255,255,255,0.72)]">
             {label}
           </span>
         )}
