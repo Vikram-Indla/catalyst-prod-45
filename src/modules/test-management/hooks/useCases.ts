@@ -91,18 +91,21 @@ export function useTemplates(projectId: string) {
 /**
  * Create test case mutation
  */
-export function useCreateTestCase() {
+export function useCreateTestCase(options?: { silent?: boolean }) {
   const queryClient = useQueryClient();
   const { toast } = useToast();
+  const silent = options?.silent ?? false;
 
   return useMutation({
     mutationFn: (data: CreateTestCaseInput) => casesApi.create(data),
     onSuccess: (newCase) => {
       queryClient.invalidateQueries({ queryKey: caseKeys.lists() });
-      toast({
-        title: 'Test case created',
-        description: `${newCase.case_key} has been created successfully.`,
-      });
+      if (!silent) {
+        toast({
+          title: 'Test case created',
+          description: `${newCase.case_key} has been created successfully.`,
+        });
+      }
     },
     onError: (error) => {
       const apiError = parseApiError(error);

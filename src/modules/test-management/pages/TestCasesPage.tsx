@@ -149,6 +149,7 @@ export function TestCasesPage() {
 
   // Mutations
   const createCase = useCreateTestCase();
+  const createCaseSilent = useCreateTestCase({ silent: true });
   const updateCase = useUpdateTestCase();
   const deleteCase = useDeleteTestCase();
   const cloneCase = useCloneTestCase();
@@ -361,29 +362,52 @@ export function TestCasesPage() {
   ) => {
     if (!projectId) return;
     
-    // Create each test case
+    // Find folder name for the toast
+    const folder = folders.find(f => f.id === folderId);
+    const folderName = folder?.name || 'Root';
+    
+    // Create each test case silently (no individual toasts)
+    const createdCases: { key: string; title: string }[] = [];
     for (const tc of testCases) {
-      await createCase.mutateAsync({
-        title: tc.title,
-        objective: tc.summary,
-        preconditions: tc.preconditions?.join('\n'),
-        folder_id: folderId,
-        priority_id: undefined, // Will use default
-        type_id: undefined, // Will use default
-        steps: tc.steps?.map((s: any, i: number) => ({
-          step_number: i + 1,
-          action: s.action,
-          test_data: s.testData,
-          expected_result: s.expectedResult,
-        })) || [],
-        project_id: projectId,
-        is_ai_generated: true,
-        ai_generation_prompt: tc.title,
-      });
+      try {
+        const result = await createCaseSilent.mutateAsync({
+          title: tc.title,
+          objective: tc.summary,
+          preconditions: tc.preconditions?.join('\n'),
+          folder_id: folderId,
+          priority_id: undefined,
+          type_id: undefined,
+          steps: tc.steps?.map((s: any, i: number) => ({
+            step_number: i + 1,
+            action: s.action,
+            test_data: s.testData,
+            expected_result: s.expectedResult,
+          })) || [],
+          project_id: projectId,
+          is_ai_generated: true,
+          ai_generation_prompt: tc.title,
+        });
+        createdCases.push({ 
+          key: result.key || (result as any).case_key || '', 
+          title: tc.title 
+        });
+      } catch (err) {
+        console.error('Failed to create case:', tc.title, err);
+      }
     }
     
-    catalystToast.success('AI test cases saved', `${testCases.length} test cases created`);
-  }, [createCase, projectId]);
+    // Show single batch toast with folder and case details
+    if (createdCases.length > 0) {
+      const casesSummary = createdCases
+        .map(c => `${c.key}: ${c.title.slice(0, 30)}${c.title.length > 30 ? '...' : ''}`)
+        .join('\n');
+      
+      catalystToast.success(
+        `${createdCases.length} test case${createdCases.length > 1 ? 's' : ''} saved to "${folderName}"`,
+        casesSummary
+      );
+    }
+  }, [createCaseSilent, projectId, folders]);
 
   const handleAddSelectedToCycle = useCallback((cycleId: string) => {
     if (selectedIds.size > 0 && projectId) {
