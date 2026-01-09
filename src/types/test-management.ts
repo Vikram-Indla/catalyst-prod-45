@@ -261,6 +261,7 @@ export interface CreateCaseInput {
   is_ai_generated?: boolean;
   ai_generation_prompt?: string;
   ai_model?: string;
+  assigned_to?: string;
 }
 
 export interface UpdateCaseInput extends Partial<CreateCaseInput> {

@@ -272,7 +272,7 @@ export function useCreateTestCase(options?: { silent?: boolean }) {
           case_type_id: input.type_id || DEFAULT_TYPE_ID,
           version: 1,
           created_by: user.id,
-          assigned_to: user.id, // Default assigned to creator
+          assigned_to: input.assigned_to || user.id, // Use provided value or default to creator
           is_ai_generated: input.is_ai_generated || false,
           ai_generation_prompt: input.ai_generation_prompt || null,
           ai_model: input.ai_model || null,

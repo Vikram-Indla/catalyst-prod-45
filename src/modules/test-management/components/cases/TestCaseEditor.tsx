@@ -110,6 +110,12 @@ interface PreconditionInput {
   text: string;
 }
 
+interface TeamMember {
+  id: string;
+  name: string;
+  avatar_url?: string;
+}
+
 interface TestCaseEditorProps {
   testCase?: TestCase | null;
   steps?: TestStep[];
@@ -117,6 +123,8 @@ interface TestCaseEditorProps {
   priorities: { id: string; name: string; color: string }[];
   caseTypes: { id: string; name: string }[];
   labels: { id: string; name: string; color: string }[];
+  teamMembers?: TeamMember[];
+  currentUserId?: string;
   onSave: (data: any, steps: any[]) => void;
   onClose: () => void;
   isSubmitting?: boolean;
@@ -157,6 +165,8 @@ export function TestCaseEditor({
   priorities,
   caseTypes,
   labels,
+  teamMembers = [],
+  currentUserId,
   onSave,
   onClose,
   isSubmitting,
@@ -208,6 +218,7 @@ export function TestCaseEditor({
       setFolderId(testCase.folder_id || '');
       setSelectedLabels(testCase.labels?.map(l => l.id) || []);
       setEstimate(testCase.estimated_time_minutes?.toString() || '');
+      setAssigneeId((testCase as any).assigned_to || currentUserId || '');
       setStepsList(
         initialSteps.map(s => ({
           id: s.id,
@@ -230,9 +241,10 @@ export function TestCaseEditor({
       setSelectedLabels([]);
       setEstimate('');
       setStepsList([]);
+      setAssigneeId(currentUserId || '');
     }
     setIsDirty(false);
-  }, [testCase, initialSteps, defaultFolderId]);
+  }, [testCase, initialSteps, defaultFolderId, currentUserId]);
 
   // Handlers
   const markDirty = useCallback(() => setIsDirty(true), []);
@@ -329,6 +341,7 @@ export function TestCaseEditor({
       folder_id: folderId || undefined,
       estimated_time_minutes: estimate ? parseInt(estimate, 10) : undefined,
       tags: selectedLabels.length > 0 ? selectedLabels : undefined,
+      assigned_to: assigneeId || undefined,
     };
 
     const stepsData = stepsList
@@ -345,7 +358,7 @@ export function TestCaseEditor({
     setIsDirty(false);
   }, [
     projectId, title, summary, description, preconditions, status, priorityId,
-    typeId, folderId, estimate, selectedLabels, stepsList, onSave,
+    typeId, folderId, estimate, selectedLabels, stepsList, onSave, assigneeId,
   ]);
 
   // Keyboard shortcuts
@@ -410,17 +423,47 @@ export function TestCaseEditor({
 
         {/* Right side */}
         <div className="flex items-center gap-3">
-          {/* Assignee */}
-          <div className="flex items-center gap-2">
-            <Avatar className="w-7 h-7">
-              <AvatarFallback className="text-xs bg-primary/10 text-primary">
-                {testCase?.owner_name?.charAt(0) || 'U'}
-              </AvatarFallback>
-            </Avatar>
-            <span className="text-sm text-muted-foreground">
-              {testCase?.owner_name || 'Unassigned'}
-            </span>
-          </div>
+          {/* Assignee Dropdown */}
+          <Select value={assigneeId || '__unassigned__'} onValueChange={(v) => { setAssigneeId(v === '__unassigned__' ? '' : v); markDirty(); }}>
+            <SelectTrigger className="w-[180px] h-9 border-border">
+              <div className="flex items-center gap-2">
+                <Avatar className="w-6 h-6">
+                  <AvatarImage src={teamMembers.find(m => m.id === assigneeId)?.avatar_url} />
+                  <AvatarFallback className="text-[10px] bg-primary/10 text-primary">
+                    {assigneeId 
+                      ? (teamMembers.find(m => m.id === assigneeId)?.name?.slice(0, 2).toUpperCase() || 'UN')
+                      : 'UN'
+                    }
+                  </AvatarFallback>
+                </Avatar>
+                <SelectValue placeholder="Assignee..." />
+              </div>
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="__unassigned__">
+                <div className="flex items-center gap-2">
+                  <User className="w-4 h-4 text-muted-foreground" />
+                  <span>Unassigned</span>
+                </div>
+              </SelectItem>
+              {teamMembers.map((member) => (
+                <SelectItem key={member.id} value={member.id}>
+                  <div className="flex items-center gap-2">
+                    <Avatar className="w-5 h-5">
+                      <AvatarImage src={member.avatar_url} />
+                      <AvatarFallback className="text-[10px]">
+                        {member.name?.slice(0, 2).toUpperCase()}
+                      </AvatarFallback>
+                    </Avatar>
+                    <span>{member.name}</span>
+                    {member.id === currentUserId && (
+                      <span className="text-xs text-muted-foreground">(me)</span>
+                    )}
+                  </div>
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
 
           {/* Save button */}
           <Button
