@@ -6,10 +6,13 @@
  * - brand-primary used ONLY as thin accent border, not background
  * - Anchored to bottom of table container (sticky)
  * - Compact, enterprise density
+ * 
+ * Supports bulk actions:
+ * - Move, Assign, Status, Priority, Link, Duplicate, Export, Delete
  */
 
 import { useEffect, useCallback } from 'react';
-import { X, Trash2 } from 'lucide-react';
+import { X, Trash2, FolderInput, UserPlus, CircleCheck, Flag, Link2, Copy, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
@@ -29,6 +32,11 @@ interface BulkSelectionBarProps {
   onDelete?: () => void;
   onUpdateStatus?: () => void;
   onAssign?: () => void;
+  onMove?: () => void;
+  onLink?: () => void;
+  onDuplicate?: () => void;
+  onExport?: () => void;
+  onPriority?: () => void;
   /** Custom class name for positioning */
   className?: string;
   /** Whether to use fixed positioning (default) or sticky */
@@ -42,6 +50,11 @@ export function BulkSelectionBar({
   onDelete,
   onUpdateStatus,
   onAssign,
+  onMove,
+  onLink,
+  onDuplicate,
+  onExport,
+  onPriority,
   className,
   positioning = 'fixed',
 }: BulkSelectionBarProps) {
@@ -59,18 +72,50 @@ export function BulkSelectionBar({
 
   if (selectedCount === 0) return null;
 
-  // Build action list from props
+  // Build action list from props - order matches spec: Move, Assign, Status, Priority, Link, Duplicate, Export, Delete
   const allActions: BulkAction[] = [
     ...actions,
-    ...(onUpdateStatus ? [{
-      id: 'update-status',
-      label: 'Update Status',
-      onClick: onUpdateStatus,
+    ...(onMove ? [{
+      id: 'move',
+      label: 'Move',
+      onClick: onMove,
+      icon: <FolderInput className="h-4 w-4" />,
     }] : []),
     ...(onAssign ? [{
       id: 'assign',
       label: 'Assign',
       onClick: onAssign,
+      icon: <UserPlus className="h-4 w-4" />,
+    }] : []),
+    ...(onUpdateStatus ? [{
+      id: 'update-status',
+      label: 'Status',
+      onClick: onUpdateStatus,
+      icon: <CircleCheck className="h-4 w-4" />,
+    }] : []),
+    ...(onPriority ? [{
+      id: 'priority',
+      label: 'Priority',
+      onClick: onPriority,
+      icon: <Flag className="h-4 w-4" />,
+    }] : []),
+    ...(onLink ? [{
+      id: 'link',
+      label: 'Link',
+      onClick: onLink,
+      icon: <Link2 className="h-4 w-4" />,
+    }] : []),
+    ...(onDuplicate ? [{
+      id: 'duplicate',
+      label: 'Duplicate',
+      onClick: onDuplicate,
+      icon: <Copy className="h-4 w-4" />,
+    }] : []),
+    ...(onExport ? [{
+      id: 'export',
+      label: 'Export',
+      onClick: onExport,
+      icon: <Download className="h-4 w-4" />,
     }] : []),
     ...(onDelete ? [{
       id: 'delete',

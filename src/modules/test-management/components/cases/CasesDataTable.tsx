@@ -243,7 +243,7 @@ export function CasesDataTable({
         return (
           <TableCell key={col.key} className="text-sm text-muted-foreground">
             <div className="flex items-center gap-1.5">
-              <Folder className="h-3.5 w-3.5 opacity-60" />
+              <Folder className="h-4 w-4 text-yellow-500 fill-yellow-500/20" />
               <span className="truncate max-w-[100px]">
                 {testCase.folder?.name || 'Root'}
               </span>
