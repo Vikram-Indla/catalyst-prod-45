@@ -607,7 +607,7 @@ export function TestCasesPage() {
                   )}
                 </div>
                 <div 
-                  className="text-[10px] font-medium text-gray-600 group-hover:text-gray-900 transition-colors max-h-28 overflow-hidden leading-tight"
+                  className="text-[11px] font-semibold text-gray-700 group-hover:text-gray-900 transition-colors max-h-28 overflow-hidden leading-tight tracking-wide"
                   style={{ writingMode: 'vertical-rl', textOrientation: 'mixed' }}
                 >
                   {selectedFolderId 
