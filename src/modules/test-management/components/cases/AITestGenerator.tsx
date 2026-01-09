@@ -1,7 +1,7 @@
 /**
  * Catalyst - AI Generator Modal
  * 3-step flow: Input → Generate → Review & Save
- * Redesigned with Catalyst V5 colors, glass-morphism cards, all 3 tabs working
+ * Redesigned with Catalyst V5 colors, all 3 tabs working
  */
 
 import { useState, useEffect } from 'react';
@@ -21,10 +21,9 @@ import {
   SelectTrigger, 
   SelectValue 
 } from '@/components/ui/select';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Sparkles, Loader2, Lightbulb, Eye, 
-  Check, FolderOpen, AlertCircle, MapPin, Settings, FileText
+  Check, FolderOpen, AlertCircle, MapPin, Settings
 } from 'lucide-react';
 import { useAIGeneration, type GeneratedTestCase } from '@/hooks/test-management/useAIGeneration';
 import { useFoldersWithCounts } from '@/hooks/test-management';
@@ -32,6 +31,7 @@ import { cn } from '@/lib/utils';
 import { AIFromRequirements } from './ai-generator/AIFromRequirements';
 import { AIBulkGenerate, type BulkOptions } from './ai-generator/AIBulkGenerate';
 import { LinkedItem } from '@/hooks/test-management/useLinkedItemsForAI';
+import { SegmentedTabs, SegmentedTab } from '@/components/ui/segmented-tabs';
 
 interface AITestGeneratorProps {
   open: boolean;
@@ -78,6 +78,18 @@ export function AITestGenerator({
   const [isSaving, setIsSaving] = useState(false);
   const [previewCase, setPreviewCase] = useState<number | null>(null);
 
+  // From Requirements state
+  const [selectedItems, setSelectedItems] = useState<LinkedItem[]>([]);
+
+  // Bulk Generate state
+  const [bulkRequirements, setBulkRequirements] = useState<string[]>([]);
+  const [bulkOptions, setBulkOptions] = useState<BulkOptions>({
+    testType: 'functional',
+    testsPerRequirement: '1-3',
+    includeEdgeCases: true,
+    includeNegativeTests: true,
+  });
+
   // Hooks
   const { data: folders = [] } = useFoldersWithCounts(projectId);
   const { generateTestCases, isGenerating, error, clearError } = useAIGeneration();
@@ -90,6 +102,8 @@ export function AITestGenerator({
       setGeneratedCases([]);
       setSelectedCases(new Set());
       setPreviewCase(null);
+      setSelectedItems([]);
+      setBulkRequirements([]);
       clearError();
       if (defaultFolderId) {
         setFolderId(defaultFolderId);
@@ -97,21 +111,60 @@ export function AITestGenerator({
     }
   }, [open, defaultFolderId, clearError]);
 
+  // Build prompt based on active tab
+  const buildPrompt = (): string => {
+    if (activeTab === 'natural') {
+      return prompt;
+    } else if (activeTab === 'requirements') {
+      return selectedItems
+        .map(item => `${item.key}: ${item.title}\n${item.description || ''}\n${item.acceptance_criteria || ''}`)
+        .join('\n\n---\n\n');
+    } else if (activeTab === 'bulk') {
+      return bulkRequirements.join('\n');
+    }
+    return '';
+  };
+
+  // Check if can generate
+  const canGenerate = (): boolean => {
+    if (activeTab === 'natural') {
+      return prompt.trim().length > 0;
+    } else if (activeTab === 'requirements') {
+      return selectedItems.length > 0;
+    } else if (activeTab === 'bulk') {
+      return bulkRequirements.length > 0;
+    }
+    return false;
+  };
+
   // Handlers
   const handleGenerate = async () => {
-    if (!prompt.trim()) {
+    const builtPrompt = buildPrompt();
+    if (!builtPrompt.trim()) {
       return;
     }
 
     setStep('generating');
     clearError();
 
-    const result = await generateTestCases(prompt, {
-      projectName,
-      featureName: folders.find(f => f.id === folderId)?.name,
-      testType,
-      ...options,
-    });
+    const genOptions = activeTab === 'bulk' 
+      ? {
+          projectName,
+          featureName: folders.find(f => f.id === folderId)?.name,
+          testType: bulkOptions.testType,
+          includeEdgeCases: bulkOptions.includeEdgeCases,
+          includeNegativeTests: bulkOptions.includeNegativeTests,
+          includePerformance: false,
+          includeSecurity: false,
+        }
+      : {
+          projectName,
+          featureName: folders.find(f => f.id === folderId)?.name,
+          testType,
+          ...options,
+        };
+
+    const result = await generateTestCases(builtPrompt, genOptions);
 
     if (result) {
       setGeneratedCases(result.testCases);
@@ -165,15 +218,25 @@ export function AITestGenerator({
     setSelectedCases(newSelected);
   };
 
+  // Get generate button label
+  const getGenerateLabel = () => {
+    if (activeTab === 'requirements') {
+      return `Generate from ${selectedItems.length} Requirement${selectedItems.length !== 1 ? 's' : ''}`;
+    } else if (activeTab === 'bulk') {
+      return `Generate Bulk (${bulkRequirements.length} items)`;
+    }
+    return 'Generate Test Cases';
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-3xl max-h-[90vh] flex flex-col p-0 gap-0">
+      <DialogContent className="max-w-4xl max-h-[90vh] flex flex-col p-0 gap-0">
         <DialogHeader className="px-6 py-4 border-b">
           <DialogTitle className="flex items-center gap-2">
-            <div className="p-1.5 rounded-lg bg-purple-100">
-              <Sparkles className="h-5 w-5 text-purple-600" />
+            <div className="p-1.5 rounded-lg bg-primary/10">
+              <Sparkles className="h-5 w-5 text-primary" />
             </div>
-            Catalyst - AI Generator
+            Catalyst AI Test Generator
           </DialogTitle>
         </DialogHeader>
 
@@ -181,7 +244,7 @@ export function AITestGenerator({
         <div className="flex items-center justify-center gap-2 py-3 px-6 bg-muted/30 border-b">
           <div className={cn(
             "flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium",
-            step === 'input' ? "bg-purple-100 text-purple-700" : "bg-muted text-muted-foreground"
+            step === 'input' ? "bg-primary/10 text-primary" : "bg-muted text-muted-foreground"
           )}>
             <span className="w-5 h-5 rounded-full bg-current/20 flex items-center justify-center">1</span>
             Input
@@ -189,7 +252,7 @@ export function AITestGenerator({
           <div className="w-8 h-px bg-border" />
           <div className={cn(
             "flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium",
-            step === 'generating' ? "bg-purple-100 text-purple-700" : "bg-muted text-muted-foreground"
+            step === 'generating' ? "bg-primary/10 text-primary" : "bg-muted text-muted-foreground"
           )}>
             <span className="w-5 h-5 rounded-full bg-current/20 flex items-center justify-center">2</span>
             Generate
@@ -197,7 +260,7 @@ export function AITestGenerator({
           <div className="w-8 h-px bg-border" />
           <div className={cn(
             "flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium",
-            step === 'preview' ? "bg-purple-100 text-purple-700" : "bg-muted text-muted-foreground"
+            step === 'preview' ? "bg-primary/10 text-primary" : "bg-muted text-muted-foreground"
           )}>
             <span className="w-5 h-5 rounded-full bg-current/20 flex items-center justify-center">3</span>
             Review & Save
@@ -208,41 +271,46 @@ export function AITestGenerator({
         <div className="flex-1 overflow-y-auto">
           {/* INPUT STEP */}
           {step === 'input' && (
-            <div className="p-6">
-              <Tabs value={activeTab} onValueChange={setActiveTab}>
-                <TabsList className="mb-4">
-                  <TabsTrigger value="natural">Natural Language</TabsTrigger>
-                  <TabsTrigger value="requirements" disabled>From Requirements</TabsTrigger>
-                  <TabsTrigger value="bulk" disabled>Bulk Generate</TabsTrigger>
-                </TabsList>
+            <div className="p-6 space-y-5">
+              {/* Tab Switcher */}
+              <SegmentedTabs value={activeTab} onValueChange={setActiveTab}>
+                <SegmentedTab value="natural">Natural Language</SegmentedTab>
+                <SegmentedTab value="requirements">From Requirements</SegmentedTab>
+                <SegmentedTab value="bulk">Bulk Generate</SegmentedTab>
+              </SegmentedTabs>
 
-                <TabsContent value="natural" className="space-y-5 mt-0">
-                  {/* Destination */}
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-1.5">
-                      <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                        Target Folder
-                      </label>
-                      <Select value={folderId || '__root__'} onValueChange={(v) => setFolderId(v === '__root__' ? null : v)}>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select folder..." />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="__root__">No folder (root)</SelectItem>
-                          {folders.map((f) => (
-                            <SelectItem key={f.id} value={f.id}>
-                              <div className="flex items-center gap-2">
-                                <FolderOpen className="h-4 w-4 text-muted-foreground" />
-                                {f.name}
-                              </div>
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
+              {/* Destination Card - Shared across tabs */}
+              <div className="bg-card rounded-xl border p-5">
+                <div className="flex items-center gap-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-4">
+                  <MapPin className="w-4 h-4 text-primary" />
+                  Destination
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="block text-xs font-medium text-muted-foreground">
+                      Target Folder
+                    </label>
+                    <Select value={folderId || '__root__'} onValueChange={(v) => setFolderId(v === '__root__' ? null : v)}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select folder..." />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="__root__">No folder (root)</SelectItem>
+                        {folders.map((f) => (
+                          <SelectItem key={f.id} value={f.id}>
+                            <div className="flex items-center gap-2">
+                              <FolderOpen className="h-4 w-4 text-muted-foreground" />
+                              {f.name}
+                            </div>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
 
+                  {activeTab === 'natural' && (
                     <div className="space-y-1.5">
-                      <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                      <label className="block text-xs font-medium text-muted-foreground">
                         Test Type
                       </label>
                       <Select value={testType} onValueChange={setTestType}>
@@ -258,11 +326,16 @@ export function AITestGenerator({
                         </SelectContent>
                       </Select>
                     </div>
-                  </div>
+                  )}
+                </div>
+              </div>
 
-                  {/* Prompt */}
-                  <div className="space-y-1.5">
-                    <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+              {/* Natural Language Tab Content */}
+              {activeTab === 'natural' && (
+                <>
+                  {/* Prompt Card */}
+                  <div className="bg-card rounded-xl border p-5">
+                    <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
                       Describe what you want to test <span className="text-destructive">*</span>
                     </label>
                     <Textarea
@@ -272,74 +345,110 @@ export function AITestGenerator({
                       className="min-h-[150px] resize-none"
                       maxLength={2000}
                     />
-                    <div className="flex justify-between mt-1 text-xs text-muted-foreground">
+                    <div className="flex justify-between mt-2 text-xs text-muted-foreground">
                       <span>{prompt.length}/2000 characters</span>
                     </div>
                   </div>
 
-                  {/* Options */}
-                  <div className="space-y-3">
-                    <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                  {/* Options Card */}
+                  <div className="bg-card rounded-xl border p-5">
+                    <div className="flex items-center gap-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-4">
+                      <Settings className="w-4 h-4 text-primary" />
                       Generation Options
-                    </label>
-                    <div className="grid grid-cols-2 gap-3">
-                      <label className="flex items-center gap-2 cursor-pointer">
-                        <Checkbox
-                          checked={options.includeEdgeCases}
-                          onCheckedChange={(c) => setOptions(o => ({ ...o, includeEdgeCases: !!c }))}
-                        />
-                        <span className="text-sm">Include edge cases</span>
-                      </label>
-                      <label className="flex items-center gap-2 cursor-pointer">
-                        <Checkbox
-                          checked={options.includeNegativeTests}
-                          onCheckedChange={(c) => setOptions(o => ({ ...o, includeNegativeTests: !!c }))}
-                        />
-                        <span className="text-sm">Include negative tests</span>
-                      </label>
-                      <label className="flex items-center gap-2 cursor-pointer">
-                        <Checkbox
-                          checked={options.includePerformance}
-                          onCheckedChange={(c) => setOptions(o => ({ ...o, includePerformance: !!c }))}
-                        />
-                        <span className="text-sm">Include performance tests</span>
-                      </label>
-                      <label className="flex items-center gap-2 cursor-pointer">
-                        <Checkbox
-                          checked={options.includeSecurity}
-                          onCheckedChange={(c) => setOptions(o => ({ ...o, includeSecurity: !!c }))}
-                        />
-                        <span className="text-sm">Include security tests</span>
-                      </label>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div 
+                        onClick={() => setOptions(o => ({ ...o, includeEdgeCases: !o.includeEdgeCases }))}
+                        className={cn(
+                          "p-4 rounded-xl border-2 cursor-pointer transition-all",
+                          options.includeEdgeCases 
+                            ? "border-primary bg-primary/5" 
+                            : "border-border hover:border-primary/30 hover:bg-muted/50"
+                        )}
+                      >
+                        <div className="flex items-center gap-2">
+                          <Checkbox checked={options.includeEdgeCases} />
+                          <span className="font-medium text-sm">Edge Cases</span>
+                        </div>
+                        <p className="text-xs text-muted-foreground mt-1 ml-6">Boundary conditions</p>
+                      </div>
+                      <div 
+                        onClick={() => setOptions(o => ({ ...o, includeNegativeTests: !o.includeNegativeTests }))}
+                        className={cn(
+                          "p-4 rounded-xl border-2 cursor-pointer transition-all",
+                          options.includeNegativeTests 
+                            ? "border-primary bg-primary/5" 
+                            : "border-border hover:border-primary/30 hover:bg-muted/50"
+                        )}
+                      >
+                        <div className="flex items-center gap-2">
+                          <Checkbox checked={options.includeNegativeTests} />
+                          <span className="font-medium text-sm">Negative Tests</span>
+                        </div>
+                        <p className="text-xs text-muted-foreground mt-1 ml-6">Error scenarios</p>
+                      </div>
+                      <div 
+                        onClick={() => setOptions(o => ({ ...o, includePerformance: !o.includePerformance }))}
+                        className={cn(
+                          "p-4 rounded-xl border-2 cursor-pointer transition-all",
+                          options.includePerformance 
+                            ? "border-primary bg-primary/5" 
+                            : "border-border hover:border-primary/30 hover:bg-muted/50"
+                        )}
+                      >
+                        <div className="flex items-center gap-2">
+                          <Checkbox checked={options.includePerformance} />
+                          <span className="font-medium text-sm">Performance Tests</span>
+                        </div>
+                        <p className="text-xs text-muted-foreground mt-1 ml-6">Load & response</p>
+                      </div>
+                      <div 
+                        onClick={() => setOptions(o => ({ ...o, includeSecurity: !o.includeSecurity }))}
+                        className={cn(
+                          "p-4 rounded-xl border-2 cursor-pointer transition-all",
+                          options.includeSecurity 
+                            ? "border-primary bg-primary/5" 
+                            : "border-border hover:border-primary/30 hover:bg-muted/50"
+                        )}
+                      >
+                        <div className="flex items-center gap-2">
+                          <Checkbox checked={options.includeSecurity} />
+                          <span className="font-medium text-sm">Security Tests</span>
+                        </div>
+                        <p className="text-xs text-muted-foreground mt-1 ml-6">Auth & injection</p>
+                      </div>
                     </div>
                   </div>
 
-                  {/* Tip */}
-                  <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg flex items-start gap-2">
-                    <Lightbulb className="h-5 w-5 text-amber-500 flex-shrink-0 mt-0.5" />
-                    <div className="text-sm text-amber-800">
+                  {/* Tip - Teal color */}
+                  <div className="p-4 bg-teal-50 dark:bg-teal-950/30 border border-teal-200 dark:border-teal-800 rounded-lg flex items-start gap-3">
+                    <Lightbulb className="h-5 w-5 text-teal-600 dark:text-teal-400 flex-shrink-0 mt-0.5" />
+                    <div className="text-sm text-teal-800 dark:text-teal-200">
                       <strong>Tip:</strong> Be specific about features, user roles, and expected behaviors. 
                       Mention specific scenarios like "login with SSO" or "password reset flow" for better results.
                     </div>
                   </div>
-                </TabsContent>
+                </>
+              )}
 
-                <TabsContent value="requirements">
-                  <div className="py-12 text-center text-muted-foreground">
-                    <FileText className="h-12 w-12 mx-auto mb-3 opacity-50" />
-                    <p>Paste your User Story or BRD content to generate test cases</p>
-                    <p className="text-sm mt-2">Coming soon...</p>
-                  </div>
-                </TabsContent>
+              {/* From Requirements Tab Content */}
+              {activeTab === 'requirements' && (
+                <AIFromRequirements
+                  projectId={projectId}
+                  selectedItems={selectedItems}
+                  onSelectionChange={setSelectedItems}
+                />
+              )}
 
-                <TabsContent value="bulk">
-                  <div className="py-12 text-center text-muted-foreground">
-                    <FileText className="h-12 w-12 mx-auto mb-3 opacity-50" />
-                    <p>Upload a CSV or Excel file with requirements</p>
-                    <p className="text-sm mt-2">Coming soon...</p>
-                  </div>
-                </TabsContent>
-              </Tabs>
+              {/* Bulk Generate Tab Content */}
+              {activeTab === 'bulk' && (
+                <AIBulkGenerate
+                  requirements={bulkRequirements}
+                  onRequirementsChange={setBulkRequirements}
+                  options={bulkOptions}
+                  onOptionsChange={setBulkOptions}
+                />
+              )}
             </div>
           )}
 
@@ -347,10 +456,10 @@ export function AITestGenerator({
           {step === 'generating' && (
             <div className="flex flex-col items-center justify-center py-16">
               <div className="relative">
-                <div className="w-16 h-16 rounded-full bg-purple-100 flex items-center justify-center">
-                  <Sparkles className="h-8 w-8 text-purple-600 animate-pulse" />
+                <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
+                  <Sparkles className="h-8 w-8 text-primary animate-pulse" />
                 </div>
-                <Loader2 className="absolute -top-2 -left-2 h-20 w-20 text-purple-300 animate-spin" />
+                <Loader2 className="absolute -top-2 -left-2 h-20 w-20 text-primary/30 animate-spin" />
               </div>
               <p className="mt-6 text-lg font-medium">Generating test cases...</p>
               <p className="text-sm text-muted-foreground mt-2">This may take a few seconds</p>
@@ -383,7 +492,7 @@ export function AITestGenerator({
                     key={index}
                     className={cn(
                       "p-3 hover:bg-muted/50 transition-colors",
-                      selectedCases.has(index) && "bg-purple-50"
+                      selectedCases.has(index) && "bg-primary/5"
                     )}
                   >
                     <div className="flex items-start gap-3">
@@ -395,7 +504,7 @@ export function AITestGenerator({
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
                           <span className="font-medium text-sm truncate">{tc.title}</span>
-                          <span className="px-1.5 py-0.5 bg-purple-100 text-purple-700 text-xs rounded flex items-center gap-1">
+                          <span className="px-1.5 py-0.5 bg-primary/10 text-primary text-xs rounded flex items-center gap-1">
                             <Sparkles className="h-3 w-3" />
                             AI
                           </span>
@@ -435,7 +544,7 @@ export function AITestGenerator({
                               <div className="flex-1">
                                 <p>{s.action}</p>
                                 {s.testData && (
-                                  <p className="text-xs text-purple-600 mt-0.5">Data: {s.testData}</p>
+                                  <p className="text-xs text-primary mt-0.5">Data: {s.testData}</p>
                                 )}
                                 <p className="text-xs text-green-600 mt-0.5">→ {s.expectedResult}</p>
                               </div>
@@ -460,7 +569,7 @@ export function AITestGenerator({
                       name="saveStatus"
                       checked={saveStatus === 'draft'}
                       onChange={() => setSaveStatus('draft')}
-                      className="text-purple-600"
+                      className="text-primary"
                     />
                     <span className="text-sm">Save as Draft (for review)</span>
                   </label>
@@ -470,7 +579,7 @@ export function AITestGenerator({
                       name="saveStatus"
                       checked={saveStatus === 'ready'}
                       onChange={() => setSaveStatus('ready')}
-                      className="text-purple-600"
+                      className="text-primary"
                     />
                     <span className="text-sm">Save as Ready</span>
                   </label>
@@ -497,11 +606,10 @@ export function AITestGenerator({
               </Button>
               <Button
                 onClick={handleGenerate}
-                disabled={!prompt.trim() || isGenerating}
-                className="bg-purple-600 hover:bg-purple-700"
+                disabled={!canGenerate() || isGenerating}
               >
                 <Sparkles className="h-4 w-4 mr-2" />
-                Generate Test Cases
+                {getGenerateLabel()}
               </Button>
             </>
           )}
@@ -511,7 +619,7 @@ export function AITestGenerator({
               <Button variant="outline" onClick={handleReset} disabled={isGenerating}>
                 Cancel
               </Button>
-              <Button disabled className="bg-purple-600">
+              <Button disabled>
                 <Loader2 className="h-4 w-4 mr-2 animate-spin" />
                 Generating...
               </Button>

@@ -12,6 +12,7 @@ export interface LinkedItem {
   key: string;
   title: string;
   description: string | null;
+  acceptance_criteria?: string | null;
   status: string;
   type: LinkedItemType;
 }
@@ -34,7 +35,7 @@ export function useLinkedItemsForAI(projectId: string | undefined, itemType: Lin
       if (itemType === 'story') {
         const { data } = await supabase
           .from('stories')
-          .select('id, story_key, title, name, description, status')
+          .select('id, story_key, title, name, description, status, acceptance_criteria:acceptance_criteria(content)')
           .order('created_at', { ascending: false })
           .limit(100);
         mappedItems = (data || []).map((item: any) => ({
@@ -42,6 +43,9 @@ export function useLinkedItemsForAI(projectId: string | undefined, itemType: Lin
           key: item.story_key || `STORY-${item.id.slice(0, 6)}`,
           title: item.title || item.name || 'Untitled',
           description: item.description,
+          acceptance_criteria: Array.isArray(item.acceptance_criteria) 
+            ? item.acceptance_criteria.map((ac: any) => ac.content).join('\n• ')
+            : null,
           status: item.status || 'unknown',
           type: 'story' as LinkedItemType,
         }));
