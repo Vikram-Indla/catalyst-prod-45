@@ -5,6 +5,9 @@
 
 import React, { useState, useMemo, useCallback } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
+import { PanelLeft } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import {
   useTestCases,
   useTestCase,
@@ -47,6 +50,7 @@ import {
   type SortDirection,
 } from '../components/cases';
 import { ColumnPreferencesProvider } from '../context/ColumnPreferencesContext';
+import { useFolderPanelState } from '../hooks/useFolderPanelState';
 import { cn } from '@/lib/utils';
 import {
   AlertDialog,
@@ -92,6 +96,9 @@ function mapTMCaseToCase(c: TMTestCase): any {
 export function TestCasesPage() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  
+  // Folder panel state (collapsible)
+  const { isCollapsed: folderPanelCollapsed, toggle: toggleFolderPanel } = useFolderPanelState();
   
   // State
   const [selectedFolderId, setSelectedFolderId] = useState<string | null>(null);
@@ -550,28 +557,55 @@ export function TestCasesPage() {
   return (
     <ColumnPreferencesProvider>
     <div className="flex h-full gap-0">
+      {/* Folder Panel Toggle (visible when collapsed) */}
+      {folderPanelCollapsed && (
+        <div className="shrink-0 border-r border-border bg-background flex flex-col items-center py-2 px-1">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8"
+                onClick={toggleFolderPanel}
+              >
+                <PanelLeft className="h-4 w-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="right">Show folders</TooltipContent>
+          </Tooltip>
+        </div>
+      )}
+
       {/* Left Panel - Folder Tree */}
-      <div className="w-60 shrink-0 border-r border-border bg-background">
-        {foldersLoading ? (
-          <div className="p-4 space-y-2">
-            <Skeleton className="h-8 w-full" />
-            <Skeleton className="h-6 w-3/4" />
-            <Skeleton className="h-6 w-3/4" />
-            <Skeleton className="h-6 w-1/2" />
-          </div>
-        ) : (
-          <FolderTree
-            folders={folderTree}
-            selectedFolderId={selectedFolderId}
-            onSelectFolder={setSelectedFolderId}
-            onCreateFolder={handleCreateFolder}
-            onRenameFolder={handleRenameFolder}
-            onDeleteFolder={handleDeleteFolder}
-            onMoveFolder={handleMoveFolder}
-            onDuplicateFolder={handleDuplicateFolder}
-            totalCaseCount={totalCases}
-            isLoading={foldersLoading}
-          />
+      <div
+        className={cn(
+          'shrink-0 border-r border-border bg-background transition-all duration-200',
+          folderPanelCollapsed ? 'w-0 overflow-hidden opacity-0' : 'w-60 opacity-100'
+        )}
+      >
+        {!folderPanelCollapsed && (
+          foldersLoading ? (
+            <div className="p-4 space-y-2">
+              <Skeleton className="h-8 w-full" />
+              <Skeleton className="h-6 w-3/4" />
+              <Skeleton className="h-6 w-3/4" />
+              <Skeleton className="h-6 w-1/2" />
+            </div>
+          ) : (
+            <FolderTree
+              folders={folderTree}
+              selectedFolderId={selectedFolderId}
+              onSelectFolder={setSelectedFolderId}
+              onCreateFolder={handleCreateFolder}
+              onRenameFolder={handleRenameFolder}
+              onDeleteFolder={handleDeleteFolder}
+              onMoveFolder={handleMoveFolder}
+              onDuplicateFolder={handleDuplicateFolder}
+              totalCaseCount={totalCases}
+              isLoading={foldersLoading}
+              onCollapse={toggleFolderPanel}
+            />
+          )
         )}
       </div>
 
