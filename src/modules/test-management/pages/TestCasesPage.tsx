@@ -274,7 +274,15 @@ export function TestCasesPage() {
 
   const handleBulkDelete = useCallback(() => {
     if (selectedIds.size > 0 && projectId) {
-      bulkDeleteCases.mutate({ case_ids: Array.from(selectedIds), project_id: projectId }, {
+      // Get case details for the toast
+      const selectedCases = cases.filter(c => selectedIds.has(c.id));
+      const caseDetails = selectedCases.map(c => ({ key: c.case_key, title: c.title }));
+      
+      bulkDeleteCases.mutate({ 
+        case_ids: Array.from(selectedIds), 
+        project_id: projectId,
+        case_details: caseDetails,
+      }, {
         onSuccess: () => {
           setSelectedIds(new Set());
           if (selectedCaseId && selectedIds.has(selectedCaseId)) {
@@ -283,39 +291,50 @@ export function TestCasesPage() {
         },
       });
     }
-  }, [selectedIds, bulkDeleteCases, selectedCaseId, projectId]);
+  }, [selectedIds, bulkDeleteCases, selectedCaseId, projectId, cases]);
 
   const handleBulkMove = useCallback(() => {
     // Move to selected folder (use currently selected folder as destination)
     if (selectedIds.size > 0 && projectId && selectedFolderId) {
+      // Get case details and folder name for the toast
+      const selectedCases = cases.filter(c => selectedIds.has(c.id));
+      const caseDetails = selectedCases.map(c => ({ key: c.case_key, title: c.title }));
+      const folder = folders.find(f => f.id === selectedFolderId);
+      
       moveCase.mutate({ 
         case_ids: Array.from(selectedIds), 
         folder_id: selectedFolderId,
-        project_id: projectId 
+        project_id: projectId,
+        case_details: caseDetails,
+        folder_name: folder?.name,
       }, {
         onSuccess: () => {
           setSelectedIds(new Set());
-          catalystToast.success('Test cases moved', `${selectedIds.size} test cases moved successfully`);
         },
       });
     } else if (selectedIds.size > 0) {
       catalystToast.info('Select a destination folder', 'Select a destination folder first, then use bulk move');
     }
-  }, [selectedIds, moveCase, projectId, selectedFolderId]);
+  }, [selectedIds, moveCase, projectId, selectedFolderId, cases, folders]);
 
   const handleBulkCopy = useCallback(() => {
     if (selectedIds.size > 0 && projectId) {
+      // Get case details for the toast
+      const selectedCases = cases.filter(c => selectedIds.has(c.id));
+      const caseDetails = selectedCases.map(c => ({ key: c.case_key, title: c.title }));
+      
       bulkCopyCases.mutate({ 
         case_ids: Array.from(selectedIds), 
         folder_id: selectedFolderId,
-        project_id: projectId 
+        project_id: projectId,
+        case_details: caseDetails,
       }, {
         onSuccess: () => {
           setSelectedIds(new Set());
         },
       });
     }
-  }, [selectedIds, bulkCopyCases, projectId, selectedFolderId]);
+  }, [selectedIds, bulkCopyCases, projectId, selectedFolderId, cases]);
 
   const handleBulkExport = useCallback(() => {
     if (selectedIds.size === 0) return;

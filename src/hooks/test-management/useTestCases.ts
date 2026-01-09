@@ -419,8 +419,9 @@ export function useDeleteTestCase() {
   });
 }
 
-export function useCloneTestCase() {
+export function useCloneTestCase(options?: { silent?: boolean }) {
   const queryClient = useQueryClient();
+  const silent = options?.silent ?? false;
 
   return useMutation({
     mutationFn: async (input: { id: string; project_id: string }): Promise<TMTestCase> => {
@@ -441,7 +442,7 @@ export function useCloneTestCase() {
         .eq('test_case_id', input.id)
         .order('step_number');
 
-      const caseKey = await generateCaseKey(input.project_id);
+      const caseKey = await generateCaseKey(input.project_id, original.folder_id);
 
       const { data: cloned, error: cloneError } = await supabase
         .from('tm_test_cases')
@@ -485,7 +486,9 @@ export function useCloneTestCase() {
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['tm-cases', data.project_id] });
-      catalystToast.success('Test case cloned');
+      if (!silent) {
+        catalystToast.success('Test case cloned', `${data.key}: ${data.title}`);
+      }
     },
     onError: (error: Error) => {
       catalystToast.error('Failed to clone test case', error.message);
@@ -497,18 +500,39 @@ export function useMoveTestCase() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (input: { case_ids: string[]; folder_id: string | null; project_id: string }): Promise<void> => {
+    mutationFn: async (input: { 
+      case_ids: string[]; 
+      folder_id: string | null; 
+      project_id: string;
+      case_details?: { key: string; title: string }[];
+      folder_name?: string;
+    }): Promise<{ case_details?: { key: string; title: string }[]; folder_name?: string }> => {
       const { error } = await supabase
         .from('tm_test_cases')
         .update({ folder_id: input.folder_id })
         .in('id', input.case_ids);
 
       if (error) throw error;
+      return { case_details: input.case_details, folder_name: input.folder_name };
     },
-    onSuccess: (_, variables) => {
+    onSuccess: (result, variables) => {
       queryClient.invalidateQueries({ queryKey: ['tm-cases', variables.project_id] });
       queryClient.invalidateQueries({ queryKey: ['tm-folders-with-counts', variables.project_id] });
-      catalystToast.success('Cases moved', `${variables.case_ids.length} case(s) moved`);
+      
+      const count = variables.case_ids.length;
+      const folderName = result.folder_name || 'selected folder';
+      const details = result.case_details;
+      
+      if (details && details.length > 0) {
+        const summary = details
+          .slice(0, 5)
+          .map(c => `${c.key}: ${c.title.slice(0, 25)}${c.title.length > 25 ? '…' : ''}`)
+          .join('\n');
+        const extra = count > 5 ? `\n+${count - 5} more` : '';
+        catalystToast.success(`${count} test case${count > 1 ? 's' : ''} moved to "${folderName}"`, summary + extra);
+      } else {
+        catalystToast.success(`${count} test case${count > 1 ? 's' : ''} moved to "${folderName}"`);
+      }
     },
     onError: (error: Error) => {
       catalystToast.error('Failed to move cases', error.message);
@@ -520,18 +544,36 @@ export function useBulkDeleteTestCases() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (input: { case_ids: string[]; project_id: string }): Promise<void> => {
+    mutationFn: async (input: { 
+      case_ids: string[]; 
+      project_id: string;
+      case_details?: { key: string; title: string }[];
+    }): Promise<{ case_details?: { key: string; title: string }[] }> => {
       const { error } = await supabase
         .from('tm_test_cases')
         .delete()
         .in('id', input.case_ids);
 
       if (error) throw error;
+      return { case_details: input.case_details };
     },
-    onSuccess: (_, variables) => {
+    onSuccess: (result, variables) => {
       queryClient.invalidateQueries({ queryKey: ['tm-cases', variables.project_id] });
       queryClient.invalidateQueries({ queryKey: ['tm-folders-with-counts', variables.project_id] });
-      catalystToast.success('Cases deleted', `${variables.case_ids.length} case(s) deleted`);
+      
+      const count = variables.case_ids.length;
+      const details = result.case_details;
+      
+      if (details && details.length > 0) {
+        const summary = details
+          .slice(0, 5)
+          .map(c => `${c.key}: ${c.title.slice(0, 25)}${c.title.length > 25 ? '…' : ''}`)
+          .join('\n');
+        const extra = count > 5 ? `\n+${count - 5} more` : '';
+        catalystToast.success(`${count} test case${count > 1 ? 's' : ''} deleted`, summary + extra);
+      } else {
+        catalystToast.success(`${count} test case${count > 1 ? 's' : ''} deleted`);
+      }
     },
     onError: (error: Error) => {
       catalystToast.error('Failed to delete cases', error.message);
@@ -541,22 +583,91 @@ export function useBulkDeleteTestCases() {
 
 export function useBulkCopyTestCases() {
   const queryClient = useQueryClient();
-  const cloneCase = useCloneTestCase();
 
   return useMutation({
-    mutationFn: async (input: { case_ids: string[]; folder_id: string | null; project_id: string }): Promise<void> => {
-      // Use the clone mutation for each case (it handles steps properly)
+    mutationFn: async (input: { 
+      case_ids: string[]; 
+      folder_id: string | null; 
+      project_id: string;
+      case_details?: { key: string; title: string }[];
+    }): Promise<{ copiedCases: { key: string; title: string }[] }> => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+
+      const copiedCases: { key: string; title: string }[] = [];
+
       for (const caseId of input.case_ids) {
-        await cloneCase.mutateAsync({ 
-          id: caseId, 
-          project_id: input.project_id,
-        } as any);
+        // Fetch original case
+        const { data: original } = await supabase
+          .from('tm_test_cases')
+          .select('*')
+          .eq('id', caseId)
+          .single();
+
+        if (!original) continue;
+
+        // Fetch steps
+        const { data: steps } = await supabase
+          .from('tm_test_steps')
+          .select('*')
+          .eq('test_case_id', caseId)
+          .order('step_number');
+
+        // Generate new key
+        const caseKey = await generateCaseKey(input.project_id, input.folder_id || original.folder_id);
+
+        // Create copy
+        const { data: cloned } = await supabase
+          .from('tm_test_cases')
+          .insert({
+            project_id: original.project_id,
+            case_key: caseKey,
+            title: `${original.title} (Copy)`,
+            description: original.description,
+            preconditions: original.preconditions,
+            status: 'draft',
+            folder_id: input.folder_id || original.folder_id,
+            priority_id: original.priority_id,
+            case_type_id: original.case_type_id,
+            version: 1,
+            created_by: user.id,
+          })
+          .select()
+          .single();
+
+        if (cloned) {
+          copiedCases.push({ key: caseKey, title: `${original.title} (Copy)` });
+
+          // Copy steps
+          if (steps && steps.length > 0) {
+            await supabase.from('tm_test_steps').insert(
+              steps.map(step => ({
+                test_case_id: cloned.id,
+                step_number: step.step_number,
+                action: step.action,
+                test_data: step.test_data,
+                expected_result: step.expected_result,
+              }))
+            );
+          }
+        }
       }
+
+      return { copiedCases };
     },
-    onSuccess: (_, variables) => {
+    onSuccess: (result, variables) => {
       queryClient.invalidateQueries({ queryKey: ['tm-cases', variables.project_id] });
       queryClient.invalidateQueries({ queryKey: ['tm-folders-with-counts', variables.project_id] });
-      catalystToast.success('Cases copied', `${variables.case_ids.length} case(s) copied`);
+      
+      const count = result.copiedCases.length;
+      if (count > 0) {
+        const summary = result.copiedCases
+          .slice(0, 5)
+          .map(c => `${c.key}: ${c.title.slice(0, 25)}${c.title.length > 25 ? '…' : ''}`)
+          .join('\n');
+        const extra = count > 5 ? `\n+${count - 5} more` : '';
+        catalystToast.success(`${count} test case${count > 1 ? 's' : ''} copied`, summary + extra);
+      }
     },
     onError: (error: Error) => {
       catalystToast.error('Failed to copy cases', error.message);
@@ -568,7 +679,13 @@ export function useAddTestCasesToCycle() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (input: { case_ids: string[]; cycle_id: string; project_id: string }): Promise<void> => {
+    mutationFn: async (input: { 
+      case_ids: string[]; 
+      cycle_id: string; 
+      project_id: string;
+      case_details?: { key: string; title: string }[];
+      cycle_name?: string;
+    }): Promise<{ case_details?: { key: string; title: string }[]; cycle_name?: string }> => {
       // Create cycle scope entries for each test case
       const scopeEntries = input.case_ids.map(caseId => ({
         cycle_id: input.cycle_id,
@@ -581,11 +698,26 @@ export function useAddTestCasesToCycle() {
         .insert(scopeEntries);
 
       if (error) throw error;
+      return { case_details: input.case_details, cycle_name: input.cycle_name };
     },
-    onSuccess: (_, variables) => {
+    onSuccess: (result, variables) => {
       queryClient.invalidateQueries({ queryKey: ['tm-cycles'] });
       queryClient.invalidateQueries({ queryKey: ['tm-cycle', variables.cycle_id] });
-      catalystToast.success('Cases added to cycle', `${variables.case_ids.length} case(s) added`);
+      
+      const count = variables.case_ids.length;
+      const cycleName = result.cycle_name || 'cycle';
+      const details = result.case_details;
+      
+      if (details && details.length > 0) {
+        const summary = details
+          .slice(0, 5)
+          .map(c => `${c.key}: ${c.title.slice(0, 25)}${c.title.length > 25 ? '…' : ''}`)
+          .join('\n');
+        const extra = count > 5 ? `\n+${count - 5} more` : '';
+        catalystToast.success(`${count} test case${count > 1 ? 's' : ''} added to "${cycleName}"`, summary + extra);
+      } else {
+        catalystToast.success(`${count} test case${count > 1 ? 's' : ''} added to "${cycleName}"`);
+      }
     },
     onError: (error: Error) => {
       catalystToast.error('Failed to add cases to cycle', error.message);
