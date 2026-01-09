@@ -19,7 +19,6 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import {
   ContextMenu,
@@ -105,7 +104,9 @@ function FolderItem({
           >
             {/* Chevron */}
             {hasChildren ? (
-              <button
+              <span
+                role="button"
+                aria-label={isExpanded ? 'Collapse folder' : 'Expand folder'}
                 onClick={(e) => {
                   e.stopPropagation();
                   onToggle(folder.id);
@@ -115,16 +116,16 @@ function FolderItem({
                 {isExpanded ? (
                   <ChevronDown style={{ width: '14px', height: '14px' }} />
                 ) : (
-                  <ChevronRight 
-                    style={{ 
-                      width: '14px', 
+                  <ChevronRight
+                    style={{
+                      width: '14px',
                       height: '14px',
                       transform: 'rotate(0deg)',
-                      transition: 'transform 150ms'
-                    }} 
+                      transition: 'transform 150ms',
+                    }}
                   />
                 )}
-              </button>
+              </span>
             ) : (
               <span style={{ width: '18px' }} />
             )}
