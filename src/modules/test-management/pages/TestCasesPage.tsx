@@ -13,6 +13,7 @@ import {
   useCasePriorities,
   useCaseTypes,
   useLabels,
+  useTeamMembers,
   useCreateTestCase,
   useUpdateTestCase,
   useDeleteTestCase,
@@ -29,6 +30,8 @@ import {
   type TMTestCase,
   type CaseStatus,
 } from '@/hooks/test-management';
+import { supabase } from '@/integrations/supabase/client';
+import { useQuery } from '@tanstack/react-query';
 import { catalystToast } from '@/lib/catalystToast';
 import {
   FolderTree,
@@ -98,6 +101,7 @@ export function TestCasesPage() {
     status: [],
     priorityIds: [],
     typeIds: [],
+    assignedTo: null,
     search: '',
   });
   const [sortField, setSortField] = useState<SortField>('updated_at');
@@ -114,6 +118,17 @@ export function TestCasesPage() {
   const [importDialogOpen, setImportDialogOpen] = useState(false);
   const [aiGeneratorOpen, setAiGeneratorOpen] = useState(false);
 
+  // Get current user
+  const { data: currentUser } = useQuery({
+    queryKey: ['current-user'],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      return user;
+    },
+    staleTime: 60000,
+  });
+  const currentUserId = currentUser?.id;
+
   // Get project ID from URL or use default TM project
   const urlProjectId = searchParams.get('projectId');
   const DEFAULT_TM_PROJECT_ID = '00000000-0000-0000-0000-000000000001';
@@ -125,10 +140,11 @@ export function TestCasesPage() {
     status: filters.status.length > 0 ? filters.status[0].toUpperCase() as CaseStatus : undefined,
     priority_id: filters.priorityIds.length > 0 ? filters.priorityIds[0] : undefined,
     type_id: filters.typeIds.length > 0 ? filters.typeIds[0] : undefined,
+    assigned_to: filters.assignedTo === 'me' && currentUserId ? currentUserId : filters.assignedTo || undefined,
     search: filters.search || undefined,
     page,
     per_page: pageSize,
-  }), [selectedFolderId, filters, page, pageSize]);
+  }), [selectedFolderId, filters, page, pageSize, currentUserId]);
 
   // API hooks using new test-management hooks
   const { data: foldersData, isLoading: foldersLoading } = useFoldersWithCounts(projectId);
@@ -149,6 +165,7 @@ export function TestCasesPage() {
   const { data: priorities } = useCasePriorities(projectId || null);
   const { data: types } = useCaseTypes(projectId || null);
   const { data: labels } = useLabels(projectId || null);
+  const { data: teamMembers } = useTeamMembers(projectId || null);
 
   // Mutations
   const createCase = useCreateTestCase();
@@ -540,6 +557,8 @@ export function TestCasesPage() {
           onImport={() => setImportDialogOpen(true)}
           priorities={prioritiesForUI}
           caseTypes={typesForUI}
+          teamMembers={teamMembers || []}
+          currentUserId={currentUserId}
         />
 
         {/* Data Table */}

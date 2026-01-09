@@ -220,6 +220,7 @@ export interface CaseFilters {
   priority_id?: string;
   type_id?: string;
   label_ids?: string[];
+  assigned_to?: string | null; // 'me' | 'unassigned' | userId
   search?: string;
   page?: number;
   per_page?: number;

@@ -6,7 +6,6 @@
 import React from 'react';
 import {
   Search,
-  Filter,
   LayoutGrid,
   LayoutList,
   Plus,
@@ -19,6 +18,9 @@ import {
   RefreshCw,
   X,
   Sparkles,
+  User,
+  Users,
+  UserX,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -30,9 +32,12 @@ import {
   DropdownMenuTrigger,
   DropdownMenuCheckboxItem,
   DropdownMenuLabel,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
 } from '@/components/ui/dropdown-menu';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
 import type { CaseStatus } from '../../api/types';
 
@@ -40,6 +45,7 @@ export interface CasesFilters {
   status: CaseStatus[];
   priorityIds: string[];
   typeIds: string[];
+  assignedTo: string | null; // 'me' | 'unassigned' | userId
   search: string;
 }
 
@@ -61,6 +67,8 @@ interface CasesToolbarProps {
   isRefreshing?: boolean;
   priorities?: { id: string; name: string; color: string }[];
   caseTypes?: { id: string; name: string }[];
+  teamMembers?: { id: string; full_name: string; avatar_url?: string | null }[];
+  currentUserId?: string;
 }
 
 const STATUS_OPTIONS: { value: CaseStatus; label: string }[] = [
@@ -89,11 +97,14 @@ export function CasesToolbar({
   isRefreshing = false,
   priorities = [],
   caseTypes = [],
+  teamMembers = [],
+  currentUserId,
 }: CasesToolbarProps) {
   const hasActiveFilters =
     filters.status.length > 0 ||
     filters.priorityIds.length > 0 ||
-    filters.typeIds.length > 0;
+    filters.typeIds.length > 0 ||
+    filters.assignedTo !== null;
 
   const toggleStatus = (status: CaseStatus) => {
     const newStatus = filters.status.includes(status)
@@ -116,8 +127,20 @@ export function CasesToolbar({
     onFiltersChange({ ...filters, typeIds: newTypes });
   };
 
+  const setAssigned = (value: string) => {
+    onFiltersChange({ ...filters, assignedTo: value === 'all' ? null : value });
+  };
+
+  const getAssignedLabel = () => {
+    if (!filters.assignedTo) return 'Assigned';
+    if (filters.assignedTo === 'me') return 'Assigned to me';
+    if (filters.assignedTo === 'unassigned') return 'Unassigned';
+    const member = teamMembers.find(m => m.id === filters.assignedTo);
+    return member?.full_name?.split(' ')[0] || 'Assigned';
+  };
+
   const clearFilters = () => {
-    onFiltersChange({ ...filters, status: [], priorityIds: [], typeIds: [] });
+    onFiltersChange({ ...filters, status: [], priorityIds: [], typeIds: [], assignedTo: null });
   };
 
   return (
@@ -226,6 +249,63 @@ export function CasesToolbar({
               {type.name}
             </DropdownMenuCheckboxItem>
           ))}
+        </DropdownMenuContent>
+      </DropdownMenu>
+
+      {/* Assigned To Filter */}
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="outline" size="sm" className="gap-1">
+            <User className="h-4 w-4" />
+            {getAssignedLabel()}
+            {filters.assignedTo && (
+              <Badge variant="secondary" className="ml-1 h-5 px-1.5 text-xs">
+                1
+              </Badge>
+            )}
+            <ChevronDown className="h-4 w-4 ml-1" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="start" className="w-56">
+          <DropdownMenuLabel>Filter by Assigned</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DropdownMenuRadioGroup value={filters.assignedTo || 'all'} onValueChange={setAssigned}>
+            <DropdownMenuRadioItem value="all">
+              <div className="flex items-center gap-2">
+                <Users className="h-4 w-4" />
+                All Users
+              </div>
+            </DropdownMenuRadioItem>
+            <DropdownMenuRadioItem value="me">
+              <div className="flex items-center gap-2">
+                <User className="h-4 w-4" />
+                Assigned to me
+              </div>
+            </DropdownMenuRadioItem>
+            <DropdownMenuRadioItem value="unassigned">
+              <div className="flex items-center gap-2">
+                <UserX className="h-4 w-4" />
+                Unassigned
+              </div>
+            </DropdownMenuRadioItem>
+            {teamMembers.length > 0 && <DropdownMenuSeparator />}
+            {teamMembers.map((member) => (
+              <DropdownMenuRadioItem key={member.id} value={member.id}>
+                <div className="flex items-center gap-2">
+                  <Avatar className="h-5 w-5">
+                    <AvatarImage src={member.avatar_url || undefined} />
+                    <AvatarFallback className="text-[10px]">
+                      {member.full_name?.slice(0, 2).toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                  <span className="truncate">{member.full_name}</span>
+                  {member.id === currentUserId && (
+                    <span className="text-xs text-muted-foreground">(me)</span>
+                  )}
+                </div>
+              </DropdownMenuRadioItem>
+            ))}
+          </DropdownMenuRadioGroup>
         </DropdownMenuContent>
       </DropdownMenu>
 

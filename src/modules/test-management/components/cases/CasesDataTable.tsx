@@ -15,7 +15,9 @@ import {
   PlayCircle,
   User,
   Sparkles,
+  Folder,
 } from 'lucide-react';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -160,10 +162,11 @@ export function CasesDataTable({
               <TableHead className="w-10" />
               <TableHead className="w-[100px]">Key</TableHead>
               <TableHead>Title</TableHead>
+              <TableHead className="w-[120px]">Folder</TableHead>
               <TableHead className="w-[100px]">Status</TableHead>
               <TableHead className="w-[100px]">Priority</TableHead>
               <TableHead className="w-[100px]">Type</TableHead>
-              <TableHead className="w-[120px]">Created By</TableHead>
+              <TableHead className="w-[130px]">Assigned To</TableHead>
               <TableHead className="w-[120px]">Updated</TableHead>
               <TableHead className="w-[50px]" />
             </TableRow>
@@ -218,6 +221,7 @@ export function CasesDataTable({
                 direction={sortDirection}
                 onSort={onSortChange}
               />
+              <TableHead className="w-[120px]">Folder</TableHead>
               <SortableHeader
                 field="status"
                 label="Status"
@@ -235,7 +239,7 @@ export function CasesDataTable({
                 className="w-[100px]"
               />
               <TableHead className="w-[100px]">Type</TableHead>
-              <TableHead className="w-[120px]">Created By</TableHead>
+              <TableHead className="w-[130px]">Assigned To</TableHead>
               <SortableHeader
                 field="updated_at"
                 label="Updated"
@@ -249,8 +253,8 @@ export function CasesDataTable({
           </TableHeader>
           <TableBody>
             {cases.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={9} className="h-32 text-center">
+            <TableRow>
+                <TableCell colSpan={10} className="h-32 text-center">
                   <div className="flex flex-col items-center gap-2 text-muted-foreground">
                     <FileText className="h-8 w-8 opacity-50" />
                     <p>No test cases found</p>
@@ -296,6 +300,15 @@ export function CasesDataTable({
                         )}
                       </div>
                     </TableCell>
+                    {/* Folder */}
+                    <TableCell className="text-sm text-muted-foreground">
+                      <div className="flex items-center gap-1.5">
+                        <Folder className="h-3.5 w-3.5 opacity-60" />
+                        <span className="truncate max-w-[100px]">
+                          {testCase.folder?.name || 'Root'}
+                        </span>
+                      </div>
+                    </TableCell>
                     <TableCell>
                       <Badge variant="outline" className={cn('text-xs', statusConfig.className)}>
                         {statusConfig.label}
@@ -317,13 +330,23 @@ export function CasesDataTable({
                     <TableCell className="text-sm text-muted-foreground">
                       {testCase.case_type?.name || '—'}
                     </TableCell>
-                    <TableCell className="text-sm text-muted-foreground">
-                      <div className="flex items-center gap-1.5">
-                        <User className="h-3.5 w-3.5 opacity-60" />
-                        <span className="truncate max-w-[100px]">
-                          {testCase.created_by_profile?.full_name || 'System'}
-                        </span>
-                      </div>
+                    {/* Assigned To */}
+                    <TableCell className="text-sm">
+                      {(testCase as any).assigned_user ? (
+                        <div className="flex items-center gap-1.5">
+                          <Avatar className="h-5 w-5">
+                            <AvatarImage src={(testCase as any).assigned_user.avatar_url || undefined} />
+                            <AvatarFallback className="text-[10px]">
+                              {(testCase as any).assigned_user.full_name?.slice(0, 2).toUpperCase()}
+                            </AvatarFallback>
+                          </Avatar>
+                          <span className="truncate max-w-[80px]">
+                            {(testCase as any).assigned_user.full_name?.split(' ')[0]}
+                          </span>
+                        </div>
+                      ) : (
+                        <span className="text-muted-foreground">Unassigned</span>
+                      )}
                     </TableCell>
                     <TableCell className="text-sm text-muted-foreground">
                       {formatDistanceToNow(new Date(testCase.updated_at), { addSuffix: true })}
