@@ -554,6 +554,22 @@ export function TestCasesPage() {
     [labels]
   );
 
+  const selectedFolder = useMemo(
+    () => folders.find((f) => f.id === selectedFolderId),
+    [folders, selectedFolderId]
+  );
+
+  const selectedFolderBreadcrumb = useMemo(() => {
+    if (!selectedFolderId) return null;
+    const raw = selectedFolder?.path ?? selectedFolder?.name ?? '';
+    const segments = raw
+      .split(/[/.>]+/)
+      .map((s) => s.trim())
+      .filter(Boolean);
+
+    return (segments.length ? segments.join('/') : 'folder').toLowerCase();
+  }, [selectedFolder, selectedFolderId]);
+
   return (
     <ColumnPreferencesProvider>
     <div className="flex h-full gap-0">
@@ -595,7 +611,7 @@ export function TestCasesPage() {
                   style={{ writingMode: 'vertical-rl', textOrientation: 'mixed' }}
                 >
                   {selectedFolderId 
-                    ? (folders.find(f => f.id === selectedFolderId)?.path?.replace(/\s*\/\s*/g, '/').toLowerCase() || folders.find(f => f.id === selectedFolderId)?.name?.toLowerCase() || 'folder')
+                    ? (selectedFolderBreadcrumb || 'folder')
                     : 'All Cases'
                   }
                 </div>
@@ -607,7 +623,7 @@ export function TestCasesPage() {
                 <Folder className="h-4 w-4 text-amber-500 fill-amber-100" />
                 <span className="text-sm font-medium text-gray-900">
                   {selectedFolderId 
-                    ? folders.find(f => f.id === selectedFolderId)?.name || 'Folder'
+                    ? (selectedFolderBreadcrumb || 'folder')
                     : 'All Cases'
                   }
                 </span>
