@@ -22814,9 +22814,12 @@ export type Database = {
       tm_folders: {
         Row: {
           case_count: number | null
+          color: string | null
           created_at: string | null
           created_by: string | null
           depth: number | null
+          description: string | null
+          icon: string | null
           id: string
           name: string
           parent_id: string | null
@@ -22827,9 +22830,12 @@ export type Database = {
         }
         Insert: {
           case_count?: number | null
+          color?: string | null
           created_at?: string | null
           created_by?: string | null
           depth?: number | null
+          description?: string | null
+          icon?: string | null
           id?: string
           name: string
           parent_id?: string | null
@@ -22840,9 +22846,12 @@ export type Database = {
         }
         Update: {
           case_count?: number | null
+          color?: string | null
           created_at?: string | null
           created_by?: string | null
           depth?: number | null
+          description?: string | null
+          icon?: string | null
           id?: string
           name?: string
           parent_id?: string | null
@@ -22885,6 +22894,13 @@ export type Database = {
             columns: ["parent_id"]
             isOneToOne: false
             referencedRelation: "tm_folders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_folders_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "tm_folders_with_counts"
             referencedColumns: ["id"]
           },
           {
@@ -23713,6 +23729,13 @@ export type Database = {
             columns: ["folder_id"]
             isOneToOne: false
             referencedRelation: "tm_folders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_test_cases_folder_id_fkey"
+            columns: ["folder_id"]
+            isOneToOne: false
+            referencedRelation: "tm_folders_with_counts"
             referencedColumns: ["id"]
           },
           {
@@ -26230,6 +26253,84 @@ export type Database = {
       }
     }
     Views: {
+      tm_folders_with_counts: {
+        Row: {
+          case_count: number | null
+          color: string | null
+          created_at: string | null
+          created_by: string | null
+          depth: number | null
+          description: string | null
+          icon: string | null
+          id: string | null
+          name: string | null
+          parent_id: string | null
+          path: unknown
+          project_id: string | null
+          sort_order: number | null
+          subfolder_count: number | null
+          test_case_count: number | null
+          updated_at: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tm_folders_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_folders_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "tm_folders_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_folders_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "v_resource_profile"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "tm_folders_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "tm_folders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_folders_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "tm_folders_with_counts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_folders_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "tm_projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_folders_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_traceability_summary"
+            referencedColumns: ["project_id"]
+          },
+        ]
+      }
       tm_users: {
         Row: {
           auth_user_id: string | null
@@ -26600,6 +26701,13 @@ export type Database = {
             columns: ["folder_id"]
             isOneToOne: false
             referencedRelation: "tm_folders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_test_cases_folder_id_fkey"
+            columns: ["folder_id"]
+            isOneToOne: false
+            referencedRelation: "tm_folders_with_counts"
             referencedColumns: ["id"]
           },
           {

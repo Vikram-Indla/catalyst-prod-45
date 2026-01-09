@@ -24,6 +24,8 @@ import {
   useCreateFolder,
   useUpdateFolder,
   useDeleteFolder,
+  useMoveFolder,
+  useDuplicateFolder,
   type TMTestCase,
   type CaseStatus,
 } from '@/hooks/test-management';
