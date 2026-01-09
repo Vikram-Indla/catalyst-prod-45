@@ -3,7 +3,7 @@
  * Expandable/collapsible test steps with drag-and-drop
  */
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import {
   ChevronDown,
   ChevronUp,
@@ -14,12 +14,16 @@ import {
   ArrowRight,
   Paperclip,
   X,
+  Upload,
+  Image as ImageIcon,
+  FileText,
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
+import { toast } from 'sonner';
 
 interface StepInput {
   id: string;
@@ -85,6 +89,62 @@ export function StepsSection({
     updated.splice(index + 1, 0, newStep);
     updated.forEach((s, i) => (s.step_number = i + 1));
     onChange(updated);
+  };
+
+  const handleAddAttachment = (stepId: string) => {
+    // Create a hidden file input and trigger it
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.multiple = true;
+    input.accept = 'image/*,.pdf,.doc,.docx,.txt,.csv,.xlsx';
+    
+    input.onchange = (e) => {
+      const files = (e.target as HTMLInputElement).files;
+      if (!files || files.length === 0) return;
+      
+      const newAttachments: { name: string; type: string }[] = [];
+      
+      Array.from(files).forEach((file) => {
+        // In a real implementation, you would upload to storage here
+        // For now, we'll just add the file info to the step
+        newAttachments.push({
+          name: file.name,
+          type: file.type || 'application/octet-stream',
+        });
+      });
+      
+      onChange(steps.map(s => {
+        if (s.id === stepId) {
+          return {
+            ...s,
+            attachments: [...(s.attachments || []), ...newAttachments],
+          };
+        }
+        return s;
+      }));
+      
+      toast.success(`${newAttachments.length} file(s) attached`);
+    };
+    
+    input.click();
+  };
+
+  const handleRemoveAttachment = (stepId: string, attachmentIndex: number) => {
+    onChange(steps.map(s => {
+      if (s.id === stepId) {
+        const newAttachments = [...(s.attachments || [])];
+        newAttachments.splice(attachmentIndex, 1);
+        return { ...s, attachments: newAttachments };
+      }
+      return s;
+    }));
+    toast.success('Attachment removed');
+  };
+
+  const getAttachmentIcon = (type: string) => {
+    if (type.startsWith('image/')) return ImageIcon;
+    if (type.includes('pdf') || type.includes('doc')) return FileText;
+    return Paperclip;
   };
 
   return (
@@ -249,21 +309,41 @@ export function StepsSection({
                       <div className="mb-4">
                         <label className="block text-[10px] font-semibold text-muted-foreground uppercase tracking-wide mb-1.5">
                           Attachments
+                          {step.attachments && step.attachments.length > 0 && (
+                            <span className="ml-1 text-muted-foreground/70">({step.attachments.length})</span>
+                          )}
                         </label>
                         <div className="flex flex-wrap gap-1.5">
-                          {step.attachments?.map((att, i) => (
-                            <div
-                              key={i}
-                              className="inline-flex items-center gap-1 px-2.5 py-1 bg-primary/10 border border-primary/20 rounded-md text-[11px] text-primary"
-                            >
-                              <Paperclip className="h-3 w-3" />
-                              {att.name}
-                              <button className="ml-1 hover:text-destructive">
-                                <X className="h-3 w-3" />
-                              </button>
-                            </div>
-                          ))}
-                          <button className="inline-flex items-center gap-1 px-2.5 py-1 bg-background border border-dashed border-muted-foreground/30 rounded-md text-[11px] text-muted-foreground hover:border-primary hover:text-primary hover:bg-primary/5 transition-colors">
+                          {step.attachments?.map((att, i) => {
+                            const IconComponent = getAttachmentIcon(att.type);
+                            return (
+                              <div
+                                key={i}
+                                className="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-primary/10 border border-primary/20 rounded-md text-[11px] text-primary group"
+                              >
+                                <IconComponent className="h-3.5 w-3.5" />
+                                <span className="max-w-[150px] truncate">{att.name}</span>
+                                <button 
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleRemoveAttachment(step.id, i);
+                                  }}
+                                  className="ml-1 opacity-60 hover:opacity-100 hover:text-destructive transition-opacity"
+                                >
+                                  <X className="h-3 w-3" />
+                                </button>
+                              </div>
+                            );
+                          })}
+                          <button 
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleAddAttachment(step.id);
+                            }}
+                            className="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-background border border-dashed border-muted-foreground/30 rounded-md text-[11px] text-muted-foreground hover:border-primary hover:text-primary hover:bg-primary/5 transition-colors"
+                          >
                             <Plus className="h-3 w-3" />
                             Add
                           </button>
