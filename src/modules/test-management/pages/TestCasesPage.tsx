@@ -46,6 +46,7 @@ import {
   type SortField,
   type SortDirection,
 } from '../components/cases';
+import { ColumnPreferencesProvider } from '../context/ColumnPreferencesContext';
 import { cn } from '@/lib/utils';
 import {
   AlertDialog,
@@ -547,6 +548,7 @@ export function TestCasesPage() {
   );
 
   return (
+    <ColumnPreferencesProvider>
     <div className="flex h-full gap-0">
       {/* Left Panel - Folder Tree */}
       <div className="w-60 shrink-0 border-r border-border bg-background">
@@ -733,6 +735,7 @@ export function TestCasesPage() {
         projectId={projectId}
       />
     </div>
+    </ColumnPreferencesProvider>
   );
 }
 
