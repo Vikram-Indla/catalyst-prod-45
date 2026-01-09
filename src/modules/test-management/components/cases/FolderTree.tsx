@@ -344,9 +344,25 @@ export function FolderTree({
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [folderToDelete, setFolderToDelete] = useState<FolderType | null>(null);
   const [renamingFolderId, setRenamingFolderId] = useState<string | null>(null);
+  const didInitExpand = useRef(false);
 
   // Flatten folders for reference
   const allFolders = flattenFolders(folders);
+
+  // Auto-expand top-level parents so subfolders are visibly nested by default.
+  // Only runs once per mount to avoid overriding user expand/collapse choices.
+  useEffect(() => {
+    if (didInitExpand.current) return;
+    didInitExpand.current = true;
+
+    const parentsWithChildren = folders
+      .filter((f) => (f as any).children && (f as any).children.length > 0)
+      .map((f) => f.id);
+
+    if (parentsWithChildren.length > 0) {
+      setExpandedFolders(new Set(parentsWithChildren));
+    }
+  }, [folders]);
 
   const handleToggleExpand = useCallback((folderId: string) => {
     setExpandedFolders((prev) => {
