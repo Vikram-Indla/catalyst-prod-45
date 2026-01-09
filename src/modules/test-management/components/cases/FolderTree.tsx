@@ -414,8 +414,8 @@ export function FolderTree({
   };
 
   const openCreateDialog = (parentId: string | null = null) => {
-    setCreateParentId(parentId);
     resetCreateForm();
+    setCreateParentId(parentId);
     setCreateDialogOpen(true);
   };
 
