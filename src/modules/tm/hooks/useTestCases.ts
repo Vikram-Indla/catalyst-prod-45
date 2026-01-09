@@ -1,6 +1,10 @@
 /**
  * useTestCases - Test Case CRUD & queries
  */
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
+import type { TMTestCase, TMSortState, TestCaseCreateInput, TestCaseUpdateInput } from '../types';
 
 interface UseTestCasesOptions {
   folderId?: string | null;
@@ -57,7 +61,7 @@ export function useTestCases(options: UseTestCasesOptions = {}) {
         estimatedTime: tc.estimated_time,
         automationStatus: tc.automation_status as TMTestCase['automationStatus'],
         tags: null,
-        assigneeId: tc.owner_id,
+        assigneeId: tc.created_by, // No assignee_id column in DB yet
         createdBy: tc.created_by,
         createdAt: tc.created_at,
         updatedAt: tc.updated_at,
