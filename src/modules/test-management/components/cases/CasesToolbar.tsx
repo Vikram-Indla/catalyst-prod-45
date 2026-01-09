@@ -18,6 +18,7 @@ import {
   Upload,
   RefreshCw,
   X,
+  Sparkles,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -49,6 +50,7 @@ interface CasesToolbarProps {
   onViewModeChange: (mode: 'table' | 'card') => void;
   selectedCount: number;
   onCreateCase: () => void;
+  onGenerateWithAI?: () => void;
   onBulkCopy: () => void;
   onBulkMove: () => void;
   onBulkDelete: () => void;
@@ -76,6 +78,7 @@ export function CasesToolbar({
   onViewModeChange,
   selectedCount,
   onCreateCase,
+  onGenerateWithAI,
   onBulkCopy,
   onBulkMove,
   onBulkDelete,
@@ -311,19 +314,38 @@ export function CasesToolbar({
         </Button>
       )}
 
-      {/* Import Button */}
-      {onImport && (
-        <Button variant="outline" size="sm" onClick={onImport}>
-          <Upload className="h-4 w-4 mr-2" />
-          Import
-        </Button>
-      )}
 
-      {/* New Case Button */}
-      <Button onClick={onCreateCase} className="gap-2">
-        <Plus className="h-4 w-4" />
-        New Case
-      </Button>
+      {/* New Case Button with Dropdown */}
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button className="gap-2">
+            <Plus className="h-4 w-4" />
+            New Case
+            <ChevronDown className="h-4 w-4 ml-1" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuItem onClick={onCreateCase}>
+            <Plus className="h-4 w-4 mr-2" />
+            New Test Case
+          </DropdownMenuItem>
+          {onGenerateWithAI && (
+            <DropdownMenuItem onClick={onGenerateWithAI}>
+              <Sparkles className="h-4 w-4 mr-2 text-purple-500" />
+              Generate with AI
+            </DropdownMenuItem>
+          )}
+          {onImport && (
+            <>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={onImport}>
+                <Upload className="h-4 w-4 mr-2" />
+                Import from File
+              </DropdownMenuItem>
+            </>
+          )}
+        </DropdownMenuContent>
+      </DropdownMenu>
     </div>
   );
 }

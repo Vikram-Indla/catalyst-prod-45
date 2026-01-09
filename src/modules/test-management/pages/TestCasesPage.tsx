@@ -29,7 +29,7 @@ import {
   type TMTestCase,
   type CaseStatus,
 } from '@/hooks/test-management';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import {
   FolderTree,
   CasesToolbar,
@@ -38,6 +38,7 @@ import {
   CaseModal,
   AddToCycleDialog,
   ImportTestCasesDialog,
+  AITestGenerator,
   type CasesFilters,
   type SortField,
   type SortDirection,
@@ -108,6 +109,7 @@ export function TestCasesPage() {
   const [addToCycleOpen, setAddToCycleOpen] = useState(false);
   const [caseToAddToCycle, setCaseToAddToCycle] = useState<string | null>(null);
   const [importDialogOpen, setImportDialogOpen] = useState(false);
+  const [aiGeneratorOpen, setAiGeneratorOpen] = useState(false);
 
   // Get project ID from URL or use default TM project
   const urlProjectId = searchParams.get('projectId');
@@ -289,11 +291,11 @@ export function TestCasesPage() {
       }, {
         onSuccess: () => {
           setSelectedIds(new Set());
-          toast.success(`${selectedIds.size} test cases moved`);
+          catalystToast.success('Test cases moved', `${selectedIds.size} test cases moved successfully`);
         },
       });
     } else if (selectedIds.size > 0) {
-      toast.info('Select a destination folder first, then use bulk move');
+      catalystToast.info('Select a destination folder', 'Select a destination folder first, then use bulk move');
     }
   }, [selectedIds, moveCase, projectId, selectedFolderId]);
 
@@ -344,9 +346,44 @@ export function TestCasesPage() {
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
     
-    toast.success(`${selectedIds.size} test cases exported`);
+    catalystToast.success('Export complete', `${selectedIds.size} test cases exported`);
     setSelectedIds(new Set());
   }, [selectedIds, cases]);
+
+  const handleOpenAIGenerator = useCallback(() => {
+    setAiGeneratorOpen(true);
+  }, []);
+
+  const handleSaveAIGeneratedCases = useCallback(async (
+    testCases: any[],
+    folderId: string,
+    status: string
+  ) => {
+    if (!projectId) return;
+    
+    // Create each test case
+    for (const tc of testCases) {
+      await createCase.mutateAsync({
+        title: tc.title,
+        objective: tc.summary,
+        preconditions: tc.preconditions?.join('\n'),
+        folder_id: folderId,
+        priority_id: undefined, // Will use default
+        type_id: undefined, // Will use default
+        steps: tc.steps?.map((s: any, i: number) => ({
+          step_number: i + 1,
+          action: s.action,
+          test_data: s.testData,
+          expected_result: s.expectedResult,
+        })) || [],
+        project_id: projectId,
+        is_ai_generated: true,
+        ai_generation_prompt: tc.title,
+      });
+    }
+    
+    catalystToast.success('AI test cases saved', `${testCases.length} test cases created`);
+  }, [createCase, projectId]);
 
   const handleAddSelectedToCycle = useCallback((cycleId: string) => {
     if (selectedIds.size > 0 && projectId) {
@@ -448,6 +485,7 @@ export function TestCasesPage() {
           onViewModeChange={setViewMode}
           selectedCount={selectedIds.size}
           onCreateCase={handleCreateCase}
+          onGenerateWithAI={handleOpenAIGenerator}
           onBulkCopy={handleBulkCopy}
           onBulkMove={handleBulkMove}
           onBulkDelete={handleBulkDelete}
@@ -584,6 +622,15 @@ export function TestCasesPage() {
         onSuccess={() => {
           // Data will be refetched automatically via react-query
         }}
+      />
+
+      {/* AI Test Case Generator */}
+      <AITestGenerator
+        open={aiGeneratorOpen}
+        onOpenChange={setAiGeneratorOpen}
+        onSaveTestCases={handleSaveAIGeneratedCases}
+        defaultFolderId={selectedFolderId}
+        projectId={projectId}
       />
     </div>
   );

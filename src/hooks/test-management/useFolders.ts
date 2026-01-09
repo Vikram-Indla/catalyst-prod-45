@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { TMFolder } from '@/types/test-management';
-import { toast } from '@/components/ui/sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { z } from 'zod';
 
 const folderNameSchema = z
@@ -185,12 +185,11 @@ export function useCreateFolder() {
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['tm-folders', variables.project_id] });
       queryClient.invalidateQueries({ queryKey: ['tm-folders-with-counts', variables.project_id] });
-      toast.success('Folder created');
+      catalystToast.success('Folder created');
     },
     onError: (error: any) => {
-      // Supabase errors often have .message, but keep safe fallback.
       const message = typeof error?.message === 'string' ? error.message : 'Unknown error';
-      toast.error(`Failed to create folder: ${message}`);
+      catalystToast.error('Failed to create folder', message);
       console.error('Create folder failed:', error);
     },
   });
@@ -225,10 +224,10 @@ export function useUpdateFolder() {
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['tm-folders', variables.project_id] });
-      toast.success('Folder updated');
+      catalystToast.success('Folder updated');
     },
     onError: (error: Error) => {
-      toast.error(`Failed to update folder: ${error.message}`);
+      catalystToast.error('Failed to update folder', error.message);
     },
   });
 }
@@ -268,10 +267,10 @@ export function useDeleteFolder() {
       queryClient.invalidateQueries({ queryKey: ['tm-folders', variables.project_id] });
       queryClient.invalidateQueries({ queryKey: ['tm-folders-with-counts', variables.project_id] });
       queryClient.invalidateQueries({ queryKey: ['tm-test-cases', variables.project_id] });
-      toast.success('Folder deleted. Contents moved to parent.');
+      catalystToast.success('Folder deleted', 'Contents moved to parent folder');
     },
     onError: (error: Error) => {
-      toast.error(`Failed to delete folder: ${error.message}`);
+      catalystToast.error('Failed to delete folder', error.message);
     },
   });
 }
@@ -354,10 +353,10 @@ export function useMoveFolder() {
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['tm-folders', variables.project_id] });
       queryClient.invalidateQueries({ queryKey: ['tm-folders-with-counts', variables.project_id] });
-      toast.success('Folder moved');
+      catalystToast.success('Folder moved');
     },
     onError: (error: Error) => {
-      toast.error(`Failed to move folder: ${error.message}`);
+      catalystToast.error('Failed to move folder', error.message);
     },
   });
 }
@@ -441,10 +440,10 @@ export function useDuplicateFolder() {
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['tm-folders', variables.project_id] });
       queryClient.invalidateQueries({ queryKey: ['tm-folders-with-counts', variables.project_id] });
-      toast.success('Folder duplicated');
+      catalystToast.success('Folder duplicated');
     },
     onError: (error: Error) => {
-      toast.error(`Failed to duplicate folder: ${error.message}`);
+      catalystToast.error('Failed to duplicate folder', error.message);
     },
   });
 }

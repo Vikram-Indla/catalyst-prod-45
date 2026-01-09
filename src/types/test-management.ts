@@ -255,6 +255,9 @@ export interface CreateCaseInput {
   type_id?: string;
   label_ids?: string[];
   steps?: CreateStepInput[];
+  is_ai_generated?: boolean;
+  ai_generation_prompt?: string;
+  ai_model?: string;
 }
 
 export interface UpdateCaseInput extends Partial<CreateCaseInput> {
