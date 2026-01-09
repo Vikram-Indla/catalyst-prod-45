@@ -150,6 +150,40 @@ export function TestCasesPage() {
   const { data: foldersData, isLoading: foldersLoading } = useFoldersWithCounts(projectId);
   const folders = foldersData || [];
 
+  // Build hierarchical tree from flat list (FolderTree UI expects children[])
+  const folderTree = useMemo(() => {
+    const map = new Map<string, any>();
+    const roots: any[] = [];
+
+    // clone nodes + init children
+    for (const f of folders) {
+      map.set(f.id, { ...f, children: [] as any[] });
+    }
+
+    // attach to parent
+    for (const f of folders) {
+      const node = map.get(f.id);
+      if (!node) continue;
+
+      if (f.parent_id) {
+        const parent = map.get(f.parent_id);
+        if (parent) parent.children.push(node);
+        else roots.push(node);
+      } else {
+        roots.push(node);
+      }
+    }
+
+    // stable ordering by sort_order
+    const sortTree = (nodes: any[]) => {
+      nodes.sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0));
+      nodes.forEach((n) => sortTree(n.children || []));
+    };
+    sortTree(roots);
+
+    return roots;
+  }, [folders]);
+
   const { data: casesRaw, isLoading: casesLoading } = useTestCases(projectId, caseFilters);
   const cases = useMemo(() => (casesRaw?.cases || []).map(mapTMCaseToCase), [casesRaw]);
   const totalCases = casesRaw?.total || 0;
@@ -525,7 +559,7 @@ export function TestCasesPage() {
           </div>
         ) : (
           <FolderTree
-            folders={folders}
+            folders={folderTree}
             selectedFolderId={selectedFolderId}
             onSelectFolder={setSelectedFolderId}
             onCreateFolder={handleCreateFolder}
