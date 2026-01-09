@@ -557,39 +557,41 @@ export function TestCasesPage() {
   return (
     <ColumnPreferencesProvider>
     <div className="flex h-full gap-0">
-      {/* Folder Panel Toggle (visible when collapsed) */}
+      {/* Folder Panel Toggle (visible when collapsed) - Catalyst V5 Design */}
       {folderPanelCollapsed && (
-        <div className="shrink-0 border-r border-border bg-background flex flex-col items-center py-2 px-1.5 w-12">
+        <div className="shrink-0 border-r border-gray-200 bg-white flex flex-col items-center py-3 px-1.5 w-12">
           {/* Expand button */}
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-8 w-8 mb-2"
+                className="h-8 w-8 mb-3 text-gray-500 hover:text-[#2563eb] hover:bg-blue-50 transition-colors"
                 onClick={toggleFolderPanel}
               >
                 <PanelLeft className="h-4 w-4" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="right">Show folders</TooltipContent>
+            <TooltipContent side="right" className="bg-gray-900 text-white text-xs px-2 py-1">
+              Show folders
+            </TooltipContent>
           </Tooltip>
 
-          {/* Selected folder indicator */}
+          {/* Selected folder indicator - Catalyst V5 */}
           <Tooltip>
             <TooltipTrigger asChild>
               <button
                 onClick={toggleFolderPanel}
-                className="flex flex-col items-center gap-1.5 py-2 px-1 rounded-md hover:bg-muted/80 transition-colors cursor-pointer group w-full"
+                className="flex flex-col items-center gap-2 py-2.5 px-1.5 rounded-lg hover:bg-gray-100 transition-all cursor-pointer group w-full border border-transparent hover:border-gray-200"
               >
                 <div className="relative">
-                  <Folder className="h-5 w-5 text-yellow-500 fill-yellow-500/20" />
+                  <Folder className="h-5 w-5 text-amber-500 fill-amber-100" />
                   {selectedFolderId && (
-                    <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-primary rounded-full" />
+                    <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-[#2563eb] rounded-full ring-2 ring-white" />
                   )}
                 </div>
                 <div 
-                  className="writing-mode-vertical text-[10px] font-medium text-muted-foreground group-hover:text-foreground transition-colors max-h-24 overflow-hidden"
+                  className="text-[10px] font-medium text-gray-500 group-hover:text-gray-900 transition-colors max-h-20 overflow-hidden leading-tight"
                   style={{ writingMode: 'vertical-rl', textOrientation: 'mixed' }}
                 >
                   {selectedFolderId 
@@ -597,17 +599,20 @@ export function TestCasesPage() {
                     : 'All Cases'
                   }
                 </div>
-                <ChevronRight className="h-3 w-3 text-muted-foreground/50 group-hover:text-muted-foreground transition-colors" />
+                <ChevronRight className="h-3 w-3 text-gray-400 group-hover:text-[#2563eb] transition-colors" />
               </button>
             </TooltipTrigger>
-            <TooltipContent side="right" className="flex items-center gap-2">
-              <Folder className="h-3.5 w-3.5 text-yellow-500" />
-              <span>
-                {selectedFolderId 
-                  ? `Viewing: ${folders.find(f => f.id === selectedFolderId)?.name || 'Folder'}`
-                  : 'Viewing: All Cases'
-                }
-              </span>
+            <TooltipContent side="right" className="bg-white border border-gray-200 shadow-lg px-3 py-2 rounded-lg">
+              <div className="flex items-center gap-2">
+                <Folder className="h-4 w-4 text-amber-500 fill-amber-100" />
+                <span className="text-sm font-medium text-gray-900">
+                  {selectedFolderId 
+                    ? folders.find(f => f.id === selectedFolderId)?.name || 'Folder'
+                    : 'All Cases'
+                  }
+                </span>
+              </div>
+              <p className="text-xs text-gray-500 mt-1">Click to expand folders</p>
             </TooltipContent>
           </Tooltip>
         </div>
