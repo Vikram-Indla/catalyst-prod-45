@@ -314,8 +314,8 @@ export function TestCaseEditor({
   };
 
   const handleSubmit = useCallback(() => {
-    if (!title.trim()) {
-      toast.error('Title is required');
+    if (!summary.trim()) {
+      toast.error('Summary is required');
       return;
     }
 
@@ -332,14 +332,13 @@ export function TestCaseEditor({
 
     const caseData = {
       project_id: projectId,
-      title: title.trim(),
+      title: summary.trim(),
       description: description.trim() || summary.trim() || undefined,
       preconditions: preconditions.map(p => p.text).join('\n') || undefined,
       status,
       priority_id: priorityId || undefined,
       type_id: typeId || undefined,
       folder_id: folderId || undefined,
-      estimated_time_minutes: estimate ? parseInt(estimate, 10) : undefined,
       tags: selectedLabels.length > 0 ? selectedLabels : undefined,
       assigned_to: assigneeId || undefined,
     };
@@ -468,7 +467,7 @@ export function TestCaseEditor({
           {/* Save button */}
           <Button
             onClick={handleSubmit}
-            disabled={!title.trim() || isSubmitting}
+            disabled={!summary.trim() || isSubmitting}
             className="h-9 px-4 gap-2 bg-green-600 hover:bg-green-700 text-white"
           >
             <Save className="h-4 w-4" />
@@ -501,17 +500,17 @@ export function TestCaseEditor({
           )}
 
           {/* ═══════════════════════════════════════════════════════════════════════ */}
-          {/* TITLE FIELD - HERO ELEMENT */}
+          {/* SUMMARY FIELD - HERO ELEMENT */}
           {/* ═══════════════════════════════════════════════════════════════════════ */}
           <div className="mb-6">
             <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
-              Title <span className="text-destructive">*</span>
+              Summary <span className="text-destructive">*</span>
             </label>
             <input
               type="text"
-              value={title}
-              onChange={(e) => { setTitle(e.target.value); markDirty(); }}
-              placeholder="Enter test case title..."
+              value={summary}
+              onChange={(e) => { setSummary(e.target.value); markDirty(); }}
+              placeholder="Brief one-line description of what this test validates..."
               autoFocus
               maxLength={200}
               disabled={!isEditable}
@@ -526,21 +525,21 @@ export function TestCaseEditor({
                 "hover:border-muted-foreground/50",
                 "placeholder:text-muted-foreground/50 placeholder:font-normal",
                 "transition-all duration-150",
-                !title && "border-destructive/50"
+                !summary && "border-destructive/50"
               )}
             />
             <div className="flex justify-between mt-1.5">
-              {!title && (
-                <span className="text-xs text-destructive">Title is required</span>
+              {!summary && (
+                <span className="text-xs text-destructive">Summary is required</span>
               )}
-              <span className="text-xs text-muted-foreground ml-auto">{title.length}/200</span>
+              <span className="text-xs text-muted-foreground ml-auto">{summary.length}/200</span>
             </div>
           </div>
 
           {/* ═══════════════════════════════════════════════════════════════════════ */}
-          {/* METADATA FIELDS - 2x2 GRID */}
+          {/* METADATA FIELDS - 3 COLUMN GRID */}
           {/* ═══════════════════════════════════════════════════════════════════════ */}
-          <div className="grid grid-cols-2 gap-4 mb-6">
+          <div className="grid grid-cols-3 gap-4 mb-6">
             {/* Type */}
             <div>
               <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
@@ -608,49 +607,6 @@ export function TestCaseEditor({
                   ))}
                 </SelectContent>
               </Select>
-            </div>
-
-            {/* Estimate */}
-            <div>
-              <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
-                Estimate
-              </label>
-              <Input
-                value={estimate}
-                onChange={(e) => { setEstimate(e.target.value); markDirty(); }}
-                placeholder="e.g., 15m, 1h 30m"
-                className="h-10 border-border"
-              />
-            </div>
-          </div>
-
-          {/* ═══════════════════════════════════════════════════════════════════════ */}
-          {/* SUMMARY FIELD */}
-          {/* ═══════════════════════════════════════════════════════════════════════ */}
-          <div className="mb-6">
-            <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
-              Summary <span className="text-destructive">*</span>
-            </label>
-            <input
-              type="text"
-              value={summary}
-              onChange={(e) => { setSummary(e.target.value); markDirty(); }}
-              placeholder="Brief one-line description of what this test validates..."
-              maxLength={200}
-              disabled={!isEditable}
-              className={cn(
-                "w-full",
-                "text-base",
-                "px-4 py-2.5",
-                "bg-background",
-                "border border-border rounded-lg",
-                "shadow-sm",
-                "focus:border-primary focus:ring-2 focus:ring-primary/10 focus:outline-none",
-                "placeholder:text-muted-foreground/50"
-              )}
-            />
-            <div className="flex justify-end mt-1">
-              <span className="text-xs text-muted-foreground">{summary.length}/200</span>
             </div>
           </div>
 
