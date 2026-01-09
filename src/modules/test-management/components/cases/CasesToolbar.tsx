@@ -1,6 +1,6 @@
 /**
  * Cases Toolbar Component
- * Search, filters, view toggle, and bulk actions
+ * Search, filters, view toggle, column selector, and bulk actions
  */
 
 import React from 'react';
@@ -22,6 +22,7 @@ import {
   Users,
   UserX,
 } from 'lucide-react';
+import { ColumnSelector } from './ColumnSelector';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -386,6 +387,9 @@ export function CasesToolbar({
           <LayoutGrid className="h-4 w-4" />
         </Button>
       </div>
+
+      {/* Column Selector */}
+      <ColumnSelector />
 
       {/* Refresh Button */}
       {onRefresh && (

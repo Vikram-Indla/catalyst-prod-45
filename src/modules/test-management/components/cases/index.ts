@@ -11,5 +11,7 @@ export { TestCaseEditor } from './TestCaseEditor';
 export { AddToCycleDialog } from './AddToCycleDialog';
 export { ImportTestCasesDialog } from './ImportTestCasesDialog';
 export { AITestGenerator } from './AITestGenerator';
+export { ColumnSelector } from './ColumnSelector';
+export { TraceabilityCell, type LinkedItem } from './TraceabilityCell';
 // Only export main editor components, not individual tabs to avoid conflicts with reports module
 export { EditorHeader, EditorToolbar, ContextPanel } from './editor';
