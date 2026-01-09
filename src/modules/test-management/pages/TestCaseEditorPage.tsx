@@ -5,6 +5,8 @@
 
 import React from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 import {
   useTestCase,
   useTestCaseSteps,
@@ -12,6 +14,7 @@ import {
   useCasePriorities,
   useCaseTypes,
   useLabels,
+  useTeamMembers,
   useCreateTestCase,
   useUpdateTestCase,
   type CaseStatus,
@@ -32,6 +35,17 @@ export function TestCaseEditorPage() {
   const projectId = urlProjectId || DEFAULT_TM_PROJECT_ID;
   const defaultFolderId = searchParams.get('folderId');
 
+  // Get current user
+  const { data: currentUser } = useQuery({
+    queryKey: ['current-user'],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      return user;
+    },
+    staleTime: 60000,
+  });
+  const currentUserId = currentUser?.id;
+
   // Fetch test case data if editing
   const { data: testCase, isLoading: caseLoading } = useTestCase(isNewCase ? null : caseId);
   const { data: steps } = useTestCaseSteps(isNewCase ? null : caseId);
@@ -42,6 +56,7 @@ export function TestCaseEditorPage() {
   const { data: priorities } = useCasePriorities(projectId);
   const { data: types } = useCaseTypes(projectId);
   const { data: labels } = useLabels(projectId);
+  const { data: teamMembers } = useTeamMembers(projectId);
 
   // Mutations
   const createCase = useCreateTestCase();
@@ -57,6 +72,7 @@ export function TestCaseEditorPage() {
           folder_id: data.folder_id || defaultFolderId,
           priority_id: data.priority_id,
           type_id: data.type_id,
+          assigned_to: data.assigned_to || currentUserId,
           steps: stepsData.map((s, i) => ({
             step_number: i + 1,
             action: s.action,
@@ -82,6 +98,7 @@ export function TestCaseEditorPage() {
           priority_id: data.priority_id,
           type_id: data.type_id,
           folder_id: data.folder_id,
+          assigned_to: data.assigned_to,
           project_id: projectId,
         },
         {
@@ -101,6 +118,7 @@ export function TestCaseEditorPage() {
   const prioritiesForUI = (priorities || []).map(p => ({ id: p.id, name: p.name, color: p.color }));
   const typesForUI = (types || []).map(t => ({ id: t.id, name: t.name }));
   const labelsForUI = (labels || []).map(l => ({ id: l.id, name: l.name, color: l.color }));
+  const teamMembersForUI = (teamMembers || []).map(m => ({ id: m.id, name: m.full_name, avatar_url: m.avatar_url }));
 
   // Map test case to expected format
   const mappedTestCase = testCase ? {
@@ -128,6 +146,8 @@ export function TestCaseEditorPage() {
       priorities={prioritiesForUI}
       caseTypes={typesForUI}
       labels={labelsForUI}
+      teamMembers={teamMembersForUI}
+      currentUserId={currentUserId}
       onSave={handleSave}
       onClose={handleClose}
       isSubmitting={createCase.isPending || updateCase.isPending}

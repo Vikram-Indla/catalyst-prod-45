@@ -416,6 +416,7 @@ export function TestCasesPage() {
           folder_id: folderId,
           priority_id: undefined,
           type_id: undefined,
+          assigned_to: currentUserId, // Assign to current logged-in user
           steps: tc.steps?.map((s: any, i: number) => ({
             step_number: i + 1,
             action: s.action,
@@ -446,7 +447,7 @@ export function TestCasesPage() {
         casesSummary
       );
     }
-  }, [createCaseSilent, projectId, folders]);
+  }, [createCaseSilent, projectId, folders, currentUserId]);
 
   const handleAddSelectedToCycle = useCallback((cycleId: string) => {
     if (selectedIds.size > 0 && projectId) {
