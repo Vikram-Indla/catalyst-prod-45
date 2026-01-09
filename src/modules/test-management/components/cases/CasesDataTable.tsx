@@ -13,6 +13,7 @@ import {
   Copy,
   Trash2,
   PlayCircle,
+  User,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -161,6 +162,7 @@ export function CasesDataTable({
               <TableHead className="w-[100px]">Status</TableHead>
               <TableHead className="w-[100px]">Priority</TableHead>
               <TableHead className="w-[100px]">Type</TableHead>
+              <TableHead className="w-[120px]">Created By</TableHead>
               <TableHead className="w-[120px]">Updated</TableHead>
               <TableHead className="w-[50px]" />
             </TableRow>
@@ -174,6 +176,7 @@ export function CasesDataTable({
                 <TableCell><Skeleton className="h-5 w-16" /></TableCell>
                 <TableCell><Skeleton className="h-4 w-12" /></TableCell>
                 <TableCell><Skeleton className="h-4 w-16" /></TableCell>
+                <TableCell><Skeleton className="h-4 w-20" /></TableCell>
                 <TableCell><Skeleton className="h-4 w-20" /></TableCell>
                 <TableCell><Skeleton className="h-8 w-8" /></TableCell>
               </TableRow>
@@ -231,6 +234,7 @@ export function CasesDataTable({
                 className="w-[100px]"
               />
               <TableHead className="w-[100px]">Type</TableHead>
+              <TableHead className="w-[120px]">Created By</TableHead>
               <SortableHeader
                 field="updated_at"
                 label="Updated"
@@ -245,7 +249,7 @@ export function CasesDataTable({
           <TableBody>
             {cases.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={8} className="h-32 text-center">
+                <TableCell colSpan={9} className="h-32 text-center">
                   <div className="flex flex-col items-center gap-2 text-muted-foreground">
                     <FileText className="h-8 w-8 opacity-50" />
                     <p>No test cases found</p>
@@ -307,6 +311,14 @@ export function CasesDataTable({
                     </TableCell>
                     <TableCell className="text-sm text-muted-foreground">
                       {testCase.case_type?.name || '—'}
+                    </TableCell>
+                    <TableCell className="text-sm text-muted-foreground">
+                      <div className="flex items-center gap-1.5">
+                        <User className="h-3.5 w-3.5 opacity-60" />
+                        <span className="truncate max-w-[100px]">
+                          {testCase.created_by_profile?.full_name || 'System'}
+                        </span>
+                      </div>
                     </TableCell>
                     <TableCell className="text-sm text-muted-foreground">
                       {formatDistanceToNow(new Date(testCase.updated_at), { addSuffix: true })}

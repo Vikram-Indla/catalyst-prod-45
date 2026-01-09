@@ -38,6 +38,7 @@ export interface TestCase {
   preconditions?: string;
   priority_id?: string;
   type_id?: string;
+  case_type_id?: string;
   status: CaseStatus;
   owner_id?: string;
   owner_name?: string;
@@ -46,6 +47,7 @@ export interface TestCase {
   template_id?: string;
   tags?: string[];
   created_by?: string;
+  created_by_profile?: { id: string; full_name?: string; avatar_url?: string };
   created_at: string;
   updated_at: string;
   steps?: TestStep[];
