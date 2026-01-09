@@ -2,6 +2,28 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { TMFolder } from '@/types/test-management';
 import { toast } from 'sonner';
+import { z } from 'zod';
+
+const folderNameSchema = z
+  .string()
+  .trim()
+  .min(1, 'Folder name is required')
+  .max(100, 'Folder name is too long');
+
+function toLtreeLabel(input: string): string {
+  // ltree labels: [A-Za-z0-9_], separated by dots.
+  // We store a stable, URL-ish path segment derived from name.
+  let slug = input
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '_')
+    .replace(/_+/g, '_')
+    .replace(/^_+|_+$/g, '');
+
+  if (!slug) slug = 'folder';
+  if (/^[0-9]/.test(slug)) slug = `f_${slug}`;
+  return slug;
+}
 
 export function useFolders(projectId: string | undefined) {
   return useQuery({
@@ -20,7 +42,7 @@ export function useFolders(projectId: string | undefined) {
         throw error;
       }
 
-      return (data || []).map(f => ({
+      return (data || []).map((f) => ({
         ...f,
         path: String(f.path || ''),
       })) as TMFolder[];
@@ -33,11 +55,11 @@ function buildFolderTree(folders: TMFolder[]): TMFolder[] {
   const map = new Map<string, TMFolder>();
   const roots: TMFolder[] = [];
 
-  folders.forEach(folder => {
+  folders.forEach((folder) => {
     map.set(folder.id, { ...folder, children: [] });
   });
 
-  folders.forEach(folder => {
+  folders.forEach((folder) => {
     const node = map.get(folder.id)!;
     if (folder.parent_id) {
       const parent = map.get(folder.parent_id);
@@ -81,12 +103,12 @@ export function useFoldersWithCounts(projectId: string | undefined) {
       if (countsError) throw countsError;
 
       const countMap = new Map<string, number>();
-      counts?.forEach(c => {
+      counts?.forEach((c) => {
         const folderId = c.folder_id || 'unfiled';
         countMap.set(folderId, (countMap.get(folderId) || 0) + 1);
       });
 
-      return (folders || []).map(f => ({
+      return (folders || []).map((f) => ({
         ...f,
         path: String(f.path || ''),
         case_count: countMap.get(f.id) || 0,
@@ -105,20 +127,23 @@ export function useCreateFolder() {
       name: string;
       parent_id?: string | null;
     }): Promise<TMFolder> => {
-      let path = `/${input.name}`;
+      const name = folderNameSchema.parse(input.name);
+      const label = toLtreeLabel(name);
+
+      let path = label;
       if (input.parent_id) {
-        const { data: parent } = await supabase
+        const { data: parent, error: parentError } = await supabase
           .from('tm_folders')
           .select('path')
           .eq('id', input.parent_id)
           .single();
-        
-        if (parent) {
-          path = `${String(parent.path || '')}/${input.name}`;
-        }
+
+        if (parentError) throw parentError;
+        const parentPath = String(parent?.path || '');
+        path = parentPath ? `${parentPath}.${label}` : label;
       }
 
-      const { data: existing } = await supabase
+      const { data: existing, error: existingError } = await supabase
         .from('tm_folders')
         .select('sort_order')
         .eq('project_id', input.project_id)
@@ -126,15 +151,17 @@ export function useCreateFolder() {
         .order('sort_order', { ascending: false })
         .limit(1);
 
+      if (existingError) throw existingError;
+
       const sortOrder = (existing?.[0]?.sort_order || 0) + 1;
 
       const { data, error } = await supabase
         .from('tm_folders')
         .insert({
           project_id: input.project_id,
-          name: input.name,
+          name,
           parent_id: input.parent_id || null,
-          path,
+          path, // ltree-compatible string (e.g., "authentication.login")
           sort_order: sortOrder,
         })
         .select()
@@ -151,8 +178,11 @@ export function useCreateFolder() {
       queryClient.invalidateQueries({ queryKey: ['tm-folders-with-counts', variables.project_id] });
       toast.success('Folder created');
     },
-    onError: (error: Error) => {
-      toast.error(`Failed to create folder: ${error.message}`);
+    onError: (error: any) => {
+      // Supabase errors often have .message, but keep safe fallback.
+      const message = typeof error?.message === 'string' ? error.message : 'Unknown error';
+      toast.error(`Failed to create folder: ${message}`);
+      console.error('Create folder failed:', error);
     },
   });
 }
@@ -168,7 +198,7 @@ export function useUpdateFolder() {
       parent_id?: string | null;
     }): Promise<TMFolder> => {
       const updates: Record<string, any> = {};
-      if (input.name) updates.name = input.name;
+      if (input.name) updates.name = folderNameSchema.parse(input.name);
       if (input.parent_id !== undefined) updates.parent_id = input.parent_id;
 
       const { data, error } = await supabase
@@ -199,10 +229,7 @@ export function useDeleteFolder() {
 
   return useMutation({
     mutationFn: async (input: { id: string; project_id: string }): Promise<void> => {
-      const { error } = await supabase
-        .from('tm_folders')
-        .delete()
-        .eq('id', input.id);
+      const { error } = await supabase.from('tm_folders').delete().eq('id', input.id);
 
       if (error) throw error;
     },
@@ -216,3 +243,4 @@ export function useDeleteFolder() {
     },
   });
 }
+
