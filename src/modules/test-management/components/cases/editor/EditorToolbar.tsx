@@ -1,5 +1,5 @@
 /**
- * Editor Toolbar Component
+ * Editor Toolbar Component - Pixel Perfect Match
  * Rich text formatting toolbar with AI assist button
  */
 
@@ -21,41 +21,24 @@ import {
   Maximize2,
   Sparkles,
 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
-import { cn } from '@/lib/utils';
 
 interface ToolbarButtonProps {
   icon: React.ReactNode;
-  label: string;
-  isActive?: boolean;
+  title: string;
   onClick?: () => void;
 }
 
-function ToolbarButton({ icon, label, isActive, onClick }: ToolbarButtonProps) {
+function ToolbarButton({ icon, title, onClick }: ToolbarButtonProps) {
   return (
-    <Tooltip>
-      <TooltipTrigger asChild>
-        <button
-          type="button"
-          onClick={onClick}
-          className={cn(
-            'flex items-center justify-center w-[30px] h-[30px] rounded-md bg-transparent border-none',
-            'text-muted-foreground cursor-pointer transition-all duration-100',
-            'hover:bg-muted hover:text-foreground',
-            isActive && 'bg-primary/10 text-primary'
-          )}
-        >
-          {icon}
-        </button>
-      </TooltipTrigger>
-      <TooltipContent>{label}</TooltipContent>
-    </Tooltip>
+    <button
+      type="button"
+      title={title}
+      onClick={onClick}
+      className="p-1.5 rounded hover:bg-neutral-100 text-neutral-500 hover:text-neutral-700"
+    >
+      {icon}
+    </button>
   );
 }
 
@@ -67,66 +50,68 @@ interface EditorToolbarProps {
 
 export function EditorToolbar({ onAIAssist, onPreview, onFullscreen }: EditorToolbarProps) {
   return (
-    <div className="flex items-center justify-between px-5 py-2 bg-background border-b border-border shrink-0">
+    <div
+      className="flex items-center justify-between px-3 border-b bg-white shrink-0"
+      style={{ height: '44px', borderColor: '#e5e5e5' }}
+    >
+      {/* Left - Formatting tools */}
       <div className="flex items-center gap-0.5">
-        {/* Text formatting */}
-        <ToolbarButton icon={<Bold className="h-4 w-4" />} label="Bold (⌘B)" />
-        <ToolbarButton icon={<Italic className="h-4 w-4" />} label="Italic (⌘I)" />
-        <ToolbarButton icon={<Underline className="h-4 w-4" />} label="Underline (⌘U)" />
+        <ToolbarButton icon={<Bold className="h-4 w-4" />} title="Bold" />
+        <ToolbarButton icon={<Italic className="h-4 w-4" />} title="Italic" />
+        <ToolbarButton icon={<Underline className="h-4 w-4" />} title="Underline" />
         
-        <Separator orientation="vertical" className="h-[18px] mx-1.5" />
+        <Separator orientation="vertical" className="h-5 mx-1.5 bg-neutral-200" />
         
-        {/* Lists */}
-        <ToolbarButton icon={<List className="h-4 w-4" />} label="Bullet List" />
-        <ToolbarButton icon={<ListOrdered className="h-4 w-4" />} label="Numbered List" />
-        <ToolbarButton icon={<CheckSquare className="h-4 w-4" />} label="Checklist" />
+        <ToolbarButton icon={<List className="h-4 w-4" />} title="Bullet List" />
+        <ToolbarButton icon={<ListOrdered className="h-4 w-4" />} title="Numbered List" />
+        <ToolbarButton icon={<CheckSquare className="h-4 w-4" />} title="Checklist" />
         
-        <Separator orientation="vertical" className="h-[18px] mx-1.5" />
+        <Separator orientation="vertical" className="h-5 mx-1.5 bg-neutral-200" />
         
-        {/* Code & Links */}
-        <ToolbarButton icon={<Code className="h-4 w-4" />} label="Code" />
-        <ToolbarButton icon={<Link2 className="h-4 w-4" />} label="Link (⌘K)" />
+        <ToolbarButton icon={<Code className="h-4 w-4" />} title="Code" />
+        <ToolbarButton icon={<Link2 className="h-4 w-4" />} title="Link" />
         
-        <Separator orientation="vertical" className="h-[18px] mx-1.5" />
+        <Separator orientation="vertical" className="h-5 mx-1.5 bg-neutral-200" />
         
-        {/* Media */}
-        <ToolbarButton icon={<Image className="h-4 w-4" />} label="Image" />
-        <ToolbarButton icon={<Paperclip className="h-4 w-4" />} label="Attachment" />
+        <ToolbarButton icon={<Image className="h-4 w-4" />} title="Image" />
+        <ToolbarButton icon={<Paperclip className="h-4 w-4" />} title="Attachment" />
         
-        <Separator orientation="vertical" className="h-[18px] mx-1.5" />
+        <Separator orientation="vertical" className="h-5 mx-1.5 bg-neutral-200" />
         
-        {/* Mentions */}
-        <ToolbarButton icon={<AtSign className="h-4 w-4" />} label="Mention" />
-        <ToolbarButton icon={<Hash className="h-4 w-4" />} label="Tag" />
+        <ToolbarButton icon={<AtSign className="h-4 w-4" />} title="Mention" />
+        <ToolbarButton icon={<Hash className="h-4 w-4" />} title="Tag" />
       </div>
 
+      {/* Right - AI Assist, Preview, Expand */}
       <div className="flex items-center gap-2">
-        {/* AI Assist Button */}
+        {/* AI Assist Button - Blue outline style */}
         <button
           type="button"
           onClick={onAIAssist}
-          className={cn(
-            'inline-flex items-center gap-1.5 px-3 py-1.5',
-            'bg-gradient-to-r from-primary/10 to-primary/5',
-            'border border-primary/20 rounded-lg',
-            'text-xs font-medium text-primary',
-            'cursor-pointer transition-all duration-150',
-            'hover:from-primary/20 hover:to-primary/10',
-            'hover:border-primary/30 hover:shadow-[0_0_20px_hsl(var(--primary)/0.15)]',
-            'hover:-translate-y-px'
-          )}
+          className="inline-flex items-center gap-1.5 h-8 px-3 rounded-md border text-sm font-medium transition-colors hover:bg-blue-50"
+          style={{
+            borderColor: '#2563eb',
+            color: '#2563eb',
+          }}
         >
-          <div className="flex items-center justify-center w-[18px] h-[18px] bg-primary rounded text-white">
-            <Sparkles className="h-3 w-3" />
-          </div>
+          <Sparkles className="h-3.5 w-3.5" />
           AI Assist
         </button>
-
-        <Separator orientation="vertical" className="h-[18px]" />
-
-        {/* View controls */}
-        <ToolbarButton icon={<Eye className="h-4 w-4" />} label="Preview" onClick={onPreview} />
-        <ToolbarButton icon={<Maximize2 className="h-4 w-4" />} label="Fullscreen" onClick={onFullscreen} />
+        
+        <button
+          onClick={onPreview}
+          className="p-1.5 rounded hover:bg-neutral-100 text-neutral-400"
+          title="Preview"
+        >
+          <Eye className="h-4 w-4" />
+        </button>
+        <button
+          onClick={onFullscreen}
+          className="p-1.5 rounded hover:bg-neutral-100 text-neutral-400"
+          title="Expand"
+        >
+          <Maximize2 className="h-4 w-4" />
+        </button>
       </div>
     </div>
   );

@@ -1,10 +1,9 @@
 /**
- * Objective Section Component
- * Rich text editor for test case objective/description
+ * Objective Section Component - Pixel Perfect Match
  */
 
 import React, { useState } from 'react';
-import { ChevronDown, ChevronUp } from 'lucide-react';
+import { ChevronUp } from 'lucide-react';
 import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
 
@@ -15,58 +14,25 @@ interface ObjectiveSectionProps {
 }
 
 export function ObjectiveSection({ objective, onChange, className }: ObjectiveSectionProps) {
-  const [isExpanded, setIsExpanded] = useState(true);
-
   return (
     <div
-      className={cn(
-        'bg-background rounded-xl border border-border shadow-sm overflow-hidden transition-all duration-200',
-        'hover:shadow-md focus-within:border-primary/30 focus-within:shadow-md focus-within:shadow-primary/5',
-        className
-      )}
+      className={cn('rounded-lg border bg-white', className)}
+      style={{ borderColor: '#e5e5e5' }}
     >
-      {/* Section Header */}
+      <Textarea
+        value={objective}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder="Describe the purpose of this test case. What functionality does it verify? What is the expected behavior?"
+        className="min-h-[120px] border-0 resize-none focus-visible:ring-0 text-sm"
+        style={{ padding: '16px' }}
+      />
       <div
-        className="flex items-center justify-between px-5 py-3 bg-gradient-to-b from-muted/50 to-muted/80 border-b border-border cursor-pointer"
-        onClick={() => setIsExpanded(!isExpanded)}
+        className="flex items-center justify-between px-4 py-2 border-t text-xs text-neutral-400"
+        style={{ borderColor: '#e5e5e5' }}
       >
-        <div className="flex items-center gap-2.5">
-          <h2 className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
-            Objective
-          </h2>
-        </div>
-        <div className="flex items-center gap-3">
-          <button
-            type="button"
-            className="text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
-          >
-            {isExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-          </button>
-        </div>
+        <span>{objective.length} characters</span>
+        <span>Tip: Be specific about expected behavior</span>
       </div>
-
-      {/* Section Body */}
-      {isExpanded && (
-        <div className="p-5 animate-in fade-in-0 slide-in-from-top-2 duration-200">
-          <Textarea
-            value={objective}
-            onChange={(e) => onChange(e.target.value)}
-            placeholder="Describe the purpose of this test case. What functionality does it verify? What is the expected behavior?"
-            className={cn(
-              'min-h-[140px] p-4 resize-y',
-              'border border-border rounded-lg',
-              'text-sm leading-relaxed text-foreground',
-              'placeholder:text-muted-foreground/60',
-              'focus:border-primary/50 focus:shadow-[0_0_0_3px_hsl(var(--primary)/0.1)]',
-              'transition-all duration-200'
-            )}
-          />
-          <div className="flex items-center justify-between mt-2 text-[10px] text-muted-foreground/60">
-            <span>{objective.length} characters</span>
-            <span>Tip: Be specific about expected behavior</span>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

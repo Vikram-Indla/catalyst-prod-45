@@ -1,23 +1,16 @@
 /**
- * Editor Header Component
- * Command bar style header with case info, quality score, and actions
+ * Editor Header Component - Pixel Perfect Match
+ * Matches test-case-editor design exactly
  */
 
 import React from 'react';
 import {
   ChevronLeft,
-  Copy,
   Save,
   X,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 import type { CaseStatus } from '../../../api/types';
 
@@ -37,212 +30,101 @@ interface EditorHeaderProps {
   disabled?: boolean;
 }
 
-const STATUS_CONFIG: Record<CaseStatus, { label: string; variant: 'warning' | 'success' | 'info' | 'muted' }> = {
-  draft: { label: 'Draft', variant: 'warning' },
-  ready: { label: 'Ready', variant: 'info' },
-  approved: { label: 'Approved', variant: 'success' },
-  needs_update: { label: 'Needs Update', variant: 'warning' },
-  deprecated: { label: 'Deprecated', variant: 'muted' },
+const STATUS_STYLES: Record<CaseStatus, string> = {
+  draft: 'bg-[#dc2626] text-white',
+  ready: 'bg-[#0d9488] text-white',
+  approved: 'bg-[#059669] text-white',
+  needs_update: 'bg-[#d97706] text-white',
+  deprecated: 'bg-[#6b7280] text-white',
 };
-
-function QualityRing({ score }: { score: number }) {
-  const circumference = 2 * Math.PI * 12;
-  const offset = circumference - (score / 100) * circumference;
-  
-  return (
-    <div className="relative w-7 h-7">
-      <svg width="28" height="28" viewBox="0 0 32 32" className="-rotate-90">
-        <circle
-          cx="16"
-          cy="16"
-          r="12"
-          fill="none"
-          stroke="hsl(var(--muted))"
-          strokeWidth="3"
-        />
-        <circle
-          cx="16"
-          cy="16"
-          r="12"
-          fill="none"
-          stroke="hsl(var(--success))"
-          strokeWidth="3"
-          strokeDasharray={circumference}
-          strokeDashoffset={offset}
-          strokeLinecap="round"
-          className="transition-all duration-500"
-        />
-      </svg>
-      <span className="absolute inset-0 flex items-center justify-center text-[9px] font-bold text-success">
-        {score}
-      </span>
-    </div>
-  );
-}
-
-function ExecutionHistory({ results }: { results: ('pass' | 'fail')[] }) {
-  const passCount = results.filter(r => r === 'pass').length;
-  const passRate = results.length > 0 ? Math.round((passCount / results.length) * 100) : 0;
-  
-  return (
-    <div className="flex items-center gap-1.5 px-3 py-1.5 bg-muted/50 border border-border rounded-lg">
-      <div className="flex gap-0.5">
-        {results.map((result, i) => (
-          <span
-            key={i}
-            className={cn(
-              'w-2 h-2 rounded-sm',
-              result === 'pass' ? 'bg-success' : 'bg-destructive'
-            )}
-          />
-        ))}
-      </div>
-      <span className="text-[11px] text-muted-foreground">
-        <strong className="text-foreground">{passRate}%</strong> pass
-      </span>
-    </div>
-  );
-}
 
 export function EditorHeader({
   caseKey,
   status,
   folderName,
-  qualityScore = 0,
-  executionResults = [],
-  collaborators = [],
   isDirty,
   isSaving,
   onBack,
   onSave,
-  onClone,
   onClose,
   disabled,
 }: EditorHeaderProps) {
-  const statusConfig = STATUS_CONFIG[status] || STATUS_CONFIG.draft;
+  const isNew = !caseKey || caseKey === 'NEW';
 
   return (
-    <header className="flex items-center justify-between px-5 py-2.5 bg-gradient-to-b from-background to-muted/30 border-b border-border shrink-0">
-      <div className="flex items-center gap-4">
+    <header
+      className="flex items-center justify-between px-4 border-b bg-white shrink-0"
+      style={{ height: '56px', borderColor: '#e5e5e5' }}
+    >
+      {/* Left side */}
+      <div className="flex items-center gap-3">
         {/* Back button */}
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-8 w-8 text-muted-foreground hover:text-foreground"
+        <button
           onClick={onBack}
+          className="p-1.5 rounded hover:bg-neutral-100 text-neutral-500"
         >
-          <ChevronLeft className="h-4 w-4" />
-        </Button>
+          <ChevronLeft className="h-5 w-5" />
+        </button>
 
-        {/* Case ID & Status */}
-        <div className="flex items-center gap-2 px-3 py-1.5 bg-gradient-to-br from-primary/5 to-primary/10 border border-primary/20 rounded-lg">
-          <span className="font-mono text-[13px] font-bold text-primary">
-            {caseKey || 'NEW'}
-          </span>
+        {/* NEW badge - blue */}
+        {isNew && (
           <Badge
-            variant="outline"
-            className={cn(
-              'text-[10px] font-semibold uppercase tracking-wide px-2 py-0.5',
-              statusConfig.variant === 'warning' && 'bg-warning/10 text-warning border-warning/20',
-              statusConfig.variant === 'success' && 'bg-success/10 text-success border-success/20',
-              statusConfig.variant === 'info' && 'bg-primary/10 text-primary border-primary/20',
-              statusConfig.variant === 'muted' && 'bg-muted text-muted-foreground border-border',
-            )}
+            className="px-2.5 py-0.5 font-semibold rounded bg-[#2563eb] text-white border-0"
+            style={{ fontSize: '11px' }}
           >
-            {statusConfig.label}
+            NEW
           </Badge>
-        </div>
-
-        <Separator orientation="vertical" className="h-6" />
-
-        {/* Breadcrumb */}
-        <nav className="flex items-center gap-1.5 text-[13px] text-muted-foreground">
-          <span className="cursor-pointer hover:text-primary transition-colors">
-            {folderName || 'Root'}
-          </span>
-        </nav>
-      </div>
-
-      <div className="flex items-center gap-3">
-        {/* Quality Score */}
-        {qualityScore > 0 && (
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <div className="flex items-center gap-2 px-3 py-1.5 bg-muted/50 border border-border rounded-lg cursor-default">
-                <QualityRing score={qualityScore} />
-                <span className="text-xs text-muted-foreground">
-                  <strong className="text-success">{qualityScore}</strong> Quality
-                </span>
-              </div>
-            </TooltipTrigger>
-            <TooltipContent>Quality score based on completeness</TooltipContent>
-          </Tooltip>
         )}
 
-        {/* Execution History */}
-        {executionResults.length > 0 && (
-          <ExecutionHistory results={executionResults} />
-        )}
-      </div>
-
-      <div className="flex items-center gap-3">
-        {/* Collaborators */}
-        {collaborators.length > 0 && (
-          <>
-            <div className="flex items-center -space-x-2">
-              {collaborators.map((collab) => (
-                <Tooltip key={collab.id}>
-                  <TooltipTrigger asChild>
-                    <div
-                      className={cn(
-                        'relative w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-semibold text-white border-2 border-background cursor-pointer hover:-translate-y-0.5 transition-transform',
-                        collab.color
-                      )}
-                    >
-                      {collab.initials}
-                      {collab.isOnline && (
-                        <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-success border-2 border-background rounded-full" />
-                      )}
-                    </div>
-                  </TooltipTrigger>
-                  <TooltipContent>{collab.name}</TooltipContent>
-                </Tooltip>
-              ))}
-            </div>
-            <Separator orientation="vertical" className="h-6" />
-          </>
-        )}
-
-        {/* Actions */}
-        {onClone && (
-          <Button variant="ghost" size="sm" className="gap-1.5 text-muted-foreground" onClick={onClone}>
-            <Copy className="h-3.5 w-3.5" />
-            Clone
-          </Button>
-        )}
-        <Button
-          size="sm"
+        {/* Status badge - color varies */}
+        <Badge
           className={cn(
-            'gap-1.5 shadow-sm transition-all duration-200',
-            isDirty 
-              ? 'bg-gradient-to-b from-primary to-primary/90 hover:shadow-md hover:shadow-primary/20' 
-              : 'bg-gradient-to-b from-success to-success/90'
+            'px-2.5 py-0.5 font-semibold rounded uppercase border-0',
+            STATUS_STYLES[status]
           )}
+          style={{ fontSize: '11px' }}
+        >
+          {status === 'needs_update' ? 'NEEDS UPDATE' : status.toUpperCase()}
+        </Badge>
+
+        {/* Folder path breadcrumb */}
+        <span className="text-sm text-neutral-700">{folderName || 'Root'}</span>
+      </div>
+
+      {/* Right side */}
+      <div className="flex items-center gap-2">
+        {/* Save button - green with +5 badge */}
+        <Button
           onClick={onSave}
           disabled={disabled || isSaving}
+          className="h-9 px-4 gap-2 text-white"
+          style={{
+            background: '#059669',
+            borderRadius: '6px',
+          }}
         >
-          <Save className={cn('h-3.5 w-3.5', isSaving && 'animate-pulse')} />
-          {isSaving ? 'Saving...' : isDirty ? 'Save' : 'Saved'}
-          <kbd className="ml-1.5 px-1.5 py-0.5 bg-white/15 rounded text-[10px]">⌘S</kbd>
+          <Save className="h-4 w-4" />
+          <span>{isSaving ? 'Saving...' : 'Saved'}</span>
+          {isDirty && (
+            <span
+              className="ml-1 px-1.5 py-0.5 rounded text-white"
+              style={{ 
+                fontSize: '10px', 
+                background: 'rgba(255,255,255,0.2)',
+              }}
+            >
+              +5
+            </span>
+          )}
         </Button>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-8 w-8 text-muted-foreground hover:text-foreground"
+
+        {/* Close button */}
+        <button
           onClick={onClose}
+          className="p-2 rounded hover:bg-neutral-100 text-neutral-400"
         >
-          <X className="h-4 w-4" />
-        </Button>
+          <X className="h-5 w-5" />
+        </button>
       </div>
     </header>
   );
