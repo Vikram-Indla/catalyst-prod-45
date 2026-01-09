@@ -15,8 +15,8 @@ export function TestStepRow({ isEmpty = true, onAdd }: TestStepRowProps) {
     return (
       <button
         onClick={onAdd}
-        className="w-full flex items-center justify-center gap-2 py-4 px-4 rounded-lg border-2 border-dashed text-neutral-400 hover:text-neutral-600 hover:border-neutral-300 transition-colors"
-        style={{ borderColor: '#e5e5e5' }}
+        className="w-full flex items-center justify-center gap-2 py-4 px-4 rounded-lg border-2 border-dashed text-[var(--text-4)] hover:text-[var(--text-2)] hover:border-[var(--text-4)] transition-colors"
+        style={{ borderColor: 'var(--stroke-1)', borderRadius: '8px', transitionDuration: '150ms' }}
       >
         <Plus className="h-4 w-4" />
         <span className="text-sm font-medium">Add Test Step</span>

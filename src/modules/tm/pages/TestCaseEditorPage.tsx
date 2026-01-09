@@ -50,7 +50,7 @@ export function TestCaseEditorPage() {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-[#fafafa]">
+    <div className="flex flex-col h-screen bg-[var(--bg-1)]">
       {/* Header */}
       <TestCaseEditorHeader
         isNew={isNew}
@@ -72,17 +72,20 @@ export function TestCaseEditorPage() {
           <ScrollArea className="flex-1">
             <div className="max-w-3xl mx-auto py-6 px-6 space-y-4">
               {/* Objective Text Area */}
-              <div className="rounded-lg border bg-white" style={{ borderColor: '#e5e5e5' }}>
+              <div 
+                className="rounded-lg border bg-[var(--bg-0)]" 
+                style={{ borderColor: 'var(--stroke-1)', borderRadius: '8px', boxShadow: 'var(--shadow-1)' }}
+              >
                 <Textarea
                   value={objective}
                   onChange={(e) => setObjective(e.target.value)}
                   placeholder="Describe the objective of this test case..."
-                  className="min-h-[120px] border-0 resize-none focus-visible:ring-0 text-sm"
-                  style={{ padding: '16px' }}
+                  className="min-h-[120px] border-0 resize-none focus-visible:ring-0 text-sm bg-transparent"
+                  style={{ padding: '16px', color: 'var(--text-1)' }}
                 />
                 <div
-                  className="flex items-center justify-between px-4 py-2 border-t text-xs text-neutral-400"
-                  style={{ borderColor: '#e5e5e5' }}
+                  className="flex items-center justify-between px-4 py-2 border-t text-xs"
+                  style={{ borderColor: 'var(--stroke-1)', color: 'var(--text-4)' }}
                 >
                   <span>{objective.length} characters</span>
                   <span>Tip: Be specific about expected behavior</span>
@@ -99,7 +102,8 @@ export function TestCaseEditorPage() {
                 {preconditions.length === 0 ? (
                   <button
                     onClick={handleAddPrecondition}
-                    className="text-[#2563eb] hover:text-[#1d4ed8] text-sm font-medium flex items-center gap-1"
+                    className="text-brand-primary hover:text-brand-primary-hover text-sm font-medium flex items-center gap-1 transition-colors"
+                    style={{ transitionDuration: '150ms' }}
                   >
                     <span>+</span> Add precondition
                   </button>
@@ -116,8 +120,8 @@ export function TestCaseEditorPage() {
                           setPreconditions(next);
                         }}
                         placeholder="Enter precondition..."
-                        className="w-full px-3 py-2 text-sm border rounded-md"
-                        style={{ borderColor: '#e5e5e5' }}
+                        className="w-full px-3 py-2 text-sm border rounded-md bg-[var(--bg-0)] text-[var(--text-1)] focus:border-brand-primary focus:ring-1 focus:ring-brand-primary-light transition-colors"
+                        style={{ borderColor: 'var(--stroke-1)', borderRadius: '6px', transitionDuration: '150ms' }}
                       />
                     ))}
                   </div>
