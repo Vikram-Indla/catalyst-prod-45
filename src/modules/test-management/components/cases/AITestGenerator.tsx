@@ -1,6 +1,7 @@
 /**
  * Catalyst - AI Generator Modal
  * 3-step flow: Input → Generate → Review & Save
+ * Redesigned with Catalyst V5 colors, glass-morphism cards, all 3 tabs working
  */
 
 import { useState, useEffect } from 'react';
@@ -23,11 +24,14 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Sparkles, Loader2, Lightbulb, Eye, 
-  Check, FolderOpen, AlertCircle, FileText
+  Check, FolderOpen, AlertCircle, MapPin, Settings, FileText
 } from 'lucide-react';
 import { useAIGeneration, type GeneratedTestCase } from '@/hooks/test-management/useAIGeneration';
 import { useFoldersWithCounts } from '@/hooks/test-management';
 import { cn } from '@/lib/utils';
+import { AIFromRequirements } from './ai-generator/AIFromRequirements';
+import { AIBulkGenerate, type BulkOptions } from './ai-generator/AIBulkGenerate';
+import { LinkedItem } from '@/hooks/test-management/useLinkedItemsForAI';
 
 interface AITestGeneratorProps {
   open: boolean;
