@@ -160,6 +160,9 @@ export function useCreateFolder() {
 
       const sortOrder = (existing?.[0]?.sort_order || 0) + 1;
 
+      // Get current user
+      const { data: { user } } = await supabase.auth.getUser();
+      
       const { data, error } = await supabase
         .from('tm_folders')
         .insert({
@@ -168,6 +171,7 @@ export function useCreateFolder() {
           parent_id: input.parent_id || null,
           path, // ltree-compatible string (e.g., "authentication.login")
           sort_order: sortOrder,
+          created_by: user?.id || null,
         })
         .select()
         .single();
