@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { TMFolder } from '@/types/test-management';
-import { toast } from 'sonner';
+import { toast } from '@/components/ui/sonner';
 import { z } from 'zod';
 
 const folderNameSchema = z
@@ -143,11 +143,16 @@ export function useCreateFolder() {
         path = parentPath ? `${parentPath}.${label}` : label;
       }
 
-      const { data: existing, error: existingError } = await supabase
+      let existingQuery = supabase
         .from('tm_folders')
         .select('sort_order')
-        .eq('project_id', input.project_id)
-        .eq('parent_id', input.parent_id || null)
+        .eq('project_id', input.project_id);
+
+      existingQuery = input.parent_id
+        ? existingQuery.eq('parent_id', input.parent_id)
+        : existingQuery.is('parent_id', null);
+
+      const { data: existing, error: existingError } = await existingQuery
         .order('sort_order', { ascending: false })
         .limit(1);
 
