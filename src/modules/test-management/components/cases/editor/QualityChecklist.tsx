@@ -1,13 +1,11 @@
 /**
- * Quality Checklist Component
+ * Quality Checklist Component - Pixel Perfect Match
  * Real-time validation for test case completeness
  */
 
 import React from 'react';
-import { CheckCircle, XCircle, AlertCircle } from 'lucide-react';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { CheckCircle, XCircle, Clock } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
 export interface QualityCheck {
@@ -93,94 +91,99 @@ export function QualityChecklist({
 
   const requiredChecks = checks.filter(c => c.required);
   const passedRequired = requiredChecks.filter(c => c.passed).length;
-  const allRequiredPassed = passedRequired === requiredChecks.length;
+  const incompleteRequired = requiredChecks.length - passedRequired;
 
   const totalPassed = checks.filter(c => c.passed).length;
   const score = Math.round((totalPassed / checks.length) * 100);
 
-  const getScoreColor = () => {
-    if (score >= 90) return 'bg-success';
-    if (score >= 70) return 'bg-warning';
-    return 'bg-destructive';
-  };
-
-  const getScoreBadge = (): 'default' | 'secondary' | 'destructive' | 'outline' => {
-    if (score >= 90) return 'default';
-    if (score >= 70) return 'secondary';
-    return 'destructive';
-  };
-
   return (
-    <Card className="border-border/50">
-      <CardHeader className="pb-3">
-        <div className="flex items-center justify-between">
-          <CardTitle className="text-sm font-medium">Quality Checklist</CardTitle>
-          <Badge variant={getScoreBadge()} className="text-xs">
+    <div
+      className="rounded-lg border bg-white"
+      style={{ borderColor: '#e5e5e5' }}
+    >
+      <div className="p-4">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-1">
+          <h3 className="font-semibold text-neutral-900" style={{ fontSize: '14px' }}>
+            Quality Checklist
+          </h3>
+          <Badge
+            className={cn(
+              'px-2 py-0.5 text-xs font-semibold rounded border-0',
+              score >= 70 ? 'bg-[#059669] text-white' : 'bg-[#dc2626] text-white'
+            )}
+          >
             {score}%
           </Badge>
         </div>
-        {!allRequiredPassed && (
-          <p className="text-xs text-destructive mt-1">
-            {requiredChecks.length - passedRequired} required item(s) incomplete - 
-            cannot mark as Ready
+
+        {/* Subtitle */}
+        {incompleteRequired > 0 && (
+          <p className="text-sm mb-4" style={{ color: '#d97706' }}>
+            {incompleteRequired} required item(s) incomplete - cannot mark as Ready
           </p>
         )}
-      </CardHeader>
-      <CardContent className="pt-0">
-        <div className="space-y-1.5">
-          {checks.map(check => (
+
+        {/* Checklist Items */}
+        <div className="space-y-0">
+          {checks.map((check) => (
             <div
               key={check.id}
               className={cn(
-                "flex items-center justify-between py-1.5 px-2 rounded text-sm",
-                !check.passed && check.required && "bg-destructive/5"
+                'flex items-center justify-between py-2.5 px-3 -mx-3 rounded',
+                !check.passed && check.required && 'bg-[#fef2f2]'
               )}
             >
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2.5">
                 {check.passed ? (
-                  <CheckCircle className="w-4 h-4 text-success shrink-0" />
+                  <CheckCircle className="w-5 h-5 text-[#059669]" />
                 ) : check.required ? (
-                  <XCircle className="w-4 h-4 text-destructive shrink-0" />
+                  <XCircle className="w-5 h-5 text-[#dc2626]" />
                 ) : (
-                  <AlertCircle className="w-4 h-4 text-warning shrink-0" />
+                  <Clock className="w-5 h-5 text-[#d97706]" />
                 )}
-                <span className={cn(
-                  "text-xs",
-                  check.passed ? "text-muted-foreground" : "text-foreground font-medium"
-                )}>
+                <span
+                  className={cn(
+                    'text-sm',
+                    check.passed ? 'text-neutral-500' : 'text-neutral-900'
+                  )}
+                >
                   {check.label}
-                  {check.required && <span className="text-destructive ml-0.5">*</span>}
+                  {check.required && !check.passed && (
+                    <span className="text-[#dc2626] ml-0.5">*</span>
+                  )}
                 </span>
               </div>
               {!check.passed && check.fixAction && (
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  className="h-5 text-[10px] px-1.5"
+                <button
                   onClick={check.fixAction}
+                  className="text-sm text-neutral-500 hover:text-neutral-700"
                 >
                   Fix
-                </Button>
+                </button>
               )}
             </div>
           ))}
         </div>
 
-        {/* Progress bar */}
-        <div className="mt-4">
-          <div className="flex justify-between text-[10px] text-muted-foreground mb-1">
+        {/* Quality Score */}
+        <div className="mt-4 pt-3 border-t" style={{ borderColor: '#e5e5e5' }}>
+          <div className="flex items-center justify-between text-sm text-neutral-500 mb-2">
             <span>Quality Score</span>
             <span>{totalPassed}/{checks.length}</span>
           </div>
-          <div className="h-1.5 bg-muted rounded-full overflow-hidden">
+          <div className="h-1.5 bg-neutral-200 rounded-full overflow-hidden">
             <div
-              className={cn("h-full transition-all duration-300", getScoreColor())}
+              className={cn(
+                'h-full transition-all duration-300',
+                score >= 70 ? 'bg-[#059669]' : 'bg-[#dc2626]'
+              )}
               style={{ width: `${score}%` }}
             />
           </div>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }
 
