@@ -257,7 +257,7 @@ export function TestCaseEditorPage() {
 
       {/* Main Content */}
       <ScrollArea className="flex-1">
-        <div className="max-w-4xl mx-auto py-8 px-6 space-y-8">
+        <div className="w-full max-w-6xl py-8 px-8 space-y-8">
           
           {/* TITLE - Hero Field */}
           <div>
