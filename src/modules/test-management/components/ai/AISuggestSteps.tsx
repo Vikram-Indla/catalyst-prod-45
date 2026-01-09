@@ -54,35 +54,10 @@ export function AISuggestSteps({
   const handleGenerate = async () => {
     setIsGenerating(true);
     try {
-      // Simulate AI generation - in real implementation, call the API
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-
-      // Generate mock suggestions based on existing steps
-      const mockSuggestions: SuggestedStep[] = [
-        {
-          id: `sug-${Date.now()}-1`,
-          action: 'Verify data persistence after page refresh',
-          expected_result: 'Data should be retained after browser refresh',
-          confidence: 0.92,
-        },
-        {
-          id: `sug-${Date.now()}-2`,
-          action: 'Test with special characters in input fields',
-          expected_result: 'Special characters should be handled correctly',
-          test_data: '!@#$%^&*()_+{}|:"<>?',
-          confidence: 0.85,
-        },
-        {
-          id: `sug-${Date.now()}-3`,
-          action: 'Validate error message for invalid input',
-          expected_result: 'Appropriate error message is displayed',
-          confidence: 0.78,
-        },
-      ];
-
-      setSuggestions(mockSuggestions);
-      setIsExpanded(true);
-      toast.success('Generated step suggestions');
+      // TODO: Implement actual AI API call for step suggestions
+      // For now, show a message that AI integration is pending
+      toast.info('AI step suggestion is not yet connected to the API');
+      setSuggestions([]);
     } catch (error) {
       toast.error('Failed to generate suggestions');
     } finally {
