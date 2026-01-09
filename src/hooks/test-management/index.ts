@@ -113,5 +113,8 @@ export {
   useCycleProgress,
 } from './useReports';
 
+// AI Generation
+export { useAIGeneration, type GeneratedTestCase, type GenerationResult, type GenerationOptions } from './useAIGeneration';
+
 // Types
 export * from '@/types/test-management';

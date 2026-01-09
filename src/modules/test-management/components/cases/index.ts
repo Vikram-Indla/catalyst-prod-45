@@ -10,5 +10,6 @@ export { CaseModal } from './CaseModal';
 export { TestCaseEditor } from './TestCaseEditor';
 export { AddToCycleDialog } from './AddToCycleDialog';
 export { ImportTestCasesDialog } from './ImportTestCasesDialog';
+export { AITestGenerator } from './AITestGenerator';
 // Only export main editor components, not individual tabs to avoid conflicts with reports module
 export { EditorHeader, EditorToolbar, ContextPanel } from './editor';

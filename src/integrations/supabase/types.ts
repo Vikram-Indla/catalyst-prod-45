@@ -23617,6 +23617,9 @@ export type Database = {
       }
       tm_test_cases: {
         Row: {
+          ai_generated_at: string | null
+          ai_generation_prompt: string | null
+          ai_model: string | null
           automation_id: string | null
           automation_status: string | null
           case_key: string
@@ -23629,6 +23632,7 @@ export type Database = {
           expected_result: string | null
           folder_id: string | null
           id: string
+          is_ai_generated: boolean | null
           is_template: boolean | null
           preconditions: string | null
           priority_id: string | null
@@ -23641,6 +23645,9 @@ export type Database = {
           version: number | null
         }
         Insert: {
+          ai_generated_at?: string | null
+          ai_generation_prompt?: string | null
+          ai_model?: string | null
           automation_id?: string | null
           automation_status?: string | null
           case_key: string
@@ -23653,6 +23660,7 @@ export type Database = {
           expected_result?: string | null
           folder_id?: string | null
           id?: string
+          is_ai_generated?: boolean | null
           is_template?: boolean | null
           preconditions?: string | null
           priority_id?: string | null
@@ -23665,6 +23673,9 @@ export type Database = {
           version?: number | null
         }
         Update: {
+          ai_generated_at?: string | null
+          ai_generation_prompt?: string | null
+          ai_model?: string | null
           automation_id?: string | null
           automation_status?: string | null
           case_key?: string
@@ -23677,6 +23688,7 @@ export type Database = {
           expected_result?: string | null
           folder_id?: string | null
           id?: string
+          is_ai_generated?: boolean | null
           is_template?: boolean | null
           preconditions?: string | null
           priority_id?: string | null
