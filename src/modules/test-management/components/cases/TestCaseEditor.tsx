@@ -19,6 +19,12 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import {
@@ -58,6 +64,11 @@ import {
   ChevronUp,
   Copy,
   ArrowRight,
+  Search,
+  BookOpen,
+  Layers,
+  Target,
+  Bug,
 } from 'lucide-react';
 
 import { validateTestCaseForReady } from './editor/QualityChecklist';
@@ -196,6 +207,17 @@ export function TestCaseEditor({
   // UI state
   const [preconditionsExpanded, setPreconditionsExpanded] = useState(true);
   const [stepsExpanded, setStepsExpanded] = useState(true);
+  const [linkModalOpen, setLinkModalOpen] = useState(false);
+  const [linkSearch, setLinkSearch] = useState('');
+
+  // Linked items state
+  interface LinkedItem {
+    id: string;
+    type: 'story' | 'feature' | 'epic' | 'defect';
+    key: string;
+    title: string;
+  }
+  const [linkedItems, setLinkedItems] = useState<LinkedItem[]>([]);
 
   // Governance state
   const isApproved = testCase?.status === 'approved';
@@ -391,28 +413,30 @@ export function TestCaseEditor({
             <ChevronLeft className="h-5 w-5" />
           </button>
 
-          {/* Status Dropdown */}
-          <Select value={status} onValueChange={(v) => { setStatus(v); markDirty(); }}>
-            <SelectTrigger className="w-[140px] h-9">
-              <div className="flex items-center gap-2">
-                <span className={cn(
-                  "w-2 h-2 rounded-full",
-                  STATUS_OPTIONS.find(s => s.value === status)?.color || 'bg-muted-foreground'
-                )} />
-                <SelectValue />
-              </div>
-            </SelectTrigger>
-            <SelectContent>
-              {STATUS_OPTIONS.map((opt) => (
-                <SelectItem key={opt.value} value={opt.value}>
-                  <div className="flex items-center gap-2">
-                    <span className={cn("w-2 h-2 rounded-full", opt.color)} />
-                    {opt.label}
-                  </div>
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          {/* Status Dropdown - Only show for existing cases */}
+          {isEditing && (
+            <Select value={status} onValueChange={(v) => { setStatus(v); markDirty(); }}>
+              <SelectTrigger className="w-[140px] h-9">
+                <div className="flex items-center gap-2">
+                  <span className={cn(
+                    "w-2 h-2 rounded-full",
+                    STATUS_OPTIONS.find(s => s.value === status)?.color || 'bg-muted-foreground'
+                  )} />
+                  <SelectValue />
+                </div>
+              </SelectTrigger>
+              <SelectContent>
+                {STATUS_OPTIONS.map((opt) => (
+                  <SelectItem key={opt.value} value={opt.value}>
+                    <div className="flex items-center gap-2">
+                      <span className={cn("w-2 h-2 rounded-full", opt.color)} />
+                      {opt.label}
+                    </div>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
 
           {/* Case Key */}
           <span className="text-sm font-medium text-muted-foreground">
@@ -422,47 +446,49 @@ export function TestCaseEditor({
 
         {/* Right side */}
         <div className="flex items-center gap-3">
-          {/* Assignee Dropdown */}
-          <Select value={assigneeId || '__unassigned__'} onValueChange={(v) => { setAssigneeId(v === '__unassigned__' ? '' : v); markDirty(); }}>
-            <SelectTrigger className="w-[180px] h-9 border-border">
-              <div className="flex items-center gap-2">
-                <Avatar className="w-6 h-6">
-                  <AvatarImage src={teamMembers.find(m => m.id === assigneeId)?.avatar_url} />
-                  <AvatarFallback className="text-[10px] bg-primary/10 text-primary">
-                    {assigneeId 
-                      ? (teamMembers.find(m => m.id === assigneeId)?.name?.slice(0, 2).toUpperCase() || 'UN')
-                      : 'UN'
-                    }
-                  </AvatarFallback>
-                </Avatar>
-                <SelectValue placeholder="Assignee..." />
-              </div>
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="__unassigned__">
+          {/* Assignee Dropdown - Only show for existing cases */}
+          {isEditing && (
+            <Select value={assigneeId || '__unassigned__'} onValueChange={(v) => { setAssigneeId(v === '__unassigned__' ? '' : v); markDirty(); }}>
+              <SelectTrigger className="w-[180px] h-9 border-border">
                 <div className="flex items-center gap-2">
-                  <User className="w-4 h-4 text-muted-foreground" />
-                  <span>Unassigned</span>
+                  <Avatar className="w-6 h-6">
+                    <AvatarImage src={teamMembers.find(m => m.id === assigneeId)?.avatar_url} />
+                    <AvatarFallback className="text-[10px] bg-primary/10 text-primary">
+                      {assigneeId 
+                        ? (teamMembers.find(m => m.id === assigneeId)?.name?.slice(0, 2).toUpperCase() || 'UN')
+                        : 'UN'
+                      }
+                    </AvatarFallback>
+                  </Avatar>
+                  <SelectValue placeholder="Assignee..." />
                 </div>
-              </SelectItem>
-              {teamMembers.map((member) => (
-                <SelectItem key={member.id} value={member.id}>
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="__unassigned__">
                   <div className="flex items-center gap-2">
-                    <Avatar className="w-5 h-5">
-                      <AvatarImage src={member.avatar_url} />
-                      <AvatarFallback className="text-[10px]">
-                        {member.name?.slice(0, 2).toUpperCase()}
-                      </AvatarFallback>
-                    </Avatar>
-                    <span>{member.name}</span>
-                    {member.id === currentUserId && (
-                      <span className="text-xs text-muted-foreground">(me)</span>
-                    )}
+                    <User className="w-4 h-4 text-muted-foreground" />
+                    <span>Unassigned</span>
                   </div>
                 </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+                {teamMembers.map((member) => (
+                  <SelectItem key={member.id} value={member.id}>
+                    <div className="flex items-center gap-2">
+                      <Avatar className="w-5 h-5">
+                        <AvatarImage src={member.avatar_url} />
+                        <AvatarFallback className="text-[10px]">
+                          {member.name?.slice(0, 2).toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
+                      <span>{member.name}</span>
+                      {member.id === currentUserId && (
+                        <span className="text-xs text-muted-foreground">(me)</span>
+                      )}
+                    </div>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
 
           {/* Save button */}
           <Button
@@ -891,10 +917,11 @@ export function TestCaseEditor({
                   Linked Items
                 </h3>
                 <Badge variant="secondary" className="h-5 px-1.5 text-[10px]">
-                  0
+                  {linkedItems.length}
                 </Badge>
               </div>
               <button
+                onClick={() => setLinkModalOpen(true)}
                 className="text-xs font-medium text-primary hover:text-primary/80 flex items-center gap-1"
               >
                 <Plus className="h-3 w-3" />
@@ -902,13 +929,116 @@ export function TestCaseEditor({
               </button>
             </div>
             <div className="p-4">
-              <div className="text-center py-6 text-muted-foreground text-sm">
-                <LinkIcon className="h-8 w-8 mx-auto mb-2 opacity-30" />
-                <p>No linked items</p>
-                <p className="text-xs mt-1">Link to Stories, Features, Epics, or Defects</p>
-              </div>
+              {linkedItems.length === 0 ? (
+                <div className="text-center py-6 text-muted-foreground text-sm">
+                  <LinkIcon className="h-8 w-8 mx-auto mb-2 opacity-30" />
+                  <p>No linked items</p>
+                  <p className="text-xs mt-1">Link to Stories, Features, Epics, or Defects</p>
+                  <button
+                    onClick={() => setLinkModalOpen(true)}
+                    className="mt-3 text-primary hover:text-primary/80 text-sm"
+                  >
+                    + Add Link
+                  </button>
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  {linkedItems.map((item) => {
+                    const typeColors: Record<string, string> = {
+                      story: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
+                      feature: 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400',
+                      epic: 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400',
+                      defect: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
+                    };
+                    const TypeIcon = item.type === 'story' ? BookOpen : item.type === 'feature' ? Layers : item.type === 'epic' ? Target : Bug;
+                    return (
+                      <div
+                        key={item.id}
+                        className="flex items-center justify-between p-2 rounded-lg hover:bg-muted/50 group"
+                      >
+                        <div className="flex items-center gap-2">
+                          <span className={cn("px-2 py-0.5 text-xs font-mono rounded", typeColors[item.type])}>
+                            {item.key}
+                          </span>
+                          <span className="text-sm">{item.title}</span>
+                        </div>
+                        <button
+                          onClick={() => setLinkedItems(linkedItems.filter(i => i.id !== item.id))}
+                          className="opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-destructive/10 text-destructive"
+                        >
+                          <X className="h-3.5 w-3.5" />
+                        </button>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
             </div>
           </div>
+
+          {/* Link Modal */}
+          <Dialog open={linkModalOpen} onOpenChange={setLinkModalOpen}>
+            <DialogContent className="max-w-lg">
+              <DialogHeader>
+                <DialogTitle>Link Work Item</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4">
+                {/* Search */}
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    value={linkSearch}
+                    onChange={(e) => setLinkSearch(e.target.value)}
+                    placeholder="Search by key or title..."
+                    className="pl-10"
+                  />
+                </div>
+
+                {/* Quick type filters */}
+                <div className="flex gap-2">
+                  {[
+                    { type: 'story', label: 'Story', icon: BookOpen, color: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' },
+                    { type: 'feature', label: 'Feature', icon: Layers, color: 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400' },
+                    { type: 'epic', label: 'Epic', icon: Target, color: 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400' },
+                    { type: 'defect', label: 'Defect', icon: Bug, color: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400' },
+                  ].map(({ type, label, icon: Icon, color }) => (
+                    <button
+                      key={type}
+                      onClick={() => {
+                        // Add a sample linked item
+                        const newItem = {
+                          id: generateId(),
+                          type: type as 'story' | 'feature' | 'epic' | 'defect',
+                          key: `${type.toUpperCase().slice(0, 3)}-${Math.floor(Math.random() * 1000)}`,
+                          title: `Sample ${label} - ${linkSearch || 'New Item'}`,
+                        };
+                        setLinkedItems([...linkedItems, newItem]);
+                        setLinkSearch('');
+                        markDirty();
+                        toast.success(`${label} linked successfully`);
+                      }}
+                      className={cn(
+                        "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors",
+                        color,
+                        "hover:opacity-80"
+                      )}
+                    >
+                      <Icon className="h-3.5 w-3.5" />
+                      {label}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Results placeholder */}
+                <div className="border rounded-lg divide-y max-h-[300px] overflow-y-auto">
+                  <div className="p-4 text-center text-muted-foreground text-sm">
+                    <p>Click a type above to add a linked item</p>
+                    <p className="text-xs mt-1">Enter a search term to filter results</p>
+                  </div>
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
 
           {/* ═══════════════════════════════════════════════════════════════════════ */}
           {/* ADDITIONAL FIELDS ROW */}
