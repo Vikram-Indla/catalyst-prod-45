@@ -5,7 +5,7 @@
 
 import React, { useState, useMemo, useCallback } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import { PanelLeft } from 'lucide-react';
+import { PanelLeft, Folder, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import {
@@ -559,19 +559,56 @@ export function TestCasesPage() {
     <div className="flex h-full gap-0">
       {/* Folder Panel Toggle (visible when collapsed) */}
       {folderPanelCollapsed && (
-        <div className="shrink-0 border-r border-border bg-background flex flex-col items-center py-2 px-1">
+        <div className="shrink-0 border-r border-border bg-background flex flex-col items-center py-2 px-1.5 w-12">
+          {/* Expand button */}
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-8 w-8"
+                className="h-8 w-8 mb-2"
                 onClick={toggleFolderPanel}
               >
                 <PanelLeft className="h-4 w-4" />
               </Button>
             </TooltipTrigger>
             <TooltipContent side="right">Show folders</TooltipContent>
+          </Tooltip>
+
+          {/* Selected folder indicator */}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                onClick={toggleFolderPanel}
+                className="flex flex-col items-center gap-1.5 py-2 px-1 rounded-md hover:bg-muted/80 transition-colors cursor-pointer group w-full"
+              >
+                <div className="relative">
+                  <Folder className="h-5 w-5 text-yellow-500 fill-yellow-500/20" />
+                  {selectedFolderId && (
+                    <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-primary rounded-full" />
+                  )}
+                </div>
+                <div 
+                  className="writing-mode-vertical text-[10px] font-medium text-muted-foreground group-hover:text-foreground transition-colors max-h-24 overflow-hidden"
+                  style={{ writingMode: 'vertical-rl', textOrientation: 'mixed' }}
+                >
+                  {selectedFolderId 
+                    ? folders.find(f => f.id === selectedFolderId)?.name || 'Folder'
+                    : 'All Cases'
+                  }
+                </div>
+                <ChevronRight className="h-3 w-3 text-muted-foreground/50 group-hover:text-muted-foreground transition-colors" />
+              </button>
+            </TooltipTrigger>
+            <TooltipContent side="right" className="flex items-center gap-2">
+              <Folder className="h-3.5 w-3.5 text-yellow-500" />
+              <span>
+                {selectedFolderId 
+                  ? `Viewing: ${folders.find(f => f.id === selectedFolderId)?.name || 'Folder'}`
+                  : 'Viewing: All Cases'
+                }
+              </span>
+            </TooltipContent>
           </Tooltip>
         </div>
       )}
