@@ -421,7 +421,7 @@ export function TestCasesPage() {
     // Show single batch toast with folder and case details
     if (createdCases.length > 0) {
       const casesSummary = createdCases
-        .map(c => `${c.key}: ${c.title.slice(0, 30)}${c.title.length > 30 ? '...' : ''}`)
+        .map(c => `• ${c.key}: ${c.title.slice(0, 30)}${c.title.length > 30 ? '…' : ''}`)
         .join('\n');
       
       catalystToast.success(

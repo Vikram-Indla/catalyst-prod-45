@@ -526,7 +526,7 @@ export function useMoveTestCase() {
       if (details && details.length > 0) {
         const summary = details
           .slice(0, 5)
-          .map(c => `${c.key}: ${c.title.slice(0, 25)}${c.title.length > 25 ? '…' : ''}`)
+          .map(c => `• ${c.key}: ${c.title.slice(0, 30)}${c.title.length > 30 ? '…' : ''}`)
           .join('\n');
         const extra = count > 5 ? `\n+${count - 5} more` : '';
         catalystToast.success(`${count} test case${count > 1 ? 's' : ''} moved to "${folderName}"`, summary + extra);
@@ -567,7 +567,7 @@ export function useBulkDeleteTestCases() {
       if (details && details.length > 0) {
         const summary = details
           .slice(0, 5)
-          .map(c => `${c.key}: ${c.title.slice(0, 25)}${c.title.length > 25 ? '…' : ''}`)
+          .map(c => `• ${c.key}: ${c.title.slice(0, 30)}${c.title.length > 30 ? '…' : ''}`)
           .join('\n');
         const extra = count > 5 ? `\n+${count - 5} more` : '';
         catalystToast.success(`${count} test case${count > 1 ? 's' : ''} deleted`, summary + extra);
@@ -663,7 +663,7 @@ export function useBulkCopyTestCases() {
       if (count > 0) {
         const summary = result.copiedCases
           .slice(0, 5)
-          .map(c => `${c.key}: ${c.title.slice(0, 25)}${c.title.length > 25 ? '…' : ''}`)
+          .map(c => `• ${c.key}: ${c.title.slice(0, 30)}${c.title.length > 30 ? '…' : ''}`)
           .join('\n');
         const extra = count > 5 ? `\n+${count - 5} more` : '';
         catalystToast.success(`${count} test case${count > 1 ? 's' : ''} copied`, summary + extra);
@@ -711,7 +711,7 @@ export function useAddTestCasesToCycle() {
       if (details && details.length > 0) {
         const summary = details
           .slice(0, 5)
-          .map(c => `${c.key}: ${c.title.slice(0, 25)}${c.title.length > 25 ? '…' : ''}`)
+          .map(c => `• ${c.key}: ${c.title.slice(0, 30)}${c.title.length > 30 ? '…' : ''}`)
           .join('\n');
         const extra = count > 5 ? `\n+${count - 5} more` : '';
         catalystToast.success(`${count} test case${count > 1 ? 's' : ''} added to "${cycleName}"`, summary + extra);
