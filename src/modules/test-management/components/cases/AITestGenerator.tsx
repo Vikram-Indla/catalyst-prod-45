@@ -1,5 +1,5 @@
 /**
- * AI Test Case Generator Modal
+ * Catalyst - AI Generator Modal
  * 3-step flow: Input → Generate → Review & Save
  */
 
@@ -169,7 +169,7 @@ export function AITestGenerator({
             <div className="p-1.5 rounded-lg bg-purple-100">
               <Sparkles className="h-5 w-5 text-purple-600" />
             </div>
-            AI Test Case Generator
+            Catalyst - AI Generator
           </DialogTitle>
         </DialogHeader>
 
