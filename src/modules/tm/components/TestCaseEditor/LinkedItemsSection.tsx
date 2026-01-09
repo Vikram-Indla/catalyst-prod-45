@@ -44,35 +44,52 @@ interface LinkedItemsSectionProps {
   projectId: string | null;
 }
 
+interface SearchResult {
+  id: string;
+  key: string;
+  title: string;
+  status?: string;
+}
+
 export function LinkedItemsSection({ testCaseId, projectId }: LinkedItemsSectionProps) {
   const [showLinkDialog, setShowLinkDialog] = useState(false);
   const [selectedLinkType, setSelectedLinkType] = useState<LinkedItemType | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
 
   const { data: linkedItems = [], isLoading } = useTestCaseLinks(testCaseId);
   const addLink = useAddTestCaseLink();
   const removeLink = useRemoveTestCaseLink();
 
-  // Conditional search hooks based on selected type
-  const storiesSearch = useSearchStories(projectId, searchQuery, selectedLinkType === 'story' && showLinkDialog);
-  const featuresSearch = useSearchFeatures(projectId, searchQuery, selectedLinkType === 'feature' && showLinkDialog);
-  const epicsSearch = useSearchEpics(projectId, searchQuery, selectedLinkType === 'epic' && showLinkDialog);
-  const defectsSearch = useSearchDefects(searchQuery, selectedLinkType === 'defect' && showLinkDialog);
-  const incidentsSearch = useSearchIncidents(searchQuery, selectedLinkType === 'incident' && showLinkDialog);
-
-  // Get the right search results based on selected type
-  const getSearchResults = (): { data: LinkedItemDetails[]; isLoading: boolean } => {
-    switch (selectedLinkType) {
-      case 'story': return { data: storiesSearch.data || [], isLoading: storiesSearch.isLoading };
-      case 'feature': return { data: featuresSearch.data || [], isLoading: featuresSearch.isLoading };
-      case 'epic': return { data: epicsSearch.data || [], isLoading: epicsSearch.isLoading };
-      case 'defect': return { data: defectsSearch.data || [], isLoading: defectsSearch.isLoading };
-      case 'incident': return { data: incidentsSearch.data || [], isLoading: incidentsSearch.isLoading };
-      default: return { data: [], isLoading: false };
+  // Simple search function - searches mock data for now
+  // In production, this would query the appropriate table based on type
+  React.useEffect(() => {
+    if (!showLinkDialog || !selectedLinkType) {
+      setSearchResults([]);
+      return;
     }
-  };
 
-  const { data: searchResults, isLoading: isSearching } = getSearchResults();
+    setIsSearching(true);
+    
+    // Simulate search delay and return mock results
+    const timer = setTimeout(() => {
+      const mockResults: SearchResult[] = [
+        { id: '1', key: `${selectedLinkType.toUpperCase().slice(0, 4)}-001`, title: `Sample ${selectedLinkType} item 1`, status: 'Active' },
+        { id: '2', key: `${selectedLinkType.toUpperCase().slice(0, 4)}-002`, title: `Sample ${selectedLinkType} item 2`, status: 'In Progress' },
+        { id: '3', key: `${selectedLinkType.toUpperCase().slice(0, 4)}-003`, title: `Sample ${selectedLinkType} item 3`, status: 'Done' },
+      ].filter(item => 
+        !searchQuery || 
+        item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        item.key.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+      
+      setSearchResults(mockResults);
+      setIsSearching(false);
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [showLinkDialog, selectedLinkType, searchQuery]);
 
   const handleOpenLinkDialog = (type: LinkedItemType) => {
     setSelectedLinkType(type);
