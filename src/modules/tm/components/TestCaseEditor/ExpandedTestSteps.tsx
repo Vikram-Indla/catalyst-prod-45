@@ -139,31 +139,37 @@ export function ExpandedTestSteps({
           </div>
 
           {/* Action */}
-          <Textarea
-            value={step.action}
-            onChange={(e) => handleStepChange(index, 'action', e.target.value)}
-            placeholder="Enter action to perform..."
-            className="min-h-[60px] text-sm resize-none border-[var(--stroke-1)] focus:border-[#2563eb] focus:ring-1 focus:ring-[#dbeafe] bg-[var(--bg-0)]"
-            style={{ fontSize: '13px', lineHeight: '1.5' }}
-          />
+          <div>
+            <Textarea
+              value={step.action}
+              onChange={(e) => handleStepChange(index, 'action', e.target.value)}
+              placeholder="e.g., Click the 'Submit' button..."
+              className="min-h-[70px] text-sm resize-y border-2 border-gray-200 rounded-lg bg-white shadow-sm hover:border-gray-300 focus:border-[#2563eb] focus:ring-4 focus:ring-[#dbeafe] focus:outline-none transition-all"
+              style={{ fontSize: '13px', lineHeight: '1.5', color: 'var(--text-1)' }}
+            />
+          </div>
 
           {/* Test Data */}
-          <Textarea
-            value={step.testData || ''}
-            onChange={(e) => handleStepChange(index, 'testData', e.target.value)}
-            placeholder="Test data (optional)"
-            className="min-h-[60px] text-sm resize-none border-[var(--stroke-1)] focus:border-[#2563eb] focus:ring-1 focus:ring-[#dbeafe] bg-[var(--bg-0)]"
-            style={{ fontSize: '13px', lineHeight: '1.5' }}
-          />
+          <div>
+            <Textarea
+              value={step.testData || ''}
+              onChange={(e) => handleStepChange(index, 'testData', e.target.value)}
+              placeholder="e.g., username: admin@test.com"
+              className="min-h-[70px] text-sm resize-y border-2 border-gray-200 rounded-lg bg-white shadow-sm hover:border-gray-300 focus:border-[#2563eb] focus:ring-4 focus:ring-[#dbeafe] focus:outline-none transition-all"
+              style={{ fontSize: '13px', lineHeight: '1.5', color: 'var(--text-1)' }}
+            />
+          </div>
 
           {/* Expected Result */}
-          <Textarea
-            value={step.expectedResult}
-            onChange={(e) => handleStepChange(index, 'expectedResult', e.target.value)}
-            placeholder="Expected result..."
-            className="min-h-[60px] text-sm resize-none border-[var(--stroke-1)] focus:border-[#2563eb] focus:ring-1 focus:ring-[#dbeafe] bg-[var(--bg-0)]"
-            style={{ fontSize: '13px', lineHeight: '1.5' }}
-          />
+          <div>
+            <Textarea
+              value={step.expectedResult}
+              onChange={(e) => handleStepChange(index, 'expectedResult', e.target.value)}
+              placeholder="e.g., Dashboard loads within 2s..."
+              className="min-h-[70px] text-sm resize-y border-2 border-gray-200 rounded-lg bg-white shadow-sm hover:border-gray-300 focus:border-[#2563eb] focus:ring-4 focus:ring-[#dbeafe] focus:outline-none transition-all"
+              style={{ fontSize: '13px', lineHeight: '1.5', color: 'var(--text-1)' }}
+            />
+          </div>
 
           {/* Actions */}
           <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
