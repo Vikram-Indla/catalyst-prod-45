@@ -591,11 +591,11 @@ export function TestCasesPage() {
                   )}
                 </div>
                 <div 
-                  className="text-xs font-semibold text-gray-600 group-hover:text-gray-900 transition-colors max-h-24 overflow-hidden leading-relaxed tracking-wide"
+                  className="text-[10px] font-medium text-gray-600 group-hover:text-gray-900 transition-colors max-h-28 overflow-hidden leading-tight"
                   style={{ writingMode: 'vertical-rl', textOrientation: 'mixed' }}
                 >
                   {selectedFolderId 
-                    ? folders.find(f => f.id === selectedFolderId)?.name || 'Folder'
+                    ? (folders.find(f => f.id === selectedFolderId)?.path || folders.find(f => f.id === selectedFolderId)?.name || 'Folder')
                     : 'All Cases'
                   }
                 </div>
