@@ -595,7 +595,7 @@ export function TestCasesPage() {
                   style={{ writingMode: 'vertical-rl', textOrientation: 'mixed' }}
                 >
                   {selectedFolderId 
-                    ? (folders.find(f => f.id === selectedFolderId)?.path || folders.find(f => f.id === selectedFolderId)?.name || 'Folder')
+                    ? (folders.find(f => f.id === selectedFolderId)?.path?.replace(/\s*\/\s*/g, '/').toLowerCase() || folders.find(f => f.id === selectedFolderId)?.name?.toLowerCase() || 'folder')
                     : 'All Cases'
                   }
                 </div>
