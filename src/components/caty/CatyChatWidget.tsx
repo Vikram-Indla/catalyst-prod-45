@@ -93,14 +93,19 @@ export function CatyChatWidget() {
       }
 
       // Check contract end dates (future-looking windows)
+      // Use start of day for consistent comparison with database queries
       if (r.contract_end_date) {
         const endDate = new Date(r.contract_end_date);
-        if (endDate >= now && endDate <= thirtyDays) {
+        const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        const thirtyDaysEnd = new Date(thirtyDays.getFullYear(), thirtyDays.getMonth(), thirtyDays.getDate(), 23, 59, 59);
+        const ninetyDaysEnd = new Date(ninetyDays.getFullYear(), ninetyDays.getMonth(), ninetyDays.getDate(), 23, 59, 59);
+        
+        if (endDate >= todayStart && endDate <= thirtyDaysEnd) {
           critical++;
           if (r.department_id && deptStats[r.department_id]) {
             deptStats[r.department_id].critical++;
           }
-        } else if (endDate > thirtyDays && endDate <= ninetyDays) {
+        } else if (endDate > thirtyDaysEnd && endDate <= ninetyDaysEnd) {
           warning++;
           if (r.department_id && deptStats[r.department_id]) {
             deptStats[r.department_id].warning++;
@@ -214,11 +219,15 @@ export function CatyChatWidget() {
   // Query database for response - async
   const generateResponseAsync = async (query: string): Promise<string> => {
     const lowerQuery = query.toLowerCase();
+    // Use start of day for consistent date comparisons
     const now = new Date();
-    const thirtyDays = new Date(now);
+    const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const thirtyDays = new Date(todayStart);
     thirtyDays.setDate(thirtyDays.getDate() + 30);
-    const ninetyDays = new Date(now);
+    thirtyDays.setHours(23, 59, 59, 999);
+    const ninetyDays = new Date(todayStart);
     ninetyDays.setDate(ninetyDays.getDate() + 90);
+    ninetyDays.setHours(23, 59, 59, 999);
 
     // Helper: Fetch merged resource data (profiles + resource_inventory) - same logic as /admin/users
     const fetchMergedResources = async (filter?: { nameSearch?: string; limit?: number }) => {
@@ -355,7 +364,7 @@ export function CatyChatWidget() {
         .from('resource_inventory')
         .select('id, profile_id, name, contract_end_date, vendor_id, vendor_name, role_name, department_id, capacity_departments(name)')
         .lte('contract_end_date', thirtyDays.toISOString())
-        .gte('contract_end_date', now.toISOString())
+        .gte('contract_end_date', todayStart.toISOString())
         .not('contract_end_date', 'is', null)
         .order('contract_end_date', { ascending: true })
         .limit(15);
