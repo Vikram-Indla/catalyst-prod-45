@@ -84,14 +84,13 @@ export function RichTextToolbar({ onAIAssist, onPreview, onExpand }: RichTextToo
 
       {/* Right - AI Assist, Preview, Expand */}
       <div className="flex items-center gap-2">
+        {/* AI Button - MUST use purple gradient #7c3aed → #a855f7 */}
         <Button
           onClick={onAIAssist}
-          variant="outline"
           size="sm"
-          className="h-8 px-3 gap-1.5 border-ai-purple text-ai-purple hover:bg-ai-purple-light transition-colors"
+          className="h-8 px-3 gap-1.5 text-white border-none transition-all hover:-translate-y-0.5"
           style={{ 
-            borderColor: 'hsl(var(--ai-purple))', 
-            color: 'hsl(var(--ai-purple))',
+            background: 'linear-gradient(135deg, #7c3aed, #a855f7)',
             transitionDuration: '150ms',
             boxShadow: '0 4px 14px -2px rgba(124, 58, 237, 0.3)'
           }}

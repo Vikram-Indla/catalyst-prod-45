@@ -29,11 +29,12 @@ export function TestCaseEditorHeader({
 }: TestCaseEditorHeaderProps) {
   const navigate = useNavigate();
 
+  // Catalyst V5 Status Badge Colors - Draft is NEUTRAL GRAY, not warning/danger
   const statusColors = {
-    draft: 'bg-sem-danger text-white',
-    ready: 'bg-brand-teal text-white',
-    approved: 'bg-sem-success text-white',
-    deprecated: 'bg-sem-warning text-white',
+    draft: 'bg-[#f5f5f5] text-[#737373] border border-[#e5e5e5]',      // Neutral gray
+    ready: 'bg-[#ccfbf1] text-[#0d9488]',                              // Teal
+    approved: 'bg-[#d1fae5] text-[#059669]',                           // Green
+    deprecated: 'bg-[#e5e5e5] text-[#525252]',                         // Darker gray
   };
 
   return (
