@@ -36,9 +36,13 @@ export function TestCasesPage() {
   const [caseToDelete, setCaseToDelete] = useState<TMTestCaseWithMeta | null>(null);
 
   // Hooks
-  const { data: foldersData, isLoading: foldersLoading } = useTestFolders();
-  const folders = foldersData?.tree || [];
-  const totalCount = foldersData?.totalCount || 0;
+  const { data: folders = [], isLoading: foldersLoading } = useTestFolders();
+  
+  // Calculate total count from all folders
+  const countAllCases = (nodes: typeof folders): number => {
+    return nodes.reduce((sum, node) => sum + node.testCaseCount + countAllCases(node.children), 0);
+  };
+  const totalCount = countAllCases(folders);
 
   const { data: testCases = [], isLoading: casesLoading } = useTestCases({
     folderId: selectedFolderId,
