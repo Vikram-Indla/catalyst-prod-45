@@ -39,23 +39,9 @@ interface TMGlobalSearchProps {
   onOpenChange: (open: boolean) => void;
 }
 
-// Mock recent items
-const mockRecentItems: SearchResult[] = [
-  { id: '1', type: 'case', key: 'TC-045', title: 'Login with valid credentials', status: 'Ready' },
-  { id: '2', type: 'cycle', key: 'CY-015', title: 'Sprint 24 Regression', status: 'In Progress' },
-  { id: '3', type: 'defect', key: 'DEF-089', title: 'Login button unresponsive', status: 'Open' },
-];
-
-// Mock search results
-const mockSearchData: SearchResult[] = [
-  { id: '1', type: 'case', key: 'TC-001', title: 'User registration flow', status: 'Ready' },
-  { id: '2', type: 'case', key: 'TC-002', title: 'Password reset functionality', status: 'Draft' },
-  { id: '3', type: 'case', key: 'TC-045', title: 'Login with valid credentials', status: 'Ready' },
-  { id: '4', type: 'cycle', key: 'CY-014', title: 'Sprint 23 Smoke Tests', status: 'Completed' },
-  { id: '5', type: 'cycle', key: 'CY-015', title: 'Sprint 24 Regression', status: 'In Progress' },
-  { id: '6', type: 'defect', key: 'DEF-088', title: 'Form validation errors', status: 'Fixed' },
-  { id: '7', type: 'defect', key: 'DEF-089', title: 'Login button unresponsive', status: 'Open' },
-];
+// Search data - to be fetched from API
+const recentItems: SearchResult[] = [];
+const searchData: SearchResult[] = [];
 
 const getTypeIcon = (type: string) => {
   switch (type) {
@@ -95,7 +81,7 @@ export function TMGlobalSearch({ open, onOpenChange }: TMGlobalSearchProps) {
       return;
     }
 
-    const filtered = mockSearchData.filter(
+    const filtered = searchData.filter(
       (item) =>
         item.key.toLowerCase().includes(query.toLowerCase()) ||
         item.title.toLowerCase().includes(query.toLowerCase())
@@ -169,7 +155,7 @@ export function TMGlobalSearch({ open, onOpenChange }: TMGlobalSearchProps) {
           <>
             {/* Recent Items */}
             <CommandGroup heading="Recent">
-              {mockRecentItems.map((item) => (
+              {recentItems.map((item) => (
                 <CommandItem
                   key={item.id}
                   onSelect={() => handleSelect(item)}

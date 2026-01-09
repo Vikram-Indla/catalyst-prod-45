@@ -107,26 +107,10 @@ export function AIGenerateCases({
 
     setIsGenerating(true);
     try {
-      // Simulate AI generation - in real implementation, call the API
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-
-      // Generate mock cases based on input
-      const mockCases: GeneratedCase[] = Array.from({ length: outputCount[0] }, (_, i) => ({
-        id: `gen-${Date.now()}-${i}`,
-        title: `Test Case ${i + 1}: ${sourceText.slice(0, 30)}...`,
-        description: `Verify ${selectedTypes[i % selectedTypes.length]} scenario for the requirement`,
-        priority: i < 2 ? 'high' : i < 4 ? 'medium' : 'low',
-        type: selectedTypes[i % selectedTypes.length],
-        steps: [
-          { action: 'Navigate to the feature', expected_result: 'Feature page is displayed' },
-          { action: 'Perform the action', expected_result: 'Expected behavior occurs' },
-          { action: 'Verify the result', expected_result: 'Result matches expectation' },
-        ],
-        selected: true,
-      }));
-
-      setGeneratedCases(mockCases);
-      toast.success(`Generated ${mockCases.length} test cases`);
+      // TODO: Implement actual AI API call for test case generation
+      // For now, show a message that AI integration is pending
+      toast.info('AI test case generation is not yet connected to the API');
+      setGeneratedCases([]);
     } catch (error) {
       toast.error('Failed to generate test cases');
     } finally {

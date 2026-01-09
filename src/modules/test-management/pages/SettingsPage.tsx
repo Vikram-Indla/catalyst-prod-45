@@ -33,21 +33,9 @@ const settingsSections = [
   { id: 'notifications', label: 'Notifications', icon: Bell, description: 'Configure alert settings' },
 ];
 
-// Mock priorities data
-const mockPriorities = [
-  { id: '1', name: 'Critical', color: '#ef4444', sortOrder: 1 },
-  { id: '2', name: 'High', color: '#f97316', sortOrder: 2 },
-  { id: '3', name: 'Medium', color: '#eab308', sortOrder: 3 },
-  { id: '4', name: 'Low', color: '#22c55e', sortOrder: 4 },
-];
-
-// Mock environments data
-const mockEnvironments = [
-  { id: '1', name: 'Development', url: 'https://dev.example.com', isActive: true },
-  { id: '2', name: 'Staging', url: 'https://staging.example.com', isActive: true },
-  { id: '3', name: 'Production', url: 'https://example.com', isActive: true },
-  { id: '4', name: 'UAT', url: 'https://uat.example.com', isActive: false },
-];
+// Priority and environment data - to be fetched from API
+const priorities: { id: string; name: string; color: string; sortOrder: number }[] = [];
+const environments: { id: string; name: string; url: string; isActive: boolean }[] = [];
 
 export function SettingsPage() {
   const [activeSection, setActiveSection] = useState('priorities');
@@ -94,7 +82,7 @@ export function SettingsPage() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                {mockPriorities.map((priority) => (
+                {priorities.map((priority) => (
                   <div 
                     key={priority.id}
                     className="flex items-center justify-between p-3 rounded-lg border border-border-subtle"
@@ -130,7 +118,7 @@ export function SettingsPage() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                {mockEnvironments.map((env) => (
+                {environments.map((env) => (
                   <div 
                     key={env.id}
                     className="flex items-center justify-between p-3 rounded-lg border border-border-subtle"

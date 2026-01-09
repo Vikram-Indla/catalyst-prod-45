@@ -31,22 +31,15 @@ interface ProjectState {
   setIsLoading: (loading: boolean) => void;
 }
 
-// Mock projects for initial development
-const mockProjects: TMProject[] = [
-  { id: 'proj-1', name: 'Ministry Portal', key: 'MP', description: 'Ministry Portal Application', isActive: true },
-  { id: 'proj-2', name: 'Citizen Services App', key: 'CSA', description: 'Citizen Services Mobile App', isActive: true },
-  { id: 'proj-3', name: 'Internal Tools', key: 'INT', description: 'Internal Admin Tools', isActive: true },
-];
-
 export const useProjectStore = create<ProjectState>()(
   persist(
     (set, get) => ({
       // Projects
-      projects: mockProjects,
+      projects: [],
       setProjects: (projects) => set({ projects }),
       
       // Selected project
-      selectedProjectId: mockProjects[0]?.id || null,
+      selectedProjectId: null,
       setSelectedProjectId: (id) => set({ selectedProjectId: id }),
       
       // Get current project helper

@@ -54,8 +54,8 @@ interface TestSet {
   tags: string[];
 }
 
-// Mock data - will be replaced with real hook
-const mockTestSets: TestSet[] = [];
+// Test sets data - to be fetched from API
+const testSets: TestSet[] = [];
 
 export function TestSetsPage() {
   const navigate = useNavigate();
@@ -78,7 +78,7 @@ export function TestSetsPage() {
     console.log('Adding set to cycle:', setId);
   };
 
-  const filteredSets = mockTestSets.filter(set =>
+  const filteredSets = testSets.filter(set =>
     set.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     set.description?.toLowerCase().includes(searchQuery.toLowerCase())
   );
