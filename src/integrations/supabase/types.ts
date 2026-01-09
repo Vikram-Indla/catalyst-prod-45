@@ -23440,6 +23440,76 @@ export type Database = {
         }
         Relationships: []
       }
+      tm_test_case_links: {
+        Row: {
+          id: string
+          linked_at: string | null
+          linked_by: string | null
+          linked_item_id: string
+          linked_item_type: string
+          test_case_id: string
+        }
+        Insert: {
+          id?: string
+          linked_at?: string | null
+          linked_by?: string | null
+          linked_item_id: string
+          linked_item_type: string
+          test_case_id: string
+        }
+        Update: {
+          id?: string
+          linked_at?: string | null
+          linked_by?: string | null
+          linked_item_id?: string
+          linked_item_type?: string
+          test_case_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tm_test_case_links_linked_by_fkey"
+            columns: ["linked_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_test_case_links_linked_by_fkey"
+            columns: ["linked_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "tm_test_case_links_linked_by_fkey"
+            columns: ["linked_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_test_case_links_linked_by_fkey"
+            columns: ["linked_by"]
+            isOneToOne: false
+            referencedRelation: "v_resource_profile"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "tm_test_case_links_test_case_id_fkey"
+            columns: ["test_case_id"]
+            isOneToOne: false
+            referencedRelation: "tm_test_cases"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_test_case_links_test_case_id_fkey"
+            columns: ["test_case_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_test_cases_full"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       tm_test_case_templates: {
         Row: {
           category_id: string | null
@@ -23547,7 +23617,9 @@ export type Database = {
           preconditions: string | null
           priority_id: string | null
           project_id: string
+          release_version_id: string | null
           status: Database["public"]["Enums"]["tm_case_status"] | null
+          test_type: string | null
           title: string
           updated_at: string | null
           version: number | null
@@ -23569,7 +23641,9 @@ export type Database = {
           preconditions?: string | null
           priority_id?: string | null
           project_id: string
+          release_version_id?: string | null
           status?: Database["public"]["Enums"]["tm_case_status"] | null
+          test_type?: string | null
           title: string
           updated_at?: string | null
           version?: number | null
@@ -23591,7 +23665,9 @@ export type Database = {
           preconditions?: string | null
           priority_id?: string | null
           project_id?: string
+          release_version_id?: string | null
           status?: Database["public"]["Enums"]["tm_case_status"] | null
+          test_type?: string | null
           title?: string
           updated_at?: string | null
           version?: number | null
@@ -23659,6 +23735,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "v_tm_traceability_summary"
             referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "tm_test_cases_release_version_id_fkey"
+            columns: ["release_version_id"]
+            isOneToOne: false
+            referencedRelation: "release_versions"
+            referencedColumns: ["id"]
           },
         ]
       }
