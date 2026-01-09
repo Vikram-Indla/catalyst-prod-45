@@ -69,3 +69,6 @@ export {
 
 // Settings
 export * from './useSettings';
+
+// Folder Panel State
+export { useFolderPanelState } from './useFolderPanelState';

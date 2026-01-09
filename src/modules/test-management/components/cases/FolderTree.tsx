@@ -16,6 +16,7 @@ import {
   Copy,
   FolderInput,
   MoreHorizontal,
+  PanelLeftClose,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -77,6 +78,7 @@ interface FolderTreeProps {
   onDuplicateFolder?: (folderId: string) => void;
   totalCaseCount?: number;
   isLoading?: boolean;
+  onCollapse?: () => void;
 }
 
 interface FolderItemProps {
@@ -334,6 +336,7 @@ export function FolderTree({
   onDuplicateFolder,
   totalCaseCount = 0,
   isLoading,
+  onCollapse,
 }: FolderTreeProps) {
   const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set());
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
@@ -471,13 +474,26 @@ export function FolderTree({
     <div className="flex flex-col h-full">
       {/* Header */}
       <div
-        className="flex items-center justify-between px-3"
+        className="flex items-center justify-between px-2 gap-1"
         style={{
           height: '52px',
           borderBottom: '1px solid var(--divider, hsl(var(--border)))',
         }}
       >
-        <h3 className="font-semibold text-sm">Folders</h3>
+        <div className="flex items-center gap-1">
+          {onCollapse && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-7 w-7"
+              onClick={onCollapse}
+              title="Collapse folders panel"
+            >
+              <PanelLeftClose className="h-4 w-4" />
+            </Button>
+          )}
+          <h3 className="font-semibold text-sm">Folders</h3>
+        </div>
         <Button
           variant="ghost"
           size="icon"
