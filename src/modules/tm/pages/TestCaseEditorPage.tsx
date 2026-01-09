@@ -16,14 +16,16 @@ import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
-import { Sparkles, PanelRightOpen } from 'lucide-react';
+import { Sparkles, PanelRightOpen, User, Clock, FolderOpen, AlertCircle } from 'lucide-react';
 import { toast } from 'sonner';
+import { cn } from '@/lib/utils';
 
 import CompactHeader from '../components/TestCaseEditor/CompactHeader';
 import QualityBadge from '../components/TestCaseEditor/QualityBadge';
 import SlideOutPanel from '../components/TestCaseEditor/SlideOutPanel';
 import ExpandedTestSteps from '../components/TestCaseEditor/ExpandedTestSteps';
 import { CollapsibleSection } from '../components/TestCaseEditor';
+import { useCurrentUser } from '../hooks/useCurrentUser';
 
 type Status = 'draft' | 'ready' | 'approved' | 'deprecated';
 type Priority = 'P1' | 'P2' | 'P3' | 'P4';
@@ -42,8 +44,11 @@ export function TestCaseEditorPage() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const isNew = !id || id === 'new';
+  
+  // Get dynamic user
+  const { user, loading: userLoading } = useCurrentUser();
 
-  // Form state
+  // Form state - NO MOCK DATA, empty by default
   const [title, setTitle] = useState('');
   const [status, setStatus] = useState<Status>('draft');
   const [priority, setPriority] = useState<Priority>('P3');
@@ -51,11 +56,13 @@ export function TestCaseEditorPage() {
   const [description, setDescription] = useState('');
   const [preconditions, setPreconditions] = useState<string[]>([]);
   const [steps, setSteps] = useState<TestStep[]>([]);
+  const [folder, setFolder] = useState('Root');
   
   // UI state
   const [isSaving, setIsSaving] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
   const [isPanelOpen, setIsPanelOpen] = useState(false);
+  const [titleTouched, setTitleTouched] = useState(false);
 
   // Track changes
   useEffect(() => {
@@ -179,7 +186,90 @@ export function TestCaseEditorPage() {
 
       {/* Main Content - Full Width */}
       <ScrollArea className="flex-1">
-        <div className="max-w-4xl mx-auto py-6 px-6 space-y-5">
+        <div className="max-w-4xl mx-auto py-6 px-6 space-y-6">
+          
+          {/* HERO TITLE FIELD - 24px, Bold, Prominent */}
+          <div>
+            <label
+              className="block font-semibold text-[var(--text-2)] uppercase tracking-wide mb-2"
+              style={{ fontSize: '11px', letterSpacing: '0.5px' }}
+            >
+              TEST CASE TITLE <span className="text-[#dc2626]">*</span>
+            </label>
+            <input
+              type="text"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              onBlur={() => setTitleTouched(true)}
+              placeholder="Enter test case title..."
+              autoFocus
+              className={cn(
+                "w-full",
+                "text-xl font-semibold",
+                "px-4 py-3",
+                "bg-white",
+                "border-2 rounded-lg",
+                "shadow-sm",
+                "transition-all duration-150",
+                "placeholder:text-gray-400 placeholder:font-normal",
+                "focus:outline-none focus:ring-4",
+                titleTouched && !title 
+                  ? "border-[#dc2626] focus:border-[#dc2626] focus:ring-[#fee2e2]" 
+                  : "border-gray-200 hover:border-gray-300 focus:border-[#2563eb] focus:ring-[#dbeafe]"
+              )}
+              style={{ color: 'var(--text-1)' }}
+            />
+            {titleTouched && !title && (
+              <p className="mt-2 text-xs text-[#dc2626] flex items-center gap-1">
+                <AlertCircle className="h-3 w-3" />
+                Title is required
+              </p>
+            )}
+            {title && (
+              <p className="mt-2 text-xs text-gray-500">
+                e.g., "Verify user login with valid credentials"
+              </p>
+            )}
+          </div>
+
+          {/* Meta Info Row - Dynamic User */}
+          <div className="flex items-center gap-3 text-sm text-[var(--text-3)] flex-wrap">
+            {/* Owner/Creator - DYNAMIC */}
+            <div className="flex items-center gap-2">
+              {user?.avatarUrl ? (
+                <img 
+                  src={user.avatarUrl} 
+                  alt={user.fullName}
+                  className="h-6 w-6 rounded-full object-cover"
+                />
+              ) : (
+                <div className="h-6 w-6 rounded-full bg-[#dbeafe] flex items-center justify-center">
+                  <span className="text-xs font-medium text-[#2563eb]">
+                    {user?.initials || <User className="h-3 w-3" />}
+                  </span>
+                </div>
+              )}
+              <span className="font-medium text-[var(--text-2)]">
+                {userLoading ? 'Loading...' : user?.fullName || 'Not signed in'}
+              </span>
+            </div>
+            
+            <span className="text-[var(--text-4)]">•</span>
+            
+            {/* Case Status */}
+            <div className="flex items-center gap-1.5">
+              <Clock className="h-3.5 w-3.5" />
+              <span>{isNew ? 'New case' : `Editing`}</span>
+            </div>
+            
+            <span className="text-[var(--text-4)]">•</span>
+            
+            {/* Folder */}
+            <div className="flex items-center gap-1.5">
+              <FolderOpen className="h-3.5 w-3.5" />
+              <span>{folder}</span>
+            </div>
+          </div>
           
           {/* Description - Large Text Area (min 200px) */}
           <div>
@@ -190,14 +280,13 @@ export function TestCaseEditorPage() {
               DESCRIPTION / OBJECTIVE
             </label>
             <div
-              className="rounded-lg border bg-[var(--bg-0)] overflow-hidden"
-              style={{ borderColor: 'var(--stroke-1)', boxShadow: '0 1px 3px hsl(0 0% 0% / 0.05)' }}
+              className="rounded-lg border-2 border-gray-200 bg-white overflow-hidden shadow-sm hover:border-gray-300 focus-within:border-[#2563eb] focus-within:ring-4 focus-within:ring-[#dbeafe] transition-all"
             >
               <Textarea
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                placeholder="Describe the purpose of this test case. What functionality does it verify? What is the expected behavior? Include context about the user story or requirement being tested."
-                className="border-0 resize-none focus-visible:ring-0 text-sm bg-transparent"
+                placeholder="Describe the purpose of this test case. What functionality does it verify? What is the expected behavior?"
+                className="border-0 resize-y focus-visible:ring-0 text-sm bg-transparent"
                 style={{
                   minHeight: '200px',
                   maxHeight: '400px',
@@ -208,11 +297,11 @@ export function TestCaseEditorPage() {
                 }}
               />
               <div
-                className="flex items-center justify-between px-4 py-2 border-t text-xs bg-[var(--bg-1)]/50"
-                style={{ borderColor: 'var(--stroke-1)', color: 'var(--text-4)' }}
+                className="flex items-center justify-between px-4 py-2 border-t text-xs bg-gray-50"
+                style={{ borderColor: '#e5e5e5', color: '#737373' }}
               >
-                <span>{description.length} characters • ~{Math.ceil(description.split(/\s+/).filter(Boolean).length)} words</span>
-                <span className="text-[var(--text-4)]">Tip: Be specific about expected behavior</span>
+                <span>{description.length} characters • {description.split(/\s+/).filter(Boolean).length} words</span>
+                <span>Tip: Be specific about expected behavior</span>
               </div>
             </div>
           </div>
@@ -236,7 +325,7 @@ export function TestCaseEditorPage() {
               <div className="space-y-2">
                 {preconditions.map((p, i) => (
                   <div key={i} className="flex items-center gap-2">
-                    <span className="text-xs text-[var(--text-4)] w-6">{i + 1}.</span>
+                    <span className="text-xs text-gray-500 w-6 font-medium">{i + 1}.</span>
                     <input
                       type="text"
                       value={p}
@@ -245,9 +334,9 @@ export function TestCaseEditorPage() {
                         next[i] = e.target.value;
                         setPreconditions(next);
                       }}
-                      placeholder="Enter precondition..."
-                      className="flex-1 px-3 py-2 text-sm border rounded-md bg-[var(--bg-0)] text-[var(--text-1)] focus:border-[#2563eb] focus:ring-1 focus:ring-[#dbeafe] transition-colors"
-                      style={{ borderColor: 'var(--stroke-1)', fontSize: '13px' }}
+                      placeholder="e.g., User is logged in as admin"
+                      className="flex-1 px-3 py-2.5 text-sm border-2 border-gray-200 rounded-lg bg-white shadow-sm hover:border-gray-300 focus:border-[#2563eb] focus:ring-4 focus:ring-[#dbeafe] focus:outline-none transition-all"
+                      style={{ fontSize: '13px', color: 'var(--text-1)' }}
                     />
                     <button
                       onClick={() => {
@@ -274,10 +363,10 @@ export function TestCaseEditorPage() {
                   className="font-semibold text-[var(--text-2)] uppercase tracking-wide"
                   style={{ fontSize: '11px', letterSpacing: '0.5px' }}
                 >
-                  TEST STEPS
+                  TEST STEPS <span className="text-[#dc2626]">*</span>
                 </span>
                 <span
-                  className="px-1.5 py-0 font-medium rounded-full bg-[#ccfbf1] text-[#0d9488]"
+                  className="px-1.5 py-0.5 font-semibold rounded-full bg-[#ccfbf1] text-[#0d9488]"
                   style={{ minWidth: '20px', textAlign: 'center', fontSize: '10px' }}
                 >
                   {steps.length}
@@ -286,9 +375,12 @@ export function TestCaseEditorPage() {
               <div className="flex items-center gap-2">
                 <Button
                   onClick={handleAIAssist}
-                  variant="outline"
                   size="sm"
-                  className="h-7 px-2 text-xs gap-1 border-[#7c3aed] text-[#7c3aed] hover:bg-[#ede9fe]"
+                  className="h-7 px-3 text-xs gap-1.5 text-white border-none"
+                  style={{
+                    background: 'linear-gradient(135deg, #7c3aed, #a855f7)',
+                    boxShadow: '0 2px 8px -2px rgba(124, 58, 237, 0.3)',
+                  }}
                 >
                   <Sparkles className="h-3 w-3" />
                   Generate Steps
@@ -297,7 +389,7 @@ export function TestCaseEditorPage() {
                   onClick={handleAddStep}
                   variant="outline"
                   size="sm"
-                  className="h-7 px-2 text-xs"
+                  className="h-7 px-3 text-xs border-2 border-gray-200 hover:border-gray-300"
                 >
                   + Add Step
                 </Button>
@@ -305,8 +397,7 @@ export function TestCaseEditorPage() {
             </div>
             
             <div
-              className="rounded-lg border bg-[var(--bg-0)] p-4"
-              style={{ borderColor: 'var(--stroke-1)', boxShadow: '0 1px 3px hsl(0 0% 0% / 0.05)' }}
+              className="rounded-lg border-2 border-gray-200 bg-white p-4 shadow-sm"
             >
               <ExpandedTestSteps
                 steps={steps}
