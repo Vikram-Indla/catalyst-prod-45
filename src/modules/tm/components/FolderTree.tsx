@@ -371,15 +371,17 @@ export function FolderTree({
       <Dialog open={createOpen} onOpenChange={setCreateOpen}>
         <DialogContent style={{ borderRadius: '12px' }}>
           <DialogHeader>
-            <DialogTitle>New Folder</DialogTitle>
+            <DialogTitle>Create Folder</DialogTitle>
           </DialogHeader>
           <div className="py-4">
             <Input
               placeholder="Folder name"
               value={newFolderName}
               onChange={(e) => setNewFolderName(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleCreate()}
-              autoFocus
+              onKeyDown={(e) => {
+                e.stopPropagation();
+                if (e.key === 'Enter') handleCreate();
+              }}
             />
           </div>
           <DialogFooter>
@@ -404,8 +406,10 @@ export function FolderTree({
               placeholder="Folder name"
               value={newFolderName}
               onChange={(e) => setNewFolderName(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleRename()}
-              autoFocus
+              onKeyDown={(e) => {
+                e.stopPropagation();
+                if (e.key === 'Enter') handleRename();
+              }}
             />
           </div>
           <DialogFooter>
