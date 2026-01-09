@@ -4,7 +4,7 @@
  * Redesigned with Catalyst V5 colors, all 3 tabs working
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -32,6 +32,43 @@ import { AIFromRequirements } from './ai-generator/AIFromRequirements';
 import { AIBulkGenerate, type BulkOptions } from './ai-generator/AIBulkGenerate';
 import { LinkedItem } from '@/hooks/test-management/useLinkedItemsForAI';
 import { SegmentedTabs, SegmentedTab } from '@/components/ui/segmented-tabs';
+import { TMFolder } from '@/types/test-management';
+
+// Helper to build tree from flat folder list
+type FolderNode = TMFolder & { children: FolderNode[] };
+
+function buildFolderTree(folders: TMFolder[]): FolderNode[] {
+  const map = new Map<string, FolderNode>();
+  const roots: FolderNode[] = [];
+
+  folders.forEach(f => map.set(f.id, { ...f, children: [] }));
+
+  folders.forEach(f => {
+    const node = map.get(f.id)!;
+    if (f.parent_id && map.has(f.parent_id)) {
+      map.get(f.parent_id)!.children.push(node);
+    } else {
+      roots.push(node);
+    }
+  });
+
+  return roots;
+}
+
+// Flatten tree with indentation levels
+function flattenFolders(
+  folders: FolderNode[],
+  level = 0
+): { folder: TMFolder; level: number }[] {
+  const result: { folder: TMFolder; level: number }[] = [];
+  for (const folder of folders) {
+    result.push({ folder, level });
+    if (folder.children && folder.children.length > 0) {
+      result.push(...flattenFolders(folder.children, level + 1));
+    }
+  }
+  return result;
+}
 
 interface AITestGeneratorProps {
   open: boolean;
@@ -93,6 +130,12 @@ export function AITestGenerator({
   // Hooks
   const { data: folders = [] } = useFoldersWithCounts(projectId);
   const { generateTestCases, isGenerating, error, clearError } = useAIGeneration();
+
+  // Build hierarchical folder list with indentation
+  const flatFolders = useMemo(() => {
+    const tree = buildFolderTree(folders);
+    return flattenFolders(tree);
+  }, [folders]);
 
   // Reset when modal opens
   useEffect(() => {
@@ -296,11 +339,11 @@ export function AITestGenerator({
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="__root__">No folder (root)</SelectItem>
-                        {folders.map((f) => (
-                          <SelectItem key={f.id} value={f.id}>
-                            <div className="flex items-center gap-2">
+                        {flatFolders.map(({ folder, level }) => (
+                          <SelectItem key={folder.id} value={folder.id}>
+                            <div className="flex items-center gap-2" style={{ paddingLeft: `${level * 16}px` }}>
                               <FolderOpen className="h-4 w-4 text-muted-foreground" />
-                              {f.name}
+                              {folder.name}
                             </div>
                           </SelectItem>
                         ))}
