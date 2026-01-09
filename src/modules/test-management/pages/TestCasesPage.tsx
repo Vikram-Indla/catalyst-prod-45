@@ -157,6 +157,8 @@ export function TestCasesPage() {
   const createFolder = useCreateFolder();
   const updateFolder = useUpdateFolder();
   const deleteFolder = useDeleteFolder();
+  const moveFolder = useMoveFolder();
+  const duplicateFolder = useDuplicateFolder();
 
   // Handlers
   const handleSortChange = useCallback((field: SortField) => {
@@ -383,6 +385,16 @@ export function TestCasesPage() {
     deleteFolder.mutate({ id: folderId, project_id: projectId });
   }, [deleteFolder, projectId]);
 
+  const handleMoveFolder = useCallback((folderId: string, newParentId: string | null) => {
+    if (!projectId) return;
+    moveFolder.mutate({ id: folderId, project_id: projectId, new_parent_id: newParentId || '' });
+  }, [moveFolder, projectId]);
+
+  const handleDuplicateFolder = useCallback((folderId: string) => {
+    if (!projectId) return;
+    duplicateFolder.mutate({ id: folderId, project_id: projectId });
+  }, [duplicateFolder, projectId]);
+
   // Map priorities and types to component format
   const prioritiesForUI = useMemo(() => 
     (priorities || []).map(p => ({ id: p.id, name: p.name, color: p.color })),
@@ -418,6 +430,8 @@ export function TestCasesPage() {
             onCreateFolder={handleCreateFolder}
             onRenameFolder={handleRenameFolder}
             onDeleteFolder={handleDeleteFolder}
+            onMoveFolder={handleMoveFolder}
+            onDuplicateFolder={handleDuplicateFolder}
             totalCaseCount={totalCases}
             isLoading={foldersLoading}
           />
