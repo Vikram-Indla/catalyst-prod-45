@@ -1,30 +1,96 @@
 /**
- * Test Case Editor - Full-Page Editor Component
- * Refactored to use focused sub-components matching test-case-editor-final.html (9.5+ quality)
+ * Test Case Editor - Complete Rebuild
+ * Bloomberg/Enterprise quality - Field-by-field specification match
  */
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { cn } from '@/lib/utils';
-import { User, Clock, Lock } from 'lucide-react';
-import { toast } from 'sonner';
-
 import {
-  EditorHeader,
-  EditorToolbar,
-  ObjectiveSection,
-  PreconditionsSection,
-  StepsSection,
-  ContextPanel,
-  QualityChecklist,
-  validateTestCaseForReady,
-  calculateQualityScore,
-} from './editor';
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { cn } from '@/lib/utils';
+import { toast } from 'sonner';
+import {
+  ChevronLeft,
+  Save,
+  X,
+  Plus,
+  Trash2,
+  Lock,
+  Clock,
+  User,
+  FileEdit,
+  Eye,
+  CheckCircle,
+  AlertCircle,
+  XCircle,
+  Cog,
+  RefreshCw,
+  Flame,
+  Link as LinkIcon,
+  Zap,
+  Shield,
+  Users,
+  FolderOpen,
+  Tag,
+  Paperclip,
+  Bold,
+  Italic,
+  Underline,
+  List,
+  ListOrdered,
+  Code,
+  Image as ImageIcon,
+  MoreVertical,
+  GripVertical,
+  ChevronDown,
+  ChevronUp,
+  Copy,
+  ArrowRight,
+} from 'lucide-react';
 
+import { validateTestCaseForReady } from './editor/QualityChecklist';
 import type { TestCase, TestStep, Folder, CaseStatus } from '../../api/types';
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// CONSTANTS
+// ═══════════════════════════════════════════════════════════════════════════════
+
+const STATUS_OPTIONS = [
+  { value: 'draft', label: 'Draft', color: 'bg-muted-foreground' },
+  { value: 'in_review', label: 'In Review', color: 'bg-blue-500' },
+  { value: 'approved', label: 'Approved', color: 'bg-green-500' },
+  { value: 'needs_revision', label: 'Needs Revision', color: 'bg-orange-500' },
+  { value: 'deprecated', label: 'Deprecated', color: 'bg-destructive' },
+] as const;
+
+const TYPE_OPTIONS = [
+  { value: 'functional', label: 'Functional', icon: Cog },
+  { value: 'regression', label: 'Regression', icon: RefreshCw },
+  { value: 'smoke', label: 'Smoke', icon: Flame },
+  { value: 'integration', label: 'Integration', icon: LinkIcon },
+  { value: 'performance', label: 'Performance', icon: Zap },
+  { value: 'security', label: 'Security', icon: Shield },
+  { value: 'usability', label: 'Usability', icon: Users },
+];
+
+const PRIORITY_OPTIONS = [
+  { value: 'P1', label: 'P1 - Critical', color: 'bg-destructive', description: 'Must test first' },
+  { value: 'P2', label: 'P2 - High', color: 'bg-orange-500', description: 'Important functionality' },
+  { value: 'P3', label: 'P3 - Medium', color: 'bg-yellow-500', description: 'Normal priority' },
+  { value: 'P4', label: 'P4 - Low', color: 'bg-muted-foreground', description: 'Nice to have' },
+];
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // TYPES
@@ -42,7 +108,6 @@ interface StepInput {
 interface PreconditionInput {
   id: string;
   text: string;
-  details?: string;
 }
 
 interface TestCaseEditorProps {
@@ -67,6 +132,20 @@ function generateId() {
   return `temp-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 }
 
+function formatRelativeTime(date: Date | string): string {
+  const now = new Date();
+  const past = new Date(date);
+  const diffMs = now.getTime() - past.getTime();
+  const diffMins = Math.floor(diffMs / 60000);
+  
+  if (diffMins < 1) return 'Just now';
+  if (diffMins < 60) return `${diffMins} min ago`;
+  const diffHours = Math.floor(diffMins / 60);
+  if (diffHours < 24) return `${diffHours}h ago`;
+  const diffDays = Math.floor(diffHours / 24);
+  return `${diffDays}d ago`;
+}
+
 // ═══════════════════════════════════════════════════════════════════════════════
 // MAIN COMPONENT
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -84,62 +163,51 @@ export function TestCaseEditor({
   projectId,
   defaultFolderId,
 }: TestCaseEditorProps) {
-  const navigate = useNavigate();
   const isEditing = !!testCase;
 
   // Form state
   const [title, setTitle] = useState('');
-  const [objective, setObjective] = useState('');
+  const [summary, setSummary] = useState('');
+  const [description, setDescription] = useState('');
   const [preconditions, setPreconditions] = useState<PreconditionInput[]>([]);
-  const [status, setStatus] = useState<CaseStatus>('draft');
+  const [status, setStatus] = useState<string>('draft');
   const [priorityId, setPriorityId] = useState<string>('');
   const [typeId, setTypeId] = useState<string>('');
   const [folderId, setFolderId] = useState<string>('');
+  const [estimate, setEstimate] = useState<string>('');
   const [selectedLabels, setSelectedLabels] = useState<string[]>([]);
-  const [estimatedTime, setEstimatedTime] = useState<string>('');
+  const [references, setReferences] = useState<string>('');
   const [stepsList, setStepsList] = useState<StepInput[]>([]);
   const [expandedSteps, setExpandedSteps] = useState<Set<string>>(new Set());
-  const [activeContextTab, setActiveContextTab] = useState<'traceability' | 'properties' | 'ai' | 'history'>('traceability');
   const [isDirty, setIsDirty] = useState(false);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
-  const [linkedRequirements, setLinkedRequirements] = useState<string[]>([]);
+  const [assigneeId, setAssigneeId] = useState<string>('');
+
+  // UI state
+  const [preconditionsExpanded, setPreconditionsExpanded] = useState(true);
+  const [stepsExpanded, setStepsExpanded] = useState(true);
 
   // Governance state
   const isApproved = testCase?.status === 'approved';
   const isEditable = !isApproved;
 
-  // Calculate quality score dynamically
-  const qualityScore = useMemo(() => calculateQualityScore(
-    title,
-    objective,
-    preconditions.map(p => p.text).join('\n'),
-    stepsList,
-    linkedRequirements,
-    priorityId
-  ), [title, objective, preconditions, stepsList, linkedRequirements, priorityId]);
-
-  const executionHistory: ('pass' | 'fail')[] = testCase ? ['pass', 'pass', 'pass', 'fail', 'pass', 'pass'] : [];
-  const collaborators = testCase ? [
-    { id: '1', name: 'Ahmed Khan', initials: 'AK', color: 'bg-primary', isOnline: true },
-    { id: '2', name: 'Sara Al-Ahmad', initials: 'SA', color: 'bg-success', isOnline: false },
-  ] : [];
-
   // Initialize form
   useEffect(() => {
     if (testCase) {
       setTitle(testCase.title);
-      setObjective(testCase.description || '');
+      setSummary(testCase.description?.split('\n')[0] || '');
+      setDescription(testCase.description || '');
       setPreconditions(
         testCase.preconditions
-          ? [{ id: generateId(), text: testCase.preconditions, details: '' }]
+          ? [{ id: generateId(), text: testCase.preconditions }]
           : []
       );
-      setStatus(testCase.status);
+      setStatus(testCase.status || 'draft');
       setPriorityId(testCase.priority_id || '');
       setTypeId(testCase.type_id || '');
       setFolderId(testCase.folder_id || '');
       setSelectedLabels(testCase.labels?.map(l => l.id) || []);
-      setEstimatedTime(testCase.estimated_time_minutes?.toString() || '');
+      setEstimate(testCase.estimated_time_minutes?.toString() || '');
       setStepsList(
         initialSteps.map(s => ({
           id: s.id,
@@ -152,14 +220,15 @@ export function TestCaseEditor({
       );
     } else {
       setTitle('');
-      setObjective('');
+      setSummary('');
+      setDescription('');
       setPreconditions([]);
       setStatus('draft');
       setPriorityId('');
       setTypeId('');
       setFolderId(defaultFolderId || '');
       setSelectedLabels([]);
-      setEstimatedTime('');
+      setEstimate('');
       setStepsList([]);
     }
     setIsDirty(false);
@@ -168,72 +237,97 @@ export function TestCaseEditor({
   // Handlers
   const markDirty = useCallback(() => setIsDirty(true), []);
 
-  const toggleStepExpand = useCallback((id: string) => {
+  const handleAddStep = () => {
+    const newStep: StepInput = {
+      id: generateId(),
+      step_number: stepsList.length + 1,
+      action: '',
+      test_data: '',
+      expected_result: '',
+      attachments: [],
+    };
+    setStepsList([...stepsList, newStep]);
+    setExpandedSteps(prev => new Set(prev).add(newStep.id));
+    markDirty();
+  };
+
+  const handleUpdateStep = (id: string, field: keyof StepInput, value: string) => {
+    setStepsList(stepsList.map(s => (s.id === id ? { ...s, [field]: value } : s)));
+    markDirty();
+  };
+
+  const handleDeleteStep = (id: string) => {
+    const updated = stepsList.filter(s => s.id !== id);
+    updated.forEach((s, i) => (s.step_number = i + 1));
+    setStepsList(updated);
+    markDirty();
+  };
+
+  const handleDuplicateStep = (step: StepInput) => {
+    const index = stepsList.findIndex(s => s.id === step.id);
+    const newStep: StepInput = {
+      ...step,
+      id: generateId(),
+      step_number: index + 2,
+    };
+    const updated = [...stepsList];
+    updated.splice(index + 1, 0, newStep);
+    updated.forEach((s, i) => (s.step_number = i + 1));
+    setStepsList(updated);
+    markDirty();
+  };
+
+  const toggleStepExpand = (id: string) => {
     setExpandedSteps(prev => {
       const next = new Set(prev);
       if (next.has(id)) next.delete(id);
       else next.add(id);
       return next;
     });
-  }, []);
+  };
 
-  // Status change handler with governance validation
-  const handleStatusChange = useCallback((newStatus: CaseStatus) => {
-    if (!isEditable && newStatus !== 'deprecated') {
-      toast.error('Approved test cases cannot be modified. Create a new version.');
+  const handleAddPrecondition = () => {
+    setPreconditions([...preconditions, { id: generateId(), text: '' }]);
+    markDirty();
+  };
+
+  const handleUpdatePrecondition = (id: string, value: string) => {
+    setPreconditions(preconditions.map(p => (p.id === id ? { ...p, text: value } : p)));
+    markDirty();
+  };
+
+  const handleDeletePrecondition = (id: string) => {
+    setPreconditions(preconditions.filter(p => p.id !== id));
+    markDirty();
+  };
+
+  const handleSubmit = useCallback(() => {
+    if (!title.trim()) {
+      toast.error('Title is required');
       return;
     }
 
-    // Validate Draft → Ready transition
-    if ((status === 'draft' && newStatus === 'ready') || newStatus === 'approved') {
-      const validation = validateTestCaseForReady(
-        title,
-        objective,
-        stepsList,
-        linkedRequirements
-      );
-      if (!validation.valid) {
-        toast.error(`Cannot change status:\n• ${validation.errors.join('\n• ')}`);
-        return;
-      }
-    }
-
-    setStatus(newStatus);
-    markDirty();
-  }, [isEditable, status, title, objective, stepsList, linkedRequirements, markDirty]);
-
-  const handleSubmit = useCallback(() => {
-    // Validate expected results for all steps with actions
     const stepsWithMissingExpected = stepsList.filter(
       step => step.action?.trim() && !step.expected_result?.trim()
     );
 
     if (stepsWithMissingExpected.length > 0) {
       toast.error(
-        `${stepsWithMissingExpected.length} step(s) missing expected results. All steps must have expected results defined.`
+        `${stepsWithMissingExpected.length} step(s) missing expected results.`
       );
       return;
-    }
-
-    // If trying to mark as Ready or Approved, additional validation
-    if (status === 'ready' || status === 'approved') {
-      const validation = validateTestCaseForReady(title, objective, stepsList, linkedRequirements);
-      if (!validation.valid) {
-        toast.error(`Cannot save as ${status}:\n• ${validation.errors.join('\n• ')}`);
-        return;
-      }
     }
 
     const caseData = {
       project_id: projectId,
       title: title.trim(),
-      description: objective.trim() || undefined,
+      description: description.trim() || summary.trim() || undefined,
       preconditions: preconditions.map(p => p.text).join('\n') || undefined,
       status,
       priority_id: priorityId || undefined,
       type_id: typeId || undefined,
       folder_id: folderId || undefined,
-      estimated_time_minutes: estimatedTime ? parseInt(estimatedTime, 10) : undefined,
+      estimated_time_minutes: estimate ? parseInt(estimate, 10) : undefined,
       tags: selectedLabels.length > 0 ? selectedLabels : undefined,
     };
 
@@ -250,8 +344,8 @@ export function TestCaseEditor({
     setLastSaved(new Date());
     setIsDirty(false);
   }, [
-    projectId, title, objective, preconditions, status, priorityId,
-    typeId, folderId, estimatedTime, selectedLabels, stepsList, onSave, linkedRequirements,
+    projectId, title, summary, description, preconditions, status, priorityId,
+    typeId, folderId, estimate, selectedLabels, stepsList, onSave,
   ]);
 
   // Keyboard shortcuts
@@ -267,182 +361,615 @@ export function TestCaseEditor({
   }, [handleSubmit]);
 
   const currentFolder = folders.find(f => f.id === folderId);
+  const selectedType = caseTypes.find(t => t.id === typeId);
+  const selectedPriority = priorities.find(p => p.id === priorityId);
 
   return (
     <div className="flex flex-col h-screen bg-muted/30">
       {/* ══════════════════════════════════════════════════════════════════════════ */}
-      {/* HEADER */}
+      {/* HEADER BAR */}
       {/* ══════════════════════════════════════════════════════════════════════════ */}
-      <EditorHeader
-        caseKey={testCase?.case_key}
-        status={status}
-        folderName={currentFolder?.name}
-        qualityScore={qualityScore}
-        executionResults={executionHistory}
-        collaborators={collaborators}
-        isDirty={isDirty}
-        isSaving={isSubmitting || false}
-        onBack={onClose}
-        onSave={handleSubmit}
-        onClone={testCase ? () => {} : undefined}
-        onClose={onClose}
-        disabled={!title.trim()}
-      />
+      <header className="flex items-center justify-between px-4 h-14 border-b bg-background shrink-0">
+        {/* Left side */}
+        <div className="flex items-center gap-3">
+          <button
+            onClick={onClose}
+            className="p-1.5 rounded hover:bg-muted text-muted-foreground"
+          >
+            <ChevronLeft className="h-5 w-5" />
+          </button>
+
+          {/* Status Dropdown */}
+          <Select value={status} onValueChange={(v) => { setStatus(v); markDirty(); }}>
+            <SelectTrigger className="w-[140px] h-9">
+              <div className="flex items-center gap-2">
+                <span className={cn(
+                  "w-2 h-2 rounded-full",
+                  STATUS_OPTIONS.find(s => s.value === status)?.color || 'bg-muted-foreground'
+                )} />
+                <SelectValue />
+              </div>
+            </SelectTrigger>
+            <SelectContent>
+              {STATUS_OPTIONS.map((opt) => (
+                <SelectItem key={opt.value} value={opt.value}>
+                  <div className="flex items-center gap-2">
+                    <span className={cn("w-2 h-2 rounded-full", opt.color)} />
+                    {opt.label}
+                  </div>
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+          {/* Case Key */}
+          <span className="text-sm font-medium text-muted-foreground">
+            {testCase?.case_key || 'New Case'}
+          </span>
+        </div>
+
+        {/* Right side */}
+        <div className="flex items-center gap-3">
+          {/* Assignee */}
+          <div className="flex items-center gap-2">
+            <Avatar className="w-7 h-7">
+              <AvatarFallback className="text-xs bg-primary/10 text-primary">
+                {testCase?.owner_name?.charAt(0) || 'U'}
+              </AvatarFallback>
+            </Avatar>
+            <span className="text-sm text-muted-foreground">
+              {testCase?.owner_name || 'Unassigned'}
+            </span>
+          </div>
+
+          {/* Save button */}
+          <Button
+            onClick={handleSubmit}
+            disabled={!title.trim() || isSubmitting}
+            className="h-9 px-4 gap-2 bg-green-600 hover:bg-green-700 text-white"
+          >
+            <Save className="h-4 w-4" />
+            {isSubmitting ? 'Saving...' : isDirty ? 'Save' : 'Saved'}
+          </Button>
+
+          <button
+            onClick={onClose}
+            className="p-2 rounded hover:bg-muted text-muted-foreground"
+          >
+            <X className="h-5 w-5" />
+          </button>
+        </div>
+      </header>
 
       {/* ══════════════════════════════════════════════════════════════════════════ */}
-      {/* MAIN CONTENT */}
+      {/* MAIN CONTENT - FULL WIDTH */}
       {/* ══════════════════════════════════════════════════════════════════════════ */}
-      <main className="flex flex-1 overflow-hidden">
-        {/* Editor Panel */}
-        <div className="flex-1 flex flex-col min-w-0">
-          {/* Toolbar */}
-          <EditorToolbar
-            onAIAssist={() => setActiveContextTab('ai')}
-          />
+      <ScrollArea className="flex-1">
+        <div className="max-w-4xl mx-auto px-8 py-6">
+          {/* Approved Lock Banner */}
+          {isApproved && (
+            <Alert variant="default" className="mb-6 border-orange-300 bg-orange-50">
+              <Lock className="h-4 w-4 text-orange-600" />
+              <AlertTitle className="text-orange-700">Locked Test Case</AlertTitle>
+              <AlertDescription className="text-orange-600">
+                This test case is approved and cannot be modified.
+              </AlertDescription>
+            </Alert>
+          )}
 
-          {/* Content */}
-          <ScrollArea className="flex-1">
-            <div className="max-w-[880px] mx-auto px-8 py-6">
-              {/* Approved Lock Banner */}
-              {isApproved && (
-                <Alert variant="default" className="mb-6 border-warning bg-warning/10">
-                  <Lock className="h-4 w-4 text-warning" />
-                  <AlertTitle className="text-warning">Locked Test Case</AlertTitle>
-                  <AlertDescription className="text-warning/80">
-                    This test case is approved and cannot be modified. Create a new version to make changes.
-                  </AlertDescription>
-                </Alert>
+          {/* ═══════════════════════════════════════════════════════════════════════ */}
+          {/* TITLE FIELD - HERO ELEMENT */}
+          {/* ═══════════════════════════════════════════════════════════════════════ */}
+          <div className="mb-6">
+            <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
+              Title <span className="text-destructive">*</span>
+            </label>
+            <input
+              type="text"
+              value={title}
+              onChange={(e) => { setTitle(e.target.value); markDirty(); }}
+              placeholder="Enter test case title..."
+              autoFocus
+              maxLength={200}
+              disabled={!isEditable}
+              className={cn(
+                "w-full",
+                "text-2xl font-semibold",
+                "px-4 py-3",
+                "bg-background",
+                "border-2 border-border rounded-lg",
+                "shadow-sm",
+                "focus:border-primary focus:ring-4 focus:ring-primary/10 focus:outline-none",
+                "hover:border-muted-foreground/50",
+                "placeholder:text-muted-foreground/50 placeholder:font-normal",
+                "transition-all duration-150",
+                !title && "border-destructive/50"
               )}
+            />
+            <div className="flex justify-between mt-1.5">
+              {!title && (
+                <span className="text-xs text-destructive">Title is required</span>
+              )}
+              <span className="text-xs text-muted-foreground ml-auto">{title.length}/200</span>
+            </div>
+          </div>
 
-              {/* Title */}
-              <div id="section-title" className="mb-6">
-                <Input
-                  value={title}
-                  onChange={(e) => { setTitle(e.target.value); markDirty(); }}
-                  placeholder="Enter test case title..."
-                  className="w-full text-2xl font-bold bg-transparent border-none shadow-none focus-visible:ring-0 p-0 h-auto placeholder:text-muted-foreground/50"
-                  disabled={!isEditable}
-                />
-                <div className="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
-                  <span className="flex items-center gap-1">
-                    <User className="h-3 w-3" />
-                    {testCase?.owner_name || 'Current User'}
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <Clock className="h-3 w-3" />
-                    {testCase ? `Updated ${new Date(testCase.updated_at).toLocaleDateString()}` : 'New case'}
-                  </span>
-                  {testCase && <span>v1</span>}
-                </div>
+          {/* ═══════════════════════════════════════════════════════════════════════ */}
+          {/* METADATA FIELDS - 2x2 GRID */}
+          {/* ═══════════════════════════════════════════════════════════════════════ */}
+          <div className="grid grid-cols-2 gap-4 mb-6">
+            {/* Type */}
+            <div>
+              <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
+                Type <span className="text-destructive">*</span>
+              </label>
+              <Select value={typeId} onValueChange={(v) => { setTypeId(v); markDirty(); }}>
+                <SelectTrigger className="w-full h-10 border-border">
+                  <SelectValue placeholder="Select type..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {caseTypes.map((t) => (
+                    <SelectItem key={t.id} value={t.id}>
+                      <div className="flex items-center gap-2">
+                        <Cog className="w-4 h-4 text-muted-foreground" />
+                        {t.name}
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Priority */}
+            <div>
+              <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
+                Priority <span className="text-destructive">*</span>
+              </label>
+              <Select value={priorityId} onValueChange={(v) => { setPriorityId(v); markDirty(); }}>
+                <SelectTrigger className="w-full h-10 border-border">
+                  <SelectValue placeholder="Select priority..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {priorities.map((p) => (
+                    <SelectItem key={p.id} value={p.id}>
+                      <div className="flex items-center gap-2">
+                        <span 
+                          className="w-3 h-3 rounded-sm" 
+                          style={{ backgroundColor: p.color }}
+                        />
+                        {p.name}
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Folder */}
+            <div>
+              <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
+                Folder <span className="text-destructive">*</span>
+              </label>
+              <Select value={folderId} onValueChange={(v) => { setFolderId(v); markDirty(); }}>
+                <SelectTrigger className="w-full h-10 border-border">
+                  <div className="flex items-center gap-2">
+                    <FolderOpen className="w-4 h-4 text-muted-foreground" />
+                    <SelectValue placeholder="Select folder..." />
+                  </div>
+                </SelectTrigger>
+                <SelectContent>
+                  {folders.map((f) => (
+                    <SelectItem key={f.id} value={f.id}>
+                      {f.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Estimate */}
+            <div>
+              <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
+                Estimate
+              </label>
+              <Input
+                value={estimate}
+                onChange={(e) => { setEstimate(e.target.value); markDirty(); }}
+                placeholder="e.g., 15m, 1h 30m"
+                className="h-10 border-border"
+              />
+            </div>
+          </div>
+
+          {/* ═══════════════════════════════════════════════════════════════════════ */}
+          {/* SUMMARY FIELD */}
+          {/* ═══════════════════════════════════════════════════════════════════════ */}
+          <div className="mb-6">
+            <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
+              Summary <span className="text-destructive">*</span>
+            </label>
+            <input
+              type="text"
+              value={summary}
+              onChange={(e) => { setSummary(e.target.value); markDirty(); }}
+              placeholder="Brief one-line description of what this test validates..."
+              maxLength={200}
+              disabled={!isEditable}
+              className={cn(
+                "w-full",
+                "text-base",
+                "px-4 py-2.5",
+                "bg-background",
+                "border border-border rounded-lg",
+                "shadow-sm",
+                "focus:border-primary focus:ring-2 focus:ring-primary/10 focus:outline-none",
+                "placeholder:text-muted-foreground/50"
+              )}
+            />
+            <div className="flex justify-end mt-1">
+              <span className="text-xs text-muted-foreground">{summary.length}/200</span>
+            </div>
+          </div>
+
+          {/* ═══════════════════════════════════════════════════════════════════════ */}
+          {/* DESCRIPTION / OBJECTIVE */}
+          {/* ═══════════════════════════════════════════════════════════════════════ */}
+          <div className="mb-6">
+            <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
+              Objective / Description
+            </label>
+            <div className="border border-border rounded-lg shadow-sm overflow-hidden bg-background">
+              {/* Rich Text Toolbar */}
+              <div className="flex items-center gap-1 px-3 py-2 bg-muted/50 border-b border-border">
+                <Button variant="ghost" size="sm" className="h-8 w-8 p-0"><Bold className="h-4 w-4" /></Button>
+                <Button variant="ghost" size="sm" className="h-8 w-8 p-0"><Italic className="h-4 w-4" /></Button>
+                <Button variant="ghost" size="sm" className="h-8 w-8 p-0"><Underline className="h-4 w-4" /></Button>
+                <div className="w-px h-5 bg-border mx-1" />
+                <Button variant="ghost" size="sm" className="h-8 w-8 p-0"><List className="h-4 w-4" /></Button>
+                <Button variant="ghost" size="sm" className="h-8 w-8 p-0"><ListOrdered className="h-4 w-4" /></Button>
+                <div className="w-px h-5 bg-border mx-1" />
+                <Button variant="ghost" size="sm" className="h-8 w-8 p-0"><Code className="h-4 w-4" /></Button>
+                <Button variant="ghost" size="sm" className="h-8 w-8 p-0"><LinkIcon className="h-4 w-4" /></Button>
+                <Button variant="ghost" size="sm" className="h-8 w-8 p-0"><ImageIcon className="h-4 w-4" /></Button>
               </div>
-
-              {/* Objective Section */}
-              <div id="section-objective">
-                <ObjectiveSection
-                  objective={objective}
-                  onChange={(value) => { if (isEditable) { setObjective(value); markDirty(); }}}
-                  className="mb-5"
-                />
-              </div>
-
-              {/* Preconditions Section */}
-              <div id="section-preconditions">
-                <PreconditionsSection
-                  preconditions={preconditions}
-                  onChange={(value) => { if (isEditable) { setPreconditions(value); markDirty(); }}}
-                  className="mb-5"
-                />
-              </div>
-
-              {/* Steps Section */}
-              <div id="section-steps">
-                <StepsSection
-                  steps={stepsList}
-                  onChange={(value) => { if (isEditable) { setStepsList(value); markDirty(); }}}
-                  expandedSteps={expandedSteps}
-                  onToggleStep={toggleStepExpand}
-                  className="mb-5"
-                />
-              </div>
-
-              {/* Quality Checklist - Visible in editor */}
-              <div id="section-traceability" className="mt-6">
-                <QualityChecklist
-                  title={title}
-                  objective={objective}
-                  preconditions={preconditions.map(p => p.text).join('\n')}
-                  steps={stepsList}
-                  linkedRequirements={linkedRequirements}
-                  priority={priorityId}
-                  onScrollToSection={(section) => {
-                    document.getElementById(`section-${section}`)?.scrollIntoView({
-                      behavior: 'smooth'
-                    });
-                  }}
-                />
+              
+              <Textarea
+                value={description}
+                onChange={(e) => { setDescription(e.target.value); markDirty(); }}
+                placeholder="Describe the purpose of this test case. What functionality does it verify? What is the expected behavior?"
+                disabled={!isEditable}
+                className={cn(
+                  "w-full",
+                  "min-h-[250px]",
+                  "max-h-[500px]",
+                  "resize-y",
+                  "px-4 py-3",
+                  "text-sm leading-relaxed",
+                  "border-none rounded-none",
+                  "focus-visible:ring-0",
+                  "placeholder:text-muted-foreground/50"
+                )}
+              />
+              
+              <div className="flex justify-between items-center px-3 py-2 bg-muted/50 border-t border-border text-xs text-muted-foreground">
+                <span>{description.length} characters · {description.split(/\s+/).filter(Boolean).length} words</span>
+                <span>Tip: Be specific about expected behavior</span>
               </div>
             </div>
-          </ScrollArea>
-        </div>
+          </div>
 
-        {/* ══════════════════════════════════════════════════════════════════════════ */}
-        {/* CONTEXT PANEL */}
-        {/* ══════════════════════════════════════════════════════════════════════════ */}
-        <ContextPanel
-          activeTab={activeContextTab}
-          onTabChange={setActiveContextTab}
-          status={status}
-          priorityId={priorityId}
-          typeId={typeId}
-          folderId={folderId}
-          estimatedTime={estimatedTime}
-          selectedLabels={selectedLabels}
-          priorities={priorities}
-          caseTypes={caseTypes}
-          folders={folders}
-          labels={labels}
-          onStatusChange={(value) => { handleStatusChange(value); }}
-          onPriorityChange={(value) => { if (isEditable) { setPriorityId(value); markDirty(); }}}
-          onTypeChange={(value) => { if (isEditable) { setTypeId(value); markDirty(); }}}
-          onFolderChange={(value) => { if (isEditable) { setFolderId(value); markDirty(); }}}
-          onEstimatedTimeChange={(value) => { if (isEditable) { setEstimatedTime(value); markDirty(); }}}
-          onLabelsChange={(value) => { if (isEditable) { setSelectedLabels(value); markDirty(); }}}
-        />
-      </main>
-
-      {/* ══════════════════════════════════════════════════════════════════════════ */}
-      {/* FOOTER */}
-      {/* ══════════════════════════════════════════════════════════════════════════ */}
-      <footer className="flex items-center justify-between px-5 py-2.5 bg-gradient-to-b from-background to-muted/30 border-t border-border shrink-0">
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
-            <span className={cn(
-              'w-1.5 h-1.5 rounded-full transition-colors duration-300',
-              isDirty ? 'bg-warning animate-pulse' : 'bg-success'
-            )} />
-            {isDirty ? 'Unsaved changes' : 'All changes saved'}
-            {lastSaved && !isDirty && (
-              <span className="text-muted-foreground/60 ml-1">
-                at {lastSaved.toLocaleTimeString()}
-              </span>
+          {/* ═══════════════════════════════════════════════════════════════════════ */}
+          {/* PRECONDITIONS */}
+          {/* ═══════════════════════════════════════════════════════════════════════ */}
+          <div className="mb-6 border border-border rounded-lg bg-background overflow-hidden">
+            <div
+              className="flex items-center justify-between px-4 py-3 bg-muted/50 border-b border-border cursor-pointer"
+              onClick={() => setPreconditionsExpanded(!preconditionsExpanded)}
+            >
+              <div className="flex items-center gap-2">
+                <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                  Preconditions
+                </h3>
+                <Badge variant="secondary" className="h-5 px-1.5 text-[10px]">
+                  {preconditions.length}
+                </Badge>
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={(e) => { e.stopPropagation(); handleAddPrecondition(); }}
+                  className="text-xs font-medium text-primary hover:text-primary/80"
+                >
+                  + Add
+                </button>
+                {preconditionsExpanded ? <ChevronUp className="h-4 w-4 text-muted-foreground" /> : <ChevronDown className="h-4 w-4 text-muted-foreground" />}
+              </div>
+            </div>
+            {preconditionsExpanded && (
+              <div className="p-4">
+                {preconditions.length === 0 ? (
+                  <div className="text-center py-6 text-muted-foreground text-sm">
+                    No preconditions defined
+                    <button
+                      onClick={handleAddPrecondition}
+                      className="block mx-auto mt-2 text-primary hover:text-primary/80 text-sm"
+                    >
+                      + Add precondition
+                    </button>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    {preconditions.map((pre, idx) => (
+                      <div key={pre.id} className="flex items-start gap-2 group">
+                        <span className="flex items-center justify-center w-6 h-6 bg-primary text-primary-foreground rounded-full text-xs font-bold shrink-0">
+                          {idx + 1}
+                        </span>
+                        <Input
+                          value={pre.text}
+                          onChange={(e) => handleUpdatePrecondition(pre.id, e.target.value)}
+                          placeholder="Enter precondition..."
+                          className="flex-1"
+                          disabled={!isEditable}
+                        />
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-destructive"
+                          onClick={() => handleDeletePrecondition(pre.id)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             )}
           </div>
+
+          {/* ═══════════════════════════════════════════════════════════════════════ */}
+          {/* TEST STEPS */}
+          {/* ═══════════════════════════════════════════════════════════════════════ */}
+          <div className="mb-6 border border-border rounded-lg bg-background overflow-hidden">
+            <div
+              className="flex items-center justify-between px-4 py-3 bg-muted/50 border-b border-border cursor-pointer"
+              onClick={() => setStepsExpanded(!stepsExpanded)}
+            >
+              <div className="flex items-center gap-2">
+                <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                  Test Steps
+                </h3>
+                <Badge variant="secondary" className="h-5 px-1.5 text-[10px] bg-green-100 text-green-700">
+                  {stepsList.length}
+                </Badge>
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={(e) => { e.stopPropagation(); handleAddStep(); }}
+                  className="text-xs font-medium text-primary hover:text-primary/80"
+                >
+                  + Add Step
+                </button>
+                {stepsExpanded ? <ChevronUp className="h-4 w-4 text-muted-foreground" /> : <ChevronDown className="h-4 w-4 text-muted-foreground" />}
+              </div>
+            </div>
+            
+            {stepsExpanded && (
+              <div className="p-4">
+                {/* Table Header */}
+                <div className="grid grid-cols-[50px_1fr_180px_1fr_80px] gap-2 px-3 py-2 bg-muted/50 rounded-t-lg border border-border text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                  <span>#</span>
+                  <span>Action <span className="text-destructive">*</span></span>
+                  <span>Test Data</span>
+                  <span>Expected Result <span className="text-destructive">*</span></span>
+                  <span></span>
+                </div>
+
+                {/* Step Rows */}
+                <div className="border-x border-b border-border rounded-b-lg divide-y divide-border">
+                  {stepsList.map((step) => {
+                    const isStepExpanded = expandedSteps.has(step.id);
+                    return (
+                      <div key={step.id} className="bg-background">
+                        {/* Collapsed row */}
+                        <div
+                          className="grid grid-cols-[50px_1fr_180px_1fr_80px] gap-2 px-3 py-3 items-center cursor-pointer hover:bg-muted/30"
+                          onClick={() => toggleStepExpand(step.id)}
+                        >
+                          <div className="flex items-center gap-2">
+                            <GripVertical className="h-4 w-4 text-muted-foreground/50" />
+                            <span className="flex items-center justify-center w-6 h-6 bg-primary text-primary-foreground rounded-full text-xs font-bold">
+                              {step.step_number}
+                            </span>
+                          </div>
+                          <div className="text-sm truncate">{step.action || <span className="text-muted-foreground/50">Enter action...</span>}</div>
+                          <div className="text-sm truncate text-muted-foreground">{step.test_data || '—'}</div>
+                          <div className="text-sm truncate">{step.expected_result || <span className="text-muted-foreground/50">Enter expected result...</span>}</div>
+                          <div className="flex items-center gap-1">
+                            {step.test_data && (
+                              <Badge variant="secondary" className="text-[10px] bg-green-100 text-green-700">DATA</Badge>
+                            )}
+                            {isStepExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                          </div>
+                        </div>
+
+                        {/* Expanded view */}
+                        {isStepExpanded && (
+                          <div className="px-4 pb-4 pt-2 bg-muted/20 border-t border-border">
+                            <div className="grid grid-cols-2 gap-4 mb-4">
+                              <div>
+                                <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1.5">
+                                  Action <span className="text-destructive">*</span>
+                                </label>
+                                <Textarea
+                                  value={step.action}
+                                  onChange={(e) => handleUpdateStep(step.id, 'action', e.target.value)}
+                                  placeholder="What should the tester do?"
+                                  className="min-h-[80px] text-sm"
+                                  disabled={!isEditable}
+                                />
+                              </div>
+                              <div>
+                                <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1.5">
+                                  Expected Result <span className="text-destructive">*</span>
+                                </label>
+                                <Textarea
+                                  value={step.expected_result}
+                                  onChange={(e) => handleUpdateStep(step.id, 'expected_result', e.target.value)}
+                                  placeholder="What should happen?"
+                                  className={cn(
+                                    "min-h-[80px] text-sm",
+                                    step.action?.trim() && !step.expected_result?.trim() && "border-destructive"
+                                  )}
+                                  disabled={!isEditable}
+                                />
+                              </div>
+                            </div>
+                            <div className="mb-4">
+                              <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1.5">
+                                Test Data
+                              </label>
+                              <Input
+                                value={step.test_data}
+                                onChange={(e) => handleUpdateStep(step.id, 'test_data', e.target.value)}
+                                placeholder="Input values, parameters..."
+                                className="text-sm font-mono"
+                                disabled={!isEditable}
+                              />
+                            </div>
+                            <div className="flex items-center justify-between pt-3 border-t border-border">
+                              <span className="text-xs text-muted-foreground">Step {step.step_number} of {stepsList.length}</span>
+                              <div className="flex gap-1">
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-7 w-7"
+                                  onClick={() => handleDuplicateStep(step)}
+                                >
+                                  <Copy className="h-3.5 w-3.5" />
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-7 w-7 text-destructive hover:bg-destructive/10"
+                                  onClick={() => handleDeleteStep(step.id)}
+                                >
+                                  <Trash2 className="h-3.5 w-3.5" />
+                                </Button>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* Add Step Button */}
+                <button
+                  onClick={handleAddStep}
+                  className="w-full mt-3 py-3 border-2 border-dashed border-border rounded-lg text-muted-foreground hover:border-primary hover:text-primary hover:bg-primary/5 transition-colors flex items-center justify-center gap-2 text-sm"
+                >
+                  <Plus className="h-4 w-4" />
+                  Add Test Step
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* ═══════════════════════════════════════════════════════════════════════ */}
+          {/* ADDITIONAL FIELDS ROW */}
+          {/* ═══════════════════════════════════════════════════════════════════════ */}
+          <div className="grid grid-cols-3 gap-4 mb-6">
+            {/* Attachments */}
+            <div className="p-4 border border-border rounded-lg bg-background">
+              <div className="flex items-center gap-2 mb-2">
+                <Paperclip className="h-4 w-4 text-muted-foreground" />
+                <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Attachments</span>
+              </div>
+              <p className="text-sm text-muted-foreground">0 files</p>
+            </div>
+
+            {/* Labels */}
+            <div className="p-4 border border-border rounded-lg bg-background">
+              <div className="flex items-center gap-2 mb-2">
+                <Tag className="h-4 w-4 text-muted-foreground" />
+                <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Labels</span>
+              </div>
+              <div className="flex flex-wrap gap-1">
+                {selectedLabels.length === 0 ? (
+                  <span className="text-sm text-muted-foreground">No labels</span>
+                ) : (
+                  selectedLabels.map(id => {
+                    const label = labels.find(l => l.id === id);
+                    return label ? (
+                      <Badge key={id} variant="secondary" className="text-xs">
+                        {label.name}
+                      </Badge>
+                    ) : null;
+                  })
+                )}
+              </div>
+            </div>
+
+            {/* References */}
+            <div className="p-4 border border-border rounded-lg bg-background">
+              <div className="flex items-center gap-2 mb-2">
+                <LinkIcon className="h-4 w-4 text-muted-foreground" />
+                <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">References</span>
+              </div>
+              <Input
+                value={references}
+                onChange={(e) => { setReferences(e.target.value); markDirty(); }}
+                placeholder="REQ-123, JIRA-456..."
+                className="text-sm"
+              />
+            </div>
+          </div>
+
+          {/* ═══════════════════════════════════════════════════════════════════════ */}
+          {/* METADATA FOOTER */}
+          {/* ═══════════════════════════════════════════════════════════════════════ */}
+          <div className="mt-8 pt-4 border-t border-border text-xs text-muted-foreground flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <span>Created by: <strong className="text-foreground">{testCase?.owner_name || 'Current User'}</strong></span>
+              <span>·</span>
+              <span>{testCase?.created_at ? new Date(testCase.created_at).toLocaleDateString() : 'Just now'}</span>
+            </div>
+            <div>
+              Last updated: {testCase?.updated_at ? formatRelativeTime(testCase.updated_at) : 'Never'}
+            </div>
+          </div>
         </div>
-        <div className="flex items-center gap-4 text-[11px] text-muted-foreground">
+      </ScrollArea>
+
+      {/* ══════════════════════════════════════════════════════════════════════════ */}
+      {/* FOOTER BAR */}
+      {/* ══════════════════════════════════════════════════════════════════════════ */}
+      <footer className="flex items-center justify-between px-5 py-2.5 bg-background border-t border-border shrink-0">
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+            <span className={cn(
+              'w-1.5 h-1.5 rounded-full',
+              isDirty ? 'bg-orange-500 animate-pulse' : 'bg-green-500'
+            )} />
+            {isDirty ? 'Unsaved changes' : 'All changes saved'}
+          </div>
+        </div>
+        <div className="flex items-center gap-4 text-xs text-muted-foreground">
           <span className="flex items-center gap-1.5">
             <span className="w-4 h-4 flex items-center justify-center bg-primary/10 text-primary rounded text-[9px] font-bold">
               {stepsList.length}
             </span>
             steps
           </span>
-          {estimatedTime && (
+          {estimate && (
             <span className="flex items-center gap-1">
               <Clock className="h-3 w-3" />
-              ~{estimatedTime} min
+              ~{estimate}
             </span>
           )}
           <span className="text-muted-foreground/50">|</span>
-          <span className="text-muted-foreground/60">
+          <span>
             <kbd className="px-1.5 py-0.5 bg-muted rounded text-[10px]">⌘S</kbd> to save
           </span>
         </div>
