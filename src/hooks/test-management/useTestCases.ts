@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { TMTestCase, TMCaseStep, CaseFilters, CreateCaseInput, UpdateCaseInput } from '@/types/test-management';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 type DbCaseStatus = 'draft' | 'ready' | 'approved' | 'deprecated';
 
@@ -237,6 +237,10 @@ export function useCreateTestCase() {
           case_type_id: input.type_id || null,
           version: 1,
           created_by: user.id,
+          is_ai_generated: input.is_ai_generated || false,
+          ai_generation_prompt: input.ai_generation_prompt || null,
+          ai_model: input.ai_model || null,
+          ai_generated_at: input.is_ai_generated ? new Date().toISOString() : null,
         })
         .select()
         .single();
@@ -279,10 +283,10 @@ export function useCreateTestCase() {
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['tm-cases', data.project_id] });
       queryClient.invalidateQueries({ queryKey: ['tm-folders-with-counts', data.project_id] });
-      toast.success('Test case created');
+      catalystToast.success('Test case created');
     },
     onError: (error: Error) => {
-      toast.error(`Failed to create test case: ${error.message}`);
+      catalystToast.error('Failed to create test case', error.message);
     },
   });
 }
@@ -363,10 +367,10 @@ export function useUpdateTestCase() {
       queryClient.invalidateQueries({ queryKey: ['tm-cases', data.project_id] });
       queryClient.invalidateQueries({ queryKey: ['tm-case', data.id] });
       queryClient.invalidateQueries({ queryKey: ['tm-case-steps', data.id] });
-      toast.success('Test case updated');
+      catalystToast.success('Test case updated');
     },
     onError: (error: Error) => {
-      toast.error(`Failed to update test case: ${error.message}`);
+      catalystToast.error('Failed to update test case', error.message);
     },
   });
 }
@@ -386,10 +390,10 @@ export function useDeleteTestCase() {
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['tm-cases', variables.project_id] });
       queryClient.invalidateQueries({ queryKey: ['tm-folders-with-counts', variables.project_id] });
-      toast.success('Test case deleted');
+      catalystToast.success('Test case deleted');
     },
     onError: (error: Error) => {
-      toast.error(`Failed to delete test case: ${error.message}`);
+      catalystToast.error('Failed to delete test case', error.message);
     },
   });
 }
@@ -460,10 +464,10 @@ export function useCloneTestCase() {
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['tm-cases', data.project_id] });
-      toast.success('Test case cloned');
+      catalystToast.success('Test case cloned');
     },
     onError: (error: Error) => {
-      toast.error(`Failed to clone test case: ${error.message}`);
+      catalystToast.error('Failed to clone test case', error.message);
     },
   });
 }
@@ -483,10 +487,10 @@ export function useMoveTestCase() {
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['tm-cases', variables.project_id] });
       queryClient.invalidateQueries({ queryKey: ['tm-folders-with-counts', variables.project_id] });
-      toast.success(`Moved ${variables.case_ids.length} case(s)`);
+      catalystToast.success('Cases moved', `${variables.case_ids.length} case(s) moved`);
     },
     onError: (error: Error) => {
-      toast.error(`Failed to move cases: ${error.message}`);
+      catalystToast.error('Failed to move cases', error.message);
     },
   });
 }
@@ -506,10 +510,10 @@ export function useBulkDeleteTestCases() {
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['tm-cases', variables.project_id] });
       queryClient.invalidateQueries({ queryKey: ['tm-folders-with-counts', variables.project_id] });
-      toast.success(`Deleted ${variables.case_ids.length} case(s)`);
+      catalystToast.success('Cases deleted', `${variables.case_ids.length} case(s) deleted`);
     },
     onError: (error: Error) => {
-      toast.error(`Failed to delete cases: ${error.message}`);
+      catalystToast.error('Failed to delete cases', error.message);
     },
   });
 }
@@ -531,10 +535,10 @@ export function useBulkCopyTestCases() {
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['tm-cases', variables.project_id] });
       queryClient.invalidateQueries({ queryKey: ['tm-folders-with-counts', variables.project_id] });
-      toast.success(`Copied ${variables.case_ids.length} case(s)`);
+      catalystToast.success('Cases copied', `${variables.case_ids.length} case(s) copied`);
     },
     onError: (error: Error) => {
-      toast.error(`Failed to copy cases: ${error.message}`);
+      catalystToast.error('Failed to copy cases', error.message);
     },
   });
 }
@@ -560,10 +564,10 @@ export function useAddTestCasesToCycle() {
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['tm-cycles'] });
       queryClient.invalidateQueries({ queryKey: ['tm-cycle', variables.cycle_id] });
-      toast.success(`Added ${variables.case_ids.length} case(s) to cycle`);
+      catalystToast.success('Cases added to cycle', `${variables.case_ids.length} case(s) added`);
     },
     onError: (error: Error) => {
-      toast.error(`Failed to add cases to cycle: ${error.message}`);
+      catalystToast.error('Failed to add cases to cycle', error.message);
     },
   });
 }
