@@ -3,7 +3,7 @@
  * Search, filters, view toggle, column selector, and bulk actions
  */
 
-import React from 'react';
+import React, { useState, useRef } from 'react';
 import {
   Search,
   LayoutGrid,
@@ -23,6 +23,9 @@ import {
   UserX,
 } from 'lucide-react';
 import { ColumnSelector } from './ColumnSelector';
+import { AISearchSuggestions } from './AISearchSuggestions';
+import { MoreFiltersPanel, type MoreFiltersState } from './MoreFiltersPanel';
+import { SortDropdown } from './SortDropdown';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -41,6 +44,7 @@ import { Separator } from '@/components/ui/separator';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
 import type { CaseStatus } from '../../api/types';
+import type { SortField, SortDirection } from './CasesDataTable';
 
 export interface CasesFilters {
   status: CaseStatus[];
@@ -48,6 +52,8 @@ export interface CasesFilters {
   typeIds: string[];
   assignedTo: string | null; // 'me' | 'unassigned' | userId
   search: string;
+  // Extended filters
+  moreFilters?: MoreFiltersState;
 }
 
 interface CasesToolbarProps {
@@ -70,6 +76,10 @@ interface CasesToolbarProps {
   caseTypes?: { id: string; name: string }[];
   teamMembers?: { id: string; full_name: string; avatar_url?: string | null }[];
   currentUserId?: string;
+  // Sort props
+  sortField?: SortField;
+  sortDirection?: SortDirection;
+  onSortChange?: (field: SortField) => void;
 }
 
 const STATUS_OPTIONS: { value: CaseStatus; label: string }[] = [
@@ -79,6 +89,15 @@ const STATUS_OPTIONS: { value: CaseStatus; label: string }[] = [
   { value: 'needs_update', label: 'Needs Update' },
   { value: 'deprecated', label: 'Deprecated' },
 ];
+
+const DEFAULT_MORE_FILTERS: MoreFiltersState = {
+  dateField: 'updated_at',
+  dateFrom: '',
+  dateTo: '',
+  tags: [],
+  hasLinkedItemsOnly: false,
+  aiGeneratedOnly: false,
+};
 
 export function CasesToolbar({
   filters,
@@ -100,7 +119,14 @@ export function CasesToolbar({
   caseTypes = [],
   teamMembers = [],
   currentUserId,
+  sortField = 'updated_at',
+  sortDirection = 'desc',
+  onSortChange,
 }: CasesToolbarProps) {
+  const [aiSuggestionsOpen, setAiSuggestionsOpen] = useState(false);
+  const [moreFilters, setMoreFilters] = useState<MoreFiltersState>(DEFAULT_MORE_FILTERS);
+  const searchRef = useRef<HTMLInputElement>(null);
+
   const hasActiveFilters =
     filters.status.length > 0 ||
     filters.priorityIds.length > 0 ||
@@ -142,6 +168,34 @@ export function CasesToolbar({
 
   const clearFilters = () => {
     onFiltersChange({ ...filters, status: [], priorityIds: [], typeIds: [], assignedTo: null });
+    setMoreFilters(DEFAULT_MORE_FILTERS);
+  };
+
+  const handleSearchChange = (value: string) => {
+    onFiltersChange({ ...filters, search: value });
+    if (value.length >= 2) {
+      setAiSuggestionsOpen(true);
+    } else {
+      setAiSuggestionsOpen(false);
+    }
+  };
+
+  const handleAISuggestionSelect = (suggestion: string) => {
+    onFiltersChange({ ...filters, search: suggestion });
+    setAiSuggestionsOpen(false);
+  };
+
+  const handleMoreFiltersChange = (newFilters: MoreFiltersState) => {
+    setMoreFilters(newFilters);
+  };
+
+  const handleMoreFiltersApply = () => {
+    onFiltersChange({ ...filters, moreFilters });
+  };
+
+  const handleMoreFiltersClear = () => {
+    setMoreFilters(DEFAULT_MORE_FILTERS);
+    onFiltersChange({ ...filters, moreFilters: undefined });
   };
 
   return (
@@ -152,14 +206,24 @@ export function CasesToolbar({
         borderBottom: '1px solid var(--divider, hsl(var(--border)))',
       }}
     >
-      {/* Search */}
+      {/* Search with AI Suggestions */}
       <div className="relative flex-1 max-w-md">
         <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
         <Input
+          ref={searchRef}
           placeholder="Search test cases..."
           value={filters.search}
-          onChange={(e) => onFiltersChange({ ...filters, search: e.target.value })}
-          className="pl-9 h-9"
+          onChange={(e) => handleSearchChange(e.target.value)}
+          onFocus={() => filters.search.length >= 2 && setAiSuggestionsOpen(true)}
+          className="pl-9 pr-9 h-9"
+        />
+        <Sparkles className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-purple-500" />
+        
+        <AISearchSuggestions
+          query={filters.search}
+          onSelect={handleAISuggestionSelect}
+          isOpen={aiSuggestionsOpen}
+          onOpenChange={setAiSuggestionsOpen}
         />
       </div>
 
@@ -310,6 +374,14 @@ export function CasesToolbar({
         </DropdownMenuContent>
       </DropdownMenu>
 
+      {/* More Filters */}
+      <MoreFiltersPanel
+        filters={moreFilters}
+        onFiltersChange={handleMoreFiltersChange}
+        onApply={handleMoreFiltersApply}
+        onClear={handleMoreFiltersClear}
+      />
+
       {/* Clear Filters */}
       {hasActiveFilters && (
         <Button variant="ghost" size="sm" onClick={clearFilters} className="text-muted-foreground">
@@ -360,6 +432,15 @@ export function CasesToolbar({
             </DropdownMenuContent>
           </DropdownMenu>
         </>
+      )}
+
+      {/* Sort Dropdown */}
+      {onSortChange && (
+        <SortDropdown
+          sortField={sortField}
+          sortDirection={sortDirection}
+          onSortChange={onSortChange}
+        />
       )}
 
       {/* View Toggle */}
