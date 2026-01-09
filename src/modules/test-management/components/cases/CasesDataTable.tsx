@@ -254,7 +254,7 @@ export function CasesDataTable({
               </TableRow>
             ) : (
               cases.map((testCase) => {
-                const statusConfig = STATUS_CONFIG[testCase.status];
+                const statusConfig = STATUS_CONFIG[testCase.status] || STATUS_CONFIG.draft;
                 const isSelected = selectedIds.has(testCase.id);
 
                 return (
