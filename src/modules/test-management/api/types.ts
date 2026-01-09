@@ -48,6 +48,7 @@ export interface TestCase {
   tags?: string[];
   created_by?: string;
   created_by_profile?: { id: string; full_name?: string; avatar_url?: string };
+  is_ai_generated?: boolean;
   created_at: string;
   updated_at: string;
   steps?: TestStep[];

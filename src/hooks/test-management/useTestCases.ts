@@ -37,7 +37,8 @@ export function useTestCases(projectId: string | undefined, filters?: CaseFilter
           *,
           priority:tm_case_priorities(*),
           type:tm_case_types(*),
-          folder:tm_folders(id, name, path)
+          folder:tm_folders(id, name, path),
+          created_by_profile:profiles!tm_test_cases_created_by_fkey(id, full_name, avatar_url)
         `, { count: 'exact' })
         .eq('project_id', projectId)
         .order('updated_at', { ascending: false });
@@ -91,6 +92,8 @@ export function useTestCases(projectId: string | undefined, filters?: CaseFilter
         type_id: c.case_type_id,
         updated_by: c.created_by || '',
         objective: c.description,
+        is_ai_generated: c.is_ai_generated || false,
+        created_by_profile: c.created_by_profile,
       })) as unknown as TMTestCase[];
 
       return { cases, total: count || 0 };
@@ -188,14 +191,25 @@ export function useTestCaseSteps(caseId: string | undefined) {
   });
 }
 
-async function generateCaseKey(projectId: string): Promise<string> {
-  const { data: project } = await supabase
-    .from('tm_projects')
-    .select('key')
-    .eq('id', projectId)
-    .maybeSingle();
-
-  const prefix = project?.key || 'TC';
+async function generateCaseKey(projectId: string, folderId?: string | null): Promise<string> {
+  let prefix = 'TC';
+  
+  // If folder_id is provided, get folder name and use first 3 letters
+  if (folderId) {
+    const { data: folder } = await supabase
+      .from('tm_folders')
+      .select('name')
+      .eq('id', folderId)
+      .maybeSingle();
+    
+    if (folder?.name) {
+      // Get first 3 letters of folder name, uppercase, remove special chars
+      prefix = folder.name
+        .replace(/[^a-zA-Z]/g, '')
+        .slice(0, 3)
+        .toUpperCase() || 'TC';
+    }
+  }
 
   const { data, error } = await supabase.rpc('tm_next_entity_key', {
     p_prefix: prefix,
@@ -222,7 +236,11 @@ export function useCreateTestCase(options?: { silent?: boolean }) {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      const caseKey = await generateCaseKey(input.project_id);
+      const caseKey = await generateCaseKey(input.project_id, input.folder_id);
+
+      // Default priority and type IDs for new cases (Medium priority, Functional type)
+      const DEFAULT_PRIORITY_ID = '00000000-0000-0000-0001-000000000003'; // Medium
+      const DEFAULT_TYPE_ID = '00000000-0000-0000-0002-000000000001'; // Functional
 
       const { data: testCase, error: caseError } = await supabase
         .from('tm_test_cases')
@@ -234,8 +252,8 @@ export function useCreateTestCase(options?: { silent?: boolean }) {
           preconditions: input.preconditions,
           status: statusToDb(input.status || 'DRAFT'),
           folder_id: input.folder_id || null,
-          priority_id: input.priority_id || null,
-          case_type_id: input.type_id || null,
+          priority_id: input.priority_id || DEFAULT_PRIORITY_ID,
+          case_type_id: input.type_id || DEFAULT_TYPE_ID,
           version: 1,
           created_by: user.id,
           is_ai_generated: input.is_ai_generated || false,
