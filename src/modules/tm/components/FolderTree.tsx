@@ -369,19 +369,23 @@ export function FolderTree({
 
       {/* Create Folder Dialog */}
       <Dialog open={createOpen} onOpenChange={setCreateOpen}>
-        <DialogContent style={{ borderRadius: '12px' }}>
+        <DialogContent style={{ borderRadius: '12px' }} onPointerDownOutside={(e) => e.preventDefault()}>
           <DialogHeader>
             <DialogTitle>Create Folder</DialogTitle>
           </DialogHeader>
           <div className="py-4">
-            <Input
+            <input
+              type="text"
               placeholder="Folder name"
               value={newFolderName}
               onChange={(e) => setNewFolderName(e.target.value)}
               onKeyDown={(e) => {
                 e.stopPropagation();
-                if (e.key === 'Enter') handleCreate();
+                if (e.key === 'Enter' && newFolderName.trim()) {
+                  handleCreate();
+                }
               }}
+              className="flex h-10 w-full rounded-md border border-border/50 bg-background px-3 py-2 text-base text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:border-brand-primary md:text-sm"
             />
           </div>
           <DialogFooter>
@@ -397,19 +401,23 @@ export function FolderTree({
 
       {/* Rename Folder Dialog */}
       <Dialog open={renameOpen} onOpenChange={setRenameOpen}>
-        <DialogContent style={{ borderRadius: '12px' }}>
+        <DialogContent style={{ borderRadius: '12px' }} onPointerDownOutside={(e) => e.preventDefault()}>
           <DialogHeader>
             <DialogTitle>Rename Folder</DialogTitle>
           </DialogHeader>
           <div className="py-4">
-            <Input
+            <input
+              type="text"
               placeholder="Folder name"
               value={newFolderName}
               onChange={(e) => setNewFolderName(e.target.value)}
               onKeyDown={(e) => {
                 e.stopPropagation();
-                if (e.key === 'Enter') handleRename();
+                if (e.key === 'Enter' && newFolderName.trim()) {
+                  handleRename();
+                }
               }}
+              className="flex h-10 w-full rounded-md border border-border/50 bg-background px-3 py-2 text-base text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:border-brand-primary md:text-sm"
             />
           </div>
           <DialogFooter>
