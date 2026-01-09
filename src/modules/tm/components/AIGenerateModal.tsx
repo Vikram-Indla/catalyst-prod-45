@@ -145,7 +145,7 @@ export function AIGenerateModal({ open, onOpenChange, onAddCases }: AIGenerateMo
             </div>
             <div>
               <DialogTitle className="text-lg font-semibold text-[var(--text-1)]">
-                AI Test Case Generator
+                Catalyst - AI Generator
               </DialogTitle>
               <p className="text-sm text-[var(--text-3)] mt-0.5">
                 Generate test cases from requirements using AI
