@@ -11,6 +11,11 @@ interface BulkActionsBarProps {
   onUpdateStatus?: () => void;
   onAssign?: () => void;
   onDelete?: () => void;
+  onMove?: () => void;
+  onLink?: () => void;
+  onDuplicate?: () => void;
+  onExport?: () => void;
+  onPriority?: () => void;
 }
 
 export function BulkActionsBar({ 
@@ -18,7 +23,12 @@ export function BulkActionsBar({
   onClear, 
   onUpdateStatus, 
   onAssign, 
-  onDelete 
+  onDelete,
+  onMove,
+  onLink,
+  onDuplicate,
+  onExport,
+  onPriority,
 }: BulkActionsBarProps) {
   return (
     <BulkSelectionBar
@@ -27,6 +37,11 @@ export function BulkActionsBar({
       onUpdateStatus={onUpdateStatus}
       onAssign={onAssign}
       onDelete={onDelete}
+      onMove={onMove}
+      onLink={onLink}
+      onDuplicate={onDuplicate}
+      onExport={onExport}
+      onPriority={onPriority}
     />
   );
 }
