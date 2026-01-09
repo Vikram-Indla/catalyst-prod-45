@@ -32,7 +32,6 @@ serve(async (req) => {
 CONTEXT:
 - Application: ${projectName || "Unknown Project"}
 - Module/Feature: ${featureName || "General"}
-- Test Type: ${testType || "functional"}
 
 USER REQUEST:
 ${prompt}
@@ -43,14 +42,90 @@ GENERATION OPTIONS:
 - Include performance tests: ${includePerformance ?? false}
 - Include security tests: ${includeSecurity ?? false}
 
-RULES:
+=== CRITICAL: SMART ASSIGNMENT RULES ===
+
+You MUST assign Priority and Type intelligently based on test case content:
+
+**PRIORITY ASSIGNMENT RULES:**
+- CRITICAL: Assign when test involves:
+  • Authentication (login, logout, session)
+  • Authorization (permissions, roles, access control)
+  • Payment/Financial transactions
+  • Data integrity/loss prevention
+  • Security vulnerabilities
+  • Compliance requirements (DGA, NCA, GDPR)
+  • System crashes or data corruption
+  
+- HIGH: Assign when test involves:
+  • Core business workflows
+  • Primary user journeys
+  • Data validation (required fields, formats)
+  • Error handling and recovery
+  • Integration failures
+  • Critical UI elements (submit buttons, navigation)
+  
+- MEDIUM: Assign when test involves:
+  • Edge cases and boundary conditions
+  • Secondary features
+  • UI/UX consistency
+  • Input formatting
+  • Non-critical validations
+  • Pagination, sorting, filtering
+  
+- LOW: Assign when test involves:
+  • Cosmetic issues
+  • Logging and audit trails
+  • Analytics tracking
+  • Help text and tooltips
+  • Nice-to-have features
+
+**TYPE ASSIGNMENT RULES:**
+- FUNCTIONAL: Default for most tests. Assign when:
+  • Testing user workflows
+  • CRUD operations (Create, Read, Update, Delete)
+  • Form submissions and validations
+  • Business logic verification
+  • UI interactions
+  
+- API: Assign when test explicitly involves:
+  • REST/GraphQL endpoint testing
+  • Request/Response validation
+  • HTTP status codes
+  • API headers and authentication tokens
+  • Payload structure validation
+  
+- PERFORMANCE: Assign when test involves:
+  • Page load times
+  • Response time thresholds
+  • Concurrent user handling
+  • Memory and CPU usage
+  • Database query performance
+  • File upload/download speeds
+  
+- SECURITY: Assign when test involves:
+  • Authentication mechanisms
+  • Password policies
+  • Session management
+  • SQL injection prevention
+  • XSS/CSRF protection
+  • Data encryption
+  • Access control violations
+  • Brute force protection
+
+**STATUS: Always set to "draft" for AI-generated cases**
+
+=== RULES ===
 1. Generate 3-7 test cases based on complexity
 2. Each test case should be independent and atomic
 3. Use specific, measurable expected results
-4. Include at least one negative test case if negative tests are enabled
-5. Prioritize P1 for critical paths, P2 for important features
-6. Test data should be realistic but safe for testing
-7. Steps should be clear enough for manual execution`;
+4. NEVER assign all tests the same priority — use the full range based on content
+5. NEVER default everything to "functional" — analyze the test purpose
+6. Security-related tests should ALWAYS be critical or high priority
+7. Performance tests should typically be medium unless core feature
+8. Include priorityReason and typeReason to explain your reasoning
+9. Status is ALWAYS "draft" — no exceptions
+10. Test data should be realistic but safe for testing
+11. Steps should be clear enough for manual execution`;
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -62,14 +137,14 @@ RULES:
         model: "google/gemini-3-flash-preview",
         messages: [
           { role: "system", content: systemPrompt },
-          { role: "user", content: "Generate comprehensive test cases based on the context provided. Return the result using the generate_test_cases function." },
+          { role: "user", content: "Generate comprehensive test cases based on the context provided. Return the result using the generate_test_cases function. Assign priority and type intelligently based on the content of each test case." },
         ],
         tools: [
           {
             type: "function",
             function: {
               name: "generate_test_cases",
-              description: "Generate structured test cases for QA testing",
+              description: "Generate structured test cases for QA testing with smart priority and type assignment",
               parameters: {
                 type: "object",
                 properties: {
@@ -78,10 +153,23 @@ RULES:
                     items: {
                       type: "object",
                       properties: {
-                        title: { type: "string", description: "Clear, descriptive title starting with action verb" },
+                        title: { type: "string", description: "Clear, descriptive title starting with 'Verify' or 'Validate'" },
                         summary: { type: "string", description: "One-line description of what this test validates" },
-                        testType: { type: "string", enum: ["functional", "regression", "integration", "smoke", "security", "performance"] },
-                        priority: { type: "string", enum: ["P1", "P2", "P3", "P4"] },
+                        testType: { 
+                          type: "string", 
+                          enum: ["functional", "api", "performance", "security"],
+                          description: "Type based on what the test validates"
+                        },
+                        priority: { 
+                          type: "string", 
+                          enum: ["critical", "high", "medium", "low"],
+                          description: "Priority based on business impact"
+                        },
+                        status: {
+                          type: "string",
+                          enum: ["draft"],
+                          description: "Always draft for AI-generated cases"
+                        },
                         preconditions: {
                           type: "array",
                           items: { type: "string" },
@@ -105,14 +193,40 @@ RULES:
                           items: { type: "string" },
                           description: "Relevant tags for categorization"
                         },
+                        priorityReason: {
+                          type: "string",
+                          description: "Brief explanation of why this priority was assigned"
+                        },
+                        typeReason: {
+                          type: "string",
+                          description: "Brief explanation of why this type was assigned"
+                        },
                       },
-                      required: ["title", "summary", "testType", "priority", "preconditions", "steps", "tags"],
+                      required: ["title", "summary", "testType", "priority", "status", "preconditions", "steps", "tags", "priorityReason", "typeReason"],
                     },
                   },
                   metadata: {
                     type: "object",
                     properties: {
                       totalGenerated: { type: "number" },
+                      priorityBreakdown: {
+                        type: "object",
+                        properties: {
+                          critical: { type: "number" },
+                          high: { type: "number" },
+                          medium: { type: "number" },
+                          low: { type: "number" },
+                        },
+                      },
+                      typeBreakdown: {
+                        type: "object",
+                        properties: {
+                          functional: { type: "number" },
+                          api: { type: "number" },
+                          performance: { type: "number" },
+                          security: { type: "number" },
+                        },
+                      },
                       coverageAreas: {
                         type: "array",
                         items: { type: "string" },
@@ -122,7 +236,7 @@ RULES:
                         items: { type: "string" },
                       },
                     },
-                    required: ["totalGenerated", "coverageAreas", "suggestedAdditionalTests"],
+                    required: ["totalGenerated", "coverageAreas"],
                   },
                 },
                 required: ["testCases", "metadata"],
@@ -169,6 +283,25 @@ RULES:
     if (!parsed.testCases || !Array.isArray(parsed.testCases)) {
       throw new Error("Invalid response structure - missing testCases array");
     }
+
+    // Normalize and validate each test case
+    parsed.testCases = parsed.testCases.map((tc: any) => ({
+      ...tc,
+      // Ensure status is always draft
+      status: 'draft',
+      // Validate and normalize priority
+      priority: ['critical', 'high', 'medium', 'low'].includes(tc.priority?.toLowerCase())
+        ? tc.priority.toLowerCase()
+        : 'medium',
+      // Validate and normalize type
+      testType: ['functional', 'api', 'performance', 'security'].includes(tc.testType?.toLowerCase())
+        ? tc.testType.toLowerCase()
+        : 'functional',
+      // Mark as AI-generated
+      isAIGenerated: true,
+      aiModel: 'google/gemini-3-flash-preview',
+      aiGeneratedAt: new Date().toISOString(),
+    }));
 
     return new Response(
       JSON.stringify({ 
