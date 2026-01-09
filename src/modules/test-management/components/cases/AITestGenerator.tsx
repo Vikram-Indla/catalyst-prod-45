@@ -219,12 +219,12 @@ export function AITestGenerator({
                       <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                         Target Folder
                       </label>
-                      <Select value={folderId || ''} onValueChange={(v) => setFolderId(v || null)}>
+                      <Select value={folderId || '__root__'} onValueChange={(v) => setFolderId(v === '__root__' ? null : v)}>
                         <SelectTrigger>
                           <SelectValue placeholder="Select folder..." />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="">No folder (root)</SelectItem>
+                          <SelectItem value="__root__">No folder (root)</SelectItem>
                           {folders.map((f) => (
                             <SelectItem key={f.id} value={f.id}>
                               <div className="flex items-center gap-2">
