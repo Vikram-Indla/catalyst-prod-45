@@ -1,5 +1,6 @@
 /**
  * Hook for AI-powered test case generation using Lovable AI
+ * With smart priority and type assignment
  */
 
 import { useState, useCallback } from 'react';
@@ -9,8 +10,9 @@ import { toast } from 'sonner';
 export interface GeneratedTestCase {
   title: string;
   summary: string;
-  testType: string;
-  priority: string;
+  testType: 'functional' | 'api' | 'performance' | 'security';
+  priority: 'critical' | 'high' | 'medium' | 'low';
+  status: 'draft';
   preconditions: string[];
   steps: {
     stepNumber: number;
@@ -19,12 +21,29 @@ export interface GeneratedTestCase {
     expectedResult: string;
   }[];
   tags: string[];
+  priorityReason?: string;
+  typeReason?: string;
+  isAIGenerated?: boolean;
+  aiModel?: string;
+  aiGeneratedAt?: string;
 }
 
 export interface GenerationResult {
   testCases: GeneratedTestCase[];
   metadata: {
     totalGenerated: number;
+    priorityBreakdown?: {
+      critical: number;
+      high: number;
+      medium: number;
+      low: number;
+    };
+    typeBreakdown?: {
+      functional: number;
+      api: number;
+      performance: number;
+      security: number;
+    };
     coverageAreas: string[];
     suggestedAdditionalTests: string[];
   };
@@ -86,7 +105,17 @@ export function useAIGeneration() {
         throw new Error('Invalid response from AI');
       }
 
-      return data.data as GenerationResult;
+      const result = data.data as GenerationResult;
+      
+      // Log breakdown for debugging
+      if (result.metadata?.priorityBreakdown) {
+        console.log('AI Priority Breakdown:', result.metadata.priorityBreakdown);
+      }
+      if (result.metadata?.typeBreakdown) {
+        console.log('AI Type Breakdown:', result.metadata.typeBreakdown);
+      }
+
+      return result;
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to generate test cases';
       setError(message);

@@ -502,19 +502,37 @@ export function AITestGenerator({
                         className="mt-1"
                       />
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 flex-wrap">
                           <span className="font-medium text-sm truncate">{tc.title}</span>
                           <span className="px-1.5 py-0.5 bg-primary/10 text-primary text-xs rounded flex items-center gap-1">
                             <Sparkles className="h-3 w-3" />
                             AI
                           </span>
                         </div>
-                        <div className="flex items-center gap-3 mt-1 text-xs text-muted-foreground">
-                          <span className="capitalize">{tc.testType}</span>
-                          <span>•</span>
-                          <span>{tc.priority}</span>
-                          <span>•</span>
-                          <span>{tc.steps?.length || 0} steps</span>
+                        <div className="flex items-center gap-2 mt-1.5 flex-wrap">
+                          {/* Priority Badge */}
+                          <span className={cn(
+                            "px-2 py-0.5 text-xs font-medium rounded-full uppercase",
+                            tc.priority === 'critical' && "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400",
+                            tc.priority === 'high' && "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400",
+                            tc.priority === 'medium' && "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400",
+                            tc.priority === 'low' && "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400",
+                          )}>
+                            {tc.priority}
+                          </span>
+                          {/* Type Badge */}
+                          <span className={cn(
+                            "px-2 py-0.5 text-xs font-medium rounded-full capitalize",
+                            tc.testType === 'functional' && "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
+                            tc.testType === 'api' && "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400",
+                            tc.testType === 'performance' && "bg-cyan-100 text-cyan-700 dark:bg-cyan-900/30 dark:text-cyan-400",
+                            tc.testType === 'security' && "bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400",
+                          )}>
+                            {tc.testType}
+                          </span>
+                          <span className="text-xs text-muted-foreground">
+                            {tc.steps?.length || 0} steps
+                          </span>
                         </div>
                         <p className="text-sm text-muted-foreground mt-1 truncate">{tc.summary}</p>
                       </div>
@@ -529,28 +547,65 @@ export function AITestGenerator({
 
                     {/* Expanded Preview */}
                     {previewCase === index && (
-                      <div className="mt-3 ml-8 p-3 bg-background border rounded-lg">
-                        <h4 className="font-medium text-sm mb-2">Preconditions:</h4>
-                        <ul className="list-disc list-inside text-sm text-muted-foreground mb-3">
-                          {tc.preconditions?.map((p, i) => (
-                            <li key={i}>{p}</li>
-                          ))}
-                        </ul>
-                        <h4 className="font-medium text-sm mb-2">Steps:</h4>
-                        <div className="space-y-2">
-                          {tc.steps?.map((s, i) => (
-                            <div key={i} className="flex gap-2 text-sm">
-                              <span className="text-muted-foreground w-6">{i + 1}.</span>
+                      <div className="mt-3 ml-8 p-4 bg-background border rounded-lg space-y-4">
+                        {/* AI Reasoning */}
+                        {(tc.priorityReason || tc.typeReason) && (
+                          <div className="flex gap-4 pb-3 border-b">
+                            {tc.priorityReason && (
                               <div className="flex-1">
-                                <p>{s.action}</p>
-                                {s.testData && (
-                                  <p className="text-xs text-primary mt-0.5">Data: {s.testData}</p>
-                                )}
-                                <p className="text-xs text-green-600 mt-0.5">→ {s.expectedResult}</p>
+                                <span className="text-xs text-muted-foreground">Priority Reason:</span>
+                                <p className="text-xs text-foreground mt-0.5">{tc.priorityReason}</p>
                               </div>
-                            </div>
-                          ))}
+                            )}
+                            {tc.typeReason && (
+                              <div className="flex-1">
+                                <span className="text-xs text-muted-foreground">Type Reason:</span>
+                                <p className="text-xs text-foreground mt-0.5">{tc.typeReason}</p>
+                              </div>
+                            )}
+                          </div>
+                        )}
+                        
+                        <div>
+                          <h4 className="font-medium text-sm mb-2">Preconditions:</h4>
+                          <ul className="list-disc list-inside text-sm text-muted-foreground">
+                            {tc.preconditions?.map((p, i) => (
+                              <li key={i}>{p}</li>
+                            ))}
+                          </ul>
                         </div>
+                        
+                        <div>
+                          <h4 className="font-medium text-sm mb-2">Steps:</h4>
+                          <div className="space-y-2">
+                            {tc.steps?.map((s, i) => (
+                              <div key={i} className="flex gap-2 text-sm">
+                                <span className="text-muted-foreground w-6">{i + 1}.</span>
+                                <div className="flex-1">
+                                  <p>{s.action}</p>
+                                  {s.testData && (
+                                    <p className="text-xs text-primary mt-0.5">Data: {s.testData}</p>
+                                  )}
+                                  <p className="text-xs text-green-600 mt-0.5">→ {s.expectedResult}</p>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Tags */}
+                        {tc.tags && tc.tags.length > 0 && (
+                          <div>
+                            <h4 className="font-medium text-sm mb-2">Tags:</h4>
+                            <div className="flex flex-wrap gap-1">
+                              {tc.tags.map((tag, i) => (
+                                <span key={i} className="px-2 py-0.5 bg-muted text-xs rounded-full">
+                                  {tag}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        )}
                       </div>
                     )}
                   </div>
