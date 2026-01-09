@@ -22,7 +22,7 @@ const badgeVariants = cva(
         outline: "border-border bg-card text-foreground",
         // Success - uses V5 success tokens
         success: "border-[var(--sem-success-border)] bg-[var(--sem-success-bg)] text-[var(--sem-success)]",
-        // Warning - uses V5 warning tokens
+        // Warning - uses V5 warning tokens (for BLOCKED only)
         warning: "border-[var(--sem-warning-border)] bg-[var(--sem-warning-bg)] text-[var(--sem-warning)]",
         // Error - uses V5 danger tokens
         error: "border-[var(--sem-danger-border)] bg-[var(--sem-danger-bg)] text-[var(--sem-danger)]",
@@ -32,6 +32,20 @@ const badgeVariants = cva(
         critical: "border-[var(--sem-critical-border)] bg-[var(--sem-critical-bg)] text-[var(--sem-critical)]",
         // Muted - neutral/low priority
         muted: "border-[var(--status-muted-border)] bg-[var(--sem-medium-bg)] text-[var(--sem-medium)]",
+        // DRAFT - Neutral gray (NOT warning/danger!)
+        draft: "border-[#e5e5e5] bg-[#f5f5f5] text-[#737373]",
+        // Ready - Teal
+        ready: "border-transparent bg-[#ccfbf1] text-[#0d9488]",
+        // Approved - Green
+        approved: "border-transparent bg-[#d1fae5] text-[#059669]",
+        // Review - Blue
+        review: "border-transparent bg-[#dbeafe] text-[#2563eb]",
+        // Deprecated - Darker gray
+        deprecated: "border-transparent bg-[#e5e5e5] text-[#525252]",
+        // Blocked - Warning (ONLY for blocked status)
+        blocked: "border-transparent bg-[#fef3c7] text-[#d97706]",
+        // Failed - Danger red
+        failed: "border-transparent bg-[#fee2e2] text-[#dc2626]",
       },
     },
     defaultVariants: {
