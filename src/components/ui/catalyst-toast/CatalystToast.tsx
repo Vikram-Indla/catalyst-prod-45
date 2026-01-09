@@ -138,7 +138,7 @@ export const CatalystToast: React.FC<CatalystToastProps> = ({
           {title}
         </p>
         {message && (
-          <p className="text-xs text-white/80 mt-0.5 truncate">
+          <p className="text-xs text-white/80 mt-1 whitespace-pre-line leading-relaxed max-h-32 overflow-y-auto">
             {message}
           </p>
         )}
