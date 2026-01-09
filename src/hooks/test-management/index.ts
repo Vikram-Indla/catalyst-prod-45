@@ -13,7 +13,9 @@ export {
   useFoldersWithCounts,
   useCreateFolder, 
   useUpdateFolder, 
-  useDeleteFolder 
+  useDeleteFolder,
+  useMoveFolder,
+  useDuplicateFolder,
 } from './useFolders';
 
 // Test Cases

@@ -1,9 +1,9 @@
 /**
  * Folder Tree Component
- * Hierarchical folder navigation with context menu and drag-drop
+ * Hierarchical folder navigation with context menu, drag-drop, and keyboard shortcuts
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
   Folder,
   FolderOpen,
@@ -13,16 +13,23 @@ import {
   Edit,
   Trash2,
   FileText,
+  Copy,
+  FolderInput,
+  MoreHorizontal,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import {
   ContextMenu,
   ContextMenuContent,
   ContextMenuItem,
   ContextMenuSeparator,
   ContextMenuTrigger,
+  ContextMenuSub,
+  ContextMenuSubContent,
+  ContextMenuSubTrigger,
 } from '@/components/ui/context-menu';
 import {
   Dialog,
@@ -30,19 +37,44 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
+  DialogDescription,
 } from '@/components/ui/dialog';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
 import type { Folder as FolderType } from '../../api/types';
+
+// Folder colors
+const FOLDER_COLORS = [
+  { value: 'default', label: 'Default', class: 'text-yellow-500' },
+  { value: 'blue', label: 'Blue', class: 'text-blue-500' },
+  { value: 'green', label: 'Green', class: 'text-green-500' },
+  { value: 'red', label: 'Red', class: 'text-red-500' },
+  { value: 'purple', label: 'Purple', class: 'text-purple-500' },
+  { value: 'orange', label: 'Orange', class: 'text-orange-500' },
+] as const;
+
+function getFolderColorClass(color?: string): string {
+  const found = FOLDER_COLORS.find(c => c.value === color);
+  return found?.class || 'text-yellow-500';
+}
 
 interface FolderTreeProps {
   folders: FolderType[];
   selectedFolderId: string | null;
   onSelectFolder: (folderId: string | null) => void;
-  onCreateFolder: (parentId: string | null, name: string) => void;
+  onCreateFolder: (parentId: string | null, name: string, description?: string, color?: string) => void;
   onRenameFolder: (folderId: string, name: string) => void;
   onDeleteFolder: (folderId: string) => void;
   onMoveFolder?: (folderId: string, newParentId: string | null) => void;
+  onDuplicateFolder?: (folderId: string) => void;
   totalCaseCount?: number;
   isLoading?: boolean;
 }
@@ -52,11 +84,42 @@ interface FolderItemProps {
   level: number;
   selectedFolderId: string | null;
   expandedFolders: Set<string>;
+  allFolders: FolderType[];
+  isRenaming: boolean;
   onToggleExpand: (folderId: string) => void;
   onSelectFolder: (folderId: string) => void;
   onRename: (folder: FolderType) => void;
   onDelete: (folder: FolderType) => void;
   onCreateSubfolder: (parentId: string) => void;
+  onStartRename: (folderId: string) => void;
+  onFinishRename: (folderId: string, newName: string) => void;
+  onCancelRename: () => void;
+  onDuplicate?: (folder: FolderType) => void;
+  onMoveTo?: (folderId: string, newParentId: string | null) => void;
+}
+
+// Flatten folder tree for move targets
+function flattenFolders(folders: FolderType[]): FolderType[] {
+  const result: FolderType[] = [];
+  const flatten = (list: FolderType[]) => {
+    list.forEach(f => {
+      result.push(f);
+      if (f.children) flatten(f.children);
+    });
+  };
+  flatten(folders);
+  return result;
+}
+
+// Get all descendant IDs of a folder
+function getDescendantIds(folder: FolderType): Set<string> {
+  const ids = new Set<string>();
+  const collect = (f: FolderType) => {
+    ids.add(f.id);
+    f.children?.forEach(collect);
+  };
+  collect(folder);
+  return ids;
 }
 
 function FolderItem({
@@ -64,24 +127,62 @@ function FolderItem({
   level,
   selectedFolderId,
   expandedFolders,
+  allFolders,
+  isRenaming,
   onToggleExpand,
   onSelectFolder,
   onRename,
   onDelete,
   onCreateSubfolder,
+  onStartRename,
+  onFinishRename,
+  onCancelRename,
+  onDuplicate,
+  onMoveTo,
 }: FolderItemProps) {
   const isExpanded = expandedFolders.has(folder.id);
   const isSelected = selectedFolderId === folder.id;
   const hasChildren = folder.children && folder.children.length > 0;
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [localName, setLocalName] = useState(folder.name);
+
+  // Focus input when renaming
+  useEffect(() => {
+    if (isRenaming && inputRef.current) {
+      inputRef.current.focus();
+      inputRef.current.select();
+    }
+  }, [isRenaming]);
+
+  // Reset local name when folder changes
+  useEffect(() => {
+    setLocalName(folder.name);
+  }, [folder.name]);
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      onFinishRename(folder.id, localName);
+    } else if (e.key === 'Escape') {
+      setLocalName(folder.name);
+      onCancelRename();
+    }
+  };
+
+  // Get valid move targets (exclude self and descendants)
+  const excludeIds = getDescendantIds(folder);
+  const validMoveTargets = flattenFolders(allFolders).filter(f => !excludeIds.has(f.id));
+
+  const colorClass = getFolderColorClass((folder as any).color);
 
   return (
     <div>
       <ContextMenu>
         <ContextMenuTrigger asChild>
-          <button
-            onClick={() => onSelectFolder(folder.id)}
+          <div
+            onClick={() => !isRenaming && onSelectFolder(folder.id)}
+            onDoubleClick={() => onStartRename(folder.id)}
             className={cn(
-              'flex w-full items-center gap-1 rounded-md px-2 py-1.5 text-sm transition-colors group',
+              'flex w-full items-center gap-1 rounded-md px-2 py-1.5 text-sm transition-colors group cursor-pointer',
               isSelected
                 ? 'bg-primary text-primary-foreground'
                 : 'hover:bg-accent text-muted-foreground hover:text-foreground'
@@ -107,13 +208,27 @@ function FolderItem({
             ) : (
               <span className="w-4" />
             )}
-            {isExpanded ? (
-              <FolderOpen className="h-4 w-4 shrink-0" />
+            {isExpanded && hasChildren ? (
+              <FolderOpen className={cn("h-4 w-4 shrink-0", colorClass)} />
             ) : (
-              <Folder className="h-4 w-4 shrink-0" />
+              <Folder className={cn("h-4 w-4 shrink-0", colorClass)} />
             )}
-            <span className="flex-1 truncate text-left">{folder.name}</span>
-            {folder.case_count !== undefined && folder.case_count > 0 && (
+            
+            {isRenaming ? (
+              <input
+                ref={inputRef}
+                value={localName}
+                onChange={(e) => setLocalName(e.target.value)}
+                onKeyDown={handleKeyDown}
+                onBlur={() => onFinishRename(folder.id, localName)}
+                onClick={(e) => e.stopPropagation()}
+                className="flex-1 px-1 py-0.5 text-sm bg-background border border-primary rounded outline-none text-foreground"
+              />
+            ) : (
+              <span className="flex-1 truncate text-left">{folder.name}</span>
+            )}
+            
+            {folder.case_count !== undefined && folder.case_count > 0 && !isRenaming && (
               <Badge
                 variant="secondary"
                 className={cn(
@@ -124,17 +239,49 @@ function FolderItem({
                 {folder.case_count}
               </Badge>
             )}
-          </button>
+          </div>
         </ContextMenuTrigger>
-        <ContextMenuContent>
+        <ContextMenuContent className="w-52">
           <ContextMenuItem onClick={() => onCreateSubfolder(folder.id)}>
             <Plus className="h-4 w-4 mr-2" />
             New Subfolder
           </ContextMenuItem>
-          <ContextMenuItem onClick={() => onRename(folder)}>
+          <ContextMenuSeparator />
+          <ContextMenuItem onClick={() => onStartRename(folder.id)}>
             <Edit className="h-4 w-4 mr-2" />
             Rename
+            <span className="ml-auto text-xs text-muted-foreground">F2</span>
           </ContextMenuItem>
+          {onDuplicate && (
+            <ContextMenuItem onClick={() => onDuplicate(folder)}>
+              <Copy className="h-4 w-4 mr-2" />
+              Duplicate
+            </ContextMenuItem>
+          )}
+          {onMoveTo && validMoveTargets.length > 0 && (
+            <ContextMenuSub>
+              <ContextMenuSubTrigger>
+                <FolderInput className="h-4 w-4 mr-2" />
+                Move to...
+              </ContextMenuSubTrigger>
+              <ContextMenuSubContent className="max-h-64 overflow-y-auto">
+                <ContextMenuItem onClick={() => onMoveTo(folder.id, null)}>
+                  <FileText className="h-4 w-4 mr-2" />
+                  Root (No parent)
+                </ContextMenuItem>
+                <ContextMenuSeparator />
+                {validMoveTargets.map(target => (
+                  <ContextMenuItem 
+                    key={target.id} 
+                    onClick={() => onMoveTo(folder.id, target.id)}
+                  >
+                    <Folder className="h-4 w-4 mr-2" />
+                    {target.name}
+                  </ContextMenuItem>
+                ))}
+              </ContextMenuSubContent>
+            </ContextMenuSub>
+          )}
           <ContextMenuSeparator />
           <ContextMenuItem
             onClick={() => onDelete(folder)}
@@ -142,6 +289,7 @@ function FolderItem({
           >
             <Trash2 className="h-4 w-4 mr-2" />
             Delete
+            <span className="ml-auto text-xs text-muted-foreground">Del</span>
           </ContextMenuItem>
         </ContextMenuContent>
       </ContextMenu>
@@ -155,11 +303,18 @@ function FolderItem({
               level={level + 1}
               selectedFolderId={selectedFolderId}
               expandedFolders={expandedFolders}
+              allFolders={allFolders}
+              isRenaming={isRenaming}
               onToggleExpand={onToggleExpand}
               onSelectFolder={onSelectFolder}
               onRename={onRename}
               onDelete={onDelete}
               onCreateSubfolder={onCreateSubfolder}
+              onStartRename={onStartRename}
+              onFinishRename={onFinishRename}
+              onCancelRename={onCancelRename}
+              onDuplicate={onDuplicate}
+              onMoveTo={onMoveTo}
             />
           ))}
         </div>
@@ -175,6 +330,8 @@ export function FolderTree({
   onCreateFolder,
   onRenameFolder,
   onDeleteFolder,
+  onMoveFolder,
+  onDuplicateFolder,
   totalCaseCount = 0,
   isLoading,
 }: FolderTreeProps) {
@@ -182,12 +339,16 @@ export function FolderTree({
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [createParentId, setCreateParentId] = useState<string | null>(null);
   const [newFolderName, setNewFolderName] = useState('');
-  const [renameDialogOpen, setRenameDialogOpen] = useState(false);
-  const [folderToRename, setFolderToRename] = useState<FolderType | null>(null);
+  const [newFolderDescription, setNewFolderDescription] = useState('');
+  const [newFolderColor, setNewFolderColor] = useState('default');
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [folderToDelete, setFolderToDelete] = useState<FolderType | null>(null);
+  const [renamingFolderId, setRenamingFolderId] = useState<string | null>(null);
 
-  const handleToggleExpand = (folderId: string) => {
+  // Flatten folders for reference
+  const allFolders = flattenFolders(folders);
+
+  const handleToggleExpand = useCallback((folderId: string) => {
     setExpandedFolders((prev) => {
       const next = new Set(prev);
       if (next.has(folderId)) {
@@ -197,28 +358,40 @@ export function FolderTree({
       }
       return next;
     });
-  };
+  }, []);
 
   const handleCreateFolder = () => {
     if (newFolderName.trim()) {
-      onCreateFolder(createParentId, newFolderName.trim());
-      setNewFolderName('');
+      onCreateFolder(createParentId, newFolderName.trim(), newFolderDescription.trim() || undefined, newFolderColor);
+      resetCreateForm();
       setCreateDialogOpen(false);
+      // Expand parent if creating subfolder
+      if (createParentId) {
+        setExpandedFolders(prev => new Set([...prev, createParentId]));
+      }
     }
   };
 
-  const handleRenameFolder = () => {
-    if (folderToRename && newFolderName.trim()) {
-      onRenameFolder(folderToRename.id, newFolderName.trim());
-      setNewFolderName('');
-      setRenameDialogOpen(false);
-      setFolderToRename(null);
+  const resetCreateForm = () => {
+    setNewFolderName('');
+    setNewFolderDescription('');
+    setNewFolderColor('default');
+    setCreateParentId(null);
+  };
+
+  const handleFinishRename = (folderId: string, newName: string) => {
+    if (newName.trim()) {
+      onRenameFolder(folderId, newName.trim());
     }
+    setRenamingFolderId(null);
   };
 
   const handleDeleteFolder = () => {
     if (folderToDelete) {
       onDeleteFolder(folderToDelete.id);
+      if (selectedFolderId === folderToDelete.id) {
+        onSelectFolder(null);
+      }
       setDeleteDialogOpen(false);
       setFolderToDelete(null);
     }
@@ -226,14 +399,8 @@ export function FolderTree({
 
   const openCreateDialog = (parentId: string | null = null) => {
     setCreateParentId(parentId);
-    setNewFolderName('');
+    resetCreateForm();
     setCreateDialogOpen(true);
-  };
-
-  const openRenameDialog = (folder: FolderType) => {
-    setFolderToRename(folder);
-    setNewFolderName(folder.name);
-    setRenameDialogOpen(true);
   };
 
   const openDeleteDialog = (folder: FolderType) => {
@@ -241,9 +408,52 @@ export function FolderTree({
     setDeleteDialogOpen(true);
   };
 
+  const handleDuplicate = (folder: FolderType) => {
+    onDuplicateFolder?.(folder.id);
+  };
+
+  const handleMoveTo = (folderId: string, newParentId: string | null) => {
+    onMoveFolder?.(folderId, newParentId);
+  };
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Only handle if we have a selected folder and not currently in an input
+      if (!selectedFolderId) return;
+      const target = e.target as HTMLElement;
+      if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') return;
+
+      // F2 = Rename
+      if (e.key === 'F2') {
+        e.preventDefault();
+        setRenamingFolderId(selectedFolderId);
+      }
+
+      // Delete = Delete folder
+      if (e.key === 'Delete') {
+        e.preventDefault();
+        const folder = allFolders.find(f => f.id === selectedFolderId);
+        if (folder) openDeleteDialog(folder);
+      }
+
+      // Ctrl+Shift+N = New subfolder
+      if (e.ctrlKey && e.shiftKey && e.key === 'N') {
+        e.preventDefault();
+        openCreateDialog(selectedFolderId);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [selectedFolderId, allFolders]);
+
+  // Get parent folder name for dialog
+  const parentFolder = createParentId ? allFolders.find(f => f.id === createParentId) : null;
+
   return (
     <div className="flex flex-col h-full">
-      {/* Header - 52px aligned with main content header */}
+      {/* Header */}
       <div
         className="flex items-center justify-between px-3"
         style={{
@@ -257,6 +467,7 @@ export function FolderTree({
           size="icon"
           className="h-7 w-7"
           onClick={() => openCreateDialog(null)}
+          title="Create folder"
         >
           <Plus className="h-4 w-4" />
         </Button>
@@ -290,6 +501,22 @@ export function FolderTree({
             )}
           </button>
 
+          {/* Empty state */}
+          {!isLoading && folders.length === 0 && (
+            <div className="py-8 px-2 text-center">
+              <Folder className="h-10 w-10 mx-auto text-muted-foreground/50 mb-2" />
+              <p className="text-sm text-muted-foreground mb-2">No folders yet</p>
+              <Button
+                variant="link"
+                size="sm"
+                onClick={() => openCreateDialog(null)}
+                className="text-primary"
+              >
+                Create your first folder
+              </Button>
+            </div>
+          )}
+
           {/* Folder Tree */}
           {folders.map((folder) => (
             <FolderItem
@@ -298,11 +525,18 @@ export function FolderTree({
               level={0}
               selectedFolderId={selectedFolderId}
               expandedFolders={expandedFolders}
+              allFolders={allFolders}
+              isRenaming={renamingFolderId === folder.id}
               onToggleExpand={handleToggleExpand}
               onSelectFolder={onSelectFolder}
-              onRename={openRenameDialog}
+              onRename={() => setRenamingFolderId(folder.id)}
               onDelete={openDeleteDialog}
               onCreateSubfolder={(parentId) => openCreateDialog(parentId)}
+              onStartRename={setRenamingFolderId}
+              onFinishRename={handleFinishRename}
+              onCancelRename={() => setRenamingFolderId(null)}
+              onDuplicate={onDuplicateFolder ? handleDuplicate : undefined}
+              onMoveTo={onMoveFolder ? handleMoveTo : undefined}
             />
           ))}
         </div>
@@ -312,51 +546,63 @@ export function FolderTree({
       <Dialog open={createDialogOpen} onOpenChange={setCreateDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Create Folder</DialogTitle>
+            <DialogTitle>Create New Folder</DialogTitle>
+            {parentFolder && (
+              <DialogDescription>
+                Creating subfolder in: <span className="font-medium">{parentFolder.name}</span>
+              </DialogDescription>
+            )}
           </DialogHeader>
-          <div className="py-4">
-            <Input
-              placeholder="Folder name"
-              value={newFolderName}
-              onChange={(e) => setNewFolderName(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleCreateFolder()}
-              autoFocus
-            />
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setCreateDialogOpen(false)}>
-              Cancel
-            </Button>
-            <Button onClick={handleCreateFolder} disabled={!newFolderName.trim()}>
-              Create
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* Rename Folder Dialog */}
-      <Dialog open={renameDialogOpen} onOpenChange={setRenameDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Rename Folder</DialogTitle>
-          </DialogHeader>
-          <div className="py-4">
-            <Input
-              placeholder="Folder name"
-              value={newFolderName}
-              onChange={(e) => setNewFolderName(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleRenameFolder()}
-              autoFocus
-            />
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setRenameDialogOpen(false)}>
-              Cancel
-            </Button>
-            <Button onClick={handleRenameFolder} disabled={!newFolderName.trim()}>
-              Rename
-            </Button>
-          </DialogFooter>
+          <form onSubmit={(e) => { e.preventDefault(); handleCreateFolder(); }}>
+            <div className="space-y-4 py-4">
+              <div className="space-y-2">
+                <Label htmlFor="folder-name">Folder Name *</Label>
+                <Input
+                  id="folder-name"
+                  placeholder="e.g., Authentication Tests"
+                  value={newFolderName}
+                  onChange={(e) => setNewFolderName(e.target.value)}
+                  autoFocus
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="folder-description">Description</Label>
+                <Textarea
+                  id="folder-description"
+                  placeholder="Optional description for this folder..."
+                  value={newFolderDescription}
+                  onChange={(e) => setNewFolderDescription(e.target.value)}
+                  rows={2}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Folder Color</Label>
+                <Select value={newFolderColor} onValueChange={setNewFolderColor}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {FOLDER_COLORS.map((c) => (
+                      <SelectItem key={c.value} value={c.value}>
+                        <div className="flex items-center gap-2">
+                          <Folder className={cn("h-4 w-4", c.class)} />
+                          {c.label}
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <DialogFooter>
+              <Button type="button" variant="outline" onClick={() => setCreateDialogOpen(false)}>
+                Cancel
+              </Button>
+              <Button type="submit" disabled={!newFolderName.trim()}>
+                Create Folder
+              </Button>
+            </DialogFooter>
+          </form>
         </DialogContent>
       </Dialog>
 
@@ -366,10 +612,27 @@ export function FolderTree({
           <DialogHeader>
             <DialogTitle>Delete Folder</DialogTitle>
           </DialogHeader>
-          <p className="text-sm text-muted-foreground py-4">
-            Are you sure you want to delete "{folderToDelete?.name}"? Test cases in this folder
-            will be moved to the root level.
-          </p>
+          <div className="py-4">
+            <p className="text-sm text-muted-foreground mb-3">
+              Are you sure you want to delete "<span className="font-medium text-foreground">{folderToDelete?.name}</span>"?
+            </p>
+            {((folderToDelete?.case_count ?? 0) > 0 || (folderToDelete?.children?.length ?? 0) > 0) && (
+              <div className="text-sm bg-warning/10 border border-warning/30 rounded-md p-3 space-y-1">
+                <p className="font-medium text-warning">This folder contains:</p>
+                <ul className="list-disc list-inside text-muted-foreground">
+                  {(folderToDelete?.case_count ?? 0) > 0 && (
+                    <li>{folderToDelete?.case_count} test case(s)</li>
+                  )}
+                  {(folderToDelete?.children?.length ?? 0) > 0 && (
+                    <li>{folderToDelete?.children?.length} subfolder(s)</li>
+                  )}
+                </ul>
+                <p className="text-muted-foreground mt-2">
+                  All contents will be moved to the parent folder.
+                </p>
+              </div>
+            )}
+          </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setDeleteDialogOpen(false)}>
               Cancel
