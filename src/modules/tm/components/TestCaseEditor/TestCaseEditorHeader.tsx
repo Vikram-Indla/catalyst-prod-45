@@ -30,22 +30,23 @@ export function TestCaseEditorHeader({
   const navigate = useNavigate();
 
   const statusColors = {
-    draft: 'bg-[#dc2626] text-white',
-    ready: 'bg-[#0d9488] text-white',
-    approved: 'bg-[#059669] text-white',
-    deprecated: 'bg-[#d97706] text-white',
+    draft: 'bg-sem-danger text-white',
+    ready: 'bg-brand-teal text-white',
+    approved: 'bg-sem-success text-white',
+    deprecated: 'bg-sem-warning text-white',
   };
 
   return (
     <header
-      className="flex items-center justify-between px-4 border-b bg-white"
-      style={{ height: '56px', borderColor: '#e5e5e5' }}
+      className="flex items-center justify-between px-4 border-b bg-[var(--bg-0)]"
+      style={{ height: '56px', borderColor: 'var(--stroke-1)' }}
     >
       {/* Left side */}
       <div className="flex items-center gap-3">
         <button
           onClick={onClose || (() => navigate(-1))}
-          className="p-1.5 rounded hover:bg-neutral-100 text-neutral-500"
+          className="p-1.5 rounded hover:bg-[var(--row-hover)] text-[var(--text-3)] transition-colors"
+          style={{ transitionDuration: '150ms' }}
         >
           <ChevronLeft className="h-5 w-5" />
         </button>
@@ -53,7 +54,7 @@ export function TestCaseEditorHeader({
         {/* NEW badge */}
         {isNew && (
           <Badge
-            className="px-2.5 py-0.5 text-xs font-semibold rounded bg-[#2563eb] text-white"
+            className="px-2.5 py-0.5 font-semibold rounded bg-brand-primary text-white"
             style={{ fontSize: '11px' }}
           >
             NEW
@@ -62,14 +63,14 @@ export function TestCaseEditorHeader({
 
         {/* Status badge */}
         <Badge
-          className={`px-2.5 py-0.5 text-xs font-semibold rounded uppercase ${statusColors[status]}`}
+          className={`px-2.5 py-0.5 font-semibold rounded uppercase ${statusColors[status]}`}
           style={{ fontSize: '11px' }}
         >
           {status}
         </Badge>
 
         {/* Folder path */}
-        <span className="text-sm text-neutral-700">{folderPath}</span>
+        <span className="text-sm text-[var(--text-2)]">{folderPath}</span>
       </div>
 
       {/* Right side */}
@@ -77,14 +78,19 @@ export function TestCaseEditorHeader({
         <Button
           onClick={onSave}
           disabled={isSaving}
-          className="h-9 px-4 bg-[#059669] hover:bg-[#047857] text-white gap-2"
-          style={{ borderRadius: '6px' }}
+          className="h-9 px-4 bg-sem-success hover:bg-[#047857] text-white gap-2 transition-colors"
+          style={{ 
+            borderRadius: '6px',
+            backgroundColor: 'var(--sem-success)',
+            boxShadow: '0 4px 14px -2px rgba(5, 150, 105, 0.25)',
+            transitionDuration: '150ms'
+          }}
         >
           <Save className="h-4 w-4" />
           Saved
           {hasChanges && (
             <span
-              className="ml-1 px-1.5 py-0.5 text-xs rounded bg-white/20"
+              className="ml-1 px-1.5 py-0.5 rounded bg-white/20"
               style={{ fontSize: '10px' }}
             >
               +5
@@ -93,9 +99,10 @@ export function TestCaseEditorHeader({
         </Button>
         <button
           onClick={onClose || (() => navigate(-1))}
-          className="p-2 rounded hover:bg-neutral-100 text-neutral-400"
+          className="p-2 rounded hover:bg-[var(--row-hover)] text-[var(--text-4)] transition-colors"
+          style={{ transitionDuration: '150ms' }}
         >
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M18 6L6 18M6 6l12 12" />
           </svg>
         </button>

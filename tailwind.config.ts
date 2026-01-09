@@ -81,21 +81,32 @@ export default {
         "border-strong": "hsl(var(--border-strong))",
         "border-focus": "hsl(var(--border-focus))",
         
-        /* === BRAND/ACTION COLORS === */
+        /* === BRAND/ACTION COLORS (Catalyst V5 Spec) === */
         "brand-primary": {
           DEFAULT: "hsl(var(--brand-primary))",
           hover: "hsl(var(--brand-primary-hover))",
+          light: "hsl(var(--brand-primary-light))",
+          dark: "hsl(var(--brand-primary-dark))",
           foreground: "hsl(var(--brand-primary-foreground))",
         },
         "brand-teal": {
           DEFAULT: "hsl(var(--brand-teal))",
           hover: "hsl(var(--brand-teal-hover))",
+          light: "hsl(var(--brand-teal-light))",
         },
-        "brand-gold": {
-          DEFAULT: "var(--accent-gold)",
-          hover: "var(--accent-gold-hover)",
-          soft: "var(--accent-gold-soft)",
+        
+        /* === AI PURPLE (A5 Spec) === */
+        "ai-purple": {
+          DEFAULT: "hsl(var(--ai-purple))",
+          light: "hsl(var(--ai-purple-light))",
+          dark: "hsl(var(--ai-purple-dark))",
         },
+        
+        /* === SEMANTIC LIGHT BACKGROUNDS (A2 Spec) === */
+        "sem-success-light": "var(--sem-success-light)",
+        "sem-warning-light": "var(--sem-warning-light)",
+        "sem-danger-light": "var(--sem-danger-light)",
+        "sem-info-light": "var(--sem-info-light)",
         
         /* === STATE COLORS === */
         success: {

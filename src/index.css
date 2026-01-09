@@ -78,38 +78,52 @@
     --border-strong: 0 0% 78%;           /* #c7c7c7 */
     --border-focus: 217 91% 60%;         /* blue */
     
-    /* === BRAND/ACTION TOKENS === */
+    /* === BRAND/ACTION TOKENS (Catalyst V5 Spec) === */
     --brand-primary: 217 91% 53%;        /* #2563eb */
     --brand-primary-hover: 217 91% 45%;  /* #1d4ed8 */
+    --brand-primary-light: 214 100% 93%; /* #dbeafe */
+    --brand-primary-dark: 217 91% 37%;   /* #1e40af */
     --brand-primary-foreground: 0 0% 100%;
     --brand-teal: 173 58% 39%;           /* #0d9488 */
     --brand-teal-hover: 173 58% 33%;     /* #0f766e */
+    --brand-teal-light: 166 76% 89%;     /* #ccfbf1 */
+    
+    /* === AI PURPLE TOKENS (A5 Spec) === */
+    --ai-purple: 263 70% 58%;            /* #7c3aed */
+    --ai-purple-light: 263 69% 96%;      /* #ede9fe */
+    --ai-purple-dark: 263 70% 42%;       /* #5b21b6 */
+    
+    /* === SEMANTIC LIGHT BACKGROUNDS (A2 Spec) === */
+    --sem-success-light: #d1fae5;        /* Green-100 */
+    --sem-warning-light: #fef3c7;        /* Amber-100 */
+    --sem-danger-light: #fee2e2;         /* Red-100 */
+    --sem-info-light: #e0f2fe;           /* Sky-100 */
     
     /* ═══════════════════════════════════════════════════════════════
        CATALYST V5 CANONICAL — Semantic State Tokens (Light Mode)
        Using official V5 semantic colors: Blue/Teal/Orange/Red
        ═══════════════════════════════════════════════════════════════ */
     
-    /* V5 CANONICAL SEMANTIC COLORS */
-    --success: 173 58% 39%;                /* #0d9488 teal */
+    /* V5 CANONICAL SEMANTIC COLORS (A2 Spec Exact) */
+    --success: 160 84% 39%;                /* #059669 emerald-600 */
     --success-foreground: 0 0% 100%;
-    --success-bg: 173 58% 39%;
-    --success-border: 173 58% 39%;
+    --success-bg: 160 84% 39%;
+    --success-border: 160 84% 39%;
     
-    --warning: 38 92% 50%;                 /* #d97706 orange */
+    --warning: 38 92% 50%;                 /* #d97706 amber-600 */
     --warning-foreground: 0 0% 100%;
     --warning-bg: 38 92% 50%;
     --warning-border: 38 92% 50%;
     
-    --danger: 0 84% 60%;                   /* #ef4444 red */
+    --danger: 0 72% 51%;                   /* #dc2626 red-600 */
     --danger-foreground: 0 0% 100%;
-    --danger-bg: 0 84% 60%;
-    --danger-border: 0 84% 60%;
+    --danger-bg: 0 72% 51%;
+    --danger-border: 0 72% 51%;
     
-    --info: 217 91% 53%;                   /* #2563eb blue */
+    --info: 201 96% 32%;                   /* #0284c7 sky-600 */
     --info-foreground: 0 0% 100%;
-    --info-bg: 217 91% 53%;
-    --info-border: 217 91% 53%;
+    --info-bg: 201 96% 32%;
+    --info-border: 201 96% 32%;
     
     /* === FOCUS & OVERLAY TOKENS === */
     --focus-ring: 217 91% 60%;           /* #3b82f6 */
@@ -166,11 +180,11 @@
        Using official V5 semantic colors: Blue/Teal/Orange/Red
        ═══════════════════════════════════════════════════════════════ */
     
-    /* Semantic tokens → V5 CANONICAL (Light Mode) */
+    /* Semantic tokens → V5 CANONICAL (Light Mode) - Exact A2 Spec */
     --sem-danger: #dc2626;                 /* Red-600 */
     --sem-warning: #d97706;                /* Amber-600 */
-    --sem-success: #0d9488;                /* Teal-600 */
-    --sem-info: #2563eb;                   /* Blue-600 */
+    --sem-success: #059669;                /* Emerald-600 - A2 Spec */
+    --sem-info: #0284c7;                   /* Sky-600 - A2 Spec */
     --sem-critical: #dc2626;               /* Red-600 */
     --sem-blocked: #d97706;                /* Orange */
     --sem-overdue: #dc2626;                /* Red */
@@ -226,12 +240,14 @@
     --neutral-bg: rgba(0,0,0,0.06);
     --neutral-bd: rgba(0,0,0,0.10);
     
-    /* === SHADOW TOKENS (as HSL base for shadows) === */
+    /* === SHADOW TOKENS (D1 Spec Compliant) === */
     --shadow-color: 0 0% 10%;            /* #1a1a1a */
-    --shadow-elev-1: 0 1px 3px hsl(0 0% 0% / 0.05), 0 1px 2px hsl(0 0% 0% / 0.03);
-    --shadow-elev-2: 0 4px 12px hsl(0 0% 0% / 0.08), 0 2px 4px hsl(0 0% 0% / 0.04);
-    --shadow-elev-3: 0 8px 24px hsl(0 0% 0% / 0.10), 0 4px 8px hsl(0 0% 0% / 0.05);
-    --shadow-brand: 0 4px 12px hsl(217 91% 60% / 0.15);
+    --shadow-elev-1: 0 1px 3px hsl(0 0% 0% / 0.05);
+    --shadow-elev-2: 0 4px 12px hsl(0 0% 0% / 0.08);
+    --shadow-elev-3: 0 8px 24px hsl(0 0% 0% / 0.12);
+    --shadow-brand: 0 4px 14px -2px rgba(37, 99, 235, 0.25);
+    --shadow-ai: 0 4px 14px -2px rgba(124, 58, 237, 0.3);
+    --shadow-focus-ring: 0 0 0 3px hsl(var(--brand-primary-light));
 
     /* ═══════════════════════════════════════════════════════════════
        LEGACY HEX MAPPINGS — For inline style compatibility
