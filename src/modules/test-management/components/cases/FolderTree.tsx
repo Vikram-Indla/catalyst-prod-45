@@ -10,10 +10,8 @@ import {
   ChevronRight,
   ChevronDown,
   Plus,
-  MoreHorizontal,
   Edit,
   Trash2,
-  FolderInput,
   FileText,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -91,7 +89,9 @@ function FolderItem({
             style={{ paddingLeft: `${8 + level * 16}px` }}
           >
             {hasChildren ? (
-              <button
+              <span
+                role="button"
+                aria-label={isExpanded ? 'Collapse folder' : 'Expand folder'}
                 onClick={(e) => {
                   e.stopPropagation();
                   onToggleExpand(folder.id);
@@ -103,7 +103,7 @@ function FolderItem({
                 ) : (
                   <ChevronRight className="h-3.5 w-3.5" />
                 )}
-              </button>
+              </span>
             ) : (
               <span className="w-4" />
             )}
