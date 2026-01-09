@@ -14,6 +14,7 @@ import {
   Trash2,
   PlayCircle,
   User,
+  Sparkles,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -282,7 +283,11 @@ export function CasesDataTable({
                     </TableCell>
                     <TableCell className="font-medium">
                       <div className="flex items-center gap-2">
-                        <FileText className="h-4 w-4 text-muted-foreground shrink-0" />
+                        {testCase.is_ai_generated ? (
+                          <Sparkles className="h-4 w-4 text-purple-500 shrink-0" />
+                        ) : (
+                          <FileText className="h-4 w-4 text-muted-foreground shrink-0" />
+                        )}
                         <span className="truncate">{testCase.title}</span>
                         {testCase._stepCount !== undefined && testCase._stepCount > 0 && (
                           <Badge variant="outline" className="text-[10px] shrink-0">

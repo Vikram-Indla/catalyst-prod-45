@@ -82,6 +82,7 @@ export interface TMTestCase {
   updated_by: string;
   created_at: string;
   updated_at: string;
+  is_ai_generated?: boolean;
   priority?: TMCasePriority;
   type?: TMCaseType;
   folder?: TMFolder;
@@ -89,6 +90,7 @@ export interface TMTestCase {
   labels?: TMLabel[];
   created_by_user?: { id: string; full_name: string; avatar_url?: string };
   updated_by_user?: { id: string; full_name: string; avatar_url?: string };
+  created_by_profile?: { id: string; full_name?: string; avatar_url?: string };
 }
 
 export interface TMCycle {

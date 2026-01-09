@@ -73,9 +73,12 @@ function mapTMCaseToCase(c: TMTestCase): any {
     created_at: c.created_at,
     updated_at: c.updated_at,
     created_by: c.created_by,
+    created_by_profile: c.created_by_profile,
+    is_ai_generated: c.is_ai_generated,
     // Include related data if available
     priority: c.priority ? { id: c.priority.id, name: c.priority.name, color: c.priority.color } : undefined,
     type: c.type ? { id: c.type.id, name: c.type.name } : undefined,
+    case_type: c.type ? { id: c.type.id, name: c.type.name } : undefined,
     folder: c.folder ? { id: c.folder.id, name: c.folder.name } : undefined,
     labels: c.labels || [],
     steps: c.steps || [],
