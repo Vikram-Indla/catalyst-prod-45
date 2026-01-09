@@ -23,10 +23,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from '@/components/ui/sheet';
 import { 
   ChevronLeft, Save, Loader2, X, Plus, Trash2, GripVertical,
   Sparkles, User, Clock, FolderOpen, AlertCircle, Paperclip, Tag, Link2,
-  Cog, RefreshCw, Flame, Route, Zap, Shield, FileEdit, Eye, CheckCircle, XCircle
+  Cog, RefreshCw, Flame, Route, Zap, Shield, FileEdit, Eye, CheckCircle, XCircle,
+  GitBranch, Search, Lightbulb
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
@@ -98,6 +105,11 @@ export function TestCaseEditorPage() {
   const [hasChanges, setHasChanges] = useState(false);
   const [titleTouched, setTitleTouched] = useState(false);
   const [preconditionsExpanded, setPreconditionsExpanded] = useState(true);
+  
+  // AI Panel state
+  const [showAIPanel, setShowAIPanel] = useState(false);
+  const [aiPrompt, setAiPrompt] = useState('');
+  const [isGenerating, setIsGenerating] = useState(false);
 
   // Track changes
   useEffect(() => {
@@ -140,6 +152,34 @@ export function TestCaseEditorPage() {
 
   const deleteStep = (stepId: string) => {
     setSteps(steps.filter(s => s.id !== stepId).map((s, i) => ({ ...s, stepNumber: i + 1 })));
+  };
+
+  // AI Generate Steps handler
+  const handleGenerateSteps = async () => {
+    if (!aiPrompt.trim()) {
+      toast.error('Please describe what you want to test');
+      return;
+    }
+    setIsGenerating(true);
+    // Simulate AI generation
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    
+    // Add sample generated steps
+    const generatedSteps: TestStep[] = [
+      { id: `step-${Date.now()}-1`, stepNumber: steps.length + 1, action: 'Navigate to the feature page', testData: '', expectedResult: 'Page loads successfully' },
+      { id: `step-${Date.now()}-2`, stepNumber: steps.length + 2, action: 'Perform the described action', testData: aiPrompt, expectedResult: 'Action completes without errors' },
+      { id: `step-${Date.now()}-3`, stepNumber: steps.length + 3, action: 'Verify the expected outcome', testData: '', expectedResult: 'Expected behavior is observed' },
+    ];
+    setSteps([...steps, ...generatedSteps]);
+    setIsGenerating(false);
+    setAiPrompt('');
+    setShowAIPanel(false);
+    toast.success('Generated 3 test steps');
+  };
+
+  // AI Quick Action handler
+  const handleQuickAction = (action: 'improve' | 'edge' | 'similar') => {
+    toast.info(`${action === 'improve' ? 'Improving description...' : action === 'edge' ? 'Adding edge cases...' : 'Finding similar cases...'}`);
   };
 
   // Keyboard shortcuts
@@ -214,6 +254,17 @@ export function TestCaseEditorPage() {
 
         {/* Right side */}
         <div className="flex items-center gap-3">
+          {/* AI Assist Button */}
+          <Button
+            onClick={() => setShowAIPanel(true)}
+            variant="outline"
+            size="sm"
+            className="h-8 px-3 gap-1.5 text-purple-600 border-purple-200 hover:bg-purple-50 hover:border-purple-300"
+          >
+            <Sparkles className="h-4 w-4" />
+            AI Assist
+          </Button>
+
           {/* Assignee */}
           <div className="flex items-center gap-2 text-sm">
             <div className="h-7 w-7 rounded-full bg-[#dbeafe] flex items-center justify-center">
@@ -661,6 +712,107 @@ export function TestCaseEditorPage() {
           <div className="h-8" />
         </div>
       </ScrollArea>
+
+      {/* AI Assist Sheet Panel */}
+      <Sheet open={showAIPanel} onOpenChange={setShowAIPanel}>
+        <SheetContent className="w-[440px] sm:w-[540px] p-0 flex flex-col">
+          <SheetHeader className="px-6 py-4 border-b">
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-lg bg-purple-100">
+                <Sparkles className="h-5 w-5 text-purple-600" />
+              </div>
+              <SheetTitle className="text-lg font-semibold">AI Step Generator</SheetTitle>
+            </div>
+          </SheetHeader>
+          
+          <div className="flex-1 overflow-auto p-6 space-y-6">
+            {/* Input Section */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Describe what you want to test
+              </label>
+              <Textarea
+                value={aiPrompt}
+                onChange={(e) => setAiPrompt(e.target.value)}
+                placeholder="Example: Test user login with valid credentials and verify dashboard access"
+                className="min-h-[100px] resize-none"
+              />
+            </div>
+            
+            {/* Generate Button */}
+            <Button 
+              onClick={handleGenerateSteps}
+              disabled={!aiPrompt.trim() || isGenerating}
+              className="w-full bg-gradient-to-r from-purple-600 to-purple-500 hover:from-purple-700 hover:to-purple-600 text-white"
+            >
+              {isGenerating ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Generating...
+                </>
+              ) : (
+                <>
+                  <Sparkles className="h-4 w-4 mr-2" />
+                  Generate Steps
+                </>
+              )}
+            </Button>
+            
+            {/* Quick Actions */}
+            <div className="pt-4 border-t">
+              <h4 className="text-sm font-medium text-gray-700 mb-3">Quick Actions</h4>
+              <div className="space-y-2">
+                <Button 
+                  variant="ghost" 
+                  className="w-full justify-start text-left h-auto py-3 hover:bg-blue-50"
+                  onClick={() => handleQuickAction('improve')}
+                >
+                  <FileEdit className="h-4 w-4 mr-3 text-blue-600 shrink-0" />
+                  <div>
+                    <div className="font-medium text-sm">Improve Description</div>
+                    <div className="text-xs text-gray-500">Enhance objective and preconditions with AI</div>
+                  </div>
+                </Button>
+                
+                <Button 
+                  variant="ghost" 
+                  className="w-full justify-start text-left h-auto py-3 hover:bg-orange-50"
+                  onClick={() => handleQuickAction('edge')}
+                >
+                  <GitBranch className="h-4 w-4 mr-3 text-orange-600 shrink-0" />
+                  <div>
+                    <div className="font-medium text-sm">Add Edge Cases</div>
+                    <div className="text-xs text-gray-500">Generate additional test scenarios</div>
+                  </div>
+                </Button>
+                
+                <Button 
+                  variant="ghost" 
+                  className="w-full justify-start text-left h-auto py-3 hover:bg-teal-50"
+                  onClick={() => handleQuickAction('similar')}
+                >
+                  <Search className="h-4 w-4 mr-3 text-teal-600 shrink-0" />
+                  <div>
+                    <div className="font-medium text-sm">Suggest Similar Cases</div>
+                    <div className="text-xs text-gray-500">Find related test cases to link</div>
+                  </div>
+                </Button>
+              </div>
+            </div>
+            
+            {/* Pro Tip */}
+            <div className="p-4 bg-purple-50 rounded-lg border border-purple-100">
+              <div className="flex items-start gap-3">
+                <Lightbulb className="h-5 w-5 text-purple-600 mt-0.5 shrink-0" />
+                <div className="text-sm text-purple-800">
+                  <strong>Pro Tip:</strong> Be specific about the feature and expected behavior. 
+                  Include edge cases and error conditions for more comprehensive test coverage.
+                </div>
+              </div>
+            </div>
+          </div>
+        </SheetContent>
+      </Sheet>
     </div>
   );
 }
