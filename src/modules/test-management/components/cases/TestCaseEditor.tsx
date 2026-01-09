@@ -749,6 +749,12 @@ export function TestCaseEditor({
                         <Input
                           value={pre.text}
                           onChange={(e) => handleUpdatePrecondition(pre.id, e.target.value)}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter' && !e.shiftKey && isEditable) {
+                              e.preventDefault();
+                              handleAddPrecondition();
+                            }
+                          }}
                           placeholder="Enter precondition..."
                           className="flex-1"
                           disabled={!isEditable}
