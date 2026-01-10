@@ -2,6 +2,7 @@
  * TestCasesTable — Data table for list view of test cases
  */
 
+import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { 
   ArrowUpDown,
@@ -226,9 +227,13 @@ export function TestCasesTable({
                 />
               </td>
               <td className="px-4 py-3">
-                <span className="text-sm font-mono text-primary font-medium hover:underline">
+                <Link 
+                  to={`/releases/test-cases/${tc.id}`}
+                  className="text-sm font-mono text-primary font-medium hover:underline"
+                  onClick={(e) => e.stopPropagation()}
+                >
                   {tc.id}
-                </span>
+                </Link>
               </td>
               <td className="px-4 py-3 max-w-xs">
                 <Tooltip>
