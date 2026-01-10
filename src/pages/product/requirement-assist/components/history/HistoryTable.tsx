@@ -35,17 +35,19 @@ export function HistoryTable({
 }: HistoryTableProps) {
   const allSelected = data.length > 0 && data.every((item) => selectedIds.has(item.id));
 
+  // Format work items summary (PRD is NOT a work item)
   const formatItems = (items: GenerationHistoryItem['items'], status: GenerationHistoryItem['status']) => {
     const parts: string[] = [];
-    if (items.prd) parts.push(`${items.prd} PRD`);
+    // PRD removed - it's a background document, not a work item
     if (items.epics) parts.push(`${items.epics} Epic${items.epics !== 1 ? 's' : ''}`);
     if (items.features) parts.push(`${items.features} Feature${items.features !== 1 ? 's' : ''}`);
     if (items.stories) parts.push(`${items.stories} Stor${items.stories !== 1 ? 'ies' : 'y'}`);
+    if (items.testCases) parts.push(`${items.testCases} Test${items.testCases !== 1 ? 's' : ''}`);
     
     if (parts.length === 0) {
       if (status === 'draft') return 'Processing...';
       if (status === 'failed') return 'Failed';
-      return 'No items';
+      return 'No work items';
     }
     
     return parts.join(' • ');

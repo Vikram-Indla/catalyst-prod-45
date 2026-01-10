@@ -15879,6 +15879,8 @@ export type Database = {
           output_prd: boolean | null
           output_stories: boolean | null
           output_test_cases: boolean | null
+          prd_content: string | null
+          prd_title: string | null
           processing_time_ms: number | null
           program_id: string | null
           project_id: string | null
@@ -15912,6 +15914,8 @@ export type Database = {
           output_prd?: boolean | null
           output_stories?: boolean | null
           output_test_cases?: boolean | null
+          prd_content?: string | null
+          prd_title?: string | null
           processing_time_ms?: number | null
           program_id?: string | null
           project_id?: string | null
@@ -15945,6 +15949,8 @@ export type Database = {
           output_prd?: boolean | null
           output_stories?: boolean | null
           output_test_cases?: boolean | null
+          prd_content?: string | null
+          prd_title?: string | null
           processing_time_ms?: number | null
           program_id?: string | null
           project_id?: string | null

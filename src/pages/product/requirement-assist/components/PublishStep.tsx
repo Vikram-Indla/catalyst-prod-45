@@ -29,12 +29,13 @@ export function PublishStep({
   const [isExportingExcel, setIsExportingExcel] = useState(false);
   const undoTimerRef = useRef<NodeJS.Timeout | null>(null);
 
+  // PRD is a background document, not counted as a work item
   const counts = useMemo(() => {
-    const prd = items.filter((i) => i.type === 'prd').length;
     const epics = items.filter((i) => i.type === 'epic').length;
     const features = items.filter((i) => i.type === 'feature').length;
     const stories = items.filter((i) => i.type === 'story').length;
-    return { prd, epics, features, stories, total: prd + epics + features + stories };
+    const testCases = items.filter((i) => i.type === 'test_case').length;
+    return { epics, features, stories, testCases, total: epics + features + stories + testCases };
   }, [items]);
 
   useEffect(() => {
@@ -123,11 +124,12 @@ export function PublishStep({
     }
   };
 
+  // Work items only - PRD is shown separately as a downloadable document
   const successItems = useMemo(() => {
-    const prdItem = items.find((i) => i.type === 'prd');
     const epics = items.filter((i) => i.type === 'epic');
     const features = items.filter((i) => i.type === 'feature');
     const stories = items.filter((i) => i.type === 'story');
+    const testCases = items.filter((i) => i.type === 'test_case');
 
     const rangeLabel = (arr: GeneratedItem[]) => {
       if (!arr.length) return '—';
@@ -135,13 +137,7 @@ export function PublishStep({
       return `${arr[0].key} to ${arr[arr.length - 1].key}`;
     };
 
-    return [
-      {
-        icon: FileText,
-        title: prdItem?.title || 'PRD',
-        subtitle: prdItem?.key || 'Generated',
-        color: 'bg-primary text-white',
-      },
+    const result = [
       {
         icon: Layers,
         title: `${epics.length} Epics Created`,
@@ -161,6 +157,17 @@ export function PublishStep({
         color: 'bg-emerald-500 text-white',
       },
     ];
+
+    if (testCases.length > 0) {
+      result.push({
+        icon: Check,
+        title: `${testCases.length} Test Cases Created`,
+        subtitle: rangeLabel(testCases),
+        color: 'bg-orange-500 text-white',
+      });
+    }
+
+    return result;
   }, [items]);
 
   return (

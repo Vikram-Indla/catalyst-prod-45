@@ -1,6 +1,6 @@
 export interface GeneratedItem {
   id: string;
-  type: 'epic' | 'feature' | 'story' | 'prd';
+  type: 'epic' | 'feature' | 'story' | 'prd' | 'test_case';
   key: string;
   title: string;
   description: string;

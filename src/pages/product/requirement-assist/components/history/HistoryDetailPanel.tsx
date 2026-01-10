@@ -15,7 +15,8 @@ interface HistoryDetailPanelProps {
   onDelete: (item: GenerationHistoryItem) => void;
 }
 
-type ItemType = 'prd' | 'epic' | 'feature' | 'story';
+// Work item types only - PRD is a background document, not a work item
+type ItemType = 'epic' | 'feature' | 'story' | 'test_case';
 
 export function HistoryDetailPanel({
   item,
@@ -69,20 +70,20 @@ export function HistoryDetailPanel({
 
   const getTypeBadgeStyle = (type: ItemType) => {
     const styles = {
-      prd: 'bg-[#3b82f6]/10 text-[#3b82f6]',
       epic: 'bg-[#7c3aed]/10 text-[#7c3aed]',
       feature: 'bg-[#0d9488]/10 text-[#0d9488]',
       story: 'bg-[#10b981]/10 text-[#10b981]',
+      test_case: 'bg-[#f59e0b]/10 text-[#f59e0b]',
     };
     return styles[type];
   };
 
   const getTypeLabel = (type: ItemType) => {
     const labels = {
-      prd: 'PRD',
       epic: 'Epics',
       feature: 'Features',
       story: 'Stories',
+      test_case: 'Test Cases',
     };
     return labels[type];
   };
@@ -176,17 +177,41 @@ export function HistoryDetailPanel({
             </div>
           </div>
 
-          {/* Generated Items */}
+          {/* Background Documents - PRD Download */}
+          {item.hasPrd && (
+            <div className="mb-6">
+              <h4 className="text-[11px] font-semibold text-[#64748b] uppercase tracking-wide mb-3">
+                Background Documents
+              </h4>
+              <button
+                onClick={() => onExportPdf(item)}
+                className="flex items-center gap-3 w-full px-4 py-3 bg-[#f8fafc] rounded-lg hover:bg-[#f1f5f9] transition-colors text-left"
+              >
+                <div className="w-10 h-10 bg-[#3b82f6]/10 rounded-lg flex items-center justify-center">
+                  <FileText className="w-5 h-5 text-[#3b82f6]" />
+                </div>
+                <div className="flex-1">
+                  <div className="text-sm font-medium text-[#0f172a]">
+                    {item.prdTitle || 'Product Requirements Document'}
+                  </div>
+                  <div className="text-xs text-[#64748b]">Download PRD</div>
+                </div>
+              </button>
+            </div>
+          )}
+
+          {/* Work Items - Epics, Features, Stories, Test Cases */}
           <div className="mb-6">
             <h4 className="text-[11px] font-semibold text-[#64748b] uppercase tracking-wide mb-3">
-              Generated Items
+              Work Items
             </h4>
             <div className="bg-[#f8fafc] rounded-lg overflow-hidden">
-              {(['prd', 'epic', 'feature', 'story'] as ItemType[]).map((type) => {
+              {(['epic', 'feature', 'story', 'test_case'] as ItemType[]).map((type) => {
                 const items = groupedItems[type] || [];
-                const itemCount = type === 'prd' ? item.items.prd : 
-                                  type === 'epic' ? item.items.epics :
-                                  type === 'feature' ? item.items.features : item.items.stories;
+                const itemCount = type === 'epic' ? item.items.epics :
+                                  type === 'feature' ? item.items.features :
+                                  type === 'story' ? item.items.stories :
+                                  item.items.testCases;
                 
                 if (itemCount === 0) return null;
 
