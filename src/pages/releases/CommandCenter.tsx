@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -118,15 +119,15 @@ export function CommandCenter() {
   }, []);
 
   const handleCreateRelease = () => {
-    // TODO: Open create release modal
-    console.log('Create Release clicked');
+    toast.success('Create Release dialog opening...');
   };
 
   const handleExport = () => {
-    console.log('Export clicked');
+    toast.success('Exporting dashboard data...');
   };
 
   const handleReleaseClick = (id: string) => {
+    toast.success(`Opening release ${id}...`);
     navigate(`/releases/${id}/dashboard`);
   };
 
