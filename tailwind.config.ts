@@ -418,12 +418,13 @@ export default {
       },
       
       /* ═══════════════════════════════════════════════════════════════
-         CATALYST TYPOGRAPHY SYSTEM — Enterprise-Grade
+         CATALYST V5 TYPOGRAPHY SYSTEM — Plus Jakarta Sans
          ═══════════════════════════════════════════════════════════════ */
       fontFamily: {
-        sans: ["Inter", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "sans-serif"],
+        sans: ['"Plus Jakarta Sans"', "-apple-system", "BlinkMacSystemFont", "Segoe UI", "sans-serif"],
+        body: ['"Plus Jakarta Sans"', "-apple-system", "BlinkMacSystemFont", "sans-serif"],
+        display: ['"Plus Jakarta Sans"', "-apple-system", "sans-serif"],
         mono: ["SF Mono", "Monaco", "Consolas", "monospace"],
-        display: ["Inter", "-apple-system", "sans-serif"],
       },
       
       fontSize: {
@@ -486,13 +487,53 @@ export default {
           "0%": { opacity: "0", transform: "translateY(4px)" },
           "100%": { opacity: "1", transform: "translateY(0)" },
         },
+        "fade-in-up": {
+          "0%": { opacity: "0", transform: "translateY(10px)" },
+          "100%": { opacity: "1", transform: "translateY(0)" },
+        },
+        "fade-out": {
+          "0%": { opacity: "1", transform: "translateY(0)" },
+          "100%": { opacity: "0", transform: "translateY(4px)" },
+        },
         "scale-in": {
-          "0%": { opacity: "0", transform: "scale(0.98)" },
+          "0%": { opacity: "0", transform: "scale(0.95)" },
           "100%": { opacity: "1", transform: "scale(1)" },
+        },
+        "scale-out": {
+          "0%": { opacity: "1", transform: "scale(1)" },
+          "100%": { opacity: "0", transform: "scale(0.95)" },
         },
         "slide-up": {
           "0%": { opacity: "0", transform: "translateY(8px)" },
           "100%": { opacity: "1", transform: "translateY(0)" },
+        },
+        "slide-in-right": {
+          "0%": { opacity: "0", transform: "translateX(100%)" },
+          "100%": { opacity: "1", transform: "translateX(0)" },
+        },
+        "slide-out-right": {
+          "0%": { opacity: "1", transform: "translateX(0)" },
+          "100%": { opacity: "0", transform: "translateX(100%)" },
+        },
+        "slide-in-left": {
+          "0%": { opacity: "0", transform: "translateX(-100%)" },
+          "100%": { opacity: "1", transform: "translateX(0)" },
+        },
+        "shimmer": {
+          "0%": { transform: "translateX(-100%)" },
+          "100%": { transform: "translateX(100%)" },
+        },
+        "count-up": {
+          "0%": { opacity: "0", transform: "translateY(8px)" },
+          "100%": { opacity: "1", transform: "translateY(0)" },
+        },
+        "gauge-draw": {
+          "0%": { strokeDashoffset: "100" },
+          "100%": { strokeDashoffset: "var(--gauge-value, 0)" },
+        },
+        "progress-fill": {
+          "0%": { width: "0%" },
+          "100%": { width: "var(--progress-value, 100%)" },
         },
         "orbit": {
           "0%": { transform: "rotate(0deg) translateX(var(--orbit-radius, 24px)) rotate(0deg)" },
@@ -502,17 +543,94 @@ export default {
           "0%": { transform: "scale(1)", opacity: "0.6" },
           "100%": { transform: "scale(1.3)", opacity: "0" },
         },
+        "toast-slide-in": {
+          "0%": { opacity: "0", transform: "translateX(100%) translateY(0)" },
+          "100%": { opacity: "1", transform: "translateX(0) translateY(0)" },
+        },
+        "toast-slide-out": {
+          "0%": { opacity: "1", transform: "translateX(0) translateY(0)" },
+          "100%": { opacity: "0", transform: "translateX(100%) translateY(0)" },
+        },
+        "modal-backdrop-in": {
+          "0%": { opacity: "0" },
+          "100%": { opacity: "1" },
+        },
+        "modal-content-in": {
+          "0%": { opacity: "0", transform: "scale(0.95) translateY(8px)" },
+          "100%": { opacity: "1", transform: "scale(1) translateY(0)" },
+        },
+        "checkmark": {
+          "0%": { strokeDashoffset: "16", opacity: "0" },
+          "50%": { opacity: "1" },
+          "100%": { strokeDashoffset: "0", opacity: "1" },
+        },
+        "toggle-on": {
+          "0%": { transform: "translateX(0)" },
+          "100%": { transform: "translateX(100%)" },
+        },
+        "toggle-off": {
+          "0%": { transform: "translateX(100%)" },
+          "100%": { transform: "translateX(0)" },
+        },
       },
       
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         "fade-in": "fade-in 0.3s ease-out",
+        "fade-in-up": "fade-in-up 0.4s ease-out",
+        "fade-out": "fade-out 0.3s ease-out",
         "scale-in": "scale-in 0.2s ease-out",
+        "scale-out": "scale-out 0.2s ease-out",
         "slide-up": "slide-up 0.3s ease-out",
+        "slide-in-right": "slide-in-right 0.3s ease-out",
+        "slide-out-right": "slide-out-right 0.3s ease-out",
+        "slide-in-left": "slide-in-left 0.3s ease-out",
+        "shimmer": "shimmer 1.5s infinite",
+        "count-up": "count-up 0.5s ease-out",
+        "gauge-draw": "gauge-draw 1s ease-out forwards",
+        "progress-fill": "progress-fill 0.6s ease-out forwards",
         "orbit": "orbit 1.5s linear infinite",
         "pulse-ring": "pulse-ring 2s ease-out infinite",
         "spin-slow": "spin 8s linear infinite",
+        "toast-in": "toast-slide-in 0.3s ease-out",
+        "toast-out": "toast-slide-out 0.3s ease-out",
+        "modal-backdrop": "modal-backdrop-in 0.2s ease-out",
+        "modal-content": "modal-content-in 0.2s ease-out",
+        "checkmark": "checkmark 0.3s ease-out forwards",
+        "toggle-on": "toggle-on 0.2s ease-out",
+        "toggle-off": "toggle-off 0.2s ease-out",
+      },
+      
+      /* Transition timing functions */
+      transitionTimingFunction: {
+        "ease-out-expo": "cubic-bezier(0.16, 1, 0.3, 1)",
+        "spring": "cubic-bezier(0.5, 1.6, 0.4, 0.7)",
+        "bounce": "cubic-bezier(0.68, -0.55, 0.265, 1.55)",
+      },
+      
+      /* Spacing - 4px base grid */
+      spacing: {
+        "0.5": "2px",
+        "1": "4px",
+        "1.5": "6px",
+        "2": "8px",
+        "2.5": "10px",
+        "3": "12px",
+        "3.5": "14px",
+        "4": "16px",
+        "5": "20px",
+        "6": "24px",
+        "7": "28px",
+        "8": "32px",
+        "9": "36px",
+        "10": "40px",
+        "11": "44px",
+        "12": "48px",
+        "14": "56px",
+        "16": "64px",
+        "20": "80px",
+        "24": "96px",
       },
     },
   },

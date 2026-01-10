@@ -1,63 +1,73 @@
 import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
-
 import { cn } from "@/lib/utils";
 
 /**
- * Badge Component - Catalyst V5 Token-Based Semantic Variants
- * All colors use CSS variables from index.css - NO hardcoded colors
+ * Catalyst V5 Badge Component
+ * Status variants: draft, active, complete, approved, rejected, blocked
+ * Test result variants: passed, failed, skipped, not-run
  */
 const badgeVariants = cva(
-  "inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none",
+  "inline-flex items-center rounded-full border font-medium transition-colors focus:outline-none",
   {
     variants: {
       variant: {
-        // Default - uses semantic tokens
+        // Base variants
         default: "border-transparent bg-foreground text-background",
-        // Secondary - subtle background
         secondary: "border-border bg-muted text-muted-foreground",
-        // Destructive - danger semantic
-        destructive: "border-[var(--sem-danger-border)] bg-[var(--sem-danger-bg)] text-[var(--sem-danger)]",
-        // Outline - bordered style
-        outline: "border-border bg-card text-foreground",
-        // Success - uses V5 success tokens
-        success: "border-[var(--sem-success-border)] bg-[var(--sem-success-bg)] text-[var(--sem-success)]",
-        // Warning - uses V5 warning tokens (for BLOCKED only)
-        warning: "border-[var(--sem-warning-border)] bg-[var(--sem-warning-bg)] text-[var(--sem-warning)]",
-        // Error - uses V5 danger tokens
-        error: "border-[var(--sem-danger-border)] bg-[var(--sem-danger-bg)] text-[var(--sem-danger)]",
-        // Info - uses V5 info tokens
-        info: "border-[var(--sem-info-border)] bg-[var(--sem-info-bg)] text-[var(--sem-info)]",
-        // Critical - highest severity
-        critical: "border-[var(--sem-critical-border)] bg-[var(--sem-critical-bg)] text-[var(--sem-critical)]",
-        // Muted - neutral/low priority
-        muted: "border-[var(--status-muted-border)] bg-[var(--sem-medium-bg)] text-[var(--sem-medium)]",
-        // DRAFT - Neutral gray (NOT warning/danger!)
+        outline: "border-border bg-transparent text-foreground",
+        
+        // Brand colors
+        primary: "border-transparent bg-[#dbeafe] text-[#2563eb]",
+        teal: "border-transparent bg-[#ccfbf1] text-[#0d9488]",
+        purple: "border-transparent bg-[#ede9fe] text-[#7c3aed]",
+        
+        // Semantic - Status
+        success: "border-transparent bg-[#d1fae5] text-[#059669]",
+        warning: "border-transparent bg-[#fef3c7] text-[#d97706]",
+        danger: "border-transparent bg-[#fee2e2] text-[#dc2626]",
+        destructive: "border-transparent bg-[#fee2e2] text-[#dc2626]",
+        info: "border-transparent bg-[#dbeafe] text-[#2563eb]",
+        error: "border-transparent bg-[#fee2e2] text-[#dc2626]",
+        critical: "border-transparent bg-[#fee2e2] text-[#dc2626]",
+        muted: "border-transparent bg-[#f5f5f5] text-[#737373]",
+        
+        // Workflow status
         draft: "border-[#e5e5e5] bg-[#f5f5f5] text-[#737373]",
-        // Ready - Teal
-        ready: "border-transparent bg-[#ccfbf1] text-[#0d9488]",
-        // Approved - Green
+        active: "border-transparent bg-[#dbeafe] text-[#2563eb]",
+        complete: "border-transparent bg-[#d1fae5] text-[#059669]",
         approved: "border-transparent bg-[#d1fae5] text-[#059669]",
-        // Review - Blue
-        review: "border-transparent bg-[#dbeafe] text-[#2563eb]",
-        // Deprecated - Darker gray
-        deprecated: "border-transparent bg-[#e5e5e5] text-[#525252]",
-        // Blocked - Warning (ONLY for blocked status)
+        rejected: "border-transparent bg-[#fee2e2] text-[#dc2626]",
         blocked: "border-transparent bg-[#fef3c7] text-[#d97706]",
-        // Failed - Danger red
+        ready: "border-transparent bg-[#ccfbf1] text-[#0d9488]",
+        review: "border-transparent bg-[#dbeafe] text-[#2563eb]",
+        deprecated: "border-transparent bg-[#e5e5e5] text-[#525252]",
+        
+        // Test result variants
+        passed: "border-transparent bg-[#d1fae5] text-[#059669]",
         failed: "border-transparent bg-[#fee2e2] text-[#dc2626]",
+        skipped: "border-transparent bg-[#f5f5f5] text-[#737373]",
+        "not-run": "border-transparent bg-[#f5f5f5] text-[#a3a3a3]",
+        
+        // AI variant
+        ai: "border-transparent bg-gradient-to-r from-[#ede9fe] to-[#e0e7ff] text-[#7c3aed]",
+      },
+      size: {
+        sm: "px-2 py-0.5 text-[11px]",
+        default: "px-2.5 py-0.5 text-xs",
       },
     },
     defaultVariants: {
       variant: "default",
+      size: "default",
     },
   },
 );
 
 export interface BadgeProps extends React.HTMLAttributes<HTMLDivElement>, VariantProps<typeof badgeVariants> {}
 
-function Badge({ className, variant, ...props }: BadgeProps) {
-  return <div className={cn(badgeVariants({ variant }), className)} {...props} />;
+function Badge({ className, variant, size, ...props }: BadgeProps) {
+  return <div className={cn(badgeVariants({ variant, size }), className)} {...props} />;
 }
 
 export { Badge, badgeVariants };
