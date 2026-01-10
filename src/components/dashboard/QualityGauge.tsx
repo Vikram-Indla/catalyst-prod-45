@@ -9,12 +9,12 @@ interface QualityGaugeProps {
   animate?: boolean;
 }
 
-// Get health color based on value
-function getHealthColor(health: number): string {
-  if (health >= 90) return '#059669'; // success green - Excellent
-  if (health >= 75) return '#2563eb'; // primary blue - Good
-  if (health >= 50) return '#d97706'; // warning orange - Caution
-  return '#ef4444'; // danger red - At Risk
+// Get health color based on value - EXACT THRESHOLDS
+function getHealthColor(value: number): string {
+  if (value >= 90) return '#059669'; // Success green - Excellent
+  if (value >= 75) return '#2563eb'; // Primary blue - Good
+  if (value >= 50) return '#d97706'; // Warning orange - Caution
+  return '#ef4444'; // Danger red - At Risk
 }
 
 export function QualityGauge({
@@ -25,6 +25,7 @@ export function QualityGauge({
 }: QualityGaugeProps) {
   const [animatedValue, setAnimatedValue] = useState(animate ? 0 : value);
   
+  // Get color based on ACTUAL value, not animated value
   const color = getHealthColor(value);
   
   // Circle calculations - THICKER stroke for bold appearance
@@ -35,13 +36,16 @@ export function QualityGauge({
   
   // Animate on mount
   useEffect(() => {
-    if (!animate) return;
+    if (!animate) {
+      setAnimatedValue(value);
+      return;
+    }
     
     const duration = 1200;
     const startTime = Date.now();
     const startValue = 0;
     
-    const animateValue = () => {
+    const animateProgress = () => {
       const elapsed = Date.now() - startTime;
       const progress = Math.min(elapsed / duration, 1);
       
@@ -52,11 +56,11 @@ export function QualityGauge({
       setAnimatedValue(currentValue);
       
       if (progress < 1) {
-        requestAnimationFrame(animateValue);
+        requestAnimationFrame(animateProgress);
       }
     };
     
-    requestAnimationFrame(animateValue);
+    requestAnimationFrame(animateProgress);
   }, [value, animate]);
 
   return (
@@ -81,7 +85,7 @@ export function QualityGauge({
           className="dark:stroke-neutral-700"
         />
         
-        {/* Value arc - THICK AND BOLD */}
+        {/* Value arc - THICK AND BOLD with explicit color */}
         <circle
           cx={size / 2}
           cy={size / 2}
@@ -92,8 +96,8 @@ export function QualityGauge({
           strokeLinecap="round"
           strokeDasharray={circumference}
           strokeDashoffset={offset}
-          className="transition-all duration-1000 ease-out"
           style={{
+            transition: 'stroke-dashoffset 1s ease-out',
             filter: `drop-shadow(0 0 4px ${color}40)`,
           }}
         />
@@ -105,7 +109,7 @@ export function QualityGauge({
           className="font-bold leading-none tabular-nums"
           style={{ 
             fontSize: size * 0.28, 
-            color: color 
+            color: color,
           }}
         >
           {Math.round(animatedValue)}%
