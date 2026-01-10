@@ -4,13 +4,14 @@ import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 
 interface PublishStepProps {
+  generationDisplayId?: string | null;
   onCreateAnother: () => void;
   onOpenInCatalyst: () => void;
   onUndo: () => void;
   onViewHistory?: () => void;
 }
 
-export function PublishStep({ onCreateAnother, onOpenInCatalyst, onUndo, onViewHistory }: PublishStepProps) {
+export function PublishStep({ generationDisplayId, onCreateAnother, onOpenInCatalyst, onUndo, onViewHistory }: PublishStepProps) {
   const [undoSeconds, setUndoSeconds] = useState(300);
   const undoTimerRef = useRef<NodeJS.Timeout | null>(null);
 

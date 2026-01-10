@@ -78,4 +78,9 @@ export interface WizardState {
   } | null;
   selectedTheme: string | null;
   generatedItems: GeneratedItem[];
+  // Database integration fields
+  generationId: string | null;
+  generationDisplayId: string | null;
+  tokensUsed: number;
+  processingTimeMs: number;
 }
