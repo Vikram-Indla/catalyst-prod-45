@@ -7,14 +7,14 @@ const tabs = [
   { 
     id: 'wizard', 
     label: 'Wizard', 
-    path: '/operations/requirement-assist',
+    path: '/product/requirement-assist',
     icon: Wand2,
     exact: true 
   },
   { 
     id: 'history', 
     label: 'History', 
-    path: '/operations/requirement-assist/history',
+    path: '/product/requirement-assist/history',
     icon: History,
     exact: true 
   },
@@ -34,7 +34,7 @@ export function RANavigationTabs() {
   const isActive = (path: string, exact: boolean) => {
     if (exact) {
       return location.pathname === path || 
-        (path === '/operations/requirement-assist' && location.pathname === '/operations/requirement-assist/wizard');
+        (path === '/product/requirement-assist' && location.pathname === '/product/requirement-assist/wizard');
     }
     return location.pathname.startsWith(path);
   };

@@ -1,4 +1,4 @@
-import { List, Users, FileText, Settings, Wand2, History, ClipboardCheck, Settings2, LayoutTemplate } from 'lucide-react';
+import { List, Users, FileText } from 'lucide-react';
 import { SidebarBase, SidebarConfig } from './SidebarBase';
 import { useOpenIncidentCount } from '@/hooks/useOpenIncidentCount';
 
@@ -15,35 +15,6 @@ export function ReleaseRoomSidebar({ expanded, onToggle, className }: Operations
     badge: 'OP',
     label: 'Operations',
     items: [
-      // Requirement Assist section
-      { 
-        id: 'requirement-assist', 
-        title: 'Requirement Assist™', 
-        path: '/operations/requirement-assist', 
-        icon: Wand2, 
-        exact: false,
-      },
-      { 
-        id: 'generation-history', 
-        title: 'Generation History', 
-        path: '/operations/requirement-assist/history', 
-        icon: History, 
-        exact: true 
-      },
-      { 
-        id: 'ra-templates', 
-        title: 'Templates', 
-        path: '/admin/requirement-assist/templates', 
-        icon: LayoutTemplate, 
-        exact: false 
-      },
-      { 
-        id: 'ra-compliance', 
-        title: 'Compliance', 
-        path: '/admin/requirement-assist/compliance', 
-        icon: ClipboardCheck, 
-        exact: false 
-      },
       // Incidents section
       { 
         id: 'incidents', 
@@ -68,13 +39,6 @@ export function ReleaseRoomSidebar({ expanded, onToggle, className }: Operations
         exact: true 
       },
     ],
-    footerItem: {
-      id: 'ra-admin-settings',
-      title: 'RA Admin Settings',
-      path: '/admin/requirement-assist',
-      icon: Settings2,
-      exact: false,
-    },
   };
 
   return (

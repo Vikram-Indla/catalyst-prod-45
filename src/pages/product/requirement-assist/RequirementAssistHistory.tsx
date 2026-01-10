@@ -211,11 +211,11 @@ export default function RequirementAssistHistory() {
     toast.success(`Opening "${item.title}" in Wizard...`);
     handleClosePanel();
     // Pass generation ID to wizard via navigation state
-    navigate('/operations/requirement-assist', { state: { generationId: item.id } });
+    navigate('/product/requirement-assist', { state: { generationId: item.id } });
   }, [navigate, handleClosePanel]);
 
   const handleNewGeneration = useCallback(() => {
-    navigate('/operations/requirement-assist');
+    navigate('/product/requirement-assist');
   }, [navigate]);
 
   return (
@@ -223,7 +223,7 @@ export default function RequirementAssistHistory() {
       {/* Page Header with Breadcrumb */}
       <div className="bg-white border-b border-[#e2e8f0] px-6 py-3 flex items-center justify-between">
         <div className="flex items-center gap-2 text-[13px]">
-          <span className="text-[#94a3b8]">Operations</span>
+          <span className="text-[#94a3b8]">Product</span>
           <ChevronRight className="w-3.5 h-3.5 text-[#94a3b8]" />
           <span className="text-[#94a3b8]">Requirement Assist™</span>
           <ChevronRight className="w-3.5 h-3.5 text-[#94a3b8]" />
