@@ -90,6 +90,7 @@ import Releases from "./pages/Releases";
 import ReleasesCommandCenter from "./pages/releases/CommandCenter";
 import ReleasesPlaceholderPage from "./pages/releases/PlaceholderPage";
 import ReleasesTestCasesPage from "./pages/releases/TestCasesPage";
+import ReleasesTestCaseDetailPage from "./pages/releases/TestCaseDetailPage";
 import OrgSetup from "./pages/admin/OrgSetup";
 import HierarchyConfig from "./pages/admin/HierarchyConfig";
 import CustomFields from "./pages/admin/CustomFields";
@@ -717,6 +718,7 @@ const App = () => (
               <Route path="/releases/calendar" element={<ReleasesPlaceholderPage />} />
               <Route path="/releases/compare" element={<ReleasesPlaceholderPage />} />
               <Route path="/releases/test-cases" element={<ReleasesTestCasesPage />} />
+              <Route path="/releases/test-cases/:id" element={<ReleasesTestCaseDetailPage />} />
               <Route path="/releases/test-cycles" element={<ReleasesPlaceholderPage />} />
               <Route path="/releases/execution" element={<ReleasesPlaceholderPage />} />
               <Route path="/releases/ask-ai" element={<ReleasesPlaceholderPage />} />
