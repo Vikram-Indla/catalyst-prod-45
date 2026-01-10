@@ -252,14 +252,14 @@ export function generateDesignSystemMarkdown(): string {
 
   md += `---
 
-## 5. Golden Hour Chart Palette
+## 5. V5 Chart Palette
 
 | Level | Name | Color | Hex |
 |-------|------|-------|-----|
-| 5 | Expert | Olive Green | #5c7c5c |
-| 4 | Advanced | Bronze | #8b7355 |
-| 3 | Intermediate | Gold | #c69c6d |
-| 2 | Beginner | Champagne | #d4b896 |
+| 5 | Expert | Teal Dark | #0f766e |
+| 4 | Advanced | Teal | #0d9488 |
+| 3 | Intermediate | Blue | #2563eb |
+| 2 | Beginner | Light Blue | #3b82f6 |
 | 1 | None | Cool Grey | #c8ccd0 |
 
 **Usage:** Charts, graphs, reports, heatmaps, and all data visualizations.

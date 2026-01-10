@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, ArrowRight, Save, Rocket, Search } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Save, Rocket, Search, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { useWizardState } from './hooks/useWizardState';
@@ -105,14 +105,24 @@ export default function RequirementAssistWizard() {
           draftSaved={state.inputContent.length > 0}
         />
         
-        <button
-          onClick={() => setSearchOpen(true)}
-          className="flex items-center gap-2 px-3 py-2 bg-muted border rounded-lg text-sm text-muted-foreground hover:border-primary transition-colors"
-        >
-          <Search className="w-4 h-4" />
-          <span>Search...</span>
-          <kbd className="ml-2 px-1.5 py-0.5 text-[10px] bg-background border rounded">⌘K</kbd>
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setSearchOpen(true)}
+            className="flex items-center gap-2 px-3 py-2 bg-muted border rounded-lg text-sm text-muted-foreground hover:border-primary transition-colors"
+          >
+            <Search className="w-4 h-4" />
+            <span>Search...</span>
+            <kbd className="ml-2 px-1.5 py-0.5 text-[10px] bg-background border rounded">⌘K</kbd>
+          </button>
+          
+          <button
+            onClick={() => setSettingsOpen(true)}
+            className="p-2 text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-colors"
+            aria-label="Open settings"
+          >
+            <Settings className="w-5 h-5" />
+          </button>
+        </div>
       </div>
 
       <div className="flex-1 overflow-auto px-6 pb-6 pt-4">

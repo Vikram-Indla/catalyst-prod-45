@@ -468,10 +468,11 @@
        Surfaces do the separation, not borders.
        ═══════════════════════════════════════════════════════════════ */
     
-    /* === BRAND TOKENS (Immutable) === */
+    /* === BRAND TOKENS (V5 Compliant) === */
     --brand-dark: #1A1A1A;
-    --brand-gold: #C69C6D;
-    --brand-gold-hover: #B8905F;
+    --brand-gold: #0d9488;
+    --brand-gold-hover: #0f766e;
+    --brand-teal: #0d9488;
     
     /* === A) SURFACE LADDER (No pure black; subtle elevation steps) === */
     --bg-0: #0F1113;                     /* App background */
@@ -4343,11 +4344,11 @@ table .text-gray-500,
    SIDEBAR (Green tint — immutable):
    - --sidebar-hover: rgba(92,124,92,0.08)
    - --sidebar-active: rgba(92,124,92,0.12)
-   - Active indicator: 2px solid var(--brand-gold)
+   - Active indicator: 2px solid var(--brand-teal)
    
    BRAND:
-   - --brand-gold: #C69C6D
-   - --brand-gold-hover: #B8905F
+   - --brand-teal: #0d9488
+   - --brand-gold: #0d9488 (deprecated, now teal)
    - --brand-primary: hsl(217 91% 60%) (#3b82f6)
    
    SEMANTIC (Muted, Premium):
@@ -4359,11 +4360,11 @@ table .text-gray-500,
    
    CHART PALETTE:
    - --chart-1: #3b82f6 (blue)
-   - --chart-2: #55c488 (green)
-   - --chart-3: #c69c6d (gold)
+   - --chart-2: #10b981 (green)
+   - --chart-3: #0d9488 (teal)
    - --chart-4: #78aaff (light blue)
-   - --chart-5: #8b7355 (bronze)
-   - --chart-6: #d4b896 (champagne)
+   - --chart-5: #14b8a6 (teal light)
+   - --chart-6: #60a5fa (sky)
    - --chart-7: #ff6b6b (coral)
    - --chart-8: #f2b85a (amber)
    ═══════════════════════════════════════════════════════════════════════════ */

@@ -58,7 +58,7 @@ export function HierarchyTreeView({ workItems }: HierarchyTreeViewProps) {
       },
       story: { 
         icon: <FileText className="w-3.5 h-3.5 text-white" />, 
-        bg: 'bg-[#8b7355]' 
+        bg: 'bg-[#10b981]' 
       },
       defect: { 
         icon: <Bug className="w-4 h-4 text-white" />, 
@@ -143,7 +143,7 @@ export function HierarchyTreeView({ workItems }: HierarchyTreeViewProps) {
             {/* Right side - Story points & Version */}
             <div className="flex items-center gap-2 text-right flex-shrink-0">
               {item.story_points && (
-                <span className="px-2 py-0.5 text-xs font-medium bg-[#8b7355]/10 text-[#8b7355] rounded">
+                <span className="px-2 py-0.5 text-xs font-medium bg-[#10b981]/10 text-[#10b981] rounded">
                   {item.story_points} SP
                 </span>
               )}

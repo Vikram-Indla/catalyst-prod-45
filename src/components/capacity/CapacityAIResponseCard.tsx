@@ -47,10 +47,10 @@ export function CapacityAIResponseCard({ data, onAction }: CapacityAIResponseCar
     switch (status) {
       case 'success':
         return {
-          bg: 'bg-[#5C7C5C]/10',
-          border: 'border-[#5C7C5C]',
-          text: 'text-[#5C7C5C]',
-          icon: 'text-[#5C7C5C]'
+          bg: 'bg-[#0d9488]/10',
+          border: 'border-[#0d9488]',
+          text: 'text-[#0d9488]',
+          icon: 'text-[#0d9488]'
         };
       case 'error':
         return {
@@ -61,10 +61,10 @@ export function CapacityAIResponseCard({ data, onAction }: CapacityAIResponseCar
         };
       case 'warning':
         return {
-          bg: 'bg-[#C69C6D]/10',
-          border: 'border-[#C69C6D]',
-          text: 'text-[#C69C6D]',
-          icon: 'text-[#C69C6D]'
+          bg: 'bg-[#d97706]/10',
+          border: 'border-[#d97706]',
+          text: 'text-[#d97706]',
+          icon: 'text-[#d97706]'
         };
     }
   };
@@ -80,7 +80,7 @@ export function CapacityAIResponseCard({ data, onAction }: CapacityAIResponseCar
             {getStatusIcon(data.directAnswer.status)}
           </div>
           <div>
-            <p className="text-[10px] font-semibold uppercase tracking-widest text-[#8B7355] dark:text-[#C69C6D] mb-1">
+            <p className="text-[10px] font-semibold uppercase tracking-widest text-[#0d9488] dark:text-[#0d9488] mb-1">
               DIRECT ANSWER
             </p>
             <p className={`text-xl font-bold ${statusStyles.text} dark:text-white`}>
@@ -93,7 +93,7 @@ export function CapacityAIResponseCard({ data, onAction }: CapacityAIResponseCar
       {/* Context Section */}
       {data.context && data.context.length > 0 && (
         <div className="px-4 py-3 border-t border-[#C8CCD0]/30 dark:border-[#C8CCD0]/10">
-          <p className="text-[10px] font-semibold uppercase tracking-widest text-[#8B7355] dark:text-[#C69C6D] mb-2">
+          <p className="text-[10px] font-semibold uppercase tracking-widest text-[#0d9488] dark:text-[#0d9488] mb-2">
             CONTEXT
           </p>
           <div className="space-y-1.5">
@@ -113,8 +113,8 @@ export function CapacityAIResponseCard({ data, onAction }: CapacityAIResponseCar
 
       {/* System Note Section */}
       {data.systemNote && (
-        <div className="px-4 py-3 border-t border-[#C8CCD0]/30 dark:border-[#C8CCD0]/10 bg-[#C69C6D]/5">
-          <p className="text-[10px] font-semibold uppercase tracking-widest text-[#8B7355] dark:text-[#C69C6D] mb-1">
+        <div className="px-4 py-3 border-t border-[#C8CCD0]/30 dark:border-[#C8CCD0]/10 bg-[#0d9488]/5">
+          <p className="text-[10px] font-semibold uppercase tracking-widest text-[#0d9488] dark:text-[#0d9488] mb-1">
             SYSTEM NOTE
           </p>
           <p className="text-sm text-[#1A1A1A]/70 dark:text-[#C8CCD0]/70">
@@ -135,7 +135,7 @@ export function CapacityAIResponseCard({ data, onAction }: CapacityAIResponseCar
                 onClick={() => onAction?.(action.action)}
                 className={
                   action.type === 'primary'
-                    ? 'bg-[#1A1A1A] hover:bg-[#1A1A1A]/80 text-white dark:bg-[#C69C6D] dark:hover:bg-[#C69C6D]/80 dark:text-[#1A1A1A]'
+                    ? 'bg-[#1A1A1A] hover:bg-[#1A1A1A]/80 text-white dark:bg-[#0d9488] dark:hover:bg-[#0d9488]/80 dark:text-white'
                     : 'border-[#C8CCD0] text-[#1A1A1A] dark:border-[#C8CCD0]/30 dark:text-[#C8CCD0]'
                 }
               >

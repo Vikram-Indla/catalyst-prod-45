@@ -22,10 +22,10 @@ const catalyst = {
   danger: '#ef4444',
   dangerBg: 'rgba(239,68,68,0.15)',
   dangerBorder: 'rgba(239,68,68,0.3)',
-  // Brand
-  gold: '#c69c6d',
-  goldBg: 'rgba(198,156,109,0.15)',
-  goldBorder: 'rgba(198,156,109,0.3)',
+  // Brand (V5 Teal)
+  gold: '#0d9488',
+  goldBg: 'rgba(13,148,136,0.15)',
+  goldBorder: 'rgba(13,148,136,0.3)',
   // Surfaces (light mode)
   pageBg: '#faf7f2',
   cardBg: '#ffffff',
@@ -164,7 +164,7 @@ export default function OKRTree() {
           className={cn(
             "flex items-center gap-3 py-3 px-4 cursor-pointer transition-colors",
             "border-b",
-            isSelected && "ring-2 ring-inset ring-[#c69c6d]",
+            isSelected && "ring-2 ring-inset ring-[#0d9488]",
             indentLevel === 0 ? "font-medium" : ""
           )}
           style={{ 

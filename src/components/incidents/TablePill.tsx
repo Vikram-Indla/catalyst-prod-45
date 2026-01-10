@@ -34,10 +34,10 @@ const catalyst = {
   infoBg: 'var(--info-bg, rgba(59, 130, 246, 0.12))',
   infoBorder: 'var(--info-bd, rgba(59, 130, 246, 0.22))',
   
-  // Brand (gold accent)
-  gold: 'var(--brand-gold, #c69c6d)',
-  goldBg: 'var(--accent-gold-soft, rgba(198, 156, 109, 0.14))',
-  goldBorder: 'var(--accent-border, rgba(198, 156, 109, 0.30))',
+  // Brand (teal accent - V5)
+  gold: 'var(--brand-teal, #0d9488)',
+  goldBg: 'var(--accent-teal-soft, rgba(13, 148, 136, 0.14))',
+  goldBorder: 'var(--accent-teal-border, rgba(13, 148, 136, 0.30))',
   
   // Neutral (using CSS variables)
   muted: 'var(--fg-3, #8a8a8a)',

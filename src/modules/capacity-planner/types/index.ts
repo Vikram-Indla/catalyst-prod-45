@@ -181,9 +181,9 @@ export const CatalystColors = {
     tealBg: 'rgba(13, 148, 136, 0.08)',
   },
   secondary: {
-    olive: '#4d8b4d',
-    bronze: '#8b7355',
-    champagne: '#d4b896',
+    olive: '#0d9488',
+    bronze: '#10b981',
+    champagne: '#3b82f6',
     green: '#22c55e',
   },
   status: {
@@ -197,17 +197,17 @@ export const CatalystColors = {
 };
 
 export const ProjectColors: Record<string, string> = {
-  'Digital Investor Portal': '#4d8b4d',
-  'Industrial Marketplace': '#8b7355',
-  'Industrial Platform Modernization': '#0d9488',
-  'Mobile App Initiative': '#d4b896',
+  'Digital Investor Portal': '#0d9488',
+  'Industrial Marketplace': '#10b981',
+  'Industrial Platform Modernization': '#2563eb',
+  'Mobile App Initiative': '#3b82f6',
   default: '#6b7280',
 };
 
 export const DepartmentColors: Record<string, { bg: string; text: string; badge: string }> = {
-  Product: { bg: 'bg-[#d4b896]', text: 'text-[#4a3f35]', badge: 'bg-[#d4b896]/15 text-[#c69c6d]' },
+  Product: { bg: 'bg-[#3b82f6]', text: 'text-white', badge: 'bg-[#3b82f6]/15 text-[#2563eb]' },
   Delivery: { bg: 'bg-[#0d9488]', text: 'text-white', badge: 'bg-[#2563eb]/10 text-[#2563eb]' },
-  Support: { bg: 'bg-[#4d8b4d]', text: 'text-white', badge: 'bg-[#5c7c5c]/15 text-[#5c7c5c]' },
+  Support: { bg: 'bg-[#10b981]', text: 'text-white', badge: 'bg-[#10b981]/15 text-[#10b981]' },
   default: { bg: 'bg-muted', text: 'text-muted-foreground', badge: 'bg-muted text-muted-foreground' },
 };
 
