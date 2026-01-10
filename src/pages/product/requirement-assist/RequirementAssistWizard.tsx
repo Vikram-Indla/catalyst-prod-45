@@ -115,7 +115,7 @@ export default function RequirementAssistWizard() {
   };
 
   const handleViewHistory = () => {
-    navigate('/operations/requirement-assist/history');
+    navigate('/product/requirement-assist/history');
   };
 
   return (
@@ -123,7 +123,7 @@ export default function RequirementAssistWizard() {
       {/* Breadcrumb */}
       <div className="bg-white border-b border-[#e2e8f0] px-6 py-3">
         <div className="flex items-center gap-2 text-[13px]">
-          <span className="text-[#94a3b8]">Operations</span>
+          <span className="text-[#94a3b8]">Product</span>
           <ChevronRight className="w-3.5 h-3.5 text-[#94a3b8]" />
           <span className="font-semibold text-[#0f172a]">Requirement Assist™</span>
         </div>

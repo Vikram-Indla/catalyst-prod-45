@@ -1,4 +1,4 @@
-import { Lock } from 'lucide-react';
+import { Lock, History, Settings2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useUserRole } from '@/hooks/useUserRole';
 import { SidebarBase, SidebarConfig } from './SidebarBase';
@@ -15,7 +15,8 @@ const productSidebarConfig: SidebarConfig = {
   label: 'Product',
   items: [
     { id: 'Product Room', title: 'Product Room', path: '/product/room', exact: true },
-    { id: 'Requirement Assist', title: 'Requirement Assist', path: '/product/requirement-assist', exact: false },
+    { id: 'Requirement Assist', title: 'Requirement Assist™', path: '/product/requirement-assist', exact: true },
+    { id: 'Generation History', title: 'Generation History', path: '/product/requirement-assist/history', icon: History, exact: true },
     { id: 'Product Backlog', title: 'Product Backlog', path: '/industry/backlog', exact: false },
     { id: 'Product Kanban', title: 'Product Kanban', path: '/industry/kanban', exact: true },
     { id: 'Product Roadmap', title: 'Product Roadmap', path: '/industry/roadmaps-v1', exact: false },

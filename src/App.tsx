@@ -410,14 +410,13 @@ const App = () => (
 <Route path="/product/room" element={<ProductRoomPage />} />
 <Route path="/product/:productId/room" element={<ProductRoomPage />} />
 <Route path="/product/capacity" element={<CapacityPlanningPage />} />
-<Route path="/product/requirement-assist" element={<Suspense fallback={<div className="p-8">Loading...</div>}><RequirementAssistWizard /></Suspense>} />
 
-{/* Requirement Assist Routes */}
-<Route path="/operations/requirement-assist" element={<Suspense fallback={<div className="p-8">Loading...</div>}><RequirementAssistWizard /></Suspense>} />
-<Route path="/operations/requirement-assist/wizard" element={<Suspense fallback={<div className="p-8">Loading...</div>}><RequirementAssistWizard /></Suspense>} />
-<Route path="/operations/requirement-assist/history" element={<Suspense fallback={<div className="p-8">Loading...</div>}><RequirementAssistHistory /></Suspense>} />
+{/* Requirement Assist Routes - under Product */}
+<Route path="/product/requirement-assist" element={<Suspense fallback={<div className="p-8">Loading...</div>}><RequirementAssistWizard /></Suspense>} />
+<Route path="/product/requirement-assist/wizard" element={<Suspense fallback={<div className="p-8">Loading...</div>}><RequirementAssistWizard /></Suspense>} />
+<Route path="/product/requirement-assist/history" element={<Suspense fallback={<div className="p-8">Loading...</div>}><RequirementAssistHistory /></Suspense>} />
 {/* Catch-all for unknown requirement-assist sub-routes */}
-<Route path="/operations/requirement-assist/*" element={<Navigate to="/operations/requirement-assist" replace />} />
+<Route path="/product/requirement-assist/*" element={<Navigate to="/product/requirement-assist" replace />} />
 
               {/* Enterprise More Items */}
               <Route path="/enterprise/ideation" element={<EnterpriseComingSoon />} />
