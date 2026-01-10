@@ -27,6 +27,11 @@ import {
 } from '@/hooks/requirement-assist';
 import type { GenerationStatus } from '@/types/requirement-assist';
 import { Skeleton } from '@/components/ui/skeleton';
+import {
+  fetchRAGeneratedItemsForExport,
+  exportRequirementAssistPdf,
+  exportRequirementAssistExcel,
+} from './utils/exports';
 
 const ITEMS_PER_PAGE = 10;
 
@@ -180,12 +185,48 @@ export default function RequirementAssistHistory() {
     handleClosePanel();
   }, [duplicateMutation, handleClosePanel]);
 
-  const handleExportPdf = useCallback((item: GenerationHistoryItem) => {
-    toast.success(`Exporting "${item.title}" as PDF...`);
+  const handleExportPdf = useCallback(async (item: GenerationHistoryItem) => {
+    if (!item._originalId) {
+      toast.error('Cannot export: missing generation ID');
+      return;
+    }
+    
+    const loadingToast = toast.loading(`Exporting "${item.title}" as PDF...`);
+    try {
+      const items = await fetchRAGeneratedItemsForExport(item._originalId);
+      await exportRequirementAssistPdf(items, {
+        title: item.title,
+        generationDisplayId: item.id,
+      });
+      toast.dismiss(loadingToast);
+      toast.success('PDF exported successfully');
+    } catch (error) {
+      console.error('PDF export failed:', error);
+      toast.dismiss(loadingToast);
+      toast.error('Failed to export PDF');
+    }
   }, []);
 
-  const handleExportExcel = useCallback((item: GenerationHistoryItem) => {
-    toast.success(`Exporting "${item.title}" as Excel...`);
+  const handleExportExcel = useCallback(async (item: GenerationHistoryItem) => {
+    if (!item._originalId) {
+      toast.error('Cannot export: missing generation ID');
+      return;
+    }
+    
+    const loadingToast = toast.loading(`Exporting "${item.title}" as Excel...`);
+    try {
+      const items = await fetchRAGeneratedItemsForExport(item._originalId);
+      await exportRequirementAssistExcel(items, {
+        title: item.title,
+        generationDisplayId: item.id,
+      });
+      toast.dismiss(loadingToast);
+      toast.success('Excel exported successfully');
+    } catch (error) {
+      console.error('Excel export failed:', error);
+      toast.dismiss(loadingToast);
+      toast.error('Failed to export Excel');
+    }
   }, []);
 
   const handleDeleteItem = useCallback((item: GenerationHistoryItem) => {

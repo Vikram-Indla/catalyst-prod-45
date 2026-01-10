@@ -1,13 +1,16 @@
 import { RAGeneration } from '@/types/requirement-assist';
 import { GenerationHistoryItem } from './types';
 import { formatDistanceToNow, format, parseISO } from 'date-fns';
+import { stripHtmlAndTruncate } from '../../utils/textUtils';
 
 /**
  * Maps a database RAGeneration record to the UI GenerationHistoryItem format
  */
 export function mapGenerationToHistoryItem(
-  generation: RAGeneration,
-  itemCounts?: { prd: number; epic: number; feature: number; story: number }
+  generation: RAGeneration & { 
+    author_name?: string | null;
+    item_counts?: { prd: number; epic: number; feature: number; story: number } | null;
+  }
 ): GenerationHistoryItem {
   const createdAt = parseISO(generation.created_at);
   const now = new Date();
@@ -25,14 +28,19 @@ export function mapGenerationToHistoryItem(
     dateStr = format(createdAt, 'MMM d, yyyy');
   }
 
-  // Extract author name from user_id (in real app, would join with profiles)
-  // For now, generate a placeholder
-  const authorName = 'User'; // This should come from a join with profiles
+  // Use author_name from database, fallback to 'Unknown'
+  const authorName = generation.author_name || 'Unknown';
   const authorInitial = authorName.charAt(0).toUpperCase();
+
+  // Strip HTML from title and truncate
+  const cleanTitle = stripHtmlAndTruncate(generation.title, 60);
+
+  // Get item counts from joined data or defaults
+  const itemCounts = generation.item_counts;
 
   return {
     id: generation.display_id,
-    title: generation.title,
+    title: cleanTitle,
     status: generation.status === 'processing' ? 'draft' : generation.status,
     items: {
       prd: itemCounts?.prd ?? (generation.output_prd ? 1 : 0),
@@ -46,9 +54,8 @@ export function mapGenerationToHistoryItem(
     },
     date: dateStr,
     dateSort: createdAt.getTime(),
-    program: 'Program', // Would come from join with programs table
+    program: 'Program',
     project: undefined,
-    // Add the original ID for operations
     _originalId: generation.id,
   };
 }
@@ -57,10 +64,10 @@ export function mapGenerationToHistoryItem(
  * Maps multiple generations to history items
  */
 export function mapGenerationsToHistoryItems(
-  generations: RAGeneration[],
-  itemCountsMap?: Map<string, { prd: number; epic: number; feature: number; story: number }>
+  generations: (RAGeneration & { 
+    author_name?: string | null;
+    item_counts?: { prd: number; epic: number; feature: number; story: number } | null;
+  })[]
 ): GenerationHistoryItem[] {
-  return generations.map(g => 
-    mapGenerationToHistoryItem(g, itemCountsMap?.get(g.id))
-  );
+  return generations.map(g => mapGenerationToHistoryItem(g));
 }

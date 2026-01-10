@@ -18,11 +18,21 @@ interface GenerationFilters {
   offset?: number;
 }
 
-// Fetch all generations with filters
+export interface RAGenerationWithCounts extends RAGeneration {
+  author_name?: string | null;
+  item_counts?: {
+    prd: number;
+    epic: number;
+    feature: number;
+    story: number;
+  } | null;
+}
+
+// Fetch all generations with filters and item counts
 export function useRAGenerations(filters?: GenerationFilters) {
   return useQuery({
     queryKey: ['ra-generations', filters],
-    queryFn: async () => {
+    queryFn: async (): Promise<RAGenerationWithCounts[]> => {
       let query = supabase
         .from('ra_generations')
         .select('*')
@@ -48,9 +58,43 @@ export function useRAGenerations(filters?: GenerationFilters) {
         query = query.range(filters.offset, filters.offset + (filters.limit || 10) - 1);
       }
 
-      const { data, error } = await query;
+      const { data: generations, error } = await query;
       if (error) throw error;
-      return data as RAGeneration[];
+
+      // Fetch item counts for all generations
+      const generationIds = (generations || []).map(g => g.id);
+      
+      if (generationIds.length === 0) {
+        return [];
+      }
+
+      const { data: items } = await supabase
+        .from('ra_generated_items')
+        .select('generation_id, item_type')
+        .in('generation_id', generationIds);
+
+      // Build counts map
+      const countsMap = new Map<string, { prd: number; epic: number; feature: number; story: number }>();
+      
+      for (const genId of generationIds) {
+        countsMap.set(genId, { prd: 0, epic: 0, feature: 0, story: 0 });
+      }
+      
+      for (const item of items || []) {
+        const counts = countsMap.get(item.generation_id);
+        if (counts) {
+          if (item.item_type === 'prd') counts.prd++;
+          else if (item.item_type === 'epic') counts.epic++;
+          else if (item.item_type === 'feature') counts.feature++;
+          else if (item.item_type === 'story') counts.story++;
+        }
+      }
+
+      // Merge counts with generations
+      return (generations || []).map(gen => ({
+        ...gen,
+        item_counts: countsMap.get(gen.id) || { prd: 0, epic: 0, feature: 0, story: 0 },
+      }));
     },
   });
 }
@@ -102,7 +146,7 @@ export function useCreateRAGeneration() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (generation: CreateRAGeneration) => {
+    mutationFn: async (generation: CreateRAGeneration & { author_name?: string }) => {
       const { data, error } = await supabase
         .from('ra_generations')
         .insert(generation)

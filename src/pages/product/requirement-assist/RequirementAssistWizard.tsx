@@ -30,6 +30,7 @@ import { useRAAISettings } from '@/hooks/requirement-assist';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import type { CreateRAGeneratedItem, ItemType } from '@/types/requirement-assist';
+import { extractTitleFromInput } from './utils/textUtils';
 
 interface LocationState {
   generationId?: string;
@@ -195,13 +196,23 @@ export default function RequirementAssistWizard() {
       // Get current user
       const { data: { user } } = await supabase.auth.getUser();
       
+      // Get author name from user metadata or email
+      const authorName = user?.user_metadata?.full_name 
+        || user?.user_metadata?.name 
+        || user?.email?.split('@')[0] 
+        || 'Unknown';
+      
+      // Extract meaningful title from input
+      const generationTitle = extractTitleFromInput(state.inputContent);
+      
       // Create generation record with status='processing'
       const newGeneration = await createGeneration.mutateAsync({
-        title: state.inputContent.slice(0, 100) || 'New Generation',
+        title: generationTitle,
         status: 'processing',
         program_id: state.selectedProgram.id,
         project_id: state.selectedProject.id,
         user_id: user?.id,
+        author_name: authorName,
         input_text: state.inputContent,
         input_word_count: state.inputContent.split(/\s+/).filter(Boolean).length,
         ai_model: aiSettings?.ai_model || 'google/gemini-3-flash-preview',
@@ -217,7 +228,7 @@ export default function RequirementAssistWizard() {
         compliance_dga: true,
         compliance_nca: true,
         compliance_babok: true,
-      });
+      } as any);
 
       setGenerationId(newGeneration.id, newGeneration.display_id);
       setCurrentStep(3);

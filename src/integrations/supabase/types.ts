@@ -15859,6 +15859,7 @@ export type Database = {
       ra_generations: {
         Row: {
           ai_model: string | null
+          author_name: string | null
           compliance_babok: boolean | null
           compliance_dga: boolean | null
           compliance_nca: boolean | null
@@ -15891,6 +15892,7 @@ export type Database = {
         }
         Insert: {
           ai_model?: string | null
+          author_name?: string | null
           compliance_babok?: boolean | null
           compliance_dga?: boolean | null
           compliance_nca?: boolean | null
@@ -15923,6 +15925,7 @@ export type Database = {
         }
         Update: {
           ai_model?: string | null
+          author_name?: string | null
           compliance_babok?: boolean | null
           compliance_dga?: boolean | null
           compliance_nca?: boolean | null

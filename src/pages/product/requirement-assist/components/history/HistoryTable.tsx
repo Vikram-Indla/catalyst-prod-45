@@ -35,13 +35,20 @@ export function HistoryTable({
 }: HistoryTableProps) {
   const allSelected = data.length > 0 && data.every((item) => selectedIds.has(item.id));
 
-  const formatItems = (items: GenerationHistoryItem['items']) => {
+  const formatItems = (items: GenerationHistoryItem['items'], status: GenerationHistoryItem['status']) => {
     const parts: string[] = [];
     if (items.prd) parts.push(`${items.prd} PRD`);
-    if (items.epics) parts.push(`${items.epics} Epics`);
-    if (items.features) parts.push(`${items.features} Features`);
-    if (items.stories) parts.push(`${items.stories} Stories`);
-    return parts.join(', ') || 'No items';
+    if (items.epics) parts.push(`${items.epics} Epic${items.epics !== 1 ? 's' : ''}`);
+    if (items.features) parts.push(`${items.features} Feature${items.features !== 1 ? 's' : ''}`);
+    if (items.stories) parts.push(`${items.stories} Stor${items.stories !== 1 ? 'ies' : 'y'}`);
+    
+    if (parts.length === 0) {
+      if (status === 'draft') return 'Processing...';
+      if (status === 'failed') return 'Failed';
+      return 'No items';
+    }
+    
+    return parts.join(' • ');
   };
 
   const getStatusBadge = (status: GenerationHistoryItem['status']) => {
@@ -139,7 +146,7 @@ export function HistoryTable({
                   </span>
                 </td>
                 <td className="p-3.5">
-                  <span className="text-[13px] text-[#475569]">{formatItems(item.items)}</span>
+                  <span className="text-[13px] text-[#475569]">{formatItems(item.items, item.status)}</span>
                 </td>
                 <td className="p-3.5">
                   <div className="flex items-center gap-2.5">
