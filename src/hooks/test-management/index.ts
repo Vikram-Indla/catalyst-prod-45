@@ -101,6 +101,9 @@ export {
   useSeedProjectConfig,
 } from './useAdminConfig';
 
+// QA Testers (users with qa_tester role)
+export { useQATesters, type QATester } from './useQATesters';
+
 // Reports
 export {
   useReportSummary,
