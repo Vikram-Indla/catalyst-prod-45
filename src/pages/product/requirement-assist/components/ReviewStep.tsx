@@ -10,6 +10,7 @@ import { toast } from 'sonner';
 
 interface ReviewStepProps {
   items: GeneratedItem[];
+  generationId?: string | null;
   onUpdateItem: (id: string, updates: Partial<GeneratedItem>) => void;
   onRemoveItem: (id: string) => void;
 }
@@ -44,7 +45,7 @@ const mockItems: GeneratedItem[] = [
   },
 ];
 
-export function ReviewStep({ items = mockItems, onUpdateItem, onRemoveItem }: ReviewStepProps) {
+export function ReviewStep({ items = mockItems, generationId, onUpdateItem, onRemoveItem }: ReviewStepProps) {
   const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
   const [editingItem, setEditingItem] = useState<string | null>(null);
   const [editTitles, setEditTitles] = useState<Record<string, string>>({});

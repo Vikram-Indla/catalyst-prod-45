@@ -2,9 +2,27 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Bot, Check, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import type { ItemType } from '@/types/requirement-assist';
 
 interface GenerateStepProps {
-  onComplete: () => void;
+  generationId: string | null;
+  selectedOutputs: {
+    epics: boolean;
+    features: boolean;
+    stories: boolean;
+    tests: boolean;
+  };
+  onComplete: (
+    items: Array<{
+      type: ItemType;
+      title: string;
+      description: string;
+      confidence: number;
+      confidenceBreakdown?: Record<string, number>;
+      parentId?: string;
+    }>,
+    metrics: { tokensUsed: number; processingTimeMs: number }
+  ) => void;
   onCancel: () => void;
 }
 
@@ -16,11 +34,77 @@ interface ProgressItem {
   progress: string;
 }
 
-export function GenerateStep({ onComplete, onCancel }: GenerateStepProps) {
+// Simulated generated items (in real app, this would come from AI)
+const generateMockItems = (outputs: { epics: boolean; features: boolean; stories: boolean }) => {
+  const items: Array<{
+    type: ItemType;
+    title: string;
+    description: string;
+    confidence: number;
+    confidenceBreakdown: Record<string, number>;
+    parentId?: string;
+  }> = [];
+
+  if (outputs.epics) {
+    items.push({
+      type: 'epic',
+      title: 'Document Upload & Processing',
+      description: 'Enable users to upload, process, and manage documents with support for multiple formats, OCR extraction, and metadata tagging.',
+      confidence: 94,
+      confidenceBreakdown: { scopeClarity: 98, functionalReqs: 95, nfrCoverage: 87, compliance: 100 },
+    });
+  }
+
+  if (outputs.features) {
+    items.push({
+      type: 'feature',
+      title: 'Multi-format File Upload',
+      description: 'Allow users to upload documents in PDF, DOCX, and TXT formats with automatic type detection.',
+      confidence: 96,
+      confidenceBreakdown: { scopeClarity: 98, functionalReqs: 96, nfrCoverage: 94, compliance: 100 },
+    });
+    items.push({
+      type: 'feature',
+      title: 'Document Preview & Viewing',
+      description: 'Provide inline document preview functionality with zoom, pan, and page navigation controls.',
+      confidence: 92,
+      confidenceBreakdown: { scopeClarity: 95, functionalReqs: 90, nfrCoverage: 88, compliance: 100 },
+    });
+  }
+
+  if (outputs.stories) {
+    items.push({
+      type: 'story',
+      title: 'Upload PDF Document',
+      description: 'As a user, I want to upload PDF documents so that I can store and manage my files digitally.',
+      confidence: 98,
+      confidenceBreakdown: { scopeClarity: 100, functionalReqs: 97, nfrCoverage: 98, compliance: 100 },
+    });
+    items.push({
+      type: 'story',
+      title: 'View Document Metadata',
+      description: 'As a user, I want to view document metadata so that I can understand file properties and history.',
+      confidence: 95,
+      confidenceBreakdown: { scopeClarity: 97, functionalReqs: 94, nfrCoverage: 92, compliance: 100 },
+    });
+    items.push({
+      type: 'story',
+      title: 'Search Document Content',
+      description: 'As a user, I want to search within document content so that I can find specific information quickly.',
+      confidence: 91,
+      confidenceBreakdown: { scopeClarity: 93, functionalReqs: 90, nfrCoverage: 88, compliance: 100 },
+    });
+  }
+
+  return items;
+};
+
+export function GenerateStep({ generationId, selectedOutputs, onComplete, onCancel }: GenerateStepProps) {
   const [progress, setProgress] = useState(0);
   const [tokenCount, setTokenCount] = useState(0);
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const processingTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const startTimeRef = useRef<number>(Date.now());
   const [items, setItems] = useState<ProgressItem[]>([
     { id: 'pi1', label: 'Loading Templates', sublabel: 'Initializing context...', status: 'completed', progress: 'Done' },
     { id: 'pi2', label: 'Analyzing Requirements', sublabel: 'Processing input text...', status: 'pending', progress: 'Pending' },
@@ -30,6 +114,7 @@ export function GenerateStep({ onComplete, onCancel }: GenerateStepProps) {
 
   // Time elapsed counter
   useEffect(() => {
+    startTimeRef.current = Date.now();
     processingTimerRef.current = setInterval(() => {
       setElapsedSeconds(prev => prev + 1);
     }, 1000);
@@ -95,7 +180,18 @@ export function GenerateStep({ onComplete, onCancel }: GenerateStepProps) {
           if (processingTimerRef.current) {
             clearInterval(processingTimerRef.current);
           }
-          setTimeout(onComplete, 500);
+          
+          // Generate mock items and call onComplete with metrics
+          const generatedItems = generateMockItems(selectedOutputs);
+          const processingTimeMs = Date.now() - startTimeRef.current;
+          const finalTokenCount = 3847;
+          
+          setTimeout(() => {
+            onComplete(generatedItems, { 
+              tokensUsed: finalTokenCount, 
+              processingTimeMs 
+            });
+          }, 500);
         }
         
         return newProgress;
@@ -103,7 +199,7 @@ export function GenerateStep({ onComplete, onCancel }: GenerateStepProps) {
     }, 80);
 
     return () => clearInterval(interval);
-  }, [onComplete]);
+  }, [onComplete, selectedOutputs]);
 
   const handleCancel = () => {
     if (confirm('Cancel generation? Your draft has been saved.')) {

@@ -15,6 +15,11 @@ const initialState: WizardState = {
   selectedProject: null,
   selectedTheme: null,
   generatedItems: [],
+  // Database integration fields
+  generationId: null,
+  generationDisplayId: null,
+  tokensUsed: 0,
+  processingTimeMs: 0,
 };
 
 export function useWizardState() {
@@ -58,6 +63,20 @@ export function useWizardState() {
     setState(prev => ({ ...prev, generatedItems: items }));
   }, []);
 
+  // New: Set generation ID after creating in database
+  const setGenerationId = useCallback((id: string | null, displayId?: string | null) => {
+    setState(prev => ({ 
+      ...prev, 
+      generationId: id,
+      generationDisplayId: displayId ?? null,
+    }));
+  }, []);
+
+  // New: Set processing metrics
+  const setProcessingMetrics = useCallback((tokensUsed: number, processingTimeMs: number) => {
+    setState(prev => ({ ...prev, tokensUsed, processingTimeMs }));
+  }, []);
+
   const reset = useCallback(() => {
     setState(initialState);
   }, []);
@@ -72,6 +91,8 @@ export function useWizardState() {
     setSelectedProject,
     setSelectedTheme,
     setGeneratedItems,
+    setGenerationId,
+    setProcessingMetrics,
     reset,
   };
 }
