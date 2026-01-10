@@ -74,32 +74,8 @@ function mapToTestCycle(cycle: TMCycle): TestCycle {
   } as TestCycle;
 }
 
-// Mock folders for demo - would come from API
-const MOCK_FOLDERS: CycleFolder[] = [
-  {
-    id: 'sprint-cycles',
-    name: 'Sprint Cycles',
-    count: 12,
-    children: [
-      { id: 'sprint-q1', name: 'Q1 2026', count: 4 },
-      { id: 'sprint-q2', name: 'Q2 2026', count: 3 },
-    ],
-  },
-  {
-    id: 'release-cycles',
-    name: 'Release Cycles',
-    count: 5,
-    children: [
-      { id: 'release-v1', name: 'v1.0', count: 2 },
-      { id: 'release-v2', name: 'v2.0', count: 3 },
-    ],
-  },
-  {
-    id: 'regression',
-    name: 'Regression',
-    count: 8,
-  },
-];
+// Empty folders - real folder structure would come from API when implemented
+const CYCLE_FOLDERS: CycleFolder[] = [];
 
 export function TestCyclesPage() {
   const navigate = useNavigate();
@@ -303,7 +279,7 @@ export function TestCyclesPage() {
       {/* Left Sidebar - Folder Tree */}
       <div className="w-64 border-r bg-muted/30 flex-shrink-0">
         <CyclesFolderTree
-          folders={MOCK_FOLDERS}
+          folders={CYCLE_FOLDERS}
           selectedFolderId={selectedFolderId}
           onSelectFolder={setSelectedFolderId}
           onSearch={(q) => setSearchQuery(q)}
@@ -440,7 +416,7 @@ export function TestCyclesPage() {
         open={bulkActionsOpen}
         onOpenChange={setBulkActionsOpen}
         selectedCycles={selectedCycles}
-        folders={MOCK_FOLDERS}
+        folders={CYCLE_FOLDERS}
         onBulkDelete={handleBulkDelete}
         onBulkStart={handleBulkStart}
         onBulkComplete={handleBulkComplete}
