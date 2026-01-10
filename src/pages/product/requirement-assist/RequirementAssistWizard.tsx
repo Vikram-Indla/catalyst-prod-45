@@ -204,11 +204,11 @@ export default function RequirementAssistWizard() {
         user_id: user?.id,
         input_text: state.inputContent,
         input_word_count: state.inputContent.split(/\s+/).filter(Boolean).length,
-        ai_model: aiSettings?.ai_model || 'claude-3.5-sonnet',
+        ai_model: aiSettings?.ai_model || 'google/gemini-3-flash-preview',
         temperature: aiSettings?.temperature || 0.7,
         max_tokens: aiSettings?.max_tokens || 4000,
         tokens_used: 0,
-        output_prd: false,
+        output_prd: true,
         output_epics: state.selectedOutputs.epics,
         output_features: state.selectedOutputs.features,
         output_stories: state.selectedOutputs.stories,
@@ -495,7 +495,9 @@ export default function RequirementAssistWizard() {
 
         {state.currentStep === 5 && (
           <PublishStep
+            generationId={state.generationId}
             generationDisplayId={state.generationDisplayId}
+            items={state.generatedItems}
             onCreateAnother={handleReset}
             onOpenInCatalyst={() => toast.success('Opening in Catalyst...')}
             onUndo={handleUndo}

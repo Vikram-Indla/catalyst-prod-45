@@ -171,7 +171,7 @@ export function GenerateStep({
             generationId,
             inputText,
             outputTypes: {
-              prd: false,
+              prd: true,
               epics: selectedOutputs.epics,
               features: selectedOutputs.features,
               stories: selectedOutputs.stories,
