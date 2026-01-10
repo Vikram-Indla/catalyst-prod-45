@@ -59,8 +59,8 @@ export interface CasesFilters {
 interface CasesToolbarProps {
   filters: CasesFilters;
   onFiltersChange: (filters: CasesFilters) => void;
-  viewMode: 'table' | 'card';
-  onViewModeChange: (mode: 'table' | 'card') => void;
+  viewMode: 'list' | 'grid';
+  onViewModeChange: (mode: 'list' | 'grid') => void;
   selectedCount: number;
   onCreateCase: () => void;
   onGenerateWithAI?: () => void;
@@ -448,10 +448,10 @@ export function CasesToolbar({
         <Button
           variant="ghost"
           size="sm"
-          onClick={() => onViewModeChange('table')}
+          onClick={() => onViewModeChange('list')}
           className={cn(
             'h-8 px-2 rounded-r-none',
-            viewMode === 'table' && 'bg-accent'
+            viewMode === 'list' && 'bg-accent'
           )}
         >
           <LayoutList className="h-4 w-4" />
@@ -459,10 +459,10 @@ export function CasesToolbar({
         <Button
           variant="ghost"
           size="sm"
-          onClick={() => onViewModeChange('card')}
+          onClick={() => onViewModeChange('grid')}
           className={cn(
             'h-8 px-2 rounded-l-none',
-            viewMode === 'card' && 'bg-accent'
+            viewMode === 'grid' && 'bg-accent'
           )}
         >
           <LayoutGrid className="h-4 w-4" />
