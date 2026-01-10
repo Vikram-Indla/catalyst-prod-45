@@ -77,3 +77,6 @@ verify_jwt = false
 
 [functions.capacity-ai]
 verify_jwt = false
+
+[functions.generate-requirements]
+verify_jwt = false
