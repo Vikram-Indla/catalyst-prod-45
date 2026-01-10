@@ -1,7 +1,9 @@
 import React from 'react';
-import { Database, Check, FileText, Layers, BookOpen, Shield } from 'lucide-react';
+import { Database, Check, FileText, Layers, BookOpen, Shield, Loader2 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 
 interface ConfigureStepProps {
   selectedProgram: {
@@ -21,18 +23,6 @@ interface ConfigureStepProps {
   onThemeChange: (theme: string | null) => void;
 }
 
-const programs = [
-  { id: 'dsp', name: 'Digital Services Program', nextEpic: 'EPIC-049', nextFeat: 'FEAT-117' },
-  { id: 'infra', name: 'Infrastructure Modernization', nextEpic: 'EPIC-078', nextFeat: 'FEAT-234' },
-  { id: 'citizen', name: 'Citizen Experience', nextEpic: 'EPIC-023', nextFeat: 'FEAT-089' },
-];
-
-const projects = [
-  { id: 'dms', name: 'DMS Implementation', nextStory: 'US-513' },
-  { id: 'portal', name: 'Portal Redesign', nextStory: 'US-891' },
-  { id: 'api', name: 'API Gateway', nextStory: 'US-234' },
-];
-
 const themes = [
   { id: 'none', name: 'None' },
   { id: 'digital-transform', name: 'Digital Transformation' },
@@ -48,14 +38,59 @@ export function ConfigureStep({
   selectedTheme,
   onThemeChange,
 }: ConfigureStepProps) {
+  // Fetch programs from database
+  const { data: programs = [], isLoading: loadingPrograms } = useQuery({
+    queryKey: ['programs-for-ra'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('programs')
+        .select('id, name, key')
+        .eq('status', 'active')
+        .neq('id', '00000000-0000-0000-0000-000000000001')
+        .order('name');
+      if (error) throw error;
+      return data || [];
+    },
+  });
+
+  // Fetch projects from database
+  const { data: projects = [], isLoading: loadingProjects } = useQuery({
+    queryKey: ['projects-for-ra'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('projects')
+        .select('id, name, key')
+        .order('name');
+      if (error) throw error;
+      return data || [];
+    },
+  });
+
   const handleProgramChange = (id: string) => {
     const program = programs.find(p => p.id === id);
-    onProgramChange(program || null);
+    if (program) {
+      onProgramChange({
+        id: program.id,
+        name: program.name,
+        nextEpic: `${program.key || 'EPIC'}-001`,
+        nextFeat: `${program.key || 'FEAT'}-001`,
+      });
+    } else {
+      onProgramChange(null);
+    }
   };
 
   const handleProjectChange = (id: string) => {
     const project = projects.find(p => p.id === id);
-    onProjectChange(project || null);
+    if (project) {
+      onProjectChange({
+        id: project.id,
+        name: project.name,
+        nextStory: `${project.key || 'US'}-001`,
+      });
+    } else {
+      onProjectChange(null);
+    }
   };
 
   return (
@@ -80,16 +115,27 @@ export function ConfigureStep({
                 </div>
                 Program (for Epics & Features)
               </div>
-              <Select value={selectedProgram?.id || ''} onValueChange={handleProgramChange}>
+              <Select value={selectedProgram?.id || ''} onValueChange={handleProgramChange} disabled={loadingPrograms}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Select a program..." />
+                  {loadingPrograms ? (
+                    <div className="flex items-center gap-2">
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <span>Loading programs...</span>
+                    </div>
+                  ) : (
+                    <SelectValue placeholder="Select a program..." />
+                  )}
                 </SelectTrigger>
                 <SelectContent>
-                  {programs.map(program => (
-                    <SelectItem key={program.id} value={program.id}>
-                      {program.name}
-                    </SelectItem>
-                  ))}
+                  {programs.length === 0 && !loadingPrograms ? (
+                    <div className="px-2 py-1.5 text-sm text-muted-foreground">No programs available</div>
+                  ) : (
+                    programs.map(program => (
+                      <SelectItem key={program.id} value={program.id}>
+                        {program.name}
+                      </SelectItem>
+                    ))
+                  )}
                 </SelectContent>
               </Select>
               {selectedProgram && (
@@ -109,16 +155,27 @@ export function ConfigureStep({
                 </div>
                 Project (for Stories)
               </div>
-              <Select value={selectedProject?.id || ''} onValueChange={handleProjectChange}>
+              <Select value={selectedProject?.id || ''} onValueChange={handleProjectChange} disabled={loadingProjects}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Select a project..." />
+                  {loadingProjects ? (
+                    <div className="flex items-center gap-2">
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <span>Loading projects...</span>
+                    </div>
+                  ) : (
+                    <SelectValue placeholder="Select a project..." />
+                  )}
                 </SelectTrigger>
                 <SelectContent>
-                  {projects.map(project => (
-                    <SelectItem key={project.id} value={project.id}>
-                      {project.name}
-                    </SelectItem>
-                  ))}
+                  {projects.length === 0 && !loadingProjects ? (
+                    <div className="px-2 py-1.5 text-sm text-muted-foreground">No projects available</div>
+                  ) : (
+                    projects.map(project => (
+                      <SelectItem key={project.id} value={project.id}>
+                        {project.name}
+                      </SelectItem>
+                    ))
+                  )}
                 </SelectContent>
               </Select>
               {selectedProject && (
