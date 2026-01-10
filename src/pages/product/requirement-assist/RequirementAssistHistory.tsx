@@ -316,7 +316,9 @@ export default function RequirementAssistHistory() {
       {/* Page Header with Breadcrumb */}
       <div className="bg-white border-b border-[#e2e8f0] px-6 py-3 flex items-center justify-between">
         <div className="flex items-center gap-2 text-[13px]">
-          <span className="text-[#94a3b8]">Product</span>
+          <button onClick={() => navigate('/product/room')} className="text-[#94a3b8] hover:text-[#64748b] transition-colors">
+            Product
+          </button>
           <ChevronRight className="w-3.5 h-3.5 text-[#94a3b8]" />
           <span className="text-[#94a3b8]">Requirement Assist™</span>
           <ChevronRight className="w-3.5 h-3.5 text-[#94a3b8]" />
