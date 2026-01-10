@@ -2,8 +2,9 @@
  * TestCasesTable — Data table for list view of test cases
  */
 
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { toast } from 'sonner';
 import { 
   ArrowUpDown,
   MoreHorizontal,
@@ -143,6 +144,33 @@ export function TestCasesTable({
   onSelectRow,
   allSelected 
 }: TestCasesTableProps) {
+  const navigate = useNavigate();
+
+  const handleRowAction = (action: string, tc: TestCase) => {
+    switch (action) {
+      case 'view':
+        navigate(`/releases/test-cases/${tc.id}`);
+        break;
+      case 'edit':
+        navigate(`/releases/test-cases/${tc.id}?edit=true`);
+        break;
+      case 'duplicate':
+        toast.success(`Test case ${tc.id} duplicated`);
+        break;
+      case 'execute':
+        toast.success(`Starting execution for ${tc.id}...`);
+        break;
+      case 'move':
+        toast.info('Move to Release dialog coming soon');
+        break;
+      case 'reassign':
+        toast.info('Reassign dialog coming soon');
+        break;
+      case 'delete':
+        toast.error(`Test case ${tc.id} deleted`);
+        break;
+    }
+  };
   return (
     <div className="bg-background border rounded-lg overflow-hidden">
       <table className="w-full">
@@ -298,27 +326,27 @@ export function TestCasesTable({
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-48">
-                    <DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => handleRowAction('view', tc)}>
                       <Eye className="w-4 h-4 mr-2" /> View Details
                     </DropdownMenuItem>
-                    <DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => handleRowAction('edit', tc)}>
                       <Pencil className="w-4 h-4 mr-2" /> Edit
                     </DropdownMenuItem>
-                    <DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => handleRowAction('duplicate', tc)}>
                       <Copy className="w-4 h-4 mr-2" /> Duplicate
                     </DropdownMenuItem>
-                    <DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => handleRowAction('execute', tc)}>
                       <Play className="w-4 h-4 mr-2" /> Execute
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => handleRowAction('move', tc)}>
                       <FolderInput className="w-4 h-4 mr-2" /> Move to Release
                     </DropdownMenuItem>
-                    <DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => handleRowAction('reassign', tc)}>
                       <UserPlus className="w-4 h-4 mr-2" /> Reassign
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem className="text-destructive">
+                    <DropdownMenuItem className="text-destructive" onClick={() => handleRowAction('delete', tc)}>
                       <Trash2 className="w-4 h-4 mr-2" /> Delete
                     </DropdownMenuItem>
                   </DropdownMenuContent>
