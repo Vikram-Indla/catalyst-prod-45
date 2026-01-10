@@ -87,6 +87,7 @@ import Sprints from "./pages/Sprints";
 import Stories from "./pages/Stories";
 import Subtasks from "./pages/Subtasks";
 import Releases from "./pages/Releases";
+import ReleasesCommandCenter from "./pages/releases/CommandCenter";
 import OrgSetup from "./pages/admin/OrgSetup";
 import HierarchyConfig from "./pages/admin/HierarchyConfig";
 import CustomFields from "./pages/admin/CustomFields";
@@ -707,6 +708,7 @@ const App = () => (
               <Route path="/work-items/stories" element={<Stories />} />
               <Route path="/work-items/subtasks" element={<Subtasks />} />
               <Route path="/releases" element={<Releases />} />
+              <Route path="/releases/command-center" element={<ReleasesCommandCenter />} />
               
               <Route path="/unauthorized" element={<UnauthorizedPage />} />
               
