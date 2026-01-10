@@ -29,7 +29,7 @@ export interface ReleaseData {
     testCases: number;
     cycles: number;
   };
-  status: 'draft' | 'active' | 'approved' | 'rejected';
+  status: 'draft' | 'active' | 'approved' | 'rejected' | 'at-risk';
   team: Array<{ initials: string; name: string; color: string }>;
 }
 
@@ -134,7 +134,8 @@ export const mockReleases: ReleaseData[] = [
     health: 60,
     healthStatus: 'caution',
     stats: { workItems: 28, testCases: 84, cycles: 1 },
-    status: 'active',
+    // FIX 5: Change status from 'active' to 'at-risk'
+    status: 'at-risk',
     team: [
       { initials: 'MR', name: 'Mohammed Rizvi', color: '#d97706' },
       { initials: 'AA', name: 'Ahmed Al-Rashid', color: '#0d9488' },

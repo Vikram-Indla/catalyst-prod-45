@@ -18,18 +18,19 @@ export interface CycleCardProps {
   animationDelay?: number;
 }
 
+// FIX 7: Full environment names instead of abbreviations
 const envStyles = {
   dev: {
     badge: 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950/50 dark:text-blue-300 dark:border-blue-800',
-    label: 'DEV',
+    label: 'Dev',
   },
   staging: {
     badge: 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/50 dark:text-amber-300 dark:border-amber-800',
-    label: 'STG',
+    label: 'Staging',
   },
   production: {
     badge: 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/50 dark:text-emerald-300 dark:border-emerald-800',
-    label: 'PROD',
+    label: 'Production',
   },
 };
 
@@ -87,16 +88,6 @@ export function CycleCard({
             {name}
           </h4>
         </div>
-        
-        {/* Assignee */}
-        <Avatar size="sm" className="flex-shrink-0">
-          <AvatarFallback 
-            style={{ backgroundColor: assignee.color }} 
-            className="text-white text-[10px] font-medium"
-          >
-            {assignee.initials}
-          </AvatarFallback>
-        </Avatar>
       </div>
       
       {/* Progress */}
@@ -111,9 +102,20 @@ export function CycleCard({
           size="sm"
           animate
         />
+        {/* FIX 8: Avatar LEFT of assignee name */}
         <div className="flex items-center justify-between text-xs text-muted-foreground">
           <span>{testsCompleted} of {testsTotal} tests</span>
-          <span className="text-muted-foreground">{assignee.name}</span>
+          <div className="flex items-center gap-1.5">
+            <Avatar size="xs" className="flex-shrink-0">
+              <AvatarFallback 
+                style={{ backgroundColor: assignee.color }} 
+                className="text-white text-[8px] font-medium"
+              >
+                {assignee.initials}
+              </AvatarFallback>
+            </Avatar>
+            <span>{assignee.name}</span>
+          </div>
         </div>
       </div>
     </div>

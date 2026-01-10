@@ -17,18 +17,20 @@ export interface ReleaseCardProps {
     testCases: number;
     cycles: number;
   };
-  status: 'draft' | 'active' | 'approved' | 'rejected';
+  status: 'draft' | 'active' | 'approved' | 'rejected' | 'at-risk';
   team: Array<{ initials: string; name: string; color: string }>;
   onClick?: () => void;
   className?: string;
   animationDelay?: number;
 }
 
-const statusBadgeVariant: Record<string, 'draft' | 'active' | 'approved' | 'rejected'> = {
+// FIX 5: Add 'at-risk' status with warning variant
+const statusBadgeVariant: Record<string, 'draft' | 'active' | 'approved' | 'rejected' | 'warning'> = {
   draft: 'draft',
   active: 'active',
   approved: 'approved',
   rejected: 'rejected',
+  'at-risk': 'warning',
 };
 
 export function ReleaseCard({
@@ -73,7 +75,7 @@ export function ReleaseCard({
               {releaseKey}
             </span>
             <Badge variant={statusBadgeVariant[status] || 'default'} size="sm">
-              {status.charAt(0).toUpperCase() + status.slice(1)}
+              {status === 'at-risk' ? 'At Risk' : status.charAt(0).toUpperCase() + status.slice(1)}
             </Badge>
           </div>
           <h3 className="text-base font-semibold text-foreground truncate group-hover:text-primary transition-colors">
@@ -113,9 +115,8 @@ export function ReleaseCard({
         </div>
       </div>
       
-      {/* Team */}
-      <div className="flex items-center justify-between">
-        <span className="text-xs text-muted-foreground">Team</span>
+      {/* Team - FIX 9: Remove "Team" label, just show avatars */}
+      <div className="flex items-center justify-end">
         <AvatarGroup max={4}>
           {team.map((member, i) => (
             <Avatar key={i} size="sm" className="border-2 border-card">

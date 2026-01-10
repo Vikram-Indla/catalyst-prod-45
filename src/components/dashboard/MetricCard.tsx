@@ -116,6 +116,7 @@ export function MetricCard({
     requestAnimationFrame(animate);
   }, [value, isVisible]);
 
+  // FIX 6: Correct vertical layout - label top-left, icon top-right, value large, trend below
   return (
     <div
       className={cn(
@@ -126,25 +127,24 @@ export function MetricCard({
       )}
       style={{ transitionDelay: `${animationDelay}ms` }}
     >
-      <div className="flex items-start justify-between gap-3">
-        {/* Icon */}
-        <div className={cn('p-2.5 rounded-lg border', styles.bg, styles.border)}>
+      {/* Header row: Label left, Icon right */}
+      <div className="flex items-start justify-between gap-3 mb-3">
+        <p className="text-[13px] font-medium text-muted-foreground">
+          {label}
+        </p>
+        {/* Icon box - top right */}
+        <div className={cn('p-2.5 rounded-lg border flex-shrink-0', styles.bg, styles.border)}>
           <IconComponent className={cn('h-5 w-5', styles.icon)} />
-        </div>
-        
-        {/* Content */}
-        <div className="flex-1 min-w-0 text-right">
-          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1">
-            {label}
-          </p>
-          <p className="text-2xl font-bold tabular-nums text-foreground">
-            {animatedValue}{suffix}
-          </p>
         </div>
       </div>
       
+      {/* Large value */}
+      <p className="text-[32px] font-bold tabular-nums text-foreground leading-none mb-2">
+        {animatedValue}{suffix}
+      </p>
+      
       {/* Trend or Progress */}
-      <div className="mt-3">
+      <div>
         {trend && (
           <div className={cn(
             'flex items-center gap-1 text-xs font-medium',
@@ -168,7 +168,7 @@ export function MetricCard({
               animate
               className="h-1.5"
             />
-            <p className="text-xs text-muted-foreground text-right">
+            <p className="text-xs text-muted-foreground">
               {progress}% complete
             </p>
           </div>
