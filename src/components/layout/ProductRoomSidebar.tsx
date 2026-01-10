@@ -14,9 +14,7 @@ const productSidebarConfig: SidebarConfig = {
   badge: 'PR',
   label: 'Product',
   items: [
-    { id: 'Product Room', title: 'Product Room', path: '/product/room', exact: true },
     { id: 'Requirement Assist', title: 'Requirement Assist™', path: '/product/requirement-assist', exact: true },
-    { id: 'Generation History', title: 'Generation History', path: '/product/requirement-assist/history', icon: History, exact: true },
     { id: 'Product Backlog', title: 'Product Backlog', path: '/industry/backlog', exact: false },
     { id: 'Product Kanban', title: 'Product Kanban', path: '/industry/kanban', exact: true },
     { id: 'Product Roadmap', title: 'Product Roadmap', path: '/industry/roadmaps-v1', exact: false },
