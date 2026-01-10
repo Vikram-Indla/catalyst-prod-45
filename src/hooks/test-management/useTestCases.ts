@@ -112,6 +112,7 @@ export function useTestCases(projectId: string | undefined, filters?: CaseFilter
         objective: c.description,
         is_ai_generated: c.is_ai_generated || false,
         created_by_profile: c.created_by_profile,
+        assigned_user: (c as any).assigned_user || null,
       })) as unknown as TMTestCase[];
 
       return { cases, total: count || 0 };
