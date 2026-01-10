@@ -2,7 +2,7 @@ import React, { lazy, Suspense } from "react";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/sonner";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { ThemeProvider } from "next-themes";
 import { AuthProvider } from "./lib/auth";
 import { NavigationProvider } from "./contexts/NavigationContext";
@@ -306,6 +306,15 @@ import {
 import { TestManagementContent } from "./modules/test-management/layouts/TestManagementContent";
 
 const queryClient = new QueryClient();
+
+// Route guard: Only show CatyChatWidget on capacity planner module
+function CatyWidgetRouteGuard() {
+  const location = useLocation();
+  const isCapacityPlannerRoute = location.pathname.startsWith('/enterprise/strategy-room/capacity');
+  
+  if (!isCapacityPlannerRoute) return null;
+  return <CatyChatWidget />;
+}
 
 const App = () => (
   <ErrorBoundary>
@@ -892,7 +901,7 @@ const App = () => (
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
             </Routes>
-              <CatyChatWidget />
+              <CatyWidgetRouteGuard />
           </BrowserRouter>
         </TooltipProvider>
       </CatalystToastProvider>
