@@ -13,7 +13,7 @@ import {
   mockActivity 
 } from '@/data/mockCommandCenterData';
 
-// Section Header Component
+// Section Header Component - Smaller text as per FIX 4
 function SectionHeader({ 
   title, 
   viewAllLink,
@@ -27,7 +27,7 @@ function SectionHeader({
   
   return (
     <div className="flex items-center justify-between mb-4">
-      <h2 className="text-base font-semibold text-foreground">{title}</h2>
+      <h2 className="text-sm font-semibold text-foreground">{title}</h2>
       {viewAllLink && (
         <button
           onClick={() => navigate(viewAllLink)}
@@ -136,41 +136,36 @@ export function CommandCenter() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* FIX 2: Context Bar */}
+      {/* Context Bar with Breadcrumb Format */}
       <div 
         className="flex items-center justify-between px-6 bg-muted/30 border-b"
         style={{ height: '44px' }}
       >
-        <div className="text-sm font-medium text-foreground">
-          Command Center
+        {/* Breadcrumb: RELEASES / Command Center */}
+        <div className="flex items-center">
+          <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+            RELEASES
+          </span>
+          <span className="text-muted-foreground mx-2">/</span>
+          <span className="text-sm font-semibold text-foreground">
+            Command Center
+          </span>
         </div>
+        
+        {/* Right side: Actions */}
         <div className="flex items-center gap-3">
           <span className="text-xs text-muted-foreground">Last updated: 2 min ago</span>
           <Button variant="ghost" size="sm" className="h-7 px-2">
             <RefreshCw className="h-3.5 w-3.5" />
           </Button>
-        </div>
-      </div>
-
-      {/* Page Header */}
-      <div className="border-b bg-card px-6 py-5">
-        <div className="flex items-start justify-between gap-4">
-          <div>
-            <h1 className="text-2xl font-bold text-foreground">Command Center</h1>
-            <p className="text-sm text-muted-foreground mt-1">
-              Ministry of Industry — Investment Portal Program
-            </p>
-          </div>
-          <div className="flex items-center gap-3">
-            <Button variant="secondary" onClick={handleExport}>
-              <Download className="h-4 w-4 mr-2" />
-              Export
-            </Button>
-            <Button variant="primary" onClick={handleCreateRelease}>
-              <Plus className="h-4 w-4 mr-2" />
-              Create Release
-            </Button>
-          </div>
+          <Button variant="secondary" size="sm" onClick={handleExport}>
+            <Download className="h-4 w-4 mr-2" />
+            Export
+          </Button>
+          <Button variant="primary" size="sm" onClick={handleCreateRelease}>
+            <Plus className="h-4 w-4 mr-2" />
+            Create Release
+          </Button>
         </div>
       </div>
       

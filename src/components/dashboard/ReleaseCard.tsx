@@ -87,11 +87,10 @@ export function ReleaseCard({
           </div>
         </div>
         
-        {/* Quality Gauge */}
+        {/* Quality Gauge - Larger for presence */}
         <QualityGauge
           value={health}
-          status={healthStatus}
-          size={80}
+          size={100}
           animate={isVisible}
         />
       </div>
