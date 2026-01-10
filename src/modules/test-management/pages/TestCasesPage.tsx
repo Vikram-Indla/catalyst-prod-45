@@ -86,6 +86,8 @@ function mapTMCaseToCase(c: TMTestCase): any {
     created_by: c.created_by,
     created_by_profile: c.created_by_profile,
     is_ai_generated: c.is_ai_generated,
+    assigned_to: (c as any).assigned_to,
+    assigned_user: (c as any).assigned_user,
     // Include related data if available
     priority: c.priority ? { id: c.priority.id, name: c.priority.name, color: c.priority.color } : undefined,
     type: c.type ? { id: c.type.id, name: c.type.name } : undefined,
