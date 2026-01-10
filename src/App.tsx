@@ -227,6 +227,7 @@ import DemandSummaryPage from "./pages/enterprise/DemandSummaryPage";
 import ProductRoomPage from "./pages/ProductRoomPage";
 import CapacityPlanningPage from "./pages/CapacityPlanningPage";
 import { RequirementAssistWizard, RequirementAssistHistory } from "./pages/product/requirement-assist";
+import { RAAdminAIConfiguration, RAAdminTemplates, RAAdminCompliance, RAAdminTranslation, RAAdminAnalytics, RAAdminPermissions } from "./pages/admin/requirement-assist";
 import ExecutiveRoadmapPage from "./pages/enterprise/ExecutiveRoadmapPage";
 import CatalystDemandKanban from "./modules/kanban/pages/CatalystDemandKanban";
 import CatalystDemandList from "./modules/product-backlog/pages/CatalystDemandList";
@@ -844,6 +845,13 @@ const App = () => (
                 <Route path="incidents/owning-teams" element={<IncidentOwningTeams />} />
                 <Route path="mock-data" element={<MockDataGenerator />} />
                 <Route path="ai-integration" element={<Suspense fallback={<div className="p-8">Loading...</div>}><AiIntegrationPage /></Suspense>} />
+                <Route path="requirement-assist" element={<Navigate to="/admin/requirement-assist/ai-configuration" replace />} />
+                <Route path="requirement-assist/ai-configuration" element={<RAAdminAIConfiguration />} />
+                <Route path="requirement-assist/templates" element={<RAAdminTemplates />} />
+                <Route path="requirement-assist/compliance" element={<RAAdminCompliance />} />
+                <Route path="requirement-assist/translation" element={<RAAdminTranslation />} />
+                <Route path="requirement-assist/analytics" element={<RAAdminAnalytics />} />
+                <Route path="requirement-assist/permissions" element={<RAAdminPermissions />} />
               </Route>
 
               <Route path="/items/epics/:epicId/status-report" element={<EpicStatusReport />} />

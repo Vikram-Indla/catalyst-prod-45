@@ -12,7 +12,8 @@ import {
   Pin,
   Boxes,
   Code2,
-  Map
+  Map,
+  Wand2
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
@@ -112,6 +113,20 @@ const adminPockets = [
     children: [
       { label: 'Routes & Components', path: '/admin/routes-registry' },
       { label: 'Mock Data Generator', path: '/admin/mock-data' },
+    ],
+  },
+  {
+    id: 'requirement-assist',
+    label: 'Requirement Assist',
+    icon: Wand2,
+    path: '/admin/requirement-assist',
+    children: [
+      { label: 'AI Configuration', path: '/admin/requirement-assist/ai-configuration' },
+      { label: 'Templates', path: '/admin/requirement-assist/templates' },
+      { label: 'Compliance', path: '/admin/requirement-assist/compliance' },
+      { label: 'Translation', path: '/admin/requirement-assist/translation' },
+      { label: 'Analytics', path: '/admin/requirement-assist/analytics' },
+      { label: 'Permissions', path: '/admin/requirement-assist/permissions' },
     ],
   },
 ];
