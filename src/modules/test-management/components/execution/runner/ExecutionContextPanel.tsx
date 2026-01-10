@@ -1,5 +1,5 @@
 /**
- * Execution Context Panel - Right sidebar with tabs (Summary, Queue, Defects, Activity)
+ * Execution Context Panel - Right sidebar with tabs (Summary, Queue, Actions, Defects, Activity)
  */
 
 import React from 'react';
@@ -17,17 +17,21 @@ import {
   Plus,
   Clock,
   User,
+  Zap,
 } from 'lucide-react';
+import { QuickActionsPanel } from './QuickActionsPanel';
 import type { TestRun, CycleScope, ExecutionStatus } from '../../../api/types';
 
 interface ExecutionContextPanelProps {
   run?: TestRun | null;
   scope: CycleScope[];
   currentScopeId: string | null;
-  activeTab: 'summary' | 'queue' | 'defects' | 'activity';
-  onTabChange: (tab: 'summary' | 'queue' | 'defects' | 'activity') => void;
+  activeTab: 'summary' | 'queue' | 'actions' | 'defects' | 'activity';
+  onTabChange: (tab: 'summary' | 'queue' | 'actions' | 'defects' | 'activity') => void;
   onSelectCase: (scope: CycleScope) => void;
   onLogDefect: () => void;
+  onBulkStatus?: (status: ExecutionStatus | 'reset') => void;
+  isUpdating?: boolean;
 }
 
 export function ExecutionContextPanel({
@@ -38,6 +42,8 @@ export function ExecutionContextPanel({
   onTabChange,
   onSelectCase,
   onLogDefect,
+  onBulkStatus,
+  isUpdating = false,
 }: ExecutionContextPanelProps) {
   // Calculate stats from steps
   const steps = run?.step_results || [];
@@ -70,6 +76,13 @@ export function ExecutionContextPanel({
             </Badge>
           </TabsTrigger>
           <TabsTrigger 
+            value="actions" 
+            className="flex-1 py-3 px-2 rounded-none data-[state=active]:bg-background data-[state=active]:shadow-none border-b-2 border-transparent data-[state=active]:border-primary text-xs font-medium"
+          >
+            <Zap className="h-3 w-3 mr-1" />
+            Actions
+          </TabsTrigger>
+          <TabsTrigger 
             value="defects" 
             className="flex-1 py-3 px-2 rounded-none data-[state=active]:bg-background data-[state=active]:shadow-none border-b-2 border-transparent data-[state=active]:border-primary text-xs font-medium"
           >
@@ -80,48 +93,56 @@ export function ExecutionContextPanel({
               </Badge>
             )}
           </TabsTrigger>
-          <TabsTrigger 
-            value="activity" 
-            className="flex-1 py-3 px-2 rounded-none data-[state=active]:bg-background data-[state=active]:shadow-none border-b-2 border-transparent data-[state=active]:border-primary text-xs font-medium"
-          >
-            Activity
-          </TabsTrigger>
         </TabsList>
 
         {/* Tab Contents */}
-        <ScrollArea className="flex-1">
-          <div className="p-4">
-            {/* Summary Tab */}
-            <TabsContent value="summary" className="m-0">
-              <SummaryTab
-                run={run}
-                passedCount={passedCount}
-                failedCount={failedCount}
-                blockedCount={blockedCount}
-                pendingCount={pendingCount}
-              />
-            </TabsContent>
+        <div className="flex-1 overflow-hidden">
+          {/* Summary Tab */}
+          <TabsContent value="summary" className="m-0 h-full">
+            <ScrollArea className="h-full">
+              <div className="p-4">
+                <SummaryTab
+                  run={run}
+                  passedCount={passedCount}
+                  failedCount={failedCount}
+                  blockedCount={blockedCount}
+                  pendingCount={pendingCount}
+                />
+              </div>
+            </ScrollArea>
+          </TabsContent>
 
-            {/* Queue Tab */}
-            <TabsContent value="queue" className="m-0">
-              <QueueTab
-                scope={scope}
-                currentScopeId={currentScopeId}
-                onSelectCase={onSelectCase}
-              />
-            </TabsContent>
+          {/* Queue Tab */}
+          <TabsContent value="queue" className="m-0 h-full">
+            <ScrollArea className="h-full">
+              <div className="p-4">
+                <QueueTab
+                  scope={scope}
+                  currentScopeId={currentScopeId}
+                  onSelectCase={onSelectCase}
+                />
+              </div>
+            </ScrollArea>
+          </TabsContent>
 
-            {/* Defects Tab */}
-            <TabsContent value="defects" className="m-0">
-              <DefectsTab onLogDefect={onLogDefect} />
-            </TabsContent>
+          {/* Actions Tab */}
+          <TabsContent value="actions" className="m-0 h-full">
+            <QuickActionsPanel
+              onBulkStatus={onBulkStatus || (() => {})}
+              onLogDefect={onLogDefect}
+              isUpdating={isUpdating}
+            />
+          </TabsContent>
 
-            {/* Activity Tab */}
-            <TabsContent value="activity" className="m-0">
-              <ActivityTab />
-            </TabsContent>
-          </div>
-        </ScrollArea>
+          {/* Defects Tab */}
+          <TabsContent value="defects" className="m-0 h-full">
+            <ScrollArea className="h-full">
+              <div className="p-4">
+                <DefectsTab onLogDefect={onLogDefect} />
+              </div>
+            </ScrollArea>
+          </TabsContent>
+        </div>
       </Tabs>
     </div>
   );

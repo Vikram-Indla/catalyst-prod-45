@@ -15,6 +15,7 @@ import { ExecutionHeader } from './ExecutionHeader';
 import { TestCasePanel } from './TestCasePanel';
 import { ExecutionContextPanel } from './ExecutionContextPanel';
 import { ExecutionFooter } from './ExecutionFooter';
+import { CompleteRunModal } from './CompleteRunModal';
 import { QuickDefectDialog } from '../QuickDefectDialog';
 import type { ExecutionStatus, CycleScope } from '../../../api/types';
 import { toast } from 'sonner';
@@ -34,8 +35,9 @@ export function ExecutionRunnerPage() {
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [defectDialogOpen, setDefectDialogOpen] = useState(false);
   const [isComplete, setIsComplete] = useState(false);
-  const [activeTab, setActiveTab] = useState<'summary' | 'queue' | 'defects' | 'activity'>('summary');
+  const [activeTab, setActiveTab] = useState<'summary' | 'queue' | 'actions' | 'defects' | 'activity'>('summary');
   const [preconditionsVerified, setPreconditionsVerified] = useState(false);
+  const [completeModalOpen, setCompleteModalOpen] = useState(false);
 
   // Mutations
   const createRun = useCreateRun();
@@ -158,12 +160,20 @@ export function ExecutionRunnerPage() {
     }
   }, [steps.length]);
 
-  // Complete run handler
-  const handleCompleteRun = useCallback(async () => {
+  // Complete run handler - opens modal instead of immediately completing
+  const handleOpenCompleteModal = useCallback(() => {
+    setCompleteModalOpen(true);
+  }, []);
+
+  const handleCompleteRun = useCallback(async (status: ExecutionStatus, notes?: string) => {
     if (!activeRunId) return;
     
-    await completeRun.mutateAsync({ runId: activeRunId });
+    await completeRun.mutateAsync({ 
+      runId: activeRunId,
+      data: { override_status: status, notes }
+    });
     setIsComplete(true);
+    setCompleteModalOpen(false);
     toast.success('Test run completed!');
     
     // Go to next case if available
@@ -171,6 +181,24 @@ export function ExecutionRunnerPage() {
       goToNextCase();
     }
   }, [activeRunId, completeRun, currentIndex, totalCases, goToNextCase]);
+
+  // Bulk status handler for quick actions
+  const handleBulkStatus = useCallback(async (status: ExecutionStatus | 'reset') => {
+    if (!activeRunId || !steps.length) return;
+    
+    const targetStatus: ExecutionStatus = status === 'reset' ? 'not_run' : status;
+    const updates = steps.map(s => ({
+      step_id: s.step_id,
+      status: targetStatus,
+    }));
+    
+    await bulkUpdate.mutateAsync({
+      runId: activeRunId,
+      updates,
+    });
+    
+    toast.success(status === 'reset' ? 'All steps reset' : `All steps marked as ${status}`);
+  }, [activeRunId, steps, bulkUpdate]);
 
   // Handle selecting case from queue
   const handleSelectCase = useCallback((scopeItem: CycleScope) => {
@@ -233,7 +261,7 @@ export function ExecutionRunnerPage() {
         onBack={handleBack}
         onPreviousCase={goToPreviousCase}
         onNextCase={goToNextCase}
-        onCompleteRun={handleCompleteRun}
+        onCompleteRun={handleOpenCompleteModal}
         isUpdating={isUpdating}
       />
 
@@ -262,11 +290,21 @@ export function ExecutionRunnerPage() {
           onTabChange={setActiveTab}
           onSelectCase={handleSelectCase}
           onLogDefect={() => setDefectDialogOpen(true)}
+          onBulkStatus={handleBulkStatus}
+          isUpdating={isUpdating}
         />
       </main>
 
       {/* Footer with shortcuts and stats */}
       <ExecutionFooter run={run} steps={steps} currentStepIndex={currentStepIndex} onStepSelect={goToStep} />
+
+      {/* Complete Run Modal */}
+      <CompleteRunModal
+        open={completeModalOpen}
+        onOpenChange={setCompleteModalOpen}
+        onComplete={handleCompleteRun}
+        isLoading={completeRun.isPending}
+      />
 
       {/* Quick Defect Dialog */}
       <QuickDefectDialog
