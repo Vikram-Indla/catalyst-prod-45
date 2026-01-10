@@ -5,11 +5,14 @@ import { stripHtmlAndTruncate } from '../../utils/textUtils';
 
 /**
  * Maps a database RAGeneration record to the UI GenerationHistoryItem format
+ * PRD is treated as a background document, not a work item
  */
 export function mapGenerationToHistoryItem(
   generation: RAGeneration & { 
     author_name?: string | null;
-    item_counts?: { prd: number; epic: number; feature: number; story: number } | null;
+    prd_content?: string | null;
+    prd_title?: string | null;
+    item_counts?: { prd: number; epic: number; feature: number; story: number; test_case?: number } | null;
   }
 ): GenerationHistoryItem {
   const createdAt = parseISO(generation.created_at);
@@ -35,7 +38,7 @@ export function mapGenerationToHistoryItem(
   // Strip HTML from title and truncate
   const cleanTitle = stripHtmlAndTruncate(generation.title, 60);
 
-  // Get item counts from joined data or defaults
+  // Get item counts from joined data or defaults - PRD is NOT counted as a work item
   const itemCounts = generation.item_counts;
 
   return {
@@ -43,11 +46,14 @@ export function mapGenerationToHistoryItem(
     title: cleanTitle,
     status: generation.status === 'processing' ? 'draft' : generation.status,
     items: {
-      prd: itemCounts?.prd ?? (generation.output_prd ? 1 : 0),
       epics: itemCounts?.epic ?? 0,
       features: itemCounts?.feature ?? 0,
       stories: itemCounts?.story ?? 0,
+      testCases: itemCounts?.test_case ?? 0,
     },
+    // PRD is a background document
+    hasPrd: !!generation.prd_content || !!itemCounts?.prd || generation.output_prd,
+    prdTitle: generation.prd_title || undefined,
     author: {
       name: authorName,
       initial: authorInitial,
@@ -66,7 +72,9 @@ export function mapGenerationToHistoryItem(
 export function mapGenerationsToHistoryItems(
   generations: (RAGeneration & { 
     author_name?: string | null;
-    item_counts?: { prd: number; epic: number; feature: number; story: number } | null;
+    prd_content?: string | null;
+    prd_title?: string | null;
+    item_counts?: { prd: number; epic: number; feature: number; story: number; test_case?: number } | null;
   })[]
 ): GenerationHistoryItem[] {
   return generations.map(g => mapGenerationToHistoryItem(g));

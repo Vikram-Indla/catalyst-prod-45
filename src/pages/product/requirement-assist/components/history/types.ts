@@ -3,10 +3,10 @@ export interface GenerationHistoryItem {
   title: string;
   status: 'published' | 'draft' | 'failed';
   items: {
-    prd: number;
     epics: number;
     features: number;
     stories: number;
+    testCases: number;
   };
   author: {
     name: string;
@@ -16,13 +16,16 @@ export interface GenerationHistoryItem {
   dateSort: number;
   program: string;
   project?: string;
+  // PRD is a background document, not a work item
+  hasPrd: boolean;
+  prdTitle?: string;
   complianceStatus?: {
     dgaStandards: { passed: number; total: number };
     ncaEcc: { met: number; total: number };
     babokValidation: boolean;
   };
   generatedItems?: {
-    type: 'prd' | 'epic' | 'feature' | 'story';
+    type: 'epic' | 'feature' | 'story' | 'test_case';
     id: string;
     title: string;
     confidence?: number;

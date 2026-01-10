@@ -104,8 +104,9 @@ export default function RequirementAssistHistory() {
         break;
       case 'items':
         data.sort((a, b) => {
-          const aTotal = a.items.prd + a.items.epics + a.items.features + a.items.stories;
-          const bTotal = b.items.prd + b.items.epics + b.items.features + b.items.stories;
+          // PRD is not counted as a work item
+          const aTotal = a.items.epics + a.items.features + a.items.stories + (a.items.testCases || 0);
+          const bTotal = b.items.epics + b.items.features + b.items.stories + (b.items.testCases || 0);
           return bTotal - aTotal;
         });
         break;

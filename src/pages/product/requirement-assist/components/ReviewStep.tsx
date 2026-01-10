@@ -15,6 +15,7 @@ interface ReviewStepProps {
   onRemoveItem: (id: string) => void;
 }
 
+// Mock work items (PRD is NOT a work item - it's a background document)
 const mockItems: GeneratedItem[] = [
   {
     id: 'item1',
@@ -51,9 +52,14 @@ export function ReviewStep({ items = mockItems, generationId, onUpdateItem, onRe
   const [editTitles, setEditTitles] = useState<Record<string, string>>({});
   const [editDescriptions, setEditDescriptions] = useState<Record<string, string>>({});
   const [expandedConfidence, setExpandedConfidence] = useState<Set<string>>(new Set());
-  const [filter, setFilter] = useState<'all' | 'epic' | 'feature' | 'story'>('all');
+  const [filter, setFilter] = useState<'all' | 'epic' | 'feature' | 'story' | 'test_case'>('all');
 
-  const displayItems = items.length > 0 ? items : mockItems;
+  // Filter out PRD items - PRD is a background document, not a work item
+  const workItems = items.length > 0 
+    ? items.filter(item => item.type !== 'prd') 
+    : mockItems;
+  
+  const displayItems = workItems;
   const filteredItems = filter === 'all' ? displayItems : displayItems.filter(item => item.type === filter);
   
   const counts = {
@@ -61,6 +67,7 @@ export function ReviewStep({ items = mockItems, generationId, onUpdateItem, onRe
     epic: displayItems.filter(i => i.type === 'epic').length,
     feature: displayItems.filter(i => i.type === 'feature').length,
     story: displayItems.filter(i => i.type === 'story').length,
+    test_case: displayItems.filter(i => i.type === 'test_case').length,
   };
 
   const toggleSelect = (id: string) => {
@@ -143,6 +150,7 @@ export function ReviewStep({ items = mockItems, generationId, onUpdateItem, onRe
       case 'epic': return 'bg-violet-100 text-violet-600';
       case 'feature': return 'bg-teal-100 text-teal-600';
       case 'story': return 'bg-emerald-100 text-emerald-600';
+      case 'test_case': return 'bg-orange-100 text-orange-600';
       default: return 'bg-primary/10 text-primary';
     }
   };
@@ -152,6 +160,7 @@ export function ReviewStep({ items = mockItems, generationId, onUpdateItem, onRe
       case 'epic': return Layers;
       case 'feature': return Puzzle;
       case 'story': return Bookmark;
+      case 'test_case': return CheckCircle;
       default: return FileText;
     }
   };
@@ -162,6 +171,7 @@ export function ReviewStep({ items = mockItems, generationId, onUpdateItem, onRe
       case 'epic': return 'bg-violet-100 text-violet-600';
       case 'feature': return 'bg-teal-100 text-teal-600';
       case 'story': return 'bg-emerald-100 text-emerald-600';
+      case 'test_case': return 'bg-orange-100 text-orange-600';
       default: return 'bg-muted';
     }
   };
@@ -188,10 +198,16 @@ export function ReviewStep({ items = mockItems, generationId, onUpdateItem, onRe
           </div>
         )}
 
-        {/* Filter Stats */}
+        {/* Filter Stats - Work Items Only (PRD is not a work item) */}
         <div className="flex gap-3">
-          {(['all', 'epic', 'feature', 'story'] as const).map(f => {
+          {(['all', 'epic', 'feature', 'story', 'test_case'] as const).map(f => {
+            // Hide test_case tab if no test cases exist
+            if (f === 'test_case' && counts.test_case === 0) return null;
+            
             const Icon = f === 'all' ? FileText : getStatIcon(f);
+            const label = f === 'all' ? 'Total' : 
+                          f === 'test_case' ? 'Test Cases' :
+                          f.charAt(0).toUpperCase() + f.slice(1) + 's';
             return (
               <button
                 key={f}
@@ -207,9 +223,7 @@ export function ReviewStep({ items = mockItems, generationId, onUpdateItem, onRe
                   <Icon className="w-4 h-4" />
                 </div>
                 <h3 className="text-2xl font-bold">{counts[f]}</h3>
-                <p className="text-xs text-muted-foreground mt-1">
-                  {f === 'all' ? 'Total' : f.charAt(0).toUpperCase() + f.slice(1) + 's'}
-                </p>
+                <p className="text-xs text-muted-foreground mt-1">{label}</p>
               </button>
             );
           })}
