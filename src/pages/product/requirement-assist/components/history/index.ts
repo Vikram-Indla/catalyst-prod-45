@@ -1,5 +1,6 @@
 export * from './types';
 export * from './mockData';
+export * from './mappers';
 export { HistoryStatsBar } from './HistoryStatsBar';
 export { HistoryFiltersBar } from './HistoryFiltersBar';
 export { HistoryBulkActionsBar } from './HistoryBulkActionsBar';

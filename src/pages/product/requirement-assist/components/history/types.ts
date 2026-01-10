@@ -27,6 +27,8 @@ export interface GenerationHistoryItem {
     title: string;
     confidence?: number;
   }[];
+  // Original database ID for CRUD operations
+  _originalId?: string;
 }
 
 export type StatusFilter = 'all' | 'published' | 'draft' | 'failed';
