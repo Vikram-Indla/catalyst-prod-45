@@ -1,16 +1,14 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Bot, Check, Loader2, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
+import Modal, {
+  ModalTransition,
+  ModalHeader,
+  ModalTitle,
+  ModalBody,
+  ModalFooter,
+} from '@atlaskit/modal-dialog';
+import AKButton from '@atlaskit/button';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -456,23 +454,27 @@ export function GenerateStep({
         )}
       </div>
 
-      {/* Cancel Confirmation Dialog */}
-      <AlertDialog open={showCancelDialog} onOpenChange={setShowCancelDialog}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Cancel generation?</AlertDialogTitle>
-            <AlertDialogDescription>
+      {/* Cancel Confirmation Dialog (Atlaskit) */}
+      <ModalTransition>
+        {showCancelDialog && (
+          <Modal onClose={() => setShowCancelDialog(false)} width="small">
+            <ModalHeader>
+              <ModalTitle appearance="warning">Cancel generation?</ModalTitle>
+            </ModalHeader>
+            <ModalBody>
               Your draft has been saved. You can continue from where you left off later.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Continue Generating</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmCancel}>
-              Yes, Cancel
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+            </ModalBody>
+            <ModalFooter>
+              <AKButton appearance="subtle" onClick={() => setShowCancelDialog(false)}>
+                Continue Generating
+              </AKButton>
+              <AKButton appearance="warning" onClick={confirmCancel}>
+                Yes, Cancel
+              </AKButton>
+            </ModalFooter>
+          </Modal>
+        )}
+      </ModalTransition>
 
       <style>{`
         @keyframes shimmer {
