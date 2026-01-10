@@ -4,8 +4,8 @@ import { cn } from '@/lib/utils';
 import { useLiveAnalysis } from '../hooks/useLiveAnalysis';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { RichTextEditor } from './RichTextEditor';
 
 interface InputStepProps {
   content: string;
@@ -129,14 +129,16 @@ export function InputStep({
             {/* Write Tab */}
             {activeTab === 'write' && (
               <div className="flex-1 flex flex-col">
-                <Textarea
-                  value={content}
-                  onChange={(e) => onContentChange(e.target.value)}
-                  placeholder="Paste or type your requirements here...
+                <div className="flex-1">
+                  <RichTextEditor
+                    content={content}
+                    onChange={onContentChange}
+                    placeholder="Paste or type your requirements here...
 
 Example: The system shall enable users to upload and manage documents. Users should be able to upload PDF, DOCX, and TXT files up to 50MB. The system must support OCR extraction for scanned documents..."
-                  className="flex-1 min-h-[300px] border-0 rounded-none resize-none focus-visible:ring-0"
-                />
+                    className="border-0 rounded-none min-h-[300px]"
+                  />
+                </div>
                 <div className="flex justify-between items-center px-4 py-3 border-t bg-muted/30">
                   <div className={cn(
                     "text-[13px]",
@@ -381,15 +383,17 @@ Example: The system shall enable users to upload and manage documents. Users sho
               <Minimize2 className="w-4 h-4 mr-1.5" /> Collapse
             </Button>
           </DialogHeader>
-          <Textarea
-            value={expandedContent}
-            onChange={(e) => setExpandedContent(e.target.value)}
-            placeholder="Paste or type your requirements here..."
-            className="flex-1 resize-none text-base"
-          />
+          <div className="flex-1 overflow-auto">
+            <RichTextEditor
+              content={expandedContent}
+              onChange={setExpandedContent}
+              placeholder="Paste or type your requirements here..."
+              className="h-full min-h-[400px]"
+            />
+          </div>
           <div className="flex justify-between items-center pt-3 border-t">
             <div className="text-[13px] text-muted-foreground">
-              <strong>{expandedContent.split(/\s+/).filter(Boolean).length}</strong> / 3,000 words
+              <strong>{expandedContent.replace(/<[^>]*>/g, '').split(/\s+/).filter(Boolean).length}</strong> / 3,000 words
             </div>
             <div className="flex gap-2">
               <Button variant="outline" onClick={handleCollapseEditor}>
