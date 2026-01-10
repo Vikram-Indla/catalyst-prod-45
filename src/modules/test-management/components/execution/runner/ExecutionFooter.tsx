@@ -84,11 +84,11 @@ export function ExecutionFooter({ run, steps, currentStepIndex, onStepSelect }: 
               onClick={() => onStepSelect(index)}
               className={cn(
                 'w-2 h-2 rounded-full transition-all cursor-pointer',
-                step.status === 'passed' && 'bg-teal-500',
-                step.status === 'failed' && 'bg-destructive',
-                step.status === 'blocked' && 'bg-orange-500',
-                step.status === 'skipped' && 'bg-muted-foreground',
-                (step.status === 'not_run' || step.status === 'in_progress') && 'bg-muted-foreground/30',
+                step.status === 'passed' && 'bg-emerald-600',
+                step.status === 'failed' && 'bg-red-500',
+                step.status === 'blocked' && 'bg-amber-500',
+                step.status === 'skipped' && 'bg-gray-400',
+                (step.status === 'not_run' || step.status === 'in_progress') && 'bg-gray-300',
                 currentStepIndex === index && 'ring-2 ring-offset-1 ring-primary'
               )}
               title={`Step ${index + 1} - ${step.status}`}
@@ -113,22 +113,22 @@ export function ExecutionFooter({ run, steps, currentStepIndex, onStepSelect }: 
       {/* Right - Progress Legend with Labels */}
       <div className="flex items-center gap-4 text-xs">
         <span className="flex items-center gap-1.5">
-          <span className="w-2 h-2 rounded-full bg-teal-500" />
+          <span className="w-2 h-2 rounded-full bg-emerald-600" />
           <span className="text-muted-foreground">Passed:</span>
           <span className="font-medium text-foreground">{passedCount}</span>
         </span>
         <span className="flex items-center gap-1.5">
-          <span className="w-2 h-2 rounded-full bg-destructive" />
+          <span className="w-2 h-2 rounded-full bg-red-500" />
           <span className="text-muted-foreground">Failed:</span>
           <span className="font-medium text-foreground">{failedCount}</span>
         </span>
         <span className="flex items-center gap-1.5">
-          <span className="w-2 h-2 rounded-full bg-orange-500" />
+          <span className="w-2 h-2 rounded-full bg-amber-500" />
           <span className="text-muted-foreground">Blocked:</span>
           <span className="font-medium text-foreground">{blockedCount}</span>
         </span>
         <span className="flex items-center gap-1.5">
-          <span className="w-2 h-2 rounded-full bg-muted-foreground" />
+          <span className="w-2 h-2 rounded-full bg-gray-400" />
           <span className="text-muted-foreground">Skipped:</span>
           <span className="font-medium text-foreground">{skippedCount}</span>
         </span>

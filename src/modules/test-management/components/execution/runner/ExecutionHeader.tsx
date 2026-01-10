@@ -209,7 +209,7 @@ export function ExecutionHeader({
           size="sm"
           onClick={onCompleteRun}
           disabled={isUpdating}
-          className="bg-teal-600 hover:bg-teal-700"
+          className="bg-emerald-600 hover:bg-emerald-700"
         >
           <CheckCircle2 className="h-4 w-4 mr-1.5" />
           Complete Run
