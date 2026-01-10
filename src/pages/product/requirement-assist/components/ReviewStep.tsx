@@ -149,7 +149,7 @@ export function ReviewStep({ items = mockItems, onUpdateItem, onRemoveItem }: Re
   const getStatIcon = (type: string) => {
     switch (type) {
       case 'epic': return Layers;
-      case 'feature': return PuzzlePiece;
+      case 'feature': return Puzzle;
       case 'story': return Bookmark;
       default: return FileText;
     }
@@ -382,5 +382,3 @@ export function ReviewStep({ items = mockItems, onUpdateItem, onRemoveItem }: Re
   );
 }
 
-// Need to import Zap for the summary panel
-import { Zap } from 'lucide-react';
