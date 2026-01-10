@@ -316,8 +316,44 @@ serve(async (req) => {
       }
 
       const aiGatewayResponse = await response.json();
-      const content = aiGatewayResponse.choices?.[0]?.message?.content;
-      if (!content) {
+
+      const choice = aiGatewayResponse.choices?.[0];
+      const message = choice?.message;
+
+      const extractText = (value: unknown): string => {
+        if (typeof value === "string") return value;
+        if (Array.isArray(value)) {
+          // Some providers return structured parts: [{ type: 'text', text: '...' }, ...]
+          return value
+            .map((part) => {
+              if (typeof part === "string") return part;
+              if (part && typeof part === "object") {
+                const t = (part as any).text;
+                return typeof t === "string" ? t : "";
+              }
+              return "";
+            })
+            .join("");
+        }
+        return "";
+      };
+
+      const content = extractText(message?.content ?? (choice as any)?.text ?? (aiGatewayResponse as any)?.output_text);
+
+      if (!content || !content.trim()) {
+        // Log a small diagnostic (avoid dumping huge payloads)
+        console.error(
+          "AI response missing content:",
+          JSON.stringify(
+            {
+              hasChoices: Array.isArray(aiGatewayResponse.choices),
+              firstChoiceKeys: choice ? Object.keys(choice) : null,
+              messageKeys: message ? Object.keys(message) : null,
+            },
+            null,
+            2
+          )
+        );
         throw new Error("No content in AI response");
       }
 
@@ -325,7 +361,7 @@ serve(async (req) => {
         (aiGatewayResponse.usage?.prompt_tokens || 0) +
         (aiGatewayResponse.usage?.completion_tokens || 0);
 
-      return { content: String(content), tokensUsed };
+      return { content: content.trim(), tokensUsed };
     };
 
     console.log("AI response received, parsing JSON...");
