@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, ArrowRight, Save, Rocket, Search, Settings } from 'lucide-react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { ArrowLeft, ArrowRight, Save, Rocket, Search, Settings, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { useWizardState } from './hooks/useWizardState';
@@ -12,11 +12,21 @@ import { ReviewStep } from './components/ReviewStep';
 import { PublishStep } from './components/PublishStep';
 import { SettingsModal } from './components/SettingsModal';
 import { SearchModal } from './components/SearchModal';
+import { RANavigationTabs } from './components/RANavigationTabs';
+
+interface LocationState {
+  generationId?: string;
+}
 
 export default function RequirementAssistWizard() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  
+  // Check for generation ID passed from History page
+  const locationState = location.state as LocationState | null;
+  const loadedGenerationId = locationState?.generationId;
   
   const {
     state,
@@ -30,6 +40,15 @@ export default function RequirementAssistWizard() {
     setGeneratedItems,
     reset,
   } = useWizardState();
+
+  // Load generation data if ID is provided
+  useEffect(() => {
+    if (loadedGenerationId) {
+      toast.info(`Loading generation ${loadedGenerationId}...`);
+      // In a real implementation, fetch the generation data here
+      // For now, just show a toast
+    }
+  }, [loadedGenerationId]);
 
   // Keyboard shortcuts
   useEffect(() => {
@@ -95,8 +114,24 @@ export default function RequirementAssistWizard() {
     setCurrentStep(1);
   };
 
+  const handleViewHistory = () => {
+    navigate('/operations/requirement-assist/history');
+  };
+
   return (
     <div className="flex flex-col h-full">
+      {/* Breadcrumb */}
+      <div className="bg-white border-b border-[#e2e8f0] px-6 py-3">
+        <div className="flex items-center gap-2 text-[13px]">
+          <span className="text-[#94a3b8]">Operations</span>
+          <ChevronRight className="w-3.5 h-3.5 text-[#94a3b8]" />
+          <span className="font-semibold text-[#0f172a]">Requirement Assist™</span>
+        </div>
+      </div>
+
+      {/* Navigation Tabs */}
+      <RANavigationTabs />
+
       {/* Header with search */}
       <div className="flex items-center justify-between px-6 py-3 border-b bg-card">
         <WizardProgress
@@ -175,6 +210,7 @@ export default function RequirementAssistWizard() {
             onCreateAnother={handleReset}
             onOpenInCatalyst={() => toast.success('Opening in Catalyst...')}
             onUndo={handleUndo}
+            onViewHistory={handleViewHistory}
           />
         )}
       </div>

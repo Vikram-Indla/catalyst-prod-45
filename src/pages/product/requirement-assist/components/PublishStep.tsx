@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Check, FileText, Layers, Puzzle, Bookmark, Download, Share2, ExternalLink, Undo2, Plus } from 'lucide-react';
+import { Check, FileText, Layers, Puzzle, Bookmark, Download, Share2, ExternalLink, Undo2, Plus, History } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 
@@ -7,9 +7,10 @@ interface PublishStepProps {
   onCreateAnother: () => void;
   onOpenInCatalyst: () => void;
   onUndo: () => void;
+  onViewHistory?: () => void;
 }
 
-export function PublishStep({ onCreateAnother, onOpenInCatalyst, onUndo }: PublishStepProps) {
+export function PublishStep({ onCreateAnother, onOpenInCatalyst, onUndo, onViewHistory }: PublishStepProps) {
   const [undoSeconds, setUndoSeconds] = useState(300);
   const undoTimerRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -154,6 +155,11 @@ export function PublishStep({ onCreateAnother, onOpenInCatalyst, onUndo }: Publi
         <Button variant="outline" onClick={onCreateAnother}>
           <Plus className="w-4 h-4 mr-2" /> Create Another
         </Button>
+        {onViewHistory && (
+          <Button variant="outline" onClick={onViewHistory}>
+            <History className="w-4 h-4 mr-2" /> View in History
+          </Button>
+        )}
         <Button onClick={onOpenInCatalyst}>
           <ExternalLink className="w-4 h-4 mr-2" /> Open in Catalyst
         </Button>
