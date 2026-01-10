@@ -1,6 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Bot, Check, Loader2, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -51,6 +61,7 @@ export function GenerateStep({
   onComplete, 
   onCancel 
 }: GenerateStepProps) {
+  const [showCancelDialog, setShowCancelDialog] = useState(false);
   const [progress, setProgress] = useState(0);
   const [tokenCount, setTokenCount] = useState(0);
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
@@ -271,18 +282,21 @@ export function GenerateStep({
   }, [generationId, inputText, selectedOutputs, settings, onComplete]);
 
   const handleCancel = () => {
-    if (confirm('Cancel generation? Your draft has been saved.')) {
-      if (processingTimerRef.current) {
-        clearInterval(processingTimerRef.current);
-      }
-      if (progressIntervalRef.current) {
-        clearInterval(progressIntervalRef.current);
-      }
-      if (abortControllerRef.current) {
-        abortControllerRef.current.abort();
-      }
-      onCancel();
+    setShowCancelDialog(true);
+  };
+
+  const confirmCancel = () => {
+    if (processingTimerRef.current) {
+      clearInterval(processingTimerRef.current);
     }
+    if (progressIntervalRef.current) {
+      clearInterval(progressIntervalRef.current);
+    }
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+    setShowCancelDialog(false);
+    onCancel();
   };
 
   const handleRetry = () => {
@@ -441,6 +455,24 @@ export function GenerateStep({
           </Button>
         )}
       </div>
+
+      {/* Cancel Confirmation Dialog */}
+      <AlertDialog open={showCancelDialog} onOpenChange={setShowCancelDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Cancel generation?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Your draft has been saved. You can continue from where you left off later.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Continue Generating</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmCancel}>
+              Yes, Cancel
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       <style>{`
         @keyframes shimmer {
