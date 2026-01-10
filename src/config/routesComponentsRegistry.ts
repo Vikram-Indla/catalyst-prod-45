@@ -71,14 +71,14 @@ export const routesComponentsRegistry: RegistryEntry[] = [
   // HOME
   // ═══════════════════════════════════════════════════════════════════════════
   {
-    id: 'home',
+    id: 'for-you',
     category: 'Home',
-    name: 'Home',
-    route: '/home',
-    filePath: 'src/pages/jira-align/Home.tsx',
-    description: 'Main dashboard/home page',
+    name: 'ForYouPage',
+    route: '/for-you',
+    filePath: 'src/pages/ForYouPage.tsx',
+    description: 'Personalized dashboard/home page',
     type: 'Page',
-    tags: ['dashboard', 'landing']
+    tags: ['dashboard', 'landing', 'personalized']
   },
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -392,16 +392,7 @@ export const routesComponentsRegistry: RegistryEntry[] = [
     type: 'Page',
     tags: ['features', 'list']
   },
-  {
-    id: 'program-board',
-    category: 'Program',
-    name: 'ProgramBoardWithSidebar',
-    route: '/program/:programId/program-board',
-    filePath: 'src/pages/ProgramBoardWithSidebar.tsx',
-    description: 'PI planning board',
-    type: 'Page',
-    tags: ['board', 'pi', 'planning']
-  },
+  // ProgramBoardWithSidebar removed
   {
     id: 'program-dependencies',
     category: 'Program',
@@ -1231,15 +1222,7 @@ export const routesComponentsRegistry: RegistryEntry[] = [
     type: 'Kanban',
     tags: ['kanban', 'feature']
   },
-  {
-    id: 'program-board-new',
-    category: 'Shared',
-    name: 'ProgramBoardNew',
-    filePath: 'src/pages/ProgramBoardNew.tsx',
-    description: 'PI planning program board',
-    type: 'Kanban',
-    tags: ['kanban', 'program-board', 'pi']
-  },
+  // ProgramBoardNew removed
 
   // ═══════════════════════════════════════════════════════════════════════════
   // WIDGET COMPONENTS

@@ -17,14 +17,14 @@ import { CatyChatWidget } from "./components/caty";
 import BrowsePage from "./pages/BrowsePage";
 import DependencyMapsPage from "./pages/reports/DependencyMapsPage";
 import SearchPage from "./pages/SearchPage";
-import Home from "./pages/jira-align/Home";
+// Home removed - using ForYouPage
 import PlaceholderPage from "./pages/jira-align/PlaceholderPage";
-import StrategyRoom from "./pages/StrategyRoom";
+// StrategyRoom removed - use StrategyRoomPage instead
 import StrategyRoomPage from "./pages/enterprise/StrategyRoomPage";
 const CapacityPlannerPage = lazy(() => import("./pages/enterprise/CapacityPlannerPage"));
 import Themes from "./pages/Themes";
 import Initiatives from "./pages/Initiatives";
-import Epics from "./pages/Epics";
+// Epics removed - redirects to epic-backlog
 import EpicsPage from "./pages/items/EpicsPage";
 import EpicsRecycleBinPage from "./pages/items/EpicsRecycleBinPage";
 import EpicsCanceledPage from "./pages/items/EpicsCanceledPage";
@@ -34,9 +34,9 @@ import EpicRequirementHierarchy from "./pages/items/reports/EpicRequirementHiera
 import EpicResponsibilityMatrix from "./pages/items/reports/EpicResponsibilityMatrix";
 import EpicPlanningPage from "./pages/items/reports/EpicPlanningPage";
 import EpicEstimationPage from "./pages/items/EpicEstimationPage";
-import EpicBacklog from "./pages/EpicBacklog";
+// EpicBacklog removed - use EpicBacklogWithSidebar
 import EpicBacklogWithSidebar from "./pages/EpicBacklogWithSidebar";
-import BacklogEpics from "./pages/BacklogEpics";
+// BacklogEpics removed
 import Features from "./pages/Features";
 import FeaturesPage from "./pages/items/FeaturesPage";
 import FeaturesBacklog from "./pages/FeaturesBacklog";
@@ -63,8 +63,7 @@ import Roadmaps from "./pages/Roadmaps";
 import DependenciesPage from "./pages/work/Dependencies";
 import ProgramRoom from "./pages/ProgramRoom";
 import ProgramEpicsPage from "./pages/ProgramEpicsPage";
-import ProgramBoardNew from "./pages/ProgramBoardNew";
-import ProgramBoardWithSidebar from "./pages/ProgramBoardWithSidebar";
+// ProgramBoardNew and ProgramBoardWithSidebar removed - use PlaceholderPage
 import ProgramBoardHistory from "./pages/ProgramBoardHistory";
 import QuartersPage from "./pages/program/QuartersPage";
 import CapacityWithSidebar from "./pages/program/CapacityWithSidebar";
@@ -167,8 +166,7 @@ import {
   IncidentAuditCompliance,
   IncidentOwningTeams,
 } from "./pages/admin/incident";
-import UIQARoute from "./pages/UIQARoute";
-import ThemeAuditProbe from "./pages/ThemeAuditProbe";
+// UIQARoute and ThemeAuditProbe removed
 import ValueStreamView from "./pages/ValueStreamView";
 import UserProfile from "./pages/UserProfile";
 import NotFound from "./pages/NotFound";
@@ -236,16 +234,7 @@ import CatalystDemandTable from "./modules/product-backlog/pages/CatalystDemandT
 import SubmitDemandRequest from "./pages/SubmitDemandRequest";
 import ResetPassword from "./pages/ResetPassword";
 import TeamComingSoon from "./pages/team/ComingSoon";
-import SelfTest from "./pages/dev/SelfTest";
-import EpicBacklogTests from "./pages/dev/EpicBacklogTests";
-import ForecastSelfTest from "./pages/dev/ForecastSelfTest";
-import TeamsSelfTest from "./pages/dev/TeamsSelfTest";
-import NotificationsSelfTest from "./pages/dev/NotificationsSelfTest";
-import PortfolioThemeSelfTest from "./pages/dev/PortfolioThemeSelfTest";
-import ProgramBoardSelfTest from "./pages/dev/ProgramBoardSelfTest";
-import SourcesReference from "./pages/dev/SourcesReference";
-import ToastDemo from "./pages/dev/ToastDemo";
-import DarkModeGatePage from "./pages/qa/DarkModeGatePage";
+// Dev and QA test pages removed
 import UnauthorizedPage from "./pages/UnauthorizedPage";
 import KanbanBoardView from "./pages/KanbanBoardView";
 import KanbanBoardSetup from "./pages/KanbanBoardSetup";
@@ -380,7 +369,7 @@ const App = () => (
               <Route path="/portfolio/:portfolioId/forecast" element={<Forecast />} />
               <Route path="/portfolio/:portfolioId/capacity" element={<PlaceholderPage />} />
               <Route path="/portfolio/:portfolioId/programs" element={<PlaceholderPage />} />
-              <Route path="/strategy-room" element={<StrategyRoom />} />
+              <Route path="/strategy-room" element={<StrategyRoomPage />} />
               <Route path="/enterprise/strategy-room" element={<StrategyRoomPage />} />
               <Route path="/enterprise/strategy-room/capacity" element={<Suspense fallback={<div className="p-8">Loading...</div>}><CapacityPlannerPage /></Suspense>} />
               <Route path="/enterprise/snapshots" element={<StrategicSnapshots />} />
@@ -397,7 +386,7 @@ const App = () => (
               <Route path="/program/:programId/epic-backlog" element={<EpicBacklogWithSidebar />} />
               <Route path="/program/:programId/feature-backlog" element={<Suspense fallback={<div className="p-8">Loading...</div>}><FeatureBacklogPage /></Suspense>} />
               <Route path="/program/:programId/features" element={<FeaturesWithSidebar />} />
-              <Route path="/program/:programId/program-board" element={<ProgramBoardWithSidebar />} />
+              <Route path="/program/:programId/program-board" element={<PlaceholderPage />} />
               <Route path="/program/:programId/dependencies" element={<DependenciesPage />} />
               <Route path="/program/:programId/roadmaps" element={<ProgramRoadmapPage />} />
               <Route path="/program/:programId/roadmaps-test" element={<RoadmapsTestPage />} />
@@ -518,7 +507,7 @@ const App = () => (
               <Route path="/programs/:programId/roadmaps" element={<ProgramRoadmapPage />} />
               <Route path="/programs/:programId/objective-tree" element={<OKRHub />} />
               <Route path="/programs/:programId/work-tree" element={<WorkTreePage />} />
-              <Route path="/programs/:programId/program-board" element={<ProgramBoardWithSidebar />} />
+              <Route path="/programs/:programId/program-board" element={<PlaceholderPage />} />
               <Route path="/programs/:programId/forecast" element={<PlaceholderPage />} />
               <Route path="/programs/:programId/capacity" element={<CapacityWithSidebar />} />
               <Route path="/programs/:programId/settings" element={<PlaceholderPage />} />
@@ -624,7 +613,7 @@ const App = () => (
 
               {/* Program Routes with :programId */}
               <Route path="/programs/:programId/room" element={<ProgramRoom />} />
-              <Route path="/programs/:programId/program-board" element={<ProgramBoardWithSidebar />} />
+              <Route path="/programs/:programId/program-board" element={<PlaceholderPage />} />
               <Route path="/programs/:programId/objective-tree" element={<OKRHub />} />
               <Route path="/programs/:programId/work-tree" element={<WorkTreePage />} />
               <Route path="/programs/:programId/backlog" element={<BacklogWithSidebar />} />
@@ -634,7 +623,7 @@ const App = () => (
               <Route path="/programs/:programId/forecast" element={<PlaceholderPage />} />
               <Route path="/programs/:programId/capacity" element={<CapacityWithSidebar />} />
               <Route path="/programs/:programId/increments" element={<PlaceholderPage />} />
-              <Route path="/programs/:programId/epics" element={<Epics />} />
+              <Route path="/programs/:programId/epics" element={<EpicsPage />} />
               <Route path="/programs/:programId/features" element={<FeaturesWithSidebar />} />
               <Route path="/programs/:programId/stories" element={<Stories />} />
               <Route path="/programs/:programId/defects" element={<Defects />} />
@@ -877,20 +866,7 @@ const App = () => (
               <Route path="/value-stream" element={<ValueStreamView />} />
               <Route path="/profile" element={<UserProfile />} />
               <Route path="/items/:type" element={<PlaceholderPage />} />
-              <Route path="/dev/self-test" element={<SelfTest />} />
-              <Route path="/dev/epic-backlog-tests" element={<EpicBacklogTests />} />
-              <Route path="/dev/forecast-self-test" element={<ForecastSelfTest />} />
-              <Route path="/dev/teams-self-test" element={<TeamsSelfTest />} />
-              <Route path="/dev/notifications-self-test" element={<NotificationsSelfTest />} />
-              <Route path="/dev/portfolio-theme-self-test" element={<PortfolioThemeSelfTest />} />
-              <Route path="/dev/program-board-self-test" element={<ProgramBoardSelfTest />} />
-              <Route path="/dev/sources" element={<SourcesReference />} />
-              <Route path="/dev/toast-demo" element={<ToastDemo />} />
-              
-              {/* QA Tools */}
-              <Route path="/qa/dark-mode-gate" element={<DarkModeGatePage />} />
-              <Route path="/ui/qa" element={<UIQARoute />} />
-              <Route path="/theme-audit" element={<ThemeAuditProbe />} />
+              {/* Dev and QA routes removed */}
             </Route>
             
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
