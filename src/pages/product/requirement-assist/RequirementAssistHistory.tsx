@@ -1,135 +1,320 @@
-import React from 'react';
-import { Eye, Copy, Trash2, Search, List, Grid } from 'lucide-react';
-import { Card } from '@/components/ui/card';
+import React, { useState, useMemo, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Plus, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { cn } from '@/lib/utils';
+import { toast } from 'sonner';
+import {
+  HistoryStatsBar,
+  HistoryFiltersBar,
+  HistoryBulkActionsBar,
+  HistoryTable,
+  HistoryPagination,
+  HistoryEmptyState,
+  HistoryDetailPanel,
+  HistoryDeleteModal,
+  mockGenerations,
+  GenerationHistoryItem,
+  StatusFilter,
+  SortOption,
+} from './components/history';
 
-const mockHistory = [
-  { id: 'GEN-001', title: 'Document Management System', program: 'Digital Services Program', items: 20, epics: 2, features: 5, stories: 12, status: 'published', createdAt: 'Jan 10, 2026', createdBy: { name: 'Vikram Kumar', initials: 'VK' } },
-  { id: 'GEN-002', title: 'API Gateway Implementation', program: 'Infrastructure Modernization', items: 15, epics: 1, features: 4, stories: 10, status: 'published', createdAt: 'Jan 9, 2026', createdBy: { name: 'Abdullah Alshammari', initials: 'AA' } },
-  { id: 'GEN-003', title: 'Portal Redesign Requirements', program: 'Citizen Experience', items: 8, epics: 1, features: 2, stories: 5, status: 'draft', createdAt: 'Jan 8, 2026', createdBy: { name: 'Vikram Kumar', initials: 'VK' } },
-  { id: 'GEN-004', title: 'Mobile App Authentication', program: 'Digital Services Program', items: 0, epics: 0, features: 0, stories: 0, status: 'failed', createdAt: 'Jan 7, 2026', createdBy: { name: 'Abdullah Alshammari', initials: 'AA' } },
-];
+const ITEMS_PER_PAGE = 10;
 
 export default function RequirementAssistHistory() {
-  const getStatusBadge = (status: string) => {
-    const styles = {
-      draft: 'bg-muted text-muted-foreground',
-      published: 'bg-emerald-100 text-emerald-600',
-      failed: 'bg-red-100 text-red-600',
-    };
-    return styles[status as keyof typeof styles] || styles.draft;
-  };
+  const navigate = useNavigate();
+  
+  // Filter states
+  const [searchQuery, setSearchQuery] = useState('');
+  const [dateFrom, setDateFrom] = useState('');
+  const [dateTo, setDateTo] = useState('');
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
+  const [sortOption, setSortOption] = useState<SortOption>('newest');
+  
+  // Selection state
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  
+  // Panel state
+  const [detailItem, setDetailItem] = useState<GenerationHistoryItem | null>(null);
+  const [isPanelOpen, setIsPanelOpen] = useState(false);
+  
+  // Delete modal state
+  const [deleteModal, setDeleteModal] = useState<{
+    isOpen: boolean;
+    item?: GenerationHistoryItem;
+    isBulk: boolean;
+  }>({ isOpen: false, isBulk: false });
+
+  // Debounced search
+  const [debouncedSearch, setDebouncedSearch] = useState('');
+  
+  React.useEffect(() => {
+    const timeout = setTimeout(() => {
+      setDebouncedSearch(searchQuery);
+      setCurrentPage(1);
+    }, 300);
+    return () => clearTimeout(timeout);
+  }, [searchQuery]);
+
+  // Filter and sort data
+  const filteredData = useMemo(() => {
+    let data = [...mockGenerations];
+    
+    // Status filter
+    if (statusFilter !== 'all') {
+      data = data.filter((item) => item.status === statusFilter);
+    }
+    
+    // Search filter
+    if (debouncedSearch) {
+      const search = debouncedSearch.toLowerCase();
+      data = data.filter(
+        (item) =>
+          item.title.toLowerCase().includes(search) ||
+          item.id.toLowerCase().includes(search) ||
+          item.author.name.toLowerCase().includes(search)
+      );
+    }
+    
+    // Sort
+    switch (sortOption) {
+      case 'oldest':
+        data.sort((a, b) => b.dateSort - a.dateSort);
+        break;
+      case 'items':
+        data.sort((a, b) => {
+          const aTotal = a.items.prd + a.items.epics + a.items.features + a.items.stories;
+          const bTotal = b.items.prd + b.items.epics + b.items.features + b.items.stories;
+          return bTotal - aTotal;
+        });
+        break;
+      case 'title':
+        data.sort((a, b) => a.title.localeCompare(b.title));
+        break;
+      default: // newest
+        data.sort((a, b) => a.dateSort - b.dateSort);
+    }
+    
+    return data;
+  }, [statusFilter, debouncedSearch, sortOption]);
+
+  // Paginated data
+  const paginatedData = useMemo(() => {
+    const start = (currentPage - 1) * ITEMS_PER_PAGE;
+    return filteredData.slice(start, start + ITEMS_PER_PAGE);
+  }, [filteredData, currentPage]);
+
+  // Stats counts
+  const stats = useMemo(() => ({
+    total: mockGenerations.length,
+    published: mockGenerations.filter((i) => i.status === 'published').length,
+    draft: mockGenerations.filter((i) => i.status === 'draft').length,
+    failed: mockGenerations.filter((i) => i.status === 'failed').length,
+  }), []);
+
+  // Check if filters are active
+  const hasFilters = Boolean(debouncedSearch || dateFrom || dateTo || statusFilter !== 'all');
+
+  // Handlers
+  const handleStatusFilterChange = useCallback((filter: StatusFilter) => {
+    setStatusFilter(filter);
+    setCurrentPage(1);
+  }, []);
+
+  const handleClearFilters = useCallback(() => {
+    setSearchQuery('');
+    setDateFrom('');
+    setDateTo('');
+    setStatusFilter('all');
+    setSortOption('newest');
+    setCurrentPage(1);
+    toast.success('Filters cleared');
+  }, []);
+
+  const handleToggleSelect = useCallback((id: string) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
+  }, []);
+
+  const handleToggleSelectAll = useCallback(() => {
+    if (selectedIds.size === paginatedData.length) {
+      setSelectedIds(new Set());
+    } else {
+      setSelectedIds(new Set(paginatedData.map((i) => i.id)));
+    }
+  }, [selectedIds.size, paginatedData]);
+
+  const handleClearSelection = useCallback(() => {
+    setSelectedIds(new Set());
+  }, []);
+
+  const handleViewDetails = useCallback((item: GenerationHistoryItem) => {
+    setDetailItem(item);
+    setIsPanelOpen(true);
+  }, []);
+
+  const handleClosePanel = useCallback(() => {
+    setIsPanelOpen(false);
+    setTimeout(() => setDetailItem(null), 300);
+  }, []);
+
+  const handleDuplicate = useCallback((item: GenerationHistoryItem) => {
+    toast.success(`Duplicating "${item.title}"...`);
+    handleClosePanel();
+  }, [handleClosePanel]);
+
+  const handleExportPdf = useCallback((item: GenerationHistoryItem) => {
+    toast.success(`Exporting "${item.title}" as PDF...`);
+  }, []);
+
+  const handleExportExcel = useCallback((item: GenerationHistoryItem) => {
+    toast.success(`Exporting "${item.title}" as Excel...`);
+  }, []);
+
+  const handleDeleteItem = useCallback((item: GenerationHistoryItem) => {
+    setDeleteModal({ isOpen: true, item, isBulk: false });
+  }, []);
+
+  const handleBulkExport = useCallback(() => {
+    toast.success(`Exporting ${selectedIds.size} generations...`);
+    setSelectedIds(new Set());
+  }, [selectedIds.size]);
+
+  const handleBulkDelete = useCallback(() => {
+    setDeleteModal({ isOpen: true, isBulk: true });
+  }, []);
+
+  const handleConfirmDelete = useCallback(() => {
+    if (deleteModal.isBulk) {
+      toast.success(`Deleted ${selectedIds.size} generations`);
+      setSelectedIds(new Set());
+    } else if (deleteModal.item) {
+      toast.success(`Deleted "${deleteModal.item.title}"`);
+      selectedIds.delete(deleteModal.item.id);
+      setSelectedIds(new Set(selectedIds));
+    }
+    setDeleteModal({ isOpen: false, isBulk: false });
+    handleClosePanel();
+  }, [deleteModal, selectedIds, handleClosePanel]);
+
+  const handleOpenInWizard = useCallback((item: GenerationHistoryItem) => {
+    toast.success(`Opening "${item.title}" in Wizard...`);
+    handleClosePanel();
+    navigate('/operations/requirement-assist');
+  }, [navigate, handleClosePanel]);
+
+  const handleNewGeneration = useCallback(() => {
+    navigate('/operations/requirement-assist');
+  }, [navigate]);
 
   return (
-    <div className="p-6">
-      {/* Toolbar */}
-      <div className="flex items-center gap-3 mb-4">
-        <div className="relative flex-1 max-w-xs">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-          <Input placeholder="Search by title or ID..." className="pl-9" />
+    <div className="min-h-screen bg-[#f8fafc]">
+      {/* Page Header */}
+      <div className="bg-white border-b border-[#e2e8f0] px-6 py-4 flex items-center justify-between">
+        <div className="flex items-center gap-2 text-[13px]">
+          <span className="text-[#94a3b8]">Operations</span>
+          <ChevronRight className="w-3.5 h-3.5 text-[#94a3b8]" />
+          <span className="text-[#94a3b8]">Requirement Assist™</span>
+          <ChevronRight className="w-3.5 h-3.5 text-[#94a3b8]" />
+          <span className="font-semibold text-[#0f172a]">History</span>
         </div>
-        <Select defaultValue="">
-          <SelectTrigger className="w-[140px]"><SelectValue placeholder="All Status" /></SelectTrigger>
-          <SelectContent>
-            <SelectItem value="">All Status</SelectItem>
-            <SelectItem value="draft">Draft</SelectItem>
-            <SelectItem value="published">Published</SelectItem>
-            <SelectItem value="failed">Failed</SelectItem>
-          </SelectContent>
-        </Select>
-        <Select defaultValue="">
-          <SelectTrigger className="w-[180px]"><SelectValue placeholder="All Programs" /></SelectTrigger>
-          <SelectContent>
-            <SelectItem value="">All Programs</SelectItem>
-            <SelectItem value="dsp">Digital Services Program</SelectItem>
-            <SelectItem value="infra">Infrastructure Modernization</SelectItem>
-          </SelectContent>
-        </Select>
-        <div className="flex border rounded-lg overflow-hidden ml-auto">
-          <Button variant="ghost" size="sm" className="rounded-none bg-primary/10 text-primary"><List className="w-4 h-4" /></Button>
-          <Button variant="ghost" size="sm" className="rounded-none"><Grid className="w-4 h-4" /></Button>
-        </div>
+        <Button
+          onClick={handleNewGeneration}
+          className="bg-[#2563eb] hover:bg-[#1d4ed8] text-white"
+        >
+          <Plus className="w-4 h-4 mr-2" />
+          New Generation
+        </Button>
       </div>
 
-      {/* Stats */}
-      <div className="flex gap-3 mb-4">
-        {[{ label: 'Total', count: 247 }, { label: 'Drafts', count: 12 }, { label: 'Published', count: 221 }, { label: 'Failed', count: 14 }].map((stat, i) => (
-          <button key={i} className={cn("flex items-center gap-2 px-4 py-2 border rounded-full text-[13px] transition-colors", i === 0 ? "border-primary bg-primary/5 text-primary" : "hover:border-primary")}>
-            <span>{stat.label}</span>
-            <strong>{stat.count}</strong>
-          </button>
-        ))}
-      </div>
+      {/* Stats Bar */}
+      <HistoryStatsBar
+        totalCount={stats.total}
+        publishedCount={stats.published}
+        draftCount={stats.draft}
+        failedCount={stats.failed}
+        activeFilter={statusFilter}
+        onFilterChange={handleStatusFilterChange}
+      />
 
-      {/* Table */}
-      <Card className="overflow-hidden">
-        <table className="w-full">
-          <thead>
-            <tr className="bg-muted/50 text-xs text-muted-foreground uppercase tracking-wide">
-              <th className="p-3.5 text-left font-semibold w-10"><input type="checkbox" /></th>
-              <th className="p-3.5 text-left font-semibold">Title</th>
-              <th className="p-3.5 text-left font-semibold w-44">Program</th>
-              <th className="p-3.5 text-left font-semibold w-24">Items</th>
-              <th className="p-3.5 text-left font-semibold w-28">Status</th>
-              <th className="p-3.5 text-left font-semibold w-32">Created</th>
-              <th className="p-3.5 text-left font-semibold w-40">Created By</th>
-              <th className="p-3.5 text-left font-semibold w-24">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {mockHistory.map(item => (
-              <tr key={item.id} className="border-t hover:bg-muted/30 cursor-pointer">
-                <td className="p-4"><input type="checkbox" /></td>
-                <td className="p-4">
-                  <div className="font-medium">{item.title}</div>
-                  <div className="text-xs text-muted-foreground">{item.id}</div>
-                </td>
-                <td className="p-4 text-sm">{item.program}</td>
-                <td className="p-4">
-                  <div className="flex items-center gap-1.5">
-                    <span>{item.items}</span>
-                    {item.epics > 0 && <span className="w-2 h-2 rounded-full bg-violet-500" title={`${item.epics} Epics`} />}
-                    {item.features > 0 && <span className="w-2 h-2 rounded-full bg-teal-500" title={`${item.features} Features`} />}
-                    {item.stories > 0 && <span className="w-2 h-2 rounded-full bg-emerald-500" title={`${item.stories} Stories`} />}
-                  </div>
-                </td>
-                <td className="p-4">
-                  <span className={cn("px-2.5 py-1 rounded text-xs font-medium capitalize", getStatusBadge(item.status))}>
-                    {item.status}
-                  </span>
-                </td>
-                <td className="p-4 text-sm text-muted-foreground">{item.createdAt}</td>
-                <td className="p-4">
-                  <div className="flex items-center gap-2.5">
-                    <div className="w-7 h-7 rounded-full bg-gradient-to-br from-primary to-teal-500 flex items-center justify-center text-white text-[11px] font-semibold">
-                      {item.createdBy.initials}
-                    </div>
-                    <span className="text-sm">{item.createdBy.name}</span>
-                  </div>
-                </td>
-                <td className="p-4">
-                  <div className="flex gap-1">
-                    <Button variant="ghost" size="sm"><Eye className="w-4 h-4" /></Button>
-                    <Button variant="ghost" size="sm"><Copy className="w-4 h-4" /></Button>
-                    <Button variant="ghost" size="sm" className="hover:text-destructive"><Trash2 className="w-4 h-4" /></Button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        <div className="flex items-center justify-between p-4 border-t bg-muted/30 text-sm text-muted-foreground">
-          <span>Showing 1-4 of 247 generations</span>
-          <div className="flex gap-1">
-            {[1, 2, 3, '...', 62].map((p, i) => (
-              <Button key={i} variant={p === 1 ? 'default' : 'outline'} size="sm" className="min-w-9">{p}</Button>
-            ))}
-          </div>
-        </div>
-      </Card>
+      {/* Filters Bar */}
+      <HistoryFiltersBar
+        searchQuery={searchQuery}
+        onSearchChange={setSearchQuery}
+        dateFrom={dateFrom}
+        onDateFromChange={setDateFrom}
+        dateTo={dateTo}
+        onDateToChange={setDateTo}
+        statusFilter={statusFilter}
+        onStatusFilterChange={handleStatusFilterChange}
+        sortOption={sortOption}
+        onSortChange={setSortOption}
+        onClearFilters={handleClearFilters}
+      />
+
+      {/* Bulk Actions Bar */}
+      <HistoryBulkActionsBar
+        selectedCount={selectedIds.size}
+        onExport={handleBulkExport}
+        onDelete={handleBulkDelete}
+        onClear={handleClearSelection}
+      />
+
+      {/* Table or Empty State */}
+      {paginatedData.length > 0 ? (
+        <>
+          <HistoryTable
+            data={paginatedData}
+            selectedIds={selectedIds}
+            onToggleSelect={handleToggleSelect}
+            onToggleSelectAll={handleToggleSelectAll}
+            onViewDetails={handleViewDetails}
+            onDuplicate={handleDuplicate}
+            onExportPdf={handleExportPdf}
+            onExportExcel={handleExportExcel}
+            onDelete={handleDeleteItem}
+          />
+          <HistoryPagination
+            currentPage={currentPage}
+            totalItems={filteredData.length}
+            itemsPerPage={ITEMS_PER_PAGE}
+            onPageChange={setCurrentPage}
+          />
+        </>
+      ) : (
+        <HistoryEmptyState hasFilters={hasFilters} onNewGeneration={handleNewGeneration} />
+      )}
+
+      {/* Detail Panel */}
+      <HistoryDetailPanel
+        item={detailItem}
+        isOpen={isPanelOpen}
+        onClose={handleClosePanel}
+        onOpenInWizard={handleOpenInWizard}
+        onDuplicate={handleDuplicate}
+        onExportPdf={handleExportPdf}
+        onExportExcel={handleExportExcel}
+        onDelete={handleDeleteItem}
+      />
+
+      {/* Delete Confirmation Modal */}
+      <HistoryDeleteModal
+        isOpen={deleteModal.isOpen}
+        title={deleteModal.item?.title || ''}
+        isBulk={deleteModal.isBulk}
+        count={selectedIds.size}
+        onConfirm={handleConfirmDelete}
+        onCancel={() => setDeleteModal({ isOpen: false, isBulk: false })}
+      />
     </div>
   );
 }
