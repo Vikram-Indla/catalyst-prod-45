@@ -7,7 +7,8 @@
 import { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { 
+import { toast } from 'sonner';
+import {
   ArrowLeft, 
   Copy, 
   History, 
@@ -65,15 +66,29 @@ export default function TestCaseDetailPage() {
         </div>
         
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" className="h-8">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="h-8"
+            onClick={() => toast.success('Test case duplicated as TC-002')}
+          >
             <Copy className="w-3.5 h-3.5 mr-1.5" />
             Duplicate
           </Button>
-          <Button variant="outline" size="sm" className="h-8">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="h-8"
+            onClick={() => toast.info('Version history coming soon')}
+          >
             <History className="w-3.5 h-3.5 mr-1.5" />
             Version History
           </Button>
-          <Button size="sm" className="h-8 bg-teal-600 hover:bg-teal-700 text-white">
+          <Button 
+            size="sm" 
+            className="h-8 bg-teal-600 hover:bg-teal-700 text-white"
+            onClick={() => toast.success('Starting test execution...')}
+          >
             <Play className="w-3.5 h-3.5 mr-1.5" />
             Run Test
           </Button>

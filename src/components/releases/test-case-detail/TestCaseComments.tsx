@@ -8,8 +8,16 @@ import { Send } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { comments } from '@/data/testCaseDetailData';
+import { comments as initialCommentsData } from '@/data/testCaseDetailData';
+import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
+
+interface Comment {
+  id: number | string;
+  author: { name: string; avatar: string; color: string };
+  content: string;
+  timestamp: string;
+}
 
 const avatarColors: Record<string, string> = {
   blue: 'bg-blue-100 text-blue-700',
@@ -19,12 +27,26 @@ const avatarColors: Record<string, string> = {
 };
 
 export function TestCaseComments() {
+  const [comments, setComments] = useState<Comment[]>(initialCommentsData);
   const [newComment, setNewComment] = useState('');
 
   const handleSubmit = () => {
     if (newComment.trim()) {
-      // Would submit comment here
+      const comment: Comment = {
+        id: `comment-${Date.now()}`,
+        author: { name: 'Vikram S.', avatar: 'VS', color: 'blue' },
+        content: newComment.trim(),
+        timestamp: 'Just now',
+      };
+      setComments([comment, ...comments]);
       setNewComment('');
+      toast.success('Comment posted');
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
+      handleSubmit();
     }
   };
 
@@ -39,10 +61,11 @@ export function TestCaseComments() {
         </Avatar>
         <div className="flex-1">
           <Textarea
-            placeholder="Add a comment..."
+            placeholder="Add a comment... (Ctrl+Enter to post)"
             className="min-h-[80px] resize-none"
             value={newComment}
             onChange={(e) => setNewComment(e.target.value)}
+            onKeyDown={handleKeyDown}
           />
           <div className="flex justify-end mt-2">
             <Button size="sm" onClick={handleSubmit} disabled={!newComment.trim()}>
