@@ -129,7 +129,7 @@ export function InputStep({
             {/* Write Tab */}
             {activeTab === 'write' && (
               <div className="flex flex-col flex-1 min-h-0">
-                <div className="flex-1 min-h-[200px] max-h-[280px] overflow-hidden">
+                <div className="flex-1 overflow-hidden">
                   <RichTextEditor
                     content={content}
                     onChange={onContentChange}
