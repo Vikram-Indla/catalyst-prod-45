@@ -183,19 +183,19 @@ function SummaryTab({
         {/* Stats Grid */}
         <div className="grid grid-cols-4 gap-2">
           <div className="flex flex-col items-center p-2.5 bg-background border rounded-lg">
-            <span className="text-lg font-bold text-teal-500">{passedCount}</span>
+            <span className="text-lg font-bold text-emerald-600">{passedCount}</span>
             <span className="text-[9px] font-semibold text-muted-foreground uppercase mt-0.5">
               Passed
             </span>
           </div>
           <div className="flex flex-col items-center p-2.5 bg-background border rounded-lg">
-            <span className="text-lg font-bold text-destructive">{failedCount}</span>
+            <span className="text-lg font-bold text-red-500">{failedCount}</span>
             <span className="text-[9px] font-semibold text-muted-foreground uppercase mt-0.5">
               Failed
             </span>
           </div>
           <div className="flex flex-col items-center p-2.5 bg-background border rounded-lg">
-            <span className="text-lg font-bold text-orange-500">{blockedCount}</span>
+            <span className="text-lg font-bold text-amber-500">{blockedCount}</span>
             <span className="text-[9px] font-semibold text-muted-foreground uppercase mt-0.5">
               Blocked
             </span>
@@ -242,7 +242,7 @@ function QueueTab({
   }> = {
     not_run: {
       icon: null,
-      className: 'bg-muted text-muted-foreground',
+      className: 'bg-gray-200 text-gray-600',
     },
     in_progress: {
       icon: <Play className="h-2.5 w-2.5" />,
@@ -250,15 +250,15 @@ function QueueTab({
     },
     passed: {
       icon: <CheckCircle2 className="h-2.5 w-2.5" />,
-      className: 'bg-teal-500 text-white',
+      className: 'bg-emerald-600 text-white',
     },
     failed: {
       icon: <XCircle className="h-2.5 w-2.5" />,
-      className: 'bg-destructive text-destructive-foreground',
+      className: 'bg-red-500 text-white',
     },
     blocked: {
       icon: <AlertTriangle className="h-2.5 w-2.5" />,
-      className: 'bg-orange-500 text-white',
+      className: 'bg-amber-500 text-white',
     },
   };
 

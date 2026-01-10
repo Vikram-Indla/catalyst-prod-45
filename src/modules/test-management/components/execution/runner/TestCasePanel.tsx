@@ -123,9 +123,9 @@ export function TestCasePanel({
               Test Steps
             </span>
             <div className="flex items-center gap-2">
-              <div className="w-28 h-1.5 bg-muted rounded-full overflow-hidden">
+              <div className="w-28 h-1.5 bg-gray-200 rounded-full overflow-hidden">
                 <div 
-                  className="h-full bg-gradient-to-r from-teal-500 to-teal-400 rounded-full transition-all duration-300"
+                  className="h-full bg-gradient-to-r from-emerald-600 to-emerald-500 rounded-full transition-all duration-300"
                   style={{ width: `${progressPercentage}%` }}
                 />
               </div>

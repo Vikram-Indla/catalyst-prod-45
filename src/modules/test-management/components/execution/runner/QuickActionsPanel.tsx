@@ -91,7 +91,7 @@ export function QuickActionsPanel({
           <div className="grid grid-cols-2 gap-2">
             <Button
               size="sm"
-              className="bg-teal-500 hover:bg-teal-600 text-white gap-1.5"
+              className="bg-emerald-600 hover:bg-emerald-700 text-white gap-1.5"
               onClick={() => onBulkStatus('passed')}
               disabled={isUpdating}
             >
@@ -100,8 +100,7 @@ export function QuickActionsPanel({
             </Button>
             <Button
               size="sm"
-              variant="destructive"
-              className="gap-1.5"
+              className="bg-red-500 hover:bg-red-600 text-white gap-1.5"
               onClick={() => onBulkStatus('failed')}
               disabled={isUpdating}
             >
@@ -110,7 +109,7 @@ export function QuickActionsPanel({
             </Button>
             <Button
               size="sm"
-              className="bg-orange-500 hover:bg-orange-600 text-white gap-1.5"
+              className="bg-amber-500 hover:bg-amber-600 text-white gap-1.5"
               onClick={() => onBulkStatus('blocked')}
               disabled={isUpdating}
             >
@@ -119,7 +118,7 @@ export function QuickActionsPanel({
             </Button>
             <Button
               size="sm"
-              className="bg-muted-foreground hover:bg-muted-foreground/90 text-white gap-1.5"
+              className="bg-gray-500 hover:bg-gray-600 text-white gap-1.5"
               onClick={() => onBulkStatus('reset')}
               disabled={isUpdating}
             >

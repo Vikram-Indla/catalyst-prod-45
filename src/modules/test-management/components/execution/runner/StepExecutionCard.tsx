@@ -37,35 +37,35 @@ const statusConfig: Record<ExecutionStatus, {
 }> = {
   not_run: {
     className: 'border-border bg-background',
-    badgeClass: 'bg-muted text-muted-foreground',
-    label: 'Pending',
+    badgeClass: 'bg-gray-100 text-gray-700 border border-gray-300',
+    label: 'Not Run',
   },
   in_progress: {
     className: 'border-primary/30 bg-background shadow-md shadow-primary/5',
-    badgeClass: 'bg-muted text-muted-foreground',
-    label: 'Pending',
+    badgeClass: 'bg-blue-100 text-blue-700',
+    label: 'In Progress',
   },
   passed: {
-    className: 'border-teal-300 bg-gradient-to-br from-background to-teal-50/50 dark:to-teal-950/20',
-    badgeClass: 'bg-teal-100 text-teal-700',
+    className: 'border-l-[3px] border-l-emerald-600 bg-emerald-50/50 dark:bg-emerald-950/20',
+    badgeClass: 'bg-green-100 text-green-700',
     label: 'Passed',
     icon: <Check className="h-2.5 w-2.5" />,
   },
   failed: {
-    className: 'border-destructive/30 bg-gradient-to-br from-background to-destructive/5',
-    badgeClass: 'bg-destructive/10 text-destructive',
+    className: 'border-l-[3px] border-l-red-500 bg-red-50/50 dark:bg-red-950/20',
+    badgeClass: 'bg-red-100 text-red-700',
     label: 'Failed',
     icon: <X className="h-2.5 w-2.5" />,
   },
   blocked: {
-    className: 'border-orange-300 bg-gradient-to-br from-background to-orange-50/50 dark:to-orange-950/20',
-    badgeClass: 'bg-orange-100 text-orange-700',
+    className: 'border-l-[3px] border-l-amber-500 bg-amber-50/50 dark:bg-amber-950/20',
+    badgeClass: 'bg-yellow-100 text-yellow-700',
     label: 'Blocked',
     icon: <AlertTriangle className="h-2.5 w-2.5" />,
   },
   skipped: {
-    className: 'border-border bg-muted/50 opacity-70',
-    badgeClass: 'bg-muted text-muted-foreground',
+    className: 'border-l-[3px] border-l-gray-400 bg-gray-50 dark:bg-gray-900/20',
+    badgeClass: 'bg-gray-100 text-gray-600',
     label: 'Skipped',
     icon: <SkipForward className="h-2.5 w-2.5" />,
   },
@@ -116,21 +116,21 @@ export function StepExecutionCard({
           <div className="flex items-center gap-3.5 px-4 py-4 cursor-pointer">
             {/* Step Number / Status Icon */}
             <div className={cn(
-              'flex items-center justify-center w-9 h-9 rounded-full font-bold text-sm flex-shrink-0 transition-all',
+              'flex items-center justify-center w-8 h-8 rounded-full font-semibold text-sm flex-shrink-0 transition-all',
               isCompleted
                 ? status === 'passed' 
-                  ? 'bg-teal-500 text-white'
+                  ? 'bg-emerald-600 text-white'
                   : status === 'failed'
-                  ? 'bg-destructive text-destructive-foreground'
+                  ? 'bg-red-500 text-white'
                   : status === 'blocked'
-                  ? 'bg-orange-500 text-white'
-                  : 'bg-muted-foreground text-background'
+                  ? 'bg-amber-500 text-white'
+                  : 'bg-gray-400 text-white'
                 : isActive
-                ? 'bg-gradient-to-br from-primary to-primary/80 text-primary-foreground shadow-sm'
-                : 'bg-muted text-muted-foreground'
+                ? 'bg-primary text-primary-foreground shadow-sm'
+                : 'bg-gray-100 text-gray-700'
             )}>
               {isCompleted && config.icon ? (
-                <span className="scale-150">{config.icon}</span>
+                <span className="scale-125">{config.icon}</span>
               ) : (
                 stepNumber
               )}
@@ -175,34 +175,27 @@ export function StepExecutionCard({
           <div className="px-4 pb-4">
             <div className="h-px bg-border mb-4" />
 
-            {/* Step Fields */}
+            {/* Step Fields - Grid Layout */}
             <div className="grid grid-cols-2 gap-4 mb-4">
+              {/* Test Data */}
               <div>
-                <label className="block text-[10px] font-semibold text-muted-foreground uppercase tracking-wide mb-1.5">
-                  Action
+                <label className="block text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1.5">
+                  Test Data
                 </label>
-                <div className="p-3 bg-muted/50 border rounded-lg text-sm text-foreground">
-                  {step?.action || 'No action defined'}
+                <div className="p-3 bg-background border rounded-lg text-sm text-foreground font-mono whitespace-pre-wrap min-h-[60px]">
+                  {step?.test_data || 'No test data'}
                 </div>
               </div>
+              
+              {/* Expected Result */}
               <div>
-                <label className="block text-[10px] font-semibold text-muted-foreground uppercase tracking-wide mb-1.5">
+                <label className="block text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1.5">
                   Expected Result
                 </label>
-                <div className="p-3 bg-muted/50 border rounded-lg text-sm text-foreground">
+                <div className="p-3 bg-background border rounded-lg text-sm text-foreground min-h-[60px]">
                   {step?.expected_result || 'No expected result defined'}
                 </div>
               </div>
-              {step?.test_data && (
-                <div className="col-span-2">
-                  <label className="block text-[10px] font-semibold text-muted-foreground uppercase tracking-wide mb-1.5">
-                    Test Data
-                  </label>
-                  <div className="p-3 bg-muted/50 border rounded-lg text-sm text-foreground font-mono">
-                    {step.test_data}
-                  </div>
-                </div>
-              )}
             </div>
 
             {/* Actual Result Input */}
@@ -256,53 +249,53 @@ export function StepExecutionCard({
                 <div className="flex items-center gap-2">
                   <Button
                     size="sm"
-                    className="bg-teal-600 hover:bg-teal-700 text-white gap-1.5"
+                    className="bg-emerald-600 hover:bg-emerald-700 text-white gap-1.5 px-4"
                     onClick={(e) => {
                       e.stopPropagation();
                       onSetStatus('passed');
                     }}
                     disabled={isUpdating}
                   >
-                    <Check className="h-3.5 w-3.5" />
+                    <Check className="h-4 w-4" />
                     Pass
                   </Button>
                   <Button
                     size="sm"
-                    variant="destructive"
-                    className="gap-1.5"
+                    variant="outline"
+                    className="border-red-500 text-red-500 hover:bg-red-50 gap-1.5 px-4"
                     onClick={(e) => {
                       e.stopPropagation();
                       onSetStatus('failed');
                     }}
                     disabled={isUpdating}
                   >
-                    <X className="h-3.5 w-3.5" />
+                    <X className="h-4 w-4" />
                     Fail
                   </Button>
                   <Button
                     size="sm"
                     variant="outline"
-                    className="text-orange-600 border-orange-200 hover:bg-orange-50 gap-1.5"
+                    className="border-amber-500 text-amber-500 hover:bg-amber-50 gap-1.5 px-4"
                     onClick={(e) => {
                       e.stopPropagation();
                       onSetStatus('blocked');
                     }}
                     disabled={isUpdating}
                   >
-                    <AlertTriangle className="h-3.5 w-3.5" />
+                    <AlertTriangle className="h-4 w-4" />
                     Blocked
                   </Button>
                   <Button
                     size="sm"
                     variant="outline"
-                    className="gap-1.5"
+                    className="border-gray-300 text-gray-600 hover:bg-gray-50 gap-1.5 px-4"
                     onClick={(e) => {
                       e.stopPropagation();
                       onSetStatus('skipped');
                     }}
                     disabled={isUpdating}
                   >
-                    <SkipForward className="h-3.5 w-3.5" />
+                    <SkipForward className="h-4 w-4" />
                     Skip
                   </Button>
                 </div>
