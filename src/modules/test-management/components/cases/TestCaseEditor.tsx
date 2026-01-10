@@ -25,6 +25,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { QATesterPicker } from '@/components/ui/qa-tester-picker';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import {
@@ -446,48 +447,17 @@ export function TestCaseEditor({
 
         {/* Right side */}
         <div className="flex items-center gap-3">
-          {/* Assignee Dropdown - Only show for existing cases */}
+          {/* Assignee Picker - Only shows QA Testers */}
           {isEditing && (
-            <Select value={assigneeId || '__unassigned__'} onValueChange={(v) => { setAssigneeId(v === '__unassigned__' ? '' : v); markDirty(); }}>
-              <SelectTrigger className="w-[180px] h-9 border-border">
-                <div className="flex items-center gap-2">
-                  <Avatar className="w-6 h-6">
-                    <AvatarImage src={teamMembers.find(m => m.id === assigneeId)?.avatar_url} />
-                    <AvatarFallback className="text-[10px] bg-primary/10 text-primary">
-                      {assigneeId 
-                        ? (teamMembers.find(m => m.id === assigneeId)?.name?.slice(0, 2).toUpperCase() || 'UN')
-                        : 'UN'
-                      }
-                    </AvatarFallback>
-                  </Avatar>
-                  <SelectValue placeholder="Assignee..." />
-                </div>
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="__unassigned__">
-                  <div className="flex items-center gap-2">
-                    <User className="w-4 h-4 text-muted-foreground" />
-                    <span>Unassigned</span>
-                  </div>
-                </SelectItem>
-                {teamMembers.map((member) => (
-                  <SelectItem key={member.id} value={member.id}>
-                    <div className="flex items-center gap-2">
-                      <Avatar className="w-5 h-5">
-                        <AvatarImage src={member.avatar_url} />
-                        <AvatarFallback className="text-[10px]">
-                          {member.name?.slice(0, 2).toUpperCase()}
-                        </AvatarFallback>
-                      </Avatar>
-                      <span>{member.name}</span>
-                      {member.id === currentUserId && (
-                        <span className="text-xs text-muted-foreground">(me)</span>
-                      )}
-                    </div>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <QATesterPicker
+              value={assigneeId || null}
+              onChange={(v) => { 
+                setAssigneeId(v === 'UNASSIGNED' ? '' : (v || '')); 
+                markDirty(); 
+              }}
+              placeholder="Assign to QA..."
+              showUnassigned
+            />
           )}
 
           {/* Save button */}
