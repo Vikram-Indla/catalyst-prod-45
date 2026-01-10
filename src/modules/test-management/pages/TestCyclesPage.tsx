@@ -1,54 +1,12 @@
 /**
- * Test Cycles Page
- * Displays test cycles with grid/list view, filters, and management
+ * Test Cycles Page - Phase 5 Complete Implementation
+ * 3-column layout with folder tree, main content, and detail drawer
  */
 
-import React, { useState, useMemo } from 'react';
-import { useSearchParams } from 'react-router-dom';
-import { format } from 'date-fns';
-import { 
-  RefreshCw, 
-  Plus, 
-  Search, 
-  LayoutGrid,
-  List,
-  CalendarRange
-} from 'lucide-react';
+import React, { useState, useMemo, useCallback } from 'react';
+import { useSearchParams, useNavigate } from 'react-router-dom';
+import { Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import {
-  Table,
-  TableBody,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
-import { Calendar } from '@/components/ui/calendar';
-import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
-import { Skeleton } from '@/components/ui/skeleton';
 import { 
   useTestCycles, 
   useCreateCycle, 
@@ -60,10 +18,27 @@ import {
   useEnvironments,
 } from '@/hooks/test-management';
 import type { TMCycle } from '@/types/test-management';
-import { CycleCard, CycleRow, CreateCycleModal } from '../components/cycles';
+import { 
+  CyclesFolderTree,
+  CycleStatsCards,
+  CyclesToolbar,
+  CycleTableView,
+  CycleCardView,
+  CycleCalendarView,
+  CyclesEmptyState,
+  CreateCycleModal,
+  EditCycleModal,
+  DeleteCycleModal,
+  BulkActionsModal,
+  CycleDetailDrawer,
+  type CycleFolder,
+  type CycleViewMode,
+  type CycleStatusFilter,
+} from '../components/cycles';
 import { useProjectStore } from '../stores/projectStore';
 import type { TestCycle, CycleStatus } from '../api/types';
 import { cn } from '@/lib/utils';
+import { catalystToast } from '@/lib/catalystToast';
 
 // Map TMCycle to component-compatible TestCycle
 function mapToTestCycle(cycle: TMCycle): TestCycle {
@@ -99,18 +74,53 @@ function mapToTestCycle(cycle: TMCycle): TestCycle {
   } as TestCycle;
 }
 
+// Mock folders for demo - would come from API
+const MOCK_FOLDERS: CycleFolder[] = [
+  {
+    id: 'sprint-cycles',
+    name: 'Sprint Cycles',
+    count: 12,
+    children: [
+      { id: 'sprint-q1', name: 'Q1 2026', count: 4 },
+      { id: 'sprint-q2', name: 'Q2 2026', count: 3 },
+    ],
+  },
+  {
+    id: 'release-cycles',
+    name: 'Release Cycles',
+    count: 5,
+    children: [
+      { id: 'release-v1', name: 'v1.0', count: 2 },
+      { id: 'release-v2', name: 'v2.0', count: 3 },
+    ],
+  },
+  {
+    id: 'regression',
+    name: 'Regression',
+    count: 8,
+  },
+];
+
 export function TestCyclesPage() {
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  
+  // View state
+  const [viewMode, setViewMode] = useState<CycleViewMode>('list');
   const [searchQuery, setSearchQuery] = useState('');
-  const [statusFilter, setStatusFilter] = useState<string>('all');
-  const [environmentFilter, setEnvironmentFilter] = useState<string>('all');
+  const [statusFilter, setStatusFilter] = useState<CycleStatusFilter>('all');
+  const [selectedFolderId, setSelectedFolderId] = useState<string | null>(null);
   const [dateRange, setDateRange] = useState<{ from?: Date; to?: Date }>({});
   
-  // Modals
+  // Selection state
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  
+  // Modal/drawer states
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [editingCycle, setEditingCycle] = useState<TestCycle | null>(null);
   const [deleteConfirmCycle, setDeleteConfirmCycle] = useState<TestCycle | null>(null);
+  const [bulkActionsOpen, setBulkActionsOpen] = useState(false);
+  const [detailDrawerCycle, setDetailDrawerCycle] = useState<TestCycle | null>(null);
 
   // Get project ID from store or search params
   const selectedProjectId = useProjectStore(s => s.selectedProjectId);
@@ -122,12 +132,14 @@ export function TestCyclesPage() {
     search: searchQuery || undefined,
   }), [statusFilter, searchQuery]);
 
-  // Fetch cycles using new hooks
+  // Fetch cycles using hooks
   const { data: cycles = [], isLoading: cyclesLoading, refetch } = useTestCycles(projectId, filters);
   const { data: environmentNames = [] } = useEnvironments(projectId || null);
 
   // Convert environment strings to objects for dropdown
-  const environmentOptions = environmentNames.map((name, idx) => ({ id: name, name }));
+  const environmentOptions = environmentNames.map((name) => ({ id: name, name }));
+  
+  // Mutations
   const createCycleMutation = useCreateCycle();
   const updateCycleMutation = useUpdateCycle();
   const deleteCycleMutation = useDeleteCycle();
@@ -138,13 +150,11 @@ export function TestCyclesPage() {
   // Map cycles to component-compatible format
   const mappedCycles = useMemo(() => cycles.map(mapToTestCycle), [cycles]);
 
-  // Client-side filtering for environment and date range
+  // Client-side filtering for folder and date range
   const filteredCycles = useMemo(() => {
     let result = mappedCycles;
     
-    if (environmentFilter !== 'all') {
-      result = result.filter(c => c.environment_id === environmentFilter);
-    }
+    // TODO: Filter by folder when folder structure is implemented
     
     if (dateRange.from) {
       result = result.filter(c => {
@@ -161,27 +171,30 @@ export function TestCyclesPage() {
     }
     
     return result;
-  }, [mappedCycles, environmentFilter, dateRange]);
+  }, [mappedCycles, selectedFolderId, dateRange]);
 
   // Summary stats
-  const stats = useMemo(() => ({
-    total: mappedCycles.length,
-    inProgress: mappedCycles.filter(c => c.status === 'active').length,
-    completed: mappedCycles.filter(c => c.status === 'completed').length,
-    avgPassRate: mappedCycles.length > 0 
-      ? Math.round(
-          mappedCycles.reduce((acc, c) => {
-            const stats = c.statistics;
-            if (!stats || stats.total_cases === 0) return acc;
-            const executed = stats.total_cases - stats.not_run_count;
-            return acc + (executed > 0 ? (stats.passed_count / executed) * 100 : 0);
-          }, 0) / mappedCycles.filter(c => c.statistics?.total_cases).length
-        ) || 0
-      : 0,
-  }), [mappedCycles]);
+  const stats = useMemo(() => {
+    const total = mappedCycles.length;
+    const active = mappedCycles.filter(c => c.status === 'active').length;
+    const completed = mappedCycles.filter(c => c.status === 'completed').length;
+    
+    let avgPassRate = 0;
+    const cyclesWithStats = mappedCycles.filter(c => c.statistics?.total_cases);
+    if (cyclesWithStats.length > 0) {
+      const totalRate = cyclesWithStats.reduce((acc, c) => {
+        const stats = c.statistics!;
+        const executed = stats.total_cases - stats.not_run_count;
+        return acc + (executed > 0 ? (stats.passed_count / executed) * 100 : 0);
+      }, 0);
+      avgPassRate = Math.round(totalRate / cyclesWithStats.length);
+    }
+    
+    return { total, active, completed, avgPassRate };
+  }, [mappedCycles]);
 
   // Handlers
-  const handleCreate = async (data: any) => {
+  const handleCreate = useCallback(async (data: any) => {
     if (!projectId) return;
     createCycleMutation.mutate({
       name: data.title || data.name,
@@ -194,17 +207,16 @@ export function TestCyclesPage() {
     }, {
       onSuccess: () => setCreateModalOpen(false),
     });
-  };
+  }, [projectId, createCycleMutation]);
 
-  const handleEdit = (cycle: TestCycle) => {
+  const handleEdit = useCallback((cycle: TestCycle) => {
     setEditingCycle(cycle);
-    setCreateModalOpen(true);
-  };
+  }, []);
 
-  const handleUpdate = async (data: any) => {
+  const handleUpdate = useCallback(async (data: any) => {
     if (!editingCycle || !projectId) return;
     updateCycleMutation.mutate({
-      id: editingCycle.id,
+      id: data.id,
       name: data.title || data.name,
       description: data.description,
       environment: data.environment_id,
@@ -213,291 +225,241 @@ export function TestCyclesPage() {
       planned_end_date: data.planned_end,
       project_id: projectId,
     }, {
-      onSuccess: () => {
-        setEditingCycle(null);
-        setCreateModalOpen(false);
-      },
+      onSuccess: () => setEditingCycle(null),
     });
-  };
+  }, [editingCycle, projectId, updateCycleMutation]);
 
-  const handleClone = async (cycle: TestCycle) => {
+  const handleClone = useCallback(async (cycle: TestCycle) => {
     if (!projectId) return;
-    cloneCycleMutation.mutate({ 
-      id: cycle.id, 
-      project_id: projectId,
-    });
-  };
+    cloneCycleMutation.mutate({ id: cycle.id, project_id: projectId });
+  }, [projectId, cloneCycleMutation]);
 
-  const handleStart = async (cycle: TestCycle) => {
+  const handleStart = useCallback(async (cycle: TestCycle) => {
     if (!projectId) return;
     startCycleMutation.mutate({ id: cycle.id, project_id: projectId });
-  };
+  }, [projectId, startCycleMutation]);
 
-  const handleComplete = async (cycle: TestCycle) => {
+  const handleComplete = useCallback(async (cycle: TestCycle) => {
     if (!projectId) return;
     completeCycleMutation.mutate({ id: cycle.id, project_id: projectId });
-  };
+  }, [projectId, completeCycleMutation]);
 
-  const handleDelete = async () => {
+  const handleDelete = useCallback(async () => {
     if (!deleteConfirmCycle || !projectId) return;
     deleteCycleMutation.mutate({ id: deleteConfirmCycle.id, project_id: projectId }, {
       onSuccess: () => setDeleteConfirmCycle(null),
     });
-  };
+  }, [deleteConfirmCycle, projectId, deleteCycleMutation]);
 
-  const handleCloseModal = () => {
-    setCreateModalOpen(false);
-    setEditingCycle(null);
-  };
+  const handleRowClick = useCallback((cycle: TestCycle) => {
+    setDetailDrawerCycle(cycle);
+  }, []);
 
+  const handleViewExecution = useCallback((cycle: TestCycle) => {
+    navigate(`/tests/cycles/${cycle.id}`);
+  }, [navigate]);
+
+  const handleSelectionChange = useCallback((ids: Set<string>) => {
+    setSelectedIds(ids);
+  }, []);
+
+  const handleClearFilters = useCallback(() => {
+    setSearchQuery('');
+    setStatusFilter('all');
+    setDateRange({});
+    setSelectedFolderId(null);
+  }, []);
+
+  // Bulk action handlers
+  const handleBulkDelete = useCallback(() => {
+    catalystToast.info('Bulk delete not yet implemented');
+  }, []);
+
+  const handleBulkStart = useCallback(() => {
+    catalystToast.info('Bulk start not yet implemented');
+  }, []);
+
+  const handleBulkComplete = useCallback(() => {
+    catalystToast.info('Bulk complete not yet implemented');
+  }, []);
+
+  const handleBulkClone = useCallback(() => {
+    catalystToast.info('Bulk clone not yet implemented');
+  }, []);
+
+  const handleBulkMove = useCallback((folderId: string) => {
+    catalystToast.info('Bulk move not yet implemented');
+  }, []);
+
+  const handleBulkReschedule = useCallback((startDate: string, endDate: string) => {
+    catalystToast.info('Bulk reschedule not yet implemented');
+  }, []);
+
+  const selectedCycles = filteredCycles.filter(c => selectedIds.has(c.id));
+  const hasActiveFilters = searchQuery || statusFilter !== 'all' || dateRange.from || dateRange.to;
 
   return (
-    <div className="flex flex-col gap-6">
-      {/* Header Actions (title is in module header) */}
-      <div className="flex items-center justify-end">
-        <Button onClick={() => setCreateModalOpen(true)}>
-          <Plus className="h-4 w-4 mr-2" />
-          New Cycle
-        </Button>
+    <div className="flex h-full">
+      {/* Left Sidebar - Folder Tree */}
+      <div className="w-64 border-r bg-muted/30 flex-shrink-0">
+        <CyclesFolderTree
+          folders={MOCK_FOLDERS}
+          selectedFolderId={selectedFolderId}
+          onSelectFolder={setSelectedFolderId}
+          onSearch={(q) => setSearchQuery(q)}
+          totalCyclesCount={stats.total}
+          archivedCount={0}
+          onCreateFolder={() => catalystToast.info('Create folder coming soon')}
+        />
       </div>
 
-      {/* Summary Cards */}
-      <div className="grid grid-cols-4 gap-4">
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Total Cycles</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.total}</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">In Progress</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-info">{stats.inProgress}</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Completed</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-success">{stats.completed}</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Avg Pass Rate</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.avgPassRate}%</div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Toolbar */}
-      <div className="flex flex-wrap items-center gap-3">
-        <div className="relative flex-1 min-w-[200px] max-w-md">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            placeholder="Search cycles..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-9"
-          />
-        </div>
-        <Select 
-          value={statusFilter} 
-          onValueChange={(v) => setStatusFilter(v as CycleStatus | 'all')}
-        >
-          <SelectTrigger className="w-[140px]">
-            <SelectValue placeholder="Status" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Status</SelectItem>
-            <SelectItem value="planned">Planned</SelectItem>
-            <SelectItem value="active">In Progress</SelectItem>
-            <SelectItem value="completed">Completed</SelectItem>
-            <SelectItem value="cancelled">Cancelled</SelectItem>
-          </SelectContent>
-        </Select>
-        <Select value={environmentFilter} onValueChange={setEnvironmentFilter}>
-          <SelectTrigger className="w-[160px]">
-            <SelectValue placeholder="Environment" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Environments</SelectItem>
-            {environmentOptions.map((env) => (
-              <SelectItem key={env.id} value={env.id}>{env.name}</SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button variant="outline" className={cn(
-              "gap-2",
-              (dateRange.from || dateRange.to) && "border-primary text-primary"
-            )}>
-              <CalendarRange className="h-4 w-4" />
-              {dateRange.from ? (
-                dateRange.to ? (
-                  `${format(dateRange.from, 'MMM d')} - ${format(dateRange.to, 'MMM d')}`
-                ) : (
-                  format(dateRange.from, 'MMM d, yyyy')
-                )
-              ) : (
-                'Date Range'
-              )}
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-auto p-0" align="start">
-            <Calendar
-              mode="range"
-              selected={{ from: dateRange.from, to: dateRange.to }}
-              onSelect={(range) => setDateRange({ from: range?.from, to: range?.to })}
-              numberOfMonths={2}
-              initialFocus
-            />
-            {(dateRange.from || dateRange.to) && (
-              <div className="border-t p-2">
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  className="w-full"
-                  onClick={() => setDateRange({})}
-                >
-                  Clear dates
-                </Button>
-              </div>
-            )}
-          </PopoverContent>
-        </Popover>
-        <div className="flex-1" />
-        <ToggleGroup 
-          type="single" 
-          value={viewMode} 
-          onValueChange={(v) => v && setViewMode(v as 'grid' | 'list')}
-        >
-          <ToggleGroupItem value="grid" aria-label="Grid view">
-            <LayoutGrid className="h-4 w-4" />
-          </ToggleGroupItem>
-          <ToggleGroupItem value="list" aria-label="List view">
-            <List className="h-4 w-4" />
-          </ToggleGroupItem>
-        </ToggleGroup>
-      </div>
-
-      {/* Content */}
-      {cyclesLoading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {[1, 2, 3, 4, 5, 6].map((i) => (
-            <Card key={i}>
-              <CardHeader>
-                <Skeleton className="h-6 w-32" />
-                <Skeleton className="h-5 w-48" />
-              </CardHeader>
-              <CardContent>
-                <Skeleton className="h-2 w-full mb-4" />
-                <div className="flex gap-4">
-                  <Skeleton className="h-8 w-12" />
-                  <Skeleton className="h-8 w-12" />
-                  <Skeleton className="h-8 w-12" />
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      ) : filteredCycles.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-16 text-center">
-          <RefreshCw className="h-12 w-12 text-muted-foreground mb-4" />
-          <h3 className="text-lg font-medium mb-1">No test cycles found</h3>
-          <p className="text-muted-foreground mb-4">
-            Create your first cycle to start organizing test execution
-          </p>
+      {/* Main Content */}
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+        {/* Header Actions */}
+        <div className="flex items-center justify-between px-6 py-4 border-b">
+          <h1 className="text-lg font-semibold">Test Cycles</h1>
           <Button onClick={() => setCreateModalOpen(true)}>
             <Plus className="h-4 w-4 mr-2" />
-            Create Cycle
+            New Cycle
           </Button>
         </div>
-      ) : viewMode === 'grid' ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filteredCycles.map((cycle) => (
-            <CycleCard
-              key={cycle.id}
-              cycle={cycle}
+
+        {/* Stats Cards */}
+        <div className="px-6 py-4">
+          <CycleStatsCards
+            stats={{
+              total: stats.total,
+              inProgress: stats.active,
+              completed: stats.completed,
+              passRate: stats.avgPassRate,
+            }}
+          />
+        </div>
+
+        {/* Toolbar */}
+        <div className="px-6 pb-4">
+          <CyclesToolbar
+            viewMode={viewMode}
+            onViewModeChange={setViewMode}
+            searchQuery={searchQuery}
+            onSearchChange={setSearchQuery}
+            statusFilter={statusFilter}
+            onStatusFilterChange={setStatusFilter}
+            dateRange={dateRange}
+            onDateRangeChange={setDateRange}
+            selectedCount={selectedIds.size}
+            onBulkAction={() => setBulkActionsOpen(true)}
+            onCreateCycle={() => setCreateModalOpen(true)}
+          />
+        </div>
+
+        {/* Content Area */}
+        <div className="flex-1 overflow-auto px-6 pb-6">
+          {cyclesLoading ? (
+            <div className="space-y-4">
+              {[1, 2, 3, 4].map(i => (
+                <div key={i} className="h-16 bg-muted/50 rounded-lg animate-pulse" />
+              ))}
+            </div>
+          ) : filteredCycles.length === 0 ? (
+            <CyclesEmptyState
+              variant={hasActiveFilters ? 'search' : 'default'}
+              title={hasActiveFilters ? 'No matching cycles' : 'No test cycles found'}
+              description={hasActiveFilters ? 'Try adjusting your filters' : 'Create your first test cycle to start organizing test execution'}
+              onAction={hasActiveFilters ? handleClearFilters : () => setCreateModalOpen(true)}
+              actionLabel={hasActiveFilters ? 'Clear Filters' : 'Create Cycle'}
+            />
+          ) : viewMode === 'list' ? (
+            <CycleTableView
+              cycles={filteredCycles}
+              selectedIds={Array.from(selectedIds)}
+              onSelectAll={(selected) => {
+                if (selected) {
+                  setSelectedIds(new Set(filteredCycles.map(c => c.id)));
+                } else {
+                  setSelectedIds(new Set());
+                }
+              }}
+              onSelectCycle={(id, selected) => {
+                const newSet = new Set(selectedIds);
+                if (selected) newSet.add(id);
+                else newSet.delete(id);
+                setSelectedIds(newSet);
+              }}
+              onCycleClick={handleRowClick}
               onEdit={handleEdit}
               onClone={handleClone}
               onDelete={setDeleteConfirmCycle}
             />
-          ))}
+          ) : viewMode === 'grid' ? (
+            <CycleCardView
+              cycles={filteredCycles}
+              onCycleClick={handleRowClick}
+              onEdit={handleEdit}
+              onClone={handleClone}
+              onDelete={setDeleteConfirmCycle}
+            />
+          ) : (
+            <CycleCalendarView
+              cycles={filteredCycles}
+              onCycleClick={handleRowClick}
+            />
+          )}
         </div>
-      ) : (
-        <div className="border rounded-lg">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-24">Key</TableHead>
-                <TableHead>Name</TableHead>
-                <TableHead className="w-28">Status</TableHead>
-                <TableHead className="w-40">Progress</TableHead>
-                <TableHead className="w-16">Passed</TableHead>
-                <TableHead className="w-16">Failed</TableHead>
-                <TableHead className="w-16">Blocked</TableHead>
-                <TableHead className="w-24">Due Date</TableHead>
-                <TableHead className="w-16">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredCycles.map((cycle) => (
-                <CycleRow
-                  key={cycle.id}
-                  cycle={cycle}
-                  onEdit={handleEdit}
-                  onClone={handleClone}
-                  onDelete={setDeleteConfirmCycle}
-                />
-              ))}
-            </TableBody>
-          </Table>
-        </div>
-      )}
+      </div>
 
-      {/* Create/Edit Modal */}
+      {/* Modals */}
       <CreateCycleModal
         open={createModalOpen}
-        onOpenChange={handleCloseModal}
-        cycle={editingCycle}
+        onOpenChange={setCreateModalOpen}
         environments={environmentOptions as any}
-        onSubmit={editingCycle ? handleUpdate : handleCreate}
-        isLoading={createCycleMutation.isPending || updateCycleMutation.isPending}
+        onSubmit={handleCreate}
+        isLoading={createCycleMutation.isPending}
       />
 
-      {/* Delete Confirmation */}
-      <AlertDialog 
-        open={!!deleteConfirmCycle} 
+      {editingCycle && (
+        <EditCycleModal
+          open={!!editingCycle}
+          onOpenChange={(open) => !open && setEditingCycle(null)}
+          cycle={editingCycle}
+          environments={environmentOptions as any}
+          onSubmit={handleUpdate}
+          isLoading={updateCycleMutation.isPending}
+        />
+      )}
+
+      <DeleteCycleModal
+        open={!!deleteConfirmCycle}
         onOpenChange={(open) => !open && setDeleteConfirmCycle(null)}
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Delete Test Cycle</AlertDialogTitle>
-            <AlertDialogDescription>
-              Are you sure you want to delete "{deleteConfirmCycle?.title}"? 
-              This will remove all execution history and cannot be undone.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction 
-              onClick={handleDelete}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            >
-              Delete
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+        cycle={deleteConfirmCycle}
+        onConfirm={handleDelete}
+        isLoading={deleteCycleMutation.isPending}
+      />
+
+      <BulkActionsModal
+        open={bulkActionsOpen}
+        onOpenChange={setBulkActionsOpen}
+        selectedCycles={selectedCycles}
+        folders={MOCK_FOLDERS}
+        onBulkDelete={handleBulkDelete}
+        onBulkStart={handleBulkStart}
+        onBulkComplete={handleBulkComplete}
+        onBulkClone={handleBulkClone}
+        onBulkMove={handleBulkMove}
+        onBulkReschedule={handleBulkReschedule}
+      />
+
+      <CycleDetailDrawer
+        open={!!detailDrawerCycle}
+        onOpenChange={(open) => !open && setDetailDrawerCycle(null)}
+        cycle={detailDrawerCycle}
+        onEdit={handleEdit}
+        onStart={handleStart}
+        onComplete={handleComplete}
+        onClone={handleClone}
+        onDelete={setDeleteConfirmCycle}
+        onViewExecution={handleViewExecution}
+      />
     </div>
   );
 }

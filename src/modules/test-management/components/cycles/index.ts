@@ -7,6 +7,10 @@
 export { CycleCard } from './CycleCard';
 export { CycleRow } from './CycleRow';
 export { CreateCycleModal } from './CreateCycleModal';
+export { EditCycleModal } from './EditCycleModal';
+export { DeleteCycleModal } from './DeleteCycleModal';
+export { BulkActionsModal } from './BulkActionsModal';
+export { CycleDetailDrawer } from './CycleDetailDrawer';
 export { AddCasesToScopeModal } from './AddCasesToScopeModal';
 export { AssignTestersModal } from './AssignTestersModal';
 export { CycleScopeTable } from './CycleScopeTable';
