@@ -369,13 +369,13 @@ export function CasesToolbar({
             {teamMembers.map((member) => (
               <DropdownMenuRadioItem key={member.id} value={member.id}>
                 <div className="flex items-center gap-2">
-                  <Avatar className="h-5 w-5">
+                  <Avatar className="h-6 w-6">
                     <AvatarImage src={member.avatar_url || undefined} />
-                    <AvatarFallback className="text-[10px]">
-                      {member.full_name?.slice(0, 2).toUpperCase()}
+                    <AvatarFallback className="text-[10px] bg-brand-primary/20 text-brand-primary font-medium">
+                      {member.full_name?.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) || '?'}
                     </AvatarFallback>
                   </Avatar>
-                  <span className="truncate">{member.full_name}</span>
+                  <span className="truncate">{member.full_name || 'No name'}</span>
                   {member.id === currentUserId && (
                     <span className="text-xs text-muted-foreground">(me)</span>
                   )}
@@ -440,11 +440,13 @@ export function CasesToolbar({
                     <DropdownMenuSeparator />
                     {teamMembers.map((member) => (
                       <DropdownMenuItem key={member.id} onClick={() => onBulkAssignTo(member.id)}>
-                        <Avatar className="h-5 w-5 mr-2">
+                        <Avatar className="h-6 w-6 mr-2">
                           <AvatarImage src={member.avatar_url || undefined} />
-                          <AvatarFallback className="text-xs">{member.full_name?.charAt(0) || '?'}</AvatarFallback>
+                          <AvatarFallback className="text-[10px] bg-brand-primary/20 text-brand-primary font-medium">
+                            {member.full_name?.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) || '?'}
+                          </AvatarFallback>
                         </Avatar>
-                        {member.full_name}
+                        {member.full_name || 'No name'}
                       </DropdownMenuItem>
                     ))}
                   </DropdownMenuContent>

@@ -299,19 +299,64 @@ export function useDeleteLabel() {
 // TEAM MEMBERS
 // ============================================================================
 
+/**
+ * useTeamMembers - Returns ONLY users with 'qa_tester' role for test management
+ * This ensures the assigned-to dropdown only shows QA testers
+ */
 export function useTeamMembers(_projectId: string | null) {
   return useQuery({
-    queryKey: ['tm-team-members'],
+    queryKey: ['tm-team-members-qa-testers'],
     queryFn: async () => {
-      // Get team members from profiles table
-      const { data, error } = await supabase
+      // First, get the qa_tester role ID
+      const { data: roleData, error: roleError } = await supabase
+        .from('product_roles')
+        .select('id')
+        .eq('code', 'qa_tester')
+        .single();
+
+      if (roleError) {
+        console.error('Error fetching qa_tester role:', roleError);
+        return [];
+      }
+
+      if (!roleData) {
+        console.warn('qa_tester role not found in product_roles');
+        return [];
+      }
+
+      // Get user IDs with qa_tester role
+      const { data: userRoles, error: userRolesError } = await supabase
+        .from('user_product_roles')
+        .select('user_id')
+        .eq('role_id', roleData.id);
+
+      if (userRolesError) {
+        console.error('Error fetching user product roles:', userRolesError);
+        return [];
+      }
+
+      if (!userRoles || userRoles.length === 0) {
+        return [];
+      }
+
+      const userIds = userRoles.map(ur => ur.user_id);
+
+      // Fetch profile info for QA testers only
+      const { data: profiles, error: profilesError } = await supabase
         .from('profiles')
         .select('id, full_name, avatar_url')
+        .in('id', userIds)
+        .eq('approval_status', 'APPROVED')
         .order('full_name', { ascending: true });
-      
-      if (error) throw error;
-      return (data || []) as Array<{ id: string; full_name: string; avatar_url?: string | null }>;
+
+      if (profilesError) {
+        console.error('Error fetching QA tester profiles:', profilesError);
+        return [];
+      }
+
+      return (profiles || []) as Array<{ id: string; full_name: string | null; avatar_url?: string | null }>;
     },
+    staleTime: 1000 * 60, // 1 minute
   });
 }
 
