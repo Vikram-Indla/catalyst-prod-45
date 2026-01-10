@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Plus, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
+import { RANavigationTabs } from './components/RANavigationTabs';
 import {
   HistoryStatsBar,
   HistoryFiltersBar,
@@ -209,7 +210,8 @@ export default function RequirementAssistHistory() {
   const handleOpenInWizard = useCallback((item: GenerationHistoryItem) => {
     toast.success(`Opening "${item.title}" in Wizard...`);
     handleClosePanel();
-    navigate('/operations/requirement-assist');
+    // Pass generation ID to wizard via navigation state
+    navigate('/operations/requirement-assist', { state: { generationId: item.id } });
   }, [navigate, handleClosePanel]);
 
   const handleNewGeneration = useCallback(() => {
@@ -217,9 +219,9 @@ export default function RequirementAssistHistory() {
   }, [navigate]);
 
   return (
-    <div className="min-h-screen bg-[#f8fafc]">
-      {/* Page Header */}
-      <div className="bg-white border-b border-[#e2e8f0] px-6 py-4 flex items-center justify-between">
+    <div className="min-h-screen bg-[#f8fafc] flex flex-col">
+      {/* Page Header with Breadcrumb */}
+      <div className="bg-white border-b border-[#e2e8f0] px-6 py-3 flex items-center justify-between">
         <div className="flex items-center gap-2 text-[13px]">
           <span className="text-[#94a3b8]">Operations</span>
           <ChevronRight className="w-3.5 h-3.5 text-[#94a3b8]" />
@@ -235,6 +237,9 @@ export default function RequirementAssistHistory() {
           New Generation
         </Button>
       </div>
+
+      {/* Navigation Tabs */}
+      <RANavigationTabs />
 
       {/* Stats Bar */}
       <HistoryStatsBar
