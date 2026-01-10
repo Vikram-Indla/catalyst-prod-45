@@ -31,6 +31,8 @@ export {
   useBulkDeleteTestCases,
   useBulkCopyTestCases,
   useAddTestCasesToCycle,
+  useBulkUpdateTestCases,
+  type BulkCaseStatus,
 } from './useTestCases';
 
 // Test Cycles
