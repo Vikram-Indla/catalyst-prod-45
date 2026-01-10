@@ -246,7 +246,7 @@ serve(async (req) => {
 
     console.log("Calling Lovable AI Gateway for generation:", generationId);
 
-    const DEFAULT_MODEL = "google/gemini-3-pro-preview";
+    const DEFAULT_MODEL = "google/gemini-3-flash-preview";
 
     const normalizeModel = (requested?: string) => {
       const m = (requested || "").trim();
@@ -271,12 +271,18 @@ serve(async (req) => {
 
       const body: Record<string, unknown> = {
         model,
-        temperature: args.temperature,
         messages: [
           { role: "system", content: args.systemPrompt },
           { role: "user", content: args.userPrompt },
         ],
       };
+
+      // Some OpenAI models only support the default temperature.
+      // To avoid 400s, we omit temperature for openai/* and only set it for google/*.
+      if (!model.startsWith("openai/")) {
+        body.temperature = args.temperature;
+      }
+
 
       // Different providers use different token parameter names.
       // For OpenAI-family models on this gateway, use max_completion_tokens.
@@ -467,7 +473,8 @@ serve(async (req) => {
         name: "retry_strict_json",
         model: "openai/gpt-5-mini",
         maxTokens: cappedMax,
-        temperature: 0,
+        // Some OpenAI models only support the default temperature.
+        temperature: 1,
         systemPrompt:
           (settings?.systemPrompt || SYSTEM_PROMPT) +
           "\n\nRETRY MODE: Output MUST be a single valid JSON object. No line breaks inside strings; escape as \\n. Output should be compact/minified.",
