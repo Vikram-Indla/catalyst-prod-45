@@ -23,6 +23,7 @@ import {
   useRAGenerationStats,
   useDeleteRAGeneration,
   useDuplicateRAGeneration,
+  useRAGenerationsRealtime,
 } from '@/hooks/requirement-assist';
 import type { GenerationStatus } from '@/types/requirement-assist';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -74,6 +75,9 @@ export default function RequirementAssistHistory() {
   });
   
   const { data: stats, isLoading: statsLoading } = useRAGenerationStats();
+  
+  // Enable realtime subscriptions for live updates
+  useRAGenerationsRealtime();
   
   // Mutations
   const deleteMutation = useDeleteRAGeneration();
