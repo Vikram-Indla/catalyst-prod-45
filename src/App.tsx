@@ -88,6 +88,7 @@ import Stories from "./pages/Stories";
 import Subtasks from "./pages/Subtasks";
 import Releases from "./pages/Releases";
 import ReleasesCommandCenter from "./pages/releases/CommandCenter";
+import ReleasesPlaceholderPage from "./pages/releases/PlaceholderPage";
 import OrgSetup from "./pages/admin/OrgSetup";
 import HierarchyConfig from "./pages/admin/HierarchyConfig";
 import CustomFields from "./pages/admin/CustomFields";
@@ -707,8 +708,21 @@ const App = () => (
               <Route path="/stories" element={<Stories />} />
               <Route path="/work-items/stories" element={<Stories />} />
               <Route path="/work-items/subtasks" element={<Subtasks />} />
-              <Route path="/releases" element={<Releases />} />
+              <Route path="/releases" element={<Navigate to="/releases/command-center" replace />} />
               <Route path="/releases/command-center" element={<ReleasesCommandCenter />} />
+              <Route path="/releases/dashboard" element={<ReleasesPlaceholderPage />} />
+              <Route path="/releases/my-scope" element={<ReleasesPlaceholderPage />} />
+              <Route path="/releases/all" element={<ReleasesPlaceholderPage />} />
+              <Route path="/releases/calendar" element={<ReleasesPlaceholderPage />} />
+              <Route path="/releases/compare" element={<ReleasesPlaceholderPage />} />
+              <Route path="/releases/test-cases" element={<ReleasesPlaceholderPage />} />
+              <Route path="/releases/test-cycles" element={<ReleasesPlaceholderPage />} />
+              <Route path="/releases/execution" element={<ReleasesPlaceholderPage />} />
+              <Route path="/releases/ask-ai" element={<ReleasesPlaceholderPage />} />
+              <Route path="/releases/coverage" element={<ReleasesPlaceholderPage />} />
+              <Route path="/releases/quality-gates" element={<ReleasesPlaceholderPage />} />
+              <Route path="/releases/rtm" element={<ReleasesPlaceholderPage />} />
+              <Route path="/releases/defects" element={<ReleasesPlaceholderPage />} />
               
               <Route path="/unauthorized" element={<UnauthorizedPage />} />
               
