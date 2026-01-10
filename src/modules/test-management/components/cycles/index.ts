@@ -1,6 +1,6 @@
 /**
  * Test Cycles Components - Barrel Export
- * Phase 5: Complete Test Cycles Management
+ * Phase 5: Complete Test Cycles Management (Ruthless Rebuild)
  */
 
 // Core components
@@ -17,6 +17,7 @@ export { CycleScopeTable } from './CycleScopeTable';
 export { CycleRunsTable } from './CycleRunsTable';
 export { CycleDefectsTable } from './CycleDefectsTable';
 export { CycleReportsTab } from './CycleReportsTab';
+export { CreateFolderModal } from './CreateFolderModal';
 
 // Phase 5 new components
 export { CyclesFolderTree } from './CyclesFolderTree';
@@ -28,3 +29,6 @@ export { CycleTableView } from './CycleTableView';
 export { CycleCardView } from './CycleCardView';
 export { CycleCalendarView } from './CycleCalendarView';
 export { CyclesEmptyState } from './CyclesEmptyState';
+
+// Mock data exports
+export * from './mockCycleData';
