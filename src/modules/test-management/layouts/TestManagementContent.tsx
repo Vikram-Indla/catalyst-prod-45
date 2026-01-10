@@ -14,7 +14,7 @@ interface BreadcrumbTitle {
 }
 
 const getTMBreadcrumb = (pathname: string): BreadcrumbTitle | null => {
-  const parent = 'TM';
+  const parent = 'Tests';
   
   if (pathname.startsWith('/tests/command-center')) return { parent, current: 'Command Center' };
   if (pathname.startsWith('/tests/cases')) return { parent, current: 'Test Cases' };

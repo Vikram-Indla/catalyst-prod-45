@@ -26,8 +26,8 @@ interface TestManagementSidebarProps {
 }
 
 const testManagementSidebarConfig: SidebarConfig = {
-  badge: 'TM',
-  label: 'Test Management',
+  badge: 'TES',
+  label: 'Tests',
   items: [
     { id: 'command-center', title: 'Command Center', path: '/tests/command-center', icon: LayoutDashboard, exact: true },
     { id: 'my-work', title: 'My Work', path: '/tests/my-work', icon: Home, exact: true },
