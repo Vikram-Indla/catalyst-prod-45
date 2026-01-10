@@ -40,6 +40,7 @@ import {
   FolderTree,
   CasesToolbar,
   CasesDataTable,
+  CasesCardGrid,
   CaseDetailsPanel,
   CaseModal,
   AddToCycleDialog,
@@ -104,7 +105,7 @@ export function TestCasesPage() {
   const [selectedFolderId, setSelectedFolderId] = useState<string | null>(null);
   const [selectedCaseId, setSelectedCaseId] = useState<string | null>(null);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
-  const [viewMode, setViewMode] = useState<'table' | 'card'>('table');
+  const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
   const [filters, setFilters] = useState<CasesFilters>({
     status: [],
     priorityIds: [],
@@ -704,6 +705,18 @@ export function TestCasesPage() {
               <p className="text-sm">Create your first test case to get started</p>
             </div>
           </div>
+        ) : viewMode === 'grid' ? (
+          <CasesCardGrid
+            cases={cases}
+            isLoading={casesLoading}
+            selectedIds={selectedIds}
+            onSelectionChange={setSelectedIds}
+            onRowClick={handleRowClick}
+            onEdit={handleEditCase}
+            onDuplicate={handleDuplicateCase}
+            onDelete={handleDeleteCase}
+            onAddToCycle={handleAddToCycle}
+          />
         ) : (
           <CasesDataTable
             cases={cases}
