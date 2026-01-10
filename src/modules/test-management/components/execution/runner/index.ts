@@ -10,3 +10,5 @@ export { PreconditionsBar } from './PreconditionsBar';
 export { StepExecutionCard } from './StepExecutionCard';
 export { ExecutionContextPanel } from './ExecutionContextPanel';
 export { ExecutionFooter } from './ExecutionFooter';
+export { CompleteRunModal } from './CompleteRunModal';
+export { QuickActionsPanel } from './QuickActionsPanel';
