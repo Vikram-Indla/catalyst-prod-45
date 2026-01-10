@@ -246,51 +246,62 @@ serve(async (req) => {
 
     console.log("Calling Lovable AI Gateway for generation:", generationId);
 
-    // Call Lovable AI Gateway (uses google/gemini-3-pro-preview by default for complex reasoning)
-    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${lovableApiKey}`,
-      },
-      body: JSON.stringify({
-        model: "google/gemini-3-pro-preview",
-        max_tokens: settings?.maxTokens || 8000, // Increased to prevent truncation
-        temperature: settings?.temperature || 0.7,
+    const callAIGateway = async (args: {
+      model: string;
+      maxTokens: number;
+      temperature: number;
+      systemPrompt: string;
+      userPrompt: string;
+    }) => {
+      const body: Record<string, unknown> = {
+        model: args.model,
+        max_tokens: args.maxTokens,
+        temperature: args.temperature,
         messages: [
-          {
-            role: "system",
-            content: settings?.systemPrompt || SYSTEM_PROMPT,
-          },
-          {
-            role: "user",
-            content: userPrompt,
-          },
+          { role: "system", content: args.systemPrompt },
+          { role: "user", content: args.userPrompt },
         ],
-      }),
-    });
+      };
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error("Lovable AI Gateway error:", response.status, errorText);
-      
-      if (response.status === 429) {
-        throw new Error("Rate limit exceeded. Please try again in a moment.");
+      // For OpenAI-family models, request strict JSON when supported by the gateway.
+      if (args.model.startsWith("openai/")) {
+        body.response_format = { type: "json_object" };
       }
-      if (response.status === 402) {
-        throw new Error("AI credits exhausted. Please add credits to continue.");
-      }
-      throw new Error(`AI Gateway error: ${response.status}`);
-    }
 
-    const aiGatewayResponse = await response.json();
-    const processingTime = Date.now() - startTime;
-    
-    // Extract content from response
-    const content = aiGatewayResponse.choices?.[0]?.message?.content;
-    if (!content) {
-      throw new Error("No content in AI response");
-    }
+      const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${lovableApiKey}`,
+        },
+        body: JSON.stringify(body),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("Lovable AI Gateway error:", response.status, errorText);
+
+        if (response.status === 429) {
+          throw new Error("Rate limit exceeded. Please try again in a moment.");
+        }
+        if (response.status === 402) {
+          throw new Error("AI credits exhausted. Please add credits to continue.");
+        }
+        throw new Error(`AI Gateway error: ${response.status}`);
+      }
+
+      const aiGatewayResponse = await response.json();
+      const content = aiGatewayResponse.choices?.[0]?.message?.content;
+      if (!content) {
+        throw new Error("No content in AI response");
+      }
+
+      const tokensUsed =
+        (aiGatewayResponse.usage?.prompt_tokens || 0) +
+        (aiGatewayResponse.usage?.completion_tokens || 0);
+
+      return { content: String(content), tokensUsed };
+    };
 
     console.log("AI response received, parsing JSON...");
 
@@ -384,33 +395,102 @@ serve(async (req) => {
 
     const removeTrailingCommas = (input: string) => input.replace(/,\s*([}\]])/g, "$1");
 
-    const safeJsonParse = <T,>(raw: string): T => {
+    const tryParseAIResponse = (raw: string) => {
       const normalized = normalizeAIJson(raw);
       try {
-        return JSON.parse(normalized) as T;
-      } catch {
+        return {
+          parsed: JSON.parse(normalized) as AIResponse,
+          usedRepair: false,
+          normalized,
+          repaired: null as string | null,
+        };
+      } catch (e1) {
         const repaired = removeTrailingCommas(escapeControlCharsInStrings(normalized));
-        return JSON.parse(repaired) as T;
+        try {
+          return {
+            parsed: JSON.parse(repaired) as AIResponse,
+            usedRepair: true,
+            normalized,
+            repaired,
+          };
+        } catch (e2) {
+          const err = new Error("AI response JSON parse failed");
+          (err as any).details = { e1, e2, normalized, repaired };
+          throw err;
+        }
       }
     };
 
-    let aiResponse: AIResponse;
-    try {
-      aiResponse = safeJsonParse<AIResponse>(content);
-    } catch (parseError) {
-      console.error("JSON parse error:", parseError);
-      console.error("AI content length:", content.length);
-      console.error("AI content head:", content.substring(0, 500));
-      console.error("AI content tail:", content.substring(Math.max(0, content.length - 500)));
-      throw new Error("Failed to parse AI response as JSON. The response may have been truncated.");
+    const buildParseDebug = (rawJson: string, parseErr: unknown) => {
+      const msg = parseErr instanceof Error ? parseErr.message : String(parseErr);
+      const match = msg.match(/position\s+(\d+)/i);
+      const pos = match ? Number(match[1]) : null;
+      if (pos === null || Number.isNaN(pos)) return { msg };
+      const start = Math.max(0, pos - 160);
+      const end = Math.min(rawJson.length, pos + 160);
+      return { msg, pos, snippet: rawJson.slice(start, end) };
+    };
+
+    // Attempt 1: Gemini (default). If parsing fails, retry once with a stricter JSON mode model.
+    const attempts = [
+      {
+        name: "primary",
+        model: settings?.model || "google/gemini-3-pro-preview",
+        maxTokens: settings?.maxTokens || 8000,
+        temperature: settings?.temperature ?? 0.7,
+        systemPrompt: settings?.systemPrompt || SYSTEM_PROMPT,
+        userPrompt,
+      },
+      {
+        name: "retry_strict_json",
+        model: "openai/gpt-5-mini",
+        maxTokens: Math.min(settings?.maxTokens || 4000, 4000),
+        temperature: 0,
+        systemPrompt:
+          (settings?.systemPrompt || SYSTEM_PROMPT) +
+          "\n\nRETRY MODE: Output MUST be a single valid JSON object. No line breaks inside strings; escape as \\n. Output should be compact/minified.",
+        userPrompt: userPrompt + "\n\nRETRY MODE: Return compact JSON only.",
+      },
+    ];
+
+    let aiResponse: AIResponse | null = null;
+    let tokensUsed = 0;
+
+    for (const attempt of attempts) {
+      try {
+        console.log("AI attempt:", attempt.name, attempt.model);
+        const { content, tokensUsed: attemptTokens } = await callAIGateway(attempt);
+
+        // keep last token count for observability
+        tokensUsed = attemptTokens;
+
+        const parsed = tryParseAIResponse(content);
+        aiResponse = parsed.parsed;
+
+        if (parsed.usedRepair) {
+          console.warn("AI JSON required repair:", attempt.name);
+        }
+
+        break; // success
+      } catch (err) {
+        console.error("AI attempt failed:", attempt.name, err);
+
+        // If it was a parse failure, log precise context to help future debugging.
+        if (err instanceof Error && (err as any).details) {
+          const details = (err as any).details;
+          console.error("Parse failure (normalized) context:", buildParseDebug(details.normalized, details.e1));
+          console.error("Parse failure (repaired) context:", buildParseDebug(details.repaired, details.e2));
+        }
+
+        // try next attempt
+      }
     }
 
+    const processingTime = Date.now() - startTime;
 
-    // Calculate tokens used (from response metadata)
-    const tokensUsed = 
-      (aiGatewayResponse.usage?.prompt_tokens || 0) + 
-      (aiGatewayResponse.usage?.completion_tokens || 0);
-
+    if (!aiResponse) {
+      throw new Error("Failed to parse AI response as JSON. Please try again.");
+    }
     // Initialize Supabase client
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
