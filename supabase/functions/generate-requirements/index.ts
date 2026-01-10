@@ -246,6 +246,20 @@ serve(async (req) => {
 
     console.log("Calling Lovable AI Gateway for generation:", generationId);
 
+    const DEFAULT_MODEL = "google/gemini-3-pro-preview";
+
+    const normalizeModel = (requested?: string) => {
+      const m = (requested || "").trim();
+      if (!m) return DEFAULT_MODEL;
+
+      // Only allow models supported by Lovable AI Gateway in this project.
+      // If user UI sends an unsupported model (e.g. Claude), we fall back gracefully.
+      if (m.startsWith("google/") || m.startsWith("openai/")) return m;
+
+      console.warn("Unsupported model requested; falling back to default:", m);
+      return DEFAULT_MODEL;
+    };
+
     const callAIGateway = async (args: {
       model: string;
       maxTokens: number;
@@ -253,9 +267,10 @@ serve(async (req) => {
       systemPrompt: string;
       userPrompt: string;
     }) => {
+      const model = normalizeModel(args.model);
+
       const body: Record<string, unknown> = {
-        model: args.model,
-        max_tokens: args.maxTokens,
+        model,
         temperature: args.temperature,
         messages: [
           { role: "system", content: args.systemPrompt },
@@ -263,9 +278,13 @@ serve(async (req) => {
         ],
       };
 
-      // For OpenAI-family models, request strict JSON when supported by the gateway.
-      if (args.model.startsWith("openai/")) {
+      // Different providers use different token parameter names.
+      // For OpenAI-family models on this gateway, use max_completion_tokens.
+      if (model.startsWith("openai/")) {
+        body.max_completion_tokens = args.maxTokens;
         body.response_format = { type: "json_object" };
+      } else {
+        body.max_tokens = args.maxTokens;
       }
 
       const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
@@ -278,7 +297,7 @@ serve(async (req) => {
       });
 
       if (!response.ok) {
-        const errorText = await response.text();
+        const errorText = (await response.text()).slice(0, 1500);
         console.error("Lovable AI Gateway error:", response.status, errorText);
 
         if (response.status === 429) {
@@ -287,7 +306,7 @@ serve(async (req) => {
         if (response.status === 402) {
           throw new Error("AI credits exhausted. Please add credits to continue.");
         }
-        throw new Error(`AI Gateway error: ${response.status}`);
+        throw new Error(`AI Gateway error ${response.status}: ${errorText || "Unknown error"}`);
       }
 
       const aiGatewayResponse = await response.json();
@@ -431,12 +450,15 @@ serve(async (req) => {
       return { msg, pos, snippet: rawJson.slice(start, end) };
     };
 
-    // Attempt 1: Gemini (default). If parsing fails, retry once with a stricter JSON mode model.
+    // Attempt 1: Primary model (validated). If parsing fails, retry once with a stricter JSON mode model.
+    const requestedMax = settings?.maxTokens ?? 4000;
+    const cappedMax = Math.max(256, Math.min(requestedMax, 4000));
+
     const attempts = [
       {
         name: "primary",
-        model: settings?.model || "google/gemini-3-pro-preview",
-        maxTokens: settings?.maxTokens || 8000,
+        model: settings?.model || DEFAULT_MODEL,
+        maxTokens: cappedMax,
         temperature: settings?.temperature ?? 0.7,
         systemPrompt: settings?.systemPrompt || SYSTEM_PROMPT,
         userPrompt,
@@ -444,7 +466,7 @@ serve(async (req) => {
       {
         name: "retry_strict_json",
         model: "openai/gpt-5-mini",
-        maxTokens: Math.min(settings?.maxTokens || 4000, 4000),
+        maxTokens: cappedMax,
         temperature: 0,
         systemPrompt:
           (settings?.systemPrompt || SYSTEM_PROMPT) +
@@ -455,6 +477,7 @@ serve(async (req) => {
 
     let aiResponse: AIResponse | null = null;
     let tokensUsed = 0;
+    let lastError: Error | null = null;
 
     for (const attempt of attempts) {
       try {
@@ -473,11 +496,13 @@ serve(async (req) => {
 
         break; // success
       } catch (err) {
-        console.error("AI attempt failed:", attempt.name, err);
+        const e = err instanceof Error ? err : new Error(String(err));
+        lastError = e;
+        console.error("AI attempt failed:", attempt.name, e);
 
         // If it was a parse failure, log precise context to help future debugging.
-        if (err instanceof Error && (err as any).details) {
-          const details = (err as any).details;
+        if ((e as any).details) {
+          const details = (e as any).details;
           console.error("Parse failure (normalized) context:", buildParseDebug(details.normalized, details.e1));
           console.error("Parse failure (repaired) context:", buildParseDebug(details.repaired, details.e2));
         }
@@ -489,7 +514,7 @@ serve(async (req) => {
     const processingTime = Date.now() - startTime;
 
     if (!aiResponse) {
-      throw new Error("Failed to parse AI response as JSON. Please try again.");
+      throw (lastError ?? new Error("Failed to parse AI response as JSON. Please try again."));
     }
     // Initialize Supabase client
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
