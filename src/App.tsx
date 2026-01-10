@@ -226,7 +226,7 @@ import IndustryComingSoon from "./pages/enterprise/IndustryComingSoon";
 import DemandSummaryPage from "./pages/enterprise/DemandSummaryPage";
 import ProductRoomPage from "./pages/ProductRoomPage";
 import CapacityPlanningPage from "./pages/CapacityPlanningPage";
-import { RequirementAssistWizard } from "./pages/product/requirement-assist";
+import { RequirementAssistWizard, RequirementAssistHistory } from "./pages/product/requirement-assist";
 import ExecutiveRoadmapPage from "./pages/enterprise/ExecutiveRoadmapPage";
 import CatalystDemandKanban from "./modules/kanban/pages/CatalystDemandKanban";
 import CatalystDemandList from "./modules/product-backlog/pages/CatalystDemandList";
@@ -410,6 +410,7 @@ const App = () => (
 <Route path="/product/:productId/room" element={<ProductRoomPage />} />
 <Route path="/product/capacity" element={<CapacityPlanningPage />} />
 <Route path="/product/requirement-assist" element={<Suspense fallback={<div className="p-8">Loading...</div>}><RequirementAssistWizard /></Suspense>} />
+<Route path="/operations/requirement-assist/history" element={<Suspense fallback={<div className="p-8">Loading...</div>}><RequirementAssistHistory /></Suspense>} />
 
               {/* Enterprise More Items */}
               <Route path="/enterprise/ideation" element={<EnterpriseComingSoon />} />

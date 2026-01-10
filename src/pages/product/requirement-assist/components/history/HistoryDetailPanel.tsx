@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X, ArrowLeft, ChevronDown, CheckCircle, Wand2, Copy, FileText, FileSpreadsheet, Trash2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -28,6 +28,23 @@ export function HistoryDetailPanel({
   onDelete,
 }: HistoryDetailPanelProps) {
   const [expandedGroups, setExpandedGroups] = useState<Set<ItemType>>(new Set());
+
+  // Handle Escape key to close panel
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+    
+    if (isOpen) {
+      document.addEventListener('keydown', handleKeyDown);
+    }
+    
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isOpen, onClose]);
 
   const toggleGroup = (type: ItemType) => {
     setExpandedGroups((prev) => {
