@@ -1,8 +1,9 @@
 import React from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
-import { Wand2, History, FileText } from 'lucide-react';
+import { Wand2, History } from 'lucide-react';
 
+// Templates tab removed - templates are only accessible via Admin
 const tabs = [
   { 
     id: 'wizard', 
@@ -17,14 +18,6 @@ const tabs = [
     path: '/product/requirement-assist/history',
     icon: History,
     exact: true 
-  },
-  { 
-    id: 'templates', 
-    label: 'Templates', 
-    path: '/admin/requirement-assist/templates',
-    icon: FileText,
-    exact: false,
-    external: true 
   },
 ];
 
