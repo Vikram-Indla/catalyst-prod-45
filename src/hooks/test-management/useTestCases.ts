@@ -783,7 +783,13 @@ export function useBulkUpdateTestCases() {
       return { count: case_ids.length, case_details };
     },
     onSuccess: (result, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['tm-cases', variables.project_id] });
+      // Use predicate to match ALL queries starting with ['tm-cases', project_id] regardless of filters
+      queryClient.invalidateQueries({ 
+        predicate: (query) => 
+          query.queryKey[0] === 'tm-cases' && 
+          query.queryKey[1] === variables.project_id 
+      });
+      queryClient.invalidateQueries({ queryKey: ['tm-folders-with-counts', variables.project_id] });
       
       const { updates } = variables;
       const count = result.count;
