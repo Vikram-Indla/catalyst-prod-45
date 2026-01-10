@@ -68,12 +68,12 @@ export type DrawerTab = 'hierarchy' | 'sunburst';
 
 // Work item type icons and colors config
 export const WorkItemConfig = {
-  theme: { color: '#4d8b4d', bgColor: 'bg-[#4d8b4d]/10', label: 'Theme', level: 'enterprise' },
+  theme: { color: '#0d9488', bgColor: 'bg-[#0d9488]/10', label: 'Theme', level: 'enterprise' },
   objective: { color: '#6b7280', bgColor: 'bg-[#6b7280]/10', label: 'Objective', level: 'enterprise' },
-  key_result: { color: '#d4b896', bgColor: 'bg-[#d4b896]/10', label: 'Key Result', level: 'enterprise' },
+  key_result: { color: '#3b82f6', bgColor: 'bg-[#3b82f6]/10', label: 'Key Result', level: 'enterprise' },
   epic: { color: '#2563eb', bgColor: 'bg-[#2563eb]/10', label: 'Epic', level: 'program' },
   feature: { color: '#0d9488', bgColor: 'bg-[#0d9488]/10', label: 'Feature', level: 'project' },
-  story: { color: '#8b7355', bgColor: 'bg-[#8b7355]/10', label: 'Story', level: 'project' },
+  story: { color: '#10b981', bgColor: 'bg-[#10b981]/10', label: 'Story', level: 'project' },
   defect: { color: '#dc2626', bgColor: 'bg-[#dc2626]/10', label: 'Defect', level: 'project' },
   incident: { color: '#d97706', bgColor: 'bg-[#d97706]/10', label: 'Incident', level: 'project' },
   business_request: { color: '#22c55e', bgColor: 'bg-[#22c55e]/10', label: 'Business Request', level: 'product' },

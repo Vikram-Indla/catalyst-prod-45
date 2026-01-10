@@ -34,8 +34,8 @@ export const generateReportPDF = async (reportData: ReportData, chartElement?: H
   doc.text(`Failed: ${reportData.failedTests}`, 15, 80);
   doc.text(`Not Run: ${reportData.notRunTests}`, 15, 90);
   
-  // Pass rate with gold color
-  doc.setTextColor(198, 156, 109); // #c69c6d gold
+  // Pass rate with teal color (V5)
+  doc.setTextColor(13, 148, 136); // #0d9488 teal
   doc.setFontSize(14);
   doc.text(`Pass Rate: ${reportData.passRate}%`, 15, 105);
   

@@ -356,12 +356,12 @@ export function CapacityAIDrawer({ isOpen, onClose }: CapacityAIDrawerProps) {
         {/* Header - Dark Executive Style */}
         <header className="flex items-center justify-between px-5 py-4 bg-[#1A1A1A]">
           <div className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-full bg-[#5C7C5C] flex items-center justify-center shadow-lg">
+            <div className="w-11 h-11 rounded-full bg-[#0d9488] flex items-center justify-center shadow-lg">
               <Bot className="w-6 h-6 text-white" />
             </div>
             <div>
               <h2 className="text-[17px] font-bold text-white tracking-wide">Caty</h2>
-              <p className="text-[10px] text-[#C69C6D] uppercase tracking-widest">Capacity AI Assistant</p>
+              <p className="text-[10px] text-[#0d9488] uppercase tracking-widest">Capacity AI Assistant</p>
             </div>
           </div>
 
@@ -404,11 +404,11 @@ export function CapacityAIDrawer({ isOpen, onClose }: CapacityAIDrawerProps) {
             <div className="p-4 rounded-lg border border-[#C8CCD0]/30 bg-white dark:bg-[#1A1A1A]">
               <div className="flex items-center gap-3">
                 <div className="flex gap-1">
-                  <span className="w-2 h-2 bg-[#C69C6D] rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                  <span className="w-2 h-2 bg-[#C69C6D] rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                  <span className="w-2 h-2 bg-[#C69C6D] rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                  <span className="w-2 h-2 bg-[#0d9488] rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                  <span className="w-2 h-2 bg-[#0d9488] rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                  <span className="w-2 h-2 bg-[#0d9488] rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
                 </div>
-                <span className="text-sm text-[#8B7355]">Querying Catalyst database...</span>
+                <span className="text-sm text-[#0d9488]">Querying Catalyst database...</span>
               </div>
             </div>
           )}

@@ -296,10 +296,10 @@ export function useResource360Data(resourceId: string | null) {
 
     // Build sunburst hierarchy
     const typeColors: Record<string, string> = {
-      theme: '#4d8b4d',
+      theme: '#0d9488',
       epic: '#2563eb',
       feature: '#0d9488',
-      story: '#8b7355',
+      story: '#10b981',
       defect: '#dc2626',
       incident: '#d97706',
     };

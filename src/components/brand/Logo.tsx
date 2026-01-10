@@ -13,9 +13,9 @@ interface LogoProps {
  * 
  * Logo specification:
  * - "Cata" = Pure black #0a0a0a (light mode) or white #ffffff (dark mode)
- * - "lyst" = Brand gold #c69c6d (light mode) or #d4b896 (dark mode)
+ * - "lyst" = Brand teal #0d9488 (V5 compliant)
  * 
- * Gold #c69c6d appears ONLY in the logo. Nowhere else in the UI.
+ * Teal appears ONLY in the logo. Nowhere else in the UI.
  */
 export function Logo({ 
   variant = "dark", 
@@ -64,8 +64,8 @@ export function Logo({
           )}>
             Cata
           </span>
-          {/* "lyst" in brand gold - ONLY place gold appears in UI */}
-          <span className="text-[var(--brand-gold)]">
+          {/* "lyst" in brand teal - ONLY place accent appears in UI */}
+          <span className="text-[var(--brand-teal)]">
             lyst
           </span>
         </span>

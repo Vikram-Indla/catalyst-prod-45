@@ -38,7 +38,7 @@ function getTypeColor(type: WorkItemIconType): string {
     case 'objective':
       return 'var(--info-fg, #2563eb)'; // Blue
     case 'keyresult':
-      return 'var(--brand-gold, #c69c6d)';
+      return 'var(--brand-teal, #0d9488)';
     case 'epic':
       return 'var(--chart-4, #8b5cf6)'; // Purple
     case 'feature':

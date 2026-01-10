@@ -6,9 +6,9 @@ import type { ResourceMetric, CapacityProject } from '@/modules/capacity-planner
 
 // Department colors - Catalyst V5 compliant
 const departmentColors: Record<string, { bg: string; text: string; badge: string }> = {
-  Product: { bg: 'bg-[#d4b896]', text: 'text-[#4a3f35]', badge: 'bg-[#d4b896]/15 text-[#c69c6d]' },
+  Product: { bg: 'bg-[#3b82f6]', text: 'text-white', badge: 'bg-[#3b82f6]/15 text-[#2563eb]' },
   Delivery: { bg: 'bg-[#0d9488]', text: 'text-white', badge: 'bg-[#2563eb]/10 text-[#2563eb]' },
-  Support: { bg: 'bg-[#4d8b4d]', text: 'text-white', badge: 'bg-[#5c7c5c]/15 text-[#5c7c5c]' },
+  Support: { bg: 'bg-[#10b981]', text: 'text-white', badge: 'bg-[#10b981]/15 text-[#10b981]' },
   default: { bg: 'bg-muted', text: 'text-muted-foreground', badge: 'bg-muted text-muted-foreground' },
 };
 
