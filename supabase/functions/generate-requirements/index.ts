@@ -88,7 +88,13 @@ For each generated item, provide a confidence score (0-100) based on:
 Always maintain professional language appropriate for government documentation.
 Generate outputs in English with Arabic translation support where relevant.
 
-IMPORTANT: Return ONLY valid JSON. Do not wrap in markdown code blocks.`;
+CRITICAL JSON RULES:
+- Return ONLY valid JSON (no markdown/code fences, no commentary)
+- Use double quotes for all keys/strings
+- Do NOT include literal newlines inside JSON strings; use \\n (and \\t) escape sequences
+- Do NOT include unescaped double quotes inside strings
+- Keep text concise to avoid truncation`;
+
 
 const GENERATION_PROMPT = `Analyze the following business requirements document and generate structured SAFe artifacts.
 
@@ -100,7 +106,10 @@ INPUT DOCUMENT:
 REQUESTED OUTPUTS: {OUTPUT_TYPES}
 COMPLIANCE FRAMEWORKS: {COMPLIANCE_FRAMEWORKS}
 
-Return a JSON object with this exact structure (no markdown, just raw JSON):
+Return a SINGLE JSON object with this exact structure (no markdown, just raw JSON).
+IMPORTANT: All string values must be valid JSON strings (escape newlines as \\n; do not include literal line breaks inside quotes).
+Keep content concise (avoid multi-page outputs) to prevent truncation.
+
 {
   "analysis": {
     "actors": ["list of identified actors/personas"],
@@ -139,7 +148,7 @@ Return a JSON object with this exact structure (no markdown, just raw JSON):
       "item_type": "feature",
       "title": "Feature title",
       "description": "Feature description with benefit hypothesis",
-      "acceptance_criteria": "Given/When/Then format",
+      "acceptance_criteria": "Given/When/Then format (use \\n for line breaks)",
       "parent_index": 0,
       "confidence_score": 89,
       "confidence_breakdown": {
@@ -185,7 +194,14 @@ Return a JSON object with this exact structure (no markdown, just raw JSON):
   }
 }
 
-Generate realistic, high-quality requirements appropriate for a government ministry. Each epic should have 2-4 features, and each feature should have 2-5 user stories. Ensure all items have meaningful confidence scores based on the quality of the input.`;
+Quality + size constraints:
+- Prefer up to 3 epics.
+- Prefer 2-3 features per epic.
+- Prefer 2-3 stories per feature.
+- Keep PRD section text brief.
+
+Generate realistic, high-quality requirements appropriate for a government ministry. Ensure all items have meaningful confidence scores based on the quality of the input.`;
+
 
 serve(async (req) => {
   // Handle CORS preflight
@@ -278,53 +294,117 @@ serve(async (req) => {
 
     console.log("AI response received, parsing JSON...");
 
-    // Parse JSON from AI response - handle multiple markdown formats
-    let jsonContent = content.trim();
-    
-    // Remove markdown code fences if present (handles ```json, ```, or just raw JSON)
-    if (jsonContent.startsWith('```')) {
-      // Find the end of the code block
-      const endIndex = jsonContent.lastIndexOf('```');
-      if (endIndex > 3) {
-        // Extract content between opening and closing fences
-        const startContent = jsonContent.indexOf('\n');
-        jsonContent = jsonContent.substring(startContent + 1, endIndex).trim();
-      } else {
-        // Just strip the opening fence
-        const startContent = jsonContent.indexOf('\n');
-        jsonContent = jsonContent.substring(startContent + 1).trim();
+    const normalizeAIJson = (raw: string) => {
+      let s = raw.trim();
+
+      // Remove markdown code fences if present
+      if (s.startsWith("```")) {
+        const endIndex = s.lastIndexOf("```");
+        const firstNewline = s.indexOf("\n");
+        if (firstNewline !== -1) {
+          s = (endIndex > firstNewline ? s.slice(firstNewline + 1, endIndex) : s.slice(firstNewline + 1)).trim();
+        }
       }
-    }
-    
-    // Also handle case where it starts with "json" (sometimes model outputs "json{")
-    if (jsonContent.toLowerCase().startsWith('json')) {
-      jsonContent = jsonContent.substring(4).trim();
-    }
+
+      // Handle case where it starts with "json" (sometimes models emit "json{...")
+      if (s.toLowerCase().startsWith("json")) {
+        s = s.slice(4).trim();
+      }
+
+      // If there's any leading/trailing chatter, extract the outermost JSON object
+      const firstBrace = s.indexOf("{");
+      const lastBrace = s.lastIndexOf("}");
+      if (firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace) {
+        s = s.slice(firstBrace, lastBrace + 1);
+      }
+
+      return s;
+    };
+
+    // Repair common JSON issues produced by LLMs (unescaped newlines/control chars in strings, trailing commas)
+    const escapeControlCharsInStrings = (input: string) => {
+      let out = "";
+      let inString = false;
+      let escaped = false;
+
+      for (let i = 0; i < input.length; i++) {
+        const ch = input[i];
+
+        if (inString) {
+          if (escaped) {
+            out += ch;
+            escaped = false;
+            continue;
+          }
+
+          if (ch === "\\") {
+            out += ch;
+            escaped = true;
+            continue;
+          }
+
+          if (ch === '"') {
+            out += ch;
+            inString = false;
+            continue;
+          }
+
+          if (ch === "\n") {
+            out += "\\n";
+            continue;
+          }
+          if (ch === "\r") {
+            out += "\\r";
+            continue;
+          }
+          if (ch === "\t") {
+            out += "\\t";
+            continue;
+          }
+
+          const code = ch.charCodeAt(0);
+          if (code < 0x20) {
+            out += `\\u${code.toString(16).padStart(4, "0")}`;
+            continue;
+          }
+
+          out += ch;
+        } else {
+          if (ch === '"') {
+            out += ch;
+            inString = true;
+            continue;
+          }
+          out += ch;
+        }
+      }
+
+      return out;
+    };
+
+    const removeTrailingCommas = (input: string) => input.replace(/,\s*([}\]])/g, "$1");
+
+    const safeJsonParse = <T,>(raw: string): T => {
+      const normalized = normalizeAIJson(raw);
+      try {
+        return JSON.parse(normalized) as T;
+      } catch {
+        const repaired = removeTrailingCommas(escapeControlCharsInStrings(normalized));
+        return JSON.parse(repaired) as T;
+      }
+    };
 
     let aiResponse: AIResponse;
     try {
-      aiResponse = JSON.parse(jsonContent);
+      aiResponse = safeJsonParse<AIResponse>(content);
     } catch (parseError) {
       console.error("JSON parse error:", parseError);
-      console.error("Raw content:", content.substring(0, 500));
-      
-      // Try to find and extract JSON object from response
-      const jsonStart = content.indexOf('{');
-      const jsonEnd = content.lastIndexOf('}');
-      
-      if (jsonStart !== -1 && jsonEnd !== -1 && jsonEnd > jsonStart) {
-        try {
-          jsonContent = content.substring(jsonStart, jsonEnd + 1);
-          aiResponse = JSON.parse(jsonContent);
-          console.log("Successfully extracted JSON from response");
-        } catch (secondError) {
-          console.error("Second parse attempt failed:", secondError);
-          throw new Error("Failed to parse AI response as JSON. The response may have been truncated.");
-        }
-      } else {
-        throw new Error("Failed to parse AI response as JSON. No valid JSON structure found.");
-      }
+      console.error("AI content length:", content.length);
+      console.error("AI content head:", content.substring(0, 500));
+      console.error("AI content tail:", content.substring(Math.max(0, content.length - 500)));
+      throw new Error("Failed to parse AI response as JSON. The response may have been truncated.");
     }
+
 
     // Calculate tokens used (from response metadata)
     const tokensUsed = 
