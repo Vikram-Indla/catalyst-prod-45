@@ -18,6 +18,7 @@ import {
   useUpdateRAGeneration,
   usePublishRAGeneration,
   useRAGeneration,
+  useRARealtimeSubscriptions,
 } from '@/hooks/requirement-assist';
 import { 
   useRAGeneratedItems,
@@ -26,6 +27,7 @@ import {
   useDeleteRAGeneratedItem,
 } from '@/hooks/requirement-assist';
 import { useRAAISettings } from '@/hooks/requirement-assist';
+import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import type { CreateRAGeneratedItem, ItemType } from '@/types/requirement-assist';
 
@@ -73,6 +75,41 @@ export default function RequirementAssistWizard() {
   // Load existing generation if ID provided
   const { data: existingGeneration } = useRAGeneration(loadedGenerationId);
   const { data: existingItems } = useRAGeneratedItems(loadedGenerationId);
+  
+  // Enable realtime subscriptions
+  useRARealtimeSubscriptions(state.generationId || loadedGenerationId);
+
+  // Fetch program details when generation has program_id
+  const { data: programDetails } = useQuery({
+    queryKey: ['program', existingGeneration?.program_id],
+    queryFn: async () => {
+      if (!existingGeneration?.program_id) return null;
+      const { data, error } = await supabase
+        .from('programs')
+        .select('id, name, key')
+        .eq('id', existingGeneration.program_id)
+        .maybeSingle();
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!existingGeneration?.program_id,
+  });
+
+  // Fetch project details when generation has project_id
+  const { data: projectDetails } = useQuery({
+    queryKey: ['project', existingGeneration?.project_id],
+    queryFn: async () => {
+      if (!existingGeneration?.project_id) return null;
+      const { data, error } = await supabase
+        .from('projects')
+        .select('id, name, key')
+        .eq('id', existingGeneration.project_id)
+        .maybeSingle();
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!existingGeneration?.project_id,
+  });
 
   // Load generation data if ID is provided
   useEffect(() => {
@@ -80,21 +117,20 @@ export default function RequirementAssistWizard() {
       setGenerationId(existingGeneration.id, existingGeneration.display_id);
       setInputContent(existingGeneration.input_text || '');
       
-      if (existingGeneration.program_id) {
-        // Would need to fetch program details - simplified for now
+      if (existingGeneration.program_id && programDetails) {
         setSelectedProgram({ 
           id: existingGeneration.program_id, 
-          name: 'Loaded Program',
-          nextEpic: 'EPIC-001',
-          nextFeat: 'FEAT-001',
+          name: programDetails.name || 'Unknown Program',
+          nextEpic: `${programDetails.key || 'EPIC'}-001`,
+          nextFeat: `${programDetails.key || 'FEAT'}-001`,
         });
       }
       
-      if (existingGeneration.project_id) {
+      if (existingGeneration.project_id && projectDetails) {
         setSelectedProject({
           id: existingGeneration.project_id,
-          name: 'Loaded Project',
-          nextStory: 'US-001',
+          name: projectDetails.name || 'Unknown Project',
+          nextStory: `${projectDetails.key || 'US'}-001`,
         });
       }
       
@@ -116,7 +152,7 @@ export default function RequirementAssistWizard() {
       
       toast.info(`Loaded generation ${existingGeneration.display_id}`);
     }
-  }, [existingGeneration, existingItems, loadedGenerationId]);
+  }, [existingGeneration, existingItems, loadedGenerationId, programDetails, projectDetails]);
 
   // Keyboard shortcuts
   useEffect(() => {

@@ -8,3 +8,4 @@ export * from './useRATemplates';
 export * from './useRAGlossary';
 export * from './useRAAISettings';
 export * from './useRAComplianceRules';
+export * from './useRARealtimeSubscriptions';
