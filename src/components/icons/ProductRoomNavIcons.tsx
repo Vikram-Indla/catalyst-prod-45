@@ -59,9 +59,20 @@ export const ProductCapacityIcon: React.FC<IconProps> = ({ className, style }) =
   </svg>
 );
 
+export const RequirementAssistIcon: React.FC<IconProps> = ({ className, style }) => (
+  <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className={className} style={style}>
+    <path d="M10 2 L10 6 M10 14 L10 18" />
+    <path d="M4 8 L6 10 L4 12" />
+    <path d="M16 8 L14 10 L16 12" />
+    <circle cx="10" cy="10" r="3" />
+    <path d="M7.5 7.5 L4 4 M12.5 7.5 L16 4 M7.5 12.5 L4 16 M12.5 12.5 L16 16" />
+  </svg>
+);
+
 // Map of menu item titles to icon components
 export const PRODUCT_ROOM_NAV_ICONS: Record<string, React.FC<IconProps>> = {
   'Product Room': ProductRoomIcon,
+  'Requirement Assist': RequirementAssistIcon,
   'Product Backlog': ProductBacklogIcon,
   'Product Kanban': ProductKanbanIcon,
   'Product Roadmap': ProductRoadmapIcon,

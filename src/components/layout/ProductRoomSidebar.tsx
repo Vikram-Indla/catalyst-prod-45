@@ -15,6 +15,7 @@ const productSidebarConfig: SidebarConfig = {
   label: 'Product',
   items: [
     { id: 'Product Room', title: 'Product Room', path: '/product/room', exact: true },
+    { id: 'Requirement Assist', title: 'Requirement Assist', path: '/product/requirement-assist', exact: false },
     { id: 'Product Backlog', title: 'Product Backlog', path: '/industry/backlog', exact: false },
     { id: 'Product Kanban', title: 'Product Kanban', path: '/industry/kanban', exact: true },
     { id: 'Product Roadmap', title: 'Product Roadmap', path: '/industry/roadmaps-v1', exact: false },
