@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, ArrowRight, Save, Rocket } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Save, Rocket, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { useWizardState } from './hooks/useWizardState';
@@ -10,9 +10,14 @@ import { ConfigureStep } from './components/ConfigureStep';
 import { GenerateStep } from './components/GenerateStep';
 import { ReviewStep } from './components/ReviewStep';
 import { PublishStep } from './components/PublishStep';
+import { SettingsModal } from './components/SettingsModal';
+import { SearchModal } from './components/SearchModal';
 
 export default function RequirementAssistWizard() {
   const navigate = useNavigate();
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+  
   const {
     state,
     setCurrentStep,
@@ -26,8 +31,34 @@ export default function RequirementAssistWizard() {
     reset,
   } = useWizardState();
 
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // ⌘K or Ctrl+K to open search
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        setSearchOpen(true);
+      }
+      
+      // ⌘S or Ctrl+S to save draft
+      if ((e.metaKey || e.ctrlKey) && e.key === 's') {
+        e.preventDefault();
+        handleSaveDraft();
+      }
+      
+      // Escape to close modals (handled in modal components)
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
   const handleStepClick = (step: number) => {
-    if (step < state.currentStep) setCurrentStep(step);
+    // Don't allow clicking on step 3 (Generate) or step 5 (Success)
+    if (step === 3 || step === 5) return;
+    // Don't allow clicking on future steps
+    if (step > state.currentStep) return;
+    setCurrentStep(step);
   };
 
   const handleNext = () => {
@@ -57,18 +88,34 @@ export default function RequirementAssistWizard() {
 
   const handleUndo = () => {
     setCurrentStep(4);
-    toast.success('Publish undone');
+  };
+
+  const handleReset = () => {
+    reset();
+    setCurrentStep(1);
   };
 
   return (
     <div className="flex flex-col h-full">
-      <WizardProgress
-        currentStep={state.currentStep}
-        onStepClick={handleStepClick}
-        draftSaved={state.inputContent.length > 0}
-      />
+      {/* Header with search */}
+      <div className="flex items-center justify-between px-6 py-3 border-b bg-card">
+        <WizardProgress
+          currentStep={state.currentStep}
+          onStepClick={handleStepClick}
+          draftSaved={state.inputContent.length > 0}
+        />
+        
+        <button
+          onClick={() => setSearchOpen(true)}
+          className="flex items-center gap-2 px-3 py-2 bg-muted border rounded-lg text-sm text-muted-foreground hover:border-primary transition-colors"
+        >
+          <Search className="w-4 h-4" />
+          <span>Search...</span>
+          <kbd className="ml-2 px-1.5 py-0.5 text-[10px] bg-background border rounded">⌘K</kbd>
+        </button>
+      </div>
 
-      <div className="flex-1 overflow-auto px-6 pb-6">
+      <div className="flex-1 overflow-auto px-6 pb-6 pt-4">
         {state.currentStep === 1 && (
           <InputStep
             content={state.inputContent}
@@ -77,6 +124,7 @@ export default function RequirementAssistWizard() {
             onFileUpload={setUploadedFile}
             selectedOutputs={state.selectedOutputs}
             onToggleOutput={toggleOutput}
+            onOpenSettings={() => setSettingsOpen(true)}
           />
         )}
 
@@ -114,13 +162,14 @@ export default function RequirementAssistWizard() {
 
         {state.currentStep === 5 && (
           <PublishStep
-            onCreateAnother={reset}
+            onCreateAnother={handleReset}
             onOpenInCatalyst={() => toast.success('Opening in Catalyst...')}
             onUndo={handleUndo}
           />
         )}
       </div>
 
+      {/* Footer - hide during Generate and Publish steps */}
       {state.currentStep !== 3 && state.currentStep !== 5 && (
         <div className="flex justify-between items-center px-6 py-4 bg-card border-t sticky bottom-0">
           <div>
@@ -144,6 +193,10 @@ export default function RequirementAssistWizard() {
           </div>
         </div>
       )}
+
+      {/* Modals */}
+      <SettingsModal open={settingsOpen} onClose={() => setSettingsOpen(false)} />
+      <SearchModal open={searchOpen} onClose={() => setSearchOpen(false)} />
     </div>
   );
 }
