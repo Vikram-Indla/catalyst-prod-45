@@ -170,6 +170,33 @@ export function PublishStep({
     return result;
   }, [items]);
 
+  // Show empty state if no items were generated
+  if (counts.total === 0) {
+    return (
+      <div className="flex-1 flex flex-col items-center justify-center py-12">
+        {/* Warning Icon */}
+        <div className="w-[88px] h-[88px] bg-amber-100 border-2 border-amber-300 rounded-full flex items-center justify-center mb-7">
+          <FileText className="w-10 h-10 text-amber-600" />
+        </div>
+
+        <h2 className="text-2xl font-semibold mb-1.5">Nothing to Publish</h2>
+        <p className="text-sm text-muted-foreground mb-9">No items were generated. Please go back and generate requirements first.</p>
+
+        {/* Footer Buttons */}
+        <div className="flex gap-3 mt-7">
+          <Button variant="outline" onClick={onCreateAnother}>
+            <Plus className="w-4 h-4 mr-2" /> Start New Generation
+          </Button>
+          {onViewHistory && (
+            <Button variant="outline" onClick={onViewHistory}>
+              <History className="w-4 h-4 mr-2" /> View History
+            </Button>
+          )}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex-1 flex flex-col items-center justify-center py-12">
       {/* Success Icon */}
