@@ -239,7 +239,7 @@ serve(async (req) => {
       },
       body: JSON.stringify({
         model: "google/gemini-3-pro-preview",
-        max_tokens: settings?.maxTokens || 4000,
+        max_tokens: settings?.maxTokens || 8000, // Increased to prevent truncation
         temperature: settings?.temperature || 0.7,
         messages: [
           {
@@ -278,20 +278,52 @@ serve(async (req) => {
 
     console.log("AI response received, parsing JSON...");
 
-    // Parse JSON from AI response (handle markdown code blocks)
-    let jsonContent = content;
-    const jsonMatch = content.match(/```(?:json)?\n?([\s\S]*?)\n?```/);
-    if (jsonMatch) {
-      jsonContent = jsonMatch[1];
+    // Parse JSON from AI response - handle multiple markdown formats
+    let jsonContent = content.trim();
+    
+    // Remove markdown code fences if present (handles ```json, ```, or just raw JSON)
+    if (jsonContent.startsWith('```')) {
+      // Find the end of the code block
+      const endIndex = jsonContent.lastIndexOf('```');
+      if (endIndex > 3) {
+        // Extract content between opening and closing fences
+        const startContent = jsonContent.indexOf('\n');
+        jsonContent = jsonContent.substring(startContent + 1, endIndex).trim();
+      } else {
+        // Just strip the opening fence
+        const startContent = jsonContent.indexOf('\n');
+        jsonContent = jsonContent.substring(startContent + 1).trim();
+      }
+    }
+    
+    // Also handle case where it starts with "json" (sometimes model outputs "json{")
+    if (jsonContent.toLowerCase().startsWith('json')) {
+      jsonContent = jsonContent.substring(4).trim();
     }
 
     let aiResponse: AIResponse;
     try {
-      aiResponse = JSON.parse(jsonContent.trim());
+      aiResponse = JSON.parse(jsonContent);
     } catch (parseError) {
       console.error("JSON parse error:", parseError);
-      console.error("Raw content:", jsonContent.substring(0, 500));
-      throw new Error("Failed to parse AI response as JSON");
+      console.error("Raw content:", content.substring(0, 500));
+      
+      // Try to find and extract JSON object from response
+      const jsonStart = content.indexOf('{');
+      const jsonEnd = content.lastIndexOf('}');
+      
+      if (jsonStart !== -1 && jsonEnd !== -1 && jsonEnd > jsonStart) {
+        try {
+          jsonContent = content.substring(jsonStart, jsonEnd + 1);
+          aiResponse = JSON.parse(jsonContent);
+          console.log("Successfully extracted JSON from response");
+        } catch (secondError) {
+          console.error("Second parse attempt failed:", secondError);
+          throw new Error("Failed to parse AI response as JSON. The response may have been truncated.");
+        }
+      } else {
+        throw new Error("Failed to parse AI response as JSON. No valid JSON structure found.");
+      }
     }
 
     // Calculate tokens used (from response metadata)
