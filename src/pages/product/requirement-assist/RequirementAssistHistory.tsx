@@ -1,6 +1,6 @@
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, ChevronRight } from 'lucide-react';
+import { Plus, ChevronRight, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { RANavigationTabs } from './components/RANavigationTabs';
@@ -13,11 +13,19 @@ import {
   HistoryEmptyState,
   HistoryDetailPanel,
   HistoryDeleteModal,
-  mockGenerations,
   GenerationHistoryItem,
   StatusFilter,
   SortOption,
+  mapGenerationToHistoryItem,
 } from './components/history';
+import {
+  useRAGenerations,
+  useRAGenerationStats,
+  useDeleteRAGeneration,
+  useDuplicateRAGeneration,
+} from '@/hooks/requirement-assist';
+import type { GenerationStatus } from '@/types/requirement-assist';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const ITEMS_PER_PAGE = 10;
 
@@ -51,7 +59,7 @@ export default function RequirementAssistHistory() {
   // Debounced search
   const [debouncedSearch, setDebouncedSearch] = useState('');
   
-  React.useEffect(() => {
+  useEffect(() => {
     const timeout = setTimeout(() => {
       setDebouncedSearch(searchQuery);
       setCurrentPage(1);
@@ -59,30 +67,31 @@ export default function RequirementAssistHistory() {
     return () => clearTimeout(timeout);
   }, [searchQuery]);
 
-  // Filter and sort data
-  const filteredData = useMemo(() => {
-    let data = [...mockGenerations];
+  // Fetch data from Supabase
+  const { data: generations, isLoading, error } = useRAGenerations({
+    status: statusFilter === 'all' ? undefined : statusFilter as GenerationStatus,
+    search: debouncedSearch || undefined,
+  });
+  
+  const { data: stats, isLoading: statsLoading } = useRAGenerationStats();
+  
+  // Mutations
+  const deleteMutation = useDeleteRAGeneration();
+  const duplicateMutation = useDuplicateRAGeneration();
+
+  // Map database records to UI format
+  const historyItems = useMemo(() => {
+    if (!generations) return [];
+    return generations.map(g => mapGenerationToHistoryItem(g));
+  }, [generations]);
+
+  // Sort data
+  const sortedData = useMemo(() => {
+    let data = [...historyItems];
     
-    // Status filter
-    if (statusFilter !== 'all') {
-      data = data.filter((item) => item.status === statusFilter);
-    }
-    
-    // Search filter
-    if (debouncedSearch) {
-      const search = debouncedSearch.toLowerCase();
-      data = data.filter(
-        (item) =>
-          item.title.toLowerCase().includes(search) ||
-          item.id.toLowerCase().includes(search) ||
-          item.author.name.toLowerCase().includes(search)
-      );
-    }
-    
-    // Sort
     switch (sortOption) {
       case 'oldest':
-        data.sort((a, b) => b.dateSort - a.dateSort);
+        data.sort((a, b) => a.dateSort - b.dateSort);
         break;
       case 'items':
         data.sort((a, b) => {
@@ -95,25 +104,17 @@ export default function RequirementAssistHistory() {
         data.sort((a, b) => a.title.localeCompare(b.title));
         break;
       default: // newest
-        data.sort((a, b) => a.dateSort - b.dateSort);
+        data.sort((a, b) => b.dateSort - a.dateSort);
     }
     
     return data;
-  }, [statusFilter, debouncedSearch, sortOption]);
+  }, [historyItems, sortOption]);
 
   // Paginated data
   const paginatedData = useMemo(() => {
     const start = (currentPage - 1) * ITEMS_PER_PAGE;
-    return filteredData.slice(start, start + ITEMS_PER_PAGE);
-  }, [filteredData, currentPage]);
-
-  // Stats counts
-  const stats = useMemo(() => ({
-    total: mockGenerations.length,
-    published: mockGenerations.filter((i) => i.status === 'published').length,
-    draft: mockGenerations.filter((i) => i.status === 'draft').length,
-    failed: mockGenerations.filter((i) => i.status === 'failed').length,
-  }), []);
+    return sortedData.slice(start, start + ITEMS_PER_PAGE);
+  }, [sortedData, currentPage]);
 
   // Check if filters are active
   const hasFilters = Boolean(debouncedSearch || dateFrom || dateTo || statusFilter !== 'all');
@@ -169,9 +170,11 @@ export default function RequirementAssistHistory() {
   }, []);
 
   const handleDuplicate = useCallback((item: GenerationHistoryItem) => {
-    toast.success(`Duplicating "${item.title}"...`);
+    if (item._originalId) {
+      duplicateMutation.mutate(item._originalId);
+    }
     handleClosePanel();
-  }, [handleClosePanel]);
+  }, [duplicateMutation, handleClosePanel]);
 
   const handleExportPdf = useCallback((item: GenerationHistoryItem) => {
     toast.success(`Exporting "${item.title}" as PDF...`);
@@ -196,27 +199,71 @@ export default function RequirementAssistHistory() {
 
   const handleConfirmDelete = useCallback(() => {
     if (deleteModal.isBulk) {
-      toast.success(`Deleted ${selectedIds.size} generations`);
+      // Bulk delete - find original IDs from historyItems
+      const idsToDelete = historyItems
+        .filter(item => selectedIds.has(item.id) && item._originalId)
+        .map(item => item._originalId!);
+      
+      idsToDelete.forEach(id => deleteMutation.mutate(id));
       setSelectedIds(new Set());
-    } else if (deleteModal.item) {
-      toast.success(`Deleted "${deleteModal.item.title}"`);
-      selectedIds.delete(deleteModal.item.id);
-      setSelectedIds(new Set(selectedIds));
+    } else if (deleteModal.item?._originalId) {
+      deleteMutation.mutate(deleteModal.item._originalId);
     }
     setDeleteModal({ isOpen: false, isBulk: false });
     handleClosePanel();
-  }, [deleteModal, selectedIds, handleClosePanel]);
+  }, [deleteModal, selectedIds, historyItems, deleteMutation, handleClosePanel]);
 
   const handleOpenInWizard = useCallback((item: GenerationHistoryItem) => {
-    toast.success(`Opening "${item.title}" in Wizard...`);
     handleClosePanel();
-    // Pass generation ID to wizard via navigation state
-    navigate('/product/requirement-assist', { state: { generationId: item.id } });
+    navigate('/product/requirement-assist', { 
+      state: { generationId: item._originalId || item.id } 
+    });
   }, [navigate, handleClosePanel]);
 
   const handleNewGeneration = useCallback(() => {
     navigate('/product/requirement-assist');
   }, [navigate]);
+
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-[#f8fafc] flex flex-col">
+        <div className="bg-white border-b border-[#e2e8f0] px-6 py-3 flex items-center justify-between">
+          <div className="flex items-center gap-2 text-[13px]">
+            <span className="text-[#94a3b8]">Product</span>
+            <ChevronRight className="w-3.5 h-3.5 text-[#94a3b8]" />
+            <span className="text-[#94a3b8]">Requirement Assist™</span>
+            <ChevronRight className="w-3.5 h-3.5 text-[#94a3b8]" />
+            <span className="font-semibold text-[#0f172a]">History</span>
+          </div>
+        </div>
+        <RANavigationTabs />
+        <div className="grid grid-cols-4 gap-4 p-5">
+          {[1, 2, 3, 4].map(i => (
+            <Skeleton key={i} className="h-24 rounded-lg" />
+          ))}
+        </div>
+        <div className="px-5 space-y-3">
+          {[1, 2, 3, 4, 5].map(i => (
+            <Skeleton key={i} className="h-16 rounded-lg" />
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <div className="min-h-screen bg-[#f8fafc] flex flex-col items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-xl font-semibold text-destructive mb-2">Error loading generations</h2>
+          <p className="text-muted-foreground mb-4">{error.message}</p>
+          <Button onClick={() => window.location.reload()}>Retry</Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#f8fafc] flex flex-col">
@@ -243,10 +290,10 @@ export default function RequirementAssistHistory() {
 
       {/* Stats Bar */}
       <HistoryStatsBar
-        totalCount={stats.total}
-        publishedCount={stats.published}
-        draftCount={stats.draft}
-        failedCount={stats.failed}
+        totalCount={stats?.total ?? 0}
+        publishedCount={stats?.published ?? 0}
+        draftCount={stats?.draft ?? 0}
+        failedCount={stats?.failed ?? 0}
         activeFilter={statusFilter}
         onFilterChange={handleStatusFilterChange}
       />
@@ -290,7 +337,7 @@ export default function RequirementAssistHistory() {
           />
           <HistoryPagination
             currentPage={currentPage}
-            totalItems={filteredData.length}
+            totalItems={sortedData.length}
             itemsPerPage={ITEMS_PER_PAGE}
             onPageChange={setCurrentPage}
           />
