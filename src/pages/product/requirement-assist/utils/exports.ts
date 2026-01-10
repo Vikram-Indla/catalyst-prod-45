@@ -109,8 +109,7 @@ export const exportRequirementAssistPdf = async (items: GeneratedItem[], ctx: Ex
       },
     });
 
-    // @ts-expect-error - jspdf-autotable adds lastAutoTable
-    y = (doc as any).lastAutoTable.finalY + 6;
+    y = ((doc as unknown) as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 6;
   };
 
   addTable("Epics", epics);
