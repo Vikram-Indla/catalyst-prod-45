@@ -3,8 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Card, CardContent } from '@/components/ui/card';
 import { MetricCard, ReleaseCard, CycleCard, ActivityFeed } from '@/components/dashboard';
-import { Download, Plus, ArrowRight, Package } from 'lucide-react';
+import { Download, Plus, ArrowRight, Package, RefreshCw } from 'lucide-react';
 import { 
   mockMetrics, 
   mockReleases, 
@@ -135,6 +136,22 @@ export function CommandCenter() {
 
   return (
     <div className="min-h-screen bg-background">
+      {/* FIX 2: Context Bar */}
+      <div 
+        className="flex items-center justify-between px-6 bg-muted/30 border-b"
+        style={{ height: '44px' }}
+      >
+        <div className="text-sm font-medium text-foreground">
+          Command Center
+        </div>
+        <div className="flex items-center gap-3">
+          <span className="text-xs text-muted-foreground">Last updated: 2 min ago</span>
+          <Button variant="ghost" size="sm" className="h-7 px-2">
+            <RefreshCw className="h-3.5 w-3.5" />
+          </Button>
+        </div>
+      </div>
+
       {/* Page Header */}
       <div className="border-b bg-card px-6 py-5">
         <div className="flex items-start justify-between gap-4">
@@ -249,20 +266,22 @@ export function CommandCenter() {
             )}
           </div>
           
-          {/* Right: Recent Activity (1/3) */}
+          {/* Right: Recent Activity (1/3) - FIX 10: Wrap in Card */}
           <div>
             <SectionHeader 
               title="Recent Activity" 
               viewAllLink="/activity"
               viewAllLabel="View All"
             />
-            <div className="bg-card border rounded-lg p-4">
-              {isLoading ? (
-                <ActivitySkeleton />
-              ) : (
-                <ActivityFeed items={mockActivity} />
-              )}
-            </div>
+            <Card>
+              <CardContent className="p-4">
+                {isLoading ? (
+                  <ActivitySkeleton />
+                ) : (
+                  <ActivityFeed items={mockActivity} />
+                )}
+              </CardContent>
+            </Card>
           </div>
         </section>
       </div>

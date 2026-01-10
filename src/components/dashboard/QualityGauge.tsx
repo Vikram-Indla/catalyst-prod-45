@@ -9,28 +9,13 @@ interface QualityGaugeProps {
   animate?: boolean;
 }
 
-const statusColors = {
-  excellent: {
-    stroke: 'hsl(var(--success))',
-    bg: 'hsl(var(--success) / 0.1)',
-    text: 'text-emerald-600 dark:text-emerald-400',
-  },
-  good: {
-    stroke: 'hsl(var(--brand-primary))',
-    bg: 'hsl(var(--brand-primary) / 0.1)',
-    text: 'text-blue-600 dark:text-blue-400',
-  },
-  caution: {
-    stroke: 'hsl(var(--warning))',
-    bg: 'hsl(var(--warning) / 0.1)',
-    text: 'text-amber-600 dark:text-amber-400',
-  },
-  'at-risk': {
-    stroke: 'hsl(var(--danger))',
-    bg: 'hsl(var(--danger) / 0.1)',
-    text: 'text-red-600 dark:text-red-400',
-  },
-};
+// Get health color based on value - FIX 4
+function getHealthColor(health: number): { stroke: string; text: string } {
+  if (health >= 90) return { stroke: '#059669', text: 'text-emerald-600 dark:text-emerald-400' }; // success green - Excellent
+  if (health >= 75) return { stroke: '#2563eb', text: 'text-blue-600 dark:text-blue-400' }; // primary blue - Good
+  if (health >= 50) return { stroke: '#d97706', text: 'text-amber-600 dark:text-amber-400' }; // warning orange - Caution
+  return { stroke: '#ef4444', text: 'text-red-600 dark:text-red-400' }; // danger red - At Risk
+}
 
 export function QualityGauge({
   value,
@@ -40,7 +25,9 @@ export function QualityGauge({
   animate = true,
 }: QualityGaugeProps) {
   const [animatedValue, setAnimatedValue] = useState(animate ? 0 : value);
-  const colors = statusColors[status];
+  
+  // Use value-based color instead of status-based - FIX 4
+  const colors = getHealthColor(value);
   
   // Circle calculations
   const strokeWidth = 8;
@@ -117,7 +104,8 @@ export function QualityGauge({
         <span className={cn('text-2xl font-bold tabular-nums', colors.text)}>
           {Math.round(animatedValue)}%
         </span>
-        <span className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
+        {/* FIX 11: Change "HEALTH" to "Health" (sentence case) */}
+        <span className="text-[10px] font-medium tracking-wider text-muted-foreground">
           Health
         </span>
       </div>

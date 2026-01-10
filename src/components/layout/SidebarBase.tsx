@@ -28,13 +28,20 @@ export interface SidebarMenuItem {
   badgeVariant?: 'info' | 'danger';
 }
 
+export interface SidebarSection {
+  title: string;
+  items: SidebarMenuItem[];
+}
+
 export interface SidebarConfig {
   /** Badge text shown in the header (e.g., "PR", "EN", "RL") */
   badge: string;
   /** Section label shown when expanded (e.g., "Product", "Enterprise") */
   label: string;
-  /** Menu items to display */
-  items: SidebarMenuItem[];
+  /** Menu sections to display with headers */
+  sections?: SidebarSection[];
+  /** Flat menu items (legacy support) */
+  items?: SidebarMenuItem[];
   /** Footer item (e.g., Settings) - optional */
   footerItem?: SidebarMenuItem;
 }
@@ -154,221 +161,166 @@ export function SidebarBase({
 
         {/* Navigation Menu */}
         <nav style={{ flex: 1, overflowY: 'auto', padding: '4px 6px' }}>
-          {config.items.map((item) => {
-            const active = isActive(item.path, item.exact);
-            const CustomIcon = iconResolver?.(item.id) || item.icon;
-
-            const menuButton = (
-              <button
-                onClick={() => handleNavigation(item.path)}
-                style={{
-                  width: '100%',
-                  height: '44px',
-                  padding: '0',
-                  display: 'flex',
-                  alignItems: 'center',
-                  borderRadius: '6px',
-                  border: 'none',
-                  cursor: 'pointer',
-                  transition: 'background 0.15s ease, color 0.15s ease',
-                  marginBottom: '2px',
-                  position: 'relative',
-                  background: active ? 'var(--nav-active-bg)' : 'transparent',
-                  color: active ? 'hsl(var(--brand-primary))' : 'hsl(var(--foreground))',
-                  fontWeight: active ? 600 : 500,
-                  fontSize: '13px',
-                  fontFamily: 'inherit',
-                  outline: 'none',
-                }}
-                onMouseEnter={(e) => { 
-                  if (!active) e.currentTarget.style.background = 'var(--nav-hover-bg)'; 
-                }}
-                onMouseLeave={(e) => { 
-                  e.currentTarget.style.background = active ? 'var(--nav-active-bg)' : 'transparent'; 
-                }}
-              >
-                {/* Left indicator bar for active state - vertically centered, matches row height */}
-                {active && (
-                  <span 
-                    style={{
-                      position: 'absolute',
-                      left: 0,
-                      top: '6px',
-                      bottom: '6px',
-                      width: '3px',
-                      background: 'hsl(var(--brand-primary))',
-                      borderRadius: '0 2px 2px 0',
-                    }}
-                  />
-                )}
-                {/* Icon container - fixed 32px width, vertically centered */}
-                <span style={{ 
-                  width: '32px',
-                  height: '32px',
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  justifyContent: 'center',
-                  flexShrink: 0,
-                  marginLeft: expanded ? '6px' : '14px',
-                }}>
-                  {CustomIcon && (
-                    <CustomIcon 
-                      className="h-[18px] w-[18px]" 
-                      style={{ color: active ? 'hsl(var(--brand-primary))' : 'hsl(var(--foreground) / 0.7)' }}
-                    />
-                  )}
-                </span>
+          {/* Render sections if provided, otherwise render flat items */}
+          {config.sections ? (
+            config.sections.map((section, sectionIndex) => (
+              <div key={section.title} style={{ marginBottom: sectionIndex < config.sections!.length - 1 ? '16px' : '0' }}>
+                {/* Section Header - only show when expanded */}
                 {expanded && (
-                  <span style={{ 
-                    flex: 1, 
-                    textAlign: 'left',
-                    lineHeight: '44px',
-                  }}>{item.title}</span>
-                )}
-                {item.badge !== undefined && item.badge > 0 && (
-                  <span 
+                  <div
                     style={{
-                      fontSize: '10px',
+                      fontSize: '11px',
                       fontWeight: 600,
-                      padding: '2px 6px',
-                      borderRadius: '9999px',
-                      background: item.badgeVariant === 'danger' 
-                        ? 'hsl(var(--destructive))' 
-                        : 'hsl(var(--brand-primary))',
-                      color: item.badgeVariant === 'danger'
-                        ? 'hsl(var(--destructive-foreground))'
-                        : 'hsl(var(--primary-foreground))',
-                      minWidth: '18px',
-                      textAlign: 'center',
-                      marginRight: expanded ? '10px' : '0',
-                      position: expanded ? 'relative' : 'absolute',
-                      top: expanded ? 'auto' : '6px',
-                      right: expanded ? 'auto' : '6px',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.05em',
+                      color: 'var(--text-tertiary)',
+                      padding: '8px 12px 4px',
+                      marginTop: sectionIndex > 0 ? '8px' : '0',
                     }}
                   >
-                    {item.badge > 99 ? '99+' : item.badge}
-                  </span>
+                    {section.title}
+                  </div>
                 )}
-              </button>
-            );
-
-            if (!expanded) {
-              return (
-                <Tooltip key={item.id}>
-                  <TooltipTrigger asChild>
-                    {menuButton}
-                  </TooltipTrigger>
-                  <TooltipContent 
-                    side="right" 
-                    className="z-[100] bg-popover text-popover-foreground border border-border shadow-md"
-                  >
-                    {item.title}
-                  </TooltipContent>
-                </Tooltip>
-              );
-            }
-
-            return <React.Fragment key={item.id}>{menuButton}</React.Fragment>;
-          })}
+                {section.items.map((item) => renderMenuItem(item, isActive, iconResolver, expanded, handleNavigation))}
+              </div>
+            ))
+          ) : (
+            config.items?.map((item) => renderMenuItem(item, isActive, iconResolver, expanded, handleNavigation))
+          )}
         </nav>
 
         {/* Footer Item (e.g., Settings) */}
         {config.footerItem && (
           <div style={{ borderTop: '1px solid var(--divider)', padding: '6px' }}>
-            {(() => {
-              const item = config.footerItem;
-              const active = isActive(item.path, item.exact);
-              const CustomIcon = iconResolver?.(item.id) || item.icon;
-
-              const footerButton = (
-                <button
-                  onClick={() => handleNavigation(item.path)}
-                  style={{
-                    width: '100%',
-                    height: '44px',
-                    padding: '0',
-                    display: 'flex',
-                    alignItems: 'center',
-                    borderRadius: '6px',
-                    border: 'none',
-                    cursor: 'pointer',
-                    transition: 'background 0.15s ease, color 0.15s ease',
-                    position: 'relative',
-                    background: active ? 'var(--nav-active-bg)' : 'transparent',
-                    color: active ? 'hsl(var(--brand-primary))' : 'hsl(var(--foreground))',
-                    fontWeight: active ? 600 : 500,
-                    fontSize: '13px',
-                    fontFamily: 'inherit',
-                    outline: 'none',
-                  }}
-                  onMouseEnter={(e) => { 
-                    if (!active) e.currentTarget.style.background = 'var(--nav-hover-bg)'; 
-                  }}
-                  onMouseLeave={(e) => { 
-                    e.currentTarget.style.background = active ? 'var(--nav-active-bg)' : 'transparent'; 
-                  }}
-                >
-                  {active && (
-                    <span 
-                      style={{
-                        position: 'absolute',
-                        left: 0,
-                        top: '6px',
-                        bottom: '6px',
-                        width: '3px',
-                        background: 'hsl(var(--brand-primary))',
-                        borderRadius: '0 2px 2px 0',
-                      }}
-                    />
-                  )}
-                  {/* Icon container - fixed 32px width, vertically centered */}
-                  <span style={{ 
-                    width: '32px',
-                    height: '32px',
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    justifyContent: 'center',
-                    flexShrink: 0,
-                    marginLeft: expanded ? '6px' : '14px',
-                  }}>
-                    {CustomIcon && (
-                      <CustomIcon 
-                        className="h-[18px] w-[18px]" 
-                        style={{ color: active ? 'hsl(var(--brand-primary))' : 'hsl(var(--foreground) / 0.7)' }}
-                      />
-                    )}
-                  </span>
-                  {expanded && (
-                    <span style={{ 
-                      flex: 1, 
-                      textAlign: 'left',
-                      lineHeight: '44px',
-                    }}>{item.title}</span>
-                  )}
-                </button>
-              );
-
-              if (!expanded) {
-                return (
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      {footerButton}
-                    </TooltipTrigger>
-                    <TooltipContent 
-                      side="right" 
-                      className="z-[100] bg-popover text-popover-foreground border border-border shadow-md"
-                    >
-                      {item.title}
-                    </TooltipContent>
-                  </Tooltip>
-                );
-              }
-
-              return footerButton;
-            })()}
+            {renderMenuItem(config.footerItem, isActive, iconResolver, expanded, handleNavigation, true)}
           </div>
         )}
       </aside>
     </TooltipProvider>
   );
+}
+
+// Helper function to render a menu item
+function renderMenuItem(
+  item: SidebarMenuItem,
+  isActive: (path: string, exact?: boolean) => boolean,
+  iconResolver: ((itemId: string) => React.ComponentType<{ className?: string }> | undefined) | undefined,
+  expanded: boolean,
+  handleNavigation: (path: string) => void,
+  isFooter: boolean = false
+) {
+  const active = isActive(item.path, item.exact);
+  const CustomIcon = iconResolver?.(item.id) || item.icon;
+
+  const menuButton = (
+    <button
+      onClick={() => handleNavigation(item.path)}
+      style={{
+        width: '100%',
+        height: '44px',
+        padding: '0',
+        display: 'flex',
+        alignItems: 'center',
+        borderRadius: '6px',
+        border: 'none',
+        cursor: 'pointer',
+        transition: 'background 0.15s ease, color 0.15s ease',
+        marginBottom: '2px',
+        position: 'relative',
+        background: active ? 'var(--nav-active-bg)' : 'transparent',
+        color: active ? 'hsl(var(--brand-primary))' : 'hsl(var(--foreground))',
+        fontWeight: active ? 600 : 500,
+        fontSize: '13px',
+        fontFamily: 'inherit',
+        outline: 'none',
+      }}
+      onMouseEnter={(e) => { 
+        if (!active) e.currentTarget.style.background = 'var(--nav-hover-bg)'; 
+      }}
+      onMouseLeave={(e) => { 
+        e.currentTarget.style.background = active ? 'var(--nav-active-bg)' : 'transparent'; 
+      }}
+    >
+      {/* Left indicator bar for active state */}
+      {active && (
+        <span 
+          style={{
+            position: 'absolute',
+            left: 0,
+            top: '6px',
+            bottom: '6px',
+            width: '3px',
+            background: 'hsl(var(--brand-primary))',
+            borderRadius: '0 2px 2px 0',
+          }}
+        />
+      )}
+      {/* Icon container */}
+      <span style={{ 
+        width: '32px',
+        height: '32px',
+        display: 'flex', 
+        alignItems: 'center', 
+        justifyContent: 'center',
+        flexShrink: 0,
+        marginLeft: expanded ? '6px' : '14px',
+      }}>
+        {CustomIcon && (
+          <CustomIcon 
+            className="h-[18px] w-[18px]" 
+            style={{ color: active ? 'hsl(var(--brand-primary))' : 'hsl(var(--foreground) / 0.7)' }}
+          />
+        )}
+      </span>
+      {expanded && (
+        <span style={{ 
+          flex: 1, 
+          textAlign: 'left',
+          lineHeight: '44px',
+        }}>{item.title}</span>
+      )}
+      {item.badge !== undefined && item.badge > 0 && (
+        <span 
+          style={{
+            fontSize: '10px',
+            fontWeight: 600,
+            padding: '2px 6px',
+            borderRadius: '9999px',
+            background: item.badgeVariant === 'danger' 
+              ? 'hsl(var(--destructive))' 
+              : 'hsl(var(--brand-primary))',
+            color: item.badgeVariant === 'danger'
+              ? 'hsl(var(--destructive-foreground))'
+              : 'hsl(var(--primary-foreground))',
+            minWidth: '18px',
+            textAlign: 'center',
+            marginRight: expanded ? '10px' : '0',
+            position: expanded ? 'relative' : 'absolute',
+            top: expanded ? 'auto' : '6px',
+            right: expanded ? 'auto' : '6px',
+          }}
+        >
+          {item.badge > 99 ? '99+' : item.badge}
+        </span>
+      )}
+    </button>
+  );
+
+  if (!expanded) {
+    return (
+      <Tooltip key={item.id}>
+        <TooltipTrigger asChild>
+          {menuButton}
+        </TooltipTrigger>
+        <TooltipContent 
+          side="right" 
+          className="z-[100] bg-popover text-popover-foreground border border-border shadow-md"
+        >
+          {item.title}
+        </TooltipContent>
+      </Tooltip>
+    );
+  }
+
+  return <React.Fragment key={item.id}>{menuButton}</React.Fragment>;
 }

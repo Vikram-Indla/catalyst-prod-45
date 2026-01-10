@@ -7,9 +7,12 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 
-export function NotificationsPanel() {
+interface NotificationsPanelProps {
+  notificationCount?: number;
+}
+
+export function NotificationsPanel({ notificationCount = 3 }: NotificationsPanelProps) {
   const [open, setOpen] = useState(false);
-  const notificationCount = 0;
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -17,7 +20,9 @@ export function NotificationsPanel() {
         <Button variant="ghost" size="icon" className="h-8 w-8 relative">
           <Bell className="h-4 w-4" />
           {notificationCount > 0 && (
-            <span className="absolute top-1 right-1 h-2 w-2 bg-destructive rounded-full" />
+            <span className="absolute -top-0.5 -right-0.5 h-4 w-4 bg-destructive rounded-full flex items-center justify-center text-[10px] font-semibold text-destructive-foreground">
+              {notificationCount > 9 ? '9+' : notificationCount}
+            </span>
           )}
         </Button>
       </PopoverTrigger>
