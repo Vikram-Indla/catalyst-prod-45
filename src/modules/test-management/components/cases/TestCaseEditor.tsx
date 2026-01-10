@@ -414,31 +414,6 @@ export function TestCaseEditor({
             <ChevronLeft className="h-5 w-5" />
           </button>
 
-          {/* Status Dropdown - Only show for existing cases */}
-          {isEditing && (
-            <Select value={status} onValueChange={(v) => { setStatus(v); markDirty(); }}>
-              <SelectTrigger className="w-[140px] h-9">
-                <div className="flex items-center gap-2">
-                  <span className={cn(
-                    "w-2 h-2 rounded-full",
-                    STATUS_OPTIONS.find(s => s.value === status)?.color || 'bg-muted-foreground'
-                  )} />
-                  <SelectValue />
-                </div>
-              </SelectTrigger>
-              <SelectContent>
-                {STATUS_OPTIONS.map((opt) => (
-                  <SelectItem key={opt.value} value={opt.value}>
-                    <div className="flex items-center gap-2">
-                      <span className={cn("w-2 h-2 rounded-full", opt.color)} />
-                      {opt.label}
-                    </div>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          )}
-
           {/* Case Key */}
           <span className="text-sm font-medium text-muted-foreground">
             {testCase?.case_key || 'New Case'}
@@ -447,19 +422,6 @@ export function TestCaseEditor({
 
         {/* Right side */}
         <div className="flex items-center gap-3">
-          {/* Assignee Picker - Only shows QA Testers */}
-          {isEditing && (
-            <QATesterPicker
-              value={assigneeId || null}
-              onChange={(v) => { 
-                setAssigneeId(v === 'UNASSIGNED' ? '' : (v || '')); 
-                markDirty(); 
-              }}
-              placeholder="Assign to QA..."
-              showUnassigned
-            />
-          )}
-
           {/* Save button */}
           <Button
             onClick={handleSubmit}
