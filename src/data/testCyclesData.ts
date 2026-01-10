@@ -3,7 +3,7 @@ export interface TestCycle {
   name: string;
   releaseId: string;
   releaseName: string;
-  environment: 'dev' | 'staging' | 'production';
+  environment: 'dev' | 'beta' | 'staging' | 'uat' | 'production';
   status: 'planned' | 'in_progress' | 'completed' | 'aborted';
   progress: number;
   totalTests: number;
@@ -291,7 +291,9 @@ export const statusOptions = [
 export const environmentOptions = [
   { value: 'all', label: 'All Environments' },
   { value: 'dev', label: 'Development' },
+  { value: 'beta', label: 'Beta' },
   { value: 'staging', label: 'Staging' },
+  { value: 'uat', label: 'UAT' },
   { value: 'production', label: 'Production' },
 ];
 
