@@ -21,6 +21,10 @@ import {
   User,
   Users,
   UserX,
+  UserPlus,
+  CheckCircle2,
+  Flag,
+  FileType,
 } from 'lucide-react';
 import { ColumnSelector } from './ColumnSelector';
 import { AISearchSuggestions } from './AISearchSuggestions';
@@ -68,6 +72,10 @@ interface CasesToolbarProps {
   onBulkMove: () => void;
   onBulkDelete: () => void;
   onBulkExport: () => void;
+  onBulkAssignTo?: (userId: string | null) => void;
+  onBulkType?: (typeId: string) => void;
+  onBulkPriority?: (priorityId: string) => void;
+  onBulkStatus?: (status: CaseStatus) => void;
   onClearSelection: () => void;
   onImport?: () => void;
   onRefresh?: () => void;
@@ -111,6 +119,10 @@ export function CasesToolbar({
   onBulkMove,
   onBulkDelete,
   onBulkExport,
+  onBulkAssignTo,
+  onBulkType,
+  onBulkPriority,
+  onBulkStatus,
   onClearSelection,
   onImport,
   onRefresh,
@@ -411,7 +423,94 @@ export function CasesToolbar({
                 <ChevronDown className="h-4 w-4 ml-1" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
+            <DropdownMenuContent align="end" className="w-56">
+              {/* Assign To submenu */}
+              {onBulkAssignTo && (
+                <DropdownMenu>
+                  <DropdownMenuTrigger className="flex items-center w-full px-2 py-1.5 text-sm cursor-pointer hover:bg-accent rounded-sm">
+                    <UserPlus className="h-4 w-4 mr-2" />
+                    Assign To
+                    <ChevronDown className="h-4 w-4 ml-auto" />
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent side="left" align="start" className="w-48">
+                    <DropdownMenuItem onClick={() => onBulkAssignTo(null)}>
+                      <UserX className="h-4 w-4 mr-2" />
+                      Unassigned
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    {teamMembers.map((member) => (
+                      <DropdownMenuItem key={member.id} onClick={() => onBulkAssignTo(member.id)}>
+                        <Avatar className="h-5 w-5 mr-2">
+                          <AvatarImage src={member.avatar_url || undefined} />
+                          <AvatarFallback className="text-xs">{member.full_name?.charAt(0) || '?'}</AvatarFallback>
+                        </Avatar>
+                        {member.full_name}
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              )}
+              
+              {/* Type submenu */}
+              {onBulkType && caseTypes.length > 0 && (
+                <DropdownMenu>
+                  <DropdownMenuTrigger className="flex items-center w-full px-2 py-1.5 text-sm cursor-pointer hover:bg-accent rounded-sm">
+                    <FileType className="h-4 w-4 mr-2" />
+                    Type
+                    <ChevronDown className="h-4 w-4 ml-auto" />
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent side="left" align="start" className="w-48">
+                    {caseTypes.map((type) => (
+                      <DropdownMenuItem key={type.id} onClick={() => onBulkType(type.id)}>
+                        {type.name}
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              )}
+              
+              {/* Priority submenu */}
+              {onBulkPriority && priorities.length > 0 && (
+                <DropdownMenu>
+                  <DropdownMenuTrigger className="flex items-center w-full px-2 py-1.5 text-sm cursor-pointer hover:bg-accent rounded-sm">
+                    <Flag className="h-4 w-4 mr-2" />
+                    Priority
+                    <ChevronDown className="h-4 w-4 ml-auto" />
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent side="left" align="start" className="w-48">
+                    {priorities.map((priority) => (
+                      <DropdownMenuItem key={priority.id} onClick={() => onBulkPriority(priority.id)}>
+                        <span 
+                          className="w-2 h-2 rounded-full mr-2" 
+                          style={{ backgroundColor: priority.color }}
+                        />
+                        {priority.name}
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              )}
+              
+              {/* Status submenu */}
+              {onBulkStatus && (
+                <DropdownMenu>
+                  <DropdownMenuTrigger className="flex items-center w-full px-2 py-1.5 text-sm cursor-pointer hover:bg-accent rounded-sm">
+                    <CheckCircle2 className="h-4 w-4 mr-2" />
+                    Status
+                    <ChevronDown className="h-4 w-4 ml-auto" />
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent side="left" align="start" className="w-48">
+                    {STATUS_OPTIONS.map((status) => (
+                      <DropdownMenuItem key={status.value} onClick={() => onBulkStatus(status.value)}>
+                        {status.label}
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              )}
+              
+              <DropdownMenuSeparator />
+              
               <DropdownMenuItem onClick={onBulkCopy}>
                 <Copy className="h-4 w-4 mr-2" />
                 Copy

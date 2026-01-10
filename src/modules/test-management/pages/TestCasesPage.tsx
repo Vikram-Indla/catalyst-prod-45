@@ -25,14 +25,16 @@ import {
   useBulkDeleteTestCases,
   useBulkCopyTestCases,
   useAddTestCasesToCycle,
+  useBulkUpdateTestCases,
   useCreateFolder,
   useUpdateFolder,
   useDeleteFolder,
   useMoveFolder,
   useDuplicateFolder,
   type TMTestCase,
-  type CaseStatus,
+  type BulkCaseStatus,
 } from '@/hooks/test-management';
+import { CaseStatus } from '@/types/test-management';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
 import { catalystToast } from '@/lib/catalystToast';
@@ -219,6 +221,7 @@ export function TestCasesPage() {
   const moveCase = useMoveTestCase();
   const bulkDeleteCases = useBulkDeleteTestCases();
   const bulkCopyCases = useBulkCopyTestCases();
+  const bulkUpdateCases = useBulkUpdateTestCases();
   const addToCycle = useAddTestCasesToCycle();
   const createFolder = useCreateFolder();
   const updateFolder = useUpdateFolder();
@@ -432,6 +435,45 @@ export function TestCasesPage() {
     catalystToast.success('Export complete', `${selectedIds.size} test cases exported`);
     setSelectedIds(new Set());
   }, [selectedIds, cases]);
+
+  const handleBulkAssignTo = useCallback((userId: string | null) => {
+    if (selectedIds.size === 0 || !projectId) return;
+    const selectedCases = cases.filter(c => selectedIds.has(c.id));
+    const caseDetails = selectedCases.map(c => ({ key: c.case_key, title: c.title }));
+    bulkUpdateCases.mutate({
+      case_ids: Array.from(selectedIds),
+      project_id: projectId,
+      updates: { assigned_to: userId },
+      case_details: caseDetails,
+    }, { onSuccess: () => setSelectedIds(new Set()) });
+  }, [selectedIds, projectId, cases, bulkUpdateCases]);
+
+  const handleBulkType = useCallback((typeId: string) => {
+    if (selectedIds.size === 0 || !projectId) return;
+    bulkUpdateCases.mutate({
+      case_ids: Array.from(selectedIds),
+      project_id: projectId,
+      updates: { type_id: typeId },
+    }, { onSuccess: () => setSelectedIds(new Set()) });
+  }, [selectedIds, projectId, bulkUpdateCases]);
+
+  const handleBulkPriority = useCallback((priorityId: string) => {
+    if (selectedIds.size === 0 || !projectId) return;
+    bulkUpdateCases.mutate({
+      case_ids: Array.from(selectedIds),
+      project_id: projectId,
+      updates: { priority_id: priorityId },
+    }, { onSuccess: () => setSelectedIds(new Set()) });
+  }, [selectedIds, projectId, bulkUpdateCases]);
+
+  const handleBulkStatus = useCallback((status: BulkCaseStatus) => {
+    if (selectedIds.size === 0 || !projectId) return;
+    bulkUpdateCases.mutate({
+      case_ids: Array.from(selectedIds),
+      project_id: projectId,
+      updates: { status },
+    }, { onSuccess: () => setSelectedIds(new Set()) });
+  }, [selectedIds, projectId, bulkUpdateCases]);
 
   const handleOpenAIGenerator = useCallback(() => {
     setAiGeneratorOpen(true);
@@ -683,6 +725,10 @@ export function TestCasesPage() {
           onBulkMove={handleBulkMove}
           onBulkDelete={handleBulkDelete}
           onBulkExport={handleBulkExport}
+          onBulkAssignTo={handleBulkAssignTo}
+          onBulkType={handleBulkType}
+          onBulkPriority={handleBulkPriority}
+          onBulkStatus={handleBulkStatus}
           onClearSelection={() => setSelectedIds(new Set())}
           onImport={() => setImportDialogOpen(true)}
           priorities={prioritiesForUI}

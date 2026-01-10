@@ -4,6 +4,8 @@ import { TMTestCase, TMCaseStep, CaseFilters, CreateCaseInput, UpdateCaseInput }
 import { catalystToast } from '@/lib/catalystToast';
 
 type DbCaseStatus = 'draft' | 'ready' | 'approved' | 'deprecated';
+// CaseStatus for bulk operations uses DB-level values
+export type BulkCaseStatus = 'draft' | 'ready' | 'approved' | 'needs_update' | 'deprecated';
 
 const statusToDb = (status: string): DbCaseStatus => {
   const map: Record<string, DbCaseStatus> = {
@@ -738,6 +740,65 @@ export function useAddTestCasesToCycle() {
     },
     onError: (error: Error) => {
       catalystToast.error('Failed to add cases to cycle', error.message);
+    },
+  });
+}
+
+/**
+ * Hook to bulk update test cases (status, priority, type, assigned_to)
+ */
+export function useBulkUpdateTestCases() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (input: {
+      case_ids: string[];
+      project_id: string;
+      updates: {
+        status?: BulkCaseStatus;
+        priority_id?: string;
+        type_id?: string;
+        assigned_to?: string | null;
+      };
+      case_details?: { key: string; title: string }[];
+    }): Promise<{ count: number; case_details?: { key: string; title: string }[] }> => {
+      const { case_ids, updates, case_details } = input;
+      
+      if (case_ids.length === 0) throw new Error('No cases selected');
+      
+      const dbUpdates: Record<string, unknown> = {};
+      
+      if (updates.status) dbUpdates.status = statusToDb(updates.status);
+      if (updates.priority_id !== undefined) dbUpdates.priority_id = updates.priority_id;
+      if (updates.type_id !== undefined) dbUpdates.case_type_id = updates.type_id;
+      if (updates.assigned_to !== undefined) dbUpdates.assigned_to = updates.assigned_to;
+      
+      const { error } = await supabase
+        .from('tm_test_cases')
+        .update(dbUpdates)
+        .in('id', case_ids);
+      
+      if (error) throw error;
+      
+      return { count: case_ids.length, case_details };
+    },
+    onSuccess: (result, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['tm-cases', variables.project_id] });
+      
+      const { updates } = variables;
+      const count = result.count;
+      
+      let action = '';
+      if (updates.status) action = `status to ${updates.status}`;
+      else if (updates.priority_id) action = 'priority';
+      else if (updates.type_id) action = 'type';
+      else if (updates.assigned_to === null) action = 'to unassigned';
+      else if (updates.assigned_to) action = 'assigned user';
+      
+      catalystToast.success(`Updated ${count} test case${count > 1 ? 's' : ''}`, `Changed ${action}`);
+    },
+    onError: (error: Error) => {
+      catalystToast.error('Failed to bulk update test cases', error.message);
     },
   });
 }
