@@ -379,7 +379,9 @@ export function ReviewStep({ items = mockItems, generationId, onUpdateItem, onRe
                 <CheckCircle className="w-4 h-4 text-emerald-500" />
                 <span className="flex-1 text-muted-foreground">Avg Confidence</span>
                 <span className="px-2.5 py-1 bg-emerald-100 text-emerald-600 rounded text-xs font-semibold">
-                  {Math.round(displayItems.reduce((acc, i) => acc + i.confidence, 0) / displayItems.length)}%
+                  {displayItems.length > 0 
+                    ? `${Math.round(displayItems.reduce((acc, i) => acc + i.confidence, 0) / displayItems.length)}%`
+                    : '0%'}
                 </span>
               </div>
               <div className="flex items-center gap-2.5 py-2 text-sm">
