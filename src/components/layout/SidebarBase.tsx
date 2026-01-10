@@ -24,6 +24,8 @@ export interface SidebarMenuItem {
   exact?: boolean;
   /** Optional badge count to display */
   badge?: number;
+  /** Badge variant for color styling */
+  badgeVariant?: 'info' | 'danger';
 }
 
 export interface SidebarConfig {
@@ -230,8 +232,12 @@ export function SidebarBase({
                       fontWeight: 600,
                       padding: '2px 6px',
                       borderRadius: '9999px',
-                      background: 'hsl(var(--brand-primary))',
-                      color: 'hsl(var(--primary-foreground))',
+                      background: item.badgeVariant === 'danger' 
+                        ? 'hsl(var(--destructive))' 
+                        : 'hsl(var(--brand-primary))',
+                      color: item.badgeVariant === 'danger'
+                        ? 'hsl(var(--destructive-foreground))'
+                        : 'hsl(var(--primary-foreground))',
                       minWidth: '18px',
                       textAlign: 'center',
                       marginRight: expanded ? '10px' : '0',

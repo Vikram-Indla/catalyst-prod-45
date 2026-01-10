@@ -6,6 +6,7 @@ import { EnterpriseSidebar } from './EnterpriseSidebar';
 import { ProductRoomSidebar } from './ProductRoomSidebar';
 import { ReleaseRoomSidebar } from './OperationsSidebar';
 import { TestManagementSidebar } from './TestManagementSidebar';
+import { ReleasesManagementSidebar } from './ReleasesManagementSidebar';
 import { CatalystContextProvider, useCatalystContext } from '@/contexts/CatalystContext';
 import { AnnouncementBanner } from '@/components/notifications/AnnouncementBanner';
 import { useTrackLastRoute } from '@/hooks/useSessionPersistence';
@@ -45,8 +46,11 @@ function CatalystShellContent() {
   // Check if on product/industry route
   const isProductRoute = location.pathname.startsWith('/industry') || location.pathname.startsWith('/product');
   
-  // Check if on release route
+  // Check if on release route (Operations/Incidents)
   const isReleaseRoute = location.pathname.startsWith('/release');
+  
+  // Check if on releases route (Release & Test Management module)
+  const isReleasesRoute = location.pathname.startsWith('/releases');
   
   // Check if on test management route
   const isTestsRoute = location.pathname.startsWith('/tests');
@@ -96,7 +100,17 @@ function CatalystShellContent() {
       return null;
     }
 
-    // Test Management sidebar
+    // Release & Test Management sidebar (new module)
+    if (isReleasesRoute) {
+      return (
+        <ReleasesManagementSidebar
+          expanded={sidebarExpanded}
+          onToggle={() => setSidebarExpanded(!sidebarExpanded)}
+        />
+      );
+    }
+
+    // Test Management sidebar (legacy)
     if (isTestsRoute) {
       return (
         <TestManagementSidebar
@@ -106,7 +120,7 @@ function CatalystShellContent() {
       );
     }
 
-    // Release route sidebar
+    // Release route sidebar (Operations/Incidents)
     if (isReleaseRoute) {
       return (
         <ReleaseRoomSidebar
