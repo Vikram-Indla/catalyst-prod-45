@@ -266,7 +266,7 @@ export function ExecutionRunnerPage() {
       </main>
 
       {/* Footer with shortcuts and stats */}
-      <ExecutionFooter run={run} steps={steps} />
+      <ExecutionFooter run={run} steps={steps} currentStepIndex={currentStepIndex} onStepSelect={goToStep} />
 
       {/* Quick Defect Dialog */}
       <QuickDefectDialog

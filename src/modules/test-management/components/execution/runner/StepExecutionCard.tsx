@@ -80,20 +80,22 @@ export function StepExecutionCard({
   onLogDefect,
   isUpdating,
 }: StepExecutionCardProps) {
-  const [isExpanded, setIsExpanded] = useState(isActive);
+  const status = stepResult.status as ExecutionStatus;
+  const isCompleted = ['passed', 'failed', 'blocked', 'skipped'].includes(status);
+  
+  // Auto-expand: active steps OR not_run steps should start expanded
+  const [isExpanded, setIsExpanded] = useState(isActive || status === 'not_run' || status === 'in_progress');
   const [actualResult, setActualResult] = useState(stepResult.actual_result || '');
 
-  const status = stepResult.status as ExecutionStatus;
   const config = statusConfig[status];
   const step = stepResult.step;
-  const isCompleted = ['passed', 'failed', 'blocked', 'skipped'].includes(status);
 
-  // Auto-expand when becomes active
+  // Auto-expand when becomes active or status changes to not_run
   React.useEffect(() => {
-    if (isActive) {
+    if (isActive || status === 'not_run' || status === 'in_progress') {
       setIsExpanded(true);
     }
-  }, [isActive]);
+  }, [isActive, status]);
 
   return (
     <Collapsible open={isExpanded} onOpenChange={setIsExpanded}>
