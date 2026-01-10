@@ -243,7 +243,7 @@ import KnowledgeHubDocumentPage from "./pages/KnowledgeHubDocumentPage";
 import KnowledgeHubPage from "./pages/KnowledgeHubPage";
 import KnowledgeHubSpacePage from "./pages/KnowledgeHubSpacePage";
 
-// Release Management Module
+// Release Management Module (Incidents only - Releases removed)
 import {
   IncidentsList,
   IncidentDetail,
@@ -251,11 +251,6 @@ import {
   CreateIncident,
   CommitteeQueue,
   IncidentReports,
-  VersionsList,
-  VersionDetail,
-  ReleaseCalendar,
-  ReleaseOverview,
-  ReleaseSettings
 } from "./pages/release";
 
 // Incident Room (New)
@@ -263,8 +258,6 @@ import IncidentRoomList from "./pages/release/IncidentRoomList";
 import IncidentRoomDetail from "./pages/release/IncidentRoomDetail";
 import IncidentCommandCenter from "./pages/release/IncidentCommandCenter";
 
-// Release Calendar Module (Forward Schedule of Change)
-import ReleaseCalendarFSC from "./modules/release-calendar/pages/ReleaseCalendarPage";
 
 // Incident Analytics
 const IncidentAnalyticsPage = lazy(() => import("./modules/incidents/analytics/pages/IncidentAnalyticsPage"));
@@ -743,9 +736,8 @@ const App = () => (
               <Route path="/tests/execution/:cycleId" element={<ProtectedRoute><ExecutionRunnerPage /></ProtectedRoute>} />
               <Route path="/tests/execution/:cycleId/:scopeId" element={<ProtectedRoute><ExecutionRunnerPage /></ProtectedRoute>} />
               
-              {/* Release Management Routes - LOCKED FOR UAT */}
+              {/* Operations (Incidents) Routes */}
               <Route path="/release" element={<Navigate to="/release/incidents" replace />} />
-              <Route path="/release/overview" element={<ReleaseOverview />} />
               
               {/* Incident Module - Canonical Routes Only */}
               <Route path="/release/incidents" element={<IncidentRoomList />} />
@@ -765,12 +757,6 @@ const App = () => (
               {/* Incident Support Routes */}
               <Route path="/release/incident-command-center" element={<IncidentCommandCenter />} />
               <Route path="/release/committee-queue" element={<CommitteeQueue />} />
-              <Route path="/release/versions" element={<VersionsList />} />
-              <Route path="/release/versions/calendar" element={<ReleaseCalendar />} />
-              <Route path="/release/versions/:id" element={<VersionDetail />} />
-              <Route path="/release/calendar" element={<ReleaseCalendarFSC />} />
-              <Route path="/release/change-calendar" element={<ReleaseCalendarFSC />} />
-              <Route path="/release/settings" element={<ReleaseSettings />} />
               {/* Kanban Boards Routes - Program Scoped */}
               <Route path="/programs/:programId/kanban-boards" element={<TeamComingSoon />} />
               <Route path="/programs/:programId/kanban-boards/:boardId" element={<KanbanBoardView />} />

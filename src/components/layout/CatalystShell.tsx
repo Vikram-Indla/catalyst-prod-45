@@ -4,7 +4,7 @@ import { CatalystHeader } from '@/components/ja/CatalystHeader';
 import { UnifiedSidebar } from './UnifiedSidebar';
 import { EnterpriseSidebar } from './EnterpriseSidebar';
 import { ProductRoomSidebar } from './ProductRoomSidebar';
-import { ReleaseRoomSidebar } from './ReleaseRoomSidebar';
+import { ReleaseRoomSidebar } from './OperationsSidebar';
 import { TestManagementSidebar } from './TestManagementSidebar';
 import { CatalystContextProvider, useCatalystContext } from '@/contexts/CatalystContext';
 import { AnnouncementBanner } from '@/components/notifications/AnnouncementBanner';

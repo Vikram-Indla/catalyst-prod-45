@@ -1,38 +1,36 @@
-import { AlertCircle, Tag, Calendar, Settings, List, Users, FileText } from 'lucide-react';
-import { SidebarBase, SidebarConfig, SidebarMenuItem } from './SidebarBase';
+import { List, Users, FileText, Settings } from 'lucide-react';
+import { SidebarBase, SidebarConfig } from './SidebarBase';
 import { useOpenIncidentCount } from '@/hooks/useOpenIncidentCount';
 
-interface ReleaseRoomSidebarProps {
+interface OperationsSidebarProps {
   expanded: boolean;
   onToggle: () => void;
   className?: string;
 }
 
-export function ReleaseRoomSidebar({ expanded, onToggle, className }: ReleaseRoomSidebarProps) {
+export function ReleaseRoomSidebar({ expanded, onToggle, className }: OperationsSidebarProps) {
   const { data: openIncidentCount = 0 } = useOpenIncidentCount();
 
-  const releaseSidebarConfig: SidebarConfig = {
-    badge: 'RL',
-    label: 'Release',
+  const operationsSidebarConfig: SidebarConfig = {
+    badge: 'OP',
+    label: 'Operations',
     items: [
       { id: 'incidents', title: 'Incident List', path: '/release/incidents', icon: List, exact: true, badge: openIncidentCount },
       { id: 'incident-reports', title: 'Incident Reports', path: '/release/incident-reports', icon: FileText, exact: true },
       { id: 'committee-queue', title: 'Committee Queue', path: '/release/committee-queue', icon: Users, exact: true },
-      { id: 'versions', title: 'Releases', path: '/release/versions', icon: Tag, exact: false },
-      { id: 'calendar', title: 'Release Calendar', path: '/release/calendar', icon: Calendar, exact: true },
     ],
     footerItem: {
-      id: 'release-settings',
-      title: 'Release Settings',
-      path: '/release/settings',
+      id: 'operations-settings',
+      title: 'Operations Settings',
+      path: '/admin/incident',
       icon: Settings,
-      exact: true,
+      exact: false,
     },
   };
 
   return (
     <SidebarBase
-      config={releaseSidebarConfig}
+      config={operationsSidebarConfig}
       expanded={expanded}
       onToggle={onToggle}
       className={className}
