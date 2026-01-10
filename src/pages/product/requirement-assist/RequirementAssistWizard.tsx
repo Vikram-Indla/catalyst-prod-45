@@ -435,7 +435,14 @@ export default function RequirementAssistWizard() {
         {state.currentStep === 3 && (
           <GenerateStep
             generationId={state.generationId}
+            inputText={state.inputContent}
             selectedOutputs={state.selectedOutputs}
+            settings={{
+              model: aiSettings?.ai_model,
+              temperature: aiSettings?.temperature,
+              maxTokens: aiSettings?.max_tokens,
+              systemPrompt: aiSettings?.system_prompt,
+            }}
             onComplete={handleGenerateComplete}
             onCancel={() => setCurrentStep(1)}
           />
