@@ -1,10 +1,10 @@
 /**
  * Test Case Steps Component
- * Displays and manages test steps with drag-and-drop
+ * Displays and manages test steps with full interactivity
  */
 
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, Reorder } from 'framer-motion';
 import { 
   GripVertical, 
   Plus, 
@@ -17,6 +17,8 @@ import {
   Trash2,
   Paperclip,
   Upload,
+  Loader2,
+  Check,
   X,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -28,6 +30,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import type { TestStep } from '@/data/testCaseDetailData';
 
@@ -36,14 +39,17 @@ interface TestCaseStepsProps {
 }
 
 export function TestCaseSteps({ steps: initialSteps }: TestCaseStepsProps) {
-  const [steps, setSteps] = useState(initialSteps);
+  const [steps, setSteps] = useState<TestStep[]>(initialSteps);
   const [showAddForm, setShowAddForm] = useState(false);
   const [newStep, setNewStep] = useState({ action: '', expectedResult: '' });
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [editingStepId, setEditingStepId] = useState<string | null>(null);
+  const [editingStep, setEditingStep] = useState({ action: '', expectedResult: '' });
 
   const handleAddStep = () => {
     if (newStep.action.trim() && newStep.expectedResult.trim()) {
       const step: TestStep = {
-        id: `step-${steps.length + 1}`,
+        id: `step-${Date.now()}`,
         action: newStep.action,
         expectedResult: newStep.expectedResult,
         attachments: [],
@@ -51,7 +57,89 @@ export function TestCaseSteps({ steps: initialSteps }: TestCaseStepsProps) {
       setSteps([...steps, step]);
       setNewStep({ action: '', expectedResult: '' });
       setShowAddForm(false);
+      toast.success('Step added successfully');
     }
+  };
+
+  const handleAIGenerate = async () => {
+    setIsGenerating(true);
+    
+    // Simulate AI processing
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    
+    // Mock AI-generated steps
+    const aiSteps: TestStep[] = [
+      {
+        id: `step-ai-${Date.now()}-1`,
+        action: "Verify the login form has CSRF token protection",
+        expectedResult: "Hidden CSRF token field is present in the form HTML",
+        attachments: []
+      },
+      {
+        id: `step-ai-${Date.now()}-2`,
+        action: "Attempt login with SQL injection in email field",
+        expectedResult: "System sanitizes input and shows 'Invalid email format' error",
+        attachments: []
+      },
+      {
+        id: `step-ai-${Date.now()}-3`,
+        action: "Verify rate limiting after 5 failed attempts",
+        expectedResult: "Account is temporarily locked with message 'Too many attempts. Try again in 15 minutes.'",
+        attachments: []
+      }
+    ];
+    
+    setSteps([...steps, ...aiSteps]);
+    setIsGenerating(false);
+    toast.success(`AI generated ${aiSteps.length} test steps`);
+  };
+
+  const handleDeleteStep = (stepId: string) => {
+    setSteps(steps.filter(s => s.id !== stepId));
+    toast.success('Step deleted');
+  };
+
+  const handleDuplicateStep = (step: TestStep) => {
+    const newStep: TestStep = { ...step, id: `step-${Date.now()}` };
+    const index = steps.findIndex(s => s.id === step.id);
+    const newSteps = [...steps];
+    newSteps.splice(index + 1, 0, newStep);
+    setSteps(newSteps);
+    toast.success('Step duplicated');
+  };
+
+  const handleMoveStep = (stepId: string, direction: 'up' | 'down') => {
+    const index = steps.findIndex(s => s.id === stepId);
+    if ((direction === 'up' && index === 0) || (direction === 'down' && index === steps.length - 1)) {
+      return;
+    }
+    const newIndex = direction === 'up' ? index - 1 : index + 1;
+    const newSteps = [...steps];
+    [newSteps[index], newSteps[newIndex]] = [newSteps[newIndex], newSteps[index]];
+    setSteps(newSteps);
+    toast.success(`Step moved ${direction}`);
+  };
+
+  const startEditing = (step: TestStep) => {
+    setEditingStepId(step.id);
+    setEditingStep({ action: step.action, expectedResult: step.expectedResult });
+  };
+
+  const saveEdit = () => {
+    if (editingStep.action.trim() && editingStep.expectedResult.trim()) {
+      setSteps(steps.map(s => 
+        s.id === editingStepId 
+          ? { ...s, action: editingStep.action, expectedResult: editingStep.expectedResult }
+          : s
+      ));
+      setEditingStepId(null);
+      toast.success('Step updated');
+    }
+  };
+
+  const cancelEdit = () => {
+    setEditingStepId(null);
+    setEditingStep({ action: '', expectedResult: '' });
   };
 
   const estimatedTime = `${steps.length * 0.5 + 2} min`;
@@ -68,9 +156,24 @@ export function TestCaseSteps({ steps: initialSteps }: TestCaseStepsProps) {
         </div>
 
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" className="h-8">
-            <Sparkles className="w-3.5 h-3.5 mr-1.5 text-purple-600" />
-            AI Generate Steps
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="h-8"
+            onClick={handleAIGenerate}
+            disabled={isGenerating}
+          >
+            {isGenerating ? (
+              <>
+                <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" />
+                Generating...
+              </>
+            ) : (
+              <>
+                <Sparkles className="w-3.5 h-3.5 mr-1.5 text-purple-600" />
+                AI Generate Steps
+              </>
+            )}
           </Button>
           <Button size="sm" className="h-8" onClick={() => setShowAddForm(true)}>
             <Plus className="w-3.5 h-3.5 mr-1.5" />
@@ -79,12 +182,34 @@ export function TestCaseSteps({ steps: initialSteps }: TestCaseStepsProps) {
         </div>
       </div>
 
-      {/* Steps List */}
-      <div className="space-y-3">
+      {/* Steps List with Reorder */}
+      <Reorder.Group 
+        axis="y" 
+        values={steps} 
+        onReorder={setSteps}
+        className="space-y-3"
+      >
         {steps.map((step, index) => (
-          <StepCard key={step.id} step={step} index={index} />
+          <Reorder.Item key={step.id} value={step}>
+            <StepCard 
+              step={step} 
+              index={index}
+              isEditing={editingStepId === step.id}
+              editingStep={editingStep}
+              onEditingStepChange={setEditingStep}
+              onStartEdit={() => startEditing(step)}
+              onSaveEdit={saveEdit}
+              onCancelEdit={cancelEdit}
+              onDelete={() => handleDeleteStep(step.id)}
+              onDuplicate={() => handleDuplicateStep(step)}
+              onMoveUp={() => handleMoveStep(step.id, 'up')}
+              onMoveDown={() => handleMoveStep(step.id, 'down')}
+              isFirst={index === 0}
+              isLast={index === steps.length - 1}
+            />
+          </Reorder.Item>
         ))}
-      </div>
+      </Reorder.Group>
 
       {/* Add Step Form */}
       <AnimatePresence>
@@ -150,7 +275,11 @@ export function TestCaseSteps({ steps: initialSteps }: TestCaseStepsProps) {
                   >
                     Cancel
                   </Button>
-                  <Button size="sm" onClick={handleAddStep}>
+                  <Button 
+                    size="sm" 
+                    onClick={handleAddStep}
+                    disabled={!newStep.action.trim() || !newStep.expectedResult.trim()}
+                  >
                     <Plus className="w-4 h-4 mr-2" />
                     Add Step
                   </Button>
@@ -167,11 +296,39 @@ export function TestCaseSteps({ steps: initialSteps }: TestCaseStepsProps) {
 interface StepCardProps {
   step: TestStep;
   index: number;
+  isEditing: boolean;
+  editingStep: { action: string; expectedResult: string };
+  onEditingStepChange: (step: { action: string; expectedResult: string }) => void;
+  onStartEdit: () => void;
+  onSaveEdit: () => void;
+  onCancelEdit: () => void;
+  onDelete: () => void;
+  onDuplicate: () => void;
+  onMoveUp: () => void;
+  onMoveDown: () => void;
+  isFirst: boolean;
+  isLast: boolean;
 }
 
-function StepCard({ step, index }: StepCardProps) {
+function StepCard({ 
+  step, 
+  index, 
+  isEditing,
+  editingStep,
+  onEditingStepChange,
+  onStartEdit,
+  onSaveEdit,
+  onCancelEdit,
+  onDelete,
+  onDuplicate,
+  onMoveUp,
+  onMoveDown,
+  isFirst,
+  isLast,
+}: StepCardProps) {
   return (
     <motion.div
+      layout
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.03 }}
@@ -179,7 +336,7 @@ function StepCard({ step, index }: StepCardProps) {
     >
       {/* Drag Handle */}
       <div className="flex flex-col items-center gap-2 flex-shrink-0">
-        <div className="cursor-grab hover:bg-muted rounded p-1 text-muted-foreground">
+        <div className="cursor-grab hover:bg-muted rounded p-1 text-muted-foreground active:cursor-grabbing">
           <GripVertical className="w-4 h-4" />
         </div>
         {/* Step Number */}
@@ -189,72 +346,109 @@ function StepCard({ step, index }: StepCardProps) {
       </div>
 
       {/* Step Content */}
-      <div className="flex-1 min-w-0 space-y-3">
-        {/* Action */}
-        <div>
-          <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-            Action
-          </span>
-          <p className="text-sm text-foreground mt-1">{step.action}</p>
-        </div>
-
-        {/* Expected Result */}
-        <div>
-          <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-            Expected Result
-          </span>
-          <p className="text-sm text-foreground mt-1">{step.expectedResult}</p>
-        </div>
-
-        {/* Attachments */}
-        {step.attachments.length > 0 && (
-          <div className="flex flex-wrap gap-2 pt-1">
-            {step.attachments.map((att) => (
-              <div
-                key={att.id}
-                className="flex items-center gap-1.5 px-2 py-1 bg-muted rounded text-xs text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
-              >
-                <Paperclip className="w-3 h-3" />
-                {att.name}
-              </div>
-            ))}
+      {isEditing ? (
+        <div className="flex-1 min-w-0 space-y-3">
+          <div>
+            <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1 block">
+              Action
+            </label>
+            <Textarea
+              value={editingStep.action}
+              onChange={(e) => onEditingStepChange({ ...editingStep, action: e.target.value })}
+              className="min-h-[60px]"
+            />
           </div>
-        )}
-      </div>
+          <div>
+            <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1 block">
+              Expected Result
+            </label>
+            <Textarea
+              value={editingStep.expectedResult}
+              onChange={(e) => onEditingStepChange({ ...editingStep, expectedResult: e.target.value })}
+              className="min-h-[60px]"
+            />
+          </div>
+          <div className="flex gap-2 justify-end">
+            <Button variant="ghost" size="sm" onClick={onCancelEdit}>
+              <X className="w-4 h-4 mr-1" />
+              Cancel
+            </Button>
+            <Button size="sm" onClick={onSaveEdit}>
+              <Check className="w-4 h-4 mr-1" />
+              Save
+            </Button>
+          </div>
+        </div>
+      ) : (
+        <div className="flex-1 min-w-0 space-y-3">
+          {/* Action */}
+          <div>
+            <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+              Action
+            </span>
+            <p className="text-sm text-foreground mt-1">{step.action}</p>
+          </div>
+
+          {/* Expected Result */}
+          <div>
+            <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+              Expected Result
+            </span>
+            <p className="text-sm text-foreground mt-1">{step.expectedResult}</p>
+          </div>
+
+          {/* Attachments */}
+          {step.attachments.length > 0 && (
+            <div className="flex flex-wrap gap-2 pt-1">
+              {step.attachments.map((att) => (
+                <div
+                  key={att.id}
+                  className="flex items-center gap-1.5 px-2 py-1 bg-muted rounded text-xs text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+                >
+                  <Paperclip className="w-3 h-3" />
+                  {att.name}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Actions */}
-      <div className="flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" className="h-8 w-8">
-              <MoreHorizontal className="w-4 h-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-40">
-            <DropdownMenuItem>
-              <Pencil className="w-4 h-4 mr-2" />
-              Edit
-            </DropdownMenuItem>
-            <DropdownMenuItem>
-              <Copy className="w-4 h-4 mr-2" />
-              Duplicate
-            </DropdownMenuItem>
-            <DropdownMenuItem>
-              <ArrowUp className="w-4 h-4 mr-2" />
-              Move Up
-            </DropdownMenuItem>
-            <DropdownMenuItem>
-              <ArrowDown className="w-4 h-4 mr-2" />
-              Move Down
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem className="text-destructive focus:text-destructive">
-              <Trash2 className="w-4 h-4 mr-2" />
-              Delete
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
+      {!isEditing && (
+        <div className="flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" className="h-8 w-8">
+                <MoreHorizontal className="w-4 h-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-40">
+              <DropdownMenuItem onClick={onStartEdit}>
+                <Pencil className="w-4 h-4 mr-2" />
+                Edit
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={onDuplicate}>
+                <Copy className="w-4 h-4 mr-2" />
+                Duplicate
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={onMoveUp} disabled={isFirst}>
+                <ArrowUp className="w-4 h-4 mr-2" />
+                Move Up
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={onMoveDown} disabled={isLast}>
+                <ArrowDown className="w-4 h-4 mr-2" />
+                Move Down
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem className="text-destructive focus:text-destructive" onClick={onDelete}>
+                <Trash2 className="w-4 h-4 mr-2" />
+                Delete
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      )}
     </motion.div>
   );
 }
