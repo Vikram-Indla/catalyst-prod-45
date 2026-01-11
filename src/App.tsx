@@ -56,6 +56,10 @@ const IdeasHubPage = lazy(() => import("./pages/ideas/IdeasHubPage"));
 const AllIdeasPage = lazy(() => import("./pages/ideas/AllIdeasPage"));
 const IdeaDetailPage = lazy(() => import("./pages/ideas/IdeaDetailPage"));
 const InitiativesPage = lazy(() => import("./pages/ideas/InitiativesPage"));
+const InitiativeDetailPage = lazy(() => import("./pages/ideas/InitiativeDetailPage"));
+const SubmitIdeaPage = lazy(() => import("./pages/ideas/SubmitIdeaPage"));
+const ScoringQueuePage = lazy(() => import("./pages/ideas/ScoringQueuePage"));
+const PriorityMatrixPage = lazy(() => import("./pages/ideas/PriorityMatrixPage"));
 import ManageIdeationUsersPage from "./components/ideation/ManageIdeationUsersPage";
 import ManageEnhancementRequests from "./pages/ManageEnhancementRequests";
 import Impediments from "./pages/Impediments";
@@ -435,8 +439,10 @@ const App = () => (
               <Route path="/industry/ideas/hub" element={<Suspense fallback={<div className="p-8">Loading...</div>}><IdeasHubPage /></Suspense>} />
               <Route path="/industry/ideas/all" element={<Suspense fallback={<div className="p-8">Loading...</div>}><AllIdeasPage /></Suspense>} />
               <Route path="/industry/ideas/initiatives" element={<Suspense fallback={<div className="p-8">Loading...</div>}><InitiativesPage /></Suspense>} />
-              <Route path="/industry/ideas/scoring" element={<Suspense fallback={<div className="p-8">Loading...</div>}><AllIdeasPage /></Suspense>} />
-              <Route path="/industry/ideas/matrix" element={<Suspense fallback={<div className="p-8">Loading...</div>}><AllIdeasPage /></Suspense>} />
+              <Route path="/industry/ideas/initiatives/:initiativeId" element={<Suspense fallback={<div className="p-8">Loading...</div>}><InitiativeDetailPage /></Suspense>} />
+              <Route path="/industry/ideas/submit" element={<Suspense fallback={<div className="p-8">Loading...</div>}><SubmitIdeaPage /></Suspense>} />
+              <Route path="/industry/ideas/scoring" element={<Suspense fallback={<div className="p-8">Loading...</div>}><ScoringQueuePage /></Suspense>} />
+              <Route path="/industry/ideas/matrix" element={<Suspense fallback={<div className="p-8">Loading...</div>}><PriorityMatrixPage /></Suspense>} />
               <Route path="/industry/ideas/:ideaId" element={<Suspense fallback={<div className="p-8">Loading...</div>}><IdeaDetailPage /></Suspense>} />
 
               {/* Enterprise More Items */}
