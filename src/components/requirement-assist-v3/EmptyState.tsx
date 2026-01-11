@@ -1,10 +1,10 @@
 // ============================================================
 // EMPTY STATE COMPONENT - ENHANCED
-// Animated icon with floating particles
+// Animated icon with floating particles (no template link)
 // ============================================================
 
 import React from 'react';
-import { Sparkles, FileText } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
 
 export function EmptyState() {
   return (
@@ -51,15 +51,6 @@ export function EmptyState() {
           <Step number={1} text="Describe your requirements" hint="minimum 10 words" />
           <Step number={2} text="Select a program and project" hint="optional" />
           <Step number={3} text="Click Generate or press" kbd="⌘G" />
-        </div>
-        
-        {/* Template link */}
-        <div className="mt-6 flex items-center justify-center gap-2 text-sm text-slate-500">
-          <FileText className="w-4 h-4" />
-          <span>Need inspiration?</span>
-          <button className="text-blue-600 hover:text-blue-700 font-medium hover:underline transition-colors">
-            Try a template →
-          </button>
         </div>
       </div>
     </div>
