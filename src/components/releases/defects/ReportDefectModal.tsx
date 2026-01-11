@@ -51,6 +51,7 @@ import {
 } from "@/components/ui/tooltip";
 import { releaseOptions, testCaseOptions, assigneeOptions, defectsData } from "@/data/defectsData";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 export interface DefectFormData {
   title: string;
@@ -147,11 +148,21 @@ const generateSmartContent = (title: string) => {
     actual = '[What actually happened]';
   }
   
+  // Map severity to priority
+  const priorityMap: Record<string, string> = {
+    blocker: 'P1',
+    critical: 'P1',
+    major: 'P2',
+    minor: 'P3',
+    trivial: 'P4'
+  };
+
   return {
     steps,
     expected,
     actual,
     suggestedSeverity: severity,
+    suggestedPriority: priorityMap[severity] || 'P3',
     suggestedModule: module,
     confidence: isLoginIssue || isPayment || isAPI ? 0.85 : isPerformance || isData ? 0.75 : 0.6
   };
@@ -251,6 +262,7 @@ export function ReportDefectModal({
       expectedResult: generated.expected,
       actualResult: generated.actual,
       severity: generated.suggestedSeverity,
+      priority: generated.suggestedPriority,
       module: generated.suggestedModule
     });
     
@@ -261,6 +273,7 @@ export function ReportDefectModal({
     });
     
     setIsGenerating(false);
+    toast.success('AI generated content. Review and adjust as needed.');
   };
 
   return (
