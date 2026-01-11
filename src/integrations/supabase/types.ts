@@ -25244,6 +25244,163 @@ export type Database = {
         }
         Relationships: []
       }
+      work_items: {
+        Row: {
+          acceptance_criteria: string | null
+          assignee_id: string | null
+          created_at: string
+          description: string | null
+          due_date: string | null
+          feature_id: string | null
+          fixed_version_id: string | null
+          id: string
+          key: string
+          labels: string[] | null
+          parent_work_item_id: string | null
+          priority: Database["public"]["Enums"]["priority_level"]
+          project_id: string
+          reporter_id: string | null
+          sequence_number: number
+          severity: Database["public"]["Enums"]["severity_level"] | null
+          status: Database["public"]["Enums"]["work_item_status"]
+          story_points: number | null
+          summary: string
+          type: Database["public"]["Enums"]["work_item_type"]
+          updated_at: string
+        }
+        Insert: {
+          acceptance_criteria?: string | null
+          assignee_id?: string | null
+          created_at?: string
+          description?: string | null
+          due_date?: string | null
+          feature_id?: string | null
+          fixed_version_id?: string | null
+          id?: string
+          key: string
+          labels?: string[] | null
+          parent_work_item_id?: string | null
+          priority?: Database["public"]["Enums"]["priority_level"]
+          project_id: string
+          reporter_id?: string | null
+          sequence_number: number
+          severity?: Database["public"]["Enums"]["severity_level"] | null
+          status?: Database["public"]["Enums"]["work_item_status"]
+          story_points?: number | null
+          summary: string
+          type: Database["public"]["Enums"]["work_item_type"]
+          updated_at?: string
+        }
+        Update: {
+          acceptance_criteria?: string | null
+          assignee_id?: string | null
+          created_at?: string
+          description?: string | null
+          due_date?: string | null
+          feature_id?: string | null
+          fixed_version_id?: string | null
+          id?: string
+          key?: string
+          labels?: string[] | null
+          parent_work_item_id?: string | null
+          priority?: Database["public"]["Enums"]["priority_level"]
+          project_id?: string
+          reporter_id?: string | null
+          sequence_number?: number
+          severity?: Database["public"]["Enums"]["severity_level"] | null
+          status?: Database["public"]["Enums"]["work_item_status"]
+          story_points?: number | null
+          summary?: string
+          type?: Database["public"]["Enums"]["work_item_type"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "work_items_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "work_items_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "work_items_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "work_items_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "v_resource_profile"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "work_items_feature_id_fkey"
+            columns: ["feature_id"]
+            isOneToOne: false
+            referencedRelation: "features"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "work_items_fixed_version_id_fkey"
+            columns: ["fixed_version_id"]
+            isOneToOne: false
+            referencedRelation: "releases"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "work_items_parent_work_item_id_fkey"
+            columns: ["parent_work_item_id"]
+            isOneToOne: false
+            referencedRelation: "work_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "work_items_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "work_items_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "work_items_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "work_items_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "work_items_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "v_resource_profile"
+            referencedColumns: ["profile_id"]
+          },
+        ]
+      }
       work_manager_task_sequences: {
         Row: {
           last_sequence: number
@@ -26758,6 +26915,15 @@ export type Database = {
         | "progress_bar"
         | "trend_sparkline"
       work_item_dependency_type: "epic" | "feature"
+      work_item_status:
+        | "backlog"
+        | "ready"
+        | "in_progress"
+        | "in_review"
+        | "blocked"
+        | "done"
+        | "closed"
+      work_item_type: "story" | "task" | "defect" | "subtask"
       work_item_type_enum: "epic" | "feature" | "story" | "task" | "defect"
     }
     CompositeTypes: {
@@ -27292,6 +27458,16 @@ export const Constants = {
         "trend_sparkline",
       ],
       work_item_dependency_type: ["epic", "feature"],
+      work_item_status: [
+        "backlog",
+        "ready",
+        "in_progress",
+        "in_review",
+        "blocked",
+        "done",
+        "closed",
+      ],
+      work_item_type: ["story", "task", "defect", "subtask"],
       work_item_type_enum: ["epic", "feature", "story", "task", "defect"],
     },
   },

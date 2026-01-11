@@ -10,6 +10,7 @@ import { RouteObject } from 'react-router-dom';
 const ProjectWorkspace = lazy(() => import('@/pages/project/ProjectWorkspace'));
 const BoardView = lazy(() => import('@/pages/project/BoardView'));
 const TimelineView = lazy(() => import('@/pages/project/TimelineView'));
+const WorkItemsPage = lazy(() => import('@/pages/project/WorkItemsPage'));
 
 // Loading component
 function ViewLoader() {
