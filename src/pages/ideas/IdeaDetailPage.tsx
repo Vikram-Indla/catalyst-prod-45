@@ -1,14 +1,12 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Textarea } from '@/components/ui/textarea';
 import {
   ArrowLeft,
   ThumbsUp,
@@ -24,10 +22,12 @@ import {
   AlertTriangle,
 } from 'lucide-react';
 import { useImprovementIdea, useCastIdeaVote } from '@/hooks/useImprovementIdeas';
+import { useIdeaCommentsCount } from '@/hooks/ideas';
 import { IDEA_CATEGORY_LABELS, IDEA_STATUS_LABELS } from '@/types/improvement-ideas';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
-import { useAuth } from '@/lib/auth';
+import { IdeaCommentsSection } from '@/components/ideas/IdeaCommentsSection';
+import { IdeaAttachmentsSection } from '@/components/ideas/IdeaAttachmentsSection';
 
 const statusColors: Record<string, string> = {
   draft: 'bg-gray-500',
@@ -44,10 +44,9 @@ const statusColors: Record<string, string> = {
 export default function IdeaDetailPage() {
   const { ideaId } = useParams<{ ideaId: string }>();
   const navigate = useNavigate();
-  const { user } = useAuth();
-  const [comment, setComment] = useState('');
 
   const { data: idea, isLoading, error } = useImprovementIdea(ideaId || '');
+  const { data: commentsCount = 0 } = useIdeaCommentsCount(ideaId);
   const voteIdea = useCastIdeaVote();
 
   const handleVote = async (voteType: 'for' | 'against') => {
@@ -165,7 +164,7 @@ export default function IdeaDetailPage() {
             </div>
             <div className="flex items-center gap-2 text-sm">
               <MessageSquare className="h-4 w-4 text-muted-foreground" />
-              <span>0 comments</span>
+              <span>{commentsCount} comment{commentsCount !== 1 ? 's' : ''}</span>
             </div>
             {idea.initiative && (
               <div className="flex items-center gap-2 text-sm">
@@ -198,7 +197,7 @@ export default function IdeaDetailPage() {
             <Sparkles className="h-4 w-4" /> AI Analysis
           </TabsTrigger>
           <TabsTrigger value="discussion" className="gap-2">
-            <MessageSquare className="h-4 w-4" /> Discussion
+            <MessageSquare className="h-4 w-4" /> Discussion ({commentsCount})
           </TabsTrigger>
           <TabsTrigger value="attachments" className="gap-2">
             <FileText className="h-4 w-4" /> Attachments
@@ -316,29 +315,8 @@ export default function IdeaDetailPage() {
             <CardHeader>
               <CardTitle className="text-lg">Discussion</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex gap-3">
-                <Avatar className="h-8 w-8">
-                  <AvatarFallback>U</AvatarFallback>
-                </Avatar>
-                <div className="flex-1 space-y-2">
-                  <Textarea
-                    placeholder="Add a comment..."
-                    value={comment}
-                    onChange={(e) => setComment(e.target.value)}
-                    rows={3}
-                  />
-                  <Button size="sm" disabled={!comment.trim()}>
-                    Post Comment
-                  </Button>
-                </div>
-              </div>
-
-              <Separator />
-
-              <p className="text-muted-foreground text-center py-8">
-                No comments yet. Be the first to share your thoughts!
-              </p>
+            <CardContent>
+              <IdeaCommentsSection ideaId={ideaId || ''} />
             </CardContent>
           </Card>
         </TabsContent>
@@ -349,9 +327,7 @@ export default function IdeaDetailPage() {
               <CardTitle className="text-lg">Attachments</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-muted-foreground text-center py-8">
-                No attachments uploaded for this idea.
-              </p>
+              <IdeaAttachmentsSection ideaId={ideaId || ''} />
             </CardContent>
           </Card>
         </TabsContent>
