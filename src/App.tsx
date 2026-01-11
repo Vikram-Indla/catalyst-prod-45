@@ -60,6 +60,8 @@ const InitiativeDetailPage = lazy(() => import("./pages/ideas/InitiativeDetailPa
 const SubmitIdeaPage = lazy(() => import("./pages/ideas/SubmitIdeaPage"));
 const ScoringQueuePage = lazy(() => import("./pages/ideas/ScoringQueuePage"));
 const PriorityMatrixPage = lazy(() => import("./pages/ideas/PriorityMatrixPage"));
+const AIInsightsPage = lazy(() => import("./pages/ideas/AIInsightsPage"));
+const AnalyticsPage = lazy(() => import("./pages/ideas/AnalyticsPage"));
 const IdeasAdminSettingsPage = lazy(() => import("./pages/ideas/IdeasAdminSettingsPage"));
 import ManageIdeationUsersPage from "./components/ideation/ManageIdeationUsersPage";
 import ManageEnhancementRequests from "./pages/ManageEnhancementRequests";
@@ -444,6 +446,8 @@ const App = () => (
               <Route path="/industry/ideas/submit" element={<Suspense fallback={<div className="p-8">Loading...</div>}><SubmitIdeaPage /></Suspense>} />
               <Route path="/industry/ideas/scoring" element={<Suspense fallback={<div className="p-8">Loading...</div>}><ScoringQueuePage /></Suspense>} />
               <Route path="/industry/ideas/matrix" element={<Suspense fallback={<div className="p-8">Loading...</div>}><PriorityMatrixPage /></Suspense>} />
+              <Route path="/industry/ideas/insights" element={<Suspense fallback={<div className="p-8">Loading...</div>}><AIInsightsPage /></Suspense>} />
+              <Route path="/industry/ideas/analytics" element={<Suspense fallback={<div className="p-8">Loading...</div>}><AnalyticsPage /></Suspense>} />
               <Route path="/industry/ideas/:ideaId" element={<Suspense fallback={<div className="p-8">Loading...</div>}><IdeaDetailPage /></Suspense>} />
 
               {/* Enterprise More Items */}
