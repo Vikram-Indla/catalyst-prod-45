@@ -60,6 +60,7 @@ const InitiativeDetailPage = lazy(() => import("./pages/ideas/InitiativeDetailPa
 const SubmitIdeaPage = lazy(() => import("./pages/ideas/SubmitIdeaPage"));
 const ScoringQueuePage = lazy(() => import("./pages/ideas/ScoringQueuePage"));
 const PriorityMatrixPage = lazy(() => import("./pages/ideas/PriorityMatrixPage"));
+const IdeasAdminSettingsPage = lazy(() => import("./pages/ideas/IdeasAdminSettingsPage"));
 import ManageIdeationUsersPage from "./components/ideation/ManageIdeationUsersPage";
 import ManageEnhancementRequests from "./pages/ManageEnhancementRequests";
 import Impediments from "./pages/Impediments";
@@ -903,6 +904,8 @@ const App = () => (
                 <Route path="requirement-assist/permissions" element={<RAAdminPermissions />} />
                 {/* Catch-all for unknown requirement-assist admin sub-routes */}
                 <Route path="requirement-assist/*" element={<Navigate to="/admin/requirement-assist/ai-configuration" replace />} />
+                {/* Ideas Admin Settings */}
+                <Route path="ideas" element={<Suspense fallback={<div className="p-8">Loading...</div>}><IdeasAdminSettingsPage /></Suspense>} />
               </Route>
 
               <Route path="/items/epics/:epicId/status-report" element={<EpicStatusReport />} />
