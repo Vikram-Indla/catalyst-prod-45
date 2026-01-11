@@ -185,14 +185,14 @@ const findDuplicates = (title: string) => {
     .slice(0, 3);
 };
 
-// Status badge component
+// Status badge component - V5 compliant
 const StatusBadge = ({ status }: { status: string }) => {
   const config: Record<string, string> = {
-    open: 'bg-red-100 text-red-700',
-    in_progress: 'bg-blue-100 text-blue-700',
-    resolved: 'bg-green-100 text-green-700',
-    closed: 'bg-gray-100 text-gray-600',
-    reopened: 'bg-orange-100 text-orange-700'
+    open: 'bg-amber-50 text-amber-700',
+    in_progress: 'bg-blue-50 text-blue-700',
+    resolved: 'bg-teal-50 text-teal-700',
+    closed: 'bg-muted text-muted-foreground',
+    reopened: 'bg-amber-50 text-amber-700'
   };
   
   return (
@@ -202,16 +202,16 @@ const StatusBadge = ({ status }: { status: string }) => {
   );
 };
 
-// Section header component for visual hierarchy
+// Section header component for visual hierarchy - V5 compliant
 const SectionHeader = ({ children }: { children: React.ReactNode }) => (
-  <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">
+  <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
     {children}
   </h3>
 );
 
-// Section divider component
+// Section divider component - V5 compliant
 const SectionDivider = () => (
-  <div className="border-t border-gray-200" />
+  <div className="border-t border-border" />
 );
 
 export function ReportDefectModal({ 
@@ -303,10 +303,10 @@ export function ReportDefectModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl max-h-[90vh] flex flex-col p-0 gap-0 bg-white">
+      <DialogContent className="max-w-2xl max-h-[90vh] flex flex-col p-0 gap-0 bg-card">
         
         {/* FIXED HEADER - More spacious */}
-        <div className="shrink-0 bg-gray-50 px-6 py-5 border-b">
+        <div className="shrink-0 bg-muted px-6 py-5 border-b border-border">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-lg">
               <Bug className="w-5 h-5 text-red-600" />
@@ -332,7 +332,7 @@ export function ReportDefectModal({
               
               {/* Title with AI Button - Full Width */}
               <div>
-                <label className="text-sm font-medium text-gray-700">
+                <label className="text-sm font-medium text-foreground">
                   Title <span className="text-red-500">*</span>
                 </label>
                 <div className="relative mt-1.5">
@@ -383,8 +383,8 @@ export function ReportDefectModal({
                         className="flex items-center justify-between p-2 bg-white rounded border text-sm"
                       >
                         <div className="flex items-center gap-2 min-w-0">
-                          <span className="font-mono text-blue-600 shrink-0">{d.id}</span>
-                          <span className="text-gray-700 truncate">{d.title}</span>
+                          <span className="font-mono text-primary shrink-0">{d.id}</span>
+                          <span className="text-foreground truncate">{d.title}</span>
                           <StatusBadge status={d.status} />
                         </div>
                         <Button 
@@ -407,14 +407,14 @@ export function ReportDefectModal({
               {/* Severity & Priority Row - Taller inputs */}
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-sm font-medium text-gray-700">
+                  <label className="text-sm font-medium text-foreground">
                     Severity <span className="text-red-500">*</span>
                   </label>
                   <Select value={formData.severity} onValueChange={(v) => updateField('severity', v)}>
                     <SelectTrigger className="mt-1.5 h-11">
                       <SelectValue placeholder="How serious is this issue?" />
                     </SelectTrigger>
-                    <SelectContent className="bg-white">
+                    <SelectContent className="bg-popover">
                       <SelectItem value="blocker">
                         <div className="flex items-center gap-2">
                           <span className="w-3 h-3 rounded-full bg-red-600" />
@@ -469,12 +469,12 @@ export function ReportDefectModal({
                 </div>
                 
                 <div>
-                  <label className="text-sm font-medium text-gray-700">Priority</label>
+                  <label className="text-sm font-medium text-foreground">Priority</label>
                   <Select value={formData.priority} onValueChange={(v) => updateField('priority', v)}>
                     <SelectTrigger className="mt-1.5 h-11">
                       <SelectValue placeholder="How urgent?" />
                     </SelectTrigger>
-                    <SelectContent className="bg-white">
+                    <SelectContent className="bg-popover">
                       <SelectItem value="P1">P1 — Urgent (Fix immediately)</SelectItem>
                       <SelectItem value="P2">P2 — High (Fix this sprint)</SelectItem>
                       <SelectItem value="P3">P3 — Medium (Fix soon)</SelectItem>
@@ -494,7 +494,7 @@ export function ReportDefectModal({
               
               {/* Steps to Reproduce - LARGE */}
               <div>
-                <label className="text-sm font-medium text-gray-700">
+                <label className="text-sm font-medium text-foreground">
                   Steps to Reproduce <span className="text-red-500">*</span>
                 </label>
                 <Textarea 
@@ -510,7 +510,7 @@ export function ReportDefectModal({
               
               {/* Expected Result - FULL WIDTH */}
               <div>
-                <label className="text-sm font-medium text-gray-700">
+                <label className="text-sm font-medium text-foreground">
                   Expected Result <span className="text-red-500">*</span>
                 </label>
                 <Textarea 
@@ -523,7 +523,7 @@ export function ReportDefectModal({
               
               {/* Actual Result - FULL WIDTH */}
               <div>
-                <label className="text-sm font-medium text-gray-700">
+                <label className="text-sm font-medium text-foreground">
                   Actual Result <span className="text-red-500">*</span>
                 </label>
                 <Textarea 
@@ -544,14 +544,14 @@ export function ReportDefectModal({
               
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-sm font-medium text-gray-700">
+                  <label className="text-sm font-medium text-foreground">
                     Release <span className="text-red-500">*</span>
                   </label>
                   <Select value={formData.releaseId} onValueChange={(v) => updateField('releaseId', v)}>
                     <SelectTrigger className="mt-1.5 h-11">
                       <SelectValue placeholder="Select target release" />
                     </SelectTrigger>
-                    <SelectContent className="bg-white">
+                    <SelectContent className="bg-popover">
                       {releaseOptions.filter(r => r.value !== 'all').map(release => (
                         <SelectItem key={release.value} value={release.value}>
                           {release.value}
@@ -561,7 +561,7 @@ export function ReportDefectModal({
                   </Select>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-700">Assign To</label>
+                  <label className="text-sm font-medium text-foreground">Assign To</label>
                   <div className="mt-1.5">
                     <UserPicker
                       value={formData.assigneeId || null}
@@ -581,12 +581,12 @@ export function ReportDefectModal({
             <div className="space-y-4">
               <SectionHeader>Attachments</SectionHeader>
               
-              <div className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center hover:border-primary/50 hover:bg-primary/5 transition-all cursor-pointer">
-                <Upload className="w-8 h-8 mx-auto text-gray-400 mb-3" />
-                <p className="text-sm text-gray-600">
+              <div className="border-2 border-dashed border-border rounded-xl p-8 text-center hover:border-primary/50 hover:bg-primary/5 transition-all cursor-pointer">
+                <Upload className="w-8 h-8 mx-auto text-muted-foreground mb-3" />
+                <p className="text-sm text-muted-foreground">
                   Drag & drop screenshots, videos, or logs
                 </p>
-                <p className="text-xs text-gray-400 mt-1">
+                <p className="text-xs text-muted-foreground/70 mt-1">
                   or <span className="text-primary font-medium">browse files</span>
                 </p>
               </div>
@@ -603,19 +603,19 @@ export function ReportDefectModal({
                   isAdvancedOpen && "rotate-90"
                 )} />
                 <span className="font-medium">Additional Details</span>
-                <span className="text-gray-400">(optional)</span>
+                <span className="text-muted-foreground/70">(optional)</span>
               </CollapsibleTrigger>
               <CollapsibleContent className="pt-4 space-y-4">
                 
                 {/* Environment & Module */}
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="text-sm font-medium text-gray-700">Environment</label>
+                    <label className="text-sm font-medium text-foreground">Environment</label>
                     <Select value={formData.environment} onValueChange={(v) => updateField('environment', v)}>
                       <SelectTrigger className="mt-1.5 h-11">
                         <SelectValue placeholder="Where was this found?" />
                       </SelectTrigger>
-                      <SelectContent className="bg-white">
+                      <SelectContent className="bg-popover">
                         <SelectItem value="dev">Development</SelectItem>
                         <SelectItem value="qa">QA</SelectItem>
                         <SelectItem value="staging">Staging</SelectItem>
@@ -625,7 +625,7 @@ export function ReportDefectModal({
                     </Select>
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-gray-700">Module</label>
+                    <label className="text-sm font-medium text-foreground">Module</label>
                     <Select value={formData.module} onValueChange={(v) => updateField('module', v)}>
                       <SelectTrigger className={cn(
                         "mt-1.5 h-11",
@@ -637,7 +637,7 @@ export function ReportDefectModal({
                             : "Which module?"
                         } />
                       </SelectTrigger>
-                      <SelectContent className="bg-white">
+                      <SelectContent className="bg-popover">
                         {aiSuggestions?.module && (
                           <SelectItem value={aiSuggestions.module}>
                             <div className="flex items-center gap-2">
@@ -662,12 +662,12 @@ export function ReportDefectModal({
                 {/* Defect Type & How Detected */}
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="text-sm font-medium text-gray-700">Defect Type</label>
+                    <label className="text-sm font-medium text-foreground">Defect Type</label>
                     <Select value={formData.defectType} onValueChange={(v) => updateField('defectType', v)}>
                       <SelectTrigger className="mt-1.5 h-11">
                         <SelectValue placeholder="What kind?" />
                       </SelectTrigger>
-                      <SelectContent className="bg-white">
+                      <SelectContent className="bg-popover">
                         <SelectItem value="functional">Functional</SelectItem>
                         <SelectItem value="ui">UI/Visual</SelectItem>
                         <SelectItem value="performance">Performance</SelectItem>
@@ -679,12 +679,12 @@ export function ReportDefectModal({
                     </Select>
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-gray-700">How Detected</label>
+                    <label className="text-sm font-medium text-foreground">How Detected</label>
                     <Select value={formData.howDetected} onValueChange={(v) => updateField('howDetected', v)}>
                       <SelectTrigger className="mt-1.5 h-11">
                         <SelectValue placeholder="How found?" />
                       </SelectTrigger>
-                      <SelectContent className="bg-white">
+                      <SelectContent className="bg-popover">
                         <SelectItem value="manual-test">Manual Testing</SelectItem>
                         <SelectItem value="automated-test">Automated Test</SelectItem>
                         <SelectItem value="regression">Regression</SelectItem>
@@ -698,12 +698,12 @@ export function ReportDefectModal({
                 
                 {/* Linked Test Case */}
                 <div>
-                  <label className="text-sm font-medium text-gray-700">Linked Test Case</label>
+                  <label className="text-sm font-medium text-foreground">Linked Test Case</label>
                   <Select value={formData.linkedTestId} onValueChange={(v) => updateField('linkedTestId', v)}>
                     <SelectTrigger className="mt-1.5 h-11">
                       <SelectValue placeholder="Link to a test case (optional)" />
                     </SelectTrigger>
-                    <SelectContent className="bg-white">
+                    <SelectContent className="bg-popover">
                       {testCaseOptions.map(tc => (
                         <SelectItem key={tc.value || 'none'} value={tc.value || 'none'}>
                           {tc.label}
@@ -715,7 +715,7 @@ export function ReportDefectModal({
                 
                 {/* URL */}
                 <div>
-                  <label className="text-sm font-medium text-gray-700">URL</label>
+                  <label className="text-sm font-medium text-foreground">URL</label>
                   <Input 
                     placeholder="https://app.catalyst.gov.sa/..."
                     value={formData.url}
@@ -731,7 +731,7 @@ export function ReportDefectModal({
         </div>
         
         {/* FIXED FOOTER with Quality Score - More spacious */}
-        <div className="shrink-0 bg-gray-50 border-t px-6 py-4 flex items-center justify-between">
+        <div className="shrink-0 bg-muted border-t border-border px-6 py-4 flex items-center justify-between">
           {/* Quality Score */}
           <TooltipProvider>
             <div className="flex items-center gap-3">
@@ -745,7 +745,7 @@ export function ReportDefectModal({
                         "w-5 h-5",
                         star <= qualityScore 
                           ? 'fill-amber-400 text-amber-400' 
-                          : 'text-gray-300'
+                          : 'text-muted-foreground/30'
                       )}
                     />
                   ))}
@@ -760,7 +760,7 @@ export function ReportDefectModal({
                       Improve
                     </Button>
                   </TooltipTrigger>
-                  <TooltipContent className="max-w-xs bg-white">
+                  <TooltipContent className="max-w-xs bg-popover">
                     <p className="font-medium mb-1 text-sm">Tips to improve:</p>
                     <ul className="text-xs space-y-1 text-muted-foreground">
                       {qualityTips.map((tip, i) => (
@@ -779,9 +779,9 @@ export function ReportDefectModal({
               Cancel
             </Button>
             <Button 
-              className="bg-red-600 hover:bg-red-700 text-white h-10 px-6"
               onClick={onSubmit}
               disabled={qualityScore < 2}
+              className="h-10 px-6"
             >
               <Bug className="w-4 h-4 mr-2" />
               Report Defect
