@@ -25,10 +25,10 @@ interface CalendarDay {
 }
 
 const statusColors: Record<string, string> = {
-  planned: 'bg-gray-100 text-gray-700 border-gray-300',
-  in_progress: 'bg-blue-100 text-blue-700 border-blue-300',
-  completed: 'bg-green-100 text-green-700 border-green-300',
-  aborted: 'bg-red-100 text-red-700 border-red-300'
+  planned: 'bg-gray-50 text-gray-700 border-l-4 border-l-gray-400',
+  in_progress: 'bg-blue-50 text-blue-700 border-l-4 border-l-blue-500',
+  completed: 'bg-green-50 text-green-700 border-l-4 border-l-green-500',
+  aborted: 'bg-red-50 text-red-700 border-l-4 border-l-red-500'
 };
 
 const envColors: Record<string, string> = {
@@ -38,6 +38,15 @@ const envColors: Record<string, string> = {
   staging: 'text-orange-600',
   uat: 'text-indigo-600',
   production: 'text-red-600'
+};
+
+const envLabels: Record<string, string> = {
+  dev: 'DEV',
+  qa: 'QA',
+  beta: 'BETA',
+  staging: 'STG',
+  uat: 'UAT',
+  production: 'PROD'
 };
 
 export function CycleCalendarView({ cycles, onCycleClick }: CycleCalendarViewProps) {
@@ -196,20 +205,25 @@ export function CycleCalendarView({ cycles, onCycleClick }: CycleCalendarViewPro
                 {day.date}
               </span>
               
-              {/* Cycle Events - Show Cycle ID + Name */}
+              {/* Cycle Events - Show Cycle ID + Name + Context */}
               <div className="mt-1 space-y-1">
                 {visibleCycles.map(cycle => (
                   <div 
                     key={cycle.id}
                     className={cn(
-                      "text-xs px-2 py-1.5 rounded border cursor-pointer hover:shadow-sm transition-shadow",
+                      "text-xs px-2 py-1.5 rounded cursor-pointer hover:shadow-sm transition-all",
                       statusColors[cycle.status]
                     )}
-                    title={`${cycle.id} · ${cycle.name} · ${cycle.releaseId}`}
+                    title={`${cycle.id} - ${cycle.name}\n${cycle.releaseId} · ${cycle.environment}`}
                     onClick={(e) => handleCycleClick(e, cycle)}
                   >
-                    <div className="font-mono font-medium truncate text-[10px]">{cycle.id}</div>
-                    <div className="truncate opacity-75">{cycle.name}</div>
+                    <div className="font-mono font-semibold truncate text-[11px]">{cycle.id}</div>
+                    <div className="truncate text-[10px]">{cycle.name}</div>
+                    <div className="flex items-center gap-1 text-[9px] opacity-70 mt-0.5">
+                      <span className="truncate">{cycle.releaseId}</span>
+                      <span>·</span>
+                      <span className={cn("font-medium", envColors[cycle.environment])}>{envLabels[cycle.environment] || cycle.environment}</span>
+                    </div>
                   </div>
                 ))}
                 
