@@ -120,7 +120,7 @@ function KanbanCard({ defect }: KanbanCardProps) {
     >
       {/* Header */}
       <div className="flex items-center justify-between mb-2">
-        <span className="font-mono text-xs font-semibold text-red-600">{defect.id}</span>
+        <span className="font-mono text-xs font-semibold text-blue-600">{defect.id}</span>
         <SeverityBadge severity={defect.severity} />
       </div>
       

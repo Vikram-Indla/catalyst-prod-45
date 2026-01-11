@@ -63,7 +63,7 @@ export function DefectTableView({ defects, onUpdateStatus, onDelete }: DefectTab
                   <Checkbox />
                 </td>
                 <td className="px-4 py-3">
-                  <span className="font-mono text-sm font-medium text-red-600">{defect.id}</span>
+                  <span className="font-mono text-sm font-medium text-blue-600">{defect.id}</span>
                 </td>
                 <td className="px-4 py-3">
                   <div className="max-w-xs">

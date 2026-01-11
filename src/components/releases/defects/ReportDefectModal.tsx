@@ -365,7 +365,7 @@ export function ReportDefectModal({
                       className="flex items-center justify-between p-2 bg-white rounded border text-sm"
                     >
                       <div className="flex items-center gap-2 min-w-0">
-                        <span className="font-mono text-red-600 shrink-0">{d.id}</span>
+                        <span className="font-mono text-blue-600 shrink-0">{d.id}</span>
                         <span className="text-gray-700 truncate">{d.title}</span>
                         <StatusBadge status={d.status} />
                       </div>
