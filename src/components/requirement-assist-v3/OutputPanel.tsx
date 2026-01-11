@@ -10,6 +10,7 @@ import { GeneratingOverlay } from './GeneratingOverlay';
 import { WorkItemTree } from './WorkItemTree';
 import { DetailPanel } from './DetailPanel';
 import { EmptyState } from './EmptyState';
+import { GenerationSummary } from './GenerationSummary';
 import { Search, ChevronDown, ChevronUp } from 'lucide-react';
 
 export function OutputPanel() {
@@ -18,6 +19,9 @@ export function OutputPanel() {
     isGenerating, 
     filterType,
     searchQuery,
+    generation,
+    projects,
+    projectId,
     setFilterType,
     setSearchQuery,
     expandAll,
@@ -26,6 +30,10 @@ export function OutputPanel() {
   
   const counts = useStore(useShallow(selectItemCounts));
   const hasItems = workItems.length > 0;
+  
+  // Get selected project name for summary
+  const selectedProject = projects.find(p => p.id === projectId);
+  const projectName = selectedProject?.name || '';
 
   return (
     <div className="relative flex flex-col bg-slate-50 overflow-hidden">
@@ -78,6 +86,19 @@ export function OutputPanel() {
           </div>
         </div>
       </div>
+      
+      {/* FIX #7: Generation Summary Header */}
+      {hasItems && generation && !isGenerating && (
+        <GenerationSummary
+          generationId={generation.displayId}
+          projectName={projectName}
+          counts={{
+            epics: counts.epics,
+            features: counts.features,
+            stories: counts.stories,
+          }}
+        />
+      )}
       
       {/* Panel Body */}
       <div className="flex-1 overflow-hidden relative">

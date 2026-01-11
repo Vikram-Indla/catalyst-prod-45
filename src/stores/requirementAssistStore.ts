@@ -550,13 +550,17 @@ export const selectFilteredWorkItems = (state: RequirementAssistState): WorkItem
   return items;
 };
 
-export const selectItemCounts = (state: RequirementAssistState) => ({
-  total: state.workItems.length,
-  epics: state.workItems.filter((i) => i.itemType === 'epic').length,
-  features: state.workItems.filter((i) => i.itemType === 'feature').length,
-  stories: state.workItems.filter((i) => i.itemType === 'story').length,
-  selected: state.workItems.filter((i) => i.isSelected).length,
-});
+export const selectItemCounts = (state: RequirementAssistState) => {
+  // FIX #3: Exclude PRDs from counts
+  const publishableItems = state.workItems.filter(i => i.itemType !== 'prd');
+  return {
+    total: publishableItems.length,
+    epics: publishableItems.filter((i) => i.itemType === 'epic').length,
+    features: publishableItems.filter((i) => i.itemType === 'feature').length,
+    stories: publishableItems.filter((i) => i.itemType === 'story').length,
+    selected: publishableItems.filter((i) => i.isSelected && !i.isPublished).length,
+  };
+};
 
 export const selectWordCount = (state: RequirementAssistState): number => {
   const text = state.inputText.trim();
