@@ -8,7 +8,7 @@ export interface Defect {
   title: string;
   description: string;
   severity: 'blocker' | 'critical' | 'major' | 'minor' | 'trivial';
-  status: 'open' | 'in_progress' | 'resolved' | 'closed' | 'reopened';
+  status: string; // Now supports 16 workflow statuses
   releaseId: string;
   releaseName?: string;
   linkedTestId: string | null;
@@ -46,7 +46,7 @@ export const defectsData: Defect[] = [
     title: "Payment timeout on slow connections",
     description: "Users on 3G connections experience payment timeout after 15 seconds",
     severity: "critical",
-    status: "open",
+    status: "todo", // NEW: was "open"
     releaseId: "REL-26.01.02",
     releaseName: "Licensing Module v2",
     linkedTestId: "TC-006",
@@ -61,7 +61,7 @@ export const defectsData: Defect[] = [
     title: "Login button unresponsive on Safari iOS",
     description: "Sign In button requires multiple taps on Safari iOS 17",
     severity: "blocker",
-    status: "in_progress",
+    status: "under_implementation", // NEW: was "in_progress"
     releaseId: "REL-26.01.01",
     releaseName: "Investment Portal Q1",
     linkedTestId: "TC-001",
@@ -76,7 +76,7 @@ export const defectsData: Defect[] = [
     title: "Dashboard charts not loading in dark mode",
     description: "Chart.js components fail to render when dark mode is enabled",
     severity: "major",
-    status: "open",
+    status: "ready_for_qa", // NEW: in QA
     releaseId: "REL-26.01.01",
     releaseName: "Investment Portal Q1",
     linkedTestId: "TC-013",
@@ -91,7 +91,7 @@ export const defectsData: Defect[] = [
     title: "Export CSV missing date column",
     description: "Transaction export to CSV omits the transaction_date field",
     severity: "major",
-    status: "resolved",
+    status: "uat_ready", // NEW: in release pipeline
     releaseId: "REL-26.01.02",
     releaseName: "Licensing Module v2",
     linkedTestId: "TC-009",
@@ -106,7 +106,7 @@ export const defectsData: Defect[] = [
     title: "Password visibility toggle missing",
     description: "Show/hide password icon not rendering on password fields",
     severity: "minor",
-    status: "resolved",
+    status: "in_production", // NEW: deployed
     releaseId: "REL-26.01.01",
     releaseName: "Investment Portal Q1",
     linkedTestId: "TC-003",
@@ -121,7 +121,7 @@ export const defectsData: Defect[] = [
     title: "Session not persisting after browser refresh",
     description: "User is logged out when refreshing the page",
     severity: "critical",
-    status: "in_progress",
+    status: "blocked", // NEW: blocked status
     releaseId: "REL-26.01.01",
     releaseName: "Investment Portal Q1",
     linkedTestId: "TC-004",
@@ -136,7 +136,7 @@ export const defectsData: Defect[] = [
     title: "API rate limit message unclear",
     description: "429 error shows generic message instead of retry time",
     severity: "minor",
-    status: "open",
+    status: "awaiting_info", // NEW: awaiting info
     releaseId: "REL-25.12.01",
     releaseName: "Security Patch",
     linkedTestId: "TC-010",
@@ -166,7 +166,7 @@ export const defectsData: Defect[] = [
     title: "Incorrect currency formatting for SAR",
     description: "Saudi Riyal amounts showing wrong decimal places",
     severity: "major",
-    status: "open",
+    status: "rejected", // NEW: QA rejected
     releaseId: "REL-26.01.02",
     releaseName: "Licensing Module v2",
     linkedTestId: "TC-006",
@@ -181,7 +181,7 @@ export const defectsData: Defect[] = [
     title: "Filter state lost on page navigation",
     description: "Applied filters reset when navigating away and back",
     severity: "minor",
-    status: "in_progress",
+    status: "retest", // NEW: in retest
     releaseId: "REL-26.01.01",
     releaseName: "Investment Portal Q1",
     linkedTestId: "TC-014",
@@ -196,7 +196,7 @@ export const defectsData: Defect[] = [
     title: "File upload fails for files > 5MB",
     description: "Large file uploads timeout without error message",
     severity: "major",
-    status: "resolved",
+    status: "in_beta", // NEW: in beta
     releaseId: "REL-26.01.02",
     releaseName: "Licensing Module v2",
     linkedTestId: null,
@@ -211,7 +211,7 @@ export const defectsData: Defect[] = [
     title: "Notification bell count incorrect",
     description: "Badge shows wrong number of unread notifications",
     severity: "trivial",
-    status: "closed",
+    status: "monitor", // NEW: monitoring in production
     releaseId: "REL-26.01.01",
     releaseName: "Investment Portal Q1",
     linkedTestId: null,
@@ -226,7 +226,7 @@ export const defectsData: Defect[] = [
     title: "CSRF token validation failing intermittently",
     description: "Form submissions randomly fail with 403 error",
     severity: "blocker",
-    status: "resolved",
+    status: "closed", // Changed to closed
     releaseId: "REL-25.12.01",
     releaseName: "Security Patch",
     linkedTestId: "TC-011",
