@@ -103,9 +103,31 @@ export function useCreateWorkItem() {
 
   return useMutation({
     mutationFn: async (input: CreateWorkItemInput) => {
+      // First get next sequence number for the project
+      const { data: seqData } = await supabase
+        .from('work_items')
+        .select('sequence_number')
+        .eq('project_id', input.project_id)
+        .order('sequence_number', { ascending: false })
+        .limit(1)
+        .single();
+      
+      const nextSeq = (seqData?.sequence_number ?? 0) + 1;
+      
+      // Get project key for generating work item key
+      const { data: project } = await supabase
+        .from('projects')
+        .select('key')
+        .eq('id', input.project_id)
+        .single();
+      
+      const itemKey = `${project?.key || 'WI'}-${nextSeq}`;
+
       const { data, error } = await supabase
         .from('work_items')
         .insert({
+          key: itemKey,
+          sequence_number: nextSeq,
           project_id: input.project_id,
           type: input.type,
           summary: input.summary,
@@ -194,23 +216,27 @@ export function useProjectFeatures(projectId: string) {
 export function useProjectReleases(projectId: string) {
   return useQuery({
     queryKey: ['releases', 'project', projectId],
-    queryFn: async () => {
-      const { data: project } = await supabase
+    queryFn: async (): Promise<{ id: string; name: string }[]> => {
+      // Get project's program_id first
+      const { data: projectData, error: projectError } = await supabase
         .from('projects')
         .select('program_id')
         .eq('id', projectId)
         .single();
 
-      if (!project?.program_id) return [];
+      if (projectError || !projectData?.program_id) return [];
 
-      const { data, error } = await supabase
+      // Fetch releases using explicit any cast to break type recursion
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const client = supabase as any;
+      const { data, error } = await client
         .from('releases')
         .select('id, name')
-        .eq('program_id', project.program_id)
+        .eq('program_id', projectData.program_id)
         .order('name');
 
       if (error) throw error;
-      return data || [];
+      return (data || []) as { id: string; name: string }[];
     },
     enabled: !!projectId,
   });
