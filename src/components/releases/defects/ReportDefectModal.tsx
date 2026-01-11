@@ -50,7 +50,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { releaseOptions, testCaseOptions, assigneeOptions, defectsData } from "@/data/defectsData";
+import { releaseOptions, testCaseOptions, defectsData } from "@/data/defectsData";
+import { UserPicker } from "@/components/ui/user-picker";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
@@ -561,18 +562,14 @@ export function ReportDefectModal({
                 </div>
                 <div>
                   <label className="text-sm font-medium text-gray-700">Assign To</label>
-                  <Select value={formData.assigneeId} onValueChange={(v) => updateField('assigneeId', v)}>
-                    <SelectTrigger className="mt-1.5 h-11">
-                      <SelectValue placeholder="Unassigned" />
-                    </SelectTrigger>
-                    <SelectContent className="bg-white">
-                      {assigneeOptions.filter(a => a.value !== 'all').map(assignee => (
-                        <SelectItem key={assignee.value || 'unassigned'} value={assignee.value || 'unassigned'}>
-                          {assignee.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <div className="mt-1.5">
+                    <UserPicker
+                      value={formData.assigneeId || null}
+                      onChange={(val) => updateField('assigneeId', (val as string) || '')}
+                      placeholder="Unassigned"
+                      showUnassigned={true}
+                    />
+                  </div>
                 </div>
               </div>
             </div>
