@@ -1,5 +1,5 @@
-import { useState, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useMemo, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { 
   Bug, 
   AlertCircle, 
@@ -64,6 +64,7 @@ const initialFormState: DefectFormData = {
 
 export default function ReleasesDefectsPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   
   // Data
   const [defects, setDefects] = useState<Defect[]>(defectsData);
@@ -81,6 +82,18 @@ export default function ReleasesDefectsPage() {
   // Modal
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const [formData, setFormData] = useState<DefectFormData>(initialFormState);
+  
+  // Auto-open modal when ?create=true is in URL
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    if (params.get('create') === 'true') {
+      setIsReportModalOpen(true);
+      // Clear the param from URL
+      params.delete('create');
+      const newSearch = params.toString();
+      navigate(location.pathname + (newSearch ? `?${newSearch}` : ''), { replace: true });
+    }
+  }, [location.search, navigate, location.pathname]);
   
   // Filtered defects
   const filteredDefects = useMemo(() => {
@@ -121,26 +134,21 @@ export default function ReleasesDefectsPage() {
     setAssigneeFilter('all');
   };
   
-  // Create defect with comprehensive validation
+  // Create defect with simplified validation (only 6 required fields)
   const handleReportDefect = () => {
-    // Validate required fields
+    // Validate required fields (simplified to 6 essential fields)
     const requiredFields: (keyof DefectFormData)[] = [
-      'title', 'severity', 'priority', 'defectType', 
-      'module', 'stepsToReproduce', 'expectedResult', 
-      'actualResult', 'environment', 'releaseId'
+      'title', 'severity', 'stepsToReproduce', 'expectedResult', 
+      'actualResult', 'releaseId'
     ];
     
     const fieldLabels: Record<string, string> = {
       title: 'Title',
       severity: 'Severity',
-      priority: 'Priority',
-      defectType: 'Defect Type',
-      module: 'Module/Component',
       stepsToReproduce: 'Steps to Reproduce',
       expectedResult: 'Expected Result',
       actualResult: 'Actual Result',
-      environment: 'Environment',
-      releaseId: 'Release/Version'
+      releaseId: 'Release'
     };
     
     const missingFields = requiredFields.filter(f => !formData[f]);
