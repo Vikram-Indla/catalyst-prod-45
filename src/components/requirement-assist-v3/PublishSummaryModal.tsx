@@ -1,19 +1,22 @@
 // ============================================================
 // PUBLISH SUMMARY MODAL
 // Shows what was published with generated keys
+// Keys are clickable to navigate to their respective backlog views
 // ============================================================
 
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { CheckCircle, Copy, ExternalLink } from 'lucide-react';
-import { WorkItem } from '@/stores/requirementAssistStore';
 import toast from 'react-hot-toast';
 
 interface PublishedItem {
   key: string;
   type: string;
   title: string;
+  programId?: string;
+  projectId?: string;
 }
 
 interface PublishSummaryModalProps {
@@ -22,6 +25,8 @@ interface PublishSummaryModalProps {
   publishedItems: PublishedItem[];
   programName: string;
   projectName: string;
+  programId: string;
+  projectId: string;
   publishedAt: string;
 }
 
@@ -31,17 +36,40 @@ export function PublishSummaryModal({
   publishedItems,
   programName,
   projectName,
+  programId,
+  projectId,
   publishedAt,
 }: PublishSummaryModalProps) {
+  const navigate = useNavigate();
+
   const handleCopyKeys = () => {
     const keys = publishedItems.map(item => item.key).join('\n');
     navigator.clipboard.writeText(keys);
     toast.success('Keys copied to clipboard');
   };
 
+  const navigateToItem = (item: PublishedItem) => {
+    // Epics and Features belong to Program backlog
+    // Stories belong to Project backlog
+    if (item.type === 'epic' || item.type === 'feature') {
+      navigate(`/program/${item.programId || programId}/backlog?highlight=${item.key}`);
+    } else {
+      navigate(`/project/${item.projectId || projectId}/backlog?highlight=${item.key}`);
+    }
+    onClose();
+  };
+
   const handleViewInBacklog = () => {
-    // TODO: Navigate to backlog
-    toast.success('Opening backlog...');
+    // If mixed (epics/features AND stories), go to program level
+    const hasEpicsOrFeatures = publishedItems.some(i => 
+      i.type === 'epic' || i.type === 'feature'
+    );
+    
+    if (hasEpicsOrFeatures) {
+      navigate(`/program/${programId}/backlog`);
+    } else {
+      navigate(`/project/${projectId}/backlog`);
+    }
     onClose();
   };
 
@@ -95,8 +123,13 @@ export function PublishSummaryModal({
               <tbody className="divide-y divide-slate-100">
                 {publishedItems.map((item, index) => (
                   <tr key={index} className="hover:bg-slate-50">
-                    <td className="px-3 py-2 font-mono text-blue-600 font-medium">
-                      {item.key}
+                    <td className="px-3 py-2">
+                      <button
+                        onClick={() => navigateToItem(item)}
+                        className="font-mono text-blue-600 hover:text-blue-800 hover:underline font-medium transition-colors"
+                      >
+                        {item.key}
+                      </button>
                     </td>
                     <td className="px-3 py-2">
                       <span className={`px-2 py-0.5 rounded text-xs font-medium capitalize ${getTypeColor(item.type)}`}>

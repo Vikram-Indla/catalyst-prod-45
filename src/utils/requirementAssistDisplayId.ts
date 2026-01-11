@@ -1,37 +1,40 @@
 // ============================================================
 // DISPLAY ID GENERATION UTILITIES
-// Generates PROJECT-TYPE-SEQ format display IDs
+// Generates CODE-SEQ format display IDs
+// Epics/Features use PROGRAM code, Stories use PROJECT code
 // ============================================================
 
 /**
- * Generate display ID in PROJECT-TYPE-SEQ format
- * @param projectCode - Project code (e.g., "DIP")
- * @param itemType - Item type (epic, feature, story)
+ * Generate display ID in CODE-SEQ format
+ * Epics and Features belong to Program → use programCode
+ * Stories belong to Project → use projectCode
+ * 
+ * @param itemType - Item type (epic, feature, story, etc.)
+ * @param programCode - Program code (e.g., "CAT" for Catalyst Epics)
+ * @param projectCode - Project code (e.g., "DIP" for Digital Investor Portal)
  * @param sequence - Sequence number
- * @returns Formatted display ID (e.g., "DIP-EPIC-001")
+ * @returns Formatted display ID (e.g., "CAT-001" for epics, "DIP-001" for stories)
  */
 export function generateDisplayId(
-  projectCode: string,
   itemType: 'epic' | 'feature' | 'story' | 'prd' | 'task' | 'test_case',
+  programCode: string,
+  projectCode: string,
   sequence: number
 ): string {
-  const typePrefix: Record<string, string> = {
-    prd: 'PRD',
-    epic: 'EPIC',
-    feature: 'FEAT',
-    story: 'US',
-    task: 'TASK',
-    test_case: 'TC',
-  };
+  // Epics and Features use PROGRAM code
+  // Stories, Tasks, Test Cases use PROJECT code
+  // PRDs are source documents, use PROJECT code
+  const code = (itemType === 'epic' || itemType === 'feature') 
+    ? programCode 
+    : projectCode;
 
-  const prefix = typePrefix[itemType] || itemType.toUpperCase();
   const paddedSeq = String(sequence).padStart(3, '0');
   
-  if (projectCode) {
-    return `${projectCode}-${prefix}-${paddedSeq}`;
+  if (code) {
+    return `${code}-${paddedSeq}`;
   }
   
-  return `${prefix}-${paddedSeq}`;
+  return paddedSeq;
 }
 
 /**
