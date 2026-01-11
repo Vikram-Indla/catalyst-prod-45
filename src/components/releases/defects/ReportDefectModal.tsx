@@ -1,6 +1,7 @@
 /**
  * AI-Enhanced Defect Report Modal
  * Features: Smart description generator, duplicate detection, severity suggestions, quality score
+ * Enterprise UX: Spacious layout with section headers and visual hierarchy
  */
 
 import { useState, useEffect, useMemo } from "react";
@@ -200,6 +201,18 @@ const StatusBadge = ({ status }: { status: string }) => {
   );
 };
 
+// Section header component for visual hierarchy
+const SectionHeader = ({ children }: { children: React.ReactNode }) => (
+  <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">
+    {children}
+  </h3>
+);
+
+// Section divider component
+const SectionDivider = () => (
+  <div className="border-t border-gray-200" />
+);
+
 export function ReportDefectModal({ 
   isOpen, 
   onClose, 
@@ -289,12 +302,12 @@ export function ReportDefectModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-xl max-h-[85vh] flex flex-col p-0 gap-0 bg-white">
+      <DialogContent className="max-w-2xl max-h-[90vh] flex flex-col p-0 gap-0 bg-white">
         
-        {/* FIXED HEADER */}
-        <div className="shrink-0 bg-white px-6 pt-6 pb-4 border-b">
+        {/* FIXED HEADER - More spacious */}
+        <div className="shrink-0 bg-gray-50 px-6 py-5 border-b">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
+            <DialogTitle className="flex items-center gap-2 text-lg">
               <Bug className="w-5 h-5 text-red-600" />
               Report Defect
               <Badge variant="outline" className="ml-2 text-xs font-normal">
@@ -302,254 +315,287 @@ export function ReportDefectModal({
                 AI-Assisted
               </Badge>
             </DialogTitle>
-            <DialogDescription>
+            <DialogDescription className="mt-1">
               Fields marked <span className="text-red-500">*</span> are required.
             </DialogDescription>
           </DialogHeader>
-          
-          {/* Title with AI Button */}
-          <div className="mt-4">
-            <label className="text-sm font-medium">
-              Title <span className="text-red-500">*</span>
-            </label>
-            <div className="relative mt-1">
-              <Input 
-                placeholder="Describe the issue briefly..."
-                className="pr-28"
-                value={formData.title}
-                onChange={(e) => updateField('title', e.target.value)}
-              />
-              <Button
-                variant="ghost"
-                size="sm"
-                className="absolute right-1 top-1/2 -translate-y-1/2 h-7 text-xs text-primary hover:text-primary/80"
-                onClick={handleGenerateDescription}
-                disabled={formData.title.length < 10 || isGenerating}
-              >
-                {isGenerating ? (
-                  <Loader2 className="w-3 h-3 animate-spin mr-1" />
-                ) : (
-                  <Sparkles className="w-3 h-3 mr-1" />
-                )}
-                AI Assist
-              </Button>
-            </div>
-            <p className="text-xs text-muted-foreground mt-1">
-              Type 10+ characters, then click AI Assist to auto-generate content
-            </p>
-          </div>
         </div>
         
-        {/* SCROLLABLE CONTENT */}
-        <div className="flex-1 overflow-y-auto px-6 py-4">
-          <div className="space-y-4">
+        {/* SCROLLABLE CONTENT - More spacious */}
+        <div className="flex-1 overflow-y-auto px-6 py-6">
+          <div className="space-y-6">
             
-            {/* Duplicate Detection Banner */}
-            {isSearchingDuplicates && (
-              <div className="flex items-center gap-2 p-3 bg-blue-50 rounded-lg text-sm text-blue-700">
-                <Loader2 className="w-4 h-4 animate-spin" />
-                Checking for similar defects...
-              </div>
-            )}
-            
-            {!isSearchingDuplicates && potentialDuplicates.length > 0 && (
-              <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg">
-                <div className="flex items-center gap-2 text-amber-800 font-medium text-sm mb-2">
-                  <AlertTriangle className="w-4 h-4" />
-                  Potential duplicates found ({potentialDuplicates.length})
-                </div>
-                <div className="space-y-2">
-                  {potentialDuplicates.map(d => (
-                    <div 
-                      key={d.id}
-                      className="flex items-center justify-between p-2 bg-white rounded border text-sm"
-                    >
-                      <div className="flex items-center gap-2 min-w-0">
-                        <span className="font-mono text-blue-600 shrink-0">{d.id}</span>
-                        <span className="text-gray-700 truncate">{d.title}</span>
-                        <StatusBadge status={d.status} />
-                      </div>
-                      <Button 
-                        variant="ghost" 
-                        size="sm" 
-                        className="h-6 w-6 p-0 shrink-0"
-                        onClick={() => window.open(`/releases/defects/${d.id}`, '_blank')}
-                      >
-                        <ExternalLink className="w-3 h-3" />
-                      </Button>
-                    </div>
-                  ))}
-                </div>
-                <p className="text-xs text-amber-700 mt-2">
-                  Consider adding a comment to an existing defect instead of creating a duplicate.
-                </p>
-              </div>
-            )}
-            
-            {/* Severity & Priority Row */}
-            <div className="grid grid-cols-2 gap-4">
+            {/* SECTION: Basic Information */}
+            <div className="space-y-4">
+              <SectionHeader>Basic Information</SectionHeader>
+              
+              {/* Title with AI Button - Full Width */}
               <div>
-                <label className="text-sm font-medium">
-                  Severity <span className="text-red-500">*</span>
+                <label className="text-sm font-medium text-gray-700">
+                  Title <span className="text-red-500">*</span>
                 </label>
-                <Select value={formData.severity} onValueChange={(v) => updateField('severity', v)}>
-                  <SelectTrigger className="mt-1">
-                    <SelectValue placeholder="How serious?" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-white">
-                    <SelectItem value="blocker">
-                      <div className="flex items-center gap-2">
-                        <span className="w-3 h-3 rounded-full bg-red-600" />
-                        <span>Blocker — System unusable</span>
-                      </div>
-                    </SelectItem>
-                    <SelectItem value="critical">
-                      <div className="flex items-center gap-2">
-                        <span className="w-3 h-3 rounded-full bg-red-400" />
-                        <span>Critical — Major function broken</span>
-                      </div>
-                    </SelectItem>
-                    <SelectItem value="major">
-                      <div className="flex items-center gap-2">
-                        <span className="w-3 h-3 rounded-full bg-orange-500" />
-                        <span>Major — Function impaired</span>
-                      </div>
-                    </SelectItem>
-                    <SelectItem value="minor">
-                      <div className="flex items-center gap-2">
-                        <span className="w-3 h-3 rounded-full bg-amber-500" />
-                        <span>Minor — Cosmetic issue</span>
-                      </div>
-                    </SelectItem>
-                    <SelectItem value="trivial">
-                      <div className="flex items-center gap-2">
-                        <span className="w-3 h-3 rounded-full bg-gray-400" />
-                        <span>Trivial — Enhancement</span>
-                      </div>
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-                
-                {/* AI Severity Suggestion */}
-                {aiSuggestions?.severity && formData.severity !== aiSuggestions.severity && (
-                  <div className="flex items-center gap-2 mt-2">
-                    <span className="text-xs text-muted-foreground">AI suggests:</span>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="h-6 text-xs gap-1"
-                      onClick={() => updateField('severity', aiSuggestions.severity)}
-                    >
-                      <Sparkles className="w-3 h-3 text-primary" />
-                      {aiSuggestions.severity}
-                      <span className="text-muted-foreground">
-                        ({Math.round(aiSuggestions.confidence * 100)}%)
-                      </span>
-                    </Button>
-                  </div>
-                )}
+                <div className="relative mt-1.5">
+                  <Input 
+                    placeholder="Brief, descriptive summary of the issue..."
+                    className="pr-28 h-11 text-base"
+                    value={formData.title}
+                    onChange={(e) => updateField('title', e.target.value)}
+                  />
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 h-8 text-sm text-primary hover:text-primary/80"
+                    onClick={handleGenerateDescription}
+                    disabled={formData.title.length < 10 || isGenerating}
+                  >
+                    {isGenerating ? (
+                      <Loader2 className="w-4 h-4 animate-spin mr-1" />
+                    ) : (
+                      <Sparkles className="w-4 h-4 mr-1" />
+                    )}
+                    AI Assist
+                  </Button>
+                </div>
+                <p className="text-xs text-muted-foreground mt-1.5">
+                  Type 10+ characters, then click AI Assist to auto-generate content
+                </p>
               </div>
               
-              <div>
-                <label className="text-sm font-medium">Priority</label>
-                <Select value={formData.priority} onValueChange={(v) => updateField('priority', v)}>
-                  <SelectTrigger className="mt-1">
-                    <SelectValue placeholder="How urgent?" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-white">
-                    <SelectItem value="P1">P1 - Urgent</SelectItem>
-                    <SelectItem value="P2">P2 - High</SelectItem>
-                    <SelectItem value="P3">P3 - Medium</SelectItem>
-                    <SelectItem value="P4">P4 - Low</SelectItem>
-                  </SelectContent>
-                </Select>
+              {/* Duplicate Detection Banner */}
+              {isSearchingDuplicates && (
+                <div className="flex items-center gap-2 p-3 bg-blue-50 rounded-lg text-sm text-blue-700">
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Checking for similar defects...
+                </div>
+              )}
+              
+              {!isSearchingDuplicates && potentialDuplicates.length > 0 && (
+                <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg">
+                  <div className="flex items-center gap-2 text-amber-800 font-medium text-sm mb-2">
+                    <AlertTriangle className="w-4 h-4" />
+                    Potential duplicates found ({potentialDuplicates.length})
+                  </div>
+                  <div className="space-y-2">
+                    {potentialDuplicates.map(d => (
+                      <div 
+                        key={d.id}
+                        className="flex items-center justify-between p-2 bg-white rounded border text-sm"
+                      >
+                        <div className="flex items-center gap-2 min-w-0">
+                          <span className="font-mono text-blue-600 shrink-0">{d.id}</span>
+                          <span className="text-gray-700 truncate">{d.title}</span>
+                          <StatusBadge status={d.status} />
+                        </div>
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          className="h-6 w-6 p-0 shrink-0"
+                          onClick={() => window.open(`/releases/defects/${d.id}`, '_blank')}
+                        >
+                          <ExternalLink className="w-3 h-3" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                  <p className="text-xs text-amber-700 mt-2">
+                    Consider adding a comment to an existing defect instead of creating a duplicate.
+                  </p>
+                </div>
+              )}
+              
+              {/* Severity & Priority Row - Taller inputs */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm font-medium text-gray-700">
+                    Severity <span className="text-red-500">*</span>
+                  </label>
+                  <Select value={formData.severity} onValueChange={(v) => updateField('severity', v)}>
+                    <SelectTrigger className="mt-1.5 h-11">
+                      <SelectValue placeholder="How serious is this issue?" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-white">
+                      <SelectItem value="blocker">
+                        <div className="flex items-center gap-2">
+                          <span className="w-3 h-3 rounded-full bg-red-600" />
+                          <span>Blocker — System unusable</span>
+                        </div>
+                      </SelectItem>
+                      <SelectItem value="critical">
+                        <div className="flex items-center gap-2">
+                          <span className="w-3 h-3 rounded-full bg-red-400" />
+                          <span>Critical — Major function broken</span>
+                        </div>
+                      </SelectItem>
+                      <SelectItem value="major">
+                        <div className="flex items-center gap-2">
+                          <span className="w-3 h-3 rounded-full bg-orange-500" />
+                          <span>Major — Function impaired</span>
+                        </div>
+                      </SelectItem>
+                      <SelectItem value="minor">
+                        <div className="flex items-center gap-2">
+                          <span className="w-3 h-3 rounded-full bg-amber-500" />
+                          <span>Minor — Cosmetic issue</span>
+                        </div>
+                      </SelectItem>
+                      <SelectItem value="trivial">
+                        <div className="flex items-center gap-2">
+                          <span className="w-3 h-3 rounded-full bg-gray-400" />
+                          <span>Trivial — Enhancement</span>
+                        </div>
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                  
+                  {/* AI Severity Suggestion */}
+                  {aiSuggestions?.severity && formData.severity !== aiSuggestions.severity && (
+                    <div className="flex items-center gap-2 mt-2">
+                      <span className="text-xs text-muted-foreground">AI suggests:</span>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="h-6 text-xs gap-1"
+                        onClick={() => updateField('severity', aiSuggestions.severity)}
+                      >
+                        <Sparkles className="w-3 h-3 text-primary" />
+                        {aiSuggestions.severity}
+                        <span className="text-muted-foreground">
+                          ({Math.round(aiSuggestions.confidence * 100)}%)
+                        </span>
+                      </Button>
+                    </div>
+                  )}
+                </div>
+                
+                <div>
+                  <label className="text-sm font-medium text-gray-700">Priority</label>
+                  <Select value={formData.priority} onValueChange={(v) => updateField('priority', v)}>
+                    <SelectTrigger className="mt-1.5 h-11">
+                      <SelectValue placeholder="How urgent?" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-white">
+                      <SelectItem value="P1">P1 — Urgent (Fix immediately)</SelectItem>
+                      <SelectItem value="P2">P2 — High (Fix this sprint)</SelectItem>
+                      <SelectItem value="P3">P3 — Medium (Fix soon)</SelectItem>
+                      <SelectItem value="P4">P4 — Low (When possible)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
             </div>
             
-            {/* Steps to Reproduce */}
-            <div>
-              <label className="text-sm font-medium">
-                Steps to Reproduce <span className="text-red-500">*</span>
-              </label>
-              <Textarea 
-                placeholder={"1. Navigate to...\n2. Click on...\n3. Observe..."}
-                value={formData.stepsToReproduce}
-                onChange={(e) => updateField('stepsToReproduce', e.target.value)}
-                className="mt-1 min-h-[80px] font-mono text-sm"
-              />
-            </div>
+            {/* DIVIDER */}
+            <SectionDivider />
             
-            {/* Expected vs Actual - Side by Side */}
-            <div className="grid grid-cols-2 gap-4">
+            {/* SECTION: Reproduction Details */}
+            <div className="space-y-4">
+              <SectionHeader>Reproduction Details</SectionHeader>
+              
+              {/* Steps to Reproduce - LARGE */}
               <div>
-                <label className="text-sm font-medium">
-                  Expected <span className="text-red-500">*</span>
+                <label className="text-sm font-medium text-gray-700">
+                  Steps to Reproduce <span className="text-red-500">*</span>
                 </label>
                 <Textarea 
-                  placeholder="What should happen..."
-                  value={formData.expectedResult}
-                  onChange={(e) => updateField('expectedResult', e.target.value)}
-                  className="mt-1 min-h-[60px]"
+                  placeholder={"1. Navigate to the affected page\n2. Click on the specific element\n3. Enter the test data\n4. Observe the result..."}
+                  value={formData.stepsToReproduce}
+                  onChange={(e) => updateField('stepsToReproduce', e.target.value)}
+                  className="mt-1.5 min-h-[140px] font-mono text-sm leading-relaxed resize-y"
                 />
-              </div>
-              <div>
-                <label className="text-sm font-medium">
-                  Actual <span className="text-red-500">*</span>
-                </label>
-                <Textarea 
-                  placeholder="What happened..."
-                  value={formData.actualResult}
-                  onChange={(e) => updateField('actualResult', e.target.value)}
-                  className="mt-1 min-h-[60px]"
-                />
-              </div>
-            </div>
-            
-            {/* Release & Assignee */}
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="text-sm font-medium">
-                  Release <span className="text-red-500">*</span>
-                </label>
-                <Select value={formData.releaseId} onValueChange={(v) => updateField('releaseId', v)}>
-                  <SelectTrigger className="mt-1">
-                    <SelectValue placeholder="Select release" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-white">
-                    {releaseOptions.filter(r => r.value !== 'all').map(release => (
-                      <SelectItem key={release.value} value={release.value}>
-                        {release.value}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <label className="text-sm font-medium">Assign To</label>
-                <Select value={formData.assigneeId} onValueChange={(v) => updateField('assigneeId', v)}>
-                  <SelectTrigger className="mt-1">
-                    <SelectValue placeholder="Unassigned" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-white">
-                    {assigneeOptions.filter(a => a.value !== 'all').map(assignee => (
-                      <SelectItem key={assignee.value || 'unassigned'} value={assignee.value || 'unassigned'}>
-                        {assignee.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-            
-            {/* Attachments */}
-            <div>
-              <label className="text-sm font-medium">Attachments</label>
-              <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center mt-1 hover:border-gray-400 transition-colors cursor-pointer">
-                <Upload className="w-5 h-5 mx-auto text-gray-400" />
-                <p className="text-sm text-gray-500 mt-1">
-                  Drop files or <span className="text-primary">browse</span>
+                <p className="text-xs text-muted-foreground mt-1.5">
+                  Be specific. Number each step clearly.
                 </p>
               </div>
+              
+              {/* Expected Result - FULL WIDTH */}
+              <div>
+                <label className="text-sm font-medium text-gray-700">
+                  Expected Result <span className="text-red-500">*</span>
+                </label>
+                <Textarea 
+                  placeholder="Describe what should have happened when following the steps above..."
+                  value={formData.expectedResult}
+                  onChange={(e) => updateField('expectedResult', e.target.value)}
+                  className="mt-1.5 min-h-[100px] text-sm leading-relaxed resize-y"
+                />
+              </div>
+              
+              {/* Actual Result - FULL WIDTH */}
+              <div>
+                <label className="text-sm font-medium text-gray-700">
+                  Actual Result <span className="text-red-500">*</span>
+                </label>
+                <Textarea 
+                  placeholder="Describe what actually happened. Include any error messages..."
+                  value={formData.actualResult}
+                  onChange={(e) => updateField('actualResult', e.target.value)}
+                  className="mt-1.5 min-h-[100px] text-sm leading-relaxed resize-y"
+                />
+              </div>
+            </div>
+            
+            {/* DIVIDER */}
+            <SectionDivider />
+            
+            {/* SECTION: Assignment & Tracking */}
+            <div className="space-y-4">
+              <SectionHeader>Assignment & Tracking</SectionHeader>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm font-medium text-gray-700">
+                    Release <span className="text-red-500">*</span>
+                  </label>
+                  <Select value={formData.releaseId} onValueChange={(v) => updateField('releaseId', v)}>
+                    <SelectTrigger className="mt-1.5 h-11">
+                      <SelectValue placeholder="Select target release" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-white">
+                      {releaseOptions.filter(r => r.value !== 'all').map(release => (
+                        <SelectItem key={release.value} value={release.value}>
+                          {release.value}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-700">Assign To</label>
+                  <Select value={formData.assigneeId} onValueChange={(v) => updateField('assigneeId', v)}>
+                    <SelectTrigger className="mt-1.5 h-11">
+                      <SelectValue placeholder="Unassigned" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-white">
+                      {assigneeOptions.filter(a => a.value !== 'all').map(assignee => (
+                        <SelectItem key={assignee.value || 'unassigned'} value={assignee.value || 'unassigned'}>
+                          {assignee.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </div>
+            
+            {/* DIVIDER */}
+            <SectionDivider />
+            
+            {/* SECTION: Attachments - LARGE drop zone */}
+            <div className="space-y-4">
+              <SectionHeader>Attachments</SectionHeader>
+              
+              <div className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center hover:border-primary/50 hover:bg-primary/5 transition-all cursor-pointer">
+                <Upload className="w-8 h-8 mx-auto text-gray-400 mb-3" />
+                <p className="text-sm text-gray-600">
+                  Drag & drop screenshots, videos, or logs
+                </p>
+                <p className="text-xs text-gray-400 mt-1">
+                  or <span className="text-primary font-medium">browse files</span>
+                </p>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                💡 Tip: Screenshots with annotations help developers understand the issue faster
+              </p>
             </div>
             
             {/* COLLAPSIBLE: Additional Details */}
@@ -559,17 +605,18 @@ export function ReportDefectModal({
                   "w-4 h-4 transition-transform",
                   isAdvancedOpen && "rotate-90"
                 )} />
-                Additional Details (optional)
+                <span className="font-medium">Additional Details</span>
+                <span className="text-gray-400">(optional)</span>
               </CollapsibleTrigger>
-              <CollapsibleContent className="pt-2 space-y-4">
+              <CollapsibleContent className="pt-4 space-y-4">
                 
                 {/* Environment & Module */}
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="text-sm font-medium">Environment</label>
+                    <label className="text-sm font-medium text-gray-700">Environment</label>
                     <Select value={formData.environment} onValueChange={(v) => updateField('environment', v)}>
-                      <SelectTrigger className="mt-1">
-                        <SelectValue placeholder="Where found?" />
+                      <SelectTrigger className="mt-1.5 h-11">
+                        <SelectValue placeholder="Where was this found?" />
                       </SelectTrigger>
                       <SelectContent className="bg-white">
                         <SelectItem value="dev">Development</SelectItem>
@@ -581,10 +628,10 @@ export function ReportDefectModal({
                     </Select>
                   </div>
                   <div>
-                    <label className="text-sm font-medium">Module</label>
+                    <label className="text-sm font-medium text-gray-700">Module</label>
                     <Select value={formData.module} onValueChange={(v) => updateField('module', v)}>
                       <SelectTrigger className={cn(
-                        "mt-1",
+                        "mt-1.5 h-11",
                         aiSuggestions?.module && !formData.module && "border-primary/50"
                       )}>
                         <SelectValue placeholder={
@@ -618,9 +665,9 @@ export function ReportDefectModal({
                 {/* Defect Type & How Detected */}
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="text-sm font-medium">Defect Type</label>
+                    <label className="text-sm font-medium text-gray-700">Defect Type</label>
                     <Select value={formData.defectType} onValueChange={(v) => updateField('defectType', v)}>
-                      <SelectTrigger className="mt-1">
+                      <SelectTrigger className="mt-1.5 h-11">
                         <SelectValue placeholder="What kind?" />
                       </SelectTrigger>
                       <SelectContent className="bg-white">
@@ -635,9 +682,9 @@ export function ReportDefectModal({
                     </Select>
                   </div>
                   <div>
-                    <label className="text-sm font-medium">How Detected</label>
+                    <label className="text-sm font-medium text-gray-700">How Detected</label>
                     <Select value={formData.howDetected} onValueChange={(v) => updateField('howDetected', v)}>
-                      <SelectTrigger className="mt-1">
+                      <SelectTrigger className="mt-1.5 h-11">
                         <SelectValue placeholder="How found?" />
                       </SelectTrigger>
                       <SelectContent className="bg-white">
@@ -654,10 +701,10 @@ export function ReportDefectModal({
                 
                 {/* Linked Test Case */}
                 <div>
-                  <label className="text-sm font-medium">Linked Test Case</label>
+                  <label className="text-sm font-medium text-gray-700">Linked Test Case</label>
                   <Select value={formData.linkedTestId} onValueChange={(v) => updateField('linkedTestId', v)}>
-                    <SelectTrigger className="mt-1">
-                      <SelectValue placeholder="Link to test..." />
+                    <SelectTrigger className="mt-1.5 h-11">
+                      <SelectValue placeholder="Link to a test case (optional)" />
                     </SelectTrigger>
                     <SelectContent className="bg-white">
                       {testCaseOptions.map(tc => (
@@ -671,12 +718,12 @@ export function ReportDefectModal({
                 
                 {/* URL */}
                 <div>
-                  <label className="text-sm font-medium">URL</label>
+                  <label className="text-sm font-medium text-gray-700">URL</label>
                   <Input 
-                    placeholder="https://..."
+                    placeholder="https://app.catalyst.gov.sa/..."
                     value={formData.url}
                     onChange={(e) => updateField('url', e.target.value)}
-                    className="mt-1"
+                    className="mt-1.5 h-11"
                   />
                 </div>
                 
@@ -686,19 +733,19 @@ export function ReportDefectModal({
           </div>
         </div>
         
-        {/* FIXED FOOTER with Quality Score */}
+        {/* FIXED FOOTER with Quality Score - More spacious */}
         <div className="shrink-0 bg-gray-50 border-t px-6 py-4 flex items-center justify-between">
           {/* Quality Score */}
           <TooltipProvider>
             <div className="flex items-center gap-3">
               <div className="flex items-center gap-2">
-                <span className="text-xs text-muted-foreground">Quality:</span>
+                <span className="text-sm text-muted-foreground">Quality:</span>
                 <div className="flex items-center gap-0.5">
                   {[1, 2, 3, 4, 5].map(star => (
                     <Star 
                       key={star}
                       className={cn(
-                        "w-3.5 h-3.5",
+                        "w-5 h-5",
                         star <= qualityScore 
                           ? 'fill-amber-400 text-amber-400' 
                           : 'text-gray-300'
@@ -711,8 +758,8 @@ export function ReportDefectModal({
               {qualityTips.length > 0 && (
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <Button variant="ghost" size="sm" className="h-6 text-xs text-primary p-1 gap-1">
-                      <Lightbulb className="w-3 h-3" />
+                    <Button variant="ghost" size="sm" className="h-7 text-xs text-primary px-2 gap-1">
+                      <Lightbulb className="w-3.5 h-3.5" />
                       Improve
                     </Button>
                   </TooltipTrigger>
@@ -730,12 +777,12 @@ export function ReportDefectModal({
           </TooltipProvider>
           
           {/* Actions */}
-          <div className="flex gap-2">
-            <Button variant="ghost" onClick={onClose}>
+          <div className="flex items-center gap-3">
+            <Button variant="ghost" onClick={onClose} className="h-10 px-4">
               Cancel
             </Button>
             <Button 
-              className="bg-red-600 hover:bg-red-700 text-white"
+              className="bg-red-600 hover:bg-red-700 text-white h-10 px-6"
               onClick={onSubmit}
               disabled={qualityScore < 2}
             >
