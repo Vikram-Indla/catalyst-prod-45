@@ -130,8 +130,8 @@ export function ReassignModal({
 
   // Handle reassignment
   const handleReassign = () => {
-    // Return the member initials or empty string for unassigned
-    onReassign(selectedMember?.initials || '');
+    // Return the member UUID (or empty string for unassigned)
+    onReassign(selectedMember?.id || '');
     onOpenChange(false);
   };
 
