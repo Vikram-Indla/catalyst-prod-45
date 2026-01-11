@@ -1,6 +1,6 @@
 // ============================================================
-// TREE ITEM COMPONENT
-// Individual item in the work item tree
+// TREE ITEM COMPONENT - ENHANCED
+// Gradient badges, connector lines, hover confidence
 // ============================================================
 
 import React from 'react';
@@ -17,6 +17,26 @@ interface TreeItemProps {
   showChildren?: boolean;
 }
 
+// Gradient badge configuration
+const badgeConfig = {
+  prd: {
+    gradient: 'bg-gradient-to-r from-blue-500 to-blue-600',
+    shadow: 'shadow-ra-badge-story',
+  },
+  epic: {
+    gradient: 'bg-gradient-to-r from-violet-500 to-purple-600',
+    shadow: 'shadow-ra-badge-epic',
+  },
+  feature: {
+    gradient: 'bg-gradient-to-r from-teal-500 to-teal-600',
+    shadow: 'shadow-ra-badge-feature',
+  },
+  story: {
+    gradient: 'bg-gradient-to-r from-emerald-500 to-green-600',
+    shadow: 'shadow-ra-badge-story',
+  },
+};
+
 export function TreeItem({ 
   item, 
   level, 
@@ -30,43 +50,52 @@ export function TreeItem({
   
   const hasChildren = item.children && item.children.length > 0;
   const canExpand = hasChildren && showChildren;
+  const badge = badgeConfig[item.itemType as keyof typeof badgeConfig] || badgeConfig.story;
 
-  // Badge colors
-  const badgeConfig: Record<string, { bg: string; text: string; border: string }> = {
-    epic: { bg: 'bg-purple-50', text: 'text-purple-700', border: 'border-purple-200' },
-    feature: { bg: 'bg-blue-50', text: 'text-blue-700', border: 'border-blue-200' },
-    story: { bg: 'bg-green-50', text: 'text-green-700', border: 'border-green-200' },
-  };
-
-  const badge = badgeConfig[item.itemType] || { bg: 'bg-slate-50', text: 'text-slate-600', border: 'border-slate-200' };
-
-  // Confidence color
+  const confidencePercent = Math.round((item.confidenceScore || 0.85) * 100);
   const confidenceColor = 
-    item.confidenceScore >= 0.9 ? 'text-green-600' :
-    item.confidenceScore >= 0.8 ? 'text-amber-600' :
-    'text-red-600';
+    confidencePercent >= 90 ? 'text-emerald-600 bg-emerald-50' :
+    confidencePercent >= 80 ? 'text-amber-600 bg-amber-50' :
+    'text-red-600 bg-red-50';
 
   return (
     <>
       <div
         className={`
-          group flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer
-          transition-colors duration-100
+          group relative flex items-center gap-2 px-3 py-2.5 rounded-xl cursor-pointer
+          transition-all duration-150 ease-out
           ${isSelected 
-            ? 'bg-primary/5 border border-primary/20' 
-            : 'hover:bg-slate-100 border border-transparent'
+            ? 'bg-blue-50 ring-2 ring-blue-200 shadow-sm' 
+            : 'hover:bg-slate-50 hover:shadow-sm'
           }
         `}
-        style={{ marginLeft: `${level * 20}px` }}
+        style={{ marginLeft: `${level * 24}px` }}
         onClick={onSelect}
       >
-        {/* Expand/Collapse Toggle */}
+        {/* Connector Line */}
+        {level > 0 && (
+          <>
+            <div 
+              className="absolute left-0 top-1/2 w-4 h-px bg-slate-200"
+              style={{ left: `-12px` }}
+            />
+            <div 
+              className="absolute left-0 top-0 w-px h-1/2 bg-slate-200"
+              style={{ left: `-12px` }}
+            />
+          </>
+        )}
+
+        {/* Expand/Collapse */}
         <button
           onClick={(e) => {
             e.stopPropagation();
             onToggleExpand();
           }}
-          className={`p-0.5 rounded hover:bg-slate-200 ${canExpand ? 'visible' : 'invisible'}`}
+          className={`
+            p-1 rounded-md transition-colors
+            ${canExpand ? 'hover:bg-slate-200 visible' : 'invisible'}
+          `}
         >
           {isExpanded ? (
             <ChevronDown className="w-4 h-4 text-slate-400" />
@@ -75,51 +104,65 @@ export function TreeItem({
           )}
         </button>
 
-        {/* Selection Checkbox */}
+        {/* Checkbox */}
         <button
           onClick={(e) => {
             e.stopPropagation();
             toggleItemSelection(item.id);
           }}
-          className="p-0.5 rounded hover:bg-slate-200"
+          className="p-0.5 rounded transition-colors hover:bg-slate-200"
         >
           {item.isSelected ? (
-            <CheckSquare className="w-4 h-4 text-primary" />
+            <CheckSquare className="w-4 h-4 text-blue-600" />
           ) : (
-            <Square className="w-4 h-4 text-slate-300" />
+            <Square className="w-4 h-4 text-slate-300 group-hover:text-slate-400" />
           )}
         </button>
 
-        {/* Type Badge */}
-        <span className={`px-1.5 py-0.5 rounded text-[10px] font-semibold uppercase border ${badge.bg} ${badge.text} ${badge.border}`}>
+        {/* Badge with Gradient */}
+        <span className={`
+          px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wide
+          text-white ${badge.gradient} ${badge.shadow}
+        `}>
           {item.displayId}
         </span>
 
         {/* Title */}
-        <span className={`flex-1 text-sm truncate ${isSelected ? 'text-slate-900 font-medium' : 'text-slate-700'}`}>
+        <span className={`
+          flex-1 text-sm truncate
+          ${isSelected ? 'text-slate-900 font-medium' : 'text-slate-700'}
+        `}>
           {item.title}
         </span>
 
-        {/* Confidence Score */}
-        <span className={`text-xs font-medium ${confidenceColor} opacity-0 group-hover:opacity-100 transition-opacity`}>
-          {Math.round(item.confidenceScore * 100)}%
+        {/* Confidence (on hover) */}
+        <span className={`
+          px-2 py-0.5 rounded-full text-xs font-semibold
+          opacity-0 group-hover:opacity-100 transition-opacity
+          ${confidenceColor}
+        `}>
+          {confidencePercent}%
         </span>
 
         {/* Children Count */}
         {hasChildren && (
-          <span className="text-xs text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded">
+          <span className="px-1.5 py-0.5 bg-slate-100 text-slate-500 rounded text-xs font-medium">
             {item.children!.length}
           </span>
         )}
       </div>
 
-      {/* Render Children */}
+      {/* Children */}
       {canExpand && isExpanded && (
         <div className="relative">
-          {/* Connector Line */}
+          {/* Vertical connector */}
           <div 
-            className="absolute left-[26px] top-0 bottom-0 w-px bg-slate-200"
-            style={{ marginLeft: `${level * 20}px` }}
+            className="absolute w-px bg-slate-200"
+            style={{ 
+              left: `${(level * 24) + 14}px`,
+              top: 0,
+              bottom: 12,
+            }}
           />
           
           {item.children!.map((child) => (

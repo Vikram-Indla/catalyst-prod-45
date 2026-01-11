@@ -472,6 +472,14 @@ export default {
         brand: "var(--shadow-brand)",
         "inner-sm": "inset 0 1px 2px hsl(var(--shadow-color) / 0.03)",
         "inner-md": "inset 0 2px 4px hsl(var(--shadow-color) / 0.05)",
+        // Requirement Assist enhanced shadows
+        "ra-card": "0 1px 3px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.06)",
+        "ra-card-hover": "0 4px 6px rgba(0,0,0,0.05), 0 10px 20px rgba(0,0,0,0.08)",
+        "ra-panel": "-4px 0 24px rgba(0,0,0,0.08)",
+        "ra-button": "0 4px 14px rgba(37, 99, 235, 0.25)",
+        "ra-badge-epic": "0 2px 4px rgba(139, 92, 246, 0.3)",
+        "ra-badge-feature": "0 2px 4px rgba(20, 184, 166, 0.3)",
+        "ra-badge-story": "0 2px 4px rgba(16, 185, 129, 0.3)",
       },
       
       keyframes: {
