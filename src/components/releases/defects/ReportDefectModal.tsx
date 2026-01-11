@@ -90,17 +90,31 @@ interface ReportDefectModalProps {
   onSubmit: () => void;
 }
 
-// Smart content generator based on title keywords
+// Smart content generator based on title keywords - Intelligent AI-powered
 const generateSmartContent = (title: string) => {
   const titleLower = title.toLowerCase();
   
-  const isLoginIssue = /login|auth|sign.?in|password|session|logout/i.test(title);
-  const isUIIssue = /button|display|layout|css|style|render|show|appear|visible|hidden|missing/i.test(title);
-  const isPerformance = /slow|timeout|hang|freeze|lag|loading|performance/i.test(title);
-  const isCrash = /crash|error|exception|fail|broken|not.?working/i.test(title);
-  const isPayment = /payment|checkout|cart|order|transaction|invoice/i.test(title);
-  const isData = /data|missing|incorrect|wrong|csv|export|import/i.test(title);
-  const isAPI = /api|endpoint|request|response|500|404|403|401/i.test(title);
+  // Extract key patterns from title
+  const extractedTerms = {
+    hasError: /error|fail|crash|exception|broken|not.?working/i.test(title),
+    hasLogin: /login|auth|sign.?in|password|session|credential|logout/i.test(title),
+    hasPayment: /payment|checkout|cart|order|transaction|billing|invoice/i.test(title),
+    hasButton: /button|click|tap|press|unresponsive/i.test(title),
+    hasDisplay: /display|show|render|visible|appear|layout|ui|css|style|hidden|missing/i.test(title),
+    hasData: /data|export|import|csv|report|missing|incorrect|wrong/i.test(title),
+    hasPerformance: /slow|timeout|loading|lag|freeze|performance|hang/i.test(title),
+    hasTab: /tab|panel|section|page|screen/i.test(title),
+    hasPermit: /permit|license|approval|certificate/i.test(title),
+    hasAPI: /api|endpoint|request|response|500|404|403|401/i.test(title),
+    hasForm: /form|input|field|submit|validation/i.test(title),
+    hasSearch: /search|filter|query|find/i.test(title),
+    hasUpload: /upload|file|attachment|document|image/i.test(title),
+    hasNotification: /notification|alert|email|message|sms/i.test(title),
+  };
+  
+  // Extract specific terms from title for personalization
+  const words = title.split(/[\s\-]+/).filter(w => w.length > 3);
+  const specificArea = words.slice(0, 4).join(' ');
   
   let steps = '';
   let expected = '';
@@ -108,46 +122,92 @@ const generateSmartContent = (title: string) => {
   let severity = 'major';
   let module = 'other';
   
-  if (isLoginIssue) {
-    steps = `1. Navigate to the login page\n2. Enter valid credentials (username/password)\n3. Click the "Sign In" button\n4. Observe the result`;
-    expected = 'User should be authenticated and redirected to the dashboard';
-    actual = '[Describe what actually happened - error message, redirect failure, etc.]';
+  // Generate based on detected patterns - ordered by priority
+  if (extractedTerms.hasLogin) {
+    steps = `1. Navigate to the login page\n2. Enter valid user credentials\n3. Click the Sign In button\n4. Observe the system response`;
+    expected = 'User should be authenticated successfully and redirected to the dashboard';
+    actual = 'Describe the error message or unexpected behavior observed';
     severity = 'critical';
     module = 'authentication';
-  } else if (isPayment) {
-    steps = `1. Add items to cart\n2. Proceed to checkout\n3. Enter payment details\n4. Click "Complete Payment"\n5. Observe the result`;
-    expected = 'Payment should process successfully with confirmation displayed';
-    actual = '[Describe the payment failure - timeout, error code, etc.]';
+  } else if (extractedTerms.hasPayment) {
+    steps = `1. Add item(s) to cart\n2. Proceed to checkout\n3. Enter payment information\n4. Click Submit/Pay button\n5. Observe the transaction result`;
+    expected = 'Payment should be processed successfully with confirmation displayed';
+    actual = 'Describe the payment failure, error, or unexpected behavior';
     severity = 'blocker';
     module = 'payments';
-  } else if (isPerformance) {
-    steps = `1. Navigate to the affected page/feature\n2. Perform the action that triggers slowness\n3. Measure the response time\n4. Note any timeout errors`;
-    expected = 'Action should complete within acceptable time (<3 seconds)';
-    actual = '[Specify actual load time, timeout duration, or error]';
-    severity = 'major';
-    module = 'performance';
-  } else if (isAPI) {
-    steps = `1. Trigger the API call (describe how)\n2. Observe the network request\n3. Check the response status and body\n4. Note any error messages`;
-    expected = 'API should return expected data with 200 status';
-    actual = '[Describe the API error - status code, error message, etc.]';
+  } else if (extractedTerms.hasAPI) {
+    steps = `1. Navigate to ${specificArea || 'the feature'} that triggers the API call\n2. Perform the action that initiates the request\n3. Observe the network request/response\n4. Note any error codes or messages`;
+    expected = 'API should return expected data with 200 status code';
+    actual = 'Describe the API error - status code, error message, timeout, etc.';
     severity = 'critical';
     module = 'api';
-  } else if (isUIIssue) {
-    steps = `1. Navigate to the affected page\n2. Locate the UI element mentioned\n3. Interact with the element (if applicable)\n4. Observe the visual result`;
-    expected = 'UI element should display correctly and respond to interaction';
-    actual = '[Describe the visual bug - misalignment, missing element, wrong color, etc.]';
+  } else if (extractedTerms.hasTab || extractedTerms.hasPermit) {
+    steps = `1. Navigate to ${specificArea || 'the affected module'}\n2. Click on the tab/section mentioned\n3. Wait for content to load\n4. Observe any error messages or unexpected behavior`;
+    expected = 'Tab should load successfully displaying the relevant content without errors';
+    actual = 'Describe the specific error message or unexpected behavior encountered';
+    severity = 'major';
+    module = 'dashboard';
+  } else if (extractedTerms.hasError) {
+    steps = `1. Navigate to ${specificArea || 'the affected area'}\n2. Perform the action that triggers the error\n3. Observe the error displayed`;
+    expected = 'The action should complete successfully without errors';
+    actual = 'Describe the exact error message and when it appears';
+    severity = 'major';
+    module = 'other';
+  } else if (extractedTerms.hasButton) {
+    steps = `1. Navigate to the page containing the button\n2. Locate the ${specificArea || 'affected'} button\n3. Click the button\n4. Observe the response`;
+    expected = 'Button should respond with visual feedback and trigger the expected action';
+    actual = 'Describe what happens (no response, wrong action, error, etc.)';
+    severity = 'major';
+    module = 'dashboard';
+  } else if (extractedTerms.hasDisplay) {
+    steps = `1. Navigate to ${specificArea || 'the affected page'}\n2. Locate the UI element mentioned\n3. Observe the display/rendering`;
+    expected = 'Content should display correctly with proper formatting and layout';
+    actual = 'Describe what is incorrectly displayed or missing';
     severity = 'minor';
     module = 'dashboard';
-  } else if (isData) {
-    steps = `1. Navigate to the data view/export\n2. Apply filters if applicable\n3. Trigger the data operation\n4. Verify the output`;
-    expected = 'Data should be complete and correctly formatted';
-    actual = '[Describe what data is wrong or missing]';
+  } else if (extractedTerms.hasData) {
+    steps = `1. Navigate to the data/report section\n2. Apply any relevant filters\n3. Trigger the export/view action\n4. Review the output`;
+    expected = 'Data should be complete and accurately formatted';
+    actual = 'Describe what data is missing, incorrect, or malformed';
     severity = 'major';
     module = 'reports';
+  } else if (extractedTerms.hasPerformance) {
+    steps = `1. Navigate to ${specificArea || 'the affected area'}\n2. Perform the action that causes slowness\n3. Measure or observe the response time`;
+    expected = 'Action should complete within acceptable time (< 3 seconds)';
+    actual = 'Describe the delay duration and any timeout errors';
+    severity = 'major';
+    module = 'performance';
+  } else if (extractedTerms.hasForm) {
+    steps = `1. Navigate to ${specificArea || 'the form'}\n2. Fill in the required fields\n3. Submit the form\n4. Observe the result`;
+    expected = 'Form should validate inputs and submit successfully';
+    actual = 'Describe the validation error or submission failure';
+    severity = 'major';
+    module = 'dashboard';
+  } else if (extractedTerms.hasSearch) {
+    steps = `1. Navigate to ${specificArea || 'the search feature'}\n2. Enter search criteria\n3. Execute the search\n4. Review the results`;
+    expected = 'Search should return relevant results matching the criteria';
+    actual = 'Describe what is wrong with the search results';
+    severity = 'major';
+    module = 'dashboard';
+  } else if (extractedTerms.hasUpload) {
+    steps = `1. Navigate to ${specificArea || 'the upload feature'}\n2. Select file(s) to upload\n3. Initiate the upload\n4. Observe the upload progress and result`;
+    expected = 'File should upload successfully with confirmation displayed';
+    actual = 'Describe the upload failure or error encountered';
+    severity = 'major';
+    module = 'other';
+  } else if (extractedTerms.hasNotification) {
+    steps = `1. Trigger the action that should send notification\n2. Wait for notification delivery\n3. Check the notification content/status`;
+    expected = 'Notification should be sent/displayed correctly with proper content';
+    actual = 'Describe what is wrong with the notification';
+    severity = 'major';
+    module = 'notifications';
   } else {
-    steps = `1. Navigate to the affected area\n2. [Describe the action taken]\n3. [Describe any inputs provided]\n4. Observe the result`;
-    expected = '[What should have happened]';
-    actual = '[What actually happened]';
+    // Default fallback - still use title context, NO placeholders
+    steps = `1. Navigate to ${specificArea || 'the affected area'}\n2. Perform the action related to: ${title}\n3. Observe the result`;
+    expected = 'The feature should work as designed without errors';
+    actual = 'Describe the specific issue encountered';
+    severity = 'major';
+    module = 'other';
   }
   
   // Map severity to priority
@@ -159,6 +219,10 @@ const generateSmartContent = (title: string) => {
     trivial: 'P4'
   };
 
+  // Calculate confidence based on pattern matches
+  const matchCount = Object.values(extractedTerms).filter(Boolean).length;
+  const confidence = matchCount >= 2 ? 0.85 : matchCount === 1 ? 0.75 : 0.6;
+
   return {
     steps,
     expected,
@@ -166,7 +230,7 @@ const generateSmartContent = (title: string) => {
     suggestedSeverity: severity,
     suggestedPriority: priorityMap[severity] || 'P3',
     suggestedModule: module,
-    confidence: isLoginIssue || isPayment || isAPI ? 0.85 : isPerformance || isData ? 0.75 : 0.6
+    confidence
   };
 };
 
