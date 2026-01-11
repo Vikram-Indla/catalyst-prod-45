@@ -303,7 +303,7 @@ export const assigneeOptions = [
 ];
 
 export const testCaseOptions = [
-  { value: '', label: 'None' },
+  { value: 'none', label: 'None' },
   { value: 'TC-001', label: 'TC-001 - User login with valid credentials' },
   { value: 'TC-002', label: 'TC-002 - User login with invalid password' },
   { value: 'TC-006', label: 'TC-006 - Payment processing' },
