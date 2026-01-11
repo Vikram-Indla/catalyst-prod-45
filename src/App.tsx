@@ -54,6 +54,8 @@ import Tasks from "./pages/Tasks";
 import Ideation from "./pages/Ideation";
 const IdeasHubPage = lazy(() => import("./pages/ideas/IdeasHubPage"));
 const AllIdeasPage = lazy(() => import("./pages/ideas/AllIdeasPage"));
+const IdeaDetailPage = lazy(() => import("./pages/ideas/IdeaDetailPage"));
+const InitiativesPage = lazy(() => import("./pages/ideas/InitiativesPage"));
 import ManageIdeationUsersPage from "./components/ideation/ManageIdeationUsersPage";
 import ManageEnhancementRequests from "./pages/ManageEnhancementRequests";
 import Impediments from "./pages/Impediments";
@@ -433,10 +435,10 @@ const App = () => (
               <Route path="/ideas/hub" element={<Suspense fallback={<div className="p-8">Loading...</div>}><IdeasHubPage /></Suspense>} />
               <Route path="/ideas/all" element={<Suspense fallback={<div className="p-8">Loading...</div>}><AllIdeasPage /></Suspense>} />
               <Route path="/ideas/submit" element={<Suspense fallback={<div className="p-8">Loading...</div>}><AllIdeasPage /></Suspense>} />
-              <Route path="/ideas/initiatives" element={<Suspense fallback={<div className="p-8">Loading...</div>}><AllIdeasPage /></Suspense>} />
+              <Route path="/ideas/initiatives" element={<Suspense fallback={<div className="p-8">Loading...</div>}><InitiativesPage /></Suspense>} />
               <Route path="/ideas/scoring" element={<Suspense fallback={<div className="p-8">Loading...</div>}><AllIdeasPage /></Suspense>} />
               <Route path="/ideas/matrix" element={<Suspense fallback={<div className="p-8">Loading...</div>}><AllIdeasPage /></Suspense>} />
-              <Route path="/ideas/:ideaId" element={<Suspense fallback={<div className="p-8">Loading...</div>}><AllIdeasPage /></Suspense>} />
+              <Route path="/ideas/:ideaId" element={<Suspense fallback={<div className="p-8">Loading...</div>}><IdeaDetailPage /></Suspense>} />
 
               {/* Enterprise More Items */}
               <Route path="/enterprise/ideation" element={<Navigate to="/ideas/hub" replace />} />
