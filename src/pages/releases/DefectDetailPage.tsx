@@ -39,16 +39,16 @@ import { ReassignModal } from '@/components/releases/defects/ReassignModal';
 import { defectsData, Defect, getAssigneeById } from '@/data/defectsData';
 import { cn } from '@/lib/utils';
 
-// Severity bar colors
-function getSeverityBarColor(severity: string): string {
+// Severity left border colors (industry standard pattern - Jira, Notion, Linear)
+function getSeverityBorderColor(severity: string): string {
   const colors: Record<string, string> = {
-    blocker: 'bg-red-600',
-    critical: 'bg-red-500',
-    major: 'bg-orange-500',
-    minor: 'bg-amber-400',
-    trivial: 'bg-muted-foreground/30',
+    blocker: 'border-l-red-600',
+    critical: 'border-l-red-500',
+    major: 'border-l-orange-500',
+    minor: 'border-l-amber-400',
+    trivial: 'border-l-gray-300',
   };
-  return colors[severity] || colors.major;
+  return colors[severity] || 'border-l-gray-300';
 }
 
 // Status transitions based on current status
@@ -234,9 +234,6 @@ export default function DefectDetailPage() {
       {/* DENSE HEADER                                                         */}
       {/* ═══════════════════════════════════════════════════════════════════ */}
       <div className="bg-card border-b border-border shadow-sm">
-        {/* Severity Color Bar */}
-        <div className={`h-1.5 ${getSeverityBarColor(defect.severity)}`} />
-        
         <div className="max-w-7xl mx-auto px-6">
           
           {/* Row 1: Navigation + ID + Badges + Actions */}
@@ -319,8 +316,8 @@ export default function DefectDetailPage() {
             </div>
           </div>
           
-          {/* Row 2: Title + Description */}
-          <div className="py-4">
+          {/* Row 2: Title + Description - WITH SEVERITY LEFT BORDER */}
+          <div className={`py-4 pl-4 border-l-4 ${getSeverityBorderColor(defect.severity)}`}>
             <h1 className="text-xl font-bold text-foreground">{defect.title}</h1>
             {defect.description && (
               <p className="text-muted-foreground mt-1 text-sm">{defect.description}</p>
