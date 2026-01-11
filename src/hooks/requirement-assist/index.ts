@@ -9,3 +9,12 @@ export * from './useRAGlossary';
 export * from './useRAAISettings';
 export * from './useRAComplianceRules';
 export * from './useRARealtimeSubscriptions';
+
+// =====================================================
+// V3 Custom Hooks
+// =====================================================
+export * from './useGeneration';
+export * from './useAnalysis';
+export * from './useKeyboardShortcuts';
+export * from './usePrograms';
+export * from './useWorkItems';
