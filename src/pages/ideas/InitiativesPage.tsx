@@ -26,6 +26,7 @@ import { useImprovementInitiatives } from '@/hooks/useImprovementIdeas';
 import { INITIATIVE_STATUS_LABELS, ImprovementInitiativeStatus } from '@/types/improvement-ideas';
 import { format, differenceInDays, isPast } from 'date-fns';
 import { useNavigate } from 'react-router-dom';
+import { CreateInitiativeDialog } from '@/components/ideas/CreateInitiativeDialog';
 
 const statusColors: Record<ImprovementInitiativeStatus, string> = {
   draft: 'bg-gray-500',
@@ -42,6 +43,7 @@ export default function InitiativesPage() {
   const navigate = useNavigate();
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
+  const [showCreateDialog, setShowCreateDialog] = useState(false);
 
   const { data: initiatives = [], isLoading } = useImprovementInitiatives();
 
@@ -70,11 +72,17 @@ export default function InitiativesPage() {
               Manage idea collection campaigns and track submissions
             </p>
           </div>
-          <Button className="gap-2">
+          <Button className="gap-2" onClick={() => setShowCreateDialog(true)}>
             <Plus className="h-4 w-4" />
             New Initiative
           </Button>
         </div>
+
+        {/* Create Initiative Dialog */}
+        <CreateInitiativeDialog 
+          open={showCreateDialog} 
+          onOpenChange={setShowCreateDialog} 
+        />
 
         {/* Filters */}
         <div className="flex items-center gap-4">
@@ -117,7 +125,7 @@ export default function InitiativesPage() {
               <p className="text-muted-foreground mb-4">
                 Create your first initiative to start collecting ideas.
               </p>
-              <Button>
+              <Button onClick={() => setShowCreateDialog(true)}>
                 <Plus className="mr-2 h-4 w-4" /> Create Initiative
               </Button>
             </CardContent>
