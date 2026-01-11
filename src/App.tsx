@@ -245,7 +245,8 @@ import IndustryComingSoon from "./pages/enterprise/IndustryComingSoon";
 import DemandSummaryPage from "./pages/enterprise/DemandSummaryPage";
 import ProductRoomPage from "./pages/ProductRoomPage";
 import CapacityPlanningPage from "./pages/CapacityPlanningPage";
-import { RequirementAssistWizard, RequirementAssistHistory } from "./pages/product/requirement-assist";
+import { RequirementAssistPage } from "./components/requirement-assist-v3";
+import { RequirementAssistHistory } from "./pages/product/requirement-assist";
 import { RAAdminAIConfiguration, RAAdminTemplates, RAAdminCompliance, RAAdminTranslation, RAAdminAnalytics, RAAdminPermissions } from "./pages/admin/requirement-assist";
 import ExecutiveRoadmapPage from "./pages/enterprise/ExecutiveRoadmapPage";
 import CatalystDemandKanban from "./modules/kanban/pages/CatalystDemandKanban";
@@ -431,8 +432,7 @@ const App = () => (
 <Route path="/product/capacity" element={<CapacityPlanningPage />} />
 
 {/* Requirement Assist Routes - under Product */}
-<Route path="/product/requirement-assist" element={<Suspense fallback={<div className="p-8">Loading...</div>}><RequirementAssistWizard /></Suspense>} />
-<Route path="/product/requirement-assist/wizard" element={<Suspense fallback={<div className="p-8">Loading...</div>}><RequirementAssistWizard /></Suspense>} />
+<Route path="/product/requirement-assist" element={<Suspense fallback={<div className="p-8">Loading...</div>}><RequirementAssistPage /></Suspense>} />
 <Route path="/product/requirement-assist/history" element={<Suspense fallback={<div className="p-8">Loading...</div>}><RequirementAssistHistory /></Suspense>} />
 {/* Catch-all for unknown requirement-assist sub-routes */}
 <Route path="/product/requirement-assist/*" element={<Navigate to="/product/requirement-assist" replace />} />
