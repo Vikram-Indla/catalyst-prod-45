@@ -1,4 +1,4 @@
-import { Lock, ChevronDown, Lightbulb, LayoutDashboard, List, Layers, Grid3X3, Sparkles, BarChart3 } from 'lucide-react';
+import { Lock, ChevronDown, ChevronLeft, ChevronRight, Lightbulb, LayoutDashboard, List, Layers, Grid3X3, Sparkles, BarChart3 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useUserRole } from '@/hooks/useUserRole';
@@ -109,7 +109,7 @@ function ProductSidebarWithCollapsible({
   isActive: (path: string, exact?: boolean) => boolean;
   navigate: (path: string) => void;
 }) {
-  const { ChevronLeft, ChevronRight } = require('lucide-react');
+  // ChevronLeft and ChevronRight imported from lucide-react at top
   
   // Separate items: before Ideas, and after Ideas (Requirement Assist)
   const itemsBeforeIdeas = config.items?.filter(item => 
